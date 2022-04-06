@@ -219,7 +219,7 @@ git commit -m "chore(amplify-category-api): update dependency on CLI packages"
 	uibuilder.test.ts)
 
 git add .
-git commit -m "$TEST_UPDATE__MESSAGE" --no-verify
+git commit -m "$TEST_UPDATE_MESSAGE" --no-verify
 
 # Run Build
 yarn setup-dev
