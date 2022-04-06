@@ -8,6 +8,7 @@ GITHUB_USERNAME=aws-amplify
 REPO_BRANCH=api-split-m1
 REPO_NAME=amplify-category-api
 FIRST_SPLIT_MESSAGE="chore(amplify-category-api): split API plugin dependencies"
+TEST_UPDATE_MESSAGE="chore(amplify-category-api): remove e2e tests that dont overlap with data"
 
 # Use Node v12 (current LTS)
 nvm install v12.22.10
@@ -158,6 +159,67 @@ cd ..
 
 git add .
 git commit -m "chore(amplify-category-api): update dependency on CLI packages"
+
+# Remove e2e tests we don't need to run
+(cd packages/amplify-e2e-tests/src/__tests__ && rm -rf \
+	amplify-configure.test.ts \
+	analytics.test.ts \
+	configure-project.test.ts \
+	container-hosting.test.ts \
+	custom_resources.test.ts \
+	delete.test.ts \
+	env.test.ts \
+	export-pull.test.ts \
+	export.test.ts \
+	feature-flags.test.ts \
+	frontend_config_drift.test.ts \
+	function_1.test.ts \
+	function_2.test.ts \
+	function_3.test.ts \
+	function_4.test.ts \
+	function_5.test.ts \
+	function_6.test.ts \
+	function_7.test.ts \
+	function_8.test.ts \
+	function_9.test.ts \
+	geo-add.test.ts \
+	geo-headless.test.ts \
+	geo-remove.test.ts \
+	geo-update.test.ts \
+	hooks.test.ts \
+	hosting.test.ts \
+	hostingPROD.test.ts \
+	iam-permissions-boundary.test.ts \
+	import_auth_1.test.ts \
+	import_auth_2.test.ts \
+	import_auth_3.test.ts \
+	import_dynamodb_1.test.ts \
+	import_dynamodb_2.test.ts \
+	import_s3_1.test.ts \
+	import_s3_2.test.ts \
+	import_s3_3.test.ts \
+	init-special-case.test.ts \
+	init.test.ts \
+	interactions.test.ts \
+	layer-1.test.ts \
+	layer-2.test.ts \
+	layer-3.test.ts \
+	layer-4.test.ts \
+	notifications.test.ts \
+	plugin.test.ts \
+	predictions.test.ts \
+	pull.test.ts \
+	s3-sse.test.ts \
+	storage-1.test.ts \
+	storage-2.test.ts \
+	storage-3.test.ts \
+	storage-4.test.ts \
+	storage-5.test.ts \
+	tags.test.ts \
+	uibuilder.test.ts)
+
+git add .
+git commit -m "$TEST_UPDATE__MESSAGE" --no-verify
 
 # Run Build
 yarn setup-dev
