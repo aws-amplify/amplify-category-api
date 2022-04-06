@@ -8,16 +8,27 @@
     "sourceMap": true,
     "esModuleInterop": true,
     "rootDir": "./src",
-    "types": ["jest", "node"],
+    "types": [
+      "jest",
+      "node"
+    ],
     "outDir": "lib",
-    "lib": ["es2015", "es2016.array.include", "esnext.asynciterable", "dom"],
-    "typeRoots": ["../../node_modules/@types", "node_modules/@types"]
+    "lib": [
+      "es2015",
+      "es2016.array.include",
+      "esnext.asynciterable",
+      "dom"
+    ],
+    "typeRoots": [
+      "../../node_modules/@types",
+      "node_modules/@types"
+    ]
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "lib"],
-  "references": [
-    {
-      "path": "../amplify-headless-interface"
-    }
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "lib"
   ]
 }
