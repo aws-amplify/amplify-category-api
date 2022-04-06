@@ -10,8 +10,6 @@ REPO_NAME=amplify-category-api
 FIRST_SPLIT_MESSAGE="chore(amplify-category-api): split API plugin dependencies"
 
 # Use Node v12 (current LTS)
-export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 nvm install v12.22.10
 nvm use v12.22.10
 
