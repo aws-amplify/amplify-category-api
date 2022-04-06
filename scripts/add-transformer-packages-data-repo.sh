@@ -78,7 +78,7 @@ declare -a CLI_PACKAGES=(amplify-app \
     amplify-util-uibuilder \
     amplify-velocity-template)
 
-(cd packages && rm -rf "${MIGRATED_PACKAGES[@]}")
+(cd packages && rm -rf "${CLI_PACKAGES[@]}")
 
 # First commit: clean copy without any changes
 git add .
