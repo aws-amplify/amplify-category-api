@@ -20,7 +20,7 @@
     "dev-build": "yarn --cache-folder ~/.cache/yarn && lerna run build",
     "link-aa-dev": "cd packages/amplify-app && ln -s \"$(pwd)/bin/amplify-app\" \"$(yarn global bin)/amplify-app-dev\" && cd -",
     "rm-aa-dev-link": "rimraf -f \"$(yarn global bin)/amplify-app-dev\"",
-    "link-dev": "cd node_modules/amplify-cli && ln -s \"$(pwd)/bin/amplify\" \"$(yarn global bin)/amplify-dev\" && cd -",
+    "link-dev": "cd node_modules/amplify-cli && ln -s \"$(pwd)/cli/bin/amplify\" \"$(yarn global bin)/amplify-dev\" && cd -",
     "rm-dev-link": "rimraf -f \"$(yarn global bin)/amplify-dev\"",
     "setup-dev": "(yarn && lerna run build) && yarn add-cli-no-save && (yarn hoist-cli && yarn rm-dev-link && yarn link-dev)",
     "link-win": "node ./scripts/link-bin.js node_modules/amplify-cli/bin/amplify amplify-dev",
@@ -42,8 +42,8 @@
     "update-versions": "lerna version --yes --no-commit-hooks --no-push --exact --conventional-commits --no-git-tag-version",
     "commit": "git-cz",
     "coverage": "codecov || exit 0",
-    "add-cli-no-save": "yarn add @aws-amplify/cli -W && git restore package.json",
-    "hoist-cli": "rimraf node_modules/amplify-cli && mkdir node_modules/amplify-cli && cp -r node_modules/@aws-amplify/cli/ node_modules/amplify-cli",
+    "add-cli-no-save": "yarn add @aws-amplify/cli-internal -W && git restore package.json",
+    "hoist-cli": "rimraf node_modules/amplify-cli && mkdir -p node_modules/amplify-cli/cli && cp -r node_modules/@aws-amplify/cli-internal/* node_modules/amplify-cli/cli",
     "publish:main": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --no-verify-access --yes"
   },
   "bugs": {
