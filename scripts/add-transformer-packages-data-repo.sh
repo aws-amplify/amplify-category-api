@@ -107,7 +107,7 @@ jq '(.scripts."link-dev", .scripts."link-win") |= sub("packages/amplify-cli";"no
 mv package.json.updated package.json
 
 ## Do CLI hoisting stuff (stolen from codegen builds)
-jq '.scripts."setup-dev" = "(yarn && lerna run build) && yarn add-cli-no-save && (yarn hoist-cli && yarn rm-dev-link && yarn link-dev)" | .scripts."setup-dev-win" = "(yarn && lerna run build) && yarn add-cli-no-save && (yarn hoist-cli && yarn rm-dev-link && yarn link-win)" | .scripts."add-cli-no-save" = "yarn add @aws-amplify/cli -W && git restore package.json" | .scripts."hoist-cli" = "rimraf node_modules/amplify-cli && mkdir node_modules/amplify-cli && cp -r node_modules/@aws-amplify/cli/ node_modules/amplify-cli"' package.json > package.json.updated
+jq '.scripts."setup-dev" = "(yarn && lerna run build) && yarn add-cli-no-save && (yarn hoist-cli && yarn rm-dev-link && yarn link-dev)" | .scripts."setup-dev-win" = "(yarn && lerna run build) && yarn add-cli-no-save && (yarn hoist-cli && yarn rm-dev-link && yarn link-win)" | .scripts."add-cli-no-save" = "yarn add @aws-amplify/cli-internal -W && git restore package.json" | .scripts."hoist-cli" = "rimraf node_modules/amplify-cli && mkdir -p node_modules/amplify-cli/cli && cp -r node_modules/@aws-amplify/cli-internal/* node_modules/amplify-cli/cli"' package.json > package.json.updated
 mv package.json.updated package.json
 
 # Use main instead of master branch name
