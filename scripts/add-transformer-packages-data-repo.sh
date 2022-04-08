@@ -125,6 +125,10 @@ mv package.json.updated package.json
 rjson packages/amplify-util-mock/tsconfig.json | jq 'del(.references[] | select(.path == ("../amplify-category-function", "../amplify-cli-core", "../amplify-storage-simulator", "../amplify-provider-awscloudformation", "../amplify-nodejs-function-runtime-provider")))' > packages/amplify-util-mock/tsconfig.json.bak
 mv packages/amplify-util-mock/tsconfig.json.bak packages/amplify-util-mock/tsconfig.json
 
+# Update repo in package JSON
+jq '(.name, .description, .scripts."cloud-e2e", .bugs.url, .homepage, .repository.url) |= gsub("amplify-cli";"amplify-category-api")' package.json > package.json.updated
+mv package.json.updated package.json
+
 git add . 
 git commit -m "chore(amplify-category-api): update package scripts, tsconfig"
 
