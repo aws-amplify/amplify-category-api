@@ -16,7 +16,6 @@ jest.setTimeout(2000000);
 const REGION = 'us-west-2';
 const cf = new CloudFormationClient(REGION);
 const customS3Client = new S3Client(REGION);
-const awsS3Client = new S3({ region: REGION });
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `HttpTransformerV2Test-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-http-transformer-v2-test-bucket-${BUILD_TIMESTAMP}`;
@@ -93,9 +92,10 @@ beforeAll(async () => {
     `;
 
   try {
-    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+    await customS3Client.createBucket(BUCKET_NAME);
   } catch (e) {
     console.error(`Failed to create bucket: ${e}`);
+    expect(true).toEqual(false);
   }
 
   const transformer = new GraphQLTransform({

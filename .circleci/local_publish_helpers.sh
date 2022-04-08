@@ -30,75 +30,6 @@ function setNpmTag {
     echo $NPM_TAG
 }
 
-function uploadPkgCli {
-    aws configure --profile=s3-uploader set aws_access_key_id $S3_ACCESS_KEY
-    aws configure --profile=s3-uploader set aws_secret_access_key $S3_SECRET_ACCESS_KEY
-    aws configure --profile=s3-uploader set aws_session_token $S3_AWS_SESSION_TOKEN
-    cd out/
-    export hash=$(git rev-parse HEAD | cut -c 1-12)
-    export version=$(./amplify-pkg-linux-x64 --version)
-
-    if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" == "beta" ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
-        tar -czvf amplify-pkg-linux-arm64.tgz amplify-pkg-linux-arm64
-        tar -czvf amplify-pkg-linux-x64.tgz amplify-pkg-linux-x64
-        tar -czvf amplify-pkg-macos-x64.tgz amplify-pkg-macos-x64
-        tar -czvf amplify-pkg-win-x64.tgz amplify-pkg-win-x64.exe
-
-        aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win-x64-$(echo $hash).tgz
-        aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos-x64-$(echo $hash).tgz
-        aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64-$(echo $hash).tgz
-        aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash).tgz
-
-        if [ "0" -ne "$(aws s3 ls s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64 | egrep -v "amplify-pkg-linux-x64-.*" | wc -l)" ]; then
-            echo "Cannot overwrite existing file at s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64.tgz"
-            exit 1
-        fi
-
-        aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win-x64.tgz
-        aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos-x64.tgz
-        aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64.tgz
-        aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64.tgz
-
-    else
-        tar -czvf amplify-pkg-linux-x64.tgz amplify-pkg-linux-x64
-        aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash).tgz
-    fi
-
-    cd ..
-}
-
-function generatePkgCli {
-  cd pkg
-
-  # install package depedencies
-  cp ../yarn.lock ./
-  yarn --production
-
-  # Optimize package size
-  yarn rimraf **/*.d.ts **/*.js.map **/*.d.ts.map **/README.md **/readme.md **/Readme.md **/CHANGELOG.md **/changelog.md **/Changelog.md **/HISTORY.md **/history.md **/History.md
-
-  # Restore .d.ts files required by @aws-amplify/codegen-ui at runtime
-  cp ../node_modules/typescript/lib/*.d.ts node_modules/typescript/lib/
-
-  # Transpile code for packaging
-  npx babel node_modules --extensions '.js,.jsx,.es6,.es,.ts' --copy-files --include-dotfiles -d ../build/node_modules
-
-  # Include third party licenses
-  cp ../Third_Party_Licenses.txt ../build/node_modules
-
-  # Build pkg cli
-  cp package.json ../build/node_modules/package.json
-  if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" == "beta" ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
-    npx pkg -t node14-macos-x64,node14-linux-x64,node14-linux-arm64,node14-win-x64 ../build/node_modules --out-path ../out
-  else
-    npx pkg -t node14-linux-x64,node14-win-x64 ../build/node_modules --out-path ../out
-    mv ../out/amplify-pkg-linux ../out/amplify-pkg-linux-x64
-    mv ../out/amplify-pkg-win.exe ../out/amplify-pkg-win-x64.exe
-  fi
-
-
-  cd ..
-}
 function unsetNpmRegistryUrl {
     # Restore the original NPM and Yarn registry URLs
     npm set registry "https://registry.npmjs.org/"
@@ -159,7 +90,9 @@ function retry {
     FIRST_RUN=true
     n=0
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
-    rm -f $FAILED_TEST_REGEX_FILE
+    if [ -f  $FAILED_TEST_REGEX_FILE ]; then
+        rm -f $FAILED_TEST_REGEX_FILE
+    fi
     until [ $n -ge $MAX_ATTEMPTS ]
     do
         echo "Attempting $@ with max retries $MAX_ATTEMPTS"
@@ -177,7 +110,7 @@ function retry {
 
     resetAwsAccountCredentials
     TEST_SUITE=${TEST_SUITE:-"TestSuiteNotSet"}
-    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-cli-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE
+    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-category-api-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE
     echo "Attempt $n succeeded."
     exit 0 # don't fail the step if putting the metric fails
 }
@@ -221,9 +154,8 @@ function runE2eTest {
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
 
     if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
-        startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
-        setNpmRegistryUrlToLocal
-        changeNpmGlobalPath
+        echo "using Amplify CLI version: "$(amplify --version)
+        echo "using amplify-app version: "$(amplify-app --version)
         cd $(pwd)/packages/amplify-e2e-tests
     fi
 
