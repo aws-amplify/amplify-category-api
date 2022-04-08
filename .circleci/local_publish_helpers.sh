@@ -30,62 +30,6 @@ function setNpmTag {
     echo $NPM_TAG
 }
 
-function uploadPkgCli {
-    sudo apt-get update
-    sudo apt-get install -y sudo tcl expect zip lsof jq groff python python-pip libpython-dev
-    sudo pip install awscli
-    aws configure --profile=s3-uploader set aws_access_key_id $S3_ACCESS_KEY
-    aws configure --profile=s3-uploader set aws_secret_access_key $S3_SECRET_ACCESS_KEY
-    aws configure --profile=s3-uploader set aws_session_token $S3_AWS_SESSION_TOKEN
-    cd out/
-    export hash=$(git rev-parse HEAD | cut -c 1-12)
-    export version=$(./amplify-pkg-linux-x64 --version)
-
-    aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.exe s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win-$(echo $hash).exe
-    aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos-$(echo $hash)
-    aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64-$(echo $hash)
-    aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash)
-    if [ -z "$NPM_TAG" ] && [[ "$CIRCLE_BRANCH" != "release" ]]; then
-        exit 0
-    fi
-
-    echo "Tag name is $NPM_TAG. Uploading to s3://aws-amplify-cli-do-not-delete/$(echo $version)"
-    if [ "0" -ne "$(aws s3 ls s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64 | egrep -v "amplify-pkg-linux-x64-.*" | wc -l)" ]; then
-        echo "Cannot overwrite existing file at s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64"
-        exit 1
-    fi
-    aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.exe s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win.exe
-    aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos
-    aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64
-    aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64
-    cd ..
-}
-
-function generatePkgCli {
-  cd pkg
-
-  # install package depedencies
-  cp ../yarn.lock ./
-  yarn --production
-
-  # Optimize package size
-  yarn rimraf **/*.d.ts **/*.js.map **/*.d.ts.map **/README.md **/readme.md **/Readme.md **/CHANGELOG.md **/changelog.md **/Changelog.md **/HISTORY.md **/history.md **/History.md
-
-  # Restore .d.ts files required by @aws-amplify/codegen-ui at runtime
-  cp ../node_modules/typescript/lib/*.d.ts node_modules/typescript/lib/
-
-  # Transpile code for packaging
-  npx babel node_modules --extensions '.js,.jsx,.es6,.es,.ts' --copy-files --include-dotfiles -d ../build/node_modules
-
-  # Include third party licenses
-  cp ../Third_Party_Licenses.txt ../build/node_modules
-
-  # Build pkg cli
-  cp package.json ../build/node_modules/package.json
-  npx pkg -t node14-macos-x64,node14-linux-x64,node14-linux-arm64,node14-win-x64 ../build/node_modules --out-path ../out
-
-  cd ..
-}
 
 function loginToLocalRegistry {
     # Login so we can publish packages
@@ -152,7 +96,9 @@ function retry {
     FIRST_RUN=true
     n=0
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
-    rm -f $FAILED_TEST_REGEX_FILE
+    if [ -f  $FAILED_TEST_REGEX_FILE ]; then
+        rm -f $FAILED_TEST_REGEX_FILE
+    fi
     until [ $n -ge $MAX_ATTEMPTS ]
     do
         echo "Attempting $@ with max retries $MAX_ATTEMPTS"
@@ -170,7 +116,7 @@ function retry {
 
     resetAwsAccountCredentials
     TEST_SUITE=${TEST_SUITE:-"TestSuiteNotSet"}
-    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-cli-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE
+    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-category-api-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE
     echo "Attempt $n succeeded."
     exit 0 # don't fail the step if putting the metric fails
 }
@@ -217,13 +163,8 @@ function runE2eTest {
         sudo apt-get install -y libatk-bridge2.0-0 libgtk-3.0 libasound2 lsof
     fi
     if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
-        startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
-        setNpmRegistryUrlToLocal
-        changeNpmGlobalPath
-        npm install -g @aws-amplify/cli
-        npm install -g amplify-app
-        amplify -v
-        amplify-app --version
+        echo "using Amplify CLI version: "$(amplify --version)
+        echo "using amplify-app version: "$(amplify-app --version)
         cd $(pwd)/packages/amplify-e2e-tests
     fi
 
