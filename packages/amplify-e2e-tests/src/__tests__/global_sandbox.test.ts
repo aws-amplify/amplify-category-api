@@ -27,23 +27,23 @@ describe('global sandbox mode', () => {
 
   it('compiles schema with one model and pushes to cloud', async () => {
     await addApiWithOneModel(projectDir);
-    await apiGqlCompile(projectDir, true);
+    await apiGqlCompile(projectDir);
     await generateModels(projectDir);
-    await amplifyPush(projectDir, true);
+    await amplifyPush(projectDir);
   });
 
   it.skip('compiles schema with three models and pushes to cloud', async () => {
     await addApiWithThreeModels(projectDir);
-    await apiGqlCompile(projectDir, true);
+    await apiGqlCompile(projectDir);
     await generateModels(projectDir);
-    await amplifyPush(projectDir, true);
+    await amplifyPush(projectDir);
   });
 
   it('compiles schema user-added schema and pushes to cloud', async () => {
     await addApiWithoutSchema(projectDir, { apiName });
     updateApiSchema(projectDir, apiName, 'model_with_sandbox_mode.graphql');
-    await apiGqlCompile(projectDir, true);
+    await apiGqlCompile(projectDir);
     await generateModels(projectDir);
-    await amplifyPush(projectDir, true);
+    await amplifyPush(projectDir);
   });
 });
