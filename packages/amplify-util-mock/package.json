@@ -22,6 +22,7 @@
     "test": "jest src/__tests__/**/*.test.ts",
     "test-watch": "jest --watch",
     "build": "tsc",
+    "build-test": "download --extract -o ./node_modules/amplify-dynamodb-simulator/emulator https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip",
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo"
   },
