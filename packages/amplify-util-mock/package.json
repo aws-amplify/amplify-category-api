@@ -22,7 +22,6 @@
     "test": "jest src/__tests__/**/*.test.ts",
     "test-watch": "jest --watch",
     "build": "tsc",
-    "build-test": "download --extract -o ./node_modules/amplify-dynamodb-simulator/emulator https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip",
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo"
   },
@@ -32,7 +31,7 @@
     "amplify-category-function": "^4.0.0",
     "amplify-cli-core": "^2.5.1",
     "amplify-codegen": "2.28.1",
-    "amplify-dynamodb-simulator": "^2.2.25",
+    "amplify-dynamodb-simulator": "2.2.25",
     "amplify-provider-awscloudformation": "^6.0.0",
     "amplify-storage-simulator": "^1.6.6",
     "chokidar": "^3.5.3",
