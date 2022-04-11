@@ -84,14 +84,11 @@ const FORCE_US_WEST_2 = ['interactions'];
 const USE_PARENT_ACCOUNT = [
   'api_2',
   'api_1',
-  'auth_2',
   'import_dynamodb_1',
-  'import_s3_1',
   'api-key-migration2',
   'api-key-migration3',
   'api-key-migration4',
-  'api-key-migration5',
-  'storage',
+  'api-key-migration5'
 ];
 
 // This array needs to be update periodically when new tests suites get added
@@ -99,43 +96,22 @@ const USE_PARENT_ACCOUNT = [
 
 const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   //<10m
-  'src/__tests__/plugin.test.ts',
-  'src/__tests__/init-special-case.test.ts',
   'src/__tests__/datastore-modelgen.test.ts',
-  'src/__tests__/amplify-configure.test.ts',
-  'src/__tests__/init.test.ts',
-  'src/__tests__/tags.test.ts',
-  'src/__tests__/notifications.test.ts',
-  'src/__tests__/geo-headless.test.ts',
   //<15m
   'src/__tests__/schema-versioned.test.ts',
   'src/__tests__/schema-data-access-patterns.test.ts',
-  'src/__tests__/interactions.test.ts',
   'src/__tests__/schema-predictions.test.ts',
   'src/__tests__/amplify-app.test.ts',
-  'src/__tests__/hosting.test.ts',
-  'src/__tests__/analytics.test.ts',
-  'src/__tests__/feature-flags.test.ts',
   'src/__tests__/schema-iterative-update-2.test.ts',
   'src/__tests__/containers-api.test.ts',
-  //<20m
-  'src/__tests__/predictions.test.ts',
-  'src/__tests__/hostingPROD.test.ts',
-  'src/__tests__/geo-add.test.ts',
-  'src/__tests__/geo-update.test.ts',
-  'src/__tests__/geo-remove.test.ts',
-  'src/__tests__/geo-multi-env.test.ts',
   //<25m
   'src/__tests__/schema-auth-10.test.ts',
   'src/__tests__/schema-key.test.ts',
   'src/__tests__/auth_1.test.ts',
   'src/__tests__/auth_5.test.ts',
-  'src/__tests__/function_3.test.ts',
   'src/__tests__/schema-iterative-update-1.test.ts',
   //<30m
   'src/__tests__/schema-auth-3.test.ts',
-  'src/__tests__/delete.test.ts',
-  'src/__tests__/function_2.test.ts',
   'src/__tests__/auth_3.test.ts',
   'src/__tests__/layer.test.ts',
   //<35m
@@ -146,23 +122,15 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/schema-searchable.test.ts',
   'src/__tests__/schema-auth-4.test.ts',
   'src/__tests__/api_3.test.ts',
-  'src/__tests__/import_auth_1.test.ts',
-  'src/__tests__/import_auth_2.test.ts',
-  'src/__tests__/import_s3_1.test.ts',
-  'src/__tests__/import_dynamodb_1.test.ts',
   'src/__tests__/schema-iterative-rollback-1.test.ts',
   //<40m
-  'src/__tests__/geo-import.test.ts',
   'src/__tests__/schema-iterative-rollback-2.test.ts',
-  'src/__tests__/env.test.ts',
   'src/__tests__/auth_2.test.ts',
   'src/__tests__/schema-auth-9.test.ts',
   'src/__tests__/schema-auth-11.test.ts',
   'src/__tests__/migration/api.key.migration2.test.ts',
   'src/__tests__/migration/api.key.migration3.test.ts',
-  'src/__tests__/function_1.test.ts',
   'src/__tests__/schema-auth-1.test.ts',
-  'src/__tests__/function_4.test.ts',
   //<45m
   'src/__tests__/schema-function.test.ts',
   'src/__tests__/schema-model.test.ts',
@@ -175,7 +143,6 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/api_1.test.ts',
   'src/__tests__/schema-auth-5.test.ts',
   //<55m
-  'src/__tests__/storage.test.ts',
   'src/__tests__/api_2.test.ts',
   'src/__tests__/api_5.test.ts',
   'src/__tests__/api_6.test.ts',
@@ -460,7 +427,7 @@ function main(): void {
   const config = loadConfig();
   const splitPkgTests = splitTests(
     config,
-    'amplify_e2e_tests_pkg',
+    'amplify_e2e_tests',
     'build_test_deploy',
     join(repoRoot, 'packages', 'amplify-e2e-tests'),
     CONCURRENCY,
@@ -472,23 +439,7 @@ function main(): void {
     join(repoRoot, 'packages', 'graphql-transformers-e2e-tests'),
     CONCURRENCY,
   );
-  const splitV5MigrationTests = splitTests(
-    splitGqlTests,
-    'amplify_migration_tests_v5',
-    'build_test_deploy',
-    join(repoRoot, 'packages', 'amplify-migration-tests'),
-    CONCURRENCY,
-    true,
-  );
-  const splitV6MigrationTests = splitTests(
-    splitV5MigrationTests,
-    'amplify_migration_tests_v6',
-    'build_test_deploy',
-    join(repoRoot, 'packages', 'amplify-migration-tests'),
-    CONCURRENCY,
-    true,
-  );
-  saveConfig(splitV6MigrationTests);
+  saveConfig(splitGqlTests);
   verifyConfig();
 }
 main();
