@@ -44,7 +44,7 @@ scan_e2e_test_artifacts: &scan_e2e_test_artifacts
     fi
   when: always
 
-install_cli_from_local_registery: &install_cli_from_local_registery
+install_cli_from_local_registry: &install_cli_from_local_registry
   name: Start verdaccio, install node CLI and amplify-app
   command: |
     source .circleci/local_publish_helpers.sh
@@ -206,7 +206,7 @@ jobs:
           key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - install_yarn:
           os: << parameters.os >>
-      - run: *install_cli_from_local_registery
+      - run: *install_cli_from_local_registry
       - run_e2e_tests:
           os: << parameters.os >>
       - scan_e2e_test_artifacts:
