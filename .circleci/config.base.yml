@@ -550,7 +550,6 @@ commands:
                 name: Run E2e Tests
                 command: |
                   source .circleci/local_publish_helpers.sh
-                  source $BASH_ENV
                   amplify version
                   retry runE2eTest
                 no_output_timeout: 90m
