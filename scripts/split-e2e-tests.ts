@@ -247,11 +247,11 @@ function splitTests(
         ...newJob.environment,
         ...(isMigration
           ? {
-              AMPLIFY_PATH: '/home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify',
+              AMPLIFY_PATH: '/home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin/amplify',
             }
           : {
-              AMPLIFY_DIR: '/home/circleci/repo/packages/amplify-cli/bin',
-              AMPLIFY_PATH: '/home/circleci/repo/packages/amplify-cli/bin/amplify',
+              AMPLIFY_DIR: '/home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin',
+              AMPLIFY_PATH: '/home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin/amplify',
             }),
       };
     }
