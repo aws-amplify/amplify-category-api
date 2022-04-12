@@ -20,7 +20,7 @@
     "dev-build": "yarn --cache-folder ~/.cache/yarn && lerna run build",
     "link-aa-dev": "cd node_modules/amplify-app && ln -s \"$(pwd)/bin/amplify-app\" \"$(yarn global bin)/amplify-app-dev\" && cd -",
     "rm-aa-dev-link": "rimraf -f \"$(yarn global bin)/amplify-app-dev\"",
-    "link-dev": "cd node_modules/amplify-cli && ln -s \"$(pwd)/bin/amplify\" \"$(yarn global bin)/amplify-dev\" && cd -",
+    "link-dev": "cd node_modules/amplify-cli/cli && ln -s \"$(pwd)/bin/amplify\" \"$(yarn global bin)/amplify-dev\" && cd -",
     "rm-dev-link": "rimraf -f \"$(yarn global bin)/amplify-dev\"",
     "setup-dev": "(yarn && lerna run build) && yarn add-cli-no-save && (yarn hoist-cli && yarn rm-dev-link && yarn link-dev)",
     "setup-dev-ci": "(yarn && lerna run build) && yarn add-cli && (yarn hoist-cli && yarn rm-dev-link && yarn link-dev)",
