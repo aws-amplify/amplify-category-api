@@ -44,7 +44,7 @@
     "commit": "git-cz",
     "coverage": "codecov || exit 0",
     "add-cli-no-save": "yarn add @aws-amplify/cli-internal@apiSplitM1 -W && git restore package.json",
-    "add-cli": "yarn add @aws-amplify/cli-internal@apiSplitM1",
+    "add-cli": "yarn add @aws-amplify/cli-internal@apiSplitM1 -W",
     "hoist-cli": "rimraf node_modules/amplify-cli && mkdir -p node_modules/amplify-cli/cli && cp -r node_modules/@aws-amplify/cli-internal/* node_modules/amplify-cli/cli",
     "publish:main": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --no-verify-access --yes"
   },
