@@ -193,10 +193,16 @@ function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
   // Todo: remove this before going prod
   const onlyRun: string[] = [];
   if (dir === join(repoRoot, 'packages', 'amplify-e2e-tests')) {
-    onlyRun.concat(['src/__tests__/auth_2.test.ts', 'src/__tests__/model-migration.test.ts']);
+    onlyRun.push(
+      'src/__tests__/auth_2.test.ts', 
+      'src/__tests__/transformer-migrations/model-migration.test.ts'
+    );
   }
   else if(dir === join(repoRoot, 'packages', 'graphql-transformers-e2e-tests')) {
-    onlyRun.concat(['src/__tests__/HttpTransformer.test.ts', 'src/__tests__/HttpTransformerV2.test.ts']);
+    onlyRun.push(
+      'src/__tests__/HttpTransformer.test.ts', 
+      'src/__tests__/HttpTransformerV2.test.ts'
+    );
   }
   return sortTestsBasedOnTime(onlyRun); // .reverse();
 }
