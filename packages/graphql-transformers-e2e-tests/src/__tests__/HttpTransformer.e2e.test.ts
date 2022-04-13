@@ -16,7 +16,6 @@ jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient('us-west-2');
 const customS3Client = new S3Client('us-west-2');
-const awsS3Client = new S3({ region: 'us-west-2' });
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {
@@ -93,7 +92,7 @@ beforeAll(async () => {
     `;
 
   try {
-    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+    await customS3Client.createBucket(BUCKET_NAME);
   } catch (e) {
     console.error(`Failed to create bucket: ${e}`);
     expect(true).toEqual(false);
