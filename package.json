@@ -67,7 +67,6 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "@aws-amplify/cli-internal": "^8.0.1-apiSplitM1.0",
     "lerna": "^4.0.0",
     "strip-ansi": "^6.0.0"
   },
