@@ -20,7 +20,7 @@
     "dev-build": "yarn --cache-folder ~/.cache/yarn && lerna run build",
     "link-aa-dev": "cd node_modules/amplify-app && ln -s \"$(pwd)/bin/amplify-app\" \"$(yarn global bin)/amplify-app-dev\" && cd -",
     "rm-aa-dev-link": "rimraf -f \"$(yarn global bin)/amplify-app-dev\"",
-    "link-dev": "cd node_modules/amplify-cli/cli && ln -s \"$(pwd)/bin/amplify\" \"$(yarn global bin)/amplify-dev\" && cd -",
+    "link-dev": "cd node_modules/amplify-cli-internal && ln -s \"$(pwd)/bin/amplify\" \"$(yarn global bin)/amplify-dev\" && cd -",
     "rm-dev-link": "rimraf -f \"$(yarn global bin)/amplify-dev\"",
     "setup-dev": "(yarn && lerna run build) && yarn add-cli-no-save && (yarn hoist-cli && yarn rm-dev-link && yarn link-dev)",
     "setup-dev-ci": "(yarn && lerna run build) && yarn add-cli && (yarn hoist-cli && yarn rm-dev-link && yarn link-dev)",
@@ -44,8 +44,8 @@
     "commit": "git-cz",
     "coverage": "codecov || exit 0",
     "add-cli-no-save": "yarn add @aws-amplify/cli-internal@apiSplitM1 -W && git restore package.json",
-    "add-cli": "yarn add @aws-amplify/cli-internal -W",
-    "hoist-cli": "rimraf node_modules/amplify-cli && mkdir -p node_modules/amplify-cli/cli && cp -r node_modules/@aws-amplify/cli-internal/* node_modules/amplify-cli/cli",
+    "add-cli": "yarn add @aws-amplify/cli-internal@apiSplitM1 -W",
+    "hoist-cli": "rm -rf node_modules/amplify-cli-internal && mkdir node_modules/amplify-cli-internal && cp -r node_modules/@aws-amplify/cli-internal/ node_modules/amplify-cli-internal",
     "publish:main": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --no-verify-access --yes"
   },
   "bugs": {
@@ -67,6 +67,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
+    "@aws-amplify/cli-internal": "^8.0.1-apiSplitM1.0",
     "lerna": "^4.0.0",
     "strip-ansi": "^6.0.0"
   },

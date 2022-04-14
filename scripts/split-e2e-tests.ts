@@ -200,8 +200,8 @@ function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
   }
   else if(dir === join(repoRoot, 'packages', 'graphql-transformers-e2e-tests')) {
     onlyRun.push(
-      'src/__tests__/HttpTransformer.test.ts', 
-      'src/__tests__/HttpTransformerV2.test.ts'
+      'src/__tests__/HttpTransformer.e2e.test.ts', 
+      'src/__tests__/HttpTransformerV2.e2e.test.ts'
     );
   }
   return sortTestsBasedOnTime(onlyRun); // .reverse();

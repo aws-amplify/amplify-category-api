@@ -386,6 +386,7 @@ workflows:
             branches:
               only:
                 - main
+                - api-split-m1
     jobs:
       - build
       - cleanup_resources:
