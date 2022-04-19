@@ -55,7 +55,6 @@ declare -a CLI_PACKAGES=(amplify-app \
     amplify-container-hosting \
     amplify-dotnet-function-runtime-provider \
     amplify-dotnet-function-template-provider \
-    amplify-dynamodb-simulator \
     amplify-frontend-android \
     amplify-frontend-flutter \
     amplify-frontend-ios \
@@ -103,11 +102,15 @@ jq 'del(.references)' packages/amplify-e2e-core/tsconfig.json > packages/amplify
 mv packages/amplify-e2e-core/tsconfig.json.bak packages/amplify-e2e-core/tsconfig.json
 
 ## Use node_modules CLI instead of local while linking
-jq '(.scripts."link-dev", .scripts."link-win") |= sub("packages/amplify-cli";"node_modules/amplify-cli")' package.json > package.json.updated
+jq '(.scripts."link-dev", .scripts."link-win") |= sub("packages/amplify-cli";"node_modules/amplify-cli-internal")' package.json > package.json.updated
+mv package.json.updated package.json
+
+## Use Amplify App from node_modules instead of local while linking
+jq '.scripts."link-aa-dev" |= sub("packages/amplify-app";"node_modules/amplify-app")' package.json > package.json.updated
 mv package.json.updated package.json
 
 ## Do CLI hoisting stuff (stolen from codegen builds)
-jq '.scripts."setup-dev" = "(yarn && lerna run build) && yarn add-cli-no-save && (yarn hoist-cli && yarn rm-dev-link && yarn link-dev)" | .scripts."setup-dev-win" = "(yarn && lerna run build) && yarn add-cli-no-save && (yarn hoist-cli && yarn rm-dev-link && yarn link-win)" | .scripts."add-cli-no-save" = "yarn add @aws-amplify/cli-internal -W && git restore package.json" | .scripts."hoist-cli" = "rimraf node_modules/amplify-cli && mkdir -p node_modules/amplify-cli/cli && cp -r node_modules/@aws-amplify/cli-internal/* node_modules/amplify-cli/cli"' package.json > package.json.updated
+jq '.scripts."setup-dev" = "(yarn && lerna run build) && yarn add-cli-no-save && (yarn hoist-cli && yarn rm-dev-link && yarn link-dev)" | .scripts."setup-dev-win" = "(yarn && lerna run build) && yarn add-cli-no-save && (yarn hoist-cli && yarn rm-dev-link && yarn link-win)" | .scripts."add-cli-no-save" = "yarn add @aws-amplify/cli-internal -W && git checkout -- package.json" | .scripts."hoist-cli" = "rimraf node_modules/amplify-cli-internal && mkdir node_modules/amplify-cli-internal && cp -r node_modules/@aws-amplify/cli-internal/* node_modules/amplify-cli-internal"' package.json > package.json.updated
 mv package.json.updated package.json
 
 # Use main instead of master branch name
@@ -127,6 +130,10 @@ mv packages/amplify-util-mock/tsconfig.json.bak packages/amplify-util-mock/tscon
 
 # Update repo in package JSON
 jq '(.name, .description, .scripts."cloud-e2e", .bugs.url, .homepage, .repository.url) |= gsub("amplify-cli";"amplify-category-api")' package.json > package.json.updated
+mv package.json.updated package.json
+
+## Update 
+jq '.scripts."link-aa-dev" |= sub("packages/amplify-app";"node_modules/amplify-app")' package.json > package.json.updated
 mv package.json.updated package.json
 
 git add . 
@@ -164,7 +171,7 @@ cd ..
 git add .
 git commit -m "chore(amplify-category-api): update dependency on CLI packages"
 
-# Remove e2e tests we don't need to run
+# Remove e2e tests we don't need to run along with the test resources, screenshots
 (cd packages/amplify-e2e-tests/src/__tests__ && rm -rf \
 	amplify-configure.test.ts \
 	analytics.test.ts \
@@ -225,6 +232,14 @@ git commit -m "chore(amplify-category-api): update dependency on CLI packages"
 	uibuilder.test.ts)
 
 (cd packages/amplify-e2e-tests && rm -rf geo-json-files)
+(cd packages/amplify-e2e-tests && rm -rf src/__tests__/__snapshots__/function_9.test.ts.snap)
+
+(cd packages/amplify-migration-tests/src/__tests__ && rm -rf \
+	migration_tests/lambda-layer-migration \
+	migration_tests/overrides \
+	update_tests/auth_migration_update.test.ts \
+	update_tests/function_migration_update.test.ts \
+	update_tests/storage_migration_update.test.ts)
 
 git add .
 git commit -m "$TEST_UPDATE_MESSAGE" --no-verify
