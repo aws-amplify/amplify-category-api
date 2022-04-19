@@ -188,6 +188,8 @@ git commit -m "chore(amplify-category-api): update dependency on CLI packages"
 	function_9.test.ts \
 	geo-add.test.ts \
 	geo-headless.test.ts \
+	geo-import.test.ts \
+	geo-multi-env.test.ts \
 	geo-remove.test.ts \
 	geo-update.test.ts \
 	hooks.test.ts \
@@ -221,6 +223,8 @@ git commit -m "chore(amplify-category-api): update dependency on CLI packages"
 	storage-5.test.ts \
 	tags.test.ts \
 	uibuilder.test.ts)
+
+(cd packages/amplify-e2e-tests && rm -rf geo-json-files)
 
 git add .
 git commit -m "$TEST_UPDATE_MESSAGE" --no-verify
