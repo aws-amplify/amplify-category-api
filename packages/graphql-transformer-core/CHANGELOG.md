@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.0.0-category-split-test.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@8.0.0-category-split-test.0...graphql-transformer-core@8.0.0-category-split-test.1) (2022-04-22)
+
+
+### Reverts
+
+* Revert "chore: temporarily remove publish from non-scoped packages" ([6691084](https://github.com/aws-amplify/amplify-cli/commit/6691084c390c761d2b89ba78a18d47e970051964))
+
+
+
+
+
 # 8.0.0-category-split-test.0 (2022-04-22)
 
 

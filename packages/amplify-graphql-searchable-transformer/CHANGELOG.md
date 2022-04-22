@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.14.0-category-split-test.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.14.0-category-split-test.0...@aws-amplify/graphql-searchable-transformer@0.14.0-category-split-test.1) (2022-04-22)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+
+
+
+
 # 0.14.0-category-split-test.0 (2022-04-22)
 
 
