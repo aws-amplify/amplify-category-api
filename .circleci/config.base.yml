@@ -3,13 +3,13 @@ orbs:
   aws-ecr: circleci/aws-ecr@6.15.3
 machine:
   environment:
-    PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
+    PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
 
 executors:
   w: &windows-e2e-executor
     machine:
-      image: 'windows-server-2019-vs2019:stable'
-      resource_class: 'windows.medium'
+      image: "windows-server-2019-vs2019:stable"
+      resource_class: "windows.medium"
       shell: bash.exe
     working_directory: ~/repo
     environment:
@@ -51,7 +51,7 @@ install_cli_from_local_registry: &install_cli_from_local_registry
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
-    npm install -g @aws-amplify/cli-internal@apiSplitM1
+    npm install -g @aws-amplify/cli-internal@apiSplitM1Refresh1
     npm install -g amplify-app@apiSplitM1
     echo "using Amplify CLI version: "$(amplify --version)
     echo "using amplify-app version: "$(amplify-app --version)
@@ -85,7 +85,7 @@ jobs:
             - persist_to_workspace:
                 root: .
                 paths: .
-  
+
   test:
     <<: *linux-e2e-executor
     steps:
@@ -124,7 +124,7 @@ jobs:
             yarn e2e
           no_output_timeout: 90m
           environment:
-            JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
+            JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
       - store_test_results:
           path: packages/amplify-util-mock/
 
@@ -179,7 +179,7 @@ jobs:
             cd packages/graphql-transformers-e2e-tests/
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
-            AMPLIFY_CLI_DISABLE_LOGGING: 'true'
+            AMPLIFY_CLI_DISABLE_LOGGING: "true"
           no_output_timeout: 90m
       - store_test_results:
           path: packages/graphql-transformers-e2e-tests/
@@ -357,7 +357,7 @@ jobs:
       - restore_cache:
           key: amplify-category-api-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
       - run:
-          name: 'Run cleanup script'
+          name: "Run cleanup script"
           command: |
             cd packages/amplify-e2e-tests
             yarn clean-e2e-resources
@@ -375,7 +375,7 @@ jobs:
       - restore_cache:
           key: amplify-category-api-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
       - run:
-          name: 'Run cleanup script'
+          name: "Run cleanup script"
           command: |
             cd packages/amplify-e2e-tests
             yarn clean-e2e-resources workflow ${CIRCLE_WORKFLOW_ID}
@@ -390,7 +390,7 @@ workflows:
   e2e_resource_cleanup:
     triggers:
       - schedule:
-          cron: '45 0,12 * * *'
+          cron: "45 0,12 * * *"
           filters:
             branches:
               only:
@@ -545,7 +545,7 @@ workflows:
 
 commands:
   install_yarn:
-    description: 'Install yarn dependency for windows'
+    description: "Install yarn dependency for windows"
     parameters:
       os:
         type: executor
@@ -561,7 +561,7 @@ commands:
             - run: yarn --cache-folder ~/.cache/yarn
 
   install_java:
-    description: 'Install Java on Linux and Docker images'
+    description: "Install Java on Linux and Docker images"
     parameters:
       os:
         type: executor
@@ -577,7 +577,7 @@ commands:
                   sudo apt-get update && sudo apt-get install default-jdk
 
   run_e2e_tests:
-    description: 'Run Amplify E2E tests'
+    description: "Run Amplify E2E tests"
     parameters:
       os:
         type: executor
@@ -609,7 +609,7 @@ commands:
                   retry runE2eTest
                 no_output_timeout: 90m
   scan_e2e_test_artifacts:
-    description: 'Scan And Cleanup E2E Test Artifacts'
+    description: "Scan And Cleanup E2E Test Artifacts"
     parameters:
       os:
         type: executor
