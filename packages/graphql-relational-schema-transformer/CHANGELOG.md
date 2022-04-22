@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 2.22.0-category-split-test.0 (2022-04-22)
+
+
+### Bug Fixes
+
+* [#8223](https://github.com/aws-amplify/amplify-cli/issues/8223), conversion to typescript ([#8245](https://github.com/aws-amplify/amplify-cli/issues/8245)) ([096e6ca](https://github.com/aws-amplify/amplify-cli/commit/096e6ca19b94aa40ef249ea98d008380395afa16))
+* build break, chore: typescript, lerna update ([#2640](https://github.com/aws-amplify/amplify-cli/issues/2640)) ([29fae36](https://github.com/aws-amplify/amplify-cli/commit/29fae366f4cab054feefa58c7dc733002d19570c))
+* e2e test dependency and cloudform depe for relational ([#3352](https://github.com/aws-amplify/amplify-cli/issues/3352)) ([6b74433](https://github.com/aws-amplify/amplify-cli/commit/6b74433a4ddf7706fef3834f02247a3cd0fd75c2))
+* export Typescript definitions and fix resulting type errors ([#2452](https://github.com/aws-amplify/amplify-cli/issues/2452)) ([7de3845](https://github.com/aws-amplify/amplify-cli/commit/7de384594d3b9cbf22cdaa85107fc8df26c141ec)), closes [#2451](https://github.com/aws-amplify/amplify-cli/issues/2451)
+* **graphql-relational-schema-transformer:** add additional RDS Policies ([#1508](https://github.com/aws-amplify/amplify-cli/issues/1508)) ([b1dcd08](https://github.com/aws-amplify/amplify-cli/commit/b1dcd08318538fa55e3631a10f61d26120d1d913))
+* **graphql-relational-schema-transformer:** escape SQL reserved keywords ([#5529](https://github.com/aws-amplify/amplify-cli/issues/5529)) ([9c0408a](https://github.com/aws-amplify/amplify-cli/commit/9c0408adf0a3541ca30b9547c6b84d28b7709783))
+* **graphql-relational-schema-transformer:** escape String primary key ([#6673](https://github.com/aws-amplify/amplify-cli/issues/6673)) ([de240bd](https://github.com/aws-amplify/amplify-cli/commit/de240bdf2995b23767c9518aa51bc51197f41796))
+* **graphql-relational-schema-transformer:** fix [#3025](https://github.com/aws-amplify/amplify-cli/issues/3025) rds resolver correctly handles no data in response ([#3314](https://github.com/aws-amplify/amplify-cli/issues/3314)) ([cb826a7](https://github.com/aws-amplify/amplify-cli/commit/cb826a7ec7680ad9b5fc46fd7a931c30747cd0ce))
+* **graphql-relational-schema-transformer:** fix add datasource update ([#3542](https://github.com/aws-amplify/amplify-cli/issues/3542)) ([176f313](https://github.com/aws-amplify/amplify-cli/commit/176f313fea1e7504bbf12255dc44f424ae1ea4a1))
+* **graphql-relational-schema-transformer:** fix input type casing ([#2249](https://github.com/aws-amplify/amplify-cli/issues/2249)) ([3a00d56](https://github.com/aws-amplify/amplify-cli/commit/3a00d56320f8c6a7de415e12ac9c6c4b5954d934)), closes [#2217](https://github.com/aws-amplify/amplify-cli/issues/2217)
+* **graphql-relational-schema-transformer:** fix template for string keys ([#2205](https://github.com/aws-amplify/amplify-cli/issues/2205)) ([294fbc6](https://github.com/aws-amplify/amplify-cli/commit/294fbc67c7d8d806c4fe8100eb27b04571a4c811)), closes [#2133](https://github.com/aws-amplify/amplify-cli/issues/2133)
+* **graphql-relational-schema-transformer:** support _ in table name ([17e9a04](https://github.com/aws-amplify/amplify-cli/commit/17e9a0433568b16dc5579c391f3d13c2282b4962)), closes [#1504](https://github.com/aws-amplify/amplify-cli/issues/1504)
+* **graphql-relational-transformer:** fixes broken list and update resolvers ([#8101](https://github.com/aws-amplify/amplify-cli/issues/8101)) ([e61b362](https://github.com/aws-amplify/amplify-cli/commit/e61b362b75e6dfce6406e35e5ab52ffbaf718483)), closes [#8008](https://github.com/aws-amplify/amplify-cli/issues/8008)
+* **graphql-transformer-common:** improve generated graphql pluralization ([#7258](https://github.com/aws-amplify/amplify-cli/issues/7258)) ([fc3ad0d](https://github.com/aws-amplify/amplify-cli/commit/fc3ad0dd5a12a7912c59ae12024f593b4cdf7f2d)), closes [#4224](https://github.com/aws-amplify/amplify-cli/issues/4224)
+
+
+### Features
+
+* add support for SMS Sandbox ([#7436](https://github.com/aws-amplify/amplify-cli/issues/7436)) ([cdcb626](https://github.com/aws-amplify/amplify-cli/commit/cdcb6260c11bbedef5b056fdcd730612d8bb3230))
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c1927da10f8c54f38a523021187361131c))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* implement multi-auth functionality ([#1916](https://github.com/aws-amplify/amplify-cli/issues/1916)) ([b99f58e](https://github.com/aws-amplify/amplify-cli/commit/b99f58e4a2b85cbe9f430838554ae3c277440132))
+* override support for api category ([#9013](https://github.com/aws-amplify/amplify-cli/issues/9013)) ([ae7b001](https://github.com/aws-amplify/amplify-cli/commit/ae7b001f274f327a29c99c67fe851272c6208e84)), closes [#9001](https://github.com/aws-amplify/amplify-cli/issues/9001) [#8954](https://github.com/aws-amplify/amplify-cli/issues/8954) [#8958](https://github.com/aws-amplify/amplify-cli/issues/8958) [#8960](https://github.com/aws-amplify/amplify-cli/issues/8960) [#8967](https://github.com/aws-amplify/amplify-cli/issues/8967) [#8971](https://github.com/aws-amplify/amplify-cli/issues/8971) [#8976](https://github.com/aws-amplify/amplify-cli/issues/8976) [#8975](https://github.com/aws-amplify/amplify-cli/issues/8975) [#8981](https://github.com/aws-amplify/amplify-cli/issues/8981) [#8983](https://github.com/aws-amplify/amplify-cli/issues/8983) [#8992](https://github.com/aws-amplify/amplify-cli/issues/8992) [#9000](https://github.com/aws-amplify/amplify-cli/issues/9000) [#9002](https://github.com/aws-amplify/amplify-cli/issues/9002) [#9005](https://github.com/aws-amplify/amplify-cli/issues/9005) [#9006](https://github.com/aws-amplify/amplify-cli/issues/9006) [#9007](https://github.com/aws-amplify/amplify-cli/issues/9007) [#9008](https://github.com/aws-amplify/amplify-cli/issues/9008) [#9010](https://github.com/aws-amplify/amplify-cli/issues/9010) [#9011](https://github.com/aws-amplify/amplify-cli/issues/9011) [#9012](https://github.com/aws-amplify/amplify-cli/issues/9012) [#9014](https://github.com/aws-amplify/amplify-cli/issues/9014) [#9015](https://github.com/aws-amplify/amplify-cli/issues/9015) [#9017](https://github.com/aws-amplify/amplify-cli/issues/9017) [#9020](https://github.com/aws-amplify/amplify-cli/issues/9020) [#9024](https://github.com/aws-amplify/amplify-cli/issues/9024) [#9027](https://github.com/aws-amplify/amplify-cli/issues/9027) [#9028](https://github.com/aws-amplify/amplify-cli/issues/9028) [#9029](https://github.com/aws-amplify/amplify-cli/issues/9029) [#9032](https://github.com/aws-amplify/amplify-cli/issues/9032) [#9031](https://github.com/aws-amplify/amplify-cli/issues/9031) [#9035](https://github.com/aws-amplify/amplify-cli/issues/9035) [#9038](https://github.com/aws-amplify/amplify-cli/issues/9038) [#9039](https://github.com/aws-amplify/amplify-cli/issues/9039)
+
+
+
+
+
 ## [2.21.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.21.4...graphql-relational-schema-transformer@2.21.5) (2022-03-07)
 
 **Note:** Version bump only for package graphql-relational-schema-transformer

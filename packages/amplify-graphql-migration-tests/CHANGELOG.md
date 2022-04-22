@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.2.38-category-split-test.0 (2022-04-22)
+
+
+### Bug Fixes
+
+* move [@model](https://github.com/model) params to root stack and fix ds logical id ([#8736](https://github.com/aws-amplify/amplify-cli/issues/8736)) ([df4408c](https://github.com/aws-amplify/amplify-cli/commit/df4408c4080949ddd638778df9ae20e763dd5824))
+
+
+
+
+
 ## [2.2.37](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.2.36...amplify-graphql-migration-tests@2.2.37) (2022-04-18)
 
 **Note:** Version bump only for package amplify-graphql-migration-tests

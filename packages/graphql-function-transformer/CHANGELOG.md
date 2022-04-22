@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 3.4.0-category-split-test.0 (2022-04-22)
+
+
+### Bug Fixes
+
+* build break, chore: typescript, lerna update ([#2640](https://github.com/aws-amplify/amplify-cli/issues/2640)) ([29fae36](https://github.com/aws-amplify/amplify-cli/commit/29fae366f4cab054feefa58c7dc733002d19570c))
+* export Typescript definitions and fix resulting type errors ([#2452](https://github.com/aws-amplify/amplify-cli/issues/2452)) ([7de3845](https://github.com/aws-amplify/amplify-cli/commit/7de384594d3b9cbf22cdaa85107fc8df26c141ec)), closes [#2451](https://github.com/aws-amplify/amplify-cli/issues/2451)
+* **graphql-function-transformer:** add hash to function iam role name ([#3030](https://github.com/aws-amplify/amplify-cli/issues/3030)) ([e3c4a32](https://github.com/aws-amplify/amplify-cli/commit/e3c4a32135f3df6ffb06308d5250433aaf2c1ce9)), closes [#2468](https://github.com/aws-amplify/amplify-cli/issues/2468)
+* **graphql-function-transformer:** handle NONE env in [@function](https://github.com/function) ([#1491](https://github.com/aws-amplify/amplify-cli/issues/1491)) ([c742d7d](https://github.com/aws-amplify/amplify-cli/commit/c742d7dff987f6e97856dba261a98581390cd6f0))
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c1927da10f8c54f38a523021187361131c))
+* feature/[@key](https://github.com/key) ([#1463](https://github.com/aws-amplify/amplify-cli/issues/1463)) ([00ed819](https://github.com/aws-amplify/amplify-cli/commit/00ed819419a4959a6d62da2fc5477621c046eff0))
+* mock support for API, function and storage ([#1893](https://github.com/aws-amplify/amplify-cli/issues/1893)) ([372e534](https://github.com/aws-amplify/amplify-cli/commit/372e5346ee1f27a2e9bee25fbbdcb19417f5230f))
+* provide helpful error message when GQL schema validation fails ([#9159](https://github.com/aws-amplify/amplify-cli/issues/9159)) ([308706c](https://github.com/aws-amplify/amplify-cli/commit/308706c8a67712d7625f11a625e258101790d4c7))
+
+
+
+
+
 ## [3.3.21](https://github.com/aws-amplify/amplify-cli/compare/graphql-function-transformer@3.3.20...graphql-function-transformer@3.3.21) (2022-04-11)
 
 **Note:** Version bump only for package graphql-function-transformer
