@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.21.0-category-split-test.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.21.0-category-split-test.1...graphql-mapping-template@4.21.0-category-split-test.2) (2022-04-22)
+
+
+### Bug Fixes
+
+* temporarily mark mapping template private since it's not in the aws organization yet ([ad0918b](https://github.com/aws-amplify/amplify-cli/commit/ad0918b0bf1ee1f6fe464a80d800215e87dcbfab))
+
+
+
+
+
 # [4.21.0-category-split-test.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.21.0-category-split-test.0...graphql-mapping-template@4.21.0-category-split-test.1) (2022-04-22)
 
 
