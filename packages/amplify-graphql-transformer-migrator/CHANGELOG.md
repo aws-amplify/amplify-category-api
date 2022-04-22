@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.3.0-alharris-thursday-test.0 (2022-04-22)
+
+
+### Bug Fixes
+
+* add migration warning when [@searchable](https://github.com/searchable) is used ([#9059](https://github.com/aws-amplify/amplify-cli/issues/9059)) ([15e1a55](https://github.com/aws-amplify/amplify-cli/commit/15e1a559677e995efdadfe8d1cbfa3a35dc6b279))
+* **amplify-category-api:** update snapshot ([#8978](https://github.com/aws-amplify/amplify-cli/issues/8978)) ([c4ed3be](https://github.com/aws-amplify/amplify-cli/commit/c4ed3befed36bb97347a19f1decb42dba71aee92))
+* api migrate command when rest apis are added ([#9054](https://github.com/aws-amplify/amplify-cli/issues/9054)) ([df4d7c6](https://github.com/aws-amplify/amplify-cli/commit/df4d7c66b2d8c337b1fc9fb3d426a99932c0e6dd))
+* bail out of gql migration if [@auth](https://github.com/auth) uses queries/mutations ([#9004](https://github.com/aws-amplify/amplify-cli/issues/9004)) ([57a0bd5](https://github.com/aws-amplify/amplify-cli/commit/57a0bd5a64cbb6f889d5bc6d8ee7451ba3638de5))
+* clean up missing and unused GraphQL v2 dependencies ([#9486](https://github.com/aws-amplify/amplify-cli/issues/9486)) ([a6ca44e](https://github.com/aws-amplify/amplify-cli/commit/a6ca44e6ea0ec0a70b648e399fc3e849ccc2a7c9))
+* don't migrate AppSync auth related directives ([#8661](https://github.com/aws-amplify/amplify-cli/issues/8661)) ([903c7bf](https://github.com/aws-amplify/amplify-cli/commit/903c7bf85e0e96275267a28700364436dcaaa712))
+* exit migration if improvePluralization is false ([#8670](https://github.com/aws-amplify/amplify-cli/issues/8670)) ([cead88d](https://github.com/aws-amplify/amplify-cli/commit/cead88db132a50827ade3e08fc01ca68b5f11282))
+* fixed snapshot ([#8987](https://github.com/aws-amplify/amplify-cli/issues/8987)) ([5e889bf](https://github.com/aws-amplify/amplify-cli/commit/5e889bf9df50597aec2168a9d72e0cda076f3d6c))
+* gracefully exit on deprecated [@connection](https://github.com/connection) parameterization ([#8640](https://github.com/aws-amplify/amplify-cli/issues/8640)) ([4045f3a](https://github.com/aws-amplify/amplify-cli/commit/4045f3ab4aa1f3782c5a4ff5d7a1af7bd48fd00d))
+* graphql-transformer-migrator add modelgen flag after v2 migrate ([#9565](https://github.com/aws-amplify/amplify-cli/issues/9565)) ([9bff4ae](https://github.com/aws-amplify/amplify-cli/commit/9bff4ae13b44f2649b4f66df4485ca768416d707))
+* **graphql-transformer-migrator:** disables field level hoisting of auth ([#8946](https://github.com/aws-amplify/amplify-cli/issues/8946)) ([a21118a](https://github.com/aws-amplify/amplify-cli/commit/a21118ae7f45dd4938b6731d1e388f2c6107e7d7))
+* **graphql-transformer-migrator:** fix protected rules that come from groups ([#8972](https://github.com/aws-amplify/amplify-cli/issues/8972)) ([dc567e9](https://github.com/aws-amplify/amplify-cli/commit/dc567e9afe8aab901a000162148099d1553d37c5))
+* **graphql-transformer-migrator:** fixed belongs to type relationshio check ([#9003](https://github.com/aws-amplify/amplify-cli/issues/9003)) ([9ecb90c](https://github.com/aws-amplify/amplify-cli/commit/9ecb90c3be958cfbf81ba4c4be7e9ce6e6c0ee2e))
+* **graphql-transformer-migrator:** migrate owners and group based auth correctly ([#8940](https://github.com/aws-amplify/amplify-cli/issues/8940)) ([f276a42](https://github.com/aws-amplify/amplify-cli/commit/f276a42a0e8eafe1dbeaed0d2af4b915b132ae31))
+* passthrough group auth rule config ([#8928](https://github.com/aws-amplify/amplify-cli/issues/8928)) ([eb6a0f5](https://github.com/aws-amplify/amplify-cli/commit/eb6a0f52c3b499db8070dad7796a8ea4de099e09))
+* schema migrator utility as separate command ([#8720](https://github.com/aws-amplify/amplify-cli/issues/8720)) ([46e1ee6](https://github.com/aws-amplify/amplify-cli/commit/46e1ee6a49dd86bb682b182a37626bc3f2f966ea))
+
+
+### Features
+
+* Activate graphql migrator behind feature flag ([5a76b3a](https://github.com/aws-amplify/amplify-cli/commit/5a76b3a320012c09d2ff2f424283fafba74fa74d))
+
+
+
+
+
 ## [1.2.34](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-migrator@1.2.33...@aws-amplify/graphql-transformer-migrator@1.2.34) (2022-04-18)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-migrator

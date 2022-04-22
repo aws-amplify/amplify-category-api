@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 5.3.0-alharris-thursday-test.0 (2022-04-22)
+
+
+### Bug Fixes
+
+* [#2296](https://github.com/aws-amplify/amplify-cli/issues/2296) [#2304](https://github.com/aws-amplify/amplify-cli/issues/2304) [#2100](https://github.com/aws-amplify/amplify-cli/issues/2100) ([#2439](https://github.com/aws-amplify/amplify-cli/issues/2439)) ([82762d6](https://github.com/aws-amplify/amplify-cli/commit/82762d6187eb2102ebd134b181622188c5632d1d))
+* build break, chore: typescript, lerna update ([#2640](https://github.com/aws-amplify/amplify-cli/issues/2640)) ([29fae36](https://github.com/aws-amplify/amplify-cli/commit/29fae366f4cab054feefa58c7dc733002d19570c))
+* clean up missing and unused GraphQL v1 dependencies ([#9496](https://github.com/aws-amplify/amplify-cli/issues/9496)) ([fe8201b](https://github.com/aws-amplify/amplify-cli/commit/fe8201be17f42db233fce0bb366ff4d0c8358ec0))
+* cloudform/type versions ([ec6f99f](https://github.com/aws-amplify/amplify-cli/commit/ec6f99f2be2f248489bf976a9eacfab1b3851a5a))
+* export Typescript definitions and fix resulting type errors ([#2452](https://github.com/aws-amplify/amplify-cli/issues/2452)) ([7de3845](https://github.com/aws-amplify/amplify-cli/commit/7de384594d3b9cbf22cdaa85107fc8df26c141ec)), closes [#2451](https://github.com/aws-amplify/amplify-cli/issues/2451)
+* update grahql transformer package versions for multienv ([8b4b2bd](https://github.com/aws-amplify/amplify-cli/commit/8b4b2bd9486d5408d1f75448e3646bdee810f448))
+* upgrade to node10 as min version for CLI ([#3128](https://github.com/aws-amplify/amplify-cli/issues/3128)) ([a0b18e0](https://github.com/aws-amplify/amplify-cli/commit/a0b18e0187a26b4ab0e6e986b0277f347e829444))
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c1927da10f8c54f38a523021187361131c))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+* **graphql-http-transformer:** support ${aws_region} template in [@http](https://github.com/http) url ([#7277](https://github.com/aws-amplify/amplify-cli/issues/7277)) ([7a740c3](https://github.com/aws-amplify/amplify-cli/commit/7a740c306f117d4566e86a94cd3632e785b1a420))
+
+
+
+
+
 ## [5.2.30](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@5.2.29...graphql-http-transformer@5.2.30) (2022-04-11)
 
 **Note:** Version bump only for package graphql-http-transformer

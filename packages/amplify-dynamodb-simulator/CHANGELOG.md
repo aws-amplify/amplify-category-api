@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 2.3.0-alharris-thursday-test.0 (2022-04-22)
+
+
+### Bug Fixes
+
+* **amplify-dynamodb-simulator:** detect errors logged to stderr ([#6769](https://github.com/aws-amplify/amplify-cli/issues/6769)) ([72b7c0a](https://github.com/aws-amplify/amplify-cli/commit/72b7c0aa4a78e3e1b40b3a3c3c6d5f87bca79005))
+* **amplify-dynamodb-simulator:** update simulator to work in docker ([#2061](https://github.com/aws-amplify/amplify-cli/issues/2061)) ([90a423c](https://github.com/aws-amplify/amplify-cli/commit/90a423cc1ecaff3dc8ebb9b5e526e1256d36d835)), closes [#2037](https://github.com/aws-amplify/amplify-cli/issues/2037)
+* use correct version of amplify-cli-core ([#5661](https://github.com/aws-amplify/amplify-cli/issues/5661)) ([c8c2e1a](https://github.com/aws-amplify/amplify-cli/commit/c8c2e1a9242e2096484f194b9e1944bf34840c51))
+
+
+### Features
+
+* add support for SMS Sandbox ([#7436](https://github.com/aws-amplify/amplify-cli/issues/7436)) ([cdcb626](https://github.com/aws-amplify/amplify-cli/commit/cdcb6260c11bbedef5b056fdcd730612d8bb3230))
+* **amplify-category-function:** refactor to support runtime and template plugins ([#3517](https://github.com/aws-amplify/amplify-cli/issues/3517)) ([607ae21](https://github.com/aws-amplify/amplify-cli/commit/607ae21287941805f44ea8a9b78dd12d16d71f85))
+* **amplify-util-mock:** add mock config for JAVA_OPTS ([#3503](https://github.com/aws-amplify/amplify-cli/issues/3503)) ([24d8085](https://github.com/aws-amplify/amplify-cli/commit/24d8085325d435284b9c49a43592e61891fd72bc))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+* mock support for API, function and storage ([#1893](https://github.com/aws-amplify/amplify-cli/issues/1893)) ([372e534](https://github.com/aws-amplify/amplify-cli/commit/372e5346ee1f27a2e9bee25fbbdcb19417f5230f))
+* pre-deploy pull, new login mechanism and pkg cli updates ([#5941](https://github.com/aws-amplify/amplify-cli/issues/5941)) ([7274251](https://github.com/aws-amplify/amplify-cli/commit/7274251faadc1035acce5f44699b172e10e2e67d))
+* update post-install to copy executable assets to .amplify ([#5595](https://github.com/aws-amplify/amplify-cli/issues/5595)) ([53a23a0](https://github.com/aws-amplify/amplify-cli/commit/53a23a07cbb9e09566c1f0f577ba2b7488bc2eae))
+
+
+
+
+
 ## [2.2.26](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.2.25...amplify-dynamodb-simulator@2.2.26) (2022-04-11)
 
 **Note:** Version bump only for package amplify-dynamodb-simulator

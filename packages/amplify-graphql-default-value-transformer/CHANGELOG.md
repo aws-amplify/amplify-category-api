@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.6.0-alharris-thursday-test.0 (2022-04-22)
+
+
+### Bug Fixes
+
+* clean up missing and unused GraphQL v2 dependencies ([#9486](https://github.com/aws-amplify/amplify-cli/issues/9486)) ([a6ca44e](https://github.com/aws-amplify/amplify-cli/commit/a6ca44e6ea0ec0a70b648e399fc3e849ccc2a7c9))
+* generate list types will nullable elements ([#9310](https://github.com/aws-amplify/amplify-cli/issues/9310)) ([e972956](https://github.com/aws-amplify/amplify-cli/commit/e9729565fef2ac7df51f7fc7f345da536f385ac1))
+* **graphql-default-value-transformer:** handle null same way as undefined with [@default](https://github.com/default) ([#8836](https://github.com/aws-amplify/amplify-cli/issues/8836)) ([7e3f491](https://github.com/aws-amplify/amplify-cli/commit/7e3f491094850b44a5ce788b01d1ac694c6b2766))
+* **graphql-default-value-transformer:** support for [@default](https://github.com/default) directive for required fields ([#8906](https://github.com/aws-amplify/amplify-cli/issues/8906)) ([dc0179d](https://github.com/aws-amplify/amplify-cli/commit/dc0179d69433db0f838d21ebc849b595f4c60c82))
+
+
+### Features
+
+* generate list types as non-null ([#8166](https://github.com/aws-amplify/amplify-cli/issues/8166)) ([93786c1](https://github.com/aws-amplify/amplify-cli/commit/93786c13ef04c72748ca32a1ef7878c0e6b5b129))
+* **graphql-default-value-transformer:** implemented default value directive ([#8291](https://github.com/aws-amplify/amplify-cli/issues/8291)) ([130aba1](https://github.com/aws-amplify/amplify-cli/commit/130aba1dda122b3289270d1a711da6e0326ecf90))
+
+
+
+
+
 ## [0.5.20](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-default-value-transformer@0.5.19...@aws-amplify/graphql-default-value-transformer@0.5.20) (2022-04-18)
 
 **Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer

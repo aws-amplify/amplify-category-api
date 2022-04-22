@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.9.0-alharris-thursday-test.0 (2022-04-22)
+
+
+### Bug Fixes
+
+* correct 'tranformer' typo ([#7408](https://github.com/aws-amplify/amplify-cli/issues/7408)) ([9420f1b](https://github.com/aws-amplify/amplify-cli/commit/9420f1b29137fd7621d7d902a147e596776357df))
+* create pipeline resolvers for [@http](https://github.com/http) v2 ([#8817](https://github.com/aws-amplify/amplify-cli/issues/8817)) ([722a2fc](https://github.com/aws-amplify/amplify-cli/commit/722a2fc83e8747e44b01f6eaa9eaca262a9febf9))
+* **graphql-model-transformer:** override resource logical id to fix v1 to v2 transformer migration ([#8597](https://github.com/aws-amplify/amplify-cli/issues/8597)) ([e3a2afb](https://github.com/aws-amplify/amplify-cli/commit/e3a2afbbed6e97f143fc7c83064e2193f4c91bdd))
+* override http datasource logical IDs ([#8714](https://github.com/aws-amplify/amplify-cli/issues/8714)) ([81cc461](https://github.com/aws-amplify/amplify-cli/commit/81cc461ed5e02b2f296825283993ad026f1126d1))
+
+
+### Features
+
+* capability injection for the vNext GraphQL Transformer ([#7735](https://github.com/aws-amplify/amplify-cli/issues/7735)) ([f3eae13](https://github.com/aws-amplify/amplify-cli/commit/f3eae13ab2848df398e26429abf985b756abcff2))
+* **graphql-http-transformer:** support ${aws_region} template in [@http](https://github.com/http) url ([#7277](https://github.com/aws-amplify/amplify-cli/issues/7277)) ([7a740c3](https://github.com/aws-amplify/amplify-cli/commit/7a740c306f117d4566e86a94cd3632e785b1a420))
+* override support for api category ([#9013](https://github.com/aws-amplify/amplify-cli/issues/9013)) ([ae7b001](https://github.com/aws-amplify/amplify-cli/commit/ae7b001f274f327a29c99c67fe851272c6208e84)), closes [#9001](https://github.com/aws-amplify/amplify-cli/issues/9001) [#8954](https://github.com/aws-amplify/amplify-cli/issues/8954) [#8958](https://github.com/aws-amplify/amplify-cli/issues/8958) [#8960](https://github.com/aws-amplify/amplify-cli/issues/8960) [#8967](https://github.com/aws-amplify/amplify-cli/issues/8967) [#8971](https://github.com/aws-amplify/amplify-cli/issues/8971) [#8976](https://github.com/aws-amplify/amplify-cli/issues/8976) [#8975](https://github.com/aws-amplify/amplify-cli/issues/8975) [#8981](https://github.com/aws-amplify/amplify-cli/issues/8981) [#8983](https://github.com/aws-amplify/amplify-cli/issues/8983) [#8992](https://github.com/aws-amplify/amplify-cli/issues/8992) [#9000](https://github.com/aws-amplify/amplify-cli/issues/9000) [#9002](https://github.com/aws-amplify/amplify-cli/issues/9002) [#9005](https://github.com/aws-amplify/amplify-cli/issues/9005) [#9006](https://github.com/aws-amplify/amplify-cli/issues/9006) [#9007](https://github.com/aws-amplify/amplify-cli/issues/9007) [#9008](https://github.com/aws-amplify/amplify-cli/issues/9008) [#9010](https://github.com/aws-amplify/amplify-cli/issues/9010) [#9011](https://github.com/aws-amplify/amplify-cli/issues/9011) [#9012](https://github.com/aws-amplify/amplify-cli/issues/9012) [#9014](https://github.com/aws-amplify/amplify-cli/issues/9014) [#9015](https://github.com/aws-amplify/amplify-cli/issues/9015) [#9017](https://github.com/aws-amplify/amplify-cli/issues/9017) [#9020](https://github.com/aws-amplify/amplify-cli/issues/9020) [#9024](https://github.com/aws-amplify/amplify-cli/issues/9024) [#9027](https://github.com/aws-amplify/amplify-cli/issues/9027) [#9028](https://github.com/aws-amplify/amplify-cli/issues/9028) [#9029](https://github.com/aws-amplify/amplify-cli/issues/9029) [#9032](https://github.com/aws-amplify/amplify-cli/issues/9032) [#9031](https://github.com/aws-amplify/amplify-cli/issues/9031) [#9035](https://github.com/aws-amplify/amplify-cli/issues/9035) [#9038](https://github.com/aws-amplify/amplify-cli/issues/9038) [#9039](https://github.com/aws-amplify/amplify-cli/issues/9039)
+* port [@http](https://github.com/http) to GraphQL Transformer v2 ([#7139](https://github.com/aws-amplify/amplify-cli/issues/7139)) ([2803605](https://github.com/aws-amplify/amplify-cli/commit/28036059229666c70ab8d8f7ff6b4d966f6acae8))
+
+
+
+
+
 ## [0.8.14](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.8.13...@aws-amplify/graphql-http-transformer@0.8.14) (2022-04-18)
 
 **Note:** Version bump only for package @aws-amplify/graphql-http-transformer

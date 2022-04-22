@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.2.0-alharris-thursday-test.0 (2022-04-22)
+
+
+### Bug Fixes
+
+* **graphql:** include sort key(s) in many to many directive relation model ([#9580](https://github.com/aws-amplify/amplify-cli/issues/9580)) ([93ebf35](https://github.com/aws-amplify/amplify-cli/commit/93ebf3566992bff95f035f70fe27b4b1871e1d3d))
+* mapping lambda build script ([#9631](https://github.com/aws-amplify/amplify-cli/issues/9631)) ([63c09ad](https://github.com/aws-amplify/amplify-cli/commit/63c09add0e80b536dca3c9d51dd288889db3178e))
+
+
+### Features
+
+* `[@maps](https://github.com/maps)To` directive to enable renaming models while retaining data ([#9340](https://github.com/aws-amplify/amplify-cli/issues/9340)) ([aedf45d](https://github.com/aws-amplify/amplify-cli/commit/aedf45d9237812d71bb8b56164efe0222ad3d534))
+
+
+
+
+
 ## [1.1.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-maps-to-transformer@1.1.11...@aws-amplify/graphql-maps-to-transformer@1.1.12) (2022-04-18)
 
 **Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer

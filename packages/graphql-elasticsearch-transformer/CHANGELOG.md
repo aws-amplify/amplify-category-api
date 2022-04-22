@@ -3,6 +3,69 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 5.3.0-alharris-thursday-test.0 (2022-04-22)
+
+
+### Bug Fixes
+
+* [#6108](https://github.com/aws-amplify/amplify-cli/issues/6108) - add proper AWSJSON mapping in generated filter input types ([#6112](https://github.com/aws-amplify/amplify-cli/issues/6112)) ([743e84a](https://github.com/aws-amplify/amplify-cli/commit/743e84a9d968aab4648a12d3a19aa5ea14c4d755))
+* add layer based on region ([#2399](https://github.com/aws-amplify/amplify-cli/issues/2399)) ([c6490c5](https://github.com/aws-amplify/amplify-cli/commit/c6490c537299e74c569a80fc06d1999cc92ae774)), closes [#2386](https://github.com/aws-amplify/amplify-cli/issues/2386)
+* **amplify-category-api:** Updating dependsOn for certain resources ([#597](https://github.com/aws-amplify/amplify-cli/issues/597)) ([7a8f5f7](https://github.com/aws-amplify/amplify-cli/commit/7a8f5f703f7042262a320965f3d9f1a3d1d3fe9b))
+* build break, chore: typescript, lerna update ([#2640](https://github.com/aws-amplify/amplify-cli/issues/2640)) ([29fae36](https://github.com/aws-amplify/amplify-cli/commit/29fae366f4cab054feefa58c7dc733002d19570c))
+* cloudform/type versions ([ec6f99f](https://github.com/aws-amplify/amplify-cli/commit/ec6f99f2be2f248489bf976a9eacfab1b3851a5a))
+* export Typescript definitions and fix resulting type errors ([#2452](https://github.com/aws-amplify/amplify-cli/issues/2452)) ([7de3845](https://github.com/aws-amplify/amplify-cli/commit/7de384594d3b9cbf22cdaa85107fc8df26c141ec)), closes [#2451](https://github.com/aws-amplify/amplify-cli/issues/2451)
+* generate list types will nullable elements ([#9310](https://github.com/aws-amplify/amplify-cli/issues/9310)) ([e972956](https://github.com/aws-amplify/amplify-cli/commit/e9729565fef2ac7df51f7fc7f345da536f385ac1))
+* **graphql-dynamodb-transformer:** make primary key non null on del ([#6337](https://github.com/aws-amplify/amplify-cli/issues/6337)) ([4a5c679](https://github.com/aws-amplify/amplify-cli/commit/4a5c6795680b6b88efb19b923ee234253ca30c35)), closes [#2564](https://github.com/aws-amplify/amplify-cli/issues/2564)
+* **graphql-elasticsearch-transformer:** allow range on searches ([#3129](https://github.com/aws-amplify/amplify-cli/issues/3129)) ([f81ea32](https://github.com/aws-amplify/amplify-cli/commit/f81ea329f47194fbc19eb966cacee9877e04a389)), closes [#2775](https://github.com/aws-amplify/amplify-cli/issues/2775)
+* **graphql-elasticsearch-transformer:** changed nonKeyword types ([#2090](https://github.com/aws-amplify/amplify-cli/issues/2090)) ([c2f71eb](https://github.com/aws-amplify/amplify-cli/commit/c2f71eb8614a3d7b3f619da40f681e1397103f60)), closes [#2080](https://github.com/aws-amplify/amplify-cli/issues/2080) [#800](https://github.com/aws-amplify/amplify-cli/issues/800) [#2080](https://github.com/aws-amplify/amplify-cli/issues/2080) [re#800](https://github.com/re/issues/800)
+* **graphql-elasticsearch-transformer:** es logging fix ([#2983](https://github.com/aws-amplify/amplify-cli/issues/2983)) ([6a6be16](https://github.com/aws-amplify/amplify-cli/commit/6a6be16493aaceeef57e9dfdde7faddfac061a26))
+* **graphql-elasticsearch-transformer:** fix duplicate records in es lambda ([#3712](https://github.com/aws-amplify/amplify-cli/issues/3712)) ([dd9f7e0](https://github.com/aws-amplify/amplify-cli/commit/dd9f7e0031a0dc68a9027de02f60bbe69d315c3d)), closes [#3602](https://github.com/aws-amplify/amplify-cli/issues/3602) [#3705](https://github.com/aws-amplify/amplify-cli/issues/3705)
+* **graphql-elasticsearch-transformer:** fix script to use keyschema ([#5036](https://github.com/aws-amplify/amplify-cli/issues/5036)) ([68a0d1e](https://github.com/aws-amplify/amplify-cli/commit/68a0d1e084d6d51c2ec0140d42a9eb008148c9d9)), closes [#3786](https://github.com/aws-amplify/amplify-cli/issues/3786)
+* **graphql-elasticsearch-transformer:** Fix zip command not found on Windows. ([c93a673](https://github.com/aws-amplify/amplify-cli/commit/c93a67360f8fbca915d625c87962015a0db79528))
+* **graphql-elasticsearch-transformer:** fixed es req template ([311f57d](https://github.com/aws-amplify/amplify-cli/commit/311f57d9938aa78c83c7c695ddd39457b89c8afc))
+* **graphql-elasticsearch-transformer:** fixed KeyError for unset DEBUG ([#2963](https://github.com/aws-amplify/amplify-cli/issues/2963)) ([ad3e23e](https://github.com/aws-amplify/amplify-cli/commit/ad3e23e5c1a88c1385529f7a6685305cb59c840d))
+* **graphql-elasticsearch-transformer:** support del in sync enabled API ([#4281](https://github.com/aws-amplify/amplify-cli/issues/4281)) ([bae946d](https://github.com/aws-amplify/amplify-cli/commit/bae946dabe4a2e37cfdb87c6fbd88af824f21b69)), closes [#4228](https://github.com/aws-amplify/amplify-cli/issues/4228) [#4228](https://github.com/aws-amplify/amplify-cli/issues/4228)
+* **graphql-elasticsearch-transformer:** to support non string key in es ([#5180](https://github.com/aws-amplify/amplify-cli/issues/5180)) ([b119344](https://github.com/aws-amplify/amplify-cli/commit/b1193446ff3503311a043dfc23dd6c30fcaa94ed)), closes [#5140](https://github.com/aws-amplify/amplify-cli/issues/5140)
+* **graphql-elasticsearch-transformer:** use ddb keys as main id in es ([#3391](https://github.com/aws-amplify/amplify-cli/issues/3391)) ([9aae9a6](https://github.com/aws-amplify/amplify-cli/commit/9aae9a6681c5ff744d908b5292a5b00faa14de4d)), closes [#3359](https://github.com/aws-amplify/amplify-cli/issues/3359)
+* **graphql-elasticsearch-transformer:** use Fn::GetAtt for StreamArn ([#1494](https://github.com/aws-amplify/amplify-cli/issues/1494)) ([8c80462](https://github.com/aws-amplify/amplify-cli/commit/8c8046214d1abbfd2f3752fec8ff6c1d3dd104ce)), closes [/github.com/aws-amplify/amplify-cli/commit/df1712b00427792bcce34adf7027698afd8e6841#diff-22e2a5351fb3f897025bc1e45811acb5R168](https://github.com//github.com/aws-amplify/amplify-cli/commit/df1712b00427792bcce34adf7027698afd8e6841/issues/diff-22e2a5351fb3f897025bc1e45811acb5R168)
+* **graphql-searchable-transformer:** fix for awstimestamp issues with elastic search ([#7534](https://github.com/aws-amplify/amplify-cli/issues/7534)) ([dd955d0](https://github.com/aws-amplify/amplify-cli/commit/dd955d0a0d237885aaa7b6ab918d98853845d0e4))
+* **graphql-transformer-common:** improve generated graphql pluralization ([#7258](https://github.com/aws-amplify/amplify-cli/issues/7258)) ([fc3ad0d](https://github.com/aws-amplify/amplify-cli/commit/fc3ad0dd5a12a7912c59ae12024f593b4cdf7f2d)), closes [#4224](https://github.com/aws-amplify/amplify-cli/issues/4224)
+* **graphql:** add new open search instance types to the allowed list ([#9834](https://github.com/aws-amplify/amplify-cli/issues/9834)) ([39014c3](https://github.com/aws-amplify/amplify-cli/commit/39014c3a7ea4eb6ab9644a1ef6653fa287917937))
+* **graphql:** correct searchable instance types ([#9973](https://github.com/aws-amplify/amplify-cli/issues/9973)) ([dfcfa52](https://github.com/aws-amplify/amplify-cli/commit/dfcfa5237d538088331e8a7c7d51a9932c879429))
+* sanitize input in transformer resolver([#3316](https://github.com/aws-amplify/amplify-cli/issues/3316)) ([a3bc0a5](https://github.com/aws-amplify/amplify-cli/commit/a3bc0a5e5d3faa7946d16d0f6595ce8c2f3c11dc))
+* update grahql transformer package versions for multienv ([8b4b2bd](https://github.com/aws-amplify/amplify-cli/commit/8b4b2bd9486d5408d1f75448e3646bdee810f448))
+* upgrade to node10 as min version for CLI ([#3128](https://github.com/aws-amplify/amplify-cli/issues/3128)) ([a0b18e0](https://github.com/aws-amplify/amplify-cli/commit/a0b18e0187a26b4ab0e6e986b0277f347e829444))
+* use ES external versioning when using DataStore ([#4127](https://github.com/aws-amplify/amplify-cli/issues/4127)) ([cef709b](https://github.com/aws-amplify/amplify-cli/commit/cef709ba2087affe860dd6fb141ccda1e5d58fd1))
+* use lib paths instead of src to reference submodule imports across data-cli split ([#9984](https://github.com/aws-amplify/amplify-cli/issues/9984)) ([7130212](https://github.com/aws-amplify/amplify-cli/commit/7130212c8342d8ecb6b35bc2072ec5034780343f))
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c1927da10f8c54f38a523021187361131c))
+* **amplify-category-api:** change default graphql query limit to 100 ([#4124](https://github.com/aws-amplify/amplify-cli/issues/4124)) ([1a68c4d](https://github.com/aws-amplify/amplify-cli/commit/1a68c4d589e2101357dec4e980719fc547964e23))
+* generate list types as non-null ([#8166](https://github.com/aws-amplify/amplify-cli/issues/8166)) ([93786c1](https://github.com/aws-amplify/amplify-cli/commit/93786c13ef04c72748ca32a1ef7878c0e6b5b129))
+* **graphql-dynamodb-transformer:** always output stream arn ([df1712b](https://github.com/aws-amplify/amplify-cli/commit/df1712b00427792bcce34adf7027698afd8e6841)), closes [#980](https://github.com/aws-amplify/amplify-cli/issues/980)
+* **graphql-dynamodb-transformer:** expose createdAt and updatedAt on model ([#4149](https://github.com/aws-amplify/amplify-cli/issues/4149)) ([8e0662e](https://github.com/aws-amplify/amplify-cli/commit/8e0662eac8c88da9393f32c33457a597acf591ed)), closes [#401](https://github.com/aws-amplify/amplify-cli/issues/401)
+* **graphql-elasticsearch-transformer:** add 'from' query parameter ([#5098](https://github.com/aws-amplify/amplify-cli/issues/5098)) ([d52a804](https://github.com/aws-amplify/amplify-cli/commit/d52a804c25df63cd1cee1a72bb99286ecfe54ed5))
+* **graphql-elasticsearch-transformer:** add total in es response ([#2602](https://github.com/aws-amplify/amplify-cli/issues/2602)) ([dbdb000](https://github.com/aws-amplify/amplify-cli/commit/dbdb0002b8e7cd33e37880d3166bc99c5faf1234)), closes [#2600](https://github.com/aws-amplify/amplify-cli/issues/2600)
+* **graphql-elasticsearch-transformer:** ddb_to_ess script now accepts session token ([#6313](https://github.com/aws-amplify/amplify-cli/issues/6313)) ([9bf8b16](https://github.com/aws-amplify/amplify-cli/commit/9bf8b16ac4f67f7be553b7cb0d020ebe0c46ab8f))
+* **graphql-elasticsearch-transformer:** export domain arn and endpoint ([97b8cad](https://github.com/aws-amplify/amplify-cli/commit/97b8cadf1d28a92f4f233cd10e7e16b351f27763)), closes [#1047](https://github.com/aws-amplify/amplify-cli/issues/1047)
+* **graphql-elasticsearch-transformer:** output endpoint with https ([a5e7b73](https://github.com/aws-amplify/amplify-cli/commit/a5e7b73644bcc251ed1094e35ee3fef8b331e7a7)), closes [#1047](https://github.com/aws-amplify/amplify-cli/issues/1047)
+* **graphql-elasticsearch-transformer:** support sets in es fn ([#2986](https://github.com/aws-amplify/amplify-cli/issues/2986)) ([16419f4](https://github.com/aws-amplify/amplify-cli/commit/16419f4d9e1733ed0ada064f9ced604083ee4703)), closes [#2860](https://github.com/aws-amplify/amplify-cli/issues/2860)
+* sanity check ([#1815](https://github.com/aws-amplify/amplify-cli/issues/1815)) ([54a8dbe](https://github.com/aws-amplify/amplify-cli/commit/54a8dbe8925a4e73358b03ba927267a2df328b78))
+* support five new regions in CLI ([#8094](https://github.com/aws-amplify/amplify-cli/issues/8094)) ([98e6c56](https://github.com/aws-amplify/amplify-cli/commit/98e6c56b21cc9a7e1145ab658c3d8611474d5c44))
+
+
+### Reverts
+
+* Revert "Revert "Revert "fix: #6108 - add proper AWSJSON mapping in generated filter input types (#6112)" (#6158)" (#6160)" (#6183) ([a0ca94e](https://github.com/aws-amplify/amplify-cli/commit/a0ca94e5a1a848404ef3977743f19d26300a636a)), closes [#6108](https://github.com/aws-amplify/amplify-cli/issues/6108) [#6112](https://github.com/aws-amplify/amplify-cli/issues/6112) [#6158](https://github.com/aws-amplify/amplify-cli/issues/6158) [#6160](https://github.com/aws-amplify/amplify-cli/issues/6160) [#6183](https://github.com/aws-amplify/amplify-cli/issues/6183)
+* Revert "Revert "fix: #6108 - add proper AWSJSON mapping in generated filter input types (#6112)" (#6158)" (#6160) ([f425924](https://github.com/aws-amplify/amplify-cli/commit/f42592420dcb49640c680c5001b3026ae0129090)), closes [#6108](https://github.com/aws-amplify/amplify-cli/issues/6108) [#6112](https://github.com/aws-amplify/amplify-cli/issues/6112) [#6158](https://github.com/aws-amplify/amplify-cli/issues/6158) [#6160](https://github.com/aws-amplify/amplify-cli/issues/6160)
+* Revert "fix: #6108 - add proper AWSJSON mapping in generated filter input types (#6112)" (#6158) ([9e57e4d](https://github.com/aws-amplify/amplify-cli/commit/9e57e4d8c887be8ee4119c87383c7379cec40c37)), closes [#6108](https://github.com/aws-amplify/amplify-cli/issues/6108) [#6112](https://github.com/aws-amplify/amplify-cli/issues/6112) [#6158](https://github.com/aws-amplify/amplify-cli/issues/6158)
+
+
+
+
+
 ## [5.2.30](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@5.2.29...graphql-elasticsearch-transformer@5.2.30) (2022-04-11)
 
 **Note:** Version bump only for package graphql-elasticsearch-transformer
