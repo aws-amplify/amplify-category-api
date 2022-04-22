@@ -13,7 +13,7 @@
     <img src="https://img.shields.io/circleci/project/github/aws-amplify/amplify-cli/master.svg" alt="build:started">
   </a>
 </p>
-
+ 
 ### Reporting Bugs/Feature Requests
 
 [![Open Bugs](https://img.shields.io/github/issues/aws-amplify/amplify-cli/bug?color=d73a4a&label=bugs)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
