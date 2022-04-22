@@ -9,28 +9,28 @@
   <a href="https://www.npmjs.com/package/@aws-amplify/cli">
     <img src="https://img.shields.io/npm/v/@aws-amplify/cli.svg" />
   </a>
-  <a href="https://circleci.com/gh/aws-amplify/amplify-cli">
-    <img src="https://img.shields.io/circleci/project/github/aws-amplify/amplify-cli/master.svg" alt="build:started">
+  <a href="https://circleci.com/gh/aws-amplify/amplify-category-api">
+    <img src="https://img.shields.io/circleci/project/github/aws-amplify/amplify-category-api/main.svg" alt="build:started">
   </a>
 </p>
 
 ### Reporting Bugs/Feature Requests
 
-[![Open Bugs](https://img.shields.io/github/issues/aws-amplify/amplify-cli/bug?color=d73a4a&label=bugs)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
-[![Feature Requests](https://img.shields.io/github/issues/aws-amplify/amplify-cli/feature-request?color=ff9001&label=feature%20requests)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+label%3Afeature-request+is%3Aopen)
-[![Enhancements](https://img.shields.io/github/issues/aws-amplify/amplify-cli/enhancement?color=4287f5&label=enhancement)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement)
-[![Closed Issues](https://img.shields.io/github/issues-closed/aws-amplify/amplify-cli?color=%2325CC00&label=issues%20closed)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+is%3Aclosed+)
+[![Open Bugs](https://img.shields.io/github/issues/aws-amplify/amplify-category-api/bug?color=d73a4a&label=bugs)](https://github.com/aws-amplify/amplify-category-api/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
+[![Feature Requests](https://img.shields.io/github/issues/aws-amplify/amplify-category-api/feature-request?color=ff9001&label=feature%20requests)](https://github.com/aws-amplify/amplify-category-api/issues?q=is%3Aissue+label%3Afeature-request+is%3Aopen)
+[![Enhancements](https://img.shields.io/github/issues/aws-amplify/amplify-category-api/enhancement?color=4287f5&label=enhancement)](https://github.com/aws-amplify/amplify-category-api/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement)
+[![Closed Issues](https://img.shields.io/github/issues-closed/aws-amplify/amplify-category-api?color=%2325CC00&label=issues%20closed)](https://github.com/aws-amplify/amplify-category-api/issues?q=is%3Aissue+is%3Aclosed+)
 
-# AWS Amplify CLI
+# AWS Amplify API Category
 
 The AWS Amplify CLI is a toolchain which includes a robust feature set for simplifying mobile and web application development. The CLI uses AWS CloudFormation and nested stacks to allow you to add or modify configurations locally before you push them for execution in your account.
 
 - [Install the CLI](#install-the-cli)
-- [Commands Summary](#commands-summary)
 - [Tutorials](#tutorials)
 - [Contributing](#contributing)
-- [Start building your app](https://aws-amplify.github.io/docs)
-- [Changelog](https://github.com/aws-amplify/amplify-cli/releases/latest)
+- [Changelog](https://github.com/aws-amplify/amplify-category-api/releases/latest)
+
+This repo manages the API category within Amplify CLI. The Category is responsible for managing graphql build and transformation processes, generating resources to deploy into your cloud stack in order to compute and store data for your graphql and REST endpoints, and providing inputs to codegen processes for use later in your end application.
 
 ## Install the CLI
 
@@ -50,49 +50,27 @@ $ sudo npm install -g @aws-amplify/cli --unsafe-perm=true
 $ amplify configure
 ```
 
-## Commands Summary
-
-The Amplify CLI supports the commands shown in the following table.
-
-| Command                                                                | Description                                                                                                                                                                                                          |
-| ---------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| amplify configure                                                      | Configures the AWS access credentials, AWS Region and sets up a new AWS User Profile                                                                                                                                 |
-| amplify init                                                           | Initializes a new project, sets up deployment resources in the cloud and prepares your project for Amplify.                                                                                                          |
-| amplify configure project                                              | Updates configuration settings used to setup the project during the init step.                                                                                                                                       |
-| amplify add `<category>`                                               | Adds cloud features to your app.                                                                                                                                                                                     |
-| amplify update `<category>`                                            | Updates existing cloud features in your app.                                                                                                                                                                         |
-| amplify push [--no-gql-override]                                       | Provisions cloud resources with the latest local developments. The 'no-gql-override' flag does not automatically compile your annotated GraphQL schema and will override your local AppSync resolvers and templates. |
-| amplify pull                                                           | Fetch upstream backend environment definition changes from the cloud and updates the local environment to match that definition.                                                                                     |
-| amplify publish                                                        | Runs `amplify push`, publishes a static assets to Amazon S3 and Amazon CloudFront (\*hosting category is required).                                                                                                  |
-| amplify status [ `<category>`...]                                      | Displays the state of local resources that haven't been pushed to the cloud (Create/Update/Delete).                                                                                                                  |
-| amplify status -v [ `<category>`...]                                   | Verbose mode - Shows the detailed verbose diff between local and deployed resources, including cloudformation-diff | 
-| amplify serve                                                          | Runs `amplify push`, and then executes the project's start command to test run the client-side application.                                                                                                          |
-| amplify delete                                                         | Deletes resources tied to the project.                                                                                                                                                                               |
-| amplify help \| amplify `<category>` help                              | Displays help for the core CLI.                                                                                                                                                                                      |
-| amplify codegen add \| generate                                        | Performs generation of strongly typed objects using a GraphQL schema.                                                                                                                                                |
-| amplify env add \| list \| remove \| get \| pull \| import \| checkout | See the [multienv docs](https://docs.amplify.aws/cli/teams/overview).                                                                                                                                                |
-
 ### Category specific commands:
 
-- [auth (Amazon Cognito)](packages/amplify-category-auth/Readme.md)
-- [storage (Amazon S3 & Amazon DynamoDB)](packages/amplify-category-storage/Readme.md)
-- [function (AWS Lambda)](packages/amplify-category-function/Readme.md)
-- [api (AWS AppSync & Amazon API Gateway)](packages/amplify-category-api/Readme.md)
-- [analytics (Amazon Pinpoint)](packages/amplify-category-analytics/Readme.md)
-- [hosting (Amazon S3 and Amazon CloudFront distribution)](packages/amplify-category-hosting/Readme.md)
-- [notifications (Amazon Pinpoint)](packages/amplify-category-notifications/Readme.md)
-- [interactions (Amazon Lex)](packages/amplify-category-interactions/Readme.md)
-- [predictions (Amazon Rekognition, Amazon Textract, Amazon Translate, Amazon Polly, Amazon Transcribe, Amazon Comprehend, and Amazon SageMaker)](packages/amplify-category-predictions/Readme.md)
+The following table lists the current set of commands supported by the Amplify API Category Plugin.
+
+| Command                            | Description                                                                                                                             |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| amplify api add                    | Takes you through steps in the CLI to add an API resource to your backend.                                                              |
+| amplify api add-graphql-datasource | Takes you through the steps in the CLI to import an already existing Aurora Serverless data source to an existing GraphQL API resource. |
+| amplify api update                 | Takes you through steps in the CLI to update an API resource.                                                                           |
+| amplify api gql-compile            | Compiles your GraphQL schema and generates a corresponding cloudformation template.                                                     |
+| amplify api push                   | Provisions only API cloud resources with the latest local developments.                                                                 |
+| amplify api remove                 | Removes an API resource from your local backend. The resource is removed from the cloud on the next push command.                       |
 
 ## Tutorials
 
 - [Getting Started guide](https://docs.amplify.aws/start)
 - [GraphQL transform tutorial](https://docs.amplify.aws/cli/graphql-transformer/overview)
-- [Native development with Amplify CLI and AWS AppSync](https://docs.amplify.aws/cli/graphql-transformer/codegen)
 
 ## Developing
 
-To set up your local development environment, go to [Local Environment Setup](https://github.com/aws-amplify/amplify-cli/blob/master/CONTRIBUTING.md#local-environment-setup).
+To set up your local development environment, go to [Local Environment Setup](https://github.com/aws-amplify/amplify-category-api/blob/main/CONTRIBUTING.md#local-environment-setup).
 
 To test your category, do the following:
 
@@ -110,4 +88,4 @@ Before pushing code or sending a pull request, do the following:
 
 ## Contributing
 
-We are thankful for any contributions from the community. Look at our [Contribution Guidelines](https://github.com/aws-amplify/amplify-cli/blob/master/CONTRIBUTING.md).
+We are thankful for any contributions from the community. Look at our [Contribution Guidelines](https://github.com/aws-amplify/amplify-category-api/blob/main/CONTRIBUTING.md).

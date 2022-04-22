@@ -1,4 +1,4 @@
-# Contributing to Amplify CLI
+# Contributing to Amplify API Category
 
 Thank you for your interest in contributing to our project! 💛
 
@@ -25,7 +25,7 @@ Whether it's a bug report, new feature, correction, or additional documentation,
 
 Our work is done directly on Github and PR's are sent to the github repo by core team members and contributors. Everyone undergoes the same review process to get their changes into the repo.
 
-This section should get you running with **Amplify CLI** and get you familiar with the basics of the codebase.
+This section should get you running with **Amplify API Category** and get you familiar with the basics of the codebase.
 
 ### Local Environment Setup
 
@@ -37,23 +37,23 @@ This section should get you running with **Amplify CLI** and get you familiar wi
 
    > If you are using Yarn v2, run `yarn set version classic` to change to Yarn Classic.
 
-1. Start by [forking](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the _master_ branch of [amplify-cli](https://github.com/aws-amplify/amplify-cli). Then clone it to your machine to work with it locally using one of the following methods:
+1. Start by [forking](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the _main_ branch of [amplify-category-api](https://github.com/aws-amplify/amplify-category-api). Then clone it to your machine to work with it locally using one of the following methods:
 
    ```sh
    # HTTPS
-   git clone https://github.com/[username]/amplify-cli.git
+   git clone https://github.com/[username]/amplify-category-api.git
 
    # SSH
-   git clone git@github.com:[username]/amplify-cli.git
+   git clone git@github.com:[username]/amplify-category-api.git
 
    # GitHub CLI
-   gh repo clone [username]/amplify-cli
+   gh repo clone [username]/amplify-category-api
    ```
 
 1. Move into your project folder:
 
    ```sh
-   cd amplify-cli
+   cd amplify-category-api
    ```
 
 1. Then, you can run the `setup-dev` script, which installs dependencies and performs initial configuration:
@@ -66,13 +66,13 @@ This section should get you running with **Amplify CLI** and get you familiar wi
    yarn setup-dev-win
    ```
 
-> NOTE: Make sure to always [sync your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) with _master_ branch of amplify-cli
+> NOTE: Make sure to always [sync your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) with _main_ branch of amplify-category-api
 
 ### Architecture of the codebase
 
-Amplify CLI is a monorepo built with [Yarn Workspaces](https://yarnpkg.com/features/workspaces) and [Lerna](https://github.com/lerna/lerna). All the categories of Amplify live within the `packages/` directory in the root. Each category inside packages has its own `src/` and `package.json`.
+Amplify API Category is a monorepo built with [Yarn Workspaces](https://yarnpkg.com/features/workspaces) and [Lerna](https://github.com/lerna/lerna). All the categories of Amplify live within the `packages/` directory in the root. Each category inside packages has its own `src/` and `package.json`.
 
-[**Packages inside Amplify CLI Monorepo**](https://github.com/aws-amplify/amplify-cli/tree/master/packages)
+[**Packages inside Amplify API Monorepo**](https://github.com/aws-amplify/amplify-category-api/tree/main/packages)
 
 ### Steps towards contributions
 
@@ -85,6 +85,7 @@ Amplify CLI is a monorepo built with [Yarn Workspaces](https://yarnpkg.com/featu
 - Submit a PR
 
 #### What's with all the lint errors?
+
 For a long time, the codebase had relatively lax lint checking. We have now added more strict rules but decided that it wasn't feasible to
 update all the code to adhere to the new rules at once. Instead we have opted for an iterative approach where lint errors are fixed as
 files are touched. If you are the first person to touch a file since the rules have been inforced we ask that you try your best to address
@@ -100,7 +101,7 @@ Pull requests are welcome!
 
 You should open an issue to discuss your pull request, unless it's a trivial change. It's best to ensure that your proposed change would be accepted so that you don't waste your own time. If you would like to implement support for a significant feature that is not yet available, please talk to us beforehand to avoid any duplication of effort.
 
-Pull requests should generally be opened against **_master_**.
+Pull requests should generally be opened against **_main_**.
 
 Don't include any build files i.e. `dist/` in your PR. These will be built upon publish to npm and when a release is created on GitHub.
 
@@ -114,7 +115,7 @@ Don't include any build files i.e. `dist/` in your PR. These will be built upon 
 1. Run `yarn lint` to find any linting errors
 1. Then, push your branch: `git push origin HEAD` (pushes the current branch to origin remote)
 1. Open GitHub to create a PR from your newly published branch. Fill out the PR template and submit a PR.
-1. Finally, the Amplify CLI team will review your PR. Add reviewers based on the core member who is tracking the issue with you or code owners. _In the meantime, address any automated check that fail (such as linting, unit tests, etc. in CI)_
+1. Finally, the Amplify Data team will review your PR. Add reviewers based on the core member who is tracking the issue with you or code owners. _In the meantime, address any automated check that fail (such as linting, unit tests, etc. in CI)_
 
 ## Bug Reports
 
@@ -127,26 +128,24 @@ When filing a bug, please try to be as detailed as possible. In addition to the 
 - Any modifications you've made relevant to the bug
 - Anything unusual about your environment or deployment
 
-
 Guidelines for bug reports:
 
-- Check to see if a [duplicate or closed issue](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+) already exists!
+- Check to see if a [duplicate or closed issue](https://github.com/aws-amplify/amplify-category-api/issues?q=is%3Aissue+) already exists!
 - Provide a short and descriptive issue title
 - Remove any sensitive data from your examples or snippets
 - Format any code snippets using [Markdown](https://docs.github.com/en/github/writing-on-github/creating-and-highlighting-code-blocks) syntax
 - If you're not using the latest version of the CLI, see if the issue still persists after upgrading - this helps to isolate regressions!
 
-
 Finally, thank you for taking the time to read this, and taking the time to write a good bug report.
-
 
 ## Commits
 
 Commit messages should follow the [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/#summary) specification. For example:
 
-`git commit -m 'docs(cli): correct spelling of CHANGELOG'`
+`git commit -m 'docs(api): correct spelling of CHANGELOG'`
 
 Valid commit types are as follows:
+
 - `build`
 - `chore`
 - `ci`
@@ -157,6 +156,29 @@ Valid commit types are as follows:
 - `refactor`
 - `style`
 - `test`
+
+However, we recommend running the monorepo's commit script (`yarn commit` or `npm run commit`) which provides an interactive way to write well formed commit messages:
+
+```sh
+yarn commit
+```
+
+It helps in constructing a more comprehensive commit message with proper message title, body and footers to describe bug fix or feature implementation, to indicate BREAKING CHANGE, or to reference github issues. It will run through a series of question shown below:
+
+```
+? Select the type of change that you're committing: <type of commit (if its a feature, bug fix etc.,>
+? What is the scope of this change (e.g. component or file name)? <package name if change is only in one package>
+? Write a short, imperative tense description of the change: <short description with length less than 72 char>
+? Provide a longer description of the change: (press enter to skip) <long description>
+? Are there any breaking changes? Y/N
+? Does this change affect any open issues? Y/N
+? Add issue references (e.g. "fix #123", "re #123".): <issue number if exists>
+```
+
+While making a commit, for the question `What is the scope of this change`, enter the name of the package that received the major codebase changes.
+
+If the git commit directly addressed certain github issues, add the issue references after the `Add issue references` prompt. However, it is NOT required to search through all the github issues to find the ones that might be relevant and reference them in your commit.
+
 ### Git Hooks
 
 You will notice the extra actions carried out when you run the `git commit` or `git push` commands on this monorepo, that's because the following git hooks are configured using [husky](https://github.com/typicode/husky/tree/master) (you can see them in the root [package.json](https://github.com/aws-amplify/amplify-cli/blob/f2ac2b27b6b0dbf0c52edbc696c35b71f539c944/package.json#L61) file):
@@ -175,7 +197,7 @@ You will notice the extra actions carried out when you run the `git commit` or `
 
 #### "commit-msg" hook:
 
-The "commit-msg" hook ensures the commit message follows the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) convention, so that proper [CHANGELOG.md](https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-cli/CHANGELOG.md) files and package versions are maintained.
+The "commit-msg" hook ensures the commit message follows the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) convention, so that proper [CHANGELOG.md](https://github.com/aws-amplify/amplify-category-api/blob/main/CHANGELOG.md) files and package versions are maintained.
 
 #### "pre-commit" hook:
 
@@ -183,7 +205,8 @@ The "pre-commit" hook runs the [verify-commit](https://github.com/aws-amplify/am
 
 #### "pre-push" hook:
 
-The "pre-push" hook will build test files and run the  `split-e2e-tests` script to ensure the correct configuration file is generated for our CICD workflow.
+The "pre-push" hook will build test files and run the `split-e2e-tests` script to ensure the correct configuration file is generated for our CICD workflow.
+
 ## Tests
 
 Please ensure that your change still passes unit tests, and ideally integration/UI tests. It's OK if you're still working on tests at the time that you submit, but be prepared to be asked about them. Wherever possible, pull requests should contain tests as appropriate. Bugfixes should contain tests that exercise the corrected behavior (i.e., the test should fail without the bugfix and pass with it), and new features should be accompanied by tests exercising the feature.
@@ -218,10 +241,10 @@ Sometimes issues can be solved by doing a clean and fresh build. To start from a
     git clean -fdx
     ```
 
-1.  Reset master branch to that of origin/master:
+1.  Reset main branch to that of origin/main:
 
     ```sh
-    git fetch origin && git checkout --track origin/master -B master
+    git fetch origin && git checkout --track origin/main -B main
     ```
 
 1.  Then, run the `setup-dev` script:
@@ -240,7 +263,7 @@ Generally, match the style of the surrounding code. Please ensure your changes d
 
 ## Finding Contributions
 
-Looking at the existing issues is a great way to find something to contribute on. As our projects, by default, use the default GitHub issue labels (enhancement/bug/duplicate/help wanted/invalid/question/wontfix), looking at any [`help-wanted`](https://github.com/aws-amplify/amplify-cli/labels/help-wanted) or [`good first issue`](https://github.com/aws-amplify/amplify-cli/labels/good%20first%20issue) is a great place to start.
+Looking at the existing issues is a great way to find something to contribute on. As our projects, by default, use the default GitHub issue labels (enhancement/bug/duplicate/help wanted/invalid/question/wontfix), looking at any [`help-wanted`](https://github.com/aws-amplify/amplify-category-api/labels/help-wanted) or [`good first issue`](https://github.com/aws-amplify/amplify-category-api/labels/good%20first%20issue) is a great place to start.
 
 You could also contribute by reporting bugs, reproduction of bugs with sample code, documentation and test improvements.
 
@@ -259,6 +282,6 @@ If you discover a potential security issue in this project we ask that you notif
 
 ## Licensing
 
-AWS Amplify CLI is [Apache 2.0](LICENSE)-licensed. Contributions you submit will be released under that license.
+AWS Amplify Category API is [Apache 2.0](LICENSE)-licensed. Contributions you submit will be released under that license.
 
 We may ask you to sign a [Contributor License Agreement (CLA)](http://en.wikipedia.org/wiki/Contributor_License_Agreement) for larger changes.
