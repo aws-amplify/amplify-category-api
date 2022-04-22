@@ -8,6 +8,7 @@
     "url": "https://github.com/aws-amplify/amplify-cli.git",
     "directory": "packages/graphql-transformers-e2e-tests"
   },
+  "private": "true",
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "main": "lib/index.js",
