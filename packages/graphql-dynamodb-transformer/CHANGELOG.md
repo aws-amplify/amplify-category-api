@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.0.0-category-split-test.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@8.0.0-category-split-test.2...graphql-dynamodb-transformer@8.0.0-category-split-test.3) (2022-04-25)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
 # [8.0.0-category-split-test.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@8.0.0-category-split-test.1...graphql-dynamodb-transformer@8.0.0-category-split-test.2) (2022-04-22)
 
 **Note:** Version bump only for package graphql-dynamodb-transformer

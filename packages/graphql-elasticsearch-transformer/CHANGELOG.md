@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0-category-split-test.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@5.3.0-category-split-test.2...graphql-elasticsearch-transformer@5.3.0-category-split-test.3) (2022-04-25)
+
+**Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
+
 # [5.3.0-category-split-test.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@5.3.0-category-split-test.1...graphql-elasticsearch-transformer@5.3.0-category-split-test.2) (2022-04-22)
 
 **Note:** Version bump only for package graphql-elasticsearch-transformer
