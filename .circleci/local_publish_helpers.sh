@@ -154,14 +154,8 @@ function runE2eTest {
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
 
     if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
-<<<<<<< HEAD
-        startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
-        setNpmRegistryUrlToLocal
-        changeNpmGlobalPath
-=======
         echo "using Amplify CLI version: "$(amplify --version)
         echo "using amplify-app version: "$(amplify-app --version)
->>>>>>> bbd01b1c1 (chore(amplify-category-api): updates post split)
         cd $(pwd)/packages/amplify-e2e-tests
     fi
 
