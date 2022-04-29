@@ -2,6 +2,7 @@
   "name": "amplify-dynamodb-simulator",
   "version": "2.2.28",
   "description": "DynamoDB emulator nodejs wrapper",
+  "private": "true",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git",
