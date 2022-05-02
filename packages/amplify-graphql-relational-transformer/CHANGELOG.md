@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.10.0 (2022-05-02)
+
+
+### Bug Fixes
+
+* [@auth](https://github.com/auth) fix relational auth, authv2 e2e with utils and fixes ([#8450](https://github.com/aws-amplify/amplify-cli/issues/8450)) ([aa320cd](https://github.com/aws-amplify/amplify-cli/commit/aa320cd2414665a484438f0764cf68fd78caa26a))
+* add [@manytomany](https://github.com/manytomany) join table auth ([#8460](https://github.com/aws-amplify/amplify-cli/issues/8460)) ([424bbda](https://github.com/aws-amplify/amplify-cli/commit/424bbda410fbab100d475d37fa9ab291bfd05317))
+* allow duplicate auth rules when creating the join type ([#8680](https://github.com/aws-amplify/amplify-cli/issues/8680)) ([1a0636d](https://github.com/aws-amplify/amplify-cli/commit/1a0636d72d010b9d0ed18d511f853bcbffa9d421))
+* **amplify-category-auth:** expand [@auth](https://github.com/auth) directive to explicit set of allowed operations ([#9859](https://github.com/aws-amplify/amplify-cli/issues/9859)) ([e44ed18](https://github.com/aws-amplify/amplify-cli/commit/e44ed189b2c94230cbd5674606ffa488cb6c7bfe))
+* clean up missing and unused GraphQL v2 dependencies ([#9486](https://github.com/aws-amplify/amplify-cli/issues/9486)) ([a6ca44e](https://github.com/aws-amplify/amplify-cli/commit/a6ca44e6ea0ec0a70b648e399fc3e849ccc2a7c9))
+* generate list types will nullable elements ([#9310](https://github.com/aws-amplify/amplify-cli/issues/9310)) ([e972956](https://github.com/aws-amplify/amplify-cli/commit/e9729565fef2ac7df51f7fc7f345da536f385ac1))
+* **graphql-auth-transformer:** fix relational map key schema lookup when using LSI ([#9722](https://github.com/aws-amplify/amplify-cli/issues/9722)) ([1794cda](https://github.com/aws-amplify/amplify-cli/commit/1794cda7658d9d7596b372c2a78b3f753d7d6aaf))
+* **graphql-auth-transformer:** update resolver should allow if update operation is set ([#9808](https://github.com/aws-amplify/amplify-cli/issues/9808)) ([44a9bea](https://github.com/aws-amplify/amplify-cli/commit/44a9bea139a9a1483cfbc7db29b84938510ffdca))
+* **graphql-model-transformer:** fix create mutation when index field is null ([#10073](https://github.com/aws-amplify/amplify-cli/issues/10073)) ([1e9d140](https://github.com/aws-amplify/amplify-cli/commit/1e9d140a529e5a2474968feb26b53ac7c9bb5750))
+* **graphql-model-transformer:** fix enum filter input when queries are set to null ([#10044](https://github.com/aws-amplify/amplify-cli/issues/10044)) ([53bef2e](https://github.com/aws-amplify/amplify-cli/commit/53bef2eb59c0e7540c87a5e43de903889a6d3d1d))
+* **graphql-model-transformer:** override resource logical id to fix v1 to v2 transformer migration ([#8597](https://github.com/aws-amplify/amplify-cli/issues/8597)) ([e3a2afb](https://github.com/aws-amplify/amplify-cli/commit/e3a2afbbed6e97f143fc7c83064e2193f4c91bdd))
+* **graphql-relational-schema-transformer:** has-many transformer update filter/condition inputs ([#8565](https://github.com/aws-amplify/amplify-cli/issues/8565)) ([9f5570b](https://github.com/aws-amplify/amplify-cli/commit/9f5570b6095ba57f2f3e514279a2f13f041e2b38))
+* **graphql-relational-transformer:** [@belongs](https://github.com/belongs)To directive support for Int fields ([#9175](https://github.com/aws-amplify/amplify-cli/issues/9175)) ([452b115](https://github.com/aws-amplify/amplify-cli/commit/452b11549aac4f5ce7cc8fb0720c3e1b10e2457e))
+* **graphql-relational-transformer:** fix belongs to e2e test ([#8738](https://github.com/aws-amplify/amplify-cli/issues/8738)) ([233ed56](https://github.com/aws-amplify/amplify-cli/commit/233ed56d2fc74020321816c53555cb04b23b9d6a))
+* **graphql-relational-transformer:** fix has many without fields ([#8700](https://github.com/aws-amplify/amplify-cli/issues/8700)) ([cc21d4d](https://github.com/aws-amplify/amplify-cli/commit/cc21d4dcf827a9ef27a89dffe828f3726a03ecea))
+* **graphql-relational-transformer:** fixed has one and belongs to relationship ([#8679](https://github.com/aws-amplify/amplify-cli/issues/8679)) ([8a390fb](https://github.com/aws-amplify/amplify-cli/commit/8a390fba8a34002abb94d28702db2dde088811d9))
+* **graphql-relational-transformer:** fixes belongs to relation field name ([#8865](https://github.com/aws-amplify/amplify-cli/issues/8865)) ([068b03b](https://github.com/aws-amplify/amplify-cli/commit/068b03bd4c78c840c74557b05f5d109c2c300210))
+* **graphql:** avoid static datastructures in gql transform ([#10006](https://github.com/aws-amplify/amplify-cli/issues/10006)) ([cd73fdd](https://github.com/aws-amplify/amplify-cli/commit/cd73fdde69f1545683e81684c4f9267145b845c6))
+* **graphql:** correct typo filterExpression on v2 resolvers ([#9412](https://github.com/aws-amplify/amplify-cli/issues/9412)) ([71bf468](https://github.com/aws-amplify/amplify-cli/commit/71bf4688952a5f43640297bf31ea9c59d1c679c9))
+* **graphql:** hasMany on model with (queries: null) generate correct scalar filter type ([#9742](https://github.com/aws-amplify/amplify-cli/issues/9742)) ([d75546c](https://github.com/aws-amplify/amplify-cli/commit/d75546cbc308e2c6f3a676ccbe8632fe9711ae0f))
+* **graphql:** include sort key(s) in many to many directive relation model ([#9580](https://github.com/aws-amplify/amplify-cli/issues/9580)) ([93ebf35](https://github.com/aws-amplify/amplify-cli/commit/93ebf3566992bff95f035f70fe27b4b1871e1d3d))
+* **graphql:** modify fields match logic for hasOne directive when using auth directive ([#9459](https://github.com/aws-amplify/amplify-cli/issues/9459)) ([a924892](https://github.com/aws-amplify/amplify-cli/commit/a92489298625d46255263d50bbceb074eb6d2269))
+* handle implicit primary keys in [@many](https://github.com/many)ToMany ([#9111](https://github.com/aws-amplify/amplify-cli/issues/9111)) ([82357a8](https://github.com/aws-amplify/amplify-cli/commit/82357a8fcb9c6565bdde4942efa9b7ba1f192f5e))
+* include default values in index arg validation ([#9759](https://github.com/aws-amplify/amplify-cli/issues/9759)) ([e135e42](https://github.com/aws-amplify/amplify-cli/commit/e135e42ece439dd9925edd8488dbc6a129d92aa8))
+* prevent A <-> B [@has](https://github.com/has)One or [@has](https://github.com/has)Many relationships with DS ([#9230](https://github.com/aws-amplify/amplify-cli/issues/9230)) ([ffa5fc7](https://github.com/aws-amplify/amplify-cli/commit/ffa5fc74e76988a821e152ab8ae3f386b5967381))
+* reintroduce connection stack in transformer v2 ([#8757](https://github.com/aws-amplify/amplify-cli/issues/8757)) ([81ffeeb](https://github.com/aws-amplify/amplify-cli/commit/81ffeeb7fecfbad1200e45291cb8052be025f761))
+* reuse foreign key field in `[@belongs](https://github.com/belongs)To` transformer ([#8557](https://github.com/aws-amplify/amplify-cli/issues/8557)) ([39fbe6f](https://github.com/aws-amplify/amplify-cli/commit/39fbe6f61687a0ffbaff5914069f64a69c23e0d6))
+* support recursive [@has](https://github.com/has)One/[@has](https://github.com/has)Many with DataStore ([#9336](https://github.com/aws-amplify/amplify-cli/issues/9336)) ([48e51e6](https://github.com/aws-amplify/amplify-cli/commit/48e51e6fbdc429218f84aae7e808bdf9fa280c0d))
+* use output when looking up relational related type index ([#8657](https://github.com/aws-amplify/amplify-cli/issues/8657)) ([1f5dd5c](https://github.com/aws-amplify/amplify-cli/commit/1f5dd5ce2eeb3b91a13c7e2bd9e3ffbfcab0c3fe))
+* use StackMapping for V2 resolvers ([#9238](https://github.com/aws-amplify/amplify-cli/issues/9238)) ([d354e78](https://github.com/aws-amplify/amplify-cli/commit/d354e78dd1e253d9572da3b08a4d8883e2fe673e))
+
+
+### Features
+
+* `[@maps](https://github.com/maps)To` directive to enable renaming models while retaining data ([#9340](https://github.com/aws-amplify/amplify-cli/issues/9340)) ([aedf45d](https://github.com/aws-amplify/amplify-cli/commit/aedf45d9237812d71bb8b56164efe0222ad3d534))
+* add [@many](https://github.com/many)ToMany directive ([#8195](https://github.com/aws-amplify/amplify-cli/issues/8195)) ([cc644eb](https://github.com/aws-amplify/amplify-cli/commit/cc644ebc4968f29ad6b3f0b42013d7ee6a142f7e))
+* add admin roles which have admin control over a graphql api ([#8601](https://github.com/aws-amplify/amplify-cli/issues/8601)) ([4d50df0](https://github.com/aws-amplify/amplify-cli/commit/4d50df000c6e11165d2da766c0eaa0097d88a0c2))
+* add handling of colon-delimited identity claims to query ([#10189](https://github.com/aws-amplify/amplify-cli/issues/10189)) ([d7983f4](https://github.com/aws-amplify/amplify-cli/commit/d7983f411f69e79cbe7508684b31ba9f9f2d9c33))
+* add new relational modeling directives ([#7997](https://github.com/aws-amplify/amplify-cli/issues/7997)) ([e9cdb7a](https://github.com/aws-amplify/amplify-cli/commit/e9cdb7a1a45b8f16546952a469ab2d45f82e855c))
+* generate list types as non-null ([#8166](https://github.com/aws-amplify/amplify-cli/issues/8166)) ([93786c1](https://github.com/aws-amplify/amplify-cli/commit/93786c13ef04c72748ca32a1ef7878c0e6b5b129))
+* use sub:username identity claim by default when persisting behind a feature flag ([#10196](https://github.com/aws-amplify/amplify-cli/issues/10196)) ([947aae6](https://github.com/aws-amplify/amplify-cli/commit/947aae6e692653d06d83f3f33298da3a33d87564))
+
+
+### Reverts
+
+* Revert "feat: add handling of colon-delimited identity claims to query (#10189)" (#10213) ([9f13064](https://github.com/aws-amplify/amplify-cli/commit/9f13064d592937c82e534c32469053d7e96a169b)), closes [#10189](https://github.com/aws-amplify/amplify-cli/issues/10189) [#10213](https://github.com/aws-amplify/amplify-cli/issues/10213)
+
+
+
+
+
 # [0.9.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.8.1...@aws-amplify/graphql-relational-transformer@0.9.0) (2022-04-29)
 
 
