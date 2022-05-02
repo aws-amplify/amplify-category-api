@@ -52,7 +52,7 @@ install_cli_from_local_registry: &install_cli_from_local_registry
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     npm install -g @aws-amplify/cli-internal@apiSplitM1Refresh3
-    npm install -g amplify-app@apiSplitM1Refresh3
+    npm install -g amplify-app@apiSplitM1
     echo "using Amplify CLI version: "$(amplify --version)
     echo "using amplify-app version: "$(amplify-app --version)
     unsetNpmRegistryUrl
