@@ -4,7 +4,7 @@
   "description": "An AppSync model transform that takes a simple model and creates a DynamoDB table, DynamoDB stream.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "url": "https://github.com/aws-amplify/amplify-category-api.git",
     "directory": "packages/graphql-dynamodb-transformer"
   },
   "author": "Amazon Web Services",

@@ -4,7 +4,7 @@
   "description": "An AppSync model transform for HTTP resolvers.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "url": "https://github.com/aws-amplify/amplify-category-api.git",
     "directory": "packages/graphql-http-transformer"
   },
   "author": "Amazon Web Services",
