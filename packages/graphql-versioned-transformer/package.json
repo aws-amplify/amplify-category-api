@@ -4,7 +4,7 @@
   "description": "A GraphQL transform that enabled object versioning and conflict resolution for a @model type.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "url": "https://github.com/aws-amplify/amplify-category-api.git",
     "directory": "packages/graphql-versioned-transformer"
   },
   "author": "Amazon Web Services",
