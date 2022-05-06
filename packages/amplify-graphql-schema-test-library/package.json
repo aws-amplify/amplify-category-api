@@ -4,7 +4,7 @@
   "description": "Library of valid and unsupported Amplify GraphQL Transformer schemas",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "url": "https://github.com/aws-amplify/amplify-category-api.git",
     "directory": "packages/amplify-graphql-schema-test-library"
   },
   "author": "Amazon Web Services",

@@ -4,7 +4,7 @@
   "description": "Amplify GraphQL default value transformer",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "url": "https://github.com/aws-amplify/amplify-category-api.git",
     "directory": "packages/amplify-graphql-default-value-transformer"
   },
   "author": "Amazon Web Services",

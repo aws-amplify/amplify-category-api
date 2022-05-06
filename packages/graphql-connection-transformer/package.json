@@ -4,7 +4,7 @@
   "description": "An AppSync model transform for connecting objects.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "url": "https://github.com/aws-amplify/amplify-category-api.git",
     "directory": "packages/graphql-connection-transformer"
   },
   "author": "Amazon Web Services",
