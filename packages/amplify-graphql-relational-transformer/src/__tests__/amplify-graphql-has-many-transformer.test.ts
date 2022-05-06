@@ -1,7 +1,7 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { Kind, parse } from 'graphql';
+import { DocumentNode, Kind, parse } from 'graphql';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 
 test('fails if used as a has one relation', () => {
@@ -778,3 +778,43 @@ test('has many with queries null generate correct filter input objects for enum 
   expect(statusField).toBeDefined();
   expect(statusField.type.name.value).toMatch('ModelIssueStatusInput');
 });
+
+describe('Pre Processing Has Many Tests', () => {
+  let transformer: GraphQLTransform;
+  const hasGeneratedField = (doc: DocumentNode, objectType: string, fieldName: string): boolean => {
+    let hasField = false;
+    doc?.definitions?.forEach(def => {
+      if ((def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') && def.name.value === objectType) {
+        def?.fields?.forEach(field => {
+          if (field.name.value === fieldName) {
+            hasField = true;
+          }
+        });
+      }
+    });
+    return hasField;
+  };
+
+  beforeEach(() => {
+    transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer(), new HasManyTransformer()],
+    });
+  });
+
+  test('Should generate connecting field when one is not provided', () => {
+    const schema = `
+    type Blog @model {
+      id: ID!
+      postsField: [Post] @hasMany
+    }
+    
+    type Post @model {
+      id: ID!
+    }
+    `;
+
+    const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+    expect(hasGeneratedField(updatedSchemaDoc, 'Post', 'blogPostsFieldId')).toBeTruthy();
+  });
+});
+
