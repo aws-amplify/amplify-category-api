@@ -13,12 +13,12 @@ import {
   ObjectTypeDefinitionNode,
   ObjectTypeExtensionNode,
 } from 'graphql';
-import { getBaseType, isListType } from 'graphql-transformer-common';
+import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import { makeGetItemConnectionWithKeyResolver } from './resolvers';
 import { ensureBelongsToConnectionField } from './schema';
 import { BelongsToDirectiveConfiguration } from './types';
 import {
-  ensureFieldsArray,
+  ensureFieldsArray, getConnectionAttributeName,
   getFieldsNodes,
   getRelatedType,
   getRelatedTypeIndex,
@@ -81,14 +81,25 @@ export class BelongsToTransformer extends TransformerPluginBase {
                 const relatedType = objectTypeMap.get(getBaseType(field.type));
                 if (relatedType) { // Validation is done in a different segment of the life cycle
                   const relationTypeField = relatedType?.fields?.find(relatedField => {
-                    if (getBaseType(field.type) === def.name.value && relatedField?.directives?.some(
+                    if (getBaseType(relatedField.type) === def.name.value && relatedField?.directives?.some(
                       relatedDir => relatedDir.name.value === 'hasOne' || relatedDir.name.value === 'hasMany',
                     )) {
                       return true;
                     }
                     return false;
                   });
-                  const typeOfRelation = relationTypeField // WIP
+                  const relationTypeName = relationTypeField?.directives?.find(relationDir => relationDir.name.value === 'hasOne' || relationDir.name.value === 'hasMany')?.name?.value;
+                  if (relationTypeName === 'hasOne') {
+                    const connectionAttributeName = getConnectionAttributeName(def.name.value, field.name.value);
+                    if (!def?.fields?.some(defField => defField.name.value === connectionAttributeName)) {
+                      def?.fields?.push(
+                        makeField(
+                          connectionAttributeName, [], isNonNullType(field.type) ?
+                            makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), [],
+                        ) as WritableDraft<FieldDefinitionNode>,
+                      );
+                    }
+                  }
                 }
               }
             });

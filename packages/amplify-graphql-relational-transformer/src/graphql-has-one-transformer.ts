@@ -95,6 +95,7 @@ export class HasOneTransformer extends TransformerPluginBase {
                   dir?.arguments?.splice(removalIndex, 1);
                 }
                 if (!hasFieldsDefined) {
+                  // eslint-disable-next-line no-param-reassign
                   dir.arguments = [makeArgument('fields', makeValueNode(connectionAttributeName)) as WritableDraft<ArgumentNode>];
                   def?.fields?.push(
                     makeField(

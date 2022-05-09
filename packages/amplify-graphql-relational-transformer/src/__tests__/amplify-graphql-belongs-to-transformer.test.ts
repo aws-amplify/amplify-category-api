@@ -1,7 +1,7 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { Kind, parse } from 'graphql';
+import { DocumentNode, Kind, parse } from 'graphql';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 
 test('fails if @belongsTo was used on an object that is not a model type', () => {
@@ -363,4 +363,65 @@ test('support for belongs to with Int fields', () => {
   expect(out.resolvers['ExamItem.owningBank.req.vtl']).not.toContain(
     '$util.defaultIfNullOrBlank($ctx.source.owningBankId, "___xamznone____"))',
   );
+});
+
+describe('Pre Processing Belongs To Tests', () => {
+  let transformer: GraphQLTransform;
+  const hasGeneratedField = (doc: DocumentNode, objectType: string, fieldName: string): boolean => {
+    let hasField = false;
+    let doubleHasField = false;
+    doc?.definitions?.forEach(def => {
+      if ((def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') && def.name.value === objectType) {
+        def?.fields?.forEach(field => {
+          if (hasField && field.name.value === fieldName) {
+            doubleHasField = true;
+          } else if (field.name.value === fieldName) {
+            hasField = true;
+          }
+        });
+      }
+    });
+    return doubleHasField ? false : hasField;
+  };
+
+  beforeEach(() => {
+    transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer(), new HasManyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+    });
+  });
+
+  test('Should generate connecting field for a has one', () => {
+    const schema = `
+    type Blog @model {
+      id: ID!
+      postsField: Post @hasOne
+    }
+    
+    type Post @model {
+      id: ID!
+      blogField: Blog @belongsTo
+    }
+    `;
+
+    const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+    expect(hasGeneratedField(updatedSchemaDoc, 'Post', 'postBlogFieldId')).toBeTruthy();
+  });
+
+  test('Should not generate extra connecting field for a has many, there\'s already a route back to parent', () => {
+    const schema = `
+    type Blog @model {
+      id: ID!
+      postsField: [Post] @hasMany
+    }
+    
+    type Post @model {
+      id: ID!
+      blogField: Blog @belongsTo
+    }
+    `;
+
+    const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+    expect(hasGeneratedField(updatedSchemaDoc, 'Post', 'postBlogFieldId')).toBeFalsy();
+    expect(hasGeneratedField(updatedSchemaDoc, 'Post', 'blogPostsFieldId')).toBeTruthy();
+  });
 });
