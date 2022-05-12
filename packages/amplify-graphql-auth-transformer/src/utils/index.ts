@@ -1,12 +1,18 @@
-import { DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
+import { DirectiveWrapper, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthMode, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Stack } from '@aws-cdk/core';
 import { ObjectTypeDefinitionNode } from 'graphql';
-import { AccessControlMatrix } from '../accesscontrol';
+import { AccessControlMatrix } from '../accesscontrol/acm';
+import { MODEL_OPERATIONS, READ_MODEL_OPERATIONS } from './constants';
 import {
-  AuthProvider, AuthRule, AuthTransformerConfig, ConfiguredAuthProviders, RoleDefinition, RolesByProvider,
+  AuthProvider,
+  AuthRule,
+  AuthTransformerConfig,
+  ConfiguredAuthProviders,
+  ModelOperation,
+  RoleDefinition,
+  RolesByProvider,
 } from './definitions';
-import { MODEL_OPERATIONS } from './constants';
 
 export * from './constants';
 export * from './definitions';
@@ -26,6 +32,78 @@ export const splitRoles = (roles: Array<RoleDefinition>): RolesByProvider => ({
   apiKeyRoles: roles.filter(r => r.provider === 'apiKey'),
   lambdaRoles: roles.filter(r => r.provider === 'function'),
 });
+
+/**
+ * returns @auth directive rules
+ */
+export const getAuthDirectiveRules = (authDir: DirectiveWrapper, isField = false): AuthRule[] => {
+  const splitReadOperation = (rule: AuthRule): void => {
+    const operations: (ModelOperation | 'read')[] = rule.operations ?? [];
+    const indexOfRead = operations.indexOf('read', 0);
+    if (indexOfRead !== -1) {
+      operations.splice(indexOfRead, 1);
+      operations.push('get');
+      operations.push('list');
+      operations.push('search');
+      operations.push('sync');
+      operations.push('listen');
+      // eslint-disable-next-line no-param-reassign
+      rule.operations = operations as ModelOperation[];
+    }
+  };
+
+  const { rules } = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] });
+  rules.forEach(rule => {
+    const operations: (ModelOperation | 'read')[] = rule.operations ?? MODEL_OPERATIONS;
+
+    if (isField && rule.operations && (rule.operations.some((operation: ModelOperation | 'read') => operation !== 'read' && READ_MODEL_OPERATIONS.includes(operation)))) {
+      const offendingOperation = operations.filter(operation => operation !== 'read' && READ_MODEL_OPERATIONS.includes(operation));
+      throw new InvalidDirectiveError(
+        `'${offendingOperation}' operation is not allowed at the field level.`,
+      );
+    }
+
+    if (operations.includes('read') && (operations.some(operation => operation !== 'read' && READ_MODEL_OPERATIONS.includes(operation)))) {
+      const offendingOperation = operations.filter(operation => operation !== 'read' && READ_MODEL_OPERATIONS.includes(operation));
+      throw new InvalidDirectiveError(
+        `'${offendingOperation}' operations are specified in addition to 'read'. Either remove 'read' to limit access only to '${offendingOperation}' or only keep 'read' to grant all ${READ_MODEL_OPERATIONS} access.`,
+      );
+    }
+
+    if (!rule.provider) {
+      switch (rule.allow) {
+        case 'owner':
+        case 'groups':
+          // eslint-disable-next-line no-param-reassign
+          rule.provider = 'userPools';
+          break;
+        case 'private':
+          // eslint-disable-next-line no-param-reassign
+          rule.provider = 'userPools';
+          break;
+        case 'public':
+          // eslint-disable-next-line no-param-reassign
+          rule.provider = 'apiKey';
+          break;
+        case 'custom':
+          // eslint-disable-next-line no-param-reassign
+          rule.provider = 'function';
+          break;
+        default:
+          throw new Error(`Need to specify an allow to assigned a provider: ${rule}`);
+      }
+    }
+
+    if (rule.provider === 'iam') {
+      // eslint-disable-next-line no-param-reassign
+      rule.generateIAMPolicy = true;
+    }
+
+    splitReadOperation(rule);
+  });
+
+  return rules;
+};
 
 /**
  * gets stack name if the field is paired with function, predictions, or by itself
@@ -94,8 +172,18 @@ export const getConfiguredAuthProviders = (config: AuthTransformerConfig): Confi
  * access by the provider
  */
 export const getReadRolesForField = (acm: AccessControlMatrix, readRoles: Array<string>, fieldName: string): Array<string> => {
-  const hasCognitoPrivateRole = readRoles.some(r => r === 'userPools:private') && acm.isAllowed('userPools:private', fieldName, 'read');
-  const hasOIDCPrivateRole = readRoles.some(r => r === 'oidc:private') && acm.isAllowed('oidc:private', fieldName, 'read');
+  const hasCognitoPrivateRole = readRoles.some(r => r === 'userPools:private')
+    && acm.isAllowed('userPools:private', fieldName, 'get')
+    && acm.isAllowed('userPools:private', fieldName, 'list')
+    && acm.isAllowed('userPools:private', fieldName, 'sync')
+    && acm.isAllowed('userPools:private', fieldName, 'search')
+    && acm.isAllowed('userPools:private', fieldName, 'listen');
+  const hasOIDCPrivateRole = readRoles.some(r => r === 'oidc:private')
+    && acm.isAllowed('oidc:private', fieldName, 'get')
+    && acm.isAllowed('oidc:private', fieldName, 'list')
+    && acm.isAllowed('oidc:private', fieldName, 'sync')
+    && acm.isAllowed('oidc:private', fieldName, 'search')
+    && acm.isAllowed('oidc:private', fieldName, 'listen');
   let allowedRoles = [...readRoles];
 
   if (hasCognitoPrivateRole) {
@@ -105,41 +193,4 @@ export const getReadRolesForField = (acm: AccessControlMatrix, readRoles: Array<
     allowedRoles = allowedRoles.filter(r => !(r.startsWith('oidc:') && r !== 'oidc:private'));
   }
   return allowedRoles;
-};
-
-/**
- * Gets the rules from the auth directive
- */
-export const getAuthDirectiveRules = (authDir: DirectiveWrapper): AuthRule[] => {
-  const { rules } = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] });
-  /* eslint-disable no-param-reassign */
-  rules.forEach(rule => {
-    rule.operations = rule.operations ?? MODEL_OPERATIONS;
-
-    if (!rule.provider) {
-      switch (rule.allow) {
-        case 'owner':
-        case 'groups':
-          rule.provider = 'userPools';
-          break;
-        case 'private':
-          rule.provider = 'userPools';
-          break;
-        case 'public':
-          rule.provider = 'apiKey';
-          break;
-        case 'custom':
-          rule.provider = 'function';
-          break;
-        default:
-          throw new Error(`Need to specify an allow to assigned a provider: ${rule}`);
-      }
-    }
-
-    if (rule.provider === 'iam') {
-      rule.generateIAMPolicy = true;
-    }
-  });
-  /* eslint-enable */
-  return rules;
 };
