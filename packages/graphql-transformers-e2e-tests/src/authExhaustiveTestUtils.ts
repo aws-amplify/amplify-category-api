@@ -226,6 +226,7 @@ export const testAuthResolver = async (
   accessToken: string,
   apiKey: string,
   hasCustomPrimaryKey = false,
+  hasPartialAccess = false,
 ): Promise<void> => {
   const client = await createGraphQLClient(
     graphqlEndpoint,
@@ -345,11 +346,20 @@ export const testAuthResolver = async (
       }
     `;
 
-    const response = await client.mutate<any>({
-      mutation,
-      fetchPolicy: 'no-cache',
-    });
-    expect(response.errors).not.toBeDefined();
+    try {
+      const response = await client.mutate<any>({
+        mutation,
+        fetchPolicy: 'no-cache',
+      });
+
+      if (hasPartialAccess && operation === 'delete') {
+        expect(response.errors).toBeDefined();
+      } else {
+        expect(response.errors).not.toBeDefined();
+      }
+    } catch (e) {
+      expect(hasPartialAccess && operation === 'delete').toBeTruthy();
+    }
 
     try {
       const failResponse = await invalidClient.mutate<any>({
