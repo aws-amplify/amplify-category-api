@@ -119,7 +119,7 @@ workflows:
       - build
       - cleanup_resources:
           context:
-            - cleanup-resources
-            - e2e-test-context
+            - api-cleanup-resources
+            - api-e2e-test-context
           requires:
             - build
