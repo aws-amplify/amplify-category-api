@@ -74,7 +74,7 @@ describe('e2e auth resolvers tests', () => {
       modelName, strategy, provider, operation,
     }) => {
       expect(true).toBeTruthy();
-      await testAuthResolver(GRAPHQL_ENDPOINT, modelName, strategy, provider, operation, ID_TOKEN, ACCESS_TOKEN, API_KEY);
+      await testAuthResolver(GRAPHQL_ENDPOINT, modelName, strategy, provider, operation, ID_TOKEN, ACCESS_TOKEN, API_KEY, false, true);
     },
   );
 });
