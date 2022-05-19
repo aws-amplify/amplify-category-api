@@ -18,11 +18,11 @@ test('fails if @hasOne was used on an object that is not a model type', () => {
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasOneTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new HasOneTransformer()],
   });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError(`@hasOne must be on an @model object type field.`);
+  expect(() => transformer.transform(inputSchema)).toThrowError('@hasOne must be on an @model object type field.');
 });
 
 test('fails if @hasOne was used with a related type that is not a model', () => {
@@ -38,11 +38,11 @@ test('fails if @hasOne was used with a related type that is not a model', () => 
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasOneTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new HasOneTransformer()],
   });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError(`Object type Test1 must be annotated with @model.`);
+  expect(() => transformer.transform(inputSchema)).toThrowError('Object type Test1 must be annotated with @model.');
 });
 
 test('fails if the related type does not exist', () => {
@@ -58,8 +58,8 @@ test('fails if the related type does not exist', () => {
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasOneTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new HasOneTransformer()],
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('Unknown type "Test2". Did you mean "Test" or "Test1"?');
@@ -207,6 +207,7 @@ test('fails if used as a has many relation', () => {
       name: String!
     }`;
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
   });
 
@@ -226,6 +227,7 @@ test('fails if object type fields are provided', () => {
       name: String!
     }`;
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
   });
 
@@ -246,8 +248,8 @@ test('creates has one relationship with explicit fields', () => {
       email: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -288,8 +290,8 @@ test('creates has one relationship with implicit fields', () => {
       email: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -305,17 +307,19 @@ test('creates has one relationship with implicit fields', () => {
 
   const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTestInput') as any;
   expect(createInput).toBeDefined();
-  expect(createInput.fields.length).toEqual(3);
+  expect(createInput.fields.length).toEqual(4);
   expect(createInput.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
   expect(createInput.fields.find((f: any) => f.name.value === 'email')).toBeDefined();
   expect(createInput.fields.find((f: any) => f.name.value === 'testOtherHalfId')).toBeDefined();
+  expect(createInput.fields.find((f: any) => f.name.value === 'testOtherHalfEmail')).toBeDefined();
 
   const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTestInput') as any;
   expect(updateInput).toBeDefined();
-  expect(updateInput.fields.length).toEqual(3);
+  expect(updateInput.fields.length).toEqual(4);
   expect(updateInput.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
   expect(updateInput.fields.find((f: any) => f.name.value === 'email')).toBeDefined();
-  expect(createInput.fields.find((f: any) => f.name.value === 'testOtherHalfId')).toBeDefined();
+  expect(updateInput.fields.find((f: any) => f.name.value === 'testOtherHalfId')).toBeDefined();
+  expect(updateInput.fields.find((f: any) => f.name.value === 'testOtherHalfEmail')).toBeDefined();
 });
 
 test('creates has one relationship with composite sort key.', () => {
@@ -376,8 +380,8 @@ test('@hasOne and @hasMany can point at each other if DataStore is not enabled',
       blog: Blog @hasOne
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -398,8 +402,8 @@ test('@hasOne and @hasOne can point at each other if DataStore is not enabled', 
       blog: Blog @hasOne
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasOneTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new HasOneTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -431,7 +435,7 @@ test('@hasOne and @hasMany cannot point at each other if DataStore is enabled', 
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError(
-    `Post and Blog cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.`,
+    'Post and Blog cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.',
   );
 });
 
@@ -457,7 +461,7 @@ test('@hasOne and @hasOne cannot point at each other if DataStore is enabled', (
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError(
-    `Blog and Post cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.`,
+    'Blog and Post cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.',
   );
 });
 
@@ -468,6 +472,7 @@ test('recursive @hasOne relationships are supported if DataStore is enabled', ()
       posts: Blog @hasOne
     }`;
   const transformer = new GraphQLTransform({
+    featureFlags,
     resolverConfig: {
       project: {
         ConflictDetection: 'VERSION',

@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -44,6 +45,9 @@ const directiveDefinition = `
   directive @${directiveName}(fields: [String!]) on FIELD_DEFINITION
 `;
 
+/**
+ * Transformer for @hasOne directive
+ */
 export class HasOneTransformer extends TransformerPluginBase {
   private directiveList: HasOneDirectiveConfiguration[] = [];
 
@@ -116,13 +120,14 @@ export class HasOneTransformer extends TransformerPluginBase {
   /**
    * During the prepare step, register any foreign keys that are renamed due to a model rename
    */
-  prepare = (context: TransformerPrepareStepContextProvider) => {
+  prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList.forEach(config => {
       registerHasOneForeignKeyMappings({
+        featureFlags: context.featureFlags,
         resourceHelper: context.resourceHelper,
         thisTypeName: config.object.name.value,
         thisFieldName: config.field.name.value,
-        relatedTypeName: config.relatedType.name.value,
+        relatedType: config.relatedType,
       });
     });
   };
@@ -145,7 +150,7 @@ export class HasOneTransformer extends TransformerPluginBase {
   };
 }
 
-function validate(config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void {
+const validate = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field } = config;
 
   ensureFieldsArray(config);
@@ -160,4 +165,4 @@ function validate(config: HasOneDirectiveConfiguration, ctx: TransformerContextP
   config.connectionFields = [];
   validateRelatedModelDirective(config);
   validateDisallowedDataStoreRelationships(config, ctx);
-}
+};

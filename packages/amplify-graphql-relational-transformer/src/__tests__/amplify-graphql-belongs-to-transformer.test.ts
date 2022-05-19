@@ -22,7 +22,7 @@ test('fails if @belongsTo was used on an object that is not a model type', () =>
     featureFlags,
   });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError(`@belongsTo must be on an @model object type field.`);
+  expect(() => transformer.transform(inputSchema)).toThrowError('@belongsTo must be on an @model object type field.');
 });
 
 test('fails if @belongsTo was used with a related type that is not a model', () => {
@@ -42,7 +42,7 @@ test('fails if @belongsTo was used with a related type that is not a model', () 
     featureFlags,
   });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError(`Object type Test1 must be annotated with @model.`);
+  expect(() => transformer.transform(inputSchema)).toThrowError('Object type Test1 must be annotated with @model.');
 });
 
 test('fails if the related type does not exist', () => {
@@ -121,8 +121,8 @@ test('fails if @belongsTo field does not match related type primary key', () => 
       test: Test @hasOne
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('email field is not of type ID');
@@ -143,8 +143,8 @@ test('fails if sort key type does not match related type sort key', () => {
       test: Test @hasOne
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('email field is not of type ID');
@@ -165,8 +165,8 @@ test('fails if partial sort key is provided', () => {
       test: Test @hasOne
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError(
@@ -191,8 +191,8 @@ test('accepts @belongsTo without a sort key', () => {
     `;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
   });
 
   expect(() => transformer.transform(inputSchema)).not.toThrowError();
@@ -275,8 +275,8 @@ test('creates belongs to relationship with implicit fields', () => {
       otherHalf2: Test @belongsTo
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -361,6 +361,7 @@ test('support for belongs to with Int fields', () => {
     }`;
 
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [
       new ModelTransformer(),
       new PrimaryKeyTransformer(),
@@ -368,7 +369,6 @@ test('support for belongs to with Int fields', () => {
       new HasManyTransformer(),
       new BelongsToTransformer(),
     ],
-    featureFlags,
   });
 
   const out = transformer.transform(inputSchema);

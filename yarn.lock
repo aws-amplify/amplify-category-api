@@ -4327,7 +4327,7 @@
 
 "@babel/runtime@^7.0.0", "@babel/runtime@^7.10.2", "@babel/runtime@^7.16.3", "@babel/runtime@^7.5.5", "@babel/runtime@^7.9.6":
   version "7.18.3"
-  resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.18.3.tgz#c7b654b57f6f63cf7f8b418ac9ca04408c4579f4"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.18.3.tgz#c7b654b57f6f63cf7f8b418ac9ca04408c4579f4"
   integrity sha512-38Y8f7YUhce/K7RMwTp7m0uCumpv9hZkitCbBClqQIow1qSbCvGkcegKOXpEWCQLfWmevgRiWokZ1GkpfhbZug==
   dependencies:
     regenerator-runtime "^0.13.4"
@@ -6743,9 +6743,9 @@ amplify-category-function@^4.0.3:
     promise-sequential "^1.1.1"
     uuid "^8.3.2"
 
-amplify-cli-core@2.9.0:
+amplify-cli-core@2.9.0, amplify-cli-core@^2.9.0:
   version "2.9.0"
-  resolved "https://registry.npmjs.org/amplify-cli-core/-/amplify-cli-core-2.9.0.tgz#6995bb17e45d0b8f3b7471300e78f950e9494f82"
+  resolved "https://registry.yarnpkg.com/amplify-cli-core/-/amplify-cli-core-2.9.0.tgz#6995bb17e45d0b8f3b7471300e78f950e9494f82"
   integrity sha512-9ScW1ahYT0hDIRMOu+rZ454ooo11dNFhH5UYQc6qTUbt12l3AsHDBTylwRSBH7hECd1xQiXqsdmMKhIUlZDtvw==
   dependencies:
     "@aws-amplify/graphql-transformer-core" "^0.17.2"
@@ -6774,7 +6774,7 @@ amplify-cli-core@2.9.0:
 
 amplify-cli-logger@1.2.0:
   version "1.2.0"
-  resolved "https://registry.npmjs.org/amplify-cli-logger/-/amplify-cli-logger-1.2.0.tgz#635d22732ac4a6e958d33038ca0b331cfc90e95c"
+  resolved "https://registry.yarnpkg.com/amplify-cli-logger/-/amplify-cli-logger-1.2.0.tgz#635d22732ac4a6e958d33038ca0b331cfc90e95c"
   integrity sha512-MidSMWUyWwPtqtkLvmlLe46P36AqY4TRFggoXuTk//wGtN1wfGCuwTI47aoyBhFoHYiXHRIyo/AXd/fLX8iJAQ==
   dependencies:
     winston "^3.3.3"
@@ -6782,7 +6782,7 @@ amplify-cli-logger@1.2.0:
 
 amplify-cli-shared-interfaces@1.1.0:
   version "1.1.0"
-  resolved "https://registry.npmjs.org/amplify-cli-shared-interfaces/-/amplify-cli-shared-interfaces-1.1.0.tgz#105c8645c50bb469272badf2501505793c3974de"
+  resolved "https://registry.yarnpkg.com/amplify-cli-shared-interfaces/-/amplify-cli-shared-interfaces-1.1.0.tgz#105c8645c50bb469272badf2501505793c3974de"
   integrity sha512-lN5Y4PfyY5SSCZLxRSfv3qhYYSEwEsFG9T+SbQIf05o6Yfim93Xy9f+1pAAlGc3f/HWjEqdegAH3HG496/BGeg==
 
 amplify-codegen@^3.0.0:

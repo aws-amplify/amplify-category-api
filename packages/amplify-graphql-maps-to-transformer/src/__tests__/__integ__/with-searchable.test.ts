@@ -3,6 +3,7 @@ import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
+import { featureFlags } from '../../../../amplify-graphql-auth-transformer/src/__tests__/test-helpers';
 
 const mappedSearchableSchema = /* GraphQL */ `
   type Agenda @model {
@@ -30,6 +31,7 @@ const mappedHasManyAndSearchableSchema = /* GraphQL */ `
 
 const transformSchema = (schema: string) => {
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [new ModelTransformer(), new HasManyTransformer(), new SearchableModelTransformer(), new MapsToTransformer()],
     sandboxModeEnabled: true,
   });
@@ -40,7 +42,7 @@ describe('mapsTo with searchable', () => {
   it('generates searchable resolvers with original index name', () => {
     const out = transformSchema(mappedSearchableSchema);
     const searchResolverLines = out.resolvers['Query.searchTodos.req.vtl'].split('\n');
-    expect(searchResolverLines[0]).toMatchInlineSnapshot(`"#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )"`);
+    expect(searchResolverLines[0]).toMatchInlineSnapshot('"#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )"');
     expect(searchResolverLines[1].startsWith('#set( $indexPath = "/task/_search" )')).toBe(true);
   });
 
@@ -50,7 +52,7 @@ describe('mapsTo with searchable', () => {
       Object.values(out.stacks.SearchableStack.Resources!).find(resource => resource.Type === 'AWS::Lambda::EventSourceMapping').Properties
         .EventSourceArn.Ref,
     ).toMatchInlineSnapshot(
-      `"referencetotransformerrootstackTaskNestedStackTaskNestedStackResource8AC104EFOutputstransformerrootstackTaskTaskTableD1773550StreamArn"`,
+      '"referencetotransformerrootstackTaskNestedStackTaskNestedStackResource8AC104EFOutputstransformerrootstackTaskTaskTableD1773550StreamArn"',
     );
   });
 

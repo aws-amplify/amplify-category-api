@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -11,8 +12,8 @@ import {
   DocumentNode,
   FieldDefinitionNode,
   InterfaceTypeDefinitionNode,
-  NamedTypeNode,
-  ObjectTypeDefinitionNode, ObjectTypeExtensionNode,
+  ObjectTypeDefinitionNode,
+  ObjectTypeExtensionNode,
 } from 'graphql';
 import { makeQueryConnectionWithKeyResolver, updateTableForConnection } from './resolvers';
 import { ensureHasManyConnectionField, extendTypeWithConnection } from './schema';
@@ -37,6 +38,9 @@ const directiveDefinition = `
   directive @${directiveName}(indexName: String, fields: [String!], limit: Int = ${defaultLimit}) on FIELD_DEFINITION
 `;
 
+/**
+ * Transformer for @hasMany directive
+ */
 export class HasManyTransformer extends TransformerPluginBase {
   private directiveList: HasManyDirectiveConfiguration[] = [];
 
@@ -98,10 +102,11 @@ export class HasManyTransformer extends TransformerPluginBase {
   prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList.forEach(config => {
       registerHasManyForeignKeyMappings({
+        featureFlags: context.featureFlags,
         resourceHelper: context.resourceHelper,
         thisTypeName: config.object.name.value,
         thisFieldName: config.field.name.value,
-        relatedTypeName: config.relatedType.name.value,
+        relatedType: config.relatedType,
       });
     });
   };
@@ -126,7 +131,7 @@ export class HasManyTransformer extends TransformerPluginBase {
   };
 }
 
-function validate(config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void {
+const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field } = config;
 
   ensureFieldsArray(config);
@@ -141,4 +146,4 @@ function validate(config: HasManyDirectiveConfiguration, ctx: TransformerContext
   config.connectionFields = [];
   validateRelatedModelDirective(config);
   validateDisallowedDataStoreRelationships(config, ctx);
-}
+};

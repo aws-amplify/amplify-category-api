@@ -1,13 +1,15 @@
 import assert from 'assert';
-import { makeModelSortDirectionEnumObject } from '@aws-amplify/graphql-model-transformer';
+import { generateModelScalarFilterInputName, makeModelSortDirectionEnumObject } from '@aws-amplify/graphql-model-transformer';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DirectiveNode,
   FieldDefinitionNode,
   InputObjectTypeDefinitionNode,
+  InputValueDefinitionNode,
   Kind,
   ListValueNode,
-  ObjectTypeDefinitionNode, ObjectTypeExtensionNode,
+  NamedTypeNode,
+  ObjectTypeDefinitionNode,
   StringValueNode,
 } from 'graphql';
 import {
@@ -30,13 +32,14 @@ import {
   toUpper,
   wrapNonNull,
 } from 'graphql-transformer-common';
+import { getSortKeyFieldNames } from '@aws-amplify/graphql-transformer-core/lib/utils/schema-utils';
 import {
   BelongsToDirectiveConfiguration,
   HasManyDirectiveConfiguration,
   HasOneDirectiveConfiguration,
   ManyToManyDirectiveConfiguration,
 } from './types';
-import { getConnectionAttributeName } from './utils';
+import { getConnectionAttributeName, getObjectPrimaryKey, getSortKeyConnectionAttributeName } from './utils';
 
 /**
  * extendTypeWithConnection
@@ -122,47 +125,85 @@ const ensureModelSortDirectionEnum = (ctx: TransformerContextProvider): void => 
  * ensureHasOneConnectionField
  */
 export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-  const { field, fieldNodes, object } = config;
+  const {
+    field, fieldNodes, object, relatedType,
+  } = config;
 
   // If fields were explicitly provided to the directive, there is nothing else to do here.
   if (fieldNodes.length > 0) {
     return;
   }
 
-  const connectionAttributeName = getConnectionAttributeName(object.name.value, field.name.value);
+  const primaryKeyField = getObjectPrimaryKey(relatedType);
+  const connectionAttributeName = getConnectionAttributeName(
+    ctx.featureFlags,
+    object.name.value,
+    field.name.value,
+    primaryKeyField.name.value,
+  );
+  const sortKeyFields = getSortKeyFields(ctx, relatedType);
+  const primaryKeyConnectionFieldType = getPrimaryKeyConnectionFieldType(ctx, primaryKeyField);
 
   const typeObject = ctx.output.getType(object.name.value) as ObjectTypeDefinitionNode;
   if (typeObject) {
-    const updated = updateTypeWithConnectionField(typeObject, connectionAttributeName, isNonNullType(field.type));
-    ctx.output.putType(updated);
+    updateTypeWithConnectionFields(
+      ctx,
+      typeObject,
+      object,
+      connectionAttributeName,
+      primaryKeyConnectionFieldType,
+      field,
+      sortKeyFields,
+    );
   }
 
   const createInputName = ModelResourceIDs.ModelCreateInputObjectName(object.name.value);
   const createInput = ctx.output.getType(createInputName) as InputObjectTypeDefinitionNode;
 
   if (createInput) {
-    ctx.output.putType(updateInputWithConnectionField(createInput, connectionAttributeName, isNonNullType(field.type)));
+    updateInputWithConnectionFields(ctx, createInput, object, connectionAttributeName, primaryKeyConnectionFieldType, field, sortKeyFields);
   }
 
   const updateInputName = ModelResourceIDs.ModelUpdateInputObjectName(object.name.value);
   const updateInput = ctx.output.getType(updateInputName) as InputObjectTypeDefinitionNode;
-
   if (updateInput) {
-    ctx.output.putType(updateInputWithConnectionField(updateInput, connectionAttributeName));
+    updateInputWithConnectionFields(ctx, updateInput, object, connectionAttributeName, primaryKeyConnectionFieldType, field, sortKeyFields);
   }
 
   const filterInputName = toPascalCase(['Model', object.name.value, 'FilterInput']);
   const filterInput = ctx.output.getType(filterInputName) as InputObjectTypeDefinitionNode;
   if (filterInput) {
-    ctx.output.putType(updateFilterConnectionInputWithConnectionField(filterInput, connectionAttributeName));
+    updateConnectionInputWithConnectionFields(
+      ctx,
+      filterInput,
+      object,
+      connectionAttributeName,
+      primaryKeyConnectionFieldType,
+      field,
+      sortKeyFields,
+    );
   }
 
   const conditionInputName = toPascalCase(['Model', object.name.value, 'ConditionInput']);
   const conditionInput = ctx.output.getType(conditionInputName) as InputObjectTypeDefinitionNode;
   if (conditionInput) {
-    ctx.output.putType(updateFilterConnectionInputWithConnectionField(conditionInput, connectionAttributeName));
+    updateConnectionInputWithConnectionFields(
+      ctx,
+      conditionInput,
+      object,
+      connectionAttributeName,
+      primaryKeyConnectionFieldType,
+      field,
+      sortKeyFields,
+    );
   }
+
   config.connectionFields.push(connectionAttributeName);
+  config.connectionFields.push(
+    ...getSortKeyFieldNames(relatedType).map(
+      it => getSortKeyConnectionAttributeName(ctx.featureFlags, object.name.value, field.name.value, it),
+    ),
+  );
 };
 
 /**
@@ -177,7 +218,15 @@ export const ensureBelongsToConnectionField = (config: BelongsToDirectiveConfigu
     ensureHasOneConnectionField(config, ctx);
   } else {
     // hasMany
-    config.connectionFields.push(getConnectionAttributeName(relatedType.name.value, relatedField.name.value));
+    const primaryKeyField = getObjectPrimaryKey(relatedType);
+    config.connectionFields.push(
+      getConnectionAttributeName(ctx.featureFlags, relatedType.name.value, relatedField.name.value, primaryKeyField.name.value),
+    );
+    config.connectionFields.push(
+      ...getSortKeyFieldNames(relatedType).map(
+        it => getSortKeyConnectionAttributeName(ctx.featureFlags, relatedType.name.value, relatedField.name.value, it),
+      ),
+    );
   }
 };
 
@@ -197,115 +246,123 @@ export const ensureHasManyConnectionField = (
     return;
   }
 
-  const connectionAttributeName = getConnectionAttributeName(object.name.value, field.name.value);
+  const sortKeyFields = getSortKeyFields(ctx, object);
+
+  const primaryKeyField = getObjectPrimaryKey(object);
+  const connectionFieldName = primaryKeyField.name.value;
+  config.connectionFields.push(
+    connectionFieldName,
+    ...sortKeyFields.map(it => getSortKeyConnectionAttributeName(ctx.featureFlags, object.name.value, field.name.value, it.name.value)),
+  );
 
   const relatedTypeObject = ctx.output.getType(relatedType.name.value) as ObjectTypeDefinitionNode;
+  const connectionAttributeName = getConnectionAttributeName(ctx.featureFlags, object.name.value, field.name.value, connectionFieldName);
+
+  const primaryKeyConnectionFieldType = getPrimaryKeyConnectionFieldType(ctx, primaryKeyField);
   if (relatedTypeObject) {
-    ctx.output.putType(updateTypeWithConnectionField(relatedTypeObject, connectionAttributeName, isNonNullType(field.type)));
+    updateTypeWithConnectionFields(
+      ctx,
+      relatedTypeObject,
+      object,
+      connectionAttributeName,
+      primaryKeyConnectionFieldType,
+      field,
+      sortKeyFields,
+    );
   }
 
   const createInputName = ModelResourceIDs.ModelCreateInputObjectName(relatedType.name.value);
   const createInput = ctx.output.getType(createInputName) as InputObjectTypeDefinitionNode;
 
   if (createInput) {
-    ctx.output.putType(updateInputWithConnectionField(createInput, connectionAttributeName, isNonNullType(field.type)));
+    updateInputWithConnectionFields(ctx, createInput, object, connectionAttributeName, primaryKeyConnectionFieldType, field, sortKeyFields);
   }
 
   const updateInputName = ModelResourceIDs.ModelUpdateInputObjectName(relatedType.name.value);
   const updateInput = ctx.output.getType(updateInputName) as InputObjectTypeDefinitionNode;
 
   if (updateInput) {
-    ctx.output.putType(updateInputWithConnectionField(updateInput, connectionAttributeName));
+    updateInputWithConnectionFields(ctx, updateInput, object, connectionAttributeName, primaryKeyConnectionFieldType, field, sortKeyFields);
   }
 
   const filterInputName = toPascalCase(['Model', relatedType.name.value, 'FilterInput']);
   const filterInput = ctx.output.getType(filterInputName) as InputObjectTypeDefinitionNode;
   if (filterInput) {
-    ctx.output.putType(updateFilterConnectionInputWithConnectionField(filterInput, connectionAttributeName));
+    updateConnectionInputWithConnectionFields(
+      ctx,
+      filterInput,
+      object,
+      connectionAttributeName,
+      primaryKeyConnectionFieldType,
+      field,
+      sortKeyFields,
+    );
   }
 
   const conditionInputName = toPascalCase(['Model', relatedType.name.value, 'ConditionInput']);
   const conditionInput = ctx.output.getType(conditionInputName) as InputObjectTypeDefinitionNode;
   if (conditionInput) {
-    ctx.output.putType(updateFilterConnectionInputWithConnectionField(conditionInput, connectionAttributeName));
+    updateConnectionInputWithConnectionFields(
+      ctx,
+      conditionInput,
+      object,
+      connectionAttributeName,
+      primaryKeyConnectionFieldType,
+      field,
+      sortKeyFields,
+    );
   }
-
-  let connectionFieldName = 'id';
-
-  object.fields!.forEach(objectField => {
-    objectField.directives!.forEach(directive => {
-      if (directive.name.value === 'primaryKey') {
-        connectionFieldName = objectField.name.value;
-      }
-    });
-  });
-
-  config.connectionFields.push(connectionFieldName);
 };
 
-const updateTypeWithConnectionField = (
-  object: ObjectTypeDefinitionNode,
+const getTypeFieldsWithConnectionField = (
+  objectFields: FieldDefinitionNode[],
   connectionFieldName: string,
+  type: string,
   nonNull = false,
-): ObjectTypeDefinitionNode => {
-  const keyFieldExists = object.fields!.some(f => f.name.value === connectionFieldName);
+): FieldDefinitionNode[] => {
+  const keyFieldExists = objectFields.some(f => f.name.value === connectionFieldName);
 
   // If the key field already exists then do not change the input.
   if (keyFieldExists) {
-    return object;
+    return [];
   }
 
-  const updatedFields = [
-    ...object.fields!,
-    makeField(connectionFieldName, [], nonNull ? makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), []),
-  ];
-
-  return {
-    ...object,
-    fields: updatedFields,
-  };
+  return [makeField(connectionFieldName, [], nonNull ? makeNonNullType(makeNamedType(type)) : makeNamedType(type), [])];
 };
 
-const updateInputWithConnectionField = (
-  input: InputObjectTypeDefinitionNode,
+const getInputFieldsWithConnectionField = (
+  inputFields: InputValueDefinitionNode[],
   connectionFieldName: string,
+  type: string,
   nonNull = false,
-): InputObjectTypeDefinitionNode => {
-  const keyFieldExists = input.fields!.some(f => f.name.value === connectionFieldName);
+): InputValueDefinitionNode[] => {
+  const keyFieldExists = inputFields.some(f => f.name.value === connectionFieldName);
 
   // If the key field already exists then do not change the input.
   if (keyFieldExists) {
-    return input;
+    return [];
   }
 
-  const updatedFields = [
-    ...input.fields!,
-    makeInputValueDefinition(connectionFieldName, nonNull ? makeNonNullType(makeNamedType('ID')) : makeNamedType('ID')),
-  ];
-
-  return {
-    ...input,
-    fields: updatedFields,
-  };
+  return [makeInputValueDefinition(connectionFieldName, nonNull ? makeNonNullType(makeNamedType(type)) : makeNamedType(type))];
 };
 
-const updateFilterConnectionInputWithConnectionField = (
-  input: InputObjectTypeDefinitionNode,
+const getFilterConnectionInputFieldsWithConnectionField = (
+  inputFields: InputValueDefinitionNode[],
   connectionFieldName: string,
-): InputObjectTypeDefinitionNode => {
-  const keyFieldExists = input.fields!.some(f => f.name.value === connectionFieldName);
+  type: string,
+): InputValueDefinitionNode[] => {
+  const keyFieldExists = inputFields.some(f => f.name.value === connectionFieldName);
 
   // If the key field already exists then do not change the input.
   if (keyFieldExists) {
-    return input;
+    return [];
   }
 
-  const updatedFields = [...input.fields!, makeInputValueDefinition(connectionFieldName, makeNamedType('ModelIDInput'))];
-
-  return {
-    ...input,
-    fields: updatedFields,
-  };
+  return [
+    makeInputValueDefinition(
+      connectionFieldName,
+      makeNamedType(type),
+    )];
 };
 
 const makeModelConnectionField = (config: HasManyDirectiveConfiguration): FieldDefinitionNode => {
@@ -389,7 +446,7 @@ const makeModelXFilterInputObject = (
         kind: 'Name',
         value: 'and',
       },
-      type: makeListType(makeNamedType(name)) as any,
+      type: makeListType(makeNamedType(name)) as unknown as NamedTypeNode,
       directives: [],
     },
     {
@@ -398,7 +455,7 @@ const makeModelXFilterInputObject = (
         kind: 'Name',
         value: 'or',
       },
-      type: makeListType(makeNamedType(name)) as any,
+      type: makeListType(makeNamedType(name)) as unknown as NamedTypeNode,
       directives: [],
     },
     {
@@ -469,13 +526,109 @@ export const getSortKeyFieldsNoContext = (object: ObjectTypeDefinitionNode | Obj
   object.fields!.forEach(field => {
     field.directives!.forEach(directive => {
       if (directive.name.value === 'primaryKey') {
-        const values = directive.arguments?.find(arg => arg.name.value === 'sortKeyFields')?.value as ListValueNode;
+        const values = directive.arguments?.find(arg => arg.name.value === 'sortKeyFields')?.value as ListValueNode | StringValueNode;
         if (values) {
-          sortKeyFields.push(...values.values.map(val => fieldMap.get((val as StringValueNode).value)!));
+          switch (values.kind) {
+            case 'StringValue':
+              sortKeyFields.push(fieldMap.get(values.value)!);
+              break;
+            case 'ListValue':
+              sortKeyFields.push(...values.values.map(val => fieldMap.get((val as StringValueNode).value)!));
+              break;
+            default:
+              break;
+          }
         }
       }
     });
   });
 
   return sortKeyFields;
+};
+
+const getPrimaryKeyConnectionFieldType = (ctx: TransformerContextProvider, primaryKeyField: FieldDefinitionNode): string => (
+  ctx.featureFlags.getBoolean('useFieldNameForPrimaryKeyConnectionField') ? getBaseType(primaryKeyField.type) : 'ID'
+);
+
+const updateInputWithConnectionFields = (
+  ctx: TransformerContextProvider,
+  input: InputObjectTypeDefinitionNode,
+  object: ObjectTypeDefinitionNode,
+  connectionAttributeName: string,
+  primaryKeyConnectionFieldType: string,
+  field: FieldDefinitionNode,
+  sortKeyFields: FieldDefinitionNode[],
+): void => {
+  const updatedFields = [...input.fields!];
+  updatedFields.push(
+    ...getInputFieldsWithConnectionField(
+      updatedFields,
+      connectionAttributeName,
+      primaryKeyConnectionFieldType,
+      isNonNullType(field.type),
+    ),
+  );
+  sortKeyFields.forEach(it => {
+    updatedFields.push(...getInputFieldsWithConnectionField(updatedFields,
+      getSortKeyConnectionAttributeName(ctx.featureFlags, object.name.value, field.name.value, it.name.value),
+      getBaseType(it.type),
+      isNonNullType(field.type)));
+  });
+  ctx.output.putType({
+    ...input,
+    fields: updatedFields,
+  });
+};
+
+const updateConnectionInputWithConnectionFields = (
+  ctx: TransformerContextProvider,
+  input: InputObjectTypeDefinitionNode,
+  object: ObjectTypeDefinitionNode,
+  connectionAttributeName: string,
+  primaryKeyConnectionFieldType: string,
+  field: FieldDefinitionNode,
+  sortKeyFields: FieldDefinitionNode[],
+): void => {
+  const updatedFields = [...input.fields!];
+  updatedFields.push(
+    ...getFilterConnectionInputFieldsWithConnectionField(
+      updatedFields,
+      connectionAttributeName,
+      generateModelScalarFilterInputName(primaryKeyConnectionFieldType, false),
+    ),
+  );
+  sortKeyFields.forEach(it => {
+    updatedFields.push(...getFilterConnectionInputFieldsWithConnectionField(updatedFields,
+      getSortKeyConnectionAttributeName(ctx.featureFlags, object.name.value, field.name.value, it.name.value),
+      generateModelScalarFilterInputName(getBaseType(it.type), false)));
+  });
+  ctx.output.putType({
+    ...input,
+    fields: updatedFields,
+  });
+};
+
+const updateTypeWithConnectionFields = (
+  ctx: TransformerContextProvider,
+  targetObject: ObjectTypeDefinitionNode,
+  object: ObjectTypeDefinitionNode,
+  connectionAttributeName: string,
+  primaryKeyConnectionFieldType: string,
+  field: FieldDefinitionNode,
+  sortKeyFields: FieldDefinitionNode[],
+): void => {
+  const updatedFields = [...targetObject.fields!];
+  updatedFields.push(
+    ...getTypeFieldsWithConnectionField(updatedFields, connectionAttributeName, primaryKeyConnectionFieldType, isNonNullType(field.type)),
+  );
+  sortKeyFields.forEach(it => {
+    updatedFields.push(...getTypeFieldsWithConnectionField(updatedFields,
+      getSortKeyConnectionAttributeName(ctx.featureFlags, object.name.value, field.name.value, it.name.value),
+      getBaseType(it.type),
+      isNonNullType(field.type)));
+  });
+  ctx.output.putType({
+    ...targetObject,
+    fields: updatedFields,
+  });
 };

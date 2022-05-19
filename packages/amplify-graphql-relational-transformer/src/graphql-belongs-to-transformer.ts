@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -35,6 +36,9 @@ const directiveDefinition = `
   directive @${directiveName}(fields: [String!]) on FIELD_DEFINITION
 `;
 
+/**
+ * Transformer for @belongsTo directive
+ */
 export class BelongsToTransformer extends TransformerPluginBase {
   private directiveList: BelongsToDirectiveConfiguration[] = [];
 
@@ -101,16 +105,17 @@ export class BelongsToTransformer extends TransformerPluginBase {
   /**
    * During the prepare step, register any foreign keys that are renamed due to a model rename
    */
-  prepare = (context: TransformerPrepareStepContextProvider) => {
+  prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList
       .filter(config => config.relationType === 'hasOne')
       .forEach(config => {
         // a belongsTo with hasOne behaves the same as hasOne
         registerHasOneForeignKeyMappings({
+          featureFlags: context.featureFlags,
           resourceHelper: context.resourceHelper,
           thisTypeName: config.object.name.value,
           thisFieldName: config.field.name.value,
-          relatedTypeName: config.relatedType.name.value,
+          relatedType: config.relatedType,
         });
       });
   };
@@ -133,7 +138,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
   };
 }
 
-function validate(config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void {
+const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field, object } = config;
 
   ensureFieldsArray(config);
@@ -148,7 +153,7 @@ function validate(config: BelongsToDirectiveConfiguration, ctx: TransformerConte
   config.connectionFields = [];
   validateRelatedModelDirective(config);
 
-  const isBidiRelation = config.relatedType.fields!.some(relatedField => {
+  const isBiRelation = config.relatedType.fields!.some(relatedField => {
     if (getBaseType(relatedField.type) !== object.name.value) {
       return false;
     }
@@ -163,9 +168,9 @@ function validate(config: BelongsToDirectiveConfiguration, ctx: TransformerConte
     });
   });
 
-  if (!isBidiRelation) {
+  if (!isBiRelation) {
     throw new InvalidDirectiveError(
       `${config.relatedType.name.value} must have a relationship with ${object.name.value} in order to use @${directiveName}.`,
     );
   }
-}
+};

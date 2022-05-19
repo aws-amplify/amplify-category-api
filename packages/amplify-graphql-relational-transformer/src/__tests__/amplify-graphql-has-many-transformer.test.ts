@@ -248,8 +248,8 @@ test('has many query case', () => {
       email: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -285,8 +285,8 @@ test('bidirectional has many query case', () => {
       posts: [Post] @hasMany(indexName: "byOwner", fields: ["id"])
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer(), new BelongsToTransformer(), new HasManyTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new IndexTransformer(), new BelongsToTransformer(), new HasManyTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -376,8 +376,8 @@ test('has many query with a composite sort key passed in as an argument', () => 
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -423,8 +423,8 @@ test('many to many query', () => {
     }`;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer(), new HasOneTransformer(), new HasManyTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new IndexTransformer(), new HasOneTransformer(), new HasManyTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -446,8 +446,8 @@ test('has many with implicit index and fields', () => {
       content: String
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasManyTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new HasManyTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -495,8 +495,8 @@ test('has many with implicit index and fields and a user-defined primary key', (
       content: String
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -557,8 +557,8 @@ test('the limit of 100 is used by default', () => {
       content: String
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasManyTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new HasManyTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -581,8 +581,8 @@ test('the default limit argument can be overridden', () => {
       content: String
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasManyTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new HasManyTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -653,6 +653,7 @@ test('validates VTL of a complex schema', () => {
         post: Post @hasOne(fields: ["postID"])
     }`;
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [
       new ModelTransformer(),
       new PrimaryKeyTransformer(),
@@ -661,7 +662,6 @@ test('validates VTL of a complex schema', () => {
       new HasManyTransformer(),
       new BelongsToTransformer(),
     ],
-    featureFlags,
   });
 
   const out = transformer.transform(inputSchema);
@@ -683,8 +683,8 @@ test('@hasMany and @hasMany can point at each other if DataStore is not enabled'
       blog: [Blog] @hasMany
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasManyTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new HasManyTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -705,6 +705,7 @@ test('@hasMany and @hasMany cannot point at each other if DataStore is enabled',
       blog: [Blog] @hasMany
     }`;
   const transformer = new GraphQLTransform({
+    featureFlags,
     resolverConfig: {
       project: {
         ConflictDetection: 'VERSION',
@@ -712,7 +713,6 @@ test('@hasMany and @hasMany cannot point at each other if DataStore is enabled',
       },
     },
     transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
-    featureFlags,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError(
@@ -727,6 +727,7 @@ test('recursive @hasMany relationships are supported if DataStore is enabled', (
       posts: [Blog] @hasMany
     }`;
   const transformer = new GraphQLTransform({
+    featureFlags,
     resolverConfig: {
       project: {
         ConflictDetection: 'VERSION',
@@ -734,7 +735,6 @@ test('recursive @hasMany relationships are supported if DataStore is enabled', (
       },
     },
     transformers: [new ModelTransformer(), new HasManyTransformer()],
-    featureFlags,
   });
 
   const out = transformer.transform(inputSchema);
@@ -753,8 +753,8 @@ test('has many with queries null generate correct filter input objects for scala
       strings: [String]
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -789,8 +789,8 @@ test('has many with queries null generate correct filter input objects for enum 
       closed
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasManyTransformer()],
     featureFlags,
+    transformers: [new ModelTransformer(), new HasManyTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
