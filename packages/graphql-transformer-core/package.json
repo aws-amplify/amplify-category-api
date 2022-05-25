@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "test": "jest",
-    "build": "tsc",
+    "build": "rimraf ./lib ./tsconfig.tsbuildinfo && tsc",
     "watch": "tsc -w",
     "clean": "rimraf ./lib"
   },
