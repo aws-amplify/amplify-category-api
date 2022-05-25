@@ -27,9 +27,8 @@ import {
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
-import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces/lib/transformer-context/transformer-context-provider';
+import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import produce from 'immer';
-import { Field } from '@aws-cdk/aws-appsync';
 import { WritableDraft } from 'immer/dist/types/types-external';
 
 const directiveName = 'hasMany';
@@ -67,7 +66,7 @@ export class HasManyTransformer extends TransformerPluginBase {
   /** During the preProcess step, modify the document node and return it
    * so that it represents any schema modifications the plugin needs
    */
-  preProcess = (context: TransformerPreProcessContextProvider): DocumentNode => {
+  mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
     const resultDoc: DocumentNode = produce(context.inputDocument, draftDoc => {
       const connectingFieldsMap = new Map<string, WritableDraft<FieldDefinitionNode>>(); // key: type name | value: connecting field
       // First iteration builds a map of the hasMany connecting fields that need to exist, second iteration ensures they exist

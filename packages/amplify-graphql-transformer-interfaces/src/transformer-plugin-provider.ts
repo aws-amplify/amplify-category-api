@@ -10,7 +10,7 @@ import {
   InputValueDefinitionNode,
   EnumValueDefinitionNode,
   DirectiveDefinitionNode,
-  TypeDefinitionNode,
+  TypeDefinitionNode, DocumentNode,
 } from 'graphql';
 import {
   TransformerBeforeStepContextProvider,
@@ -18,8 +18,9 @@ import {
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerValidationStepContextProvider,
-  TransformerTransformSchemaStepContextProvider, TransformerPreProcessContextProvider,
+  TransformerTransformSchemaStepContextProvider,
 } from './transformer-context/transformer-context-provider';
+import { TransformerPreProcessContextProvider } from './transformer-context';
 
 export enum TransformerPluginType {
   DATA_SOURCE_PROVIDER = 'DATA_SOURCE_PROVIDER',
@@ -37,14 +38,22 @@ export interface TransformerPluginProvider {
   typeDefinitions: TypeDefinitionNode[];
 
   /**
-   * A processing step executed prior to and separate from transformation.
+   * The first method call in the pre-processing lifecycle giving opportunity
+   * to build metadata prior to the mutation step which returns a mutated
+   * schema
+   * @param context
+   */
+  preMutateSchema?: (context: TransformerPreProcessContextProvider) => void;
+
+  /**
+   * A pre-processing step executed prior to and separate from transformation.
    * This method is used by plugins to make any necessary schema modifications
    * before processing is done. This allows external sources to make necessary
    * schema modifications without adding all the other transformation logic
-   * @param context the context provider with the document and feature flags
+   * @param context Pre processing context provider
    * @returns DocumentNode returns a modified GraphQL DocumentNode
    */
-  preProcess?: (context: TransformerPreProcessContextProvider) => void;
+  mutateSchema?: (context: TransformerPreProcessContextProvider) => DocumentNode;
 
   /**
    * An initializer that is called once at the beginning of a transformation.

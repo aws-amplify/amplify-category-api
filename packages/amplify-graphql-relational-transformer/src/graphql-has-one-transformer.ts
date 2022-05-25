@@ -36,7 +36,7 @@ import {
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
-import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces/lib/transformer-context/transformer-context-provider';
+import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { WritableDraft } from 'immer/dist/types/types-external';
 
 const directiveName = 'hasOne';
@@ -72,8 +72,8 @@ export class HasOneTransformer extends TransformerPluginBase {
   /** During the preProcess step, modify the document node and return it
    * so that it represents any schema modifications the plugin needs
    */
-  preProcess = (context: TransformerPreProcessContextProvider): DocumentNode => {
-    const document = produce(context.inputDocument, draftDoc => {
+  mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
+    const document: DocumentNode = produce(context.inputDocument, draftDoc => {
       draftDoc.definitions.forEach(def => {
         if (def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') {
           def?.fields?.forEach(field => {

@@ -4,9 +4,10 @@ import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-in
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { DocumentNode, ObjectTypeDefinitionNode, parse } from 'graphql';
+import { DirectiveNode, DocumentNode, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { HasOneTransformer, ManyToManyTransformer } from '..';
 import { featureFlags } from './test-helpers';
+import { getBaseType } from 'graphql-transformer-common';
 
 jest.mock('amplify-prompts');
 
@@ -428,6 +429,174 @@ test('creates join table with implicitly defined primary keys', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
+});
+
+describe('Pre Processing Many To Many Tests', () => {
+  let transformer: GraphQLTransform;
+  const hasGeneratedField = (doc: DocumentNode, objectType: string, fieldName: string, fieldType?: string, isList?: boolean): boolean => {
+    let hasField = false;
+    doc?.definitions?.forEach(def => {
+      if ((def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') && def.name.value === objectType) {
+        def?.fields?.forEach(field => {
+          if (field.name.value === fieldName) {
+            hasField = true;
+            if (isList != null && field.type.kind === 'ListType') {
+              hasField = hasField && true;
+            }
+            if (fieldType && getBaseType(field.type) === fieldType) {
+              hasField = hasField && true;
+            }
+          }
+        });
+      }
+    });
+    return hasField;
+  };
+
+  const hasGeneratedDirective = (
+      doc: DocumentNode,
+      objectType: string,
+      fieldName: string | undefined,
+      dirName: string,
+      args: Map<string, string | Array<string>> | undefined
+    ): boolean => {
+    let matchesExpected = false;
+    // This is only written to support the string and string list arguments of the relational directives
+    const checkDirective = (dir: DirectiveNode, args: Map<string, string | Array<string>> | undefined): boolean => {
+      if (!args && !dir.arguments) {
+        return true;
+      }
+      dir?.arguments?.forEach(arg => {
+        if (arg.value.kind === 'StringValue') {
+          if (args?.get(arg.name.value) === arg.value.value) {
+            args?.delete(arg.name.value);
+          }
+        }
+        else if (arg.value.kind === 'ListValue') {
+          const stringValues = args?.get(arg.name.value);
+          let fullMatch = true;
+          arg.value.values.forEach((val, idx) => {
+            if (val.kind != 'StringValue' || val.value != stringValues?.[idx]) {
+              fullMatch = false;
+            }
+          });
+          if (fullMatch) {
+            args?.delete(arg.name.value);
+          }
+        }
+      });
+
+      if (args?.size && args?.size > 0) {
+        return false;
+      }
+      return true;
+    };
+
+    doc?.definitions?.forEach(def => {
+      if ((def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') && def.name.value === objectType) {
+        if (fieldName) {
+          def?.fields?.forEach(field => {
+            field?.directives?.forEach(dir => {
+              if (dir.name.value === dirName) {
+                matchesExpected = matchesExpected ? true : checkDirective(dir, args);
+              }
+            });
+          });
+        }
+        else {
+          def?.directives?.forEach(dir => {
+            if (dir.name.value === dirName) {
+              matchesExpected = matchesExpected ? true : checkDirective(dir, args);
+            }
+          });
+        }
+      }
+    });
+    return matchesExpected;
+  };
+
+  beforeEach(() => {
+    transformer = createTransformer()
+  });
+
+  test('Should generate intermediate model in standard case with all fields', () => {
+    const schema = `
+    type Recipe @model {
+      id: ID!
+      recipeName: String
+      ingredients: [Ingredient] @manyToMany(relationName: "RecipeIngredients")
+    }
+    
+    type Ingredient @model {
+      id: ID!
+      ingredientName: String
+      recipes: [Recipe] @manyToMany(relationName: "RecipeIngredients")
+    }
+    `;
+
+    const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+    expect(hasGeneratedField(updatedSchemaDoc, 'RecipeIngredients', 'id')).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, 'RecipeIngredients', 'recipeID')).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, 'RecipeIngredients', 'ingredientID')).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, 'RecipeIngredients', 'recipe')).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, 'RecipeIngredients', 'ingredient')).toBeTruthy();
+  });
+
+  test('Should generate hasMany directives on source types', () => {
+    const schema = `
+    type Recipe @model {
+      id: ID!
+      recipeName: String
+      ingredients: [Ingredient] @manyToMany(relationName: "RecipeIngredients")
+    }
+    
+    type Ingredient @model {
+      id: ID!
+      ingredientName: String
+      recipes: [Recipe] @manyToMany(relationName: "RecipeIngredients")
+    }
+    `;
+
+    const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+    const hasManyIngredientsMap = new Map<string, string | Array<string>>([
+      ["indexName", "byRecipe"],
+      ["fields", ["id"]],
+    ]);
+    const hasManyRecipesMap = new Map<string, string | Array<string>>([
+      ["indexName", "byIngredient"],
+      ["fields", ["id"]],
+    ]);
+    expect(hasGeneratedDirective(updatedSchemaDoc, "Recipe", "ingredients", "hasMany", hasManyIngredientsMap)).toBeTruthy();
+    expect(hasGeneratedDirective(updatedSchemaDoc, "Ingredient", "recipes", "hasMany", hasManyRecipesMap)).toBeTruthy();
+  });
+
+  test('Should generate correct index directives for sort keys', () => {
+    const schema = `
+    type Recipe @model {
+      id: ID! @primaryKey(sortKeyFields: ["recipeName"])
+      recipeName: String
+      ingredients: [Ingredient] @manyToMany(relationName: "RecipeIngredients")
+    }
+    
+    type Ingredient @model {
+      id: ID! @primaryKey(sortKeyFields: ["ingredientName"])
+      ingredientName: String
+      recipes: [Recipe] @manyToMany(relationName: "RecipeIngredients")
+    }
+    `;
+
+    const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+    const hasManyIngredientsMap = new Map<string, string | Array<string>>([
+      ["indexName", "byRecipe"],
+      ["fields", ["id", "recipeName"]],
+    ]);
+    const hasManyRecipesMap = new Map<string, string | Array<string>>([
+      ["indexName", "byIngredient"],
+      ["fields", ["id", "ingredientName"]],
+    ]);
+    expect(hasGeneratedDirective(updatedSchemaDoc, "Recipe", "ingredients", "hasMany", hasManyIngredientsMap)).toBeTruthy();
+    expect(hasGeneratedDirective(updatedSchemaDoc, "Ingredient", "recipes", "hasMany", hasManyRecipesMap)).toBeTruthy();
+  });
 });
 
 function createTransformer(authConfig?: AppSyncAuthConfiguration) {

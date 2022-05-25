@@ -4,12 +4,14 @@ import { ModelResourceIDs } from 'graphql-transformer-common';
 import md5 from 'md5';
 import { ModelFieldMapImpl } from './model-field-map';
 import { StackManager } from './stack-manager';
+import { DirectiveNode, FieldNode, ObjectTypeDefinitionNode, ObjectTypeExtensionNode } from 'graphql';
 
 /**
  * Contains helper methods for transformers to access and compile context about resource generation
  */
 export class TransformerResourceHelper implements TransformerResourceHelperProvider {
   private api?: GraphQLAPIProvider;
+  private exclusionSet = new Set<string>();
 
   // a mapping of models that have been renamed with @mapsTo
   readonly #modelNameMap = new Map<string, string>();
@@ -106,6 +108,35 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
    */
   getModelFieldMapKeys = () => [...this.#modelFieldMaps.keys()];
 
+  /**
+   * In some cases a directive may be added to a schema during preprocessing for the sake of external use, but should be ignored by the
+   * transformer itself. This method is used to define a specific instance/configuration of a directive that should be ignored during
+   * the transformation process
+   * @param object the parent object of the directive (whether directive is on field or type)
+   * @param field the field the directive is on (if the directive is on a field)
+   * @param directive the directive
+   */
+  addDirectiveConfigExclusion = (
+      object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
+      field: FieldNode | undefined,
+      directive: DirectiveNode): void => {
+    this.exclusionSet.add(this.convertDirectiveConfigToKey(object, field, directive));
+  };
+
+  /**
+   * In the cases where a directive configuration is excluded, this method returns true
+   * @param object the parent object of the directive (whether directive is on field or type)
+   * @param field the field the directive is on (if the directive is on a field)
+   * @param directive the directive
+   * @return boolean true if the configuration has been excluded
+   */
+  isDirectiveConfigExcluded = (
+      object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
+      field: FieldNode | undefined,
+      directive: DirectiveNode): boolean => {
+    return this.exclusionSet.has(this.convertDirectiveConfigToKey(object, field, directive));
+  };
+
   private ensureEnv = (): void => {
     if (!this.stackManager.getParameter('env')) {
       this.stackManager.addParameter('env', {
@@ -114,4 +145,14 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
       });
     }
   };
+
+  private convertDirectiveConfigToKey = (
+      object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
+      field: FieldNode | undefined,
+      directive: DirectiveNode): string => {
+    const argString = directive?.arguments?.map(arg => {
+      return `${arg?.name?.value}|${arg?.value?.kind === 'StringValue' || arg?.value?.kind === 'IntValue' || arg?.value?.kind === 'FloatValue' ? arg.value.value : 'NullValue'}`
+    })?.join('-');
+    return `${object.name.value}/${field?.name?.value ?? 'NullField'}/${directive.name.value}/${argString}`;
+  }
 }

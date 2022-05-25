@@ -56,7 +56,7 @@ import {
 } from './utils';
 import { validateAuthModes, validateModelSchema } from './validation';
 import { DocumentNode } from 'graphql/language';
-import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces/lib/transformer-context/transformer-context-provider';
+import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
@@ -143,17 +143,18 @@ export class GraphQLTransform {
    */
   public preProcessSchema(schema: DocumentNode): DocumentNode {
     let processedSchema = schema;
-    const createContext = (inputSchema: DocumentNode): TransformerPreProcessContextProvider => {
-      return {
-        inputDocument: inputSchema,
-        featureFlags: this.options.featureFlags,
-      } as TransformerPreProcessContextProvider;
-    };
-    let context = createContext(processedSchema);
+    let context = new TransformerPreProcessContext(schema, this?.options?.featureFlags);
+
     this.transformers.forEach(transformer => {
-      if (isFunction(transformer.preProcess)) {
-        processedSchema = JSON.parse(JSON.stringify(transformer.preProcess(context)));
-        context = createContext(processedSchema);
+      if (isFunction(transformer.preMutateSchema)) {
+        transformer.preMutateSchema(context);
+      }
+    });
+
+    this.transformers.forEach(transformer => {
+      if (isFunction(transformer.mutateSchema)) {
+        processedSchema = JSON.parse(JSON.stringify(transformer.mutateSchema(context)));
+        context.inputDocument = processedSchema;
       }
     });
     return processedSchema;

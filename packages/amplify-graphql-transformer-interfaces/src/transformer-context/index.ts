@@ -16,4 +16,6 @@ export {
   TransformerSchemaVisitStepContextProvider,
   TransformerValidationStepContextProvider,
 } from './transformer-context-provider';
+export { TransformerSchemaHelperProvider } from './schema-helper-provider';
+export { TransformerPreProcessContextProvider } from './transformer-preprocess-context-provider';
 export { StackManagerProvider } from './stack-manager-provider';

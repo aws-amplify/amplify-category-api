@@ -7,7 +7,7 @@ import {
   InputObjectTypeDefinitionNode,
   Kind,
   ListValueNode,
-  ObjectTypeDefinitionNode,
+  ObjectTypeDefinitionNode, ObjectTypeExtensionNode,
   StringValueNode,
 } from 'graphql';
 import {
@@ -429,10 +429,14 @@ const makeModelXFilterInputObject = (
 export const getPartitionKeyField = (ctx: TransformerContextProvider, object: ObjectTypeDefinitionNode): FieldDefinitionNode => {
   const outputObject = ctx.output.getType(object.name.value) as ObjectTypeDefinitionNode;
   assert(outputObject);
+  return getPartitionKeyFieldNoContext(outputObject);
+};
+
+export const getPartitionKeyFieldNoContext = (object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode): FieldDefinitionNode => {
   const fieldMap = new Map<string, FieldDefinitionNode>();
   let name = 'id';
 
-  outputObject.fields!.forEach(field => {
+  object.fields!.forEach(field => {
     fieldMap.set(field.name.value, field);
 
     field.directives!.forEach(directive => {
@@ -443,7 +447,7 @@ export const getPartitionKeyField = (ctx: TransformerContextProvider, object: Ob
   });
 
   return fieldMap.get(name) ?? makeField('id', [], wrapNonNull(makeNamedType('ID')));
-};
+}
 
 /**
  * getSortKeyFields
@@ -451,14 +455,18 @@ export const getPartitionKeyField = (ctx: TransformerContextProvider, object: Ob
 export const getSortKeyFields = (ctx: TransformerContextProvider, object: ObjectTypeDefinitionNode): FieldDefinitionNode[] => {
   const outputObject = ctx.output.getType(object.name.value) as ObjectTypeDefinitionNode;
   assert(outputObject);
+  return getSortKeyFieldsNoContext(outputObject);
+};
+
+export const getSortKeyFieldsNoContext = (object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode): FieldDefinitionNode[] => {
   const fieldMap = new Map<string, FieldDefinitionNode>();
 
-  outputObject.fields!.forEach(field => {
+  object.fields!.forEach(field => {
     fieldMap.set(field.name.value, field);
   });
 
   const sortKeyFields: FieldDefinitionNode[] = [];
-  outputObject.fields!.forEach(field => {
+  object.fields!.forEach(field => {
     field.directives!.forEach(directive => {
       if (directive.name.value === 'primaryKey') {
         const values = directive.arguments?.find(arg => arg.name.value === 'sortKeyFields')?.value as ListValueNode;
@@ -470,4 +478,4 @@ export const getSortKeyFields = (ctx: TransformerContextProvider, object: Object
   });
 
   return sortKeyFields;
-};
+}

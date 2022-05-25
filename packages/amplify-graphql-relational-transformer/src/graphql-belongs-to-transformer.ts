@@ -26,7 +26,7 @@ import {
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
-import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces/lib/transformer-context/transformer-context-provider';
+import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
 
@@ -63,7 +63,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
   /** During the preProcess step, modify the document node and return it
    * so that it represents any schema modifications the plugin needs
    */
-  preProcess = (context: TransformerPreProcessContextProvider): DocumentNode => {
+  mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
     const resultDoc: DocumentNode = produce(context.inputDocument, draftDoc => {
       const objectTypeMap = new Map<string, WritableDraft<ObjectTypeDefinitionNode | ObjectTypeExtensionNode>>(); // key: type name | value: object type node
       // First iteration builds a map of the object types to reference for relation types

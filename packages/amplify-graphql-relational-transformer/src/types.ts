@@ -1,4 +1,5 @@
-import { DirectiveNode, FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import { DirectiveNode, FieldDefinitionNode, ObjectTypeDefinitionNode, ObjectTypeExtensionNode } from 'graphql';
+import { WritableDraft } from 'immer/dist/types/types-external';
 
 export type HasOneDirectiveConfiguration = {
   directiveName: string;
@@ -60,3 +61,12 @@ export type ManyToManyRelation = {
   directive1: ManyToManyDirectiveConfiguration;
   directive2: ManyToManyDirectiveConfiguration;
 };
+
+export type ManyToManyPreProcessContext = {
+  model: WritableDraft<ObjectTypeDefinitionNode> | WritableDraft<ObjectTypeExtensionNode>;
+  field: WritableDraft<FieldDefinitionNode>;
+  directive: WritableDraft<DirectiveNode>;
+  modelAuthDirectives: WritableDraft<DirectiveNode>[];
+  fieldAuthDirectives: WritableDraft<DirectiveNode>[];
+  relationName: string;
+}
