@@ -291,7 +291,7 @@ jobs:
       - run:
           name: Configure Amplify CLI
           command: |
-            yarn setup-dev && yarn rm-aa-dev-link && yarn link-aa-dev
+            yarn clean && yarn setup-dev && yarn rm-aa-dev-link && yarn link-aa-dev
             echo 'export PATH="$(yarn global bin):$PATH"' >> $BASH_ENV
             source $BASH_ENV
             amplify-dev --version
