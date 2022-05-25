@@ -366,7 +366,7 @@ export class GraphQLTransform {
     }
   };
 
-  private generateGraphQlApi(stackManager: StackManager, output: TransformerOutput) {
+  protected generateGraphQlApi(stackManager: StackManager, output: TransformerOutput): GraphQLApi {
     // Todo: Move this to its own transformer plugin to support modifying the API
     // Like setting the auth mode and enabling logging and such
 
@@ -389,10 +389,9 @@ export class GraphQLTransform {
       mode => mode?.authorizationType,
     );
 
-    if (
-      authModes.includes(AuthorizationType.API_KEY)
-      && !(this.buildParameters.CreateAPIKey && this.buildParameters.CreateAPIKey !== false)
-    ) {
+    const hasLegacyAPIKeyConfigDisabled = 'CreateAPIKey' in this.buildParameters && this.buildParameters.CreateAPIKey !== 1;
+
+    if (authModes.includes(AuthorizationType.API_KEY) && !hasLegacyAPIKeyConfigDisabled) {
       const apiKeyConfig: AuthorizationMode | undefined = [
         authorizationConfig.defaultAuthorization,
         ...(authorizationConfig.additionalAuthorizationModes || []),

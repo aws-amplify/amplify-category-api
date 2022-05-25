@@ -5,7 +5,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "url": "https://github.com/aws-amplify/amplify-category-api.git",
     "directory": "packages/graphql-transformers-e2e-tests"
   },
   "author": "Amazon Web Services",

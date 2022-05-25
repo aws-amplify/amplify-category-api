@@ -51,8 +51,8 @@ install_cli_from_local_registry: &install_cli_from_local_registry
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
-    npm install -g @aws-amplify/cli-internal@apiSplitM1Refresh3
-    npm install -g amplify-app@apiSplitM1
+    npm install -g @aws-amplify/cli-internal
+    npm install -g amplify-app
     echo "using Amplify CLI version: "$(amplify --version)
     echo "using amplify-app version: "$(amplify-app --version)
     unsetNpmRegistryUrl
@@ -395,8 +395,6 @@ workflows:
             branches:
               only:
                 - main
-                - api-split-m1-test
-                - api-split-m1
     jobs:
       - build
       - cleanup_resources:
@@ -432,8 +430,6 @@ workflows:
                 - main
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
-                - api-split-m1-test
-                - api-split-m1
           requires:
             - build
             - publish_to_local_registry
@@ -447,9 +443,6 @@ workflows:
                 - beta
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
-                - api-split-m1-test
-                - api-split-m1
-                - api-split-m1-staging
           requires:
             - build
       - publish_to_local_registry:
@@ -462,8 +455,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
                 - /run-e2e\/.*/
-                - api-split-m1-test
-                - api-split-m1
           requires:
             - build
       - amplify_e2e_tests:
@@ -477,8 +468,6 @@ workflows:
                 - main
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
-                - api-split-m1-test
-                - api-split-m1
           requires:
             - publish_to_local_registry
       - amplify_migration_tests_v6:
@@ -492,8 +481,6 @@ workflows:
                 - main
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
-                - api-split-m1-test
-                - api-split-m1
           requires:
             - publish_to_local_registry
             - integration_test
@@ -508,8 +495,6 @@ workflows:
                 - main
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
-                - api-split-m1-test
-                - api-split-m1
           requires:
             - publish_to_local_registry
             - integration_test
@@ -542,7 +527,6 @@ workflows:
                 - beta
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
-
 commands:
   install_yarn:
     description: "Install yarn dependency for windows"

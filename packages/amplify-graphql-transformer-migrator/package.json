@@ -4,7 +4,7 @@
   "description": "A tool for converting schemas from Amplify's V1 transformer to the V2 transformer",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "url": "https://github.com/aws-amplify/amplify-category-api.git",
     "directory": "packages/amplify-graphql-transformer-migrator"
   },
   "author": "Amazon Web Services",

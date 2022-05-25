@@ -4,7 +4,7 @@
   "description": "amplify cli plugin providing local testing",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "url": "https://github.com/aws-amplify/amplify-category-api.git",
     "directory": "packages/amplify-util-mock"
   },
   "author": "Amazon Web Services",
@@ -42,6 +42,7 @@
     "dotenv": "^8.2.0",
     "execa": "^5.1.1",
     "fs-extra": "^8.1.0",
+    "graphql-transformer-common": "^4.23.0",
     "inquirer": "^7.3.3",
     "lodash": "^4.17.21",
     "semver": "^7.3.5",
