@@ -440,8 +440,11 @@ describe('Pre Processing Many To Many Tests', () => {
         def?.fields?.forEach(field => {
           if (field.name.value === fieldName) {
             hasField = true;
-            if (isList != null && field.type.kind === 'ListType') {
+            if (isList === true && field.type.kind === 'ListType') {
               hasField = hasField && true;
+            }
+            if (isList === false && field.type.kind === 'ListType') {
+              hasField = false;
             }
             if (fieldType && getBaseType(field.type) === fieldType) {
               hasField = hasField && true;
@@ -570,7 +573,7 @@ describe('Pre Processing Many To Many Tests', () => {
     expect(hasGeneratedDirective(updatedSchemaDoc, "Ingredient", "recipes", "hasMany", hasManyRecipesMap)).toBeTruthy();
   });
 
-  test('Should generate correct index directives for sort keys', () => {
+  test('Should generate correct hasMany directives for sort keys', () => {
     const schema = `
     type Recipe @model {
       id: ID! @primaryKey(sortKeyFields: ["recipeName"])
@@ -596,6 +599,88 @@ describe('Pre Processing Many To Many Tests', () => {
     ]);
     expect(hasGeneratedDirective(updatedSchemaDoc, "Recipe", "ingredients", "hasMany", hasManyIngredientsMap)).toBeTruthy();
     expect(hasGeneratedDirective(updatedSchemaDoc, "Ingredient", "recipes", "hasMany", hasManyRecipesMap)).toBeTruthy();
+  });
+
+  test('Should generate correct index directives for sort keys', () => {
+    const schema = `
+    type Recipe @model {
+      id: ID! @primaryKey(sortKeyFields: ["recipeName"])
+      recipeName: String
+      ingredients: [Ingredient] @manyToMany(relationName: "RecipeIngredients")
+    }
+    
+    type Ingredient @model {
+      id: ID! @primaryKey(sortKeyFields: ["ingredientName"])
+      ingredientName: String
+      recipes: [Recipe] @manyToMany(relationName: "RecipeIngredients")
+    }
+    `;
+
+    const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+    const recipeIndexArgsMap = new Map<string, string | Array<string>>([
+      ["name", "byRecipe"],
+      ["sortKeyFields", ["reciperecipeName"]],
+    ]);
+    const ingredientIndexArgsMap = new Map<string, string | Array<string>>([
+      ["name", "byIngredient"],
+      ["sortKeyFields", ["ingredientingredientName"]],
+    ]);
+    expect(hasGeneratedDirective(updatedSchemaDoc, "RecipeIngredients", "recipeID", "index", recipeIndexArgsMap)).toBeTruthy();
+    expect(hasGeneratedDirective(updatedSchemaDoc, "RecipeIngredients", "ingredientID", "index", ingredientIndexArgsMap)).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, "RecipeIngredients", "reciperecipeName", "String"))
+    expect(hasGeneratedField(updatedSchemaDoc, "RecipeIngredients", "ingredientingredientName", "String"))
+  });
+
+  test('Should generate correct hasOne directives', () => {
+    const schema = `
+    type Recipe @model {
+      id: ID!
+      mealName: String
+      ingredients: [Ingredient] @manyToMany(relationName: "RecipeIngredients")
+    }
+    
+    type Ingredient @model {
+      id: ID!
+      componentName: String
+      recipes: [Recipe] @manyToMany(relationName: "RecipeIngredients")
+    }
+    `;
+
+    const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+    const recipeBelongsToArgsMap = new Map<string, string | Array<string>>([
+      ["fields", ["recipeID"]],
+    ]);
+    const ingredientBelongsToArgsMap = new Map<string, string | Array<string>>([
+      ["fields", ["ingredientID"]],
+    ]);
+    expect(hasGeneratedDirective(updatedSchemaDoc, "RecipeIngredients", "recipe", "hasOne", recipeBelongsToArgsMap)).toBeTruthy();
+    expect(hasGeneratedDirective(updatedSchemaDoc, "RecipeIngredients", "ingredient", "hasOne", ingredientBelongsToArgsMap)).toBeTruthy();
+  });
+
+  test('Should generate correct hasOne directives for sort key fields', () => {
+    const schema = `
+    type Recipe @model {
+      id: ID! @primaryKey(sortKeyFields: ["mealName"])
+      mealName: String
+      ingredients: [Ingredient] @manyToMany(relationName: "RecipeIngredients")
+    }
+    
+    type Ingredient @model {
+      id: ID! @primaryKey(sortKeyFields: ["componentName"])
+      componentName: String
+      recipes: [Recipe] @manyToMany(relationName: "RecipeIngredients")
+    }
+    `;
+
+    const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+    const recipeBelongsToArgsMap = new Map<string, string | Array<string>>([
+      ["fields", ["recipeID", "recipemealName"]],
+    ]);
+    const ingredientBelongsToArgsMap = new Map<string, string | Array<string>>([
+      ["fields", ["ingredientID", "ingredientcomponentName"]],
+    ]);
+    expect(hasGeneratedDirective(updatedSchemaDoc, "RecipeIngredients", "recipe", "hasOne", recipeBelongsToArgsMap)).toBeTruthy();
+    expect(hasGeneratedDirective(updatedSchemaDoc, "RecipeIngredients", "ingredient", "hasOne", ingredientBelongsToArgsMap)).toBeTruthy();
   });
 });
 
