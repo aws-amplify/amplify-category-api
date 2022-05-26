@@ -440,10 +440,11 @@ describe('Pre Processing Many To Many Tests', () => {
         def?.fields?.forEach(field => {
           if (field.name.value === fieldName) {
             hasField = true;
-            if (isList === true && field.type.kind === 'ListType') {
+            const listTypeTrue = field.type.kind === 'ListType' || (field.type.kind === 'NonNullType' && field.type.type.kind === 'ListType');
+            if (isList === true && listTypeTrue) {
               hasField = hasField && true;
             }
-            if (isList === false && field.type.kind === 'ListType') {
+            if (isList === false && listTypeTrue) {
               hasField = false;
             }
             if (fieldType && getBaseType(field.type) === fieldType) {
@@ -681,6 +682,55 @@ describe('Pre Processing Many To Many Tests', () => {
     ]);
     expect(hasGeneratedDirective(updatedSchemaDoc, "RecipeIngredients", "recipe", "hasOne", recipeBelongsToArgsMap)).toBeTruthy();
     expect(hasGeneratedDirective(updatedSchemaDoc, "RecipeIngredients", "ingredient", "hasOne", ingredientBelongsToArgsMap)).toBeTruthy();
+  });
+
+  test('Should update field type on the source models', () => {
+    const schema = `
+    type Recipe @model {
+      id: ID!
+      mealName: String
+      ingredients: [Ingredient] @manyToMany(relationName: "RecipeIngredients")
+    }
+    
+    type Ingredient @model {
+      id: ID!
+      componentName: String
+      recipes: [Recipe] @manyToMany(relationName: "RecipeIngredients")
+    }
+    `;
+
+    const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+
+    expect(hasGeneratedField(updatedSchemaDoc, "Recipe", "ingredients", "RecipeIngredients", true)).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, "Ingredient", "recipes", "RecipeIngredients", true)).toBeTruthy();
+  });
+
+  test('Should correctly name fields based on mapsTo', () => {
+    const schema = `
+    type Foo @model @mapsTo(name: "Recipe") {
+      id: ID! @primaryKey(sortKeyFields: ["mealName"])
+      mealName: String
+      ingredients: [Bar] @manyToMany(relationName: "RecipeIngredients")
+    }
+    
+    type Bar @model @mapsTo(name: "Ingredient") {
+      id: ID! @primaryKey(sortKeyFields: ["componentName"])
+      componentName: String
+      recipes: [Foo] @manyToMany(relationName: "RecipeIngredients")
+    }
+    `;
+
+    const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+
+    expect(hasGeneratedField(updatedSchemaDoc, "Foo", "ingredients", "RecipeIngredients", true)).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, "Bar", "recipes", "RecipeIngredients", true)).toBeTruthy();
+
+    expect(hasGeneratedField(updatedSchemaDoc, "RecipeIngredients", "foo", "Foo")).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, "RecipeIngredients", "fooID", "ID")).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, "RecipeIngredients", "bar", "Foo")).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, "RecipeIngredients", "barID", "ID")).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, "RecipeIngredients", "foomealName", "ID")).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, "RecipeIngredients", "barcomponentName", "ID")).toBeTruthy();
   });
 });
 

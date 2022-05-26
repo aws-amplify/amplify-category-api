@@ -25,7 +25,7 @@ import {
   isListType,
   makeArgument,
   makeDirective,
-  makeField,
+  makeField, makeListType,
   makeNamedType,
   makeValueNode,
   toUpper,
@@ -206,6 +206,17 @@ export class ManyToManyTransformer extends TransformerPluginBase {
 
         manyToManyOne?.field?.directives?.push(hasManyOne as WritableDraft<DirectiveNode>);
         manyToManyTwo?.field?.directives?.push(hasManyTwo as WritableDraft<DirectiveNode>);
+
+        let baseTypeD1 = manyToManyOne.field.type;
+        let baseTypeD2 = manyToManyOne.field.type;
+        while (baseTypeD1.kind != 'NamedType') {
+          baseTypeD1 = baseTypeD1.type;
+        }
+        while (baseTypeD2.kind != 'NamedType') {
+          baseTypeD2 = baseTypeD2.type;
+        }
+        baseTypeD1.name.value = manyToManyOne.relationName;
+        baseTypeD2.name.value = manyToManyTwo.relationName;
 
         draftDoc.definitions.push(joinType as WritableDraft<ObjectTypeDefinitionNode>);
       });
