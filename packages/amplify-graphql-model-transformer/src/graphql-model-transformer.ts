@@ -45,6 +45,7 @@ import {
   FieldDefinitionNode,
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
+  ListValueNode,
   ObjectTypeDefinitionNode,
 } from 'graphql';
 import {
@@ -142,6 +143,8 @@ type ModelTransformerOptions = {
   EnableDeletionProtection?: boolean;
   SyncConfig?: SyncConfig;
 };
+
+const DEFAULT_ID_FIELD_NAME = 'id';
 
 /**
  * ModelTransformer
@@ -504,13 +507,14 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Update${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
+      const hasCustomPrimaryKey = this.hasCustomPrimaryKey(type);
       const resolver = ctx.resolvers.generateMutationResolver(
         typeName,
         fieldName,
         resolverLogicalId,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(
-          generateUpdateRequestTemplate(typeName, isSyncEnabled),
+          generateUpdateRequestTemplate(typeName, isSyncEnabled, hasCustomPrimaryKey),
           `${typeName}.${fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(
@@ -541,13 +545,14 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const isSyncEnabled = ctx.isProjectUsingDataStore();
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `delete${generateResolverKey(typeName, fieldName)}`;
+    const hasCustomPrimaryKey = this.hasCustomPrimaryKey(type);
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateMutationResolver(
         typeName,
         fieldName,
         resolverLogicalId,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(generateDeleteRequestTemplate(isSyncEnabled), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateDeleteRequestTemplate(isSyncEnabled, hasCustomPrimaryKey), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(
           generateDefaultResponseMappingTemplate(isSyncEnabled, true),
           `${typeName}.${fieldName}.res.vtl`,
@@ -625,12 +630,14 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Sync${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
+      const hasCustomPrimaryKey = this.hasCustomPrimaryKey(type);
+      const partitionKeyName = this.getPartitionKeyName(type);
       this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
         typeName,
         fieldName,
         resolverLogicalId,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(generateSyncRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateSyncRequestTemplate(hasCustomPrimaryKey, partitionKeyName), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(
           generateDefaultResponseMappingTemplate(isSyncEnabled),
           `${typeName}.${fieldName}.res.vtl`,
@@ -879,12 +886,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const resolverKey = `Create${generateResolverKey(typeName, fieldName)}`;
     const modelIndexFields = type.fields!.filter(field => field.directives?.some(it => it.name.value === 'index')).map(it => it.name.value);
     if (!this.resolverMap[resolverKey]) {
+      const hasCustomPrimaryKey = this.hasCustomPrimaryKey(type);
       const resolver = ctx.resolvers.generateMutationResolver(
         typeName,
         fieldName,
         resolverLogicalId,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(generateCreateRequestTemplate(type.name.value, modelIndexFields), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateCreateRequestTemplate(type.name.value, modelIndexFields, hasCustomPrimaryKey), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(
           generateDefaultResponseMappingTemplate(isSyncEnabled, true),
           `${typeName}.${fieldName}.res.vtl`,
@@ -1391,4 +1399,39 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     EnableDeletionProtection: false,
     ...options,
   });
+
+  /**
+   * Returns true if the model contains a custom primary key.
+   * Custom Primary Key is a renamed partition key with at least one sort key.
+   * @param obj ObjectTypeDefinitionNode
+   * @returns a boolean
+   */
+  private hasCustomPrimaryKey = (obj: ObjectTypeDefinitionNode): boolean => {
+    const primaryKeyField = obj.fields?.find(field => field.directives?.find(directive => directive.name.value === 'primaryKey'));
+    if (!primaryKeyField || primaryKeyField.name.value === DEFAULT_ID_FIELD_NAME) {
+      return false;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+    const primaryKeyDirective = primaryKeyField.directives?.find(directive => directive.name.value === 'primaryKey')!;
+    const sortKeysArgument = primaryKeyDirective.arguments?.find(arg => arg.name.value === 'sortKeyFields');
+    if (!sortKeysArgument || (sortKeysArgument.value as ListValueNode)?.values.length === 0) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Returns the field name of the partition key.
+   * @param obj ObjectTypeDefinitionNode
+   * @returns a string
+   */
+   private getPartitionKeyName = (obj: ObjectTypeDefinitionNode): string => {
+     const primaryKeyField = obj.fields?.find(field => field.directives?.find(directive => directive.name.value === 'primaryKey'));
+     if (!primaryKeyField) {
+       return DEFAULT_ID_FIELD_NAME;
+     }
+     return primaryKeyField.name.value;
+   }
 }
