@@ -1,7 +1,12 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { ConflictHandlerType, GraphQLTransform, SyncConfig, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, ListValueNode, NamedTypeNode, parse } from 'graphql';
+import {
+  ConflictHandlerType, GraphQLTransform, SyncConfig, validateModelSchema,
+} from '@aws-amplify/graphql-transformer-core';
+import {
+  InputObjectTypeDefinitionNode, InputValueDefinitionNode, ListValueNode, NamedTypeNode, parse,
+} from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
+import { expect as cdkExpect, haveResource } from '@aws-cdk/assert';
 import {
   doNotExpectFields,
   expectFields,
@@ -13,7 +18,6 @@ import {
   verifyInputCount,
   verifyMatchingTypes,
 } from './test-utils/helpers';
-import { expect as cdkExpect, haveResource } from '@aws-cdk/assert';
 
 const featureFlags = {
   getBoolean: jest.fn(),
@@ -22,7 +26,7 @@ const featureFlags = {
   getString: jest.fn(),
 };
 
-describe('ModelTransformer: ', () => {
+describe('ModelTransformer:', () => {
   it('should successfully transform simple valid schema', async () => {
     const validSchema = `
       type Post @model {
@@ -579,7 +583,7 @@ describe('ModelTransformer: ', () => {
     expect(verifyInputCount(parsed, 'TagInput', 1)).toBeTruthy();
   });
 
-  it('it should generate filter inputs', () => {
+  it('should generate filter inputs', () => {
     const validSchema = `
       type Post @model {
           id: ID!
@@ -1130,8 +1134,34 @@ describe('ModelTransformer: ', () => {
             AttributeName: 'ds_sk',
             AttributeType: 'S',
           },
+          {
+            AttributeName: 'gsi_ds_pk',
+            AttributeType: 'S',
+          },
+          {
+            AttributeName: 'gsi_ds_sk',
+            AttributeType: 'S',
+          },
         ],
         BillingMode: 'PAY_PER_REQUEST',
+        GlobalSecondaryIndexes: [
+          {
+            IndexName: 'deltaSyncGSI',
+            KeySchema: [
+              {
+                AttributeName: 'gsi_ds_pk',
+                KeyType: 'HASH',
+              },
+              {
+                AttributeName: 'gsi_ds_sk',
+                KeyType: 'RANGE',
+              },
+            ],
+            Projection: {
+              ProjectionType: 'ALL',
+            },
+          },
+        ],
         StreamSpecification: {
           StreamViewType: 'NEW_AND_OLD_IMAGES',
         },
@@ -1198,11 +1228,11 @@ describe('ModelTransformer: ', () => {
     });
     const out = transformer.transform(validSchema);
 
-    const rootStack = out.rootStack;
+    const { rootStack } = out;
     expect(rootStack).toBeDefined();
     expect(rootStack.Parameters).toMatchObject(modelParams);
 
-    const todoStack = out.stacks['Todo'];
+    const todoStack = out.stacks.Todo;
     expect(todoStack).toBeDefined();
     expect(todoStack.Parameters).toMatchObject(modelParams);
   });
@@ -1284,7 +1314,7 @@ describe('ModelTransformer: ', () => {
     expect(Object.keys(result.stacks.Blog.Resources!).includes('CreateBlogResolver')).toBe(false);
     expect(Object.keys(result.stacks.Blog.Resources!).includes('UpdateBlogResolver')).toBe(false);
   });
-  
+
   it('allow aws_lambda to pass through', () => {
     const validSchema = `
     type Todo @aws_lambda {

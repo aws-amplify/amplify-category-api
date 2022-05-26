@@ -1366,14 +1366,15 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     if (!primaryKeyField || primaryKeyField.name.value === DEFAULT_ID_FIELD_NAME) {
       return false;
     }
-
     // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
     const primaryKeyDirective = primaryKeyField.directives?.find(directive => directive.name.value === 'primaryKey')!;
     const sortKeysArgument = primaryKeyDirective.arguments?.find(arg => arg.name.value === 'sortKeyFields');
-    if (!sortKeysArgument || (sortKeysArgument.value as ListValueNode)?.values.length === 0) {
+    if (sortKeysArgument?.value?.kind === 'StringValue') {
+      return true;
+    }
+    if (!sortKeysArgument || !(sortKeysArgument.value as ListValueNode)?.values.length) {
       return false;
     }
-
     return true;
   }
 
@@ -1382,11 +1383,11 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
    * @param obj ObjectTypeDefinitionNode
    * @returns a string
    */
-   private getPartitionKeyName = (obj: ObjectTypeDefinitionNode): string => {
-     const primaryKeyField = obj.fields?.find(field => field.directives?.find(directive => directive.name.value === 'primaryKey'));
-     if (!primaryKeyField) {
-       return DEFAULT_ID_FIELD_NAME;
-     }
-     return primaryKeyField.name.value;
-   }
+  private getPartitionKeyName = (obj: ObjectTypeDefinitionNode): string => {
+    const primaryKeyField = obj.fields?.find(field => field.directives?.find(directive => directive.name.value === 'primaryKey'));
+    if (!primaryKeyField) {
+      return DEFAULT_ID_FIELD_NAME;
+    }
+    return primaryKeyField.name.value;
+  }
 }
