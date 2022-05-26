@@ -483,7 +483,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - publish_to_local_registry
-            - integration_test
       - amplify_migration_tests_v5:
           context:
             - e2e-auth-credentials
@@ -497,7 +496,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - publish_to_local_registry
-            - integration_test
       - cleanup_resources_after_e2e_runs:
           context:
             - api-cleanup-resources
