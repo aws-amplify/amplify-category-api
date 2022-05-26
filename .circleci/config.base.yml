@@ -318,6 +318,13 @@ jobs:
 workflows:
   version: 2
   e2e_resource_cleanup:
+    triggers:
+      - schedule:
+          cron: "45 0,12 * * *"
+          filters:
+            branches:
+              only:
+                - main
     jobs:
       - build
       - cleanup_resources:
