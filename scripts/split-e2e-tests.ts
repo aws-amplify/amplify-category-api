@@ -70,10 +70,6 @@ const AWS_REGIONS_TO_RUN_TESTS = [
 const FORCE_US_WEST_2 = ['interactions'];
 
 const USE_PARENT_ACCOUNT = [
-  'api_2',
-  'api_1',
-  'auth_2',
-  'import_dynamodb_1',
   'api-key-migration2',
   'api-key-migration3',
   'api-key-migration4',
@@ -126,10 +122,8 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/schema-iterative-update-3.test.ts',
   //<50m
   'src/__tests__/schema-auth-2.test.ts',
-  'src/__tests__/api_1.test.ts',
   'src/__tests__/schema-auth-5.test.ts',
   //<55m
-  'src/__tests__/api_2.test.ts',
   'src/__tests__/api_5.test.ts',
   'src/__tests__/api_6.test.ts',
   'src/__tests__/schema-iterative-update-4.test.ts',
