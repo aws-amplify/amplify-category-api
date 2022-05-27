@@ -135,10 +135,13 @@ export class GraphQLTransform {
   }
 
   /**
-   * Processes the schema using the transformer plugins
-   * that have specified a pre-process method. The purpose
-   * is to make any necessary schema changes prior to the
-   * transformation step
+   * Processes the schema using the transformer plugins that have exposed pre-process lifecycle methods
+   * The transformation step is focused on taking the schema and boiling it down into metadata which can
+   * then be 'transformed' into Cloud resources for the purpose of runtime use by applications. The pre-process
+   * lifecycle holds the logic for making any modifications to the schema (i.e. adding fields)
+   *
+   * One example of an added field: a @hasMany connection will add a field to the target model to ensure
+   * that the relationship can be resolved at runtime by storing the source model's primary key
    * @param schema A parsed GraphQL DocumentNode
    */
   public preProcessSchema(schema: DocumentNode): DocumentNode {
