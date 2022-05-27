@@ -52,13 +52,14 @@ let GRAPHQL_CLIENT_2: GraphQLClient = undefined;
 let GRAPHQL_CLIENT_3: GraphQLClient = undefined;
 
 let USER_POOL_ID;
-let user2Sub: string;
 
 const USERNAME1 = 'user1@test.com';
 const USERNAME2 = 'user2@test.com';
 const USERNAME3 = 'user3@test.com';
 const TMP_PASSWORD = 'Password123!';
 const REAL_PASSWORD = 'Password1234!';
+
+let USER_2_SUB: string;
 
 const ADMIN_GROUP_NAME = 'Admin';
 const DEVS_GROUP_NAME = 'Devs';
@@ -168,7 +169,7 @@ beforeAll(async () => {
 
   const authRes2AfterGroup: any = await authenticateUser(USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
   const idToken2 = authRes2AfterGroup.getIdToken().getJwtToken();
-  user2Sub = authRes2AfterGroup.idToken.payload.sub;
+  USER_2_SUB = authRes2AfterGroup.idToken.payload.sub;
   GRAPHQL_CLIENT_2 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken2 });
 
   const authRes3: any = await authenticateUser(USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
@@ -252,7 +253,7 @@ test('listX with primaryKey', async () => {
   listResponse = await listFamilyMembers(GRAPHQL_CLIENT_3);
   expect(listResponse.data.listFamilyMembers.items).toHaveLength(0);
 
-  await createFamilyMember(GRAPHQL_CLIENT_1, USERNAME1, `${user2Sub}::${USERNAME2}`);
+  await createFamilyMember(GRAPHQL_CLIENT_1, USERNAME1, `${USER_2_SUB}::${USERNAME2}`);
   listResponse = await listFamilyMembers(GRAPHQL_CLIENT_2, { parent: USERNAME1 });
   let { items } = listResponse.data.listFamilyMembers;
   expect(listResponse.data.listFamilyMembers.items).toHaveLength(1);
