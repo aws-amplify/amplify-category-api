@@ -142,8 +142,7 @@ export class GraphQLTransform {
    * @param schema A parsed GraphQL DocumentNode
    */
   public preProcessSchema(schema: DocumentNode): DocumentNode {
-    let processedSchema = schema;
-    let context = new TransformerPreProcessContext(schema, this?.options?.featureFlags);
+    const context = new TransformerPreProcessContext(schema, this?.options?.featureFlags);
 
     this.transformers
         .filter(transformer => isFunction(transformer.preMutateSchema))
