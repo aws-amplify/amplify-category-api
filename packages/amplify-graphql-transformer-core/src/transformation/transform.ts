@@ -145,19 +145,21 @@ export class GraphQLTransform {
     let processedSchema = schema;
     let context = new TransformerPreProcessContext(schema, this?.options?.featureFlags);
 
-    this.transformers.forEach(transformer => {
-      if (isFunction(transformer.preMutateSchema)) {
-        transformer.preMutateSchema(context);
-      }
-    });
+    this.transformers
+        .filter(transformer => isFunction(transformer.preMutateSchema))
+        .map(transformer => transformer.preMutateSchema as Function)
+        .forEach(preMutateSchema => preMutateSchema(context));
 
-    this.transformers.forEach(transformer => {
-      if (isFunction(transformer.mutateSchema)) {
-        processedSchema = JSON.parse(JSON.stringify(transformer.mutateSchema(context)));
-        context.inputDocument = processedSchema;
-      }
-    });
-    return processedSchema;
+    return this.transformers
+      .filter(transformer => isFunction(transformer.mutateSchema))
+      .map(transformer => transformer.mutateSchema as Function)
+      .reduce((mutateContext, mutateSchema) => {
+        const updatedSchema = mutateSchema(mutateContext);
+        return {
+          ...mutateContext,
+          inputDocument: updatedSchema,
+        }
+      }, context).inputDocument;
   }
 
   /**
