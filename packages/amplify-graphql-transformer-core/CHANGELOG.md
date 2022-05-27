@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.17.2-test-api-package-migration.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.17.0...@aws-amplify/graphql-transformer-core@0.17.2-test-api-package-migration.0) (2022-05-27)
+
+
+### Bug Fixes
+
+* correct behavior for CreateApiKey config ([#463](https://github.com/aws-amplify/amplify-category-api/issues/463)) ([26ac8b3](https://github.com/aws-amplify/amplify-category-api/commit/26ac8b3f0186e1227a40a05c304f7ba43634218d))
+
+
+
+
+
 ## [0.17.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.17.0...@aws-amplify/graphql-transformer-core@0.17.1) (2022-05-02)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-core

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.23.1-test-api-package-migration.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.23.0...graphql-transformer-common@4.23.1-test-api-package-migration.0) (2022-05-27)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
 # [4.23.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.22.5...graphql-transformer-common@4.23.0) (2022-01-31)
 
 

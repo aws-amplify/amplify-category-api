@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.9.2-test-api-package-migration.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-e2e-tests@3.9.0...amplify-e2e-tests@3.9.2-test-api-package-migration.0) (2022-05-27)
+
+
+### Bug Fixes
+
+* build/test updates that were missed in the script ([2c27182](https://github.com/aws-amplify/amplify-category-api/commit/2c2718284b557dcebb1c8de9f6021722be9ac60b))
+* update cleanup script to correctly use assumed creds in child accounts ([#467](https://github.com/aws-amplify/amplify-category-api/issues/467)) ([4ceb8fc](https://github.com/aws-amplify/amplify-category-api/commit/4ceb8fcb4837139f4c85cbcefc318d8c769d9f5a))
+
+
+
+
+
 ## [3.9.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.9.0...amplify-e2e-tests@3.9.1) (2022-05-02)
 
 

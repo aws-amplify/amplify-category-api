@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.30-test-api-package-migration.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-dynamodb-simulator@2.2.28...amplify-dynamodb-simulator@2.2.30-test-api-package-migration.0) (2022-05-27)
+
+**Note:** Version bump only for package amplify-dynamodb-simulator
+
+
+
+
+
 ## [2.2.29](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.2.28...amplify-dynamodb-simulator@2.2.29) (2022-05-02)
 
 **Note:** Version bump only for package amplify-dynamodb-simulator
