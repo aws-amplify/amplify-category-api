@@ -321,7 +321,14 @@ const generateAuthOnModelQueryExpression = (
                 forEach(ref('entry'), ref('primaryFieldMap.entrySet()'), [
                   set(ref('modelQueryExpression.expression'), str('${modelQueryExpression.expression} AND #${entry.key} = :${entry.key}')),
                   qref(ref('modelQueryExpression.expressionNames.put("#${entry.key}", $entry.key)')),
-                  qref(ref('modelQueryExpression.expressionValues.put(":${entry.key}", $util.dynamodb.toDynamoDB($entry.value))')),
+                  ifElse(
+                    methodCall(ref('util.isList'), ref('entry.value')),
+                    compoundExpression([
+                      set(ref('lastClaim'), raw('$entry.value.size() - 1')),
+                      qref(ref('modelQueryExpression.expressionValues.put(":${entry.key}", $util.dynamodb.toDynamoDB($entry.value[$lastClaim]))')),
+                    ]),
+                    qref(ref('modelQueryExpression.expressionValues.put(":${entry.key}", $util.dynamodb.toDynamoDB($entry.value))')),
+                  ),
                 ]),
                 qref(methodCall(ref('ctx.stash.put'), str('modelQueryExpression'), ref('modelQueryExpression'))),
                 set(ref(IS_AUTHORIZED_FLAG), bool(true)),

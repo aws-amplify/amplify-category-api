@@ -51,7 +51,8 @@ let GRAPHQL_CLIENT_2: GraphQLClient = undefined;
  */
 let GRAPHQL_CLIENT_3: GraphQLClient = undefined;
 
-let USER_POOL_ID = undefined;
+let USER_POOL_ID;
+let user2Sub: string;
 
 const USERNAME1 = 'user1@test.com';
 const USERNAME2 = 'user2@test.com';
@@ -80,7 +81,7 @@ beforeAll(async () => {
           { allow: owner, ownerField: "child", operations: [read] }
         ]
       ) {
-      parent: ID! @primaryKey(sortKeyFields: ["child"]) @index(name: "byParent", queryField: "byParent")
+      parent: ID! @primaryKey(sortKeyFields: ["child"]) @index(name: "byParent", sortKeyFields: ["child"], queryField: "byParent")
       child: ID! @index(name: "byChild", queryField: "byChild")
       createdAt: AWSDateTime
       updatedAt: AWSDateTime
@@ -167,6 +168,7 @@ beforeAll(async () => {
 
   const authRes2AfterGroup: any = await authenticateUser(USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
   const idToken2 = authRes2AfterGroup.getIdToken().getJwtToken();
+  user2Sub = authRes2AfterGroup.idToken.payload.sub;
   GRAPHQL_CLIENT_2 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken2 });
 
   const authRes3: any = await authenticateUser(USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
@@ -250,13 +252,22 @@ test('listX with primaryKey', async () => {
   listResponse = await listFamilyMembers(GRAPHQL_CLIENT_3);
   expect(listResponse.data.listFamilyMembers.items).toHaveLength(0);
 
-  // should be able to see one record
-  // with feature flag and writing with only username, child is required to specify username because
-  // sub::username is not the stored value
-  // TODO: fix this query behavior later
-  listResponse = await listFamilyMembers(GRAPHQL_CLIENT_2, { parent: USERNAME1, child: { eq: USERNAME2 } });
-  const items = listResponse.data.listFamilyMembers.items;
-  expect(items).toHaveLength(1);
+  await createFamilyMember(GRAPHQL_CLIENT_1, USERNAME1, `${user2Sub}::${USERNAME2}`);
+  listResponse = await listFamilyMembers(GRAPHQL_CLIENT_2, { parent: USERNAME1 });
+  let { items } = listResponse.data.listFamilyMembers;
+  expect(listResponse.data.listFamilyMembers.items).toHaveLength(1);
+  expect(items[0]).toEqual(
+    expect.objectContaining({
+      parent: USERNAME1,
+      child: USERNAME2,
+      createdAt: expect.any(String),
+      updatedAt: expect.any(String),
+    }),
+  );
+
+  listResponse = await listFamilyMembersByParent(GRAPHQL_CLIENT_2, { parent: USERNAME1 });
+  items = listResponse.data.byParent.items;
+  expect(items).toHaveLength(2);
   expect(items[0]).toEqual(
     expect.objectContaining({
       parent: USERNAME1,
@@ -313,6 +324,36 @@ async function listFamilyMembers(client: GraphQLClient, args?: Record<string, an
       listFamilyMembers(
         parent: $parent
         child: $child
+        filter: $filter
+        limit: $limit
+        nextToken: $nextToken
+        sortDirection: $sortDirection
+      ) {
+        items {
+          parent
+          child
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+    }`,
+    args,
+  );
+  return result;
+}
+
+async function listFamilyMembersByParent(client: GraphQLClient, args?: Record<string, any>) {
+  const result = await client.query(
+    `query ByParent(
+      $parent: ID!
+      $filter: ModelFamilyMemberFilterInput
+      $limit: Int
+      $nextToken: String
+      $sortDirection: ModelSortDirection
+    ) {
+      byParent(
+        parent: $parent
         filter: $filter
         limit: $limit
         nextToken: $nextToken
