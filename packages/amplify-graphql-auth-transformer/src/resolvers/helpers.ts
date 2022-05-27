@@ -257,25 +257,27 @@ export const generateOwnerClaimExpression = (ownerClaim: string, refName: string
 export const generateFieldResolverForOwner = (entity: string): string => {
   const expressions: Expression[] = [
     ifElse(
-      methodCall(ref('util.isString'), ref(`ctx.source.${entity}`)),
-      compoundExpression([
-        set(ref('ownerEntities'), ref(`ctx.source.${entity}.split("${IDENTITY_CLAIM_DELIMITER}")`)),
-        set(ref('ownerEntitiesLastIdx'), raw('$ownerEntities.size() - 1')),
-        set(ref('ownerEntitiesLast'), ref('ownerEntities.get($ownerEntitiesLastIdx)')),
-        qref(methodCall(ref('ctx.source.put'), str(entity), ref('ownerEntitiesLast'))),
-      ]),
+      methodCall(ref('util.isList'), ref(`ctx.source.${entity}`)),
       compoundExpression([
         set(ref('ownerEntitiesList'), list([])),
-        forEach(ref('ownerEntities'), ref(`ctx.source.${entity}`), [
-          set(ref('ownerEntities'), ref(`ownerEntities.split("${IDENTITY_CLAIM_DELIMITER}")`)),
+        set(ref(entity), ref(`ctx.source.${entity}`)),
+        forEach(ref('entities'), ref(entity), [
+          set(ref('ownerEntities'), ref(`entities.split("${IDENTITY_CLAIM_DELIMITER}")`)),
           set(ref('ownerEntitiesLastIdx'), raw('$ownerEntities.size() - 1')),
-          set(ref('ownerEntitiesLast'), ref('ownerEntities.get($ownerEntitiesLastIdx)')),
+          set(ref('ownerEntitiesLast'), ref('ownerEntities[$ownerEntitiesLastIdx]')),
           qref(methodCall(ref('ownerEntitiesList.add'), ref('ownerEntitiesLast'))),
         ]),
         qref(methodCall(ref(`ctx.source.${entity}.put`), ref('ownerEntitiesList'))),
+        toJson(ref('ownerEntitiesList')),
+      ]),
+      compoundExpression([
+        set(ref('ownerEntities'), ref(`ctx.source.${entity}.split("${IDENTITY_CLAIM_DELIMITER}")`)),
+        set(ref('ownerEntitiesLastIdx'), raw('$ownerEntities.size() - 1')),
+        set(ref('ownerEntitiesLast'), ref('ownerEntities[$ownerEntitiesLastIdx]')),
+        qref(methodCall(ref('ctx.source.put'), str(entity), ref('ownerEntitiesLast'))),
+        toJson(ref(`ctx.source.${entity}`)),
       ]),
     ),
-    toJson(ref(`ctx.source.${entity}`)),
   ];
 
   return printBlock('Parse owner field auth for Get')(compoundExpression(expressions));
