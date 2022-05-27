@@ -360,7 +360,12 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
         #foreach( $entry in $primaryFieldMap.entrySet() )
           #set( $modelQueryExpression.expression = \\"\${modelQueryExpression.expression} AND #\${entry.key} = :\${entry.key}\\" )
           $util.qr($modelQueryExpression.expressionNames.put(\\"#\${entry.key}\\", $entry.key))
-          $util.qr($modelQueryExpression.expressionValues.put(\\":\${entry.key}\\", $util.dynamodb.toDynamoDB($entry.value)))
+          #if( $util.isList($entry.value) )
+            #set( $lastClaim = $entry.value.size() - 1 )
+            $util.qr($modelQueryExpression.expressionValues.put(\\":\${entry.key}\\", $util.dynamodb.toDynamoDB($entry.value[$lastClaim])))
+          #else
+            $util.qr($modelQueryExpression.expressionValues.put(\\":\${entry.key}\\", $util.dynamodb.toDynamoDB($entry.value)))
+          #end
         #end
         $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
         #set( $isAuthorized = true )
@@ -735,7 +740,12 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
         #foreach( $entry in $primaryFieldMap.entrySet() )
           #set( $modelQueryExpression.expression = \\"\${modelQueryExpression.expression} AND #\${entry.key} = :\${entry.key}\\" )
           $util.qr($modelQueryExpression.expressionNames.put(\\"#\${entry.key}\\", $entry.key))
-          $util.qr($modelQueryExpression.expressionValues.put(\\":\${entry.key}\\", $util.dynamodb.toDynamoDB($entry.value)))
+          #if( $util.isList($entry.value) )
+            #set( $lastClaim = $entry.value.size() - 1 )
+            $util.qr($modelQueryExpression.expressionValues.put(\\":\${entry.key}\\", $util.dynamodb.toDynamoDB($entry.value[$lastClaim])))
+          #else
+            $util.qr($modelQueryExpression.expressionValues.put(\\":\${entry.key}\\", $util.dynamodb.toDynamoDB($entry.value)))
+          #end
         #end
         $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
         #set( $isAuthorized = true )
