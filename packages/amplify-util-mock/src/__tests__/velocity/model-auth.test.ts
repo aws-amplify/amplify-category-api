@@ -834,17 +834,7 @@ describe("@model @primaryIndex @index auth", () => {
         },
         "expressionValues": Object {
           ":child": Object {
-            "L": Array [
-              Object {
-                "S": "${ownerRequest.jwt.sub}",
-              },
-              Object {
-                "S": "user1",
-              },
-              Object {
-                "S": "${ownerRequest.jwt.sub}::user1",
-              },
-            ],
+            "S": "${ownerRequest.jwt.sub}::user1",
           },
           ":parent": Object {
             "S": "$ctx.args.parent",
