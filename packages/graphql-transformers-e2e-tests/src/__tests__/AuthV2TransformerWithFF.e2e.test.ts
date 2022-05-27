@@ -74,6 +74,10 @@ describe('@model with @auth', () => {
   const WATCHER_GROUP_NAME = 'Watcher';
   const SUBSCRIBER_GROUP_NAME = 'Subscriber';
 
+  let USER_1_SUB: string;
+  let USER_2_SUB: string;
+  let USER_3_SUB: string;
+
   function outputValueSelector(key: string) {
     return (outputs: Output[]) => {
       const output = outputs.find((o: Output) => o.OutputKey === key);
@@ -276,6 +280,10 @@ describe('@model with @auth', () => {
         description: String!
         owner: String!
       }
+      type OwnerSet @model @auth(rules: [{ allow: owner, ownerField: "owners" }]) {
+        id: ID!
+        owners: [String]
+      }
       `;
     try {
       await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
@@ -365,6 +373,7 @@ describe('@model with @auth', () => {
 
       const authResAfterGroup: any = await authenticateUser(USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
       const idToken = authResAfterGroup.getIdToken().getJwtToken();
+      USER_1_SUB = authResAfterGroup.idToken.payload.sub;
       GRAPHQL_CLIENT_1 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken });
 
       const accessToken = authResAfterGroup.getAccessToken().getJwtToken();
@@ -372,11 +381,13 @@ describe('@model with @auth', () => {
 
       const authRes2AfterGroup: any = await authenticateUser(USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
       const idToken2 = authRes2AfterGroup.getIdToken().getJwtToken();
+      USER_2_SUB = authRes2AfterGroup.idToken.payload.sub;
       GRAPHQL_CLIENT_2 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken2 });
 
       const authRes3AfterGroup: any = await authenticateUser(USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
       const idToken3 = authRes3AfterGroup.getIdToken().getJwtToken();
       GRAPHQL_CLIENT_3 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken3 });
+      USER_3_SUB = authRes3AfterGroup.idToken.payload.sub;
     } catch (e) {
       console.error(`Could not setup transformer ${e}`);
       expect(true).toBe(false);
@@ -3664,6 +3675,127 @@ describe('@model with @auth', () => {
         expect(getResponse.data.getPostCustomOwnerField).toEqual(null);
         expect(getResponse.errors.length).toEqual(1);
         expect((getResponse.errors[0] as any).errorType).toEqual('Unauthorized');
+      });
+
+      test('creating records with owner field set', async () => {
+        let createResponse = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            createOwnerSet(input: {
+              owners: ["${USERNAME1}", "${USERNAME2}", "${USERNAME3}"]
+            }) {
+              id
+              owners
+            }
+          }`,
+          {},
+        );
+
+        expect(createResponse.data.createOwnerSet.owners).toEqual(
+          expect.arrayContaining([
+            USERNAME1,
+            USERNAME2,
+            USERNAME3,
+          ]),
+        );
+
+        let getResponse = await GRAPHQL_CLIENT_2.query(
+          `query {
+            getOwnerSet(id: "${createResponse.data.createOwnerSet.id}") {
+              owners
+            }
+          }`,
+          {},
+        );
+
+        expect(getResponse.data.getOwnerSet.owners).toEqual(
+          expect.arrayContaining([
+            USERNAME1,
+            USERNAME2,
+            USERNAME3,
+          ]),
+        );
+
+        createResponse = await GRAPHQL_CLIENT_2.query(
+          `mutation {
+            createOwnerSet(input: {
+              owners: [
+                "${USER_1_SUB}::${USERNAME1}",
+                "${USERNAME2}",
+                "${USERNAME3}",
+              ]
+            }) {
+              id
+              owners
+            }
+          }`,
+          {},
+        );
+
+        expect(createResponse.data.createOwnerSet.owners).toEqual(
+          expect.arrayContaining([
+            USERNAME1,
+            USERNAME2,
+            USERNAME3,
+          ]),
+        );
+
+        getResponse = await GRAPHQL_CLIENT_3.query(
+          `query {
+            getOwnerSet(id: "${createResponse.data.createOwnerSet.id}") {
+              owners
+            }
+          }`,
+          {},
+        );
+
+        expect(getResponse.data.getOwnerSet.owners).toEqual(
+          expect.arrayContaining([
+            USERNAME1,
+            USERNAME2,
+            USERNAME3,
+          ]),
+        );
+
+        createResponse = await GRAPHQL_CLIENT_3.query(
+          `mutation {
+            createOwnerSet(input: {
+              owners: [
+                "${USER_1_SUB}::${USERNAME1}",
+                "${USER_2_SUB}::${USERNAME2}",
+                "${USER_3_SUB}::${USERNAME3}"
+              ]
+            }) {
+              id
+              owners
+            }
+          }`,
+          {},
+        );
+
+        expect(createResponse.data.createOwnerSet.owners).toEqual(
+          expect.arrayContaining([
+            USERNAME1,
+            USERNAME2,
+            USERNAME3,
+          ]),
+        );
+
+        getResponse = await GRAPHQL_CLIENT_1.query(
+          `query {
+            getOwnerSet(id: "${createResponse.data.createOwnerSet.id}") {
+              owners
+            }
+          }`,
+          {},
+        );
+
+        expect(getResponse.data.getOwnerSet.owners).toEqual(
+          expect.arrayContaining([
+            USERNAME1,
+            USERNAME2,
+            USERNAME3,
+          ]),
+        );
       });
     });
 
