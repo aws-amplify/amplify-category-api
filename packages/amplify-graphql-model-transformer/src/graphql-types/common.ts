@@ -36,6 +36,11 @@ import {
   STRING_CONDITIONS,
   STRING_FUNCTIONS,
   API_KEY_DIRECTIVE,
+  SUBSCRIPTION_STRING_CONDITIONS,
+  SUBSCRIPTION_ID_CONDITIONS,
+  SUBSCRIPTION_INT_CONDITIONS,
+  SUBSCRIPTION_FLOAT_CONDITIONS,
+  SUBSCRIPTION_BOOLEAN_CONDITIONS,
 } from '../definitions';
 import {
   EnumWrapper,
@@ -85,9 +90,42 @@ export const makeConditionFilterInput = (
   return input;
 };
 
+export const makeSubscriptionFilterInput = (
+  ctx: TransformerTransformSchemaStepContextProvider,
+  name: string,
+  object: ObjectTypeDefinitionNode,
+): InputObjectDefinitionWrapper => {
+  const supportsConditions = true;
+  const input = InputObjectDefinitionWrapper.create(name);
+  const wrappedObject = new ObjectDefinitionWrapper(object);
+  for (let field of wrappedObject.fields) {
+    const fieldType = ctx.output.getType(field.getTypeName());
+    const isEnumType = fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION;
+    if (field.isScalar() || isEnumType) {
+      const conditionTypeName =
+        isEnumType && field.isList()
+          ? ModelResourceIDs.ModelFilterListInputTypeName(field.getTypeName(), !supportsConditions, true)
+          : ModelResourceIDs.ModelFilterScalarInputTypeName(isEnumType ? 'String' : field.getTypeName(), !supportsConditions, true);
+      const inputField = InputFieldWrapper.create(field.name, conditionTypeName, true);
+      input.addField(inputField);
+    }
+  }
+
+  // additional conditions of list type
+  for (let additionalField of ['and', 'or']) {
+    const inputField = InputFieldWrapper.create(additionalField, name, true, true);
+    input.addField(inputField);
+  }
+
+  return input;
+};
+
 export const addModelConditionInputs = (ctx: TransformerTransformSchemaStepContextProvider): void => {
   const conditionsInput: TypeDefinitionNode[] = ['String', 'Int', 'Float', 'Boolean', 'ID'].map(scalarName =>
     makeModelScalarFilterInputObject(scalarName, true),
+  );
+  ['String', 'Int', 'Float', 'Boolean', 'ID'].map(scalarName =>
+    conditionsInput.push(makeModelScalarFilterInputObject(scalarName, true, true)),
   );
   conditionsInput.push(makeAttributeTypeEnum());
   conditionsInput.push(makeSizeInputType());
@@ -104,12 +142,12 @@ export const addModelConditionInputs = (ctx: TransformerTransformSchemaStepConte
  * @param typeName Name of the scalar type
  * @param includeFilter add filter suffix to input
  */
-export function generateModelScalarFilterInputName(typeName: string, includeFilter: boolean): string {
+export function generateModelScalarFilterInputName(typeName: string, includeFilter: boolean, isSubscriptionFilter: boolean = false): string {
   const nameOverride = DEFAULT_SCALARS[typeName];
   if (nameOverride) {
-    return `Model${nameOverride}${includeFilter ? 'Filter' : ''}Input`;
+    return `Model${isSubscriptionFilter ? 'Subscription' : ''}${nameOverride}${includeFilter ? 'Filter' : ''}Input`;
   }
-  return `Model${typeName}${includeFilter ? 'Filter' : ''}Input`;
+  return `Model${isSubscriptionFilter ? 'Subscription' : ''}${typeName}${includeFilter ? 'Filter' : ''}Input`;
 }
 
 export const createEnumModelFilters = (
@@ -132,9 +170,13 @@ export const createEnumModelFilters = (
  * @param type scalar type name
  * @param supportsConditions add filter suffix to input
  */
-export function makeModelScalarFilterInputObject(type: string, supportsConditions: boolean): InputObjectTypeDefinitionNode {
-  const name = generateModelScalarFilterInputName(type, !supportsConditions);
-  const conditions = getScalarConditions(type);
+export function makeModelScalarFilterInputObject(
+  type: string, 
+  supportsConditions: boolean, 
+  isSubscriptionFilter: boolean = false,
+): InputObjectTypeDefinitionNode {
+  const name = generateModelScalarFilterInputName(type, !supportsConditions, isSubscriptionFilter);
+  const conditions = isSubscriptionFilter ? getSubscriptionScalarConditions(type) : getScalarConditions(type);
   const scalarConditionInput = InputObjectDefinitionWrapper.create(name);
   for (let condition of conditions) {
     let typeName;
@@ -152,7 +194,11 @@ export function makeModelScalarFilterInputObject(type: string, supportsCondition
     }
     scalarConditionInput.addField(field);
   }
-  makeFunctionInputFields(type).map(f => scalarConditionInput.addField(f));
+
+  if (!isSubscriptionFilter) {
+    makeFunctionInputFields(type).map(f => scalarConditionInput.addField(f));
+  }
+
   return scalarConditionInput.serialize();
 }
 
@@ -168,6 +214,23 @@ function getScalarConditions(type: string): string[] {
       return FLOAT_CONDITIONS;
     case 'Boolean':
       return BOOLEAN_CONDITIONS;
+    default:
+      throw new Error('Valid types are String, ID, Int, Float, Boolean');
+  }
+}
+
+function getSubscriptionScalarConditions(type: string): string[] {
+  switch (type) {
+    case 'String':
+      return SUBSCRIPTION_STRING_CONDITIONS;
+    case 'ID':
+      return SUBSCRIPTION_ID_CONDITIONS;
+    case 'Int':
+      return SUBSCRIPTION_INT_CONDITIONS;
+    case 'Float':
+      return SUBSCRIPTION_FLOAT_CONDITIONS;
+    case 'Boolean':
+      return SUBSCRIPTION_BOOLEAN_CONDITIONS;
     default:
       throw new Error('Valid types are String, ID, Int, Float, Boolean');
   }

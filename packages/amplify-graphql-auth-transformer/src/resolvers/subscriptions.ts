@@ -12,6 +12,8 @@ import {
   nul,
   printBlock,
   or,
+  raw,
+  qref,
 } from 'graphql-mapping-template';
 import {
   COGNITO_AUTH_TYPE,
@@ -40,6 +42,10 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
       ownerExpression.push(
         generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
         generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
+        set(ref(`authRuntimeFilter`), raw(`[]`)),
+        qref(methodCall(ref('authRuntimeFilter.add'), raw(`{ "${role.entity}": { "eq": $ownerClaim${idx} } }`))),
+        set(ref('ctx.args.filter'), raw(`{ "and": [ "or": $util.toJson($authRuntimeFilter), $ctx.args.filter ]}`)),
+        set(ref(IS_AUTHORIZED_FLAG), bool(true)),
         set(
           ref(`ownerEntity${idx}`),
           methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}`), nul()),

@@ -41,6 +41,7 @@ import {
   ModelResourceIDs,
   ResolverResourceIDs,
   toUpper,
+  isListType,
 } from 'graphql-transformer-common';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -944,6 +945,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
               };
             } else if (rule.allow === 'owner') {
               const ownerField = rule.ownerField || DEFAULT_OWNER_FIELD;
+              const fieldType = (context.output.getType(acm.getName()) as any).fields.find(field => field.name.value == ownerField);
+              const isOwnerFieldList = fieldType ? isListType(fieldType.type) : false;
               const useSub = context.featureFlags.getBoolean('useSubUsernameForDefaultIdentityClaim');
               const ownerClaim = rule.identityClaim || (useSub ? DEFAULT_UNIQUE_IDENTITY_CLAIM : DEFAULT_IDENTITY_CLAIM);
               roleName = `${rule.provider}:owner:${ownerField}:${ownerClaim}`;
@@ -953,6 +956,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
                 static: false,
                 claim: ownerClaim,
                 entity: ownerField,
+                isEntityList: isOwnerFieldList,
               };
             } else if (rule.allow === 'private') {
               roleName = `${rule.provider}:${rule.allow}`;

@@ -66,6 +66,7 @@ import {
   makeCreateInputField,
   makeDeleteInputField,
   makeListQueryFilterInput,
+  makeSubscriptionQueryFilterInput,
   makeListQueryModel,
   makeModelSortDirectionEnumObject,
   makeMutationConditionInput,
@@ -756,8 +757,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       const maps = subscriptionToMutationsMap[subscriptionFieldName];
 
       const args: InputValueDefinitionNode[] = [];
-      maps.map(it => args.concat(
-        this.getInputs(ctx, def!, {
+      maps.map(it => args.push(
+        ...this.getInputs(ctx, def!, {
           fieldName: it.fieldName,
           typeName: it.typeName,
           type: it.type,
@@ -978,7 +979,19 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       case SubscriptionFieldType.ON_CREATE:
       case SubscriptionFieldType.ON_DELETE:
       case SubscriptionFieldType.ON_UPDATE:
-        return [];
+        const filterInputName = toPascalCase(['ModelSubscription', type.name.value, 'FilterInput']);
+        const filterInputs = createEnumModelFilters(ctx, type);
+        filterInputs.push(makeSubscriptionQueryFilterInput(ctx, filterInputName, type));
+        filterInputs.forEach(input => {
+          const conditionInputName = input.name.value;
+          if (!ctx.output.getType(conditionInputName)) {
+            ctx.output.addInput(input);
+          }
+        });
+
+        return [
+          makeInputValueDefinition('filter', makeNamedType(filterInputName)),
+        ];
 
       default:
         throw new Error('Unknown operation type');

@@ -213,7 +213,7 @@ export const addSubscriptionArguments = (
   const subscriptionArgumentList = subscriptionRoles.map(role => makeInputValueDefinition(role.entity!, makeNamedType('String')));
   createField = {
     ...createField,
-    arguments: subscriptionArgumentList,
+    arguments: [...createField.arguments, ...subcriptionArgumentList],
   };
   subscription = {
     ...subscription,
