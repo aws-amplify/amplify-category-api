@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.34](https://github.com/aws-amplify/amplify-category-api/compare/graphql-key-transformer@3.2.32...graphql-key-transformer@3.2.34) (2022-05-31)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
 ## [3.2.33](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@3.2.32...graphql-key-transformer@3.2.33) (2022-05-02)
 
 **Note:** Version bump only for package graphql-key-transformer

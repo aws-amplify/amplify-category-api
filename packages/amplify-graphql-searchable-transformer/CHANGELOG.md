@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.14.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@0.14.0...@aws-amplify/graphql-searchable-transformer@0.14.2) (2022-05-31)
+
+
+### Bug Fixes
+
+* **searchable:** change delete and update policy for os instance ([#24](https://github.com/aws-amplify/amplify-category-api/issues/24)) ([6d4d5ce](https://github.com/aws-amplify/amplify-category-api/commit/6d4d5ce54c1cf02bc827edf6804ef76f10a09182))
+* set searchable streaming lambda debug env var default to 0 ([6a34980](https://github.com/aws-amplify/amplify-category-api/commit/6a3498059c60225e8cc659977352755044638591))
+
+
+
+
+
 ## [0.14.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.14.0...@aws-amplify/graphql-searchable-transformer@0.14.1) (2022-05-02)
 
 **Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
