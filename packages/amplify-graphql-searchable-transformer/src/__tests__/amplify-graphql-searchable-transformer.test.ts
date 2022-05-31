@@ -1,7 +1,7 @@
 import { ConflictHandlerType, GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import {
-  anything, countResources, expect as cdkExpect, haveResource,
+  anything, countResources, expect as cdkExpect, haveResource, ResourcePart
 } from '@aws-cdk/assert';
 import { parse } from 'graphql';
 import { SearchableModelTransformer } from '..';
@@ -226,8 +226,13 @@ test('it generates expected resources', () => {
       EBSOptions: anything(),
       ElasticsearchClusterConfig: anything(),
       ElasticsearchVersion: '7.10',
-    }),
+    }, ResourcePart.Properties),
   );
+  cdkExpect(searchableStack).to(
+    haveResource('AWS::Elasticsearch::Domain', {
+      UpdateReplacePolicy: "Delete",
+      DeletionPolicy: "Delete"
+  }, ResourcePart.CompleteDefinition));
   cdkExpect(searchableStack).to(
     haveResource('AWS::AppSync::DataSource', {
       ApiId: {
