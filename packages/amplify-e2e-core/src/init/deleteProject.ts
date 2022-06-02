@@ -6,20 +6,12 @@ export const deleteProject = async (cwd: string, profileConfig?: any, usingLates
   const { StackName: stackName, Region: region } = getBackendAmplifyMeta(cwd).providers.awscloudformation;
   await retry(
     () => describeCloudFormationStack(stackName, region, profileConfig),
-    stack => stack.StackStatus.endsWith('_COMPLETE'),
+    stack => stack.StackStatus.endsWith('_COMPLETE') || stack.StackStatus.endsWith('_FAILED'),
   );
-  return new Promise((resolve, reject) => {
-    const noOutputTimeout = 1000 * 60 * 20; // 20 minutes;
-    spawn(getCLIPath(usingLatestCodebase), ['delete'], { cwd, stripColors: true, noOutputTimeout })
-      .wait('Are you sure you want to continue?')
-      .sendConfirmYes()
-      .wait('Project deleted locally.')
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
+  const noOutputTimeout = 1000 * 60 * 20; // 20 minutes;
+  return spawn(getCLIPath(usingLatestCodebase), ['delete'], { cwd, stripColors: true, noOutputTimeout })
+    .wait('Are you sure you want to continue?')
+    .sendConfirmYes()
+    .wait('Project deleted locally.')
+    .runAsync();
 };

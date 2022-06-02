@@ -25,7 +25,6 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'analytics_pkg',
   'schema-auth-7_pkg',
   'schema-auth-11_pkg',
-  'auth_6_pkg',
   'frontend_config_drift_pkg',
   'hooks_pkg',
   'plugin_pkg',
@@ -34,13 +33,11 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'schema-auth-8_pkg',
   'import_dynamodb_1_pkg',
   'schema-connection_pkg',
-  'auth_7_pkg',
   'iam-permissions-boundary_pkg',
   'schema-data-access-patterns_pkg',
   'schema-auth-10_pkg',
   'schema-searchable_pkg',
   'schema-auth-6_pkg',
-  'auth_8_pkg',
   's3-sse_pkg',
   'storage-2_pkg',
   'schema-auth-4_pkg',
@@ -50,13 +47,11 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'amplify-configure_pkg',
   'schema-predictions_pkg',
   'predictions_pkg',
-  'auth_1_pkg',
   'schema-auth-1_pkg',
   'schema-auth-2_pkg',
   'container-hosting_pkg',
   'schema-auth-13_pkg',
   'init_pkg',
-  'auth_5_pkg',
 ];
 
 // Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated
@@ -75,10 +70,6 @@ const AWS_REGIONS_TO_RUN_TESTS = [
 const FORCE_US_WEST_2 = ['interactions'];
 
 const USE_PARENT_ACCOUNT = [
-  'api_2',
-  'api_1',
-  'auth_2',
-  'import_dynamodb_1',
   'api-key-migration2',
   'api-key-migration3',
   'api-key-migration4',
@@ -102,16 +93,12 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   //<25m
   'src/__tests__/schema-auth-10.test.ts',
   'src/__tests__/schema-key.test.ts',
-  'src/__tests__/auth_1.test.ts',
-  'src/__tests__/auth_5.test.ts',
   'src/__tests__/schema-iterative-update-1.test.ts',
   //<30m
   'src/__tests__/schema-auth-3.test.ts',
-  'src/__tests__/auth_3.test.ts',
   'src/__tests__/layer.test.ts',
   //<35m
   'src/__tests__/migration/api.key.migration1.test.ts',
-  'src/__tests__/auth_4.test.ts',
   'src/__tests__/schema-auth-7.test.ts',
   'src/__tests__/schema-auth-8.test.ts',
   'src/__tests__/schema-searchable.test.ts',
@@ -135,10 +122,8 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/schema-iterative-update-3.test.ts',
   //<50m
   'src/__tests__/schema-auth-2.test.ts',
-  'src/__tests__/api_1.test.ts',
   'src/__tests__/schema-auth-5.test.ts',
   //<55m
-  'src/__tests__/api_2.test.ts',
   'src/__tests__/api_5.test.ts',
   'src/__tests__/api_6.test.ts',
   'src/__tests__/schema-iterative-update-4.test.ts',
