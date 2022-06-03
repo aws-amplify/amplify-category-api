@@ -42,6 +42,20 @@
     ora "^4.0.3"
     uuid "^8.3.2"
 
+"@aws-amplify/amplify-category-custom@2.3.33":
+  version "2.3.33"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-category-custom/-/amplify-category-custom-2.3.33.tgz#ab86f9016d5fed1dc5e83232c95b8007ad7048c4"
+  integrity sha512-NjkKnrbulIcV72Bg0VpRshKoU9i0x96+LLNtipj+62IyjkqfVLNMb0VLxo8nDM/27INc84RsxhP2ALpc8SAqEw==
+  dependencies:
+    amplify-cli-core "2.9.0"
+    amplify-prompts "2.2.0"
+    execa "^5.1.1"
+    fs-extra "^8.1.0"
+    glob "^7.2.0"
+    inquirer "^7.3.3"
+    ora "^4.0.3"
+    uuid "^8.3.2"
+
 "@aws-amplify/analytics@5.2.9":
   version "5.2.9"
   resolved "https://registry.npmjs.org/@aws-amplify/analytics/-/analytics-5.2.9.tgz#2fdd2b6ffb147a15dc4eff7f87d29266c6bdd283"
@@ -139,6 +153,24 @@
     "@aws-cdk/core" "~1.124.0"
     amplify-cli-core "2.8.0"
     amplify-prompts "2.1.0"
+
+"@aws-amplify/cli-extensibility-helper@2.3.29":
+  version "2.3.29"
+  resolved "https://registry.npmjs.org/@aws-amplify/cli-extensibility-helper/-/cli-extensibility-helper-2.3.29.tgz#c057c1147a0871efe2cc3295529f2297e6e76754"
+  integrity sha512-DTFTA1WkfToE6bA0ZZjfX3zBIwK0Z9guR1m+wutUiDHZcd6JBZUOPmEdLPzcJ8ruhyJbRYla6GEbstJO9XSTEQ==
+  dependencies:
+    "@aws-amplify/amplify-category-custom" "2.3.33"
+    "@aws-cdk/aws-apigateway" "~1.124.0"
+    "@aws-cdk/aws-appsync" "~1.124.0"
+    "@aws-cdk/aws-cognito" "~1.124.0"
+    "@aws-cdk/aws-dynamodb" "~1.124.0"
+    "@aws-cdk/aws-elasticsearch" "~1.124.0"
+    "@aws-cdk/aws-iam" "~1.124.0"
+    "@aws-cdk/aws-lambda" "~1.124.0"
+    "@aws-cdk/aws-s3" "~1.124.0"
+    "@aws-cdk/core" "~1.124.0"
+    amplify-cli-core "2.9.0"
+    amplify-prompts "2.2.0"
 
 "@aws-amplify/core@4.5.6":
   version "4.5.6"
@@ -298,6 +330,21 @@
     "@aws-cdk/cx-api" "1.124.0"
     constructs "^3.3.69"
 
+"@aws-cdk/assertions@~1.124.0":
+  version "1.124.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/assertions/-/assertions-1.124.0.tgz#4d61226f341cf4f8ba66238cf46fa9150cc87afb"
+  integrity sha512-jvJf701HizOu3gZHFeC0YQHED2P9aRzKuBk76kA07pAVxxLN7AWTbPrMBtC0ToCVnhazZ1sftxjnLOkxLyyloA==
+  dependencies:
+    "@aws-cdk/cloud-assembly-schema" "1.124.0"
+    "@aws-cdk/core" "1.124.0"
+    "@aws-cdk/cx-api" "1.124.0"
+    colors "^1.4.0"
+    constructs "^3.3.69"
+    diff "^5.0.0"
+    fast-deep-equal "^3.1.3"
+    string-width "^4.2.2"
+    table "^6.7.1"
+
 "@aws-cdk/assets@1.124.0", "@aws-cdk/assets@~1.124.0":
   version "1.124.0"
   resolved "https://registry.npmjs.org/@aws-cdk/assets/-/assets-1.124.0.tgz#eaeacef8f2c03b93e3b742b6fe767b69e3cad4b3"
@@ -366,7 +413,7 @@
     "@aws-cdk/core" "1.124.0"
     constructs "^3.3.69"
 
-"@aws-cdk/aws-autoscaling-common@1.124.0":
+"@aws-cdk/aws-autoscaling-common@1.124.0", "@aws-cdk/aws-autoscaling-common@~1.124.0":
   version "1.124.0"
   resolved "https://registry.npmjs.org/@aws-cdk/aws-autoscaling-common/-/aws-autoscaling-common-1.124.0.tgz#c8e6e1b3d87336fb63b585a7f5d1f84e563ac285"
   integrity sha512-Ef+YT0GSXtkc0jTwXmNqjbUtjHXgIg5FSt4lkfWRe2DzG/AeCEZDY0s+yUJMn6tXk1ubmqgIZO/i0VhTq8nW/g==
@@ -375,7 +422,7 @@
     "@aws-cdk/core" "1.124.0"
     constructs "^3.3.69"
 
-"@aws-cdk/aws-autoscaling-hooktargets@1.124.0":
+"@aws-cdk/aws-autoscaling-hooktargets@1.124.0", "@aws-cdk/aws-autoscaling-hooktargets@~1.124.0":
   version "1.124.0"
   resolved "https://registry.npmjs.org/@aws-cdk/aws-autoscaling-hooktargets/-/aws-autoscaling-hooktargets-1.124.0.tgz#b3441a97898a8846055929074943bdac599f4305"
   integrity sha512-g0q+Jv124/krjMqT8U5gAKGHJwZkg5/yiswfWIy4aqEOieSwOwii4YuFUUIyghe779ua1yXFyEWnSfYAymXWgA==
@@ -444,7 +491,7 @@
     "@aws-cdk/cx-api" "1.124.0"
     constructs "^3.3.69"
 
-"@aws-cdk/aws-cloudfront@1.124.0":
+"@aws-cdk/aws-cloudfront@1.124.0", "@aws-cdk/aws-cloudfront@~1.124.0":
   version "1.124.0"
   resolved "https://registry.npmjs.org/@aws-cdk/aws-cloudfront/-/aws-cloudfront-1.124.0.tgz#81dd569112799ca5720ecb5efe502bddf06cd503"
   integrity sha512-vd0vSEfKVWRtUMOWi5micPuC3qhLC7z7Dre/+X7N/YNqA+U+NX/g5k7jd00UdRnBiSxE34WRezHKsADUw8Tz6w==
@@ -882,7 +929,7 @@
     "@aws-cdk/cx-api" "1.124.0"
     constructs "^3.3.69"
 
-"@aws-cdk/aws-route53-targets@1.124.0":
+"@aws-cdk/aws-route53-targets@1.124.0", "@aws-cdk/aws-route53-targets@~1.124.0":
   version "1.124.0"
   resolved "https://registry.npmjs.org/@aws-cdk/aws-route53-targets/-/aws-route53-targets-1.124.0.tgz#fa1ddcce2af9c552574ab96d1af946ca717b9021"
   integrity sha512-6+hN0zYlDmdXUZHmn5zVFD/sfH788212nLfRUo3V4Lg/XsV4vS3OV8b8wsctZCehuF1lagSIIF7rQJlGoYSBnA==
@@ -939,7 +986,7 @@
     "@aws-cdk/cx-api" "1.124.0"
     constructs "^3.3.69"
 
-"@aws-cdk/aws-sam@1.124.0":
+"@aws-cdk/aws-sam@1.124.0", "@aws-cdk/aws-sam@~1.124.0":
   version "1.124.0"
   resolved "https://registry.npmjs.org/@aws-cdk/aws-sam/-/aws-sam-1.124.0.tgz#cc20765fb556f1691ca64963a146c1fb106da66b"
   integrity sha512-5yQsH3FNp+Mc4FdNwtrG1uRGqzXFSZEcds0FeVs338wDYLPDMnBe4kZzmOO4hY7d7siKP3E5tn+v8cSGvTUiSA==
@@ -1029,7 +1076,7 @@
     "@aws-cdk/core" "1.124.0"
     constructs "^3.3.69"
 
-"@aws-cdk/aws-ssm@1.124.0":
+"@aws-cdk/aws-ssm@1.124.0", "@aws-cdk/aws-ssm@~1.124.0":
   version "1.124.0"
   resolved "https://registry.npmjs.org/@aws-cdk/aws-ssm/-/aws-ssm-1.124.0.tgz#54c6f6959ea0327b38a865bec76445aa23bbda51"
   integrity sha512-41mopAh9ZTg3SL04P0WOO1d3sCDYJL3A/fPWCxDuzizSojdI2EWqvKf/5Lu1NY1jYZG+2ls7xqgG4b8x9BDILw==
@@ -4785,7 +4832,16 @@
     "@graphql-tools/utils" "8.6.12"
     tslib "~2.4.0"
 
-"@graphql-tools/schema@8.3.13", "@graphql-tools/schema@^8.3.1":
+"@graphql-tools/merge@^6.0.18":
+  version "6.2.17"
+  resolved "https://registry.npmjs.org/@graphql-tools/merge/-/merge-6.2.17.tgz#4dedf87d8435a5e1091d7cc8d4f371ed1e029f1f"
+  integrity sha512-G5YrOew39fZf16VIrc49q3c8dBqQDD0ax5LYPiNja00xsXDi0T9zsEWVt06ApjtSdSF6HDddlu5S12QjeN8Tow==
+  dependencies:
+    "@graphql-tools/schema" "^8.0.2"
+    "@graphql-tools/utils" "8.0.2"
+    tslib "~2.3.0"
+
+"@graphql-tools/schema@8.3.13", "@graphql-tools/schema@^8.0.2", "@graphql-tools/schema@^8.3.1":
   version "8.3.13"
   resolved "https://registry.npmjs.org/@graphql-tools/schema/-/schema-8.3.13.tgz#099460459d7821dd8deb34952900fe300085ba0b"
   integrity sha512-e+bx1VHj1i5v4HmhCYCar0lqdoLmkRi/CfV07rTqHR6CRDbIb/S/qDCajHLt7FCovQ5ozlI5sRVbBhzfq5H0PQ==
@@ -4815,6 +4871,13 @@
     tslib "^2.3.0"
     value-or-promise "^1.0.11"
     ws "^8.3.0"
+
+"@graphql-tools/utils@8.0.2":
+  version "8.0.2"
+  resolved "https://registry.npmjs.org/@graphql-tools/utils/-/utils-8.0.2.tgz#795a8383cdfdc89855707d62491c576f439f3c51"
+  integrity sha512-gzkavMOgbhnwkHJYg32Adv6f+LxjbQmmbdD5Hty0+CWxvaiuJq+nU6tzb/7VSU4cwhbNLx/lGu2jbCPEW1McZQ==
+  dependencies:
+    tslib "~2.3.0"
 
 "@graphql-tools/utils@8.6.12", "@graphql-tools/utils@^8.5.1":
   version "8.6.12"
@@ -6738,10 +6801,47 @@ amplify-cli-core@2.8.0, amplify-cli-core@^2.6.0:
     typescript-json-schema "~0.52.0"
     which "^2.0.2"
 
+amplify-cli-core@2.9.0, amplify-cli-core@^2.9.0:
+  version "2.9.0"
+  resolved "https://registry.npmjs.org/amplify-cli-core/-/amplify-cli-core-2.9.0.tgz#6995bb17e45d0b8f3b7471300e78f950e9494f82"
+  integrity sha512-9ScW1ahYT0hDIRMOu+rZ454ooo11dNFhH5UYQc6qTUbt12l3AsHDBTylwRSBH7hECd1xQiXqsdmMKhIUlZDtvw==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "^0.17.2"
+    "@aws-amplify/graphql-transformer-interfaces" "^1.14.2"
+    ajv "^6.12.6"
+    amplify-cli-logger "1.2.0"
+    amplify-prompts "2.2.0"
+    chalk "^4.1.1"
+    ci-info "^2.0.0"
+    cloudform-types "^4.2.0"
+    dotenv "^8.2.0"
+    execa "^5.1.1"
+    fs-extra "^8.1.0"
+    globby "^11.0.3"
+    graphql-transformer-core "^7.5.2"
+    hjson "^3.2.1"
+    js-yaml "^4.0.0"
+    lodash "^4.17.21"
+    node-fetch "^2.6.7"
+    open "^8.4.0"
+    ora "^4.0.3"
+    proxy-agent "^5.0.0"
+    semver "^7.3.5"
+    typescript-json-schema "~0.52.0"
+    which "^2.0.2"
+
 amplify-cli-logger@1.1.3:
   version "1.1.3"
   resolved "https://registry.npmjs.org/amplify-cli-logger/-/amplify-cli-logger-1.1.3.tgz#f08c9b0f389442b6ace7226e6d15c35727bc1dae"
   integrity sha512-mYCfmtbmqLfC0AtUhTZDKzq7v7v81RIeyeVgP1neDoAd0/bEzyPN1sSOVv3Y+Z4C2rX30JvbjSEtcNg4evWg/A==
+  dependencies:
+    winston "^3.3.3"
+    winston-daily-rotate-file "^4.5.0"
+
+amplify-cli-logger@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.npmjs.org/amplify-cli-logger/-/amplify-cli-logger-1.2.0.tgz#635d22732ac4a6e958d33038ca0b331cfc90e95c"
+  integrity sha512-MidSMWUyWwPtqtkLvmlLe46P36AqY4TRFggoXuTk//wGtN1wfGCuwTI47aoyBhFoHYiXHRIyo/AXd/fLX8iJAQ==
   dependencies:
     winston "^3.3.3"
     winston-daily-rotate-file "^4.5.0"
@@ -6777,6 +6877,11 @@ amplify-function-plugin-interface@1.9.5, amplify-function-plugin-interface@^1.9.
   resolved "https://registry.npmjs.org/amplify-function-plugin-interface/-/amplify-function-plugin-interface-1.9.5.tgz#caa95891f7976d29a3d43c51f7c6a372178b9a81"
   integrity sha512-x49gI8U1863JC7akkUTQ5WrAhOPD8/PRx9LCwRshl1RJNMH4AaF40Gx+ueDVV/SLAsFc2GM0xoigxsvX+Cu4qQ==
 
+amplify-headless-interface@1.15.0, amplify-headless-interface@^1.15.0:
+  version "1.15.0"
+  resolved "https://registry.npmjs.org/amplify-headless-interface/-/amplify-headless-interface-1.15.0.tgz#a72d001d11d230ab48844b6e57b5f5c9f1cb030e"
+  integrity sha512-6U22nhKLu67i6/zbBXZO+1TYmLXym+/e9fnwqeOhnctMCybU56RdWvj4/MhQIywn4DyOTHvYBkRT5o4f1hFSPg==
+
 amplify-headless-interface@^1.14.2:
   version "1.14.3"
   resolved "https://registry.npmjs.org/amplify-headless-interface/-/amplify-headless-interface-1.14.3.tgz#0bf0fb115db3f4756eb8c348fc24112ef398d7e7"
@@ -6799,6 +6904,15 @@ amplify-prompts@2.1.0, amplify-prompts@^2.0.0, amplify-prompts@^2.0.1:
   version "2.1.0"
   resolved "https://registry.npmjs.org/amplify-prompts/-/amplify-prompts-2.1.0.tgz#2d54c700493fc8b40a79edd61040dcc73b80326e"
   integrity sha512-52m7sPmQbh3wdNwzYZldK5eRg2432dx8G5Obak2rSeLmThgYagsKhF622mRIgxq5yc87hyEjAzjifMfLwkKzbQ==
+  dependencies:
+    amplify-cli-shared-interfaces "1.1.0"
+    chalk "^4.1.1"
+    enquirer "^2.3.6"
+
+amplify-prompts@2.2.0, amplify-prompts@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.npmjs.org/amplify-prompts/-/amplify-prompts-2.2.0.tgz#288a52ee990eb19a51eed28c20bd43703980ec78"
+  integrity sha512-JZv9GTVz3//s8QlhNBZRuYcUCoxdAEJU6q2tivl2hN0XK3pckeofaXqv6Fi8e9c8NfUyA/u+JVRR7vE4QIMtyw==
   dependencies:
     amplify-cli-shared-interfaces "1.1.0"
     chalk "^4.1.1"
@@ -6892,6 +7006,94 @@ amplify-provider-awscloudformation@^6.1.3:
     vm2 "^3.9.8"
     xstate "^4.14.0"
 
+amplify-provider-awscloudformation@^6.3.0:
+  version "6.3.0"
+  resolved "https://registry.npmjs.org/amplify-provider-awscloudformation/-/amplify-provider-awscloudformation-6.3.0.tgz#409aac4d4fdbc37bf1470bed53c955d4f8046e01"
+  integrity sha512-WsPWS0hJE159Lvm9U7cDgB/aJz+DbzPgoxkdkKh8muadRP48/FnazJrIZj/pRioQPvexS8R+MjJrTty/Rd7PNQ==
+  dependencies:
+    "@aws-amplify/amplify-category-custom" "2.3.33"
+    "@aws-amplify/cli-extensibility-helper" "2.3.29"
+    "@aws-amplify/graphql-transformer-core" "^0.17.2"
+    "@aws-amplify/graphql-transformer-interfaces" "^1.14.2"
+    "@aws-cdk/assert" "~1.124.0"
+    "@aws-cdk/assets" "~1.124.0"
+    "@aws-cdk/aws-apigatewayv2" "~1.124.0"
+    "@aws-cdk/aws-autoscaling" "~1.124.0"
+    "@aws-cdk/aws-batch" "~1.124.0"
+    "@aws-cdk/aws-cloudformation" "~1.124.0"
+    "@aws-cdk/aws-cloudwatch" "~1.124.0"
+    "@aws-cdk/aws-codebuild" "~1.124.0"
+    "@aws-cdk/aws-codecommit" "~1.124.0"
+    "@aws-cdk/aws-codedeploy" "~1.124.0"
+    "@aws-cdk/aws-codepipeline" "~1.124.0"
+    "@aws-cdk/aws-codepipeline-actions" "~1.124.0"
+    "@aws-cdk/aws-ec2" "~1.124.0"
+    "@aws-cdk/aws-ecr" "~1.124.0"
+    "@aws-cdk/aws-ecr-assets" "~1.124.0"
+    "@aws-cdk/aws-ecs" "~1.124.0"
+    "@aws-cdk/aws-elasticloadbalancing" "~1.124.0"
+    "@aws-cdk/aws-elasticloadbalancingv2" "~1.124.0"
+    "@aws-cdk/aws-events" "~1.124.0"
+    "@aws-cdk/aws-events-targets" "~1.124.0"
+    "@aws-cdk/aws-iam" "~1.124.0"
+    "@aws-cdk/aws-kinesis" "~1.124.0"
+    "@aws-cdk/aws-kinesisfirehose" "~1.124.0"
+    "@aws-cdk/aws-kms" "~1.124.0"
+    "@aws-cdk/aws-lambda" "~1.124.0"
+    "@aws-cdk/aws-logs" "~1.124.0"
+    "@aws-cdk/aws-route53" "~1.124.0"
+    "@aws-cdk/aws-s3" "~1.124.0"
+    "@aws-cdk/aws-s3-assets" "~1.124.0"
+    "@aws-cdk/aws-secretsmanager" "~1.124.0"
+    "@aws-cdk/aws-servicecatalog" "~1.124.0"
+    "@aws-cdk/aws-servicediscovery" "~1.124.0"
+    "@aws-cdk/aws-sns" "~1.124.0"
+    "@aws-cdk/aws-sns-subscriptions" "~1.124.0"
+    "@aws-cdk/aws-sqs" "~1.124.0"
+    "@aws-cdk/aws-stepfunctions" "~1.124.0"
+    "@aws-cdk/core" "~1.124.0"
+    "@aws-cdk/custom-resources" "~1.124.0"
+    "@aws-cdk/region-info" "~1.124.0"
+    "@octokit/rest" "^18.0.9"
+    ajv "^6.12.6"
+    amplify-cli-core "2.9.0"
+    amplify-cli-logger "1.2.0"
+    amplify-codegen "^3.0.0"
+    amplify-prompts "2.2.0"
+    amplify-util-import "2.2.32"
+    archiver "^5.3.0"
+    aws-sdk "^2.1113.0"
+    bottleneck "2.19.5"
+    chalk "^4.1.1"
+    cloudform "^4.2.0"
+    cloudform-types "^4.2.0"
+    columnify "^1.5.4"
+    constructs "^3.3.125"
+    cors "^2.8.5"
+    deep-diff "^1.0.2"
+    extract-zip "^2.0.1"
+    folder-hash "^4.0.2"
+    fs-extra "^8.1.0"
+    glob "^7.2.0"
+    graphql "^14.5.8"
+    graphql-transformer-core "^7.5.2"
+    ignore "^5.2.0"
+    ini "^1.3.5"
+    inquirer "^7.3.3"
+    is-wsl "^2.2.0"
+    jose "^4.3.7"
+    lodash "^4.17.21"
+    lodash.throttle "^4.1.1"
+    moment "^2.24.0"
+    netmask "^2.0.2"
+    node-fetch "^2.6.7"
+    ora "^4.0.3"
+    promise-sequential "^1.1.1"
+    proxy-agent "^5.0.0"
+    rimraf "^3.0.0"
+    vm2 "^3.9.8"
+    xstate "^4.14.0"
+
 amplify-storage-simulator@^1.6.7:
   version "1.6.7"
   resolved "https://registry.npmjs.org/amplify-storage-simulator/-/amplify-storage-simulator-1.6.7.tgz#4967fd4f9903910ab096ebd09d56e53de6398238"
@@ -6910,12 +7112,28 @@ amplify-storage-simulator@^1.6.7:
     xml "^1.0.1"
     xml-js "^1.6.11"
 
+amplify-util-headless-input@^1.9.5:
+  version "1.9.5"
+  resolved "https://registry.npmjs.org/amplify-util-headless-input/-/amplify-util-headless-input-1.9.5.tgz#30cec34338140b1938b7bddf2e7d07095941b58b"
+  integrity sha512-dAXewft+FW80TQ4Iwq/f45jDyNn6rFivGOo6cQd7xIQgKmBPwyz24+/5KL363AwX+gkXFFPizacTgMAqigwjcw==
+  dependencies:
+    ajv "^6.12.6"
+    amplify-headless-interface "1.15.0"
+
 amplify-util-import@2.2.30:
   version "2.2.30"
   resolved "https://registry.npmjs.org/amplify-util-import/-/amplify-util-import-2.2.30.tgz#fc20b0dcf1f8d52086c8cf2c3d79d6a7e5e4b76c"
   integrity sha512-/B4jHOlwGhShRf1LTenwRgNTtyRnZzFzgp11d5S2nzu9pDbruqR1vJVHDmeKgGOU2d1dNZi3yCJ9GDClHgM60A==
   dependencies:
     amplify-cli-core "2.8.0"
+    aws-sdk "^2.1113.0"
+
+amplify-util-import@2.2.32:
+  version "2.2.32"
+  resolved "https://registry.npmjs.org/amplify-util-import/-/amplify-util-import-2.2.32.tgz#ae984043f8fd946fca968ee5372f6c8c8427c71b"
+  integrity sha512-BJ8+Ffc+SBBBBnYcuoJcf6y2UdIzUgKtIA0Rm2oybLeBZ4wQ2kl3vpU/5KDDJDbCv+RTH2it7KTzs8JmCJKAeg==
+  dependencies:
+    amplify-cli-core "2.9.0"
     aws-sdk "^2.1113.0"
 
 amplify-velocity-template@1.4.8:
@@ -10901,7 +11119,7 @@ glob@^7.0.0, glob@^7.0.5, glob@^7.1.1, glob@^7.1.2, glob@^7.1.3, glob@^7.1.4, gl
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
-global-dirs@^0.1.1:
+global-dirs@^0.1.0, global-dirs@^0.1.1:
   version "0.1.1"
   resolved "https://registry.npmjs.org/global-dirs/-/global-dirs-0.1.1.tgz#b319c0dd4607f353f3be9cca4c72fc148c49f445"
   integrity sha1-sxnA3UYH81PzvpzKTHL8FIxJ9EU=
@@ -11397,7 +11615,7 @@ import-fresh@^3.0.0, import-fresh@^3.2.1:
     parent-module "^1.0.0"
     resolve-from "^4.0.0"
 
-import-from@3.0.0:
+import-from@3.0.0, import-from@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/import-from/-/import-from-3.0.0.tgz#055cfec38cd5a27d8057ca51376d7d3bf0891966"
   integrity sha512-CiuXOFFSzkU5x/CR0+z7T91Iht4CXgfCxVOFRhh2Zyhg5wOpWvvDLQUsWl+gcN+QscYBjez8hDCt85O7RLDttQ==
@@ -11408,6 +11626,13 @@ import-from@4.0.0:
   version "4.0.0"
   resolved "https://registry.npmjs.org/import-from/-/import-from-4.0.0.tgz#2710b8d66817d232e16f4166e319248d3d5492e2"
   integrity sha512-P9J71vT5nLlDeV8FHs5nNxaLbrpfAV5cF5srvbZfpwpcJoM/xZR3hiv+q+SAnuSmuGbXMWud063iIMx/V/EWZQ==
+
+import-global@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.npmjs.org/import-global/-/import-global-0.1.0.tgz#97b38fd444114eec16824a935f8da575b57aa1ce"
+  integrity sha512-8+hPJLML+m1ym9NSeZXTXFkY5+ml0fYFAzO5yhZiaFQvk9kO0NkE7vd7e7kCVjkTmAxsDPbrWwLQACMwGTDgIg==
+  dependencies:
+    global-dirs "^0.1.0"
 
 import-local@^3.0.2:
   version "3.1.0"
