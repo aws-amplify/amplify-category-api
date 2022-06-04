@@ -14,6 +14,11 @@ import {
   or,
   raw,
   qref,
+  and,
+  list,
+  forEach,
+  comment,
+  ifElse,
 } from 'graphql-mapping-template';
 import {
   COGNITO_AUTH_TYPE,
@@ -32,20 +37,22 @@ import {
   setHasAuthExpression,
   generateOwnerClaimExpression,
   generateOwnerClaimListExpression,
+  getIdentityClaimExp,
+  getOwnerClaimReference,
 } from './helpers';
 
 const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
+  const dynamicExpression = new Array<Expression>();
   const ownerExpression = new Array<Expression>();
+  const groupExpression = new Array<Expression>();
   // we only check against owner rules which are not list fields
   roles.forEach((role, idx) => {
     if (role.strategy === 'owner') {
+      const ownerClaimRef = getOwnerClaimReference(role.claim!, `ownerClaim${idx}`);
       ownerExpression.push(
         generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
         generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
-        set(ref(`authRuntimeFilter`), raw(`[]`)),
-        qref(methodCall(ref('authRuntimeFilter.add'), raw(`{ "${role.entity}": { "eq": $ownerClaim${idx} } }`))),
-        set(ref('ctx.args.filter'), raw(`{ "and": [ "or": $util.toJson($authRuntimeFilter), $ctx.args.filter ]}`)),
-        set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+        qref(methodCall(ref('authOwnerRuntimeFilter.add'), raw(`{ "${role.entity}": { "${role.isEntityList ? 'contains' : 'eq'}": $${ownerClaimRef} } }`))),
         set(
           ref(`ownerEntity${idx}`),
           methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}`), nul()),
@@ -58,15 +65,74 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
                 equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
                 methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
               ]),
-              set(ref(IS_AUTHORIZED_FLAG), bool(true))),
+              set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+            ),
           ]),
         ),
+      );
+    } else if (role.strategy === 'groups' && !role.static) {
+      // Loop through the cognito groups and set as runtime filter
+      groupExpression.push(
+        set(ref(`groupClaim${idx}`), getIdentityClaimExp(str(role.claim!), list([]))),
+        iff(
+          methodCall(ref('util.isString'), ref(`groupClaim${idx}`)),
+          ifElse(
+            methodCall(ref('util.isList'), methodCall(ref('util.parseJson'), ref(`groupClaim${idx}`))),
+            set(ref(`groupClaim${idx}`), methodCall(ref('util.parseJson'), ref(`groupClaim${idx}`))),
+            set(ref(`groupClaim${idx}`), list([ref(`groupClaim${idx}`)])),
+          ),
+        ),
+        forEach(ref('groupRole'), ref(`groupClaim${idx}`), [
+          qref(methodCall(ref('authGroupRuntimeFilter.add'), raw(`{ "${role.entity}": { "${role.isEntityList ? 'contains' : 'eq'}": $groupRole } }`))),
+        ]),
       );
     }
   });
 
-  return [...(ownerExpression.length > 0 ? ownerExpression : [])];
+  dynamicExpression.push(
+    ...combineAuthExpressionAndFilter(ownerExpression, groupExpression),
+  );
+
+  return dynamicExpression;
 };
+
+const combineAuthExpressionAndFilter = (ownerExpression: Array<Expression>, groupExpression: Array<Expression>): Array<Expression> => [
+  set(ref('authRuntimeFilter'), raw('[]')),
+  set(ref('authOwnerRuntimeFilter'), raw('[]')),
+  set(ref('authGroupRuntimeFilter'), raw('[]')),
+  ...(ownerExpression.length > 0 ? ownerExpression : []),
+  ...(groupExpression.length > 0 ? groupExpression : []),
+  comment('Apply dynamic roles auth if not previously authorized by static groups and owner argument'),
+  iff(
+    raw('$authOwnerRuntimeFilter.size() > 0'),
+    forEach(ref('ownerAuthFilter'), ref('authOwnerRuntimeFilter'), [
+      qref(methodCall(ref('authRuntimeFilter.add'), ref('ownerAuthFilter'))),
+    ]),
+  ),
+  iff(
+    and([
+      raw('$authGroupRuntimeFilter.size() > 0'),
+      raw('$authGroupRuntimeFilter.size() + $authRuntimeFilter.size() <= 10'),
+    ]),
+    forEach(ref('groupAuthFilter'), ref('authGroupRuntimeFilter'), [
+      qref(methodCall(ref('authRuntimeFilter.add'), ref('groupAuthFilter'))),
+    ]),
+  ),
+  iff(
+    and([
+      not(ref(IS_AUTHORIZED_FLAG)),
+      raw('$authRuntimeFilter.size() > 0'),
+    ]),
+    compoundExpression([
+      ifElse(
+        methodCall(ref('util.isNullOrEmpty'), ref('ctx.args.filter')),
+        set(ref('ctx.args.filter'), raw('{ "or": $authRuntimeFilter }')),
+        set(ref('ctx.args.filter'), raw('{ "and": [ { "or": $authRuntimeFilter }, $ctx.args.filter ]}')),
+      ),
+      set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+    ]),
+  ),
+];
 
 /**
  * Generates auth expressions for each auth type for Subscription requests

@@ -31,7 +31,7 @@ import {
   ListValueNode,
   StringValueNode,
 } from 'graphql';
-import { SubscriptionLevel, ModelDirectiveConfiguration } from '@aws-amplify/graphql-model-transformer';
+import { SubscriptionLevel, ModelDirectiveConfiguration, removeSubscriptionFilterInputAttribute } from '@aws-amplify/graphql-model-transformer';
 import {
   getBaseType,
   makeDirective,
@@ -272,6 +272,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       if (this.roleMap.get(role)!.strategy === 'owner') prev.push(this.roleMap.get(role)!.entity!);
       return prev;
     }, []);
+    this.removeAuthFieldsFromSubscriptionFilter(context);
     this.authModelConfig.forEach((acm, modelName) => {
       const def = context.output.getObject(modelName)!;
       const modelHasSearchable = def.directives.some(dir => dir.name.value === 'searchable');
@@ -398,7 +399,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         // for subscriptions we only use static rules or owner rule where the field is not a list
         .filter(roleDef => (roleDef.strategy === 'owner' && !fieldIsList(def.fields ?? [], roleDef.entity!)) || roleDef.static);
       subscriptionFieldNames.forEach(subscription => {
-        this.protectSubscriptionResolver(context, subscription.typeName, subscription.fieldName, subscriptionRoles);
+        this.protectSubscriptionResolver(context, subscription.typeName, subscription.fieldName, roleDefinitions);
       });
 
       if (context.featureFlags.getBoolean('useSubUsernameForDefaultIdentityClaim')) {
@@ -420,6 +421,22 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       const [typeName, fieldName] = typeFieldName.split(':');
       const def = context.output.getObject(typeName);
       this.protectFieldResolver(context, def, typeName, fieldName, acm.getRoles());
+    });
+  };
+
+  /**
+   * Amplify will not include the dynamic auth fields in the generated subscription filter input type.
+   * This is because of a limitation of AppSync service. AppSync doesn't allow multiple conditions on the same field in a filter.
+   * Amplify automatically applies filter on the dynamic auth fields, so we don't accept filters on these fields from client.
+   * @param context TransformerTransformSchemaStepContextProvider
+   */
+  removeAuthFieldsFromSubscriptionFilter = (context: TransformerTransformSchemaStepContextProvider): void => {
+    this.authModelConfig.forEach((acm, modelName) => {
+      acm.getRoles().map(role => this.roleMap.get(role)).forEach(role => {
+        if (!role.static && (role.provider === 'userPools' || role.provider === 'oidc')) {
+          removeSubscriptionFilterInputAttribute(context, modelName, role.entity);
+        }
+      });
     });
   };
 
@@ -935,6 +952,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
             if (rule.allow === 'groups') {
               const groupClaim = rule.groupClaim || DEFAULT_GROUP_CLAIM;
               const groupsField = rule.groupsField || DEFAULT_GROUPS_FIELD;
+              const fieldType = (context.output.getType(acm.getName()) as any).fields.find(f => f.name.value === groupsField);
+              const isGroupFieldList = fieldType ? isListType(fieldType.type) : false;
               roleName = `${rule.provider}:dynamicGroup:${groupsField}:${groupClaim}`;
               roleDefinition = {
                 provider: rule.provider,
@@ -942,10 +961,11 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
                 static: false,
                 claim: groupClaim,
                 entity: groupsField,
+                isEntityList: isGroupFieldList,
               };
             } else if (rule.allow === 'owner') {
               const ownerField = rule.ownerField || DEFAULT_OWNER_FIELD;
-              const fieldType = (context.output.getType(acm.getName()) as any).fields.find(field => field.name.value == ownerField);
+              const fieldType = (context.output.getType(acm.getName()) as any).fields.find(f => f.name.value === ownerField);
               const isOwnerFieldList = fieldType ? isListType(fieldType.type) : false;
               const useSub = context.featureFlags.getBoolean('useSubUsernameForDefaultIdentityClaim');
               const ownerClaim = rule.identityClaim || (useSub ? DEFAULT_UNIQUE_IDENTITY_CLAIM : DEFAULT_IDENTITY_CLAIM);
