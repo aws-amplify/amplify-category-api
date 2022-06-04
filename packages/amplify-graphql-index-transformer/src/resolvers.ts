@@ -51,7 +51,7 @@ import { lookupResolverName } from './utils';
 const API_KEY = 'API Key Authorization';
 
 /**
- *
+ * replaceDdbPrimaryKey
  */
 export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
   // Replace the table's primary key with the value from @primaryKey.
@@ -90,7 +90,7 @@ export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, c
 }
 
 /**
- *
+ * updateResolvers
  */
 export function updateResolvers(
   config: PrimaryKeyDirectiveConfiguration,
@@ -316,7 +316,7 @@ function setQuerySnippet(config: PrimaryKeyDirectiveConfiguration, ctx: Transfor
 }
 
 /**
- *
+ * appendSecondaryIndex
  */
 export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const { name, object, primaryKeyField } = config;
@@ -387,7 +387,7 @@ function appendIndex(list: any, newIndex: any): any[] {
 }
 
 /**
- *
+ * updateResolversForIndex
  */
 export function updateResolversForIndex(
   config: IndexDirectiveConfiguration,
@@ -611,7 +611,7 @@ function setSyncQueryMapSnippet(name: string, config: PrimaryKeyDirectiveConfigu
 }
 
 /**
- *
+ * constructSyncVTL
  */
 export function constructSyncVTL(syncVTLContent: string, resolver: TransformerResolverProvider) {
   const checks = [
