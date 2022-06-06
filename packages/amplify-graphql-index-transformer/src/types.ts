@@ -10,7 +10,7 @@ export type PrimaryKeyDirectiveConfiguration = {
 };
 
 export type IndexDirectiveConfiguration = PrimaryKeyDirectiveConfiguration & {
-  name: string;
-  queryField: string;
+  name: string | null;
+  queryField: string | null;
   primaryKeyField: FieldDefinitionNode;
 };

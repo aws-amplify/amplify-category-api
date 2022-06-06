@@ -48,6 +48,10 @@ export function toUpper(word: string): string {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
+export function toLower(word: string): string {
+  return word.charAt(0).toLowerCase() + word.slice(1);
+}
+
 export function toCamelCase(words: string[]): string {
   const formatted = words.map((w, i) => (i === 0 ? w.charAt(0).toLowerCase() + w.slice(1) : w.charAt(0).toUpperCase() + w.slice(1)));
   return formatted.join('');

@@ -17,11 +17,11 @@ import { isListType, isScalarOrEnum } from 'graphql-transformer-common';
 import { appendSecondaryIndex, constructSyncVTL, updateResolversForIndex } from './resolvers';
 import { addKeyConditionInputs, ensureQueryField, updateMutationConditionInput } from './schema';
 import { IndexDirectiveConfiguration } from './types';
-import { validateNotSelfReferencing } from './utils';
+import { generateKeyAndQueryNameForConfig, validateNotSelfReferencing } from './utils';
 
 const directiveName = 'index';
 const directiveDefinition = `
-  directive @${directiveName}(name: String!, sortKeyFields: [String], queryField: String) repeatable on FIELD_DEFINITION
+  directive @${directiveName}(name: String, sortKeyFields: [String], queryField: String) repeatable on FIELD_DEFINITION
 `;
 
 /**
@@ -48,12 +48,13 @@ export class IndexTransformer extends TransformerPluginBase {
       directive,
     } as IndexDirectiveConfiguration);
 
-    if (!args.sortKeyFields) {
-      args.sortKeyFields = [];
-    } else if (!Array.isArray(args.sortKeyFields)) {
-      args.sortKeyFields = [args.sortKeyFields];
-    }
-
+    /**
+     * Impute Optional Fields
+     * Start with sort key fields since both the name and queryField will work sort key fields into the generated name if necessary.
+     */
+    args.sortKeyFields = getOrGenerateDefaultSortKeyFields(args);
+    args.name = getOrGenerateDefaultName(args);
+    args.queryField = getOrGenerateDefaultQueryField(context, args);
     args.sortKey = [];
 
     validate(args, context as TransformerContextProvider);
@@ -88,6 +89,58 @@ export class IndexTransformer extends TransformerPluginBase {
     }
   };
 }
+
+/**
+ * Return the name if provided in our args, else
+ * compute the name based on the field name, and sortKeyFields.
+ */
+const getOrGenerateDefaultName = (config: IndexDirectiveConfiguration): string => {
+  if (config.name) {
+    return config.name;
+  }
+
+  if (config.name === null) {
+    throw new Error('Explicit null value not allowed for name field on @index');
+  }
+
+  return generateKeyAndQueryNameForConfig(config);
+};
+
+/**
+ * Return the queryField if provided in our args, else
+ * compute the queryField based on the field name, and sortKeyFields if the feature flag is enabled.
+ */
+const getOrGenerateDefaultQueryField = (
+  context: TransformerSchemaVisitStepContextProvider,
+  config: IndexDirectiveConfiguration,
+): string | null => {
+  const autoIndexQueryNamesIsEnabled = context.featureFlags.getBoolean('enableAutoIndexQueryNames', false);
+  // Any explicit null will take effect, if enableAutoIndexQueryNames and no queryField is provide set to null for consistency
+  if (config.queryField === null || (!autoIndexQueryNamesIsEnabled && !config.queryField)) {
+    return null;
+  }
+
+  if (config.queryField) {
+    return config.queryField;
+  }
+
+  return generateKeyAndQueryNameForConfig(config);
+};
+
+/**
+ * sortKeyFields are optional so default to empty list,
+ * if we get a raw object just wrap in an array,
+ * else return the list which was provided correctly.
+ */
+const getOrGenerateDefaultSortKeyFields = (config: IndexDirectiveConfiguration): string[] => {
+  if (!config.sortKeyFields) {
+    return [];
+  }
+  if (!Array.isArray(config.sortKeyFields)) {
+    return [config.sortKeyFields];
+  }
+  return config.sortKeyFields;
+};
 
 const validate = (config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const {
