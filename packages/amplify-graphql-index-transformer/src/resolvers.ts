@@ -394,7 +394,10 @@ export function updateResolversForIndex(
   ctx: TransformerContextProvider,
   resolverMap: Map<TransformerResolverProvider, string>,
 ): void {
-  const { queryField } = config;
+  const { name, queryField } = config;
+  if (!name) {
+    throw new Error('Expected name while updating index resolvers.');
+  }
   const createResolver = getResolverObject(config, ctx, 'create');
   const updateResolver = getResolverObject(config, ctx, 'update');
   const deleteResolver = getResolverObject(config, ctx, 'delete');
@@ -431,12 +434,15 @@ export function updateResolversForIndex(
   }
 
   if (syncResolver) {
-    makeSyncResolver(config.name, config, ctx, syncResolver, resolverMap);
+    makeSyncResolver(name, config, ctx, syncResolver, resolverMap);
   }
 }
 
 function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider) {
   const { name, object, queryField } = config;
+  if (!(name && queryField)) {
+    throw new Error('Expected name and queryField to be defined while generating resolver.');
+  }
   const dataSource = ctx.api.host.getDataSource(`${object.name.value}Table`);
   const queryTypeName = ctx.output.getQueryTypeName() as string;
   const table = getTable(ctx, object);
