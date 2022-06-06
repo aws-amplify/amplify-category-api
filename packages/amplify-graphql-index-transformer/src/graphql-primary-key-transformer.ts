@@ -24,7 +24,10 @@ import {
   updateMutationConditionInput,
 } from './schema';
 import { PrimaryKeyDirectiveConfiguration } from './types';
-import { validateNotSelfReferencing } from './utils';
+import {
+  validateNotSelfReferencing,
+  validateNotOwnerAuth,
+} from './utils';
 
 const directiveName = 'primaryKey';
 const directiveDefinition = `
@@ -154,6 +157,12 @@ function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
 
     if (!isNonNullType(sortField.type)) {
       throw new InvalidDirectiveError(`The primary key on type '${object.name.value}' must reference non-null fields.`);
+    }
+
+    if (!validateNotOwnerAuth(sortKeyFieldName, config, ctx)) {
+      throw new InvalidDirectiveError(
+        `The primary key's sort key type '${sortKeyFieldName}' cannot be used as an owner @auth field too. Please user another field for the sort key.`
+      );
     }
 
     config.sortKey.push(sortField);

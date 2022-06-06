@@ -1,5 +1,6 @@
 import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { ListValueNode, ObjectValueNode, StringValueNode } from 'graphql';
 import { plurality, toUpper } from 'graphql-transformer-common';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
 
@@ -50,3 +51,58 @@ export function validateNotSelfReferencing(config: IndexDirectiveConfiguration |
     }
   }
 }
+
+/**
+ * Checks if @auth owner field has been set to a sortKeyField for @primaryKey
+ */
+export const validateNotOwnerAuth = (
+  sortKeyField: string,
+  config: PrimaryKeyDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+): boolean => {
+  const { object } = config;
+
+  const authDir = object.directives?.find(dir => dir.name.value === 'auth');
+
+  if (!authDir) return true;
+
+  const dirRules = (authDir.arguments?.find(arg => arg.name.value === 'rules')?.value as ListValueNode).values;
+  const ownerRules = dirRules.filter(rule => {
+    let isOwner = false;
+    let hasIdentityClaimField = false;
+    let hasOwnerFieldField = false;
+    let usesMultiClaim = false;
+    let sortKeyFieldIsAuthField = false;
+
+    (rule as ObjectValueNode).fields?.forEach(field => {
+      const name = field.name.value;
+      const { value } = field?.value as StringValueNode;
+
+      if (name === 'allow' && value === 'owner') {
+        isOwner = true;
+      }
+
+      if (name === 'identityClaim') {
+        hasIdentityClaimField = true;
+
+        if (value === 'sub::username') {
+          usesMultiClaim = true;
+        }
+      }
+
+      if (name === 'ownerField') {
+        hasOwnerFieldField = true;
+
+        if (value === sortKeyField) {
+          sortKeyFieldIsAuthField = true;
+        }
+      }
+    });
+    const featureFlagEnabled = ctx.featureFlags.getBoolean('useSubUsernameForDefaultIdentityClaim');
+    const usesSubUsernameIdentityClaim = isOwner && (usesMultiClaim || (!hasIdentityClaimField && featureFlagEnabled));
+    const invalidOwnerField = sortKeyFieldIsAuthField || !hasOwnerFieldField;
+
+    return usesSubUsernameIdentityClaim && invalidOwnerField;
+  });
+  return ownerRules.length === 0;
+};
