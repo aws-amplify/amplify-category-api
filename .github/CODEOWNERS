@@ -1,2 +1,1 @@
-# Amplify Data and Amplify CLI teams are modeled as codeowners during this migration process. We'll remove CLI once complete.
-* @aws-amplify/amplify-data @aws-amplify/amplify-cli
+* @aws-amplify/amplify-data
