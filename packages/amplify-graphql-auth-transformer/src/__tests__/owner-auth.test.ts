@@ -1039,9 +1039,8 @@ describe('owner based @auth', () => {
         } as FeatureFlagProvider),
       });
 
-      expect(() => {
-        transformer.transform(schema);
-      }).toBeTruthy();
+      const out = transformer.transform(schema);
+      expect(out).toBeDefined();
     });
 
     test('handles sortKeyFields with implicit single claim and use username for default', () => {
@@ -1069,9 +1068,8 @@ describe('owner based @auth', () => {
         } as FeatureFlagProvider),
       });
 
-      expect(() => {
-        transformer.transform(schema);
-      }).toBeTruthy();
+      const out = transformer.transform(schema);
+      expect(out).toBeDefined();
     });
 
     test('handles sortKeyFields with implicit single claim, custom owner field, and use sub::username for default', () => {
