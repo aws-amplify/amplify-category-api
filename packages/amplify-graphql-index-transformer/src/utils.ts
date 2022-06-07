@@ -57,25 +57,23 @@ export function validateNotSelfReferencing(config: IndexDirectiveConfiguration |
  */
 export const validateNotOwnerAuth = (
   sortKeyField: string,
-  config: PrimaryKeyDirectiveConfiguration,
+  { object }: PrimaryKeyDirectiveConfiguration,
   ctx: TransformerContextProvider,
 ): boolean => {
-  const { object } = config;
-
   const authDir = object.directives?.find(dir => dir.name.value === 'auth');
 
   if (!authDir) return true;
 
-  const dirRules = (authDir.arguments?.find(arg => arg.name.value === 'rules')?.value as ListValueNode).values;
-  const ownerRules = dirRules.filter(rule => {
+  const dirRules = (authDir.arguments?.find(arg => arg.name.value === 'rules')?.value as ListValueNode)?.values || [];
+  const hasOwnerFieldAsSortKey = dirRules.some(rule => {
     let isOwner = false;
-    let hasIdentityClaimField = false;
-    let hasOwnerFieldField = false;
+    let identityClaimIsSet = false;
+    let ownerFieldIsSet = false;
     let usesMultiClaim = false;
     let sortKeyFieldIsAuthField = false;
 
     (rule as ObjectValueNode).fields?.forEach(field => {
-      const name = field.name.value;
+      const name: string = field.name.value;
       const { value } = field?.value as StringValueNode;
 
       if (name === 'allow' && value === 'owner') {
@@ -83,7 +81,7 @@ export const validateNotOwnerAuth = (
       }
 
       if (name === 'identityClaim') {
-        hasIdentityClaimField = true;
+        identityClaimIsSet = true;
 
         if (value === 'sub::username') {
           usesMultiClaim = true;
@@ -91,18 +89,22 @@ export const validateNotOwnerAuth = (
       }
 
       if (name === 'ownerField') {
-        hasOwnerFieldField = true;
+        ownerFieldIsSet = true;
 
         if (value === sortKeyField) {
           sortKeyFieldIsAuthField = true;
         }
       }
     });
+
     const featureFlagEnabled = ctx.featureFlags.getBoolean('useSubUsernameForDefaultIdentityClaim');
-    const usesSubUsernameIdentityClaim = isOwner && (usesMultiClaim || (!hasIdentityClaimField && featureFlagEnabled));
-    const invalidOwnerField = sortKeyFieldIsAuthField || !hasOwnerFieldField;
+    const usesImplicitIdentityClaim = !identityClaimIsSet && featureFlagEnabled;
+    const usesImplicitOwnerField = !ownerFieldIsSet;
+    const usesSubUsernameIdentityClaim: boolean = isOwner && (usesMultiClaim || usesImplicitIdentityClaim);
+    const invalidOwnerField: boolean = sortKeyFieldIsAuthField || usesImplicitOwnerField;
 
     return usesSubUsernameIdentityClaim && invalidOwnerField;
   });
-  return ownerRules.length === 0;
+
+  return !hasOwnerFieldAsSortKey;
 };
