@@ -1,5 +1,6 @@
 import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { ListValueNode, ObjectValueNode, StringValueNode } from 'graphql';
 import { plurality, toUpper } from 'graphql-transformer-common';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
 
@@ -50,3 +51,60 @@ export function validateNotSelfReferencing(config: IndexDirectiveConfiguration |
     }
   }
 }
+
+/**
+ * Checks if @auth owner field has been set to a sortKeyField for @primaryKey
+ */
+export const validateNotOwnerAuth = (
+  sortKeyField: string,
+  { object }: PrimaryKeyDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+): boolean => {
+  const authDir = object.directives?.find(dir => dir.name.value === 'auth');
+
+  if (!authDir) return true;
+
+  const dirRules = (authDir.arguments?.find(arg => arg.name.value === 'rules')?.value as ListValueNode)?.values || [];
+  const hasOwnerFieldAsSortKey = dirRules.some(rule => {
+    let isOwner = false;
+    let identityClaimIsSet = false;
+    let ownerFieldIsSet = false;
+    let usesMultiClaim = false;
+    let sortKeyFieldIsAuthField = false;
+
+    (rule as ObjectValueNode).fields?.forEach(field => {
+      const name: string = field.name.value;
+      const { value } = field?.value as StringValueNode;
+
+      if (name === 'allow' && value === 'owner') {
+        isOwner = true;
+      }
+
+      if (name === 'identityClaim') {
+        identityClaimIsSet = true;
+
+        if (value === 'sub::username') {
+          usesMultiClaim = true;
+        }
+      }
+
+      if (name === 'ownerField') {
+        ownerFieldIsSet = true;
+
+        if (value === sortKeyField) {
+          sortKeyFieldIsAuthField = true;
+        }
+      }
+    });
+
+    const featureFlagEnabled = ctx.featureFlags.getBoolean('useSubUsernameForDefaultIdentityClaim');
+    const usesImplicitIdentityClaim = !identityClaimIsSet && featureFlagEnabled;
+    const usesImplicitOwnerField = !ownerFieldIsSet && sortKeyField === 'owner';
+    const usesSubUsernameIdentityClaim: boolean = isOwner && (usesMultiClaim || usesImplicitIdentityClaim);
+    const invalidOwnerField: boolean = sortKeyFieldIsAuthField || usesImplicitOwnerField;
+
+    return usesSubUsernameIdentityClaim && invalidOwnerField;
+  });
+
+  return !hasOwnerFieldAsSortKey;
+};
