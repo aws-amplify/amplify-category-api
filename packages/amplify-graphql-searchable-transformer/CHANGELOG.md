@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.14.3-sub-username-identity-claim.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@0.14.0...@aws-amplify/graphql-searchable-transformer@0.14.3-sub-username-identity-claim.1) (2022-06-07)
+
+
+### Bug Fixes
+
+* **searchable:** change delete and update policy for os instance ([#24](https://github.com/aws-amplify/amplify-category-api/issues/24)) ([136afb8](https://github.com/aws-amplify/amplify-category-api/commit/136afb8494a7f69999a11f54e7e66f70f7a6b73a))
+* set searchable streaming lambda debug env var default to 0 ([8ef6ebe](https://github.com/aws-amplify/amplify-category-api/commit/8ef6ebe10fa0a516bf502dd3d6f48d118558dbad))
+
+
+
+
+
 ## [0.14.3-sub-username-identity-claim.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@0.14.0...@aws-amplify/graphql-searchable-transformer@0.14.3-sub-username-identity-claim.0) (2022-06-07)
 
 
