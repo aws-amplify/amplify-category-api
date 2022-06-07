@@ -3,7 +3,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthConfiguration, FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { getField, getObjectType, featureFlags } from './test-helpers';
@@ -935,6 +935,175 @@ describe('owner based @auth', () => {
       expect(out).toBeDefined();
       const schema = parse(out.schema);
       validateModelSchema(schema);
+    });
+  });
+
+  describe('sort key fields on @auth owner field', () => {
+    let authConfig: AppSyncAuthConfiguration;
+
+    beforeAll(() => {
+      authConfig = {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [],
+      };
+    });
+
+    test('handles sortKeyFields with implicit multi claim and use sub::username default', () => {
+      const schema = `
+        type Test @model @auth(rules: [{ allow: owner }]) {
+          id: ID! @primaryKey(sortKeyFields: "owner")
+          owner: String!
+        }`;
+
+      const transformer = new GraphQLTransform({
+        authConfig,
+        transformers: [
+          new ModelTransformer(),
+          new PrimaryKeyTransformer(),
+          new AuthTransformer(),
+        ],
+        featureFlags: ({
+          getBoolean: (featureName: string, defaultValue: boolean) => {
+            if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
+              return true;
+            }
+
+            return defaultValue;
+          },
+        } as FeatureFlagProvider),
+      });
+
+      expect(() => {
+        transformer.transform(schema);
+      }).toThrow(
+        "The primary key's sort key type 'owner' cannot be used as an owner @auth field too. Please user another field for the sort key.",
+      );
+    });
+
+    test('handles sortKeyFields with explicit multi claim and explicit identity claim', () => {
+      const schema = `
+        type Test @model @auth(rules: [{ allow: owner, identityClaim: "sub::username" }]) {
+          id: ID! @primaryKey(sortKeyFields: "owner")
+          owner: String!
+        }`;
+
+      const transformer = new GraphQLTransform({
+        authConfig,
+        transformers: [
+          new ModelTransformer(),
+          new PrimaryKeyTransformer(),
+          new AuthTransformer(),
+        ],
+        featureFlags: ({
+          getBoolean: (featureName: string, defaultValue: boolean) => {
+            if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
+              return false;
+            }
+
+            return defaultValue;
+          },
+        } as FeatureFlagProvider),
+      });
+
+      expect(() => {
+        transformer.transform(schema);
+      }).toThrow(
+        "The primary key's sort key type 'owner' cannot be used as an owner @auth field too. Please user another field for the sort key.",
+      );
+    });
+
+    test('handles sortKeyFields with explicit single claim and explicit identity claim', () => {
+      const schema = `
+        type Test @model @auth(rules: [{ allow: owner, identityClaim: "username" }]) {
+          id: ID! @primaryKey(sortKeyFields: "owner")
+          owner: String!
+        }`;
+
+      const transformer = new GraphQLTransform({
+        authConfig,
+        transformers: [
+          new ModelTransformer(),
+          new PrimaryKeyTransformer(),
+          new AuthTransformer(),
+        ],
+        featureFlags: ({
+          getBoolean: (featureName: string, defaultValue: boolean) => {
+            if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
+              return true;
+            }
+
+            return defaultValue;
+          },
+        } as FeatureFlagProvider),
+      });
+
+      expect(() => {
+        transformer.transform(schema);
+      }).toBeTruthy();
+    });
+
+    test('handles sortKeyFields with implicit single claim and use username for default', () => {
+      const schema = `
+        type Test @model @auth(rules: [{ allow: owner }]) {
+          id: ID! @primaryKey(sortKeyFields: "owner")
+          owner: String!
+        }`;
+
+      const transformer = new GraphQLTransform({
+        authConfig,
+        transformers: [
+          new ModelTransformer(),
+          new PrimaryKeyTransformer(),
+          new AuthTransformer(),
+        ],
+        featureFlags: ({
+          getBoolean: (featureName: string, defaultValue: boolean) => {
+            if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
+              return false;
+            }
+
+            return defaultValue;
+          },
+        } as FeatureFlagProvider),
+      });
+
+      expect(() => {
+        transformer.transform(schema);
+      }).toBeTruthy();
+    });
+
+    test('handles sortKeyFields with implicit single claim, custom owner field, and use sub::username for default', () => {
+      const schema = `
+        type Test @model @auth(rules: [{ allow: owner, ownerField: "myOwnerField" }]) {
+          id: ID! @primaryKey(sortKeyFields: "myOwnerField")
+          myOwnerField: String!
+        }`;
+
+      const transformer = new GraphQLTransform({
+        authConfig,
+        transformers: [
+          new ModelTransformer(),
+          new PrimaryKeyTransformer(),
+          new AuthTransformer(),
+        ],
+        featureFlags: ({
+          getBoolean: (featureName: string, defaultValue: boolean) => {
+            if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
+              return true;
+            }
+
+            return defaultValue;
+          },
+        } as FeatureFlagProvider),
+      });
+
+      expect(() => {
+        transformer.transform(schema);
+      }).toThrow(
+        "The primary key's sort key type 'myOwnerField' cannot be used as an owner @auth field too. Please user another field for the sort key.",
+      );
     });
   });
 });
