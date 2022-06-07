@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.20.5-sub-username-identity-claim.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-mapping-template@4.20.3...graphql-mapping-template@4.20.5-sub-username-identity-claim.0) (2022-06-07)
+
+**Note:** Version bump only for package graphql-mapping-template
+
+
+
+
+
 ## [4.20.4](https://github.com/aws-amplify/amplify-category-api/compare/graphql-mapping-template@4.20.3...graphql-mapping-template@4.20.4) (2022-05-31)
 
 **Note:** Version bump only for package graphql-mapping-template

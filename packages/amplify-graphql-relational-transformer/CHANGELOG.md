@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.3-sub-username-identity-claim.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.9.0...@aws-amplify/graphql-relational-transformer@0.9.3-sub-username-identity-claim.0) (2022-06-07)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+
+
+
+
 ## [0.9.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.9.0...@aws-amplify/graphql-relational-transformer@0.9.2) (2022-05-31)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer

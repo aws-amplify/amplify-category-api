@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.31-sub-username-identity-claim.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-dynamodb-simulator@2.2.28...amplify-dynamodb-simulator@2.2.31-sub-username-identity-claim.0) (2022-06-07)
+
+**Note:** Version bump only for package amplify-dynamodb-simulator
+
+
+
+
+
 ## [2.2.30](https://github.com/aws-amplify/amplify-category-api/compare/amplify-dynamodb-simulator@2.2.28...amplify-dynamodb-simulator@2.2.30) (2022-05-31)
 
 **Note:** Version bump only for package amplify-dynamodb-simulator

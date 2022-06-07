@@ -1,6 +1,6 @@
 {
   "name": "graphql-mapping-template",
-  "version": "4.20.4",
+  "version": "4.20.5-sub-username-identity-claim.0",
   "description": "An AST wrapper around AWS AppSync resolvers",
   "repository": {
     "type": "git",

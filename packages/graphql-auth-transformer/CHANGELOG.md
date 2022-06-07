@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.35-sub-username-identity-claim.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-auth-transformer@7.2.32...graphql-auth-transformer@7.2.35-sub-username-identity-claim.0) (2022-06-07)
+
+**Note:** Version bump only for package graphql-auth-transformer
+
+
+
+
+
 ## [7.2.34](https://github.com/aws-amplify/amplify-category-api/compare/graphql-auth-transformer@7.2.32...graphql-auth-transformer@7.2.34) (2022-05-31)
 
 **Note:** Version bump only for package graphql-auth-transformer

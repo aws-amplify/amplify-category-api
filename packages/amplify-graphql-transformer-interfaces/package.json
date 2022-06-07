@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-transformer-interfaces",
-  "version": "1.14.2",
+  "version": "1.14.3-sub-username-identity-claim.0",
   "description": "Amplify GraphQL transformer interface definitions",
   "repository": {
     "type": "git",

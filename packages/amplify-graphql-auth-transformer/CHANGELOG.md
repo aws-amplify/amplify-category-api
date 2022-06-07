@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.3-sub-username-identity-claim.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@0.9.0...@aws-amplify/graphql-auth-transformer@0.9.3-sub-username-identity-claim.0) (2022-06-07)
+
+
+### Bug Fixes
+
+* handle return value of set of owners to return user for sub::username identity claim ([1fb03c5](https://github.com/aws-amplify/amplify-category-api/commit/1fb03c5d9d52c4665ba046637933fa9bf4e3f483))
+* use concatenated identity claim for primary key queries ([4e4a22f](https://github.com/aws-amplify/amplify-category-api/commit/4e4a22febc679eee471f7234c6595564c7a5a7d2))
+
+
+
+
+
 ## [0.9.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@0.9.0...@aws-amplify/graphql-auth-transformer@0.9.2) (2022-05-31)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
