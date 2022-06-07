@@ -99,7 +99,7 @@ export const validateNotOwnerAuth = (
 
     const featureFlagEnabled = ctx.featureFlags.getBoolean('useSubUsernameForDefaultIdentityClaim');
     const usesImplicitIdentityClaim = !identityClaimIsSet && featureFlagEnabled;
-    const usesImplicitOwnerField = !ownerFieldIsSet;
+    const usesImplicitOwnerField = !ownerFieldIsSet && sortKeyField === 'owner';
     const usesSubUsernameIdentityClaim: boolean = isOwner && (usesMultiClaim || usesImplicitIdentityClaim);
     const invalidOwnerField: boolean = sortKeyFieldIsAuthField || usesImplicitOwnerField;
 
