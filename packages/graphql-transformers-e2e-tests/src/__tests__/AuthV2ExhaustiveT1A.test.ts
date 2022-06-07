@@ -1,6 +1,7 @@
 import { AuthProvider, AuthStrategy, ModelOperation } from '@aws-amplify/graphql-auth-transformer';
 import moment from 'moment';
 import {
+  AUTH_TEST_OPERATIONS,
   cleanupAuthExhaustiveTest, deploySchema, generateTestModel, testAuthResolver,
 } from '../authExhaustiveTestUtils';
 
@@ -35,8 +36,7 @@ describe('e2e auth resolvers tests', () => {
     const providers = strategyProviders[strategy];
 
     providers.forEach(provider => {
-      const operations: ModelOperation[] = ['create', 'read', 'update', 'delete'];
-      operations.forEach(operation => {
+      AUTH_TEST_OPERATIONS.forEach(operation => {
         const { modelName, schema } = generateTestModel(strategy, provider, operation);
         tests.push({
           modelName, strategy, provider, operation,

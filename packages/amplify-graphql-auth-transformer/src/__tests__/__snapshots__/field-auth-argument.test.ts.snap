@@ -247,8 +247,6 @@ exports[`with identity claim feature flag disabled does not generate field resol
 ## [End] Checking for allowed operations which can return this field. **"
 `;
 
-exports[`with identity claim feature flag disabled error on non null fields which need resolvers 1`] = `"Because \\"Post\\" has a field-level authorization rule and subscriptions are enabled, you need to either apply field-level authorization rules to all required fields where all rules have read access [\\"id\\",\\"name\\",\\"ssn\\"], make those fields nullable, or disable subscriptions for \\"Post\\" (setting level to off or public)."`;
-
 exports[`with identity claim feature flag disabled generates field resolver for other provider rules even if private removes all provided-related rules 1`] = `
 "## [Start] Field Authorization Steps. **
 #set( $isAuthorized = false )

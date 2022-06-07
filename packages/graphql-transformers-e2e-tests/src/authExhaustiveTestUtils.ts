@@ -37,6 +37,7 @@ const REAL_PASSWORD = 'Password1234!';
 const ADMIN_GROUP_NAME = 'Admin';
 
 const S3_ROOT_DIR_KEY = 'deployments';
+export const AUTH_TEST_OPERATIONS: ModelOperation[] = ['create', 'get', 'list', 'update', 'delete'];
 
 /**
  *
@@ -275,11 +276,10 @@ export const testAuthResolver = async (
   }
 
   const { profileId } = response.data[`create${modelName}`];
-  if (operation === 'read') {
-    // get/list
+  if (operation === 'list') {
     const listQuery = gql`
       query {
-        list${plurality(modelName, true)} {
+        ${operation}${plurality(modelName, true)} {
           items {
             lastName
             firstName
@@ -304,12 +304,12 @@ export const testAuthResolver = async (
     } catch (e) {
       expect(e).toBeDefined();
     }
-
+  } else if (operation === 'get') {
     const getInput = hasCustomPrimaryKey ? `profileId: "${profileId}", firstName: "Amplify", lastName: "CLI"` : `profileId: "${profileId}"`;
 
     const getQuery = gql`
       query {
-        get${modelName} (${getInput}) {
+        ${operation}${modelName} (${getInput}) {
           lastName
           firstName
         }
@@ -333,10 +333,12 @@ export const testAuthResolver = async (
       expect(e).toBeDefined();
     }
   } else if (operation === 'delete' || operation === 'update') {
-    const input = operation === 'update'
-      ? `{ profileId: "${profileId}", firstName: "Amplify", lastName: "CLI", title: "UPDATED" }`
-      : operation === 'delete' && hasCustomPrimaryKey ? `{ profileId: "${profileId}", firstName: "Amplify", lastName: "CLI" }`
-        : `{ profileId: "${profileId}" }`;
+    let input = `{ profileId: "${profileId}", firstName: "Amplify", lastName: "CLI", title: "UPDATED" }`;
+
+    if (operation === 'delete') {
+      input = hasCustomPrimaryKey ? `{ profileId: "${profileId}", firstName: "Amplify", lastName: "CLI" }` : `{ profileId: "${profileId}" }`;
+    }
+
     const mutation = gql`
       mutation {
         ${operation}${modelName} (input: ${input}) {
@@ -347,15 +349,15 @@ export const testAuthResolver = async (
     `;
 
     try {
-      const response = await client.mutate<any>({
+      const mutationResponse = await client.mutate<unknown>({
         mutation,
         fetchPolicy: 'no-cache',
       });
 
       if (hasPartialAccess && operation === 'delete') {
-        expect(response.errors).toBeDefined();
+        expect(mutationResponse.errors).toBeDefined();
       } else {
-        expect(response.errors).not.toBeDefined();
+        expect(mutationResponse.errors).not.toBeDefined();
       }
     } catch (e) {
       expect(hasPartialAccess && operation === 'delete').toBeTruthy();

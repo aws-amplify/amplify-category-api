@@ -105,11 +105,10 @@ const getOperationRelatedTemplates = (operation: ModelOperation, modelName: stri
     case 'delete':
     case 'update':
       return [`Mutation.${operation}${modelName}.auth.1.res.vtl`];
-    case 'read':
-      return [
-        `Query.get${modelName}.auth.1.req.vtl`,
-        `Query.list${plurality(modelName, true)}.auth.1.req.vtl`,
-      ];
+    case 'list':
+      return [`Query.list${plurality(modelName, true)}.auth.1.req.vtl`];
+    case 'get':
+      return [`Query.get${modelName}.auth.1.req.vtl`];
     default:
       throw new Error(`'${operation}' auth operation not supported for this test`);
   }
@@ -173,7 +172,9 @@ const getInputContext = (
       });
       break;
     }
-    case 'read': break;
+    case 'list':
+    case 'get':
+      break;
     default: throw new Error(`'${operation}' operation is not supported for this test case`);
   }
 
@@ -267,7 +268,7 @@ describe('acm resolver tests', () => {
 
     providers.forEach(provider => {
       const userContext = generateUser(provider, authStrategy);
-      const operations: ModelOperation[] = ['create', 'read', 'update', 'delete'];
+      const operations: ModelOperation[] = ['create', 'get', 'list', 'update', 'delete'];
       operations.forEach(operation => {
         it(`should generate auth resolver logic that passes as expected for '${authStrategy}' strategy using '${provider}' provider running '${operation}' operation`, () => {
           testResolverLogic(authStrategy, provider, userContext, operation);
