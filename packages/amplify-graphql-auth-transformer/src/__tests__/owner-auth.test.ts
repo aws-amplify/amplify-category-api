@@ -978,7 +978,7 @@ describe('owner based @auth', () => {
       expect(() => {
         transformer.transform(schema);
       }).toThrow(
-        "The primary key's sort key type 'owner' cannot be used as an owner @auth field too. Please user another field for the sort key.",
+        "The primary key's sort key type 'owner' cannot be used as an owner @auth field too. Please use another field for the sort key.",
       );
     });
 
@@ -1010,7 +1010,7 @@ describe('owner based @auth', () => {
       expect(() => {
         transformer.transform(schema);
       }).toThrow(
-        "The primary key's sort key type 'owner' cannot be used as an owner @auth field too. Please user another field for the sort key.",
+        "The primary key's sort key type 'owner' cannot be used as an owner @auth field too. Please use another field for the sort key.",
       );
     });
 
@@ -1102,7 +1102,7 @@ describe('owner based @auth', () => {
       expect(() => {
         transformer.transform(schema);
       }).toThrow(
-        "The primary key's sort key type 'myOwnerField' cannot be used as an owner @auth field too. Please user another field for the sort key.",
+        "The primary key's sort key type 'myOwnerField' cannot be used as an owner @auth field too. Please use another field for the sort key.",
       );
     });
   });

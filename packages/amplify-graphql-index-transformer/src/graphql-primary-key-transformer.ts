@@ -161,7 +161,7 @@ function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
 
     if (!validateNotOwnerAuth(sortKeyFieldName, config, ctx)) {
       throw new InvalidDirectiveError(
-        `The primary key's sort key type '${sortKeyFieldName}' cannot be used as an owner @auth field too. Please user another field for the sort key.`
+        `The primary key's sort key type '${sortKeyFieldName}' cannot be used as an owner @auth field too. Please use another field for the sort key.`
       );
     }
 
