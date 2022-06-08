@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.12.0-sub-username-identity-claim.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.11.10...@aws-amplify/graphql-index-transformer@0.12.0-sub-username-identity-claim.0) (2022-06-08)
+
+
+### Features
+
+* add error when using an owner field as a sort key field ([e668f8f](https://github.com/aws-amplify/amplify-category-api/commit/e668f8ffd9f236b5d8e35ab84432c681094ca4b6))
+
+
+
+
+
 ## [0.11.10](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.11.7...@aws-amplify/graphql-index-transformer@0.11.10) (2022-06-07)
 
 **Note:** Version bump only for package @aws-amplify/graphql-index-transformer

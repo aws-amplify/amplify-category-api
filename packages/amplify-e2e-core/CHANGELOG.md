@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.6-sub-username-identity-claim.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-e2e-core@3.1.5...amplify-e2e-core@3.1.6-sub-username-identity-claim.0) (2022-06-08)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
 ## [3.1.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-e2e-core@3.1.2...amplify-e2e-core@3.1.5) (2022-06-07)
 
 **Note:** Version bump only for package amplify-e2e-core

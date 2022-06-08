@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.36-sub-username-identity-claim.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-dynamodb-transformer@7.2.35...graphql-dynamodb-transformer@7.2.36-sub-username-identity-claim.0) (2022-06-08)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
 ## [7.2.35](https://github.com/aws-amplify/amplify-category-api/compare/graphql-dynamodb-transformer@7.2.32...graphql-dynamodb-transformer@7.2.35) (2022-06-07)
 
 **Note:** Version bump only for package graphql-dynamodb-transformer

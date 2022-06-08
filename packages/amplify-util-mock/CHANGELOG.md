@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0-sub-username-identity-claim.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-util-mock@4.4.3...amplify-util-mock@4.5.0-sub-username-identity-claim.0) (2022-06-08)
+
+
+### Features
+
+* **graphql-auth-transformer:** [@auth](https://github.com/auth) allow more granular access rights for read ([#23](https://github.com/aws-amplify/amplify-category-api/issues/23)) ([041fb80](https://github.com/aws-amplify/amplify-category-api/commit/041fb808e380d04f2c4913cef1037c3d87e98d22))
+
+
+
+
+
 ## [4.4.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-util-mock@4.4.0...amplify-util-mock@4.4.3) (2022-06-07)
 
 **Note:** Version bump only for package amplify-util-mock

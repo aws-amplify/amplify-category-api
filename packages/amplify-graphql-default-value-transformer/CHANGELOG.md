@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.26-sub-username-identity-claim.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-default-value-transformer@0.5.25...@aws-amplify/graphql-default-value-transformer@0.5.26-sub-username-identity-claim.0) (2022-06-08)
+
+**Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer
+
+
+
+
+
 ## [0.5.25](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-default-value-transformer@0.5.22...@aws-amplify/graphql-default-value-transformer@0.5.25) (2022-06-07)
 
 **Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer

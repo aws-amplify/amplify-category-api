@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.6.0-sub-username-identity-claim.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformers-e2e-tests@7.5.3...graphql-transformers-e2e-tests@7.6.0-sub-username-identity-claim.0) (2022-06-08)
+
+
+### Bug Fixes
+
+* use concatenated identity claim for primary key queries ([eafc412](https://github.com/aws-amplify/amplify-category-api/commit/eafc412d1a9c799077cd631c3d9c75edb43f524c))
+
+
+### Features
+
+* **graphql-auth-transformer:** [@auth](https://github.com/auth) allow more granular access rights for read ([#23](https://github.com/aws-amplify/amplify-category-api/issues/23)) ([041fb80](https://github.com/aws-amplify/amplify-category-api/commit/041fb808e380d04f2c4913cef1037c3d87e98d22))
+
+
+
+
+
 ## [7.5.3](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformers-e2e-tests@7.5.0...graphql-transformers-e2e-tests@7.5.3) (2022-06-07)
 
 **Note:** Version bump only for package graphql-transformers-e2e-tests
