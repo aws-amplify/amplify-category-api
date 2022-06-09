@@ -1007,11 +1007,8 @@ describe('owner based @auth', () => {
         } as FeatureFlagProvider),
       });
 
-      expect(() => {
-        transformer.transform(schema);
-      }).toThrow(
-        "The primary key's sort key type 'owner' cannot be used as an owner @auth field too. Please use another field for the sort key.",
-      );
+      const out = transformer.transform(schema);
+      expect(out).toBeDefined();
     });
 
     test('handles sortKeyFields with explicit single claim and explicit identity claim', () => {
