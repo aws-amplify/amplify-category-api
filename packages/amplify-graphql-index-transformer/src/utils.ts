@@ -1,6 +1,12 @@
 import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ListValueNode, ObjectValueNode, StringValueNode } from 'graphql';
+import {
+  ListValueNode,
+  ObjectValueNode,
+  StringValueNode,
+  ValueNode,
+  DirectiveNode,
+} from 'graphql';
 import { plurality, toUpper } from 'graphql-transformer-common';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
 
@@ -60,51 +66,34 @@ export const validateNotOwnerAuth = (
   { object }: PrimaryKeyDirectiveConfiguration,
   ctx: TransformerContextProvider,
 ): boolean => {
-  const authDir = object.directives?.find(dir => dir.name.value === 'auth');
+  const authDir = (object.directives || []).find(collectAuthDirectives);
+  const featureFlagEnabled = ctx.featureFlags.getBoolean('useSubUsernameForDefaultIdentityClaim');
 
-  if (!authDir) return true;
+  if (!authDir || !featureFlagEnabled) return true;
 
-  const dirRules = (authDir.arguments?.find(arg => arg.name.value === 'rules')?.value as ListValueNode)?.values || [];
-  const hasOwnerFieldAsSortKey = dirRules.some(rule => {
-    let isOwner = false;
-    let identityClaimIsSet = false;
-    let ownerFieldIsSet = false;
-    let usesMultiClaim = false;
-    let sortKeyFieldIsAuthField = false;
+  const authDirRules = (authDir.arguments?.find(arg => arg.name.value === 'rules')?.value as ListValueNode | undefined)?.values || [];
 
-    (rule as ObjectValueNode).fields?.forEach(field => {
-      const name: string = field.name.value;
-      const { value } = field?.value as StringValueNode;
+  return !authDirRules.map(ownerFieldsFromOwnerRule).includes(sortKeyField);
+};
 
-      if (name === 'allow' && value === 'owner') {
-        isOwner = true;
-      }
+const collectAuthDirectives = (dir: DirectiveNode): boolean => dir.name.value === 'auth';
 
-      if (name === 'identityClaim') {
-        identityClaimIsSet = true;
+const ownerFieldsFromOwnerRule = (rule: ValueNode): string => {
+  const ruleObject: { [key: string]: string } = {
+    ownerField: 'owner', // default owner field
+    identityClaim: 'sub::username', // default identity claim
+  };
 
-        if (value === 'sub::username') {
-          usesMultiClaim = true;
-        }
-      }
+  ((rule as ObjectValueNode).fields || []).forEach(field => {
+    const name: string = field.name.value;
+    const value: string = (field?.value as StringValueNode | undefined)?.value || '';
 
-      if (name === 'ownerField') {
-        ownerFieldIsSet = true;
-
-        if (value === sortKeyField) {
-          sortKeyFieldIsAuthField = true;
-        }
-      }
-    });
-
-    const featureFlagEnabled = ctx.featureFlags.getBoolean('useSubUsernameForDefaultIdentityClaim');
-    const usesImplicitIdentityClaim = !identityClaimIsSet && featureFlagEnabled;
-    const usesImplicitOwnerField = !ownerFieldIsSet && sortKeyField === 'owner';
-    const usesSubUsernameIdentityClaim: boolean = isOwner && (usesMultiClaim || usesImplicitIdentityClaim);
-    const invalidOwnerField: boolean = sortKeyFieldIsAuthField || usesImplicitOwnerField;
-
-    return usesSubUsernameIdentityClaim && invalidOwnerField;
+    ruleObject[name] = value;
   });
 
-  return !hasOwnerFieldAsSortKey;
+  if (ruleObject.allow === 'owner' && ruleObject.identityClaim.split('::').length > 1) {
+    return ruleObject.ownerField;
+  }
+
+  return '';
 };
