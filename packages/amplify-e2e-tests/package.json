@@ -1,7 +1,7 @@
 {
   "name": "amplify-e2e-tests",
   "version": "3.9.4",
-  "description": "",
+  "description": "E2e test suite",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",

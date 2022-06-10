@@ -1,7 +1,7 @@
 {
   "name": "@aws-amplify/amplify-category-api",
   "version": "3.0.1",
-  "description": "amplify-cli api plugin",
+  "description": "Amplify CLI API plugin",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",
