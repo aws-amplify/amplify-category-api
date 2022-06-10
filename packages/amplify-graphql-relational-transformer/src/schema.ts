@@ -447,7 +447,7 @@ export const getPartitionKeyFieldNoContext = (object: ObjectTypeDefinitionNode |
   });
 
   return fieldMap.get(name) ?? makeField('id', [], wrapNonNull(makeNamedType('ID')));
-}
+};
 
 /**
  * getSortKeyFields
@@ -478,4 +478,4 @@ export const getSortKeyFieldsNoContext = (object: ObjectTypeDefinitionNode | Obj
   });
 
   return sortKeyFields;
-}
+};
