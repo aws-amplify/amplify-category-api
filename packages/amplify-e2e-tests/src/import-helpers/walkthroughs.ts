@@ -1,4 +1,4 @@
-import { getCLIPath, nspawn as spawn } from 'amplify-e2e-core';
+import { getCLIPath, nspawn as spawn } from 'amplify-category-api-e2e-core';
 
 export const importUserPoolOnly = (cwd: string, autoCompletePrefix: string, clientNames?: { web?: string; native?: string }) => {
   return new Promise((resolve, reject) => {

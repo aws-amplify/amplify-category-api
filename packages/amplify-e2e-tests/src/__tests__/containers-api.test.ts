@@ -9,7 +9,7 @@ import {
   getProjectMeta,
   modifyRestAPI,
   retry,
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 import fetch from 'node-fetch';
 import { getAWSExports } from '../aws-exports/awsExports';
 

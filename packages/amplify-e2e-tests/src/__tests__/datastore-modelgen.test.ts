@@ -1,7 +1,7 @@
 import { amplifyAppAndroid, amplifyAppAngular, amplifyAppIos, amplifyAppReact } from '../amplify-app-helpers/amplify-app-setup';
-import { addFeatureFlag, updateApiSchema } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
-import { generateModels } from 'amplify-e2e-core';
+import { addFeatureFlag, updateApiSchema } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import { generateModels } from 'amplify-category-api-e2e-core';
 
 describe('data store modelgen tests', () => {
   let projRoot: string;

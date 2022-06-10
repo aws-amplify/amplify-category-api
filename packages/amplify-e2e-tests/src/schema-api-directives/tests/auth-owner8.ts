@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { addApi, amplifyPush, updateAuthAddUserGroups } from 'amplify-e2e-core';
+import { addApi, amplifyPush, updateAuthAddUserGroups } from 'amplify-category-api-e2e-core';
 import { setupUser, getUserPoolId, configureAmplify, signInUser, getConfiguredAppsyncClientCognitoAuth } from '../authHelper';
 import { updateSchemaInTestProject, testMutations, testQueries, testSubscriptions } from '../common';
 

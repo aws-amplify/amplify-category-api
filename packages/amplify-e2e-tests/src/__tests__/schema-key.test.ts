@@ -1,4 +1,4 @@
-import { initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir, createRandomName } from 'amplify-e2e-core';
+import { initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir, createRandomName } from 'amplify-category-api-e2e-core';
 import { testSchema } from '../schema-api-directives';
 
 describe('api directives @key', () => {

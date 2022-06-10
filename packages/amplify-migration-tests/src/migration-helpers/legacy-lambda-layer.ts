@@ -9,7 +9,7 @@ import {
   multiSelect,
   nspawn as spawn,
   permissionChoices,
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 import * as fs from 'fs';
 import * as path from 'path';
 

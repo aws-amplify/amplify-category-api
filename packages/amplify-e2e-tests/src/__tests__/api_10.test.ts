@@ -15,7 +15,7 @@ import {
   updateApiSchema,
   setCustomRolesConfig,
   addFeatureFlag,
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 import { existsSync, readFileSync } from 'fs';
 import _ from 'lodash';
 import * as path from 'path';

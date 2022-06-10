@@ -13,7 +13,7 @@ import {
   amplifyPull,
   getProjectMeta,
   sleep,
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 import S3 from 'aws-sdk/clients/s3';
 import { DeploymentState, DeploymentStatus, JSONUtilities } from 'amplify-cli-core';
 
