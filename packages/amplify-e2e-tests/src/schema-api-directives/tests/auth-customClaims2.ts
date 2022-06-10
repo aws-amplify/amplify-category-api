@@ -6,7 +6,7 @@ import {
   addApiWithCognitoUserPoolAuthTypeWhenAuthExists,
   updateAuthAddUserGroups,
   amplifyPush,
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 
 import {
   getUserPoolId, configureAmplify, setupUser, signInUser, getConfiguredAppsyncClientCognitoAuth,

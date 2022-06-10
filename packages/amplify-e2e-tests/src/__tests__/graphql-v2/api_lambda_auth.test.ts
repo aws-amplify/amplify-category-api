@@ -10,7 +10,7 @@ import {
   updateApiSchema,
   addApiWithAllAuthModes,
   amplifyPush,
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { addEnvironment, checkoutEnvironment, listEnvironment } from '../../environment/env';

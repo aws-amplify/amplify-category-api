@@ -11,7 +11,7 @@ import {
   amplifyPushWithoutCodegen,
   addFunction,
   initProjectWithAccessKey,
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 
 import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
 

@@ -16,7 +16,7 @@ import {
   amplifyPushUpdateForDependentModel,
   amplifyPushForce,
   createRandomName,
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 import path from 'path';
 import { existsSync } from 'fs';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';

@@ -8,7 +8,7 @@ import {
   deleteProjectDir,
   updateApiSchema,
   getProjectConfig,
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 import { initJSProjectWithProfile, versionCheck, addApiWithoutSchemaOldDx, allowedVersionsToMigrateFrom } from '../../../migration-helpers';
 
 describe('amplify key force push', () => {

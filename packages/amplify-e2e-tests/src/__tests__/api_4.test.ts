@@ -8,7 +8,7 @@ import {
   getProjectMeta,
   getSchemaPath,
   initJSProjectWithProfile,
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
 (global as any).fetch = require('node-fetch');

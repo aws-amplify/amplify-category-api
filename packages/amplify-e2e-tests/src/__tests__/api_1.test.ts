@@ -16,7 +16,7 @@ import {
   getAwsIOSConfig,
   getAmplifyIOSConfig,
   amplifyPushWithoutCodegen,
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 import path from 'path';
 import { existsSync } from 'fs';
 
