@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 2.3.0 (2022-06-10)
+
+
+### Bug Fixes
+
+* move [@model](https://github.com/model) params to root stack and fix ds logical id ([#8736](https://github.com/aws-amplify/amplify-category-api/issues/8736)) ([df4408c](https://github.com/aws-amplify/amplify-category-api/commit/df4408c4080949ddd638778df9ae20e763dd5824))
+
+
+### Features
+
+* **amplify-category-api:** rename private packages to scope them down ([e131d06](https://github.com/aws-amplify/amplify-category-api/commit/e131d06463745d448a699e0e75eedd040c167d9d))
+
+
+
+
+
 ## [2.2.43](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-migration-tests@2.2.42...amplify-graphql-migration-tests@2.2.43) (2022-06-10)
 
 **Note:** Version bump only for package amplify-graphql-migration-tests
