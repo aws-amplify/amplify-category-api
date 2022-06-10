@@ -368,7 +368,6 @@ workflows:
               only:
                 - main
                 - beta
-                - release
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
                 - /run-e2e\/.*/
