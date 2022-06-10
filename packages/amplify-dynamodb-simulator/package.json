@@ -1,6 +1,6 @@
 {
   "name": "amplify-dynamodb-simulator",
-  "version": "2.2.32",
+  "version": "2.3.2",
   "description": "DynamoDB emulator NodeJS wrapper",
   "private": "true",
   "repository": {
