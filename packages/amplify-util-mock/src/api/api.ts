@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra';
-import * as dynamoEmulator from 'amplify-dynamodb-simulator';
+import * as dynamoEmulator from 'amplify-category-api-dynamodb-simulator';
 import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorConfig } from 'amplify-appsync-simulator';
 import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-codegen';
 import * as path from 'path';

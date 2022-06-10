@@ -1,5 +1,5 @@
 {
-  "name": "amplify-migration-tests",
+  "name": "amplify-category-api-migration-tests",
   "version": "4.4.35",
   "description": "Test suites for migration scenarios",
   "repository": {
@@ -25,7 +25,7 @@
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },
   "dependencies": {
-    "amplify-e2e-core": "3.1.6",
+    "amplify-category-api-e2e-core": "3.1.6",
     "aws-sdk": "^2.1113.0",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
