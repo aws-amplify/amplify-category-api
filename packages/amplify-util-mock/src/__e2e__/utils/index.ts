@@ -1,5 +1,5 @@
 import { AmplifyAppSyncSimulator } from 'amplify-appsync-simulator';
-import * as dynamoEmulator from 'amplify-dynamodb-simulator';
+import * as dynamoEmulator from 'amplify-category-api-dynamodb-simulator';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { v4 } from 'uuid';

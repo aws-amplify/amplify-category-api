@@ -1,5 +1,5 @@
 {
-  "name": "amplify-dynamodb-simulator",
+  "name": "amplify-category-api-dynamodb-simulator",
   "version": "2.3.2",
   "description": "DynamoDB emulator NodeJS wrapper",
   "private": "true",
