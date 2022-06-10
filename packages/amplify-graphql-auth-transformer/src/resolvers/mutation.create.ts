@@ -173,7 +173,7 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArr
                   iff(
                     or([
                       equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
-                      methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                      methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
                     ]),
                     addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`, true),
                   ),

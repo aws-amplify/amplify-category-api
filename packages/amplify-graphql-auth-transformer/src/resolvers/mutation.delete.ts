@@ -137,7 +137,7 @@ const dynamicGroupRoleExpression = (
                   iff(
                     or([
                       equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
-                      methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                      methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
                     ]),
                     set(ref(IS_AUTHORIZED_FLAG), bool(true)),
                   ),

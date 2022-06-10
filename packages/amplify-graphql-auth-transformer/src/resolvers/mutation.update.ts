@@ -183,7 +183,7 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
               methodCall(ref('util.defaultIfNull'), ref(`ctx.result.${role.entity!}`), entityIsList ? list([]) : nul()),
             ),
             generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
-            generateOwnerClaimListExpression(role.claim!,  `ownerClaimsList${idx}`),
+            generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
             set(ref(`ownerAllowedFields${idx}`), raw(JSON.stringify(role.allowedFields))),
             set(ref(`ownerNullAllowedFields${idx}`), raw(JSON.stringify(role.nullAllowedFields))),
             set(ref(`isAuthorizedOnAllFields${idx}`), bool(role.areAllFieldsAllowed && role.areAllFieldsNullAllowed)),
@@ -193,7 +193,7 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
                   iff(
                     or([
                       equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
-                      methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                      methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
                     ]),
                     addAllowedFieldsIfElse(
                       `ownerAllowedFields${idx}`,

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-default-value-transformer",
-  "version": "0.5.24",
+  "version": "0.5.25",
   "description": "Amplify GraphQL default value transformer",
   "repository": {
     "type": "git",
@@ -28,15 +28,15 @@
     "test-watch": "jest --watch"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "0.17.2",
-    "@aws-amplify/graphql-transformer-interfaces": "1.14.2",
+    "@aws-amplify/graphql-transformer-core": "0.17.3",
+    "@aws-amplify/graphql-transformer-interfaces": "1.14.3",
     "graphql": "^14.5.8",
-    "graphql-mapping-template": "4.20.4",
-    "graphql-transformer-common": "4.23.1",
+    "graphql-mapping-template": "4.20.5",
+    "graphql-transformer-common": "4.23.2",
     "libphonenumber-js": "1.9.47"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-model-transformer": "0.14.2"
+    "@aws-amplify/graphql-model-transformer": "0.14.3"
   },
   "jest": {
     "transform": {
