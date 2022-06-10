@@ -12,7 +12,7 @@ import {
   FieldDefinitionNode,
   InterfaceTypeDefinitionNode,
   NamedTypeNode,
-  ObjectTypeDefinitionNode,
+  ObjectTypeDefinitionNode, ObjectTypeExtensionNode,
 } from 'graphql';
 import { makeQueryConnectionWithKeyResolver, updateTableForConnection } from './resolvers';
 import { ensureHasManyConnectionField, extendTypeWithConnection } from './schema';
@@ -69,28 +69,23 @@ export class HasManyTransformer extends TransformerPluginBase {
   mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
     const resultDoc: DocumentNode = produce(context.inputDocument, draftDoc => {
       const connectingFieldsMap = new Map<string, WritableDraft<FieldDefinitionNode>>(); // key: type name | value: connecting field
+      const filteredDefs = draftDoc?.definitions?.filter(def => def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension');
+      const objectDefs = filteredDefs as Array<WritableDraft<ObjectTypeDefinitionNode | ObjectTypeExtensionNode>>;
       // First iteration builds a map of the hasMany connecting fields that need to exist, second iteration ensures they exist
-      draftDoc?.definitions?.forEach(def => {
-        if (def.kind === 'ObjectTypeExtension' || def.kind === 'ObjectTypeDefinition') {
-          def?.fields?.forEach(field => {
-            field?.directives?.forEach(dir => {
-              if (dir.name.value === directiveName) {
-                const baseFieldType = getBaseType(field.type);
-                const connectionAttributeName = getConnectionAttributeName(def.name.value, field.name.value);
-                const newField = makeField(connectionAttributeName, [], isNonNullType(field.type) ? makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), []);
-                connectingFieldsMap.set(baseFieldType, newField as WritableDraft<FieldDefinitionNode>);
-              }
-            });
-          });
-        }
+      objectDefs?.forEach(def => {
+        const filteredFields = def?.fields?.filter(field => field?.directives?.some(dir => dir.name.value === directiveName));
+        filteredFields?.forEach(field => {
+          const baseFieldType = getBaseType(field.type);
+          const connectionAttributeName = getConnectionAttributeName(def.name.value, field.name.value);
+          const newField = makeField(connectionAttributeName, [], isNonNullType(field.type) ? makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), []);
+          connectingFieldsMap.set(baseFieldType, newField as WritableDraft<FieldDefinitionNode>);
+        });
       });
 
-      draftDoc?.definitions?.forEach(def => {
-        if ((def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') && connectingFieldsMap.has(def.name.value)) {
-          const fieldToAdd = connectingFieldsMap.get(def.name.value);
-          if (def.fields && fieldToAdd && !def.fields.some(field => field.name.value === fieldToAdd.name.value)) {
-            def.fields.push(fieldToAdd);
-          }
+      objectDefs?.filter(def => connectingFieldsMap.has(def.name.value))?.forEach(def => {
+        const fieldToAdd = connectingFieldsMap.get(def.name.value);
+        if (def.fields && fieldToAdd && !def.fields.some(field => field.name.value === fieldToAdd.name.value)) {
+          def.fields.push(fieldToAdd);
         }
       });
     });

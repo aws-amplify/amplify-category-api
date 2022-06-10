@@ -67,44 +67,32 @@ export class BelongsToTransformer extends TransformerPluginBase {
     const resultDoc: DocumentNode = produce(context.inputDocument, draftDoc => {
       const objectTypeMap = new Map<string, WritableDraft<ObjectTypeDefinitionNode | ObjectTypeExtensionNode>>(); // key: type name | value: object type node
       // First iteration builds a map of the object types to reference for relation types
-      draftDoc?.definitions?.forEach(def => {
-        if (def.kind === 'ObjectTypeExtension' || def.kind === 'ObjectTypeDefinition') {
-          objectTypeMap.set(def.name.value, def);
-        }
-      });
+      const filteredDefs = draftDoc?.definitions?.filter(def => def.kind === 'ObjectTypeExtension' || def.kind === 'ObjectTypeDefinition');
+      const objectDefs = filteredDefs as Array<WritableDraft<ObjectTypeDefinitionNode | ObjectTypeExtensionNode>>;
+      objectDefs?.forEach(def => objectTypeMap.set(def.name.value, def));
 
-      draftDoc?.definitions?.forEach(def => {
-        if (def.kind === 'ObjectTypeExtension' || def.kind === 'ObjectTypeDefinition') {
-          def?.fields?.forEach(field => {
-            field?.directives?.forEach(dir => {
-              if (dir.name.value === directiveName) {
-                const relatedType = objectTypeMap.get(getBaseType(field.type));
-                if (relatedType) { // Validation is done in a different segment of the life cycle
-                  const relationTypeField = relatedType?.fields?.find(relatedField => {
-                    if (getBaseType(relatedField.type) === def.name.value && relatedField?.directives?.some(
-                      relatedDir => relatedDir.name.value === 'hasOne' || relatedDir.name.value === 'hasMany',
-                    )) {
-                      return true;
-                    }
-                    return false;
-                  });
-                  const relationTypeName = relationTypeField?.directives?.find(relationDir => relationDir.name.value === 'hasOne' || relationDir.name.value === 'hasMany')?.name?.value;
-                  if (relationTypeName === 'hasOne') {
-                    const connectionAttributeName = getConnectionAttributeName(def.name.value, field.name.value);
-                    if (!def?.fields?.some(defField => defField.name.value === connectionAttributeName)) {
-                      def?.fields?.push(
-                        makeField(
-                          connectionAttributeName, [], isNonNullType(field.type) ?
-                            makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), [],
-                        ) as WritableDraft<FieldDefinitionNode>,
-                      );
-                    }
-                  }
-                }
-              }
-            });
-          });
-        }
+      objectDefs?.forEach(def => {
+        const filteredFields = def?.fields?.filter(field => field?.directives?.some(dir => dir.name.value === directiveName && objectTypeMap.get(getBaseType(field.type))));
+        filteredFields?.forEach(field => {
+          const relatedType = objectTypeMap.get(getBaseType(field.type));
+          const relationTypeField = relatedType?.fields?.find(relatedField =>
+            getBaseType(relatedField.type) === def.name.value &&
+            relatedField?.directives?.some(relatedDir => relatedDir.name.value === 'hasOne' || relatedDir.name.value === 'hasMany')
+          );
+          const relationTypeName = relationTypeField?.directives?.find(relationDir => relationDir.name.value === 'hasOne' || relationDir.name.value === 'hasMany')?.name?.value;
+
+          if (relationTypeName === 'hasOne') {
+            const connectionAttributeName = getConnectionAttributeName(def.name.value, field.name.value);
+            if (!def?.fields?.some(defField => defField.name.value === connectionAttributeName)) {
+              def?.fields?.push(
+                makeField(
+                  connectionAttributeName, [], isNonNullType(field.type) ?
+                    makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), [],
+                ) as WritableDraft<FieldDefinitionNode>,
+              );
+            }
+          }
+        });
       });
     });
     return resultDoc;

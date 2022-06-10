@@ -11,7 +11,7 @@ import {
   DocumentNode,
   FieldDefinitionNode,
   InterfaceTypeDefinitionNode,
-  ObjectTypeDefinitionNode,
+  ObjectTypeDefinitionNode, ObjectTypeExtensionNode,
 } from 'graphql';
 import {
   isListType,
@@ -74,40 +74,40 @@ export class HasOneTransformer extends TransformerPluginBase {
    */
   mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
     const document: DocumentNode = produce(context.inputDocument, draftDoc => {
-      draftDoc.definitions.forEach(def => {
-        if (def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') {
-          def?.fields?.forEach(field => {
-            field?.directives?.forEach(dir => {
-              if (dir.name.value === directiveName) {
-                const connectionAttributeName = getConnectionAttributeName(def.name.value, field.name.value);
-                let hasFieldsDefined = false;
-                let removalIndex = -1;
-                dir?.arguments?.forEach((arg, idx) => {
-                  if (arg.name.value === 'fields') {
-                    if ((arg.value.kind === 'StringValue' && arg.value.value) || (arg.value.kind === 'ListValue' && arg.value.values && arg.value.values.length > 0)) {
-                      hasFieldsDefined = true;
-                    } else {
-                      removalIndex = idx;
-                    }
-                  }
-                });
-                if (removalIndex !== -1) {
-                  dir?.arguments?.splice(removalIndex, 1);
-                }
-                if (!hasFieldsDefined) {
-                  // eslint-disable-next-line no-param-reassign
-                  dir.arguments = [makeArgument('fields', makeValueNode(connectionAttributeName)) as WritableDraft<ArgumentNode>];
-                  def?.fields?.push(
-                    makeField(
-                      connectionAttributeName, [], isNonNullType(field.type) ?
-                        makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), [],
-                    ) as WritableDraft<FieldDefinitionNode>,
-                  );
+      const filteredDefs = draftDoc?.definitions?.filter(def => def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension');
+      const objectDefs = filteredDefs as Array<WritableDraft<ObjectTypeDefinitionNode | ObjectTypeExtensionNode>>;
+
+      objectDefs?.forEach(def => {
+        const filteredFields = def?.fields?.filter(field => field?.directives?.some(dir => dir.name.value === directiveName));
+        filteredFields?.forEach(field => {
+          field?.directives?.forEach(dir => {
+            const connectionAttributeName = getConnectionAttributeName(def.name.value, field.name.value);
+            let hasFieldsDefined = false;
+            let removalIndex = -1;
+            dir?.arguments?.forEach((arg, idx) => {
+              if (arg.name.value === 'fields') {
+                if ((arg.value.kind === 'StringValue' && arg.value.value) || (arg.value.kind === 'ListValue' && arg.value.values && arg.value.values.length > 0)) {
+                  hasFieldsDefined = true;
+                } else {
+                  removalIndex = idx;
                 }
               }
             });
+            if (removalIndex !== -1) {
+              dir?.arguments?.splice(removalIndex, 1);
+            }
+            if (!hasFieldsDefined) {
+              // eslint-disable-next-line no-param-reassign
+              dir.arguments = [makeArgument('fields', makeValueNode(connectionAttributeName)) as WritableDraft<ArgumentNode>];
+              def?.fields?.push(
+                makeField(
+                  connectionAttributeName, [], isNonNullType(field.type) ?
+                    makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), [],
+                ) as WritableDraft<FieldDefinitionNode>,
+              );
+            }
           });
-        }
+        });
       });
     });
     return document;

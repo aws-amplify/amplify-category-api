@@ -12,7 +12,6 @@ import {
   DirectiveNode,
   DocumentNode,
   FieldDefinitionNode,
-  GraphQLError,
   InterfaceTypeDefinitionNode,
   Kind,
   ObjectTypeDefinitionNode,
@@ -25,7 +24,7 @@ import {
   isListType,
   makeArgument,
   makeDirective,
-  makeField, makeListType,
+  makeField,
   makeNamedType,
   makeValueNode,
   toUpper,
@@ -111,32 +110,30 @@ export class ManyToManyTransformer extends TransformerPluginBase {
   mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
     const manyToManyMap = new Map<string, ManyToManyPreProcessContext[]>(); // Relation name is the key, each array should be length 2 (two models being connected)
     const newDocument: DocumentNode = produce(context.inputDocument, draftDoc => {
+      const filteredDefs = draftDoc?.definitions?.filter(def => def.kind === 'ObjectTypeExtension' || def.kind === 'ObjectTypeDefinition');
+      const objectDefs = filteredDefs as Array<WritableDraft<ObjectTypeDefinitionNode | ObjectTypeExtensionNode>>;
       // First iteration builds the map
-      draftDoc?.definitions?.forEach(def => {
-        if (def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') {
-          def?.fields?.forEach(field => {
-            field?.directives?.forEach(dir => {
-              if (dir.name.value === directiveName) {
-                const relationArg = dir?.arguments?.find(arg => arg.name.value === 'relationName');
-                if (relationArg?.value?.kind === 'StringValue') {
-                  const relationName = relationArg.value.value;
-                  const manyToManyContext: ManyToManyPreProcessContext = {
-                    model: def,
-                    field: field,
-                    directive: dir,
-                    modelAuthDirectives: def?.directives?.filter(authDir => authDir.name.value === 'auth') ?? [],
-                    fieldAuthDirectives: def?.directives?.filter(authDir => authDir.name.value === 'auth') ?? [],
-                    relationName: relationName,
-                  };
-                  if (!manyToManyMap.has(relationName)) {
-                    manyToManyMap.set(relationName, []);
-                  }
-                  manyToManyMap.get(relationName)?.push(manyToManyContext);
-                }
+      objectDefs?.forEach(def => {
+        def?.fields?.forEach(field => {
+          field?.directives?.filter(dir => dir.name.value === directiveName)?.forEach(dir => {
+            const relationArg = dir?.arguments?.find(arg => arg.name.value === 'relationName');
+            if (relationArg?.value?.kind === 'StringValue') {
+              const relationName = relationArg.value.value;
+              const manyToManyContext: ManyToManyPreProcessContext = {
+                model: def,
+                field: field,
+                directive: dir,
+                modelAuthDirectives: def?.directives?.filter(authDir => authDir.name.value === 'auth') ?? [],
+                fieldAuthDirectives: def?.directives?.filter(authDir => authDir.name.value === 'auth') ?? [],
+                relationName: relationName,
+              };
+              if (!manyToManyMap.has(relationName)) {
+                manyToManyMap.set(relationName, []);
               }
-            });
+              manyToManyMap.get(relationName)?.push(manyToManyContext);
+            }
           });
-        }
+        });
       });
 
       // Run check for relations that are not binary and therefore invalid
