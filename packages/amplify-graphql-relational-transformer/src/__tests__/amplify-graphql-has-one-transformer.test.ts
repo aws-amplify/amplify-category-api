@@ -3,6 +3,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { Kind, parse } from 'graphql';
 import { HasManyTransformer, HasOneTransformer } from '..';
+import { featureFlags } from './test-helpers';
 
 test('fails if @hasOne was used on an object that is not a model type', () => {
   const inputSchema = `
@@ -18,6 +19,7 @@ test('fails if @hasOne was used on an object that is not a model type', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new HasOneTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError(`@hasOne must be on an @model object type field.`);
@@ -37,6 +39,7 @@ test('fails if @hasOne was used with a related type that is not a model', () => 
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new HasOneTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError(`Object type Test1 must be annotated with @model.`);
@@ -56,6 +59,7 @@ test('fails if the related type does not exist', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new HasOneTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('Unknown type "Test2". Did you mean "Test" or "Test1"?');
@@ -75,6 +79,7 @@ test('fails if an empty list of fields is passed in', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new HasOneTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('No fields passed to @hasOne directive.');
@@ -95,6 +100,7 @@ test('fails if any of the fields passed in are not in the parent model', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('name is not a field in Test');
@@ -115,6 +121,7 @@ test('fails if @hasOne field does not match related type primary key', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new HasOneTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('email field is not of type ID');
@@ -135,6 +142,7 @@ test('fails if sort key type does not match related type sort key', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('email field is not of type ID');
@@ -155,6 +163,7 @@ test('fails if partial sort key is provided', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError(
@@ -179,6 +188,7 @@ test('accepts @hasOne without a sort key', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(inputSchema)).not.toThrowError();
@@ -237,6 +247,7 @@ test('creates has one relationship with explicit fields', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
+    featureFlags,
   });
 
   const out = transformer.transform(inputSchema);
@@ -278,6 +289,7 @@ test('creates has one relationship with implicit fields', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
+    featureFlags,
   });
 
   const out = transformer.transform(inputSchema);
@@ -323,6 +335,7 @@ test('creates has one relationship with composite sort key.', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
+    featureFlags,
   });
 
   const out = transformer.transform(inputSchema);
@@ -364,6 +377,7 @@ test('@hasOne and @hasMany can point at each other if DataStore is not enabled',
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
+    featureFlags,
   });
 
   const out = transformer.transform(inputSchema);
@@ -385,6 +399,7 @@ test('@hasOne and @hasOne can point at each other if DataStore is not enabled', 
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new HasOneTransformer()],
+    featureFlags,
   });
 
   const out = transformer.transform(inputSchema);
@@ -412,6 +427,7 @@ test('@hasOne and @hasMany cannot point at each other if DataStore is enabled', 
       },
     },
     transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError(
