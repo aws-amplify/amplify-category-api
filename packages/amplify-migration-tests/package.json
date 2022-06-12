@@ -60,7 +60,7 @@
       "default",
       "jest-junit",
       [
-        "amplify-e2e-core/reporter",
+        "amplify-category-api-e2e-core/reporter",
         {
           "publicPath": "./amplify-migration-reports",
           "filename": "index.html",
