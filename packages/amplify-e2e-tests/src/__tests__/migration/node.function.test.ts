@@ -11,7 +11,7 @@ import {
   addAuthWithDefault,
   createNewProjectDir,
   deleteProjectDir,
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 
 describe('nodejs version migration tests', () => {
   let projectRoot: string;

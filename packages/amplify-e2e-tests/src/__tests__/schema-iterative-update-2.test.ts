@@ -10,7 +10,7 @@ import {
   amplifyPushUpdate,
   addApiWithoutSchema,
   updateApiWithMultiAuth,
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 
 describe('Schema iterative update - add new @models and @key', () => {
   let projectDir: string;

@@ -2,7 +2,7 @@ import {
   addApiWithBlankSchema, addFunction,
   amplifyPush,
   amplifyPushFunction, createNewProjectDir, deleteProject, deleteProjectDir, initJSProjectWithProfile, updateApiSchema,
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 
 describe('test function deploy when other resources are present', () => {
   let projectRoot: string;

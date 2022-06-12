@@ -6,9 +6,9 @@ import {
   addFeatureFlag,
   createRandomName,
   addAuthWithDefault,
-} from 'amplify-e2e-core';
-import { addApiWithoutSchema, updateApiSchema, getProjectMeta } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
+import { addApiWithoutSchema, updateApiSchema, getProjectMeta } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 (global as any).fetch = require('node-fetch');

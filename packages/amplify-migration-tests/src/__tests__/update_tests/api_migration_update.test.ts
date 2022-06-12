@@ -11,7 +11,7 @@ import {
   updateApiWithMultiAuth,
   updateAPIWithResolutionStrategyWithModels,
   getProjectConfig,
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 import { existsSync } from 'fs';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { join } from 'path';

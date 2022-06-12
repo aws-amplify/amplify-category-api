@@ -1,6 +1,6 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate, addFeatureFlag } from 'amplify-e2e-core';
-import { addApiWithoutSchema, updateApiSchema, getProjectMeta } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
+import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate, addFeatureFlag } from 'amplify-category-api-e2e-core';
+import { addApiWithoutSchema, updateApiSchema, getProjectMeta } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { addEnvironment } from '../../environment/env';
 
 describe('amplify add api', () => {

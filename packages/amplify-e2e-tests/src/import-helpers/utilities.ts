@@ -6,7 +6,7 @@ import {
   getBackendAmplifyMeta,
   getProjectMeta,
   getTeamProviderInfo,
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 import * as aws from 'aws-sdk';
 import * as fs from 'fs-extra';
 import _ from 'lodash';

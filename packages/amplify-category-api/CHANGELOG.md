@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@3.0.1...@aws-amplify/amplify-category-api@3.1.0) (2022-06-10)
+
+
+### Features
+
+* **amplify-category-api:** rename private packages to scope them down ([e131d06](https://github.com/aws-amplify/amplify-category-api/commit/e131d06463745d448a699e0e75eedd040c167d9d))
+* **amplify-category-api:** update descriptions to properly publish ([f685bbe](https://github.com/aws-amplify/amplify-category-api/commit/f685bbe52fd2d364e34c0ecb45c8a903555de3fe))
+* **amplify-category-api:** update yarn lock with dynamodb simulator version ([4dce641](https://github.com/aws-amplify/amplify-category-api/commit/4dce6411fbcd45c7f25db3383a0f1f21450738c0))
+
+
+
+
+
+## [3.0.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@3.0.0...@aws-amplify/amplify-category-api@3.0.1) (2022-06-10)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+
+
+
+
 # [3.0.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@2.0.4...@aws-amplify/amplify-category-api@3.0.0) (2022-06-07)
 
 

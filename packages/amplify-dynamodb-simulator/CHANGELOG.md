@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 2.4.0 (2022-06-10)
+
+
+### Bug Fixes
+
+* **amplify-dynamodb-simulator:** detect errors logged to stderr ([#6769](https://github.com/aws-amplify/amplify-category-api/issues/6769)) ([72b7c0a](https://github.com/aws-amplify/amplify-category-api/commit/72b7c0aa4a78e3e1b40b3a3c3c6d5f87bca79005))
+* **amplify-dynamodb-simulator:** update simulator to work in docker ([#2061](https://github.com/aws-amplify/amplify-category-api/issues/2061)) ([90a423c](https://github.com/aws-amplify/amplify-category-api/commit/90a423cc1ecaff3dc8ebb9b5e526e1256d36d835)), closes [#2037](https://github.com/aws-amplify/amplify-category-api/issues/2037)
+* removed unsupported portfinder ([#10269](https://github.com/aws-amplify/amplify-category-api/issues/10269)) ([33d8a8f](https://github.com/aws-amplify/amplify-category-api/commit/33d8a8ffeebbb9f05f9dbcd8afc6b0629bcf3819))
+* use correct version of amplify-cli-core ([#5661](https://github.com/aws-amplify/amplify-category-api/issues/5661)) ([c8c2e1a](https://github.com/aws-amplify/amplify-category-api/commit/c8c2e1a9242e2096484f194b9e1944bf34840c51))
+
+
+### Features
+
+* add support for SMS Sandbox ([#7436](https://github.com/aws-amplify/amplify-category-api/issues/7436)) ([cdcb626](https://github.com/aws-amplify/amplify-category-api/commit/cdcb6260c11bbedef5b056fdcd730612d8bb3230))
+* **amplify-category-api:** rename private packages to scope them down ([e131d06](https://github.com/aws-amplify/amplify-category-api/commit/e131d06463745d448a699e0e75eedd040c167d9d))
+* **amplify-category-api:** update descriptions to properly publish ([f685bbe](https://github.com/aws-amplify/amplify-category-api/commit/f685bbe52fd2d364e34c0ecb45c8a903555de3fe))
+* **amplify-category-api:** update dynamodb simulator version ([95f7c86](https://github.com/aws-amplify/amplify-category-api/commit/95f7c86d647d2bf10b6cbfa066c41bce9d2635fc))
+* **amplify-category-function:** refactor to support runtime and template plugins ([#3517](https://github.com/aws-amplify/amplify-category-api/issues/3517)) ([607ae21](https://github.com/aws-amplify/amplify-category-api/commit/607ae21287941805f44ea8a9b78dd12d16d71f85))
+* **amplify-util-mock:** add mock config for JAVA_OPTS ([#3503](https://github.com/aws-amplify/amplify-category-api/issues/3503)) ([24d8085](https://github.com/aws-amplify/amplify-category-api/commit/24d8085325d435284b9c49a43592e61891fd72bc))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-category-api/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-category-api/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+* mock support for API, function and storage ([#1893](https://github.com/aws-amplify/amplify-category-api/issues/1893)) ([372e534](https://github.com/aws-amplify/amplify-category-api/commit/372e5346ee1f27a2e9bee25fbbdcb19417f5230f))
+* pre-deploy pull, new login mechanism and pkg cli updates ([#5941](https://github.com/aws-amplify/amplify-category-api/issues/5941)) ([7274251](https://github.com/aws-amplify/amplify-category-api/commit/7274251faadc1035acce5f44699b172e10e2e67d))
+* update post-install to copy executable assets to .amplify ([#5595](https://github.com/aws-amplify/amplify-category-api/issues/5595)) ([53a23a0](https://github.com/aws-amplify/amplify-category-api/commit/53a23a07cbb9e09566c1f0f577ba2b7488bc2eae))
+
+
+
+
+
+## [2.2.32](https://github.com/aws-amplify/amplify-category-api/compare/amplify-dynamodb-simulator@2.2.31...amplify-dynamodb-simulator@2.2.32) (2022-06-10)
+
+**Note:** Version bump only for package amplify-dynamodb-simulator
+
+
+
+
+
 ## [2.2.31](https://github.com/aws-amplify/amplify-category-api/compare/amplify-dynamodb-simulator@2.2.28...amplify-dynamodb-simulator@2.2.31) (2022-06-07)
 
 **Note:** Version bump only for package amplify-dynamodb-simulator

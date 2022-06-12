@@ -11,7 +11,7 @@ import {
   updateApiWithMultiAuth,
   addApiWithoutSchema,
   updateAuthAddUserGroups,
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 import {
   configureAmplify,
   getUserPoolId,

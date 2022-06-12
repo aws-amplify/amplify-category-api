@@ -11,7 +11,7 @@ import {
   addSimpleDDB,
   createNewProjectDir,
   deleteProjectDir
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 import _ from 'lodash';
 import { JSONUtilities } from 'amplify-cli-core';
 import AWS from 'aws-sdk';

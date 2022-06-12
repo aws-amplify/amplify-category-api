@@ -12,7 +12,7 @@ import {
   getUserPoolClients,
   getLambdaFunction,
   addAuthViaAPIWithTrigger,
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 
 const defaultsSettings = {
   name: 'authTest',

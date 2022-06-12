@@ -8,8 +8,8 @@ import {
   apiGqlCompile,
   amplifyPush,
   generateModels,
-} from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 
 describe('global sandbox mode', () => {
   let projectDir: string;

@@ -7,7 +7,7 @@ import {
   amplifyPush,
   addApi,
   amplifyPushUpdate,
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 import { addSimpleFunction, updateFunctionNameInSchema } from '../../schema-api-directives/functionTester';
 import { updateSchemaInTestProject, testQueries } from '../../schema-api-directives/common';
 import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../../schema-api-directives/authHelper';

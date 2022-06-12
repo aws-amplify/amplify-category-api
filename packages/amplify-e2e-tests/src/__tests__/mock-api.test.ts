@@ -7,7 +7,7 @@ import {
   initJSProjectWithProfile,
   updateApiSchema,
   cancelAmplifyMockApi,
-} from 'amplify-e2e-core';
+} from 'amplify-category-api-e2e-core';
 import { existsSync } from 'fs';
 import path from 'path';
 import { addCodegen } from '../codegen/add';
