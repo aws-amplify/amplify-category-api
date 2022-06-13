@@ -173,7 +173,7 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
   const filterInputName = toPascalCase(['Model', object.name.value, 'FilterInput']);
   const filterInput = ctx.output.getType(filterInputName) as InputObjectTypeDefinitionNode;
   if (filterInput) {
-    updateConnectionInputWithConnectionFields(
+    updateFilterConnectionInputWithConnectionFields(
       ctx,
       filterInput,
       object,
@@ -181,13 +181,14 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
       primaryKeyConnectionFieldType,
       field,
       sortKeyFields,
+      true,
     );
   }
 
   const conditionInputName = toPascalCase(['Model', object.name.value, 'ConditionInput']);
   const conditionInput = ctx.output.getType(conditionInputName) as InputObjectTypeDefinitionNode;
   if (conditionInput) {
-    updateConnectionInputWithConnectionFields(
+    updateFilterConnectionInputWithConnectionFields(
       ctx,
       conditionInput,
       object,
@@ -195,6 +196,7 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
       primaryKeyConnectionFieldType,
       field,
       sortKeyFields,
+      false,
     );
   }
 
@@ -288,7 +290,7 @@ export const ensureHasManyConnectionField = (
   const filterInputName = toPascalCase(['Model', relatedType.name.value, 'FilterInput']);
   const filterInput = ctx.output.getType(filterInputName) as InputObjectTypeDefinitionNode;
   if (filterInput) {
-    updateConnectionInputWithConnectionFields(
+    updateFilterConnectionInputWithConnectionFields(
       ctx,
       filterInput,
       object,
@@ -296,13 +298,14 @@ export const ensureHasManyConnectionField = (
       primaryKeyConnectionFieldType,
       field,
       sortKeyFields,
+      true,
     );
   }
 
   const conditionInputName = toPascalCase(['Model', relatedType.name.value, 'ConditionInput']);
   const conditionInput = ctx.output.getType(conditionInputName) as InputObjectTypeDefinitionNode;
   if (conditionInput) {
-    updateConnectionInputWithConnectionFields(
+    updateFilterConnectionInputWithConnectionFields(
       ctx,
       conditionInput,
       object,
@@ -310,6 +313,7 @@ export const ensureHasManyConnectionField = (
       primaryKeyConnectionFieldType,
       field,
       sortKeyFields,
+      false,
     );
   }
 };
@@ -580,7 +584,7 @@ const updateInputWithConnectionFields = (
   });
 };
 
-const updateConnectionInputWithConnectionFields = (
+const updateFilterConnectionInputWithConnectionFields = (
   ctx: TransformerContextProvider,
   input: InputObjectTypeDefinitionNode,
   object: ObjectTypeDefinitionNode,
@@ -588,19 +592,20 @@ const updateConnectionInputWithConnectionFields = (
   primaryKeyConnectionFieldType: string,
   field: FieldDefinitionNode,
   sortKeyFields: FieldDefinitionNode[],
+  isFilter: boolean,
 ): void => {
   const updatedFields = [...input.fields!];
   updatedFields.push(
     ...getFilterConnectionInputFieldsWithConnectionField(
       updatedFields,
       connectionAttributeName,
-      generateModelScalarFilterInputName(primaryKeyConnectionFieldType, false),
+      generateModelScalarFilterInputName(primaryKeyConnectionFieldType, isFilter),
     ),
   );
   sortKeyFields.forEach(it => {
     updatedFields.push(...getFilterConnectionInputFieldsWithConnectionField(updatedFields,
       getSortKeyConnectionAttributeName(ctx.featureFlags, object.name.value, field.name.value, it.name.value),
-      generateModelScalarFilterInputName(getBaseType(it.type), false)));
+      generateModelScalarFilterInputName(getBaseType(it.type), isFilter)));
   });
   ctx.output.putType({
     ...input,
