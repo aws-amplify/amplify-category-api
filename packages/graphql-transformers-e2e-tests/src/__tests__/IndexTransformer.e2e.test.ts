@@ -93,6 +93,16 @@ beforeAll(async () => {
       id: ID!
       parentId: ID @index(name: "parent-id-index")
     }
+    type Todo @model {
+      id: ID!
+      name: String!
+      description: String
+      begin: AWSDateTime
+      end: AWSDateTime
+      createdAt: AWSDateTime!
+      isTeamTodo:Int! 
+      isPublic: Int! @index(name: "byIsPublicByByCreatedAtByIsTeamTodoByBeginByEnd",sortKeyFields: ["createdAt","isTeamTodo","begin","end"], queryField: "TodoByIsPublicByByCreatedAtByIsTeamTodoByBeginByEnd" )
+    }
   `;
 
   try {
@@ -179,6 +189,12 @@ test('next token with key', async () => {
   await deleteItem('order2', status, createdAt);
   await deleteItem('order3', status, createdAt);
   await deleteItem('order4', status, createdAt);
+});
+
+test('index should handle begin and end keywords', async () => {
+  const todo = await createTodo('Test', 'Example', '2022-01-01T12:00:00.000Z', '2022-01-03T12:00:00.000Z', 0, 0);
+  expect(todo.data.createTodo.name).toEqual('Test');
+  expect(todo.data.createTodo.description).toEqual('Example');
 });
 
 test('getX with a two part primary key.', async () => {
@@ -991,6 +1007,31 @@ const getShippingUpdatesWithNameFilter = async (orderId: string, name: string): 
         }
     }`,
     { orderId, name },
+  );
+  return result;
+};
+
+const createTodo = async (
+  name: string, description: string, begin: string, end: string, isTeamTodo: number, isPublic: number,
+): Promise<any> => {
+  const input = {
+    name, description, begin, end, isTeamTodo, isPublic,
+  };
+  const result = await GRAPHQL_CLIENT.query(
+    `mutation CreateTodo($input: CreateTodoInput!) {
+        createTodo(input: $input) {
+            id
+            name
+            description
+            begin
+            end
+            isTeamTodo
+            isPublic
+        }
+    }`,
+    {
+      input,
+    },
   );
   return result;
 };

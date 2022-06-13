@@ -627,14 +627,12 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #end
 ## [End] Validate create mutation for @index 'GSI'. **
 #if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"kind#date\\": \\"kindDate\\"
-}))
+  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'kind#date': \\"kindDate\\" }))
 #else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"kind#date\\", \\"kindDate\\"))
+  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('kind#date', \\"kindDate\\"))
 #end
 #if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put(\\"kind#date\\",\\"\${mergedValues.kind}#\${mergedValues.date}\\"))
+  $util.qr($ctx.args.input.put('kind#date',\\"\${mergedValues.kind}#\${mergedValues.date}\\"))
 #end
 {}",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
@@ -730,13 +728,11 @@ $util.toJson({})
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
 #if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"kind#date\\": \\"kindDate\\"
-}))
+  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'kind#date': \\"kindDate\\" }))
 #else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"kind#date\\", \\"kindDate\\"))
+  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('kind#date', \\"kindDate\\"))
 #end
-$util.qr($ctx.args.input.put(\\"kind#date\\",\\"\${mergedValues.kind}#\${mergedValues.date}\\"))
+$util.qr($ctx.args.input.put('kind#date',\\"\${mergedValues.kind}#\${mergedValues.date}\\"))
 {}",
   "Mutation.deleteTest.req.vtl": "## [Start] Delete Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -836,14 +832,12 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #end
 ## [End] Validate update mutation for @index 'GSI'. **
 #if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"kind#date\\": \\"kindDate\\"
-}))
+  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'kind#date': \\"kindDate\\" }))
 #else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"kind#date\\", \\"kindDate\\"))
+  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('kind#date', \\"kindDate\\"))
 #end
 #if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put(\\"kind#date\\",\\"\${mergedValues.kind}#\${mergedValues.date}\\"))
+  $util.qr($ctx.args.input.put('kind#date',\\"\${mergedValues.kind}#\${mergedValues.date}\\"))
 #end
 {}",
   "Mutation.updateTest.req.vtl": "## [Start] Mutation Update resolver. **
@@ -2781,13 +2775,11 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 }))
 ## [End] Set the primary key. **
 #if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"status#createdAt\\": \\"statusCreatedAt\\"
-}))
+  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'status#createdAt': \\"statusCreatedAt\\" }))
 #else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
+  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('status#createdAt', \\"statusCreatedAt\\"))
 #end
-$util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${mergedValues.status}#\${mergedValues.createdAt}\\"))
+$util.qr($ctx.args.input.put('status#createdAt',\\"\${mergedValues.status}#\${mergedValues.createdAt}\\"))
 {}",
   "Mutation.createItem.req.vtl": "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -2981,13 +2973,11 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 }))
 ## [End] Set the primary key. **
 #if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"status#createdAt\\": \\"statusCreatedAt\\"
-}))
+  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'status#createdAt': \\"statusCreatedAt\\" }))
 #else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
+  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('status#createdAt', \\"statusCreatedAt\\"))
 #end
-$util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${mergedValues.status}#\${mergedValues.createdAt}\\"))
+$util.qr($ctx.args.input.put('status#createdAt',\\"\${mergedValues.status}#\${mergedValues.createdAt}\\"))
 {}",
   "Mutation.updateItem.req.vtl": "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -3953,13 +3943,11 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 }))
 ## [End] Set the primary key. **
 #if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"status#createdAt\\": \\"statusCreatedAt\\"
-}))
+  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'status#createdAt': \\"statusCreatedAt\\" }))
 #else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
+  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('status#createdAt', \\"statusCreatedAt\\"))
 #end
-$util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${mergedValues.status}#\${mergedValues.createdAt}\\"))
+$util.qr($ctx.args.input.put('status#createdAt',\\"\${mergedValues.status}#\${mergedValues.createdAt}\\"))
 {}",
   "Mutation.createItem.req.vtl": "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -4152,13 +4140,11 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 }))
 ## [End] Set the primary key. **
 #if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"status#createdAt\\": \\"statusCreatedAt\\"
-}))
+  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'status#createdAt': \\"statusCreatedAt\\" }))
 #else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
+  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('status#createdAt', \\"statusCreatedAt\\"))
 #end
-$util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${mergedValues.status}#\${mergedValues.createdAt}\\"))
+$util.qr($ctx.args.input.put('status#createdAt',\\"\${mergedValues.status}#\${mergedValues.createdAt}\\"))
 {}",
   "Mutation.updateItem.req.vtl": "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )

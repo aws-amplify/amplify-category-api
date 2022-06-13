@@ -8845,13 +8845,11 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 }))
 ## [End] Set the primary key. **
 #if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"name#surname\\": \\"nameSurname\\"
-}))
+  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'name#surname': \\"nameSurname\\" }))
 #else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"name#surname\\", \\"nameSurname\\"))
+  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('name#surname', \\"nameSurname\\"))
 #end
-$util.qr($ctx.args.input.put(\\"name#surname\\",\\"\${mergedValues.name}#\${mergedValues.surname}\\"))
+$util.qr($ctx.args.input.put('name#surname',\\"\${mergedValues.name}#\${mergedValues.surname}\\"))
 {}",
   "Mutation.createUser.req.vtl": "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -8973,14 +8971,12 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #end
 ## [End] Validate create mutation for @index 'composite'. **
 #if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"name#surname\\": \\"nameSurname\\"
-}))
+  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'name#surname': \\"nameSurname\\" }))
 #else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"name#surname\\", \\"nameSurname\\"))
+  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('name#surname', \\"nameSurname\\"))
 #end
 #if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put(\\"name#surname\\",\\"\${mergedValues.name}#\${mergedValues.surname}\\"))
+  $util.qr($ctx.args.input.put('name#surname',\\"\${mergedValues.name}#\${mergedValues.surname}\\"))
 #end
 {}",
   "Mutation.createUserModel.req.vtl": "## [Start] Create Request template. **
@@ -9613,13 +9609,11 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
 #if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"name#surname\\": \\"nameSurname\\"
-}))
+  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'name#surname': \\"nameSurname\\" }))
 #else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"name#surname\\", \\"nameSurname\\"))
+  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('name#surname', \\"nameSurname\\"))
 #end
-$util.qr($ctx.args.input.put(\\"name#surname\\",\\"\${mergedValues.name}#\${mergedValues.surname}\\"))
+$util.qr($ctx.args.input.put('name#surname',\\"\${mergedValues.name}#\${mergedValues.surname}\\"))
 {}",
   "Mutation.deleteUserModel.req.vtl": "## [Start] Delete Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -10643,13 +10637,11 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 }))
 ## [End] Set the primary key. **
 #if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"name#surname\\": \\"nameSurname\\"
-}))
+  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'name#surname': \\"nameSurname\\" }))
 #else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"name#surname\\", \\"nameSurname\\"))
+  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('name#surname', \\"nameSurname\\"))
 #end
-$util.qr($ctx.args.input.put(\\"name#surname\\",\\"\${mergedValues.name}#\${mergedValues.surname}\\"))
+$util.qr($ctx.args.input.put('name#surname',\\"\${mergedValues.name}#\${mergedValues.surname}\\"))
 {}",
   "Mutation.updateUser.req.vtl": "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -10833,14 +10825,12 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #end
 ## [End] Validate update mutation for @index 'composite'. **
 #if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"name#surname\\": \\"nameSurname\\"
-}))
+  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'name#surname': \\"nameSurname\\" }))
 #else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"name#surname\\", \\"nameSurname\\"))
+  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('name#surname', \\"nameSurname\\"))
 #end
 #if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put(\\"name#surname\\",\\"\${mergedValues.name}#\${mergedValues.surname}\\"))
+  $util.qr($ctx.args.input.put('name#surname',\\"\${mergedValues.name}#\${mergedValues.surname}\\"))
 #end
 {}",
   "Mutation.updateUserModel.req.vtl": "## [Start] Mutation Update resolver. **
