@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@1.0.22...@aws-amplify/graphql-schema-test-library@1.1.0) (2022-06-13)
+
+
+### Features
+
+* add error when using an owner field as a sort key field ([#517](https://github.com/aws-amplify/amplify-category-api/issues/517)) ([201032d](https://github.com/aws-amplify/amplify-category-api/commit/201032d674a8272931fad0c75e9e146a22ed030b))
+
+
+
+
+
 ## [1.0.22](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@1.0.21...@aws-amplify/graphql-schema-test-library@1.0.22) (2022-06-10)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-test-library

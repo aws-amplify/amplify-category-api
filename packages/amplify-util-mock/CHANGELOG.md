@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@5.0.0...amplify-category-api-util-mock@5.1.0) (2022-06-13)
+
+
+### Features
+
+* add error when using an owner field as a sort key field ([#517](https://github.com/aws-amplify/amplify-category-api/issues/517)) ([201032d](https://github.com/aws-amplify/amplify-category-api/commit/201032d674a8272931fad0c75e9e146a22ed030b))
+* **graphql-auth-transformer:** [@auth](https://github.com/auth) allow more granular access rights for read ([#23](https://github.com/aws-amplify/amplify-category-api/issues/23)) ([041fb80](https://github.com/aws-amplify/amplify-category-api/commit/041fb808e380d04f2c4913cef1037c3d87e98d22))
+
+
+
+
+
 # 5.0.0 (2022-06-10)
 
 
