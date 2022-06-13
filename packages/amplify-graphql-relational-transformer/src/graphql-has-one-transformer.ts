@@ -30,6 +30,7 @@ import { HasOneDirectiveConfiguration } from './types';
 import {
   ensureFieldsArray, getConnectionAttributeName,
   getFieldsNodes,
+  getObjectPrimaryKey,
   getRelatedType,
   getRelatedTypeIndex,
   registerHasOneForeignKeyMappings,
@@ -85,7 +86,12 @@ export class HasOneTransformer extends TransformerPluginBase {
         const filteredFields = def?.fields?.filter(field => field?.directives?.some(dir => dir.name.value === directiveName));
         filteredFields?.forEach(field => {
           field?.directives?.forEach(dir => {
-            const connectionAttributeName = getConnectionAttributeName(def.name.value, field.name.value);
+            const connectionAttributeName = getConnectionAttributeName(
+              context.featureFlags,
+              def.name.value,
+              field.name.value,
+              getObjectPrimaryKey(def).name.value,
+            );
             let hasFieldsDefined = false;
             let removalIndex = -1;
             dir?.arguments?.forEach((arg, idx) => {

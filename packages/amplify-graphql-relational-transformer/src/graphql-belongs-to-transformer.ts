@@ -21,6 +21,7 @@ import { BelongsToDirectiveConfiguration } from './types';
 import {
   ensureFieldsArray, getConnectionAttributeName,
   getFieldsNodes,
+  getObjectPrimaryKey,
   getRelatedType,
   getRelatedTypeIndex,
   registerHasOneForeignKeyMappings,
@@ -86,7 +87,12 @@ export class BelongsToTransformer extends TransformerPluginBase {
           const relationTypeName = relationTypeField?.directives?.find(relationDir => relationDir.name.value === 'hasOne' || relationDir.name.value === 'hasMany')?.name?.value;
 
           if (relationTypeName === 'hasOne') {
-            const connectionAttributeName = getConnectionAttributeName(def.name.value, field.name.value);
+            const connectionAttributeName = getConnectionAttributeName(
+              context.featureFlags,
+              def.name.value,
+              field.name.value,
+              getObjectPrimaryKey(def as ObjectTypeDefinitionNode).name.value,
+            );
             if (!def?.fields?.some(defField => defField.name.value === connectionAttributeName)) {
               def?.fields?.push(
                 makeField(

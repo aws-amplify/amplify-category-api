@@ -21,6 +21,7 @@ import { HasManyDirectiveConfiguration } from './types';
 import {
   ensureFieldsArray, getConnectionAttributeName,
   getFieldsNodes,
+  getObjectPrimaryKey,
   getRelatedType,
   getRelatedTypeIndex,
   registerHasManyForeignKeyMappings,
@@ -80,7 +81,12 @@ export class HasManyTransformer extends TransformerPluginBase {
         const filteredFields = def?.fields?.filter(field => field?.directives?.some(dir => dir.name.value === directiveName));
         filteredFields?.forEach(field => {
           const baseFieldType = getBaseType(field.type);
-          const connectionAttributeName = getConnectionAttributeName(def.name.value, field.name.value);
+          const connectionAttributeName = getConnectionAttributeName(
+            context.featureFlags,
+            def.name.value,
+            field.name.value,
+            getObjectPrimaryKey(def as ObjectTypeDefinitionNode).name.value,
+          );
           const newField = makeField(connectionAttributeName, [], isNonNullType(field.type) ? makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), []);
           connectingFieldsMap.set(baseFieldType, newField as WritableDraft<FieldDefinitionNode>);
         });
