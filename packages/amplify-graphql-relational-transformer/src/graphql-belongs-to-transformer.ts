@@ -5,13 +5,20 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { getBaseType, isListType } from 'graphql-transformer-common';
+import {
+  DirectiveNode,
+  DocumentNode,
+  FieldDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  ObjectTypeDefinitionNode,
+  ObjectTypeExtensionNode,
+} from 'graphql';
+import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import { makeGetItemConnectionWithKeyResolver } from './resolvers';
 import { ensureBelongsToConnectionField } from './schema';
 import { BelongsToDirectiveConfiguration } from './types';
 import {
-  ensureFieldsArray,
+  ensureFieldsArray, getConnectionAttributeName,
   getFieldsNodes,
   getRelatedType,
   getRelatedTypeIndex,
@@ -19,6 +26,9 @@ import {
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
+import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import produce from 'immer';
+import { WritableDraft } from 'immer/dist/types/types-external';
 
 const directiveName = 'belongsTo';
 const directiveDefinition = `
@@ -49,6 +59,44 @@ export class BelongsToTransformer extends TransformerPluginBase {
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);
   };
+
+  /** During the preProcess step, modify the document node and return it
+   * so that it represents any schema modifications the plugin needs
+   */
+  mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
+    const resultDoc: DocumentNode = produce(context.inputDocument, draftDoc => {
+      const objectTypeMap = new Map<string, WritableDraft<ObjectTypeDefinitionNode | ObjectTypeExtensionNode>>(); // key: type name | value: object type node
+      // First iteration builds a map of the object types to reference for relation types
+      const filteredDefs = draftDoc?.definitions?.filter(def => def.kind === 'ObjectTypeExtension' || def.kind === 'ObjectTypeDefinition');
+      const objectDefs = filteredDefs as Array<WritableDraft<ObjectTypeDefinitionNode | ObjectTypeExtensionNode>>;
+      objectDefs?.forEach(def => objectTypeMap.set(def.name.value, def));
+
+      objectDefs?.forEach(def => {
+        const filteredFields = def?.fields?.filter(field => field?.directives?.some(dir => dir.name.value === directiveName && objectTypeMap.get(getBaseType(field.type))));
+        filteredFields?.forEach(field => {
+          const relatedType = objectTypeMap.get(getBaseType(field.type));
+          const relationTypeField = relatedType?.fields?.find(relatedField =>
+            getBaseType(relatedField.type) === def.name.value &&
+            relatedField?.directives?.some(relatedDir => relatedDir.name.value === 'hasOne' || relatedDir.name.value === 'hasMany')
+          );
+          const relationTypeName = relationTypeField?.directives?.find(relationDir => relationDir.name.value === 'hasOne' || relationDir.name.value === 'hasMany')?.name?.value;
+
+          if (relationTypeName === 'hasOne') {
+            const connectionAttributeName = getConnectionAttributeName(def.name.value, field.name.value);
+            if (!def?.fields?.some(defField => defField.name.value === connectionAttributeName)) {
+              def?.fields?.push(
+                makeField(
+                  connectionAttributeName, [], isNonNullType(field.type) ?
+                    makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), [],
+                ) as WritableDraft<FieldDefinitionNode>,
+              );
+            }
+          }
+        });
+      });
+    });
+    return resultDoc;
+  }
 
   /**
    * During the prepare step, register any foreign keys that are renamed due to a model rename

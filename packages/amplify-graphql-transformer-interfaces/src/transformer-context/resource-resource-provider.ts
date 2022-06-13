@@ -1,3 +1,5 @@
+import { DirectiveNode, FieldNode, ObjectTypeDefinitionNode, ObjectTypeExtensionNode } from 'graphql';
+
 export interface TransformerResourceHelperProvider {
   generateTableName(modelName: string): string;
   generateIAMRoleName(name: string): string;
@@ -7,6 +9,8 @@ export interface TransformerResourceHelperProvider {
   getModelFieldMap(modelName: string): ModelFieldMap;
   getModelFieldMapKeys(): string[];
   getFieldNameMapping(modelName: string, fieldName: string): string;
+  addDirectiveConfigExclusion(object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode, field: FieldNode, directive: DirectiveNode): void;
+  isDirectiveConfigExcluded(object: ObjectTypeExtensionNode | ObjectTypeExtensionNode, field: FieldNode, directive: DirectiveNode): boolean;
 }
 
 export type ModelFieldMap = {

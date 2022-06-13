@@ -55,6 +55,8 @@ import {
   sortTransformerPlugins,
 } from './utils';
 import { validateAuthModes, validateModelSchema } from './validation';
+import { DocumentNode } from 'graphql/language';
+import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
@@ -130,6 +132,36 @@ export class GraphQLTransform {
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
     this.resolverConfig = options.resolverConfig || {};
     this.overrideConfig = options.overrideConfig;
+  }
+
+  /**
+   * Processes the schema using the transformer plugins that have exposed pre-process lifecycle methods
+   * The transformation step is focused on taking the schema and boiling it down into metadata which can
+   * then be 'transformed' into Cloud resources for the purpose of runtime use by applications. The pre-process
+   * lifecycle holds the logic for making any modifications to the schema (i.e. adding fields)
+   *
+   * One example of an added field: a @hasMany connection will add a field to the target model to ensure
+   * that the relationship can be resolved at runtime by storing the source model's primary key
+   * @param schema A parsed GraphQL DocumentNode
+   */
+  public preProcessSchema(schema: DocumentNode): DocumentNode {
+    const context = new TransformerPreProcessContext(schema, this?.options?.featureFlags);
+
+    this.transformers
+        .filter(transformer => isFunction(transformer.preMutateSchema))
+        .map(transformer => transformer.preMutateSchema as Function)
+        .forEach(preMutateSchema => preMutateSchema(context));
+
+    return this.transformers
+      .filter(transformer => isFunction(transformer.mutateSchema))
+      .map(transformer => transformer.mutateSchema as Function)
+      .reduce((mutateContext, mutateSchema) => {
+        const updatedSchema = mutateSchema(mutateContext);
+        return {
+          ...mutateContext,
+          inputDocument: updatedSchema,
+        }
+      }, context).inputDocument;
   }
 
   /**
