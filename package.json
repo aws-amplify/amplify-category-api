@@ -26,7 +26,7 @@
     "setup-dev": "(yarn && lerna run build) && yarn add-cli-no-save && (yarn hoist-cli && yarn rm-dev-link && yarn link-dev)",
     "link-win": "node ./scripts/link-bin.js node_modules/amplify-cli-internal/bin/amplify amplify-dev",
     "link-aa-win": "node ./scripts/link-bin.js packages/amplify-app/bin/amplify-app amplify-app-dev",
-    "setup-dev-win": "(yarn && lerna run build) && yarn add-cli-no-save && (yarn hoist-cli && yarn rm-dev-link && yarn link-win)",
+    "setup-dev-win": "(yarn && lerna run build) && yarn add-cli-no-save && (yarn hoist-cli-win && yarn rm-dev-link && yarn link-win)",
     "split-e2e-tests": "yarn ts-node ./scripts/split-e2e-tests.ts && git add .circleci/config.yml",
     "verify-commit": "yarn ts-node ./scripts/verify-commit.ts",
     "publish:beta": "lerna publish --exact --dist-tag=beta --preid=beta --conventional-commits --conventional-prerelease --message 'chore(release): Publish [ci skip]' --no-verify-access --yes",
@@ -45,6 +45,7 @@
     "coverage": "codecov || exit 0",
     "add-cli-no-save": "yarn add @aws-amplify/cli-internal -W  && git checkout -- package.json",
     "hoist-cli": "rm -rf node_modules/amplify-cli-internal && mkdir node_modules/amplify-cli-internal && cp -r node_modules/@aws-amplify/cli-internal/* node_modules/amplify-cli-internal",
+    "hoist-cli-win": "rimraf node_modules/amplify-cli-internal && mkdir node_modules\\amplify-cli-internal && xcopy /e /q node_modules\\@aws-amplify\\cli-internal node_modules\\amplify-cli-internal\\",
     "publish:main": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --no-verify-access --yes"
   },
   "bugs": {
