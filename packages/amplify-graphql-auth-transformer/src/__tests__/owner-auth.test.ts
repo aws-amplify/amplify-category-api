@@ -100,6 +100,28 @@ describe('owner based @auth', () => {
     expect(out.resolvers['Query.listPosts.auth.1.req.vtl']).toMatchSnapshot();
   });
 
+  test('owner where field is "::" delimited with only mutation', () => {
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [],
+    };
+    const validSchema = `
+    type Post @model @auth(rules: [{allow: owner, operations: [create, delete] }]) {
+      id: ID!
+      title: String!
+    }`;
+    const transformer = new GraphQLTransform({
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out.resolvers['Post.owner.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Post.owner.res.vtl']).toMatchSnapshot();
+  });
+
   test('owner field with subscriptions', () => {
     const authConfig: AppSyncAuthConfiguration = {
       defaultAuthentication: {
