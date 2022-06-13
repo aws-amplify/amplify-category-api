@@ -38,8 +38,8 @@
   "jest": {
     "verbose": false,
     "preset": "ts-jest",
-    "testRunner": "amplify-e2e-core/runner",
-    "testEnvironment": "amplify-e2e-core/environment",
+    "testRunner": "amplify-category-api-e2e-core/runner",
+    "testEnvironment": "amplify-category-api-e2e-core/environment",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
@@ -60,7 +60,7 @@
       "default",
       "jest-junit",
       [
-        "amplify-e2e-core/reporter",
+        "amplify-category-api-e2e-core/reporter",
         {
           "publicPath": "./amplify-migration-reports",
           "filename": "index.html",
