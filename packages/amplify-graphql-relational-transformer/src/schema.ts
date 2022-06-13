@@ -182,7 +182,6 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
       primaryKeyConnectionFieldType,
       field,
       sortKeyFields,
-      true,
     );
   }
 
@@ -197,7 +196,6 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
       primaryKeyConnectionFieldType,
       field,
       sortKeyFields,
-      false,
     );
   }
 
@@ -299,7 +297,6 @@ export const ensureHasManyConnectionField = (
       primaryKeyConnectionFieldType,
       field,
       sortKeyFields,
-      true,
     );
   }
 
@@ -314,7 +311,6 @@ export const ensureHasManyConnectionField = (
       primaryKeyConnectionFieldType,
       field,
       sortKeyFields,
-      false,
     );
   }
 };
@@ -593,20 +589,19 @@ const updateFilterConnectionInputWithConnectionFields = (
   primaryKeyConnectionFieldType: string,
   field: FieldDefinitionNode,
   sortKeyFields: FieldDefinitionNode[],
-  isFilter: boolean,
 ): void => {
   const updatedFields = [...input.fields!];
   updatedFields.push(
     ...getFilterConnectionInputFieldsWithConnectionField(
       updatedFields,
       connectionAttributeName,
-      generateModelScalarFilterInputName(primaryKeyConnectionFieldType, isFilter),
+      generateModelScalarFilterInputName(primaryKeyConnectionFieldType, false),
     ),
   );
   sortKeyFields.forEach(it => {
     updatedFields.push(...getFilterConnectionInputFieldsWithConnectionField(updatedFields,
       getSortKeyConnectionAttributeName(ctx.featureFlags, object.name.value, field.name.value, it.name.value),
-      generateModelScalarFilterInputName(getBaseType(it.type), isFilter)));
+      generateModelScalarFilterInputName(getBaseType(it.type), false)));
   });
   ctx.output.putType({
     ...input,
