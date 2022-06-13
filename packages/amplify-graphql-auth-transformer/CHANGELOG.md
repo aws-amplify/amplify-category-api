@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@0.10.0...@aws-amplify/graphql-auth-transformer@0.11.0) (2022-06-13)
+
+
+### Bug Fixes
+
+* create owner field resolvers for all operations ([#532](https://github.com/aws-amplify/amplify-category-api/issues/532)) ([298190d](https://github.com/aws-amplify/amplify-category-api/commit/298190de49fa50cf0665459d745c798253a385f6))
+* handle return value of set of owners to return user for sub::username identity claim ([623b24d](https://github.com/aws-amplify/amplify-category-api/commit/623b24d556fc145f1e3be6e8ff91309510f7a925))
+* use concatenated identity claim for primary key queries ([eafc412](https://github.com/aws-amplify/amplify-category-api/commit/eafc412d1a9c799077cd631c3d9c75edb43f524c))
+
+
+### Features
+
+* add error when using an owner field as a sort key field ([#517](https://github.com/aws-amplify/amplify-category-api/issues/517)) ([201032d](https://github.com/aws-amplify/amplify-category-api/commit/201032d674a8272931fad0c75e9e146a22ed030b))
+* **graphql-auth-transformer:** [@auth](https://github.com/auth) allow more granular access rights for read ([#23](https://github.com/aws-amplify/amplify-category-api/issues/23)) ([041fb80](https://github.com/aws-amplify/amplify-category-api/commit/041fb808e380d04f2c4913cef1037c3d87e98d22))
+
+
+
+
+
 # [0.10.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@0.9.4...@aws-amplify/graphql-auth-transformer@0.10.0) (2022-06-10)
 
 

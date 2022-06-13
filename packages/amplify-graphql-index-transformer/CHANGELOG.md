@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.12.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.11.11...@aws-amplify/graphql-index-transformer@0.12.0) (2022-06-13)
+
+
+### Features
+
+* add error when using an owner field as a sort key field ([#517](https://github.com/aws-amplify/amplify-category-api/issues/517)) ([201032d](https://github.com/aws-amplify/amplify-category-api/commit/201032d674a8272931fad0c75e9e146a22ed030b))
+
+
+
+
+
 ## [0.11.11](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.11.10...@aws-amplify/graphql-index-transformer@0.11.11) (2022-06-10)
 
 **Note:** Version bump only for package @aws-amplify/graphql-index-transformer

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.9.4...@aws-amplify/graphql-relational-transformer@0.10.0) (2022-06-13)
+
+
+### Features
+
+* add error when using an owner field as a sort key field ([#517](https://github.com/aws-amplify/amplify-category-api/issues/517)) ([201032d](https://github.com/aws-amplify/amplify-category-api/commit/201032d674a8272931fad0c75e9e146a22ed030b))
+
+
+
+
+
 ## [0.9.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.9.3...@aws-amplify/graphql-relational-transformer@0.9.4) (2022-06-10)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
