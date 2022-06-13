@@ -824,6 +824,7 @@ describe('Pre Processing Has Many Tests', () => {
 
   beforeEach(() => {
     transformer = new GraphQLTransform({
+      featureFlags,
       transformers: [new ModelTransformer(), new HasManyTransformer()],
     });
   });
@@ -834,7 +835,7 @@ describe('Pre Processing Has Many Tests', () => {
       id: ID!
       postsField: [Post] @hasMany
     }
-    
+
     type Post @model {
       id: ID!
     }

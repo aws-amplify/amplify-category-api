@@ -402,6 +402,7 @@ describe('Pre Processing Belongs To Tests', () => {
 
   beforeEach(() => {
     transformer = new GraphQLTransform({
+      featureFlags,
       transformers: [new ModelTransformer(), new HasManyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     });
   });
@@ -412,7 +413,7 @@ describe('Pre Processing Belongs To Tests', () => {
       id: ID!
       postsField: Post @hasOne
     }
-    
+
     type Post @model {
       id: ID!
       blogField: Blog @belongsTo
@@ -429,7 +430,7 @@ describe('Pre Processing Belongs To Tests', () => {
       id: ID!
       postsField: [Post] @hasMany
     }
-    
+
     type Post @model {
       id: ID!
       blogField: Blog @belongsTo

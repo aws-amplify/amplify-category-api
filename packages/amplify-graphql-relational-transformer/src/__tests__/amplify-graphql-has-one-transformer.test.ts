@@ -516,8 +516,7 @@ describe('Pre Processing Has One Tests', () => {
                   if (arg.name.value === 'fields') {
                     if (arg.value.kind === 'ListValue' && arg.value.values[0].kind === 'StringValue' && arg.value.values[0].value === generatedFieldName) {
                       hasFieldArgument = true;
-                    }
-                    else if (arg.value.kind === 'StringValue' && arg.value.value === generatedFieldName) {
+                    } else if (arg.value.kind === 'StringValue' && arg.value.value === generatedFieldName) {
                       hasFieldArgument = true;
                     }
                   }
@@ -533,6 +532,7 @@ describe('Pre Processing Has One Tests', () => {
 
   beforeEach(() => {
     transformer = new GraphQLTransform({
+      featureFlags,
       transformers: [new ModelTransformer(), new HasOneTransformer()],
     });
   });
@@ -543,7 +543,7 @@ describe('Pre Processing Has One Tests', () => {
       id: ID!
       blogName: BlogName @hasOne
     }
-    
+
     type BlogName @model {
       id: ID!
     }
@@ -560,7 +560,7 @@ describe('Pre Processing Has One Tests', () => {
       id: ID!
       blogName: BlogName @hasOne(fields: [])
     }
-    
+
     type BlogName @model {
       id: ID!
     }
@@ -578,7 +578,7 @@ describe('Pre Processing Has One Tests', () => {
       connectionField: ID
       blogName: BlogName @hasOne(fields: "connectionField")
     }
-    
+
     type BlogName @model {
       id: ID!
     }
@@ -596,7 +596,7 @@ describe('Pre Processing Has One Tests', () => {
       connectionField: ID
       blogName: BlogName @hasOne(fields: ["connectionField"])
     }
-    
+
     type BlogName @model {
       id: ID!
     }

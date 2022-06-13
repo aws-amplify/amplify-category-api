@@ -24,6 +24,8 @@ import {
   makeValueNode,
 } from 'graphql-transformer-common';
 import { produce } from 'immer';
+import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { WritableDraft } from 'immer/dist/types/types-external';
 import { makeGetItemConnectionWithKeyResolver } from './resolvers';
 import { ensureHasOneConnectionField } from './schema';
 import { HasOneDirectiveConfiguration } from './types';
@@ -38,8 +40,6 @@ import {
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
-import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { WritableDraft } from 'immer/dist/types/types-external';
 
 const directiveName = 'hasOne';
 const directiveDefinition = `
@@ -90,7 +90,7 @@ export class HasOneTransformer extends TransformerPluginBase {
               context.featureFlags,
               def.name.value,
               field.name.value,
-              getObjectPrimaryKey(def).name.value,
+              getObjectPrimaryKey(def as ObjectTypeDefinitionNode).name.value,
             );
             let hasFieldsDefined = false;
             let removalIndex = -1;
@@ -111,8 +111,8 @@ export class HasOneTransformer extends TransformerPluginBase {
               dir.arguments = [makeArgument('fields', makeValueNode(connectionAttributeName)) as WritableDraft<ArgumentNode>];
               def?.fields?.push(
                 makeField(
-                  connectionAttributeName, [], isNonNullType(field.type) ?
-                    makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), [],
+                  connectionAttributeName, [], isNonNullType(field.type)
+                    ? makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), [],
                 ) as WritableDraft<FieldDefinitionNode>,
               );
             }

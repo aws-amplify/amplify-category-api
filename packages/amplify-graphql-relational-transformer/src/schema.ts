@@ -10,6 +10,7 @@ import {
   ListValueNode,
   NamedTypeNode,
   ObjectTypeDefinitionNode,
+  ObjectTypeExtensionNode,
   StringValueNode,
 } from 'graphql';
 import {
