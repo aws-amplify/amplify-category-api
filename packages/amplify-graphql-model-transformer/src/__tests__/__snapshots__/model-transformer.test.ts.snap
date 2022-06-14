@@ -78,6 +78,65 @@ input ModelIDInput {
   size: ModelSizeInput
 }
 
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
 enum ModelAttributeTypes {
   binary
   binarySet
@@ -152,13 +211,19 @@ type Mutation {
   deleteEmail(input: DeleteEmailInput!, condition: ModelEmailConditionInput): Email
 }
 
+input ModelSubscriptionTestFilterInput {
+  id: ModelSubscriptionIDInput
+  and: [ModelSubscriptionTestFilterInput]
+  or: [ModelSubscriptionTestFilterInput]
+}
+
 type Subscription {
-  onCreateTest: Test @aws_subscribe(mutations: [\\"createTest\\"])
-  onUpdateTest: Test @aws_subscribe(mutations: [\\"updateTest\\"])
-  onDeleteTest: Test @aws_subscribe(mutations: [\\"deleteTest\\"])
-  onCreateEmail: Email @aws_subscribe(mutations: [\\"createEmail\\"])
-  onUpdateEmail: Email @aws_subscribe(mutations: [\\"updateEmail\\"])
-  onDeleteEmail: Email @aws_subscribe(mutations: [\\"deleteEmail\\"])
+  onCreateTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"createTest\\"])
+  onUpdateTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"updateTest\\"])
+  onDeleteTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"deleteTest\\"])
+  onCreateEmail(filter: ModelSubscriptionEmailFilterInput): Email @aws_subscribe(mutations: [\\"createEmail\\"])
+  onUpdateEmail(filter: ModelSubscriptionEmailFilterInput): Email @aws_subscribe(mutations: [\\"updateEmail\\"])
+  onDeleteEmail(filter: ModelSubscriptionEmailFilterInput): Email @aws_subscribe(mutations: [\\"deleteEmail\\"])
 }
 
 type ModelEmailConnection {
@@ -189,6 +254,12 @@ input UpdateEmailInput {
 
 input DeleteEmailInput {
   id: ID!
+}
+
+input ModelSubscriptionEmailFilterInput {
+  id: ModelSubscriptionIDInput
+  and: [ModelSubscriptionEmailFilterInput]
+  or: [ModelSubscriptionEmailFilterInput]
 }
 
 "
@@ -312,6 +383,65 @@ input ModelIDInput {
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
   size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
 }
 
 enum ModelAttributeTypes {
@@ -447,19 +577,30 @@ type Mutation {
   deleteComment(input: DeleteCommentInput!, condition: ModelCommentConditionInput): Comment
 }
 
+input ModelSubscriptionPostFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  appearsIn: ModelSubscriptionEpisodeListInput
+  episode: ModelSubscriptionStringInput
+  and: [ModelSubscriptionPostFilterInput]
+  or: [ModelSubscriptionPostFilterInput]
+}
+
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
-  onCreateAuthor: Author @aws_subscribe(mutations: [\\"createAuthor\\"])
-  onUpdateAuthor: Author @aws_subscribe(mutations: [\\"updateAuthor\\"])
-  onDeleteAuthor: Author @aws_subscribe(mutations: [\\"deleteAuthor\\"])
-  onCreateRequire: Require @aws_subscribe(mutations: [\\"createRequire\\"])
-  onUpdateRequire: Require @aws_subscribe(mutations: [\\"updateRequire\\"])
-  onDeleteRequire: Require @aws_subscribe(mutations: [\\"deleteRequire\\"])
-  onCreateComment: Comment @aws_subscribe(mutations: [\\"createComment\\"])
-  onUpdateComment: Comment @aws_subscribe(mutations: [\\"updateComment\\"])
-  onDeleteComment: Comment @aws_subscribe(mutations: [\\"deleteComment\\"])
+  onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreateAuthor(filter: ModelSubscriptionAuthorFilterInput): Author @aws_subscribe(mutations: [\\"createAuthor\\"])
+  onUpdateAuthor(filter: ModelSubscriptionAuthorFilterInput): Author @aws_subscribe(mutations: [\\"updateAuthor\\"])
+  onDeleteAuthor(filter: ModelSubscriptionAuthorFilterInput): Author @aws_subscribe(mutations: [\\"deleteAuthor\\"])
+  onCreateRequire(filter: ModelSubscriptionRequireFilterInput): Require @aws_subscribe(mutations: [\\"createRequire\\"])
+  onUpdateRequire(filter: ModelSubscriptionRequireFilterInput): Require @aws_subscribe(mutations: [\\"updateRequire\\"])
+  onDeleteRequire(filter: ModelSubscriptionRequireFilterInput): Require @aws_subscribe(mutations: [\\"deleteRequire\\"])
+  onCreateComment(filter: ModelSubscriptionCommentFilterInput): Comment @aws_subscribe(mutations: [\\"createComment\\"])
+  onUpdateComment(filter: ModelSubscriptionCommentFilterInput): Comment @aws_subscribe(mutations: [\\"updateComment\\"])
+  onDeleteComment(filter: ModelSubscriptionCommentFilterInput): Comment @aws_subscribe(mutations: [\\"deleteComment\\"])
 }
 
 type ModelAuthorConnection {
@@ -500,6 +641,13 @@ input DeleteAuthorInput {
   id: ID!
 }
 
+input ModelSubscriptionAuthorFilterInput {
+  id: ModelSubscriptionIDInput
+  name: ModelSubscriptionStringInput
+  and: [ModelSubscriptionAuthorFilterInput]
+  or: [ModelSubscriptionAuthorFilterInput]
+}
+
 type ModelRequireConnection {
   items: [Require]!
   nextToken: String
@@ -536,6 +684,14 @@ input UpdateRequireInput {
 
 input DeleteRequireInput {
   id: ID!
+}
+
+input ModelSubscriptionRequireFilterInput {
+  id: ModelSubscriptionIDInput
+  requiredField: ModelSubscriptionStringInput
+  notRequiredField: ModelSubscriptionStringInput
+  and: [ModelSubscriptionRequireFilterInput]
+  or: [ModelSubscriptionRequireFilterInput]
 }
 
 type ModelCommentConnection {
@@ -578,6 +734,15 @@ input UpdateCommentInput {
 
 input DeleteCommentInput {
   id: ID!
+}
+
+input ModelSubscriptionCommentFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  content: ModelSubscriptionStringInput
+  updatedOn: ModelSubscriptionIntInput
+  and: [ModelSubscriptionCommentFilterInput]
+  or: [ModelSubscriptionCommentFilterInput]
 }
 
 "
@@ -1078,6 +1243,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onCreatePost.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onDeletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -1093,6 +1261,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onDeletePost.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onUpdatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -1108,6 +1279,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onUpdatePost.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
 }
@@ -1608,6 +1782,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onCreatePost.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onDeletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -1623,6 +1800,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onDeletePost.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onUpdatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -1638,6 +1818,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onUpdatePost.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
 }
@@ -2138,6 +2321,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onCreatePost.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onDeletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -2153,6 +2339,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onDeletePost.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onUpdatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -2168,6 +2357,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onUpdatePost.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
 }
@@ -2243,6 +2435,65 @@ input ModelIDInput {
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
   size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
 }
 
 enum ModelAttributeTypes {
@@ -2326,10 +2577,19 @@ type Mutation {
   deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
+input ModelSubscriptionPostFilterInput {
+  id: ModelSubscriptionIDInput
+  str: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionPostFilterInput]
+  or: [ModelSubscriptionPostFilterInput]
+}
+
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
 
 "
@@ -2678,6 +2938,65 @@ input ModelIDInput {
   size: ModelSizeInput
 }
 
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
 enum ModelAttributeTypes {
   binary
   binarySet
@@ -2785,6 +3104,65 @@ input ModelIDInput {
   size: ModelSizeInput
 }
 
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
 enum ModelAttributeTypes {
   binary
   binarySet
@@ -2866,10 +3244,19 @@ type Mutation {
   deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
+input ModelSubscriptionPostFilterInput {
+  id: ModelSubscriptionIDInput
+  str: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionIntInput
+  updatedAt: ModelSubscriptionIntInput
+  and: [ModelSubscriptionPostFilterInput]
+  or: [ModelSubscriptionPostFilterInput]
+}
+
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
 
 "
@@ -3147,6 +3534,65 @@ input ModelIDInput {
   size: ModelSizeInput
 }
 
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
 enum ModelAttributeTypes {
   binary
   binarySet
@@ -3220,10 +3666,17 @@ type Mutation {
   deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
+input ModelSubscriptionPostFilterInput {
+  id: ModelSubscriptionIDInput
+  str: ModelSubscriptionStringInput
+  and: [ModelSubscriptionPostFilterInput]
+  or: [ModelSubscriptionPostFilterInput]
+}
+
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
 
 "
@@ -3503,6 +3956,65 @@ input ModelIDInput {
   size: ModelSizeInput
 }
 
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
 enum ModelAttributeTypes {
   binary
   binarySet
@@ -3576,10 +4088,17 @@ type Mutation {
   deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
+input ModelSubscriptionPostFilterInput {
+  id: ModelSubscriptionIDInput
+  str: ModelSubscriptionStringInput
+  and: [ModelSubscriptionPostFilterInput]
+  or: [ModelSubscriptionPostFilterInput]
+}
+
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
 
 "

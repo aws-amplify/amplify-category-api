@@ -137,6 +137,9 @@ export const removeSubscriptionFilterInputAttribute = (
 ): void => {
   const filterTypeName = getSubscriptionFilterInputName(typeName);
   const filterType = ctx.output.getType(filterTypeName) as InputObjectTypeDefinitionNode;
+  if (!filterType) {
+    return;
+  }
   const newFilterType: InputObjectTypeDefinitionNode = {
     ...filterType,
     fields: filterType.fields?.filter(field => field.name.value !== fieldName),

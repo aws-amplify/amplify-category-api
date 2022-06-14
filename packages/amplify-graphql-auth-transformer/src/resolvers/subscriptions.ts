@@ -58,14 +58,18 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
           methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}`), nul()),
         ),
         iff(
-          not(ref(IS_AUTHORIZED_FLAG)),
+          and([
+            not(ref(IS_AUTHORIZED_FLAG)),
+            not(methodCall(ref('util.isNullOrEmpty'), ref(`ownerEntity${idx}`))),
+          ]),
           compoundExpression([
-            iff(
+            ifElse(
               or([
                 equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
                 methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
               ]),
               set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+              methodCall(ref('util.unauthorized')),
             ),
           ]),
         ),
@@ -97,26 +101,19 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
 };
 
 const combineAuthExpressionAndFilter = (ownerExpression: Array<Expression>, groupExpression: Array<Expression>): Array<Expression> => [
-  set(ref('authRuntimeFilter'), raw('[]')),
-  set(ref('authOwnerRuntimeFilter'), raw('[]')),
-  set(ref('authGroupRuntimeFilter'), raw('[]')),
+  set(ref('authRuntimeFilter'), list([])),
+  set(ref('authOwnerRuntimeFilter'), list([])),
+  set(ref('authGroupRuntimeFilter'), list([])),
   ...(ownerExpression.length > 0 ? ownerExpression : []),
   ...(groupExpression.length > 0 ? groupExpression : []),
   comment('Apply dynamic roles auth if not previously authorized by static groups and owner argument'),
   iff(
     raw('$authOwnerRuntimeFilter.size() > 0'),
-    forEach(ref('ownerAuthFilter'), ref('authOwnerRuntimeFilter'), [
-      qref(methodCall(ref('authRuntimeFilter.add'), ref('ownerAuthFilter'))),
-    ]),
+    qref(methodCall(ref('authRuntimeFilter.addAll'), ref('authOwnerRuntimeFilter'))),
   ),
   iff(
-    and([
-      raw('$authGroupRuntimeFilter.size() > 0'),
-      raw('$authGroupRuntimeFilter.size() + $authRuntimeFilter.size() <= 10'),
-    ]),
-    forEach(ref('groupAuthFilter'), ref('authGroupRuntimeFilter'), [
-      qref(methodCall(ref('authRuntimeFilter.add'), ref('groupAuthFilter'))),
-    ]),
+    raw('$authGroupRuntimeFilter.size() > 0'),
+    qref(methodCall(ref('authRuntimeFilter.addAll'), ref('authGroupRuntimeFilter'))),
   ),
   iff(
     and([

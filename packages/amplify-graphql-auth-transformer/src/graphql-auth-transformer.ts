@@ -397,9 +397,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         .getRolesPerOperation('listen')
         .map(role => this.roleMap.get(role)!)
         // for subscriptions we only use static rules or owner rule where the field is not a list
-        .filter(roleDef => (roleDef.strategy === 'owner' && !fieldIsList(def.fields ?? [], roleDef.entity!)) || roleDef.static);
+        .filter(roleDef => roleDef.strategy === 'owner' || roleDef.static);
       subscriptionFieldNames.forEach(subscription => {
-        this.protectSubscriptionResolver(context, subscription.typeName, subscription.fieldName, roleDefinitions);
+        this.protectSubscriptionResolver(context, subscription.typeName, subscription.fieldName, subscriptionRoles);
       });
 
       if (context.featureFlags.getBoolean('useSubUsernameForDefaultIdentityClaim')) {
