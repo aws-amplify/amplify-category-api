@@ -184,7 +184,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     }
 
     const directiveWrapped = new DirectiveWrapper(directive);
-    const directiveArguments = directiveWrapped.getArguments({}) as any;
+    const directiveArguments = directiveWrapped.getArguments({}, ctx.featureFlags) as any;
     let shouldMakeSearch = true;
     let searchFieldNameOverride = undefined;
 

@@ -6,7 +6,7 @@ import {
   QueryFieldType,
   MutationFieldType,
   TransformerTransformSchemaStepContextProvider,
-  TransformerContextProvider,
+  TransformerContextProvider, FeatureFlagProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, NamedTypeNode,
@@ -40,7 +40,7 @@ export const fieldIsList = (fields: ReadonlyArray<FieldDefinitionNode>, fieldNam
 /**
  * getModelConfig
  */
-export const getModelConfig = (directive: DirectiveNode, typeName: string, isDataStoreEnabled = false): ModelDirectiveConfiguration => {
+export const getModelConfig = (directive: DirectiveNode, typeName: string, featureFlags: FeatureFlagProvider, isDataStoreEnabled = false): ModelDirectiveConfiguration => {
   const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
   const options = directiveWrapped.getArguments<ModelDirectiveConfiguration>({
     queries: {
@@ -63,20 +63,20 @@ export const getModelConfig = (directive: DirectiveNode, typeName: string, isDat
       createdAt: 'createdAt',
       updatedAt: 'updatedAt',
     },
-  });
+  }, featureFlags);
   return options;
 };
 
 /**
  * getSearchableConfig
  */
-export const getSearchableConfig = (directive: DirectiveNode, typeName: string): SearchableConfig | null => {
+export const getSearchableConfig = (directive: DirectiveNode, typeName: string, featureFlags: FeatureFlagProvider): SearchableConfig | null => {
   const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
   const options = directiveWrapped.getArguments<SearchableConfig>({
     queries: {
       search: graphqlName(`search${plurality(toUpper(typeName), true)}`),
     },
-  });
+  }, featureFlags);
   return options;
 };
 /*
@@ -109,7 +109,7 @@ export const getRelationalPrimaryMap = (
     const args = directiveWrapped.getArguments({
       indexName: undefined,
       fields: undefined,
-    });
+    }, ctx.featureFlags);
     // we only generate a primary map if a index name or field is specified
     // if both are undefined then @hasMany will create a new gsi with a new readonly field
     // we don't need a primary map since this readonly field is not a auth field
@@ -131,7 +131,7 @@ export const getRelationalPrimaryMap = (
   else if (relationalDirective.name.value !== 'manyToMany') {
     const args = directiveWrapped.getArguments({
       fields: [toCamelCase([def.name.value, field.name.value, 'id'])],
-    });
+    }, ctx.featureFlags);
     const relatedPrimaryFields = getKeyFields(ctx, relatedModel);
     // the fields provided by the directive (implicit/explicit) need to match the total amount of fields used for the primary key in the related table
     // otherwise the get request is incomplete

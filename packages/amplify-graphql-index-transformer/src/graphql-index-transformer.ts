@@ -46,7 +46,7 @@ export class IndexTransformer extends TransformerPluginBase {
       object: parent as ObjectTypeDefinitionNode,
       field: definition,
       directive,
-    } as IndexDirectiveConfiguration);
+    } as IndexDirectiveConfiguration, context.featureFlags);
 
     if (!args.sortKeyFields) {
       args.sortKeyFields = [];
