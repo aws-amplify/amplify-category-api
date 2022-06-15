@@ -386,7 +386,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
       const subscriptionLevel = this.modelDirectiveConfig.get(def.name.value)?.subscriptions?.level;
       // in order to create subscription resolvers the level needs to be on
-      if (subscriptionLevel === SubscriptionLevel.on) {
+      if (subscriptionLevel !== SubscriptionLevel.off) {
         const subscriptionFields = this.getSubscriptionFieldNames(def!);
         subscriptionFields.forEach(subscription => {
           let resolver;
@@ -418,13 +418,15 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             default:
               throw new Error('Unknown subscription field type');
           }
-          resolver.addToSlot(
-            'postAuth',
-            MappingTemplate.s3MappingTemplateFromString(
-              generateAuthExpressionForSandboxMode(context.sandboxModeEnabled),
-              `${subscription.typeName}.${subscription.fieldName}.{slotName}.{slotIndex}.req.vtl`,
-            ),
-          );
+          if (subscriptionLevel === SubscriptionLevel.on) {
+            resolver.addToSlot(
+              'postAuth',
+              MappingTemplate.s3MappingTemplateFromString(
+                generateAuthExpressionForSandboxMode(context.sandboxModeEnabled),
+                `${subscription.typeName}.${subscription.fieldName}.{slotName}.{slotIndex}.req.vtl`,
+              ),
+            );
+          }
           resolver.mapToStack(context.stackManager.getStackFor(subscription.resolverLogicalId, def!.name.value));
           context.resolvers.addResolver(subscription.typeName, subscription.fieldName, resolver);
         });
