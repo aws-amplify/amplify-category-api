@@ -74,7 +74,7 @@ export class HasOneTransformer extends TransformerPluginBase {
       object: parent as ObjectTypeDefinitionNode,
       field: definition,
       directive,
-    } as HasOneDirectiveConfiguration);
+    } as HasOneDirectiveConfiguration, context.featureFlags);
 
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);
