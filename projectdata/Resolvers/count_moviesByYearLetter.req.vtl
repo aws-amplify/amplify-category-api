@@ -1,0 +1,8 @@
+{
+    "version": "2017-02-28",
+    "operation": "GetItem",
+    "key": {
+        "Type": $util.dynamodb.toDynamoDBJson($ctx.args.type),
+        "QueryExpression": $util.dynamodb.toDynamoDBJson($ctx.args.query_name)
+    }
+}

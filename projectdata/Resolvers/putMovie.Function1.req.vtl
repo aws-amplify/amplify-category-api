@@ -1,0 +1,8 @@
+{
+    "operation" : "PutItem",
+    "key" : {
+        "year" : $util.dynamodb.toDynamoDBJson($ctx.args.year),
+        "title" : $util.dynamodb.toDynamoDBJson($ctx.args.title)
+    },
+    "attributeValues" : $util.dynamodb.toMapValuesJson($ctx.args)
+}

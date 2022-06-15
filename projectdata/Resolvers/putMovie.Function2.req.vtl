@@ -1,0 +1,15 @@
+#set( $myMap = {
+  "context": $context,
+  "Model": "Movies",
+  "Query" : "moviesByYearLetter",
+  "args" : {
+  	"year" : 2013,
+    "letter1" : "A",
+    "letter2" : "Z"
+  }
+})
+
+{
+  "operation": "Invoke",
+  "payload": $util.toJson($myMap)
+}

@@ -1,0 +1,26 @@
+type Aggregate {
+	count: Int
+	min: Int
+	max: Int
+	sum: Int
+}
+
+type Movie {
+	year: Int!
+	title: String!
+	info: String
+}
+
+type Mutation {
+	putMovie(year: Int!, title: String!, info: String): Movie
+}
+
+type Query {
+	moviesByYearLetter(year: Int!, letter1: String!, letter2: String!): [Movie]
+	count_moviesByYearLetter(type: String!, query_name: String!): Aggregate
+}
+
+schema {
+	query: Query
+	mutation: Mutation
+}

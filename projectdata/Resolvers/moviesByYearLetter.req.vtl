@@ -1,0 +1,16 @@
+{
+    "version" : "2017-02-28",
+    "operation" : "Query",
+    "query" : {
+        ## Provide a query expression. **
+        "expression": "#yr = :yyyy AND title between :letter1 and :letter2",
+        "expressionNames" : {
+            "#yr" : "year"
+        },
+        "expressionValues" : {
+            ":yyyy" : $util.dynamodb.toDynamoDBJson($context.arguments.year),
+            ":letter1" : $util.dynamodb.toDynamoDBJson($context.arguments.letter1),
+            ":letter2" : $util.dynamodb.toDynamoDBJson($context.arguments.letter2)
+        }
+    }
+}
