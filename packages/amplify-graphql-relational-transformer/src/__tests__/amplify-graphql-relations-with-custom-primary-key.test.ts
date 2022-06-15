@@ -3,6 +3,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
+import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const mockFeatureFlags = (useFieldNameForPrimaryKeyConnectionField: boolean) => ({
@@ -546,5 +547,63 @@ describe('custom primary key and relational directives', () => {
 
     expect(out.resolvers['Engine.car.req.vtl']).toContain('"#sortKeyName": "serialNumber"');
     expect(out.resolvers['Engine.car.req.vtl']).toContain('":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.engineCarSerialNumber, "___xamznone____")))');
+  });
+
+  it('generated correct allowed field for relational fields with custom PK and partial auth', () => {
+    const inputSchema = `
+      type Post @model @auth(rules: [{ allow: owner }]) {
+        postReference: ID! @primaryKey(sortKeyFields: ["title"])
+        title: String!
+        comments: [Comment] @hasMany
+        restricted: String @auth(rules: [{ allow: owner, operations: [] }])
+      }
+      type Comment @model @auth(rules: [{ allow: owner }])  {
+        commentReference: ID! @primaryKey(sortKeyFields: ["title"])
+        title: String!
+        post: Post @belongsTo
+        restricted: String @auth(rules: [{ allow: owner, operations: [] }])
+      }
+
+      type Car @model @auth(rules: [{ allow: owner }])  {
+        vinNumber: ID! @primaryKey(sortKeyFields: ["serialNumber"])
+        serialNumber: String!
+        engine: Engine @hasOne
+        restricted: String @auth(rules: [{ allow: owner, operations: [] }])
+      }
+      type Engine @model @auth(rules: [{ allow: owner }])  {
+        vinNumber: ID! @primaryKey(sortKeyFields: ["manufacturerReference"])
+        manufacturerReference: String!
+        car: Car @belongsTo
+        restricted: String @auth(rules: [{ allow: owner, operations: [] }])
+      }
+    `;
+
+    const transformer = new GraphQLTransform({
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [],
+      },
+      featureFlags: mockFeatureFlags(true),
+      transformers: [
+        new ModelTransformer(),
+        new PrimaryKeyTransformer(),
+        new HasOneTransformer(),
+        new HasManyTransformer(),
+        new BelongsToTransformer(),
+        new AuthTransformer(),
+      ],
+    });
+
+    const out = transformer.transform(inputSchema);
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+
+    expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain('#set( $ownerAllowedFields0 = ["postReference","title","comments"] )');
+    expect(out.resolvers['Mutation.createComment.auth.1.req.vtl']).toContain('#set( $ownerAllowedFields0 = ["commentReference","title","post","postCommentsPostReference","postCommentsTitle"] )');
+    expect(out.resolvers['Mutation.createCar.auth.1.req.vtl']).toContain('#set( $ownerAllowedFields0 = ["vinNumber","serialNumber","engine","carEngineVinNumber","carEngineSerialNumber"] )')
+    expect(out.resolvers['Mutation.createEngine.auth.1.req.vtl']).toContain('#set( $ownerAllowedFields0 = ["vinNumber","manufacturerReference","car","engineCarVinNumber","engineCarManufacturerReference"] )');
   });
 });

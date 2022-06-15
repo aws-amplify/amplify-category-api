@@ -1,7 +1,9 @@
 import { ModelDirectiveConfiguration, SubscriptionLevel } from '@aws-amplify/graphql-model-transformer';
+import { getConnectionAttributeName, getSortKeyConnectionAttributeName } from '@aws-amplify/graphql-relational-transformer';
 import {
   DirectiveWrapper, getKeySchema, getTable, InvalidDirectiveError,
 } from '@aws-amplify/graphql-transformer-core';
+import { getSortKeyFieldNames } from '@aws-amplify/graphql-transformer-core/src/utils/schema-utils';
 import {
   QueryFieldType,
   MutationFieldType,
@@ -130,7 +132,12 @@ export const getRelationalPrimaryMap = (
   // to the join table between related @models
   else if (relationalDirective.name.value !== 'manyToMany') {
     const args = directiveWrapped.getArguments({
-      fields: [toCamelCase([def.name.value, field.name.value, 'id'])],
+      fields: [
+        getConnectionAttributeName(ctx.featureFlags, def.name.value, field.name.value, relatedModel.name.value),
+        ...getSortKeyFieldNames(relatedModel).map(
+          it => getSortKeyConnectionAttributeName(def.name.value, field.name.value, it),
+        )
+      ],
     });
     const relatedPrimaryFields = getKeyFields(ctx, relatedModel);
     // the fields provided by the directive (implicit/explicit) need to match the total amount of fields used for the primary key in the related table
