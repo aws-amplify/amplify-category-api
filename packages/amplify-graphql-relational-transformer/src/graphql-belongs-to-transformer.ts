@@ -65,7 +65,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
       object: parent as ObjectTypeDefinitionNode,
       field: definition,
       directive,
-    } as BelongsToDirectiveConfiguration);
+    } as BelongsToDirectiveConfiguration, context.featureFlags);
 
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);
