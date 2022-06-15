@@ -1,4 +1,6 @@
 import { ArgumentNode, DirectiveNode, NameNode, valueFromASTUntyped, ValueNode, Location } from 'graphql';
+import _ from 'lodash';
+import { FeatureFlagProvider } from "@aws-amplify/graphql-transformer-interfaces";
 
 export class ArgumentWrapper {
   public readonly name: NameNode;
@@ -32,7 +34,7 @@ export class DirectiveWrapper {
       arguments: this.arguments.map(arg => arg.serialize()),
     };
   };
-  public getArguments = <T>(defaultValue: Required<T>): Required<T> => {
+  public getArguments = <T>(defaultValue: Required<T>, featureFlags: FeatureFlagProvider): Required<T> => {
     const argValues = this.arguments.reduce(
       (acc: Record<string, any>, arg: ArgumentWrapper) => ({
         ...acc,
@@ -40,6 +42,9 @@ export class DirectiveWrapper {
       }),
       {},
     );
+    if (featureFlags.getBoolean('graphQLTransformer.shouldDeepMergeDirectiveConfigDefaults')) {
+      return _.merge(defaultValue, argValues);
+    }
     return Object.assign(defaultValue, argValues);
   };
 }
