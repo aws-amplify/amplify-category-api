@@ -202,7 +202,7 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
   config.connectionFields.push(connectionAttributeName);
   config.connectionFields.push(
     ...getSortKeyFieldNames(relatedType).map(
-      it => getSortKeyConnectionAttributeName(ctx.featureFlags, object.name.value, field.name.value, it),
+      it => getSortKeyConnectionAttributeName(object.name.value, field.name.value, it),
     ),
   );
 };
@@ -225,7 +225,7 @@ export const ensureBelongsToConnectionField = (config: BelongsToDirectiveConfigu
     );
     config.connectionFields.push(
       ...getSortKeyFieldNames(relatedType).map(
-        it => getSortKeyConnectionAttributeName(ctx.featureFlags, relatedType.name.value, relatedField.name.value, it),
+        it => getSortKeyConnectionAttributeName(relatedType.name.value, relatedField.name.value, it),
       ),
     );
   }
@@ -253,7 +253,7 @@ export const ensureHasManyConnectionField = (
   const connectionFieldName = primaryKeyField.name.value;
   config.connectionFields.push(
     connectionFieldName,
-    ...sortKeyFields.map(it => getSortKeyConnectionAttributeName(ctx.featureFlags, object.name.value, field.name.value, it.name.value)),
+    ...sortKeyFields.map(it => getSortKeyConnectionAttributeName(object.name.value, field.name.value, it.name.value)),
   );
 
   const relatedTypeObject = ctx.output.getType(relatedType.name.value) as ObjectTypeDefinitionNode;
@@ -571,7 +571,7 @@ const updateInputWithConnectionFields = (
   );
   sortKeyFields.forEach(it => {
     updatedFields.push(...getInputFieldsWithConnectionField(updatedFields,
-      getSortKeyConnectionAttributeName(ctx.featureFlags, object.name.value, field.name.value, it.name.value),
+      getSortKeyConnectionAttributeName(object.name.value, field.name.value, it.name.value),
       getBaseType(it.type),
       isNonNullType(field.type)));
   });
@@ -600,7 +600,7 @@ const updateFilterConnectionInputWithConnectionFields = (
   );
   sortKeyFields.forEach(it => {
     updatedFields.push(...getFilterConnectionInputFieldsWithConnectionField(updatedFields,
-      getSortKeyConnectionAttributeName(ctx.featureFlags, object.name.value, field.name.value, it.name.value),
+      getSortKeyConnectionAttributeName(object.name.value, field.name.value, it.name.value),
       generateModelScalarFilterInputName(getBaseType(it.type), false)));
   });
   ctx.output.putType({
@@ -624,7 +624,7 @@ const updateTypeWithConnectionFields = (
   );
   sortKeyFields.forEach(it => {
     updatedFields.push(...getTypeFieldsWithConnectionField(updatedFields,
-      getSortKeyConnectionAttributeName(ctx.featureFlags, object.name.value, field.name.value, it.name.value),
+      getSortKeyConnectionAttributeName(object.name.value, field.name.value, it.name.value),
       getBaseType(it.type),
       isNonNullType(field.type)));
   });

@@ -1,7 +1,7 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { BelongsToTransformer, HasManyTransformer } from '..';
-import { featureFlags } from '../../../amplify-graphql-auth-transformer/src/__tests__/test-helpers';
+import { featureFlags } from './test-helpers';
 
 describe('transformer stack mapping', () => {
   it('maps relational resolvers to specified stack', async () => {

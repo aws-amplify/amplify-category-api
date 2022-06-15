@@ -1314,7 +1314,6 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       getSortKeyFieldNames(relatedField.relatedType).forEach(sortKeyFieldName => {
         allowedFields.add(
           getSortKeyConnectionAttributeName(
-            ctx.featureFlags,
             relatedField.relatedType.name.value,
             relatedField.name.value,
             sortKeyFieldName,

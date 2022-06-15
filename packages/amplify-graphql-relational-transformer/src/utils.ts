@@ -18,9 +18,6 @@ import {
   ManyToManyDirectiveConfiguration,
 } from './types';
 
-/**
- *
- */
 export function getRelatedTypeIndex(
   config: HasOneDirectiveConfiguration,
   ctx: TransformerContextProvider,
@@ -103,9 +100,6 @@ export function getRelatedTypeIndex(
   return [partitionField, ...sortFields];
 }
 
-/**
- *
- */
 export function ensureFieldsArray(config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration) {
   if (!config.fields) {
     config.fields = [];
@@ -116,16 +110,10 @@ export function ensureFieldsArray(config: HasManyDirectiveConfiguration | HasOne
   }
 }
 
-/**
- *
- */
 export function getModelDirective(objectType: ObjectTypeDefinitionNode) {
   return objectType.directives!.find(directive => directive.name.value === 'model');
 }
 
-/**
- *
- */
 export function validateModelDirective(
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration | ManyToManyDirectiveConfiguration,
 ) {
@@ -134,9 +122,6 @@ export function validateModelDirective(
   }
 }
 
-/**
- *
- */
 export function getRelatedType(
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
   ctx: TransformerContextProvider,
@@ -151,9 +136,6 @@ export function getRelatedType(
   return relatedType;
 }
 
-/**
- *
- */
 export function getFieldsNodes(
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
   ctx: TransformerContextProvider,
@@ -176,9 +158,6 @@ export function getFieldsNodes(
   });
 }
 
-/**
- *
- */
 export function validateRelatedModelDirective(
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
 ) {
@@ -195,24 +174,15 @@ function getIndexName(directive: DirectiveNode): string | undefined {
   }
 }
 
-/**
- *
- */
 export function getConnectionAttributeName(featureFlags: FeatureFlagProvider, type: string, field: string, relatedTypeField: string) {
   const nameSuffix = featureFlags.getBoolean('useFieldNameForPrimaryKeyConnectionField') ? relatedTypeField : 'id';
   return toCamelCase([type, field, nameSuffix]);
 }
 
-/**
- *
- */
-export function getSortKeyConnectionAttributeName(featureFlags: FeatureFlagProvider, type: string, field: string, relatedTypeField: string) {
+export function getSortKeyConnectionAttributeName(type: string, field: string, relatedTypeField: string) {
   return toCamelCase([type, field, relatedTypeField]);
 }
 
-/**
- *
- */
 export function getBackendConnectionAttributeName(
   featureFlags: FeatureFlagProvider,
   resourceHelper: TransformerResourceHelperProvider,
@@ -223,9 +193,6 @@ export function getBackendConnectionAttributeName(
   return getConnectionAttributeName(featureFlags, resourceHelper.getModelNameMapping(type), field, relatedTypeField);
 }
 
-/**
- *
- */
 export function validateDisallowedDataStoreRelationships(
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration,
   ctx: TransformerContextProvider,
@@ -337,9 +304,6 @@ export function registerHasManyForeignKeyMappings({
   });
 }
 
-/**
- *
- */
 export type ManyToManyForeignKeyMappingParams = {
   resourceHelper: TransformerResourceHelperProvider;
   typeName: string;
@@ -347,9 +311,6 @@ export type ManyToManyForeignKeyMappingParams = {
   fieldMap: FieldMapEntry[];
 };
 
-/**
- *
- */
 export function registerManyToManyForeignKeyMappings({
   resourceHelper,
   typeName,
@@ -368,9 +329,6 @@ export function registerManyToManyForeignKeyMappings({
   });
 }
 
-/**
- *
- */
 export const getObjectPrimaryKey = (object: ObjectTypeDefinitionNode): FieldDefinitionNode => {
   let primaryKey = makeField('id', [], makeNonNullType(makeNamedType('ID')));
 
