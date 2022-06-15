@@ -125,6 +125,33 @@ interface DeleteTaskInput {
   readOwners?: string[]
 }
 
+interface CreateTodoInput {
+  id?: string;
+  name?: string;
+  description?: string;
+  level?: number;
+  owner?: string;
+  sharedOwners?: [string];
+}
+
+interface UpdateTodoInput {
+  id?: string;
+  name?: string;
+  description?: string;
+  level?: number;
+  owner?: string;
+  sharedOwners?: [string];
+}
+
+interface DeleteTodoInput {
+  id?: string;
+  name?: string;
+  description?: string;
+  level?: number;
+  owner?: string;
+  sharedOwners?: [string];
+}
+
 beforeEach(async () => {
   try {
     await Auth.signOut();
@@ -147,6 +174,20 @@ beforeAll(async () => {
       severity: Int,
       owner: String
       readOwners: [String]
+  }
+  
+  type Todo @model
+  @auth(rules: [
+      {allow: groups, groups: ["Admin"]}
+      {allow: owner, ownerField: "owner", identityClaim: "username"}
+      {allow: owner, ownerField: "sharedOwners", identityClaim: "username"}
+  ]) {
+      id: String,
+      name: String,
+      description: String,
+      level: Int,
+      owner: String
+      sharedOwners: [String]
   }`;
   const transformer = new GraphQLTransform({
     authConfig: {
@@ -652,6 +693,172 @@ const reconfigureAmplifyAPI = (appSyncAuthType: string, apiKey?: string):void =>
   }
 };
 
+test('Static group auth should get precedence over owner argument', async () => {
+  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+  await Auth.signIn(USERNAME1, REAL_PASSWORD);
+  const observer = API.graphql({
+    // @ts-ignore
+    query: gql`
+      subscription OnCreateTodo {
+        onCreateTodo(owner: "${USERNAME2}") {
+          id
+          name
+          description
+          level
+          owner
+          sharedOwners
+        }
+      }
+    `,
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  }) as unknown as Observable<any>;
+  let subscription: ZenObservable.Subscription;
+  const subscriptionPromise = new Promise((resolve, _) => {
+    subscription = observer.subscribe((event: any) => {
+      const todo = event.value.data.onCreateTodo;
+      subscription.unsubscribe();
+      expect(todo.name).toEqual('todo1');
+      expect(todo.description).toEqual('description1');
+      expect(todo.level).toEqual(4);
+      resolve(undefined);
+    });
+  });
+
+  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+
+  await createTodo(GRAPHQL_CLIENT_2, {
+    name: 'todo1',
+    description: 'description1',
+    level: 4,
+    owner: USERNAME2,
+  });
+
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTodo Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
+});
+
+test('Runtime Filter with AND condition and IN & BEGINSWITH operators', async () => {
+  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+  await Auth.signIn(USERNAME1, REAL_PASSWORD);
+  const observer = API.graphql({
+    // @ts-ignore
+    query: gql`
+      subscription OnCreateTodo {
+        onCreateTodo(filter: {
+          and: [
+            {name: { in: ["todo", "test", "Testing"]}}
+            {description: { beginsWith: "Test"}}
+          ]
+        }) {
+          id
+          name
+          description
+          level
+          owner
+          sharedOwners
+        }
+      }
+    `,
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  }) as unknown as Observable<any>;
+  let subscription: ZenObservable.Subscription;
+  const subscriptionPromise = new Promise((resolve, _) => {
+    subscription = observer.subscribe((event: any) => {
+      const todo = event.value.data.onCreateTodo;
+      subscription.unsubscribe();
+      expect(todo.name).toEqual('Testing');
+      expect(todo.description).toEqual('Testing Desc');
+      expect(todo.level).toEqual(6);
+      resolve(undefined);
+    });
+  });
+
+  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+
+  await createTodo(GRAPHQL_CLIENT_1, {
+    name: 'todo',
+    description: 'description2',
+    level: 4,
+    owner: USERNAME1,
+  });
+
+  await createTodo(GRAPHQL_CLIENT_1, {
+    name: 'Test',
+    description: 'description3',
+    level: 5,
+    owner: USERNAME1,
+  });
+
+  await createTodo(GRAPHQL_CLIENT_1, {
+    name: 'Testing',
+    description: 'Testing Desc',
+    level: 6,
+    owner: USERNAME1,
+  });
+
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTodo Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
+});
+
+test('Runtime Filter with OR condition and NOTIN & BETWEEN operators', async () => {
+  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+  await Auth.signIn(USERNAME1, REAL_PASSWORD);
+  const observer = API.graphql({
+    // @ts-ignore
+    query: gql`
+      subscription OnCreateTodo {
+        onCreateTodo(filter: {
+          or: [
+            {name: { notIn: ["todo", "test", "Testing"]}}
+            {level: { between: [5, 10]}}
+          ]
+        }) {
+          id
+          name
+          description
+          level
+          owner
+          sharedOwners
+        }
+      }
+    `,
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  }) as unknown as Observable<any>;
+  let subscription: ZenObservable.Subscription;
+  const subscriptionPromise = new Promise((resolve, _) => {
+    subscription = observer.subscribe((event: any) => {
+      const todo = event.value.data.onCreateTodo;
+      subscription.unsubscribe();
+      expect(todo.name).toEqual('Test4');
+      expect(todo.description).toEqual('description4');
+      expect(todo.level).toEqual(8);
+      resolve(undefined);
+    });
+  });
+
+  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+
+  await createTodo(GRAPHQL_CLIENT_1, {
+    name: 'todo',
+    description: 'description2',
+    level: 4,
+    owner: USERNAME1,
+  });
+
+  await createTodo(GRAPHQL_CLIENT_1, {
+    name: 'Test4',
+    description: 'description4',
+    level: 8,
+    owner: USERNAME1,
+  });
+
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTodo Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
+});
+
 // mutations
 const createTask = async (client: AWSAppSyncClient<any>, input: CreateTaskInput): Promise<any> => {
   const request = gql`
@@ -698,6 +905,54 @@ const deleteTask = async (client: AWSAppSyncClient<any>, input: DeleteTaskInput)
         severity
         owner
         readOwners
+      }
+    }
+  `;
+  return client.mutate<any>({ mutation: request, variables: { input } });
+};
+
+const createTodo = async (client: AWSAppSyncClient<any>, input: CreateTodoInput): Promise<any> => {
+  const request = gql`
+    mutation CreateTodo($input: CreateTodoInput!) {
+      createTodo(input: $input) {
+        id
+        name
+        description
+        level
+        owner
+        sharedOwners
+      }
+    }
+  `;
+  return client.mutate<any>({ mutation: request, variables: { input } });
+};
+
+const updateTodo = async (client: AWSAppSyncClient<any>, input: UpdateTodoInput): Promise<any> => {
+  const request = gql`
+    mutation UpdateTodo($input: UpdateTodoInput!) {
+      updateTodo(input: $input) {
+        id
+        name
+        description
+        level
+        owner
+        sharedOwners
+      }
+    }
+  `;
+  return client.mutate<any>({ mutation: request, variables: { input } });
+};
+
+const deleteTodo = async (client: AWSAppSyncClient<any>, input: DeleteTodoInput): Promise<any> => {
+  const request = gql`
+    mutation DeleteTodo($input: DeleteTodoInput!) {
+      deleteTodo(input: $input) {
+        id
+        name
+        description
+        level
+        owner
+        sharedOwners
       }
     }
   `;
