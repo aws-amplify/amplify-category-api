@@ -3,7 +3,7 @@ import { getConnectionAttributeName, getSortKeyConnectionAttributeName } from '@
 import {
   DirectiveWrapper, getKeySchema, getTable, InvalidDirectiveError,
 } from '@aws-amplify/graphql-transformer-core';
-import { getSortKeyFieldNames } from '@aws-amplify/graphql-transformer-core/src/utils/schema-utils';
+import { getSortKeyFieldNames } from '@aws-amplify/graphql-transformer-core';
 import {
   QueryFieldType,
   MutationFieldType,

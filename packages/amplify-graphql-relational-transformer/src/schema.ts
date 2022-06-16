@@ -33,7 +33,7 @@ import {
   toUpper,
   wrapNonNull,
 } from 'graphql-transformer-common';
-import { getSortKeyFieldNames } from '@aws-amplify/graphql-transformer-core/lib/utils/schema-utils';
+import { getSortKeyFieldNames } from '@aws-amplify/graphql-transformer-core';
 import {
   BelongsToDirectiveConfiguration,
   HasManyDirectiveConfiguration,
