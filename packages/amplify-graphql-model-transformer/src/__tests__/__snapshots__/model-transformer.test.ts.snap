@@ -582,7 +582,7 @@ input ModelSubscriptionPostFilterInput {
   title: ModelSubscriptionStringInput
   createdAt: ModelSubscriptionStringInput
   updatedAt: ModelSubscriptionStringInput
-  appearsIn: ModelSubscriptionEpisodeListInput
+  appearsIn: ModelSubscriptionStringInput
   episode: ModelSubscriptionStringInput
   and: [ModelSubscriptionPostFilterInput]
   or: [ModelSubscriptionPostFilterInput]
