@@ -105,9 +105,11 @@ export const makeSubscriptionFilterInput = (
     const fieldType = ctx.output.getType(field.getTypeName());
     const isEnumType = fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION;
     if (field.isScalar() || isEnumType) {
-      const conditionTypeName = isEnumType && field.isList()
-        ? ModelResourceIDs.ModelFilterListInputTypeName(field.getTypeName(), !supportsConditions, true)
-        : ModelResourceIDs.ModelFilterScalarInputTypeName(isEnumType ? 'String' : field.getTypeName(), !supportsConditions, true);
+      const conditionTypeName = ModelResourceIDs.ModelFilterScalarInputTypeName(
+        isEnumType ? 'String' : field.getTypeName(),
+        !supportsConditions,
+        true,
+      );
       const inputField = InputFieldWrapper.create(field.name, conditionTypeName, true);
       input.addField(inputField);
     }
