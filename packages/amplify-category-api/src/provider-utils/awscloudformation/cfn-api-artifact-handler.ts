@@ -166,6 +166,12 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
   private getResourceDir = (apiName: string): string => pathManager.getResourceDirectoryPath(undefined, category, apiName);
 
+  private getRelativeResourceDir = (apiName: string) => {
+    const projectRoot = pathManager.findProjectRoot();
+    const resourceDir = this.getResourceDir(apiName);
+    return path.relative(projectRoot, resourceDir);
+  };
+
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   private createAmplifyMeta = (authConfig: AuthConfig, dependsOn?: DependsOnEntry[]) => ({
     service: 'AppSync',
@@ -294,12 +300,13 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
   };
 
   private generateAppsyncCLIInputs = async (serviceConfig: AppSyncServiceConfiguration, resourceDir: string): Promise<AppSyncCLIInputs> => {
+    const relativeResourceDir = path.isAbsolute(resourceDir) ? path.relative(pathManager.findProjectRoot(), resourceDir) : resourceDir;
     const appsyncCLIInputs: AppSyncCLIInputs = {
       version: 1,
       serviceConfiguration: {
         apiName: serviceConfig.apiName,
         serviceName: serviceConfig.serviceName,
-        gqlSchemaPath: path.join(resourceDir, gqlSchemaFilename),
+        gqlSchemaPath: path.join(relativeResourceDir, gqlSchemaFilename),
         defaultAuthType: serviceConfig.defaultAuthType,
       },
     };
@@ -321,7 +328,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
   private updateAppsyncCLIInputs = async (updates: AppSyncServiceModification, apiName: string) => {
     const cliState = new AppsyncApiInputState(this.context, apiName);
-    const gqlSchemaPath = path.join(this.getResourceDir(apiName), gqlSchemaFilename);
+    const gqlSchemaPath = path.join(this.getRelativeResourceDir(apiName), gqlSchemaFilename);
     if (!cliState.cliInputFileExists()) {
       return gqlSchemaPath;
     }
