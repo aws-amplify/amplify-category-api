@@ -2,7 +2,6 @@ import { DirectiveWrapper, InvalidDirectiveError } from '@aws-amplify/graphql-tr
 import { AppSyncAuthMode, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Stack } from '@aws-cdk/core';
 import { ObjectTypeDefinitionNode } from 'graphql';
-import { AccessControlMatrix } from '../accesscontrol/acm';
 import { MODEL_OPERATIONS, READ_MODEL_OPERATIONS } from './constants';
 import {
   AuthProvider,
@@ -164,33 +163,4 @@ export const getConfiguredAuthProviders = (config: AuthTransformerConfig): Confi
     hasIAM,
   };
   return configuredProviders;
-};
-
-/**
- * util to get allowed roles for field
- * if we have a rule like cognito private we can remove all other related roles from the field since it has top level
- * access by the provider
- */
-export const getReadRolesForField = (acm: AccessControlMatrix, readRoles: Array<string>, fieldName: string): Array<string> => {
-  const hasCognitoPrivateRole = readRoles.some(r => r === 'userPools:private')
-    && acm.isAllowed('userPools:private', fieldName, 'get')
-    && acm.isAllowed('userPools:private', fieldName, 'list')
-    && acm.isAllowed('userPools:private', fieldName, 'sync')
-    && acm.isAllowed('userPools:private', fieldName, 'search')
-    && acm.isAllowed('userPools:private', fieldName, 'listen');
-  const hasOIDCPrivateRole = readRoles.some(r => r === 'oidc:private')
-    && acm.isAllowed('oidc:private', fieldName, 'get')
-    && acm.isAllowed('oidc:private', fieldName, 'list')
-    && acm.isAllowed('oidc:private', fieldName, 'sync')
-    && acm.isAllowed('oidc:private', fieldName, 'search')
-    && acm.isAllowed('oidc:private', fieldName, 'listen');
-  let allowedRoles = [...readRoles];
-
-  if (hasCognitoPrivateRole) {
-    allowedRoles = allowedRoles.filter(r => !(r.startsWith('userPools:') && r !== 'userPools:private'));
-  }
-  if (hasOIDCPrivateRole) {
-    allowedRoles = allowedRoles.filter(r => !(r.startsWith('oidc:') && r !== 'oidc:private'));
-  }
-  return allowedRoles;
 };

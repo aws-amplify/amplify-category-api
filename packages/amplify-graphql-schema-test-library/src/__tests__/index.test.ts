@@ -13,8 +13,23 @@ import {
 } from '@aws-amplify/graphql-relational-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { ConflictHandlerType, GraphQLTransform, GraphQLTransformOptions } from '@aws-amplify/graphql-transformer-core';
-import { TransformerPluginProvider, FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { schemas, TransformerPlatform, TransformerSchema, TransformerVersion } from '..';
+import { FeatureFlagProvider, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  schemas, TransformerPlatform, TransformerSchema, TransformerVersion,
+} from '..';
+
+const featureFlags: FeatureFlagProvider = {
+  getBoolean: (value: string): boolean => {
+    if (value === 'useSubUsernameForDefaultIdentityClaim') {
+      return true;
+    }
+    return false;
+  },
+  getString: jest.fn(),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+};
+
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 const defaultDataStoreConfig = {
   resolverConfig: {
@@ -65,6 +80,7 @@ function expectToFail(name: string, schema: TransformerSchema, transformer: Grap
 }
 
 function createV2Transformer(options: Partial<Writeable<GraphQLTransformOptions>> = {}): GraphQLTransform {
+  options.featureFlags ??= featureFlags;
   options.transformers ??= getV2DefaultTransformerList();
   options.featureFlags = {
     getBoolean: (value: string, defaultValue: boolean): boolean => {
