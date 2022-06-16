@@ -20,7 +20,8 @@
     "e2e": "npm run setup-profile && jest --verbose",
     "build-tests": "tsc --build tsconfig.tests.json",
     "setup-profile": "ts-node ./src/configure_tests.ts",
-    "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts"
+    "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts",
+    "clean-stale-test-buckets": "ts-node ./src/cleanup-stale-test-buckets.ts"
   },
   "dependencies": {
     "@aws-amplify/graphql-transformer-core": "0.17.5",
