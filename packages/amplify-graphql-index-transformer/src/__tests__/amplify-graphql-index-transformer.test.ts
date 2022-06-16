@@ -2,10 +2,21 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import {
   ConflictHandlerType, GraphQLTransform, SyncConfig, validateModelSchema,
 } from '@aws-amplify/graphql-transformer-core';
+import Template from '@aws-amplify/graphql-transformer-core/lib/transformation/types';
 import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { expect as cdkExpect, haveResourceLike } from '@aws-cdk/assert';
-import { parse } from 'graphql';
+import { DocumentNode, parse } from 'graphql';
 import { IndexTransformer, PrimaryKeyTransformer } from '..';
+
+const generateFeatureFlagWithBooleanOverrides = (overrides: Record<string, boolean>): FeatureFlagProvider => ({
+  getBoolean: (name: string, defaultValue?: boolean): boolean => {
+    const overrideValue = Object.entries(overrides).find(([overrideName]) => overrideName === name)?.[1];
+    return overrideValue ?? defaultValue ?? false;
+  },
+  getString: jest.fn(),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+});
 
 test('throws if @index is used in a non-@model type', () => {
   const schema = `
@@ -117,20 +128,7 @@ test('throws if an LSI is missing sort fields', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: {
-      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-        if (name === 'secondaryKeyAsGSI') {
-          return false;
-        }
-        if (name === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return defaultValue;
-      }),
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-      getString: jest.fn(),
-    },
+    featureFlags: generateFeatureFlagWithBooleanOverrides({ secondaryKeyAsGSI: false, useSubUsernameForDefaultIdentityClaim: true }),
   });
 
   const sortKeyFieldsError = 'Invalid @index \'index1\'. You may not create an index where the partition key is the same as that of the primary key unless the index has a sort field. You cannot have a local secondary index without a sort key in the index.';
@@ -778,20 +776,7 @@ test('@index adds an LSI with secondaryKeyAsGSI FF set to false', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: {
-      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-        if (name === 'secondaryKeyAsGSI') {
-          return false;
-        }
-        if (name === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return defaultValue;
-      }),
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-      getString: jest.fn(),
-    },
+    featureFlags: generateFeatureFlagWithBooleanOverrides({ secondaryKeyAsGSI: false, useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -838,20 +823,7 @@ test('@index adds a GSI with secondaryKeyAsGSI FF set to true', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: {
-      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-        if (name === 'secondaryKeyAsGSI') {
-          return true;
-        }
-        if (name === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return defaultValue;
-      }),
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-      getString: jest.fn(),
-    },
+    featureFlags: generateFeatureFlagWithBooleanOverrides({ secondaryKeyAsGSI: true, useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -1270,4 +1242,179 @@ test('LSI creation regression test', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
+});
+
+describe('automatic name generation', () => {
+  const transform = (
+    enableAutoIndexQueryNames: boolean,
+    modelName: string,
+    inputSchema: string,
+  ): { schema: DocumentNode, stack: Template } => {
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+      featureFlags: generateFeatureFlagWithBooleanOverrides({ enableAutoIndexQueryNames }),
+    });
+    const transformerOutput = transformer.transform(inputSchema);
+    const schema = parse(transformerOutput.schema);
+    validateModelSchema(schema);
+    return { schema, stack: transformerOutput.stacks[modelName] };
+  };
+  const expectGSILike = (
+    {
+      stack,
+      indexName,
+      hashKeyName,
+      sortKeyName,
+    }: { stack: Template, indexName: string, hashKeyName: string, sortKeyName?: string },
+  ): void => {
+    const keySchema = [{ AttributeName: hashKeyName, KeyType: 'HASH' }];
+    if (sortKeyName) {
+      keySchema.push({ AttributeName: sortKeyName, KeyType: 'RANGE' });
+    }
+    cdkExpect(stack).to(
+      haveResourceLike('AWS::DynamoDB::Table', {
+        GlobalSecondaryIndexes: [
+          {
+            IndexName: indexName,
+            KeySchema: keySchema,
+          },
+        ],
+      }),
+    );
+  };
+  const expectGeneratedQueryLike = (
+    {
+      schema,
+      queryFieldName,
+      hashKeyFieldName,
+      sortKeyFieldName,
+    }: { schema: DocumentNode, queryFieldName: string, hashKeyFieldName: string, sortKeyFieldName?: string },
+  ): void => {
+    const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as any;
+    expect(queryType).toBeDefined();
+    const queryField = queryType.fields.find((f: any) => f.name && f.name.value === queryFieldName);
+    expect(queryField).toBeDefined();
+    expect(queryField.arguments[0].name.value).toEqual(hashKeyFieldName);
+    if (sortKeyFieldName) {
+      expect(queryField.arguments[1].name.value).toEqual(sortKeyFieldName);
+    }
+  };
+
+  it('generates an index name and queryField if neither is provided', () => {
+    const { schema, stack } = transform(true, 'Test', `
+      type Test @model {
+        category: String! @index
+      }
+    `);
+    expectGSILike({ stack, indexName: 'testsByCategory', hashKeyName: 'category' });
+    expectGeneratedQueryLike({ schema, queryFieldName: 'testsByCategory', hashKeyFieldName: 'category' });
+  });
+
+  it('generates an index name and queryField if neither are provided with sort key field', () => {
+    const { schema, stack } = transform(true, 'Test', `
+      type Test @model {
+        category: String! @index(sortKeyFields: ["priority"])
+        priority: String!
+      }
+    `);
+    expectGSILike({
+      stack, indexName: 'testsByCategoryAndPriority', hashKeyName: 'category', sortKeyName: 'priority',
+    });
+    expectGeneratedQueryLike({
+      schema, queryFieldName: 'testsByCategoryAndPriority', hashKeyFieldName: 'category', sortKeyFieldName: 'priority',
+    });
+  });
+
+  it('generates an index name and queryField if neither are provided with multiple sort key fields', () => {
+    const { schema, stack } = transform(true, 'Test', `
+      type Test @model {
+        category: String! @index(sortKeyFields: ["priority", "severity"])
+        priority: String!
+        severity: String!
+      }
+    `);
+    expectGSILike({
+      stack, indexName: 'testsByCategoryAndPriorityAndSeverity', hashKeyName: 'category', sortKeyName: 'priority#severity',
+    });
+    expectGeneratedQueryLike({
+      schema, queryFieldName: 'testsByCategoryAndPriorityAndSeverity', hashKeyFieldName: 'category', sortKeyFieldName: 'prioritySeverity',
+    });
+  });
+
+  it('generates an queryField if none is provided', () => {
+    const { schema, stack } = transform(true, 'Test', `
+      type Test @model {
+        category: String! @index(name: "overrideByCategory")
+      }
+    `);
+    expectGSILike({ stack, indexName: 'overrideByCategory', hashKeyName: 'category' });
+    expectGeneratedQueryLike({ schema, queryFieldName: 'testsByCategory', hashKeyFieldName: 'category' });
+  });
+
+  it('generates an queryField if none is provided with sort key field', () => {
+    const { schema, stack } = transform(true, 'Test', `
+      type Test @model {
+        category: String! @index(name: "overrideByCategory", sortKeyFields: ["priority"])
+        priority: String!
+      }
+    `);
+    expectGSILike({
+      stack, indexName: 'overrideByCategory', hashKeyName: 'category', sortKeyName: 'priority',
+    });
+    expectGeneratedQueryLike({
+      schema, queryFieldName: 'testsByCategoryAndPriority', hashKeyFieldName: 'category', sortKeyFieldName: 'priority',
+    });
+  });
+
+  it('generates an queryField if none is provided with multiple sort key fields', () => {
+    const { schema, stack } = transform(true, 'Test', `
+      type Test @model {
+        category: String! @index(name: "overrideByCategory", sortKeyFields: ["priority", "severity"])
+        priority: String!
+        severity: String!
+      }
+    `);
+    expectGSILike({
+      stack, indexName: 'overrideByCategory', hashKeyName: 'category', sortKeyName: 'priority#severity',
+    });
+    expectGeneratedQueryLike({
+      schema, queryFieldName: 'testsByCategoryAndPriorityAndSeverity', hashKeyFieldName: 'category', sortKeyFieldName: 'prioritySeverity',
+    });
+  });
+
+  it('does not generates a queryField if a null is provided', () => {
+    const { schema, stack } = transform(true, 'Test', `
+      type Test @model {
+        category: String! @index(queryField: null)
+      }
+    `);
+    expectGSILike({ stack, indexName: 'testsByCategory', hashKeyName: 'category' });
+    const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as any;
+    expect(queryType).toBeDefined();
+    expect(queryType.fields.some((f: any) => f.name && f.name.value === 'testsByCategory')).toBeFalsy();
+  });
+
+  it('does not generate a queryField if no input is provided, and feature flag is disabled', () => {
+    const { schema, stack } = transform(false, 'Test', `
+      type Test @model {
+        category: String! @index
+      }
+    `);
+    expectGSILike({ stack, indexName: 'testsByCategory', hashKeyName: 'category' });
+    const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as any;
+    expect(queryType).toBeDefined();
+    expect(queryType.fields.some((f: any) => f.name && f.name.value === 'testsByCategory')).toBeFalsy();
+  });
+
+  it('throws on explicit null name regardless of feature flag state', () => {
+    const modelName = 'Test';
+    const schema = `
+      type Test @model {
+        category: String! @index(name: null)
+      }
+    `;
+    const errorMessage = 'Explicit null value not allowed for name field on @index';
+    expect(() => transform(true, modelName, schema)).toThrow(errorMessage);
+    expect(() => transform(false, modelName, schema)).toThrow(errorMessage);
+  });
 });
