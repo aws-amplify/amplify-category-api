@@ -132,6 +132,7 @@ interface CreateTodoInput {
   level?: number;
   owner?: string;
   sharedOwners?: [string];
+  status?: string;
 }
 
 interface UpdateTodoInput {
@@ -141,6 +142,7 @@ interface UpdateTodoInput {
   level?: number;
   owner?: string;
   sharedOwners?: [string];
+  status?: string;
 }
 
 interface DeleteTodoInput {
@@ -150,6 +152,7 @@ interface DeleteTodoInput {
   level?: number;
   owner?: string;
   sharedOwners?: [string];
+  status?: string;
 }
 
 beforeEach(async () => {
@@ -188,6 +191,13 @@ beforeAll(async () => {
       level: Int,
       owner: String
       sharedOwners: [String]
+      status: TodoStatus
+  }
+  
+  enum TodoStatus {
+    NOTSTARTED
+    STARTED
+    COMPLETED
   }`;
   const transformer = new GraphQLTransform({
     authConfig: {
@@ -707,6 +717,7 @@ test('Static group auth should get precedence over owner argument', async () => 
           level
           owner
           sharedOwners
+          status
         }
       }
     `,
@@ -731,6 +742,7 @@ test('Static group auth should get precedence over owner argument', async () => 
     description: 'description1',
     level: 4,
     owner: USERNAME2,
+    status: 'NOTSTARTED',
   });
 
   return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTodo Subscription timed out', () => {
@@ -757,6 +769,7 @@ test('Runtime Filter with AND condition and IN & BEGINSWITH operators', async ()
           level
           owner
           sharedOwners
+          status
         }
       }
     `,
@@ -781,6 +794,7 @@ test('Runtime Filter with AND condition and IN & BEGINSWITH operators', async ()
     description: 'description2',
     level: 4,
     owner: USERNAME1,
+    status: 'NOTSTARTED',
   });
 
   await createTodo(GRAPHQL_CLIENT_1, {
@@ -788,6 +802,7 @@ test('Runtime Filter with AND condition and IN & BEGINSWITH operators', async ()
     description: 'description3',
     level: 5,
     owner: USERNAME1,
+    status: 'NOTSTARTED',
   });
 
   await createTodo(GRAPHQL_CLIENT_1, {
@@ -795,6 +810,7 @@ test('Runtime Filter with AND condition and IN & BEGINSWITH operators', async ()
     description: 'Testing Desc',
     level: 6,
     owner: USERNAME1,
+    status: 'NOTSTARTED',
   });
 
   return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTodo Subscription timed out', () => {
@@ -821,6 +837,7 @@ test('Runtime Filter with OR condition and NOTIN & BETWEEN operators', async () 
           level
           owner
           sharedOwners
+          status
         }
       }
     `,
@@ -845,6 +862,7 @@ test('Runtime Filter with OR condition and NOTIN & BETWEEN operators', async () 
     description: 'description2',
     level: 4,
     owner: USERNAME1,
+    status: 'NOTSTARTED',
   });
 
   await createTodo(GRAPHQL_CLIENT_1, {
@@ -852,6 +870,65 @@ test('Runtime Filter with OR condition and NOTIN & BETWEEN operators', async () 
     description: 'description4',
     level: 8,
     owner: USERNAME1,
+    status: 'NOTSTARTED',
+  });
+
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTodo Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
+});
+
+test('Runtime Filter enum field type should be treated as string', async () => {
+  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+  await Auth.signIn(USERNAME1, REAL_PASSWORD);
+  const observer = API.graphql({
+    // @ts-ignore
+    query: gql`
+      subscription OnCreateTodo {
+        onCreateTodo(filter: {
+          status: { eq: "COMPLETED" }
+        }) {
+          id
+          name
+          description
+          level
+          owner
+          sharedOwners
+          status
+        }
+      }
+    `,
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  }) as unknown as Observable<any>;
+  let subscription: ZenObservable.Subscription;
+  const subscriptionPromise = new Promise((resolve, _) => {
+    subscription = observer.subscribe((event: any) => {
+      const todo = event.value.data.onCreateTodo;
+      subscription.unsubscribe();
+      expect(todo.name).toEqual('Test6');
+      expect(todo.description).toEqual('description6');
+      expect(todo.level).toEqual(8);
+      expect(todo.status).toEqual('COMPLETED');
+      resolve(undefined);
+    });
+  });
+
+  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+
+  await createTodo(GRAPHQL_CLIENT_1, {
+    name: 'todo5',
+    description: 'description5',
+    level: 4,
+    owner: USERNAME1,
+    status: 'NOTSTARTED',
+  });
+
+  await createTodo(GRAPHQL_CLIENT_1, {
+    name: 'Test6',
+    description: 'description6',
+    level: 8,
+    owner: USERNAME1,
+    status: 'COMPLETED',
   });
 
   return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTodo Subscription timed out', () => {
@@ -921,6 +998,7 @@ const createTodo = async (client: AWSAppSyncClient<any>, input: CreateTodoInput)
         level
         owner
         sharedOwners
+        status
       }
     }
   `;
@@ -937,6 +1015,7 @@ const updateTodo = async (client: AWSAppSyncClient<any>, input: UpdateTodoInput)
         level
         owner
         sharedOwners
+        status
       }
     }
   `;
@@ -953,6 +1032,7 @@ const deleteTodo = async (client: AWSAppSyncClient<any>, input: DeleteTodoInput)
         level
         owner
         sharedOwners
+        status
       }
     }
   `;
