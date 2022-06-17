@@ -1,7 +1,8 @@
+## TODO: Move `movies` modelname and query out of here, since we can't generate til after the table is created.
 #set( $myMap = {
   "context": $context,
-  "Model": "Movies",
-  "Query" : "moviesByYearLetter",
+  "model": "movies",
+  "queryExpression" : "moviesByYearLetter",
   "args" : {
   	"year" : 2013,
     "letter1" : "A",

@@ -1,0 +1,1 @@
+type Blob = never;

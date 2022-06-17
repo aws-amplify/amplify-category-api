@@ -1,0 +1,10 @@
+*.js
+*.d.ts
+node_modules
+*.lambda.zip
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+!resources/lambda/**/*.js
+!types/**
+lib
