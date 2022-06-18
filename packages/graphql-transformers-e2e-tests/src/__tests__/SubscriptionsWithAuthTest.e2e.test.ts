@@ -1012,7 +1012,7 @@ test('Test onCreatePost with incorrect owner argument should throw an error', as
       event => {},
       err => {
         expect(err.error.errors[0].message).toEqual(
-          'Connection failed: {"errors":[{"errorType":"Unauthorized","message":"Not Authorized to access onCreatePost on type Post"}]}',
+          'Connection failed: {"errors":[{"errorType":"Unauthorized","message":"Not Authorized to access onCreatePost on type Subscription"}]}',
         );
         resolve(undefined);
       },
