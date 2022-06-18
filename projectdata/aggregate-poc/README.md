@@ -1,4 +1,4 @@
-# Aggregates Demo Stack
+# Aggregates POC
 
 ## Overview
 
