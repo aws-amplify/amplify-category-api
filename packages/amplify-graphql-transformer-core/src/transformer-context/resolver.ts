@@ -315,6 +315,9 @@ export class TransformerResolver implements TransformerResolverProvider {
           throw new Error('Unknown DataSource type');
       }
     }
+
+    const envName = (context.stackManager.getParameter('env') as CfnParameter).valueAsString;
+
     let initResolver = dedent`
     $util.qr($ctx.stash.put("typeName", "${this.typeName}"))
     $util.qr($ctx.stash.put("fieldName", "${this.fieldName}"))
@@ -322,6 +325,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     $util.qr($ctx.stash.put("metadata", {}))
     $util.qr($ctx.stash.metadata.put("dataSourceType", "${dataSourceType}"))
     $util.qr($ctx.stash.metadata.put("apiId", "${api.apiId}"))
+    $util.qr($ctx.stash.metadata.put("env", "${envName}"))
     ${dataSource}
     `;
     const authModes = [context.authConfig.defaultAuthentication, ...(context.authConfig.additionalAuthenticationProviders || [])].map(
@@ -405,3 +409,4 @@ export class TransformerResolver implements TransformerResolverProvider {
     }
   }
 }
+ 
