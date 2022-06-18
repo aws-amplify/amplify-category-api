@@ -235,6 +235,11 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.metadata.put(\\"env\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+              },
+              "\\"))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -284,6 +289,11 @@ $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               Object {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "\\"))
+$util.qr($ctx.stash.metadata.put(\\"env\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackenv10C5A902Ref",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
@@ -412,6 +422,11 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.metadata.put(\\"env\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+              },
+              "\\"))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -461,6 +476,11 @@ $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               Object {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "\\"))
+$util.qr($ctx.stash.metadata.put(\\"env\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackenv10C5A902Ref",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
@@ -1080,6 +1100,11 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.metadata.put(\\"env\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+              },
+              "\\"))
 
 $util.toJson({})",
             ],
@@ -1125,6 +1150,11 @@ $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"NONE\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               Object {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "\\"))
+$util.qr($ctx.stash.metadata.put(\\"env\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackenv10C5A902Ref",
               },
               "\\"))
 
@@ -1207,6 +1237,11 @@ $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               Object {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "\\"))
+$util.qr($ctx.stash.metadata.put(\\"env\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackenv10C5A902Ref",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
@@ -1609,6 +1644,11 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.metadata.put(\\"env\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+              },
+              "\\"))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
@@ -1655,6 +1695,11 @@ $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               Object {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "\\"))
+$util.qr($ctx.stash.metadata.put(\\"env\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackenv10C5A902Ref",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
@@ -1780,6 +1825,11 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.metadata.put(\\"env\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+              },
+              "\\"))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
@@ -1826,6 +1876,11 @@ $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               Object {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "\\"))
+$util.qr($ctx.stash.metadata.put(\\"env\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackenv10C5A902Ref",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
@@ -2128,6 +2183,11 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.metadata.put(\\"env\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+              },
+              "\\"))
 
 $util.toJson({})",
             ],
@@ -2169,6 +2229,11 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.metadata.put(\\"env\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+              },
+              "\\"))
 
 $util.toJson({})",
             ],
@@ -2208,6 +2273,11 @@ $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"NONE\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               Object {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "\\"))
+$util.qr($ctx.stash.metadata.put(\\"env\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackenv10C5A902Ref",
               },
               "\\"))
 
@@ -2255,6 +2325,11 @@ $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               Object {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "\\"))
+$util.qr($ctx.stash.metadata.put(\\"env\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackenv10C5A902Ref",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
