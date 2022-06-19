@@ -298,6 +298,10 @@ test('it generates expected resources', () => {
             {
               Ref: anything(),
             },
+            anything(),
+            {
+              Ref: anything(),
+            },
             '"))\n$util.qr($ctx.stash.put("endpoint", "https://',
             {
               'Fn::GetAtt': ['OpenSearchDomain', 'DomainEndpoint'],
