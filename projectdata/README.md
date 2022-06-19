@@ -6,8 +6,9 @@ This is a CDK project which allows for quick reproduction of a test app which ca
 
 ### Pre-requisites
 
-1. CDK is installed.
+1. CDK is installed via `npm i -g aws-cdk`
 2. You have access to an aws account to deploy this stack into.
+3. This account has cdk enabled by running `cdk bootstrap` against the relevant account/region you plan to deploy into.
 
 ### Useful commands
 

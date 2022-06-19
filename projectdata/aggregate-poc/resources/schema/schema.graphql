@@ -13,6 +13,7 @@ type Movie {
 
 type Mutation {
 	putMovie(year: Int!, title: String!, info: String): Movie
+	triggerEvent(message: String!): String
 }
 
 type Query {
