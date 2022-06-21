@@ -80,6 +80,7 @@
     "@aws-cdk/region-info": "~1.124.0",
     "@graphql-tools/merge": "^6.0.18",
     "@octokit/rest": "^18.0.9",
+    "amplify-app": "4.2.35",
     "chalk": "^4.1.1",
     "cloudform": "^4.2.0",
     "cloudform-types": "^4.2.0",
