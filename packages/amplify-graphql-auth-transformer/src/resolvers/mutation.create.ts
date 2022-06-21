@@ -159,11 +159,29 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArr
     const entityIsList = fieldIsList(fields, role.entity!);
     if (role.strategy === 'owner') {
       ownerExpression.push(
+        compoundExpression([
+          set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.input.${role.entity!}`), nul())),
+          generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
+          iff(
+            and([
+              ref(IS_AUTHORIZED_FLAG), 
+              ref(`util.isNull($ownerEntity${idx})`), 
+              not(methodCall(ref('ctx.args.input.containsKey'), str(role.entity!)))
+            ]),
+            compoundExpression([
+              qref(
+                methodCall(
+                  ref('ctx.args.input.put'),
+                  str(role.entity!),
+                  entityIsList ? list([ref(`ownerClaim${idx}`)]) : ref(`ownerClaim${idx}`),
+                ),
+              )
+            ])
+          )
+        ]),
         iff(
           not(ref(IS_AUTHORIZED_FLAG)),
           compoundExpression([
-            set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.input.${role.entity!}`), nul())),
-            generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
             generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
             set(ref(`ownerAllowedFields${idx}`), raw(JSON.stringify(role.allowedFields))),
             set(ref(`isAuthorizedOnAllFields${idx}`), bool(role.areAllFieldsAllowed)),
