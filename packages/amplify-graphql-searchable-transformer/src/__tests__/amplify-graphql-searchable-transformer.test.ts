@@ -60,8 +60,6 @@ test('SearchableModelTransformer with datastore enabled vtl', () => {
     type Post @model @searchable {
         id: ID!
         title: String!
-        createdAt: String
-        updatedAt: String
     }
     `;
   const transformer = new GraphQLTransform({
