@@ -310,7 +310,7 @@ describe('@model with @auth', () => {
           if (value === 'useSubUsernameForDefaultIdentityClaim') {
             return true;
           }
-          if (value === 'useSubUsernameForDefaultIdentityClaim') {
+          if (value === 'populateOwnerFieldForStaticGroupAuth') {
             return true;
           }
           return false;
