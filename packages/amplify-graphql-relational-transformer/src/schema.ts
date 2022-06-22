@@ -38,9 +38,10 @@ import {
   BelongsToDirectiveConfiguration,
   HasManyDirectiveConfiguration,
   HasOneDirectiveConfiguration,
-  ManyToManyDirectiveConfiguration,
+  ManyToManyDirectiveConfiguration, ObjectDefinition,
 } from './types';
 import { getConnectionAttributeName, getObjectPrimaryKey, getSortKeyConnectionAttributeName } from './utils';
+import {WritableDraft} from "immer/dist/types/types-external";
 
 /**
  * extendTypeWithConnection
@@ -632,4 +633,32 @@ const updateTypeWithConnectionFields = (
     ...targetObject,
     fields: updatedFields,
   });
+};
+
+export const addFieldsToDefinition = (
+  object: WritableDraft<ObjectDefinition>,
+  fields: FieldDefinitionNode[],
+): void => {
+  fields.forEach(field => {
+    if (!object?.fields?.some(objField => objField.name.value === field.name.value)) {
+      object?.fields?.push(field as WritableDraft<FieldDefinitionNode>);
+    }
+  });
+};
+
+export const convertSortKeyFieldsToSortKeyConnectionFields = (
+  sortKeyFields: FieldDefinitionNode[],
+  object: ObjectDefinition,
+  connectingField: FieldDefinitionNode,
+): FieldDefinitionNode[] => {
+  const createdFields = new Array<FieldDefinitionNode>();
+  sortKeyFields.forEach(skf => {
+    createdFields.push(...getTypeFieldsWithConnectionField(
+      [],
+      getSortKeyConnectionAttributeName(object.name.value, connectingField.name.value, skf.name.value),
+      getBaseType(skf.type),
+      isNonNullType(skf.type),
+    ));
+  });
+  return createdFields;
 };
