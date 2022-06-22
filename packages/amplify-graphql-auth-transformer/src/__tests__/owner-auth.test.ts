@@ -553,7 +553,7 @@ describe('owner based @auth', () => {
         transformers: [new ModelTransformer(), new AuthTransformer()],
         featureFlags: {
           ...featureFlags,
-          ...{ getBoolean: () => false },
+          ...{ getBoolean: (featureName) => (featureName === 'useSubUsernameForDefaultIdentityClaim') ? false : true },
         },
       });
       const out = transformer.transform(validSchema);
@@ -587,7 +587,7 @@ describe('owner based @auth', () => {
         transformers: [new ModelTransformer(), new AuthTransformer()],
         featureFlags: {
           ...featureFlags,
-          ...{ getBoolean: () => false },
+          ...{ getBoolean: (featureName) => (featureName === 'useSubUsernameForDefaultIdentityClaim') ? false : true },
         },
       });
       const out = transformer.transform(validSchema);
@@ -1121,6 +1121,128 @@ describe('owner based @auth', () => {
       }).toThrow(
         "The primary key's sort key type 'myOwnerField' cannot be used as an owner @auth field too. Please use another field for the sort key.",
       );
+    });
+  });
+
+  describe('with populateOwnerFieldForStaticGroupAuth feature flag disabled', () => {
+    test('auth transformer validation happy case', () => {
+      const authConfig: AppSyncAuthConfiguration = {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [],
+      };
+      const validSchema = `
+        type Post @model @auth(rules: [{allow: owner}]) {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+        }`;
+      const transformer = new GraphQLTransform({
+        authConfig,
+        transformers: [new ModelTransformer(), new AuthTransformer()],
+        featureFlags: {
+          ...featureFlags,
+          ...{ getBoolean: (featureName) => (featureName === 'populateOwnerFieldForStaticGroupAuth') ? false : true },
+        },
+      });
+      const out = transformer.transform(validSchema);
+      expect(out).toBeDefined();
+      expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+        'AMAZON_COGNITO_USER_POOLS',
+      );
+    });
+
+    test('owner field is not set where the field is a list', () => {
+      const authConfig: AppSyncAuthConfiguration = {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [],
+      };
+      const validSchema = `
+        type Post @model @auth(rules: [{allow: owner, ownerField: "editors" }]) {
+          id: ID!
+          title: String!
+          editors: [String]
+          createdAt: String
+          updatedAt: String
+        }`;
+      const transformer = new GraphQLTransform({
+        authConfig,
+        transformers: [new ModelTransformer(), new AuthTransformer()],
+        featureFlags: {
+          ...featureFlags,
+          ...{ getBoolean: (featureName) => (featureName === 'populateOwnerFieldForStaticGroupAuth') ? false : true },
+        },
+      });
+      const out = transformer.transform(validSchema);
+      expect(out).toBeDefined();
+      expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+        'AMAZON_COGNITO_USER_POOLS',
+      );
+      expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
+    });
+
+    test('owner field is not set where field is "::" delimited string', () => {
+      const authConfig: AppSyncAuthConfiguration = {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [],
+      };
+      const validSchema = `
+        type Post @model @auth(rules: [{allow: owner, identityClaim: "sub::username" }]) {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+        }`;
+      const transformer = new GraphQLTransform({
+        authConfig,
+        transformers: [new ModelTransformer(), new AuthTransformer()],
+        featureFlags: {
+          ...featureFlags,
+          ...{ getBoolean: (featureName) => (featureName === 'populateOwnerFieldForStaticGroupAuth') ? false : true },
+        },
+      });
+      const out = transformer.transform(validSchema);
+      expect(out).toBeDefined();
+      expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+        'AMAZON_COGNITO_USER_POOLS',
+      );
+      expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
+    });
+
+    test('owner field is not set after static auth checks', () => {
+      const authConfig: AppSyncAuthConfiguration = {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [],
+      };
+      const validSchema = `
+        type Post @model @auth(rules: [{allow: owner}, { allow: groups, groups: ["Admin"] }]) {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+        }`;
+      const transformer = new GraphQLTransform({
+        authConfig,
+        transformers: [new ModelTransformer(), new AuthTransformer()],
+        featureFlags: {
+          ...featureFlags,
+          ...{ getBoolean: (featureName) => (featureName === 'populateOwnerFieldForStaticGroupAuth') ? false : true },
+        },
+      });
+      const out = transformer.transform(validSchema);
+      expect(out).toBeDefined();
+      expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+        'AMAZON_COGNITO_USER_POOLS',
+      );
+      expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
     });
   });
 });

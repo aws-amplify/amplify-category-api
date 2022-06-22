@@ -29,6 +29,8 @@ import {
   iamAdminRoleCheckExpression,
   generateOwnerClaimExpression,
   generateOwnerClaimListExpression,
+  populateOwnerField,
+  addAllowedFieldsIfElse,
 } from './helpers';
 import {
   API_KEY_AUTH_TYPE,
@@ -44,6 +46,7 @@ import {
   ALLOWED_FIELDS,
   DENIED_FIELDS,
 } from '../utils';
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 /**
  * There is only one role for ApiKey we can use the first index
@@ -152,33 +155,25 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expre
   return staticRoleExpression;
 };
 
-const dynamicRoleExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>): Array<Expression> => {
+const dynamicRoleExpression = (ctx: TransformerContextProvider, roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>): Array<Expression> => {
   const ownerExpression = new Array<Expression>();
   const dynamicGroupExpression = new Array<Expression>();
   roles.forEach((role, idx) => {
     const entityIsList = fieldIsList(fields, role.entity!);
     if (role.strategy === 'owner') {
+      const ownerEntityClaimExpressions = new Array<Expression>();
+      // get current owner entity
+      ownerEntityClaimExpressions.push(set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.input.${role.entity!}`), nul())));
+      // get current owner claim
+      ownerEntityClaimExpressions.push(generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`));
+      // If the user is already authorized, populate owner field with the owner claim
+      if (ctx.featureFlags.getBoolean('populateOwnerFieldForStaticGroupAuth')) {
+        ownerEntityClaimExpressions.push(populateOwnerField(`ownerClaim${idx}`, role.entity!, `ownerEntity${idx}`, entityIsList, true));
+      }
       ownerExpression.push(
-        compoundExpression([
-          set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.input.${role.entity!}`), nul())),
-          generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
-          iff(
-            and([
-              ref(IS_AUTHORIZED_FLAG), 
-              ref(`util.isNull($ownerEntity${idx})`), 
-              not(methodCall(ref('ctx.args.input.containsKey'), str(role.entity!)))
-            ]),
-            compoundExpression([
-              qref(
-                methodCall(
-                  ref('ctx.args.input.put'),
-                  str(role.entity!),
-                  entityIsList ? list([ref(`ownerClaim${idx}`)]) : ref(`ownerClaim${idx}`),
-                ),
-              )
-            ])
-          )
-        ]),
+        compoundExpression(
+          ownerEntityClaimExpressions,
+        ),
         iff(
           not(ref(IS_AUTHORIZED_FLAG)),
           compoundExpression([
@@ -206,19 +201,15 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArr
                   addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
                 ),
               ]),
-            iff(
-              and([ref(`util.isNull($ownerEntity${idx})`), not(methodCall(ref('ctx.args.input.containsKey'), str(role.entity!)))]),
-              compoundExpression([
-                qref(
-                  methodCall(
-                    ref('ctx.args.input.put'),
-                    str(role.entity!),
-                    entityIsList ? list([ref(`ownerClaim${idx}`)]) : ref(`ownerClaim${idx}`),
-                  ),
-                ),
-                addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
-              ]),
-            ),
+            populateOwnerField(
+              `ownerClaim${idx}`, 
+              role.entity!, 
+              `ownerEntity${idx}`, 
+              entityIsList, 
+              false,
+              `ownerAllowedFields${idx}`,
+              `isAuthorizedOnAllFields${idx}`
+            )
           ]),
         ),
       );
@@ -266,6 +257,7 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArr
  * - there are fields conditions that could not be met
  */
 export const generateAuthExpressionForCreate = (
+  ctx: TransformerContextProvider,
   providers: ConfiguredAuthProviders,
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
@@ -292,7 +284,7 @@ export const generateAuthExpressionForCreate = (
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
-        compoundExpression([...generateStaticRoleExpression(cognitoStaticRoles), ...dynamicRoleExpression(cognitoDynamicRoles, fields)]),
+        compoundExpression([...generateStaticRoleExpression(cognitoStaticRoles), ...dynamicRoleExpression(ctx, cognitoDynamicRoles, fields)]),
       ),
     );
   }
@@ -300,7 +292,7 @@ export const generateAuthExpressionForCreate = (
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(OIDC_AUTH_TYPE)),
-        compoundExpression([...generateStaticRoleExpression(oidcStaticRoles), ...dynamicRoleExpression(oidcDynamicRoles, fields)]),
+        compoundExpression([...generateStaticRoleExpression(oidcStaticRoles), ...dynamicRoleExpression(ctx, oidcDynamicRoles, fields)]),
       ),
     );
   }
@@ -320,8 +312,3 @@ export const generateAuthExpressionForCreate = (
   return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
 };
 
-const addAllowedFieldsIfElse = (allowedFieldsKey: string, condition: string, breakLoop = false): Expression => ifElse(
-  ref(condition),
-  compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), ...(breakLoop ? [raw('#break')] : [])]),
-  qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(allowedFieldsKey))),
-);

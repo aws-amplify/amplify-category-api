@@ -310,6 +310,9 @@ describe('@model with @auth', () => {
           if (value === 'useSubUsernameForDefaultIdentityClaim') {
             return true;
           }
+          if (value === 'useSubUsernameForDefaultIdentityClaim') {
+            return true;
+          }
           return false;
         },
         getString: jest.fn(),
@@ -770,6 +773,7 @@ describe('@model with @auth', () => {
           createSalary(input: { wage: 10 }) {
               id
               wage
+              owner
           }
       }
       `,
@@ -777,6 +781,7 @@ describe('@model with @auth', () => {
     );
     expect(req.data.createSalary.id).toBeDefined();
     expect(req.data.createSalary.wage).toEqual(10);
+    expect(req.data.createSalary.owner).toBeDefined();
   });
 
   test('update my own salary without admin permission', async () => {
