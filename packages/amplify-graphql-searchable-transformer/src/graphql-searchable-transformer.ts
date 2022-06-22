@@ -44,6 +44,7 @@ import {
   makeSearchableAggregateTypeEnumObject,
   AGGREGATE_TYPES,
   extendTypeWithDirectives,
+  DATASTORE_SYNC_FIELDS,
 } from './definitions';
 import assert from 'assert';
 import { setMappings } from './cdk/create-layer-cfnMapping';
@@ -429,9 +430,8 @@ function getTable(context: TransformerContextProvider, definition: ObjectTypeDef
 
 function getNonKeywordFields(def: ObjectTypeDefinitionNode): Expression[] {
   const nonKeywordTypeSet = new Set(nonKeywordTypes);
-  const datastoreReservedFields = ['_version', '_deleted', '_lastChangedAt'];
 
-  return def.fields?.filter(field => nonKeywordTypeSet.has(getBaseType(field.type)) && !datastoreReservedFields.includes(field.name.value)).map(field => str(field.name.value)) || [];
+  return def.fields?.filter(field => nonKeywordTypeSet.has(getBaseType(field.type)) && !DATASTORE_SYNC_FIELDS.includes(field.name.value)).map(field => str(field.name.value)) || [];
 }
 
 /**

@@ -60,6 +60,8 @@ test('SearchableModelTransformer with datastore enabled vtl', () => {
     type Post @model @searchable {
         id: ID!
         title: String!
+        createdAt: String
+        updatedAt: String
     }
     `;
   const transformer = new GraphQLTransform({
@@ -375,4 +377,30 @@ test('SearchableModelTransformer enum type generates StringFilterInput', () => {
   expect(out).toBeDefined();
   parse(out.schema);
   expect(out.schema).toMatchSnapshot();
+});
+
+describe('SearchableModelTransformer with datastore enabled and sort field defined vtl', () => {
+  test('it should populate auto-generated timestamp fields in non keywords and omit datastore reserved fields when in implicit schema', () => {
+    const validSchema = `
+      type Post @model @searchable {
+        id: ID!
+        title: String!
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+      featureFlags,
+      resolverConfig: {
+        project: {
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+          ConflictDetection: 'VERSION',
+        },
+      },
+    });
+  
+    const out = transformer.transform(validSchema);
+    expect(parse(out.schema)).toBeDefined();
+    expect(out.resolvers['Query.searchPosts.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Query.searchPosts.res.vtl']).toMatchSnapshot();
+  });
 });
