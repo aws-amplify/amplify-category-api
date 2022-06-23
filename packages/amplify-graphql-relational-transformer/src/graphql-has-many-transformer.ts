@@ -16,7 +16,13 @@ import {
   ObjectTypeExtensionNode,
 } from 'graphql';
 import { makeQueryConnectionWithKeyResolver, updateTableForConnection } from './resolvers';
-import { ensureHasManyConnectionField, extendTypeWithConnection } from './schema';
+import {
+  addFieldsToDefinition,
+  convertSortKeyFieldsToSortKeyConnectionFields,
+  ensureHasManyConnectionField,
+  extendTypeWithConnection,
+  getSortKeyFieldsNoContext
+} from './schema';
 import { HasManyDirectiveConfiguration } from './types';
 import {
   ensureFieldsArray, getConnectionAttributeName,
@@ -73,7 +79,7 @@ export class HasManyTransformer extends TransformerPluginBase {
    */
   mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
     const resultDoc: DocumentNode = produce(context.inputDocument, draftDoc => {
-      const connectingFieldsMap = new Map<string, WritableDraft<FieldDefinitionNode>>(); // key: type name | value: connecting field
+      const connectingFieldsMap = new Map<string, Array<WritableDraft<FieldDefinitionNode>>>(); // key: type name | value: connecting field
       const filteredDefs = draftDoc?.definitions?.filter(def => def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension');
       const objectDefs = filteredDefs as Array<WritableDraft<ObjectTypeDefinitionNode | ObjectTypeExtensionNode>>;
       // First iteration builds a map of the hasMany connecting fields that need to exist, second iteration ensures they exist
@@ -88,14 +94,20 @@ export class HasManyTransformer extends TransformerPluginBase {
             getObjectPrimaryKey(def as ObjectTypeDefinitionNode).name.value,
           );
           const newField = makeField(connectionAttributeName, [], isNonNullType(field.type) ? makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), []);
-          connectingFieldsMap.set(baseFieldType, newField as WritableDraft<FieldDefinitionNode>);
+          const sortKeyFields = convertSortKeyFieldsToSortKeyConnectionFields(
+            getSortKeyFieldsNoContext(def),
+            def,
+            field,
+          );
+          const allNewFields = [newField, ...sortKeyFields];
+          connectingFieldsMap.set(baseFieldType, allNewFields as Array<WritableDraft<FieldDefinitionNode>>);
         });
       });
 
       objectDefs?.filter(def => connectingFieldsMap.has(def.name.value))?.forEach(def => {
-        const fieldToAdd = connectingFieldsMap.get(def.name.value);
-        if (def.fields && fieldToAdd && !def.fields.some(field => field.name.value === fieldToAdd.name.value)) {
-          def.fields.push(fieldToAdd);
+        const fieldsToAdd = connectingFieldsMap.get(def.name.value);
+        if (fieldsToAdd) {
+          addFieldsToDefinition(def, fieldsToAdd);
         }
       });
     });

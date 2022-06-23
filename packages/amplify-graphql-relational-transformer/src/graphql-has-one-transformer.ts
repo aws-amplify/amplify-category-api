@@ -125,7 +125,9 @@ export class HasOneTransformer extends TransformerPluginBase {
                   ? makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), [],
               ) as WritableDraft<FieldDefinitionNode>;
               // eslint-disable-next-line no-param-reassign
-              dir.arguments = [makeArgument('fields', makeValueNode(connectionAttributeName)) as WritableDraft<ArgumentNode>];
+              dir.arguments = [makeArgument('fields', makeValueNode(
+                [connectionAttributeName, ...sortKeyFields.map(skf => skf.name.value)],
+              )) as WritableDraft<ArgumentNode>];
               addFieldsToDefinition(def, [connField, ...sortKeyFields]);
             }
           });

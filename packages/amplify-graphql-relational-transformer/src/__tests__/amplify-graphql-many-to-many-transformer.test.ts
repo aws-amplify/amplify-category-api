@@ -4,10 +4,9 @@ import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-in
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { DirectiveNode, DocumentNode, ObjectTypeDefinitionNode, parse } from 'graphql';
+import { DocumentNode, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { HasOneTransformer, ManyToManyTransformer } from '..';
-import { featureFlags } from './test-helpers';
-import { getBaseType } from 'graphql-transformer-common';
+import { featureFlags, hasGeneratedDirective, hasGeneratedField } from './test-helpers';
 
 jest.mock('amplify-prompts');
 
@@ -433,91 +432,6 @@ test('creates join table with implicitly defined primary keys', () => {
 
 describe('Pre Processing Many To Many Tests', () => {
   let transformer: GraphQLTransform;
-  const hasGeneratedField = (doc: DocumentNode, objectType: string, fieldName: string, fieldType?: string, isList?: boolean): boolean => {
-    let hasField = false;
-    doc?.definitions?.forEach(def => {
-      if ((def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') && def.name.value === objectType) {
-        def?.fields?.forEach(field => {
-          if (field.name.value === fieldName) {
-            hasField = true;
-            const listTypeTrue = field.type.kind === 'ListType' || (field.type.kind === 'NonNullType' && field.type.type.kind === 'ListType');
-            if (isList === true && listTypeTrue) {
-              hasField = hasField && true;
-            }
-            if (isList === false && listTypeTrue) {
-              hasField = false;
-            }
-            if (fieldType && getBaseType(field.type) === fieldType) {
-              hasField = hasField && true;
-            }
-          }
-        });
-      }
-    });
-    return hasField;
-  };
-
-  const hasGeneratedDirective = (
-      doc: DocumentNode,
-      objectType: string,
-      fieldName: string | undefined,
-      dirName: string,
-      args: Map<string, string | Array<string>> | undefined
-    ): boolean => {
-    let matchesExpected = false;
-    // This is only written to support the string and string list arguments of the relational directives
-    const checkDirective = (dir: DirectiveNode, args: Map<string, string | Array<string>> | undefined): boolean => {
-      if (!args && !dir.arguments) {
-        return true;
-      }
-      dir?.arguments?.forEach(arg => {
-        if (arg.value.kind === 'StringValue') {
-          if (args?.get(arg.name.value) === arg.value.value) {
-            args?.delete(arg.name.value);
-          }
-        }
-        else if (arg.value.kind === 'ListValue') {
-          const stringValues = args?.get(arg.name.value);
-          let fullMatch = true;
-          arg.value.values.forEach((val, idx) => {
-            if (val.kind != 'StringValue' || val.value != stringValues?.[idx]) {
-              fullMatch = false;
-            }
-          });
-          if (fullMatch) {
-            args?.delete(arg.name.value);
-          }
-        }
-      });
-
-      if (args?.size && args?.size > 0) {
-        return false;
-      }
-      return true;
-    };
-
-    doc?.definitions?.forEach(def => {
-      if ((def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') && def.name.value === objectType) {
-        if (fieldName) {
-          def?.fields?.forEach(field => {
-            field?.directives?.forEach(dir => {
-              if (dir.name.value === dirName) {
-                matchesExpected = matchesExpected ? true : checkDirective(dir, args);
-              }
-            });
-          });
-        }
-        else {
-          def?.directives?.forEach(dir => {
-            if (dir.name.value === dirName) {
-              matchesExpected = matchesExpected ? true : checkDirective(dir, args);
-            }
-          });
-        }
-      }
-    });
-    return matchesExpected;
-  };
 
   beforeEach(() => {
     transformer = createTransformer()
