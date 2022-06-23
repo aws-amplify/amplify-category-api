@@ -3,7 +3,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { DocumentNode, Kind, parse } from 'graphql';
 import { HasManyTransformer, HasOneTransformer } from '..';
-import { featureFlags } from './test-helpers';
+import {featureFlags, hasGeneratedField} from './test-helpers';
 
 test('fails if @hasOne was used on an object that is not a model type', () => {
   const inputSchema = `
@@ -490,20 +490,6 @@ test('recursive @hasOne relationships are supported if DataStore is enabled', ()
 
 describe('Pre Processing Has One Tests', () => {
   let transformer: GraphQLTransform;
-  const hasGeneratedField = (doc: DocumentNode, objectType: string, fieldName: string): boolean => {
-    let hasField = false;
-    doc?.definitions?.forEach(def => {
-      if ((def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') && def.name.value === objectType) {
-        def?.fields?.forEach(field => {
-          if (field.name.value === fieldName) {
-            hasField = true;
-          }
-        });
-      }
-    });
-    return hasField;
-  };
-
   const hasGeneratedFieldArgument = (doc: DocumentNode, objectType: string, fieldName: string, generatedFieldName: string): boolean => {
     let hasFieldArgument = false;
     doc?.definitions?.forEach(def => {
@@ -605,5 +591,24 @@ describe('Pre Processing Has One Tests', () => {
     const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
     expect(hasGeneratedField(updatedSchemaDoc, 'Blog', 'blogBlogNameId')).toBeFalsy();
     expect(hasGeneratedFieldArgument(updatedSchemaDoc, 'Blog', 'blogName', 'blogBlogNameId')).toBeFalsy();
+  });
+
+  test('Should generate additional matching sort key fields when connected to primary key with sort keys', () => {
+    const schema = `
+    type Blog @model {
+      id: ID!
+      connectionField: ID
+      arbitraryField: BlogName @hasOne
+    }
+
+    type BlogName @model {
+      id: ID! @primaryKey(sortKeyFields: ["thing"])
+      thing: String
+    }
+    `;
+
+    const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+    expect(hasGeneratedField(updatedSchemaDoc, 'Blog', 'blogArbitraryFieldThing', 'String')).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, 'Blog', 'blogArbitraryFieldId')).toBeTruthy();
   });
 });

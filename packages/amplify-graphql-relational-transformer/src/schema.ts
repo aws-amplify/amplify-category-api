@@ -34,6 +34,7 @@ import {
   wrapNonNull,
 } from 'graphql-transformer-common';
 import { getSortKeyFieldNames } from '@aws-amplify/graphql-transformer-core';
+import { WritableDraft } from 'immer/dist/types/types-external';
 import {
   BelongsToDirectiveConfiguration,
   HasManyDirectiveConfiguration,
@@ -41,7 +42,6 @@ import {
   ManyToManyDirectiveConfiguration, ObjectDefinition,
 } from './types';
 import { getConnectionAttributeName, getObjectPrimaryKey, getSortKeyConnectionAttributeName } from './utils';
-import {WritableDraft} from "immer/dist/types/types-external";
 
 /**
  * extendTypeWithConnection
@@ -635,6 +635,11 @@ const updateTypeWithConnectionFields = (
   });
 };
 
+/**
+ * Given an object definition and some fields, any fields which are not (by name) already a part of the definition will be added
+ * @param object The object (made writable by immer) being modified
+ * @param fields The fields to be added to the definition
+ */
 export const addFieldsToDefinition = (
   object: WritableDraft<ObjectDefinition>,
   fields: FieldDefinitionNode[],
@@ -646,6 +651,14 @@ export const addFieldsToDefinition = (
   });
 };
 
+/**
+ * Given a list of sort key fields on an object, another object with a relational connection to the object, and the field
+ * establishing the relational connection, converts the list of sort key fields from the original object to fields ready
+ * to be placed on the object establishing the relational connection
+ * @param sortKeyFields the original sort key fields from the object with a custom primary key
+ * @param object the object defining the relation
+ * @param connectingField the field which has the relational directive
+ */
 export const convertSortKeyFieldsToSortKeyConnectionFields = (
   sortKeyFields: FieldDefinitionNode[],
   object: ObjectDefinition,
