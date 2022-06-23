@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformer-core",
-  "version": "7.6.1",
+  "version": "7.6.2",
   "description": "A framework to transform from GraphQL SDL to AWS cloudFormation.",
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
     "fs-extra": "^8.1.0",
     "glob": "^7.2.0",
     "graphql": "^14.5.8",
-    "graphql-transformer-common": "4.23.2",
+    "graphql-transformer-common": "4.23.3",
     "lodash": "^4.17.21"
   },
   "peerDependencies": {
