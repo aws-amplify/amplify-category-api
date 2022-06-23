@@ -2167,7 +2167,7 @@ describe('@model with @auth', () => {
     // set by input
     expect(ownedBy2.data.createAllThree.owner).toEqual(USERNAME2);
     // not auto filled as the admin condition was met
-    expect(ownedBy2.data.createAllThree.editors).toBeNull();
+    expect(ownedBy2.data.createAllThree.editors).toEqual([USERNAME1]);
     expect(ownedBy2.data.createAllThree.groups).toBeNull();
     expect(ownedBy2.data.createAllThree.alternativeGroup).toBeNull();
 
