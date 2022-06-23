@@ -3,6 +3,7 @@ import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { BelongsToTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
 import { expectedResolversForModelWithRenamedField } from './common';
+import { featureFlags } from '../../../../amplify-graphql-auth-transformer/src/__tests__/test-helpers';
 
 const mappedHasOne = /* GraphQL */ `
   type Employee @model @mapsTo(name: "Person") {
@@ -44,6 +45,7 @@ const biDiHasOneMapped = /* GraphQL */ `
 
 const transformSchema = (schema: string) => {
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer(), new MapsToTransformer()],
     sandboxModeEnabled: true,
   });

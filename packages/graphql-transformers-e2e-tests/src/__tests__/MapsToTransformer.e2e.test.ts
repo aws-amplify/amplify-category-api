@@ -8,6 +8,17 @@ describe('@mapsTo transformer', () => {
   jest.setTimeout(1000 * 60 * 15); // 15 minutes
   const transformerFactory = () =>
     new GraphQLTransform({
+      featureFlags: {
+        getBoolean: (value: string, defaultValue: boolean): boolean => {
+          if (value === 'useFieldNameForPrimaryKeyConnectionField') {
+            return false;
+          }
+          return defaultValue;
+        },
+        getString: jest.fn(),
+        getNumber: jest.fn(),
+        getObject: jest.fn(),
+      },
       transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer(), new MapsToTransformer()],
       sandboxModeEnabled: true,
     });
