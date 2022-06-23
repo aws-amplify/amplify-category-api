@@ -255,7 +255,7 @@ export const generateOwnerClaimExpression = (ownerClaim: string, refName: string
 /**
  * Sets the value of owner field if the user is already Authorized
  */
-export const populateOwnerField = (
+export const generatePopulateOwnerField = (
    claimRef: string, 
    ownerEntity: string, 
    entityRef: string, 

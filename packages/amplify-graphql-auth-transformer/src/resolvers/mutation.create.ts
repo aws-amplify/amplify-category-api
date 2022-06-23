@@ -29,7 +29,7 @@ import {
   iamAdminRoleCheckExpression,
   generateOwnerClaimExpression,
   generateOwnerClaimListExpression,
-  populateOwnerField,
+  generatePopulateOwnerField,
   addAllowedFieldsIfElse,
 } from './helpers';
 import {
@@ -168,7 +168,7 @@ const dynamicRoleExpression = (ctx: TransformerContextProvider, roles: Array<Rol
       ownerEntityClaimExpressions.push(generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`));
       // If the user is already authorized, populate owner field with the owner claim
       if (ctx.featureFlags.getBoolean('populateOwnerFieldForStaticGroupAuth')) {
-        ownerEntityClaimExpressions.push(populateOwnerField(`ownerClaim${idx}`, role.entity!, `ownerEntity${idx}`, entityIsList, true));
+        ownerEntityClaimExpressions.push(generatePopulateOwnerField(`ownerClaim${idx}`, role.entity!, `ownerEntity${idx}`, entityIsList, true));
       }
       ownerExpression.push(
         compoundExpression(
@@ -201,7 +201,7 @@ const dynamicRoleExpression = (ctx: TransformerContextProvider, roles: Array<Rol
                   addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
                 ),
               ]),
-            populateOwnerField(
+              generatePopulateOwnerField(
               `ownerClaim${idx}`, 
               role.entity!, 
               `ownerEntity${idx}`, 
