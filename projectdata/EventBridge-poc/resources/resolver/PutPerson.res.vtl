@@ -1,0 +1,11 @@
+## Raise a GraphQL field error in case of a datasource invocation error
+#if($ctx.error)
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+## If the response is not 200 then return an error. Else return the input **
+#if($ctx.result.statusCode == 200)
+    $util.toJson($ctx.arguments)
+#else
+    #set($errorMessage = "Failed http request" + $ctx.result)
+    $util.error($errorMessage, "HttpFailure")
+#end

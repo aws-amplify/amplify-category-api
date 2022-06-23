@@ -74,3 +74,51 @@ query GetPrecomputedCount {
   }
 }
 ```
+
+# EventBridge and RDS POCs
+
+Schema is located in `./EventBridge-poc/resources/schema.graphql` for both of the projects
+
+## Event Bridge Datasource
+
+Use the `PutPerson` mutation field for testing this out at first.
+
+The AppSync console doesn't support creating an HTTP API with an AWS Role for calling other AWS Services with Sigv4 Auth but you can do it via the AWS CLI or using CDK/CloudFormation. Here is how you do it with the CLI: https://docs.aws.amazon.com/appsync/latest/devguide/tutorial-http-resolvers.html#invoking-aws-services
+In the case of EventBridge the JSON file passed into `--http-config file:///http.json ` will be:
+
+```json
+{
+  "endpoint": "https://events.us-east-2.amazonaws.com/",
+  "authorizationConfig": {
+      "authorizationType": "AWS_IAM",
+      "awsIamConfig": {
+          "signingRegion": "us-east-2",
+          "signingServiceName": "events"
+      }
+  }
+}
+```
+You'll need to create an appropriate IAM role too which 1) has a Trust Policy for AppSync and 2) can do PutEvents on Event Bridge
+
+Of course we want to move this to CDK and here is a rough example that we might be able to use of that: https://github.com/aws-samples/aws-cdk-examples/blob/master/typescript/appsync-graphql-eventbridge/index.ts
+
+I would recommend though not using the VTL in that template and instead use the VTL in `./EventBridge-poc/resources/resolver` and also in the **Rules** for the Bus changing the event pattern like this:
+
+```json
+{
+  "source": ["com.amazon.appsync"]
+}
+```
+
+The VTL and rules here will be much more flexible for our use case of ingesting dynamic events and GraphQL context for routing decisions later.
+
+
+## RDS
+
+Schema is in the same location: `./EventBridge-poc/resources/schema.graphql`.
+For RDS use the `listContacts` query in your GraphQL schema to get started. You will probably need to tweak the Lambda to create some records first. Try to get basic CRUD working better than I did.
+
+The Lambda is in `RES-poc/resources/lambda`. You will need a MySQL DB setup with RDS Proxy in the same VPC to get started. I don't have CDK code for that as I set it up manually but there are two links at the top in the comments of that Lambda function which should walk you through the process and then it can be automated in CDK after that. Note that we have a "global" VPC in GraphQL Transform which was added in the Fargate work from 2020 which can be re-used for this project, which we should do because getting the CIDR rules for subnet isolation in multi-envs was tricky and it would be a lot of work to redo all that. I'll walk you through the details.
+
+
+There isn't a VTL for this as I used a direct Lambda resolver

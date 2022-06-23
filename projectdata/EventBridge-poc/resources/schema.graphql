@@ -1,0 +1,30 @@
+type Contacts {
+	fname: String
+	lname: String
+}
+
+type Mutation {
+	# These should go to EB
+	putPerson(
+		id: ID,
+		firstName: String!,
+		lastName: String!,
+		age: Int
+	): Person
+}
+
+type Person {
+	id: ID!
+	firstName: String!
+	lastName: String!
+	age: Int
+}
+
+type Query {
+	listContacts: [Contacts]
+}
+
+schema {
+	query: Query
+	mutation: Mutation
+}

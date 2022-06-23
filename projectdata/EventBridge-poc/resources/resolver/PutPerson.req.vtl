@@ -1,0 +1,25 @@
+#set( $mymap = {} )
+$util.qr($mymap.put("args", $context.arguments))
+$util.qr($mymap.put("info", $context.info))
+
+{
+  "version": "2018-05-29",
+  "method": "POST",
+  "resourcePath": "/",
+  "params": {
+    "headers": {
+      "content-type": "application/x-amz-json-1.1",
+      "x-amz-target":"AWSEvents.PutEvents"
+    },
+    "body": {
+      "Entries":[
+        {
+          "Source":"com.amazon.appsync",
+          "EventBusName": "CdkAppStackMyBusBCA5501E",
+          "Detail": "$util.escapeJavaScript($util.toJson($mymap))",
+          "DetailType": "Event Bridge via GraphQL"
+         }
+      ]
+    }
+  }
+}
