@@ -41,7 +41,7 @@ import {
   toCamelCase,
 } from 'graphql-transformer-common';
 import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './types';
-import { getConnectionAttributeName } from './utils';
+import { getConnectionAttributeName, getObjectPrimaryKey } from './utils';
 
 const CONNECTION_STACK = 'ConnectionStack';
 const authFilter = ref('ctx.stash.authFilter');
@@ -59,21 +59,28 @@ function buildKeyValueExpression(fieldName: string, object: ObjectTypeDefinition
   );
 }
 
+/**
+ * Create a get item resolver for singular connections.
+ * @param config The connection directive configuration.
+ * @param ctx The transformer context provider.
+ */
 export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider) {
-  const { connectionFields, field, fields, object, relatedType, relatedTypeIndex } = config;
+  const {
+    connectionFields, field, fields, object, relatedType, relatedTypeIndex,
+  } = config;
   assert(relatedTypeIndex.length > 0);
   const localFields = fields.length > 0 ? fields : connectionFields;
   const table = getTable(ctx, relatedType);
   const { keySchema } = table as any;
   const dataSource = ctx.api.host.getDataSource(`${relatedType.name.value}Table`);
   const partitionKeyName = keySchema[0].attributeName;
-  let totalExpressions = [`#partitionKey = :partitionValue`];
-  let totalExpressionNames: Record<string, Expression> = {
-    [`#partitionKey`]: str(partitionKeyName),
+  const totalExpressions = ['#partitionKey = :partitionValue'];
+  const totalExpressionNames: Record<string, Expression> = {
+    '#partitionKey': str(partitionKeyName),
   };
 
-  let totalExpressionValues: Record<string, Expression> = {
-    [`:partitionValue`]: buildKeyValueExpression(localFields[0], object),
+  const totalExpressionValues: Record<string, Expression> = {
+    ':partitionValue': buildKeyValueExpression(localFields[0], ctx.output.getObject(object.name.value)!),
   };
 
   // Add a composite sort key or simple sort key if there is one.
@@ -82,16 +89,16 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
     const sortKeyName = keySchema[1].attributeName;
     const condensedSortKeyValue = condenseRangeKey(rangeKeyFields.map(keyField => `\${ctx.source.${keyField}}`));
 
-    totalExpressions.push(`#sortKeyName = :sortKeyName`);
+    totalExpressions.push('#sortKeyName = :sortKeyName');
     totalExpressionNames['#sortKeyName'] = str(sortKeyName);
     totalExpressionValues[':sortKeyName'] = ref(
       `util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("${condensedSortKeyValue}", "${NONE_VALUE}")))`,
     );
   } else if (relatedTypeIndex.length === 2) {
     const sortKeyName = keySchema[1].attributeName;
-    totalExpressions.push(`#sortKeyName = :sortKeyName`);
+    totalExpressions.push('#sortKeyName = :sortKeyName');
     totalExpressionNames['#sortKeyName'] = str(sortKeyName);
-    totalExpressionValues[':sortKeyName'] = buildKeyValueExpression(localFields[1], object);
+    totalExpressionValues[':sortKeyName'] = buildKeyValueExpression(localFields[1], ctx.output.getObject(object.name.value)!);
   }
 
   const resolverResourceId = ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value);
@@ -103,7 +110,7 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
     MappingTemplate.s3MappingTemplateFromString(
       print(
         compoundExpression([
-          iff(ref('ctx.source.deniedField'), raw(`#return($util.toJson(null))`)),
+          iff(ref('ctx.source.deniedField'), raw('#return($util.toJson(null))')),
           ifElse(
             or(localFields.map(f => raw(`$util.isNull($ctx.source.${f})`))),
             raw('#return'),
@@ -159,8 +166,15 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
   ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
 }
 
+/**
+ * Create a resolver that queries an item in DynamoDB.
+ * @param config The connection directive configuration.
+ * @param ctx The transformer context provider.
+ */
 export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider) {
-  const { connectionFields, field, fields, indexName, limit, object, relatedType } = config;
+  const {
+    connectionFields, field, fields, indexName, limit, object, relatedType,
+  } = config;
   const table = getTable(ctx, relatedType);
   const dataSource = ctx.api.host.getDataSource(`${relatedType.name.value}Table`);
   const connectionAttributes: string[] = fields.length > 0 ? fields : connectionFields;
@@ -200,7 +214,7 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
       not(isNullOrEmpty(ref('filter'))),
       compoundExpression([
         set(
-          ref(`filterExpression`),
+          ref('filterExpression'),
           methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref('filter'))),
         ),
         iff(
@@ -243,7 +257,7 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
     MappingTemplate.s3MappingTemplateFromString(
       print(
         compoundExpression([
-          iff(ref('ctx.source.deniedField'), raw(`#return($util.toJson(null))`)),
+          iff(ref('ctx.source.deniedField'), raw('#return($util.toJson(null))')),
           ifElse(
             raw(`$util.isNull($ctx.source.${connectionAttributes[0]})`),
             compoundExpression([set(ref('result'), obj({ items: list([]) })), raw('#return($result)')]),
@@ -312,6 +326,9 @@ function condenseRangeKey(fields: string[]): string {
   return fields.join(ModelResourceIDs.ModelCompositeKeySeparator());
 }
 
+/**
+ * adds GSI to the table if it doesn't already exists for connection
+ */
 export function updateTableForConnection(config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider) {
   let { fields, indexName } = config;
 
@@ -322,7 +339,7 @@ export function updateTableForConnection(config: HasManyDirectiveConfiguration, 
 
   const { field, object, relatedType } = config;
   const mappedObjectName = ctx.resourceHelper.getModelNameMapping(object.name.value);
-  const connectionName = getConnectionAttributeName(mappedObjectName, field.name.value);
+  const connectionName = getConnectionAttributeName(ctx.featureFlags, mappedObjectName, field.name.value, getObjectPrimaryKey(relatedType).name.value);
   const table = getTable(ctx, relatedType) as any;
   const gsis = table.globalSecondaryIndexes;
 

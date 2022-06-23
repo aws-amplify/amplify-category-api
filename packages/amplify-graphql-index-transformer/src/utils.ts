@@ -7,7 +7,8 @@ import {
   ValueNode,
   DirectiveNode,
 } from 'graphql';
-import { plurality, toUpper } from 'graphql-transformer-common';
+import { plurality, toLower, toUpper } from 'graphql-transformer-common';
+import pluralize from 'pluralize';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
 
 export function lookupResolverName(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, op: string): string | null {
@@ -96,4 +97,16 @@ const ownerFieldsFromOwnerRule = (rule: ValueNode): string => {
   }
 
   return '';
+}
+
+/*
+ * Accepts a model and field name, and potentially empty list of sortKeyFields to generate a unique index name.
+ * e.g. modelName = Employee, fieldName = manager, sortKeyFields = [level]
+ * will generate a name like employeeByManagerAndLevel.
+ */
+export const generateKeyAndQueryNameForConfig = (config: IndexDirectiveConfiguration): string => {
+  const modelName = config.object.name.value;
+  const fieldName = config.field.name.value;
+  const { sortKeyFields } = config;
+  return `${toLower(pluralize(modelName))}By${[fieldName, ...sortKeyFields].map(toUpper).join('And')}`;
 };

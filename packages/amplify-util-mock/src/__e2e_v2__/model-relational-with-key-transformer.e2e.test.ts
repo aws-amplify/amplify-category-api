@@ -75,9 +75,19 @@ describe('@model with relational transformers', () => {
           new BelongsToTransformer(),
           new AuthTransformer(),
         ],
-        featureFlags: {
-          getBoolean: name => (name === 'improvePluralization' ? true : false),
-        } as FeatureFlagProvider,
+        featureFlags: ({
+          getBoolean: (featureName: string, defaultValue: boolean) => {
+            if (featureName === 'improvePluralization') {
+              return true;
+            }
+
+            if (featureName === 'useFieldNameForPrimaryKeyConnectionField') {
+              return false;
+            }
+
+            return defaultValue;
+          },
+        } as FeatureFlagProvider),
       });
       const out = transformer.transform(validSchema);
 

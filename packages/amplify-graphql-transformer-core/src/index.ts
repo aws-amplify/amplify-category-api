@@ -17,6 +17,7 @@ export {
 export {
   getTable,
   getKeySchema,
+  getSortKeyFieldNames,
   collectDirectives,
   collectDirectivesByTypeNames,
   DirectiveWrapper,

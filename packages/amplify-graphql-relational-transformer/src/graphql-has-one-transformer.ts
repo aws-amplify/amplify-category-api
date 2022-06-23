@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -23,12 +24,15 @@ import {
   makeValueNode,
 } from 'graphql-transformer-common';
 import { produce } from 'immer';
+import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { WritableDraft } from 'immer/dist/types/types-external';
 import { makeGetItemConnectionWithKeyResolver } from './resolvers';
 import { ensureHasOneConnectionField } from './schema';
 import { HasOneDirectiveConfiguration } from './types';
 import {
   ensureFieldsArray, getConnectionAttributeName,
   getFieldsNodes,
+  getObjectPrimaryKey,
   getRelatedType,
   getRelatedTypeIndex,
   registerHasOneForeignKeyMappings,
@@ -36,14 +40,15 @@ import {
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
-import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { WritableDraft } from 'immer/dist/types/types-external';
 
 const directiveName = 'hasOne';
 const directiveDefinition = `
   directive @${directiveName}(fields: [String!]) on FIELD_DEFINITION
 `;
 
+/**
+ * Transformer for @hasOne directive
+ */
 export class HasOneTransformer extends TransformerPluginBase {
   private directiveList: HasOneDirectiveConfiguration[] = [];
 
@@ -81,7 +86,12 @@ export class HasOneTransformer extends TransformerPluginBase {
         const filteredFields = def?.fields?.filter(field => field?.directives?.some(dir => dir.name.value === directiveName));
         filteredFields?.forEach(field => {
           field?.directives?.forEach(dir => {
-            const connectionAttributeName = getConnectionAttributeName(def.name.value, field.name.value);
+            const connectionAttributeName = getConnectionAttributeName(
+              context.featureFlags,
+              def.name.value,
+              field.name.value,
+              getObjectPrimaryKey(def as ObjectTypeDefinitionNode).name.value,
+            );
             let hasFieldsDefined = false;
             let removalIndex = -1;
             dir?.arguments?.forEach((arg, idx) => {
@@ -101,8 +111,8 @@ export class HasOneTransformer extends TransformerPluginBase {
               dir.arguments = [makeArgument('fields', makeValueNode(connectionAttributeName)) as WritableDraft<ArgumentNode>];
               def?.fields?.push(
                 makeField(
-                  connectionAttributeName, [], isNonNullType(field.type) ?
-                    makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), [],
+                  connectionAttributeName, [], isNonNullType(field.type)
+                    ? makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), [],
                 ) as WritableDraft<FieldDefinitionNode>,
               );
             }
@@ -116,13 +126,14 @@ export class HasOneTransformer extends TransformerPluginBase {
   /**
    * During the prepare step, register any foreign keys that are renamed due to a model rename
    */
-  prepare = (context: TransformerPrepareStepContextProvider) => {
+  prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList.forEach(config => {
       registerHasOneForeignKeyMappings({
+        featureFlags: context.featureFlags,
         resourceHelper: context.resourceHelper,
         thisTypeName: config.object.name.value,
         thisFieldName: config.field.name.value,
-        relatedTypeName: config.relatedType.name.value,
+        relatedType: config.relatedType,
       });
     });
   };
@@ -145,7 +156,7 @@ export class HasOneTransformer extends TransformerPluginBase {
   };
 }
 
-function validate(config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void {
+const validate = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field } = config;
 
   ensureFieldsArray(config);
@@ -160,4 +171,4 @@ function validate(config: HasOneDirectiveConfiguration, ctx: TransformerContextP
   config.connectionFields = [];
   validateRelatedModelDirective(config);
   validateDisallowedDataStoreRelationships(config, ctx);
-}
+};

@@ -18,16 +18,21 @@ const cf = new CloudFormationClient('us-west-2');
 const customS3Client = new S3Client('us-west-2');
 const awsS3Client = new S3({ region: 'us-west-2' });
 const featureFlags = {
-  getBoolean: jest.fn(),
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'enableAutoIndexQueryNames') {
+      return true;
+    }
+    return defaultValue;
+  }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
   getString: jest.fn(),
 };
 // eslint-disable-next-line spellcheck/spell-checker
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `IndexTransformerTests-${BUILD_TIMESTAMP}`;
-const BUCKET_NAME = `appsync-index-transformer-test-bucket-${BUILD_TIMESTAMP}`;
-const LOCAL_FS_BUILD_DIR = '/tmp/index_transformer_tests/';
+const STACK_NAME = `IndexWithAutoQueryField-${BUILD_TIMESTAMP}`;
+const BUCKET_NAME = `appsync-index-with-auto-query-test-bucket-${BUILD_TIMESTAMP}`;
+const LOCAL_FS_BUILD_DIR = '/tmp/index_with_auth_query_field_transformer_tests/';
 const S3_ROOT_DIR_KEY = 'deployments';
 
 let GRAPHQL_CLIENT;
@@ -93,15 +98,10 @@ beforeAll(async () => {
       id: ID!
       parentId: ID @index(name: "parent-id-index")
     }
-    type Todo @model {
+    type Employee @model {
       id: ID!
-      name: String!
-      description: String
-      begin: AWSDateTime
-      end: AWSDateTime
-      createdAt: AWSDateTime!
-      isTeamTodo:Int! 
-      isPublic: Int! @index(name: "byIsPublicByByCreatedAtByIsTeamTodoByBeginByEnd",sortKeyFields: ["createdAt","isTeamTodo","begin","end"], queryField: "TodoByIsPublicByByCreatedAtByIsTeamTodoByBeginByEnd" )
+      managerId: ID! @index @index(sortKeyFields: ["level"])
+      level: Int!
     }
   `;
 
@@ -189,12 +189,6 @@ test('next token with key', async () => {
   await deleteItem('order2', status, createdAt);
   await deleteItem('order3', status, createdAt);
   await deleteItem('order4', status, createdAt);
-});
-
-test('index should handle begin and end keywords', async () => {
-  const todo = await createTodo('Test', 'Example', '2022-01-01T12:00:00.000Z', '2022-01-03T12:00:00.000Z', 0, 0);
-  expect(todo.data.createTodo.name).toEqual('Test');
-  expect(todo.data.createTodo.description).toEqual('Example');
 });
 
 test('getX with a two part primary key.', async () => {
@@ -590,6 +584,24 @@ test('create mutation with index field set to null', async () => {
   expect(result.errors).toBeUndefined();
   expect(result.data.createTestModel).not.toBeNull();
   expect(result.data.createTestModel.parentId).toBeNull();
+});
+
+test('can query by auto-generated queryField', async () => {
+  const manager1Id = '1';
+  const manager2Id = '2';
+  await createEmployee(manager1Id, 4);
+  await createEmployee(manager1Id, 5);
+  await createEmployee(manager2Id, 1);
+  await createEmployee(manager2Id, 1);
+  await createEmployee(manager2Id, 2);
+  const manager1Employees = await queryEmployeesByManagerId(manager1Id);
+  expect(manager1Employees.data.employeesByManagerId.items.length).toEqual(2);
+  const manager1L4Employees = await queryEmployeesByManagerIdAndLevel(manager1Id, 4);
+  expect(manager1L4Employees.data.employeesByManagerIdAndLevel.items.length).toEqual(1);
+  const manager2Employees = await queryEmployeesByManagerId(manager2Id);
+  expect(manager2Employees.data.employeesByManagerId.items.length).toEqual(3);
+  const manager2L1Employees = await queryEmployeesByManagerIdAndLevel(manager2Id, 1);
+  expect(manager2L1Employees.data.employeesByManagerIdAndLevel.items.length).toEqual(2);
 });
 
 const createCustomer = async (email: string, addressList: string[], username: string): Promise<any> => {
@@ -1011,27 +1023,51 @@ const getShippingUpdatesWithNameFilter = async (orderId: string, name: string): 
   return result;
 };
 
-const createTodo = async (
-  name: string, description: string, begin: string, end: string, isTeamTodo: number, isPublic: number,
-): Promise<any> => {
-  const input = {
-    name, description, begin, end, isTeamTodo, isPublic,
-  };
+const createEmployee = async (managerId: string, level: number): Promise<any> => {
   const result = await GRAPHQL_CLIENT.query(
-    `mutation CreateTodo($input: CreateTodoInput!) {
-        createTodo(input: $input) {
-            id
-            name
-            description
-            begin
-            end
-            isTeamTodo
-            isPublic
+    `mutation CreateEmployee($input: CreateEmployeeInput!) {
+        createEmployee(input: $input) {
+            managerId
+            level
         }
     }`,
     {
-      input,
+      input: { managerId, level },
     },
+  );
+  return result;
+};
+
+const queryEmployeesByManagerId = async (managerId: string): Promise<any> => {
+  const result = await GRAPHQL_CLIENT.query(
+    `query GetEmployeesByManagerId($managerId: ID!) {
+        employeesByManagerId(managerId: $managerId) {
+            items {
+                id
+                managerId
+                level
+            }
+            nextToken
+        }
+    }`,
+    { managerId },
+  );
+  return result;
+};
+
+const queryEmployeesByManagerIdAndLevel = async (managerId: string, level: number): Promise<any> => {
+  const result = await GRAPHQL_CLIENT.query(
+    `query GetEmployeesByManagerIdAndLevel($managerId: ID!, $level: Int!) {
+        employeesByManagerIdAndLevel(managerId: $managerId, level: { eq: $level }) {
+            items {
+                id
+                managerId
+                level
+            }
+            nextToken
+        }
+    }`,
+    { managerId, level },
   );
   return result;
 };
