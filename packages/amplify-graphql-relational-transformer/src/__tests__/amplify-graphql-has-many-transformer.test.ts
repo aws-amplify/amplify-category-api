@@ -1,9 +1,9 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { DocumentNode, Kind, parse } from 'graphql';
+import { Kind, parse } from 'graphql';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
-import {featureFlags, hasGeneratedField} from './test-helpers';
+import { featureFlags, hasGeneratedField } from './test-helpers';
 
 test('fails if used as a has one relation', () => {
   const inputSchema = `

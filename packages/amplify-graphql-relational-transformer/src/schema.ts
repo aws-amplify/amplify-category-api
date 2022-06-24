@@ -39,7 +39,8 @@ import {
   BelongsToDirectiveConfiguration,
   HasManyDirectiveConfiguration,
   HasOneDirectiveConfiguration,
-  ManyToManyDirectiveConfiguration, ObjectDefinition,
+  ManyToManyDirectiveConfiguration,
+  ObjectDefinition,
 } from './types';
 import { getConnectionAttributeName, getObjectPrimaryKey, getSortKeyConnectionAttributeName } from './utils';
 
