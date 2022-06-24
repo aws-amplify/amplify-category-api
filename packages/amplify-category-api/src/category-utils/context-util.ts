@@ -34,6 +34,10 @@ export class ContextUtil {
     const resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
     if (!resourceDir) {
       // There can only be one appsync resource
+      if (!resources.length) {
+        // No appsync resource to update/add
+        return undefined;
+      }
       if (resources.length > 0) {
         const resource = resources[0];
         if (resource.providerPlugin !== PROVIDER_NAME) {
@@ -42,9 +46,6 @@ export class ContextUtil {
         const { category } = resource;
         const { resourceName } = resource;
         resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
-      } else {
-        // No appsync resource to update/add
-        return undefined;
       }
     }
     this.resourceDir = resourceDir;
