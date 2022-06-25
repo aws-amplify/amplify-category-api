@@ -171,45 +171,68 @@ export const generateListRequestTemplate = (): string => {
 /**
  * Generates the Sync query request template
  */
-export const generateSyncRequestTemplate = (hasCustomPrimaryKey: boolean, partitionKeyName: string): string => printBlock('Sync Request template')(
-  compoundExpression([
-    setArgs,
-    ifElse(
-      not(isNullOrEmpty(authFilter)),
-      compoundExpression([
-        set(ref('filter'), authFilter),
-        iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), obj({ and: list([ref('filter'), ref('args.filter')]) }))),
-      ]),
-      iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), ref('args.filter'))),
-    ),
-    iff(
-      not(isNullOrEmpty(ref('filter'))),
-      compoundExpression([
-        set(
-          ref('filterExpression'),
-          methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref('filter'))),
-        ),
-        iff(
-          not(methodCall(ref('util.isNullOrBlank'), ref('filterExpression.expression'))),
-          compoundExpression([
-            iff(
-              equals(methodCall(ref('filterExpression.expressionValues.size')), int(0)),
-              qref(methodCall(ref('filterExpression.remove'), str('expressionValues'))),
-            ),
-            set(ref('filter'), ref('filterExpression')),
-          ]),
-        ),
-      ]),
-    ),
-    obj({
-      version: str('2018-05-29'),
-      operation: str('Sync'),
-      filter: ifElse(ref('filter'), ref('util.toJson($filter)'), nul(), true),
-      limit: ref(`util.defaultIfNull($args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
-      lastSync: ref('util.toJson($util.defaultIfNull($args.lastSync, null))'),
-      nextToken: ref('util.toJson($util.defaultIfNull($args.nextToken, null))'),
-      basePartitionKey: ifElse(ref('filter'), raw(`${hasCustomPrimaryKey ? `$filter.${partitionKeyName}` : 'null'}`), nul(), true),
-      deltaIndexName: str(SyncResourceIDs.syncGSIName),
-    }),
-  ]),
-);
+export const generateSyncRequestTemplate = (hasCustomPrimaryKey: boolean, partitionKeyName: string): string => {
+  const syncExpression = [];
+  syncExpression.push(
+    compoundExpression([
+      setArgs,
+      ifElse(
+        not(isNullOrEmpty(authFilter)),
+        compoundExpression([
+          set(ref('filter'), authFilter),
+          iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), obj({ and: list([ref('filter'), ref('args.filter')]) }))),
+        ]),
+        iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), ref('args.filter'))),
+      ),
+      iff(
+        not(isNullOrEmpty(ref('filter'))),
+        compoundExpression([
+          set(
+            ref('filterExpression'),
+            methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref('filter'))),
+          ),
+          iff(
+            not(methodCall(ref('util.isNullOrBlank'), ref('filterExpression.expression'))),
+            compoundExpression([
+              iff(
+                equals(methodCall(ref('filterExpression.expressionValues.size')), int(0)),
+                qref(methodCall(ref('filterExpression.remove'), str('expressionValues'))),
+              ),
+              set(ref('filter'), ref('filterExpression')),
+            ]),
+          ),
+        ]),
+      ),
+      set(
+        ref('syncRequest'),
+        obj({
+          version: str('2018-05-29'),
+          operation: str('Sync'),
+          filter: ref('filter'),
+          limit: ref(`util.defaultIfNull($args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
+          lastSync: ref('args.lastSync'),
+          nextToken: ref('args.nextToken'),
+        }),
+      ),
+    ]),
+  );
+
+  if (hasCustomPrimaryKey) {
+    syncExpression.push(
+      ifElse(
+        and([
+          ref('ctx.args.filter'),
+          ref(`ctx.args.filter.${partitionKeyName}`),
+          ref(`ctx.args.filter.${partitionKeyName}.eq`),
+        ]),
+        qref(methodCall(ref('syncRequest.put'), str('basePartitionKey'), ref(`ctx.args.filter.${partitionKeyName}.eq`))),
+        qref(methodCall(ref('syncRequest.put'), str('deltaIndexName'), str(SyncResourceIDs.syncGSIName))),
+      ),
+    );
+  }
+
+  syncExpression.push(
+    toJson(ref('syncRequest')),
+  );
+  return printBlock('Sync Request template')(compoundExpression(syncExpression));
+};

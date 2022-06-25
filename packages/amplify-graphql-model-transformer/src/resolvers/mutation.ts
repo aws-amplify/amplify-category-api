@@ -133,8 +133,10 @@ export const generateUpdateRequestTemplate = (modelName: string, isSyncEnabled: 
         operation: str('UpdateItem'),
         key: ref('Key'),
         update: ref('update'),
-        hasCustomPrimaryKey: raw(`${hasCustomPrimaryKey}`),
-        populateGSIFields: raw(`${hasCustomPrimaryKey}`),
+        ...(hasCustomPrimaryKey && {
+          hasCustomPartitionKey: bool(true),
+          populateIndexFields: bool(true),
+        }),
         ...(isSyncEnabled && { _version: ref('util.defaultIfNull($args.input["_version"], 0)') }),
       }),
     ),
@@ -184,8 +186,10 @@ export const generateCreateRequestTemplate = (modelName: string, modelIndexField
         operation: str('PutItem'),
         attributeValues: methodCall(ref('util.dynamodb.toMapValues'), ref('mergedValues')),
         condition: ref('condition'),
-        hasCustomPrimaryKey: raw(`${hasCustomPrimaryKey}`),
-        populateGSIFields: raw(`${hasCustomPrimaryKey}`),
+        ...(hasCustomPrimaryKey && {
+          hasCustomPartitionKey: bool(true),
+          populateIndexFields: bool(true),
+        }),
       }),
     ),
 
@@ -268,8 +272,10 @@ export const generateDeleteRequestTemplate = (isSyncEnabled: boolean, hasCustomP
       obj({
         version: str('2018-05-29'),
         operation: str('DeleteItem'),
-        hasCustomPrimaryKey: raw(`${hasCustomPrimaryKey}`),
-        populateGSIFields: raw(`${hasCustomPrimaryKey}`),
+        ...(hasCustomPrimaryKey && {
+          hasCustomPartitionKey: bool(true),
+          populateIndexFields: bool(true),
+        }),
       }),
     ),
     ifElse(

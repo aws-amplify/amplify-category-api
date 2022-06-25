@@ -614,9 +614,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
   \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
-  \\"condition\\": $condition,
-  \\"hasCustomPrimaryKey\\":   false,
-  \\"populateGSIFields\\":   false
+  \\"condition\\": $condition
 } )
 #if( $args.condition )
   $util.qr($ctx.stash.conditions.add($args.condition))
@@ -688,9 +686,7 @@ $util.toJson({})
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"DeleteItem\\",
-  \\"hasCustomPrimaryKey\\":   false,
-  \\"populateGSIFields\\":   false
+  \\"operation\\": \\"DeleteItem\\"
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
@@ -889,8 +885,6 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"operation\\": \\"UpdateItem\\",
   \\"key\\": $Key,
   \\"update\\": $update,
-  \\"hasCustomPrimaryKey\\":   false,
-  \\"populateGSIFields\\":   false,
   \\"_version\\": $util.defaultIfNull($args.input[\\"_version\\"], 0)
 } )
 #if( $Conditions )
@@ -1051,16 +1045,15 @@ $util.toJson({})
     #set( $filter = $filterExpression )
   #end
 #end
-{
+#set( $syncRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Sync\\",
-  \\"filter\\": #if( $filter ) $util.toJson($filter) #else null #end,
+  \\"filter\\": $filter,
   \\"limit\\": $util.defaultIfNull($args.limit, 100),
-  \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
-  \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null)),
-  \\"basePartitionKey\\": #if( $filter ) null #else null #end,
-  \\"deltaIndexName\\": \\"deltaSyncGSI\\"
-}
+  \\"lastSync\\": $args.lastSync,
+  \\"nextToken\\": $args.nextToken
+} )
+$util.toJson($syncRequest)
 ## [End] Sync Request template. **",
   "Query.syncPosts.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
@@ -1148,9 +1141,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
   \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
-  \\"condition\\": $condition,
-  \\"hasCustomPrimaryKey\\":   false,
-  \\"populateGSIFields\\":   false
+  \\"condition\\": $condition
 } )
 #if( $args.condition )
   $util.qr($ctx.stash.conditions.add($args.condition))
@@ -1222,9 +1213,7 @@ $util.toJson({})
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"DeleteItem\\",
-  \\"hasCustomPrimaryKey\\":   false,
-  \\"populateGSIFields\\":   false
+  \\"operation\\": \\"DeleteItem\\"
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
@@ -1423,8 +1412,6 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"operation\\": \\"UpdateItem\\",
   \\"key\\": $Key,
   \\"update\\": $update,
-  \\"hasCustomPrimaryKey\\":   false,
-  \\"populateGSIFields\\":   false,
   \\"_version\\": $util.defaultIfNull($args.input[\\"_version\\"], 0)
 } )
 #if( $Conditions )
@@ -1585,16 +1572,15 @@ $util.toJson({})
     #set( $filter = $filterExpression )
   #end
 #end
-{
+#set( $syncRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Sync\\",
-  \\"filter\\": #if( $filter ) $util.toJson($filter) #else null #end,
+  \\"filter\\": $filter,
   \\"limit\\": $util.defaultIfNull($args.limit, 100),
-  \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
-  \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null)),
-  \\"basePartitionKey\\": #if( $filter ) null #else null #end,
-  \\"deltaIndexName\\": \\"deltaSyncGSI\\"
-}
+  \\"lastSync\\": $args.lastSync,
+  \\"nextToken\\": $args.nextToken
+} )
+$util.toJson($syncRequest)
 ## [End] Sync Request template. **",
   "Query.syncPosts.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
@@ -1682,9 +1668,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
   \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
-  \\"condition\\": $condition,
-  \\"hasCustomPrimaryKey\\":   false,
-  \\"populateGSIFields\\":   false
+  \\"condition\\": $condition
 } )
 #if( $args.condition )
   $util.qr($ctx.stash.conditions.add($args.condition))
@@ -1756,9 +1740,7 @@ $util.toJson({})
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"DeleteItem\\",
-  \\"hasCustomPrimaryKey\\":   false,
-  \\"populateGSIFields\\":   false
+  \\"operation\\": \\"DeleteItem\\"
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
@@ -1957,8 +1939,6 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"operation\\": \\"UpdateItem\\",
   \\"key\\": $Key,
   \\"update\\": $update,
-  \\"hasCustomPrimaryKey\\":   false,
-  \\"populateGSIFields\\":   false,
   \\"_version\\": $util.defaultIfNull($args.input[\\"_version\\"], 0)
 } )
 #if( $Conditions )
@@ -2119,16 +2099,15 @@ $util.toJson({})
     #set( $filter = $filterExpression )
   #end
 #end
-{
+#set( $syncRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Sync\\",
-  \\"filter\\": #if( $filter ) $util.toJson($filter) #else null #end,
+  \\"filter\\": $filter,
   \\"limit\\": $util.defaultIfNull($args.limit, 100),
-  \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
-  \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null)),
-  \\"basePartitionKey\\": #if( $filter ) null #else null #end,
-  \\"deltaIndexName\\": \\"deltaSyncGSI\\"
-}
+  \\"lastSync\\": $args.lastSync,
+  \\"nextToken\\": $args.nextToken
+} )
+$util.toJson($syncRequest)
 ## [End] Sync Request template. **",
   "Query.syncPosts.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
@@ -2360,9 +2339,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
   \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
-  \\"condition\\": $condition,
-  \\"hasCustomPrimaryKey\\":   false,
-  \\"populateGSIFields\\":   false
+  \\"condition\\": $condition
 } )
 #if( $args.condition )
   $util.qr($ctx.stash.conditions.add($args.condition))
@@ -2539,9 +2516,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"UpdateItem\\",
   \\"key\\": $Key,
-  \\"update\\": $update,
-  \\"hasCustomPrimaryKey\\":   false,
-  \\"populateGSIFields\\":   false
+  \\"update\\": $update
 } )
 #if( $Conditions )
   #if( $keyConditionExprNames )
@@ -2566,9 +2541,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
   \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
-  \\"condition\\": $condition,
-  \\"hasCustomPrimaryKey\\":   false,
-  \\"populateGSIFields\\":   false
+  \\"condition\\": $condition
 } )
 #if( $args.condition )
   $util.qr($ctx.stash.conditions.add($args.condition))
@@ -2906,9 +2879,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
   \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
-  \\"condition\\": $condition,
-  \\"hasCustomPrimaryKey\\":   false,
-  \\"populateGSIFields\\":   false
+  \\"condition\\": $condition
 } )
 #if( $args.condition )
   $util.qr($ctx.stash.conditions.add($args.condition))
@@ -3085,9 +3056,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"UpdateItem\\",
   \\"key\\": $Key,
-  \\"update\\": $update,
-  \\"hasCustomPrimaryKey\\":   false,
-  \\"populateGSIFields\\":   false
+  \\"update\\": $update
 } )
 #if( $Conditions )
   #if( $keyConditionExprNames )
@@ -3264,9 +3233,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
   \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
-  \\"condition\\": $condition,
-  \\"hasCustomPrimaryKey\\":   false,
-  \\"populateGSIFields\\":   false
+  \\"condition\\": $condition
 } )
 #if( $args.condition )
   $util.qr($ctx.stash.conditions.add($args.condition))
@@ -3443,9 +3410,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"UpdateItem\\",
   \\"key\\": $Key,
-  \\"update\\": $update,
-  \\"hasCustomPrimaryKey\\":   false,
-  \\"populateGSIFields\\":   false
+  \\"update\\": $update
 } )
 #if( $Conditions )
   #if( $keyConditionExprNames )
@@ -3624,9 +3589,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
   \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
-  \\"condition\\": $condition,
-  \\"hasCustomPrimaryKey\\":   false,
-  \\"populateGSIFields\\":   false
+  \\"condition\\": $condition
 } )
 #if( $args.condition )
   $util.qr($ctx.stash.conditions.add($args.condition))
@@ -3803,9 +3766,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"UpdateItem\\",
   \\"key\\": $Key,
-  \\"update\\": $update,
-  \\"hasCustomPrimaryKey\\":   false,
-  \\"populateGSIFields\\":   false
+  \\"update\\": $update
 } )
 #if( $Conditions )
   #if( $keyConditionExprNames )
@@ -3841,16 +3802,15 @@ exports[`ModelTransformer: the datastore table should be configured 1`] = `
     #set( $filter = $filterExpression )
   #end
 #end
-{
+#set( $syncRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Sync\\",
-  \\"filter\\": #if( $filter ) $util.toJson($filter) #else null #end,
+  \\"filter\\": $filter,
   \\"limit\\": $util.defaultIfNull($args.limit, 100),
-  \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
-  \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null)),
-  \\"basePartitionKey\\": #if( $filter ) null #else null #end,
-  \\"deltaIndexName\\": \\"deltaSyncGSI\\"
-}
+  \\"lastSync\\": $args.lastSync,
+  \\"nextToken\\": $args.nextToken
+} )
+$util.toJson($syncRequest)
 ## [End] Sync Request template. **"
 `;
 
