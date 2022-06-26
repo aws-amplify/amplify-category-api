@@ -17,131 +17,6 @@ const AWS = require('aws-sdk');
 
 const docClient = new AWS.DynamoDB.DocumentClient();
 
-/**
- * Example query which executes against the HashKey and SortKey for a given table.
- * Only pulls COUNT.
- */
-const queryItemCount = async ({
-  year, letter1, letter2, LastKey,
-}) => {
-  let count = 0;
-
-  const data = await docClient.query({
-    TableName: process.env.MOVIES_TABLE_NAME,
-    KeyConditionExpression: '#yr = :yyyy AND title between :letter1 and :letter2',
-    ExpressionAttributeNames: { '#yr': 'year' },
-    ExpressionAttributeValues: {
-      ':yyyy': year,
-      ':letter1': letter1,
-      ':letter2': letter2,
-    },
-    Select: 'COUNT',
-    ...((LastKey !== 'undefined') ? { ExclusiveStartKey: LastKey } : {}),
-  }).promise();
-
-  count += data.Count ?? 0;
-
-  if (typeof data.LastEvaluatedKey !== 'undefined') {
-    count += await queryItemCount({
-      year, letter1, letter2, LastKey: data.LastEvaluatedKey,
-    });
-  }
-
-  return count;
-};
-
-/**
- * Example query which executes against the HashKey and SortKey for a given table.
- * Leverages a FilterExpression to additionally filter beyond the key space.
- * Only pulls COUNT
- */
-const queryItemCountWithFilter = async ({
-  year, letter1, letter2, minRunningTimeSecs, LastKey,
-}) => {
-  let count = 0;
-
-  const data = await docClient.query({
-    TableName: process.env.MOVIES_TABLE_NAME,
-    KeyConditionExpression: '#yr = :yyyy AND title between :letter1 and :letter2',
-    FilterExpression: 'info.running_time_secs >= :minRunningTimeSecs',
-    ExpressionAttributeNames: { '#yr': 'year' },
-    ExpressionAttributeValues: {
-      ':yyyy': year,
-      ':letter1': letter1,
-      ':letter2': letter2,
-      ':minRunningTimeSecs': minRunningTimeSecs,
-    },
-    Select: 'COUNT',
-    ...((LastKey !== 'undefined') ? { ExclusiveStartKey: LastKey } : {}),
-  }).promise();
-
-  count += data.Count ?? 0;
-
-  if (typeof data.LastEvaluatedKey !== 'undefined') {
-    count += await queryItemCountWithFilter({
-      year, letter1, letter2, minRunningTimeSecs, LastKey: data.LastEvaluatedKey,
-    });
-  }
-
-  return count;
-};
-
-/**
- * Example query which executes against the HashKey and SortKey for a given table.
- * Leverages a FilterExpression to additionally filter beyond the key space.
- * Pulls COUNT, MIN, MAX, SUM for a fixed field.
- */
-const queryItemAggregateMetadata = async ({
-  year, letter1, letter2, minRunningTimeSecs, fieldToAggregate, LastKey,
-}) => {
-  let count = 0;
-  let min = Number.POSITIVE_INFINITY;
-  let max = Number.NEGATIVE_INFINITY;
-  let sum = 0;
-
-  const queryInput = {
-    TableName: process.env.MOVIES_TABLE_NAME,
-    KeyConditionExpression: '#yr = :yyyy AND title between :letter1 and :letter2',
-    FilterExpression: 'info.running_time_secs >= :minRunningTimeSecs',
-    ExpressionAttributeNames: { '#yr': 'year' },
-    ExpressionAttributeValues: {
-      ':yyyy': year,
-      ':letter1': letter1,
-      ':letter2': letter2,
-      ':minRunningTimeSecs': minRunningTimeSecs,
-    },
-    ProjectionExpression: fieldToAggregate,
-    Select: 'SPECIFIC_ATTRIBUTES',
-    ...((LastKey !== 'undefined') ? { ExclusiveStartKey: LastKey } : {}),
-  };
-
-  console.debug(`Generated Query: ${JSON.stringify(queryInput)}`);
-
-  const data = await docClient.query(queryInput).promise();
-
-  // TODO: Do this all in one pass.
-  // TODO: Parse out the field using `fieldToAggregate`
-  const runningTimes = data.Items.map(item => item.info.running_time_secs).filter(runtime => typeof runtime === 'number');
-  count += runningTimes.length;
-  sum += runningTimes.reduce((previousValue, currentValue) => previousValue + currentValue, 0);
-  min = Math.min(min, ...runningTimes);
-  max = Math.max(max, ...runningTimes);
-
-  if (typeof data.LastEvaluatedKey !== 'undefined') {
-    const recursiveResponse = await queryItemAggregateMetadataGeneric({
-      year, letter1, letter2, minRunningTimeSecs, fieldToAggregate, LastKey: data.LastEvaluatedKey,
-    });
-    count += recursiveResponse.count;
-    sum += recursiveResponse.sum;
-    min = Math.min(min, recursiveResponse.min);
-    max = Math.max(max, recursiveResponse.max);
-  }
-
-  return {
-    count, min, max, sum,
-  };
-};
-
 // TYPES
 // TODO: Support NOT, AND, OR, and NEQ for filterAttributes as well. https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.OperatorsAndFunctions.html#Expressions.OperatorsAndFunctions.Syntax
 // type ComparisonType = 'EQ' | 'LT' | 'LTE' | 'GT' | 'GTE' | 'BETWEEN' | 'BEGINS_WITH';
@@ -195,6 +70,16 @@ const queryItemAggregateMetadataGeneric = async ({
       fieldName, comparisonType, comparedValue, rangeStart, rangeEnd,
     } = comparison;
     if (comparisonType === 'BETWEEN') {
+      if (fieldName.includes('.')) {
+        return {
+          expressionString: `${fieldName} BETWEEN :${comparisonAlias}Start AND :${comparisonAlias}End`,
+          expressionAttributeName: {},
+          expressionAttributeValues: {
+            [`:${comparisonAlias}Start`]: rangeStart,
+            [`:${comparisonAlias}End`]: rangeEnd,
+          },
+        };
+      }
       return {
         expressionString: `#${comparisonAlias} BETWEEN :${comparisonAlias}Start AND :${comparisonAlias}End`,
         expressionAttributeName: { [`#${comparisonAlias}`]: fieldName },
@@ -206,8 +91,15 @@ const queryItemAggregateMetadataGeneric = async ({
     }
 
     if (comparisonType === 'BEGINS_WITH') {
+      if (fieldName.includes('.')) {
+        return {
+          expressionString: `begins_with(${fieldName}, :${comparisonAlias})`,
+          expressionAttributeName: {},
+          expressionAttributeValues: { [`:${comparisonAlias}`]: comparedValue },
+        };
+      }
       return {
-        expressionString: `begins_with( #${comparisonAlias}, :${comparisonAlias} )`,
+        expressionString: `begins_with(#${comparisonAlias}, :${comparisonAlias})`,
         expressionAttributeName: { [`#${comparisonAlias}`]: fieldName },
         expressionAttributeValues: { [`:${comparisonAlias}`]: comparedValue },
       };
@@ -282,11 +174,16 @@ const queryItemAggregateMetadataGeneric = async ({
 
   const data = await docClient.query(queryInput).promise();
 
+  console.debug(`Got response: ${JSON.stringify(data)}`);
+
   // TODO: Support [] index based access https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.Attributes.html#Expressions.Attributes.NestedElements.DocumentPathExamples
   const accessByDocumentPath = (item, path) => {
     const pathParts = path.split('.');
     let currentValue = item;
     pathParts.forEach(pathPart => {
+      if (currentValue === undefined || currentValue === null) {
+        return undefined;
+      }
       currentValue = currentValue[pathPart];
     });
     return currentValue;
@@ -295,14 +192,18 @@ const queryItemAggregateMetadataGeneric = async ({
   // TODO: Do this all in one pass.
   const aggregateValues = data.Items
     .map(item => accessByDocumentPath(item, ProjectionExpression))
-    .filter(runtime => typeof runtime === 'number');
+    .filter(itemVal => itemVal !== undefined && itemVal !== null)
+    .filter(itemVal => typeof itemVal === 'number');
+
+  console.debug(`Got ${aggregateValues.length} values after processing`);
+
   count += aggregateValues.length;
   sum += aggregateValues.reduce((previousValue, currentValue) => previousValue + currentValue, 0);
   min = Math.min(min, ...aggregateValues);
   max = Math.max(max, ...aggregateValues);
 
   if (typeof data.LastEvaluatedKey !== 'undefined') {
-    const recursiveResponse = await queryItemAggregateMetadata({
+    const recursiveResponse = await queryItemAggregateMetadataGeneric({
       tableName: TableName,
       partitionKeyComparison,
       sortKeyComparison,
@@ -321,12 +222,6 @@ const queryItemAggregateMetadataGeneric = async ({
   };
 };
 
-const validateExpectedInputs = nameValPairs => {
-  nameValPairs.forEach(([name, val]) => {
-    if (!val) { throw new Error(`Expected ${name} to be provided in input`); }
-  });
-};
-
 /**
  * Entry point to the lambda function.
  */
@@ -334,97 +229,21 @@ const validateExpectedInputs = nameValPairs => {
 exports.handler = async event => {
   console.debug(event);
 
-  const { benchmarkType } = event;
+  const {
+    tableName, partitionKeyComparison, sortKeyComparison, filterComparisons, aggregateField,
+  } = event;
 
-  if (!benchmarkType) { throw new Error('Expected benchmarkType to be provided in input as either queryItemCount, queryItemCountWithFilter, queryItemAggregateMetadata, or queryItemAggregateMetadataGeneric'); }
+  const aggregateMetadata = await queryItemAggregateMetadataGeneric({
+    tableName,
+    partitionKeyComparison,
+    sortKeyComparison,
+    filterComparisons,
+    aggregateField,
+  });
 
-  if (benchmarkType === 'queryItemCount') {
-    const { year, letter1, letter2 } = event;
-    validateExpectedInputs([
-      ['year', year],
-      ['letter1', letter1],
-      ['letter2', letter2],
-    ]);
-    const count = await queryItemCount({ year, letter1, letter2 });
-    return { benchmarkType, ...event, count };
-  }
+  console.debug(`Returning: ${JSON.stringify(aggregateMetadata)}`);
 
-  if (benchmarkType === 'queryItemCountWithFilter') {
-    const {
-      year, letter1, letter2, minRunningTimeSecs,
-    } = event;
-    validateExpectedInputs([
-      ['year', year],
-      ['letter1', letter1],
-      ['letter2', letter2],
-      ['minRunningTimeSecs', minRunningTimeSecs],
-    ]);
-    const count = await queryItemCountWithFilter({
-      year, letter1, letter2, minRunningTimeSecs,
-    });
-    return { benchmarkType, ...event, count };
-  }
-
-  if (benchmarkType === 'queryItemAggregateMetadata') {
-    const {
-      year, letter1, letter2, minRunningTimeSecs, fieldToAggregate,
-    } = event;
-    validateExpectedInputs([
-      ['year', year],
-      ['letter1', letter1],
-      ['letter2', letter2],
-      ['minRunningTimeSecs', minRunningTimeSecs],
-      ['fieldToAggregate', fieldToAggregate],
-    ]);
-    const aggregateMetadata = await queryItemAggregateMetadata({
-      year, letter1, letter2, minRunningTimeSecs, fieldToAggregate,
-    });
-    aggregateMetadata.average = aggregateMetadata.sum / aggregateMetadata.count;
-    return { benchmarkType, ...event, ...aggregateMetadata };
-  }
-
-  if (benchmarkType === 'queryItemAggregateMetadataGeneric') {
-    // TODO: Support Generic Input Mapping
-    const {
-      year, letter1, letter2, minRunningTimeSecs, fieldToAggregate,
-    } = event;
-    validateExpectedInputs([
-      ['year', year],
-      ['letter1', letter1],
-      ['letter2', letter2],
-      ['minRunningTimeSecs', minRunningTimeSecs],
-      ['fieldToAggregate', fieldToAggregate],
-    ]);
-    const aggregateMetadata = await queryItemAggregateMetadataGeneric({
-      year, letter1, letter2, minRunningTimeSecs, fieldToAggregate,
-    });
-    return { benchmarkType, ...event, ...aggregateMetadata };
-  }
-
-  if (benchmarkType === 'queryItemAggregateMetadataGenericFixedInput') {
-    const aggregateMetadata = await queryItemAggregateMetadataGeneric({
-      tableName: process.env.MOVIES_TABLE_NAME,
-      partitionKeyComparison: {
-        fieldName: 'year',
-        comparedValue: 2040,
-      },
-      sortKeyComparison: {
-        fieldName: 'title',
-        comparisonType: 'BETWEEN',
-        rangeStart: 'A',
-        rangeEnd: 'Z',
-      },
-      filterComparisons: [{
-        fieldName: 'info.running_time_secs',
-        comparisonType: 'GTE',
-        comparedValue: 5400,
-      }],
-      aggregateField: 'info.running_time_secs',
-    });
-    return { benchmarkType, ...event, ...aggregateMetadata };
-  }
-
-  throw new Error('Something went wrong');
+  return { ...event, ...aggregateMetadata };
 };
 
 // Gotchas so far, filter expressions with dots are kind of weird

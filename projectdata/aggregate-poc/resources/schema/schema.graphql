@@ -1,8 +1,32 @@
 type Aggregate {
 	count: Int
-	min: Int
-	max: Int
-	sum: Int
+	min: Float
+	max: Float
+	sum: Float
+	average: Float
+}
+
+enum ComparisonType {
+	EQ
+	LT
+	LTE
+	GT
+	GTE
+	BETWEEN
+	BEGINS_WITH
+}
+
+input PartitionKeyComparison {
+	fieldName: String!
+	comparedValue: Int!
+}
+
+input Comparison {
+	fieldName: String!
+	comparisonType: ComparisonType!
+	comparedValue: Int
+	rangeStart: Int
+	rangeEnd: Int
 }
 
 type Movie {
@@ -19,6 +43,12 @@ type Mutation {
 type Query {
 	moviesByYearLetter(year: Int!, letter1: String!, letter2: String!): [Movie]
 	count_moviesByYearLetter(model: String!, queryExpression: String!): Aggregate
+	movieAggregateSearch(
+		aggregateField: String!,
+		partitionKeyComparison: PartitionKeyComparison!,
+		sortKeyComparison: Comparison,
+		filterComparisons: [Comparison]
+	): Aggregate
 }
 
 schema {

@@ -1,0 +1,8 @@
+#set( $myMap = $util.map.copyAndRemoveAllKeys($context.arguments, []) )
+$util.qr( $myMap.put("tableName", "AggregateStack-MoviesTable0F76A3E4-1KWQ8OUBZCCL1") )
+
+{
+  "version" : "2017-02-28",
+  "operation": "Invoke",
+  "payload": $util.toJson($myMap)
+}

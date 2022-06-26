@@ -63,6 +63,14 @@ export class AggregateStack extends Stack {
       tracing: lambda.Tracing.ACTIVE,
     });
 
+    const aggregateSearchFunction = new lambda.Function(this, 'AggregateSearch', {
+      runtime: lambda.Runtime.NODEJS_16_X,
+      code: getLambdaCode('aggregateSearch'),
+      handler: 'index.handler',
+      timeout: Duration.seconds(10),
+      tracing: lambda.Tracing.ACTIVE,
+    });
+
     // Generate Lambdas for populating and querying mock data
     const generateMockDataFunction = new lambda.Function(this, 'GenerateMockData', {
       runtime: lambda.Runtime.NODEJS_16_X,
@@ -127,6 +135,7 @@ export class AggregateStack extends Stack {
     const aggregatesDataSource = api.addDynamoDbDataSource('AggregatesDataSource', aggregatesTable);
     const computeAggregatesDataSource = api.addLambdaDataSource('ComputeAggregatesDataSource', computeAggregatesFunction);
     const triggerEventDataSource = api.addLambdaDataSource('TriggereEventDataSource', triggerEventBus);
+    const aggregateSearchDataSource = api.addLambdaDataSource('AggregateSearchDataSource', aggregateSearchFunction);
     
     moviesDataSource.createResolver({
       typeName: 'Query',
@@ -140,6 +149,13 @@ export class AggregateStack extends Stack {
       fieldName: 'count_moviesByYearLetter',
       requestMappingTemplate: getMappingTemplate('count_moviesByYearLetter.req.vtl'),
       responseMappingTemplate: getMappingTemplate('count_moviesByYearLetter.res.vtl'),
+    });
+
+    aggregateSearchDataSource.createResolver({
+      typeName: 'Query',
+      fieldName: 'movieAggregateSearch',
+      requestMappingTemplate: getMappingTemplate('movieAggregateSearch.req.vtl'),
+      responseMappingTemplate: getMappingTemplate('movieAggregateSearch.res.vtl'),
     });
 
     api.createResolver({
@@ -174,6 +190,7 @@ export class AggregateStack extends Stack {
     moviesTable.grantReadWriteData(moviesDataSource);
     moviesTable.grantWriteData(generateMockDataFunction);
     moviesTable.grantReadData(benchmarkQueriesFunction);
+    moviesTable.grantReadData(aggregateSearchFunction);
     aggregatesTable.grantReadWriteData(computeAggregatesFunction);
     aggregatesTable.grantReadWriteData(computeAggregatesDataSource);
     aggregatesTable.grantReadWriteData(aggregatesDataSource);
