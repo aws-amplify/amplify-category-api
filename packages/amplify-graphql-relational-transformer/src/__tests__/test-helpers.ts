@@ -5,7 +5,7 @@ import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces
  */
 export const featureFlags: FeatureFlagProvider = {
   getBoolean: (value: string, defaultValue: boolean): boolean => {
-    if (value === 'useFieldNameForPrimaryKeyConnectionField') {
+    if (value === 'respectPrimaryKeyAttributesOnConnectionField') {
       return false;
     }
     if (value === 'useSubUsernameForDefaultIdentityClaim') {

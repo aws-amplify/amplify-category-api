@@ -11,7 +11,7 @@ describe('@belongsTo transformer', () => {
   const transformerFactory = () => new GraphQLTransform({
     featureFlags: {
       getBoolean: (value: string, defaultValue: boolean): boolean => {
-        if (value === 'useFieldNameForPrimaryKeyConnectionField') {
+        if (value === 'respectPrimaryKeyAttributesOnConnectionField') {
           return false;
         }
         return defaultValue;

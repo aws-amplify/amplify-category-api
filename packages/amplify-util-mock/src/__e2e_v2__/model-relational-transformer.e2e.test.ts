@@ -59,7 +59,7 @@ describe('@model with relational transformer', () => {
               return true;
             }
 
-            if (featureName === 'useFieldNameForPrimaryKeyConnectionField') {
+            if (featureName === 'respectPrimaryKeyAttributesOnConnectionField') {
               return false;
             }
 
