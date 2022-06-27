@@ -791,6 +791,7 @@ describe('@model with @auth', () => {
           createSalary(input: { wage: 10 }) {
               id
               wage
+              owner
           }
       }
       `,
@@ -798,12 +799,15 @@ describe('@model with @auth', () => {
     );
 
     expect(req.data.createSalary.wage).toEqual(10);
+    expect(req.data.createSalary.owner).toEqual(USERNAME2);
+
     const req2 = await GRAPHQL_CLIENT_2.query(
       `
       mutation {
           updateSalary(input: { id: "${req.data.createSalary.id}", wage: 14 }) {
               id
               wage
+              owner
           }
       }
       `,
@@ -811,6 +815,7 @@ describe('@model with @auth', () => {
     );
 
     expect(req2.data.updateSalary.wage).toEqual(14);
+    expect(req2.data.updateSalary.owner).toEqual(USERNAME2);
   });
 
   test('updating someone else\'s salary as an admin', async () => {
