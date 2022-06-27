@@ -548,7 +548,7 @@ export const getSortKeyFieldsNoContext = (object: ObjectTypeDefinitionNode | Obj
 };
 
 const getPrimaryKeyConnectionFieldType = (ctx: TransformerContextProvider, primaryKeyField: FieldDefinitionNode): string => (
-  ctx.featureFlags.getBoolean('useFieldNameForPrimaryKeyConnectionField') ? getBaseType(primaryKeyField.type) : 'ID'
+  ctx.featureFlags.getBoolean('respectPrimaryKeyAttributesOnConnectionField') ? getBaseType(primaryKeyField.type) : 'ID'
 );
 
 const updateInputWithConnectionFields = (
