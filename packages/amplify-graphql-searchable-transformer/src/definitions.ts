@@ -53,6 +53,9 @@ export const AGGREGATE_TYPES = [
   'SearchableAggregateBucketResult',
   'SearchableAggregateBucketResultItem',
 ];
+
+export const DATASTORE_SYNC_FIELDS = ['_version', '_deleted', '_lastChangedAt'];
+
 export function makeSearchableScalarInputObject(type: string): InputObjectTypeDefinitionNode {
   const name = SearchableResourceIDs.SearchableFilterInputTypeName(type);
   const conditions = getScalarConditions(type);
