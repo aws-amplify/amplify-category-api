@@ -44,6 +44,7 @@ import {
   makeSearchableAggregateTypeEnumObject,
   AGGREGATE_TYPES,
   extendTypeWithDirectives,
+  DATASTORE_SYNC_FIELDS,
 } from './definitions';
 import assert from 'assert';
 import { setMappings } from './cdk/create-layer-cfnMapping';
@@ -148,7 +149,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         MappingTemplate.s3MappingTemplateFromString(
           requestTemplate(
             attributeName,
-            getNonKeywordFields(def.node),
+            getNonKeywordFields((context.output.getObject(type))as ObjectTypeDefinitionNode),
             context.isProjectUsingDataStore(),
             openSearchIndexName,
             type,
@@ -430,7 +431,7 @@ function getTable(context: TransformerContextProvider, definition: ObjectTypeDef
 function getNonKeywordFields(def: ObjectTypeDefinitionNode): Expression[] {
   const nonKeywordTypeSet = new Set(nonKeywordTypes);
 
-  return def.fields?.filter(field => nonKeywordTypeSet.has(getBaseType(field.type))).map(field => str(field.name.value)) || [];
+  return def.fields?.filter(field => nonKeywordTypeSet.has(getBaseType(field.type)) && !DATASTORE_SYNC_FIELDS.includes(field.name.value)).map(field => str(field.name.value)) || [];
 }
 
 /**
