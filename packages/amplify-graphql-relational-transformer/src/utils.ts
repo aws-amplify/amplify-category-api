@@ -175,7 +175,7 @@ function getIndexName(directive: DirectiveNode): string | undefined {
 }
 
 export function getConnectionAttributeName(featureFlags: FeatureFlagProvider, type: string, field: string, relatedTypeField: string) {
-  const nameSuffix = featureFlags.getBoolean('useFieldNameForPrimaryKeyConnectionField') ? relatedTypeField : 'id';
+  const nameSuffix = featureFlags.getBoolean('respectPrimaryKeyAttributesOnConnectionField') ? relatedTypeField : 'id';
   return toCamelCase([type, field, nameSuffix]);
 }
 

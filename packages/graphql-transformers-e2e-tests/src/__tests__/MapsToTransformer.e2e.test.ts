@@ -10,7 +10,7 @@ describe('@mapsTo transformer', () => {
     new GraphQLTransform({
       featureFlags: {
         getBoolean: (value: string, defaultValue: boolean): boolean => {
-          if (value === 'useFieldNameForPrimaryKeyConnectionField') {
+          if (value === 'respectPrimaryKeyAttributesOnConnectionField') {
             return false;
           }
           return defaultValue;
