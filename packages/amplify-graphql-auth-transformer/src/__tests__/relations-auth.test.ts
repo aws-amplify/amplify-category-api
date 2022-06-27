@@ -7,7 +7,7 @@ import { AuthTransformer } from '../graphql-auth-transformer';
 
 const featureFlags: FeatureFlagProvider = {
   getBoolean: (value: string): boolean => {
-    if (value === 'useFieldNameForPrimaryKeyConnectionField') {
+    if (value === 'respectPrimaryKeyAttributesOnConnectionField') {
       return true;
     }
     return false;
