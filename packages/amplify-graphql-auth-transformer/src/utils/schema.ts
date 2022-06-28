@@ -210,6 +210,7 @@ export const addDirectivesToField = (
 /**
  * addSubscriptionArguments
  */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const addSubscriptionArguments = (
   ctx: TransformerTransformSchemaStepContextProvider,
   operationName: string,
@@ -220,7 +221,7 @@ export const addSubscriptionArguments = (
   const subscriptionArgumentList = subscriptionRoles.map(role => makeInputValueDefinition(role.entity!, makeNamedType('String')));
   createField = {
     ...createField,
-    arguments: subscriptionArgumentList,
+    arguments: [...createField.arguments, ...subscriptionArgumentList],
   };
   subscription = {
     ...subscription,

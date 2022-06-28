@@ -31,12 +31,12 @@ export class ModelResourceIDs {
     }
     return `Model${name}FilterInput`;
   }
-  static ModelFilterScalarInputTypeName(name: string, includeFilter: Boolean): string {
+  static ModelFilterScalarInputTypeName(name: string, includeFilter: Boolean, isSubscriptionFilter:boolean = false): string {
     const nameOverride = DEFAULT_SCALARS[name];
     if (nameOverride) {
-      return `Model${nameOverride}${includeFilter ? 'Filter' : ''}Input`;
+      return `Model${isSubscriptionFilter ? 'Subscription' : ''}${nameOverride}${includeFilter ? 'Filter' : ''}Input`;
     }
-    return `Model${name}${includeFilter ? 'Filter' : ''}Input`;
+    return `Model${isSubscriptionFilter ? 'Subscription' : ''}${name}${includeFilter ? 'Filter' : ''}Input`;
   }
   static ModelConditionInputTypeName(name: string): string {
     const nameOverride = DEFAULT_SCALARS[name];
@@ -67,12 +67,12 @@ export class ModelResourceIDs {
   static ModelCompositeKeyInputTypeName(modelName: string, keyName: string): string {
     return `Model${modelName}${keyName}CompositeKeyInput`;
   }
-  static ModelFilterListInputTypeName(name: string, includeFilter: Boolean): string {
+  static ModelFilterListInputTypeName(name: string, includeFilter: Boolean, isSubscriptionFilter: boolean = false): string {
     const nameOverride = DEFAULT_SCALARS[name];
     if (nameOverride) {
-      return `Model${nameOverride}List${includeFilter ? 'Filter' : ''}Input`;
+      return `Model${isSubscriptionFilter ? 'Subscription' : ''}${nameOverride}List${includeFilter ? 'Filter' : ''}Input`;
     }
-    return `Model${name}List${includeFilter ? 'Filter' : ''}Input`;
+    return `Model${isSubscriptionFilter ? 'Subscription' : ''}${name}List${includeFilter ? 'Filter' : ''}Input`;
   }
 
   static ModelScalarFilterInputTypeName(name: string, includeFilter: Boolean): string {
