@@ -85,6 +85,7 @@ export interface RoleDefinition {
   nullAllowedFields?: Array<string>;
   areAllFieldsAllowed?: boolean;
   areAllFieldsNullAllowed?: boolean;
+  isEntityList?: boolean;
 }
 
 /**
