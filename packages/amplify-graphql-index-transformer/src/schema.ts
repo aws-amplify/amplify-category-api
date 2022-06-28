@@ -35,6 +35,7 @@ import {
 } from 'graphql-transformer-common';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
 import { lookupResolverName } from './utils';
+import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 
 export function addKeyConditionInputs(
   config: PrimaryKeyDirectiveConfiguration | IndexDirectiveConfiguration,
@@ -64,7 +65,9 @@ export function addKeyConditionInputs(
       return resolvedEnumType ? 'String' : undefined;
     };
     const sortKeyConditionInput = makeScalarKeyConditionForType(sortKeyField.type, typeResolver as (baseType: string) => string);
-    assert(sortKeyConditionInput);
+    if (sortKeyConditionInput === undefined) {
+      throw new InvalidDirectiveError(`Sort Key Condition could not be constructed for field '${sortKeyField.name.value}'`);
+    }
 
     if (!ctx.output.getType(sortKeyConditionInput.name.value)) {
       ctx.output.addInput(sortKeyConditionInput);
