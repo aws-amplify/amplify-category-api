@@ -874,20 +874,7 @@ test('validate resolver code', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: {
-      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-        if (name === 'secondaryKeyAsGSI') {
-          return true;
-        }
-        if (name === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return defaultValue;
-      }),
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-      getString: jest.fn(),
-    },
+    featureFlags: generateFeatureFlagWithBooleanOverrides({ secondaryKeyAsGSI: true, useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -916,17 +903,7 @@ it('@model mutation with user defined null args', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: {
-      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-        if (name === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return defaultValue;
-      }),
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-      getString: jest.fn(),
-    },
+    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -960,17 +937,7 @@ it('@model mutation with user defined create args', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: {
-      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-        if (name === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return defaultValue;
-      }),
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-      getString: jest.fn(),
-    },
+    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -1004,17 +971,7 @@ it('@model mutation with default', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: {
-      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-        if (name === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return defaultValue;
-      }),
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-      getString: jest.fn(),
-    },
+    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -1056,17 +1013,7 @@ it('@model mutation with queries', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: {
-      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-        if (name === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return defaultValue;
-      }),
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-      getString: jest.fn(),
-    },
+    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -1108,17 +1055,7 @@ it('id field should be optional in updateInputObjects when it is not a primary k
   `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: {
-      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-        if (name === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return defaultValue;
-      }),
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-      getString: jest.fn(),
-    },
+    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -1149,17 +1086,7 @@ test('GSI composite sort keys are wrapped in conditional to check presence in mu
   `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: {
-      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-        if (name === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return defaultValue;
-      }),
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-      getString: jest.fn(),
-    },
+    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -1193,17 +1120,7 @@ it('should support index/primary key with sync resolvers', () => {
     resolverConfig: {
       project: config,
     },
-    featureFlags: {
-      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-        if (name === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return defaultValue;
-      }),
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-      getString: jest.fn(),
-    },
+    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
 
   const out = transformer.transform(validSchema);
@@ -1225,23 +1142,30 @@ test('LSI creation regression test', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: {
-      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-        if (name === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return defaultValue;
-      }),
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-      getString: jest.fn(),
-    },
+    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
 
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
+});
+
+test('it throws an understandable error on boolean sort keys', () => {
+  const inputSchema = `
+  type Test @model {
+    taskID: ID! @index(sortKeyFields: ["completed"])
+    completed: Boolean!
+  }`;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer()],
+    featureFlags: generateFeatureFlagWithBooleanOverrides({ enableAutoIndexQueryNames: true }),
+  });
+
+  expect(() => {
+    transformer.transform(inputSchema);
+  }).toThrowErrorMatchingInlineSnapshot('"Sort Key Condition could not be constructed for field \'completed\'"');
 });
 
 describe('automatic name generation', () => {
