@@ -93,6 +93,65 @@ input ModelIDInput {
   size: ModelSizeInput
 }
 
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
 enum ModelAttributeTypes {
   binary
   binarySet
@@ -176,16 +235,23 @@ type Mutation {
   deleteModelAModelB(input: DeleteModelAModelBInput!, condition: ModelModelAModelBConditionInput): ModelAModelB
 }
 
+input ModelSubscriptionModelAFilterInput {
+  id: ModelSubscriptionIDInput
+  sortId: ModelSubscriptionIDInput
+  and: [ModelSubscriptionModelAFilterInput]
+  or: [ModelSubscriptionModelAFilterInput]
+}
+
 type Subscription {
-  onCreateModelA: ModelA @aws_subscribe(mutations: [\\"createModelA\\"])
-  onUpdateModelA: ModelA @aws_subscribe(mutations: [\\"updateModelA\\"])
-  onDeleteModelA: ModelA @aws_subscribe(mutations: [\\"deleteModelA\\"])
-  onCreateModelB: ModelB @aws_subscribe(mutations: [\\"createModelB\\"])
-  onUpdateModelB: ModelB @aws_subscribe(mutations: [\\"updateModelB\\"])
-  onDeleteModelB: ModelB @aws_subscribe(mutations: [\\"deleteModelB\\"])
-  onCreateModelAModelB: ModelAModelB @aws_subscribe(mutations: [\\"createModelAModelB\\"])
-  onUpdateModelAModelB: ModelAModelB @aws_subscribe(mutations: [\\"updateModelAModelB\\"])
-  onDeleteModelAModelB: ModelAModelB @aws_subscribe(mutations: [\\"deleteModelAModelB\\"])
+  onCreateModelA(filter: ModelSubscriptionModelAFilterInput): ModelA @aws_subscribe(mutations: [\\"createModelA\\"])
+  onUpdateModelA(filter: ModelSubscriptionModelAFilterInput): ModelA @aws_subscribe(mutations: [\\"updateModelA\\"])
+  onDeleteModelA(filter: ModelSubscriptionModelAFilterInput): ModelA @aws_subscribe(mutations: [\\"deleteModelA\\"])
+  onCreateModelB(filter: ModelSubscriptionModelBFilterInput): ModelB @aws_subscribe(mutations: [\\"createModelB\\"])
+  onUpdateModelB(filter: ModelSubscriptionModelBFilterInput): ModelB @aws_subscribe(mutations: [\\"updateModelB\\"])
+  onDeleteModelB(filter: ModelSubscriptionModelBFilterInput): ModelB @aws_subscribe(mutations: [\\"deleteModelB\\"])
+  onCreateModelAModelB(filter: ModelSubscriptionModelAModelBFilterInput): ModelAModelB @aws_subscribe(mutations: [\\"createModelAModelB\\"])
+  onUpdateModelAModelB(filter: ModelSubscriptionModelAModelBFilterInput): ModelAModelB @aws_subscribe(mutations: [\\"updateModelAModelB\\"])
+  onDeleteModelAModelB(filter: ModelSubscriptionModelAModelBFilterInput): ModelAModelB @aws_subscribe(mutations: [\\"deleteModelAModelB\\"])
 }
 
 type ModelModelBConnection {
@@ -220,6 +286,13 @@ input UpdateModelBInput {
 input DeleteModelBInput {
   id: ID!
   sortId: ID!
+}
+
+input ModelSubscriptionModelBFilterInput {
+  id: ModelSubscriptionIDInput
+  sortId: ModelSubscriptionIDInput
+  and: [ModelSubscriptionModelBFilterInput]
+  or: [ModelSubscriptionModelBFilterInput]
 }
 
 type ModelModelAModelBConnection {
@@ -266,6 +339,16 @@ input UpdateModelAModelBInput {
 
 input DeleteModelAModelBInput {
   id: ID!
+}
+
+input ModelSubscriptionModelAModelBFilterInput {
+  id: ModelSubscriptionIDInput
+  modelAID: ModelSubscriptionIDInput
+  modelAsortId: ModelSubscriptionIDInput
+  modelBID: ModelSubscriptionIDInput
+  modelBsortId: ModelSubscriptionIDInput
+  and: [ModelSubscriptionModelAModelBFilterInput]
+  or: [ModelSubscriptionModelAModelBFilterInput]
 }
 
 input ModelIDKeyConditionInput {
@@ -2031,6 +2114,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onCreateModelA.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onCreateModelAModelB.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -2046,6 +2132,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onCreateModelAModelB.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onCreateModelB.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -2061,6 +2150,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onCreateModelB.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onDeleteModelA.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -2076,6 +2168,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onDeleteModelA.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onDeleteModelAModelB.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -2091,6 +2186,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onDeleteModelAModelB.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onDeleteModelB.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -2106,6 +2204,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onDeleteModelB.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onUpdateModelA.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -2121,6 +2222,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onUpdateModelA.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onUpdateModelAModelB.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -2136,6 +2240,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onUpdateModelAModelB.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onUpdateModelB.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -2151,6 +2258,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onUpdateModelB.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
 }
@@ -3243,6 +3353,65 @@ input ModelIDInput {
   size: ModelSizeInput
 }
 
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
 enum ModelAttributeTypes {
   binary
   binarySet
@@ -3330,16 +3499,24 @@ type Mutation {
   deleteModelAModelB(input: DeleteModelAModelBInput!, condition: ModelModelAModelBConditionInput): ModelAModelB
 }
 
+input ModelSubscriptionModelAFilterInput {
+  id: ModelSubscriptionIDInput
+  sortId: ModelSubscriptionIDInput
+  secondSortId: ModelSubscriptionIDInput
+  and: [ModelSubscriptionModelAFilterInput]
+  or: [ModelSubscriptionModelAFilterInput]
+}
+
 type Subscription {
-  onCreateModelA: ModelA @aws_subscribe(mutations: [\\"createModelA\\"])
-  onUpdateModelA: ModelA @aws_subscribe(mutations: [\\"updateModelA\\"])
-  onDeleteModelA: ModelA @aws_subscribe(mutations: [\\"deleteModelA\\"])
-  onCreateModelB: ModelB @aws_subscribe(mutations: [\\"createModelB\\"])
-  onUpdateModelB: ModelB @aws_subscribe(mutations: [\\"updateModelB\\"])
-  onDeleteModelB: ModelB @aws_subscribe(mutations: [\\"deleteModelB\\"])
-  onCreateModelAModelB: ModelAModelB @aws_subscribe(mutations: [\\"createModelAModelB\\"])
-  onUpdateModelAModelB: ModelAModelB @aws_subscribe(mutations: [\\"updateModelAModelB\\"])
-  onDeleteModelAModelB: ModelAModelB @aws_subscribe(mutations: [\\"deleteModelAModelB\\"])
+  onCreateModelA(filter: ModelSubscriptionModelAFilterInput): ModelA @aws_subscribe(mutations: [\\"createModelA\\"])
+  onUpdateModelA(filter: ModelSubscriptionModelAFilterInput): ModelA @aws_subscribe(mutations: [\\"updateModelA\\"])
+  onDeleteModelA(filter: ModelSubscriptionModelAFilterInput): ModelA @aws_subscribe(mutations: [\\"deleteModelA\\"])
+  onCreateModelB(filter: ModelSubscriptionModelBFilterInput): ModelB @aws_subscribe(mutations: [\\"createModelB\\"])
+  onUpdateModelB(filter: ModelSubscriptionModelBFilterInput): ModelB @aws_subscribe(mutations: [\\"updateModelB\\"])
+  onDeleteModelB(filter: ModelSubscriptionModelBFilterInput): ModelB @aws_subscribe(mutations: [\\"deleteModelB\\"])
+  onCreateModelAModelB(filter: ModelSubscriptionModelAModelBFilterInput): ModelAModelB @aws_subscribe(mutations: [\\"createModelAModelB\\"])
+  onUpdateModelAModelB(filter: ModelSubscriptionModelAModelBFilterInput): ModelAModelB @aws_subscribe(mutations: [\\"updateModelAModelB\\"])
+  onDeleteModelAModelB(filter: ModelSubscriptionModelAModelBFilterInput): ModelAModelB @aws_subscribe(mutations: [\\"deleteModelAModelB\\"])
 }
 
 type ModelModelBConnection {
@@ -3374,6 +3551,13 @@ input UpdateModelBInput {
 input DeleteModelBInput {
   id: ID!
   sortId: ID!
+}
+
+input ModelSubscriptionModelBFilterInput {
+  id: ModelSubscriptionIDInput
+  sortId: ModelSubscriptionIDInput
+  and: [ModelSubscriptionModelBFilterInput]
+  or: [ModelSubscriptionModelBFilterInput]
 }
 
 type ModelModelAModelBConnection {
@@ -3424,6 +3608,17 @@ input UpdateModelAModelBInput {
 
 input DeleteModelAModelBInput {
   id: ID!
+}
+
+input ModelSubscriptionModelAModelBFilterInput {
+  id: ModelSubscriptionIDInput
+  modelAID: ModelSubscriptionIDInput
+  modelAsortId: ModelSubscriptionIDInput
+  modelAsecondSortId: ModelSubscriptionIDInput
+  modelBID: ModelSubscriptionIDInput
+  modelBsortId: ModelSubscriptionIDInput
+  and: [ModelSubscriptionModelAModelBFilterInput]
+  or: [ModelSubscriptionModelAModelBFilterInput]
 }
 
 input ModelModelAPrimaryCompositeKeyConditionInput {
@@ -3560,6 +3755,65 @@ input ModelIDInput {
   size: ModelSizeInput
 }
 
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
 enum ModelAttributeTypes {
   binary
   binarySet
@@ -3643,16 +3897,23 @@ type Mutation {
   deleteModelAModelB(input: DeleteModelAModelBInput!, condition: ModelModelAModelBConditionInput): ModelAModelB
 }
 
+input ModelSubscriptionModelAFilterInput {
+  id: ModelSubscriptionIDInput
+  sortId: ModelSubscriptionIDInput
+  and: [ModelSubscriptionModelAFilterInput]
+  or: [ModelSubscriptionModelAFilterInput]
+}
+
 type Subscription {
-  onCreateModelA: ModelA @aws_subscribe(mutations: [\\"createModelA\\"])
-  onUpdateModelA: ModelA @aws_subscribe(mutations: [\\"updateModelA\\"])
-  onDeleteModelA: ModelA @aws_subscribe(mutations: [\\"deleteModelA\\"])
-  onCreateModelB: ModelB @aws_subscribe(mutations: [\\"createModelB\\"])
-  onUpdateModelB: ModelB @aws_subscribe(mutations: [\\"updateModelB\\"])
-  onDeleteModelB: ModelB @aws_subscribe(mutations: [\\"deleteModelB\\"])
-  onCreateModelAModelB: ModelAModelB @aws_subscribe(mutations: [\\"createModelAModelB\\"])
-  onUpdateModelAModelB: ModelAModelB @aws_subscribe(mutations: [\\"updateModelAModelB\\"])
-  onDeleteModelAModelB: ModelAModelB @aws_subscribe(mutations: [\\"deleteModelAModelB\\"])
+  onCreateModelA(filter: ModelSubscriptionModelAFilterInput): ModelA @aws_subscribe(mutations: [\\"createModelA\\"])
+  onUpdateModelA(filter: ModelSubscriptionModelAFilterInput): ModelA @aws_subscribe(mutations: [\\"updateModelA\\"])
+  onDeleteModelA(filter: ModelSubscriptionModelAFilterInput): ModelA @aws_subscribe(mutations: [\\"deleteModelA\\"])
+  onCreateModelB(filter: ModelSubscriptionModelBFilterInput): ModelB @aws_subscribe(mutations: [\\"createModelB\\"])
+  onUpdateModelB(filter: ModelSubscriptionModelBFilterInput): ModelB @aws_subscribe(mutations: [\\"updateModelB\\"])
+  onDeleteModelB(filter: ModelSubscriptionModelBFilterInput): ModelB @aws_subscribe(mutations: [\\"deleteModelB\\"])
+  onCreateModelAModelB(filter: ModelSubscriptionModelAModelBFilterInput): ModelAModelB @aws_subscribe(mutations: [\\"createModelAModelB\\"])
+  onUpdateModelAModelB(filter: ModelSubscriptionModelAModelBFilterInput): ModelAModelB @aws_subscribe(mutations: [\\"updateModelAModelB\\"])
+  onDeleteModelAModelB(filter: ModelSubscriptionModelAModelBFilterInput): ModelAModelB @aws_subscribe(mutations: [\\"deleteModelAModelB\\"])
 }
 
 type ModelModelBConnection {
@@ -3683,6 +3944,12 @@ input UpdateModelBInput {
 
 input DeleteModelBInput {
   id: ID!
+}
+
+input ModelSubscriptionModelBFilterInput {
+  id: ModelSubscriptionIDInput
+  and: [ModelSubscriptionModelBFilterInput]
+  or: [ModelSubscriptionModelBFilterInput]
 }
 
 type ModelModelAModelBConnection {
@@ -3725,6 +3992,15 @@ input UpdateModelAModelBInput {
 
 input DeleteModelAModelBInput {
   id: ID!
+}
+
+input ModelSubscriptionModelAModelBFilterInput {
+  id: ModelSubscriptionIDInput
+  modelAID: ModelSubscriptionIDInput
+  modelAsortId: ModelSubscriptionIDInput
+  modelBID: ModelSubscriptionIDInput
+  and: [ModelSubscriptionModelAModelBFilterInput]
+  or: [ModelSubscriptionModelAModelBFilterInput]
 }
 
 input ModelIDKeyConditionInput {
@@ -3829,6 +4105,65 @@ input ModelIDInput {
   size: ModelSizeInput
 }
 
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
 enum ModelAttributeTypes {
   binary
   binarySet
@@ -3908,16 +4243,22 @@ type Mutation {
   deleteFooBar(input: DeleteFooBarInput!, condition: ModelFooBarConditionInput): FooBar
 }
 
+input ModelSubscriptionFooFilterInput {
+  id: ModelSubscriptionIDInput
+  and: [ModelSubscriptionFooFilterInput]
+  or: [ModelSubscriptionFooFilterInput]
+}
+
 type Subscription {
-  onCreateFoo: Foo @aws_subscribe(mutations: [\\"createFoo\\"])
-  onUpdateFoo: Foo @aws_subscribe(mutations: [\\"updateFoo\\"])
-  onDeleteFoo: Foo @aws_subscribe(mutations: [\\"deleteFoo\\"])
-  onCreateBar: Bar @aws_subscribe(mutations: [\\"createBar\\"])
-  onUpdateBar: Bar @aws_subscribe(mutations: [\\"updateBar\\"])
-  onDeleteBar: Bar @aws_subscribe(mutations: [\\"deleteBar\\"])
-  onCreateFooBar: FooBar @aws_subscribe(mutations: [\\"createFooBar\\"])
-  onUpdateFooBar: FooBar @aws_subscribe(mutations: [\\"updateFooBar\\"])
-  onDeleteFooBar: FooBar @aws_subscribe(mutations: [\\"deleteFooBar\\"])
+  onCreateFoo(filter: ModelSubscriptionFooFilterInput): Foo @aws_subscribe(mutations: [\\"createFoo\\"])
+  onUpdateFoo(filter: ModelSubscriptionFooFilterInput): Foo @aws_subscribe(mutations: [\\"updateFoo\\"])
+  onDeleteFoo(filter: ModelSubscriptionFooFilterInput): Foo @aws_subscribe(mutations: [\\"deleteFoo\\"])
+  onCreateBar(filter: ModelSubscriptionBarFilterInput): Bar @aws_subscribe(mutations: [\\"createBar\\"])
+  onUpdateBar(filter: ModelSubscriptionBarFilterInput): Bar @aws_subscribe(mutations: [\\"updateBar\\"])
+  onDeleteBar(filter: ModelSubscriptionBarFilterInput): Bar @aws_subscribe(mutations: [\\"deleteBar\\"])
+  onCreateFooBar(filter: ModelSubscriptionFooBarFilterInput): FooBar @aws_subscribe(mutations: [\\"createFooBar\\"])
+  onUpdateFooBar(filter: ModelSubscriptionFooBarFilterInput): FooBar @aws_subscribe(mutations: [\\"updateFooBar\\"])
+  onDeleteFooBar(filter: ModelSubscriptionFooBarFilterInput): FooBar @aws_subscribe(mutations: [\\"deleteFooBar\\"])
 }
 
 type ModelBarConnection {
@@ -3948,6 +4289,12 @@ input UpdateBarInput {
 
 input DeleteBarInput {
   id: ID!
+}
+
+input ModelSubscriptionBarFilterInput {
+  id: ModelSubscriptionIDInput
+  and: [ModelSubscriptionBarFilterInput]
+  or: [ModelSubscriptionBarFilterInput]
 }
 
 type ModelFooBarConnection {
@@ -3986,6 +4333,14 @@ input UpdateFooBarInput {
 
 input DeleteFooBarInput {
   id: ID!
+}
+
+input ModelSubscriptionFooBarFilterInput {
+  id: ModelSubscriptionIDInput
+  fooID: ModelSubscriptionIDInput
+  barID: ModelSubscriptionIDInput
+  and: [ModelSubscriptionFooBarFilterInput]
+  or: [ModelSubscriptionFooBarFilterInput]
 }
 
 "
@@ -5525,6 +5880,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onCreateBar.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onCreateFoo.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -5540,6 +5898,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onCreateFoo.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onCreateFooBar.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -5555,6 +5916,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onCreateFooBar.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onDeleteBar.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -5570,6 +5934,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onDeleteBar.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onDeleteFoo.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -5585,6 +5952,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onDeleteFoo.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onDeleteFooBar.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -5600,6 +5970,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onDeleteFooBar.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onUpdateBar.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -5615,6 +5988,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onUpdateBar.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onUpdateFoo.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -5630,6 +6006,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onUpdateFoo.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onUpdateFooBar.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -5645,6 +6024,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onUpdateFooBar.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
 }
