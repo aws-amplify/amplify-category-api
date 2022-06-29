@@ -1,0 +1,18 @@
+type Todo @model
+  @auth(rules: [
+    { allow: public, provider: apiKey }
+  ]) {
+  aTodoId: ID! @primaryKey(sortKeyFields: ["seqNo"])
+  seqNo: Int!
+  name: String!
+  description: String
+}
+
+type Person @model
+  @auth(rules: [
+    { allow: public, provider: apiKey }
+  ]) {
+  id: ID!
+  firstName: String!
+  lastName: String!
+}

@@ -20,12 +20,14 @@ import {
   list,
   forEach,
   nul,
+  raw,
 } from 'graphql-mapping-template';
-import { ResourceConstants, setArgs } from 'graphql-transformer-common';
+import { ResourceConstants, setArgs, SyncResourceIDs } from 'graphql-transformer-common';
+
 const authFilter = ref('ctx.stash.authFilter');
 
 /**
- * Generate get query resolver template
+ * Generate get query resolver request template
  */
 export const generateGetRequestTemplate = (): string => {
   const statements: Expression[] = [
@@ -74,6 +76,9 @@ export const generateGetRequestTemplate = (): string => {
   return printBlock('Get Request template')(compoundExpression(statements));
 };
 
+/**
+ * Generates the Get query response template
+ */
 export const generateGetResponseTemplate = (isSyncEnabled: boolean): string => {
   const statements = new Array<Expression>();
   if (isSyncEnabled) {
@@ -96,13 +101,16 @@ export const generateGetResponseTemplate = (isSyncEnabled: boolean): string => {
   return printBlock('Get Response template')(compoundExpression(statements));
 };
 
+/**
+ * Generates the List query request template
+ */
 export const generateListRequestTemplate = (): string => {
   const requestVariable = 'ListRequest';
   const modelQueryObj = 'ctx.stash.modelQueryExpression';
   const indexNameVariable = 'ctx.stash.metadata.index';
   const expression = compoundExpression([
     setArgs,
-    set(ref('limit'), methodCall(ref(`util.defaultIfNull`), ref('args.limit'), int(100))),
+    set(ref('limit'), methodCall(ref('util.defaultIfNull'), ref('args.limit'), int(100))),
     set(
       ref(requestVariable),
       obj({
@@ -123,7 +131,7 @@ export const generateListRequestTemplate = (): string => {
       not(isNullOrEmpty(ref('filter'))),
       compoundExpression([
         set(
-          ref(`filterExpression`),
+          ref('filterExpression'),
           methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref('filter'))),
         ),
         iff(
@@ -133,7 +141,7 @@ export const generateListRequestTemplate = (): string => {
               equals(methodCall(ref('filterExpression.expressionValues.size')), int(0)),
               qref(methodCall(ref('filterExpression.remove'), str('expressionValues'))),
             ),
-            set(ref(`${requestVariable}.filter`), ref(`filterExpression`)),
+            set(ref(`${requestVariable}.filter`), ref('filterExpression')),
           ]),
         ),
       ]),
@@ -160,8 +168,12 @@ export const generateListRequestTemplate = (): string => {
   return printBlock('List Request')(expression);
 };
 
-export const generateSyncRequestTemplate = (): string => {
-  return printBlock('Sync Request template')(
+/**
+ * Generates the Sync query request template
+ */
+export const generateSyncRequestTemplate = (hasCustomPrimaryKey: boolean, partitionKeyName: string): string => {
+  const syncExpression = [];
+  syncExpression.push(
     compoundExpression([
       setArgs,
       ifElse(
@@ -176,7 +188,7 @@ export const generateSyncRequestTemplate = (): string => {
         not(isNullOrEmpty(ref('filter'))),
         compoundExpression([
           set(
-            ref(`filterExpression`),
+            ref('filterExpression'),
             methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref('filter'))),
           ),
           iff(
@@ -191,14 +203,36 @@ export const generateSyncRequestTemplate = (): string => {
           ),
         ]),
       ),
-      obj({
-        version: str('2018-05-29'),
-        operation: str('Sync'),
-        filter: ifElse(ref('filter'), ref('util.toJson($filter)'), nul()),
-        limit: ref(`util.defaultIfNull($args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
-        lastSync: ref('util.toJson($util.defaultIfNull($args.lastSync, null))'),
-        nextToken: ref('util.toJson($util.defaultIfNull($args.nextToken, null))'),
-      }),
+      set(
+        ref('syncRequest'),
+        obj({
+          version: str('2018-05-29'),
+          operation: str('Sync'),
+          filter: ref('filter'),
+          limit: ref(`util.defaultIfNull($args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
+          lastSync: ref('args.lastSync'),
+          nextToken: ref('args.nextToken'),
+        }),
+      ),
     ]),
   );
+
+  if (hasCustomPrimaryKey) {
+    syncExpression.push(
+      ifElse(
+        and([
+          ref('ctx.args.filter'),
+          ref(`ctx.args.filter.${partitionKeyName}`),
+          ref(`ctx.args.filter.${partitionKeyName}.eq`),
+        ]),
+        qref(methodCall(ref('syncRequest.put'), str('basePartitionKey'), ref(`ctx.args.filter.${partitionKeyName}.eq`))),
+        qref(methodCall(ref('syncRequest.put'), str('deltaIndexName'), str(SyncResourceIDs.syncGSIName))),
+      ),
+    );
+  }
+
+  syncExpression.push(
+    toJson(ref('syncRequest')),
+  );
+  return printBlock('Sync Request template')(compoundExpression(syncExpression));
 };
