@@ -49,15 +49,34 @@ test('it generates the expected resources', () => {
           {
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
-            Resource: {
-              'Fn::If': [
-                'HasEnvironmentParameter',
-                {
-                  'Fn::Sub': ['arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction-${env}', { env: { Ref: anything() } }],
-                },
-                { 'Fn::Sub': 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction' },
-              ],
-            },
+            Resource: [
+              {
+                'Fn::If': [
+                  'HasEnvironmentParameter',
+                  {
+                    'Fn::Sub': ['arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction-${env}', { env: { Ref: anything() } }],
+                  },
+                  { 'Fn::Sub': 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction' },
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::If': [
+                        'HasEnvironmentParameter',
+                        {
+                          'Fn::Sub': ['arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction-${env}', { env: { Ref: anything() } }],
+                        },
+                        { 'Fn::Sub': 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction' },
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
           },
         ],
         Version: '2012-10-17',
