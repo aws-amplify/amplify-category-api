@@ -26,14 +26,8 @@
   },
   "dependencies": {
     "amplify-category-api-e2e-core": "4.0.2",
-    "aws-sdk": "^2.1113.0",
-    "dotenv": "^8.2.0",
-    "esm": "^3.2.25",
-    "fs-extra": "^8.1.0",
     "graphql-transformer-core": "7.6.2",
-    "lodash": "^4.17.21",
-    "rimraf": "^3.0.0",
-    "uuid": "^8.3.2"
+    "lodash": "^4.17.21"
   },
   "jest": {
     "verbose": false,
