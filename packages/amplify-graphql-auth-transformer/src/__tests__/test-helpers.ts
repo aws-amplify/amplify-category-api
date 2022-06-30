@@ -33,7 +33,6 @@ export const featureFlags: FeatureFlagProvider = {
     }
     return false;
   },
-  getString: jest.fn(),
   getNumber: jest.fn(),
   getObject: jest.fn(),
 };

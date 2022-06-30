@@ -304,7 +304,8 @@ describe('@model with @auth', () => {
           }
           return defaultValue;
         },
-        getString: jest.fn(),
+       
+
         getNumber: jest.fn(),
         getObject: jest.fn(),
       },

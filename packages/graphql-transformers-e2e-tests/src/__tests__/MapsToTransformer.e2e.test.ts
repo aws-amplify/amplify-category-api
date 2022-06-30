@@ -15,7 +15,8 @@ describe('@mapsTo transformer', () => {
           }
           return defaultValue;
         },
-        getString: jest.fn(),
+       
+
         getNumber: jest.fn(),
         getObject: jest.fn(),
       },

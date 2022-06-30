@@ -22,7 +22,8 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
-  getString: jest.fn(),
+ 
+
 };
 
 test('ModelConnectionTransformer should fail if connection was called on an object that is not a Model type.', () => {
