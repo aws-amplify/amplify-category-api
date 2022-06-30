@@ -6,7 +6,8 @@ jest.mock('amplify-cli-core');
 const buildMockedFeatureFlags = (flagValue: boolean) => {
   return {
     getBoolean: jest.fn(() => flagValue),
-    getString: jest.fn(),
+   
+
     getNumber: jest.fn(),
     getObject: jest.fn(),
   };

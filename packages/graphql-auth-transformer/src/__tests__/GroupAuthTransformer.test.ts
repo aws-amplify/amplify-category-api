@@ -11,7 +11,8 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
-  getString: jest.fn(),
+ 
+
 };
 
 test('Test ModelAuthTransformer validation happy case w/ static groups', () => {

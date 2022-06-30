@@ -333,7 +333,6 @@ describe('owner based @auth', () => {
         }),
         getNumber: jest.fn(),
         getObject: jest.fn(),
-        getString: jest.fn(),
       },
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
     });
@@ -404,7 +403,6 @@ describe('owner based @auth', () => {
         }),
         getNumber: jest.fn(),
         getObject: jest.fn(),
-        getString: jest.fn(),
       },
       transformers: [
         new ModelTransformer(),
@@ -452,7 +450,6 @@ describe('owner based @auth', () => {
         }),
         getNumber: jest.fn(),
         getObject: jest.fn(),
-        getString: jest.fn(),
       },
       transformers: [
         new ModelTransformer(),
@@ -823,7 +820,6 @@ describe('owner based @auth', () => {
           }),
           getNumber: jest.fn(),
           getObject: jest.fn(),
-          getString: jest.fn(),
         },
         transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
       });
@@ -894,7 +890,6 @@ describe('owner based @auth', () => {
           }),
           getNumber: jest.fn(),
           getObject: jest.fn(),
-          getString: jest.fn(),
         },
         transformers: [
           new ModelTransformer(),
@@ -942,7 +937,6 @@ describe('owner based @auth', () => {
           }),
           getNumber: jest.fn(),
           getObject: jest.fn(),
-          getString: jest.fn(),
         },
         transformers: [
           new ModelTransformer(),

@@ -11,7 +11,8 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
-  getString: jest.fn(),
+ 
+
 };
 
 test('Test simple model with public auth rule and amplify admin app is present', () => {

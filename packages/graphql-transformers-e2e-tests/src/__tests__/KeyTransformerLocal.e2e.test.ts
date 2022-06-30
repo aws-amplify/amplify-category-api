@@ -19,7 +19,8 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
-  getString: jest.fn(),
+ 
+
 };
 test('Test that a primary @key with a single field changes the hash key.', () => {
   const validSchema = `

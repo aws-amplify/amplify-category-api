@@ -485,7 +485,8 @@ export const deploySchema = async (
       }),
       getNumber: jest.fn(),
       getObject: jest.fn(),
-      getString: jest.fn(),
+     
+
     },
     transformers: [
       new ModelTransformer(),

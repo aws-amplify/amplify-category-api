@@ -13,7 +13,8 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
-  getString: jest.fn(),
+ 
+
 };
 
 const noAuthModeDefaultConfig: AppSyncAuthConfiguration = {
