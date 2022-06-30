@@ -23,7 +23,8 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
-  getString: jest.fn(),
+ 
+
 };
 
 test('Test custom root types with additional fields.', () => {

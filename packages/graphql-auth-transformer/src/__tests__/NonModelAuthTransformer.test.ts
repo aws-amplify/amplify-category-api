@@ -12,7 +12,8 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
-  getString: jest.fn(),
+ 
+
 };
 
 describe('@auth directive without @model', async () => {

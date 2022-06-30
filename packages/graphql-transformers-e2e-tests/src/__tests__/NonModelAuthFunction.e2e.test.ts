@@ -34,7 +34,8 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
-  getString: jest.fn(),
+ 
+
 };
 // To overcome of the way of how AmplifyJS picks up currentUserCredentials
 const anyAWS = AWS as any;

@@ -15,7 +15,6 @@ const mockFeatureFlags = (respectPrimaryKeyAttributesOnConnectionField: boolean)
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
-  getString: jest.fn(),
 });
 
 describe('custom primary key and relational directives', () => {

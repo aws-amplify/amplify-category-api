@@ -175,7 +175,8 @@ beforeAll(async () => {
         }
         return defaultValue;
       },
-      getString: jest.fn(),
+     
+
       getNumber: jest.fn(),
       getObject: jest.fn(),
     },

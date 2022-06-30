@@ -13,7 +13,6 @@ const generateFeatureFlagWithBooleanOverrides = (overrides: Record<string, boole
     const overrideValue = Object.entries(overrides).find(([overrideName]) => overrideName === name)?.[1];
     return overrideValue ?? defaultValue ?? false;
   },
-  getString: jest.fn(),
   getNumber: jest.fn(),
   getObject: jest.fn(),
 });
@@ -603,7 +602,6 @@ test('creates a primary key and a secondary index', () => {
       }),
       getNumber: jest.fn(),
       getObject: jest.fn(),
-      getString: jest.fn(),
     },
   });
   const out = transformer.transform(inputSchema);
