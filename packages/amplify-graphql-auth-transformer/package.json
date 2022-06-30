@@ -31,21 +31,23 @@
     "@aws-amplify/graphql-relational-transformer": "0.10.1",
     "@aws-amplify/graphql-transformer-core": "0.17.6",
     "@aws-amplify/graphql-transformer-interfaces": "1.14.4",
-    "@aws-cdk/core": "~1.124.0",
-    "constructs": "^3.3.125",
-    "graphql": "^14.5.8",
     "graphql-mapping-template": "4.20.5",
     "graphql-transformer-common": "4.23.3",
     "lodash": "^4.17.21",
     "md5": "^2.3.0"
   },
   "peerDependencies": {
-    "amplify-prompts": "^2.0.0"
+    "amplify-prompts": "^2.0.0",
+    "graphql": "^14.5.8",
+    "constructs": "^3.3.125",
+    "@aws-cdk/core": "^1.124.0"
   },
   "devDependencies": {
     "@aws-amplify/graphql-index-transformer": "0.12.1",
     "@aws-amplify/graphql-searchable-transformer": "0.14.6",
-    "@types/node": "^12.12.6"
+    "@types/node": "^12.12.6",
+    "graphql": "^14.5.8",
+    "constructs": "^3.3.125"
   },
   "jest": {
     "testURL": "http://localhost",
