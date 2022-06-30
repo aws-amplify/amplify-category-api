@@ -1,8 +1,6 @@
-const dictionary = require('./.eslint-dictionary.json');
 /**
  * README if you have come here because you are sick and tired of some rule being on your case all the time:
  * If you are trying to modify a rule for normal code, see the docs for each of the lint plugins we are using in the "rules" section.
- * If you are trying to add a word to spellcheck: run `yarn addwords <word1> <word2> ...`
  * If you are trying to ignore certain files from spellchecking, see the "overrides" section
  * If you are trying to modify rules that run in test files, see the "overrides" section
  * If you are trying to ignore certain files from linting, see "ignorePatterns" at the bottom of the file
@@ -43,18 +41,6 @@ module.exports = {
   rules: {
     // NOTE: This config should only specify rules as "errors" or "off". Over time "warnings" invariably become the same as "off".
 
-    // Spellcheck rules
-    // Docs: https://www.npmjs.com/package/eslint-plugin-spellcheck
-    'spellcheck/spell-checker': ['error', {
-      lang: 'en_US',
-      skipWords: dictionary,
-      skipIfMatch: [
-        'http://[^s]*',
-        '^[-\\w]+/[-\\w\\.]+$', //For MIME Types
-      ],
-      minLength: 4,
-    }],
-
     // Disables double quote error when using single quotes within string for readability
     // https://eslint.org/docs/rules/quotes#avoidescape
     'quotes': ['error', 'single', { 'avoidEscape': true }],
@@ -78,11 +64,12 @@ module.exports = {
       },
     ],
     '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
-    '@typescript-eslint/no-explicit-any': 'error',
-    '@typescript-eslint/no-useless-constructor': 'error',
+    '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/method-signature-style': ['error', 'property'],
 
     // Some ESLint rules conflict with the corresponding TS rule. These ESLint rules are turned off in favor of the corresponding TS rules
+    'no-useless-constructor': 'off',
+    '@typescript-eslint/no-useless-constructor': 'error',
     'no-invalid-this': 'off',
     '@typescript-eslint/no-invalid-this': 'error',
     'no-unused-vars': 'off',
@@ -104,7 +91,7 @@ module.exports = {
 
     // JSDoc Rules
     // Docs here: https://www.npmjs.com/package/eslint-plugin-jsdoc
-    'jsdoc/require-jsdoc': ['error', {
+    'jsdoc/require-jsdoc': ['warn', {
       publicOnly: true,
       require: {
         ClassDeclaration: true,
@@ -120,9 +107,9 @@ module.exports = {
     }],
     'jsdoc/require-description': ['error', { contexts: ['any'] }
     ],
-    'jsdoc/require-param': 'off',
+    'jsdoc/require-param': 'warn',
     'jsdoc/require-param-description': 'error',
-    'jsdoc/require-returns': 'off',
+    'jsdoc/require-returns': 'warn',
     'jsdoc/require-returns-description': 'error',
     'jsdoc/check-param-names': 'error',
 
@@ -142,7 +129,7 @@ module.exports = {
     'max-classes-per-file': 'error',
     'no-lonely-if': 'error',
     'no-unneeded-ternary': 'error',
-    'no-use-before-define': 'off',
+    'no-use-before-define': 'error',
     'consistent-return': 'error',
     'no-bitwise': 'error',
     'yoda': 'error',
@@ -150,9 +137,8 @@ module.exports = {
     'strict': 'error',
     'spaced-comment': ['error', 'always'],
     'no-new': 'error',
-    'no-useless-constructor': 'off',
-    'no-underscore-dangle': 'off',
-    'no-template-curly-in-string': 'off',
+    'no-underscore-dangle': 'error',
+    'no-template-curly-in-string': 'error',
     'no-plusplus': 'off',
 
     // same as air-bnb default with the exception of allowing for...of
@@ -173,11 +159,11 @@ module.exports = {
     ],
 
     // function style
-    'arrow-parens': ['error', 'as-needed'],
+    'arrow-parens': ['error', 'always'],
     'func-style': ['error', 'expression'],
     'prefer-arrow/prefer-arrow-functions': ['error', { disallowPrototype: true }],
     // yes I know these are all supposed to be errors, but this one requires too much functional refactoring at the moment
-    // we should still aim to keep funcitons small moving forward
+    // we should still aim to keep functions small moving forward
     'max-lines-per-function': ['warn', {
       max: 50,
       skipBlankLines: true,
@@ -186,13 +172,6 @@ module.exports = {
     'max-depth': ['error', 4],
   },
   overrides: [
-    {
-      // Add files to this list that shouldn't be spellchecked
-      files: ['.eslintrc.js'],
-      rules: {
-        'spellcheck/spell-checker': 'off',
-      },
-    },
     {
       // edit rules here to modify test linting
       files: ['__tests__/**', '*.test.ts'],
@@ -209,7 +188,6 @@ module.exports = {
   // (note that only .js, .jsx, .ts, and .tsx files are linted in the first place)
   ignorePatterns: [
     '.eslintrc.js',
-    'scripts/',
     'node_modules',
     'dist',
     'build',
@@ -220,9 +198,7 @@ module.exports = {
     'amplify-velocity-template',
 
     // Project specific excludes
-    '/cypress',
     '/packages/amplify-appsync-simulator/public',
-    '/packages/amplify-cli/scripts/post-install.js',
 
     // Ignore project/file templates
     'function-template-dir',
@@ -232,49 +208,7 @@ module.exports = {
     '/packages/amplify-e2e-tests/overrides',
 
     // Ignore lib directory of typescript packages until all packages are migrated to typescript
-    '/packages/amplify-*-function-*/lib',
-    '/packages/amplify-appsync-simulator/lib',
-    '/packages/amplify-category-api/lib',
-    '/packages/amplify-category-auth/lib',
-    '/packages/amplify-category-function/lib',
-    '/packages/amplify-category-geo/lib',
-    '/packages/amplify-category-storage/lib',
-    '/packages/amplify-cli-npm/lib',
-    '/packages/amplify-cli-core/lib',
-    '/packages/amplify-cli/lib',
-    '/packages/amplify-cli-logger/lib',
-    '/packages/amplify-e2e-core/lib',
-    '/packages/amplify-function-plugin-interface/lib',
-    '/packages/amplify-graphql-schema-test-library/lib',
-    '/packages/amplify-headless-interface/lib',
-    '/packages/amplify-migration-tests/lib',
-    '/packages/amplify-prompts/lib',
-    '/packages/amplify-provider-awscloudformation/lib',
-    '/packages/amplify-storage-simulator/lib',
-    '/packages/amplify-ui-tests/lib',
-    '/packages/amplify-util-headless-input/lib',
-    '/packages/amplify-util-mock/lib',
-    '/packages/graphql-*-transformer/lib',
-    '/packages/graphql-mapping-template/lib',
-    '/packages/graphql-transformer-*/lib',
-    '/packages/amplify-headless-interface/lib',
-    '/packages/amplify-util-headless-input/lib',
-    '/packages/amplify-util-uibuilder/lib',
-    '/packages/amplify-graphql-docs-generator/lib',
-    '/packages/amplify-graphql-*transformer*/lib',
-    '/packages/amplify-graphql-types-generator/lib',
-    '/packages/amplify-provider-awscloudformation/lib',
-    '/packages/amplify-console-integration-tests/lib',
-    '/packages/amplify-cli-extensibility-helper/lib',
-    '/packages/amplify-category-auth/resources/auth-custom-resource',
-    '/packages/amplify-category-custom/lib',
-    '/packages/amplify-category-custom/resources',
-    '/packages/amplify-console-hosting/lib/',
-    '/packages/amplify-container-hosting/lib/',
-    '/packages/amplify-category-predictions/lib',
-    '/packages/amplify-category-analytics/lib',
-    '/amplify-category-interactions/lib',
-    '/packages/amplify-category-custom/src/utils/generate-cfn-from-cdk.ts',
+    '/packages/*/lib',
 
     // Ignore CHANGELOG.md files
     '/packages/*/CHANGELOG.md',
