@@ -25,7 +25,8 @@ const featureFlags: FeatureFlagProvider = {
     }
     return false;
   },
-  getString: jest.fn(),
+ 
+
   getNumber: jest.fn(),
   getObject: jest.fn(),
 };
@@ -89,7 +90,8 @@ function createV2Transformer(options: Partial<Writeable<GraphQLTransformOptions>
       }
       return defaultValue;
     },
-    getString: jest.fn(),
+   
+
     getNumber: jest.fn(),
     getObject: jest.fn(),
   } as FeatureFlagProvider;

@@ -13,7 +13,8 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
-  getString: jest.fn(),
+ 
+
 };
 
 test('Test ModelAuthTransformer validation happy case', () => {
@@ -179,7 +180,8 @@ describe('add missing implicit owner fields to type', () => {
       }),
       getNumber: jest.fn(),
       getObject: jest.fn(),
-      getString: jest.fn(),
+     
+
     };
   });
   describe('object level', () => {

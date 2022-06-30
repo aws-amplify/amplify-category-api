@@ -758,7 +758,8 @@ describe("@model @primaryIndex @index auth", () => {
         }),
         getNumber: jest.fn(),
         getObject: jest.fn(),
-        getString: jest.fn()
+       
+
       },
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()]
     });
@@ -1540,7 +1541,8 @@ describe("with identity claim feature flag disabled", () => {
           }),
           getNumber: jest.fn(),
           getObject: jest.fn(),
-          getString: jest.fn()
+         
+
         },
         transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()]
       });

@@ -1,12 +1,10 @@
 import { FeatureFlags } from 'amplify-cli-core';
 import { FeatureFlagProvider } from 'graphql-transformer-core';
 import { FeatureFlagProvider as NewTransformerFFProvider } from '@aws-amplify/graphql-transformer-interfaces'
+
 export class AmplifyCLIFeatureFlagAdapterBase implements FeatureFlagProvider {
   getBoolean(featureName: string, defaultValue?: boolean): boolean {
     return this.getValue<boolean>(featureName, 'boolean', defaultValue);
-  }
-  getString(featureName: string, defaultValue?: string): string {
-    return this.getValue<string>(featureName, 'string', defaultValue);
   }
   getNumber(featureName: string, defaultValue?: number): number {
     return this.getValue<number>(featureName, 'number', defaultValue);
@@ -16,7 +14,7 @@ export class AmplifyCLIFeatureFlagAdapterBase implements FeatureFlagProvider {
     throw new Error('Not implemented');
   }
 
-  protected getValue<T extends string | number | boolean>(featureName: string, type: 'boolean' | 'number' | 'string', defaultValue: T): T {
+  protected getValue<T extends number | boolean>(featureName: string, type: 'boolean' | 'number' | 'string', defaultValue: T): T {
     const keyName = `graphQLTransformer.${featureName}`;
     try {
       switch (type) {
@@ -24,8 +22,6 @@ export class AmplifyCLIFeatureFlagAdapterBase implements FeatureFlagProvider {
           return FeatureFlags.getBoolean(keyName) as T;
         case 'number':
           return FeatureFlags.getNumber(keyName) as T;
-        case 'string':
-          return FeatureFlags.getString(keyName) as T;
       }
     } catch (e) {
       if (defaultValue) {

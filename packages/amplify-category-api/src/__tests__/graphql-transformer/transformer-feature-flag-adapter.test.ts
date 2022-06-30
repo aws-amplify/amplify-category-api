@@ -34,35 +34,6 @@ describe('AmplifyCLIFeatureFlagAdapter', () => {
     });
   });
 
-  describe('getString', () => {
-    test('test getString to return default value', () => {
-      const expectedValue = 'StrValue';
-      (<any>FeatureFlags.getString).mockReturnValue(expectedValue);
-      const flagName = 'testFlag';
-      expect(ff.getString(flagName, 'some other value')).toEqual(expectedValue);
-      expect(FeatureFlags.getString).toHaveBeenCalledWith(`${transformerFeatureFlagPrefix}.${flagName}`);
-    });
-
-    test('test getString should return defaultValue when the FF throw error', () => {
-      (<any>FeatureFlags.getString).mockImplementation(() => {
-        throw new Error('Error');
-      });
-      const flagName = 'testFlag';
-      const expectedValue = 'StrValue';
-      expect(ff.getString(flagName, expectedValue)).toEqual(expectedValue);
-      expect(FeatureFlags.getString).toHaveBeenCalledWith(`${transformerFeatureFlagPrefix}.${flagName}`);
-    });
-
-    test('test getString should throw error when defaultValue is missing and the FF throw error', () => {
-      (<any>FeatureFlags.getString).mockImplementation(() => {
-        throw new Error('Error');
-      });
-      const flagName = 'testFlag';
-      expect(() => ff.getString(flagName)).toThrowError();
-      expect(FeatureFlags.getString).toHaveBeenCalledWith(`${transformerFeatureFlagPrefix}.${flagName}`);
-    });
-  });
-
   describe('getNumber', () => {
     test('test getNumber to return default value', () => {
       const expectedValue = 22;

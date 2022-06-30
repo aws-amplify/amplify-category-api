@@ -12,7 +12,8 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
-  getString: jest.fn(),
+ 
+
 };
 
 test('it overrides expected resources', () => {

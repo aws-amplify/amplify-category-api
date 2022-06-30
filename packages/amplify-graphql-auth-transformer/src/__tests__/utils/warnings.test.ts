@@ -15,7 +15,6 @@ describe('showDefaultIdentityClaimWarning', () => {
           featureFlags: {
             getBoolean: () => true,
             getNumber: jest.fn(),
-            getString: jest.fn(),
             getObject: jest.fn(),
           },
         };
@@ -33,7 +32,6 @@ describe('showDefaultIdentityClaimWarning', () => {
             featureFlags: {
               getBoolean: () => true,
               getNumber: jest.fn(),
-              getString: jest.fn(),
               getObject: jest.fn(),
             },
           };
@@ -49,7 +47,6 @@ describe('showDefaultIdentityClaimWarning', () => {
             featureFlags: {
               getBoolean: () => true,
               getNumber: jest.fn(),
-              getString: jest.fn(),
               getObject: jest.fn(),
             },
           };
@@ -67,7 +64,6 @@ describe('showDefaultIdentityClaimWarning', () => {
             featureFlags: {
               getBoolean: () => false,
               getNumber: jest.fn(),
-              getString: jest.fn(),
               getObject: jest.fn(),
             },
           };
@@ -83,7 +79,6 @@ describe('showDefaultIdentityClaimWarning', () => {
             featureFlags: {
               getBoolean: () => false,
               getNumber: jest.fn(),
-              getString: jest.fn(),
               getObject: jest.fn(),
             },
           };
@@ -100,7 +95,6 @@ describe('showDefaultIdentityClaimWarning', () => {
           featureFlags: {
             getBoolean: () => false,
             getNumber: jest.fn(),
-            getString: jest.fn(),
             getObject: jest.fn(),
           },
         };

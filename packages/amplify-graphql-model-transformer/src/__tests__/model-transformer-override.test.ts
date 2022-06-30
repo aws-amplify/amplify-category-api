@@ -6,7 +6,6 @@ const featureFlags = {
   getBoolean: jest.fn(),
   getNumber: jest.fn(),
   getObject: jest.fn(),
-  getString: jest.fn(),
 };
 
 describe('ModelTransformer: ', () => {

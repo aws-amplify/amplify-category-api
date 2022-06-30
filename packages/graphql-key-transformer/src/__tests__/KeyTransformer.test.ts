@@ -14,7 +14,8 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
-  getString: jest.fn(),
+ 
+
 };
 
 test('Check KeyTransformer Resolver Code', () => {

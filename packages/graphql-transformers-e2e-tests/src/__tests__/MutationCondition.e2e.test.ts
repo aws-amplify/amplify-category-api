@@ -43,7 +43,8 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
-  getString: jest.fn(),
+ 
+
 };
 const transformAndParseSchema = (schema: string, version: number = TRANSFORM_CURRENT_VERSION): DocumentNode => {
   const transformer = new GraphQLTransform({
