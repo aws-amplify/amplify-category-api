@@ -3839,15 +3839,6 @@
     source-map "^0.5.0"
     trim-right "^1.0.1"
 
-<<<<<<< HEAD
-"@babel/generator@7.18.2":
-  version "7.18.2"
-  resolved "https://registry.npmjs.org/@babel/generator/-/generator-7.18.2.tgz#33873d6f89b21efe2da63fe554460f3df1c5880d"
-  integrity sha512-W1lG5vUwFvfMd8HVXqdfbuG7RuaSrTCCD8cl8fP8wOivdbtbIg2Db3IWUcgvfxKbbn6ZBGYRW/Zk1MIwK49mgw==
-  dependencies:
-    "@babel/types" "^7.18.2"
-    "@jridgewell/gen-mapping" "^0.3.0"
-=======
 "@babel/generator@^7.18.6", "@babel/generator@^7.5.0":
   version "7.18.7"
   resolved "https://registry.npmjs.org/@babel/generator/-/generator-7.18.7.tgz#2aa78da3c05aadfc82dbac16c99552fc802284bd"
@@ -3855,7 +3846,6 @@
   dependencies:
     "@babel/types" "^7.18.7"
     "@jridgewell/gen-mapping" "^0.3.2"
->>>>>>> 46c35db41 (chore: remove unused dependencies based on depcheck report)
     jsesc "^2.5.1"
 
 "@babel/generator@^7.14.0", "@babel/generator@^7.18.6", "@babel/generator@^7.18.7":
@@ -4403,17 +4393,10 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
-<<<<<<< HEAD
-"@babel/types@^7.0.0", "@babel/types@^7.18.2", "@babel/types@^7.18.6", "@babel/types@^7.18.7", "@babel/types@^7.18.8", "@babel/types@^7.3.0", "@babel/types@^7.3.3", "@babel/types@^7.7.0":
-  version "7.18.8"
-  resolved "https://registry.npmjs.org/@babel/types/-/types-7.18.8.tgz#c5af199951bf41ba4a6a9a6d0d8ad722b30cd42f"
-  integrity sha512-qwpdsmraq0aJ3osLJRApsc2ouSJCdnMeZwB0DhbtHAtRpZNZCdlbRnHIgcRKzdE1g0iOGg644fzjOBcdOz9cPw==
-=======
 "@babel/types@^7.0.0", "@babel/types@^7.18.6", "@babel/types@^7.18.7", "@babel/types@^7.3.0", "@babel/types@^7.3.3", "@babel/types@^7.7.0":
   version "7.18.7"
   resolved "https://registry.npmjs.org/@babel/types/-/types-7.18.7.tgz#a4a2c910c15040ea52cdd1ddb1614a65c8041726"
   integrity sha512-QG3yxTcTIBoAcQmkCs+wAPYZhu7Dk9rXKacINfNbdJDNERTbLQbHGyVG8q/YGMPeCJRIhSY0+fTc5+xuh6WPSQ==
->>>>>>> 46c35db41 (chore: remove unused dependencies based on depcheck report)
   dependencies:
     "@babel/helper-validator-identifier" "^7.18.6"
     to-fast-properties "^2.0.0"
@@ -4755,7 +4738,6 @@
     "@graphql-tools/utils" "8.0.2"
     tslib "~2.3.0"
 
-<<<<<<< HEAD
 "@graphql-tools/optimize@^1.0.1":
   version "1.3.0"
   resolved "https://registry.npmjs.org/@graphql-tools/optimize/-/optimize-1.3.0.tgz#11ea27ac73e857d882ccfd7a3a981d8d6fb521e2"
@@ -4772,8 +4754,6 @@
     "@graphql-tools/utils" "8.8.0"
     tslib "^2.4.0"
 
-=======
->>>>>>> 46c35db41 (chore: remove unused dependencies based on depcheck report)
 "@graphql-tools/schema@^8.0.2", "@graphql-tools/schema@^8.3.1":
   version "8.5.0"
   resolved "https://registry.npmjs.org/@graphql-tools/schema/-/schema-8.5.0.tgz#0332b3a2e674d16e9bf8a58dfd47432449ce2368"
@@ -5042,11 +5022,7 @@
     "@jridgewell/set-array" "^1.0.0"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-<<<<<<< HEAD
-"@jridgewell/gen-mapping@^0.3.0", "@jridgewell/gen-mapping@^0.3.2":
-=======
 "@jridgewell/gen-mapping@^0.3.2":
->>>>>>> 46c35db41 (chore: remove unused dependencies based on depcheck report)
   version "0.3.2"
   resolved "https://registry.npmjs.org/@jridgewell/gen-mapping/-/gen-mapping-0.3.2.tgz#c1aedc61e853f2bb9f5dfe6d4442d3b565b253b9"
   integrity sha512-mh65xKQAzI6iBcFzwv28KVWSmCkdRBWoOh+bYQGW3+6OZvbbN3TqMGo5hqYxQniRcH9F2VZIoJCm4pa3BPDK/A==
@@ -5768,8 +5744,6 @@
     npmlog "^4.1.2"
     write-file-atomic "^3.0.3"
 
-<<<<<<< HEAD
-=======
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.npmjs.org/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
@@ -5778,7 +5752,6 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
->>>>>>> 46c35db41 (chore: remove unused dependencies based on depcheck report)
 "@nicolo-ribaudo/chokidar-2@2.1.8-no-fsevents.3":
   version "2.1.8-no-fsevents.3"
   resolved "https://registry.npmjs.org/@nicolo-ribaudo/chokidar-2/-/chokidar-2-2.1.8-no-fsevents.3.tgz#323d72dd25103d0c4fbdce89dadf574a787b1f9b"
@@ -5920,6 +5893,7 @@
 
 "@octokit/plugin-paginate-rest@^2.16.8":
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "2.21.2"
   resolved "https://registry.npmjs.org/@octokit/plugin-paginate-rest/-/plugin-paginate-rest-2.21.2.tgz#070be9bb18cb78e52b471ddc3551d28355e2d5e2"
   integrity sha512-S24H0a6bBVreJtoTaRHT/gnVASbOHVTRMOVIqd9zrJBP3JozsxJB56TDuTUmd1xLI4/rAE2HNmThvVKtIdLLEw==
@@ -5929,6 +5903,11 @@
   version "2.20.0"
   resolved "https://registry.npmjs.org/@octokit/plugin-paginate-rest/-/plugin-paginate-rest-2.20.0.tgz#874f9d0cd500bfa0f0901a44de834e3de115d28b"
   integrity sha512-LbemX86JEmOCFo9eRwrtdP5Isq69TefLS1J7w0DO4PMhfpvRfqYVzq9c0eH1xgcx2PSA7/VJHu9SwvNhD9FjVg==
+=======
+  version "2.21.0"
+  resolved "https://registry.npmjs.org/@octokit/plugin-paginate-rest/-/plugin-paginate-rest-2.21.0.tgz#ddd425eaa09214dfdfdc9cc411fcf676b8985e65"
+  integrity sha512-MoGEKjvDpTOCVb5gbeiW7kZm/cRfT256UJwHEuy+y+gTUuKziyXaiOkt5rM/4nzhp8UxVgvok9Tu7dMMpUybiQ==
+>>>>>>> 1ce36459a (chore: remove dictionary references from our scripts, and update feature flag to no longer reference strings)
   dependencies:
     "@octokit/types" "^6.38.1"
 >>>>>>> 46c35db41 (chore: remove unused dependencies based on depcheck report)
@@ -6247,9 +6226,15 @@
   integrity sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ==
 
 "@types/node@^16.9.2":
+<<<<<<< HEAD
   version "16.11.43"
   resolved "https://registry.npmjs.org/@types/node/-/node-16.11.43.tgz#555e5a743f76b6b897d47f945305b618525ddbe6"
   integrity sha512-GqWykok+3uocgfAJM8imbozrqLnPyTrpFlrryURQlw1EesPUCx5XxTiucWDSFF9/NUEXDuD4bnvHm8xfVGWTpQ==
+=======
+  version "16.11.42"
+  resolved "https://registry.npmjs.org/@types/node/-/node-16.11.42.tgz#d2a75c58e9b0902b82dc54bd4c13f8ef12bd1020"
+  integrity sha512-iwLrPOopPy6V3E+1yHTpJea3bdsNso0b0utLOJJwaa/PLzqBt3GZl3stMcakc/gr89SfcNk2ki3z7Gvue9hYGQ==
+>>>>>>> 1ce36459a (chore: remove dictionary references from our scripts, and update feature flag to no longer reference strings)
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.1"
@@ -7602,6 +7587,7 @@ aws-sdk-mock@^5.6.2:
 
 aws-sdk@2.518.0, aws-sdk@^2.1113.0, aws-sdk@^2.1122.0, aws-sdk@^2.1141.0, aws-sdk@^2.518.0:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "2.1173.0"
   resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1173.0.tgz#3da6cd33dff4de7c5572fee3e34483b5553992d7"
   integrity sha512-RR5OENCE5N7J9sp6Are+8WacIa4sGgeVi3K0wezV97nDTHXJD82hSiaRCCN/xGfnB/GcWtPIBCetRD2tpiCN2w==
@@ -7610,6 +7596,11 @@ aws-sdk@2.518.0, aws-sdk@^2.1113.0, aws-sdk@^2.1122.0, aws-sdk@^2.1141.0, aws-sd
   resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1164.0.tgz#050ce644ed9993582bd02151bf3ac9d9ebc143f5"
   integrity sha512-q/M9E68WabF22G8d8lFgo3NH+9RooYswSY9VG6zqN16C19RRm2sGThp8Sxtz/WUK98BAsxSnkLW1ksmy3BsP7Q==
 >>>>>>> 46c35db41 (chore: remove unused dependencies based on depcheck report)
+=======
+  version "2.1166.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1166.0.tgz#9bc5ceb3690d2747b941a2e2b8ebacfffb412f41"
+  integrity sha512-9CJQpMtIv2sxvwYTcMCfuCGU8t5qEppnvmo0uFFOm+1Q1uEv5sPg95wQH3Gfj4Mmv4FKWFofgTLksn0u2pDxsw==
+>>>>>>> 1ce36459a (chore: remove dictionary references from our scripts, and update feature flag to no longer reference strings)
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -8227,9 +8218,15 @@ camelcase@^6.0.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001359:
+<<<<<<< HEAD
   version "1.0.30001366"
   resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001366.tgz#c73352c83830a9eaf2dea0ff71fb4b9a4bbaa89c"
   integrity sha512-yy7XLWCubDobokgzudpkKux8e0UOOnLHE6mlNJBzT3lZJz6s5atSEzjoL+fsCPkI0G8MP5uVdDx1ur/fXEWkZA==
+=======
+  version "1.0.30001361"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001361.tgz#ba2adb2527566fb96f3ac7c67698ae7fc495a28d"
+  integrity sha512-ybhCrjNtkFji1/Wto6SSJKkWk6kZgVQsDq5QI83SafsF6FXv2JB4df9eEdH6g8sdGgqTXrFLjAxqBGgYoU3azQ==
+>>>>>>> 1ce36459a (chore: remove dictionary references from our scripts, and update feature flag to no longer reference strings)
 
 capital-case@^1.0.4:
   version "1.0.4"
@@ -9489,9 +9486,15 @@ ee-first@1.1.1:
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
 electron-to-chromium@^1.4.172:
+<<<<<<< HEAD
   version "1.4.188"
   resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.188.tgz#1954bc444e6f6662cb39f24810f9e5022fcd5bb3"
   integrity sha512-Zpa1+E+BVmD/orkyz1Z2dAT1XNUuVAHB3GrogfyY66dXN0ZWSsygI8+u6QTDai1ZayLcATDJpcv2Z2AZjEcr1A==
+=======
+  version "1.4.174"
+  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.174.tgz#ffdf57f26dd4558c5aabdb4b190c47af1c4e443b"
+  integrity sha512-JER+w+9MV2MBVFOXxP036bLlNOnzbYAWrWU8sNUwoOO69T3w4564WhM5H5atd8VVS8U4vpi0i0kdoYzm1NPQgQ==
+>>>>>>> 1ce36459a (chore: remove dictionary references from our scripts, and update feature flag to no longer reference strings)
 
 emittery@^0.7.1:
   version "0.7.2"
