@@ -1,6 +1,5 @@
 export interface FeatureFlagProvider {
   getBoolean(featureName: string, defaultValue?: boolean | null): boolean;
-  getString(featureName: string, defaultValue?: string): string;
   getNumber(featureName: string, defaultValue?: Number): Number;
   getObject(featureName: string, defaultValue?: object): object;
 }
@@ -8,9 +7,6 @@ export interface FeatureFlagProvider {
 export class NoopFeatureFlagProvider implements FeatureFlagProvider {
   getBoolean(featureName: string, options?: boolean): boolean {
     return this.getValue<boolean>(featureName, options);
-  }
-  getString(featureName: string, options?: string): string {
-    return this.getValue<string>(featureName, options);
   }
   getNumber(featureName: string, options?: number): number {
     return this.getValue<number>(featureName, options);
@@ -20,7 +16,7 @@ export class NoopFeatureFlagProvider implements FeatureFlagProvider {
     throw new Error('Not implemented');
   }
 
-  protected getValue<T extends string | number | boolean>(featureName: string, defaultValue?: T): T {
+  protected getValue<T extends number | boolean>(featureName: string, defaultValue?: T): T {
     if (defaultValue !== undefined) {
       return defaultValue;
     }

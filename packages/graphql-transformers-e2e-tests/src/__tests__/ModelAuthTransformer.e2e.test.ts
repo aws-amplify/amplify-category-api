@@ -38,7 +38,8 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
-  getString: jest.fn(),
+ 
+
 };
 describe(`ModelAuthTests`, () => {
   const cf = new CloudFormationClient('us-west-2');

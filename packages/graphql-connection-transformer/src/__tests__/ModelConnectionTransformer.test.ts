@@ -21,7 +21,8 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
-  getString: jest.fn(),
+ 
+
 };
 
 test('Test ModelConnectionTransformer simple one to many happy case', () => {

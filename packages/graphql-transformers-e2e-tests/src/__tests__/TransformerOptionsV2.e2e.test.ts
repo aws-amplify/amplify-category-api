@@ -110,7 +110,6 @@ describe('V2 transformer options', () => {
                 }
                 return defaultValue;
               },
-              getString: jest.fn(),
               getNumber: jest.fn(),
               getObject: jest.fn(),
             }
