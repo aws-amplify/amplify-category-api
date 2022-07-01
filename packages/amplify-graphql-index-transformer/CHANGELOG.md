@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.13.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.12.1...@aws-amplify/graphql-index-transformer@0.13.0) (2022-07-01)
+
+
+### Features
+
+* **graphql:** add runtime filtering support for subscriptions ([#551](https://github.com/aws-amplify/amplify-category-api/issues/551)) ([0a24bb0](https://github.com/aws-amplify/amplify-category-api/commit/0a24bb0444ecc0947218db41094ab4ef4f0e2948))
+
+
+
+
+
 ## [0.12.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.12.0...@aws-amplify/graphql-index-transformer@0.12.1) (2022-06-23)
 
 **Note:** Version bump only for package @aws-amplify/graphql-index-transformer
