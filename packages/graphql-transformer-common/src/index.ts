@@ -6,6 +6,7 @@ export * from './ModelResourceIDs';
 export * from './SearchableResourceIDs';
 export * from './nodeUtils';
 export * from './HttpResourceIDs';
+export * from './FunctionDirectiveConfig';
 export * from './FunctionResourceIDs';
 export * from './connectionUtils';
 export * from './dynamodbUtils';
