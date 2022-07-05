@@ -294,6 +294,24 @@ export const addAllowedFieldsIfElse = (allowedFieldsKey: string, condition: stri
   qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(allowedFieldsKey))),
 );
 
+export const getOwnerClaimReference = (ownerClaim: string, refName: string): string => {
+  const expressions: Expression[] = [];
+  const identityClaims = ownerClaim.split(IDENTITY_CLAIM_DELIMITER);
+  const hasMultiIdentityClaims = identityClaims.length > 1;
+  let ownerRef = refName;
+
+  if (hasMultiIdentityClaims) {
+    identityClaims.forEach((_, idx) => {
+      expressions.push();
+      if (idx > 0) {
+        ownerRef = `currentClaim${idx}`;
+      }
+    });
+  }
+
+  return ownerRef;
+};
+
 /**
  * Creates field resolver for owner
  */

@@ -72,6 +72,65 @@ input ModelIDInput {
   size: ModelSizeInput
 }
 
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
 enum ModelAttributeTypes {
   binary
   binarySet
@@ -145,10 +204,17 @@ type Mutation {
   deleteTest(input: DeleteTestInput!, condition: ModelTestConditionInput): Test
 }
 
+input ModelSubscriptionTestFilterInput {
+  id: ModelSubscriptionIDInput
+  stringValue: ModelSubscriptionStringInput
+  and: [ModelSubscriptionTestFilterInput]
+  or: [ModelSubscriptionTestFilterInput]
+}
+
 type Subscription {
-  onCreateTest: Test @aws_subscribe(mutations: [\\"createTest\\"])
-  onUpdateTest: Test @aws_subscribe(mutations: [\\"updateTest\\"])
-  onDeleteTest: Test @aws_subscribe(mutations: [\\"deleteTest\\"])
+  onCreateTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"createTest\\"])
+  onUpdateTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"updateTest\\"])
+  onDeleteTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"deleteTest\\"])
 }
 
 "
@@ -243,6 +309,65 @@ input ModelIDInput {
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
   size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
 }
 
 enum ModelAttributeTypes {
@@ -379,10 +504,31 @@ type Mutation {
   deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
+input ModelSubscriptionPostFilterInput {
+  id: ModelSubscriptionIDInput
+  stringValue: ModelSubscriptionStringInput
+  intVal: ModelSubscriptionIntInput
+  floatValue: ModelSubscriptionFloatInput
+  booleanValue: ModelSubscriptionBooleanInput
+  awsJsonValue: ModelSubscriptionStringInput
+  awsDateValue: ModelSubscriptionStringInput
+  awsTimestampValue: ModelSubscriptionIntInput
+  awsEmailValue: ModelSubscriptionStringInput
+  awsURLValue: ModelSubscriptionStringInput
+  awsPhoneValue: ModelSubscriptionStringInput
+  awsIPAddressValue1: ModelSubscriptionStringInput
+  awsIPAddressValue2: ModelSubscriptionStringInput
+  enumValue: ModelSubscriptionStringInput
+  awsTimeValue: ModelSubscriptionStringInput
+  awsDateTime: ModelSubscriptionStringInput
+  and: [ModelSubscriptionPostFilterInput]
+  or: [ModelSubscriptionPostFilterInput]
+}
+
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
 
 "

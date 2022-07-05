@@ -6,10 +6,10 @@ import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..'
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const mockFeatureFlags = (useFieldNameForPrimaryKeyConnectionField: boolean) => ({
+const mockFeatureFlags = (respectPrimaryKeyAttributesOnConnectionField: boolean) => ({
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'useFieldNameForPrimaryKeyConnectionField') {
-      return useFieldNameForPrimaryKeyConnectionField;
+    if (name === 'respectPrimaryKeyAttributesOnConnectionField') {
+      return respectPrimaryKeyAttributesOnConnectionField;
     }
     return defaultValue;
   }),

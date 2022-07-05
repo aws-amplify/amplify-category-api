@@ -147,9 +147,9 @@ describe('owner based @auth', () => {
     expect(out).toBeDefined();
 
     // expect 'postOwner' as an argument for subscription operations
-    expect(out.schema).toContain('onCreatePost(postOwner: String)');
-    expect(out.schema).toContain('onUpdatePost(postOwner: String)');
-    expect(out.schema).toContain('onDeletePost(postOwner: String)');
+    expect(out.schema).toContain('onCreatePost(filter: ModelSubscriptionPostFilterInput, postOwner: String)');
+    expect(out.schema).toContain('onUpdatePost(filter: ModelSubscriptionPostFilterInput, postOwner: String)');
+    expect(out.schema).toContain('onDeletePost(filter: ModelSubscriptionPostFilterInput, postOwner: String)');
 
     // expect logic in the resolvers to check for postOwner args as an allowed owner
     expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
@@ -193,9 +193,9 @@ describe('owner based @auth', () => {
     expect(out).toBeDefined();
 
     // expect 'owner' and 'editors' as arguments for subscription operations
-    expect(out.schema).toContain('onCreatePost(owner: String, editor: String)');
-    expect(out.schema).toContain('onUpdatePost(owner: String, editor: String)');
-    expect(out.schema).toContain('onDeletePost(owner: String, editor: String)');
+    expect(out.schema).toContain('onCreatePost(filter: ModelSubscriptionPostFilterInput, owner: String, editor: String)');
+    expect(out.schema).toContain('onUpdatePost(filter: ModelSubscriptionPostFilterInput, owner: String, editor: String)');
+    expect(out.schema).toContain('onDeletePost(filter: ModelSubscriptionPostFilterInput, owner: String, editor: String)');
 
     // expect logic in the resolvers to check for owner args as an allowedOwner
     expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
@@ -629,9 +629,9 @@ describe('owner based @auth', () => {
       expect(out).toBeDefined();
 
       // expect 'postOwner' as an argument for subscription operations
-      expect(out.schema).toContain('onCreatePost(postOwner: String)');
-      expect(out.schema).toContain('onUpdatePost(postOwner: String)');
-      expect(out.schema).toContain('onDeletePost(postOwner: String)');
+      expect(out.schema).toContain('onCreatePost(filter: ModelSubscriptionPostFilterInput, postOwner: String)');
+      expect(out.schema).toContain('onUpdatePost(filter: ModelSubscriptionPostFilterInput, postOwner: String)');
+      expect(out.schema).toContain('onDeletePost(filter: ModelSubscriptionPostFilterInput, postOwner: String)');
 
       // expect logic in the resolvers to check for postOwner args as an allowed owner
       expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
@@ -677,9 +677,9 @@ describe('owner based @auth', () => {
       expect(out).toBeDefined();
 
       // expect 'owner' and 'editors' as arguments for subscription operations
-      expect(out.schema).toContain('onCreatePost(owner: String, editor: String)');
-      expect(out.schema).toContain('onUpdatePost(owner: String, editor: String)');
-      expect(out.schema).toContain('onDeletePost(owner: String, editor: String)');
+      expect(out.schema).toContain('onCreatePost(filter: ModelSubscriptionPostFilterInput, owner: String, editor: String)');
+      expect(out.schema).toContain('onUpdatePost(filter: ModelSubscriptionPostFilterInput, owner: String, editor: String)');
+      expect(out.schema).toContain('onDeletePost(filter: ModelSubscriptionPostFilterInput, owner: String, editor: String)');
 
       // expect logic in the resolvers to check for owner args as an allowedOwner
       expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(

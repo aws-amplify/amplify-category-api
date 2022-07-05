@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.15.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@0.14.6...@aws-amplify/graphql-model-transformer@0.15.0) (2022-07-01)
+
+
+### Features
+
+* **graphql:** add runtime filtering support for subscriptions ([#551](https://github.com/aws-amplify/amplify-category-api/issues/551)) ([0a24bb0](https://github.com/aws-amplify/amplify-category-api/commit/0a24bb0444ecc0947218db41094ab4ef4f0e2948))
+
+
+
+
+
 ## [0.14.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@0.14.5...@aws-amplify/graphql-model-transformer@0.14.6) (2022-06-23)
 
 **Note:** Version bump only for package @aws-amplify/graphql-model-transformer
