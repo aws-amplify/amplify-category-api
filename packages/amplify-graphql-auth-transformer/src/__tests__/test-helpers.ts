@@ -31,6 +31,9 @@ export const featureFlags: FeatureFlagProvider = {
     if (value === 'useSubUsernameForDefaultIdentityClaim') {
       return true;
     }
+    if (value === 'populateOwnerFieldForStaticGroupAuth') {
+      return true;
+    }
     return false;
   },
   getString: jest.fn(),
