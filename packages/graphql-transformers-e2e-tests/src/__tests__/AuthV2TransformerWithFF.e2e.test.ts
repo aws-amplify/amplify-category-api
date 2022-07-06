@@ -310,6 +310,9 @@ describe('@model with @auth', () => {
           if (value === 'useSubUsernameForDefaultIdentityClaim') {
             return true;
           }
+          if (value === 'populateOwnerFieldForStaticGroupAuth') {
+            return true;
+          }
           return false;
         },
         getString: jest.fn(),
@@ -770,6 +773,7 @@ describe('@model with @auth', () => {
           createSalary(input: { wage: 10 }) {
               id
               wage
+              owner
           }
       }
       `,
@@ -777,6 +781,7 @@ describe('@model with @auth', () => {
     );
     expect(req.data.createSalary.id).toBeDefined();
     expect(req.data.createSalary.wage).toEqual(10);
+    expect(req.data.createSalary.owner).toEqual(USERNAME1);
   });
 
   test('update my own salary without admin permission', async () => {
@@ -786,6 +791,7 @@ describe('@model with @auth', () => {
           createSalary(input: { wage: 10 }) {
               id
               wage
+              owner
           }
       }
       `,
@@ -793,12 +799,15 @@ describe('@model with @auth', () => {
     );
 
     expect(req.data.createSalary.wage).toEqual(10);
+    expect(req.data.createSalary.owner).toEqual(USERNAME2);
+
     const req2 = await GRAPHQL_CLIENT_2.query(
       `
       mutation {
           updateSalary(input: { id: "${req.data.createSalary.id}", wage: 14 }) {
               id
               wage
+              owner
           }
       }
       `,
@@ -806,6 +815,7 @@ describe('@model with @auth', () => {
     );
 
     expect(req2.data.updateSalary.wage).toEqual(14);
+    expect(req2.data.updateSalary.owner).toEqual(USERNAME2);
   });
 
   test('updating someone else\'s salary as an admin', async () => {
@@ -1576,6 +1586,7 @@ describe('@model with @auth', () => {
       {},
     );
     expect(ownedBy2.data.createAllThree).toBeTruthy();
+    expect(ownedBy2.data.createAllThree.owner).toEqual(USERNAME2);
 
     const fetchOwnedBy2AsAdmin = await GRAPHQL_CLIENT_1.query(
       `
@@ -1624,6 +1635,7 @@ describe('@model with @auth', () => {
       {},
     );
     expect(ownedBy2.data.createAllThree).toBeTruthy();
+    expect(ownedBy2.data.createAllThree.owner).toEqual(USERNAME2);
 
     const fetchOwnedBy2AsOwner = await GRAPHQL_CLIENT_2.query(
       `
@@ -1672,6 +1684,7 @@ describe('@model with @auth', () => {
       {},
     );
     expect(ownedBy2.data.createAllThree).toBeTruthy();
+    expect(ownedBy2.data.createAllThree.owner).toEqual(USERNAME1);
 
     const fetchOwnedBy2AsEditor = await GRAPHQL_CLIENT_2.query(
       `
@@ -1720,6 +1733,7 @@ describe('@model with @auth', () => {
       {},
     );
     expect(ownedByAdmins.data.createAllThree).toBeTruthy();
+    expect(ownedByAdmins.data.createAllThree.owner).toEqual(USERNAME1);
 
     const fetchOwnedByAdminsAsAdmin = await GRAPHQL_CLIENT_2.query(
       `
@@ -1785,6 +1799,7 @@ describe('@model with @auth', () => {
       {},
     );
     expect(ownedByAdmins.data.createAllThree).toBeTruthy();
+    expect(ownedByAdmins.data.createAllThree.owner).toEqual(USERNAME1);
 
     const fetchOwnedByAdminsAsAdmin = await GRAPHQL_CLIENT_2.query(
       `
@@ -1854,6 +1869,7 @@ describe('@model with @auth', () => {
       {},
     );
     expect(ownedBy2.data.createAllThree).toBeTruthy();
+    expect(ownedBy2.data.createAllThree.owner).toEqual(USERNAME2);
 
     const fetchOwnedBy2AsAdmin = await GRAPHQL_CLIENT_1.query(
       `
@@ -1905,6 +1921,7 @@ describe('@model with @auth', () => {
       {},
     );
     expect(ownedBy2.data.createAllThree).toBeTruthy();
+    expect(ownedBy2.data.createAllThree.owner).toEqual(USERNAME2);
 
     const fetchOwnedBy2AsOwner = await GRAPHQL_CLIENT_2.query(
       `
@@ -1956,6 +1973,7 @@ describe('@model with @auth', () => {
       {},
     );
     expect(ownedBy2.data.createAllThree).toBeTruthy();
+    expect(ownedBy2.data.createAllThree.owner).toEqual(USERNAME1);
 
     const fetchOwnedBy2AsEditor = await GRAPHQL_CLIENT_2.query(
       `
@@ -2007,6 +2025,7 @@ describe('@model with @auth', () => {
       {},
     );
     expect(ownedByAdmins.data.createAllThree).toBeTruthy();
+    expect(ownedByAdmins.data.createAllThree.owner).toEqual(USERNAME1);
 
     const fetchOwnedByAdminsAsAdmin = await GRAPHQL_CLIENT_2.query(
       `
@@ -2076,6 +2095,7 @@ describe('@model with @auth', () => {
       {},
     );
     expect(ownedByAdmins.data.createAllThree).toBeTruthy();
+    expect(ownedByAdmins.data.createAllThree.owner).toEqual(USERNAME1);
 
     const fetchOwnedByAdminsAsAdmin = await GRAPHQL_CLIENT_2.query(
       `
@@ -2150,9 +2170,9 @@ describe('@model with @auth', () => {
     );
     expect(ownedBy2.data.createAllThree).toBeTruthy();
     // set by input
-    expect(ownedBy2.data.createAllThree.owner).toEqual('user2@test.com');
+    expect(ownedBy2.data.createAllThree.owner).toEqual(USERNAME2);
     // not auto filled as the admin condition was met
-    expect(ownedBy2.data.createAllThree.editors).toBeNull();
+    expect(ownedBy2.data.createAllThree.editors).toEqual([USERNAME1]);
     expect(ownedBy2.data.createAllThree.groups).toBeNull();
     expect(ownedBy2.data.createAllThree.alternativeGroup).toBeNull();
 
@@ -2175,7 +2195,7 @@ describe('@model with @auth', () => {
     );
     expect(ownedBy2NoEditors.data.createAllThree).toBeTruthy();
     // set by input
-    expect(ownedBy2NoEditors.data.createAllThree.owner).toEqual('user2@test.com');
+    expect(ownedBy2NoEditors.data.createAllThree.owner).toEqual(USERNAME2);
     // set by input
     expect(ownedBy2NoEditors.data.createAllThree.editors).toHaveLength(0);
     expect(ownedBy2NoEditors.data.createAllThree.groups).toBeNull();
@@ -2225,7 +2245,7 @@ describe('@model with @auth', () => {
       {},
     );
     expect(ownedBy2.data.createAllThree).toBeTruthy();
-    expect(ownedBy2.data.createAllThree.owner).toEqual('user2@test.com');
+    expect(ownedBy2.data.createAllThree.owner).toEqual(USERNAME2);
     expect(ownedBy2.data.createAllThree.editors).toHaveLength(0);
     expect(ownedBy2.data.createAllThree.groups).toBeNull();
     expect(ownedBy2.data.createAllThree.alternativeGroup).toBeNull();
@@ -2495,7 +2515,7 @@ describe('@model with @auth', () => {
     );
     expect(ownedBy2.data.createAllThree).toBeTruthy();
     // set by input
-    expect(ownedBy2.data.createAllThree.owner).toEqual('user2@test.com');
+    expect(ownedBy2.data.createAllThree.owner).toEqual(USERNAME2);
     // auto filled as logged in user.
     expect(ownedBy2.data.createAllThree.editors).toHaveLength(0);
     expect(ownedBy2.data.createAllThree.groups).toBeNull();
@@ -2520,7 +2540,7 @@ describe('@model with @auth', () => {
     );
     expect(ownedByTwoUpdate.data.updateAllThree).toBeTruthy();
     // set by input
-    expect(ownedByTwoUpdate.data.updateAllThree.owner).toEqual('user2@test.com');
+    expect(ownedByTwoUpdate.data.updateAllThree.owner).toEqual(USERNAME2);
     // set by input
     expect(ownedByTwoUpdate.data.updateAllThree.editors).toHaveLength(0);
     expect(ownedByTwoUpdate.data.updateAllThree.groups).toBeNull();
@@ -2558,7 +2578,7 @@ describe('@model with @auth', () => {
       {},
     );
     expect(ownedBy2.data.createAllThree).toBeTruthy();
-    expect(ownedBy2.data.createAllThree.owner).toEqual('user2@test.com');
+    expect(ownedBy2.data.createAllThree.owner).toEqual(USERNAME2);
     expect(ownedBy2.data.createAllThree.editors).toHaveLength(0);
     expect(ownedBy2.data.createAllThree.groups).toBeNull();
     expect(ownedBy2.data.createAllThree.alternativeGroup).toBeNull();
@@ -2582,7 +2602,7 @@ describe('@model with @auth', () => {
     );
     expect(ownedBy2Update.data.updateAllThree).toBeTruthy();
     // set by input
-    expect(ownedBy2Update.data.updateAllThree.owner).toEqual('user2@test.com');
+    expect(ownedBy2Update.data.updateAllThree.owner).toEqual(USERNAME2);
     // set by input
     expect(ownedBy2Update.data.updateAllThree.editors).toHaveLength(0);
     expect(ownedBy2Update.data.updateAllThree.groups).toBeNull();
@@ -2621,7 +2641,7 @@ describe('@model with @auth', () => {
     );
     expect(ownedBy2.data.createAllThree).toBeTruthy();
     expect(ownedBy2.data.createAllThree.owner).toBeNull();
-    expect(ownedBy2.data.createAllThree.editors[0]).toEqual('user2@test.com');
+    expect(ownedBy2.data.createAllThree.editors[0]).toEqual(USERNAME2);
     expect(ownedBy2.data.createAllThree.groups).toBeNull();
     expect(ownedBy2.data.createAllThree.alternativeGroup).toBeNull();
 
@@ -2646,7 +2666,7 @@ describe('@model with @auth', () => {
     // set by input
     expect(ownedByUpdate.data.updateAllThree.owner).toBeNull();
     // set by input
-    expect(ownedByUpdate.data.updateAllThree.editors[0]).toEqual('user2@test.com');
+    expect(ownedByUpdate.data.updateAllThree.editors[0]).toEqual(USERNAME2);
     expect(ownedByUpdate.data.updateAllThree.groups).toBeNull();
     expect(ownedByUpdate.data.updateAllThree.alternativeGroup).toEqual('Devs');
 

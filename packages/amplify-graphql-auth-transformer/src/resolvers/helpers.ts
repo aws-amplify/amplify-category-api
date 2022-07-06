@@ -31,6 +31,7 @@ import {
   LAMBDA_AUTH_TYPE,
   IAM_AUTH_TYPE,
   IDENTITY_CLAIM_DELIMITER,
+  ALLOWED_FIELDS
 } from '../utils';
 
 // note in the resolver that operation is protected by auth
@@ -252,8 +253,47 @@ export const generateOwnerClaimExpression = (ownerClaim: string, refName: string
 };
 
 /**
- *
+ * Sets the value of owner field if the user is already Authorized
  */
+export const generatePopulateOwnerField = (
+   claimRef: string, 
+   ownerEntity: string, 
+   entityRef: string, 
+   entityIsList: boolean,
+   checkIfAuthorized: boolean,
+   allowedFieldsKey?: string,
+   allowedFieldsCondition?: string): Expression => {
+
+  const conditionsToCheck = new Array<Expression>();
+  if (checkIfAuthorized) {
+    conditionsToCheck.push(ref(IS_AUTHORIZED_FLAG));
+  }
+  conditionsToCheck.push(ref('util.isNull($' + `${entityRef})`));
+  conditionsToCheck.push(not(methodCall(ref('ctx.args.input.containsKey'), str(ownerEntity))));
+
+  const populateOwnerFieldExprs = new Array<Expression>();
+  populateOwnerFieldExprs.push(
+    qref(
+      methodCall(
+        ref('ctx.args.input.put'),
+        str(ownerEntity),
+        entityIsList ? list([ref(claimRef)]) : ref(claimRef)
+      ),
+    )
+  );
+  if (allowedFieldsKey && allowedFieldsCondition) {
+    populateOwnerFieldExprs.push(addAllowedFieldsIfElse(allowedFieldsKey, allowedFieldsCondition));
+  }
+
+  return(compoundExpression([iff(and(conditionsToCheck), compoundExpression(populateOwnerFieldExprs))]));
+};
+
+export const addAllowedFieldsIfElse = (allowedFieldsKey: string, condition: string, breakLoop = false): Expression => ifElse(
+  ref(condition),
+  compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), ...(breakLoop ? [raw('#break')] : [])]),
+  qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(allowedFieldsKey))),
+);
+
 export const getOwnerClaimReference = (ownerClaim: string, refName: string): string => {
   const expressions: Expression[] = [];
   const identityClaims = ownerClaim.split(IDENTITY_CLAIM_DELIMITER);
