@@ -13,7 +13,6 @@ import { ResolverConfig } from 'graphql-transformer-core';
 import _ from 'lodash';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
-import { gqlSchemaFilename } from '../aws-constants';
 import { AppSyncCLIInputs } from '../service-walkthrough-types/appsync-user-input-types';
 import { authConfigToAppSyncAuthType } from './auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { resolverConfigToConflictResolution } from './resolver-config-to-conflict-resolution-bi-di-mapper';
@@ -58,7 +57,7 @@ export const migrateResourceToSupportOverride = async (resourceName: string) => 
       resourceName,
     };
     // convert parameters.json to cli-inputs.json
-    const cliInputs = generateCliInputs(parameters, apiresourceDirPath);
+    const cliInputs = generateCliInputs(parameters);
     const cliInputsPath = path.join(apiresourceDirPath, 'cli-inputs.json');
     JSONUtilities.writeJson(cliInputsPath, cliInputs);
     printer.debug('Migration is Successful');
@@ -102,7 +101,7 @@ function cleanUp(authresourcePath: string | undefined) {
   if (!!authresourcePath && fs.existsSync(authresourcePath)) fs.removeSync(authresourcePath);
 }
 
-const generateCliInputs = (parameters: ApiMetaData, apiResourceDir: string): AppSyncCLIInputs => {
+const generateCliInputs = (parameters: ApiMetaData): AppSyncCLIInputs => {
   return {
     version: 1,
     serviceConfiguration: {
@@ -114,7 +113,6 @@ const generateCliInputs = (parameters: ApiMetaData, apiResourceDir: string): App
           : undefined,
       conflictResolution: resolverConfigToConflictResolution(parameters.resolverConfig),
       apiName: parameters.resourceName,
-      gqlSchemaPath: path.join(apiResourceDir, gqlSchemaFilename),
     },
   };
 };

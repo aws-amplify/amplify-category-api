@@ -86,7 +86,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     serviceConfig.conflictResolution = await this.createResolverResources(serviceConfig.conflictResolution);
     await writeResolverConfig(serviceConfig.conflictResolution, resourceDir);
 
-    const appsyncCLIInputs = await this.generateAppsyncCLIInputs(serviceConfig, resourceDir);
+    const appsyncCLIInputs = await this.generateAppsyncCLIInputs(serviceConfig);
 
     // Write the default custom resources stack out to disk.
     fs.copyFileSync(
@@ -95,7 +95,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     );
 
     // write the template buffer to the project folder
-    this.writeSchema(appsyncCLIInputs.serviceConfiguration.gqlSchemaPath, serviceConfig.transformSchema);
+    this.writeSchema(path.join(resourceDir, gqlSchemaFilename), serviceConfig.transformSchema);
 
     const authConfig = this.extractAuthConfig(appsyncCLIInputs.serviceConfiguration);
 
@@ -293,13 +293,12 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     return `${functionName}-\${env}`;
   };
 
-  private generateAppsyncCLIInputs = async (serviceConfig: AppSyncServiceConfiguration, resourceDir: string): Promise<AppSyncCLIInputs> => {
+  private generateAppsyncCLIInputs = async (serviceConfig: AppSyncServiceConfiguration): Promise<AppSyncCLIInputs> => {
     const appsyncCLIInputs: AppSyncCLIInputs = {
       version: 1,
       serviceConfiguration: {
         apiName: serviceConfig.apiName,
         serviceName: serviceConfig.serviceName,
-        gqlSchemaPath: path.join(resourceDir, gqlSchemaFilename),
         defaultAuthType: serviceConfig.defaultAuthType,
       },
     };
@@ -328,8 +327,8 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     const prevAppsyncInputs = cliState.getCLIInputPayload();
 
     const appsyncInputs: AppSyncCLIInputs = prevAppsyncInputs;
-    if (!_.isEmpty(appsyncInputs.serviceConfiguration)) {
-      appsyncInputs.serviceConfiguration.gqlSchemaPath = gqlSchemaPath;
+    if ((appsyncInputs.serviceConfiguration as any)?.gqlSchemaPath) {
+      delete (appsyncInputs.serviceConfiguration as any).gqlSchemaPath;
     }
     if (updates.conflictResolution) {
       appsyncInputs.serviceConfiguration.conflictResolution = updates.conflictResolution;
