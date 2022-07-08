@@ -5,14 +5,19 @@
     "version": {
       "description": "The schema version.",
       "type": "number",
-      "enum": [1]
+      "enum": [
+        1
+      ]
     },
     "serviceConfiguration": {
       "$ref": "#/definitions/AppSyncServiceConfig",
       "description": "The service configuration that will be interpreted by Amplify."
     }
   },
-  "required": ["serviceConfiguration", "version"],
+  "required": [
+    "serviceConfiguration",
+    "version"
+  ],
   "definitions": {
     "AppSyncServiceConfig": {
       "description": "Configuration exposed by AppSync. Currently this is the only API type supported by Amplify headless mode.",
@@ -21,14 +26,12 @@
         "serviceName": {
           "description": "The service name of the resource provider.",
           "type": "string",
-          "enum": ["AppSync"]
+          "enum": [
+            "AppSync"
+          ]
         },
         "apiName": {
           "description": "The name of the API that will be created.",
-          "type": "string"
-        },
-        "gqlSchemaPath": {
-          "description": "Path to GraphQL schema that defines the AppSync API.",
           "type": "string"
         },
         "defaultAuthType": {
@@ -79,7 +82,11 @@
           "description": "The strategy for resolving API write conflicts."
         }
       },
-      "required": ["apiName", "defaultAuthType", "gqlSchemaPath", "serviceName"]
+      "required": [
+        "apiName",
+        "defaultAuthType",
+        "serviceName"
+      ]
     },
     "AppSyncAPIKeyAuthType": {
       "description": "Specifies that the AppSync API should be secured using an API key.",
@@ -87,7 +94,9 @@
       "properties": {
         "mode": {
           "type": "string",
-          "enum": ["API_KEY"]
+          "enum": [
+            "API_KEY"
+          ]
         },
         "expirationTime": {
           "type": "number"
@@ -100,7 +109,9 @@
           "type": "string"
         }
       },
-      "required": ["mode"]
+      "required": [
+        "mode"
+      ]
     },
     "AppSyncAWSIAMAuthType": {
       "description": "Specifies that the AppSync API should be secured using AWS IAM.",
@@ -108,10 +119,14 @@
       "properties": {
         "mode": {
           "type": "string",
-          "enum": ["AWS_IAM"]
+          "enum": [
+            "AWS_IAM"
+          ]
         }
       },
-      "required": ["mode"]
+      "required": [
+        "mode"
+      ]
     },
     "AppSyncCognitoUserPoolsAuthType": {
       "description": "Specifies that the AppSync API should be secured using Cognito.",
@@ -119,14 +134,18 @@
       "properties": {
         "mode": {
           "type": "string",
-          "enum": ["AMAZON_COGNITO_USER_POOLS"]
+          "enum": [
+            "AMAZON_COGNITO_USER_POOLS"
+          ]
         },
         "cognitoUserPoolId": {
           "description": "The user pool that will be used to authenticate requests.",
           "type": "string"
         }
       },
-      "required": ["mode"]
+      "required": [
+        "mode"
+      ]
     },
     "AppSyncOpenIDConnectAuthType": {
       "description": "Specifies that the AppSync API should be secured using OpenID.",
@@ -134,7 +153,9 @@
       "properties": {
         "mode": {
           "type": "string",
-          "enum": ["OPENID_CONNECT"]
+          "enum": [
+            "OPENID_CONNECT"
+          ]
         },
         "openIDProviderName": {
           "type": "string"
@@ -152,7 +173,12 @@
           "type": "string"
         }
       },
-      "required": ["mode", "openIDClientID", "openIDIssuerURL", "openIDProviderName"]
+      "required": [
+        "mode",
+        "openIDClientID",
+        "openIDIssuerURL",
+        "openIDProviderName"
+      ]
     },
     "AppSyncLambdaAuthType": {
       "description": "Specifies that the AppSync API should be secured using Lambda.",
@@ -160,7 +186,9 @@
       "properties": {
         "mode": {
           "type": "string",
-          "enum": ["AWS_LAMBDA"]
+          "enum": [
+            "AWS_LAMBDA"
+          ]
         },
         "lambdaFunction": {
           "type": "string"
@@ -169,7 +197,10 @@
           "type": "string"
         }
       },
-      "required": ["lambdaFunction", "mode"]
+      "required": [
+        "lambdaFunction",
+        "mode"
+      ]
     },
     "ConflictResolution": {
       "description": "Defines a strategy for resolving API write conflicts.",
@@ -200,11 +231,17 @@
       "type": "object",
       "properties": {
         "type": {
-          "enum": ["AUTOMERGE", "NONE", "OPTIMISTIC_CONCURRENCY"],
+          "enum": [
+            "AUTOMERGE",
+            "NONE",
+            "OPTIMISTIC_CONCURRENCY"
+          ],
           "type": "string"
         }
       },
-      "required": ["type"]
+      "required": [
+        "type"
+      ]
     },
     "LambdaResolutionStrategy": {
       "description": "Resolution strategy using a custom lambda function.",
@@ -212,7 +249,9 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["LAMBDA"]
+          "enum": [
+            "LAMBDA"
+          ]
         },
         "resolver": {
           "description": "The lambda function used to resolve conflicts.",
@@ -226,7 +265,10 @@
           ]
         }
       },
-      "required": ["resolver", "type"]
+      "required": [
+        "resolver",
+        "type"
+      ]
     },
     "NewLambdaConflictResolver": {
       "description": "Defines a new lambda conflict resolver. Using this resolver type will create a new lambda function with boilerplate resolver logic.",
@@ -234,10 +276,14 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["NEW"]
+          "enum": [
+            "NEW"
+          ]
         }
       },
-      "required": ["type"]
+      "required": [
+        "type"
+      ]
     },
     "ExistingLambdaConflictResolver": {
       "description": "Defines an lambda conflict resolver that uses an existing lambda function.",
@@ -245,7 +291,9 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["EXISTING"]
+          "enum": [
+            "EXISTING"
+          ]
         },
         "name": {
           "description": "The name of the lambda function (this must be a lambda function that exists in the Amplify project).",
@@ -260,7 +308,10 @@
           "type": "string"
         }
       },
-      "required": ["name", "type"]
+      "required": [
+        "name",
+        "type"
+      ]
     },
     "PerModelResolutionstrategy": {
       "description": "Defines a resolution strategy for a single model.",
@@ -282,7 +333,10 @@
           "type": "string"
         }
       },
-      "required": ["entityName", "resolutionStrategy"]
+      "required": [
+        "entityName",
+        "resolutionStrategy"
+      ]
     }
   },
   "$schema": "http://json-schema.org/draft-07/schema#"

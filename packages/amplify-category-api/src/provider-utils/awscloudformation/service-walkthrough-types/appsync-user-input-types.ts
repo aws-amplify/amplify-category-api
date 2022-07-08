@@ -25,10 +25,6 @@ export interface AppSyncServiceConfig {
    */
   apiName: string;
   /**
-   * Path to GraphQL schema that defines the AppSync API.
-   */
-  gqlSchemaPath: string;
-  /**
    * The auth type that will be used by default.
    */
   defaultAuthType: AppSyncAuthType;
