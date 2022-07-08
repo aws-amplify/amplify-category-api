@@ -143,7 +143,6 @@ describe('create artifacts', () => {
       serviceConfiguration: {
         apiName: 'testApiName',
         defaultAuthType: { expirationTime: 10, keyDescription: 'api key description', mode: 'API_KEY' },
-        gqlSchemaPath: 'backendDirPath/api/testApiName/schema.graphql',
         serviceName: 'AppSync',
       },
       version: 1,
@@ -250,7 +249,6 @@ describe('update artifacts', () => {
       serviceConfiguration: {
         apiName: 'testApiName',
         defaultAuthType: { expirationTime: 10, keyDescription: 'api key description', mode: 'API_KEY' },
-        gqlSchemaPath: 'backendDirPath/api/testApiName/schema.graphql',
         serviceName: 'AppSync',
       },
       version: 1,
@@ -266,7 +264,6 @@ describe('update artifacts', () => {
       serviceConfiguration: {
         apiName: 'testApiName',
         defaultAuthType: { expirationTime: 10, keyDescription: 'api key description', mode: 'API_KEY' },
-        gqlSchemaPath: 'backendDirPath/api/testApiName/schema.graphql',
         serviceName: 'AppSync',
       },
       version: 1,
@@ -284,7 +281,6 @@ describe('update artifacts', () => {
       serviceConfiguration: {
         apiName: 'testApiName',
         defaultAuthType: { expirationTime: 10, keyDescription: 'api key description', mode: 'API_KEY' },
-        gqlSchemaPath: 'backendDirPath/api/testApiName/schema.graphql',
         serviceName: 'AppSync',
       },
       version: 1,
@@ -295,7 +291,6 @@ describe('update artifacts', () => {
         additionalAuthTypes: [{ mode: 'AWS_IAM' }, { mode: 'API_KEY' }],
         apiName: 'testApiName',
         defaultAuthType: { expirationTime: 10, keyDescription: 'api key description', mode: 'API_KEY' },
-        gqlSchemaPath: 'backendDirPath/api/testApiName/schema.graphql',
         serviceName: 'AppSync',
       },
       version: 1,
@@ -308,7 +303,6 @@ describe('update artifacts', () => {
       serviceConfiguration: {
         apiName: 'testApiName',
         defaultAuthType: { expirationTime: 10, keyDescription: 'api key description', mode: 'API_KEY' },
-        gqlSchemaPath: 'backendDirPath/api/testApiName/schema.graphql',
         serviceName: 'AppSync',
       },
       version: 1,

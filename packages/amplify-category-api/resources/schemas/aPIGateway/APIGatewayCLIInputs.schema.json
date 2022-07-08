@@ -5,7 +5,9 @@
     "version": {
       "description": "The schema version.",
       "type": "number",
-      "enum": [1]
+      "enum": [
+        1
+      ]
     },
     "paths": {
       "description": "map of paths in the REST API.",
@@ -25,14 +27,24 @@
               "auth": {
                 "type": "array",
                 "items": {
-                  "enum": ["create", "delete", "read", "update"],
+                  "enum": [
+                    "create",
+                    "delete",
+                    "read",
+                    "update"
+                  ],
                   "type": "string"
                 }
               },
               "guest": {
                 "type": "array",
                 "items": {
-                  "enum": ["create", "delete", "read", "update"],
+                  "enum": [
+                    "create",
+                    "delete",
+                    "read",
+                    "update"
+                  ],
                   "type": "string"
                 }
               },
@@ -41,23 +53,40 @@
                 "additionalProperties": {
                   "type": "array",
                   "items": {
-                    "enum": ["create", "delete", "read", "update"],
+                    "enum": [
+                      "create",
+                      "delete",
+                      "read",
+                      "update"
+                    ],
                     "type": "string"
                   }
                 }
               }
             },
-            "required": ["setting"]
+            "required": [
+              "setting"
+            ]
           }
         },
-        "required": ["lambdaFunction", "permissions"]
+        "required": [
+          "lambdaFunction",
+          "permissions"
+        ]
       }
     }
   },
-  "required": ["paths", "version"],
+  "required": [
+    "paths",
+    "version"
+  ],
   "definitions": {
     "PermissionSetting": {
-      "enum": ["open", "private", "protected"],
+      "enum": [
+        "open",
+        "private",
+        "protected"
+      ],
       "type": "string"
     }
   },
