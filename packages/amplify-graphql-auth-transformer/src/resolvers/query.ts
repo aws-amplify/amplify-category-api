@@ -440,11 +440,20 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
       }
     }
   });
-  groupMap.forEach((fieldList, groupClaim) => {
+  Array.from(groupMap.entries()).forEach(([groupClaim, fieldList]: [string, string[]], idx) => {
     groupContainsExpression.push(
+      set(ref(`groups${idx}`), getIdentityClaimExp(str(groupClaim), list([]))),
+      iff(
+        methodCall(ref('util.isString'), ref(`groups${idx}`)),
+        ifElse(
+          methodCall(ref('util.isList'), methodCall(ref('util.parseJson'), ref(`groups${idx}`))),
+          set(ref(`groups${idx}`), methodCall(ref('util.parseJson'), ref(`groups${idx}`))),
+          set(ref(`groups${idx}`), list([ref(`groups${idx}`)])),
+        ),
+      ),
       forEach(
         ref('group'),
-        ref(`util.defaultIfNull($ctx.identity.claims.get("${groupClaim}"), [])`),
+        ref(`groups${idx}`),
         fieldList.map((field) => iff(not(methodCall(ref('group.isEmpty'))), qref(methodCall(ref('authFilter.add'), raw(`{"${field}": { "contains": $group }}`))))),
       ),
     );
