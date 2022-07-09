@@ -87,12 +87,13 @@ export const iamCheck = (claim: string, exp: Expression, identityPoolId?: string
  * 1. custom
  * 2. none value
  * @param ownerClaim
+ * @param defaultValueExp
  */
-export const getOwnerClaim = (ownerClaim: string): Expression => {
+export const getOwnerClaim = (ownerClaim: string, defaultValueExp: Expression = str(NONE_VALUE)): Expression => {
   if (ownerClaim === 'username') {
-    return getIdentityClaimExp(str(ownerClaim), getIdentityClaimExp(str(DEFAULT_COGNITO_IDENTITY_CLAIM), str(NONE_VALUE)));
+    return getIdentityClaimExp(str(ownerClaim), getIdentityClaimExp(str(DEFAULT_COGNITO_IDENTITY_CLAIM), defaultValueExp));
   }
-  return getIdentityClaimExp(str(ownerClaim), str(NONE_VALUE));
+  return getIdentityClaimExp(str(ownerClaim), defaultValueExp);
 };
 
 /**
@@ -227,15 +228,27 @@ export const emptyPayload = toJson(raw(JSON.stringify({ version: '2018-05-29', p
  */
 export const generateOwnerClaimListExpression = (claim: string, refName: string): Expression => {
   const claims = claim.split(IDENTITY_CLAIM_DELIMITER);
+  const hasMultiIdentityClaims = claims.length > 1;
 
-  if (claims.length <= 1) {
-    return set(ref(refName), list([]));
+  if (hasMultiIdentityClaims) {
+    return compoundExpression([
+      set(ref(refName), list([])),
+      compoundExpression(
+        claims.map((c) => qref(methodCall(ref(`${refName}.add`), getOwnerClaim(c)))),
+      ),
+    ]);
   }
 
+  // this logic deals with dynamic groups custom claims having a value of a list or a stringified list
   return compoundExpression([
-    set(ref(refName), list([])),
-    compoundExpression(
-      claims.map((c) => qref(methodCall(ref(`${refName}.add`), getOwnerClaim(c)))),
+    set(ref(refName), getOwnerClaim(claim, list([]))),
+    iff(
+      methodCall(ref('util.isString'), ref(refName)),
+      ifElse(
+        methodCall(ref('util.isList'), methodCall(ref('util.parseJson'), ref(refName))),
+        set(ref(refName), methodCall(ref('util.parseJson'), ref(refName))),
+        set(ref(refName), list([])),
+      ),
     ),
   ]);
 };
