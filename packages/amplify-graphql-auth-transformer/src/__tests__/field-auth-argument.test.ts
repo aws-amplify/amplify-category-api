@@ -64,7 +64,7 @@ test('per-field @auth without @model', () => {
   expect(out).toBeDefined();
 
   const resources = out.rootStack.Resources;
-  const authPolicyIdx = Object.keys(out.rootStack.Resources).find(r => r.includes('AuthRolePolicy'));
+  const authPolicyIdx = Object.keys(out.rootStack.Resources).find((r) => r.includes('AuthRolePolicy'));
   expect(resources[authPolicyIdx]).toMatchSnapshot();
   expect(out.resolvers['Query.listContext.req.vtl']).toContain(
     '#set( $staticGroupRoles = [{"claim":"cognito:groups","entity":"Allowed"}] )',
@@ -116,7 +116,7 @@ test('does not generate field resolvers when private rule takes precedence over 
   expect(out).toBeDefined();
   expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
   expect(out.resolvers['Student.ssn.res.vtl']).toMatchSnapshot();
-  ['id', 'name'].forEach(field => {
+  ['id', 'name'].forEach((field) => {
     expect(out.resolvers[`Student.${field}.req.vtl`]).toBeUndefined();
     expect(out.resolvers[`Student.${field}.res.vtl`]).toBeUndefined();
   });
@@ -145,7 +145,7 @@ test('generates field resolver for other provider rules even if private removes 
   expect(out).toBeDefined();
   expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
   expect(out.resolvers['Student.ssn.res.vtl']).toMatchSnapshot();
-  ['id', 'name'].forEach(field => {
+  ['id', 'name'].forEach((field) => {
     expect(out.resolvers[`Student.${field}.req.vtl`]).toBeDefined();
     expect(out.resolvers[`Student.${field}.res.vtl`]).toBeDefined();
   });
@@ -401,7 +401,7 @@ describe('with identity claim feature flag disabled', () => {
     expect(out).toBeDefined();
 
     const resources = out.rootStack.Resources;
-    const authPolicyIdx = Object.keys(out.rootStack.Resources).find(r => r.includes('AuthRolePolicy'));
+    const authPolicyIdx = Object.keys(out.rootStack.Resources).find((r) => r.includes('AuthRolePolicy'));
     expect(resources[authPolicyIdx]).toMatchSnapshot();
     expect(out.resolvers['Query.listContext.req.vtl']).toContain(
       '#set( $staticGroupRoles = [{"claim":"cognito:groups","entity":"Allowed"}] )',
@@ -434,7 +434,7 @@ describe('with identity claim feature flag disabled', () => {
     expect(out).toBeDefined();
     expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Student.ssn.res.vtl']).toMatchSnapshot();
-    ['id', 'name'].forEach(field => {
+    ['id', 'name'].forEach((field) => {
       expect(out.resolvers[`Student.${field}.req.vtl`]).toBeUndefined();
       expect(out.resolvers[`Student.${field}.res.vtl`]).toBeUndefined();
     });
@@ -466,7 +466,7 @@ describe('with identity claim feature flag disabled', () => {
     expect(out).toBeDefined();
     expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Student.ssn.res.vtl']).toMatchSnapshot();
-    ['id', 'name'].forEach(field => {
+    ['id', 'name'].forEach((field) => {
       expect(out.resolvers[`Student.${field}.req.vtl`]).toBeDefined();
       expect(out.resolvers[`Student.${field}.res.vtl`]).toBeDefined();
     });
@@ -510,7 +510,14 @@ describe('with identity claim feature flag disabled', () => {
   #if( !$isAuthorized )
     #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
     #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")) )
-    #set( $ownerClaimsList0 = [] )
+    #set( $ownerClaimsList0 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), [])) )
+    #if( $util.isString($ownerClaimsList0) )
+      #if( $util.isList($util.parseJson($ownerClaimsList0)) )
+        #set( $ownerClaimsList0 = $util.parseJson($ownerClaimsList0) )
+      #else
+        #set( $ownerClaimsList0 = [] )
+      #end
+    #end
     #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
       #set( $isAuthorized = true )
     #end
@@ -604,7 +611,14 @@ describe('with identity claim feature flag disabled', () => {
   #if( !$isAuthorized )
     #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
     #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")) )
-    #set( $ownerClaimsList0 = [] )
+    #set( $ownerClaimsList0 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), [])) )
+    #if( $util.isString($ownerClaimsList0) )
+      #if( $util.isList($util.parseJson($ownerClaimsList0)) )
+        #set( $ownerClaimsList0 = $util.parseJson($ownerClaimsList0) )
+      #else
+        #set( $ownerClaimsList0 = [] )
+      #end
+    #end
     #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
       #set( $isAuthorized = true )
     #end
