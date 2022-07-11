@@ -7,6 +7,7 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
+  TransformerPreProcessContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DirectiveNode,
@@ -32,6 +33,8 @@ import {
 } from 'graphql-transformer-common';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
+import produce from 'immer';
+import { WritableDraft } from 'immer/dist/types/types-external';
 import { ManyToManyDirectiveConfiguration, ManyToManyPreProcessContext, ManyToManyRelation } from './types';
 import { registerManyToManyForeignKeyMappings, validateModelDirective } from './utils';
 import { makeQueryConnectionWithKeyResolver, updateTableForConnection } from './resolvers';
@@ -44,9 +47,6 @@ import {
   getSortKeyFieldsNoContext,
 } from './schema';
 import { HasOneTransformer } from './graphql-has-one-transformer';
-import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import produce from 'immer';
-import { WritableDraft } from 'immer/dist/types/types-external';
 
 const directiveName = 'manyToMany';
 const defaultLimit = 100;
@@ -55,7 +55,11 @@ const directiveDefinition = `
 `;
 
 /**
- *
+ * ManyToManyTransformer
+ * The many to many transformer is shorthand for an additional model in the a GraphQL schema,
+ * the directive is used to create the additional model based on the relationName in addition to
+ * the necessary index and relational hasOne/hasMany directives to establish a M:N relationship between
+ * two model types
  */
 export class ManyToManyTransformer extends TransformerPluginBase {
   private relationMap = new Map<string, ManyToManyRelation>();
@@ -121,11 +125,11 @@ export class ManyToManyTransformer extends TransformerPluginBase {
               const relationName = relationArg.value.value;
               const manyToManyContext: ManyToManyPreProcessContext = {
                 model: def,
-                field: field,
+                field,
                 directive: dir,
                 modelAuthDirectives: def?.directives?.filter(authDir => authDir.name.value === 'auth') ?? [],
                 fieldAuthDirectives: def?.directives?.filter(authDir => authDir.name.value === 'auth') ?? [],
-                relationName: relationName,
+                relationName,
               };
               if (!manyToManyMap.has(relationName)) {
                 manyToManyMap.set(relationName, []);
@@ -138,7 +142,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
 
       // Run check for relations that are not binary and therefore invalid
       manyToManyMap.forEach((value, key) => {
-        if (value.length != 2) {
+        if (value.length !== 2) {
           throw new InvalidDirectiveError(`relationNames should have 2 occurrences. '${key}' has '${value.length}' occurrences`);
         }
       });
@@ -206,10 +210,10 @@ export class ManyToManyTransformer extends TransformerPluginBase {
 
         let baseTypeD1 = manyToManyOne.field.type;
         let baseTypeD2 = manyToManyOne.field.type;
-        while (baseTypeD1.kind != 'NamedType') {
+        while (baseTypeD1.kind !== 'NamedType') {
           baseTypeD1 = baseTypeD1.type;
         }
-        while (baseTypeD2.kind != 'NamedType') {
+        while (baseTypeD2.kind !== 'NamedType') {
           baseTypeD2 = baseTypeD2.type;
         }
         baseTypeD1.name.value = manyToManyOne.relationName;
