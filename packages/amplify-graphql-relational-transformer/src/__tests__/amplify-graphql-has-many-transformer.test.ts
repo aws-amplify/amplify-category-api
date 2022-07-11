@@ -1,9 +1,9 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { DocumentNode, Kind, parse } from 'graphql';
+import { Kind, parse } from 'graphql';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
-import { featureFlags } from './test-helpers';
+import { featureFlags, hasGeneratedField } from './test-helpers';
 
 test('fails if used as a has one relation', () => {
   const inputSchema = `
@@ -808,19 +808,6 @@ test('has many with queries null generate correct filter input objects for enum 
 
 describe('Pre Processing Has Many Tests', () => {
   let transformer: GraphQLTransform;
-  const hasGeneratedField = (doc: DocumentNode, objectType: string, fieldName: string): boolean => {
-    let hasField = false;
-    doc?.definitions?.forEach(def => {
-      if ((def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') && def.name.value === objectType) {
-        def?.fields?.forEach(field => {
-          if (field.name.value === fieldName) {
-            hasField = true;
-          }
-        });
-      }
-    });
-    return hasField;
-  };
 
   beforeEach(() => {
     transformer = new GraphQLTransform({
@@ -843,5 +830,23 @@ describe('Pre Processing Has Many Tests', () => {
 
     const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
     expect(hasGeneratedField(updatedSchemaDoc, 'Post', 'blogPostsFieldId')).toBeTruthy();
+  });
+
+  test('Should create sort key field when specified on custom primary key', () => {
+    const schema = `
+    type Blog @model {
+      id: ID! @primaryKey(sortKeyFields: ["value"])
+      postsField: [Post] @hasMany
+      value: String!
+    }
+
+    type Post @model {
+      id: ID!
+    }
+    `;
+
+    const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+    expect(hasGeneratedField(updatedSchemaDoc, 'Post', 'blogPostsFieldId')).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, 'Post', 'blogPostsFieldValue', 'String')).toBeTruthy();
   });
 });
