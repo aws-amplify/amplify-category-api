@@ -81,12 +81,10 @@ export class SchemaReader {
       this.schemaDocument = parse(fullSchema);
     }
 
-    if (preProcessSchema) {
-      if (!this.preProcessedSchemaDocument) {
-        const transformerOptions = await generateTransformerOptions(context, options);
-        const transform = await buildGraphQLTransformV2(transformerOptions);
-        this.preProcessedSchemaDocument = transform.preProcessSchema(this.schemaDocument);
-      }
+    if (preProcessSchema && !this.preProcessedSchemaDocument) {
+      const transformerOptions = await generateTransformerOptions(context, options);
+      const transform = await buildGraphQLTransformV2(transformerOptions);
+      this.preProcessedSchemaDocument = transform.preProcessSchema(this.schemaDocument);
     }
 
     return preProcessSchema ? this.preProcessedSchemaDocument : this.schemaDocument;
