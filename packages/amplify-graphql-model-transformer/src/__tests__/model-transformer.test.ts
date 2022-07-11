@@ -613,6 +613,29 @@ describe('ModelTransformer: ', () => {
     expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy();
   });
 
+  it('Should support public level subscriptions without defining custom names', () => {
+    const validSchema = `
+    type Post @model(subscriptions: { level: public }) {
+      id: ID!
+      title: String!
+    }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    const parsed = parse(definition);
+    validateModelSchema(parsed);
+
+    const subscriptionType = getObjectType(parsed, 'Subscription');
+    expect(subscriptionType).toBeDefined();
+    expectFields(subscriptionType!, ['onUpdatePost', 'onCreatePost', 'onDeletePost']);
+  });
+
   it('should support advanced subscriptions', () => {
     const validSchema = `type Post @model(subscriptions: {
           onCreate: ["onFeedUpdated", "onCreatePost"],
@@ -1283,7 +1306,7 @@ describe('ModelTransformer: ', () => {
     expect(Object.keys(result.stacks.Blog.Resources!).includes('CreateBlogResolver')).toBe(false);
     expect(Object.keys(result.stacks.Blog.Resources!).includes('UpdateBlogResolver')).toBe(false);
   });
-  
+
   it('allow aws_lambda to pass through', () => {
     const validSchema = `
     type Todo @aws_lambda {
