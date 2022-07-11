@@ -240,7 +240,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             level: SubscriptionLevel.on,
             ...publicSubscriptionDefaults,
           },
-        }, ctx.featureFlags);
+        },
+        ctx.featureFlags,
+      );
       if (baseArgs?.subscriptions?.level === SubscriptionLevel.public
         && !(baseArgs?.subscriptions?.onCreate || baseArgs?.subscriptions?.onDelete || baseArgs?.subscriptions?.onUpdate)) {
         options.subscriptions = { level: SubscriptionLevel.public, ...publicSubscriptionDefaults };
