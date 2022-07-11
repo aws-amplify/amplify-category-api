@@ -15,6 +15,7 @@ import {
   ObjectTypeDefinitionNode, ObjectTypeExtensionNode,
 } from 'graphql';
 import {
+  getBaseType,
   isListType,
   isNonNullType,
   makeArgument,
@@ -27,8 +28,13 @@ import { produce } from 'immer';
 import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { WritableDraft } from 'immer/dist/types/types-external';
 import { makeGetItemConnectionWithKeyResolver } from './resolvers';
-import { ensureHasOneConnectionField } from './schema';
-import { HasOneDirectiveConfiguration } from './types';
+import {
+  addFieldsToDefinition,
+  convertSortKeyFieldsToSortKeyConnectionFields,
+  ensureHasOneConnectionField,
+  getSortKeyFieldsNoContext
+} from './schema';
+import { HasOneDirectiveConfiguration, ObjectDefinition } from './types';
 import {
   ensureFieldsArray, getConnectionAttributeName,
   getFieldsNodes,
@@ -80,7 +86,8 @@ export class HasOneTransformer extends TransformerPluginBase {
   mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
     const document: DocumentNode = produce(context.inputDocument, draftDoc => {
       const filteredDefs = draftDoc?.definitions?.filter(def => def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension');
-      const objectDefs = filteredDefs as Array<WritableDraft<ObjectTypeDefinitionNode | ObjectTypeExtensionNode>>;
+      const objectDefs = new Map<string, WritableDraft<ObjectDefinition>>((filteredDefs as Array<WritableDraft<ObjectDefinition>>)
+        .map(def => [def.name.value, def]));
 
       objectDefs?.forEach(def => {
         const filteredFields = def?.fields?.filter(field => field?.directives?.some(dir => dir.name.value === directiveName));
@@ -106,15 +113,22 @@ export class HasOneTransformer extends TransformerPluginBase {
             if (removalIndex !== -1) {
               dir?.arguments?.splice(removalIndex, 1);
             }
-            if (!hasFieldsDefined) {
-              // eslint-disable-next-line no-param-reassign
-              dir.arguments = [makeArgument('fields', makeValueNode(connectionAttributeName)) as WritableDraft<ArgumentNode>];
-              def?.fields?.push(
-                makeField(
-                  connectionAttributeName, [], isNonNullType(field.type)
-                    ? makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), [],
-                ) as WritableDraft<FieldDefinitionNode>,
+            const relatedType = objectDefs.get(getBaseType(field.type));
+            if (!hasFieldsDefined && relatedType) {
+              const sortKeyFields = convertSortKeyFieldsToSortKeyConnectionFields(
+                getSortKeyFieldsNoContext(relatedType),
+                def,
+                field,
               );
+              const connField = makeField(
+                connectionAttributeName, [], isNonNullType(field.type)
+                  ? makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), [],
+              ) as WritableDraft<FieldDefinitionNode>;
+              // eslint-disable-next-line no-param-reassign
+              dir.arguments = [makeArgument('fields', makeValueNode(
+                [connectionAttributeName, ...sortKeyFields.map(skf => skf.name.value)],
+              )) as WritableDraft<ArgumentNode>];
+              addFieldsToDefinition(def, [connField, ...sortKeyFields]);
             }
           });
         });
