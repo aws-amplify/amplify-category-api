@@ -3,6 +3,7 @@ import {
   ObjectTypeDefinitionNode,
   parse,
 } from 'graphql';
+import { cloneDeep } from 'lodash';
 import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { getFieldNameFor } from '../../utils/operation-names';
 import { DirectiveWrapper } from '../../utils';
@@ -53,7 +54,7 @@ describe('Transformer Core Util Tests', () => {
       const modelDir = objNode?.directives?.[0] as DirectiveNode;
       const wrappedDir = new DirectiveWrapper(modelDir);
 
-      const newArgs = wrappedDir.getArguments(defaultArgs, generateFeatureFlagWithBooleanOverrides({}));
+      const newArgs = wrappedDir.getArguments(cloneDeep(defaultArgs), generateFeatureFlagWithBooleanOverrides({}));
       expect(newArgs.subscriptions).toEqual({ level: 'public' });
       expect(newArgs.timestamps).toEqual(defaultArgs.timestamps);
       expect(newArgs.queries).toEqual(defaultArgs.queries);
@@ -67,7 +68,7 @@ describe('Transformer Core Util Tests', () => {
       const wrappedDir = new DirectiveWrapper(modelDir);
 
       const newArgs = wrappedDir.getArguments(
-        defaultArgs,
+        cloneDeep(defaultArgs),
         generateFeatureFlagWithBooleanOverrides({ 'graphQLTransformer.shouldDeepMergeDirectiveConfigDefaults': true }),
       );
       expect(newArgs.subscriptions).toEqual({
