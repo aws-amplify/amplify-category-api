@@ -42,7 +42,7 @@ export class DirectiveWrapper {
       }),
       {},
     );
-    if (featureFlags.getBoolean('graphQLTransformer.shouldDeepMergeDirectiveConfigDefaults')) {
+    if (featureFlags.getBoolean('graphQLTransformer.shouldDeepMergeDirectiveConfigDefaults', false)) {
       return _.merge(defaultValue, argValues);
     }
     return Object.assign(defaultValue, argValues);
