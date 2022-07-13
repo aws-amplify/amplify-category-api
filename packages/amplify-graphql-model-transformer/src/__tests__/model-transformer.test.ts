@@ -639,9 +639,7 @@ describe('ModelTransformer: ', () => {
 
   it('should support advanced subscriptions', () => {
     const validSchema = `type Post @model(subscriptions: {
-          onCreate: ["onFeedUpdated", "onCreatePost"],
-          onUpdate: ["onFeedUpdated"],
-          onDelete: ["onFeedUpdated"]
+          onCreate: ["onFeedUpdated", "onCreatePost"]
       }) {
         id: ID!
         title: String!
@@ -668,10 +666,8 @@ describe('ModelTransformer: ', () => {
     expect(subField!.directives![0].name!.value).toEqual('aws_subscribe');
     const mutationsList = subField!.directives![0].arguments!.find(a => a.name.value === 'mutations')!.value as ListValueNode;
     const mutList = mutationsList.values.map((v: any) => v.value);
-    expect(mutList.length).toEqual(3);
+    expect(mutList.length).toEqual(1);
     expect(mutList).toContain('createPost');
-    expect(mutList).toContain('updatePost');
-    expect(mutList).toContain('deletePost');
   });
 
   it('should not generate superfluous input and filter types', () => {
