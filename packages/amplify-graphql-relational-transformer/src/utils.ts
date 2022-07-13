@@ -10,7 +10,7 @@ import {
 import {
   DirectiveNode, EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, StringValueNode,
 } from 'graphql';
-import { getBaseType, isScalarOrEnum, makeField, makeNamedType, makeNonNullType, toCamelCase } from 'graphql-transformer-common';
+import { getBaseType, isScalarOrEnum, makeField, makeNamedType, makeNonNullType, toCamelCase, toPascalCase } from 'graphql-transformer-common';
 import {
   BelongsToDirectiveConfiguration,
   HasManyDirectiveConfiguration,
@@ -177,6 +177,11 @@ function getIndexName(directive: DirectiveNode): string | undefined {
 export function getConnectionAttributeName(featureFlags: FeatureFlagProvider, type: string, field: string, relatedTypeField: string) {
   const nameSuffix = featureFlags.getBoolean('respectPrimaryKeyAttributesOnConnectionField') ? relatedTypeField : 'id';
   return toCamelCase([type, field, nameSuffix]);
+}
+
+export function getManyToManyConnectionAttributeName(featureFlags: FeatureFlagProvider, field: string, relatedTypeField: string) {
+  const nameSuffix = featureFlags.getBoolean('respectPrimaryKeyAttributesOnConnectionField') ? toPascalCase([relatedTypeField]) : 'ID';
+  return `${toCamelCase([field])}${nameSuffix}`;
 }
 
 export function getSortKeyConnectionAttributeName(type: string, field: string, relatedTypeField: string) {

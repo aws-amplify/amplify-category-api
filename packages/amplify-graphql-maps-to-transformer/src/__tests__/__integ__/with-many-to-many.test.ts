@@ -1,11 +1,20 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { DeploymentResources, GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { HasOneTransformer, ManyToManyTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { MapsToTransformer } from '../../graphql-maps-to-transformer';
 import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
+import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { MapsToTransformer } from '../../graphql-maps-to-transformer';
 import { expectedResolversForModelWithRenamedField } from './common';
+
+
+const featureFlags: FeatureFlagProvider = {
+  getBoolean: (_: string): boolean => false,
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+};
 
 const manyToManyMapped = /* GraphQL */ `
   type Employee @model @mapsTo(name: "Person") {
@@ -20,12 +29,13 @@ const manyToManyMapped = /* GraphQL */ `
   }
 `;
 
-const transformSchema = (schema: string) => {
+const transformSchema = (schema: string): DeploymentResources => {
   const indexTransformer = new IndexTransformer();
   const modelTransformer = new ModelTransformer();
   const hasOneTransformer = new HasOneTransformer();
   const authTransformer = new AuthTransformer();
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [
       modelTransformer,
       indexTransformer,
@@ -45,12 +55,12 @@ describe('mapsTo with manyToMany', () => {
     expect(out.stacks.EmployeeTask!.Resources!.EmployeeTaskTable.Properties.GlobalSecondaryIndexes).toMatchSnapshot();
     const outSchema = parse(out.schema);
     const EmployeeTaskFields = (
-      outSchema.definitions.find(def => (def as any)?.name.value === 'EmployeeTask')! as ObjectTypeDefinitionNode
-    ).fields!.map(field => field.name.value);
+      outSchema.definitions.find((def) => (def as any)?.name.value === 'EmployeeTask')! as ObjectTypeDefinitionNode
+    ).fields!.map((field) => field.name.value);
     expect(EmployeeTaskFields).toEqual(
       expect.arrayContaining(['id', 'employeeID', 'taskID', 'task', 'employee', 'createdAt', 'updatedAt']),
     );
     const expectedResolvers = expectedResolversForModelWithRenamedField('EmployeeTask');
-    expectedResolvers.forEach(resolver => expect(out.resolvers[resolver]).toMatchSnapshot());
+    expectedResolvers.forEach((resolver) => expect(out.resolvers[resolver]).toMatchSnapshot());
   });
 });

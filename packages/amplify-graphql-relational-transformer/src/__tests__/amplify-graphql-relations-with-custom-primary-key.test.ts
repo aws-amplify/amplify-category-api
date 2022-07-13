@@ -1,8 +1,8 @@
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { parse } from 'graphql';
-import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
+import { ObjectTypeDefinitionNode, parse } from 'graphql';
+import { BelongsToTransformer, HasManyTransformer, HasOneTransformer, ManyToManyTransformer } from '..';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -602,7 +602,60 @@ describe('custom primary key and relational directives', () => {
 
     expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain('#set( $ownerAllowedFields0 = ["postReference","title","comments"] )');
     expect(out.resolvers['Mutation.createComment.auth.1.req.vtl']).toContain('#set( $ownerAllowedFields0 = ["commentReference","title","post","postCommentsPostReference","postCommentsTitle"] )');
-    expect(out.resolvers['Mutation.createCar.auth.1.req.vtl']).toContain('#set( $ownerAllowedFields0 = ["vinNumber","serialNumber","engine","carEngineVinNumber","carEngineSerialNumber"] )')
+    expect(out.resolvers['Mutation.createCar.auth.1.req.vtl']).toContain('#set( $ownerAllowedFields0 = ["vinNumber","serialNumber","engine","carEngineVinNumber","carEngineSerialNumber"] )');
     expect(out.resolvers['Mutation.createEngine.auth.1.req.vtl']).toContain('#set( $ownerAllowedFields0 = ["vinNumber","manufacturerReference","car","engineCarVinNumber","engineCarManufacturerReference"] )');
+  });
+
+  it('should generate correct fields in the many to many link object', () => {
+    [true, false].forEach((ff) => {
+      const inputSchema = `
+      type Post @model {
+        customPostId: ID! @primaryKey(sortKeyFields: ["sortId"])
+        sortId: ID!
+        tags: [Tag] @manyToMany(relationName: "PostTag")
+      }
+
+      type Tag @model {
+        customTagId: ID! @primaryKey(sortKeyFields: ["label"])
+        label: ID!
+        posts: [Post] @manyToMany(relationName: "PostTag")
+      }`;
+
+      const authTransformer = new AuthTransformer();
+      const modelTransformer = new ModelTransformer();
+      const indexTransformer = new IndexTransformer();
+      const hasOneTransformer = new HasOneTransformer();
+      const primaryKeyTransformer = new PrimaryKeyTransformer();
+      const transformer = new GraphQLTransform({
+        authConfig: {
+          defaultAuthentication: {
+            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          },
+          additionalAuthenticationProviders: [],
+        },
+        featureFlags: mockFeatureFlags(ff),
+        transformers: [
+          modelTransformer,
+          primaryKeyTransformer,
+          indexTransformer,
+          hasOneTransformer,
+          new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
+          authTransformer,
+        ],
+      });
+      const out = transformer.transform(inputSchema);
+      expect(out).toBeDefined();
+      const schema = parse(out.schema);
+      validateModelSchema(schema);
+
+      const type = schema.definitions.find((def: any) => def.name && def.name.value === 'PostTag') as ObjectTypeDefinitionNode;
+      expect(type).toBeDefined();
+      expect(type.fields?.find((f) => f.name.value === 'taglabel')).toBeDefined();
+      expect(type.fields?.find((f) => f.name.value === 'postsortId')).toBeDefined();
+      expect((type.fields?.find((f) => f.name.value === 'postCustomPostId') !== undefined) === ff).toBe(true);
+      expect((type.fields?.find((f) => f.name.value === 'tagCustomTagId') !== undefined) === ff).toBe(true);
+      expect((type.fields?.find((f) => f.name.value === 'postID') !== undefined) !== ff).toBe(true);
+      expect((type.fields?.find((f) => f.name.value === 'tagID') !== undefined) !== ff).toBe(true);
+    });
   });
 });
