@@ -120,14 +120,18 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
       throw new Error('No AppSync API configured in the project. Use \'amplify add api\' to create an API.');
     }
     const resourceDir = this.getResourceDir(apiName);
+
+    // Because we rely on an in-place update for 'NEW' lambda conflictResolution types, we
+    // execute this behavior before the call to `updateAppsyncCLIInputs`.
+    if (updates.conflictResolution) {
+      updates.conflictResolution = await this.createResolverResources(updates.conflictResolution);
+      await writeResolverConfig(updates.conflictResolution, resourceDir);
+    }
+
     // update appsync cli-inputs
     const gqlSchemaPath = await this.updateAppsyncCLIInputs(updates, apiName);
     if (updates.transformSchema) {
       this.writeSchema(gqlSchemaPath, updates.transformSchema);
-    }
-    if (updates.conflictResolution) {
-      updates.conflictResolution = await this.createResolverResources(updates.conflictResolution);
-      await writeResolverConfig(updates.conflictResolution, resourceDir);
     }
 
     const authConfig = getAppSyncAuthConfig(stateManager.getMeta());

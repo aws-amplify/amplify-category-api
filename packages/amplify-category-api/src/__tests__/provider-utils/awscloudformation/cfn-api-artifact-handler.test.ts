@@ -357,4 +357,36 @@ describe('update artifacts', () => {
       },
     ]);
   });
+
+  it('correctly updates the cli-inputs on an update that sets a NEW lambda for conflict resolution', async () =>{
+    jest.spyOn(AppsyncApiInputState.prototype, 'saveCLIInputPayload');
+    jest.spyOn(AppsyncApiInputState.prototype, 'cliInputFileExists').mockReturnValueOnce(true);
+
+    updateRequestStub.serviceModification.conflictResolution = {
+      defaultResolutionStrategy: {
+        type: 'LAMBDA',
+        resolver: {
+          type: 'NEW',
+        },
+      },
+    };
+
+    await cfnApiArtifactHandler.updateArtifacts(updateRequestStub);
+
+    const { objectContaining, stringContaining } = expect;
+
+    expect(AppsyncApiInputState.prototype.saveCLIInputPayload).toHaveBeenCalledWith(objectContaining({
+      serviceConfiguration: objectContaining({
+        conflictResolution: {
+          defaultResolutionStrategy: {
+            type: 'LAMBDA',
+            resolver: {
+              type: 'EXISTING',
+              name: stringContaining('syncConflictHandler'),
+            },
+          },
+        },
+      }),
+    }));
+  });
 });
