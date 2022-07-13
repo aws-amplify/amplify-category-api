@@ -36,7 +36,7 @@ import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
 import { ManyToManyDirectiveConfiguration, ManyToManyPreProcessContext, ManyToManyRelation } from './types';
-import { registerManyToManyForeignKeyMappings, validateModelDirective } from './utils';
+import { getManyToManyConnectionAttributeName, getObjectPrimaryKey, registerManyToManyForeignKeyMappings, validateModelDirective } from './utils';
 import { makeQueryConnectionWithKeyResolver, updateTableForConnection } from './resolvers';
 import {
   ensureHasManyConnectionField,
@@ -165,9 +165,9 @@ export class ManyToManyTransformer extends TransformerPluginBase {
         const d2SortKeys = getSortKeyFieldsNoContext(manyToManyTwo.model);
         const d1IndexName = `by${d1origTypeName}`;
         const d2IndexName = `by${d2origTypeName}`;
-        const d1FieldNameId = `${d1FieldName}ID`;
+        const d1FieldNameId = getManyToManyConnectionAttributeName(context.featureFlags, d1FieldName, getObjectPrimaryKey(manyToManyOne.model as ObjectTypeDefinitionNode).name.value);
         const d1SortFieldNames = d1SortKeys.map(node => `${d1FieldNameOrig}${node.name.value}`);
-        const d2FieldNameId = `${d2FieldName}ID`;
+        const d2FieldNameId = getManyToManyConnectionAttributeName(context.featureFlags, d2FieldName, getObjectPrimaryKey(manyToManyTwo.model as ObjectTypeDefinitionNode).name.value);
         const d2SortFieldNames = d2SortKeys.map(node => `${d2FieldNameOrig}${node.name.value}`);
         const joinModelDirective = makeDirective('model', []);
         const d1IndexDirective = makeDirective('index', [
@@ -282,9 +282,9 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       const d2SortKeys = getSortKeyFields(context, directive2.object);
       const d1IndexName = `by${d1origTypeName}`;
       const d2IndexName = `by${d2origTypeName}`;
-      const d1FieldNameId = `${d1FieldName}ID`;
+      const d1FieldNameId = getManyToManyConnectionAttributeName(ctx.featureFlags, d1FieldName, getObjectPrimaryKey(directive1.object).name.value);
       const d1SortFieldNames = d1SortKeys.map(node => `${d1FieldNameOrig}${node.name.value}`);
-      const d2FieldNameId = `${d2FieldName}ID`;
+      const d2FieldNameId = getManyToManyConnectionAttributeName(ctx.featureFlags, d2FieldName, getObjectPrimaryKey(directive2.object).name.value);
       const d1FieldNameIdOrig = `${d1FieldNameOrig}ID`;
       const d2FieldNameIdOrig = `${d2FieldNameOrig}ID`;
       const d2SortFieldNames = d2SortKeys.map(node => `${d2FieldNameOrig}${node.name.value}`);
