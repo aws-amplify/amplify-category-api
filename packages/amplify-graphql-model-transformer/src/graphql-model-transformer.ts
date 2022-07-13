@@ -1,15 +1,15 @@
 import {
   DirectiveWrapper,
+  FieldWrapper,
+  getFieldNameFor,
+  InputObjectDefinitionWrapper,
   InvalidDirectiveError,
   MappingTemplate,
+  ObjectDefinitionWrapper,
   SyncConfig,
   SyncUtils,
   TransformerModelBase,
   TransformerNestedStack,
-  FieldWrapper,
-  InputObjectDefinitionWrapper,
-  ObjectDefinitionWrapper,
-  getFieldNameFor,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
@@ -18,6 +18,7 @@ import {
   MutationFieldType,
   QueryFieldType,
   SubscriptionFieldType,
+  TransformerBeforeStepContextProvider,
   TransformerContextProvider,
   TransformerModelProvider,
   TransformerPrepareStepContextProvider,
@@ -25,14 +26,12 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
-  TransformerBeforeStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  AttributeType, CfnTable, ITable, StreamViewType, Table, TableEncryption,
-} from '@aws-cdk/aws-dynamodb';
+import {AttributeType, CfnTable, ITable, StreamViewType, Table, TableEncryption,} from '@aws-cdk/aws-dynamodb';
 import * as iam from '@aws-cdk/aws-iam';
+import {CfnRole} from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { CfnDataSource } from '@aws-cdk/aws-appsync';
+import {CfnDataSource} from '@aws-cdk/aws-appsync';
 import {
   DirectiveNode,
   FieldDefinitionNode,
@@ -57,7 +56,6 @@ import {
   toCamelCase,
   toPascalCase,
 } from 'graphql-transformer-common';
-import { CfnRole } from '@aws-cdk/aws-iam';
 import {
   addDirectivesToOperation,
   addModelConditionInputs,
@@ -91,8 +89,8 @@ import {
   generateListRequestTemplate,
   generateSyncRequestTemplate,
 } from './resolvers/query';
-import { API_KEY_DIRECTIVE } from './definitions';
-import { SubscriptionLevel, ModelDirectiveConfiguration } from './directive';
+import {API_KEY_DIRECTIVE} from './definitions';
+import {ModelDirectiveConfiguration, SubscriptionLevel} from './directive';
 
 /**
  * Nullable
@@ -225,7 +223,31 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         createdAt: 'createdAt',
         updatedAt: 'updatedAt',
       },
-    });
+    }, ctx.featureFlags);
+
+    // This property override is specifically to address parity between V1 and V2 when the FF is disabled
+    // If one subscription is defined, just let the others go to null without FF. But if public and none defined, default all subs
+    if (!ctx.featureFlags.getBoolean('graphQLTransformer.shouldDeepMergeDirectiveConfigDefaults', false)) {
+      const publicSubscriptionDefaults = {
+        onCreate: [getFieldNameFor('onCreate', typeName)],
+        onDelete: [getFieldNameFor('onDelete', typeName)],
+        onUpdate: [getFieldNameFor('onUpdate', typeName)],
+      };
+
+      const baseArgs = directiveWrapped.getArguments(
+        {
+          subscriptions: {
+            level: SubscriptionLevel.on,
+            ...publicSubscriptionDefaults,
+          },
+        },
+        ctx.featureFlags,
+      );
+      if (baseArgs?.subscriptions?.level === SubscriptionLevel.public
+        && !(baseArgs?.subscriptions?.onCreate || baseArgs?.subscriptions?.onDelete || baseArgs?.subscriptions?.onUpdate)) {
+        options.subscriptions = { level: SubscriptionLevel.public, ...publicSubscriptionDefaults };
+      }
+    }
 
     if (options.subscriptions?.onCreate && !Array.isArray(options.subscriptions.onCreate)) {
       options.subscriptions.onCreate = [options.subscriptions.onCreate];
@@ -366,7 +388,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
       const subscriptionLevel = this.modelDirectiveConfig.get(def.name.value)?.subscriptions?.level;
       // in order to create subscription resolvers the level needs to be on
-      if (subscriptionLevel === SubscriptionLevel.on) {
+      if (subscriptionLevel !== SubscriptionLevel.off) {
         const subscriptionFields = this.getSubscriptionFieldNames(def!);
         subscriptionFields.forEach(subscription => {
           let resolver;
@@ -398,13 +420,15 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             default:
               throw new Error('Unknown subscription field type');
           }
-          resolver.addToSlot(
-            'postAuth',
-            MappingTemplate.s3MappingTemplateFromString(
-              generateAuthExpressionForSandboxMode(context.sandboxModeEnabled),
-              `${subscription.typeName}.${subscription.fieldName}.{slotName}.{slotIndex}.req.vtl`,
-            ),
-          );
+          if (subscriptionLevel === SubscriptionLevel.on) {
+            resolver.addToSlot(
+              'postAuth',
+              MappingTemplate.s3MappingTemplateFromString(
+                generateAuthExpressionForSandboxMode(context.sandboxModeEnabled),
+                `${subscription.typeName}.${subscription.fieldName}.{slotName}.{slotIndex}.req.vtl`,
+              ),
+            );
+          }
           resolver.mapToStack(context.stackManager.getStackFor(subscription.resolverLogicalId, def!.name.value));
           context.resolvers.addResolver(subscription.typeName, subscription.fieldName, resolver);
         });

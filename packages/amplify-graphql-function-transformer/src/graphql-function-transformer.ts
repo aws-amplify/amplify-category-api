@@ -42,7 +42,7 @@ export class FunctionTransformer extends TransformerPluginBase {
     const args = directiveWrapped.getArguments({
       resolverTypeName: parent.name.value,
       resolverFieldName: definition.name.value,
-    } as FunctionDirectiveConfiguration);
+    } as FunctionDirectiveConfiguration, acc.featureFlags);
     let resolver = this.resolverGroups.get(definition);
 
     if (resolver === undefined) {

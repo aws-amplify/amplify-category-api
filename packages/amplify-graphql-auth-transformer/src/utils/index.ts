@@ -1,5 +1,5 @@
 import { DirectiveWrapper, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
-import { AppSyncAuthMode, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthMode, FeatureFlagProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Stack } from '@aws-cdk/core';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { MODEL_OPERATIONS, READ_MODEL_OPERATIONS } from './constants';
@@ -35,7 +35,7 @@ export const splitRoles = (roles: Array<RoleDefinition>): RolesByProvider => ({
 /**
  * returns @auth directive rules
  */
-export const getAuthDirectiveRules = (authDir: DirectiveWrapper, isField = false): AuthRule[] => {
+export const getAuthDirectiveRules = (authDir: DirectiveWrapper, featureFlags: FeatureFlagProvider, isField = false): AuthRule[] => {
   const splitReadOperation = (rule: AuthRule): void => {
     const operations: (ModelOperation | 'read')[] = rule.operations ?? [];
     const indexOfRead = operations.indexOf('read', 0);
@@ -51,7 +51,7 @@ export const getAuthDirectiveRules = (authDir: DirectiveWrapper, isField = false
     }
   };
 
-  const { rules } = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] });
+  const { rules } = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }, featureFlags);
   rules.forEach(rule => {
     const operations: (ModelOperation | 'read')[] = rule.operations ?? MODEL_OPERATIONS;
 

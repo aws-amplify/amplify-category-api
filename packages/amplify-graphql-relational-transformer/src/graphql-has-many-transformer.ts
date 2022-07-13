@@ -68,7 +68,7 @@ export class HasManyTransformer extends TransformerPluginBase {
       field: definition,
       directive,
       limit: defaultLimit,
-    } as HasManyDirectiveConfiguration);
+    } as HasManyDirectiveConfiguration, context.featureFlags);
 
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);
