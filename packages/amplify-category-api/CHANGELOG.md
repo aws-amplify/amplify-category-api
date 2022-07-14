@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@3.1.3...@aws-amplify/amplify-category-api@3.1.4) (2022-07-14)
+
+
+### Bug Fixes
+
+* remove `gqlSchemaPath` in cli-inputs.json ([6356f8a](https://github.com/aws-amplify/amplify-category-api/commit/6356f8a62d4dad930777684b7484f65803bd4c20)), closes [#123](https://github.com/aws-amplify/amplify-category-api/issues/123)
+* update object reference to match cap change ([#627](https://github.com/aws-amplify/amplify-category-api/issues/627)) ([8ad6a23](https://github.com/aws-amplify/amplify-category-api/commit/8ad6a237eb50bf20b5391d8b4a79991552676b49))
+
+
+
+
+
 ## [3.1.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@3.1.2...@aws-amplify/amplify-category-api@3.1.3) (2022-07-01)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api
