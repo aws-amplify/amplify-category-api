@@ -99,7 +99,7 @@ test('model with public auth rule without all operations and amplify admin app i
   expect(out.schema).toContain('deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post @aws_api_key @aws_iam');
 
   // No Resource extending Auth and UnAuth role
-  const policyResources = Object.values(out.rootStack.Resources!).filter(r => r.Type === 'AWS::IAM::ManagedPolicy');
+  const policyResources = Object.values(out.rootStack.Resources!).filter((r) => r.Type === 'AWS::IAM::ManagedPolicy');
   expect(policyResources).toHaveLength(0);
 });
 
@@ -206,7 +206,7 @@ test('simple model with private auth rule, few operations, and amplify admin app
   );
 
   // No Resource extending Auth and UnAuth role
-  const policyResources = Object.values(out.rootStack.Resources!).filter(r => r.Type === 'AWS::IAM::ManagedPolicy');
+  const policyResources = Object.values(out.rootStack.Resources!).filter((r) => r.Type === 'AWS::IAM::ManagedPolicy');
   expect(policyResources).toHaveLength(0);
 });
 
@@ -297,10 +297,10 @@ test('simple model with AdminUI enabled should add IAM policy only for fields th
 
   expect(out.schema).toContain('getPost(id: ID!): Post @aws_iam');
   expect(out.schema).toContain('listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection @aws_iam');
-  const policyResources = _.filter(out.rootStack.Resources, r => r.Type === 'AWS::IAM::ManagedPolicy');
+  const policyResources = _.filter(out.rootStack.Resources, (r) => r.Type === 'AWS::IAM::ManagedPolicy');
   expect(policyResources).toHaveLength(1);
   const resources = _.get(policyResources, '[0].Properties.PolicyDocument.Statement[0].Resource');
-  const typeFieldList = _.map(resources, r => _.get(r, 'Fn::Sub[1]')).map(r => `${_.get(r, 'typeName')}.${_.get(r, 'fieldName', '*')}`);
+  const typeFieldList = _.map(resources, (r) => _.get(r, 'Fn::Sub[1]')).map((r) => `${_.get(r, 'typeName')}.${_.get(r, 'fieldName', '*')}`);
   expect(typeFieldList).toEqual([
     'Post.*',
     'Query.getPost',
@@ -313,7 +313,7 @@ test('simple model with AdminUI enabled should add IAM policy only for fields th
     'Subscription.onDeletePost',
   ]);
   // should throw unauthorized if it's not signed by the admin ui iam role
-  ['Mutation.createPost.auth.1.req.vtl', 'Mutation.updatePost.auth.1.res.vtl', 'Mutation.deletePost.auth.1.res.vtl'].forEach(r => {
+  ['Mutation.createPost.auth.1.req.vtl', 'Mutation.updatePost.auth.1.res.vtl', 'Mutation.deletePost.auth.1.res.vtl'].forEach((r) => {
     expect(out.resolvers[r]).toMatchSnapshot();
   });
 });
