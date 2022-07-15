@@ -34,7 +34,9 @@ test('subscriptions are only generated if the respective mutation operation exis
   const out = transformer.transform(validSchema);
   // expect to generate subscription resolvers for create and update only
   expect(out).toBeDefined();
-  expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+  const resources = out.rootStack.Resources;
+  expect(resources).toBeDefined();
+  expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID]?.Properties?.AuthenticationType).toEqual(
     'AMAZON_COGNITO_USER_POOLS',
   );
   expect(out.resolvers['Salary.secret.res.vtl']).toContain('#if( $operation == "Mutation" )');
@@ -64,8 +66,11 @@ test('per-field @auth without @model', () => {
   expect(out).toBeDefined();
 
   const resources = out.rootStack.Resources;
-  const authPolicyIdx = Object.keys(out.rootStack.Resources).find(r => r.includes('AuthRolePolicy'));
-  expect(resources[authPolicyIdx]).toMatchSnapshot();
+  expect(resources).toBeDefined();
+  const authPolicyIdx = Object.keys(resources!).find((r) => r.includes('AuthRolePolicy'));
+  expect(resources).toBeDefined();
+  expect(authPolicyIdx).toBeDefined();
+  expect(resources![authPolicyIdx!]).toMatchSnapshot();
   expect(out.resolvers['Query.listContext.req.vtl']).toContain(
     '#set( $staticGroupRoles = [{"claim":"cognito:groups","entity":"Allowed"}] )',
   );
@@ -116,7 +121,7 @@ test('does not generate field resolvers when private rule takes precedence over 
   expect(out).toBeDefined();
   expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
   expect(out.resolvers['Student.ssn.res.vtl']).toMatchSnapshot();
-  ['id', 'name'].forEach(field => {
+  ['id', 'name'].forEach((field) => {
     expect(out.resolvers[`Student.${field}.req.vtl`]).toBeUndefined();
     expect(out.resolvers[`Student.${field}.res.vtl`]).toBeUndefined();
   });
@@ -145,7 +150,7 @@ test('generates field resolver for other provider rules even if private removes 
   expect(out).toBeDefined();
   expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
   expect(out.resolvers['Student.ssn.res.vtl']).toMatchSnapshot();
-  ['id', 'name'].forEach(field => {
+  ['id', 'name'].forEach((field) => {
     expect(out.resolvers[`Student.${field}.req.vtl`]).toBeDefined();
     expect(out.resolvers[`Student.${field}.res.vtl`]).toBeDefined();
   });
@@ -368,7 +373,9 @@ describe('with identity claim feature flag disabled', () => {
     const out = transformer.transform(validSchema);
     // expect to generate subscription resolvers for create and update only
     expect(out).toBeDefined();
-    expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+    const resources = out.rootStack.Resources;
+    expect(resources).toBeDefined();
+    expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID]?.Properties?.AuthenticationType).toEqual(
       'AMAZON_COGNITO_USER_POOLS',
     );
     expect(out.resolvers['Salary.secret.res.vtl']).toContain('#if( $operation == "Mutation" )');
@@ -401,8 +408,10 @@ describe('with identity claim feature flag disabled', () => {
     expect(out).toBeDefined();
 
     const resources = out.rootStack.Resources;
-    const authPolicyIdx = Object.keys(out.rootStack.Resources).find(r => r.includes('AuthRolePolicy'));
-    expect(resources[authPolicyIdx]).toMatchSnapshot();
+    expect(resources).toBeDefined();
+    const authPolicyIdx = Object.keys(resources!).find((r) => r.includes('AuthRolePolicy'));
+    expect(authPolicyIdx).toBeDefined();
+    expect(resources![authPolicyIdx!]).toMatchSnapshot();
     expect(out.resolvers['Query.listContext.req.vtl']).toContain(
       '#set( $staticGroupRoles = [{"claim":"cognito:groups","entity":"Allowed"}] )',
     );
@@ -434,7 +443,7 @@ describe('with identity claim feature flag disabled', () => {
     expect(out).toBeDefined();
     expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Student.ssn.res.vtl']).toMatchSnapshot();
-    ['id', 'name'].forEach(field => {
+    ['id', 'name'].forEach((field) => {
       expect(out.resolvers[`Student.${field}.req.vtl`]).toBeUndefined();
       expect(out.resolvers[`Student.${field}.res.vtl`]).toBeUndefined();
     });
@@ -466,7 +475,7 @@ describe('with identity claim feature flag disabled', () => {
     expect(out).toBeDefined();
     expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Student.ssn.res.vtl']).toMatchSnapshot();
-    ['id', 'name'].forEach(field => {
+    ['id', 'name'].forEach((field) => {
       expect(out.resolvers[`Student.${field}.req.vtl`]).toBeDefined();
       expect(out.resolvers[`Student.${field}.res.vtl`]).toBeDefined();
     });
