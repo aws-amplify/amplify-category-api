@@ -11,7 +11,7 @@ export const getObjectType = (
   type: string,
 ):
   ObjectTypeDefinitionNode
-  | undefined => doc.definitions.find(def => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
+  | undefined => doc.definitions.find((def) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
   | ObjectTypeDefinitionNode
   | undefined;
 
@@ -21,7 +21,7 @@ export const getObjectType = (
 export const getField = (
   obj: ObjectTypeDefinitionNode,
   fieldName: string,
-): FieldDefinitionNode | void => obj.fields?.find(f => f.name.value === fieldName);
+): FieldDefinitionNode | void => obj.fields?.find((f) => f.name.value === fieldName);
 
 /**
  * Merges passed in feature flags with default feature flags for tests

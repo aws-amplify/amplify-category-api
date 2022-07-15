@@ -32,7 +32,9 @@ describe('owner based @auth', () => {
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
-    expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+    const resources = out.rootStack.Resources;
+    expect(resources).toBeDefined();
+    expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
       'AMAZON_COGNITO_USER_POOLS',
     );
   });
@@ -59,7 +61,9 @@ describe('owner based @auth', () => {
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
-    expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+    const resources = out.rootStack.Resources;
+    expect(resources).toBeDefined();
+    expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
       'AMAZON_COGNITO_USER_POOLS',
     );
     expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
@@ -90,7 +94,9 @@ describe('owner based @auth', () => {
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
-    expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+    const resources = out.rootStack.Resources;
+    expect(resources).toBeDefined();
+    expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
       'AMAZON_COGNITO_USER_POOLS',
     );
     expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
@@ -250,10 +256,10 @@ describe('owner based @auth', () => {
     const postType = getObjectType(schema, 'Post');
     expect(postType).toBeDefined();
 
-    const postOwnerField = getField(postType, 'postOwner');
+    const postOwnerField = getField(postType!, 'postOwner');
     expect(postOwnerField).toBeDefined();
 
-    const customOwner = getField(postType, 'customOwner');
+    const customOwner = getField(postType!, 'customOwner');
     expect(customOwner).toBeDefined();
 
     /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -290,10 +296,10 @@ describe('owner based @auth', () => {
     const postType = getObjectType(schema, 'Post');
     expect(postType).toBeDefined();
 
-    const postOwnerField = getField(postType, 'postOwner');
+    const postOwnerField = getField(postType!, 'postOwner');
     expect(postOwnerField).toBeDefined();
 
-    const customOwner = getField(postType, 'customOwner');
+    const customOwner = getField(postType!, 'customOwner');
     expect(customOwner).toBeDefined();
 
     /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -343,10 +349,10 @@ describe('owner based @auth', () => {
     expect(familyMemberType).toBeDefined();
 
     // use double type as it's non-null
-    const parentOwnerField = getField(familyMemberType, 'parent');
+    const parentOwnerField = getField(familyMemberType!, 'parent');
     expect(parentOwnerField).toBeDefined();
 
-    const childOwnerField = getField(familyMemberType, 'child');
+    const childOwnerField = getField(familyMemberType!, 'child');
     expect(childOwnerField).toBeDefined();
 
     /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -490,7 +496,9 @@ describe('owner based @auth', () => {
     const out = transformer.transform(validSchema);
 
     expect(out).toBeDefined();
-    expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+    const resources = out.rootStack.Resources;
+    expect(resources).toBeDefined();
+    expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
       'AMAZON_COGNITO_USER_POOLS',
     );
     expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
@@ -525,7 +533,9 @@ describe('owner based @auth', () => {
       });
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
-      expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+      const resources = out.rootStack.Resources;
+      expect(resources).toBeDefined();
+      expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
         'AMAZON_COGNITO_USER_POOLS',
       );
     });
@@ -545,17 +555,25 @@ describe('owner based @auth', () => {
           createdAt: String
           updatedAt: String
         }`;
+      const getBooleanFn = (featureName): boolean => {
+        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
+          return false;
+        }
+        return true;
+      };
       const transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
         featureFlags: {
           ...featureFlags,
-          ...{ getBoolean: (featureName) => (featureName === 'useSubUsernameForDefaultIdentityClaim') ? false : true },
+          ...{ getBoolean: getBooleanFn },
         },
       });
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
-      expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+      const resources = out.rootStack.Resources;
+      expect(resources).toBeDefined();
+      expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
         'AMAZON_COGNITO_USER_POOLS',
       );
       expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
@@ -579,17 +597,25 @@ describe('owner based @auth', () => {
           createdAt: String
           updatedAt: String
         }`;
+      const getBooleanFn = (featureName): boolean => {
+        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
+          return false;
+        }
+        return true;
+      };
       const transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
         featureFlags: {
           ...featureFlags,
-          ...{ getBoolean: (featureName) => (featureName === 'useSubUsernameForDefaultIdentityClaim') ? false : true },
+          ...{ getBoolean: getBooleanFn },
         },
       });
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
-      expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+      const resources = out.rootStack.Resources;
+      expect(resources).toBeDefined();
+      expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
         'AMAZON_COGNITO_USER_POOLS',
       );
       expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
@@ -734,10 +760,10 @@ describe('owner based @auth', () => {
       const postType = getObjectType(schema, 'Post');
       expect(postType).toBeDefined();
 
-      const postOwnerField = getField(postType, 'postOwner');
+      const postOwnerField = getField(postType!, 'postOwner');
       expect(postOwnerField).toBeDefined();
 
-      const customOwner = getField(postType, 'customOwner');
+      const customOwner = getField(postType!, 'customOwner');
       expect(customOwner).toBeDefined();
 
       /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -777,10 +803,10 @@ describe('owner based @auth', () => {
       const postType = getObjectType(schema, 'Post');
       expect(postType).toBeDefined();
 
-      const postOwnerField = getField(postType, 'postOwner');
+      const postOwnerField = getField(postType!, 'postOwner');
       expect(postOwnerField).toBeDefined();
 
-      const customOwner = getField(postType, 'customOwner');
+      const customOwner = getField(postType!, 'customOwner');
       expect(customOwner).toBeDefined();
 
       /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -830,10 +856,10 @@ describe('owner based @auth', () => {
       expect(familyMemberType).toBeDefined();
 
       // use double type as it's non-null
-      const parentOwnerField = getField(familyMemberType, 'parent');
+      const parentOwnerField = getField(familyMemberType!, 'parent');
       expect(parentOwnerField).toBeDefined();
 
-      const childOwnerField = getField(familyMemberType, 'child');
+      const childOwnerField = getField(familyMemberType!, 'child');
       expect(childOwnerField).toBeDefined();
 
       /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -1133,17 +1159,25 @@ describe('owner based @auth', () => {
           createdAt: String
           updatedAt: String
         }`;
+      const getBooleanFn = (featureName): boolean => {
+        if (featureName === 'populateOwnerFieldForStaticGroupAuth') {
+          return false;
+        }
+        return true;
+      };
       const transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
         featureFlags: {
           ...featureFlags,
-          ...{ getBoolean: (featureName) => (featureName === 'populateOwnerFieldForStaticGroupAuth') ? false : true },
+          ...{ getBoolean: getBooleanFn },
         },
       });
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
-      expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+      const resources = out.rootStack.Resources;
+      expect(resources).toBeDefined();
+      expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
         'AMAZON_COGNITO_USER_POOLS',
       );
     });
@@ -1163,17 +1197,25 @@ describe('owner based @auth', () => {
           createdAt: String
           updatedAt: String
         }`;
+      const getBooleanFn = (featureName): boolean => {
+        if (featureName === 'populateOwnerFieldForStaticGroupAuth') {
+          return false;
+        }
+        return true;
+      };
       const transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
         featureFlags: {
           ...featureFlags,
-          ...{ getBoolean: (featureName) => (featureName === 'populateOwnerFieldForStaticGroupAuth') ? false : true },
+          ...{ getBoolean: getBooleanFn },
         },
       });
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
-      expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+      const resources = out.rootStack.Resources;
+      expect(resources).toBeDefined();
+      expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
         'AMAZON_COGNITO_USER_POOLS',
       );
       expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
@@ -1193,17 +1235,25 @@ describe('owner based @auth', () => {
           createdAt: String
           updatedAt: String
         }`;
+      const getBooleanFn = (featureName): boolean => {
+        if (featureName === 'populateOwnerFieldForStaticGroupAuth') {
+          return false;
+        }
+        return true;
+      };
       const transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
         featureFlags: {
           ...featureFlags,
-          ...{ getBoolean: (featureName) => (featureName === 'populateOwnerFieldForStaticGroupAuth') ? false : true },
+          ...{ getBoolean: getBooleanFn },
         },
       });
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
-      expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+      const resources = out.rootStack.Resources;
+      expect(resources).toBeDefined();
+      expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
         'AMAZON_COGNITO_USER_POOLS',
       );
       expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
@@ -1223,17 +1273,25 @@ describe('owner based @auth', () => {
           createdAt: String
           updatedAt: String
         }`;
+      const getBooleanFn = (featureName): boolean => {
+        if (featureName === 'populateOwnerFieldForStaticGroupAuth') {
+          return false;
+        }
+        return true;
+      };
       const transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
         featureFlags: {
           ...featureFlags,
-          ...{ getBoolean: (featureName) => (featureName === 'populateOwnerFieldForStaticGroupAuth') ? false : true },
+          ...{ getBoolean: getBooleanFn },
         },
       });
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
-      expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+      const resources = out.rootStack.Resources;
+      expect(resources).toBeDefined();
+      expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
         'AMAZON_COGNITO_USER_POOLS',
       );
       expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
