@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DefaultValueModelTransformer:  should be supported on a required field. 1`] = `
+exports[`DefaultValueModelTransformer: should be supported on a required field. 1`] = `
 "
 type Test {
   id: ID!
@@ -220,7 +220,7 @@ type Subscription {
 "
 `;
 
-exports[`DefaultValueModelTransformer:  should successfully transform simple valid schema 1`] = `
+exports[`DefaultValueModelTransformer: should successfully transform simple valid schema 1`] = `
 "
 type Post {
   id: ID!
