@@ -72,7 +72,6 @@ test('migrate resource', async () => {
         },
       },
       apiName: 'apiunittests',
-      gqlSchemaPath: 'mockProjectPath/schema.graphql',
     },
   };
   expect(JSONUtilities.writeJson).toBeCalledWith(expectedPath, expectedPayload);

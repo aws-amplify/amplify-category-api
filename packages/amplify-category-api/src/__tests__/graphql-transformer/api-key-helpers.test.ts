@@ -5,7 +5,7 @@ jest.mock('amplify-cli-core', () => {
   const original = jest.requireActual('amplify-cli-core');
   return {
     ...original,
-    ApiCategoryFacade: {
+    CloudformationProviderFacade: {
       getApiKeyConfig: jest.fn(() => ({
         apiKeyExpirationDays: 2,
         apiKeyExpirationDate: new Date('2021-08-20T20:38:07.585Z'),
