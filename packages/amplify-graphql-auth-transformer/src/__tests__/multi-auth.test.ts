@@ -38,10 +38,11 @@ const withAuthModes = (authConfig: AppSyncAuthConfiguration, authModes: AppSyncA
     additionalAuthenticationProviders: [],
   };
 
-  authModes.forEach(authMode => {
-    newAuthConfig.additionalAuthenticationProviders.push({
+  authModes.forEach((authMode) => {
+    const provider = {
       authenticationType: authMode,
-    });
+    };
+    newAuthConfig.additionalAuthenticationProviders.push(provider as never);
   });
 
   return newAuthConfig;
@@ -166,7 +167,7 @@ const getObjectType = (
   type: string,
 ):
   ObjectTypeDefinitionNode
-  | undefined => doc.definitions.find(def => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
+  | undefined => doc.definitions.find((def) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
     | ObjectTypeDefinitionNode
     | undefined;
 
@@ -176,22 +177,22 @@ const expectNone = (fieldOrType): void => {
 
 const expectOne = (fieldOrType, directiveName): void => {
   expect(fieldOrType.directives.length).toBe(1);
-  expect(fieldOrType.directives.find(d => d.name.value === directiveName)).toBeDefined();
+  expect(fieldOrType.directives.find((d) => d.name.value === directiveName)).toBeDefined();
 };
 
 const expectTwo = (fieldOrType, directiveNames): void => {
   expect(directiveNames).toBeDefined();
   expect(directiveNames).toHaveLength(2);
   expect(fieldOrType.directives).toHaveLength(2);
-  expect(fieldOrType.directives.find(d => d.name.value === directiveNames[0])).toBeDefined();
-  expect(fieldOrType.directives.find(d => d.name.value === directiveNames[1])).toBeDefined();
+  expect(fieldOrType.directives.find((d) => d.name.value === directiveNames[0])).toBeDefined();
+  expect(fieldOrType.directives.find((d) => d.name.value === directiveNames[1])).toBeDefined();
 };
 
 const expectMultiple = (fieldOrType: ObjectTypeDefinitionNode | FieldDefinitionNode, directiveNames: string[]): void => {
   expect(directiveNames).toBeDefined();
   expect(directiveNames).toHaveLength(directiveNames.length);
-  expect(fieldOrType.directives.length).toEqual(directiveNames.length);
-  directiveNames.forEach(directiveName => {
+  expect(fieldOrType?.directives?.length).toEqual(directiveNames.length);
+  directiveNames.forEach((directiveName) => {
     expect(fieldOrType.directives).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -202,7 +203,7 @@ const expectMultiple = (fieldOrType: ObjectTypeDefinitionNode | FieldDefinitionN
   });
 };
 
-const getField = (type, name): any => type.fields.find(f => f.name.value === name);
+const getField = (type, name): any => type.fields.find((f) => f.name.value === name);
 
 describe('validation tests', () => {
   const validationTest = (authDirective, authConfig, expectedError): void => {
@@ -295,12 +296,12 @@ describe('schema generation directive tests', () => {
     if (expectedDirectiveNames && expectedDirectiveNames.length > 0) {
       let expectedDirectiveNameCount = 0;
 
-      expectedDirectiveNames.forEach(expectedDirectiveName => {
-        expect(postType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
+      expectedDirectiveNames.forEach((expectedDirectiveName) => {
+        expect(postType?.directives?.find((d) => d.name.value === expectedDirectiveName)).toBeDefined();
         expectedDirectiveNameCount += 1;
       });
 
-      expect(expectedDirectiveNameCount).toEqual(postType.directives.length);
+      expect(expectedDirectiveNameCount).toEqual(postType?.directives?.length);
     }
   };
 
@@ -329,11 +330,15 @@ describe('schema generation directive tests', () => {
     const mutationType = getObjectType(schemaDoc, 'Mutation');
     const subscriptionType = getObjectType(schemaDoc, 'Subscription');
 
-    const fields = [...queryType.fields, ...mutationType.fields];
+    const queryTypeFields = queryType?.fields;
+    expect(queryTypeFields).toBeDefined();
+    const mutationTypeFields = mutationType?.fields;
+    expect(mutationTypeFields).toBeDefined();
+    const fields = [...queryTypeFields!, ...mutationTypeFields!];
 
-    fields.forEach(field => {
-      expect(field.directives.length).toEqual(1);
-      expect(field.directives.find(d => d.name.value === userPoolsDirectiveName)).toBeDefined();
+    fields.forEach((field) => {
+      expect(field?.directives?.length).toEqual(1);
+      expect(field?.directives?.find((d) => d.name.value === userPoolsDirectiveName)).toBeDefined();
     });
 
     // Check that owner is required when only using owner auth rules
@@ -475,12 +480,13 @@ describe('schema generation directive tests', () => {
     const locationType = getObjectType(schemaDoc, 'Location');
     const addressType = getObjectType(schemaDoc, 'Address');
 
-    expect(locationType.directives.length).toBe(0);
-    expect(addressType.directives.length).toBe(0);
+    expect(locationType?.directives?.length).toBe(0);
+    expect(addressType?.directives?.length).toBe(0);
 
-    const authPolicyIdx = Object.keys(out.rootStack.Resources).find(r => r.includes('AuthRolePolicy'));
-
-    expect(out.rootStack.Resources[authPolicyIdx]).toBeUndefined();
+    const resources = out.rootStack.Resources;
+    expect(resources).toBeDefined();
+    const authPolicyIdx = Object.keys(resources!).find((r) => r.includes('AuthRolePolicy'));
+    expect(authPolicyIdx).not.toBeDefined();
   });
 
   test('Nested types without @model not getting directives applied for iam, but policy is generated', () => {
@@ -493,16 +499,19 @@ describe('schema generation directive tests', () => {
     const locationType = getObjectType(schemaDoc, 'Location');
     const addressType = getObjectType(schemaDoc, 'Address');
 
-    expect(locationType.directives.length).toBe(0);
-    expect(addressType.directives.length).toBe(0);
+    expect(locationType?.directives?.length).toBe(0);
+    expect(addressType?.directives?.length).toBe(0);
 
     // find the key to account for the hash
-    const authPolicyIdx = Object.keys(out.rootStack.Resources).find(r => r.includes('AuthRolePolicy01'));
-    expect(out.rootStack.Resources[authPolicyIdx]).toBeDefined();
-    const authRolePolicy = out.rootStack.Resources[authPolicyIdx];
+    const resources = out.rootStack.Resources;
+    expect(resources).toBeDefined();
+    const authPolicyIdx = Object.keys(resources!).find((r) => r.includes('AuthRolePolicy01'));
+    expect(authPolicyIdx).toBeDefined();
+    expect(resources![authPolicyIdx!]).toBeDefined();
+    const authRolePolicy = resources![authPolicyIdx!];
 
     const locationPolicy = authRolePolicy.Properties.PolicyDocument.Statement[0].Resource.filter(
-      r => r['Fn::Sub']
+      (r) => r['Fn::Sub']
         && r['Fn::Sub'].length
         && r['Fn::Sub'].length === 2
         && r['Fn::Sub'][1].typeName
@@ -511,7 +520,7 @@ describe('schema generation directive tests', () => {
     expect(locationPolicy).toHaveLength(1);
 
     const addressPolicy = authRolePolicy.Properties.PolicyDocument.Statement[0].Resource.filter(
-      r => r['Fn::Sub']
+      (r) => r['Fn::Sub']
         && r['Fn::Sub'].length
         && r['Fn::Sub'].length === 2
         && r['Fn::Sub'][1].typeName
@@ -530,7 +539,8 @@ describe('schema generation directive tests', () => {
     const tagType = getObjectType(schemaDoc, 'Tag');
     const expectedDirectiveNames = [userPoolsDirectiveName, iamDirectiveName];
 
-    expectMultiple(tagType, expectedDirectiveNames);
+    expect(tagType).toBeDefined();
+    expectMultiple(tagType!, expectedDirectiveNames);
   });
 
   test('Recursive types without @model', () => {
@@ -543,7 +553,8 @@ describe('schema generation directive tests', () => {
     const tagType = getObjectType(schemaDoc, 'Tag');
     const expectedDirectiveNames = [userPoolsDirectiveName, iamDirectiveName];
 
-    expectMultiple(tagType, expectedDirectiveNames);
+    expect(tagType).toBeDefined();
+    expectMultiple(tagType!, expectedDirectiveNames);
   });
 
   test('OIDC works with private', () => {
@@ -570,21 +581,21 @@ describe('schema generation directive tests', () => {
 
     let expectedDirectiveNameCount = 0;
 
-    expectedDirectiveNames.forEach(expectedDirectiveName => {
-      expect(locationType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
+    expectedDirectiveNames.forEach((expectedDirectiveName) => {
+      expect(locationType?.directives?.find((d) => d.name.value === expectedDirectiveName)).toBeDefined();
       expectedDirectiveNameCount += 1;
     });
 
-    expect(expectedDirectiveNameCount).toEqual(locationType.directives.length);
+    expect(expectedDirectiveNameCount).toEqual(locationType?.directives?.length);
 
     expectedDirectiveNameCount = 0;
 
-    expectedDirectiveNames.forEach(expectedDirectiveName => {
-      expect(addressType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
+    expectedDirectiveNames.forEach((expectedDirectiveName) => {
+      expect(addressType?.directives?.find((d) => d.name.value === expectedDirectiveName)).toBeDefined();
       expectedDirectiveNameCount += 1;
     });
 
-    expect(expectedDirectiveNameCount).toEqual(addressType.directives.length);
+    expect(expectedDirectiveNameCount).toEqual(addressType?.directives?.length);
   });
 });
 
