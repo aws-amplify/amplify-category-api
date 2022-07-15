@@ -3,7 +3,7 @@ import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-tran
 import { parse } from 'graphql';
 import { DefaultValueTransformer } from '..';
 
-describe('DefaultValueModelTransformer: ', () => {
+describe('DefaultValueModelTransformer:', () => {
   it('throws if @default is used in a non-@model type', () => {
     const schema = `
       type Test {
@@ -278,7 +278,7 @@ describe('DefaultValueModelTransformer: ', () => {
         intVal: Int @default(value: "10002000")
         floatValue: Float @default(value: "123456.34565")
         booleanValue: Boolean @default(value: "true")
-        awsJsonValue: AWSJSON @default(value: "{\\\"a\\\":1, \\\"b\\\":3, \\\"string\\\": 234}")
+        awsJsonValue: AWSJSON @default(value: "{\\"a\\":1, \\"b\\":3, \\"string\\": 234}")
         awsDateValue: AWSDate @default(value: "2016-01-29")
         awsTimestampValue: AWSTimestamp @default(value: "545345345")
         awsEmailValue: AWSEmail @default(value: "local-part@domain-part")
