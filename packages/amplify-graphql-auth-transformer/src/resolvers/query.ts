@@ -23,7 +23,6 @@ import {
   parens,
   or,
 } from 'graphql-mapping-template';
-import { NONE_VALUE } from 'graphql-transformer-common';
 import {
   getIdentityClaimExp,
   getOwnerClaim,
@@ -155,11 +154,11 @@ const generateAuthOnModelQueryExpression = (
                       or([
                         equals(
                           ref(`${role.entity}Claim`),
-                          methodCall(ref('util.defaultIfNull'), raw(`$ctx.args.${role.entity}.get("eq")`), str(NONE_VALUE)),
+                          methodCall(ref('util.defaultIfNull'), raw(`$ctx.args.${role.entity}.get("eq")`), nul()),
                         ),
                         methodCall(
                           ref(`ownerClaimsList${idx}.contains`),
-                          methodCall(ref('util.defaultIfNull'), raw(`$ctx.args.${role.entity}.get("eq")`), str(NONE_VALUE)),
+                          methodCall(ref('util.defaultIfNull'), raw(`$ctx.args.${role.entity}.get("eq")`), nul()),
                         ),
                       ]),
                     ),
@@ -246,11 +245,11 @@ const generateAuthOnModelQueryExpression = (
                       or([
                         equals(
                           ref(`${role.entity}Claim`),
-                          methodCall(ref('util.defaultIfNull'), raw(`$ctx.args.${role.entity}.get("eq")`), str(NONE_VALUE)),
+                          methodCall(ref('util.defaultIfNull'), raw(`$ctx.args.${role.entity}.get("eq")`), nul()),
                         ),
                         methodCall(
                           ref(`ownerClaimsList${idx}.contains`),
-                          methodCall(ref('util.defaultIfNull'), raw(`$ctx.args.${role.entity}.get("eq")`), str(NONE_VALUE)),
+                          methodCall(ref('util.defaultIfNull'), raw(`$ctx.args.${role.entity}.get("eq")`), nul()),
                         ),
                       ]),
                     ),
@@ -373,7 +372,7 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
           ...[
             generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
             iff(
-              notEquals(ref(`role${idx}`), str(NONE_VALUE)),
+              notEquals(ref(`role${idx}`), nul()),
               qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "${ownerCondition}": $ownerClaim${idx} }}`))),
             ),
           ],
@@ -384,7 +383,7 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
             ...[
               set(ref(`role${idx}_${secIdx}`), getOwnerClaim(claim)),
               iff(
-                notEquals(ref(`role${idx}_${secIdx}`), str(NONE_VALUE)),
+                notEquals(ref(`role${idx}_${secIdx}`), nul()),
                 qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "${ownerCondition}": $role${idx}_${secIdx} }}`))),
               ),
             ],
@@ -395,7 +394,7 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
           ...[
             set(ref(`role${idx}`), getOwnerClaim(role.claim!)),
             iff(
-              notEquals(ref(`role${idx}`), str(NONE_VALUE)),
+              notEquals(ref(`role${idx}`), nul()),
               qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "${ownerCondition}": $role${idx} }}`))),
             ),
           ],
