@@ -19,8 +19,8 @@ import {
   raw,
   set,
   ifElse,
+  nul
 } from 'graphql-mapping-template';
-import { NONE_VALUE } from 'graphql-transformer-common';
 import {
   getIdentityClaimExp,
   emptyPayload,
@@ -204,7 +204,7 @@ const generateAuthFilter = (
           obj({
             terms_set: obj({
               [roleKey]: obj({
-                terms: getIdentityClaimExp(str(role.claim!), list([str(NONE_VALUE)])),
+                terms: getIdentityClaimExp(str(role.claim!), list([nul()])),
                 minimum_should_match_script: obj({ source: str('1') }),
               }),
             }),
