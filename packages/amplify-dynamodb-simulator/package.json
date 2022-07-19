@@ -17,7 +17,7 @@
     "aws"
   ],
   "scripts": {
-    "build": "download --extract -o emulator https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip",
+    "build": "ts-node scripts/download-emulator.ts",
     "test": "jest"
   },
   "dependencies": {
@@ -34,7 +34,11 @@
     "amplify-cli-core": "^2.9.0"
   },
   "devDependencies": {
-    "download-cli": "^1.1.1",
+    "ts-node": "^10.9.1",
+    "node-fetch": "^3.2.9",
+    "@types/node-fetch": "^2.6.2",
+    "unzipper": "^0.10.11",
+    "@types/unzipper": "^0.10.5",
     "get-port": "^5.1.1"
   },
   "jest": {
