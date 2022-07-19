@@ -85,12 +85,13 @@ export const iamCheck = (claim: string, exp: Expression, identityPoolId?: string
  * 1. custom
  * 2. none value
  * @param ownerClaim owner claim
+ * @param defaultValueExp default value expression
  */
-export const getOwnerClaim = (ownerClaim: string): Expression => {
+export const getOwnerClaim = (ownerClaim: string, defaultValueExp: Expression = str(NONE_VALUE)): Expression => {
   if (ownerClaim === 'username') {
-    return getIdentityClaimExp(str(ownerClaim), getIdentityClaimExp(str(DEFAULT_COGNITO_IDENTITY_CLAIM), str(NONE_VALUE)));
+    return getIdentityClaimExp(str(ownerClaim), getIdentityClaimExp(str(DEFAULT_COGNITO_IDENTITY_CLAIM), defaultValueExp));
   }
-  return getIdentityClaimExp(str(ownerClaim), str(NONE_VALUE));
+  return getIdentityClaimExp(str(ownerClaim), defaultValueExp);
 };
 
 /**
@@ -226,14 +227,24 @@ export const emptyPayload = toJson(raw(JSON.stringify({ version: '2018-05-29', p
 export const generateOwnerClaimListExpression = (claim: string, refName: string): Expression => {
   const claims = claim.split(IDENTITY_CLAIM_DELIMITER);
 
-  if (claims.length <= 1) {
-    return set(ref(refName), list([]));
+  if (claims.length > 1) {
+    return compoundExpression([
+      set(ref(refName), list([])),
+      compoundExpression(
+        claims.map((c) => qref(methodCall(ref(`${refName}.add`), getOwnerClaim(c)))),
+      ),
+    ]);
   }
 
   return compoundExpression([
-    set(ref(refName), list([])),
-    compoundExpression(
-      claims.map((c) => qref(methodCall(ref(`${refName}.add`), getOwnerClaim(c)))),
+    set(ref(refName), getOwnerClaim(claim, list([]))),
+    iff(
+      methodCall(ref('util.isString'), ref(refName)),
+      ifElse(
+        methodCall(ref('util.isList'), methodCall(ref('util.parseJson'), ref(refName))),
+        set(ref(refName), methodCall(ref('util.parseJson'), ref(refName))),
+        set(ref(refName), list([ref(refName)])),
+      ),
     ),
   ]);
 };

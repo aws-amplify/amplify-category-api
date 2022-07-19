@@ -439,11 +439,12 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
       }
     }
   });
-  groupMap.forEach((fieldList, groupClaim) => {
+  Array.from(groupMap.entries()).forEach(([groupClaim, fieldList]: [string, string[]], idx) => {
     groupContainsExpression.push(
+      generateOwnerClaimListExpression(groupClaim, `groups${idx}`),
       forEach(
         ref('group'),
-        ref(`util.defaultIfNull($ctx.identity.claims.get("${groupClaim}"), [])`),
+        ref(`groups${idx}`),
         fieldList.map((field) => iff(not(methodCall(ref('group.isEmpty'))), qref(methodCall(ref('authFilter.add'), raw(`{"${field}": { "contains": $group }}`))))),
       ),
     );
