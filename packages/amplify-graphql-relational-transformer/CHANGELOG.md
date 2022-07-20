@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.11.0...@aws-amplify/graphql-relational-transformer@0.11.2) (2022-07-20)
+
+
+### Bug Fixes
+
+* use PK name in many to many link object ([a7a8692](https://github.com/aws-amplify/amplify-category-api/commit/a7a8692e9dba189c362443ead508e578ff6b6502))
+
+
+
+
+
 ## [0.11.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.11.0...@aws-amplify/graphql-relational-transformer@0.11.1) (2022-07-14)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer

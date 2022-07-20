@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.23](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@1.1.21...@aws-amplify/graphql-maps-to-transformer@1.1.23) (2022-07-20)
+
+
+### Bug Fixes
+
+* use PK name in many to many link object ([a7a8692](https://github.com/aws-amplify/amplify-category-api/commit/a7a8692e9dba189c362443ead508e578ff6b6502))
+
+
+
+
+
 ## [1.1.22](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@1.1.21...@aws-amplify/graphql-maps-to-transformer@1.1.22) (2022-07-14)
 
 **Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
