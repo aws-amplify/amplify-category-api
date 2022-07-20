@@ -103,7 +103,7 @@ import {
   getAuthDirectiveRules,
   READ_MODEL_OPERATIONS,
 } from './utils';
-import { showDefaultIdentityClaimWarning } from './utils/warnings';
+import { showDefaultIdentityClaimWarning, showOwnerCanReassignWarning } from './utils/warnings';
 
 // @ auth
 // changing the schema
@@ -193,6 +193,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
 
   after = (context: TransformerContextProvider): void => {
     showDefaultIdentityClaimWarning(context, this.rules);
+    showOwnerCanReassignWarning(this.authModelConfig);
   };
 
   field = (
