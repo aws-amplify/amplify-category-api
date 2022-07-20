@@ -1,7 +1,13 @@
 import { GraphQLAPIProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { EventSourceMapping, IFunction, LayerVersion, Runtime, StartingPosition } from '@aws-cdk/aws-lambda';
-import { CfnParameter, Construct, Fn, Stack, Duration } from '@aws-cdk/core';
-import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import {
+  EventSourceMapping, IFunction, LayerVersion, Runtime, StartingPosition,
+} from '@aws-cdk/aws-lambda';
+import {
+  CfnParameter, Construct, Fn, Stack, Duration,
+} from '@aws-cdk/core';
+import {
+  Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal,
+} from '@aws-cdk/aws-iam';
 import { ResourceConstants, SearchableResourceIDs } from 'graphql-transformer-common';
 import * as path from 'path';
 import assert from 'assert';
@@ -19,7 +25,7 @@ export const createLambda = (
   const { OpenSearchStreamingLambdaFunctionLogicalID } = ResourceConstants.RESOURCES;
   const { OpenSearchStreamingLambdaHandlerName, OpenSearchDebugStreamingLambda } = ResourceConstants.PARAMETERS;
   const enviroment: { [key: string]: string } = {
-    OPENSEARCH_ENDPOINT: 'https://' + endpoint,
+    OPENSEARCH_ENDPOINT: `https://${endpoint}`,
     OPENSEARCH_REGION: region,
     DEBUG: parameterMap.get(OpenSearchDebugStreamingLambda)!.valueAsString,
     OPENSEARCH_USE_EXTERNAL_VERSIONING: isProjectUsingDataStore.toString(),
@@ -27,7 +33,7 @@ export const createLambda = (
 
   return apiGraphql.host.addLambdaFunction(
     OpenSearchStreamingLambdaFunctionLogicalID,
-    'functions/' + OpenSearchStreamingLambdaFunctionLogicalID + '.zip',
+    `functions/${OpenSearchStreamingLambdaFunctionLogicalID}.zip`,
     parameterMap.get(OpenSearchStreamingLambdaHandlerName)!.valueAsString,
     path.resolve(__dirname, '..', '..', 'lib', 'streaming-lambda.zip'),
     Runtime.PYTHON_3_8,
