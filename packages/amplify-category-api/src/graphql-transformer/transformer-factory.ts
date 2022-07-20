@@ -45,6 +45,10 @@ import {
 import importFrom from 'import-from';
 import importGlobal from 'import-global';
 import path from 'path';
+import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { parseUserDefinedSlots } from './user-defined-slots';
+import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
+import { TransformerProjectOptions } from './transformer-options-types';
 
 const PROVIDER_NAME = 'awscloudformation';
 
@@ -230,4 +234,37 @@ const importTransformerModule = (transformerName: string) => {
     printer.error(`You may fix this error by editing transformers at ${path.join(transformerName, TRANSFORM_CONFIG_FILE_NAME)}`);
     throw error;
   }
+};
+
+/**
+ * Use the options generated from 'transformer-options' to create a V2 GraphQL Transform instance
+ * @param opts The options produced by 'transformer-options'
+ * @returns GraphQLTransform A brand new instance of the GraphQL Transform
+ */
+export const buildGraphQLTransformV2 = async (opts: TransformerProjectOptions<TransformerFactoryArgs>): Promise<GraphQLTransform> => {
+  const userProjectConfig = opts.projectConfig;
+  const stackMapping = userProjectConfig.config.StackMapping;
+  const userDefinedSlots = {
+    ...parseUserDefinedSlots(userProjectConfig.pipelineFunctions),
+    ...parseUserDefinedSlots(userProjectConfig.resolvers),
+  };
+
+  // Create the transformer instances, we've to make sure we're not reusing them within the same CLI command
+  // because the StackMapping feature already builds the project once.
+  const transformers = await opts.transformersFactory(opts.transformersFactoryArgs);
+  const transform = new GraphQLTransform({
+    transformers,
+    stackMapping,
+    transformConfig: userProjectConfig.config,
+    authConfig: opts.authConfig,
+    buildParameters: opts.buildParameters,
+    stacks: opts.projectConfig.stacks || {},
+    featureFlags: new AmplifyCLIFeatureFlagAdapter(),
+    sandboxModeEnabled: opts.sandboxModeEnabled,
+    userDefinedSlots,
+    resolverConfig: opts.resolverConfig,
+    overrideConfig: opts.overrideConfig,
+  });
+
+  return transform;
 };
