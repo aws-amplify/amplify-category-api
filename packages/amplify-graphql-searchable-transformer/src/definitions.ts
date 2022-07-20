@@ -26,6 +26,7 @@ import {
 } from 'graphql-transformer-common';
 import assert from 'assert';
 import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+
 const ID_CONDITIONS = [
   'ne',
   'gt',
@@ -56,13 +57,41 @@ export const AGGREGATE_TYPES = [
 
 export const DATASTORE_SYNC_FIELDS = ['_version', '_deleted', '_lastChangedAt'];
 
-export function makeSearchableScalarInputObject(type: string): InputObjectTypeDefinitionNode {
+const getScalarFilterInputType = (condition: string, type: string): TypeNode => {
+  switch (condition) {
+    case 'range':
+      return makeListType(makeNamedType(type));
+    case 'exists':
+      return makeNamedType('Boolean');
+    default:
+      return makeNamedType(type);
+  }
+};
+
+const getScalarConditions = (type: string): string[] => {
+  switch (type) {
+    case 'String':
+      return STRING_CONDITIONS;
+    case 'ID':
+      return ID_CONDITIONS;
+    case 'Int':
+      return INT_CONDITIONS;
+    case 'Float':
+      return FLOAT_CONDITIONS;
+    case 'Boolean':
+      return BOOLEAN_CONDITIONS;
+    default:
+      throw new Error('Valid types are String, ID, Int, Float, Boolean');
+  }
+};
+
+export const makeSearchableScalarInputObject = (type: string): InputObjectTypeDefinitionNode => {
   const name = SearchableResourceIDs.SearchableFilterInputTypeName(type);
   const conditions = getScalarConditions(type);
   const fields: InputValueDefinitionNode[] = conditions.map((condition: string) => ({
     kind: Kind.INPUT_VALUE_DEFINITION,
     name: { kind: 'Name' as const, value: condition },
-    type: getScalarFilterInputType(condition, type, name),
+    type: getScalarFilterInputType(condition, type),
     // TODO: Service does not support new style descriptions so wait.
     // description: field.description,
     directives: [],
@@ -81,38 +110,36 @@ export function makeSearchableScalarInputObject(type: string): InputObjectTypeDe
     fields,
     directives: [],
   };
-}
+};
 
-export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode, document: DocumentNode): InputObjectTypeDefinitionNode {
+export const makeSearchableXFilterInputObject = (obj: ObjectTypeDefinitionNode, document: DocumentNode): InputObjectTypeDefinitionNode => {
   const name = SearchableResourceIDs.SearchableFilterInputTypeName(obj.name.value);
   assert(obj.fields);
   const fields: InputValueDefinitionNode[] = obj.fields
     .filter((field: FieldDefinitionNode) => isScalar(field.type))
     .map(
-      (field: FieldDefinitionNode) =>
-        ({
-          kind: Kind.INPUT_VALUE_DEFINITION,
-          name: field.name,
-          type: makeNamedType(SearchableResourceIDs.SearchableFilterInputTypeName(getBaseType(field.type))),
-          // TODO: Service does not support new style descriptions so wait.
-          // description: field.description,
-          directives: [],
-        } as InputValueDefinitionNode),
+      (field: FieldDefinitionNode) => ({
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: field.name,
+        type: makeNamedType(SearchableResourceIDs.SearchableFilterInputTypeName(getBaseType(field.type))),
+        // TODO: Service does not support new style descriptions so wait.
+        // description: field.description,
+        directives: [],
+      } as InputValueDefinitionNode),
     );
 
   fields.push(
     ...obj.fields
       .filter((field: FieldDefinitionNode) => isEnum(field.type, document))
       .map(
-        (field: FieldDefinitionNode) =>
-          ({
-            kind: Kind.INPUT_VALUE_DEFINITION,
-            name: field.name,
-            type: makeNamedType(SearchableResourceIDs.SearchableFilterInputTypeName('String')),
-            // TODO: Service does not support new style descriptions so wait.
-            // description: field.description,
-            directives: [],
-          } as InputValueDefinitionNode),
+        (field: FieldDefinitionNode) => ({
+          kind: Kind.INPUT_VALUE_DEFINITION,
+          name: field.name,
+          type: makeNamedType(SearchableResourceIDs.SearchableFilterInputTypeName('String')),
+          // TODO: Service does not support new style descriptions so wait.
+          // description: field.description,
+          directives: [],
+        } as InputValueDefinitionNode),
       ),
   );
 
@@ -160,10 +187,10 @@ export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode, 
     fields,
     directives: [],
   };
-}
+};
 
-export function makeSearchableSortDirectionEnumObject(): EnumTypeDefinitionNode {
-  const name = graphqlName(`SearchableSortDirection`);
+export const makeSearchableSortDirectionEnumObject = (): EnumTypeDefinitionNode => {
+  const name = graphqlName('SearchableSortDirection');
   return {
     kind: Kind.ENUM_TYPE_DEFINITION,
     name: {
@@ -184,9 +211,9 @@ export function makeSearchableSortDirectionEnumObject(): EnumTypeDefinitionNode 
     ],
     directives: [],
   };
-}
+};
 
-export function makeSearchableXSortableFieldsEnumObject(obj: ObjectTypeDefinitionNode): EnumTypeDefinitionNode {
+export const makeSearchableXSortableFieldsEnumObject = (obj: ObjectTypeDefinitionNode): EnumTypeDefinitionNode => {
   const name = graphqlName(`Searchable${obj.name.value}SortableFields`);
   assert(obj.fields);
   const values: EnumValueDefinitionNode[] = obj.fields
@@ -206,9 +233,9 @@ export function makeSearchableXSortableFieldsEnumObject(obj: ObjectTypeDefinitio
     values,
     directives: [],
   };
-}
+};
 
-export function makeSearchableXAggregateFieldEnumObject(obj: ObjectTypeDefinitionNode, document: DocumentNode): EnumTypeDefinitionNode {
+export const makeSearchableXAggregateFieldEnumObject = (obj: ObjectTypeDefinitionNode, document: DocumentNode): EnumTypeDefinitionNode => {
   const name = graphqlName(`Searchable${obj.name.value}AggregateField`);
   assert(obj.fields);
   const values: EnumValueDefinitionNode[] = obj.fields
@@ -228,9 +255,9 @@ export function makeSearchableXAggregateFieldEnumObject(obj: ObjectTypeDefinitio
     values,
     directives: [],
   };
-}
+};
 
-export function makeSearchableXSortInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
+export const makeSearchableXSortInputObject = (obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode => {
   const name = graphqlName(`Searchable${obj.name.value}SortInput`);
   return {
     kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
@@ -269,9 +296,9 @@ export function makeSearchableXSortInputObject(obj: ObjectTypeDefinitionNode): I
     ],
     directives: [],
   };
-}
+};
 
-export function makeSearchableAggregateTypeEnumObject(): EnumTypeDefinitionNode {
+export const makeSearchableAggregateTypeEnumObject = (): EnumTypeDefinitionNode => {
   const name = graphqlName('SearchableAggregateType');
   const values: EnumValueDefinitionNode[] = ['terms', 'avg', 'min', 'max', 'sum'].map((type: string) => ({
     kind: Kind.ENUM_VALUE_DEFINITION,
@@ -288,9 +315,9 @@ export function makeSearchableAggregateTypeEnumObject(): EnumTypeDefinitionNode 
     values,
     directives: [],
   };
-}
+};
 
-export function makeSearchableXAggregationInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
+export const makeSearchableXAggregationInputObject = (obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode => {
   const name = graphqlName(`Searchable${obj.name.value}AggregationInput`);
   return {
     kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
@@ -320,35 +347,8 @@ export function makeSearchableXAggregationInputObject(obj: ObjectTypeDefinitionN
     ],
     directives: [],
   };
-}
+};
 
-function getScalarFilterInputType(condition: string, type: string, filterInputName: string): TypeNode {
-  switch (condition) {
-    case 'range':
-      return makeListType(makeNamedType(type));
-    case 'exists':
-      return makeNamedType('Boolean');
-    default:
-      return makeNamedType(type);
-  }
-}
-
-function getScalarConditions(type: string): string[] {
-  switch (type) {
-    case 'String':
-      return STRING_CONDITIONS;
-    case 'ID':
-      return ID_CONDITIONS;
-    case 'Int':
-      return INT_CONDITIONS;
-    case 'Float':
-      return FLOAT_CONDITIONS;
-    case 'Boolean':
-      return BOOLEAN_CONDITIONS;
-    default:
-      throw 'Valid types are String, ID, Int, Float, Boolean';
-  }
-}
 export const extendTypeWithDirectives = (
   ctx: TransformerTransformSchemaStepContextProvider,
   typeName: string,
@@ -364,12 +364,12 @@ export const addDirectivesToField = (
   typeName: string,
   fieldName: string,
   directives: Array<DirectiveNode>,
-) => {
+): void => {
   const type = ctx.output.getType(typeName) as ObjectTypeDefinitionNode;
   if (type) {
-    const field = type.fields?.find(f => f.name.value === fieldName);
+    const field = type.fields?.find((f) => f.name.value === fieldName);
     if (field) {
-      const newFields = [...type.fields!.filter(f => f.name.value !== field.name.value), extendFieldWithDirectives(field, directives)];
+      const newFields = [...type.fields!.filter((f) => f.name.value !== field.name.value), extendFieldWithDirectives(field, directives)];
 
       const newType = {
         ...type,
@@ -386,14 +386,14 @@ export const addDirectivesToOperation = (
   typeName: string,
   operationName: string,
   directives: Array<DirectiveNode>,
-) => {
+): void => {
   // add directives to the given operation
   addDirectivesToField(ctx, typeName, operationName, directives);
 
   // add the directives to the result type of the operation
   const type = ctx.output.getType(typeName) as ObjectTypeDefinitionNode;
   if (type) {
-    const field = type.fields!.find(f => f.name.value === operationName);
+    const field = type.fields!.find((f) => f.name.value === operationName);
 
     if (field) {
       const returnFieldType = field.type as NamedTypeNode;
