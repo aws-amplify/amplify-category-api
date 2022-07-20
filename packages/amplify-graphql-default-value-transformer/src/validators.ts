@@ -3,28 +3,11 @@ import * as net from 'net';
 
 const TIME_REGEX = /^([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(\.\d{1,})?(([Z])|([+|-]([01][0-9]|2[0-3]):[0-5][0-9]))$/;
 const RFC_3339_REGEX_DATE = /^(\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01]))$/;
-const RFC_3339_REGEX_DATE_TIME =
-  /^(\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]|60))(\.\d{1,})?(([Z])|([+|-]([01][0-9]|2[0-3]):[0-5][0-9]))$/;
-const EMAIL_ADDRESS_REGEX =
-  /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+const RFC_3339_REGEX_DATE_TIME = /^(\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]|60))(\.\d{1,})?(([Z])|([+|-]([01][0-9]|2[0-3]):[0-5][0-9]))$/;
+const EMAIL_ADDRESS_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 const BOOL_REGEX = /^(true|false)$/i;
 
-const validateString = (x: string) => x === x.toString();
-const validateInt = (x: string) => !Number.isNaN(parseInt(x, 10));
-const validateFloat = (x: string) => !Number.isNaN(parseFloat(x));
-const validateAwsDate = (x: string) => validateDate(x);
-const validateAwsTime = (x: string) => validateTime(x);
-const validateAwsDateTime = (x: string) => validateDateTime(x);
-const validateAwsTimestamp = (x: string) => !Number.isNaN(parseInt(x, 10));
-const validateAwsPhone = (x: string) => isValidNumber(x);
-
-const validateTime = (time: string): boolean => {
-  return TIME_REGEX.test(time);
-};
-
-const leapYear = (year: number): boolean => {
-  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-};
+const leapYear = (year: number): boolean => (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
 
 const validateDate = (date: string): boolean => {
   if (!RFC_3339_REGEX_DATE.test(date)) {
@@ -41,7 +24,8 @@ const validateDate = (date: string): boolean => {
     case 2: // February
       if (leapYear(year) && day > 29) {
         return false;
-      } else if (!leapYear(year) && day > 28) {
+      }
+      if (!leapYear(year) && day > 28) {
         return false;
       }
       return true;
@@ -53,10 +37,13 @@ const validateDate = (date: string): boolean => {
         return false;
       }
       break;
+    default:
   }
 
   return true;
 };
+
+const validateTime = (time: string): boolean => TIME_REGEX.test(time);
 
 const validateDateTime = (dateTime: string): boolean => {
   // Validate the structure of the date-string
@@ -77,11 +64,18 @@ const validateDateTime = (dateTime: string): boolean => {
   return validateDate(date) && validateTime(time);
 };
 
-const validateBoolean = (x: string): boolean => {
-  return BOOL_REGEX.test(x);
-};
+const validateString = (x: string): boolean => x === x.toString();
+const validateInt = (x: string): boolean => !Number.isNaN(parseInt(x, 10));
+const validateFloat = (x: string): boolean => !Number.isNaN(parseFloat(x));
+const validateAwsDate = (x: string): boolean => validateDate(x);
+const validateAwsTime = (x: string): boolean => validateTime(x);
+const validateAwsDateTime = (x: string): boolean => validateDateTime(x);
+const validateAwsTimestamp = (x: string): boolean => !Number.isNaN(parseInt(x, 10));
+const validateAwsPhone = (x: string): boolean => isValidNumber(x);
 
-const validateJson = (x: string) => {
+const validateBoolean = (x: string): boolean => BOOL_REGEX.test(x);
+
+const validateJson = (x: string): boolean => {
   try {
     JSON.parse(x);
     return true;
@@ -90,12 +84,11 @@ const validateJson = (x: string) => {
   }
 };
 
-const validateAwsEmail = (x: string): boolean => {
-  return EMAIL_ADDRESS_REGEX.test(x);
-};
+const validateAwsEmail = (x: string): boolean => EMAIL_ADDRESS_REGEX.test(x);
 
-const validateAwsUrl = (x: string) => {
+const validateAwsUrl = (x: string): boolean => {
   try {
+    // eslint-disable-next-line no-new
     new URL(x);
     return true;
   } catch (e) {
@@ -103,9 +96,7 @@ const validateAwsUrl = (x: string) => {
   }
 };
 
-const validateAwsIpAddress = (x: string) => {
-  return net.isIP(x) !== 0;
-};
+const validateAwsIpAddress = (x: string): boolean => net.isIP(x) !== 0;
 
 interface Indexable {
   [key: string]: any;
