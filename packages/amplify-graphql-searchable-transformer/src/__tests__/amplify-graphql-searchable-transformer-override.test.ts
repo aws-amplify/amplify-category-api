@@ -5,15 +5,14 @@ import * as path from 'path';
 import { SearchableModelTransformer } from '..';
 
 const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+  getBoolean: jest.fn().mockImplementation((name): boolean => {
     if (name === 'improvePluralization') {
       return true;
     }
+    return false;
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 
 test('it overrides expected resources', () => {
