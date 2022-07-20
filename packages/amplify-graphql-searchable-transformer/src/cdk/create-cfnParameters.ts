@@ -1,7 +1,7 @@
 import { ResourceConstants } from 'graphql-transformer-common';
 import { CfnParameter, Stack } from '@aws-cdk/core';
 
-export function createParametersStack(stack: Stack): Map<string, CfnParameter> {
+export const createParametersStack = (stack: Stack): Map<string, CfnParameter> => {
   const {
     OpenSearchAccessIAMRoleName,
     OpenSearchStreamingLambdaHandlerName,
@@ -36,8 +36,9 @@ export function createParametersStack(stack: Stack): Map<string, CfnParameter> {
     [
       OpenSearchStreamingLambdaRuntime,
       new CfnParameter(stack, OpenSearchStreamingLambdaRuntime, {
-        description: `The lambda runtime \
-                (https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime)`,
+        // eslint-disable-next-line no-multi-str
+        description: 'The lambda runtime \
+                (https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime)',
         default: 'python3.6',
       }),
     ],
@@ -209,4 +210,4 @@ export function createParametersStack(stack: Stack): Map<string, CfnParameter> {
       }),
     ],
   ]);
-}
+};
