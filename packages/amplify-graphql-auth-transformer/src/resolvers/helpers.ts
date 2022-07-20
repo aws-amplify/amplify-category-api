@@ -31,7 +31,7 @@ import {
   LAMBDA_AUTH_TYPE,
   IAM_AUTH_TYPE,
   IDENTITY_CLAIM_DELIMITER,
-  ALLOWED_FIELDS
+  ALLOWED_FIELDS,
 } from '../utils';
 
 // note in the resolver that operation is protected by auth
@@ -45,11 +45,16 @@ export const getInputFields = (): Expression => set(ref('inputFields'), methodCa
 
 /**
  * Creates get identity claim helper
+ * @param value value
+ * @param defaultValueExp default expression
  */
 export const getIdentityClaimExp = (value: Expression, defaultValueExp: Expression): Expression => methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.identity.claims.get'), value), defaultValueExp);
 
 /**
  * Creates iam check helper
+ * @param claim claim
+ * @param exp expression
+ * @param identityPoolId identity pool ID
  */
 export const iamCheck = (claim: string, exp: Expression, identityPoolId?: string): Expression => {
   let iamExp: Expression = equals(ref('ctx.identity.userArn'), ref(`ctx.stash.${claim}`));
@@ -79,12 +84,14 @@ export const iamCheck = (claim: string, exp: Expression, identityPoolId?: string
  * if claim is custom
  * 1. custom
  * 2. none value
+ * @param ownerClaim owner claim
+ * @param defaultValueExp default value expression
  */
-export const getOwnerClaim = (ownerClaim: string): Expression => {
+export const getOwnerClaim = (ownerClaim: string, defaultValueExp: Expression = str(NONE_VALUE)): Expression => {
   if (ownerClaim === 'username') {
-    return getIdentityClaimExp(str(ownerClaim), getIdentityClaimExp(str(DEFAULT_COGNITO_IDENTITY_CLAIM), str(NONE_VALUE)));
+    return getIdentityClaimExp(str(ownerClaim), getIdentityClaimExp(str(DEFAULT_COGNITO_IDENTITY_CLAIM), defaultValueExp));
   }
-  return getIdentityClaimExp(str(ownerClaim), str(NONE_VALUE));
+  return getIdentityClaimExp(str(ownerClaim), defaultValueExp);
 };
 
 /**
@@ -96,10 +103,11 @@ export const responseCheckForErrors = (): Expression => iff(ref('ctx.error'), me
 
 /**
  * Creates generate static role expression helper
+ * @param roles roles
  */
 export const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
   const staticRoleExpression: Array<Expression> = [];
-  const privateRoleIdx = roles.findIndex(r => r.strategy === 'private');
+  const privateRoleIdx = roles.findIndex((r) => r.strategy === 'private');
   if (privateRoleIdx > -1) {
     staticRoleExpression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
     roles.splice(privateRoleIdx, 1);
@@ -109,7 +117,7 @@ export const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Arra
       iff(
         not(ref(IS_AUTHORIZED_FLAG)),
         compoundExpression([
-          set(ref('staticGroupRoles'), raw(JSON.stringify(roles.map(r => ({ claim: r.claim, entity: r.entity }))))),
+          set(ref('staticGroupRoles'), raw(JSON.stringify(roles.map((r) => ({ claim: r.claim, entity: r.entity }))))),
           forEach(ref('groupRole'), ref('staticGroupRoles'), [
             set(ref('groupsInToken'), getIdentityClaimExp(ref('groupRole.claim'), list([]))),
             iff(
@@ -126,6 +134,7 @@ export const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Arra
 
 /**
  * Creates api key expression helper
+ * @param roles roles
  */
 export const apiKeyExpression = (roles: Array<RoleDefinition>): Expression => iff(
   equals(ref('util.authType()'), str(API_KEY_AUTH_TYPE)),
@@ -134,6 +143,7 @@ export const apiKeyExpression = (roles: Array<RoleDefinition>): Expression => if
 
 /**
  * Creates lambda expression helper
+ * @param roles roles
  */
 export const lambdaExpression = (roles: Array<RoleDefinition>): Expression => iff(
   equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)),
@@ -141,32 +151,9 @@ export const lambdaExpression = (roles: Array<RoleDefinition>): Expression => if
 );
 
 /**
- * Creates iam expression helper
- */
-export const iamExpression = (
-  roles: Array<RoleDefinition>,
-  adminRolesEnabled: boolean,
-  adminRoles: Array<string> = [],
-  identityPoolId: string = undefined,
-  fieldName: string = undefined,
-): Expression => {
-  const expression = new Array<Expression>();
-  // allow if using an admin role
-  if (adminRolesEnabled) {
-    expression.push(iamAdminRoleCheckExpression(adminRoles, fieldName));
-  }
-  if (roles.length > 0) {
-    roles.forEach(role => {
-      expression.push(iff(not(ref(IS_AUTHORIZED_FLAG)), iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), identityPoolId)));
-    });
-  } else {
-    expression.push(ref('util.unauthorized()'));
-  }
-  return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));
-};
-
-/**
  * Creates iam admin role check helper
+ * @param adminRoles admin roles
+ * @param fieldName field name
  */
 export const iamAdminRoleCheckExpression = (adminRoles: Array<string>, fieldName?: string): Expression => compoundExpression([
   set(ref('adminRoles'), raw(JSON.stringify(adminRoles))),
@@ -181,6 +168,36 @@ export const iamAdminRoleCheckExpression = (adminRoles: Array<string>, fieldName
     ),
   ]),
 ]);
+
+/**
+ * Creates iam expression helper
+ * @param roles roles
+ * @param adminRolesEnabled admin roles enabled
+ * @param adminRoles admin roles
+ * @param identityPoolId identity pool ID
+ * @param fieldName field name
+ */
+export const iamExpression = (
+  roles: Array<RoleDefinition>,
+  adminRolesEnabled: boolean,
+  adminRoles: Array<string> = [],
+  identityPoolId: string = undefined,
+  fieldName: string = undefined,
+): Expression => {
+  const expression = new Array<Expression>();
+  // allow if using an admin role
+  if (adminRolesEnabled) {
+    expression.push(iamAdminRoleCheckExpression(adminRoles, fieldName));
+  }
+  if (roles.length > 0) {
+    roles.forEach((role) => {
+      expression.push(iff(not(ref(IS_AUTHORIZED_FLAG)), iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), identityPoolId)));
+    });
+  } else {
+    expression.push(ref('util.unauthorized()'));
+  }
+  return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));
+};
 
 /**
  * Creates generate auth request helper
@@ -204,24 +221,38 @@ export const emptyPayload = toJson(raw(JSON.stringify({ version: '2018-05-29', p
 
 /**
  * Generates a list of claims to be iterated over for authorization
+ * @param claim claim
+ * @param refName ref name
  */
 export const generateOwnerClaimListExpression = (claim: string, refName: string): Expression => {
   const claims = claim.split(IDENTITY_CLAIM_DELIMITER);
 
-  if (claims.length <= 1) {
-    return set(ref(refName), list([]));
+  if (claims.length > 1) {
+    return compoundExpression([
+      set(ref(refName), list([])),
+      compoundExpression(
+        claims.map((c) => qref(methodCall(ref(`${refName}.add`), getOwnerClaim(c)))),
+      ),
+    ]);
   }
 
   return compoundExpression([
-    set(ref(refName), list([])),
-    compoundExpression(
-      claims.map(c => qref(methodCall(ref(`${refName}.add`), getOwnerClaim(c)))),
+    set(ref(refName), getOwnerClaim(claim, list([]))),
+    iff(
+      methodCall(ref('util.isString'), ref(refName)),
+      ifElse(
+        methodCall(ref('util.isList'), methodCall(ref('util.parseJson'), ref(refName))),
+        set(ref(refName), methodCall(ref('util.parseJson'), ref(refName))),
+        set(ref(refName), list([ref(refName)])),
+      ),
     ),
   ]);
 };
 
 /**
  * Creates generate owner claim expression owner
+ * @param ownerClaim owner claim
+ * @param refName ref name
  */
 export const generateOwnerClaimExpression = (ownerClaim: string, refName: string): Expression => {
   const expressions: Expression[] = [];
@@ -253,22 +284,41 @@ export const generateOwnerClaimExpression = (ownerClaim: string, refName: string
 };
 
 /**
+ * Add allowed fields if else
+ * @param allowedFieldsKey allowed fields key
+ * @param condition condition
+ * @param breakLoop break loop
+ */
+export const addAllowedFieldsIfElse = (allowedFieldsKey: string, condition: string, breakLoop = false): Expression => ifElse(
+  ref(condition),
+  compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), ...(breakLoop ? [raw('#break')] : [])]),
+  qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(allowedFieldsKey))),
+);
+
+/**
  * Sets the value of owner field if the user is already Authorized
+ * @param claimRef claim ref
+ * @param ownerEntity owner entity
+ * @param entityRef entity ref
+ * @param entityIsList entity is list
+ * @param checkIfAuthorized check if authorized
+ * @param allowedFieldsKey allowed fields key
+ * @param allowedFieldsCondition allowed fields condition
  */
 export const generatePopulateOwnerField = (
-   claimRef: string, 
-   ownerEntity: string, 
-   entityRef: string, 
-   entityIsList: boolean,
-   checkIfAuthorized: boolean,
-   allowedFieldsKey?: string,
-   allowedFieldsCondition?: string): Expression => {
-
+  claimRef: string,
+  ownerEntity: string,
+  entityRef: string,
+  entityIsList: boolean,
+  checkIfAuthorized: boolean,
+  allowedFieldsKey?: string,
+  allowedFieldsCondition?: string,
+): Expression => {
   const conditionsToCheck = new Array<Expression>();
   if (checkIfAuthorized) {
     conditionsToCheck.push(ref(IS_AUTHORIZED_FLAG));
   }
-  conditionsToCheck.push(ref('util.isNull($' + `${entityRef})`));
+  conditionsToCheck.push(ref(`util.isNull($${entityRef})`));
   conditionsToCheck.push(not(methodCall(ref('ctx.args.input.containsKey'), str(ownerEntity))));
 
   const populateOwnerFieldExprs = new Array<Expression>();
@@ -277,23 +327,22 @@ export const generatePopulateOwnerField = (
       methodCall(
         ref('ctx.args.input.put'),
         str(ownerEntity),
-        entityIsList ? list([ref(claimRef)]) : ref(claimRef)
+        entityIsList ? list([ref(claimRef)]) : ref(claimRef),
       ),
-    )
+    ),
   );
   if (allowedFieldsKey && allowedFieldsCondition) {
     populateOwnerFieldExprs.push(addAllowedFieldsIfElse(allowedFieldsKey, allowedFieldsCondition));
   }
 
-  return(compoundExpression([iff(and(conditionsToCheck), compoundExpression(populateOwnerFieldExprs))]));
+  return (compoundExpression([iff(and(conditionsToCheck), compoundExpression(populateOwnerFieldExprs))]));
 };
 
-export const addAllowedFieldsIfElse = (allowedFieldsKey: string, condition: string, breakLoop = false): Expression => ifElse(
-  ref(condition),
-  compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), ...(breakLoop ? [raw('#break')] : [])]),
-  qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(allowedFieldsKey))),
-);
-
+/**
+ * Get owner claim reference
+ * @param ownerClaim owner claim
+ * @param refName ref name
+ */
 export const getOwnerClaimReference = (ownerClaim: string, refName: string): string => {
   const expressions: Expression[] = [];
   const identityClaims = ownerClaim.split(IDENTITY_CLAIM_DELIMITER);
@@ -314,6 +363,7 @@ export const getOwnerClaimReference = (ownerClaim: string, refName: string): str
 
 /**
  * Creates field resolver for owner
+ * @param entity entity
  */
 export const generateFieldResolverForOwner = (entity: string): string => {
   const expressions: Expression[] = [
