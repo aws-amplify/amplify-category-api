@@ -1,21 +1,20 @@
 import { ConflictHandlerType, GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import {
-  anything, countResources, expect as cdkExpect, haveResource, ResourcePart
+  anything, countResources, expect as cdkExpect, haveResource, ResourcePart,
 } from '@aws-cdk/assert';
 import { parse } from 'graphql';
 import { SearchableModelTransformer } from '..';
 
 const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+  getBoolean: jest.fn().mockImplementation((name): boolean => {
     if (name === 'improvePluralization') {
       return true;
     }
+    return false;
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 
 test('SearchableModelTransformer validation happy case', () => {
@@ -231,9 +230,10 @@ test('it generates expected resources', () => {
   );
   cdkExpect(searchableStack).to(
     haveResource('AWS::Elasticsearch::Domain', {
-      UpdateReplacePolicy: "Delete",
-      DeletionPolicy: "Delete"
-  }, ResourcePart.CompleteDefinition));
+      UpdateReplacePolicy: 'Delete',
+      DeletionPolicy: 'Delete',
+    }, ResourcePart.CompleteDefinition),
+  );
   cdkExpect(searchableStack).to(
     haveResource('AWS::AppSync::DataSource', {
       ApiId: {
@@ -398,7 +398,7 @@ describe('SearchableModelTransformer with datastore enabled and sort field defin
         },
       },
     });
-  
+
     const out = transformer.transform(validSchema);
     expect(parse(out.schema)).toBeDefined();
     expect(out.resolvers['Query.searchPosts.req.vtl']).toMatchSnapshot();
