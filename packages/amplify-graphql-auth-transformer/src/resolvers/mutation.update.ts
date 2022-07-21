@@ -46,6 +46,8 @@ import {
   iamAdminRoleCheckExpression,
   generateOwnerClaimExpression,
   generateOwnerClaimListExpression,
+  generateOwnerMultiClaimExpression,
+  generateInvalidClaimsCondition
 } from './helpers';
 
 /**
@@ -183,36 +185,42 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
               methodCall(ref('util.defaultIfNull'), ref(`ctx.result.${role.entity!}`), entityIsList ? list([]) : nul()),
             ),
             generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
-            generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
-            set(ref(`ownerAllowedFields${idx}`), raw(JSON.stringify(role.allowedFields))),
-            set(ref(`ownerNullAllowedFields${idx}`), raw(JSON.stringify(role.nullAllowedFields))),
-            set(ref(`isAuthorizedOnAllFields${idx}`), bool(role.areAllFieldsAllowed && role.areAllFieldsNullAllowed)),
-            ...(entityIsList
-              ? [
-                forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
-                  iff(
-                    or([
-                      equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
-                      methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
+            iff(
+              generateInvalidClaimsCondition(role.claim!, `ownerClaim${idx}`),
+              compoundExpression([
+                generateOwnerMultiClaimExpression(role.claim!, `ownerClaim${idx}`),
+                generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
+                set(ref(`ownerAllowedFields${idx}`), raw(JSON.stringify(role.allowedFields))),
+                set(ref(`ownerNullAllowedFields${idx}`), raw(JSON.stringify(role.nullAllowedFields))),
+                set(ref(`isAuthorizedOnAllFields${idx}`), bool(role.areAllFieldsAllowed && role.areAllFieldsNullAllowed)),
+                ...(entityIsList
+                  ? [
+                    forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
+                      iff(
+                        or([
+                          equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                          methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
+                        ]),
+                        addAllowedFieldsIfElse(
+                          `ownerAllowedFields${idx}`,
+                          `ownerNullAllowedFields${idx}`,
+                          `isAuthorizedOnAllFields${idx}`,
+                          true,
+                        ),
+                      ),
                     ]),
-                    addAllowedFieldsIfElse(
-                      `ownerAllowedFields${idx}`,
-                      `ownerNullAllowedFields${idx}`,
-                      `isAuthorizedOnAllFields${idx}`,
-                      true,
+                  ]
+                  : [
+                    iff(
+                      or([
+                        equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
+                        methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                      ]),
+                      addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `ownerNullAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
                     ),
-                  ),
-                ]),
-              ]
-              : [
-                iff(
-                  or([
-                    equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
-                    methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
                   ]),
-                  addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `ownerNullAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
-                ),
               ]),
+            ),
           ]),
         ),
       );

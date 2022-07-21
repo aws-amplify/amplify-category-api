@@ -31,6 +31,8 @@ import {
   generateOwnerClaimListExpression,
   generatePopulateOwnerField,
   addAllowedFieldsIfElse,
+  generateOwnerMultiClaimExpression,
+  generateInvalidClaimsCondition
 } from './helpers';
 import {
   API_KEY_AUTH_TYPE,
@@ -166,52 +168,58 @@ const dynamicRoleExpression = (ctx: TransformerContextProvider, roles: Array<Rol
       ownerEntityClaimExpressions.push(set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.input.${role.entity!}`), nul())));
       // get current owner claim
       ownerEntityClaimExpressions.push(generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`));
-      // If the user is already authorized, populate owner field with the owner claim
-      if (ctx.featureFlags.getBoolean('populateOwnerFieldForStaticGroupAuth')) {
-        ownerEntityClaimExpressions.push(generatePopulateOwnerField(`ownerClaim${idx}`, role.entity!, `ownerEntity${idx}`, entityIsList, true));
-      }
+
       ownerExpression.push(
-        compoundExpression(
-          ownerEntityClaimExpressions,
-        ),
+        compoundExpression(ownerEntityClaimExpressions),
         iff(
-          not(ref(IS_AUTHORIZED_FLAG)),
+          generateInvalidClaimsCondition(role.claim!, `ownerClaim${idx}`),
           compoundExpression([
-            generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
-            set(ref(`ownerAllowedFields${idx}`), raw(JSON.stringify(role.allowedFields))),
-            set(ref(`isAuthorizedOnAllFields${idx}`), bool(role.areAllFieldsAllowed)),
-            ...(entityIsList
-              ? [
-                forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
-                  iff(
-                    or([
-                      equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
-                      methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
+            generateOwnerMultiClaimExpression(role.claim!, `ownerClaim${idx}`),
+            // If the user is already authorized, populate owner field with the owner claim
+            ...(ctx.featureFlags.getBoolean('populateOwnerFieldForStaticGroupAuth')
+              ? [generatePopulateOwnerField(`ownerClaim${idx}`, role.entity!, `ownerEntity${idx}`, entityIsList, true)]
+              : []
+            ),
+            iff(
+              not(ref(IS_AUTHORIZED_FLAG)),
+              compoundExpression([
+                generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
+                set(ref(`ownerAllowedFields${idx}`), raw(JSON.stringify(role.allowedFields))),
+                set(ref(`isAuthorizedOnAllFields${idx}`), bool(role.areAllFieldsAllowed)),
+                ...(entityIsList
+                  ? [
+                    forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
+                      iff(
+                        or([
+                          equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                          methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
+                        ]),
+                        addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`, true),
+                      ),
                     ]),
-                    addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`, true),
-                  ),
-                ]),
-              ]
-              : [
-                iff(
-                  or([
-                    equals(ref(`ownerClaim${idx}`), ref(`ownerEntity${idx}`)),
-                    methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                  ]
+                  : [
+                    iff(
+                      or([
+                        equals(ref(`ownerClaim${idx}`), ref(`ownerEntity${idx}`)),
+                        methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                      ]),
+                      addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
+                    ),
                   ]),
-                  addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
-                ),
+                  generatePopulateOwnerField(
+                  `ownerClaim${idx}`, 
+                  role.entity!, 
+                  `ownerEntity${idx}`, 
+                  entityIsList, 
+                  false,
+                  `ownerAllowedFields${idx}`,
+                  `isAuthorizedOnAllFields${idx}`
+                )
               ]),
-              generatePopulateOwnerField(
-              `ownerClaim${idx}`, 
-              role.entity!, 
-              `ownerEntity${idx}`, 
-              entityIsList, 
-              false,
-              `ownerAllowedFields${idx}`,
-              `isAuthorizedOnAllFields${idx}`
-            )
+            ),
           ]),
-        ),
+        )
       );
     }
     if (role.strategy === 'groups') {

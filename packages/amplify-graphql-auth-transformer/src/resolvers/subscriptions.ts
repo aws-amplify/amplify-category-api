@@ -39,6 +39,8 @@ import {
   generateOwnerClaimListExpression,
   getIdentityClaimExp,
   getOwnerClaimReference,
+  generateOwnerMultiClaimExpression,
+  generateInvalidClaimsCondition
 } from './helpers';
 
 const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
@@ -51,25 +53,31 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
       const ownerClaimRef = getOwnerClaimReference(role.claim!, `ownerClaim${idx}`);
       ownerExpression.push(
         generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
-        generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
-        qref(methodCall(ref('authOwnerRuntimeFilter.add'), raw(`{ "${role.entity}": { "${role.isEntityList ? 'contains' : 'eq'}": $${ownerClaimRef} } }`))),
-        set(
-          ref(`ownerEntity${idx}`),
-          methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}`), nul()),
-        ),
         iff(
-          and([
-            not(ref(IS_AUTHORIZED_FLAG)),
-            not(methodCall(ref('util.isNullOrEmpty'), ref(`ownerEntity${idx}`))),
-          ]),
+          generateInvalidClaimsCondition(role.claim!, `ownerClaim${idx}`),
           compoundExpression([
-            ifElse(
-              or([
-                equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
-                methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+            generateOwnerMultiClaimExpression(role.claim!, `ownerClaim${idx}`),
+            generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
+            qref(methodCall(ref('authOwnerRuntimeFilter.add'), raw(`{ "${role.entity}": { "${role.isEntityList ? 'contains' : 'eq'}": $${ownerClaimRef} } }`))),
+            set(
+              ref(`ownerEntity${idx}`),
+              methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}`), nul()),
+            ),
+            iff(
+              and([
+                not(ref(IS_AUTHORIZED_FLAG)),
+                not(methodCall(ref('util.isNullOrEmpty'), ref(`ownerEntity${idx}`))),
               ]),
-              set(ref(IS_AUTHORIZED_FLAG), bool(true)),
-              methodCall(ref('util.unauthorized')),
+              compoundExpression([
+                ifElse(
+                  or([
+                    equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
+                    methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                  ]),
+                  set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                  methodCall(ref('util.unauthorized')),
+                ),
+              ]),
             ),
           ]),
         ),
