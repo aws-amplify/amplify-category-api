@@ -236,10 +236,6 @@ export const generateOwnerClaimExpression = (ownerClaim: string, refName: string
       } else {
         expressions.push(
           set(ref(`currentClaim${idx}`), getOwnerClaim(claim)),
-          set(
-            ref(refName),
-            raw(`"$${refName}${IDENTITY_CLAIM_DELIMITER}$currentClaim${idx}"`),
-          ),
         );
       }
     });
@@ -250,6 +246,58 @@ export const generateOwnerClaimExpression = (ownerClaim: string, refName: string
   }
 
   return compoundExpression(expressions);
+};
+
+/**
+ * Concatenates multiple owner claims if any
+ */
+export const generateOwnerMultiClaimExpression = (ownerClaim: string, refName: string): Expression => {
+  let expression: Expression;
+  const identityClaims = ownerClaim.split(IDENTITY_CLAIM_DELIMITER);
+  const hasMultiIdentityClaims = identityClaims.length > 1;
+
+  if (hasMultiIdentityClaims) {
+    const additionalClaims: string[] = [];
+    identityClaims.forEach((claim, idx) => {
+      if (idx > 0) {
+        additionalClaims.push(`$currentClaim${idx}`);
+      }
+    });
+    expression = set(
+      ref(refName),
+      raw(`"$${refName}${IDENTITY_CLAIM_DELIMITER}${additionalClaims.join(IDENTITY_CLAIM_DELIMITER)}"`),
+    )
+  }
+  return expression;
+};
+
+/**
+ * Generates a check for invalid owner claims
+ */
+export const generateInvalidClaimsCondition = (ownerClaim: string, refName: string): Expression => {
+  const expressions: Expression[] = [];
+  const identityClaims = ownerClaim.split(IDENTITY_CLAIM_DELIMITER);
+  const hasMultiIdentityClaims = identityClaims.length > 1;
+
+  if (hasMultiIdentityClaims) {
+    identityClaims.forEach((claim, idx) => {
+      if (idx === 0) {
+        expressions.push(
+          not(methodCall(ref('util.isNull'), ref(refName)))
+        );
+      } else {
+        expressions.push(
+          not(methodCall(ref('util.isNull'), ref(`currentClaim${idx}`)))
+        );
+      }
+    });
+  } else {
+    expressions.push(
+      not(methodCall(ref('util.isNull'), ref(refName)))
+    );
+  }
+
+  return and(expressions);
 };
 
 /**

@@ -190,14 +190,16 @@ describe('subscription disabled and userPools configured', () => {
         expect(out.resolvers['Student.ssn.req.vtl']).toContain(`#if( $util.authType() == "User Pool Authorization" )
   #if( !$isAuthorized )
     #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
-    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("sub"), "___xamznone____") )
-    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")) )
-    #set( $ownerClaim0 = "$ownerClaim0::$currentClaim1" )
-    #set( $ownerClaimsList0 = [] )
-    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get("sub"), "___xamznone____")))
-    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____"))))
-    #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
-      #set( $isAuthorized = true )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("sub"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = "$ownerClaim0::$currentClaim1" )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get("sub"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), null))))
+      #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #set( $isAuthorized = true )
+      #end
     #end
   #end
 #end`);
@@ -282,14 +284,16 @@ describe('subscription disabled and userPools configured', () => {
         expect(out.resolvers['Student.ssn.req.vtl']).toContain(`#if( $util.authType() == "User Pool Authorization" )
   #if( !$isAuthorized )
     #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
-    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("sub"), "___xamznone____") )
-    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")) )
-    #set( $ownerClaim0 = "$ownerClaim0::$currentClaim1" )
-    #set( $ownerClaimsList0 = [] )
-    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get("sub"), "___xamznone____")))
-    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____"))))
-    #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
-      #set( $isAuthorized = true )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("sub"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = "$ownerClaim0::$currentClaim1" )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get("sub"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), null))))
+      #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #set( $isAuthorized = true )
+      #end
     #end
   #end
 #end`);
@@ -518,10 +522,13 @@ describe('with identity claim feature flag disabled', () => {
           expect(out.resolvers['Student.ssn.req.vtl']).toContain(`#if( $util.authType() == "User Pool Authorization" )
   #if( !$isAuthorized )
     #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
-    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")) )
-    #set( $ownerClaimsList0 = [] )
-    #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
-      #set( $isAuthorized = true )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), null)) )
+    #if( !$util.isNull($ownerClaim0) )
+
+      #set( $ownerClaimsList0 = [] )
+      #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #set( $isAuthorized = true )
+      #end
     #end
   #end
 #end`);
@@ -612,10 +619,13 @@ describe('with identity claim feature flag disabled', () => {
           expect(out.resolvers['Student.ssn.req.vtl']).toContain(`#if( $util.authType() == "User Pool Authorization" )
   #if( !$isAuthorized )
     #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
-    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")) )
-    #set( $ownerClaimsList0 = [] )
-    #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
-      #set( $isAuthorized = true )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), null)) )
+    #if( !$util.isNull($ownerClaim0) )
+
+      #set( $ownerClaimsList0 = [] )
+      #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #set( $isAuthorized = true )
+      #end
     #end
   #end
 #end`);

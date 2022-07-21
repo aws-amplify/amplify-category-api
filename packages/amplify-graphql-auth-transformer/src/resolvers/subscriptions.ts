@@ -12,6 +12,8 @@ import {
   nul,
   printBlock,
   or,
+  and,
+  ifElse
 } from 'graphql-mapping-template';
 import {
   COGNITO_AUTH_TYPE,
@@ -30,6 +32,8 @@ import {
   setHasAuthExpression,
   generateOwnerClaimExpression,
   generateOwnerClaimListExpression,
+  generateOwnerMultiClaimExpression,
+  generateInvalidClaimsCondition
 } from './helpers';
 
 const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
@@ -39,20 +43,31 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
     if (role.strategy === 'owner') {
       ownerExpression.push(
         generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
-        generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
-        set(
-          ref(`ownerEntity${idx}`),
-          methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}`), nul()),
-        ),
         iff(
-          not(ref(IS_AUTHORIZED_FLAG)),
+          generateInvalidClaimsCondition(role.claim!, `ownerClaim${idx}`),
           compoundExpression([
+            generateOwnerMultiClaimExpression(role.claim!, `ownerClaim${idx}`),
+            generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
+            set(
+              ref(`ownerEntity${idx}`),
+              methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}`), nul()),
+            ),
             iff(
-              or([
-                equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
-                methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+              and([
+                not(ref(IS_AUTHORIZED_FLAG)),
+                not(methodCall(ref('util.isNullOrEmpty'), ref(`ownerEntity${idx}`))),
               ]),
-              set(ref(IS_AUTHORIZED_FLAG), bool(true))),
+              compoundExpression([
+                ifElse(
+                  or([
+                    equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
+                    methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                  ]),
+                  set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                  methodCall(ref('util.unauthorized')),
+                ),
+              ]),
+            ),
           ]),
         ),
       );

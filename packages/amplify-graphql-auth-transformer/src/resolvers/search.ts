@@ -19,8 +19,8 @@ import {
   raw,
   set,
   ifElse,
-  nul
 } from 'graphql-mapping-template';
+import { NONE_VALUE } from 'graphql-transformer-common';
 import {
   getIdentityClaimExp,
   emptyPayload,
@@ -29,6 +29,8 @@ import {
   iamAdminRoleCheckExpression,
   generateOwnerClaimExpression,
   generateOwnerClaimListExpression,
+  generateOwnerMultiClaimExpression,
+  generateInvalidClaimsCondition
 } from './helpers';
 import {
   COGNITO_AUTH_TYPE,
@@ -158,7 +160,6 @@ const generateAuthFilter = (
   allowedAggFields: Array<string>,
 ): Array<Expression> => {
   const filterExpression = new Array<Expression>();
-  const authFilter = new Array<Expression>();
   const aggFieldMap: Record<string, Array<string>> = {};
   if (!(roles.length > 0)) return [];
   /**
@@ -166,6 +167,9 @@ const generateAuthFilter = (
    * we create a terms_set where the field (role.entity) has to match at least element in the terms
    * if the field is a list it will look for a subset of elements in the list which should exist in the terms list
    *  */
+  // dynamically construct the auth filter conditions
+  const authFilterConditionsRefName = 'authFilterConditions';
+  filterExpression.push(set(ref(authFilterConditionsRefName), list([])));
   roles.forEach((role, idx) => {
     // for the terms search it's best to go by keyword for non list dynamic auth fields
     const entityIsList = fieldIsList(fields, role.entity);
@@ -173,22 +177,27 @@ const generateAuthFilter = (
     if (role.strategy === 'owner') {
       filterExpression.push(
         generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
-        generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
-        qref(methodCall(ref(`ownerClaimsList${idx}.add`), ref(`ownerClaim${idx}`))),
-        set(
-          ref(`owner${idx}`),
-          obj({
-            terms_set: obj({
-              [roleKey]: obj({
-                terms: ref(`ownerClaimsList${idx}`),
-                minimum_should_match_script: obj({ source: str('1') }),
+        iff(
+          generateInvalidClaimsCondition(role.claim!, `ownerClaim${idx}`),
+          compoundExpression([
+            generateOwnerMultiClaimExpression(role.claim!, `ownerClaim${idx}`),
+            generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
+            qref(methodCall(ref(`ownerClaimsList${idx}.add`), ref(`ownerClaim${idx}`))),
+            set(
+              ref(`owner${idx}`),
+              obj({
+                terms_set: obj({
+                  [roleKey]: obj({
+                    terms: ref(`ownerClaimsList${idx}`),
+                    minimum_should_match_script: obj({ source: str('1') }),
+                  }),
+                }),
               }),
-            }),
-          }),
+            ),
+            qref(methodCall(ref(`${authFilterConditionsRefName}.add`), ref(`owner${idx}`))),
+          ]),
         ),
       );
-
-      authFilter.push(ref(`owner${idx}`));
 
       if (role.allowedFields) {
         role.allowedFields.forEach(field => {
@@ -199,19 +208,26 @@ const generateAuthFilter = (
       }
     } else if (role.strategy === 'groups') {
       filterExpression.push(
-        set(
-          ref(`group${idx}`),
-          obj({
-            terms_set: obj({
-              [roleKey]: obj({
-                terms: getIdentityClaimExp(str(role.claim!), list([nul()])),
-                minimum_should_match_script: obj({ source: str('1') }),
+        set(ref(`groupClaim${idx}`), getIdentityClaimExp(str(role.claim!), list([]))),
+        iff(
+          not(raw(`$groupClaim${idx}.isEmpty()`)),
+          compoundExpression([ 
+            set(
+              ref(`group${idx}`),
+              obj({
+                terms_set: obj({
+                  [roleKey]: obj({
+                    terms: ref(`groupClaim${idx}`),
+                    minimum_should_match_script: obj({ source: str('1') }),
+                  }),
+                }),
               }),
-            }),
-          }),
+            ),
+            qref(methodCall(ref(`${authFilterConditionsRefName}.add`), ref(`group${idx}`))),
+          ]),
         ),
       );
-      authFilter.push(ref(`group${idx}`));
+
       if (role.allowedFields) {
         role.allowedFields.forEach(field => {
           if (!allowedAggFields.includes(field)) {
@@ -223,8 +239,8 @@ const generateAuthFilter = (
   });
   filterExpression.push(
     iff(
-      not(ref(IS_AUTHORIZED_FLAG)),
-      qref(methodCall(ref('ctx.stash.put'), str('authFilter'), obj({ bool: obj({ should: list(authFilter) }) }))),
+      and([ not(ref(IS_AUTHORIZED_FLAG)), not(raw(`$${authFilterConditionsRefName}.isEmpty()`))]),
+      qref(methodCall(ref('ctx.stash.put'), str('authFilter'), obj({ bool: obj({ should: ref(authFilterConditionsRefName) }) }))),
     ),
   );
   if (Object.keys(aggFieldMap).length > 0) {
