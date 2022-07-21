@@ -94,7 +94,7 @@ test('read access control', () => {
     operations: ['get', 'list'],
   });
 
-  typeFields.forEach(field => {
+  typeFields.forEach((field) => {
     expect(acm.isAllowed(ownerRole, field, 'list')).toBe(true);
     expect(acm.isAllowed(ownerRole, field, 'get')).toBe(true);
   });
@@ -123,7 +123,7 @@ test('list access control', () => {
     operations: ['list'],
   });
 
-  typeFields.forEach(field => {
+  typeFields.forEach((field) => {
     expect(acm.isAllowed(ownerRole, field, 'list')).toBe(true);
     expect(acm.isAllowed(ownerRole, field, 'get')).toBe(false);
   });
@@ -152,7 +152,7 @@ test('get access control', () => {
     operations: ['get'],
   });
 
-  typeFields.forEach(field => {
+  typeFields.forEach((field) => {
     expect(acm.isAllowed(ownerRole, field, 'list')).toBe(false);
     expect(acm.isAllowed(ownerRole, field, 'get')).toBe(true);
   });
@@ -204,7 +204,7 @@ test('read get list auth operations', () => {
       project: config,
     },
     featureFlags: {
-      getBoolean(value: string) {
+      getBoolean: (value: string) => {
         if (value === 'useSubUsernameForDefaultIdentityClaim') {
           return true;
         }

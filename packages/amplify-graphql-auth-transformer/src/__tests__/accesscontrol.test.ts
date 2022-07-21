@@ -46,7 +46,7 @@ test('access control on object and field', () => {
     operations: ['get', 'list', 'search', 'sync', 'listen'],
   });
 
-  studentTypeFields.forEach(field => {
+  studentTypeFields.forEach((field) => {
     // check that admin has CRUD access on all fields
     expect(acm.isAllowed(adminRole, field, 'create')).toBe(true);
     expect(acm.isAllowed(adminRole, field, 'search')).toBe(true);
@@ -142,7 +142,7 @@ test('that adding a role again without a resource is not allowed', () => {
     operations: MODEL_OPERATIONS,
   });
   acm.setRole({ role: blogOwnerRole, operations: MODEL_OPERATIONS });
-  blogFields.forEach(field => {
+  blogFields.forEach((field) => {
     expect(acm.isAllowed(blogOwnerRole, field, 'create')).toBe(true);
     expect(acm.isAllowed(blogOwnerRole, field, 'search')).toBe(true);
     expect(acm.isAllowed(blogOwnerRole, field, 'sync')).toBe(true);
@@ -169,7 +169,7 @@ test('that adding a role again without a resource is allowed with overwrite flag
     operations: MODEL_OPERATIONS,
   });
   acm.setRole({ role: blogOwnerRole, operations: MODEL_OPERATIONS });
-  blogFields.forEach(field => {
+  blogFields.forEach((field) => {
     expect(acm.isAllowed(blogOwnerRole, field, 'create')).toBe(true);
     expect(acm.isAllowed(blogOwnerRole, field, 'search')).toBe(true);
     expect(acm.isAllowed(blogOwnerRole, field, 'sync')).toBe(true);
@@ -180,7 +180,7 @@ test('that adding a role again without a resource is allowed with overwrite flag
     expect(acm.isAllowed(blogOwnerRole, field, 'delete')).toBe(true);
   });
   acm.setRole({ role: blogOwnerRole, operations: ['list', 'get'], allowRoleOverwrite: true });
-  blogFields.forEach(field => {
+  blogFields.forEach((field) => {
     expect(acm.isAllowed(blogOwnerRole, field, 'create')).toBe(false);
     expect(acm.isAllowed(blogOwnerRole, field, 'search')).toBe(false);
     expect(acm.isAllowed(blogOwnerRole, field, 'sync')).toBe(false);

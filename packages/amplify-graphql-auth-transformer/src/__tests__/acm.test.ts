@@ -7,14 +7,6 @@ import { featureFlags } from './test-helpers';
 
 jest.mock('amplify-prompts');
 
-describe('acm tests', () => {
-  Object.entries(acmTests).forEach(([name, test]) => {
-    it(`ACM test '${name}' passes as expected`, () => {
-      testSchemaACM(test);
-    });
-  });
-});
-
 const testSchemaACM = (test: AcmTest): void => {
   const authTransformer = new AuthTransformer();
   const transformer = new GraphQLTransform({
@@ -25,12 +17,12 @@ const testSchemaACM = (test: AcmTest): void => {
 
   transformer.transform(test.sdl);
 
-  test.models.forEach(model => {
+  test.models.forEach((model) => {
     const acm = (authTransformer as any).authModelConfig.get(model.name);
     expect(acm).toBeDefined();
     const resourceFields = acm.getResources();
 
-    model.validations.forEach(validation => {
+    model.validations.forEach((validation) => {
       Object.entries(validation.operations).forEach(([operation, fields]) => {
         const role = acm.getRolesPerOperation(operation).find((it: string) => it === validation.roleType);
         expect(role || (!role && fields.length === 0)).toBeTruthy();
@@ -43,3 +35,11 @@ const testSchemaACM = (test: AcmTest): void => {
     });
   });
 };
+
+describe('acm tests', () => {
+  Object.entries(acmTests).forEach(([name, test]) => {
+    it(`ACM test '${name}' passes as expected`, () => {
+      testSchemaACM(test);
+    });
+  });
+});

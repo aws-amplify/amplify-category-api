@@ -15,7 +15,7 @@ const getObjectType = (
   type: string,
 ):
   ObjectTypeDefinitionNode
-  | undefined => doc.definitions.find(def => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
+  | undefined => doc.definitions.find((def) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
     | ObjectTypeDefinitionNode
     | undefined;
 
@@ -25,8 +25,8 @@ const expectMultiple = (
 ): void => {
   expect(directiveNames).toBeDefined();
   expect(directiveNames).toHaveLength(directiveNames.length);
-  expect(fieldOrType.directives.length).toEqual(directiveNames.length);
-  directiveNames.forEach(directiveName => {
+  expect(fieldOrType?.directives?.length).toEqual(directiveNames.length);
+  directiveNames.forEach((directiveName) => {
     expect(fieldOrType.directives).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -116,8 +116,10 @@ test('auth logic is enabled for iam/apiKey auth rules', () => {
   expect(out).toBeDefined();
   expect(out.schema).toBeDefined();
   const schemaDoc = parse(out.schema);
-  SEARCHABLE_AGGREGATE_TYPES.forEach(aggregateType => {
-    expectMultiple(getObjectType(schemaDoc, aggregateType), expectedDirectives);
+  SEARCHABLE_AGGREGATE_TYPES.forEach((aggregateType) => {
+    const objectType = getObjectType(schemaDoc, aggregateType);
+    expect(objectType).toBeDefined();
+    expectMultiple(objectType!, expectedDirectives);
   });
   // expect the searchable types to have the auth directives for total providers
   // expect the allowed fields for agg to exclude secret
