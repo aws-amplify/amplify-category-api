@@ -760,7 +760,7 @@ test('test that an owner is not authorized to perform an agg query on the secret
     expect(response.data.searchBlogs.aggregateItems);
     const aggregateItem = response.data.searchBlogs.aggregateItems[0];
     // if the user is not authorized, no items are returned
-    expect(aggregateItem).toEqual(null);
+    expect(aggregateItem).not.toBeDefined();
   } catch (err) {
     expect(err).not.toBeDefined();
   }
