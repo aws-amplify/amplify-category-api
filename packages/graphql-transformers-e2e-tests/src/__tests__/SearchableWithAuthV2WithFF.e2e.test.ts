@@ -760,7 +760,7 @@ test('that an owner does not get any results for the agg query on the secret fie
     expect(response.data.searchBlogs.aggregateItems);
     const aggregateItem = response.data.searchBlogs.aggregateItems[0];
     // if the user is not authorized, no items are returned
-    expect(aggregateItem).toEqual(null);
+    expect(aggregateItem).not.toBeDefined();
   } catch (err) {
     expect(err).not.toBeDefined();
   }
