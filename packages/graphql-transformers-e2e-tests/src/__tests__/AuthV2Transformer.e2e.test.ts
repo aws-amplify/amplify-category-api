@@ -4416,7 +4416,7 @@ describe('@model with @auth', () => {
           {},
         );
 
-        expect(getRes.data.getOwnerInvalidClaim).toEqual(null);
+        expect(getRes.data).toEqual(null);
         expect(getRes.errors.length).toEqual(1);
         expect((getRes.errors[0] as any).data).toBeNull();
         expect((getRes.errors[0] as any).errorType).toEqual('Unauthorized');
@@ -4456,7 +4456,7 @@ describe('@model with @auth', () => {
         expect(createRes.data.createOwnerClaimWithPrivateAccess.id).toBeDefined();
         expect(createRes.data.createOwnerClaimWithPrivateAccess.description).toEqual('create allowed');
         // The owner cannot be auto-populated due to non-existent claims
-        expect(createRes.data.createOwnerClaimWithPrivateAccess.owner).not.toBeDefined();
+        expect(createRes.data.createOwnerClaimWithPrivateAccess.owner).toEqual(null);
         // The owner field is populated since default cognito claims exist
         expect(createRes.data.createOwnerClaimWithPrivateAccess.owners).toEqual([USERNAME2]);
 
@@ -4646,7 +4646,6 @@ describe('@model with @auth', () => {
         expect((deleteRes.errors[0] as any).errorType).toEqual('Unauthorized');
 
         // User cannot query a field protected with owner auth and invalid claim
-        // but can access the other fields
         const getRes = await GRAPHQL_CLIENT_2.query(
           `mutation {
             getFieldAuthWithClaim(input: {
@@ -4661,10 +4660,7 @@ describe('@model with @auth', () => {
           {},
         );
 
-        expect(getRes.data.getFieldAuthWithClaim.id).toEqual(recordID);
-        expect(getRes.data.getFieldAuthWithClaim.description).toEqual('update allowed');
-        expect(getRes.data.getFieldAuthWithClaim.owner).toEqual(null);
-        expect(getRes.data.getFieldAuthWithClaim.ownerProtectedInvalidClaim).toEqual(null);
+        expect(getRes.data).toEqual(null);
         expect(getRes.errors.length).toEqual(1);
         expect((getRes.errors[0] as any).data).toBeNull();
         expect((getRes.errors[0] as any).errorType).toEqual('Unauthorized');
