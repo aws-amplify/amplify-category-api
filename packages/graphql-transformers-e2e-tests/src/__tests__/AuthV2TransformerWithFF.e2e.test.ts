@@ -4606,7 +4606,7 @@ describe('@model with @auth', () => {
         expect(createRes.data.createOwnerClaimWithPrivateAccess.description).toEqual('create allowed');
         // The owner cannot be auto-populated due to non-existent claims
         expect(createRes.data.createOwnerClaimWithPrivateAccess.owner).toEqual(null);
-        expect(createRes.data.createOwnerClaimWithPrivateAccess.owners).toEqual(null);
+        expect(createRes.data.createOwnerClaimWithPrivateAccess.owners).toEqual([USERNAME2]);
 
         const recordID = createRes.data.createOwnerClaimWithPrivateAccess.id;
 
@@ -4629,7 +4629,7 @@ describe('@model with @auth', () => {
         expect(updateRes.data.updateOwnerClaimWithPrivateAccess.id).toEqual(recordID);
         expect(updateRes.data.updateOwnerClaimWithPrivateAccess.description).toEqual('update allowed');
         expect(updateRes.data.updateOwnerClaimWithPrivateAccess.owner).toEqual(null);
-        expect(updateRes.data.updateOwnerClaimWithPrivateAccess.owners).toEqual(null);
+        expect(updateRes.data.updateOwnerClaimWithPrivateAccess.owners).toEqual([USERNAME2]);
 
         // testuser can read the record
         const getRes = await GRAPHQL_CLIENT_2.query(
@@ -4649,7 +4649,7 @@ describe('@model with @auth', () => {
         expect(getRes.data.getOwnerClaimWithPrivateAccess.id).toEqual(recordID);
         expect(getRes.data.getOwnerClaimWithPrivateAccess.description).toEqual('update allowed');
         expect(getRes.data.getOwnerClaimWithPrivateAccess.owner).toEqual(null);
-        expect(getRes.data.getOwnerClaimWithPrivateAccess.owners).toEqual(null);
+        expect(getRes.data.getOwnerClaimWithPrivateAccess.owners).toEqual([USERNAME2]);
 
         // testuser can list the records
         const listRes = await GRAPHQL_CLIENT_2.query(
@@ -4670,7 +4670,7 @@ describe('@model with @auth', () => {
         expect(receivedItem.id).toEqual(recordID);
         expect(receivedItem.description).toEqual('update allowed');
         expect(receivedItem.owner).toEqual(null);
-        expect(receivedItem.owners).toEqual(null);
+        expect(receivedItem.owners).toEqual([USERNAME2]);
 
         // testuser can delete the record
         const deleteRes = await GRAPHQL_CLIENT_2.query(
@@ -4690,7 +4690,7 @@ describe('@model with @auth', () => {
         expect(deleteRes.data.deleteOwnerClaimWithPrivateAccess.id).toEqual(recordID);
         expect(deleteRes.data.deleteOwnerClaimWithPrivateAccess.description).toEqual('update allowed');
         expect(deleteRes.data.deleteOwnerClaimWithPrivateAccess.owner).toEqual(null);
-        expect(deleteRes.data.deleteOwnerClaimWithPrivateAccess.owners).toEqual(null);
+        expect(deleteRes.data.deleteOwnerClaimWithPrivateAccess.owners).toEqual([USERNAME2]);
       })
     });
 
