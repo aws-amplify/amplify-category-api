@@ -168,8 +168,7 @@ const repoRoot = join(__dirname, '..');
 
 function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
   // Todo: add reverse to run longest tests first
-  // return sortTestsBasedOnTime(glob.sync(pattern, { cwd: dir })); // .reverse();
-  return ['src/__tests__/AuthV2TransformerWithFF.e2e.test.ts'];
+  return sortTestsBasedOnTime(glob.sync(pattern, { cwd: dir })); // .reverse();
 }
 
 function generateJobName(baseName: string, testSuitePath: string): string {
@@ -406,7 +405,6 @@ function verifyConfig() {
 
 function main(): void {
   const config = loadConfig();
-  /*
   const splitPkgTests = splitTests(
     config,
     'amplify_e2e_tests',
@@ -414,15 +412,13 @@ function main(): void {
     join(repoRoot, 'packages', 'amplify-e2e-tests'),
     CONCURRENCY,
   );
-  */
   const splitGqlTests = splitTests(
-    config,
+    splitPkgTests,
     'graphql_e2e_tests',
     'build_test_deploy',
     join(repoRoot, 'packages', 'graphql-transformers-e2e-tests'),
     CONCURRENCY,
   );
-  /*
   const splitV5MigrationTests = splitTests(
     splitGqlTests,
     'amplify_migration_tests_v5',
@@ -439,8 +435,7 @@ function main(): void {
     CONCURRENCY,
     true,
   );
-  */
-  saveConfig(splitGqlTests);
+  saveConfig(splitV6MigrationTests);
   verifyConfig();
 }
 main();
