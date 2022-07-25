@@ -169,7 +169,7 @@ const repoRoot = join(__dirname, '..');
 function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
   // Todo: add reverse to run longest tests first
   // return sortTestsBasedOnTime(glob.sync(pattern, { cwd: dir })); // .reverse();
-  return ['src/__tests/AuthV2TransformerWithFF.e2e.test.ts'];
+  return ['src/__tests__/AuthV2TransformerWithFF.e2e.test.ts'];
 }
 
 function generateJobName(baseName: string, testSuitePath: string): string {
