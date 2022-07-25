@@ -4656,7 +4656,7 @@ describe('@model with @auth', () => {
         // testuser can list the records
         const listRes = await GRAPHQL_CLIENT_2.query(
           `query {
-            listOwnerClaimWithPrivateAccesss {
+            listOwnerClaimWithPrivateAccesses {
               items {
                 id
                 description
@@ -4667,8 +4667,8 @@ describe('@model with @auth', () => {
           {},
         );
 
-        expect(listRes.data.listOwnerClaimWithPrivateAccesss.items.length).toEqual(1);
-        const receivedItem = listRes.data.listOwnerClaimWithPrivateAccesss.items[0];
+        expect(listRes.data.listOwnerClaimWithPrivateAccesses.items.length).toEqual(1);
+        const receivedItem = listRes.data.listOwnerClaimWithPrivateAccesses.items[0];
         expect(receivedItem.id).toEqual(recordID);
         expect(receivedItem.description).toEqual('update allowed');
         expect(receivedItem.owner).toEqual(null);
