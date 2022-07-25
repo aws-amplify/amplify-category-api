@@ -4645,7 +4645,8 @@ describe('@model with @auth', () => {
           }`,
           {},
         );
-
+        console.log(getRes.data);
+        console.log(getRes.errors);
         expect(getRes.data.getOwnerClaimWithPrivateAccess.id).toEqual(recordID);
         expect(getRes.data.getOwnerClaimWithPrivateAccess.description).toEqual('update allowed');
         expect(getRes.data.getOwnerClaimWithPrivateAccess.owner).toEqual(null);
