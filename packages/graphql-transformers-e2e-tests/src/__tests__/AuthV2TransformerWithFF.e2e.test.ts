@@ -4661,6 +4661,7 @@ describe('@model with @auth', () => {
                 id
                 description
                 owner
+                owners
               }
             }
           }`,
