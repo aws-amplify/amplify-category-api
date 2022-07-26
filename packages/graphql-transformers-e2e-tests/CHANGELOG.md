@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.2.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.2.2...amplify-category-api-graphql-transformers-e2e-tests@8.2.3) (2022-07-26)
+
+
+### Bug Fixes
+
+* **graphql:** incorrect filter expression on model transformer ([#697](https://github.com/aws-amplify/amplify-category-api/issues/697)) ([a6fc3be](https://github.com/aws-amplify/amplify-category-api/commit/a6fc3beb6746bad8fcca55bb85b6615dee7318c8))
+
+
+
+
+
 ## [8.2.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.2.0...amplify-category-api-graphql-transformers-e2e-tests@8.2.2) (2022-07-20)
 
 **Note:** Version bump only for package amplify-category-api-graphql-transformers-e2e-tests
