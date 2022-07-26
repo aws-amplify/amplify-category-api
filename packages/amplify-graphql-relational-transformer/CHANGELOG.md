@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.11.2...@aws-amplify/graphql-relational-transformer@0.11.3) (2022-07-26)
+
+
+### Bug Fixes
+
+* **graphql:** incorrect filter expression on model transformer ([#697](https://github.com/aws-amplify/amplify-category-api/issues/697)) ([a6fc3be](https://github.com/aws-amplify/amplify-category-api/commit/a6fc3beb6746bad8fcca55bb85b6615dee7318c8))
+
+
+
+
+
 ## [0.11.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.11.0...@aws-amplify/graphql-relational-transformer@0.11.2) (2022-07-20)
 
 
