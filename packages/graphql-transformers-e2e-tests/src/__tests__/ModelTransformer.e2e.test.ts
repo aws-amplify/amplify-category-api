@@ -862,6 +862,23 @@ test('Test renamed queries and mutations', async () => {
   expect(response.data.getTodoList.items.length).toEqual(0);
 });
 
+test('Invalid filter should throw an error on listQuery', async () => {
+  const listResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      listPosts(filter: { title: { between: "test" } }) {
+        items {
+          id
+          title
+        }
+      }
+    }`,
+    {},
+  );
+  expect(listResponse.data.listPosts).toEqual(null);
+  expect(listResponse.errors.length).toEqual(1);
+  expect((listResponse.errors[0] as any).errorType).toEqual('Unrecognized Filter');
+});
+
 describe('Timestamp configuration', () => {
   test('Test createdAt is present in the schema', async () => {
     const response = await GRAPHQL_CLIENT.query(

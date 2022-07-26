@@ -561,6 +561,9 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+  #if( $util.isNullOrEmpty($filterExpression) )
+    $util.error(\\"Unable to process the filter expression\\", \\"Unrecognized Filter\\")
+  #end
   #if( !$util.isNullOrBlank($filterExpression.expression) )
     #if( $filterExpression.expressionValues.size() == 0 )
       $util.qr($filterExpression.remove(\\"expressionValues\\"))
@@ -1153,6 +1156,9 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+  #if( $util.isNullOrEmpty($filterExpression) )
+    $util.error(\\"Unable to process the filter expression\\", \\"Unrecognized Filter\\")
+  #end
   #if( !$util.isNullOrBlank($filterExpression.expression) )
     #if( $filterExpression.expressionValues.size() == 0 )
       $util.qr($filterExpression.remove(\\"expressionValues\\"))
@@ -1698,6 +1704,9 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+  #if( $util.isNullOrEmpty($filterExpression) )
+    $util.error(\\"Unable to process the filter expression\\", \\"Unrecognized Filter\\")
+  #end
   #if( !$util.isNullOrBlank($filterExpression.expression) )
     #if( $filterExpression.expressionValues.size() == 0 )
       $util.qr($filterExpression.remove(\\"expressionValues\\"))
@@ -2290,6 +2299,9 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+  #if( $util.isNullOrEmpty($filterExpression) )
+    $util.error(\\"Unable to process the filter expression\\", \\"Unrecognized Filter\\")
+  #end
   #if( !$util.isNullOrBlank($filterExpression.expression) )
     #if( $filterExpression.expressionValues.size() == 0 )
       $util.qr($filterExpression.remove(\\"expressionValues\\"))
@@ -3352,6 +3364,9 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+  #if( $util.isNullOrEmpty($filterExpression) )
+    $util.error(\\"Unable to process the filter expression\\", \\"Unrecognized Filter\\")
+  #end
   #if( !$util.isNullOrBlank($filterExpression.expression) )
     #if( $filterExpression.expressionValues.size() == 0 )
       $util.qr($filterExpression.remove(\\"expressionValues\\"))
