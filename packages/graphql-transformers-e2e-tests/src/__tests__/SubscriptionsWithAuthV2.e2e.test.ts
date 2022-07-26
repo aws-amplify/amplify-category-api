@@ -203,7 +203,21 @@ beforeAll(async () => {
         { allow: private, provider: iam }
       ])
       description: String
-  }`;
+  }
+
+  type OwnerInvalidClaim
+    @model
+    @auth(rules: [
+      { allow: owner, identityClaim: "doesnotexist" }
+      { allow: owner, ownerField: "owners", identityClaim: "doesnotexist" }
+      { allow: groups, groups: ["Admin"] }
+    ]) 
+  {
+    id: ID!
+    description: String!
+    owners: [String]
+  }
+  `;
   const transformer = new GraphQLTransform({
     authConfig: {
       defaultAuthentication: {
@@ -971,6 +985,38 @@ test('test that subscription with apiKey onDelete', async () => {
   });
 
   return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, ' OnDelete Todo Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
+});
+
+test('Test onCreateOwnerInvalidClaim with invalid owner claims fails', async () => {
+  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+  await Auth.signIn(USERNAME2, REAL_PASSWORD);
+  const failedObserver = API.graphql({
+    // @ts-ignore
+    query: gql`
+      subscription OnCreateOwnerInvalidClaim {
+        onCreateOwnerInvalidClaim(owner: "${USERNAME2}") {
+          id
+          description
+          owner
+        }
+      }
+    `,
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  }) as unknown as Observable<any>;
+  let subscription: ZenObservable.Subscription;
+  const subscriptionPromise = new Promise((resolve, _) => {
+    subscription = failedObserver.subscribe(
+      event => {},
+      err => {
+        expect(err.error.errors[0].message).toBeDefined();
+        resolve(undefined);
+      },
+    );
+  });
+
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateOwnerInvalidClaim Subscription timed out', () => {
     subscription?.unsubscribe();
   });
 });
