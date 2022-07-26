@@ -8,34 +8,36 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $allowedFields = [] )
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.editors, null) )
-  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-  #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
-  #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"editors\\") )
-    $util.qr($ctx.args.input.put(\\"editors\\", [$ownerClaim0]))
-  #end
-  #if( !$isAuthorized )
-    #set( $ownerClaimsList0 = [] )
-    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\")))
-    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\"))))
-    #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"editors\\",\\"createdAt\\",\\"updatedAt\\"] )
-    #set( $isAuthorizedOnAllFields0 = true )
-    #foreach( $allowedOwner in $ownerEntity0 )
-      #if( $allowedOwner == $ownerClaim0 || $ownerClaimsList0.contains($allowedOwner) )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"editors\\") )
+      $util.qr($ctx.args.input.put(\\"editors\\", [$ownerClaim0]))
+    #end
+    #if( !$isAuthorized )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"editors\\",\\"createdAt\\",\\"updatedAt\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #foreach( $allowedOwner in $ownerEntity0 )
+        #if( $allowedOwner == $ownerClaim0 || $ownerClaimsList0.contains($allowedOwner) )
+          #if( $isAuthorizedOnAllFields0 )
+            #set( $isAuthorized = true )
+            #break
+          #else
+            $util.qr($allowedFields.addAll($ownerAllowedFields0))
+          #end
+        #end
+      #end
+      #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"editors\\") )
+        $util.qr($ctx.args.input.put(\\"editors\\", [$ownerClaim0]))
         #if( $isAuthorizedOnAllFields0 )
           #set( $isAuthorized = true )
-          #break
         #else
           $util.qr($allowedFields.addAll($ownerAllowedFields0))
         #end
-      #end
-    #end
-    #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"editors\\") )
-      $util.qr($ctx.args.input.put(\\"editors\\", [$ownerClaim0]))
-      #if( $isAuthorizedOnAllFields0 )
-        #set( $isAuthorized = true )
-      #else
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
       #end
     #end
   #end
@@ -97,18 +99,20 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
     #set( $authFilter = [] )
-    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
-    #if( $role0 != \\"___xamznone____\\" )
-      $util.qr($authFilter.add({\\"editors\\": { \\"contains\\": $ownerClaim0 }}))
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( !$util.isNull($ownerClaim0) )
+        $util.qr($authFilter.add({\\"editors\\": { \\"contains\\": $ownerClaim0 }}))
+      #end
     #end
-    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-    #if( $role0_0 != \\"___xamznone____\\" )
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( !$util.isNull($role0_0) )
       $util.qr($authFilter.add({\\"editors\\": { \\"contains\\": $role0_0 }}))
     #end
-    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #if( $role0_1 != \\"___xamznone____\\" )
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($role0_1) )
       $util.qr($authFilter.add({\\"editors\\": { \\"contains\\": $role0_1 }}))
     #end
     #if( !$authFilter.isEmpty() )
@@ -131,18 +135,20 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
     #set( $authFilter = [] )
-    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
-    #if( $role0 != \\"___xamznone____\\" )
-      $util.qr($authFilter.add({\\"editors\\": { \\"contains\\": $ownerClaim0 }}))
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( !$util.isNull($ownerClaim0) )
+        $util.qr($authFilter.add({\\"editors\\": { \\"contains\\": $ownerClaim0 }}))
+      #end
     #end
-    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-    #if( $role0_0 != \\"___xamznone____\\" )
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( !$util.isNull($role0_0) )
       $util.qr($authFilter.add({\\"editors\\": { \\"contains\\": $role0_0 }}))
     #end
-    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #if( $role0_1 != \\"___xamznone____\\" )
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($role0_1) )
       $util.qr($authFilter.add({\\"editors\\": { \\"contains\\": $role0_1 }}))
     #end
     #if( !$authFilter.isEmpty() )
@@ -165,27 +171,30 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $allowedFields = [] )
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
-  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"custom:my_field\\"), \\"___xamznone____\\") )
-  #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
-    $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
-  #end
-  #if( !$isAuthorized )
-    #set( $ownerClaimsList0 = [] )
-    #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
-    #set( $isAuthorizedOnAllFields0 = true )
-    #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
-      #if( $isAuthorizedOnAllFields0 )
-        #set( $isAuthorized = true )
-      #else
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
-      #end
-    #end
-    #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"custom:my_field\\"), null) )
+  #if( !$util.isNull($ownerClaim0) )
+
+    #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
       $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
-      #if( $isAuthorizedOnAllFields0 )
-        #set( $isAuthorized = true )
-      #else
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
+    #end
+    #if( !$isAuthorized )
+      #set( $ownerClaimsList0 = [] )
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+      #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+        $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
       #end
     #end
   #end
@@ -247,8 +256,8 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
     #set( $authFilter = [] )
-    #set( $role0 = $util.defaultIfNull($ctx.identity.claims.get(\\"custom:my_field\\"), \\"___xamznone____\\") )
-    #if( $role0 != \\"___xamznone____\\" )
+    #set( $role0 = $util.defaultIfNull($ctx.identity.claims.get(\\"custom:my_field\\"), null) )
+    #if( !$util.isNull($role0) )
       $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0 }}))
     #end
     #if( !$authFilter.isEmpty() )
@@ -271,8 +280,8 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
     #set( $authFilter = [] )
-    #set( $role0 = $util.defaultIfNull($ctx.identity.claims.get(\\"custom:my_field\\"), \\"___xamznone____\\") )
-    #if( $role0 != \\"___xamznone____\\" )
+    #set( $role0 = $util.defaultIfNull($ctx.identity.claims.get(\\"custom:my_field\\"), null) )
+    #if( !$util.isNull($role0) )
       $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0 }}))
     #end
     #if( !$authFilter.isEmpty() )
@@ -293,59 +302,65 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #set( $primaryFieldMap = {} )
 #if( $util.authType() == \\"User Pool Authorization\\" )
-  #set( $parentClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-  #set( $ownerClaimsList0 = [] )
-  $util.qr($ownerClaimsList0.add($parentClaim))
-  #if( !$util.isNull($ctx.args.parent) )
-    #if( $util.isString($ctx.args.parent) )
-      #set( $parentCondition = (($parentClaim == $ctx.args.parent) || $ownerClaimsList0.contains($ctx.args.parent)) )
-    #else
-      #set( $parentCondition = ($parentClaim == $util.defaultIfNull($ctx.args.parent.get(\\"eq\\"), \\"___xamznone____\\") || $ownerClaimsList0.contains($util.defaultIfNull($ctx.args.parent.get(\\"eq\\"), \\"___xamznone____\\"))) )
-      #if( !$parentCondition )
-        #set( $entityValues = 0 )
-        #foreach( $argEntity in $ctx.args.parent.get(\\"eq\\") )
-          #if( $ownerClaimsList0.contains($argEntity) )
-            #set( $entityValues = $entityValues + 1 )
+  #set( $parentClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #if( !$util.isNull($parentClaim) )
+
+    #set( $ownerClaimsList0 = [] )
+    $util.qr($ownerClaimsList0.add($parentClaim))
+    #if( !$util.isNull($ctx.args.parent) )
+      #if( $util.isString($ctx.args.parent) )
+        #set( $parentCondition = (($parentClaim == $ctx.args.parent) || $ownerClaimsList0.contains($ctx.args.parent)) )
+      #else
+        #set( $parentCondition = ($parentClaim == $util.defaultIfNull($ctx.args.parent.get(\\"eq\\"), null) || $ownerClaimsList0.contains($util.defaultIfNull($ctx.args.parent.get(\\"eq\\"), null))) )
+        #if( !$parentCondition )
+          #set( $entityValues = 0 )
+          #foreach( $argEntity in $ctx.args.parent.get(\\"eq\\") )
+            #if( $ownerClaimsList0.contains($argEntity) )
+              #set( $entityValues = $entityValues + 1 )
+            #end
+          #end
+          #if( $entityValues == $ctx.args.parent.get(\\"eq\\").size() )
+            #set( $parentCondition = true )
           #end
         #end
-        #if( $entityValues == $ctx.args.parent.get(\\"eq\\").size() )
-          #set( $parentCondition = true )
-        #end
       #end
+      #if( $parentCondition )
+        #set( $isAuthorized = true )
+        $util.qr($ctx.stash.put(\\"authFilter\\", null))
+      #end
+    #else
+      $util.qr($primaryFieldMap.put(\\"parent\\", $parentClaim))
     #end
-    #if( $parentCondition )
-      #set( $isAuthorized = true )
-      $util.qr($ctx.stash.put(\\"authFilter\\", null))
-    #end
-  #else
-    $util.qr($primaryFieldMap.put(\\"parent\\", $parentClaim))
   #end
-  #set( $childClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-  #set( $ownerClaimsList1 = [] )
-  $util.qr($ownerClaimsList1.add($childClaim))
-  #if( !$util.isNull($ctx.args.child) )
-    #if( $util.isString($ctx.args.child) )
-      #set( $childCondition = (($childClaim == $ctx.args.child) || $ownerClaimsList1.contains($ctx.args.child)) )
-    #else
-      #set( $childCondition = ($childClaim == $util.defaultIfNull($ctx.args.child.get(\\"eq\\"), \\"___xamznone____\\") || $ownerClaimsList1.contains($util.defaultIfNull($ctx.args.child.get(\\"eq\\"), \\"___xamznone____\\"))) )
-      #if( !$childCondition )
-        #set( $entityValues = 0 )
-        #foreach( $argEntity in $ctx.args.child.get(\\"eq\\") )
-          #if( $ownerClaimsList1.contains($argEntity) )
-            #set( $entityValues = $entityValues + 1 )
+  #set( $childClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #if( !$util.isNull($childClaim) )
+
+    #set( $ownerClaimsList1 = [] )
+    $util.qr($ownerClaimsList1.add($childClaim))
+    #if( !$util.isNull($ctx.args.child) )
+      #if( $util.isString($ctx.args.child) )
+        #set( $childCondition = (($childClaim == $ctx.args.child) || $ownerClaimsList1.contains($ctx.args.child)) )
+      #else
+        #set( $childCondition = ($childClaim == $util.defaultIfNull($ctx.args.child.get(\\"eq\\"), null) || $ownerClaimsList1.contains($util.defaultIfNull($ctx.args.child.get(\\"eq\\"), null))) )
+        #if( !$childCondition )
+          #set( $entityValues = 0 )
+          #foreach( $argEntity in $ctx.args.child.get(\\"eq\\") )
+            #if( $ownerClaimsList1.contains($argEntity) )
+              #set( $entityValues = $entityValues + 1 )
+            #end
+          #end
+          #if( $entityValues == $ctx.args.child.get(\\"eq\\").size() )
+            #set( $childCondition = true )
           #end
         #end
-        #if( $entityValues == $ctx.args.child.get(\\"eq\\").size() )
-          #set( $childCondition = true )
-        #end
       #end
+      #if( $childCondition )
+        #set( $isAuthorized = true )
+        $util.qr($ctx.stash.put(\\"authFilter\\", null))
+      #end
+    #else
+      $util.qr($primaryFieldMap.put(\\"child\\", $childClaim))
     #end
-    #if( $childCondition )
-      #set( $isAuthorized = true )
-      $util.qr($ctx.stash.put(\\"authFilter\\", null))
-    #end
-  #else
-    $util.qr($primaryFieldMap.put(\\"child\\", $childClaim))
   #end
   #if( !$isAuthorized && !$primaryFieldMap.isEmpty() )
     #if( $util.isNull($ctx.args.parent) )
@@ -394,31 +409,33 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $allowedFields = [] )
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
-  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-  #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
-  #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
-    $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
-  #end
-  #if( !$isAuthorized )
-    #set( $ownerClaimsList0 = [] )
-    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\")))
-    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\"))))
-    #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
-    #set( $isAuthorizedOnAllFields0 = true )
-    #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
-      #if( $isAuthorizedOnAllFields0 )
-        #set( $isAuthorized = true )
-      #else
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
-      #end
-    #end
-    #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
       $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
-      #if( $isAuthorizedOnAllFields0 )
-        #set( $isAuthorized = true )
-      #else
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
+    #end
+    #if( !$isAuthorized )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+      #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+        $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
       #end
     #end
   #end
@@ -480,18 +497,20 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
     #set( $authFilter = [] )
-    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
-    #if( $role0 != \\"___xamznone____\\" )
-      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( !$util.isNull($ownerClaim0) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+      #end
     #end
-    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-    #if( $role0_0 != \\"___xamznone____\\" )
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( !$util.isNull($role0_0) )
       $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
     #end
-    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #if( $role0_1 != \\"___xamznone____\\" )
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($role0_1) )
       $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
     #end
     #if( !$authFilter.isEmpty() )
@@ -514,18 +533,20 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
     #set( $authFilter = [] )
-    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
-    #if( $role0 != \\"___xamznone____\\" )
-      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( !$util.isNull($ownerClaim0) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+      #end
     #end
-    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-    #if( $role0_0 != \\"___xamznone____\\" )
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( !$util.isNull($role0_0) )
       $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
     #end
-    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #if( $role0_1 != \\"___xamznone____\\" )
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($role0_1) )
       $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
     #end
     #if( !$authFilter.isEmpty() )
@@ -573,30 +594,33 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $allowedFields = [] )
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.editors, null) )
-  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-  #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"editors\\") )
-    $util.qr($ctx.args.input.put(\\"editors\\", [$ownerClaim0]))
-  #end
-  #if( !$isAuthorized )
-    #set( $ownerClaimsList0 = [] )
-    #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"editors\\",\\"createdAt\\",\\"updatedAt\\"] )
-    #set( $isAuthorizedOnAllFields0 = true )
-    #foreach( $allowedOwner in $ownerEntity0 )
-      #if( $allowedOwner == $ownerClaim0 || $ownerClaimsList0.contains($allowedOwner) )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) )
+
+    #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"editors\\") )
+      $util.qr($ctx.args.input.put(\\"editors\\", [$ownerClaim0]))
+    #end
+    #if( !$isAuthorized )
+      #set( $ownerClaimsList0 = [] )
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"editors\\",\\"createdAt\\",\\"updatedAt\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #foreach( $allowedOwner in $ownerEntity0 )
+        #if( $allowedOwner == $ownerClaim0 || $ownerClaimsList0.contains($allowedOwner) )
+          #if( $isAuthorizedOnAllFields0 )
+            #set( $isAuthorized = true )
+            #break
+          #else
+            $util.qr($allowedFields.addAll($ownerAllowedFields0))
+          #end
+        #end
+      #end
+      #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"editors\\") )
+        $util.qr($ctx.args.input.put(\\"editors\\", [$ownerClaim0]))
         #if( $isAuthorizedOnAllFields0 )
           #set( $isAuthorized = true )
-          #break
         #else
           $util.qr($allowedFields.addAll($ownerAllowedFields0))
         #end
-      #end
-    #end
-    #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"editors\\") )
-      $util.qr($ctx.args.input.put(\\"editors\\", [$ownerClaim0]))
-      #if( $isAuthorizedOnAllFields0 )
-        #set( $isAuthorized = true )
-      #else
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
       #end
     #end
   #end
@@ -658,8 +682,8 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
     #set( $authFilter = [] )
-    #set( $role0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #if( $role0 != \\"___xamznone____\\" )
+    #set( $role0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($role0) )
       $util.qr($authFilter.add({\\"editors\\": { \\"contains\\": $role0 }}))
     #end
     #if( !$authFilter.isEmpty() )
@@ -682,8 +706,8 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
     #set( $authFilter = [] )
-    #set( $role0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #if( $role0 != \\"___xamznone____\\" )
+    #set( $role0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($role0) )
       $util.qr($authFilter.add({\\"editors\\": { \\"contains\\": $role0 }}))
     #end
     #if( !$authFilter.isEmpty() )
@@ -704,59 +728,65 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #set( $primaryFieldMap = {} )
 #if( $util.authType() == \\"User Pool Authorization\\" )
-  #set( $parentClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-  #set( $ownerClaimsList0 = [] )
-  $util.qr($ownerClaimsList0.add($parentClaim))
-  #if( !$util.isNull($ctx.args.parent) )
-    #if( $util.isString($ctx.args.parent) )
-      #set( $parentCondition = (($parentClaim == $ctx.args.parent) || $ownerClaimsList0.contains($ctx.args.parent)) )
-    #else
-      #set( $parentCondition = ($parentClaim == $util.defaultIfNull($ctx.args.parent.get(\\"eq\\"), \\"___xamznone____\\") || $ownerClaimsList0.contains($util.defaultIfNull($ctx.args.parent.get(\\"eq\\"), \\"___xamznone____\\"))) )
-      #if( !$parentCondition )
-        #set( $entityValues = 0 )
-        #foreach( $argEntity in $ctx.args.parent.get(\\"eq\\") )
-          #if( $ownerClaimsList0.contains($argEntity) )
-            #set( $entityValues = $entityValues + 1 )
+  #set( $parentClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #if( !$util.isNull($parentClaim) )
+
+    #set( $ownerClaimsList0 = [] )
+    $util.qr($ownerClaimsList0.add($parentClaim))
+    #if( !$util.isNull($ctx.args.parent) )
+      #if( $util.isString($ctx.args.parent) )
+        #set( $parentCondition = (($parentClaim == $ctx.args.parent) || $ownerClaimsList0.contains($ctx.args.parent)) )
+      #else
+        #set( $parentCondition = ($parentClaim == $util.defaultIfNull($ctx.args.parent.get(\\"eq\\"), null) || $ownerClaimsList0.contains($util.defaultIfNull($ctx.args.parent.get(\\"eq\\"), null))) )
+        #if( !$parentCondition )
+          #set( $entityValues = 0 )
+          #foreach( $argEntity in $ctx.args.parent.get(\\"eq\\") )
+            #if( $ownerClaimsList0.contains($argEntity) )
+              #set( $entityValues = $entityValues + 1 )
+            #end
+          #end
+          #if( $entityValues == $ctx.args.parent.get(\\"eq\\").size() )
+            #set( $parentCondition = true )
           #end
         #end
-        #if( $entityValues == $ctx.args.parent.get(\\"eq\\").size() )
-          #set( $parentCondition = true )
-        #end
       #end
+      #if( $parentCondition )
+        #set( $isAuthorized = true )
+        $util.qr($ctx.stash.put(\\"authFilter\\", null))
+      #end
+    #else
+      $util.qr($primaryFieldMap.put(\\"parent\\", $parentClaim))
     #end
-    #if( $parentCondition )
-      #set( $isAuthorized = true )
-      $util.qr($ctx.stash.put(\\"authFilter\\", null))
-    #end
-  #else
-    $util.qr($primaryFieldMap.put(\\"parent\\", $parentClaim))
   #end
-  #set( $childClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-  #set( $ownerClaimsList1 = [] )
-  $util.qr($ownerClaimsList1.add($childClaim))
-  #if( !$util.isNull($ctx.args.child) )
-    #if( $util.isString($ctx.args.child) )
-      #set( $childCondition = (($childClaim == $ctx.args.child) || $ownerClaimsList1.contains($ctx.args.child)) )
-    #else
-      #set( $childCondition = ($childClaim == $util.defaultIfNull($ctx.args.child.get(\\"eq\\"), \\"___xamznone____\\") || $ownerClaimsList1.contains($util.defaultIfNull($ctx.args.child.get(\\"eq\\"), \\"___xamznone____\\"))) )
-      #if( !$childCondition )
-        #set( $entityValues = 0 )
-        #foreach( $argEntity in $ctx.args.child.get(\\"eq\\") )
-          #if( $ownerClaimsList1.contains($argEntity) )
-            #set( $entityValues = $entityValues + 1 )
+  #set( $childClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #if( !$util.isNull($childClaim) )
+
+    #set( $ownerClaimsList1 = [] )
+    $util.qr($ownerClaimsList1.add($childClaim))
+    #if( !$util.isNull($ctx.args.child) )
+      #if( $util.isString($ctx.args.child) )
+        #set( $childCondition = (($childClaim == $ctx.args.child) || $ownerClaimsList1.contains($ctx.args.child)) )
+      #else
+        #set( $childCondition = ($childClaim == $util.defaultIfNull($ctx.args.child.get(\\"eq\\"), null) || $ownerClaimsList1.contains($util.defaultIfNull($ctx.args.child.get(\\"eq\\"), null))) )
+        #if( !$childCondition )
+          #set( $entityValues = 0 )
+          #foreach( $argEntity in $ctx.args.child.get(\\"eq\\") )
+            #if( $ownerClaimsList1.contains($argEntity) )
+              #set( $entityValues = $entityValues + 1 )
+            #end
+          #end
+          #if( $entityValues == $ctx.args.child.get(\\"eq\\").size() )
+            #set( $childCondition = true )
           #end
         #end
-        #if( $entityValues == $ctx.args.child.get(\\"eq\\").size() )
-          #set( $childCondition = true )
-        #end
       #end
+      #if( $childCondition )
+        #set( $isAuthorized = true )
+        $util.qr($ctx.stash.put(\\"authFilter\\", null))
+      #end
+    #else
+      $util.qr($primaryFieldMap.put(\\"child\\", $childClaim))
     #end
-    #if( $childCondition )
-      #set( $isAuthorized = true )
-      $util.qr($ctx.stash.put(\\"authFilter\\", null))
-    #end
-  #else
-    $util.qr($primaryFieldMap.put(\\"child\\", $childClaim))
   #end
   #if( !$isAuthorized && !$primaryFieldMap.isEmpty() )
     #if( $util.isNull($ctx.args.parent) )
@@ -805,31 +835,33 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $allowedFields = [] )
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
-  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-  #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
-  #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
-    $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
-  #end
-  #if( !$isAuthorized )
-    #set( $ownerClaimsList0 = [] )
-    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\")))
-    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\"))))
-    #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
-    #set( $isAuthorizedOnAllFields0 = true )
-    #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
-      #if( $isAuthorizedOnAllFields0 )
-        #set( $isAuthorized = true )
-      #else
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
-      #end
-    #end
-    #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
       $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
-      #if( $isAuthorizedOnAllFields0 )
-        #set( $isAuthorized = true )
-      #else
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
+    #end
+    #if( !$isAuthorized )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+      #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+        $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
       #end
     #end
   #end
@@ -891,18 +923,20 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
     #set( $authFilter = [] )
-    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
-    #if( $role0 != \\"___xamznone____\\" )
-      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( !$util.isNull($ownerClaim0) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+      #end
     #end
-    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-    #if( $role0_0 != \\"___xamznone____\\" )
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( !$util.isNull($role0_0) )
       $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
     #end
-    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #if( $role0_1 != \\"___xamznone____\\" )
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($role0_1) )
       $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
     #end
     #if( !$authFilter.isEmpty() )
@@ -925,18 +959,20 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
     #set( $authFilter = [] )
-    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
-    #if( $role0 != \\"___xamznone____\\" )
-      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( !$util.isNull($ownerClaim0) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+      #end
     #end
-    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-    #if( $role0_0 != \\"___xamznone____\\" )
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( !$util.isNull($role0_0) )
       $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
     #end
-    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #if( $role0_1 != \\"___xamznone____\\" )
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($role0_1) )
       $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
     #end
     #if( !$authFilter.isEmpty() )
@@ -973,28 +1009,30 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #end
   #end
   #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
-  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-  #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
-  #if( !$isAuthorized )
-    #set( $ownerClaimsList0 = [] )
-    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\")))
-    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\"))))
-    #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
-    #set( $isAuthorizedOnAllFields0 = true )
-    #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
-      #if( $isAuthorizedOnAllFields0 )
-        #set( $isAuthorized = true )
-      #else
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #if( !$isAuthorized )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
       #end
-    #end
-    #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
-      $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
-      #if( $isAuthorizedOnAllFields0 )
-        #set( $isAuthorized = true )
-      #else
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
+      #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+        $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
       #end
     #end
   #end
@@ -1020,28 +1058,30 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $allowedFields = [] )
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
-  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-  #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
-  #if( !$isAuthorized )
-    #set( $ownerClaimsList0 = [] )
-    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\")))
-    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\"))))
-    #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
-    #set( $isAuthorizedOnAllFields0 = true )
-    #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
-      #if( $isAuthorizedOnAllFields0 )
-        #set( $isAuthorized = true )
-      #else
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #if( !$isAuthorized )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
       #end
-    #end
-    #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
-      $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
-      #if( $isAuthorizedOnAllFields0 )
-        #set( $isAuthorized = true )
-      #else
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
+      #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+        $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
       #end
     #end
   #end
@@ -1067,31 +1107,33 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $allowedFields = [] )
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.editors, null) )
-  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
-  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-  #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
-  #if( !$isAuthorized )
-    #set( $ownerClaimsList0 = [] )
-    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\")))
-    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\"))))
-    #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"editors\\",\\"createdAt\\",\\"updatedAt\\"] )
-    #set( $isAuthorizedOnAllFields0 = true )
-    #foreach( $allowedOwner in $ownerEntity0 )
-      #if( $allowedOwner == $ownerClaim0 || $ownerClaimsList0.contains($allowedOwner) )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #if( !$isAuthorized )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"editors\\",\\"createdAt\\",\\"updatedAt\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #foreach( $allowedOwner in $ownerEntity0 )
+        #if( $allowedOwner == $ownerClaim0 || $ownerClaimsList0.contains($allowedOwner) )
+          #if( $isAuthorizedOnAllFields0 )
+            #set( $isAuthorized = true )
+            #break
+          #else
+            $util.qr($allowedFields.addAll($ownerAllowedFields0))
+          #end
+        #end
+      #end
+      #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"editors\\") )
+        $util.qr($ctx.args.input.put(\\"editors\\", [$ownerClaim0]))
         #if( $isAuthorizedOnAllFields0 )
           #set( $isAuthorized = true )
-          #break
         #else
           $util.qr($allowedFields.addAll($ownerAllowedFields0))
         #end
-      #end
-    #end
-    #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"editors\\") )
-      $util.qr($ctx.args.input.put(\\"editors\\", [$ownerClaim0]))
-      #if( $isAuthorizedOnAllFields0 )
-        #set( $isAuthorized = true )
-      #else
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
       #end
     #end
   #end

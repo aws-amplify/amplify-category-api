@@ -42,6 +42,8 @@ import {
   getIdentityClaimExp,
   generateOwnerClaimExpression,
   generateOwnerClaimListExpression,
+  generateOwnerMultiClaimExpression,
+  generateInvalidClaimsCondition
 } from './helpers';
 
 // Field Read VTL Functions
@@ -57,28 +59,34 @@ const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields:
           compoundExpression([
             set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.source.${role.entity!}`), nul())),
             generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
-            generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
-            ...(entityIsList
-              ? [
-                forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
-                  iff(
-                    or([
-                      equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
-                      methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
+            iff(
+              generateInvalidClaimsCondition(role.claim!, `ownerClaim${idx}`),
+              compoundExpression([
+                generateOwnerMultiClaimExpression(role.claim!, `ownerClaim${idx}`),
+                generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
+                ...(entityIsList
+                  ? [
+                    forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
+                      iff(
+                        or([
+                          equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                          methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
+                        ]),
+                        compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
+                      ),
                     ]),
-                    compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
-                  ),
-                ]),
-              ]
-              : [
-                iff(
-                  or([
-                    equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
-                    methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                  ]
+                  : [
+                    iff(
+                      or([
+                        equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
+                        methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                      ]),
+                      set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                    )
                   ]),
-                  set(ref(IS_AUTHORIZED_FLAG), bool(true)),
-                )
               ]),
+            ),
           ]),
         ),
       );

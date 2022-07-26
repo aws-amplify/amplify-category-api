@@ -759,8 +759,8 @@ test('that an owner does not get any results for the agg query on the secret fie
     expect(response.data.searchBlogs).toBeDefined();
     expect(response.data.searchBlogs.aggregateItems);
     const aggregateItem = response.data.searchBlogs.aggregateItems[0];
-    expect(aggregateItem.name).toEqual('Terms');
-    expect(aggregateItem.result.buckets).toHaveLength(0);
+    // if the user is not authorized, no items are returned
+    expect(aggregateItem).not.toBeDefined();
   } catch (err) {
     expect(err).not.toBeDefined();
   }
