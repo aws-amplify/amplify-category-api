@@ -1,9 +1,13 @@
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { printer } from 'amplify-prompts';
+import { AuthTransformer } from '../../graphql-auth-transformer';
 import { showDefaultIdentityClaimWarning } from '../../utils/warnings';
 
 jest.mock('amplify-prompts', () => ({
   printer: {
     warn: jest.fn(),
+    debug: jest.fn(),
   },
 }));
 
@@ -106,6 +110,119 @@ describe('showDefaultIdentityClaimWarning', () => {
             + 'to use \'sub::username\'. To continue using only usernames, set \'identityClaim: "username"\' on your '
             + '\'owner\' rules on your schema. The default will be officially switched with v9.0.0. To read '
             + 'more: https://docs.amplify.aws/cli/migration/identity-claim-changes/',
+        );
+      });
+    });
+  });
+});
+
+describe('showOwnerCanReassignWarning', () => {
+  const OWNER_ENABLED_PROVIDERS = ['userPools', 'oidc'];
+  const transformTestSchema = (schema: string): void => {
+    const transformer = new GraphQLTransform({
+      authConfig: {
+        defaultAuthentication: { authenticationType: 'API_KEY' },
+        additionalAuthenticationProviders: [
+          { authenticationType: 'AMAZON_COGNITO_USER_POOLS' },
+          {
+            authenticationType: 'OPENID_CONNECT',
+            openIDConnectConfig: {
+              name: 'myOIDCProvider',
+              issuerUrl: 'https://some-oidc-provider/auth',
+              clientId: 'my-sample-client-id',
+            },
+          },
+        ],
+      },
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+      featureFlags: {
+        getBoolean: jest.fn(),
+        getNumber: jest.fn(),
+        getObject: jest.fn(),
+      },
+    });
+
+    transformer.transform(schema);
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  OWNER_ENABLED_PROVIDERS.forEach((provider: string) => {
+    describe(`${provider} provider`, () => {
+      test('warns on owner auth rule without field-level auth', () => {
+        transformTestSchema(`
+          type Blog @model @auth(rules: [{ allow: owner, provider: ${provider} }]) {
+            id: ID!
+            owner: String
+            description: String
+          }
+        `);
+
+        expect(printer.warn).toHaveBeenCalledWith(
+          'WARNING: owners may reassign ownership for the following model(s) and role(s): Blog: [owner]. '
+          + 'If this is not intentional, you may want to apply field-level authorization rules to these fields. '
+          + 'To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.',
+        );
+      });
+
+      test('does not warn on owner auth rule with field-level auth', () => {
+        transformTestSchema(`
+          type Blog @model @auth(rules: [{ allow: owner, provider: ${provider} }]) {
+            id: ID!
+            owner: String @auth(rules: [{ allow: owner, provider: ${provider}, operations: [read, delete] }])
+            description: String
+          }
+        `);
+
+        expect(printer.warn).not.toHaveBeenCalledWith(
+          'WARNING: owners may reassign ownership for the following model(s) and role(s): Blog: [owner]. '
+          + 'If this is not intentional, you may want to apply field-level authorization rules to these fields. '
+          + 'To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.',
+        );
+      });
+
+      test('warns on multiple schemas with multiple reassignable owners each', () => {
+        transformTestSchema(`
+          type Todo @model @auth(rules: [
+            { allow: owner, provider: ${provider} }
+            { allow: owner, provider: ${provider}, ownerField: "writer" }
+            { allow: owner, provider: ${provider}, ownerField: "editors" }
+          ]) {
+            id: ID!
+            description: String
+            writer: String
+            editors: [String]
+            owner: String @auth(rules: [{ allow: owner, provider: ${provider}, operations: [read] }])
+          }
+          
+          type Blog @model @auth(rules: [{ allow: owner, provider: ${provider} }]) {
+            id: ID!
+            owner: String
+            description: String
+          }
+        `);
+
+        expect(printer.warn).toHaveBeenCalledWith(
+          'WARNING: owners may reassign ownership for the following model(s) and role(s): Todo: [writer, editors], Blog: [owner]. '
+          + 'If this is not intentional, you may want to apply field-level authorization rules to these fields. '
+          + 'To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.',
+        );
+      });
+
+      test('should warn on implicit owner field', () => {
+        transformTestSchema(`
+          type Blog @model @auth(rules: [{ allow: owner, provider: ${provider} }]) {
+            id: ID!
+            description: String
+          }
+        `);
+
+        expect(printer.warn).toHaveBeenCalledWith(
+          'WARNING: owners may reassign ownership for the following model(s) and role(s): Blog: [owner]. '
+          + 'If this is not intentional, you may want to apply field-level authorization rules to these fields. '
+          + 'To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.',
         );
       });
     });
