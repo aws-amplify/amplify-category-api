@@ -1,3 +1,4 @@
+import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
@@ -168,13 +169,42 @@ export function addApiWithBlankSchema(cwd: string, opts: Partial<AddApiOptions &
   });
 }
 
+function selectConflictHandlerType(
+  chain: ExecutionContext,
+  { conflictHandlerType, isUpdate }: { conflictHandlerType: ConflictHandlerType, isUpdate: boolean },
+) {
+  switch (conflictHandlerType) {
+    case (ConflictHandlerType.AUTOMERGE):
+      chain
+        .sendCarriageReturn(); // Select Automerge Handler
+      break;
+    case (ConflictHandlerType.OPTIMISTIC):
+      chain
+        .sendKeyDown().sendCarriageReturn(); // Select Optimistic Handler
+      break;
+    case (ConflictHandlerType.LAMBDA):
+      chain
+        .sendKeyDown(2).sendCarriageReturn() // Select Lambda Handler
+        .wait(/.*Select from the options below.*/)
+        .sendCarriageReturn(); // Create a new Lambda
+      break;
+    default:
+      throw new Error(`Unexpected ConflictHandlerType received: ${conflictHandlerType}`);
+  }
+  if (isUpdate) {
+    chain
+      .wait(/.*Do you want to override default per model settings*/)
+      .sendCarriageReturn();
+  }
+}
+
 export function addApiWithBlankSchemaAndConflictDetection(
   cwd: string,
-  opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {},
+  opts: Partial<AddApiOptions & { apiKeyExpirationDays: number, conflictHandlerType: ConflictHandlerType }> = {},
 ) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(options.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(options.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
@@ -182,8 +212,11 @@ export function addApiWithBlankSchemaAndConflictDetection(
       .sendCarriageReturn()
       .wait(/.*Enable conflict detection.*/)
       .sendConfirmYes()
-      .wait(/.*Select the default resolution strategy.*/)
-      .sendCarriageReturn()
+      .wait(/.*Select the default resolution strategy.*/);
+
+    selectConflictHandlerType(chain, { conflictHandlerType: opts.conflictHandlerType || ConflictHandlerType.AUTOMERGE, isUpdate: false });
+
+    chain
       .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
       .sendCarriageReturn()
       .wait('Choose a schema template:')
@@ -336,6 +369,34 @@ export function updateApiWithMultiAuth(cwd: string, settings?: { testingWithLate
       .sendLine('2000')
       .wait(/.*Successfully updated resource.*/)
       .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function updateApiConflictHandlerType(
+  cwd: string,
+  opts: Partial<AddApiOptions> & { conflictHandlerType: ConflictHandlerType },
+) {
+  const options = _.assign(defaultOptions, opts);
+  return new Promise<void>((resolve, reject) => {
+    const chain = spawn(getCLIPath(options.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
+      .wait('Select from one of the below mentioned services:')
+      .sendCarriageReturn()
+      .wait(/.*Select a setting to edit*/)
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait(/.*Select the default resolution strategy.*/);
+
+    selectConflictHandlerType(chain, { conflictHandlerType: opts.conflictHandlerType, isUpdate: true });
+
+    chain
+      .wait(/.*Successfully updated resource*/)
       .run((err: Error) => {
         if (!err) {
           resolve();
