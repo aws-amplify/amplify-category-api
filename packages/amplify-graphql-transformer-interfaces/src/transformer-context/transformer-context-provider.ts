@@ -64,6 +64,7 @@ export type TransformerValidationStepContextProvider = Pick<
   | 'sandboxModeEnabled'
   | 'resourceHelper'
   | 'resolvers'
+  | 'stackManager'
 >;
 export type TransformerPrepareStepContextProvider = TransformerValidationStepContextProvider;
 export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;

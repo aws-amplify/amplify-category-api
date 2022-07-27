@@ -5,6 +5,8 @@ import { ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
 import { TransformerContext } from '../transformer-context';
 import { ResolverConfig, SyncConfig, SyncConfigLambda } from '../config/transformer-config';
 import {
+  StackManagerProvider,
+  TransformerContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -105,6 +107,12 @@ export function getSyncConfig(ctx: TransformerTransformSchemaStepContextProvider
     syncConfig = typeResolverConfig;
   }
 
+  if (syncConfig && isLambdaSyncConfig(syncConfig) && !syncConfig.LambdaConflictHandler.lambdaArn) {
+    const { name, region } = syncConfig.LambdaConflictHandler;
+    const syncLambdaArn = syncLambdaArnResource(ctx.stackManager, name, region);
+    syncConfig.LambdaConflictHandler.lambdaArn = syncLambdaArn;
+  }
+
   return syncConfig;
 }
 
@@ -119,23 +127,23 @@ export function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncCo
   return false;
 }
 
-export function createSyncLambdaIAMPolicy(stack: cdk.Stack, name: string, region?: string): iam.Policy {
+export function createSyncLambdaIAMPolicy(context: TransformerContextProvider, stack: cdk.Stack, name: string, region?: string): iam.Policy {
   return new iam.Policy(stack, 'InvokeLambdaFunction', {
     statements: [
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['lambda:InvokeFunction'],
-        resources: [syncLambdaArnResource(name, region)],
+        resources: [syncLambdaArnResource(context.stackManager, name, region)],
       }),
     ],
   });
 }
 
-function syncLambdaArnResource(name: string, region?: string): string {
+function syncLambdaArnResource(stackManager: StackManagerProvider, name: string, region?: string): string {
   const substitutions = {};
   if (referencesEnv(name)) {
     Object.assign(substitutions, {
-      env: cdk.Fn.ref(ResourceConstants.PARAMETERS.Env),
+      env: stackManager.getParameter(ResourceConstants.PARAMETERS.Env),
     });
   }
   return cdk.Fn.conditionIf(
