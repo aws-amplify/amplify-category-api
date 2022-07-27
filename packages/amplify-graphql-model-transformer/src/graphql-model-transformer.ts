@@ -1371,7 +1371,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const syncConfig = SyncUtils.getSyncConfig(context, def!.name.value);
     if (syncConfig && SyncUtils.isLambdaSyncConfig(syncConfig)) {
       role.attachInlinePolicy(
-        SyncUtils.createSyncLambdaIAMPolicy(stack, syncConfig.LambdaConflictHandler.name, syncConfig.LambdaConflictHandler.region),
+        SyncUtils.createSyncLambdaIAMPolicy(context, stack, syncConfig.LambdaConflictHandler.name, syncConfig.LambdaConflictHandler.region),
       );
     }
 

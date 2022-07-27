@@ -28,6 +28,7 @@ module.exports = {
     '<rootDir>/packages/amplify-graphql-relational-transformer',
     '<rootDir>/packages/amplify-graphql-searchable-transformer',
     '<rootDir>/packages/amplify-graphql-transformer-migrator',
+    '<rootDir>/packages/amplify-graphql-transformer-core',
     '<rootDir>/packages/graphql-auth-transformer',
     '<rootDir>/packages/graphql-connection-transformer',
     '<rootDir>/packages/graphql-dynamodb-transformer',
