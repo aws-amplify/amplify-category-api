@@ -3593,7 +3593,12 @@ $util.qr($PkMap.put('createdAt' , 'ByCreatedAt'))
 ## [End] Set query expression for @key **
 ## [Start] Set query expression for @key **
 #set( $filterArgsMap = $ctx.args.filter.get(\\"and\\") )
-#if( !$util.isNullOrEmpty($filterArgsMap) && ($util.isNull($ctx.args.lastSync) || $ctx.args.lastSync == 0) )
+#set( $isLastSyncInDeltaTTLWindow = false )
+#set( $minLastSync = $util.time.nowEpochMilliSeconds() - 1800000 )
+#if( !$util.isNull($ctx.args.lastSync) && $ctx.args.lastSync != 0 && $minLastSync <= $ctx.args.lastSync )
+  #set( $isLastSyncInDeltaTTLWindow = true )
+#end
+#if( !$util.isNullOrEmpty($filterArgsMap) && !$isLastSyncInDeltaTTLWindow )
   #set( $json = $filterArgsMap )
   #foreach( $item in $json )
     #set( $ind = $foreach.index )
@@ -3676,6 +3681,7 @@ $util.qr($PkMap.put('createdAt' , 'ByCreatedAt'))
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Sync\\",
   \\"limit\\": $limit,
+  \\"lastSync\\": $util.toJson($util.defaultIfNull($ctx.args.lastSync, null)),
   \\"query\\": $modelQueryExpression
 } )
   #if( !$util.isNull($ctx.args.sortDirection)
@@ -3722,7 +3728,12 @@ $util.qr($PkMap.put('orderId' , 'dbTable'))
 ## [End] Set query expression for @key **
 ## [Start] Set query expression for @key **
 #set( $filterArgsMap = $ctx.args.filter.get(\\"and\\") )
-#if( !$util.isNullOrEmpty($filterArgsMap) && ($util.isNull($ctx.args.lastSync) || $ctx.args.lastSync == 0) )
+#set( $isLastSyncInDeltaTTLWindow = false )
+#set( $minLastSync = $util.time.nowEpochMilliSeconds() - 1800000 )
+#if( !$util.isNull($ctx.args.lastSync) && $ctx.args.lastSync != 0 && $minLastSync <= $ctx.args.lastSync )
+  #set( $isLastSyncInDeltaTTLWindow = true )
+#end
+#if( !$util.isNullOrEmpty($filterArgsMap) && !$isLastSyncInDeltaTTLWindow )
   #set( $json = $filterArgsMap )
   #foreach( $item in $json )
     #set( $ind = $foreach.index )
@@ -3805,6 +3816,7 @@ $util.qr($PkMap.put('orderId' , 'dbTable'))
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Sync\\",
   \\"limit\\": $limit,
+  \\"lastSync\\": $util.toJson($util.defaultIfNull($ctx.args.lastSync, null)),
   \\"query\\": $modelQueryExpression
 } )
   #if( !$util.isNull($ctx.args.sortDirection)
