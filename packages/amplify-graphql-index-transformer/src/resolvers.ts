@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
+import { MappingTemplate, SyncUtils } from '@aws-amplify/graphql-transformer-core';
 import { DataSourceProvider, TransformerContextProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
 import { Table } from '@aws-cdk/aws-dynamodb';
@@ -637,8 +637,13 @@ function setSyncQueryFilterSnippet() {
   expressions.push(
     compoundExpression([
       set(ref('filterArgsMap'), ref('ctx.args.filter.get("and")')),
+      generateDeltaTableTTLCheck(
+        'isLastSyncInDeltaTTLWindow', 
+        SyncUtils.syncDataSourceConfig()?.DeltaSyncTableTTL, 
+        'ctx.args.lastSync'
+      ),
       ifElse(
-        raw('!$util.isNullOrEmpty($filterArgsMap) && ($util.isNull($ctx.args.lastSync) || $ctx.args.lastSync == 0)'),
+        raw('!$util.isNullOrEmpty($filterArgsMap) && !$isLastSyncInDeltaTTLWindow'),
         compoundExpression([
           set(ref('json'), raw('$filterArgsMap')),
           forEach(ref('item'), ref('json'), [
@@ -670,6 +675,26 @@ function setSyncQueryFilterSnippet() {
     ]),
   );
   return block('Set query expression for @key', expressions);
+}
+
+const generateDeltaTableTTLCheck = (
+  deltaTTLCheckRefName: string, 
+  deltaTTLInMinutes: number, 
+  lastSyncRefName: string
+): Expression => {
+  const deltaTTLInMilliSeconds = deltaTTLInMinutes * 60 * 1000;
+  return compoundExpression([
+    set(ref(deltaTTLCheckRefName), bool(false)),
+    set(ref('minLastSync'), raw(`$util.time.nowEpochMilliSeconds() - ${deltaTTLInMilliSeconds}`)),
+    iff(
+      and([
+        not(methodCall(ref('util.isNull'), ref(lastSyncRefName))),
+        notEquals(ref(lastSyncRefName), int(0)),
+        raw(`$minLastSync <= $${lastSyncRefName}`),
+      ]),
+      set(ref(deltaTTLCheckRefName), bool(true)),
+    )
+  ]);
 }
 
 function setSyncKeyExpressionForHashKey(queryExprReference: string) {
@@ -786,6 +811,7 @@ function makeSyncQueryResolver() {
             version: str(RESOLVER_VERSION_ID),
             operation: str('Sync'),
             limit: ref('limit'),
+            lastSync: ref('util.toJson($util.defaultIfNull($ctx.args.lastSync, null))'),
             query: ref(ResourceConstants.SNIPPETS.ModelQueryExpression),
           }),
         ),
