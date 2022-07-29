@@ -1,8 +1,9 @@
+import { attributeTypeFromType } from '@aws-amplify/graphql-index-transformer';
 import { getKeySchema, getTable, MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from '@aws-cdk/core';
 import assert from 'assert';
-import { ObjectTypeDefinitionNode } from 'graphql';
+import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import {
   and,
   bool,
@@ -40,6 +41,7 @@ import {
   setArgs,
   toCamelCase,
 } from 'graphql-transformer-common';
+import { getSortKeyFields } from './schema';
 import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './types';
 import { getConnectionAttributeName, getObjectPrimaryKey } from './utils';
 
@@ -339,7 +341,6 @@ export function updateTableForConnection(config: HasManyDirectiveConfiguration, 
 
   const { field, object, relatedType } = config;
   const mappedObjectName = ctx.resourceHelper.getModelNameMapping(object.name.value);
-  const connectionName = getConnectionAttributeName(ctx.featureFlags, mappedObjectName, field.name.value, getObjectPrimaryKey(relatedType).name.value);
   const table = getTable(ctx, relatedType) as any;
   const gsis = table.globalSecondaryIndexes;
 
@@ -351,13 +352,25 @@ export function updateTableForConnection(config: HasManyDirectiveConfiguration, 
     return;
   }
 
+  const respectPrimaryKeyAttributesOnConnectionField: boolean = ctx.featureFlags.getBoolean('respectPrimaryKeyAttributesOnConnectionField');
+  const partitionKeyName = getConnectionAttributeName(ctx.featureFlags, mappedObjectName, field.name.value, getObjectPrimaryKey(object).name.value);
+  const partitionKeyType = respectPrimaryKeyAttributesOnConnectionField ? attributeTypeFromType(getObjectPrimaryKey(object).type, ctx) : 'S';
+  const sortKeyAttributeDefinitions = respectPrimaryKeyAttributesOnConnectionField
+    ? getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(ctx, object, field)
+    : undefined;
   table.addGlobalSecondaryIndex({
     indexName,
     projectionType: 'ALL',
     partitionKey: {
-      name: connectionName,
-      type: 'S',
+      name: partitionKeyName,
+      type: partitionKeyType,
     },
+    sortKey: sortKeyAttributeDefinitions
+    ? {
+      name: sortKeyAttributeDefinitions.sortKeyName,
+      type: sortKeyAttributeDefinitions.sortKeyType,
+    }
+    : undefined,
     readCapacity: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
     writeCapacity: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
   });
@@ -386,4 +399,34 @@ function appendIndex(list: any, newIndex: any): any[] {
   }
 
   return [newIndex];
+}
+
+type SortKeyAttributeDefinitions = {
+  sortKeyName: string;
+  sortKeyType: 'S' | 'N';
+}
+
+function getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(
+  ctx: TransformerContextProvider,
+  object: ObjectTypeDefinitionNode,
+  hasManyField: FieldDefinitionNode,
+): SortKeyAttributeDefinitions | undefined {
+  const sortKeyFields = getSortKeyFields(ctx, object);
+  if (!sortKeyFields.length) {
+    return undefined;
+  }
+  const mappedObjectName = ctx.resourceHelper.getModelNameMapping(object.name.value);
+  const connectedSortKeyFieldNames: string[] = sortKeyFields.map(sortKeyField =>
+    getConnectionAttributeName(ctx.featureFlags, mappedObjectName, hasManyField.name.value, sortKeyField.name.value));
+  if (connectedSortKeyFieldNames.length === 1) {
+    return {
+      sortKeyName: connectedSortKeyFieldNames[0],
+      sortKeyType: attributeTypeFromType(sortKeyFields[0].type, ctx),
+    };
+  } else if (sortKeyFields.length > 1) {
+    return {
+      sortKeyName: condenseRangeKey(connectedSortKeyFieldNames),
+      sortKeyType: 'S',
+    };
+  }
 }
