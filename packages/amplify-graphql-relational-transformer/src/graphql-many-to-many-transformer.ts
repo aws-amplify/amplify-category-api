@@ -285,8 +285,8 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       const d1FieldNameId = getManyToManyConnectionAttributeName(ctx.featureFlags, d1FieldName, getObjectPrimaryKey(directive1.object).name.value);
       const d1SortFieldNames = d1SortKeys.map(node => `${d1FieldNameOrig}${node.name.value}`);
       const d2FieldNameId = getManyToManyConnectionAttributeName(ctx.featureFlags, d2FieldName, getObjectPrimaryKey(directive2.object).name.value);
-      const d1FieldNameIdOrig = `${d1FieldNameOrig}ID`;
-      const d2FieldNameIdOrig = `${d2FieldNameOrig}ID`;
+      const d1FieldNameIdOrig = getManyToManyConnectionAttributeName(ctx.featureFlags, d1FieldNameOrig, getObjectPrimaryKey(directive1.object).name.value);
+      const d2FieldNameIdOrig = getManyToManyConnectionAttributeName(ctx.featureFlags, d2FieldNameOrig, getObjectPrimaryKey(directive2.object).name.value);
       const d2SortFieldNames = d2SortKeys.map(node => `${d2FieldNameOrig}${node.name.value}`);
       const joinModelDirective = makeDirective('model', []);
       const d1IndexDirective = makeDirective('index', [

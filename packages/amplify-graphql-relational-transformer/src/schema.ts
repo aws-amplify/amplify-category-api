@@ -255,7 +255,7 @@ export const ensureHasManyConnectionField = (
   const connectionFieldName = primaryKeyField.name.value;
   config.connectionFields.push(
     connectionFieldName,
-    ...sortKeyFields.map(it => getSortKeyConnectionAttributeName(object.name.value, field.name.value, it.name.value)),
+    ...sortKeyFields.map(it => it.name.value),
   );
 
   const relatedTypeObject = ctx.output.getType(relatedType.name.value) as ObjectTypeDefinitionNode;
