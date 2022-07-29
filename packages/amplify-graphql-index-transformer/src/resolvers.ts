@@ -159,7 +159,7 @@ function getDdbKeySchema(config: PrimaryKeyDirectiveConfiguration) {
   return schema;
 }
 
-function attributeTypeFromType(type: TypeNode, ctx: TransformerContextProvider) {
+export function attributeTypeFromType(type: TypeNode, ctx: TransformerContextProvider) {
   const baseTypeName = getBaseType(type);
   const ofType = ctx.output.getType(baseTypeName);
   if (ofType && ofType.kind === Kind.ENUM_TYPE_DEFINITION) {
