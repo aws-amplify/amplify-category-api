@@ -639,7 +639,7 @@ function setSyncQueryFilterSnippet() {
       set(ref('filterArgsMap'), ref('ctx.args.filter.get("and")')),
       generateDeltaTableTTLCheck(
         'isLastSyncInDeltaTTLWindow', 
-        SyncUtils.syncDataSourceConfig()?.DeltaSyncTableTTL, 
+        SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL, 
         'ctx.args.lastSync'
       ),
       ifElse(
