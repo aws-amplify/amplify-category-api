@@ -1,0 +1,9 @@
+input AMPLIFY {
+  globalAuthRule: AuthRule = { allow: public }
+}
+
+type Song @model {
+    id: ID!
+    name: String!
+    genre: String! @index(name : "byGenre", queryField: "songInfoByGenre")
+}
