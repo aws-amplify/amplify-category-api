@@ -42,7 +42,7 @@ export class SchemaReader {
     } else if (fs.pathExistsSync(schemaDirPath)) {
       this.schemaPath = schemaDirPath;
     } else {
-      this.schemaPath = null;
+      throw new Error(`No schema found, your graphql schema should be in either ${schemaFilePath} or ${schemaDirPath}`);
     }
     return this.schemaPath;
   };
