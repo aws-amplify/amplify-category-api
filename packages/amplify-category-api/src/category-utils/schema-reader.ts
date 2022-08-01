@@ -15,9 +15,7 @@ import {
   SCHEMA_FILENAME,
 } from '../graphql-transformer/constants';
 import { generateTransformerOptions } from '../graphql-transformer/transformer-options-v2';
-import {
-  contextUtil,
-} from './context-util';
+import { contextUtil } from './context-util';
 
 /**
  * SchemaReader is a utility point to consolidate and abstract GraphQL Schema reading
@@ -31,13 +29,11 @@ export class SchemaReader {
   private preProcessedSchemaDocument: DocumentNode;
 
   getSchemaPath = async (
-    context: $TSContext,
-    options: $TSAny,
+    resourceDir: string,
   ): Promise<string> => {
     if (this.schemaPath) {
       return this.schemaPath;
     }
-    const resourceDir = await contextUtil.getResourceDir(context, options);
     const schemaFilePath = path.normalize(path.join(resourceDir, SCHEMA_FILENAME));
     const schemaDirPath = path.normalize(path.join(resourceDir, SCHEMA_DIR_NAME));
 
@@ -65,11 +61,12 @@ export class SchemaReader {
     const preProcessSchema = usePreProcessing && (await ApiCategoryFacade.getTransformerVersion(context) === 2);
     if (!this.schemaDocument) {
       const fileContentsList = new Array<Promise<Buffer>>();
-      const schemaPath = await this.getSchemaPath(context, options);
+      const resourceDir = await contextUtil.getResourceDir(context, options);
+      const schemaPath = await this.getSchemaPath(resourceDir);
 
       const stats = fs.statSync(schemaPath);
       if (stats.isDirectory()) {
-        fs.readdirSync(schemaPath).forEach(fileName => {
+        fs.readdirSync(schemaPath).forEach((fileName) => {
           fileContentsList.push(fs.readFile(path.join(schemaPath, fileName)));
         });
       } else {
@@ -77,7 +74,7 @@ export class SchemaReader {
       }
 
       const bufferList = await Promise.all(fileContentsList);
-      const fullSchema = bufferList.map(buff => buff.toString()).join('\n');
+      const fullSchema = bufferList.map((buff) => buff.toString()).join('\n');
       this.schemaDocument = parse(fullSchema);
     }
 

@@ -36,6 +36,8 @@ import {
 } from './transformer-options-types';
 import { contextUtil } from '../category-utils/context-util';
 
+export const APPSYNC_RESOURCE_SERVICE = 'AppSync';
+
 /**
  * Use current context to generate the Transformer options for generating
  * a GraphQL Transformer V2 object
@@ -65,8 +67,8 @@ export const generateTransformerOptions = async (
   // cloud formation push will fail even if there is no changes in the GraphQL API
   // https://github.com/aws-amplify/amplify-console/issues/10
   const resourceNeedCompile = allResources
-    .filter(r => !resources.includes(r))
-    .filter(r => {
+    .filter((r) => !resources.includes(r))
+    .filter((r) => {
       const buildDir = path.normalize(path.join(backEndDir, AmplifyCategories.API, r.resourceName, 'build'));
       return !fs.existsSync(buildDir);
     });
@@ -75,7 +77,7 @@ export const generateTransformerOptions = async (
   if (forceCompile) {
     resources = resources.concat(allResources);
   }
-  resources = resources.filter(resource => resource.service === 'AppSync');
+  resources = resources.filter((resource) => resource.service === APPSYNC_RESOURCE_SERVICE);
 
   const resourceDir = await contextUtil.getResourceDir(context, options);
 
