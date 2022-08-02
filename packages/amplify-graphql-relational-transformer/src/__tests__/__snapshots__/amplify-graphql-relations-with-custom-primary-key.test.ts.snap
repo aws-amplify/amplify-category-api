@@ -296,6 +296,152 @@ exports[`Resolvers for custom primary key and relational directives should gener
 "#if( $ctx.source.deniedField )
   #return($util.toJson(null))
 #end
+#if( $util.isNull($ctx.source.postId) )
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
+#else
+  #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $query = {
+  \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
+  \\"expressionNames\\": {
+      \\"#partitionKey\\": \\"post5CommentsPostId\\",
+      \\"#sortKey\\": \\"post5CommentsTitle#post5CommentsLikes\\"
+  },
+  \\"expressionValues\\": {
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.postId),
+      \\":sortKey\\": $util.dynamodb.toDynamoDB(\\"\${context.source.title}#\${context.source.likes}\\")
+  }
+} )
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+  #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+    #set( $filter = $ctx.stash.authFilter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = {
+  \\"and\\":   [$filter, $args.filter]
+} )
+    #end
+  #else
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filter) )
+    #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+    #if( !$util.isNullOrBlank($filterExpression.expression) )
+      #if( $filterExpression.expressionValues.size() == 0 )
+        $util.qr($filterExpression.remove(\\"expressionValues\\"))
+      #end
+      #set( $filter = $filterExpression )
+    #end
+  #end
+{
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"Query\\",
+      \\"query\\":     $util.toJson($query),
+      \\"scanIndexForward\\":     #if( $context.args.sortDirection )
+      #if( $context.args.sortDirection == \\"ASC\\" )
+true
+      #else
+false
+      #end
+    #else
+true
+    #end,
+      \\"filter\\":     #if( $filter )
+$util.toJson($filter)
+    #else
+null
+    #end,
+      \\"limit\\": $limit,
+      \\"nextToken\\":     #if( $context.args.nextToken )
+$util.toJson($context.args.nextToken)
+    #else
+null
+    #end,
+      \\"index\\": \\"gsi-Post5.comments\\"
+  }
+#end"
+`;
+
+exports[`Resolvers for custom primary key and relational directives should generate correct dynamoDB partition key and sort key for CPK schema in resolver VTL when CPK feature is enabled 6`] = `
+"#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.postId) )
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
+#else
+  #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $query = {
+  \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
+  \\"expressionNames\\": {
+      \\"#partitionKey\\": \\"post6CommentsPostId\\",
+      \\"#sortKey\\": \\"post6CommentsTitle#post6CommentsLikes\\"
+  },
+  \\"expressionValues\\": {
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.postId),
+      \\":sortKey\\": $util.dynamodb.toDynamoDB(\\"\${context.source.title}#\${context.source.likes}\\")
+  }
+} )
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+  #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+    #set( $filter = $ctx.stash.authFilter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = {
+  \\"and\\":   [$filter, $args.filter]
+} )
+    #end
+  #else
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filter) )
+    #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+    #if( !$util.isNullOrBlank($filterExpression.expression) )
+      #if( $filterExpression.expressionValues.size() == 0 )
+        $util.qr($filterExpression.remove(\\"expressionValues\\"))
+      #end
+      #set( $filter = $filterExpression )
+    #end
+  #end
+{
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"Query\\",
+      \\"query\\":     $util.toJson($query),
+      \\"scanIndexForward\\":     #if( $context.args.sortDirection )
+      #if( $context.args.sortDirection == \\"ASC\\" )
+true
+      #else
+false
+      #end
+    #else
+true
+    #end,
+      \\"filter\\":     #if( $filter )
+$util.toJson($filter)
+    #else
+null
+    #end,
+      \\"limit\\": $limit,
+      \\"nextToken\\":     #if( $context.args.nextToken )
+$util.toJson($context.args.nextToken)
+    #else
+null
+    #end,
+      \\"index\\": \\"gsi-Post6.comments\\"
+  }
+#end"
+`;
+
+exports[`Resolvers for custom primary key and relational directives should generate correct dynamoDB partition key and sort key for CPK schema in resolver VTL when CPK feature is enabled 7`] = `
+"#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
 #if( $util.isNull($ctx.source.customPostId) )
   #set( $result = {
   \\"items\\":   []
@@ -365,7 +511,7 @@ null
 #end"
 `;
 
-exports[`Resolvers for custom primary key and relational directives should generate correct dynamoDB partition key and sort key for CPK schema in resolver VTL when CPK feature is enabled 6`] = `
+exports[`Resolvers for custom primary key and relational directives should generate correct dynamoDB partition key and sort key for CPK schema in resolver VTL when CPK feature is enabled 8`] = `
 "#if( $ctx.source.deniedField )
   #return($util.toJson(null))
 #end
@@ -576,6 +722,148 @@ $util.toJson($context.args.nextToken)
 null
     #end,
       \\"index\\": \\"gsi-Post2.comments\\"
+  }
+#end"
+`;
+
+exports[`Resolvers for custom primary key and relational directives should not generate sort key field in implicit hasMany relation when CPK feature is disabled 3`] = `
+"#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.postId) )
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
+#else
+  #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $query = {
+  \\"expression\\": \\"#partitionKey = :partitionKey\\",
+  \\"expressionNames\\": {
+      \\"#partitionKey\\": \\"post5CommentsId\\"
+  },
+  \\"expressionValues\\": {
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.postId)
+  }
+} )
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+  #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+    #set( $filter = $ctx.stash.authFilter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = {
+  \\"and\\":   [$filter, $args.filter]
+} )
+    #end
+  #else
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filter) )
+    #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+    #if( !$util.isNullOrBlank($filterExpression.expression) )
+      #if( $filterExpression.expressionValues.size() == 0 )
+        $util.qr($filterExpression.remove(\\"expressionValues\\"))
+      #end
+      #set( $filter = $filterExpression )
+    #end
+  #end
+{
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"Query\\",
+      \\"query\\":     $util.toJson($query),
+      \\"scanIndexForward\\":     #if( $context.args.sortDirection )
+      #if( $context.args.sortDirection == \\"ASC\\" )
+true
+      #else
+false
+      #end
+    #else
+true
+    #end,
+      \\"filter\\":     #if( $filter )
+$util.toJson($filter)
+    #else
+null
+    #end,
+      \\"limit\\": $limit,
+      \\"nextToken\\":     #if( $context.args.nextToken )
+$util.toJson($context.args.nextToken)
+    #else
+null
+    #end,
+      \\"index\\": \\"gsi-Post5.comments\\"
+  }
+#end"
+`;
+
+exports[`Resolvers for custom primary key and relational directives should not generate sort key field in implicit hasMany relation when CPK feature is disabled 4`] = `
+"#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.postId) )
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
+#else
+  #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $query = {
+  \\"expression\\": \\"#partitionKey = :partitionKey\\",
+  \\"expressionNames\\": {
+      \\"#partitionKey\\": \\"post6CommentsId\\"
+  },
+  \\"expressionValues\\": {
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.postId)
+  }
+} )
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+  #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+    #set( $filter = $ctx.stash.authFilter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = {
+  \\"and\\":   [$filter, $args.filter]
+} )
+    #end
+  #else
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filter) )
+    #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+    #if( !$util.isNullOrBlank($filterExpression.expression) )
+      #if( $filterExpression.expressionValues.size() == 0 )
+        $util.qr($filterExpression.remove(\\"expressionValues\\"))
+      #end
+      #set( $filter = $filterExpression )
+    #end
+  #end
+{
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"Query\\",
+      \\"query\\":     $util.toJson($query),
+      \\"scanIndexForward\\":     #if( $context.args.sortDirection )
+      #if( $context.args.sortDirection == \\"ASC\\" )
+true
+      #else
+false
+      #end
+    #else
+true
+    #end,
+      \\"filter\\":     #if( $filter )
+$util.toJson($filter)
+    #else
+null
+    #end,
+      \\"limit\\": $limit,
+      \\"nextToken\\":     #if( $context.args.nextToken )
+$util.toJson($context.args.nextToken)
+    #else
+null
+    #end,
+      \\"index\\": \\"gsi-Post6.comments\\"
   }
 #end"
 `;
