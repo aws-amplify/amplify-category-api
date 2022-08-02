@@ -707,7 +707,30 @@ describe('Resolvers for custom primary key and relational directives', () => {
       postId: ID @index(name: "byPost", sortKeyFields:["postTitle"]) # customized foreign key for parent primary key
       postTitle: String # customized foreign key for parent sort key
     }
-    # 5. manyToMany
+    # 5. Implicit Bi hasMany with multiple SKs
+    type Post5 @model {
+      postId: ID! @primaryKey(sortKeyFields:["title", "likes"])
+      title: String!
+      likes: Int!
+      comments: [Comment5] @hasMany
+    }
+    type Comment5 @model {
+      commentId: ID! @primaryKey(sortKeyFields:["content"])
+      content: String!
+      post: Post5 @belongsTo
+    }
+    # 6. Implicit Uni hasMany with multiple SKs
+    type Post6 @model {
+      postId: ID! @primaryKey(sortKeyFields:["title", "likes"])
+      title: String!
+      likes: Int!
+      comments: [Comment6] @hasMany
+    }
+    type Comment6 @model {
+      commentId: ID! @primaryKey(sortKeyFields:["content"])
+      content: String!
+    }
+    # 7. manyToMany
     type Post @model {
         customPostId: ID! @primaryKey(sortKeyFields: ["title"])
         title: String!
@@ -750,6 +773,8 @@ describe('Resolvers for custom primary key and relational directives', () => {
     expect(out.resolvers['Post2.comments.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Post3.comments.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Post4.comments.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Post5.comments.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Post6.comments.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Post.tags.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Tag.posts.req.vtl']).toMatchSnapshot();
   });
@@ -762,5 +787,7 @@ describe('Resolvers for custom primary key and relational directives', () => {
     expect(out).toBeDefined();
     expect(out.resolvers['Post1.comments.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Post2.comments.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Post5.comments.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Post6.comments.req.vtl']).toMatchSnapshot();
   });
 });
