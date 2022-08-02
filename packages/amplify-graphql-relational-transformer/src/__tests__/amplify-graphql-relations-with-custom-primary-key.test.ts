@@ -659,3 +659,108 @@ describe('custom primary key and relational directives', () => {
     });
   });
 });
+describe('Resolvers for custom primary key and relational directives', () => {
+  const inputSchema = `
+    # 1. Implicit Bi hasMany
+    type Post1 @model {
+      postId: ID! @primaryKey(sortKeyFields:["title"])
+      title: String!
+      comments: [Comment1] @hasMany
+    }
+    type Comment1 @model {
+      commentId: ID! @primaryKey(sortKeyFields:["content"])
+      content: String!
+      post: Post1 @belongsTo
+    }
+    # 2. Implicit Uni hasMany
+    type Post2 @model {
+      postId: ID! @primaryKey(sortKeyFields:["title"])
+      title: String!
+      comments: [Comment2] @hasMany
+    }
+    type Comment2 @model {
+      commentId: ID! @primaryKey(sortKeyFields:["content"])
+      content: String!
+    }
+    # 3. Explicit Bi hasMany
+    type Post3 @model {
+      postId: ID! @primaryKey(sortKeyFields:["title"])
+      title: String!
+      comments: [Comment3] @hasMany(indexName:"byPost", fields:["postId", "title"])
+    }
+    type Comment3 @model {
+      commentId: ID! @primaryKey(sortKeyFields:["content"])
+      content: String!
+      post: Post3 @belongsTo(fields:["postId", "postTitle"])
+      postId: ID @index(name: "byPost", sortKeyFields:["postTitle"])
+      postTitle: String
+    }
+    # 4. Explicit Uni hasMany
+    type Post4 @model {
+      postId: ID! @primaryKey(sortKeyFields:["title"])
+      title: String!
+      comments: [Comment4] @hasMany(indexName:"byPost", fields:["postId", "title"])
+    }
+    type Comment4 @model {
+      commentId: ID! @primaryKey(sortKeyFields:["content"])
+      content: String!
+      postId: ID @index(name: "byPost", sortKeyFields:["postTitle"]) # customized foreign key for parent primary key
+      postTitle: String # customized foreign key for parent sort key
+    }
+    # 5. manyToMany
+    type Post @model {
+        customPostId: ID! @primaryKey(sortKeyFields: ["title"])
+        title: String!
+        content: String
+        content2: String
+        tags: [Tag] @manyToMany(relationName: "PostTags")
+    }
+    type Tag @model {
+        customTagId: ID! @primaryKey(sortKeyFields: ["label"])
+        label: String!
+        posts: [Post] @manyToMany(relationName: "PostTags")
+    }
+  `;
+  const setupTransformers = () => {
+    const modelTransformer = new ModelTransformer();
+    const indexTransformer = new IndexTransformer();
+    const hasOneTransformer = new HasOneTransformer();
+    const authTransformer = new AuthTransformer();
+    return [
+      modelTransformer,
+      indexTransformer,
+      new PrimaryKeyTransformer(),
+      new HasManyTransformer(),
+      new BelongsToTransformer(),
+      new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
+    ];
+  };
+
+  it('should generate correct dynamoDB partition key and sort key for CPK schema in resolver VTL when CPK feature is enabled', () => {
+    const transformer = new GraphQLTransform({
+      featureFlags: mockFeatureFlags(true),
+      transformers: setupTransformers(),
+    });
+    const out = transformer.transform(inputSchema);
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+
+    expect(out.resolvers['Post1.comments.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Post2.comments.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Post3.comments.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Post4.comments.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Post.tags.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Tag.posts.req.vtl']).toMatchSnapshot();
+  });
+  it('should not generate sort key field in implicit hasMany relation when CPK feature is disabled', () => {
+    const transformer = new GraphQLTransform({
+      featureFlags: mockFeatureFlags(false),
+      transformers: setupTransformers(),
+    });
+    const out = transformer.transform(inputSchema);
+    expect(out).toBeDefined();
+    expect(out.resolvers['Post1.comments.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Post2.comments.req.vtl']).toMatchSnapshot();
+  });
+});
