@@ -5,6 +5,7 @@
   "scripts": {
     "test-changed": "lerna run test --since main",
     "test": "lerna run test",
+    "test-v2-transformers": "lerna run --scope '@aws-amplify/graphql-*-transformer' test",
     "test-ci": "lerna run test --concurrency 1 -- --ci -i",
     "e2e": "lerna run e2e",
     "cloud-e2e": "CURR_BRANCH=$(git branch | awk '/\\*/{printf \"%s\", $2}') && UPSTREAM_BRANCH=run-e2e/$USER/$CURR_BRANCH && git push $(git remote -v | grep aws-amplify/amplify-category-api | head -n1 | awk '{print $1;}') $CURR_BRANCH:$UPSTREAM_BRANCH --no-verify --force-with-lease && echo \"\n\n 🏃 E2E test are running at:\nhttps://app.circleci.com/pipelines/github/aws-amplify/amplify-category-api?branch=$UPSTREAM_BRANCH\"",
