@@ -7,6 +7,7 @@ import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces
 import { expect as cdkExpect, haveResourceLike } from '@aws-cdk/assert';
 import { DocumentNode, parse } from 'graphql';
 import { IndexTransformer, PrimaryKeyTransformer } from '..';
+import * as resolverUtils from '../resolvers';
 
 const generateFeatureFlagWithBooleanOverrides = (overrides: Record<string, boolean>): FeatureFlagProvider => ({
   getBoolean: (name: string, defaultValue?: boolean): boolean => {
@@ -1124,6 +1125,90 @@ it('should support index/primary key with sync resolvers', () => {
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
 
+  const definition = out.schema;
+  expect(definition).toBeDefined();
+  expect(out.resolvers).toMatchSnapshot();
+
+  validateModelSchema(parse(definition));
+});
+
+it('sync query resolver renders without overrides', () => {
+  const validSchema = `
+    type Song @model {
+      id: ID!
+      name: String!
+      genre: String! @index(name : "byGenre", queryField: "songInfoByGenre")
+    }
+  `;
+
+  const config: SyncConfig = {
+    ConflictDetection: 'VERSION',
+    ConflictHandler: ConflictHandlerType.AUTOMERGE,
+  };
+
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
+    resolverConfig: {
+      project: config,
+    },
+    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
+  });
+
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  const expectedSyncDeltaSyncTtlConfig = '#set( $minLastSync = $util.time.nowEpochMilliSeconds() - 1800000 )';
+  expect(out?.resolvers['Query.syncSongs.preAuth.1.req.vtl']?.includes(expectedSyncDeltaSyncTtlConfig));
+  const definition = out.schema;
+  expect(definition).toBeDefined();
+  expect(out.resolvers).toMatchSnapshot();
+
+  validateModelSchema(parse(definition));
+});
+
+it('sync query resolver renders with deltaSyncTableTTL override', () => {
+  const validSchema = `
+    type Song @model {
+      id: ID!
+      name: String!
+      genre: String! @index(name : "byGenre", queryField: "songInfoByGenre")
+    }
+  `;
+
+  const config: SyncConfig = {
+    ConflictDetection: 'VERSION',
+    ConflictHandler: ConflictHandlerType.AUTOMERGE,
+  };
+
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer()],
+    resolverConfig: {
+      project: config,
+    },
+    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
+  });
+
+  const mockResourceOverrides = {
+    models: {
+      Song: {
+        modelDatasource: {
+          dynamoDbConfig: {
+            deltaSyncConfig: {
+              deltaSyncTableTtl: 15
+            }
+          }
+        }
+      }
+    }
+  };
+
+  jest.spyOn(resolverUtils, 'getResourceOverrides').mockReturnValue(mockResourceOverrides);
+
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  const expectedSyncDeltaSyncTtlConfig = '#set( $minLastSync = $util.time.nowEpochMilliSeconds() - 900000 )';
+  expect(out?.resolvers['Query.syncSongs.preAuth.1.req.vtl']?.includes(expectedSyncDeltaSyncTtlConfig));
   const definition = out.schema;
   expect(definition).toBeDefined();
   expect(out.resolvers).toMatchSnapshot();
