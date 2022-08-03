@@ -47,8 +47,6 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 
 // to deal with bug in cognito-identity-js
@@ -214,11 +212,10 @@ beforeAll(async () => {
         {allow: owner}
         {allow: groups, groups: ["Instructor"]}
     ]) {
-        id: String
-        name: String
-        email: AWSEmail
+        id: String,
+        name: String,
+        email: AWSEmail,
         ssn: String @auth(rules: [{allow: owner}])
-        owner: String
     }
 
     type Member @model
@@ -688,6 +685,51 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
   });
 });
 
+test('Test that an user not in the group is not allowed to view the subscription', async () => {
+  // subscribe to create students as user 3
+  // const observer = onCreateStudent(GRAPHQL_CLIENT_3)
+  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+  await Auth.signIn(USERNAME3, REAL_PASSWORD);
+  const observer = API.graphql({
+    // @ts-ignore
+    query: gql`
+      subscription OnCreateStudent {
+        onCreateStudent {
+          id
+          name
+          email
+          ssn
+          owner
+        }
+      }
+    `,
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  }) as unknown as Observable<any>;
+  let subscription: ZenObservable.Subscription;
+  const subscriptionPromise = new Promise((resolve, _) => {
+    subscription = observer.subscribe({
+      error: (err: any) => {
+        expect(err.error.errors[0].message).toEqual(
+          'Connection failed: {"errors":[{"errorType":"Unauthorized","message":"Not Authorized to access onCreateStudent on type Subscription"}]}',
+        );
+        resolve(undefined);
+      },
+    });
+  });
+
+  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+
+  await createStudent(GRAPHQL_CLIENT_1, {
+    name: 'student2',
+    email: 'student2@domain.com',
+    ssn: 'BBB-00-SNSN',
+  });
+
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
+});
+
 test('Test a subscription on update', async () => {
   // subscribe to update students as user 2
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
@@ -991,14 +1033,14 @@ test('Test subscription onCreatePost with ownerField', async () => {
   });
 });
 
-test('Test onCreatePost with incorrect owner argument should throw an error', async () => {
+test('Test onCreatePost with optional argument', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const failedObserver = API.graphql({
     // @ts-ignore
     query: gql`
       subscription OnCreatePost {
-        onCreatePost(postOwner: "${USERNAME2}") {
+        onCreatePost {
           id
           title
           postOwner

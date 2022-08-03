@@ -397,8 +397,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       const subscriptionRoles = acm
         .getRolesPerOperation('listen')
         .map(role => this.roleMap.get(role)!)
-        // for subscriptions we only use static rules or owner rule
-        .filter(roleDef => roleDef.strategy === 'owner' || roleDef.static);
+        // for subscriptions we only use static rules or owner rule where the field is not a list
+        .filter(roleDef => (roleDef.strategy === 'owner' && !fieldIsList(def.fields ?? [], roleDef.entity!)) || roleDef.static);
       subscriptionFieldNames.forEach(subscription => {
         this.protectSubscriptionResolver(context, subscription.typeName, subscription.fieldName, subscriptionRoles);
       });

@@ -343,13 +343,10 @@ describe('schema generation directive tests', () => {
 
     // Check that owner is required when only using owner auth rules
     subscriptionType?.fields?.forEach((field) => {
-      expect(field.arguments).toHaveLength(2);
-      const ownerArg: InputValueDefinitionNode = field.arguments![1];
-      expect(ownerArg.name.value).toEqual('owner');
-      expect(ownerArg.type.kind).toEqual(Kind.NAMED_TYPE);
-      const filterArg: InputValueDefinitionNode = field.arguments![0];
-      expect(filterArg.name.value).toEqual('filter');
-      expect(filterArg.type.kind).toEqual(Kind.NAMED_TYPE);
+      expect(field.arguments).toHaveLength(1);
+      const arg: InputValueDefinitionNode = field.arguments![0];
+      expect(arg.name.value).toEqual('owner');
+      expect(arg.type.kind).toEqual(Kind.NAMED_TYPE);
     });
 
     // Check that resolvers containing the authMode check block
