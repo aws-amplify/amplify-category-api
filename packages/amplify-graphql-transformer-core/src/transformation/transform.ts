@@ -57,6 +57,7 @@ import {
 import { validateAuthModes, validateModelSchema } from './validation';
 import { DocumentNode } from 'graphql/language';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
+import { AmplifyApiGraphQlResourceStackTemplate } from '../types/amplify-api-resource-stack-types';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
@@ -305,7 +306,7 @@ export class GraphQLTransform {
     return this.synthesize(context);
   }
 
-  private applyOverride = (stackManager: StackManager) => {
+  public applyOverride = (stackManager: StackManager): AmplifyApiGraphQlResourceStackTemplate  => {
     const stacks: string[] = [];
     const amplifyApiObj: any = {};
     stackManager.rootStack.node.findAll().forEach(node => {
@@ -368,6 +369,7 @@ export class GraphQLTransform {
         throw error;
       }
     }
+    return appsyncResourceObj;
   };
 
   protected generateGraphQlApi(stackManager: StackManager, output: TransformerOutput): GraphQLApi {

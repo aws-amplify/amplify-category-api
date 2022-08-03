@@ -20,6 +20,7 @@ import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
 
 export { TransformerResolver } from './resolver';
+export { StackManager } from './stack-manager';
 export class TransformerContextMetadata implements TransformerContextMetadataProvider {
   /**
    * Used by transformers to pass information between one another.

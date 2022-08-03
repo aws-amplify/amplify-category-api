@@ -32,7 +32,7 @@ export {
   TransformerPluginBase,
   TransformerAuthBase,
 } from './transformation/transformer-plugin-base';
-export { TransformerResolver } from './transformer-context';
+export { TransformerResolver, StackManager } from './transformer-context';
 /**
  * Returns the extra set of directives that are supported by AppSync service
  */
@@ -48,3 +48,5 @@ export {
   InputObjectDefinitionWrapper,
   ObjectDefinitionWrapper,
 } from './wrappers/object-definition-wrapper';
+
+export { AmplifyApiGraphQlResourceStackTemplate } from './types/amplify-api-resource-stack-types';
