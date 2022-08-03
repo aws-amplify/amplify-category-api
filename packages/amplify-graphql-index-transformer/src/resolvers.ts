@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import { MappingTemplate, SyncUtils } from '@aws-amplify/graphql-transformer-core';
-import { DataSourceProvider, TransformerContextProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { MappingTemplate, GraphQLTransform, AmplifyApiGraphQlResourceStackTemplate, SyncUtils, StackManager } from '@aws-amplify/graphql-transformer-core';
+import { DataSourceProvider, StackManagerProvider, TransformerContextProvider, TransformerPluginProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
 import { Table } from '@aws-cdk/aws-dynamodb';
 import * as cdk from '@aws-cdk/core';
@@ -47,6 +47,9 @@ import {
 } from 'graphql-transformer-common';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
 import { lookupResolverName } from './utils';
+import { stateManager, pathManager, $TSAny } from 'amplify-cli-core';
+import * as path from 'path';
+import _ from 'lodash';
 
 const API_KEY = 'API Key Authorization';
 
@@ -619,11 +622,11 @@ function setSyncQueryMapSnippet(name: string, config: PrimaryKeyDirectiveConfigu
 /**
  * constructSyncVTL
  */
-export function constructSyncVTL(syncVTLContent: string, resolver: TransformerResolverProvider) {
+export function constructSyncVTL(syncVTLContent: string, resolver: TransformerResolverProvider, deltaSyncTableTtl: number) {
   const checks = [
     print(generateSyncResolverInit()),
     syncVTLContent,
-    print(setSyncQueryFilterSnippet()),
+    print(setSyncQueryFilterSnippet(deltaSyncTableTtl)),
     print(setSyncKeyExpressionForHashKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
     print(setSyncKeyExpressionForRangeKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
     print(makeSyncQueryResolver()),
@@ -632,14 +635,14 @@ export function constructSyncVTL(syncVTLContent: string, resolver: TransformerRe
   addIndexToResolverSlot(resolver, checks, true);
 }
 
-function setSyncQueryFilterSnippet() {
+function setSyncQueryFilterSnippet(deltaSyncTableTtl: number) {
   const expressions: Expression[] = [];
   expressions.push(
     compoundExpression([
       set(ref('filterArgsMap'), ref('ctx.args.filter.get("and")')),
       generateDeltaTableTTLCheck(
         'isLastSyncInDeltaTTLWindow', 
-        SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL, 
+        deltaSyncTableTtl, 
         'ctx.args.lastSync'
       ),
       ifElse(
@@ -869,3 +872,36 @@ export const generateAuthExpressionForSandboxMode = (enabled: boolean): string =
     compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), exp), toJson(obj({}))]),
   );
 };
+
+export const getDeltaSyncTableTtl = (resourceOverrides: $TSAny, resource: TransformerResolverProvider) => {
+  if (_.get(resource, 'typeName') !== 'Query') {
+    return SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
+  }
+  const modelName = _.get(resource, ['datasource', 'name'])?.replace(new RegExp('Table$'), '');
+  const deltaSyncTtlOverride = _.get(resourceOverrides, ['models', modelName, 'modelDatasource', 'dynamoDbConfig', 'deltaSyncConfig', 'deltaSyncTableTtl']);
+  return deltaSyncTtlOverride || SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
+}
+
+export const getResourceOverrides = (transformers: TransformerPluginProvider[], stackManager?: StackManagerProvider | null): $TSAny => {
+  try {
+    const meta = stateManager.getCurrentMeta(undefined, { throwIfNotExist: false });
+    const gqlApiName = _.entries(meta?.api).find(([, value]) => (value as { service: string }).service === 'AppSync')?.[0];
+    if (gqlApiName && stackManager) {
+      const backendDir = pathManager.getBackendDirPath();
+      const overrideDir = path.join(backendDir, 'api', gqlApiName);
+      const localGraphQLTransformObj = new GraphQLTransform({
+        transformers: transformers,
+        overrideConfig: {
+          overrideFlag: true,
+          overrideDir: overrideDir,
+          resourceName: gqlApiName
+        }
+      });
+      return localGraphQLTransformObj.applyOverride(stackManager as StackManager);
+    }
+  } catch (error) {
+    // do not throw but return empty overrides
+    return {};
+  }
+  return {};
+}

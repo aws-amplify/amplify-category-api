@@ -40,6 +40,9 @@
   "devDependencies": {
     "@aws-cdk/assert": "~1.124.0"
   },
+  "peerDependencies": {
+    "amplify-cli-core": "^2.9.0"
+  },
   "jest": {
     "transform": {
       "^.+\\.(ts|tsx)?$": "ts-jest"

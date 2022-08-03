@@ -14,7 +14,13 @@ import {
   ObjectTypeDefinitionNode,
 } from 'graphql';
 import { isListType, isNonNullType, isScalarOrEnum } from 'graphql-transformer-common';
-import { constructSyncVTL, replaceDdbPrimaryKey, updateResolvers } from './resolvers';
+import { 
+  constructSyncVTL, 
+  replaceDdbPrimaryKey, 
+  updateResolvers,
+  getResourceOverrides,
+  getDeltaSyncTableTtl
+} from './resolvers';
 import {
   addKeyConditionInputs,
   removeAutoCreatedPrimaryKey,
@@ -70,10 +76,12 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
   public after = (ctx: TransformerContextProvider): void => {
     if (!ctx.isProjectUsingDataStore()) return;
 
+    const overriddenResources = getResourceOverrides([this], ctx?.stackManager);
     // construct sync VTL code
     this.resolverMap.forEach((syncVTLContent, resource) => {
       if (syncVTLContent) {
-        constructSyncVTL(syncVTLContent, resource);
+        const deltaSyncTableTtl = getDeltaSyncTableTtl(overriddenResources, resource);
+        constructSyncVTL(syncVTLContent, resource, deltaSyncTableTtl);
       }
     });
   };
