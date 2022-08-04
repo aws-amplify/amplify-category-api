@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.5...amplify-category-api-e2e-core@4.0.6) (2022-08-04)
+
+
+### Bug Fixes
+
+* **graphql:** revert subscriptions server-side filtering ([20cffc0](https://github.com/aws-amplify/amplify-category-api/commit/20cffc0810c23f85127a939c0a3b812f87c2a601))
+
+
+
+
+
 ## [4.0.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.3...amplify-category-api-e2e-core@4.0.5) (2022-07-20)
 
 **Note:** Version bump only for package amplify-category-api-e2e-core
