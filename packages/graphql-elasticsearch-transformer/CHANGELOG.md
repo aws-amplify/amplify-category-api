@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.43](https://github.com/aws-amplify/amplify-category-api/compare/graphql-elasticsearch-transformer@5.2.42...graphql-elasticsearch-transformer@5.2.43) (2022-08-04)
+
+
+### Bug Fixes
+
+* **graphql:** revert subscriptions server-side filtering ([20cffc0](https://github.com/aws-amplify/amplify-category-api/commit/20cffc0810c23f85127a939c0a3b812f87c2a601))
+
+
+
+
+
 ## [5.2.42](https://github.com/aws-amplify/amplify-category-api/compare/graphql-elasticsearch-transformer@5.2.40...graphql-elasticsearch-transformer@5.2.42) (2022-07-20)
 
 **Note:** Version bump only for package graphql-elasticsearch-transformer

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.11.3...@aws-amplify/graphql-relational-transformer@0.11.4) (2022-08-04)
+
+
+### Bug Fixes
+
+* **graphql:** revert subscriptions server-side filtering ([20cffc0](https://github.com/aws-amplify/amplify-category-api/commit/20cffc0810c23f85127a939c0a3b812f87c2a601))
+
+
+
+
+
 ## [0.11.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.11.2...@aws-amplify/graphql-relational-transformer@0.11.3) (2022-07-26)
 
 
