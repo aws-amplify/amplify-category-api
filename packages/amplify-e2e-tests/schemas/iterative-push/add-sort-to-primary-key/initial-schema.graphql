@@ -1,0 +1,5 @@
+type Blog @model {
+  id: ID! @primaryKey
+  name: String!
+  posts: [Post] @connection(keyName: "byBlog1", fields: ["id"])
+}
