@@ -4,8 +4,12 @@ import {
   AmplifyCategories,
   pathManager,
 } from 'amplify-cli-core';
+
+import fs from 'fs-extra';
 import path from 'path';
 import { PROVIDER_NAME } from '../graphql-transformer/constants';
+
+export const APPSYNC_RESOURCE_SERVICE = 'AppSync';
 
 /**
  * ContextUtil
@@ -29,9 +33,27 @@ export class ContextUtil {
       return this.resourceDir;
     }
     let { resourceDir } = options;
+    const { forceCompile } = options;
     const backEndDir = pathManager.getBackendDirPath();
-    const { resourcesToBeCreated, resourcesToBeUpdated } = await context.amplify.getResourceStatus(AmplifyCategories.API);
-    const resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
+    const { resourcesToBeCreated, resourcesToBeUpdated, allResources } = await context.amplify.getResourceStatus(AmplifyCategories.API);
+    let resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
+
+    // When build folder is missing include the API
+    // to be compiled without the backend/api/<api-name>/build
+    // cloud formation push will fail even if there is no changes in the GraphQL API
+    // https://github.com/aws-amplify/amplify-console/issues/10
+    const resourceNeedCompile = allResources
+      .filter((r) => !resources.includes(r))
+      .filter((r) => {
+        const buildDir = path.normalize(path.join(backEndDir, AmplifyCategories.API, r.resourceName, 'build'));
+        return !fs.existsSync(buildDir);
+      });
+    resources = resources.concat(resourceNeedCompile);
+
+    if (forceCompile) {
+      resources = resources.concat(allResources);
+    }
+    resources = resources.filter((resource) => resource.service === APPSYNC_RESOURCE_SERVICE);
     if (!resourceDir) {
       // There can only be one appsync resource
       if (!resources.length) {
