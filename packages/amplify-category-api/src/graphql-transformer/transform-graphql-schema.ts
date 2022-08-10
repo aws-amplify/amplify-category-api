@@ -20,5 +20,6 @@ export const transformGraphQLSchema = async (
       : transformGraphQLSchemaV1(context, options);
   } catch (e) {
     printer.error(e.stack);
+    throw e;
   }
 };
