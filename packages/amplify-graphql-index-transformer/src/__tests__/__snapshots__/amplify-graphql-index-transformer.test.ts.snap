@@ -4645,9 +4645,6 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onCreateSong.res.vtl": "## [Start] Subscription Response template. **
-#if( !$util.isNullOrEmpty($ctx.args.filter) )
-$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
-#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onDeleteSong.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -4663,9 +4660,6 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onDeleteSong.res.vtl": "## [Start] Subscription Response template. **
-#if( !$util.isNullOrEmpty($ctx.args.filter) )
-$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
-#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onUpdateSong.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -4681,9 +4675,6 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onUpdateSong.res.vtl": "## [Start] Subscription Response template. **
-#if( !$util.isNullOrEmpty($ctx.args.filter) )
-$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
-#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
 }
@@ -5394,9 +5385,6 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onCreateSong.res.vtl": "## [Start] Subscription Response template. **
-#if( !$util.isNullOrEmpty($ctx.args.filter) )
-$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
-#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onDeleteSong.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -5412,9 +5400,6 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onDeleteSong.res.vtl": "## [Start] Subscription Response template. **
-#if( !$util.isNullOrEmpty($ctx.args.filter) )
-$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
-#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onUpdateSong.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -5430,9 +5415,6 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onUpdateSong.res.vtl": "## [Start] Subscription Response template. **
-#if( !$util.isNullOrEmpty($ctx.args.filter) )
-$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
-#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
 }
