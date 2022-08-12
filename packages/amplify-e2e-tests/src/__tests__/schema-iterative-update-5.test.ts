@@ -30,7 +30,7 @@ describe('Schema iterative update - add sort key to primary key', () => {
     const apiName = 'iterativetest1';
 
     const initialSchema = path.join('iterative-push', 'add-sort-to-primary-key', 'initial-schema.graphql');
-    await addApiWithoutSchema(projectDir, { apiKeyExpirationDays: 7, transformerVersion: 1 });
+    await addApiWithoutSchema(projectDir, { apiKeyExpirationDays: 7, transformerVersion: 2 });
     await updateApiSchema(projectDir, apiName, initialSchema);
     await amplifyPush(projectDir);
 
