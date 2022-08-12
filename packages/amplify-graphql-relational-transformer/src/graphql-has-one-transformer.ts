@@ -129,6 +129,12 @@ export class HasOneTransformer extends TransformerPluginBase {
                 [connectionAttributeName, ...sortKeyFields.map(skf => skf.name.value)],
               )) as WritableDraft<ArgumentNode>];
               addFieldsToDefinition(def, [connField, ...sortKeyFields]);
+              def?.fields?.push(
+                makeField(
+                  connectionAttributeName, [], isNonNullType(field.type)
+                    ? makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), [],
+                ) as WritableDraft<FieldDefinitionNode>,
+              );
             }
           });
         });

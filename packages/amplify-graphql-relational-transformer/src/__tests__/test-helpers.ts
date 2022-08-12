@@ -1,6 +1,6 @@
 import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import {getBaseType} from "graphql-transformer-common";
-import {DirectiveNode, DocumentNode} from "graphql";
+import { getBaseType } from 'graphql-transformer-common';
+import { DirectiveNode, DocumentNode } from 'graphql';
 
 /**
  * Merges passed in feature flags with default feature flags for tests
@@ -15,7 +15,7 @@ export const featureFlags: FeatureFlagProvider = {
     }
     return defaultValue;
   },
- 
+
 
   getNumber: jest.fn(),
   getObject: jest.fn(),
