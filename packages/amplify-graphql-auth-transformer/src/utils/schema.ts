@@ -8,7 +8,8 @@ import {
   QueryFieldType,
   MutationFieldType,
   TransformerTransformSchemaStepContextProvider,
-  TransformerContextProvider, FeatureFlagProvider,
+  TransformerContextProvider,
+  FeatureFlagProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, NamedTypeNode,
