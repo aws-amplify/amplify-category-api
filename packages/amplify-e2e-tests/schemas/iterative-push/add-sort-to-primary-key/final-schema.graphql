@@ -1,5 +1,4 @@
 type Blog @model {
-  id: ID! @primaryKey(sortKeyFields: ["name"]
+  id: ID! @primaryKey(sortKeyFields: ["name"])
   name: String!
-  posts: [Post] @connection(keyName: "byBlog1", fields: ["id"])
 }
