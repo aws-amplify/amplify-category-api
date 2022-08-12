@@ -27,11 +27,18 @@ import {
   TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import {AttributeType, CfnTable, ITable, StreamViewType, Table, TableEncryption,} from '@aws-cdk/aws-dynamodb';
+import {
+  AttributeType,
+  CfnTable,
+  ITable,
+  StreamViewType,
+  Table,
+  TableEncryption,
+} from '@aws-cdk/aws-dynamodb';
 import * as iam from '@aws-cdk/aws-iam';
-import {CfnRole} from '@aws-cdk/aws-iam';
+import { CfnRole } from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import {CfnDataSource} from '@aws-cdk/aws-appsync';
+import { CfnDataSource } from '@aws-cdk/aws-appsync';
 import {
   DirectiveNode,
   FieldDefinitionNode,
@@ -89,8 +96,8 @@ import {
   generateListRequestTemplate,
   generateSyncRequestTemplate,
 } from './resolvers/query';
-import {API_KEY_DIRECTIVE} from './definitions';
-import {ModelDirectiveConfiguration, SubscriptionLevel} from './directive';
+import { API_KEY_DIRECTIVE } from './definitions';
+import { ModelDirectiveConfiguration, SubscriptionLevel } from './directive';
 
 /**
  * Nullable
