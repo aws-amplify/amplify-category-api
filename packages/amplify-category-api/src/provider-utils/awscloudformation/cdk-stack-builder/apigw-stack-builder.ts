@@ -1,3 +1,8 @@
+/* eslint-disable jsdoc/require-param-description */
+/* eslint-disable no-new */
+/* eslint-disable no-use-before-define */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable no-underscore-dangle */
 import * as apigw from '@aws-cdk/aws-apigateway';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -6,7 +11,9 @@ import { $TSObject, JSONUtilities } from 'amplify-cli-core';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { ADMIN_QUERIES_NAME } from '../../../category-constants';
-import { AmplifyApigwResourceTemplate, ApigwInputs, ApigwPathPolicy, Path, PermissionSetting } from './types';
+import {
+  AmplifyApigwResourceTemplate, ApigwInputs, ApigwPathPolicy, Path, PermissionSetting,
+} from './types';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'API Gateway Resource for AWS Amplify CLI';
@@ -34,58 +41,33 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
     this.templateOptions.description = ROOT_CFN_DESCRIPTION;
   }
 
-  /**
-   *
-   * @param props
-   * @param logicalId
-   */
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
     this.validateLogicalId(logicalId);
     new cdk.CfnOutput(this, logicalId, props);
   }
 
-  /**
-   *
-   * @param props
-   * @param logicalId
-   */
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
     this.validateLogicalId(logicalId);
     new cdk.CfnMapping(this, logicalId, props);
   }
 
-  /**
-   *
-   * @param props
-   * @param logicalId
-   */
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
     this.validateLogicalId(logicalId);
     new cdk.CfnCondition(this, logicalId, props);
   }
 
-  /**
-   *
-   * @param props
-   * @param logicalId
-   */
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
     this.validateLogicalId(logicalId);
     new cdk.CfnResource(this, logicalId, props);
   }
 
-  /**
-   *
-   * @param props
-   * @param logicalId
-   */
   addCfnLambdaPermissionResource(props: lambda.CfnPermissionProps, logicalId: string): void {
     this.validateLogicalId(logicalId);
     new lambda.CfnPermission(this, logicalId, props);
   }
 
+  // eslint-disable-next-line jsdoc/require-description
   /**
-   *
    * @param props
    * @param logicalId
    * @param value optional value which will be stored in parameters.json
@@ -109,24 +91,21 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
     this._seenLogicalIds.add(logicalId);
   }
 
+  // eslint-disable-next-line class-methods-use-this
   private _craftPolicyDocument(apiResourceName: string, pathName: string, supportedOperations: string[]) {
     const paths = [pathName, appendToUrlPath(pathName, '*')];
-    const resources = paths.flatMap(path =>
-      supportedOperations.map(op =>
-        cdk.Fn.join('', [
-          'arn:aws:execute-api:',
-          cdk.Fn.ref('AWS::Region'),
-          ':',
-          cdk.Fn.ref('AWS::AccountId'),
-          ':',
-          cdk.Fn.ref(apiResourceName),
-          '/',
-          cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', cdk.Fn.ref('env')).toString(),
-          op,
-          path,
-        ]),
-      ),
-    );
+    const resources = paths.flatMap((path) => supportedOperations.map((op) => cdk.Fn.join('', [
+      'arn:aws:execute-api:',
+      cdk.Fn.ref('AWS::Region'),
+      ':',
+      cdk.Fn.ref('AWS::AccountId'),
+      ':',
+      cdk.Fn.ref(apiResourceName),
+      '/',
+      cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', cdk.Fn.ref('env')).toString(),
+      op,
+      path,
+    ])));
 
     return new iam.PolicyDocument({
       statements: [
@@ -158,9 +137,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
     _.set(this.policies, [pathName, 'groups', groupName], iamPolicy);
   }
 
-  renderCloudFormationTemplate = (): string => {
-    return JSONUtilities.stringify(this._toCloudFormation());
-  };
+  renderCloudFormationTemplate = (): string => JSONUtilities.stringify(this._toCloudFormation());
 
   generateAdminQueriesStack = (resourceName: string, authResourceName: string) => {
     this._constructCfnPaths(resourceName);
@@ -266,18 +243,18 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
         },
       },
     });
-    new apigw.CfnGatewayResponse(this, `${resourceName}Default4XXResponse`, {
+    const default4xx = new apigw.CfnGatewayResponse(this, `${resourceName}Default4XXResponse`, {
       responseType: 'DEFAULT_4XX',
       restApiId: cdk.Fn.ref(resourceName),
       responseParameters: defaultCorsGatewayResponseParams,
     });
-    new apigw.CfnGatewayResponse(this, `${resourceName}Default5XXResponse`, {
+    const default5xx = new apigw.CfnGatewayResponse(this, `${resourceName}Default5XXResponse`, {
       responseType: 'DEFAULT_5XX',
       restApiId: cdk.Fn.ref(resourceName),
       responseParameters: defaultCorsGatewayResponseParams,
     });
 
-    this._setDeploymentResource(resourceName);
+    this._setDeploymentResource(resourceName, [default4xx, default5xx]);
   };
 
   private _constructCfnPaths(resourceName: string) {
@@ -285,7 +262,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
     for (const [pathName, path] of Object.entries(this._props.paths)) {
       let lambdaPermissionLogicalId: string;
       if (resourceName === ADMIN_QUERIES_NAME) {
-        this.paths[`/{proxy+}`] = getAdminQueriesPathObject(path.lambdaFunction);
+        this.paths['/{proxy+}'] = getAdminQueriesPathObject(path.lambdaFunction);
         lambdaPermissionLogicalId = `${ADMIN_QUERIES_NAME}APIGWPolicyForLambda`;
       } else {
         this.paths[pathName] = createPathObject(path);
@@ -316,26 +293,25 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
     }
   }
 
-  private _setDeploymentResource = (resourceName: string) => {
+  private _setDeploymentResource = (apiName: string, dependencies: cdk.CfnResource[] = []) => {
     const [shortId] = uuid().split('-');
-    this.deploymentResource = new apigw.CfnDeployment(this, `DeploymentAPIGW${resourceName}${shortId}`, {
+    this.deploymentResource = new apigw.CfnDeployment(this, `DeploymentAPIGW${apiName}${shortId}`, {
       description: 'The Development stage deployment of your API.',
       stageName: cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', cdk.Fn.ref('env')).toString(),
-      restApiId: cdk.Fn.ref(resourceName),
+      restApiId: cdk.Fn.ref(apiName),
     });
+    dependencies.forEach((dep) => this.deploymentResource.addDependsOn(dep));
   };
 }
 
-const appendToUrlPath = (path: string, postfix: string) => {
-  return path.charAt(path.length - 1) === '/' ? `${path}${postfix}` : `${path}/${postfix}`;
-};
+const appendToUrlPath = (path: string, postfix: string) => (path.charAt(path.length - 1) === '/' ? `${path}${postfix}` : `${path}/${postfix}`);
 
 const getAdminQueriesPathObject = (lambdaFunctionName: string) => ({
   options: {
     consumes: ['application/json'],
     produces: ['application/json'],
     responses: {
-      '200': {
+      200: {
         description: '200 response',
         schema: {
           $ref: '#/definitions/Empty',
@@ -418,7 +394,7 @@ const createPathObject = (path: Path) => {
       consumes: ['application/json'],
       produces: ['application/json'],
       responses: {
-        '200': response200,
+        200: response200,
       },
       'x-amazon-apigateway-integration': {
         responses: {
@@ -445,7 +421,7 @@ const createPathObject = (path: Path) => {
         },
       ],
       responses: {
-        '200': {
+        200: {
           description: '200 response',
           schema: {
             $ref: '#/definitions/ResponseSchema',
