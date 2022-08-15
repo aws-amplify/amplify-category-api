@@ -15,7 +15,6 @@ const generateFeatureFlagWithBooleanOverrides = (overrides: Record<string, boole
   },
   getNumber: jest.fn(),
   getObject: jest.fn(),
-  getString: jest.fn(),
 });
 
 describe('Transformer Core Util Tests', () => {
