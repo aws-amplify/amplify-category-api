@@ -18,16 +18,6 @@ const generateFeatureFlagWithBooleanOverrides = (overrides: Record<string, boole
   getObject: jest.fn(),
 });
 
-const generateFeatureFlagWithBooleanOverrides = (overrides: Record<string, boolean>): FeatureFlagProvider => ({
-  getBoolean: (name: string, defaultValue?: boolean): boolean => {
-    const overrideValue = Object.entries(overrides).find(([overrideName]) => overrideName === name)?.[1];
-    return overrideValue ?? defaultValue ?? false;
-  },
-  getString: jest.fn(),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-});
-
 test('throws if @index is used in a non-@model type', () => {
   const schema = `
     type Test {
