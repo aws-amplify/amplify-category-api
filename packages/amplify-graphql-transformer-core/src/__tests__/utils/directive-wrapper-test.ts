@@ -68,7 +68,7 @@ describe('Transformer Core Util Tests', () => {
 
       const newArgs = wrappedDir.getArguments(
         cloneDeep(defaultArgs),
-        generateFeatureFlagWithBooleanOverrides({ 'graphQLTransformer.shouldDeepMergeDirectiveConfigDefaults': true }),
+        generateFeatureFlagWithBooleanOverrides({ shouldDeepMergeDirectiveConfigDefaults: true }),
       );
       expect(newArgs.subscriptions).toEqual({
         level: 'public',
