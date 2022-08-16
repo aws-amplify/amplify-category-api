@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.7](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.6...amplify-category-api-e2e-core@4.0.7) (2022-08-16)
+
+
+### Bug Fixes
+
+* set cfn values correctly when applying lambda-based conflict resolution ([4542759](https://github.com/aws-amplify/amplify-category-api/commit/45427596bbcfcb83bda18a037b0b540bff812b25))
+
+
+
+
+
 ## [4.0.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.5...amplify-category-api-e2e-core@4.0.6) (2022-08-04)
 
 

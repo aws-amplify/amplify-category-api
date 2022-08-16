@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.7](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@5.1.6...amplify-category-api-util-mock@5.1.7) (2022-08-16)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+
+
+
+
 ## [5.1.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@5.1.5...amplify-category-api-util-mock@5.1.6) (2022-08-04)
 
 **Note:** Version bump only for package amplify-category-api-util-mock

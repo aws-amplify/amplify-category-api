@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.10.7](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.6...amplify-category-api-e2e-tests@3.10.7) (2022-08-16)
+
+
+### Bug Fixes
+
+* set cfn values correctly when applying lambda-based conflict resolution ([4542759](https://github.com/aws-amplify/amplify-category-api/commit/45427596bbcfcb83bda18a037b0b540bff812b25))
+
+
+
+
+
 ## [3.10.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.5...amplify-category-api-e2e-tests@3.10.6) (2022-08-04)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests

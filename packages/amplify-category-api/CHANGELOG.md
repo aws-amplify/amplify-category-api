@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@3.1.7...@aws-amplify/amplify-category-api@3.1.8) (2022-08-16)
+
+
+### Bug Fixes
+
+* update api should allow setting NEW lambda conflict resolver ([10553ab](https://github.com/aws-amplify/amplify-category-api/commit/10553ab42b0ce56092c8006b728808d2b71fb412))
+
+
+### Reverts
+
+* Revert "Feat: Single Source Read (#573)" ([726d45a](https://github.com/aws-amplify/amplify-category-api/commit/726d45a319d51124118d06145d4b2cd7522a1bd7)), closes [#573](https://github.com/aws-amplify/amplify-category-api/issues/573)
+* Revert "Fix: add additional checks to resource dir cache" ([5d5255e](https://github.com/aws-amplify/amplify-category-api/commit/5d5255e3783f75ea5a7d6b4bf19853b5f81122f7))
+* Revert "Try to find the error" ([65d6289](https://github.com/aws-amplify/amplify-category-api/commit/65d628902f63dc6c32720a343e33a73cf8aa700c))
+* Revert "Try to find the error" ([a9a4808](https://github.com/aws-amplify/amplify-category-api/commit/a9a48080cd0da66e920509e30968cf2a87870a99))
+
+
+
+
+
 ## [3.1.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@3.1.6...@aws-amplify/amplify-category-api@3.1.7) (2022-08-04)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

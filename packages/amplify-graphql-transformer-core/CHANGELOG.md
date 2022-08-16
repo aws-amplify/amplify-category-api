@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.17.10](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.17.9...@aws-amplify/graphql-transformer-core@0.17.10) (2022-08-16)
+
+
+### Bug Fixes
+
+* **amplify-graphql-index-transformer:** read overrides during transformation ([5e59d18](https://github.com/aws-amplify/amplify-category-api/commit/5e59d18e3341b00bfdcc2e5edabf016fed8eb986))
+* set cfn values correctly when applying lambda-based conflict resolution ([4542759](https://github.com/aws-amplify/amplify-category-api/commit/45427596bbcfcb83bda18a037b0b540bff812b25))
+
+
+### Reverts
+
+* Revert "Feat: Single Source Read (#573)" ([726d45a](https://github.com/aws-amplify/amplify-category-api/commit/726d45a319d51124118d06145d4b2cd7522a1bd7)), closes [#573](https://github.com/aws-amplify/amplify-category-api/issues/573)
+
+
+
+
+
 ## [0.17.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.17.7...@aws-amplify/graphql-transformer-core@0.17.9) (2022-07-20)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-core

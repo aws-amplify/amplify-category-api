@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.14.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@1.14.6...@aws-amplify/graphql-transformer-interfaces@1.14.7) (2022-08-16)
+
+
+### Bug Fixes
+
+* set cfn values correctly when applying lambda-based conflict resolution ([4542759](https://github.com/aws-amplify/amplify-category-api/commit/45427596bbcfcb83bda18a037b0b540bff812b25))
+
+
+
+
+
 ## [1.14.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@1.14.4...@aws-amplify/graphql-transformer-interfaces@1.14.6) (2022-07-20)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces

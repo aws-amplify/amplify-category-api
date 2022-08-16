@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.13.4...@aws-amplify/graphql-index-transformer@0.13.5) (2022-08-16)
+
+
+### Bug Fixes
+
+* **amplify-graphql-index-transformer:** avoid scan on base table when query expression is specified on index field ([bbc5884](https://github.com/aws-amplify/amplify-category-api/commit/bbc58844c7dcfe2e837f4ccbc73f86e945ec8c2e))
+* **amplify-graphql-index-transformer:** read overrides during transformation ([5e59d18](https://github.com/aws-amplify/amplify-category-api/commit/5e59d18e3341b00bfdcc2e5edabf016fed8eb986))
+
+
+
+
+
 ## [0.13.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.13.3...@aws-amplify/graphql-index-transformer@0.13.4) (2022-08-04)
 
 
