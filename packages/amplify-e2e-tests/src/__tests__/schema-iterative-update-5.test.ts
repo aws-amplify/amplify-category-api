@@ -36,6 +36,6 @@ describe('Schema iterative update - add sort key to primary key', () => {
 
     const finalSchema = path.join('iterative-push', 'add-sort-to-primary-key', 'final-schema.graphql');
     await updateApiSchema(projectDir, apiName, finalSchema);
-    await expect(amplifyPushUpdate(projectDir)).resolves.toThrowError();
+    await expect(amplifyPushUpdate(projectDir)).rejects.toBeTruthy();
   });
 });
