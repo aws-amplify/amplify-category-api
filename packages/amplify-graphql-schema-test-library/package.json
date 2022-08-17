@@ -15,7 +15,8 @@
     "graphql",
     "cloudformation",
     "aws",
-    "amplify"
+    "amplify",
+    "schema"
   ],
   "publishConfig": {
     "access": "public"
