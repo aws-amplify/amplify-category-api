@@ -284,6 +284,42 @@ describe('@model with @auth', () => {
         id: ID!
         owners: [String]
       }
+      type OwnerInvalidClaim
+        @model
+        @auth(rules: [
+          { allow: owner, identityClaim: "doesnotexist" }
+          { allow: owner, ownerField: "owners", identityClaim: "doesnotexist" }
+          { allow: groups, groups: ["Admin"] }
+          { allow: groups, groupsField: "groups" }
+        ]) 
+      {
+        id: ID!
+        description: String!
+        owners: [String]
+        groups: [String]
+      }
+      type OwnerClaimWithPrivateAccess
+        @model
+        @auth(rules: [
+          { allow: owner, identityClaim: "doesnotexist" }
+          { allow: owner, ownerField: "owners" }
+          { allow: private }
+        ]) 
+      {
+        id: ID!
+        description: String!
+        owners: [String]
+      }
+      type FieldAuthWithClaim
+        @model
+        @auth(rules: [
+          { allow: private }
+        ]) 
+      {
+        id: ID!
+        description: String!
+        ownerProtectedInvalidClaim: String @auth(rules: [{ allow: owner, identityClaim: "doesnotexist" }])
+      }
       `;
     try {
       await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
@@ -4405,6 +4441,407 @@ describe('@model with @auth', () => {
         expect(deleteRes2.data.deleteOwnerGroupExplicitOps.id).toBeDefined();
         expect(deleteRes2.data.deleteOwnerGroupExplicitOps.content).toEqual('Bye, World!');
       });
+    });
+
+  });
+
+  describe('Test invalid owner auth claims checks', () => {
+    describe('owner auth with invalid custom claims', () => {
+      test('user with invalid claims cannot create a record', async () => {
+        const createRes = await GRAPHQL_CLIENT_2.query(
+          `mutation {
+            createOwnerInvalidClaim(input: { description: "not allowed" }) {
+              id
+              description
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(createRes.data.createOwnerInvalidClaim).toEqual(null);
+        expect(createRes.errors.length).toEqual(1);
+        expect((createRes.errors[0] as any).data).toBeNull();
+        expect((createRes.errors[0] as any).errorType).toEqual('Unauthorized');
+      })
+
+      test('owner with invalid claims cannot update a record', async () => {
+        // create a record as admin with testuser as owner
+        const createRes = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            createOwnerInvalidClaim(input: { description: "allowed", owners: ["${USERNAME2}"] }) {
+              id
+              description
+              owners
+            }
+          }`,
+          {},
+        );
+
+        expect(createRes.data.createOwnerInvalidClaim.id).toBeDefined();
+        expect(createRes.data.createOwnerInvalidClaim.description).toEqual('allowed');
+        expect(createRes.data.createOwnerInvalidClaim.owners).toEqual([USERNAME2]);
+
+        // testuser cannot update the record as owner with invalid claims
+        const updateRes = await GRAPHQL_CLIENT_2.query(
+          `mutation {
+            updateOwnerInvalidClaim(input: {
+              id: "${createRes.data.createOwnerInvalidClaim.id}",
+              description: "not allowed"
+            }) {
+              id
+              description
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(updateRes.data.updateOwnerInvalidClaim).toEqual(null);
+        expect(updateRes.errors.length).toEqual(1);
+        expect((updateRes.errors[0] as any).data).toBeNull();
+        expect((updateRes.errors[0] as any).errorType).toEqual('Unauthorized');
+      })
+
+      test('owner with invalid claims cannot delete a record', async () => {
+        // create a record as admin with testuser as owner
+        const createRes = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            createOwnerInvalidClaim(input: { description: "allowed", owners: ["${USERNAME2}"] }) {
+              id
+              description
+              owners
+            }
+          }`,
+          {},
+        );
+
+        expect(createRes.data.createOwnerInvalidClaim.id).toBeDefined();
+        expect(createRes.data.createOwnerInvalidClaim.description).toEqual('allowed');
+        expect(createRes.data.createOwnerInvalidClaim.owners).toEqual([USERNAME2]);
+
+        // testuser cannot delete the record as owner with invalid claims
+        const deleteRes = await GRAPHQL_CLIENT_2.query(
+          `mutation {
+            deleteOwnerInvalidClaim(input: {
+              id: "${createRes.data.createOwnerInvalidClaim.id}"
+            }) {
+              id
+              description
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(deleteRes.data.deleteOwnerInvalidClaim).toEqual(null);
+        expect(deleteRes.errors.length).toEqual(1);
+        expect((deleteRes.errors[0] as any).data).toBeNull();
+        expect((deleteRes.errors[0] as any).errorType).toEqual('Unauthorized');
+      })
+
+      test('owner with invalid claims cannot query a record', async () => {
+        // create a record as admin with testuser as owner
+        const createRes = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            createOwnerInvalidClaim(input: { description: "allowed", owners: ["${USERNAME2}"] }) {
+              id
+              description
+              owners
+            }
+          }`,
+          {},
+        );
+
+        expect(createRes.data.createOwnerInvalidClaim.id).toBeDefined();
+        expect(createRes.data.createOwnerInvalidClaim.description).toEqual('allowed');
+        expect(createRes.data.createOwnerInvalidClaim.owners).toEqual([USERNAME2]);
+
+        // testuser cannot read the record as owner with invalid claims
+        const getRes = await GRAPHQL_CLIENT_2.query(
+          `query {
+            getOwnerInvalidClaim(id: "${createRes.data.createOwnerInvalidClaim.id}") {
+              id
+              description
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(getRes.data.getOwnerInvalidClaim).toEqual(null);
+        expect(getRes.errors.length).toEqual(1);
+        expect((getRes.errors[0] as any).data).toBeNull();
+        expect((getRes.errors[0] as any).errorType).toEqual('Unauthorized');
+
+        // testuser cannot list the records as owner with invalid claims
+        const listRes = await GRAPHQL_CLIENT_2.query(
+          `query {
+            listOwnerInvalidClaims {
+              items {
+                id
+                description
+                owner
+              }
+            }
+          }`,
+          {},
+        );
+
+        expect(listRes.data.listOwnerInvalidClaims.items.length).toEqual(0);
+      })
+    });
+
+    describe('owner auth together with private access', () => {
+      test('private access level allows users to mutate, query records', async () => {
+        const createRes = await GRAPHQL_CLIENT_2.query(
+          `mutation {
+            createOwnerClaimWithPrivateAccess(input: { description: "create allowed" }) {
+              id
+              description
+              owner
+              owners
+            }
+          }`,
+          {},
+        );
+
+        expect(createRes.data.createOwnerClaimWithPrivateAccess.id).toBeDefined();
+        expect(createRes.data.createOwnerClaimWithPrivateAccess.description).toEqual('create allowed');
+        // The owner cannot be auto-populated due to non-existent claims
+        expect(createRes.data.createOwnerClaimWithPrivateAccess.owner).toEqual(null);
+        expect(createRes.data.createOwnerClaimWithPrivateAccess.owners).toEqual([USERNAME2]);
+
+        const recordID = createRes.data.createOwnerClaimWithPrivateAccess.id;
+
+        // testuser can update the record
+        const updateRes = await GRAPHQL_CLIENT_2.query(
+          `mutation {
+            updateOwnerClaimWithPrivateAccess(input: {
+              id: "${recordID}",
+              description: "update allowed"
+            }) {
+              id
+              description
+              owner
+              owners
+            }
+          }`,
+          {},
+        );
+
+        expect(updateRes.data.updateOwnerClaimWithPrivateAccess.id).toEqual(recordID);
+        expect(updateRes.data.updateOwnerClaimWithPrivateAccess.description).toEqual('update allowed');
+        expect(updateRes.data.updateOwnerClaimWithPrivateAccess.owner).toEqual(null);
+        expect(updateRes.data.updateOwnerClaimWithPrivateAccess.owners).toEqual([USERNAME2]);
+
+        // testuser can read the record
+        const getRes = await GRAPHQL_CLIENT_2.query(
+          `query {
+            getOwnerClaimWithPrivateAccess(id: "${recordID}") {
+              id
+              description
+              owner
+              owners
+            }
+          }`,
+          {},
+        );
+
+        expect(getRes.data.getOwnerClaimWithPrivateAccess.id).toEqual(recordID);
+        expect(getRes.data.getOwnerClaimWithPrivateAccess.description).toEqual('update allowed');
+        expect(getRes.data.getOwnerClaimWithPrivateAccess.owner).toEqual(null);
+        expect(getRes.data.getOwnerClaimWithPrivateAccess.owners).toEqual([USERNAME2]);
+
+        // testuser can list the records
+        const listRes = await GRAPHQL_CLIENT_2.query(
+          `query {
+            listOwnerClaimWithPrivateAccesses {
+              items {
+                id
+                description
+                owner
+                owners
+              }
+            }
+          }`,
+          {},
+        );
+
+        expect(listRes.data.listOwnerClaimWithPrivateAccesses.items.length).toEqual(1);
+        const receivedItem = listRes.data.listOwnerClaimWithPrivateAccesses.items[0];
+        expect(receivedItem.id).toEqual(recordID);
+        expect(receivedItem.description).toEqual('update allowed');
+        expect(receivedItem.owner).toEqual(null);
+        expect(receivedItem.owners).toEqual([USERNAME2]);
+
+        // testuser can delete the record
+        const deleteRes = await GRAPHQL_CLIENT_2.query(
+          `mutation {
+            deleteOwnerClaimWithPrivateAccess(input: {
+              id: "${recordID}"
+            }) {
+              id
+              description
+              owner
+              owners
+            }
+          }`,
+          {},
+        );
+
+        expect(deleteRes.data.deleteOwnerClaimWithPrivateAccess.id).toEqual(recordID);
+        expect(deleteRes.data.deleteOwnerClaimWithPrivateAccess.description).toEqual('update allowed');
+        expect(deleteRes.data.deleteOwnerClaimWithPrivateAccess.owner).toEqual(null);
+        expect(deleteRes.data.deleteOwnerClaimWithPrivateAccess.owners).toEqual([USERNAME2]);
+      })
+    });
+
+    describe('owner field auth with invalid claims', () => {
+      test('user cannot access a field protected with invalid owner claims', async () => {
+        // Trying to populate a field protected with owner auth and invalid custom claim fails
+        const createRes = await GRAPHQL_CLIENT_2.query(
+          `mutation {
+            createFieldAuthWithClaim(input: { description: "not allowed", ownerProtectedInvalidClaim: "${USERNAME2}" }) {
+              id
+              description
+              ownerProtectedInvalidClaim
+            }
+          }`,
+          {},
+        );
+
+        expect(createRes.data.createFieldAuthWithClaim).toEqual(null);
+        expect(createRes.errors.length).toEqual(1);
+        expect((createRes.errors[0] as any).data).toBeNull();
+        expect((createRes.errors[0] as any).errorType).toEqual('Unauthorized');
+
+        // User can create other fields that he has access to
+        const createRes2 = await GRAPHQL_CLIENT_2.query(
+          `mutation {
+            createFieldAuthWithClaim(input: { description: "allowed" }) {
+              id
+              description
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(createRes2.data.createFieldAuthWithClaim.id).toBeDefined();
+        expect(createRes2.data.createFieldAuthWithClaim.description).toEqual('allowed');
+        // owner field is not available to be set because of invalid custom claim
+        expect(createRes2.data.createFieldAuthWithClaim.owner).toEqual(null);
+
+        const recordID = createRes2.data.createFieldAuthWithClaim.id;
+
+        // Trying to update a field protected with owner auth and invalid custom claim fails
+        const updateRes = await GRAPHQL_CLIENT_2.query(
+          `mutation {
+            updateFieldAuthWithClaim(input: {
+              id: "${recordID}",
+              description: "update not allowed"
+              ownerProtectedInvalidClaim: "${USERNAME2}"
+            }) {
+              id
+              description
+              owner
+              ownerProtectedInvalidClaim
+            }
+          }`,
+          {},
+        );
+
+        expect(updateRes.data.updateFieldAuthWithClaim).toEqual(null);
+        expect(updateRes.errors.length).toEqual(1);
+        expect((updateRes.errors[0] as any).data).toBeNull();
+        expect((updateRes.errors[0] as any).errorType).toEqual('Unauthorized');
+
+        // User can update other fields that he has access to
+        const updateRes2 = await GRAPHQL_CLIENT_2.query(
+          `mutation {
+            updateFieldAuthWithClaim(input: {
+              id: "${recordID}",
+              description: "update allowed"
+            }) {
+              id
+              description
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(updateRes2.data.updateFieldAuthWithClaim.id).toBeDefined();
+        expect(updateRes2.data.updateFieldAuthWithClaim.description).toEqual('update allowed');
+        // owner field is not available to be set because of invalid custom claim
+        expect(updateRes2.data.updateFieldAuthWithClaim.owner).toEqual(null);
+
+        // User cannot query a field protected with owner auth and invalid claim
+        const getRes = await GRAPHQL_CLIENT_2.query(
+          `query {
+            getFieldAuthWithClaim(id: "${recordID}") {
+              id
+              description
+              owner
+              ownerProtectedInvalidClaim
+            }
+          }`,
+          {},
+        );
+
+        expect(getRes.data.getFieldAuthWithClaim.id).toEqual(recordID);
+        expect(getRes.data.getFieldAuthWithClaim.description).toEqual('update allowed');
+        expect(getRes.data.getFieldAuthWithClaim.owner).toEqual(null);
+        expect(getRes.data.getFieldAuthWithClaim.ownerProtectedInvalidClaim).toEqual(null);
+        expect(getRes.errors.length).toEqual(1);
+        expect((getRes.errors[0] as any).data).toBeNull();
+        expect((getRes.errors[0] as any).errorType).toEqual('Unauthorized');
+
+        // testuser can list the records but without the protected field
+        const listRes = await GRAPHQL_CLIENT_2.query(
+          `query {
+            listFieldAuthWithClaims {
+              items {
+                id
+                description
+                owner
+                ownerProtectedInvalidClaim
+              }
+            }
+          }`,
+          {},
+        );
+
+        expect(listRes.data.listFieldAuthWithClaims.items.length).toEqual(1);
+        const receivedItem = listRes.data.listFieldAuthWithClaims.items[0];
+        expect(receivedItem.id).toEqual(recordID);
+        expect(receivedItem.description).toEqual('update allowed');
+        expect(receivedItem.owner).toEqual(null);
+        expect(receivedItem.ownerProtectedInvalidClaim).toEqual(null);
+        expect(listRes.errors.length).toEqual(1);
+        expect((listRes.errors[0] as any).data).toBeNull();
+        expect((listRes.errors[0] as any).errorType).toEqual('Unauthorized');
+
+        // Trying to delete a record fails because of field owner auth with invalid claims
+        const deleteRes = await GRAPHQL_CLIENT_2.query(
+          `mutation {
+            deleteFieldAuthWithClaim(input: {
+              id: "${recordID}"
+            }) {
+              id
+              description
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(deleteRes.data.deleteFieldAuthWithClaim).toEqual(null);
+        expect(deleteRes.errors.length).toEqual(1);
+        expect((deleteRes.errors[0] as any).data).toBeNull();
+        expect((deleteRes.errors[0] as any).errorType).toEqual('Unauthorized');
+      })
     });
   });
 });
