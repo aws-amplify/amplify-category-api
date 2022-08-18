@@ -17,6 +17,13 @@
     "test": "jest",
     "generateSchemas": "ts-node ./scripts/generateApiSchemas.ts"
   },
+  "keywords": [
+    "graphql",
+    "cloudformation",
+    "aws",
+    "amplify",
+    "api"
+  ],
   "publishConfig": {
     "access": "public"
   },

@@ -16,8 +16,7 @@
     "cloudformation",
     "aws",
     "amplify",
-    "auth",
-    "transformer"
+    "auth"
   ],
   "publishConfig": {
     "access": "public"
