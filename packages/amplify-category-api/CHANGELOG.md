@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@3.1.8...@aws-amplify/amplify-category-api@3.1.9) (2022-08-18)
+
+
+### Bug Fixes
+
+* race condition provisioning default apigw responses ([#731](https://github.com/aws-amplify/amplify-category-api/issues/731)) ([a29b5e5](https://github.com/aws-amplify/amplify-category-api/commit/a29b5e5bf8522d493ce2753916d3f6b3703fb431))
+
+
+
+
+
 ## [3.1.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@3.1.7...@aws-amplify/amplify-category-api@3.1.8) (2022-08-16)
 
 
