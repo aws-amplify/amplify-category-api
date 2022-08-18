@@ -1,6 +1,7 @@
 import { ArgumentNode, DirectiveNode, NameNode, valueFromASTUntyped, ValueNode, Location } from 'graphql';
 import _ from 'lodash';
 import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {FeatureFlags} from "amplify-cli-core";
 
 export class ArgumentWrapper {
   public readonly name: NameNode;
@@ -42,7 +43,8 @@ export class DirectiveWrapper {
       }),
       {},
     );
-    if (featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false)) {
+    if (featureFlags ? featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false)
+      : FeatureFlags.getBoolean('graphqltransformer.shouldDeepMergeDirectiveConfigDefaults')) {
       return _.merge(defaultValue, argValues);
     }
     return Object.assign(defaultValue, argValues);
