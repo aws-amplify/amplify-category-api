@@ -35,7 +35,7 @@ export const splitRoles = (roles: Array<RoleDefinition>): RolesByProvider => ({
 /**
  * returns @auth directive rules
  */
-export const getAuthDirectiveRules = (authDir: DirectiveWrapper, isField = false, featureFlags: FeatureFlagProvider = null): AuthRule[] => {
+export const getAuthDirectiveRules = (authDir: DirectiveWrapper, featureFlags?: FeatureFlagProvider, isField = false): AuthRule[] => {
   const splitReadOperation = (rule: AuthRule): void => {
     const operations: (ModelOperation | 'read')[] = rule.operations ?? [];
     const indexOfRead = operations.indexOf('read', 0);
