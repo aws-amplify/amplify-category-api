@@ -27,7 +27,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "amplify-cli-core": "^2.9.0",
     "@aws-amplify/graphql-transformer-interfaces": "1.14.7",
     "@aws-cdk/aws-applicationautoscaling": "~1.124.0",
     "@aws-cdk/aws-appsync": "~1.124.0",
@@ -64,6 +63,7 @@
     "vm2": "^3.9.8"
   },
   "peerDependencies": {
+    "amplify-cli-core": "^2.9.0",
     "amplify-prompts": "^2.0.1"
   },
   "devDependencies": {
