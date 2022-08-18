@@ -21,8 +21,8 @@ import {
   and,
   parens,
   notEquals,
+  nul
 } from 'graphql-mapping-template';
-import { NONE_VALUE } from 'graphql-transformer-common';
 import {
   DEFAULT_COGNITO_IDENTITY_CLAIM,
   RoleDefinition,
@@ -82,9 +82,9 @@ export const iamCheck = (claim: string, exp: Expression, identityPoolId?: string
  */
 export const getOwnerClaim = (ownerClaim: string): Expression => {
   if (ownerClaim === 'username') {
-    return getIdentityClaimExp(str(ownerClaim), getIdentityClaimExp(str(DEFAULT_COGNITO_IDENTITY_CLAIM), str(NONE_VALUE)));
+    return getIdentityClaimExp(str(ownerClaim), getIdentityClaimExp(str(DEFAULT_COGNITO_IDENTITY_CLAIM), nul()));
   }
-  return getIdentityClaimExp(str(ownerClaim), str(NONE_VALUE));
+  return getIdentityClaimExp(str(ownerClaim), nul());
 };
 
 /**
@@ -236,10 +236,6 @@ export const generateOwnerClaimExpression = (ownerClaim: string, refName: string
       } else {
         expressions.push(
           set(ref(`currentClaim${idx}`), getOwnerClaim(claim)),
-          set(
-            ref(refName),
-            raw(`"$${refName}${IDENTITY_CLAIM_DELIMITER}$currentClaim${idx}"`),
-          ),
         );
       }
     });
@@ -250,6 +246,38 @@ export const generateOwnerClaimExpression = (ownerClaim: string, refName: string
   }
 
   return compoundExpression(expressions);
+};
+
+/**
+ * Concatenates multiple owner claims if any
+ */
+export const generateOwnerMultiClaimExpression = (ownerClaim: string, refName: string): Expression | undefined => {
+  const identityClaims = ownerClaim.split(IDENTITY_CLAIM_DELIMITER);
+  const hasMultiIdentityClaims = identityClaims.length > 1;
+
+  if (hasMultiIdentityClaims) {
+    const additionalClaims = [...Array(identityClaims.length).keys()].splice(1).map((idx) => `$currentClaim${idx}`);
+    return set(
+      ref(refName), 
+      raw(`"$${[refName, ...additionalClaims].join(IDENTITY_CLAIM_DELIMITER)}"`)
+    );
+  }
+};
+
+/**
+ * Generates a check for invalid owner claims
+ */
+export const generateInvalidClaimsCondition = (ownerClaim: string, refName: string): Expression => {
+  const identityClaims = ownerClaim.split(IDENTITY_CLAIM_DELIMITER);
+  const hasMultiIdentityClaims = identityClaims.length > 1;
+
+  const ownerClaimCheck = not(methodCall(ref('util.isNull'), ref(refName)));
+  if (!hasMultiIdentityClaims) {
+    return ownerClaimCheck;
+  }
+
+  const additionalClaimsChecks = [...Array(identityClaims.length).keys()].splice(1).map((idx) => not(methodCall(ref('util.isNull'), ref(`currentClaim${idx}`))));
+  return and([ownerClaimCheck, ...additionalClaimsChecks]);
 };
 
 /**

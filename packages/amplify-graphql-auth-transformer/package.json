@@ -15,7 +15,9 @@
     "graphql",
     "cloudformation",
     "aws",
-    "amplify"
+    "amplify",
+    "auth",
+    "transformer"
   ],
   "publishConfig": {
     "access": "public"
