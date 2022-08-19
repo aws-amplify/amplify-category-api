@@ -1,7 +1,13 @@
 import { print } from 'graphql';
 import { EXTRA_DIRECTIVES_DOCUMENT } from './transformation/validation';
+
 export { GraphQLTransform, GraphQLTransformOptions, SyncUtils } from './transformation';
-export { DeploymentResources, UserDefinedSlot, UserDefinedResolver } from './transformation/types';
+export {
+  DeploymentResources,
+  OverrideConfig,
+  UserDefinedSlot,
+  UserDefinedResolver,
+} from './transformation/types';
 export { validateModelSchema } from './transformation/validation';
 export {
   ConflictDetectionType,
@@ -14,6 +20,9 @@ export {
   TransformConfig,
   TransformerProjectConfig,
 } from './config/index';
+export {
+  Template,
+} from './config/project-config';
 export {
   getTable,
   getKeySchema,

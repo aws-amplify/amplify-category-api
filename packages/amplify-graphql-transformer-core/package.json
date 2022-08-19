@@ -63,7 +63,6 @@
     "vm2": "^3.9.8"
   },
   "peerDependencies": {
-    "amplify-cli-core": "^2.9.0",
     "amplify-prompts": "^2.0.1"
   },
   "devDependencies": {

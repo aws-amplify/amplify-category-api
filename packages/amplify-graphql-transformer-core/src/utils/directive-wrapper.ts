@@ -1,7 +1,10 @@
 import { ArgumentNode, DirectiveNode, NameNode, valueFromASTUntyped, ValueNode, Location } from 'graphql';
 import _ from 'lodash';
 import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { FeatureFlags } from 'amplify-cli-core';
+
+export type GetArgumentsOptions = {
+  deepMergeArguments?: boolean;
+}
 
 export class ArgumentWrapper {
   public readonly name: NameNode;
@@ -35,7 +38,7 @@ export class DirectiveWrapper {
       arguments: this.arguments.map(arg => arg.serialize()),
     };
   };
-  public getArguments = <T>(defaultValue: Required<T>, featureFlags?: FeatureFlagProvider): Required<T> => {
+  public getArguments = <T>(defaultValue: Required<T>, featureFlags?: FeatureFlagProvider, options?: GetArgumentsOptions): Required<T> => {
     const argValues = this.arguments.reduce(
       (acc: Record<string, any>, arg: ArgumentWrapper) => ({
         ...acc,
@@ -43,9 +46,10 @@ export class DirectiveWrapper {
       }),
       {},
     );
+    const deepMergeFlag = 'shouldDeepMergeDirectiveConfigDefaults';
     const useDeepMerge = featureFlags != null
-      ? featureFlags?.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false)
-      : FeatureFlags.getBoolean('graphqltransformer.shouldDeepMergeDirectiveConfigDefaults');
+      ? featureFlags?.getBoolean(deepMergeFlag, false)
+      : options?.deepMergeArguments;
     if (useDeepMerge) {
       return _.merge(defaultValue, argValues);
     }

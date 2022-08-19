@@ -170,7 +170,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     if (context.metadata.has('joinTypeList')) {
       isJoinType = context.metadata.get<Array<string>>('joinTypeList')!.includes(typeName);
     }
-    this.rules = getAuthDirectiveRules(new DirectiveWrapper(directive), context.featureFlags);
+    this.rules = getAuthDirectiveRules(new DirectiveWrapper(directive), false, {
+      deepMergeArguments: context.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults'),
+    });
 
     // validate rules
     validateRules(this.rules, this.configuredAuthProviders, def.name.value);
@@ -225,7 +227,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const modelDirective = parent.directives?.find(dir => dir.name.value === 'model');
     const typeName = parent.name.value;
     const fieldName = field.name.value;
-    const rules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(directive), context.featureFlags, true);
+    const rules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(directive), true, {
+      deepMergeArguments: context.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults'),
+    });
     validateFieldRules(new DirectiveWrapper(directive), isParentTypeBuiltinType, modelDirective !== undefined, field.name.value, context.featureFlags);
     validateRules(rules, this.configuredAuthProviders, field.name.value);
 

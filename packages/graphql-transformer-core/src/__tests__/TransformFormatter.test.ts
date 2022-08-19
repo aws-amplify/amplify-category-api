@@ -1,7 +1,12 @@
 import { TransformFormatter } from '../TransformFormatter';
-import { Template, Fn, AppSync, DynamoDB } from 'cloudform-types';
+import {
+  Template,
+  Fn,
+  AppSync,
+  DynamoDB,
+} from 'cloudform-types';
 import { TransformerContext } from '..';
-import { NoopFeatureFlagProvider } from '../../lib/FeatureFlags';
+import { NoopFeatureFlagProvider } from '../FeatureFlags';
 
 const template: Template = {
   Parameters: {

@@ -14,7 +14,7 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import { IAM as cfnIAM, Cognito as cfnCognito } from 'cloudform-types';
 import { CognitoIdentityServiceProvider as CognitoClient, CognitoIdentity } from 'aws-sdk';
 import TestStorage from './TestStorage';
-import DeploymentResources from 'graphql-transformer-core/lib/DeploymentResources';
+import { DeploymentResources } from 'graphql-transformer-core';
 
 interface E2Econfiguration {
   STACK_NAME?: string;

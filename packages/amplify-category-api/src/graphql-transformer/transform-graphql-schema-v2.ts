@@ -2,11 +2,11 @@ import {
   collectDirectivesByTypeNames,
   DeploymentResources,
   GraphQLTransform,
+  OverrideConfig,
   ResolverConfig,
+  Template,
   TransformerProjectConfig,
 } from '@aws-amplify/graphql-transformer-core';
-import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
-import { OverrideConfig } from '@aws-amplify/graphql-transformer-core/lib/transformation/types';
 import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   $TSAny,
