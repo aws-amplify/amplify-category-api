@@ -211,19 +211,13 @@ type Mutation {
   deleteEmail(input: DeleteEmailInput!, condition: ModelEmailConditionInput): Email
 }
 
-input ModelSubscriptionTestFilterInput {
-  id: ModelSubscriptionIDInput
-  and: [ModelSubscriptionTestFilterInput]
-  or: [ModelSubscriptionTestFilterInput]
-}
-
 type Subscription {
-  onCreateTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"createTest\\"])
-  onUpdateTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"updateTest\\"])
-  onDeleteTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"deleteTest\\"])
-  onCreateEmail(filter: ModelSubscriptionEmailFilterInput): Email @aws_subscribe(mutations: [\\"createEmail\\"])
-  onUpdateEmail(filter: ModelSubscriptionEmailFilterInput): Email @aws_subscribe(mutations: [\\"updateEmail\\"])
-  onDeleteEmail(filter: ModelSubscriptionEmailFilterInput): Email @aws_subscribe(mutations: [\\"deleteEmail\\"])
+  onCreateTest: Test @aws_subscribe(mutations: [\\"createTest\\"])
+  onUpdateTest: Test @aws_subscribe(mutations: [\\"updateTest\\"])
+  onDeleteTest: Test @aws_subscribe(mutations: [\\"deleteTest\\"])
+  onCreateEmail: Email @aws_subscribe(mutations: [\\"createEmail\\"])
+  onUpdateEmail: Email @aws_subscribe(mutations: [\\"updateEmail\\"])
+  onDeleteEmail: Email @aws_subscribe(mutations: [\\"deleteEmail\\"])
 }
 
 type ModelEmailConnection {
@@ -254,12 +248,6 @@ input UpdateEmailInput {
 
 input DeleteEmailInput {
   id: ID!
-}
-
-input ModelSubscriptionEmailFilterInput {
-  id: ModelSubscriptionIDInput
-  and: [ModelSubscriptionEmailFilterInput]
-  or: [ModelSubscriptionEmailFilterInput]
 }
 
 "
@@ -577,30 +565,19 @@ type Mutation {
   deleteComment(input: DeleteCommentInput!, condition: ModelCommentConditionInput): Comment
 }
 
-input ModelSubscriptionPostFilterInput {
-  id: ModelSubscriptionIDInput
-  title: ModelSubscriptionStringInput
-  createdAt: ModelSubscriptionStringInput
-  updatedAt: ModelSubscriptionStringInput
-  appearsIn: ModelSubscriptionStringInput
-  episode: ModelSubscriptionStringInput
-  and: [ModelSubscriptionPostFilterInput]
-  or: [ModelSubscriptionPostFilterInput]
-}
-
 type Subscription {
-  onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
-  onCreateAuthor(filter: ModelSubscriptionAuthorFilterInput): Author @aws_subscribe(mutations: [\\"createAuthor\\"])
-  onUpdateAuthor(filter: ModelSubscriptionAuthorFilterInput): Author @aws_subscribe(mutations: [\\"updateAuthor\\"])
-  onDeleteAuthor(filter: ModelSubscriptionAuthorFilterInput): Author @aws_subscribe(mutations: [\\"deleteAuthor\\"])
-  onCreateRequire(filter: ModelSubscriptionRequireFilterInput): Require @aws_subscribe(mutations: [\\"createRequire\\"])
-  onUpdateRequire(filter: ModelSubscriptionRequireFilterInput): Require @aws_subscribe(mutations: [\\"updateRequire\\"])
-  onDeleteRequire(filter: ModelSubscriptionRequireFilterInput): Require @aws_subscribe(mutations: [\\"deleteRequire\\"])
-  onCreateComment(filter: ModelSubscriptionCommentFilterInput): Comment @aws_subscribe(mutations: [\\"createComment\\"])
-  onUpdateComment(filter: ModelSubscriptionCommentFilterInput): Comment @aws_subscribe(mutations: [\\"updateComment\\"])
-  onDeleteComment(filter: ModelSubscriptionCommentFilterInput): Comment @aws_subscribe(mutations: [\\"deleteComment\\"])
+  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreateAuthor: Author @aws_subscribe(mutations: [\\"createAuthor\\"])
+  onUpdateAuthor: Author @aws_subscribe(mutations: [\\"updateAuthor\\"])
+  onDeleteAuthor: Author @aws_subscribe(mutations: [\\"deleteAuthor\\"])
+  onCreateRequire: Require @aws_subscribe(mutations: [\\"createRequire\\"])
+  onUpdateRequire: Require @aws_subscribe(mutations: [\\"updateRequire\\"])
+  onDeleteRequire: Require @aws_subscribe(mutations: [\\"deleteRequire\\"])
+  onCreateComment: Comment @aws_subscribe(mutations: [\\"createComment\\"])
+  onUpdateComment: Comment @aws_subscribe(mutations: [\\"updateComment\\"])
+  onDeleteComment: Comment @aws_subscribe(mutations: [\\"deleteComment\\"])
 }
 
 type ModelAuthorConnection {
@@ -641,13 +618,6 @@ input DeleteAuthorInput {
   id: ID!
 }
 
-input ModelSubscriptionAuthorFilterInput {
-  id: ModelSubscriptionIDInput
-  name: ModelSubscriptionStringInput
-  and: [ModelSubscriptionAuthorFilterInput]
-  or: [ModelSubscriptionAuthorFilterInput]
-}
-
 type ModelRequireConnection {
   items: [Require]!
   nextToken: String
@@ -684,14 +654,6 @@ input UpdateRequireInput {
 
 input DeleteRequireInput {
   id: ID!
-}
-
-input ModelSubscriptionRequireFilterInput {
-  id: ModelSubscriptionIDInput
-  requiredField: ModelSubscriptionStringInput
-  notRequiredField: ModelSubscriptionStringInput
-  and: [ModelSubscriptionRequireFilterInput]
-  or: [ModelSubscriptionRequireFilterInput]
 }
 
 type ModelCommentConnection {
@@ -734,15 +696,6 @@ input UpdateCommentInput {
 
 input DeleteCommentInput {
   id: ID!
-}
-
-input ModelSubscriptionCommentFilterInput {
-  id: ModelSubscriptionIDInput
-  title: ModelSubscriptionStringInput
-  content: ModelSubscriptionStringInput
-  updatedOn: ModelSubscriptionIntInput
-  and: [ModelSubscriptionCommentFilterInput]
-  or: [ModelSubscriptionCommentFilterInput]
 }
 
 "
@@ -2559,19 +2512,10 @@ type Mutation {
   deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
-input ModelSubscriptionPostFilterInput {
-  id: ModelSubscriptionIDInput
-  str: ModelSubscriptionStringInput
-  createdAt: ModelSubscriptionStringInput
-  updatedAt: ModelSubscriptionStringInput
-  and: [ModelSubscriptionPostFilterInput]
-  or: [ModelSubscriptionPostFilterInput]
-}
-
 type Subscription {
-  onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
 
 "
@@ -3226,19 +3170,10 @@ type Mutation {
   deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
-input ModelSubscriptionPostFilterInput {
-  id: ModelSubscriptionIDInput
-  str: ModelSubscriptionStringInput
-  createdAt: ModelSubscriptionIntInput
-  updatedAt: ModelSubscriptionIntInput
-  and: [ModelSubscriptionPostFilterInput]
-  or: [ModelSubscriptionPostFilterInput]
-}
-
 type Subscription {
-  onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
 
 "
@@ -3648,17 +3583,10 @@ type Mutation {
   deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
-input ModelSubscriptionPostFilterInput {
-  id: ModelSubscriptionIDInput
-  str: ModelSubscriptionStringInput
-  and: [ModelSubscriptionPostFilterInput]
-  or: [ModelSubscriptionPostFilterInput]
-}
-
 type Subscription {
-  onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
 
 "
@@ -4070,17 +3998,10 @@ type Mutation {
   deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
-input ModelSubscriptionPostFilterInput {
-  id: ModelSubscriptionIDInput
-  str: ModelSubscriptionStringInput
-  and: [ModelSubscriptionPostFilterInput]
-  or: [ModelSubscriptionPostFilterInput]
-}
-
 type Subscription {
-  onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
 
 "
