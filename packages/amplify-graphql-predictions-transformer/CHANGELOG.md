@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.27](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@0.6.26...@aws-amplify/graphql-predictions-transformer@0.6.27) (2022-08-23)
+
+
+### Reverts
+
+* Revert "Undo change to directive merge that broke tests" (#756) ([3da2ce6](https://github.com/aws-amplify/amplify-category-api/commit/3da2ce604469d87160de1374f944a891ca9f476b)), closes [#756](https://github.com/aws-amplify/amplify-category-api/issues/756)
+
+
+
+
+
 ## [0.6.26](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@0.6.25...@aws-amplify/graphql-predictions-transformer@0.6.26) (2022-08-16)
 
 **Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer

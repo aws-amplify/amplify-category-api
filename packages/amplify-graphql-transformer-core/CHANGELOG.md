@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.17.11](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.17.10...@aws-amplify/graphql-transformer-core@0.17.11) (2022-08-23)
+
+
+### Reverts
+
+* Revert "Undo change to directive merge that broke tests" (#756) ([3da2ce6](https://github.com/aws-amplify/amplify-category-api/commit/3da2ce604469d87160de1374f944a891ca9f476b)), closes [#756](https://github.com/aws-amplify/amplify-category-api/issues/756)
+
+
+
+
+
 ## [0.17.10](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.17.9...@aws-amplify/graphql-transformer-core@0.17.10) (2022-08-16)
 
 

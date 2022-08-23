@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.0.1...@aws-amplify/graphql-auth-transformer@1.0.2) (2022-08-23)
+
+
+### Reverts
+
+* Revert "Undo change to directive merge that broke tests" (#756) ([3da2ce6](https://github.com/aws-amplify/amplify-category-api/commit/3da2ce604469d87160de1374f944a891ca9f476b)), closes [#756](https://github.com/aws-amplify/amplify-category-api/issues/756)
+
+
+
+
+
 ## [1.0.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@0.12.7...@aws-amplify/graphql-auth-transformer@1.0.1) (2022-08-18)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

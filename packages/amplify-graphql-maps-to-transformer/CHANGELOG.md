@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.28](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@1.1.27...@aws-amplify/graphql-maps-to-transformer@1.1.28) (2022-08-23)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+
+
+
+
 ## [1.1.27](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@1.1.26...@aws-amplify/graphql-maps-to-transformer@1.1.27) (2022-08-18)
 
 **Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
