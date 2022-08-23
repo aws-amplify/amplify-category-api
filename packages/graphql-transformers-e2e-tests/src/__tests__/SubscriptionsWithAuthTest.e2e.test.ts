@@ -1261,6 +1261,86 @@ test('test that subscription with apiKey onDelete', async () => {
   });
 });
 
+// This scenario is a bug on AppSync. AppSync is working to accept optional arguments in subscriptions.
+// This needs to be updated once AppSync change the behavior
+test('Test subscriptions with variable syntax and does not include optional argument - should throw an error', async () => {
+  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+  await Auth.signIn(USERNAME1, REAL_PASSWORD);
+  const observer = API.graphql({
+    // @ts-ignore
+    query: gql`
+      subscription OnCreateStudent($owner: String) {
+        onCreateStudent(owner: $owner) {
+          id
+          name
+          email
+          ssn
+          owner
+        }
+      }
+    `,
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  }) as unknown as Observable<any>;
+  let subscription: ZenObservable.Subscription;
+  const subscriptionPromise = new Promise((resolve, _) => {
+    subscription = observer.subscribe({
+      error: (err: any) => {
+        expect(err.error.errors.length).toEqual(1);
+        expect(err.error.errors[0].message).toEqual(
+          'Connection failed: {"errors":[{"message":"Validation error of type UndefinedVariable: variable not found"}]}',
+        );
+        resolve(undefined);
+      },
+    });
+  });
+});
+
+test('Test subscriptions with variable syntax', async () => {
+  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+  await Auth.signIn(USERNAME1, REAL_PASSWORD);
+  const observer = API.graphql({
+    // @ts-ignore
+    query: gql`
+      subscription OnCreateStudent($owner: String) {
+        onCreateStudent(owner: $owner) {
+          id
+          name
+          email
+          ssn
+          owner
+        }
+      }
+    `,
+    variables: {
+      owner: USERNAME1,
+    },
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  }) as unknown as Observable<any>;
+  let subscription: ZenObservable.Subscription;
+  const subscriptionPromise = new Promise((resolve, _) => {
+    subscription = observer.subscribe((event: any) => {
+      const student = event.value.data.onCreateStudent;
+      subscription.unsubscribe();
+      expect(student.name).toEqual('student_variable_1');
+      expect(student.email).toEqual('student1@domain.com');
+      expect(student.ssn).toBeNull();
+      resolve(undefined);
+    });
+  });
+
+  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+
+  await createStudent(GRAPHQL_CLIENT_1, {
+    name: 'student_variable_1',
+    email: 'student1@domain.com',
+    ssn: 'AAA-01-SSSS',
+  });
+
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateStudent Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
+});
+
 function reconfigureAmplifyAPI(appSyncAuthType: string, apiKey?: string) {
   if (appSyncAuthType === 'API_KEY') {
     API.configure({

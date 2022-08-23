@@ -9,7 +9,6 @@ import {
   MutationFieldType,
   TransformerTransformSchemaStepContextProvider,
   TransformerContextProvider,
-  FeatureFlagProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, NamedTypeNode,
@@ -43,7 +42,7 @@ export const fieldIsList = (fields: ReadonlyArray<FieldDefinitionNode>, fieldNam
 /**
  * getModelConfig
  */
-export const getModelConfig = (directive: DirectiveNode, typeName: string, featureFlags: FeatureFlagProvider, isDataStoreEnabled = false): ModelDirectiveConfiguration => {
+export const getModelConfig = (directive: DirectiveNode, typeName: string, isDataStoreEnabled = false): ModelDirectiveConfiguration => {
   const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
   const options = directiveWrapped.getArguments<ModelDirectiveConfiguration>({
     queries: {
@@ -66,20 +65,20 @@ export const getModelConfig = (directive: DirectiveNode, typeName: string, featu
       createdAt: 'createdAt',
       updatedAt: 'updatedAt',
     },
-  }, featureFlags);
+  });
   return options;
 };
 
 /**
  * getSearchableConfig
  */
-export const getSearchableConfig = (directive: DirectiveNode, typeName: string, featureFlags: FeatureFlagProvider): SearchableConfig | null => {
+export const getSearchableConfig = (directive: DirectiveNode, typeName: string): SearchableConfig | null => {
   const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
   const options = directiveWrapped.getArguments<SearchableConfig>({
     queries: {
       search: graphqlName(`search${plurality(toUpper(typeName), true)}`),
     },
-  }, featureFlags);
+  });
   return options;
 };
 /*
@@ -112,7 +111,7 @@ export const getRelationalPrimaryMap = (
     const args = directiveWrapped.getArguments({
       indexName: undefined,
       fields: undefined,
-    }, ctx.featureFlags);
+    });
     // we only generate a primary map if a index name or field is specified
     // if both are undefined then @hasMany will create a new gsi with a new readonly field
     // we don't need a primary map since this readonly field is not a auth field
@@ -136,10 +135,10 @@ export const getRelationalPrimaryMap = (
       fields: [
         getConnectionAttributeName(ctx.featureFlags, def.name.value, field.name.value, relatedModel.name.value),
         ...getSortKeyFieldNames(relatedModel).map(
-          (it) => getSortKeyConnectionAttributeName(def.name.value, field.name.value, it),
-        ),
+          it => getSortKeyConnectionAttributeName(def.name.value, field.name.value, it),
+        )
       ],
-    }, ctx.featureFlags);
+    });
     const relatedPrimaryFields = getKeyFields(ctx, relatedModel);
     // the fields provided by the directive (implicit/explicit) need to match the total amount of fields used for the primary key in the related table
     // otherwise the get request is incomplete
