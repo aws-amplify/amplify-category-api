@@ -95,7 +95,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       field: definition,
       directive,
       limit: defaultLimit,
-    } as ManyToManyDirectiveConfiguration, context.featureFlags);
+    } as ManyToManyDirectiveConfiguration);
 
     validateModelDirective(args);
     args.connectionFields = [];

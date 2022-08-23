@@ -107,7 +107,7 @@ export class HttpTransformer extends TransformerPluginBase {
       resolverTypeName: parent.name.value,
       resolverFieldName: definition.name.value,
       supportsBody: false,
-    } as HttpDirectiveConfiguration, context.featureFlags);
+    } as HttpDirectiveConfiguration);
 
     if (!VALID_PROTOCOLS_REGEX.test(args.url)) {
       throw new TransformerContractError(

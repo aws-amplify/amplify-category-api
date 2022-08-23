@@ -613,11 +613,16 @@ describe('ModelTransformer: ', () => {
     expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy();
   });
 
-  it('Should support public level subscriptions without defining custom names', () => {
-    const validSchema = `
-    type Post @model(subscriptions: { level: public }) {
-      id: ID!
-      title: String!
+  it('should support advanced subscriptions', () => {
+    const validSchema = `type Post @model(subscriptions: {
+          onCreate: ["onFeedUpdated", "onCreatePost"],
+          onUpdate: ["onFeedUpdated"],
+          onDelete: ["onFeedUpdated"]
+      }) {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
     }
     `;
     const transformer = new GraphQLTransform({
@@ -633,7 +638,16 @@ describe('ModelTransformer: ', () => {
 
     const subscriptionType = getObjectType(parsed, 'Subscription');
     expect(subscriptionType).toBeDefined();
-    expectFields(subscriptionType!, ['onUpdatePost', 'onCreatePost', 'onDeletePost']);
+    expectFields(subscriptionType!, ['onFeedUpdated', 'onCreatePost']);
+    const subField = subscriptionType!.fields!.find(f => f.name.value === 'onFeedUpdated');
+    expect(subField!.directives!.length).toEqual(1);
+    expect(subField!.directives![0].name!.value).toEqual('aws_subscribe');
+    const mutationsList = subField!.directives![0].arguments!.find(a => a.name.value === 'mutations')!.value as ListValueNode;
+    const mutList = mutationsList.values.map((v: any) => v.value);
+    expect(mutList.length).toEqual(3);
+    expect(mutList).toContain('createPost');
+    expect(mutList).toContain('updatePost');
+    expect(mutList).toContain('deletePost');
   });
 
   it('should not generate superfluous input and filter types', () => {
@@ -1269,7 +1283,7 @@ describe('ModelTransformer: ', () => {
     expect(Object.keys(result.stacks.Blog.Resources!).includes('CreateBlogResolver')).toBe(false);
     expect(Object.keys(result.stacks.Blog.Resources!).includes('UpdateBlogResolver')).toBe(false);
   });
-
+  
   it('allow aws_lambda to pass through', () => {
     const validSchema = `
     type Todo @aws_lambda {
