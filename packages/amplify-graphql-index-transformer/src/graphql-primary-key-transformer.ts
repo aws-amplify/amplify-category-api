@@ -59,7 +59,7 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
       object: parent as ObjectTypeDefinitionNode,
       field: definition,
       directive,
-    } as PrimaryKeyDirectiveConfiguration, context.featureFlags);
+    } as PrimaryKeyDirectiveConfiguration);
 
     if (!args.sortKeyFields) {
       args.sortKeyFields = [];

@@ -47,7 +47,7 @@ export class IndexTransformer extends TransformerPluginBase {
       object: parent as ObjectTypeDefinitionNode,
       field: definition,
       directive,
-    } as IndexDirectiveConfiguration, context.featureFlags);
+    } as IndexDirectiveConfiguration);
 
     /**
      * Impute Optional Fields
