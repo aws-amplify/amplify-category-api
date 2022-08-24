@@ -1,4 +1,3 @@
-import assert from 'assert';
 import { InvalidDirectiveError, TransformerContractError } from '@aws-amplify/graphql-transformer-core';
 import { ModelOperation } from '../utils/definitions';
 
@@ -62,7 +61,9 @@ export class AccessControlMatrix {
       allowedVector = this.getResourceOperationMatrix({ operations, resource });
       this.roles.push(input.role);
       this.matrix.push(allowedVector);
-      assert(this.roles.length === this.matrix.length, 'Roles are not aligned with Roles added in Matrix');
+      if (this.roles.length !== this.matrix.length) {
+        throw new Error('Roles are not aligned with Roles added in Matrix');
+      }
     } else if (this.roles.includes(role) && (resource || allowRoleOverwrite)) {
       allowedVector = this.getResourceOperationMatrix({ operations, resource, role });
       const roleIndex = this.roles.indexOf(role);

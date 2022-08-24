@@ -24,8 +24,8 @@ import {
   extensionWithDirectives,
   extendFieldWithDirectives,
 } from 'graphql-transformer-common';
-import assert from 'assert';
 import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 
 const ID_CONDITIONS = [
   'ne',
@@ -114,7 +114,9 @@ export const makeSearchableScalarInputObject = (type: string): InputObjectTypeDe
 
 export const makeSearchableXFilterInputObject = (obj: ObjectTypeDefinitionNode, document: DocumentNode): InputObjectTypeDefinitionNode => {
   const name = SearchableResourceIDs.SearchableFilterInputTypeName(obj.name.value);
-  assert(obj.fields);
+  if (!obj.fields) {
+    throw new InvalidDirectiveError('Models decorated with @searchable require fields defined within them.');
+  }
   const fields: InputValueDefinitionNode[] = obj.fields
     .filter((field: FieldDefinitionNode) => isScalar(field.type))
     .map(
@@ -215,7 +217,9 @@ export const makeSearchableSortDirectionEnumObject = (): EnumTypeDefinitionNode 
 
 export const makeSearchableXSortableFieldsEnumObject = (obj: ObjectTypeDefinitionNode): EnumTypeDefinitionNode => {
   const name = graphqlName(`Searchable${obj.name.value}SortableFields`);
-  assert(obj.fields);
+  if (!obj.fields) {
+    throw new InvalidDirectiveError('Models decorated with @searchable require fields defined within them.');
+  }
   const values: EnumValueDefinitionNode[] = obj.fields
     .filter((field: FieldDefinitionNode) => isScalar(field.type))
     .map((field: FieldDefinitionNode) => ({
@@ -237,7 +241,9 @@ export const makeSearchableXSortableFieldsEnumObject = (obj: ObjectTypeDefinitio
 
 export const makeSearchableXAggregateFieldEnumObject = (obj: ObjectTypeDefinitionNode, document: DocumentNode): EnumTypeDefinitionNode => {
   const name = graphqlName(`Searchable${obj.name.value}AggregateField`);
-  assert(obj.fields);
+  if (!obj.fields) {
+    throw new InvalidDirectiveError('Models decorated with @searchable require fields defined within them.');
+  }
   const values: EnumValueDefinitionNode[] = obj.fields
     .filter((field: FieldDefinitionNode) => isScalar(field.type) || isEnum(field.type, document))
     .map((field: FieldDefinitionNode) => ({

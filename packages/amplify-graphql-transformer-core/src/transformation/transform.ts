@@ -11,7 +11,6 @@ import {
   App, Aws, CfnOutput, CfnResource, Fn,
 } from '@aws-cdk/core';
 import { printer } from 'amplify-prompts';
-import assert from 'assert';
 import * as fs from 'fs-extra';
 import {
   EnumTypeDefinitionNode,
@@ -383,7 +382,9 @@ export class GraphQLTransform {
       type: 'String',
     }).valueAsString;
     const envName = stackManager.getParameter('env');
-    assert(envName);
+    if (!envName) {
+      throw new Error('Parameter `env` not configured properly.');
+    }
     const api = new GraphQLApi(rootStack, 'GraphQLAPI', {
       name: `${apiName}-${envName.valueAsString}`,
       authorizationConfig,

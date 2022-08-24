@@ -25,7 +25,6 @@ import {
 import { stripDirectives } from '../utils/strip-directives';
 import { DEFAULT_SCHEMA_DEFINITION } from '../utils/defaultSchema';
 import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import assert from 'assert';
 
 const AMPLIFY = 'AMPLIFY';
 
@@ -313,7 +312,9 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     }
     // AppSync does not yet understand type extensions so fold the types in.
     const oldNode = this.getObject(obj.name.value);
-    assert(oldNode);
+    if (!oldNode) {
+      throw new Error('Failure adding object extension');
+    }
     const newDirs = [];
     const oldDirs = oldNode?.directives || [];
 

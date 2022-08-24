@@ -1,4 +1,3 @@
-import assert from 'assert';
 import { getFieldNameFor, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import {
   FeatureFlagProvider,
@@ -67,12 +66,16 @@ export function getRelatedTypeIndex(
   }
 
   partitionField = fieldMap.get(partitionFieldName);
-  assert(partitionField);
+  if (!partitionField) {
+    throw new Error(`Expected partition field ${partitionFieldName} to be found in map.`);
+  }
 
   for (const sortFieldName of sortFieldNames) {
     const sortField = fieldMap.get(sortFieldName);
 
-    assert(sortField);
+    if (!sortField) {
+      throw new Error(`Expected sort field ${sortFieldName} to be found in map.`);
+    }
     sortFields.push(sortField);
   }
 
@@ -132,7 +135,9 @@ export function getRelatedType(
     (d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === relatedTypeName,
   ) as ObjectTypeDefinitionNode | undefined;
 
-  assert(relatedType);
+  if (!relatedType) {
+    throw new Error(`Could not find related type with name ${relatedTypeName} while processing relationships.`);
+  }
   return relatedType;
 }
 
@@ -212,7 +217,9 @@ export function validateDisallowedDataStoreRelationships(
 
   const modelType = config.object.name.value;
   const relatedType = ctx.output.getType(config.relatedType.name.value) as ObjectTypeDefinitionNode;
-  assert(relatedType);
+  if (!relatedType) {
+    throw new Error(`Expected related type ${config.relatedType.name.value} to be found in output, but did not.`);
+  }
 
   // Recursive relationships on the same type are allowed.
   if (modelType === relatedType.name.value) {
