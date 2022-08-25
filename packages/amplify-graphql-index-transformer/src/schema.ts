@@ -1,4 +1,3 @@
-import assert from 'assert';
 import { makeModelSortDirectionEnumObject } from '@aws-amplify/graphql-model-transformer';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
@@ -130,15 +129,13 @@ export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: T
     return;
   }
 
-  const { sortKey } = config;
   let listField = query.fields!.find((field: FieldDefinitionNode) => field.name.value === resolverName) as FieldDefinitionNode;
   if (listField) {
     const args = [createHashField(config)];
 
-    if (sortKey.length === 1) {
-      args.push(createSimpleSortField(config, ctx));
-    } else if (sortKey.length > 1) {
-      args.push(createCompositeSortField(config, ctx));
+    const sortField = tryAndCreateSortField(config, ctx);
+    if (sortField) {
+      args.push(sortField);
     }
 
     if (Array.isArray(listField.arguments)) {
@@ -251,7 +248,9 @@ function createSimpleSortField(
   ctx: TransformerContextProvider,
 ): InputValueDefinitionNode {
   const { sortKey } = config;
-  assert(sortKey.length === 1);
+  if (sortKey.length !== 1) {
+    throw new Error(`Expected Sort key length to be 1, received list of length ${sortKey.length}`);
+  }
   const key = sortKey[0];
   const baseType = getBaseType(key.type);
   const resolvedTypeIfEnum = (ctx.output.getType(baseType) as EnumTypeDefinitionNode) ? 'String' : undefined;
@@ -265,7 +264,9 @@ function createCompositeSortField(
   ctx: TransformerContextProvider,
 ): InputValueDefinitionNode {
   const { object, sortKeyFields } = config;
-  assert(sortKeyFields.length > 1);
+  if (sortKeyFields.length <= 1) {
+    throw new Error(`Expected Sort key length to be greater than 1, received ${sortKeyFields.length}`);
+  }
   const compositeSortKeyName = toCamelCase(sortKeyFields);
   const indexKeyName = (config as IndexDirectiveConfiguration).name;
   const keyName = toUpper(indexKeyName ?? 'Primary');
@@ -275,6 +276,26 @@ function createCompositeSortField(
     makeNamedType(ModelResourceIDs.ModelCompositeKeyConditionInputTypeName(object.name.value, keyName)),
   );
 }
+
+/**
+ * Invoke the relevant createSortField method given a set of sort keys.
+ * @param config The directive config
+ * @param ctx the cli invocation context
+ * @returns the constructed sort field, or null if no sort field can be created
+ */
+export const tryAndCreateSortField = (
+  config: PrimaryKeyDirectiveConfiguration | IndexDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+): InputValueDefinitionNode | null => {
+  switch (config.sortKey.length) {
+    case 0:
+      return null;
+    case 1:
+      return createSimpleSortField(config, ctx);
+    default:
+      return createCompositeSortField(config, ctx);
+  }
+};
 
 function replaceCreateInput(input: InputObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
   return { ...input, fields: input.fields!.filter(f => f.name.value !== 'id') };
@@ -321,7 +342,7 @@ function replaceDeleteInput(config: PrimaryKeyDirectiveConfiguration, input: Inp
 }
 
 export function ensureQueryField(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
-  const { name, object, queryField, sortKey } = config;
+  const { name, object, queryField } = config;
   const hasAuth = object.directives?.some(dir => dir.name.value === 'auth');
   const directives = [];
 
@@ -341,10 +362,9 @@ export function ensureQueryField(config: IndexDirectiveConfiguration, ctx: Trans
 
   const args = [createHashField(config)];
 
-  if (sortKey.length === 1) {
-    args.push(createSimpleSortField(config, ctx));
-  } else if (sortKey.length > 1) {
-    args.push(createCompositeSortField(config, ctx));
+  const sortField = tryAndCreateSortField(config, ctx);
+  if (sortField) {
+    args.push(sortField);
   }
 
   args.push(makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')));

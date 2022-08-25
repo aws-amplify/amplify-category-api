@@ -2,7 +2,6 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
 import { Table } from '@aws-cdk/aws-dynamodb';
-import * as assert from 'assert';
 import { ListValueNode, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { ModelResourceIDs } from 'graphql-transformer-common';
 
@@ -24,7 +23,9 @@ export const getTable = (ctx: TransformerContextProvider, object: ObjectTypeDefi
   const tableName = ModelResourceIDs.ModelTableResourceID(object.name.value);
   const table = ddbDataSource.ds.stack.node.findChild(tableName) as Table;
 
-  assert.ok(table);
+  if (!table) {
+    throw new Error(`Table not found for name ${tableName}`);
+  }
   return table;
 };
 

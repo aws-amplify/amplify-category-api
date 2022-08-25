@@ -10,7 +10,6 @@ import {
 } from '@aws-cdk/aws-iam';
 import { ResourceConstants, SearchableResourceIDs } from 'graphql-transformer-common';
 import * as path from 'path';
-import assert from 'assert';
 
 export const createLambda = (
   stack: Stack,
@@ -19,9 +18,8 @@ export const createLambda = (
   lambdaRole: IRole,
   endpoint: string,
   isProjectUsingDataStore: boolean,
-  region?: string,
+  region: string,
 ): IFunction => {
-  assert(region);
   const { OpenSearchStreamingLambdaFunctionLogicalID } = ResourceConstants.RESOURCES;
   const { OpenSearchStreamingLambdaHandlerName, OpenSearchDebugStreamingLambda } = ResourceConstants.PARAMETERS;
   const enviroment: { [key: string]: string } = {
@@ -78,10 +76,9 @@ export const createEventSourceMapping = (
   type: string,
   target: IFunction,
   parameterMap: Map<string, CfnParameter>,
-  tableStreamArn?: string,
+  tableStreamArn: string,
 ): EventSourceMapping => {
   const { OpenSearchStreamBatchSize, OpenSearchStreamMaximumBatchingWindowInSeconds } = ResourceConstants.PARAMETERS;
-  assert(tableStreamArn);
   return new EventSourceMapping(stack, SearchableResourceIDs.SearchableEventSourceMappingID(type), {
     eventSourceArn: tableStreamArn,
     target,

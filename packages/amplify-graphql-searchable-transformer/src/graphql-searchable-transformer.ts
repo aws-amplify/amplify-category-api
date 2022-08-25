@@ -35,7 +35,6 @@ import {
   ResolverResourceIDs,
   makeDirective,
 } from 'graphql-transformer-common';
-import assert from 'assert';
 import { createParametersStack as createParametersInStack } from './cdk/create-cfnParameters';
 import { requestTemplate, responseTemplate, sandboxMappingTemplate } from './generate-resolver-vtl';
 import {
@@ -299,12 +298,17 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     domain.grantReadWrite(openSearchRole);
 
+    const { region } = stack.parseArn(domain.domainArn);
+    if (!region) {
+      throw new Error('Could not access region from search domain');
+    }
+
     const datasource = createSearchableDataSource(
       stack,
       context.api,
       domain.domainEndpoint,
       openSearchRole,
-      stack.parseArn(domain.domainArn).region,
+      region,
     );
 
     // streaming lambda role
@@ -319,7 +323,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       lambdaRole,
       domain.domainEndpoint,
       isProjectUsingDataStore,
-      stack.parseArn(domain.domainArn).region,
+      region,
     );
 
     for (const def of this.searchableObjectTypeDefinitions) {
@@ -329,17 +333,24 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       const typeName = context.output.getQueryTypeName();
       const table = getTable(context, def.node);
       const ddbTable = table as Table;
-      assert(ddbTable);
+      if (!ddbTable) {
+        throw new Error('Failed to find ddb table for searchable');
+      }
 
       ddbTable.grantStreamRead(lambdaRole);
 
       // creates event source mapping from ddb to lambda
+      if (!ddbTable.tableStreamArn) {
+        throw new Error('tableStreamArn is required on ddb table ot create event source mappings');
+      }
       createEventSourceMapping(stack, openSearchIndexName, lambda, parameterMap, ddbTable.tableStreamArn);
 
       const { attributeName } = (table as any).keySchema.find((att: any) => att.keyType === 'HASH');
       const keyFields = getKeyFields(attributeName, table);
 
-      assert(typeName);
+      if (!typeName) {
+        throw new Error('Query type name not found');
+      }
       const resolver = context.resolvers.generateQueryResolver(
         typeName,
         def.fieldName,

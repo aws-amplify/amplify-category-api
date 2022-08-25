@@ -1,4 +1,3 @@
-import assert from 'assert';
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
 import { MappingTemplate, GraphQLTransform, AmplifyApiGraphQlResourceStackTemplate, SyncUtils, StackManager } from '@aws-amplify/graphql-transformer-core';
 import { DataSourceProvider, StackManagerProvider, TransformerContextProvider, TransformerPluginProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -148,7 +147,9 @@ function getTable(context: TransformerContextProvider, object: ObjectTypeDefinit
   const tableName = ModelResourceIDs.ModelTableResourceID(object.name.value);
   const table = ddbDataSource.ds.stack.node.findChild(tableName) as Table;
 
-  assert(table);
+  if (!table) {
+    throw new Error(`Table not found in stack with table name ${tableName}`);
+  }
   return table;
 }
 
@@ -446,13 +447,16 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
   if (!(name && queryField)) {
     throw new Error('Expected name and queryField to be defined while generating resolver.');
   }
-  const dataSource = ctx.api.host.getDataSource(`${object.name.value}Table`);
+  const dataSourceName = `${object.name.value}Table`;
+  const dataSource = ctx.api.host.getDataSource(dataSourceName);
   const queryTypeName = ctx.output.getQueryTypeName() as string;
   const table = getTable(ctx, object);
   const authFilter = ref('ctx.stash.authFilter');
   const requestVariable = 'QueryRequest';
 
-  assert(dataSource);
+  if (!dataSource) {
+    throw new Error(`Could not find datasource with name ${dataSourceName} in context.`);
+  }
 
   const resolver = ctx.resolvers.generateQueryResolver(
     queryTypeName,

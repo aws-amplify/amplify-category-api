@@ -9,10 +9,10 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationType, CfnFunctionConfiguration } from '@aws-cdk/aws-appsync';
 import { isResolvableObject, Stack, CfnParameter } from '@aws-cdk/core';
-import assert from 'assert';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
 import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
+import { InvalidDirectiveError } from '../errors';
 import * as SyncUtils from '../transformation/sync-utils';
 import { IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils';
 import { StackManager } from './stack-manager';
@@ -134,11 +134,21 @@ export class TransformerResolver implements TransformerResolverProvider {
     private responseSlots: string[],
     private datasource?: DataSourceProvider,
   ) {
-    assert(typeName, 'typeName is required');
-    assert(fieldName, 'fieldName is required');
-    assert(resolverLogicalId, 'resolverLogicalId is required');
-    assert(requestMappingTemplate, 'requestMappingTemplate is required');
-    assert(responseMappingTemplate, 'responseMappingTemplate is required');
+    if (!typeName) {
+      throw new InvalidDirectiveError('typeName is required');
+    }
+    if (!fieldName) {
+      throw new InvalidDirectiveError('fieldName is required');
+    }
+    if (!resolverLogicalId) {
+      throw new InvalidDirectiveError('resolverLogicalId is required');
+    }
+    if (!requestMappingTemplate) {
+      throw new InvalidDirectiveError('requestMappingTemplate is required');
+    }
+    if (!responseMappingTemplate) {
+      throw new InvalidDirectiveError('responseMappingTemplate is required');
+    }
     this.slotNames = new Set([...requestSlots, ...responseSlots]);
   }
 
