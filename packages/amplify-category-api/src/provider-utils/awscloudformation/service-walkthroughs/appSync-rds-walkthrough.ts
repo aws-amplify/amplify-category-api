@@ -1,3 +1,4 @@
+import * as path from 'node:path'
 import { $TSContext, $TSObject, exitOnNextTick, ResourceCredentialsNotFoundError, ResourceDoesNotExistError, pathManager, JSONUtilities, $TSAny } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import chalk from 'chalk';
@@ -44,7 +45,7 @@ export async function serviceWalkthrough(context: $TSContext, datasourceMetadata
   const { inputs, availableRegions } = datasourceMetadata;
 
   // FIXME: We should NOT be treating CloudFormation templates as inputs to prompts! This a temporary exception while we move team-provider-info to a service.
-  const cfnJson: $TSAny = JSONUtilities.readJson(`${pathManager.getCurrentCloudRootStackDirPath(pathManager.findProjectRoot())}/${cfnRootStackFileName}`);
+  const cfnJson: $TSAny = JSONUtilities.readJson(path.join(pathManager.getCurrentCloudRootStackDirPath(pathManager.findProjectRoot()), cfnRootStackFileName));
   const cfnJsonParameters = cfnJson?.Resources[`api${appSyncApi}`]?.Properties?.Parameters || {};
   let selectedRegion = cfnJsonParameters?.rdsRegion;
   // Region Question
