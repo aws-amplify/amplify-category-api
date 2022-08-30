@@ -661,16 +661,7 @@ describe('ModelTransformer: ', () => {
 
     const subscriptionType = getObjectType(parsed, 'Subscription');
     expect(subscriptionType).toBeDefined();
-    expectFields(subscriptionType!, ['onFeedUpdated', 'onCreatePost']);
-    const subField = subscriptionType!.fields!.find(f => f.name.value === 'onFeedUpdated');
-    expect(subField!.directives!.length).toEqual(1);
-    expect(subField!.directives![0].name!.value).toEqual('aws_subscribe');
-    const mutationsList = subField!.directives![0].arguments!.find(a => a.name.value === 'mutations')!.value as ListValueNode;
-    const mutList = mutationsList.values.map((v: any) => v.value);
-    expect(mutList.length).toEqual(3);
-    expect(mutList).toContain('createPost');
-    expect(mutList).toContain('updatePost');
-    expect(mutList).toContain('deletePost');
+    expectFields(subscriptionType!, ['onUpdatePost', 'onCreatePost', 'onDeletePost']);
   });
 
   it('should not generate superfluous input and filter types', () => {

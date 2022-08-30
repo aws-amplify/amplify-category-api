@@ -35,6 +35,7 @@ import {
   ResolverResourceIDs,
   makeDirective,
 } from 'graphql-transformer-common';
+import assert from 'assert';
 import { createParametersStack as createParametersInStack } from './cdk/create-cfnParameters';
 import { requestTemplate, responseTemplate, sandboxMappingTemplate } from './generate-resolver-vtl';
 import {

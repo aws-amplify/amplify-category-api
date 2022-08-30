@@ -15,7 +15,6 @@ const generateFeatureFlagWithBooleanOverrides = (overrides: Record<string, boole
   },
   getNumber: jest.fn(),
   getObject: jest.fn(),
-  getString: jest.fn(),
 });
 
 describe('Transformer Core Util Tests', () => {
@@ -69,7 +68,7 @@ describe('Transformer Core Util Tests', () => {
 
       const newArgs = wrappedDir.getArguments(
         cloneDeep(defaultArgs),
-        generateFeatureFlagWithBooleanOverrides({ 'graphQLTransformer.shouldDeepMergeDirectiveConfigDefaults': true }),
+        generateFeatureFlagWithBooleanOverrides({ shouldDeepMergeDirectiveConfigDefaults: true }),
       );
       expect(newArgs.subscriptions).toEqual({
         level: 'public',
