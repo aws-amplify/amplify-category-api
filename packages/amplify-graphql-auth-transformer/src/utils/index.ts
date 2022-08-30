@@ -8,6 +8,7 @@ import {
   AuthRule,
   AuthTransformerConfig,
   ConfiguredAuthProviders,
+  GetAuthRulesOptions,
   ModelOperation,
   RoleDefinition,
   RolesByProvider,
@@ -35,7 +36,7 @@ export const splitRoles = (roles: Array<RoleDefinition>): RolesByProvider => ({
 /**
  * returns @auth directive rules
  */
-export const getAuthDirectiveRules = (authDir: DirectiveWrapper, featureFlags: FeatureFlagProvider, isField = false): AuthRule[] => {
+export const getAuthDirectiveRules = (authDir: DirectiveWrapper, options?: GetAuthRulesOptions): AuthRule[] => {
   const splitReadOperation = (rule: AuthRule): void => {
     const operations: (ModelOperation | 'read')[] = rule.operations ?? [];
     const indexOfRead = operations.indexOf('read', 0);
@@ -51,7 +52,7 @@ export const getAuthDirectiveRules = (authDir: DirectiveWrapper, featureFlags: F
     }
   };
 
-  const { rules } = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }, featureFlags);
+  const { rules } = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }, options);
   rules.forEach(rule => {
     const operations: (ModelOperation | 'read')[] = rule.operations ?? MODEL_OPERATIONS;
 

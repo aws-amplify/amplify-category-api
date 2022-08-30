@@ -1,2 +1,2 @@
-export { TransformerProjectConfig } from './project-config';
+export { Template, TransformerProjectConfig } from './project-config';
 export * from './transformer-config';

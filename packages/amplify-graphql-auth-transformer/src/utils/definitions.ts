@@ -1,4 +1,5 @@
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import {GetArgumentsOptions} from "@aws-amplify/graphql-transformer-core/lib/utils/directive-wrapper";
 
 /**
  * AuthStrategy
@@ -29,6 +30,10 @@ export interface SearchableConfig {
     search: string;
   };
 }
+
+export type GetAuthRulesOptions = GetArgumentsOptions & {
+  isField?: boolean;
+};
 
 /**
  * AuthTransformerConfig
