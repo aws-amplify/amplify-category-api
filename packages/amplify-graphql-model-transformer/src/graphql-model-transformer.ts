@@ -234,7 +234,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
     // This property override is specifically to address parity between V1 and V2 when the FF is disabled
     // If one subscription is defined, just let the others go to null without FF. But if public and none defined, default all subs
-    if (!ctx.featureFlags.getBoolean('graphQLTransformer.shouldDeepMergeDirectiveConfigDefaults')) {
+    if (!ctx.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults')) {
       const publicSubscriptionDefaults = {
         onCreate: [getFieldNameFor('onCreate', typeName)],
         onDelete: [getFieldNameFor('onDelete', typeName)],
