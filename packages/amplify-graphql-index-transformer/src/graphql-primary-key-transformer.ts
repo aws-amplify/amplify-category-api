@@ -14,9 +14,9 @@ import {
   ObjectTypeDefinitionNode,
 } from 'graphql';
 import { isListType, isNonNullType, isScalarOrEnum } from 'graphql-transformer-common';
-import { 
-  constructSyncVTL, 
-  replaceDdbPrimaryKey, 
+import {
+  constructSyncVTL,
+  replaceDdbPrimaryKey,
   updateResolvers,
   getResourceOverrides,
   getDeltaSyncTableTtl
@@ -59,7 +59,7 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
       object: parent as ObjectTypeDefinitionNode,
       field: definition,
       directive,
-    } as PrimaryKeyDirectiveConfiguration, context.featureFlags);
+    } as PrimaryKeyDirectiveConfiguration, { deepMergeArguments: context.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) });
 
     if (!args.sortKeyFields) {
       args.sortKeyFields = [];

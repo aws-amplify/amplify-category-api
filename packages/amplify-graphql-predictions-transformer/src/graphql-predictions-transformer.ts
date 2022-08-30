@@ -96,7 +96,7 @@ export class PredictionsTransformer extends TransformerPluginBase {
     const args = directiveWrapped.getArguments({
       resolverTypeName: parent.name.value,
       resolverFieldName: definition.name.value,
-    } as PredictionsDirectiveConfiguration, context.featureFlags);
+    } as PredictionsDirectiveConfiguration, { deepMergeArguments: context.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) });
 
     if (!Array.isArray(args.actions)) {
       args.actions = [args.actions as unknown as string];

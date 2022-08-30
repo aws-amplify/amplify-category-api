@@ -106,7 +106,10 @@ export const validateFieldRules = (
   fieldName: string,
   featureFlags: FeatureFlagProvider,
 ) => {
-  const rules = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }, featureFlags).rules;
+  const rules = authDir.getArguments<{ rules: Array<AuthRule> }>(
+    { rules: [] },
+    { deepMergeArguments: featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) },
+  ).rules;
 
   if (rules.length === 0) {
     throw new InvalidDirectiveError(`@auth on ${fieldName} does not have any auth rules.`);

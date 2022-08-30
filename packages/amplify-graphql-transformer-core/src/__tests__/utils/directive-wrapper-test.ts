@@ -53,7 +53,7 @@ describe('Transformer Core Util Tests', () => {
       const modelDir = objNode?.directives?.[0] as DirectiveNode;
       const wrappedDir = new DirectiveWrapper(modelDir);
 
-      const newArgs = wrappedDir.getArguments(cloneDeep(defaultArgs), generateFeatureFlagWithBooleanOverrides({}));
+      const newArgs = wrappedDir.getArguments(cloneDeep(defaultArgs), { deepMergeArguments: false });
       expect(newArgs.subscriptions).toEqual({ level: 'public' });
       expect(newArgs.timestamps).toEqual(defaultArgs.timestamps);
       expect(newArgs.queries).toEqual(defaultArgs.queries);
@@ -68,7 +68,7 @@ describe('Transformer Core Util Tests', () => {
 
       const newArgs = wrappedDir.getArguments(
         cloneDeep(defaultArgs),
-        generateFeatureFlagWithBooleanOverrides({ shouldDeepMergeDirectiveConfigDefaults: true }),
+        { deepMergeArguments: true },
       );
       expect(newArgs.subscriptions).toEqual({
         level: 'public',

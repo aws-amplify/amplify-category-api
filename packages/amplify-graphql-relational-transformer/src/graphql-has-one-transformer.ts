@@ -74,7 +74,7 @@ export class HasOneTransformer extends TransformerPluginBase {
       object: parent as ObjectTypeDefinitionNode,
       field: definition,
       directive,
-    } as HasOneDirectiveConfiguration, context.featureFlags);
+    } as HasOneDirectiveConfiguration, { deepMergeArguments: context.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) });
 
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);

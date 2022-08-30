@@ -395,7 +395,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     }
 
     const directiveWrapped = new DirectiveWrapper(directive);
-    const directiveArguments = directiveWrapped.getArguments({}, ctx.featureFlags) as any;
+    const directiveArguments = directiveWrapped.getArguments({}, { deepMergeArguments: ctx.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) }) as any;
     let shouldMakeSearch = true;
     let searchFieldNameOverride;
 

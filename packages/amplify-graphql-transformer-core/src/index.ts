@@ -16,6 +16,7 @@ export {
   SyncConfigOptimistic,
   SyncConfigServer,
   SyncConfigLambda,
+  Template,
   TransformConfig,
   TransformerProjectConfig,
 } from './config/index';

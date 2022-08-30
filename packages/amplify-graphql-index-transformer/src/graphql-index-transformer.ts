@@ -47,7 +47,7 @@ export class IndexTransformer extends TransformerPluginBase {
       object: parent as ObjectTypeDefinitionNode,
       field: definition,
       directive,
-    } as IndexDirectiveConfiguration, context.featureFlags);
+    } as IndexDirectiveConfiguration, { deepMergeArguments: context.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) });
 
     /**
      * Impute Optional Fields

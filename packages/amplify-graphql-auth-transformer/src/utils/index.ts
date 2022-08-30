@@ -1,5 +1,5 @@
 import { DirectiveWrapper, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
-import { AppSyncAuthMode, FeatureFlagProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthMode, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Stack } from '@aws-cdk/core';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { MODEL_OPERATIONS, READ_MODEL_OPERATIONS } from './constants';
@@ -56,7 +56,7 @@ export const getAuthDirectiveRules = (authDir: DirectiveWrapper, options?: GetAu
   rules.forEach(rule => {
     const operations: (ModelOperation | 'read')[] = rule.operations ?? MODEL_OPERATIONS;
 
-    if (isField && rule.operations && (rule.operations.some((operation: ModelOperation | 'read') => operation !== 'read' && READ_MODEL_OPERATIONS.includes(operation)))) {
+    if (options?.isField && rule.operations && (rule.operations.some((operation: ModelOperation | 'read') => operation !== 'read' && READ_MODEL_OPERATIONS.includes(operation)))) {
       const offendingOperation = operations.filter(operation => operation !== 'read' && READ_MODEL_OPERATIONS.includes(operation));
       throw new InvalidDirectiveError(
         `'${offendingOperation}' operation is not allowed at the field level.`,

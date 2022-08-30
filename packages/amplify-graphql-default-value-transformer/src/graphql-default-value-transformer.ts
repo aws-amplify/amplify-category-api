@@ -107,7 +107,7 @@ export class DefaultValueTransformer extends TransformerPluginBase {
       object: parent as ObjectTypeDefinitionNode,
       field: definition,
       directive,
-    } as DefaultValueDirectiveConfiguration, ctx.featureFlags);
+    } as DefaultValueDirectiveConfiguration, { deepMergeArguments: ctx.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) });
     validate(ctx, config);
 
     if (!this.directiveMap.has(parent.name.value)) {
