@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Mocha Tests" time="1.9340" tests="2" failures="0">
-  <testsuite name="Root Suite" timestamp="2022-08-07T06:01:55" tests="0" file="cypress\e2e\spec.cy.ts" time="0.0000" failures="0">
+<testsuites name="Mocha Tests" time="0.0000" tests="2" failures="1">
+  <testsuite name="Root Suite" timestamp="2022-08-30T05:36:00" tests="0" file="cypress\e2e\spec.cy.ts" time="0.0000" failures="0">
   </testsuite>
-  <testsuite name="empty spec" timestamp="2022-08-07T06:01:55" tests="2" time="1.9340" failures="0">
-    <testcase name="empty spec loads" time="0.5350" classname="loads">
-    </testcase>
-    <testcase name="empty spec successfully saves a todo that you an read" time="1.3990" classname="successfully saves a todo that you an read">
+  <testsuite name="empty spec" timestamp="2022-08-30T05:36:00" tests="2" time="0.0000" failures="1">
+    <testcase name="empty spec &quot;before all&quot; hook for &quot;loads&quot;" time="0.0000" classname="&quot;before all&quot; hook for &quot;loads&quot;">
+      <failure message="The following error originated from your application code, not from Cypress.
+
+  &gt; Cannot find module &apos;./graphql/mutations&apos;
+
+When Cypress detects uncaught errors originating from your application it will automatically fail the current test.
+
+This behavior is configurable, and you can choose to turn this off by listening to the `uncaught:exception` event.
+
+https://on.cypress.io/uncaught-exception-from-application
+
+Because this error occurred during a `before all` hook we are skipping the remaining tests in the current suite: `empty spec`" type="Error"><![CDATA[Error: The following error originated from your application code, not from Cypress.
+
+  > Cannot find module './graphql/mutations'
+
+When Cypress detects uncaught errors originating from your application it will automatically fail the current test.
+
+This behavior is configurable, and you can choose to turn this off by listening to the `uncaught:exception` event.
+
+https://on.cypress.io/uncaught-exception-from-application
+
+Because this error occurred during a `before all` hook we are skipping the remaining tests in the current suite: `empty spec`
+webpackMissingModule@http://localhost:3000/static/js/bundle.js:23:50
+./src/App.tsx@http://localhost:3000/static/js/bundle.js:23:144
+options.factory@http://localhost:3000/static/js/bundle.js:134513:31
+__webpack_require__@http://localhost:3000/static/js/bundle.js:133936:33
+fn@http://localhost:3000/static/js/bundle.js:134170:21
+./src/index.tsx@http://localhost:3000/static/js/bundle.js:282:81
+options.factory@http://localhost:3000/static/js/bundle.js:134513:31
+__webpack_require__@http://localhost:3000/static/js/bundle.js:133936:33
+@http://localhost:3000/static/js/bundle.js:135154:56
+@http://localhost:3000/static/js/bundle.js:135156:12
+]]></failure>
     </testcase>
   </testsuite>
 </testsuites>

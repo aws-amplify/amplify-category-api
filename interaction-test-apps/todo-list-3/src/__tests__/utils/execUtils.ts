@@ -872,3 +872,5 @@ export const spawn = (command: string | string[], params: string[] = [], options
 
   return chain(context);
 };
+
+it('is', () => { /* A No-op */ });
