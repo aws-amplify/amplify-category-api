@@ -77,7 +77,7 @@ describe('API Gateway e2e tests', () => {
     expect(secondItemsResJson).toEqual({ message: 'Missing Authentication Token' }); // Restricted API
   });
 
-  it.only('adds rest api and verify the default 4xx response', async () => {
+  it('adds rest api and verify the default 4xx response', async () => {
     const apiName = 'integtest';
     await addRestApi(projRoot, {
       apiName,
