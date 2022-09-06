@@ -638,9 +638,9 @@ describe('ModelTransformer: ', () => {
 
   it('should support advanced subscriptions', () => {
     const validSchema = `type Post @model(subscriptions: {
-          onCreate: ["onFeedUpdated", "onCreatePost"],
-          onUpdate: ["onFeedUpdated"],
-          onDelete: ["onFeedUpdated"]
+          onCreate: ["onCreatePoster", "onCreatePost"],
+          onUpdate: ["onUpdatePoster"],
+          onDelete: ["onDeletePoster"]
       }) {
         id: ID!
         title: String!
@@ -661,7 +661,7 @@ describe('ModelTransformer: ', () => {
 
     const subscriptionType = getObjectType(parsed, 'Subscription');
     expect(subscriptionType).toBeDefined();
-    expectFields(subscriptionType!, ['onUpdatePost', 'onCreatePost', 'onDeletePost']);
+    expectFields(subscriptionType!, ['onUpdatePoster', 'onCreatePoster', 'onDeletePoster', 'onCreatePost']);
   });
 
   it('should not generate superfluous input and filter types', () => {
