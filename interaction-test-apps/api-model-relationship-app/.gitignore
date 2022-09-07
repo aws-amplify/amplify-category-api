@@ -1,5 +1,12 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Test Artifacts and interstitials we don't want to persist
+test-results.xml
+/amplify
+/src/API.ts
+/src/models
+/src/awsexports.json
+
 # dependencies
 /node_modules
 /.pnp

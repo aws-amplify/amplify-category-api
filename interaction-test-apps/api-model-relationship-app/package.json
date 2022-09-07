@@ -30,12 +30,12 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "test:setup": "cross-env TEST_HARNESS_STAGE=setup react-scripts test",
-    "test:execute": "cross-env TEST_HARNESS_STAGE=execute react-scripts test",
-    "test:watch": "cross-env TEST_HARNESS_STAGE=watch react-scripts test",
-    "test:teardown": "cross-env TEST_HARNESS_STAGE=teardown react-scripts test"
+    "test": "react-scripts test src/__tests__/api.test.ts",
+    "test:setup": "cross-env TEST_HARNESS_STAGE=setup react-scripts test src/__tests__/api.test.ts",
+    "test:execute": "cross-env TEST_HARNESS_STAGE=execute react-scripts test src/__tests__/api.test.ts",
+    "test:watch": "cross-env TEST_HARNESS_STAGE=watch react-scripts test src/__tests__/api.test.ts",
+    "test:teardown": "cross-env TEST_HARNESS_STAGE=teardown react-scripts test src/__tests__/api.test.ts"
   },
   "eslintConfig": {
     "extends": [

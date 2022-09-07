@@ -144,8 +144,8 @@ export const onDeletePost = /* GraphQL */ `
   }
 `;
 export const onCreateListing = /* GraphQL */ `
-  subscription OnCreateListing {
-    onCreateListing {
+  subscription OnCreateListing($filter: ModelSubscriptionListingFilterInput) {
+    onCreateListing(filter: $filter) {
       id
       title
       bedroomCount
@@ -162,8 +162,8 @@ export const onCreateListing = /* GraphQL */ `
   }
 `;
 export const onUpdateListing = /* GraphQL */ `
-  subscription OnUpdateListing {
-    onUpdateListing {
+  subscription OnUpdateListing($filter: ModelSubscriptionListingFilterInput) {
+    onUpdateListing(filter: $filter) {
       id
       title
       bedroomCount
@@ -180,8 +180,8 @@ export const onUpdateListing = /* GraphQL */ `
   }
 `;
 export const onDeleteListing = /* GraphQL */ `
-  subscription OnDeleteListing {
-    onDeleteListing {
+  subscription OnDeleteListing($filter: ModelSubscriptionListingFilterInput) {
+    onDeleteListing(filter: $filter) {
       id
       title
       bedroomCount
@@ -198,8 +198,8 @@ export const onDeleteListing = /* GraphQL */ `
   }
 `;
 export const onCreateTag = /* GraphQL */ `
-  subscription OnCreateTag {
-    onCreateTag {
+  subscription OnCreateTag($filter: ModelSubscriptionTagFilterInput) {
+    onCreateTag(filter: $filter) {
       id
       label
       listings {
@@ -211,8 +211,8 @@ export const onCreateTag = /* GraphQL */ `
   }
 `;
 export const onUpdateTag = /* GraphQL */ `
-  subscription OnUpdateTag {
-    onUpdateTag {
+  subscription OnUpdateTag($filter: ModelSubscriptionTagFilterInput) {
+    onUpdateTag(filter: $filter) {
       id
       label
       listings {
@@ -224,8 +224,8 @@ export const onUpdateTag = /* GraphQL */ `
   }
 `;
 export const onDeleteTag = /* GraphQL */ `
-  subscription OnDeleteTag {
-    onDeleteTag {
+  subscription OnDeleteTag($filter: ModelSubscriptionTagFilterInput) {
+    onDeleteTag(filter: $filter) {
       id
       label
       listings {
@@ -237,8 +237,10 @@ export const onDeleteTag = /* GraphQL */ `
   }
 `;
 export const onCreateListingTags = /* GraphQL */ `
-  subscription OnCreateListingTags {
-    onCreateListingTags {
+  subscription OnCreateListingTags(
+    $filter: ModelSubscriptionListingTagsFilterInput
+  ) {
+    onCreateListingTags(filter: $filter) {
       id
       listingID
       tagID
@@ -265,8 +267,10 @@ export const onCreateListingTags = /* GraphQL */ `
   }
 `;
 export const onUpdateListingTags = /* GraphQL */ `
-  subscription OnUpdateListingTags {
-    onUpdateListingTags {
+  subscription OnUpdateListingTags(
+    $filter: ModelSubscriptionListingTagsFilterInput
+  ) {
+    onUpdateListingTags(filter: $filter) {
       id
       listingID
       tagID
@@ -293,8 +297,10 @@ export const onUpdateListingTags = /* GraphQL */ `
   }
 `;
 export const onDeleteListingTags = /* GraphQL */ `
-  subscription OnDeleteListingTags {
-    onDeleteListingTags {
+  subscription OnDeleteListingTags(
+    $filter: ModelSubscriptionListingTagsFilterInput
+  ) {
+    onDeleteListingTags(filter: $filter) {
       id
       listingID
       tagID

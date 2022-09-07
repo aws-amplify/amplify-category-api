@@ -430,6 +430,92 @@ export enum ModelSortDirection {
 }
 
 
+export type ModelSubscriptionListingFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  title?: ModelSubscriptionStringInput | null,
+  bedroomCount?: ModelSubscriptionIntInput | null,
+  bathroomCount?: ModelSubscriptionIntInput | null,
+  listPriceUSD?: ModelSubscriptionFloatInput | null,
+  state?: ModelSubscriptionStringInput | null,
+  isHotProperty?: ModelSubscriptionBooleanInput | null,
+  and?: Array< ModelSubscriptionListingFilterInput | null > | null,
+  or?: Array< ModelSubscriptionListingFilterInput | null > | null,
+};
+
+export type ModelSubscriptionIDInput = {
+  ne?: string | null,
+  eq?: string | null,
+  le?: string | null,
+  lt?: string | null,
+  ge?: string | null,
+  gt?: string | null,
+  contains?: string | null,
+  notContains?: string | null,
+  between?: Array< string | null > | null,
+  beginsWith?: string | null,
+  in?: Array< string | null > | null,
+  notIn?: Array< string | null > | null,
+};
+
+export type ModelSubscriptionStringInput = {
+  ne?: string | null,
+  eq?: string | null,
+  le?: string | null,
+  lt?: string | null,
+  ge?: string | null,
+  gt?: string | null,
+  contains?: string | null,
+  notContains?: string | null,
+  between?: Array< string | null > | null,
+  beginsWith?: string | null,
+  in?: Array< string | null > | null,
+  notIn?: Array< string | null > | null,
+};
+
+export type ModelSubscriptionIntInput = {
+  ne?: number | null,
+  eq?: number | null,
+  le?: number | null,
+  lt?: number | null,
+  ge?: number | null,
+  gt?: number | null,
+  between?: Array< number | null > | null,
+  in?: Array< number | null > | null,
+  notIn?: Array< number | null > | null,
+};
+
+export type ModelSubscriptionFloatInput = {
+  ne?: number | null,
+  eq?: number | null,
+  le?: number | null,
+  lt?: number | null,
+  ge?: number | null,
+  gt?: number | null,
+  between?: Array< number | null > | null,
+  in?: Array< number | null > | null,
+  notIn?: Array< number | null > | null,
+};
+
+export type ModelSubscriptionBooleanInput = {
+  ne?: boolean | null,
+  eq?: boolean | null,
+};
+
+export type ModelSubscriptionTagFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  label?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionTagFilterInput | null > | null,
+  or?: Array< ModelSubscriptionTagFilterInput | null > | null,
+};
+
+export type ModelSubscriptionListingTagsFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  listingID?: ModelSubscriptionIDInput | null,
+  tagID?: ModelSubscriptionIDInput | null,
+  and?: Array< ModelSubscriptionListingTagsFilterInput | null > | null,
+  or?: Array< ModelSubscriptionListingTagsFilterInput | null > | null,
+};
+
 export type CreateTodoMutationVariables = {
   input: CreateTodoInput,
   condition?: ModelTodoConditionInput | null,
@@ -1298,6 +1384,10 @@ export type OnDeletePostSubscription = {
   } | null,
 };
 
+export type OnCreateListingSubscriptionVariables = {
+  filter?: ModelSubscriptionListingFilterInput | null,
+};
+
 export type OnCreateListingSubscription = {
   onCreateListing?:  {
     __typename: "Listing",
@@ -1315,6 +1405,10 @@ export type OnCreateListingSubscription = {
     createdAt: string,
     updatedAt: string,
   } | null,
+};
+
+export type OnUpdateListingSubscriptionVariables = {
+  filter?: ModelSubscriptionListingFilterInput | null,
 };
 
 export type OnUpdateListingSubscription = {
@@ -1336,6 +1430,10 @@ export type OnUpdateListingSubscription = {
   } | null,
 };
 
+export type OnDeleteListingSubscriptionVariables = {
+  filter?: ModelSubscriptionListingFilterInput | null,
+};
+
 export type OnDeleteListingSubscription = {
   onDeleteListing?:  {
     __typename: "Listing",
@@ -1355,6 +1453,10 @@ export type OnDeleteListingSubscription = {
   } | null,
 };
 
+export type OnCreateTagSubscriptionVariables = {
+  filter?: ModelSubscriptionTagFilterInput | null,
+};
+
 export type OnCreateTagSubscription = {
   onCreateTag?:  {
     __typename: "Tag",
@@ -1367,6 +1469,10 @@ export type OnCreateTagSubscription = {
     createdAt: string,
     updatedAt: string,
   } | null,
+};
+
+export type OnUpdateTagSubscriptionVariables = {
+  filter?: ModelSubscriptionTagFilterInput | null,
 };
 
 export type OnUpdateTagSubscription = {
@@ -1383,6 +1489,10 @@ export type OnUpdateTagSubscription = {
   } | null,
 };
 
+export type OnDeleteTagSubscriptionVariables = {
+  filter?: ModelSubscriptionTagFilterInput | null,
+};
+
 export type OnDeleteTagSubscription = {
   onDeleteTag?:  {
     __typename: "Tag",
@@ -1395,6 +1505,10 @@ export type OnDeleteTagSubscription = {
     createdAt: string,
     updatedAt: string,
   } | null,
+};
+
+export type OnCreateListingTagsSubscriptionVariables = {
+  filter?: ModelSubscriptionListingTagsFilterInput | null,
 };
 
 export type OnCreateListingTagsSubscription = {
@@ -1427,6 +1541,10 @@ export type OnCreateListingTagsSubscription = {
   } | null,
 };
 
+export type OnUpdateListingTagsSubscriptionVariables = {
+  filter?: ModelSubscriptionListingTagsFilterInput | null,
+};
+
 export type OnUpdateListingTagsSubscription = {
   onUpdateListingTags?:  {
     __typename: "ListingTags",
@@ -1455,6 +1573,10 @@ export type OnUpdateListingTagsSubscription = {
     createdAt: string,
     updatedAt: string,
   } | null,
+};
+
+export type OnDeleteListingTagsSubscriptionVariables = {
+  filter?: ModelSubscriptionListingTagsFilterInput | null,
 };
 
 export type OnDeleteListingTagsSubscription = {

@@ -182,5 +182,3 @@ export class AmplifyCLI {
       .runAsync();
   }
 };
-
-it('is', () => { /* A No-op */ });

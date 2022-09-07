@@ -86,6 +86,7 @@ export const executeAmplifyTestHarness = (testName: string, projectRoot: string,
       if (getTestExecutionStages().has(TestExecutionStage.TEARDOWN)) {
           try {
           await cli.delete();
+          cleanupJSGeneratedFiles(projectRoot);
         } catch (e) {}
       }
   

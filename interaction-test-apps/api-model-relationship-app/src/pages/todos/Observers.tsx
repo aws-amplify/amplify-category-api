@@ -1,13 +1,39 @@
-import { Card, Collection, Flex, Heading } from "@aws-amplify/ui-react";
-import { API, graphqlOperation } from "aws-amplify";
-import { useEffect, useState } from "react";
+import { Card, Collection, Flex, Heading } from '@aws-amplify/ui-react';
+import { API, graphqlOperation } from 'aws-amplify';
+import { useEffect, useState } from 'react';
 import { onCreateTodo, onUpdateTodo, onDeleteTodo } from '../../graphql/subscriptions';
 import Observable from 'zen-observable-ts';
+import { CONNECTION_STATE_CHANGE, ConnectionState } from '@aws-amplify/pubsub';
+import { Hub } from 'aws-amplify';
 
 type SubscriptionComponentProps = {
   id: string;
   subscriptionQuery: string;
   title: string;
+};
+
+export const SubscriptionState = () => {
+  const [areSubscriptionsReady, setSubscriptionsReady] = useState(false);
+
+  useEffect(() => {
+    const hubListener = (data: any) => {
+      const { payload } = data;
+      if (payload.event === CONNECTION_STATE_CHANGE) {
+        const connectionState = payload.data.connectionState as ConnectionState;
+        if (connectionState === 'Connected') {
+          setSubscriptionsReady(true);
+        }
+      }
+    }
+
+    Hub.listen('api', hubListener);
+
+    return () => Hub.remove('api', hubListener);
+  }, []);
+
+  const stateIndicator = areSubscriptionsReady ? '✅' : '❌';
+
+  return (<span id='subscription-state'>{ stateIndicator }</span>);
 };
 
 const SubscriptionComponent = ({ id, subscriptionQuery, title }: SubscriptionComponentProps) => {
@@ -28,7 +54,7 @@ const SubscriptionComponent = ({ id, subscriptionQuery, title }: SubscriptionCom
 
     // Stop receiving data updates from the subscription on unmount
     return () => subscription.unsubscribe();
-  }, [subscriptionQuery]);
+  }, [title, subscriptionQuery]);
 
   return (
     <Flex id={id} direction='column'>
@@ -36,11 +62,11 @@ const SubscriptionComponent = ({ id, subscriptionQuery, title }: SubscriptionCom
       <Collection
         items={loggedSubscriptionMessages}
           type='list'
-          direction='column'
+          direction='column-reverse'
           gap='20px'
           wrap='nowrap'
         >
-          {(msg, idx) => <Card key={idx} variation='elevated'>{ JSON.stringify(msg) }</Card> }
+          {(msg, idx) => <Card maxWidth={'400px'} key={idx} variation='elevated'>{ JSON.stringify(msg) }</Card> }
       </Collection>
     </Flex>);
 }; 
