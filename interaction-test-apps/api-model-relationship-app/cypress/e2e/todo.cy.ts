@@ -6,7 +6,7 @@ const PAGE_ROUTE = 'http://localhost:3000/todos';
 const TEST_ID = `${uuid()}`;
 const SUCCESS_MARK = '✅';
 const FAILURE_MARK = '❌';
-const PAGE_TITLE = 'Todo Interaction Tests';
+const PAGE_TITLE = 'Todo Controls';
 const UPDATED_TITLE = `updated todo content ${TEST_ID}`;
 
 /**

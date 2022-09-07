@@ -1,18 +1,19 @@
 import { Card, Collection, Flex, Heading } from '@aws-amplify/ui-react';
 import { API, graphqlOperation } from 'aws-amplify';
 import { useEffect, useState } from 'react';
-import { onCreateTodo, onUpdateTodo, onDeleteTodo } from '../../graphql/subscriptions';
 import Observable from 'zen-observable-ts';
 import { CONNECTION_STATE_CHANGE, ConnectionState } from '@aws-amplify/pubsub';
 import { Hub } from 'aws-amplify';
+import pluralize from 'pluralize';
+import _ from 'lodash';
 
 type SubscriptionComponentProps = {
   id: string;
-  subscriptionQuery: string;
+  query: string;
   title: string;
 };
 
-export const SubscriptionState = () => {
+const SubscriptionState = () => {
   const [areSubscriptionsReady, setSubscriptionsReady] = useState(false);
 
   useEffect(() => {
@@ -36,7 +37,7 @@ export const SubscriptionState = () => {
   return (<span id='subscription-state'>{ stateIndicator }</span>);
 };
 
-const SubscriptionComponent = ({ id, subscriptionQuery, title }: SubscriptionComponentProps) => {
+const SubscriptionComponent = ({ id, query, title }: SubscriptionComponentProps) => {
   const [loggedSubscriptionMessages, setSubscriptionMessages] = useState<object[]>([]);
 
   const appendSubscriptionMessage = (newMessage: object): void => {
@@ -45,8 +46,8 @@ const SubscriptionComponent = ({ id, subscriptionQuery, title }: SubscriptionCom
 
   useEffect(() => {
     // Subscribe to creation of Todo
-    const query = API.graphql(graphqlOperation(subscriptionQuery)) as Observable<object>;
-    const subscription = query.subscribe({
+    const request = API.graphql(graphqlOperation(query)) as Observable<object>;
+    const subscription = request.subscribe({
       // @ts-ignore
       next: ({ value }) => appendSubscriptionMessage(value),
       error: (error) => console.warn(error)
@@ -54,7 +55,7 @@ const SubscriptionComponent = ({ id, subscriptionQuery, title }: SubscriptionCom
 
     // Stop receiving data updates from the subscription on unmount
     return () => subscription.unsubscribe();
-  }, [title, subscriptionQuery]);
+  }, [title, query]);
 
   return (
     <Flex id={id} direction='column'>
@@ -69,16 +70,25 @@ const SubscriptionComponent = ({ id, subscriptionQuery, title }: SubscriptionCom
           {(msg, idx) => <Card maxWidth={'400px'} key={idx} variation='elevated'>{ JSON.stringify(msg) }</Card> }
       </Collection>
     </Flex>);
-}; 
-
-export const CreatedTodosSubscription = () => {
-  return <SubscriptionComponent id='created-todos-subscription' subscriptionQuery={onCreateTodo} title='Created Todo Events' />
 };
 
-export const UpdatedTodosSubscription = () => {
-  return <SubscriptionComponent id='updated-todos-subscription' subscriptionQuery={onUpdateTodo} title='Updated Todo Events' />
-};
+type SubscriptionsProps = {
+  recordName: string;
+  createSubscriptionQuery: string;
+  updateSubscriptionQuery: string;
+  deleteSubscriptionQuery: string;
+}
 
-export const DeletedTodosSubscription = () => {
-  return <SubscriptionComponent id='deleted-todos-subscription' subscriptionQuery={onDeleteTodo} title='Deleted Todo Events' />
+export const Subscriptions = ({ recordName, createSubscriptionQuery, updateSubscriptionQuery, deleteSubscriptionQuery }: SubscriptionsProps) => {
+  return (
+    <Flex direction='column'>
+      <Flex direction='row'>
+        <Heading level={2}>Subscriptions</Heading>
+        <SubscriptionState />
+      </Flex>
+      <SubscriptionComponent id={`created-${pluralize(recordName)}-subscription`} query={createSubscriptionQuery} title={`Created ${_.capitalize(recordName)} Events`} />
+      <SubscriptionComponent id={`updated-${pluralize(recordName)}-subscription`} query={updateSubscriptionQuery} title={`Updated ${_.capitalize(recordName)} Events`} />
+      <SubscriptionComponent id={`deleted-${pluralize(recordName)}-subscription`} query={deleteSubscriptionQuery} title={`Deleted ${_.capitalize(recordName)} Events`} />
+    </Flex>
+  );
 };
