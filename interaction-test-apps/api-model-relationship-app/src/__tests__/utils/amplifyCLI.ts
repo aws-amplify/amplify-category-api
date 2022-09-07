@@ -163,8 +163,8 @@ export class AmplifyCLI {
       .runAsync();
   }
 
-  codegen (usingLatestCodebase = false): Promise<void> {
-    return spawn(getCLIPath(usingLatestCodebase), ['codegen', 'add'], { cwd: this.projectRoot, noOutputTimeout: pushTimeoutMS })
+  codegen (opts?: { statementDepth?: number }, usingLatestCodebase = false): Promise<void> {
+    const chain = spawn(getCLIPath(usingLatestCodebase), ['codegen', 'add'], { cwd: this.projectRoot, noOutputTimeout: pushTimeoutMS })
       .wait('Choose the code generation language target')
       .sendKeyDown()
       .sendCarriageReturn()
@@ -172,8 +172,13 @@ export class AmplifyCLI {
       .sendCarriageReturn()
       .wait('Do you want to generate/update all possible GraphQL operations - queries, mutations and subscriptions')
       .sendConfirmYes()
-      .wait('Enter maximum statement depth')
-      .sendCarriageReturn()
+      .wait('Enter maximum statement depth');
+    
+      if (opts?.statementDepth) {
+        chain.sendLine(String(opts.statementDepth));
+      }
+
+      return chain.sendCarriageReturn()
       .wait('Enter the file name for the generated code')
       .sendCarriageReturn()
       .wait('Do you want to generate code for your newly created GraphQL API')

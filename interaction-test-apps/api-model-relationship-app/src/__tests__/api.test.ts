@@ -68,5 +68,5 @@ executeAmplifyTestHarness('simple test', PROJECT_ROOT, async (cli: AmplifyCLI) =
   await cli.addApiWithoutSchema();
   await cli.updateSchema(projName, schemaText);
   await cli.push();
-  await cli.codegen();
+  await cli.codegen({ statementDepth: 3 });
 });

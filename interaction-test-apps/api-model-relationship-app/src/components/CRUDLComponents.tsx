@@ -143,14 +143,15 @@ export const createListComponent = <T extends any>({ listQuery, recordName, Deta
 };
 
 export type createViewCompProps<T> = {
+  recordName: string;
   fields: (keyof T)[];
 };
 
-export const createViewComp = <T extends object>({ fields }: createViewCompProps<T>): RecordComponentType<T> => {
+export const createViewComp = <T extends object>({ recordName, fields }: createViewCompProps<T>): RecordComponentType<T> => {
   return ({ record }: SimpleIdRecordProps<T>) => {
     return (
       <ul>
-        { fields.map((field) => <li>{ `${String(field)}: ${record[field]}`}</li> )}
+        { fields.map((field) => <li key={`${recordName}-${String(field)}`}>{ `${String(field)}: ${JSON.stringify(record[field])}`}</li> )}
       </ul>
     );
   };
@@ -175,6 +176,7 @@ export const createEditComp = <T extends object>({ updateMutation, fields, recor
       <Flex direction='row'>
         { fields.map(field => { return (
           <TextField
+            key={`${recordName}-${String(field)}`}
             id={`update-${String(field)}-input`}
             label={_.capitalize(String(field))}
             placeholder={ String(record[field]) || '' }
