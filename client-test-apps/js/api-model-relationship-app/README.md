@@ -1,4 +1,30 @@
-# Getting Started with Create React App
+# Using this test app
+
+This test app has capabilities to deploy a backend amplify project, tear down said project, and execute a ui test suite against the running app using the full backend.
+
+To facilitate easier dev/test cycles, the `test` there are 4 test lifecycles defined with custom targets to make it easier to develop.
+
+`npm run test` will execute all of these lifecycles.
+`npm run test:setup` will strictly setup the amplify app in your DEFAULT aws profile.
+`npm run test:teardown` will execute an `amplify delete` on the project.
+`npm run test:execute` will start the webapp, and run the cypress suite against it.
+`npm run test:watch` will start the app, and open a cypress watch against it.
+
+In addition to these targets, `npm start` can still be used to run the app locally (recommended after `npm run test:setup` to develop new test pages/cases), and `npx cypress open` can be used to interactively run/re-run the cypress suite, this is probably preferable to using just `npm run test:watch` but I don't have a strong opinion on that yet.
+
+## Test Structure
+
+Both the amplify app setup, and basic CRUD+List+Observe functionality rely on test harnesses to reduce the per-test load of creating a UI that uses our API/DataStore clients, and managing basic lifecycle concerns like app setup, teardown, invoking cypress, etc.
+
+Cypress suites are still written by hand in the `cypress` directory, though we could build helpers given the consistent structure of the UI due to these harnesses.
+
+Backend setup code is available at [api.test.ts](src/__tests__/api.test.ts), and top-level app pages can be found in the [pages](src/pages/) directory.
+
+## CLI Interactions
+
+This project uses a stripped down version of the `amplify-e2e-core` shims for shelling out to Amplify. This is expected to be shortly refactored back to a shared lib, but the reason we don't use that directly is due to the large dep-tree it invokes, including the actual CLI source code, which causes issues with jest. This is also potentially mitigable, but while I was under the hood, I simplified the API a bit as well, which I'm happy with. The refactored bits list in the `__tests__/utils` directory, in addition to the test harness package, which is expected to be re-used across apps for consistency.
+
+# About this Repo
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
