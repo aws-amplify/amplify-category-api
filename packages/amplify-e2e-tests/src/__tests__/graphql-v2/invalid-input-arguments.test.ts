@@ -5,15 +5,15 @@ import {
 } from 'amplify-category-api-e2e-core';
 import { addApiWithBlankSchemaAndConflictDetection, updateApiSchema, getProjectMeta } from 'amplify-category-api-e2e-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
-import gql from 'graphql-tag';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { API } from 'aws-amplify';
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+
 (global as any).fetch = require('node-fetch');
 
 const projectName = 'invalidarguments';
 describe('Invalid arguments should throw an error', () => {
     let projRoot: string;
-    let appSyncClient = undefined;
-
+    
     beforeAll(async () => {
         projRoot = await createNewProjectDir(projectName);
         await initJSProjectWithProfile(projRoot, {
@@ -23,8 +23,7 @@ describe('Invalid arguments should throw an error', () => {
         await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 2 });
         await updateApiSchema(projRoot, projectName, v2Schema);
         await amplifyPush(projRoot);
-
-        appSyncClient = getAppSyncClientFromProj(projRoot);
+        await configureAmplifyAPI(projRoot);
     });
 
     afterAll(async () => {
@@ -37,16 +36,17 @@ describe('Invalid arguments should throw an error', () => {
             { title: 'task 1', description: 'task 1 description', priority: 1, dueDate: 'invalid date' }, // Invalid date argument
             { title: 'test', description: 'task 1 description', priority: 2, dueDate: 1000000 }, // Invalid date argument
             { title: 'task 1', description: 'task 1 description', priority: 5.1, dueDate: '2022-01-01T00:00:00.000Z' }, // Passing float in place of int
+            { title: 'task 1', description: 'task 1 description', priority: "invalid", dueDate: '2022-01-01T00:00:00.000Z' }, // Passing string in place of int
         ];
         
         await Promise.all(
             invalid_create_inputs.map(async (input) => {
-                console.log(input);
                 try {
                     const createResult = await createTask(input);
                     expect(false).toBeTruthy();
                 } catch (error) {
-                    expect(true).toBeTruthy();
+                    expect(error.errors).toBeDefined();
+                    expect(error.errors.length).toBeGreaterThanOrEqual(1);
                 }
             }),
         );
@@ -55,41 +55,28 @@ describe('Invalid arguments should throw an error', () => {
     it('list query should error on invalid filter arguments', async () => {
         const invalid_filter_inputs = [
             { priority: { eq: 1.5 } }, // Invalid datatype - passing float for int
-            { dueDate: { gt: 1000 } }, // Invalid datatype - datetime
-            { title: { eq: 1 } }, // Invalid datatype - passing int for string
+            { priority: { eq: "test" } }, // Invalid datatype - passing string for int
+            { priority: { gt: 1.5 } }, // Invalid datatype - passing float for int
+            { priority: { lt: "test" } }, // Invalid datatype - passing string for int
+            { and: { priority: { lt: "test" } } }, // Invalid datatype - passing string for int with 'and' condition
+            { priority: { lt: "test" } }, // Invalid datatype - passing string for int
             { priority: { between: [1] } }, // Incorrect number of arguments for between operator
+            { priority: { between: [1, 2.5] } }, // Incorrect argument value for between operator
+            { or: [ { priority: { between: [1, 2.5] } }, { title: { gt: "test" } } ] }, // Incorrect argument value for between operator with 'or' condition
         ];
 
         await Promise.all(
             invalid_filter_inputs.map(async (input) => {
-                console.log(input);
                 try {
                     const listResult = await listTasks(input);
                     expect(false).toBeTruthy();
                 } catch (error) {
-                    expect(true).toBeTruthy();
+                    expect(error.errors).toBeDefined();
+                    expect(error.errors.length).toBeGreaterThanOrEqual(1);
                 }
-            }),
+           }),
         );
     });
-
-    const getAppSyncClientFromProj = (projRoot: string) => {
-        const meta = getProjectMeta(projRoot);
-        const region = meta['providers']['awscloudformation']['Region'] as string;
-        const { output } = meta.api[projectName];
-        const url = output.GraphQLAPIEndpointOutput as string;
-        const apiKey = output.GraphQLAPIKeyOutput as string;
-
-        return new AWSAppSyncClient({
-            url,
-            region,
-            disableOffline: true,
-            auth: {
-                type: AUTH_TYPE.API_KEY,
-                apiKey,
-            },
-        });
-    };
 
     const createTask = async (
         createInput: any
@@ -109,12 +96,12 @@ describe('Invalid arguments should throw an error', () => {
             }
         `;
 
-        const result: any = await appSyncClient.mutate({
-            mutation: gql(createMutation),
-            fetchPolicy: 'no-cache',
+        const result: any = await API.graphql({
+            query: createMutation,
             variables: {
                 input: createInput,
             },
+            authMode: GRAPHQL_AUTH_MODE.API_KEY,
         });
         return result;
     };
@@ -137,13 +124,28 @@ describe('Invalid arguments should throw an error', () => {
             }
         `;
 
-        const result: any = await appSyncClient.query({
-            query: gql(listTasksQuery),
-            fetchPolicy: 'no-cache',
+        const result: any = await API.graphql({
+            query: listTasksQuery,
             variables: {
                 filter,
             },
+            authMode: GRAPHQL_AUTH_MODE.API_KEY,
         });
         return result;
     };
+
+    const configureAmplifyAPI = async (projRoot: string) => {
+        const meta = getProjectMeta(projRoot);
+        const region = meta['providers']['awscloudformation']['Region'] as string;
+        const { output } = meta.api[projectName];
+        const url = output.GraphQLAPIEndpointOutput as string;
+        const apiKey = output.GraphQLAPIKeyOutput as string;
+
+        API.configure({
+            aws_appsync_graphqlEndpoint: url,
+            aws_appsync_region: region,
+            aws_appsync_authenticationType: 'API_KEY',
+            aws_appsync_apiKey: apiKey,
+        });
+    }
 });
