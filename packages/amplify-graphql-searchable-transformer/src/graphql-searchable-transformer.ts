@@ -1,5 +1,8 @@
 import {
-  TransformerPluginBase, InvalidDirectiveError, MappingTemplate, DirectiveWrapper,
+  TransformerPluginBase,
+  generateGetArgumentsInput,
+  InvalidDirectiveError,
+  MappingTemplate, DirectiveWrapper,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -35,7 +38,6 @@ import {
   ResolverResourceIDs,
   makeDirective,
 } from 'graphql-transformer-common';
-import assert from 'assert';
 import { createParametersStack as createParametersInStack } from './cdk/create-cfnParameters';
 import { requestTemplate, responseTemplate, sandboxMappingTemplate } from './generate-resolver-vtl';
 import {
@@ -395,7 +397,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     }
 
     const directiveWrapped = new DirectiveWrapper(directive);
-    const directiveArguments = directiveWrapped.getArguments({}, { deepMergeArguments: ctx.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) }) as any;
+    const directiveArguments = directiveWrapped.getArguments({}, generateGetArgumentsInput(ctx.featureFlags)) as any;
     let shouldMakeSearch = true;
     let searchFieldNameOverride;
 

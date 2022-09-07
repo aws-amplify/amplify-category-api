@@ -1,6 +1,7 @@
 import {
   DirectiveWrapper,
   FieldWrapper,
+  generateGetArgumentsInput,
   getFieldNameFor,
   InputObjectDefinitionWrapper,
   InvalidDirectiveError,
@@ -230,7 +231,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         createdAt: 'createdAt',
         updatedAt: 'updatedAt',
       },
-    }, { deepMergeArguments: ctx.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) });
+    }, generateGetArgumentsInput(ctx.featureFlags));
 
     // This property override is specifically to address parity between V1 and V2 when the FF is disabled
     // If one subscription is defined, just let the others go to null without FF. But if public and none defined, default all subs
@@ -248,7 +249,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             ...publicSubscriptionDefaults,
           },
         },
-        { deepMergeArguments: ctx.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) },
+        generateGetArgumentsInput(ctx.featureFlags),
       );
       if (baseArgs?.subscriptions?.level === SubscriptionLevel.public
         && !(baseArgs?.subscriptions?.onCreate || baseArgs?.subscriptions?.onDelete || baseArgs?.subscriptions?.onUpdate)) {

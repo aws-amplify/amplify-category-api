@@ -1,5 +1,6 @@
 import {
   DirectiveWrapper,
+  generateGetArgumentsInput,
   IAM_AUTH_ROLE_PARAMETER,
   IAM_UNAUTH_ROLE_PARAMETER,
   MappingTemplate,
@@ -107,7 +108,7 @@ export class HttpTransformer extends TransformerPluginBase {
       resolverTypeName: parent.name.value,
       resolverFieldName: definition.name.value,
       supportsBody: false,
-    } as HttpDirectiveConfiguration, { deepMergeArguments: context.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) });
+    } as HttpDirectiveConfiguration, generateGetArgumentsInput(context.featureFlags));
 
     if (!VALID_PROTOCOLS_REGEX.test(args.url)) {
       throw new TransformerContractError(

@@ -1,6 +1,10 @@
-import { DirectiveWrapper, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
+import {
+  DirectiveWrapper,
+  InvalidDirectiveError,
+  generateGetArgumentsInput,
+} from '@aws-amplify/graphql-transformer-core';
+import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthRule, ConfiguredAuthProviders } from './definitions';
-import {FeatureFlagProvider} from "@aws-amplify/graphql-transformer-interfaces";
 
 export const validateRuleAuthStrategy = (rule: AuthRule, configuredAuthProviders: ConfiguredAuthProviders) => {
   //
@@ -108,7 +112,7 @@ export const validateFieldRules = (
 ) => {
   const rules = authDir.getArguments<{ rules: Array<AuthRule> }>(
     { rules: [] },
-    { deepMergeArguments: featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) },
+    generateGetArgumentsInput(featureFlags),
   ).rules;
 
   if (rules.length === 0) {

@@ -7,6 +7,7 @@ import {
   Location,
 } from 'graphql';
 import _ from 'lodash';
+import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 export type GetArgumentsOptions = {
   deepMergeArguments?: boolean;
@@ -61,3 +62,9 @@ export class DirectiveWrapper {
     return Object.assign(defaultValue, argValues);
   };
 }
+
+export const generateGetArgumentsInput = (featureFlags: FeatureFlagProvider): GetArgumentsOptions => {
+  return {
+    deepMergeArguments: featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false),
+  };
+};

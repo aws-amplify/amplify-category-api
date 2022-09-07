@@ -1,5 +1,6 @@
 import {
   DirectiveWrapper,
+  generateGetArgumentsInput,
   IAM_AUTH_ROLE_PARAMETER,
   IAM_UNAUTH_ROLE_PARAMETER,
   MappingTemplate,
@@ -42,7 +43,7 @@ export class FunctionTransformer extends TransformerPluginBase {
     const args = directiveWrapped.getArguments({
       resolverTypeName: parent.name.value,
       resolverFieldName: definition.name.value,
-    } as FunctionDirectiveConfiguration, { deepMergeArguments: acc.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) });
+    } as FunctionDirectiveConfiguration, generateGetArgumentsInput(acc.featureFlags));
     let resolver = this.resolverGroups.get(definition);
 
     if (resolver === undefined) {

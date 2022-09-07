@@ -29,6 +29,7 @@ import {
 import md5 from 'md5';
 import { RELATIONAL_DIRECTIVES } from './constants';
 import { RelationalPrimaryMapConfig, RoleDefinition, SearchableConfig } from './definitions';
+import { generateGetArgumentsInput } from '@aws-amplify/graphql-transformer-core/lib/utils/directive-wrapper';
 
 /**
  * collectFieldNames
@@ -66,7 +67,7 @@ export const getModelConfig = (directive: DirectiveNode, typeName: string, featu
       createdAt: 'createdAt',
       updatedAt: 'updatedAt',
     },
-  }, { deepMergeArguments: featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) });
+  }, generateGetArgumentsInput(featureFlags));
   return options;
 };
 
@@ -79,7 +80,7 @@ export const getSearchableConfig = (directive: DirectiveNode, typeName: string, 
     queries: {
       search: graphqlName(`search${plurality(toUpper(typeName), true)}`),
     },
-  }, { deepMergeArguments: featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) });
+  }, generateGetArgumentsInput(featureFlags));
   return options;
 };
 /*
@@ -112,7 +113,7 @@ export const getRelationalPrimaryMap = (
     const args = directiveWrapped.getArguments({
       indexName: undefined,
       fields: undefined,
-    }, { deepMergeArguments: ctx.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) });
+    }, generateGetArgumentsInput(ctx.featureFlags));
     // we only generate a primary map if a index name or field is specified
     // if both are undefined then @hasMany will create a new gsi with a new readonly field
     // we don't need a primary map since this readonly field is not a auth field
@@ -139,7 +140,7 @@ export const getRelationalPrimaryMap = (
           (it) => getSortKeyConnectionAttributeName(def.name.value, field.name.value, it),
         ),
       ],
-    }, { deepMergeArguments: ctx.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) });
+    }, generateGetArgumentsInput(ctx.featureFlags));
     const relatedPrimaryFields = getKeyFields(ctx, relatedModel);
     // the fields provided by the directive (implicit/explicit) need to match the total amount of fields used for the primary key in the related table
     // otherwise the get request is incomplete

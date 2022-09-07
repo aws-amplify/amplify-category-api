@@ -1,6 +1,7 @@
 import * as path from 'path';
 import {
   DirectiveWrapper,
+  generateGetArgumentsInput,
   IAM_AUTH_ROLE_PARAMETER,
   IAM_UNAUTH_ROLE_PARAMETER,
   InvalidDirectiveError,
@@ -43,6 +44,7 @@ import {
   str,
   toJson,
 } from 'graphql-mapping-template';
+import { AuthorizationType } from '@aws-cdk/aws-appsync';
 import { actionToDataSourceMap, actionToRoleAction, allowedActions } from './utils/action-maps';
 import {
   amzJsonContentType,
@@ -57,7 +59,6 @@ import {
   translateTextAmzTarget,
   PREDICTIONS_DIRECTIVE_STACK,
 } from './utils/constants';
-import { AuthorizationType } from '@aws-cdk/aws-appsync';
 
 type PredictionsDirectiveConfiguration = {
   actions: string[] | undefined;
@@ -96,7 +97,7 @@ export class PredictionsTransformer extends TransformerPluginBase {
     const args = directiveWrapped.getArguments({
       resolverTypeName: parent.name.value,
       resolverFieldName: definition.name.value,
-    } as PredictionsDirectiveConfiguration, { deepMergeArguments: context.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) });
+    } as PredictionsDirectiveConfiguration, generateGetArgumentsInput(context.featureFlags));
 
     if (!Array.isArray(args.actions)) {
       args.actions = [args.actions as unknown as string];

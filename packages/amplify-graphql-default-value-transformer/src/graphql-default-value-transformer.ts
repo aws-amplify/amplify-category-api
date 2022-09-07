@@ -1,5 +1,6 @@
 import {
   DirectiveWrapper,
+  generateGetArgumentsInput,
   InputObjectDefinitionWrapper,
   InvalidDirectiveError,
   MappingTemplate,
@@ -107,7 +108,7 @@ export class DefaultValueTransformer extends TransformerPluginBase {
       object: parent as ObjectTypeDefinitionNode,
       field: definition,
       directive,
-    } as DefaultValueDirectiveConfiguration, { deepMergeArguments: ctx.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) });
+    } as DefaultValueDirectiveConfiguration, generateGetArgumentsInput(ctx.featureFlags));
     validate(ctx, config);
 
     if (!this.directiveMap.has(parent.name.value)) {

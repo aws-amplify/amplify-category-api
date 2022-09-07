@@ -1,9 +1,15 @@
 import { print } from 'graphql';
 import { EXTRA_DIRECTIVES_DOCUMENT } from './transformation/validation';
-export { GraphQLTransform, GraphQLTransformOptions, SyncUtils } from './transformation';
+
+export {
+  GraphQLTransform,
+  GraphQLTransformOptions,
+  SyncUtils,
+} from './transformation';
 export {
   DeploymentResources,
   OverrideConfig,
+  default as Template,
   UserDefinedSlot,
   UserDefinedResolver,
 } from './transformation/types';
@@ -16,11 +22,11 @@ export {
   SyncConfigOptimistic,
   SyncConfigServer,
   SyncConfigLambda,
-  Template,
   TransformConfig,
   TransformerProjectConfig,
 } from './config/index';
 export {
+  generateGetArgumentsInput,
   getTable,
   getKeySchema,
   getSortKeyFieldNames,

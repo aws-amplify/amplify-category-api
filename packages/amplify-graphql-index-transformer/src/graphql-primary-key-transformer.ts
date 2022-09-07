@@ -1,4 +1,9 @@
-import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import {
+  DirectiveWrapper,
+  generateGetArgumentsInput,
+  InvalidDirectiveError,
+  TransformerPluginBase,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerResolverProvider,
@@ -59,7 +64,7 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
       object: parent as ObjectTypeDefinitionNode,
       field: definition,
       directive,
-    } as PrimaryKeyDirectiveConfiguration, { deepMergeArguments: context.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) });
+    } as PrimaryKeyDirectiveConfiguration, generateGetArgumentsInput(context.featureFlags));
 
     if (!args.sortKeyFields) {
       args.sortKeyFields = [];
