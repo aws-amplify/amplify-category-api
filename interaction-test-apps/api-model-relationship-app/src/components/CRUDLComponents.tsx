@@ -20,7 +20,7 @@ export type createDetailComponentProps<T> = {
 
 export const createDetailComponent = <T extends any>({ deleteMutation, recordName, ViewComp, EditComp }: createDetailComponentProps<T>): RecordComponentType<T> => {
   const capitalizedRecordName = _.capitalize(recordName)
-  return ({ record }: {record: any & { id: string }}) => {
+  return ({ record }: SimpleIdRecordProps<T>) => {
     const { wrappedFn, opState } = useOperationStateWrapper(async () => await API.graphql(graphqlOperation(deleteMutation, { input: { id: record.id } })));
     const [detailState, setDetailState] = useState<DetailState>('view');
   
@@ -137,6 +137,54 @@ export const createListComponent = <T extends any>({ listQuery, recordName, Deta
             { (record: SimpleIdRecord<T>) => <DetailComp key={record.id} record={record} /> }
           </Collection>
         </div>
+      </Flex>
+    );
+  };
+};
+
+export type createViewCompProps<T> = {
+  fields: (keyof T)[];
+};
+
+export const createViewComp = <T extends object>({ fields }: createViewCompProps<T>): RecordComponentType<T> => {
+  return ({ record }: SimpleIdRecordProps<T>) => {
+    return (
+      <ul>
+        { fields.map((field) => <li>{ `${String(field)}: ${record[field]}`}</li> )}
+      </ul>
+    );
+  };
+};
+
+export type createEditCompProps<T> = {
+  recordName: string;
+  updateMutation: string;
+  fields: (keyof T)[];
+};
+
+export const createEditComp = <T extends object>({ updateMutation, fields, recordName }: createEditCompProps<T>): RecordComponentType<T> => {
+  return ({ record }: SimpleIdRecordProps<T>) => {
+    const [updatedFields, setUpdatedFields] = useState({});
+    const { wrappedFn, opState } = useOperationStateWrapper(async () => await API.graphql(graphqlOperation(updateMutation, { input: { ...updatedFields, id: record.id} })));
+  
+    const updateField = (fieldName: keyof T, updatedValue: string) => {
+      setUpdatedFields((oldFields) => ({ ...oldFields, [fieldName]: updatedValue }));
+    };
+
+    return (
+      <Flex direction='row'>
+        { fields.map(field => { return (
+          <TextField
+            id={`update-${String(field)}-input`}
+            label={_.capitalize(String(field))}
+            placeholder={ String(record[field]) || '' }
+            onChange={(event: any) => {
+              updateField(field, event.target.value);
+            }}
+          />
+        ) }) }
+        <Button id={`update-${recordName}`} onClick={wrappedFn}>Update</Button>
+        <OperationStateIndicator id={`${recordName}-is-updated`} state={opState} />
       </Flex>
     );
   };

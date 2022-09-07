@@ -70,7 +70,7 @@ describe('todo interactions', () => {
       cy.get('#retrieved-todo').within(() => {
         cy.contains('Edit').click();
         cy.get('#update-content-input').clear().type(UPDATED_TITLE);
-        cy.get('#update-content').click();
+        cy.get('#update-todo').click();
         cy.get('#todo-is-updated').contains(SUCCESS_MARK);
       });
     });

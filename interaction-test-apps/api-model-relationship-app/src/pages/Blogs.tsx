@@ -1,8 +1,6 @@
-import { Button, Flex, Heading, TextField } from '@aws-amplify/ui-react';
-import { API, graphqlOperation } from 'aws-amplify';
-import { useState } from 'react';
+import { Flex, Heading } from '@aws-amplify/ui-react';
 import { Blog, Post } from '../API';
-import { createCreateRecordComponent, createDetailComponent, createGetRecordComponent, createListComponent, OperationStateIndicator, SimpleIdRecordProps, Subscriptions, useOperationStateWrapper } from '../components';
+import { createCreateRecordComponent, createDetailComponent, createEditComp, createGetRecordComponent, createListComponent, createViewComp, Subscriptions } from '../components';
 import { createBlog, createPost, deleteBlog, deletePost, updateBlog, updatePost } from '../graphql/mutations';
 import { getBlog, getPost, listBlogs, listPosts } from '../graphql/queries';
 import { onCreateBlog, onCreatePost, onDeleteBlog, onDeletePost, onUpdateBlog, onUpdatePost } from '../graphql/subscriptions';
@@ -11,9 +9,11 @@ import { NavBar } from '../NavBar';
 const commonBlogProps = {
   recordName: 'blog',
   createMutation: createBlog,
+  updateMutation: updateBlog,
   getQuery: getBlog,
   listQuery: listBlogs,
   deleteMutation: deleteBlog,
+  fields: ['title', 'author'],
 };
 
 const CreateBlog = createCreateRecordComponent({
@@ -24,25 +24,9 @@ const CreateBlog = createCreateRecordComponent({
   },
 });
 
-// View/Edit are a little tougher to make super generic, just injecting them instead.
-const ViewBlog = ({ record }: SimpleIdRecordProps<Blog>) => {
-  return <p>{ record.title }</p>;
-};
+const ViewBlog = createViewComp<Blog>({ ...commonBlogProps, fields: ['title', 'author'] });
 
-const EditBlog = ({ record }: SimpleIdRecordProps<Blog>) => {
-  const [updatedTitle, setUpdatedTitle] = useState(record.title);
-  const { wrappedFn, opState } = useOperationStateWrapper(async () => await API.graphql(graphqlOperation(updateBlog, { input: { id: record.id, title: updatedTitle} })));
-
-  return (
-    <Flex direction='row'>
-      <TextField id='update-title-input' label='Updated Title' labelHidden placeholder={ record.title || '' } onChange={(event: any) => {
-        setUpdatedTitle(event.target.value);
-      }} />
-      <Button id='update-title' onClick={wrappedFn}>Update</Button>
-      <OperationStateIndicator id='blog-is-updated' state={opState} />
-    </Flex>
-  );
-};
+const EditBlog = createEditComp<Blog>({ ...commonBlogProps, fields: ['title', 'author'] });
 
 const BlogDetail = createDetailComponent({
   ...commonBlogProps,
@@ -60,13 +44,14 @@ const ListBlogs = createListComponent({
   DetailComp: BlogDetail,
 });
 
-
 const commonPostProps = {
   recordName: 'post',
   createMutation: createPost,
+  updateMutation: updatePost,
   getQuery: getPost,
   listQuery: listPosts,
   deleteMutation: deletePost,
+  fields: ['title'],
 };
 
 const CreatePost = createCreateRecordComponent({
@@ -77,25 +62,9 @@ const CreatePost = createCreateRecordComponent({
   },
 });
 
-// View/Edit are a little tougher to make super generic, just injecting them instead.
-const ViewPost = ({ record }: SimpleIdRecordProps<Post>) => {
-  return <p>{ record.title }</p>;
-};
+const ViewPost = createViewComp<Post>({ ...commonPostProps, fields: ['title'] });
 
-const EditPost = ({ record }: SimpleIdRecordProps<Post>) => {
-  const [updatedTitle, setUpdatedTitle] = useState(record.title);
-  const { wrappedFn, opState } = useOperationStateWrapper(async () => await API.graphql(graphqlOperation(updatePost, { input: { id: record.id, title: updatedTitle} })));
-
-  return (
-    <Flex direction='row'>
-      <TextField id='update-title-input' label='Updated Title' labelHidden placeholder={ record.title || '' } onChange={(event: any) => {
-        setUpdatedTitle(event.target.value);
-      }} />
-      <Button id='update-title' onClick={wrappedFn}>Update</Button>
-      <OperationStateIndicator id='post-is-updated' state={opState} />
-    </Flex>
-  );
-};
+const EditPost = createEditComp<Post>({ ...commonPostProps, fields: ['title'] });
 
 const PostDetail = createDetailComponent({
   ...commonPostProps,
