@@ -1226,11 +1226,18 @@ $util.toJson({})
   #else
     $util.error(\\"Unauthorized to run aggregation on field: \${aggItem.field}\\", \\"Unauthorized\\")
   #end
+  #set( $aggregateValue = {} )
+  $util.qr($aggregateValue.put(\\"filter\\", $aggFilter))
+  #set( $aggsValue = {} )
+  #set( $aggItemType = {} )
   #if( $nonKeywordFields.contains($aggItem.field) )
-    $util.qr($aggregateValues.put(\\"$aggItem.name\\", { \\"filter\\": $aggFilter, \\"aggs\\": { \\"$aggItem.name\\": { \\"$aggItem.type\\": { \\"field\\": \\"$aggItem.field\\" }}} }))
+    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"$aggItem.field\\" }))
   #else
-    $util.qr($aggregateValues.put(\\"$aggItem.name\\", { \\"filter\\": $aggFilter, \\"aggs\\": { \\"$aggItem.name\\": { \\"$aggItem.type\\": { \\"field\\": \\"\${aggItem.field}.keyword\\" }}} }))
+    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"\${aggItem.field}.keyword\\" }))
   #end
+  $util.qr($aggsValue.put(\\"$aggItem.name\\", $aggItemType))
+  $util.qr($aggregateValue.put(\\"aggs\\", $aggsValue))
+  $util.qr($aggregateValues.put(\\"$aggItem.name\\", $aggregateValue))
 #end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
@@ -1405,11 +1412,18 @@ exports[`SearchableModelTransformer with datastore enabled and sort field define
   #else
     $util.error(\\"Unauthorized to run aggregation on field: \${aggItem.field}\\", \\"Unauthorized\\")
   #end
+  #set( $aggregateValue = {} )
+  $util.qr($aggregateValue.put(\\"filter\\", $aggFilter))
+  #set( $aggsValue = {} )
+  #set( $aggItemType = {} )
   #if( $nonKeywordFields.contains($aggItem.field) )
-    $util.qr($aggregateValues.put(\\"$aggItem.name\\", { \\"filter\\": $aggFilter, \\"aggs\\": { \\"$aggItem.name\\": { \\"$aggItem.type\\": { \\"field\\": \\"$aggItem.field\\" }}} }))
+    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"$aggItem.field\\" }))
   #else
-    $util.qr($aggregateValues.put(\\"$aggItem.name\\", { \\"filter\\": $aggFilter, \\"aggs\\": { \\"$aggItem.name\\": { \\"$aggItem.type\\": { \\"field\\": \\"\${aggItem.field}.keyword\\" }}} }))
+    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"\${aggItem.field}.keyword\\" }))
   #end
+  $util.qr($aggsValue.put(\\"$aggItem.name\\", $aggItemType))
+  $util.qr($aggregateValue.put(\\"aggs\\", $aggsValue))
+  $util.qr($aggregateValues.put(\\"$aggItem.name\\", $aggregateValue))
 #end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
@@ -1543,11 +1557,18 @@ exports[`SearchableModelTransformer with datastore enabled vtl 1`] = `
   #else
     $util.error(\\"Unauthorized to run aggregation on field: \${aggItem.field}\\", \\"Unauthorized\\")
   #end
+  #set( $aggregateValue = {} )
+  $util.qr($aggregateValue.put(\\"filter\\", $aggFilter))
+  #set( $aggsValue = {} )
+  #set( $aggItemType = {} )
   #if( $nonKeywordFields.contains($aggItem.field) )
-    $util.qr($aggregateValues.put(\\"$aggItem.name\\", { \\"filter\\": $aggFilter, \\"aggs\\": { \\"$aggItem.name\\": { \\"$aggItem.type\\": { \\"field\\": \\"$aggItem.field\\" }}} }))
+    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"$aggItem.field\\" }))
   #else
-    $util.qr($aggregateValues.put(\\"$aggItem.name\\", { \\"filter\\": $aggFilter, \\"aggs\\": { \\"$aggItem.name\\": { \\"$aggItem.type\\": { \\"field\\": \\"\${aggItem.field}.keyword\\" }}} }))
+    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"\${aggItem.field}.keyword\\" }))
   #end
+  $util.qr($aggsValue.put(\\"$aggItem.name\\", $aggItemType))
+  $util.qr($aggregateValue.put(\\"aggs\\", $aggsValue))
+  $util.qr($aggregateValues.put(\\"$aggItem.name\\", $aggregateValue))
 #end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )

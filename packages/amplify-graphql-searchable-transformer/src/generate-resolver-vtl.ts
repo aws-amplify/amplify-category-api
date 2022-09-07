@@ -131,15 +131,7 @@ export const requestTemplate = (
           + '    $util.error("Unauthorized to run aggregation on field: ${aggItem.field}", "Unauthorized")\n'
           + '  #end',
       ),
-      ifElse(
-        ref('nonKeywordFields.contains($aggItem.field)'),
-        qref(
-          '$aggregateValues.put("$aggItem.name", { "filter": $aggFilter, "aggs": { "$aggItem.name": { "$aggItem.type": { "field": "$aggItem.field" }}} })',
-        ),
-        qref(
-          '$aggregateValues.put("$aggItem.name", { "filter": $aggFilter, "aggs": { "$aggItem.name": { "$aggItem.type": { "field": "${aggItem.field}.keyword" }}} })',
-        ),
-      ),
+      generateAddAggregateValues()
     ]),
     ifElse(
       not(isNullOrEmpty(authFilter)),
@@ -175,6 +167,27 @@ export const requestTemplate = (
     }),
   ]),
 );
+
+export const generateAddAggregateValues = (): Expression => {
+  return compoundExpression([
+    set(ref('aggregateValue'), obj({})),
+    qref('$aggregateValue.put("filter", $aggFilter)'),
+    set(ref('aggsValue'), obj({})),
+    set(ref('aggItemType'), obj({})),
+    ifElse(
+      ref('nonKeywordFields.contains($aggItem.field)'),
+      qref(
+        '$aggItemType.put("$aggItem.type", { "field": "$aggItem.field" })',
+      ),
+      qref(
+        '$aggItemType.put("$aggItem.type", { "field": "${aggItem.field}.keyword" })',
+      ),
+    ),
+    qref('$aggsValue.put("$aggItem.name", $aggItemType)'),
+    qref('$aggregateValue.put("aggs", $aggsValue)'),
+    qref('$aggregateValues.put("$aggItem.name", $aggregateValue)'),
+  ]);
+};
 
 export const responseTemplate = (includeVersion = false): string => print(
   compoundExpression([
