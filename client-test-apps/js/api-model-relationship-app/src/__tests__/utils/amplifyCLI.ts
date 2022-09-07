@@ -3,7 +3,190 @@ import path from 'path';
 import { EOL } from 'os';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import { spawn } from './execUtils';
+import { spawn, singleSelect } from './execUtils';
+import { homedir } from 'os';
+import * as ini from 'ini';
+import { JSONUtilities } from './jsonUtilities';
+
+/**
+ * NEW MESS
+ */
+
+export interface Tag {
+  Key: string;
+  Value: string;
+}
+
+export function ReadTags(tagsFilePath: string): Tag[] {
+  const tags = JSONUtilities.readJson<Tag[]>(tagsFilePath, {
+    throwIfNotExist: false,
+    preserveComments: false,
+  });
+
+  if (!tags) return [];
+
+  return tags;
+}
+
+const constructPath = (projectPath: string, segments: string[] = []): string => path.normalize(path.join(projectPath, ...segments));
+
+const getTagFilePath = (projectPath: string): string => constructPath(
+  projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, PathConstants.TagsFileName],
+);
+
+const getProjectTags = (projectPath: string): Tag[] => ReadTags(getTagFilePath(projectPath));
+
+const setProjectFileTags = (projectPath: string, tags: Tag[]): void => {
+  const tagFilePath = getTagFilePath(projectPath);
+  JSONUtilities.writeJson(tagFilePath, tags);
+};
+
+const addCircleCITags = (projectPath: string): void => {
+  if (process.env && process.env['CIRCLECI']) {
+    const tags = getProjectTags(projectPath);
+
+    const addTagIfNotExist = (key: string, value: string): void => {
+      if (!tags.find(t => t.Key === key)) {
+        tags.push({
+          Key: key,
+          Value: value,
+        });
+      }
+    };
+
+    const sanitizeTagValue = (value: string): string => {
+      return value.replace(/[^ a-z0-9_.:/=+\-@]/gi, '');
+    };
+
+    addTagIfNotExist('circleci', sanitizeTagValue(process.env['CIRCLECI'] || 'N/A'));
+    addTagIfNotExist('circleci:branch', sanitizeTagValue(process.env['CIRCLE_BRANCH'] || 'N/A'));
+    addTagIfNotExist('circleci:sha1', sanitizeTagValue(process.env['CIRCLE_SHA1'] || 'N/A'));
+    addTagIfNotExist('circleci:workflow_id', sanitizeTagValue(process.env['CIRCLE_WORKFLOW_ID'] || 'N/A'));
+    addTagIfNotExist('circleci:build_id', sanitizeTagValue(process.env['CIRCLE_BUILD_NUM'] || 'N/A'));
+    addTagIfNotExist('circleci:build_url', sanitizeTagValue(process.env['CIRCLE_BUILD_URL'] || 'N/A'));
+    addTagIfNotExist('circleci:job', sanitizeTagValue(process.env['CIRCLE_JOB'] || 'N/A'));
+
+    setProjectFileTags(projectPath, tags);
+  }
+};
+
+/**
+ * END TAG STUFF
+ */
+
+
+export const PathConstants = {
+  DotAWSDirName: '.aws',
+  AWSCredentials: 'credentials',
+  AmplifyDirName: 'amplify',
+  BackendDirName: 'backend',
+  TagsFileName: 'tags.json',
+}
+
+const getDotAWSDirPath = (): string => path.normalize(path.join(homedir(), PathConstants.DotAWSDirName));
+const getAWSCredentialsFilePath = (): string => path.normalize(path.join(getDotAWSDirPath(), PathConstants.AWSCredentials));
+
+const injectSessionToken = (profileName: string) => {
+  const credentialsContents = ini.parse(fs.readFileSync(getAWSCredentialsFilePath()).toString());
+  credentialsContents[profileName] = credentialsContents[profileName] || {};
+  credentialsContents[profileName].aws_session_token = process.env.AWS_SESSION_TOKEN;
+  fs.writeFileSync(getAWSCredentialsFilePath(), ini.stringify(credentialsContents));
+};
+
+type AmplifyConfiguration = {
+  accessKeyId: string;
+  secretAccessKey: string;
+  profileName?: string;
+  region?: string;
+};
+
+const defaultConfigureSettings = {
+  profileName: 'amplify-integ-test-user',
+  region: 'us-east-2',
+  userName: EOL,
+};
+
+const amplifyRegions = [
+  'us-east-1',
+  'us-east-2',
+  'us-west-1',
+  'us-west-2',
+  'eu-north-1',
+  'eu-west-1',
+  'eu-west-2',
+  'eu-west-3',
+  'eu-central-1',
+  'ap-northeast-1',
+  'ap-northeast-2',
+  'ap-southeast-1',
+  'ap-southeast-2',
+  'ap-south-1',
+  'ca-central-1',
+  'me-south-1',
+  'sa-east-1',
+];
+
+const MANDATORY_PARAMS = ['accessKeyId', 'secretAccessKey', 'region'];
+
+const amplifyConfigure = (settings: AmplifyConfiguration): Promise<void> => {
+  console.log('Executing Amplify Configure');
+  const s = { ...defaultConfigureSettings, ...settings };
+  const missingParam = MANDATORY_PARAMS.filter(p => !Object.keys(s).includes(p));
+  if (missingParam.length) {
+    throw new Error(`mandatory params ${missingParam.join(' ')} are missing`);
+  }
+
+  const chain = spawn(getCLIPath(), ['configure'])
+    .wait('Sign in to your AWS administrator account:')
+    .wait('Press Enter to continue')
+    .sendCarriageReturn()
+    .wait('Specify the AWS Region');
+
+  singleSelect(chain, s.region, amplifyRegions);
+
+  return chain
+    .wait('user name:')
+    .sendCarriageReturn()
+    .wait('Press Enter to continue')
+    .sendCarriageReturn()
+    .wait('accessKeyId')
+    .pauseRecording()
+    .sendLine(s.accessKeyId)
+    .wait('secretAccessKey')
+    .sendLine(s.secretAccessKey)
+    .resumeRecording()
+    .wait('Profile Name:')
+    .sendLine(s.profileName)
+    .wait('Successfully set up the new user.')
+    .runAsync();
+};
+
+const isCI = () => process.env.CI && process.env.CIRCLECI;
+
+ async function setupAmplify() {
+  if (isCI()) {
+    const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
+    const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
+    const REGION = process.env.CLI_REGION;
+    if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY || !REGION) {
+      throw new Error('Please set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and CLI_REGION in .env');
+    }
+    await amplifyConfigure({
+      accessKeyId: AWS_ACCESS_KEY_ID,
+      secretAccessKey: AWS_SECRET_ACCESS_KEY,
+      profileName: 'amplify-integ-test-user',
+      region: REGION,
+    });
+    if (process.env.AWS_SESSION_TOKEN) {
+      injectSessionToken('amplify-integ-test-user');
+    }
+  } else {
+    console.log('AWS Profile is already configured');
+  }
+}
+/**
+ * END NEW MESS
+ */
 
 const pushTimeoutMS = 1000 * 60 * 10; // 10 minutes;
 
@@ -50,15 +233,27 @@ const defaultAddApi: AddApiOptions = {
 };
 
 export class AmplifyCLI {
+  isAmplifySetup: boolean
   projectRoot: string;
 
   constructor(projectRoot: string) {
     this.projectRoot = projectRoot;
+    this.isAmplifySetup = false;
   }
 
-  initializeProject (settings?: Partial<typeof defaultSettings>): Promise<void> {
+  setupAmplifyIfNecessary (): Promise<void> {
+    if (this.isAmplifySetup) return Promise.resolve();
+
+    return setupAmplify();
+  }
+
+  async initializeProject (settings?: Partial<typeof defaultSettings>): Promise<void> {
+    console.log('Initializing Project');
+    await this.setupAmplifyIfNecessary();
     const s = { ...defaultSettings, ...settings };
     let env: any;
+
+    addCircleCITags(this.projectRoot);
   
     if (s.disableAmplifyAppCreation === true) {
       env = {
@@ -118,6 +313,7 @@ export class AmplifyCLI {
   }
 
   addApiWithoutSchema(opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
+    console.log('Adding Amplify API');
     const options = _.assign(defaultAddApi, opts);
     return spawn(getCLIPath(options.testingWithLatestCodebase), ['add', 'api'], { cwd: this.projectRoot })
       .wait('Select from one of the below mentioned services')
@@ -138,6 +334,7 @@ export class AmplifyCLI {
   }
 
   updateSchema(projectName: string, schemaText: string, forceUpdate: boolean = false) {
+    console.log('Updating Amplify Schema');
     if (forceUpdate) {
       schemaText += '  ';
     }
@@ -146,6 +343,7 @@ export class AmplifyCLI {
   }
 
   delete(profileConfig?: any, usingLatestCodebase = false): Promise<void> {
+    console.log('Executing Amplify Delete');
     return spawn(getCLIPath(usingLatestCodebase), ['delete'], { cwd: this.projectRoot, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
@@ -154,6 +352,7 @@ export class AmplifyCLI {
   }
 
   push(testingWithLatestCodebase = false): Promise<void> {
+    console.log('Executing Amplify Push');
     return spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd: this.projectRoot, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
@@ -164,6 +363,7 @@ export class AmplifyCLI {
   }
 
   codegen (opts?: { statementDepth?: number }, usingLatestCodebase = false): Promise<void> {
+    console.log('Executing Amplify Codegen');
     const chain = spawn(getCLIPath(usingLatestCodebase), ['codegen', 'add'], { cwd: this.projectRoot, noOutputTimeout: pushTimeoutMS })
       .wait('Choose the code generation language target')
       .sendKeyDown()

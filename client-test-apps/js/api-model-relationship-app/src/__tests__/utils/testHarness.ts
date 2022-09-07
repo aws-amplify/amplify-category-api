@@ -102,7 +102,10 @@ export const executeAmplifyTestHarness = (testName: string, projectRoot: string,
         it('executes the cypress suite', async () => {
         const runResult = await cypress.run({
           reporter: 'junit',
-          browser: 'firefox',
+          browser: 'electron',
+          reporterOptions: {
+            mochaFile: 'test-results/cypress-test-results-[hash].xml'
+          },
           config: {
             video: true,
           },
