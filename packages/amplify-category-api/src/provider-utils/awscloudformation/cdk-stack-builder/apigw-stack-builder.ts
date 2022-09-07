@@ -243,12 +243,16 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
         },
       },
     });
-    const default4xx = new apigw.CfnGatewayResponse(this, `${resourceName}Default4XXResponse`, {
+
+    // Append a random id to the logical id of the gateway response 
+    // This is required to resolve issue with dropping gateway responses on updating api resource
+    const [responseRandomId] = uuid().split('-');
+    const default4xx = new apigw.CfnGatewayResponse(this, `${resourceName}Default4XXResponse${responseRandomId}`, {
       responseType: 'DEFAULT_4XX',
       restApiId: cdk.Fn.ref(resourceName),
       responseParameters: defaultCorsGatewayResponseParams,
     });
-    const default5xx = new apigw.CfnGatewayResponse(this, `${resourceName}Default5XXResponse`, {
+    const default5xx = new apigw.CfnGatewayResponse(this, `${resourceName}Default5XXResponse${responseRandomId}`, {
       responseType: 'DEFAULT_5XX',
       restApiId: cdk.Fn.ref(resourceName),
       responseParameters: defaultCorsGatewayResponseParams,

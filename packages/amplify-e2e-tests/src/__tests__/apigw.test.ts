@@ -10,6 +10,7 @@ import {
   get,
   getProjectMeta,
   initJSProjectWithProfile,
+  updateRestApi,
 } from 'amplify-category-api-e2e-core';
 import { JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
@@ -93,6 +94,16 @@ describe('API Gateway e2e tests', () => {
     expect(res.headers.get('access-control-allow-methods')).toEqual('DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT');
     expect(res.headers.get('access-control-allow-origin')).toEqual('*');
     expect(res.headers.get('access-control-expose-headers')).toEqual('Date,X-Amzn-ErrorType');
+
+    // Add a path and make sure that the gateway responses are preserved
+    await updateRestApi(projRoot);
+    await amplifyPushAuth(projRoot);
+    const responseAfterAddPath = await fetch(apiPath);
+    expect(responseAfterAddPath.status).toEqual(403);
+    expect(responseAfterAddPath.headers.get('access-control-allow-headers')).toEqual('Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token');
+    expect(responseAfterAddPath.headers.get('access-control-allow-methods')).toEqual('DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT');
+    expect(responseAfterAddPath.headers.get('access-control-allow-origin')).toEqual('*');
+    expect(responseAfterAddPath.headers.get('access-control-expose-headers')).toEqual('Date,X-Amzn-ErrorType');
   });
 
   it('adds and overrides a rest api, then pushes', async () => {
