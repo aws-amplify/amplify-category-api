@@ -112,7 +112,7 @@
     "uuid": "^8.3.2"
   },
   "peerDependencies": {
-    "amplify-cli-core": "^2.9.0",
+    "amplify-cli-core": "^3.0.0",
     "amplify-headless-interface": "^1.15.0",
     "amplify-prompts": "^2.2.0",
     "amplify-provider-awscloudformation": "^6.3.0",

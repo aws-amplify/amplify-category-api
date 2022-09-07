@@ -38,6 +38,6 @@
     "uuid": "^8.3.2"
   },
   "peerDependencies": {
-    "amplify-cli-core": "^2.9.0"
+    "amplify-cli-core": "^3.0.0"
   }
 }

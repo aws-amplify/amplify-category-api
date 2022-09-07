@@ -48,7 +48,7 @@
     "which": "^2.0.2"
   },
   "peerDependencies": {
-    "amplify-cli-core": "^2.9.0"
+    "amplify-cli-core": "^3.0.0"
   },
   "devDependencies": {
     "@aws-amplify/graphql-auth-transformer": "1.0.2",
