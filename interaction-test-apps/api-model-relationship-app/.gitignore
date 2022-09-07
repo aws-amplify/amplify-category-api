@@ -2,10 +2,11 @@
 
 # Test Artifacts and interstitials we don't want to persist
 test-results.xml
-/amplify
-/src/API.ts
-/src/models
-/src/awsexports.json
+amplify
+src/API.ts
+src/models
+src/awsexports.json
+.graphqlconfig
 
 # dependencies
 /node_modules
