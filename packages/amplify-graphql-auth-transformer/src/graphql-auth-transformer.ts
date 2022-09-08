@@ -9,6 +9,7 @@ import {
   TransformerResolver,
   getTable,
   getKeySchema,
+  generateGetArgumentsInput,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -31,6 +32,7 @@ import {
   ListValueNode,
   StringValueNode,
 } from 'graphql';
+import { merge } from 'lodash';
 import { SubscriptionLevel, ModelDirectiveConfiguration, removeSubscriptionFilterInputAttribute } from '@aws-amplify/graphql-model-transformer';
 import {
   getBaseType,
@@ -170,9 +172,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     if (context.metadata.has('joinTypeList')) {
       isJoinType = context.metadata.get<Array<string>>('joinTypeList')!.includes(typeName);
     }
-    this.rules = getAuthDirectiveRules(new DirectiveWrapper(directive), {
-      deepMergeArguments: context.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults'),
-    });
+    const getAuthRulesOptions = merge({ isField: true }, generateGetArgumentsInput(context.featureFlags));
+    this.rules = getAuthDirectiveRules(new DirectiveWrapper(directive), getAuthRulesOptions);
 
     // validate rules
     validateRules(this.rules, this.configuredAuthProviders, def.name.value);
@@ -227,10 +228,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const modelDirective = parent.directives?.find(dir => dir.name.value === 'model');
     const typeName = parent.name.value;
     const fieldName = field.name.value;
-    const rules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(directive), {
-      isField: true,
-      deepMergeArguments: context.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults'),
-    });
+    const getAuthRulesOptions = merge({ isField: true }, generateGetArgumentsInput(context.featureFlags));
+    const rules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(directive), getAuthRulesOptions);
     validateFieldRules(new DirectiveWrapper(directive), isParentTypeBuiltinType, modelDirective !== undefined, field.name.value, context.featureFlags);
     validateRules(rules, this.configuredAuthProviders, field.name.value);
 
