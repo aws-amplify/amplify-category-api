@@ -6586,14 +6586,14 @@ amplify-appsync-simulator@^2.3.12:
     uuid "^8.3.2"
     ws "^7.5.7"
 
-amplify-category-function@^4.0.3:
-  version "4.0.10"
-  resolved "https://registry.npmjs.org/amplify-category-function/-/amplify-category-function-4.0.10.tgz#ddc8bd549ee208cf6fa9277e9c3e3c56e48099e5"
-  integrity sha512-zHP6pXWQoKw2Hl4J0TuMtU+NGNJUb9ZFsi7coO6jTVAlGVI8jO9Ueo3I0sLZqe6NGv1sGr9/HqADoocbpWWEZA==
+amplify-category-function@^4.0.12:
+  version "4.0.12"
+  resolved "https://registry.npmjs.org/amplify-category-function/-/amplify-category-function-4.0.12.tgz#025ff20b04d073a3f1c0487f7e9f7fffb9d8edde"
+  integrity sha512-PuT8+5ovix85fH/lpU6xgwKqzpJu98aanj+R9E7o1qp1D7g471vh+Mj/HqRhKRnVhwe6i5l3xh/9kWmEVc9seg==
   dependencies:
-    amplify-cli-core "2.11.0"
+    amplify-cli-core "3.0.0"
     amplify-function-plugin-interface "1.9.5"
-    amplify-prompts "2.2.0"
+    amplify-prompts "2.3.0"
     archiver "^5.3.0"
     aws-sdk "^2.1113.0"
     chalk "^4.1.1"
@@ -6602,12 +6602,11 @@ amplify-category-function@^4.0.3:
     folder-hash "^4.0.2"
     fs-extra "^8.1.0"
     globby "^11.0.3"
-    graphql-transformer-core "^7.6.2"
+    graphql-transformer-core "^7.6.5"
     inquirer "^7.3.3"
     inquirer-datepicker "^2.0.0"
     jstreemap "^1.28.2"
     lodash "^4.17.21"
-    mime-types "^2.1.26"
     ora "^4.0.3"
     promise-sequential "^1.1.1"
     uuid "^8.3.2"
@@ -12809,7 +12808,7 @@ mime-db@1.52.0:
   resolved "https://registry.npmjs.org/mime-db/-/mime-db-1.52.0.tgz#bbabcdc02859f4987301c856e3387ce5ec43bf70"
   integrity sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==
 
-mime-types@^2.1.12, mime-types@^2.1.26, mime-types@~2.1.19, mime-types@~2.1.24, mime-types@~2.1.34:
+mime-types@^2.1.12, mime-types@~2.1.19, mime-types@~2.1.24, mime-types@~2.1.34:
   version "2.1.35"
   resolved "https://registry.npmjs.org/mime-types/-/mime-types-2.1.35.tgz#381a871b62a734450660ae3deee44813f70d959a"
   integrity sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==
