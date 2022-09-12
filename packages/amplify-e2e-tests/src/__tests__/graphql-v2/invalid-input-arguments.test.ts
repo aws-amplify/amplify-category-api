@@ -39,17 +39,7 @@ describe('Invalid arguments should throw an error', () => {
             { title: 'task 1', description: 'task 1 description', priority: "invalid", dueDate: '2022-01-01T00:00:00.000Z' }, // Passing string in place of int
         ];
         
-        await Promise.all(
-            invalid_create_inputs.map(async (input) => {
-                try {
-                    const createResult = await createTask(input);
-                    expect(false).toBeTruthy();
-                } catch (error) {
-                    expect(error.errors).toBeDefined();
-                    expect(error.errors.length).toBeGreaterThanOrEqual(1);
-                }
-            }),
-        );
+        await runQueryAndExpectError(createTask, invalid_create_inputs);
     });
 
     it('list query should error on invalid filter arguments', async () => {
@@ -65,17 +55,7 @@ describe('Invalid arguments should throw an error', () => {
             { or: [ { priority: { between: [1, 2.5] } }, { title: { gt: "test" } } ] }, // Incorrect argument value for between operator with 'or' condition
         ];
 
-        await Promise.all(
-            invalid_filter_inputs.map(async (input) => {
-                try {
-                    const listResult = await listTasks(input);
-                    expect(false).toBeTruthy();
-                } catch (error) {
-                    expect(error.errors).toBeDefined();
-                    expect(error.errors.length).toBeGreaterThanOrEqual(1);
-                }
-           }),
-        );
+        await runQueryAndExpectError(listTasks, invalid_filter_inputs);
     });
 
     const createTask = async (
@@ -147,5 +127,19 @@ describe('Invalid arguments should throw an error', () => {
             aws_appsync_authenticationType: 'API_KEY',
             aws_appsync_apiKey: apiKey,
         });
+    }
+
+    const runQueryAndExpectError = async (query: (input: any) => any, inputs: any[]) => {
+        await Promise.all(
+            inputs.map(async (input) => {
+                try {
+                    const queryResult = await query(input);
+                    expect(false).toBeTruthy();
+                } catch (error) {
+                    expect(error.errors).toBeDefined();
+                    expect(error.errors.length).toBeGreaterThanOrEqual(1);
+                }
+           }),
+        );
     }
 });
