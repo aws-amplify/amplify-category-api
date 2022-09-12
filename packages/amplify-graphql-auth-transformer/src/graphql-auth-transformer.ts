@@ -172,7 +172,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     if (context.metadata.has('joinTypeList')) {
       isJoinType = context.metadata.get<Array<string>>('joinTypeList')!.includes(typeName);
     }
-    const getAuthRulesOptions = merge({ isField: true }, generateGetArgumentsInput(context.featureFlags));
+    const getAuthRulesOptions = merge({ isField: false }, generateGetArgumentsInput(context.featureFlags));
     this.rules = getAuthDirectiveRules(new DirectiveWrapper(directive), getAuthRulesOptions);
 
     // validate rules
