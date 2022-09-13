@@ -9,7 +9,7 @@ import {
   $TSContext,
   ApiCategoryFacade,
 } from 'amplify-cli-core';
-import { buildGraphQLTransformV2 } from '../graphql-transformer/transformer-factory';
+import { constructGraphQLTransformV2 } from '../graphql-transformer/transformer-factory';
 import {
   SCHEMA_DIR_NAME,
   SCHEMA_FILENAME,
@@ -73,6 +73,10 @@ export class SchemaReader {
         fileContentsList.push(fs.readFile(schemaPath));
       }
 
+      if (!fileContentsList.length) {
+        throw new Error(`No GraphQL schema found in schema location ${schemaPath}`);
+      }
+
       const bufferList = await Promise.all(fileContentsList);
       const fullSchema = bufferList.map((buff) => buff.toString()).join('\n');
       this.schemaDocument = parse(fullSchema);
@@ -80,7 +84,7 @@ export class SchemaReader {
 
     if (preProcessSchema && !this.preProcessedSchemaDocument) {
       const transformerOptions = await generateTransformerOptions(context, options);
-      const transform = await buildGraphQLTransformV2(transformerOptions);
+      const transform = await constructGraphQLTransformV2(transformerOptions);
       this.preProcessedSchemaDocument = transform.preProcessSchema(this.schemaDocument);
     }
 
