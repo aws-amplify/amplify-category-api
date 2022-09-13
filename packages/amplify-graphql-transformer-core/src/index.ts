@@ -26,6 +26,7 @@ export {
   TransformerProjectConfig,
 } from './config/index';
 export {
+  GetArgumentsOptions,
   generateGetArgumentsInput,
   getTable,
   getKeySchema,

@@ -1,4 +1,4 @@
-export { DirectiveWrapper, generateGetArgumentsInput } from './directive-wrapper';
+export { DirectiveWrapper, GetArgumentsOptions, generateGetArgumentsInput } from './directive-wrapper';
 export { collectDirectives, collectDirectivesByTypeNames } from './type-map-utils';
 export { stripDirectives } from './strip-directives';
 export { getTable, getKeySchema, getSortKeyFieldNames } from './schema-utils';
