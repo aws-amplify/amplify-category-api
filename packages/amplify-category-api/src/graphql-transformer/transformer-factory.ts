@@ -241,7 +241,7 @@ const importTransformerModule = (transformerName: string) => {
  * @param opts The options produced by 'transformer-options'
  * @returns GraphQLTransform A brand new instance of the GraphQL Transform
  */
-export const buildGraphQLTransformV2 = async (opts: TransformerProjectOptions<TransformerFactoryArgs>): Promise<GraphQLTransform> => {
+export const constructGraphQLTransformV2 = async (opts: TransformerProjectOptions<TransformerFactoryArgs>): Promise<GraphQLTransform> => {
   const userProjectConfig = opts.projectConfig;
   const stackMapping = userProjectConfig.config.StackMapping;
   const userDefinedSlots = {
