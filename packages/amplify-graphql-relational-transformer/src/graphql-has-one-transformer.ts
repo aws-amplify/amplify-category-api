@@ -1,5 +1,10 @@
 /* eslint-disable no-param-reassign */
-import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import {
+  DirectiveWrapper,
+  generateGetArgumentsInput,
+  InvalidDirectiveError,
+  TransformerPluginBase,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
@@ -12,7 +17,7 @@ import {
   DocumentNode,
   FieldDefinitionNode,
   InterfaceTypeDefinitionNode,
-  ObjectTypeDefinitionNode, ObjectTypeExtensionNode,
+  ObjectTypeDefinitionNode,
 } from 'graphql';
 import {
   getBaseType,
@@ -74,7 +79,7 @@ export class HasOneTransformer extends TransformerPluginBase {
       object: parent as ObjectTypeDefinitionNode,
       field: definition,
       directive,
-    } as HasOneDirectiveConfiguration);
+    } as HasOneDirectiveConfiguration, generateGetArgumentsInput(context.featureFlags));
 
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);

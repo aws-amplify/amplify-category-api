@@ -1,4 +1,9 @@
-import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import {
+  DirectiveWrapper,
+  generateGetArgumentsInput,
+  InvalidDirectiveError,
+  TransformerPluginBase,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerResolverProvider,
@@ -14,9 +19,9 @@ import {
   ObjectTypeDefinitionNode,
 } from 'graphql';
 import { isListType, isNonNullType, isScalarOrEnum } from 'graphql-transformer-common';
-import { 
-  constructSyncVTL, 
-  replaceDdbPrimaryKey, 
+import {
+  constructSyncVTL,
+  replaceDdbPrimaryKey,
   updateResolvers,
   getResourceOverrides,
   getDeltaSyncTableTtl
@@ -59,7 +64,7 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
       object: parent as ObjectTypeDefinitionNode,
       field: definition,
       directive,
-    } as PrimaryKeyDirectiveConfiguration);
+    } as PrimaryKeyDirectiveConfiguration, generateGetArgumentsInput(context.featureFlags));
 
     if (!args.sortKeyFields) {
       args.sortKeyFields = [];

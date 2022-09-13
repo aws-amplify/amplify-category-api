@@ -1,5 +1,6 @@
 import {
   AuthProvider,
+  AuthStrategy,
   AuthTransformer,
   ModelOperation,
 } from '@aws-amplify/graphql-auth-transformer';
@@ -14,7 +15,6 @@ import { featureFlags } from './test-helper';
 import {
   AppSyncVTLContext, getGenericToken, getIAMToken, getJWTToken, VelocityTemplateSimulator,
 } from '../../velocity';
-import { AuthStrategy } from '../../../../amplify-graphql-auth-transformer/src/utils/definitions';
 
 const USER_POOL_ID = 'us-fake-1ID';
 
