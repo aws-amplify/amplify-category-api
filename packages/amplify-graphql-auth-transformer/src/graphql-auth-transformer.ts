@@ -9,6 +9,7 @@ import {
   TransformerResolver,
   getTable,
   getKeySchema,
+  getSortKeyFieldNames,
   generateGetArgumentsInput,
 } from '@aws-amplify/graphql-transformer-core';
 import {
@@ -48,7 +49,6 @@ import {
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { getConnectionAttributeName, getSortKeyConnectionAttributeName, getObjectPrimaryKey } from '@aws-amplify/graphql-relational-transformer';
-import { getSortKeyFieldNames } from '@aws-amplify/graphql-transformer-core';
 import {
   generateAuthExpressionForCreate,
   generateAuthExpressionForUpdate,

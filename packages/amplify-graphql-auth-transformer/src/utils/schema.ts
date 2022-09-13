@@ -1,9 +1,13 @@
 import { ModelDirectiveConfiguration, SubscriptionLevel } from '@aws-amplify/graphql-model-transformer';
 import { getConnectionAttributeName, getSortKeyConnectionAttributeName } from '@aws-amplify/graphql-relational-transformer';
 import {
-  DirectiveWrapper, getKeySchema, getTable, InvalidDirectiveError,
+  DirectiveWrapper,
+  generateGetArgumentsInput,
+  getKeySchema,
+  getSortKeyFieldNames,
+  getTable,
+  InvalidDirectiveError,
 } from '@aws-amplify/graphql-transformer-core';
-import { getSortKeyFieldNames } from '@aws-amplify/graphql-transformer-core';
 import {
   QueryFieldType,
   MutationFieldType,
@@ -29,7 +33,6 @@ import {
 import md5 from 'md5';
 import { RELATIONAL_DIRECTIVES } from './constants';
 import { RelationalPrimaryMapConfig, RoleDefinition, SearchableConfig } from './definitions';
-import { generateGetArgumentsInput } from '@aws-amplify/graphql-transformer-core/lib/utils/directive-wrapper';
 
 /**
  * collectFieldNames
