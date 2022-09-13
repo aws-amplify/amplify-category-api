@@ -155,7 +155,6 @@ function runE2eTest {
 
     if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
         echo "using Amplify CLI version: "$(amplify --version)
-        echo "using amplify-app version: "$(amplify-app --version)
         cd $(pwd)/packages/amplify-e2e-tests
     fi
 
