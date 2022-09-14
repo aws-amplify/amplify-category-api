@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.10.10](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.9...amplify-category-api-e2e-tests@3.10.10) (2022-09-14)
+
+
+### Bug Fixes
+
+* **api:** gateway response dropping on update api ([#764](https://github.com/aws-amplify/amplify-category-api/issues/764)) ([942d1d1](https://github.com/aws-amplify/amplify-category-api/commit/942d1d18a4a6b09fe2fe23e3d48fe591a43abf9f))
+
+
+
+
+
 ## [3.10.9](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.8...amplify-category-api-e2e-tests@3.10.9) (2022-08-23)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests

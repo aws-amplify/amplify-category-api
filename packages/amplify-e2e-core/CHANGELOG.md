@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.8](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.7...amplify-category-api-e2e-core@4.0.8) (2022-09-14)
+
+
+### Bug Fixes
+
+* **e2e:** remove all resources update wait ([#788](https://github.com/aws-amplify/amplify-category-api/issues/788)) ([9019f4c](https://github.com/aws-amplify/amplify-category-api/commit/9019f4c147d7e1fc486b31aeccf3d98546be8a4e))
+
+
+
+
+
 ## [4.0.7](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.6...amplify-category-api-e2e-core@4.0.7) (2022-08-16)
 
 
