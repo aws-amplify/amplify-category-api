@@ -28,7 +28,7 @@ import {
 import {
   toUpper, plurality, graphqlName, ResourceConstants, ModelResourceIDs,
 } from 'graphql-transformer-common';
-import { MappingParameters } from 'graphql-transformer-core/lib/TransformerContext';
+import { MappingParameters } from 'graphql-transformer-core';
 
 /**
  * ResourceFactory

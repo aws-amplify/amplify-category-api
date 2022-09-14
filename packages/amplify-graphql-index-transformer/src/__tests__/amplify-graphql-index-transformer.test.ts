@@ -1,8 +1,11 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import {
-  ConflictHandlerType, GraphQLTransform, SyncConfig, validateModelSchema,
+  ConflictHandlerType,
+  GraphQLTransform,
+  SyncConfig,
+  validateModelSchema,
+  Template,
 } from '@aws-amplify/graphql-transformer-core';
-import Template from '@aws-amplify/graphql-transformer-core/lib/transformation/types';
 import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { expect as cdkExpect, haveResourceLike } from '@aws-cdk/assert';
 import { DocumentNode, parse } from 'graphql';

@@ -1,4 +1,19 @@
-import { ArgumentNode, DirectiveNode, NameNode, valueFromASTUntyped, ValueNode, Location } from 'graphql';
+import {
+  ArgumentNode,
+  DirectiveNode,
+  NameNode,
+  valueFromASTUntyped,
+  ValueNode,
+  Location,
+} from 'graphql';
+import _ from 'lodash';
+import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
+
+const DEEP_MERGE_FLAG_NAME = 'shouldDeepMergeDirectiveConfigDefaults';
+
+export type GetArgumentsOptions = {
+  deepMergeArguments?: boolean;
+}
 
 export class ArgumentWrapper {
   public readonly name: NameNode;
@@ -7,6 +22,7 @@ export class ArgumentWrapper {
     this.name = argument.name;
     this.value = argument.value;
   }
+
   serialize = (): ArgumentNode => {
     return {
       kind: 'Argument',
@@ -25,6 +41,7 @@ export class DirectiveWrapper {
     this.arguments = (node.arguments ?? []).map(arg => new ArgumentWrapper(arg));
     this.location = this.location;
   }
+
   public serialize = (): DirectiveNode => {
     return {
       kind: 'Directive',
@@ -32,7 +49,8 @@ export class DirectiveWrapper {
       arguments: this.arguments.map(arg => arg.serialize()),
     };
   };
-  public getArguments = <T>(defaultValue: Required<T>): Required<T> => {
+
+  public getArguments = <T>(defaultValue: Required<T>, options?: GetArgumentsOptions): Required<T> => {
     const argValues = this.arguments.reduce(
       (acc: Record<string, any>, arg: ArgumentWrapper) => ({
         ...acc,
@@ -40,6 +58,15 @@ export class DirectiveWrapper {
       }),
       {},
     );
+    if (options?.deepMergeArguments) {
+      return _.merge(_.cloneDeep(defaultValue), argValues);
+    }
     return Object.assign(defaultValue, argValues);
   };
 }
+
+export const generateGetArgumentsInput = (featureFlags: FeatureFlagProvider): GetArgumentsOptions => {
+  return {
+    deepMergeArguments: featureFlags.getBoolean(DEEP_MERGE_FLAG_NAME, false),
+  };
+};

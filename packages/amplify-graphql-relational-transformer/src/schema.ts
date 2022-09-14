@@ -1,4 +1,3 @@
-import assert from 'assert';
 import { generateModelScalarFilterInputName, makeModelSortDirectionEnumObject } from '@aws-amplify/graphql-model-transformer';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
@@ -55,7 +54,9 @@ export const extendTypeWithConnection = (config: HasManyDirectiveConfiguration, 
   // Extensions are not allowed to re-declare fields so we must replace it in place.
   const type = ctx.output.getType(object.name.value) as ObjectTypeDefinitionNode;
 
-  assert(type?.kind === Kind.OBJECT_TYPE_DEFINITION || type?.kind === Kind.INTERFACE_TYPE_DEFINITION);
+  if (type?.kind !== Kind.OBJECT_TYPE_DEFINITION && type?.kind !== Kind.INTERFACE_TYPE_DEFINITION) {
+    throw new Error(`Expected referenced type to be either and object or interface definition, got ${type?.kind}`);
+  }
 
   const newFields = type.fields!.map((f: FieldDefinitionNode) => {
     if (f.name.value === field.name.value) {
@@ -488,7 +489,9 @@ const makeModelXFilterInputObject = (
  */
 export const getPartitionKeyField = (ctx: TransformerContextProvider, object: ObjectTypeDefinitionNode): FieldDefinitionNode => {
   const outputObject = ctx.output.getType(object.name.value) as ObjectTypeDefinitionNode;
-  assert(outputObject);
+  if (!outputObject) {
+    throw new Error(`Expected to find output object defined for ${object.name.value}, but did not.`);
+  }
   return getPartitionKeyFieldNoContext(outputObject);
 };
 
@@ -514,7 +517,9 @@ export const getPartitionKeyFieldNoContext = (object: ObjectTypeDefinitionNode |
  */
 export const getSortKeyFields = (ctx: TransformerContextProvider, object: ObjectTypeDefinitionNode): FieldDefinitionNode[] => {
   const outputObject = ctx.output.getType(object.name.value) as ObjectTypeDefinitionNode;
-  assert(outputObject);
+  if (!outputObject) {
+    throw new Error(`Expected to find output object defined for ${object.name.value}, but did not.`);
+  }
   return getSortKeyFieldsNoContext(outputObject);
 };
 

@@ -117,6 +117,7 @@ describe('showDefaultIdentityClaimWarning', () => {
 });
 
 describe('showOwnerCanReassignWarning', () => {
+  const OWNER_MAY_REASSIGN_MESSAGE = expect.stringContaining('owners may reassign ownership');
   const OWNER_ENABLED_PROVIDERS = ['userPools', 'oidc'];
   const transformTestSchema = (schema: string): void => {
     const transformer = new GraphQLTransform({
@@ -160,6 +161,7 @@ describe('showOwnerCanReassignWarning', () => {
           }
         `);
 
+        expect(printer.warn).toHaveBeenCalledWith(OWNER_MAY_REASSIGN_MESSAGE);
         expect(printer.warn).toHaveBeenCalledWith(
           'WARNING: owners may reassign ownership for the following model(s) and role(s): Blog: [owner]. '
           + 'If this is not intentional, you may want to apply field-level authorization rules to these fields. '
@@ -176,11 +178,7 @@ describe('showOwnerCanReassignWarning', () => {
           }
         `);
 
-        expect(printer.warn).not.toHaveBeenCalledWith(
-          'WARNING: owners may reassign ownership for the following model(s) and role(s): Blog: [owner]. '
-          + 'If this is not intentional, you may want to apply field-level authorization rules to these fields. '
-          + 'To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.',
-        );
+        expect(printer.warn).not.toHaveBeenCalledWith(OWNER_MAY_REASSIGN_MESSAGE);
       });
 
       test('warns on multiple schemas with multiple reassignable owners each', () => {
@@ -204,11 +202,58 @@ describe('showOwnerCanReassignWarning', () => {
           }
         `);
 
+        expect(printer.warn).toHaveBeenCalledWith(OWNER_MAY_REASSIGN_MESSAGE);
         expect(printer.warn).toHaveBeenCalledWith(
           'WARNING: owners may reassign ownership for the following model(s) and role(s): Todo: [writer, editors], Blog: [owner]. '
           + 'If this is not intentional, you may want to apply field-level authorization rules to these fields. '
           + 'To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.',
         );
+      });
+
+      test('does not warn on custom owner fields with field-level overrides', () => {
+        transformTestSchema(`
+          type Todo @model @auth(rules: [
+            { allow: owner, provider: ${provider} }
+            { allow: owner, provider: ${provider} ownerField: "writer" }
+            { allow: owner, provider: ${provider} ownerField: "editors" }
+          ]) {
+            id: ID!
+            description: String
+            writer: String @auth(rules: [{ allow: owner, provider: ${provider}, operations: [read] }])
+            editors: [String] @auth(rules: [{ allow: owner, provider: ${provider}, operations: [read] }])
+            owner: String @auth(rules: [{ allow: owner, provider: ${provider}, operations: [read] }])
+          }
+        `);
+
+        expect(printer.warn).not.toHaveBeenCalledWith(OWNER_MAY_REASSIGN_MESSAGE);
+      });
+
+      test('does not warn on single custom owner fields with field-level override', () => {
+        transformTestSchema(`
+          type Todo @model @auth(rules: [
+            { allow: owner, provider: ${provider} ownerField: "writer" }
+          ]) {
+            id: ID!
+            description: String
+            writer: String @auth(rules: [{ allow: owner, provider: ${provider}, ownerField: "writer", operations: [read] }])
+          }
+        `);
+
+        expect(printer.warn).not.toHaveBeenCalledWith(OWNER_MAY_REASSIGN_MESSAGE);
+      });
+
+      test('malformed field-level auth will continue to warn', () => {
+        transformTestSchema(`
+          type Todo @model(subscriptions: null) @auth(rules: [
+            { allow: owner, provider: ${provider} ownerField: "writer" }
+          ]) {
+            id: ID!
+            description: String
+            writer: String @auth(rules: [{ allow: owner, provider: ${provider}, operations: [read] }])
+          }
+        `);
+
+        expect(printer.warn).toHaveBeenCalledWith(OWNER_MAY_REASSIGN_MESSAGE);
       });
 
       test('should warn on implicit owner field', () => {
@@ -219,6 +264,7 @@ describe('showOwnerCanReassignWarning', () => {
           }
         `);
 
+        expect(printer.warn).toHaveBeenCalledWith(OWNER_MAY_REASSIGN_MESSAGE);
         expect(printer.warn).toHaveBeenCalledWith(
           'WARNING: owners may reassign ownership for the following model(s) and role(s): Blog: [owner]. '
           + 'If this is not intentional, you may want to apply field-level authorization rules to these fields. '

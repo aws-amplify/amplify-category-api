@@ -9,6 +9,8 @@ import {
   TransformerResolver,
   getTable,
   getKeySchema,
+  getSortKeyFieldNames,
+  generateGetArgumentsInput,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -31,6 +33,7 @@ import {
   ListValueNode,
   StringValueNode,
 } from 'graphql';
+import { merge } from 'lodash';
 import { SubscriptionLevel, ModelDirectiveConfiguration, removeSubscriptionFilterInputAttribute } from '@aws-amplify/graphql-model-transformer';
 import {
   getBaseType,
@@ -46,7 +49,6 @@ import {
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { getConnectionAttributeName, getSortKeyConnectionAttributeName, getObjectPrimaryKey } from '@aws-amplify/graphql-relational-transformer';
-import { getSortKeyFieldNames } from '@aws-amplify/graphql-transformer-core';
 import {
   generateAuthExpressionForCreate,
   generateAuthExpressionForUpdate,
@@ -170,7 +172,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     if (context.metadata.has('joinTypeList')) {
       isJoinType = context.metadata.get<Array<string>>('joinTypeList')!.includes(typeName);
     }
-    this.rules = getAuthDirectiveRules(new DirectiveWrapper(directive));
+    const getAuthRulesOptions = merge({ isField: false }, generateGetArgumentsInput(context.featureFlags));
+    this.rules = getAuthDirectiveRules(new DirectiveWrapper(directive), getAuthRulesOptions);
 
     // validate rules
     validateRules(this.rules, this.configuredAuthProviders, def.name.value);
@@ -187,7 +190,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     this.addTypeToResourceReferences(def.name.value, this.rules);
     // turn rules into roles and add into acm and roleMap
     this.convertRulesToRoles(acm, this.rules, isJoinType, undefined, undefined, context);
-    this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName, context.isProjectUsingDataStore()));
+    this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName, context.featureFlags, context.isProjectUsingDataStore()));
     this.authModelConfig.set(typeName, acm);
   };
 
@@ -225,8 +228,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const modelDirective = parent.directives?.find(dir => dir.name.value === 'model');
     const typeName = parent.name.value;
     const fieldName = field.name.value;
-    const rules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(directive), true);
-    validateFieldRules(new DirectiveWrapper(directive), isParentTypeBuiltinType, modelDirective !== undefined, field.name.value);
+    const getAuthRulesOptions = merge({ isField: true }, generateGetArgumentsInput(context.featureFlags));
+    const rules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(directive), getAuthRulesOptions);
+    validateFieldRules(new DirectiveWrapper(directive), isParentTypeBuiltinType, modelDirective !== undefined, field.name.value, context.featureFlags);
     validateRules(rules, this.configuredAuthProviders, field.name.value);
 
     // regardless if a model directive is used we generate the policy for iam auth
@@ -239,7 +243,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       let acm: AccessControlMatrix;
       // check if the parent is already in the model config if not add it
       if (!this.modelDirectiveConfig.has(typeName)) {
-        this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName, context.isProjectUsingDataStore()));
+        this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName, context.featureFlags, context.isProjectUsingDataStore()));
         acm = new AccessControlMatrix({
           name: parent.name.value,
           operations: MODEL_OPERATIONS,
@@ -345,7 +349,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       // check if searchable if included in the typeName
       if (searchableDirective) {
         // protect search query
-        const config = getSearchableConfig(searchableDirective, modelName);
+        const config = getSearchableConfig(searchableDirective, modelName, context.featureFlags);
         this.protectSearchResolver(context, def, context.output.getQueryTypeName()!, config.queries.search, acm);
       }
       // get fields specified in the schema
@@ -515,7 +519,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     }
     // @searchable
     if (searchableDirective) {
-      const config = getSearchableConfig(searchableDirective, def.name.value);
+      const config = getSearchableConfig(searchableDirective, def.name.value, ctx.featureFlags);
       addServiceDirective(ctx.output.getQueryTypeName(), 'search', config.queries.search);
     }
 

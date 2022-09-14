@@ -2,7 +2,6 @@ import { attributeTypeFromType } from '@aws-amplify/graphql-index-transformer';
 import { getKeySchema, getTable, MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from '@aws-cdk/core';
-import assert from 'assert';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import {
   and,
@@ -70,7 +69,9 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
   const {
     connectionFields, field, fields, object, relatedType, relatedTypeIndex,
   } = config;
-  assert(relatedTypeIndex.length > 0);
+  if (relatedTypeIndex.length === 0) {
+    throw new Error('Expected relatedType index fields to be set for connection.');
+  }
   const localFields = fields.length > 0 ? fields : connectionFields;
   const table = getTable(ctx, relatedType);
   const { keySchema } = table as any;
@@ -177,10 +178,12 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
   const {
     connectionFields, field, fields, indexName, limit, object, relatedType,
   } = config;
+  const connectionAttributes: string[] = fields.length > 0 ? fields : connectionFields;
+  if (connectionAttributes.length === 0) {
+    throw new Error('Either connection fields or local fields should be populated.');
+  }
   const table = getTable(ctx, relatedType);
   const dataSource = ctx.api.host.getDataSource(`${relatedType.name.value}Table`);
-  const connectionAttributes: string[] = fields.length > 0 ? fields : connectionFields;
-  assert(connectionAttributes.length > 0);
   const keySchema = getKeySchema(table, indexName);
   const setup: Expression[] = [
     set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${limit})`)),

@@ -3,10 +3,12 @@ import { EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
 import { CfnDomain, Domain, ElasticsearchVersion } from '@aws-cdk/aws-elasticsearch';
 import { IRole, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import {
-  CfnParameter, Construct, Fn, RemovalPolicy,
+  CfnParameter,
+  Construct,
+  Fn,
+  RemovalPolicy,
 } from '@aws-cdk/core';
 import { ResourceConstants } from 'graphql-transformer-common';
-import assert from 'assert';
 
 export const createSearchableDomain = (stack: Construct, parameterMap: Map<string, CfnParameter>, apiId: string): Domain => {
   const { OpenSearchEBSVolumeGB, OpenSearchInstanceType, OpenSearchInstanceCount } = ResourceConstants.PARAMETERS;
@@ -43,7 +45,9 @@ export const createSearchableDomainRole = (
   const { OpenSearchAccessIAMRoleLogicalID } = ResourceConstants.RESOURCES;
   const { OpenSearchAccessIAMRoleName } = ResourceConstants.PARAMETERS;
   const roleName = parameterMap.get(OpenSearchAccessIAMRoleName)?.valueAsString;
-  assert(roleName);
+  if (!roleName) {
+    throw new Error(`Could find role name parameter for ${OpenSearchAccessIAMRoleName}`);
+  }
   return new Role(stack, OpenSearchAccessIAMRoleLogicalID, {
     assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
     roleName: context.resourceHelper.generateIAMRoleName(roleName),
