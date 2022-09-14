@@ -20,8 +20,13 @@ import path from 'path';
 import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import _ from 'lodash';
+import { printer } from 'amplify-prompts';
 import { getAdminRoles, getIdentityPoolId } from './utils';
-import { schemaHasSandboxModeEnabled, showSandboxModePrompts } from './sandbox-mode-helpers';
+import {
+  schemaHasSandboxModeEnabled,
+  showGlobalSandboxModeWarning,
+  showSandboxModePrompts,
+} from './sandbox-mode-helpers';
 import { getTransformerFactory } from './transformer-factory';
 import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import {
@@ -35,8 +40,22 @@ import {
   TransformerProjectOptions,
 } from './transformer-options-types';
 import { contextUtil } from '../category-utils/context-util';
+import {searchablePushChecks} from "./api-utils";
 
 export const APPSYNC_RESOURCE_SERVICE = 'AppSync';
+
+const warnOnAuth = (map: $TSObject, docLink: string): void => {
+  const unAuthModelTypes = Object.keys(map).filter((type) => !map[type].includes('auth') && map[type].includes('model'));
+  if (unAuthModelTypes.length) {
+    printer.info(
+      `
+⚠️  WARNING: Some types do not have authorization rules configured. That means all create, read, update, and delete operations are denied on these types:`,
+      'yellow',
+    );
+    printer.info(unAuthModelTypes.map((type) => `\t - ${type}`).join('\n'), 'yellow');
+    printer.info(`Learn more about "@auth" authorization rules here: ${docLink}`, 'yellow');
+  }
+};
 
 /**
  * Use current context to generate the Transformer options for generating
@@ -173,12 +192,23 @@ export const generateTransformerOptions = async (
   const docLink = getGraphQLTransformerAuthDocLink(transformerVersion);
   const sandboxModeEnabled = schemaHasSandboxModeEnabled(project.schema, docLink);
   const directiveMap = collectDirectivesByTypeNames(project.schema);
+  const hasApiKey = authConfig.defaultAuthentication.authenticationType === 'API_KEY'
+    || authConfig.additionalAuthenticationProviders.some(a => a.authenticationType === 'API_KEY');
+  const showSandboxModeMessage = sandboxModeEnabled && hasApiKey;
 
   const transformerListFactory = await getTransformerFactory(context, resourceDir);
+
+  searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
 
   if (sandboxModeEnabled && options.promptApiKeyCreation) {
     const apiKeyConfig = await showSandboxModePrompts(context);
     if (apiKeyConfig) authConfig.additionalAuthenticationProviders.push(apiKeyConfig);
+  }
+
+  if (showSandboxModeMessage) {
+    showGlobalSandboxModeWarning(docLink);
+  } else {
+    warnOnAuth(directiveMap.types, docLink);
   }
 
   let searchableTransformerFlag = false;
