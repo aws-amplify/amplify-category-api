@@ -1,5 +1,4 @@
 import {
-  collectDirectivesByTypeNames,
   DeploymentResources,
   GraphQLTransform,
   OverrideConfig,
@@ -9,15 +8,9 @@ import {
 } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
-  $TSAny,
   $TSContext,
-  $TSMeta,
-  $TSObject,
   AmplifyCategories,
   AmplifySupportedService,
-  ApiCategoryFacade,
-  CloudformationProviderFacade,
-  getGraphQLTransformerAuthDocLink,
   JSONUtilities,
   pathManager,
 } from 'amplify-cli-core';
@@ -25,8 +18,6 @@ import { printer } from 'amplify-prompts';
 import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import {
-  getSanityCheckRules,
-  loadProject,
   sanityCheckProject,
 } from 'graphql-transformer-core';
 import _ from 'lodash';
@@ -35,12 +26,11 @@ import path from 'path';
 import { searchablePushChecks } from './api-utils';
 import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import { isAuthModeUpdated } from './auth-mode-compare';
-import { schemaHasSandboxModeEnabled, showGlobalSandboxModeWarning, showSandboxModePrompts } from './sandbox-mode-helpers';
+import { showSandboxModePrompts } from './sandbox-mode-helpers';
 import { parseUserDefinedSlots } from './user-defined-slots';
 import {
-  getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk,
+  mergeUserConfigWithTransformOutput, writeDeploymentToDisk,
 } from './utils';
-import { getTransformerFactory } from './transformer-factory';
 import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerFactoryArgs, TransformerProjectOptions } from './transformer-options-types';
 import { ProjectOptions } from './transform-config';
@@ -48,22 +38,7 @@ import { ProjectOptions } from './transform-config';
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
 const SCHEMA_DIR_NAME = 'schema';
-const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
-const DESTRUCTIVE_UPDATES_FLAG = 'allow-destructive-graphql-schema-updates';
 const PROVIDER_NAME = 'awscloudformation';
-
-const warnOnAuth = (map: $TSObject, docLink: string): void => {
-  const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
-  if (unAuthModelTypes.length) {
-    printer.info(
-      `
-⚠️  WARNING: Some types do not have authorization rules configured. That means all create, read, update, and delete operations are denied on these types:`,
-      'yellow',
-    );
-    printer.info(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'), 'yellow');
-    printer.info(`Learn more about "@auth" authorization rules here: ${docLink}`, 'yellow');
-  }
-};
 
 /**
  * Transform GraphQL Schema
@@ -116,19 +91,13 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
     }
   }
 
-  let previouslyDeployedBackendDir = options.cloudBackendDirectory;
+  const previouslyDeployedBackendDir = options.cloudBackendDirectory;
   if (!previouslyDeployedBackendDir) {
     if (resources.length > 0) {
       const resource = resources[0];
       if (resource.providerPlugin !== PROVIDER_NAME) {
         return undefined;
       }
-      const { category } = resource;
-      resourceName = resource.resourceName;
-      const cloudBackendRootDir = pathManager.getCurrentCloudBackendDirPath();
-      /* eslint-disable */
-      previouslyDeployedBackendDir = path.normalize(path.join(cloudBackendRootDir, category, resourceName));
-      /* eslint-enable */
     }
   }
 
@@ -188,30 +157,10 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
     fs.ensureDirSync(buildDir);
   }
 
-  const project = await loadProject(resourceDir);
-
-  const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
-  const docLink = getGraphQLTransformerAuthDocLink(transformerVersion);
-  const sandboxModeEnabled = schemaHasSandboxModeEnabled(project.schema, docLink);
-  const directiveMap = collectDirectivesByTypeNames(project.schema);
-  const hasApiKey = authConfig.defaultAuthentication.authenticationType === 'API_KEY'
-    || authConfig.additionalAuthenticationProviders.some(a => a.authenticationType === 'API_KEY');
-  const showSandboxModeMessage = sandboxModeEnabled && hasApiKey;
-
-  if (showSandboxModeMessage) {
-    showGlobalSandboxModeWarning(docLink);
-  } else {
-    warnOnAuth(directiveMap.types, docLink);
-  }
-
-  searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
-
-  if (sandboxModeEnabled && options.promptApiKeyCreation) {
-    const apiKeyConfig = await showSandboxModePrompts(context);
-    if (apiKeyConfig) authConfig.additionalAuthenticationProviders.push(apiKeyConfig);
-  }
-
   const buildConfig: TransformerProjectOptions<TransformerFactoryArgs> = await generateTransformerOptions(context, options);
+  if (!buildConfig) {
+    return undefined;
+  }
 
   const transformerOutput = await buildAPIProject(context, buildConfig);
 
