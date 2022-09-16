@@ -77,7 +77,8 @@ describe('amplify add api (GraphQL)', () => {
 
   it('init a project and add custom iam roles - local test with gql v2', async () => {
     const name = 'customadminroles';
-    await initJSProjectWithProfile(projRoot, { name });
+    const envName = 'fill'
+    await initJSProjectWithProfile(projRoot, { name, envName });
     await addApi(projRoot, { transformerVersion: 2, IAM: {}, 'Amazon Cognito User Pool': {} });
     updateApiSchema(projRoot, name, 'cognito_simple_model.graphql');
     await apiGqlCompile(projRoot);
@@ -95,10 +96,10 @@ describe('amplify add api (GraphQL)', () => {
     expect(beforeAdminConfig).toMatchSnapshot();
 
     const customRolesConfig = {
-      adminRoleNames: ['myAdminRoleName'],
+      adminRoleNames: ['myAdminRoleName', 'myEnvFunction-${env}'],
     };
     setCustomRolesConfig(projRoot, name, customRolesConfig);
-    await apiGqlCompile(projRoot);
+    await apiGqlCompile(projRoot, true);
     const afterAdminConfig = readFileSync(createResolver).toString();
     expect(afterAdminConfig).toMatchSnapshot();
     expect(beforeAdminConfig).not.toEqual(afterAdminConfig);
@@ -106,7 +107,8 @@ describe('amplify add api (GraphQL)', () => {
 
   it('init a project and add custom iam roles - local test with gql v2 w/ identity claim feature flag disabled', async () => {
     const name = 'customadminroles';
-    await initJSProjectWithProfile(projRoot, { name });
+    const envName = 'fill'
+    await initJSProjectWithProfile(projRoot, { name, envName });
     await addFeatureFlag(projRoot, 'graphqltransformer', 'useSubUsernameForDefaultIdentityClaim', false);
     await addApi(projRoot, { transformerVersion: 2, IAM: {}, 'Amazon Cognito User Pool': {} });
     updateApiSchema(projRoot, name, 'cognito_simple_model.graphql');
@@ -125,10 +127,10 @@ describe('amplify add api (GraphQL)', () => {
     expect(beforeAdminConfig).toMatchSnapshot();
 
     const customRolesConfig = {
-      adminRoleNames: ['myAdminRoleName'],
+      adminRoleNames: ['myAdminRoleName', 'myEnvFunction-${env}'],
     };
     setCustomRolesConfig(projRoot, name, customRolesConfig);
-    await apiGqlCompile(projRoot);
+    await apiGqlCompile(projRoot, true);
     const afterAdminConfig = readFileSync(createResolver).toString();
     expect(afterAdminConfig).toMatchSnapshot();
     expect(beforeAdminConfig).not.toEqual(afterAdminConfig);

@@ -2,7 +2,9 @@ import fs from 'fs-extra';
 import * as path from 'path';
 import { TransformerProjectConfig, DeploymentResources } from '@aws-amplify/graphql-transformer-core';
 import rimraf from 'rimraf';
-import { $TSContext, AmplifyCategories, CloudformationProviderFacade, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import {
+  $TSContext, AmplifyCategories, CloudformationProviderFacade, JSONUtilities, pathManager, stateManager,
+} from 'amplify-cli-core';
 import { CloudFormation, Fn } from 'cloudform';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { pullAllBy, find } from 'lodash';
@@ -36,7 +38,7 @@ export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string | u
     return [];
   }
 
-  //admin ui roles
+  // admin ui roles
   try {
     const amplifyMeta = stateManager.getMeta();
     const appId = amplifyMeta?.providers?.[PROVIDER_NAME]?.AmplifyAppId;
@@ -65,7 +67,10 @@ export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string | u
     if (fs.existsSync(customRoleFile)) {
       const customRoleConfig = JSONUtilities.readJson<CustomRolesConfig>(customRoleFile);
       if (customRoleConfig && customRoleConfig.adminRoleNames) {
-        adminRoles.push(...customRoleConfig.adminRoleNames);
+        const adminRoleNames = customRoleConfig.adminRoleNames
+          // eslint-disable-next-line no-template-curly-in-string
+          .map((r) => (r.includes('${env}') ? r.replace('${env}', currentEnv) : r));
+        adminRoles.push(...adminRoleNames);
       }
     }
   }
@@ -80,9 +85,9 @@ export function mergeUserConfigWithTransformOutput(
   const userFunctions = userConfig.functions || {};
   const userResolvers = userConfig.resolvers || {};
   const userPipelineFunctions = userConfig.pipelineFunctions || {};
-  const functions = transformOutput.functions;
-  const resolvers = transformOutput.resolvers;
-  const pipelineFunctions = transformOutput.pipelineFunctions;
+  const { functions } = transformOutput;
+  const { resolvers } = transformOutput;
+  const { pipelineFunctions } = transformOutput;
 
   if (!opts?.disableFunctionOverrides) {
     for (const userFunction of Object.keys(userFunctions)) {
@@ -95,8 +100,8 @@ export function mergeUserConfigWithTransformOutput(
 
     if (pipelineFunctionKeys.length > 0) {
       printer.warn(
-        ' You are using the "pipelineFunctions" directory for overridden and custom resolvers. ' +
-          'Please use the "resolvers" directory as "pipelineFunctions" will be deprecated.\n',
+        ' You are using the "pipelineFunctions" directory for overridden and custom resolvers. '
+          + 'Please use the "resolvers" directory as "pipelineFunctions" will be deprecated.\n',
       );
     }
 
@@ -148,7 +153,7 @@ function overrideUserDefinedStacks(userConfig: TransformerProjectConfig, transfo
 
   customStackParams[ResourceConstants.PARAMETERS.AppSyncApiId] = Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId');
 
-  let updatedParameters = rootStack.Parameters;
+  const updatedParameters = rootStack.Parameters;
 
   for (const userStack of Object.keys(userStacks)) {
     if (stacks[userStack]) {
@@ -202,7 +207,7 @@ export async function writeDeploymentToDisk(
   context: $TSContext,
   deployment: DeploymentResources,
   directory: string,
-  rootStackFileName: string = 'rootStack.json',
+  rootStackFileName = 'rootStack.json',
   buildParameters: Object,
   minify = false,
 ) {
@@ -211,8 +216,8 @@ export async function writeDeploymentToDisk(
   emptyBuildDirPreserveTsconfig(directory);
 
   // Write the schema to disk
-  const schema = deployment.schema;
-  const fullSchemaPath = path.normalize(directory + `/schema.graphql`);
+  const { schema } = deployment;
+  const fullSchemaPath = path.normalize(`${directory}/schema.graphql`);
   fs.writeFileSync(fullSchemaPath, schema);
 
   // Setup the directories if they do not exist.
@@ -222,7 +227,7 @@ export async function writeDeploymentToDisk(
   const resolverFileNames = Object.keys(deployment.resolvers);
   const resolverRootPath = resolverDirectoryPath(directory);
   for (const resolverFileName of resolverFileNames) {
-    const fullResolverPath = path.normalize(resolverRootPath + '/' + resolverFileName);
+    const fullResolverPath = path.normalize(`${resolverRootPath}/${resolverFileName}`);
     fs.writeFileSync(fullResolverPath, deployment.resolvers[resolverFileName]);
   }
 
@@ -230,7 +235,7 @@ export async function writeDeploymentToDisk(
   const pipelineFunctions = Object.keys(deployment.pipelineFunctions);
   const pipelineFunctionRootPath = pipelineFunctionDirectoryPath(directory);
   for (const functionFileName of pipelineFunctions) {
-    const fullTemplatePath = path.normalize(pipelineFunctionRootPath + '/' + functionFileName);
+    const fullTemplatePath = path.normalize(`${pipelineFunctionRootPath}/${functionFileName}`);
     fs.writeFileSync(fullTemplatePath, deployment.pipelineFunctions[functionFileName]);
   }
 
@@ -244,7 +249,7 @@ export async function writeDeploymentToDisk(
     }
     const fullFileName = fileNameParts.join('.');
     throwIfNotJSONExt(fullFileName);
-    const fullStackPath = path.normalize(stackRootPath + '/' + fullFileName);
+    const fullStackPath = path.normalize(`${stackRootPath}/${fullFileName}`);
     let stackContent = deployment.stacks[stackFileName];
     if (typeof stackContent === 'string') {
       stackContent = JSON.parse(stackContent);
@@ -255,17 +260,17 @@ export async function writeDeploymentToDisk(
 
   // Write any functions to disk
   const functionNames = Object.keys(deployment.functions);
-  const functionRootPath = path.normalize(directory + `/functions`);
+  const functionRootPath = path.normalize(`${directory}/functions`);
   if (!fs.existsSync(functionRootPath)) {
     fs.mkdirSync(functionRootPath);
   }
   for (const functionName of functionNames) {
-    const fullFunctionPath = path.normalize(functionRootPath + '/' + functionName);
+    const fullFunctionPath = path.normalize(`${functionRootPath}/${functionName}`);
     const zipContents = fs.readFileSync(deployment.functions[functionName]);
     fs.writeFileSync(fullFunctionPath, zipContents);
   }
-  const rootStack = deployment.rootStack;
-  const rootStackPath = path.normalize(directory + `/${rootStackFileName}`);
+  const { rootStack } = deployment;
+  const rootStackPath = path.normalize(`${directory}/${rootStackFileName}`);
   const rootStackString = minify ? JSON.stringify(rootStack) : JSON.stringify(rootStack, null, 4);
   fs.writeFileSync(rootStackPath, rootStackString);
 
@@ -291,11 +296,11 @@ function pipelineFunctionDirectoryPath(rootPath: string) {
 }
 
 function resolverDirectoryPath(rootPath: string) {
-  return path.normalize(rootPath + `/resolvers`);
+  return path.normalize(`${rootPath}/resolvers`);
 }
 
 function stacksDirectoryPath(rootPath: string) {
-  return path.normalize(rootPath + `/stacks`);
+  return path.normalize(`${rootPath}/stacks`);
 }
 
 function throwIfNotJSONExt(stackFile: string) {
@@ -310,7 +315,7 @@ function throwIfNotJSONExt(stackFile: string) {
 
 const emptyBuildDirPreserveTsconfig = (directory: string) => {
   const files = fs.readdirSync(directory);
-  files.forEach(file => {
+  files.forEach((file) => {
     const fileDir = path.join(directory, file);
     if (fs.lstatSync(fileDir).isDirectory()) {
       rimraf.sync(fileDir);
