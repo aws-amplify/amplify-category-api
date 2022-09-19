@@ -442,3 +442,33 @@ describe('Pre Processing Belongs To Tests', () => {
     expect(hasGeneratedField(updatedSchemaDoc, 'Post', 'blogPostsFieldId')).toBeTruthy();
   });
 });
+
+test('Should not resolve to secondary index of connected model if the index is defined', () => {
+  const inputSchema = `
+    type Post @model {
+      customId: ID! @primaryKey(sortKeyFields:["content"])
+      content: String! @index
+      comments: [Comment] @hasMany(indexName:"byParent", fields:["customId", "content"])
+    }
+    
+    type Comment @model {
+      childId: ID! @primaryKey(sortKeyFields:["content"])
+      content: String!
+      parent: Post @belongsTo(fields:["parentId", "parentTitle"])
+      parentId: ID @index(name: "byParent", sortKeyFields:["parentTitle"])
+      parentTitle: String
+    }
+  `;
+
+  const transformer = new GraphQLTransform({
+    featureFlags,
+    transformers: [
+      new ModelTransformer(),
+      new PrimaryKeyTransformer(),
+      new IndexTransformer(),
+      new HasManyTransformer(),
+      new BelongsToTransformer(),
+    ],
+  });
+  expect(() => transformer.transform(inputSchema)).not.toThrow();
+});
