@@ -818,7 +818,7 @@ function makeSyncQueryResolver() {
             version: str(RESOLVER_VERSION_ID),
             operation: str('Sync'),
             limit: ref('limit'),
-            lastSync: ref('util.toJson($util.defaultIfNull($ctx.args.lastSync, null))'),
+            lastSync: ref('util.defaultIfNull($ctx.args.lastSync, null)'),
             query: ref(ResourceConstants.SNIPPETS.ModelQueryExpression),
           }),
         ),
