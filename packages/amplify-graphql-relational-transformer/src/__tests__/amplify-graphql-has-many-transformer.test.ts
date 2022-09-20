@@ -1,6 +1,7 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Kind, parse } from 'graphql';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 import { featureFlags, hasGeneratedField } from './test-helpers';
@@ -848,5 +849,80 @@ describe('Pre Processing Has Many Tests', () => {
     const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
     expect(hasGeneratedField(updatedSchemaDoc, 'Post', 'blogPostsFieldId')).toBeTruthy();
     expect(hasGeneratedField(updatedSchemaDoc, 'Post', 'blogPostsFieldValue', 'String')).toBeTruthy();
+  });
+});
+
+describe('@hasMany connection field nullability tests', () => {
+  const featureFlags: FeatureFlagProvider = {
+    getBoolean: (value: string, defaultValue: boolean): boolean => {
+      if (value === 'respectPrimaryKeyAttributesOnConnectionField') {
+        return true;
+      }
+      return defaultValue;
+    },
+    getNumber: jest.fn(),
+    getObject: jest.fn(),
+  };
+  test('Should not affect the nullability of connection fields of the other side when the @hasMany field is non-nullable', () => {
+    const inputSchema = `
+      type Todo @model {
+        todoid: ID! @primaryKey(sortKeyFields:["name"])
+        name: String!
+        title: String!
+        priority: Int
+        tasks: [Task]! @hasMany
+      }
+      type Task @model {
+        taskid: ID! @primaryKey(sortKeyFields:["name"])
+        name: String!
+        description: String
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      featureFlags,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+    });
+  
+    const out = transformer.transform(inputSchema);
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+    const connectionFieldName1 = 'todoTasksTodoid';
+    const connectionFieldName2 = 'todoTasksName';
+    //Type definition
+    const objType = schema.definitions.find((def: any) => def.name && def.name.value === 'Task') as any;
+    expect(objType).toBeDefined();
+    const relatedField1 = objType.fields.find((f: any) => f.name.value === connectionFieldName1);
+    expect(relatedField1).toBeDefined();
+    expect(relatedField1.type.kind).toBe(Kind.NAMED_TYPE);
+    expect(relatedField1.type.name.value).toBe('ID');
+    const relatedField2 = objType.fields.find((f: any) => f.name.value === connectionFieldName2);
+    expect(relatedField2).toBeDefined();
+    expect(relatedField2.type.kind).toBe(Kind.NAMED_TYPE);
+    expect(relatedField2.type.name.value).toBe('String');
+    //Create Input
+    const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTaskInput') as any;
+    expect(createInput).toBeDefined();
+    expect(createInput.fields.length).toEqual(5);
+    const createInputConnectedField1 = createInput.fields.find((f: any) => f.name.value === connectionFieldName1);
+    expect(createInputConnectedField1).toBeDefined();
+    expect(createInputConnectedField1.type.kind).toBe(Kind.NAMED_TYPE);
+    expect(createInputConnectedField1.type.name.value).toBe('ID');
+    const createInputConnectedField2 = createInput.fields.find((f: any) => f.name.value === connectionFieldName2);
+    expect(createInputConnectedField2).toBeDefined();
+    expect(createInputConnectedField2.type.kind).toBe(Kind.NAMED_TYPE);
+    expect(createInputConnectedField2.type.name.value).toBe('String');
+    //Update Input
+    const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTaskInput') as any;
+    expect(updateInput).toBeDefined();
+    expect(updateInput.fields.length).toEqual(5);
+    const updateInputConnectedField1 = updateInput.fields.find((f: any) => f.name.value === connectionFieldName1);
+    expect(updateInputConnectedField1).toBeDefined();
+    expect(updateInputConnectedField1.type.kind).toBe(Kind.NAMED_TYPE);
+    expect(updateInputConnectedField1.type.name.value).toBe('ID');
+    const updateInputConnectedField2 = updateInput.fields.find((f: any) => f.name.value === connectionFieldName2);
+    expect(updateInputConnectedField2).toBeDefined();
+    expect(updateInputConnectedField2.type.kind).toBe(Kind.NAMED_TYPE);
+    expect(updateInputConnectedField2.type.name.value).toBe('String');
   });
 });
