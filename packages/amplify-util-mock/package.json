@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@hapi/topo": "^5.0.0",
-    "amplify-appsync-simulator": "^2.3.12",
+    "@aws-amplify/amplify-appsync-simulator": "2.6.1",
     "amplify-category-api-dynamodb-simulator": "2.4.3",
     "amplify-category-function": "^4.0.12",
     "amplify-codegen": "^3.1.0",
