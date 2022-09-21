@@ -4,7 +4,7 @@ import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-in
 import { HasManyTransformer, HasOneTransformer, BelongsToTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from 'amplify-appsync-simulator';
+import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from '@aws-amplify/amplify-appsync-simulator';
 import { featureFlags } from '@aws-amplify/graphql-auth-transformer/src/__tests__/test-helpers';
 import { VelocityTemplateSimulator, getJWTToken, getIAMToken } from '../../velocity';
 
@@ -100,8 +100,8 @@ describe('relational tests', () => {
     expect(ownerFieldResponse.stash.authFilter).toEqual(
       expect.objectContaining({
         or: [
-          { owner: { eq: `${ownerRequest.jwt.sub}::user1` } },
-          { owner: { eq: `${ownerRequest.jwt.sub}` } },
+          { owner: { eq: `${ownerRequest?.jwt?.sub}::user1` } },
+          { owner: { eq: `${ownerRequest?.jwt?.sub}` } },
           { owner: { eq: 'user1' } },
         ],
       }),

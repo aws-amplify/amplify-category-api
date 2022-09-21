@@ -4,11 +4,10 @@ import {
   AuthTransformer,
   ModelOperation,
 } from '@aws-amplify/graphql-auth-transformer';
-import { AppSyncGraphQLExecutionContext } from 'amplify-appsync-simulator/lib/utils/graphql-runner';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { AmplifyAppSyncSimulatorAuthenticationType } from 'amplify-appsync-simulator';
+import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from '@aws-amplify/amplify-appsync-simulator';
 import { plurality } from 'graphql-transformer-common';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { featureFlags } from './test-helper';
@@ -93,7 +92,7 @@ const generateUserPoolsContext = (): AppSyncGraphQLExecutionContext => ({
 const generateInvalidUserPoolsContext = (context: AppSyncGraphQLExecutionContext): AppSyncGraphQLExecutionContext => {
   const invalidMode = Object.values(AmplifyAppSyncSimulatorAuthenticationType).find(it => it !== context.requestAuthorizationMode);
   return {
-    requestAuthorizationMode: invalidMode,
+    requestAuthorizationMode: invalidMode || AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
     headers: {},
   };
 };

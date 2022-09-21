@@ -40,7 +40,7 @@
     signedsource "^1.0.0"
     yargs "^15.3.1"
 
-"@aws-amplify/amplify-appsync-simulator@2.6.1":
+"@aws-amplify/amplify-appsync-simulator@^2.6.1":
   version "2.6.1"
   resolved "https://registry.npmjs.org/@aws-amplify/amplify-appsync-simulator/-/amplify-appsync-simulator-2.6.1.tgz#1f2faa83f37be8b1c18b20ba2c645ce6f1cbd6d3"
   integrity sha512-sDTcDj6NaHaBOHGTWSayCLXhN0eyXsjUi2CyL5eDWCeuefqU6xhXribX06tNg85mreSrMUtMBm2+3fdB/UBwDw==
