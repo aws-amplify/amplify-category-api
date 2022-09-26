@@ -64,7 +64,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "lerna": "^4.0.0",
+    "lerna": "^5.1.6",
     "strip-ansi": "^6.0.0"
   },
   "workspaces": {
@@ -130,6 +130,8 @@
     "cross-fetch": "^2.2.6",
     "trim-newlines": "^3.0.1",
     "aws-sdk": "^2.1141.0",
-    "parse-path": "^5.0.0"
+    "parse-path": "^5.0.0",
+    "parse-url": "^8.1.0",
+    "moment-timezone": "^0.5.35"
   }
 }
