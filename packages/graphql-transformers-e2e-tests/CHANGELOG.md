@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.3.0-rtf-release-phase-1.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.2.11...amplify-category-api-graphql-transformers-e2e-tests@8.3.0-rtf-release-phase-1.0) (2022-09-28)
+
+
+### Features
+
+* **graphql:** subscriptions rtf support ([738db70](https://github.com/aws-amplify/amplify-category-api/commit/738db707c24eaa4d6c38727f7146cd7e681528bc))
+
+
+
+
+
 ## [8.2.11](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.2.10...amplify-category-api-graphql-transformers-e2e-tests@8.2.11) (2022-09-20)
 
 **Note:** Version bump only for package amplify-category-api-graphql-transformers-e2e-tests

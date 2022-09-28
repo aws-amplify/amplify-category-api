@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.14.0-rtf-release-phase-1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.13.8...@aws-amplify/graphql-index-transformer@0.14.0-rtf-release-phase-1.0) (2022-09-28)
+
+
+### Features
+
+* **graphql:** subscriptions rtf support ([738db70](https://github.com/aws-amplify/amplify-category-api/commit/738db707c24eaa4d6c38727f7146cd7e681528bc))
+
+
+
+
+
 ## [0.13.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.13.7...@aws-amplify/graphql-index-transformer@0.13.8) (2022-09-20)
 
 

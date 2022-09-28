@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.5-rtf-release-phase-1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.4...@aws-amplify/amplify-category-api@4.0.5-rtf-release-phase-1.0) (2022-09-28)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+
+
+
+
 ## [4.0.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.3...@aws-amplify/amplify-category-api@4.0.4) (2022-09-20)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

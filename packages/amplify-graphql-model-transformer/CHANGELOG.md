@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.16.0-rtf-release-phase-1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@0.15.7...@aws-amplify/graphql-model-transformer@0.16.0-rtf-release-phase-1.0) (2022-09-28)
+
+
+### Features
+
+* **graphql:** subscriptions rtf support ([738db70](https://github.com/aws-amplify/amplify-category-api/commit/738db707c24eaa4d6c38727f7146cd7e681528bc))
+
+
+
+
+
 ## [0.15.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@0.15.6...@aws-amplify/graphql-model-transformer@0.15.7) (2022-09-14)
 
 **Note:** Version bump only for package @aws-amplify/graphql-model-transformer
