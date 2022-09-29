@@ -193,6 +193,17 @@ beforeAll(async () => {
       sharedOwners: [String]
       status: TodoStatus
   }
+
+  type TaskGroup @model
+  @auth(rules: [
+      {allow: groups, groupsField: "groups" }
+  ]) {
+      id: String,
+      title: String,
+      description: String,
+      priority: Int,
+      severity: Int
+  }
   
   enum TodoStatus {
     NOTSTARTED
@@ -424,8 +435,11 @@ test('Multiple owners auth is supported for subscriptions', async () => {
   const observer = API.graphql({
     // @ts-ignore
     query: gql`
-      subscription OnCreateTask {
-        onCreateTask {
+      subscription OnCreateTask(
+        $filter: ModelSubscriptionTaskFilterInput
+        $owner: String
+      ) {
+        onCreateTask(filter: $filter, owner: $owner) {
           id
           title
           description
@@ -467,6 +481,47 @@ test('Multiple owners auth is supported for subscriptions', async () => {
 });
 
 /**
+ * Dynamic groups only model should continue to throw 'unauthorized error'
+ */
+ test('Dynamic groups only model should throw an unauthorized error', async () => {
+  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+  await Auth.signIn(USERNAME1, REAL_PASSWORD);
+  const failedObserver = API.graphql({
+    // @ts-ignore
+    query: gql`
+      subscription OnCreateTaskGroup(
+        $filter: ModelSubscriptionTaskGroupFilterInput
+      ) {
+        onCreateTaskGroup(filter: $filter) {
+          id
+          title
+          description
+          priority
+          severity
+        }
+      }
+    `,
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  }) as unknown as Observable<any>;
+  let subscription: ZenObservable.Subscription;
+  const subscriptionPromise = new Promise((resolve, _) => {
+    subscription = failedObserver.subscribe(
+      event => {},
+      err => {
+        expect(err.error.errors[0].message).toEqual(
+          'Connection failed: {"errors":[{"errorType":"Unauthorized","message":"Not Authorized to access onCreateTaskGroup on type TaskGroup"}]}',
+        );
+        resolve(undefined);
+      },
+    );
+  });
+
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
+});
+
+/**
  * Runtime filtering supports multiple owners auth and filter argument
  * User1 is running the subscription and User2 is running the mutations
  */
@@ -476,13 +531,11 @@ test('Basic runtime filtering with subscriptions and multiple owners auth work',
   const observer = API.graphql({
     // @ts-ignore
     query: gql`
-      subscription OnCreateTask {
-        onCreateTask(filter: {
-          or: [
-            { priority: { gt: 5 } }
-            { severity: { gt: 5 } }
-          ]
-        }) {
+      subscription OnCreateTask(
+          $filter: ModelSubscriptionTaskFilterInput
+          $owner: String
+        ) {
+        onCreateTask(filter: $filter, owner: $owner) {
           id
           title
           description
@@ -493,6 +546,14 @@ test('Basic runtime filtering with subscriptions and multiple owners auth work',
         }
       }
     `,
+    variables: {
+      filter: {
+        or: [
+          { priority: { gt: 5 } },
+          { severity: { gt: 5 } },
+        ]
+      },
+    },
     authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
   }) as unknown as Observable<any>;
   let subscription: ZenObservable.Subscription;
