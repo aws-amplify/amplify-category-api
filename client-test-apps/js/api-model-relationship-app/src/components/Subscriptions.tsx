@@ -1,19 +1,21 @@
 import { Card, Collection, Flex, Heading } from '@aws-amplify/ui-react';
-import { API, graphqlOperation } from 'aws-amplify';
+import { API } from 'aws-amplify';
 import { useEffect, useState } from 'react';
 import Observable from 'zen-observable-ts';
 import { CONNECTION_STATE_CHANGE, ConnectionState } from '@aws-amplify/pubsub';
 import { Hub } from 'aws-amplify';
 import pluralize from 'pluralize';
 import _ from 'lodash';
+import { AuthMode, HarnessContext, HarnessContextType } from './HarnessContext';
 
 type SubscriptionComponentProps = {
   id: string;
   query: string;
   title: string;
+  authMode?: AuthMode;
 };
 
-const SubscriptionState = () => {
+const SubscriptionState = ({ authMode }: { authMode?: AuthMode }) => {
   const [areSubscriptionsReady, setSubscriptionsReady] = useState(false);
 
   useEffect(() => {
@@ -30,14 +32,14 @@ const SubscriptionState = () => {
     Hub.listen('api', hubListener);
 
     return () => Hub.remove('api', hubListener);
-  }, []);
+  }, [authMode]);
 
   const stateIndicator = areSubscriptionsReady ? '✅' : '❌';
 
   return (<span id='subscription-state'>{ stateIndicator }</span>);
 };
 
-const SubscriptionComponent = ({ id, query, title }: SubscriptionComponentProps) => {
+const SubscriptionComponent = ({ id, query, title, authMode }: SubscriptionComponentProps) => {
   const [loggedSubscriptionMessages, setSubscriptionMessages] = useState<object[]>([]);
 
   const appendSubscriptionMessage = (newMessage: object): void => {
@@ -46,7 +48,7 @@ const SubscriptionComponent = ({ id, query, title }: SubscriptionComponentProps)
 
   useEffect(() => {
     // Subscribe to creation of Todo
-    const request = API.graphql(graphqlOperation(query)) as Observable<object>;
+    const request = API.graphql({ query, authMode }) as Observable<object>;
     const subscription = request.subscribe({
       // @ts-ignore
       next: ({ value }) => appendSubscriptionMessage(value),
@@ -55,7 +57,7 @@ const SubscriptionComponent = ({ id, query, title }: SubscriptionComponentProps)
 
     // Stop receiving data updates from the subscription on unmount
     return () => subscription.unsubscribe();
-  }, [title, query]);
+  }, [id, title, query, authMode]);
 
   return (
     <Flex id={id} direction='column'>
@@ -81,14 +83,18 @@ type SubscriptionsProps = {
 
 export const Subscriptions = ({ recordName, createSubscriptionQuery, updateSubscriptionQuery, deleteSubscriptionQuery }: SubscriptionsProps) => {
   return (
-    <Flex direction='column'>
-      <Flex direction='row'>
-        <Heading level={2}>Subscriptions</Heading>
-        <SubscriptionState />
-      </Flex>
-      <SubscriptionComponent id={`created-${pluralize(recordName)}-subscription`} query={createSubscriptionQuery} title={`Created ${_.capitalize(recordName)} Events`} />
-      <SubscriptionComponent id={`updated-${pluralize(recordName)}-subscription`} query={updateSubscriptionQuery} title={`Updated ${_.capitalize(recordName)} Events`} />
-      <SubscriptionComponent id={`deleted-${pluralize(recordName)}-subscription`} query={deleteSubscriptionQuery} title={`Deleted ${_.capitalize(recordName)} Events`} />
-    </Flex>
+    <HarnessContext.Consumer>
+      { ({ authMode }: HarnessContextType) =>
+        <Flex direction='column'>
+          <Flex direction='row'>
+            <Heading level={2}>Subscriptions</Heading>
+            <SubscriptionState authMode={authMode} />
+          </Flex>
+          <SubscriptionComponent id={`created-${pluralize(recordName)}-subscription`} query={createSubscriptionQuery} title={`Created ${_.capitalize(recordName)} Events`} authMode={authMode} />
+          <SubscriptionComponent id={`updated-${pluralize(recordName)}-subscription`} query={updateSubscriptionQuery} title={`Updated ${_.capitalize(recordName)} Events`} authMode={authMode} />
+          <SubscriptionComponent id={`deleted-${pluralize(recordName)}-subscription`} query={deleteSubscriptionQuery} title={`Deleted ${_.capitalize(recordName)} Events`} authMode={authMode} />
+        </Flex>
+      }
+    </HarnessContext.Consumer>
   );
 };

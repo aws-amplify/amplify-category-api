@@ -386,4 +386,16 @@ export class AmplifyCLI {
       .wait('Code generated successfully')
       .runAsync();
   }
+
+  addAuth (): Promise<void> {
+    console.log('Executing Add Auth');
+    return spawn(getCLIPath(), ['add', 'auth'], { cwd: this.projectRoot, noOutputTimeout: pushTimeoutMS })
+      .wait('Do you want to use the default authentication and security configuration?')
+      .sendCarriageReturn()
+      .wait('How do you want users to be able to sign in?')
+      .sendCarriageReturn()
+      .wait('Do you want to configure advanced settings?')
+      .sendCarriageReturn()
+      .runAsync();
+  }
 };
