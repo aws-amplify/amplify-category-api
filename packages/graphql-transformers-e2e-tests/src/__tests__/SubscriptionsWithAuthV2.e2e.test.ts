@@ -722,8 +722,8 @@ test('Test onCreatePost with incorrect owner argument should throw an error', as
   const failedObserver = API.graphql({
     // @ts-ignore
     query: gql`
-      subscription OnCreatePost(postOwner: "${USERNAME2}") {
-        onCreatePost {
+      subscription OnCreatePost {
+        onCreatePost(postOwner: "${USERNAME2}") {
           id
           title
           postOwner
