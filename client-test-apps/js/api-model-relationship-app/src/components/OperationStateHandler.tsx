@@ -7,13 +7,13 @@ export const OperationStateIndicator = ({ id, state }: { id: string, state: Oper
   return <span id={id}>{ state === 'Succeeded' ? '✅' : '❌' }</span>;
 }
 
-export const useOperationStateWrapper = (fn: () => Promise<any>): { wrappedFn: () => Promise<void>, opState: OperationState } => {
+export const useOperationStateWrapper = <T extends Array<any>>(fn: (...args: T) => Promise<any>): { wrappedFn: (...args: T) => Promise<void>, opState: OperationState } => {
   const [opState, setState] = useState<OperationState>('NotStarted');
 
-  const wrappedFn = async () => {
+  const wrappedFn = async (...args: T): Promise<void> => {
     setState('NotStarted')
     try {
-      await fn();
+      await fn(...args);
       setState('Succeeded');
     } catch (e) {
       console.error(e);
