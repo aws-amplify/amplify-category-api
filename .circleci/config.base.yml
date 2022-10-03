@@ -371,7 +371,26 @@ workflows:
             - api-e2e-test-context
           requires:
             - build
-
+  canary:
+    triggers:
+      - schedule:
+          cron: "13 0,6,12,18 * * *" # Run 4 times daily, on the 13th minute of the hour
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - build
+      - publish_to_local_registry:
+          requires:
+            - build
+      - client_e2e_tests:
+          context:
+            - api-cleanup-resources
+            - e2e-auth-credentials
+            - api-e2e-test-context
+          requires:
+            - publish_to_local_registry
   build_test_deploy:
     jobs:
       - build:
