@@ -1005,9 +1005,12 @@ test('Test onCreatePost with incorrect owner argument should throw an error', as
     authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
   }) as unknown as Observable<any>;
   let subscription: ZenObservable.Subscription;
-  const subscriptionPromise = new Promise((resolve, _) => {
+  const subscriptionPromise = new Promise((resolve, reject) => {
     subscription = failedObserver.subscribe(
-      event => {},
+      event => {
+        subscription.unsubscribe();
+        reject("Should throw unauthorized error.");
+      },
       err => {
         expect(err.error.errors[0].message).toEqual(
           'Connection failed: {"errors":[{"errorType":"Unauthorized","message":"Not Authorized to access onCreatePost on type Subscription"}]}',
@@ -1213,40 +1216,6 @@ test('test that subscription with apiKey onDelete', async () => {
 
   return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, ' OnDelete Todo Subscription timed out', () => {
     subscription?.unsubscribe();
-  });
-});
-
-// This scenario is a bug on AppSync. AppSync is working to accept optional arguments in subscriptions.
-// This needs to be updated once AppSync change the behavior
-test('Test subscriptions with variable syntax and does not include optional argument - should throw an error', async () => {
-  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
-  await Auth.signIn(USERNAME1, REAL_PASSWORD);
-  const observer = API.graphql({
-    // @ts-ignore
-    query: gql`
-      subscription OnCreateStudent($owner: String) {
-        onCreateStudent(owner: $owner) {
-          id
-          name
-          email
-          ssn
-          owner
-        }
-      }
-    `,
-    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-  }) as unknown as Observable<any>;
-  let subscription: ZenObservable.Subscription;
-  const subscriptionPromise = new Promise((resolve, _) => {
-    subscription = observer.subscribe({
-      error: (err: any) => {
-        expect(err.error.errors.length).toEqual(1);
-        expect(err.error.errors[0].message).toEqual(
-          'Connection failed: {"errors":[{"message":"Validation error of type UndefinedVariable: variable not found"}]}',
-        );
-        resolve(undefined);
-      },
-    });
   });
 });
 
