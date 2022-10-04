@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-default-value-transformer@0.6.7...@aws-amplify/graphql-default-value-transformer@0.7.0) (2022-10-04)
+
+
+### Features
+
+* **graphql:** subscriptions rtf support ([#837](https://github.com/aws-amplify/amplify-category-api/issues/837)) ([99caa22](https://github.com/aws-amplify/amplify-category-api/commit/99caa22d4d48c317ce98bdc7ae7f19d7e3c0ce94))
+
+
+
+
+
 ## [0.6.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-default-value-transformer@0.6.6...@aws-amplify/graphql-default-value-transformer@0.6.7) (2022-09-14)
 
 **Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer

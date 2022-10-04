@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-graphql-transformers-e2e-tests",
-  "version": "8.2.11",
+  "version": "8.3.0",
   "description": "End to end functional tests for appsync supported transformers.",
   "private": true,
   "repository": {
@@ -22,8 +22,8 @@
     "build-tests": "yarn tsc --build tsconfig.tests.json"
   },
   "dependencies": {
-    "@aws-amplify/graphql-auth-transformer": "1.0.4",
-    "@aws-amplify/graphql-relational-transformer": "0.11.9",
+    "@aws-amplify/graphql-auth-transformer": "1.1.0",
+    "@aws-amplify/graphql-relational-transformer": "0.12.0",
     "axios": "^0.26.0",
     "cloudform-types": "^4.2.0",
     "graphql": "^14.5.8",
@@ -33,10 +33,10 @@
   },
   "devDependencies": {
     "@aws-amplify/core": "^2.1.0",
-    "@aws-amplify/graphql-default-value-transformer": "0.6.7",
-    "@aws-amplify/graphql-index-transformer": "0.13.8",
-    "@aws-amplify/graphql-maps-to-transformer": "1.1.30",
-    "@aws-amplify/graphql-model-transformer": "0.15.7",
+    "@aws-amplify/graphql-default-value-transformer": "0.7.0",
+    "@aws-amplify/graphql-index-transformer": "0.14.0",
+    "@aws-amplify/graphql-maps-to-transformer": "1.1.31",
+    "@aws-amplify/graphql-model-transformer": "0.16.0",
     "@aws-amplify/graphql-transformer-core": "0.17.12",
     "@aws-amplify/graphql-transformer-interfaces": "1.14.7",
     "@types/node": "^12.12.6",
