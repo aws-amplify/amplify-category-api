@@ -1,4 +1,4 @@
-import * as path from 'node:path'
+import * as path from 'path'
 import { $TSContext, $TSObject, exitOnNextTick, ResourceCredentialsNotFoundError, ResourceDoesNotExistError, pathManager, JSONUtilities, $TSAny } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import chalk from 'chalk';
