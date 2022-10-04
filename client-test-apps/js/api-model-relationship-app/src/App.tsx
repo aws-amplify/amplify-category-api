@@ -12,6 +12,7 @@ import {
   Todos,
   Blogs,
   Listings,
+  AuthModes,
 } from './pages';
 
 Amplify.configure(awsconfig);
@@ -26,6 +27,7 @@ const App = () => {
             <Route path="todos" element={<Todos />} />
             <Route path="blogs" element={<Blogs />} />
             <Route path="listings" element={<Listings />} />
+            <Route path="auth-modes" element={<AuthModes />} />
           </Route>
         </Routes>
       </BrowserRouter>

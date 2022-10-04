@@ -1011,7 +1011,19 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       case SubscriptionFieldType.ON_CREATE:
       case SubscriptionFieldType.ON_DELETE:
       case SubscriptionFieldType.ON_UPDATE:
-        return [];
+        const filterInputName = toPascalCase(['ModelSubscription', type.name.value, 'FilterInput']);
+        const filterInputs = createEnumModelFilters(ctx, type);
+        filterInputs.push(makeSubscriptionQueryFilterInput(ctx, filterInputName, type));
+        filterInputs.forEach(input => {
+          const conditionInputName = input.name.value;
+          if (!ctx.output.getType(conditionInputName)) {
+            ctx.output.addInput(input);
+          }
+        });
+
+        return [
+          makeInputValueDefinition('filter', makeNamedType(filterInputName)),
+        ];
 
       default:
         throw new Error('Unknown operation type');

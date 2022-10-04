@@ -685,51 +685,6 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
   });
 });
 
-test('Test that an user not in the group is not allowed to view the subscription', async () => {
-  // subscribe to create students as user 3
-  // const observer = onCreateStudent(GRAPHQL_CLIENT_3)
-  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
-  await Auth.signIn(USERNAME3, REAL_PASSWORD);
-  const observer = API.graphql({
-    // @ts-ignore
-    query: gql`
-      subscription OnCreateStudent {
-        onCreateStudent {
-          id
-          name
-          email
-          ssn
-          owner
-        }
-      }
-    `,
-    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-  }) as unknown as Observable<any>;
-  let subscription: ZenObservable.Subscription;
-  const subscriptionPromise = new Promise((resolve, _) => {
-    subscription = observer.subscribe({
-      error: (err: any) => {
-        expect(err.error.errors[0].message).toEqual(
-          'Connection failed: {"errors":[{"errorType":"Unauthorized","message":"Not Authorized to access onCreateStudent on type Subscription"}]}',
-        );
-        resolve(undefined);
-      },
-    });
-  });
-
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
-
-  await createStudent(GRAPHQL_CLIENT_1, {
-    name: 'student2',
-    email: 'student2@domain.com',
-    ssn: 'BBB-00-SNSN',
-  });
-
-  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'Subscription timed out', () => {
-    subscription?.unsubscribe();
-  });
-});
-
 test('Test a subscription on update', async () => {
   // subscribe to update students as user 2
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
@@ -1033,14 +988,14 @@ test('Test subscription onCreatePost with ownerField', async () => {
   });
 });
 
-test('Test onCreatePost with optional argument', async () => {
+test('Test onCreatePost with incorrect owner argument should throw an error', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const failedObserver = API.graphql({
     // @ts-ignore
     query: gql`
       subscription OnCreatePost {
-        onCreatePost {
+        onCreatePost(postOwner: "${USERNAME2}") {
           id
           title
           postOwner
@@ -1050,9 +1005,12 @@ test('Test onCreatePost with optional argument', async () => {
     authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
   }) as unknown as Observable<any>;
   let subscription: ZenObservable.Subscription;
-  const subscriptionPromise = new Promise((resolve, _) => {
+  const subscriptionPromise = new Promise((resolve, reject) => {
     subscription = failedObserver.subscribe(
-      event => {},
+      event => {
+        subscription.unsubscribe();
+        reject("Should throw unauthorized error.");
+      },
       err => {
         expect(err.error.errors[0].message).toEqual(
           'Connection failed: {"errors":[{"errorType":"Unauthorized","message":"Not Authorized to access onCreatePost on type Subscription"}]}',
@@ -1258,40 +1216,6 @@ test('test that subscription with apiKey onDelete', async () => {
 
   return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, ' OnDelete Todo Subscription timed out', () => {
     subscription?.unsubscribe();
-  });
-});
-
-// This scenario is a bug on AppSync. AppSync is working to accept optional arguments in subscriptions.
-// This needs to be updated once AppSync change the behavior
-test('Test subscriptions with variable syntax and does not include optional argument - should throw an error', async () => {
-  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
-  await Auth.signIn(USERNAME1, REAL_PASSWORD);
-  const observer = API.graphql({
-    // @ts-ignore
-    query: gql`
-      subscription OnCreateStudent($owner: String) {
-        onCreateStudent(owner: $owner) {
-          id
-          name
-          email
-          ssn
-          owner
-        }
-      }
-    `,
-    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-  }) as unknown as Observable<any>;
-  let subscription: ZenObservable.Subscription;
-  const subscriptionPromise = new Promise((resolve, _) => {
-    subscription = observer.subscribe({
-      error: (err: any) => {
-        expect(err.error.errors.length).toEqual(1);
-        expect(err.error.errors[0].message).toEqual(
-          'Connection failed: {"errors":[{"message":"Validation error of type UndefinedVariable: variable not found"}]}',
-        );
-        resolve(undefined);
-      },
-    });
   });
 });
 
