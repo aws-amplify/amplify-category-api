@@ -166,3 +166,20 @@ function runE2eTest {
         yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
     fi
 }
+
+# Accepts the value as an input parameter, i.e. 1 for success, 0 for failure.
+# Only executes if IS_CANARY env variable is set
+function emitCanarySuccessRate {
+    if [[ -v IS_CANARY ]]; then
+        USE_PARENT_ACCOUNT=1
+        setAwsAccountCredentials 
+        aws cloudwatch \
+            put-metric-data \
+            --metric-name CanarySuccessRate \
+            --namespace amplify-category-api-e2e-tests \
+            --unit Count \
+            --value $1 \
+            --dimensions branch=$CIRCLE_BRANCH \
+            --region us-west-2
+    fi
+}

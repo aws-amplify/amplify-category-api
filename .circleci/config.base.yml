@@ -219,6 +219,9 @@ jobs:
       os:
         type: executor
         default: l
+      is_canary:
+        type: boolean
+        default: false
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -232,6 +235,13 @@ jobs:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
+      - when:
+          condition: << parameters.is_canary >>
+          steps:
+              - run:
+                  name: Set Canary Metric
+                  command: |
+                      IS_CANARY=1
       - install_yarn:
           os: << parameters.os >>
       - run: *install_cli_from_local_registry
@@ -245,6 +255,17 @@ jobs:
           path: client-test-apps/js/api-model-relationship-app/cypress/screenshots
       - store_artifacts:
           path: client-test-apps/js/api-model-relationship-app/cypress/videos
+      - run:
+          name: Emit Canary Success Metric
+          command: |
+            source .circleci/local_publish_helpers.sh
+            emitCanarySuccessRate 1
+      - run:
+          name: Emit Canary Failure Metric
+          command: |
+              source .circleci/local_publish_helpers.sh
+              emitCanarySuccessRate 0
+          when: on_fail
 
   amplify_migration_tests_v5:
     <<: *defaults
@@ -385,6 +406,7 @@ workflows:
           requires:
             - build
       - client_e2e_tests:
+          is_canary: true
           context:
             - api-cleanup-resources
             - e2e-auth-credentials
