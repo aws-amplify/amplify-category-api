@@ -163,6 +163,10 @@ jobs:
           paths:
             - ~/repo/UNIFIED_CHANGELOG.md
   client_e2e_tests:
+    parameters:
+      is_canary:
+        type: boolean
+        default: true
     environment:
       AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin/amplify
     executor: 'linux'
@@ -178,6 +182,13 @@ jobs:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
+      - when:
+          condition: << parameters.is_canary >>
+          steps:
+              - run:
+                  name: Set Canary Metric
+                  command: |
+                      IS_CANARY=1
       - run: *install_cli_from_local_registry
       - run_client_tests
       - scan_e2e_test_artifacts
@@ -187,6 +198,17 @@ jobs:
           path: client-test-apps/js/api-model-relationship-app/cypress/screenshots
       - store_artifacts:
           path: client-test-apps/js/api-model-relationship-app/cypress/videos
+      - run:
+          name: Emit Canary Success Metric
+          command: |
+            source .circleci/local_publish_helpers.sh
+            emitCanarySuccessRate 1
+      - run:
+          name: Emit Canary Failure Metric
+          command: |
+              source .circleci/local_publish_helpers.sh
+              emitCanarySuccessRate 0
+          when: on_fail
 
 # our single workflow, that triggers the setup job defined above
 workflows:
