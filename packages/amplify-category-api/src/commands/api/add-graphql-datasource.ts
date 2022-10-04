@@ -17,7 +17,6 @@ import { supportedDataSources } from '../../provider-utils/supported-datasources
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 
 const subcommand = 'add-graphql-datasource';
-const categories = 'categories';
 const category = 'api';
 const providerName = 'awscloudformation';
 
@@ -49,8 +48,7 @@ export const run = async (context: $TSContext): Promise<void> => {
      * the team-provider-info file
      */
     const currentEnv = context.amplify.getEnvInfo().envName;
-    const teamProviderInfo = stateManager.getTeamProviderInfo();
-
+    
     getEnvParamManager(currentEnv).getResourceParamManager(category, resourceName).setParams({
       rdsRegion: answers.region,
       rdsClusterIdentifier: answers.dbClusterArn,
