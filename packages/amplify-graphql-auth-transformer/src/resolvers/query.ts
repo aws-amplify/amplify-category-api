@@ -144,7 +144,7 @@ const generateAuthOnModelQueryExpression = (
             compoundExpression([
               generateOwnerMultiClaimExpression(role.claim!, `${role.entity}Claim`),
               generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
-              qref(methodCall(ref(`ownerClaimsList${idx}.add`), ref(`${role.entity}Claim`))),
+              qref(methodCall(ref(`ownerClaimsList${idx}.addAll`), ref(`${role.entity}Claim`))),
               ifElse(
                 not(ref(`util.isNull($ctx.args.${role.entity})`)),
                 compoundExpression([
@@ -239,7 +239,7 @@ const generateAuthOnModelQueryExpression = (
             compoundExpression([
               generateOwnerMultiClaimExpression(role.claim!, `${role.entity}Claim`),
               generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
-              qref(methodCall(ref(`ownerClaimsList${idx}.add`), ref(`${role.entity}Claim`))),
+              qref(methodCall(ref(`ownerClaimsList${idx}.addAll`), ref(`${role.entity}Claim`))),
               ifElse(
                 not(ref(`util.isNull($ctx.args.${role.entity})`)),
                 compoundExpression([
