@@ -80,7 +80,7 @@ export class IamResource implements APIIAMResourceProvider {
    * Example: ofType('Query', 'GetExample')
    */
   public static ofType(type: string, ...fields: string[]): IamResource {
-    const arns = fields.length ? fields.map((field) => `types/${type}/fields/${field}`) : [`types/${type}/*`];
+    const arns = fields.length ? fields.map(field => `types/${type}/fields/${field}`) : [`types/${type}/*`];
     return new IamResource(arns);
   }
 
@@ -103,7 +103,7 @@ export class IamResource implements APIIAMResourceProvider {
    * @param api The GraphQL API to give permissions
    */
   public resourceArns(api: GraphQLAPIProvider): string[] {
-    return this.arns.map((arn) => Stack.of(api).formatArn({
+    return this.arns.map(arn => Stack.of(api).formatArn({
       service: 'appsync',
       resource: `apis/${api.apiId}`,
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
@@ -191,7 +191,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     const additionalModes = this.authorizationConfig.additionalAuthorizationModes;
     const modes = [defaultMode, ...additionalModes];
 
-    this.modes = modes.map((mode) => mode.authorizationType);
+    this.modes = modes.map(mode => mode.authorizationType);
     this.environmentName = props.environmentName;
     this.validateAuthorizationProps(modes);
 
@@ -213,7 +213,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     this.schema = props.schema ?? new TransformerSchema();
     this.schemaResource = this.schema.bind(this);
 
-    const hasApiKey = modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY);
+    const hasApiKey = modes.some(mode => mode.authorizationType === AuthorizationType.API_KEY);
 
     if (props.createApiKey && hasApiKey) {
       const config = modes.find((mode: AuthorizationMode) => mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig)?.apiKeyConfig;
@@ -291,7 +291,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   }
 
   private validateAuthorizationProps(modes: AuthorizationMode[]) {
-    modes.forEach((mode) => {
+    modes.forEach(mode => {
       if (mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig) {
         throw new Error('Missing default OIDC Configuration');
       }
@@ -299,10 +299,10 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
         throw new Error('Missing default OIDC Configuration');
       }
     });
-    if (modes.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY).length > 1) {
+    if (modes.filter(mode => mode.authorizationType === AuthorizationType.API_KEY).length > 1) {
       throw new Error("You can't duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html");
     }
-    if (modes.filter((mode) => mode.authorizationType === AuthorizationType.IAM).length > 1) {
+    if (modes.filter(mode => mode.authorizationType === AuthorizationType.IAM).length > 1) {
       throw new Error("You can't duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html");
     }
   }

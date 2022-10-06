@@ -9,7 +9,7 @@ const authTypeMap: Record<AppSyncAuthMode, any> = {
   AMAZON_COGNITO_USER_POOLS: AuthorizationType.USER_POOL,
   AWS_IAM: AuthorizationType.IAM,
   OPENID_CONNECT: AuthorizationType.OIDC,
-  AWS_LAMBDA: 'AWS_LAMBDA',
+  AWS_LAMBDA: "AWS_LAMBDA",
 };
 
 export const IAM_AUTH_ROLE_PARAMETER = 'authRoleName';
@@ -18,7 +18,7 @@ export const IAM_UNAUTH_ROLE_PARAMETER = 'unauthRoleName';
 export function adoptAuthModes(stack: StackManager, authConfig: AppSyncAuthConfiguration): AuthorizationConfig {
   return {
     defaultAuthorization: adoptAuthMode(stack, authConfig.defaultAuthentication),
-    additionalAuthorizationModes: authConfig.additionalAuthenticationProviders?.map((entry) => adoptAuthMode(stack, entry)),
+    additionalAuthorizationModes: authConfig.additionalAuthenticationProviders?.map(entry => adoptAuthMode(stack, entry)),
   };
 }
 
@@ -39,7 +39,7 @@ export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConf
       const userPoolId = stackManager.addParameter('AuthCognitoUserPoolId', {
         type: 'String',
       }).valueAsString;
-      const { rootStack } = stackManager;
+      const rootStack = stackManager.rootStack;
       return {
         authorizationType: authType,
         userPoolConfig: {

@@ -86,7 +86,6 @@ export class TransformerContext implements TransformerContextProvider {
     this._api = api;
     this.resourceHelper.bind(api);
   }
-
   public get api(): GraphQLAPIProvider {
     if (!this._api) {
       throw new Error('API is not initialized till generateResolver step');

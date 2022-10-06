@@ -4,14 +4,14 @@ import {
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
+import { TransformerContext } from '../transformer-context';
+import { ResolverConfig, SyncConfig, SyncConfigLambda } from '../config/transformer-config';
 import {
   StackManagerProvider,
   TransformerContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { TransformerContext } from '../transformer-context';
-import { ResolverConfig, SyncConfig, SyncConfigLambda } from '../config/transformer-config';
 
 type DeltaSyncConfig = {
   DeltaSyncTableName: any;
@@ -124,7 +124,7 @@ export function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncCo
     if (syncConfig.hasOwnProperty(lambdaConfigKey)) {
       return true;
     }
-    throw Error('Invalid Lambda SyncConfig');
+    throw Error(`Invalid Lambda SyncConfig`);
   }
   return false;
 }

@@ -15,7 +15,7 @@ beforeEach(() => {
 describe('generateTableName', () => {
   it('throws if api not initialized', () => {
     resourceHelper = getResourceHelper(false);
-    expect(() => resourceHelper.generateTableName('Test')).toThrowErrorMatchingInlineSnapshot('"API not initialized"');
+    expect(() => resourceHelper.generateTableName('Test')).toThrowErrorMatchingInlineSnapshot(`"API not initialized"`);
   });
 
   it('uses model name if no rename specified', () => {

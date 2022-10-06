@@ -4,7 +4,6 @@ import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { Construct } from 'constructs';
 import { InlineTemplate } from './cdk-compat/template-asset';
 import { GraphQLApi } from './graphql-api';
-
 export interface BaseFunctionConfigurationProps {
   /**
    * The request mapping template for this resolver

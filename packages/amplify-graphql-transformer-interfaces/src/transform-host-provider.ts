@@ -26,19 +26,19 @@ export interface DynamoDbDataSourceOptions extends DataSourceOptions {
 }
 
 export interface TransformHostProvider {
-  setAPI: (api: GraphqlApiBase) => void;
+  setAPI(api: GraphqlApiBase): void;
 
-  addHttpDataSource: (name: string, endpoint: string, options?: DataSourceOptions, stack?: Stack) => HttpDataSource;
-  addDynamoDbDataSource: (name: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack) => DynamoDbDataSource;
-  addNoneDataSource: (name: string, options?: DataSourceOptions, stack?: Stack) => NoneDataSource;
-  addLambdaDataSource: (name: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack) => LambdaDataSource;
-  addSearchableDataSource: (
+  addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, stack?: Stack): HttpDataSource;
+  addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource;
+  addNoneDataSource(name: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource;
+  addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource;
+  addSearchableDataSource(
     name: string,
     endpoint: string,
     region: string,
     options?: SearchableDataSourceOptions,
     stack?: Stack,
-  ) => BaseDataSource;
+  ): BaseDataSource;
 
   addAppSyncFunction: (
     name: string,

@@ -20,9 +20,9 @@ export interface NoneDataSourceProvider {
 export type DataSourceInstance = ITable | CfnDomain | HttpDataSource | IFunction | NoneDataSourceProvider;
 
 export interface TransformerDataSourceManagerProvider {
-  add: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: DataSourceInstance) => void;
-  get: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode) => DataSourceInstance;
-  has: (name: string) => boolean;
+  add(type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: DataSourceInstance): void;
+  get(type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): DataSourceInstance;
+  has(name: string): boolean;
 }
 
-export type DataSourceProvider = BackedDataSource
+export interface DataSourceProvider extends BackedDataSource {}

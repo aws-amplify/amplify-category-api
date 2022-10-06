@@ -48,11 +48,11 @@ import {
   ResourceConstants,
   toCamelCase,
 } from 'graphql-transformer-common';
+import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
+import { lookupResolverName } from './utils';
 import { stateManager, pathManager, $TSAny } from 'amplify-cli-core';
 import * as path from 'path';
 import _ from 'lodash';
-import { lookupResolverName } from './utils';
-import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
 
 const API_KEY = 'API Key Authorization';
 
@@ -70,7 +70,7 @@ export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, c
   const attrDefs = attributeDefinitions(config, ctx);
   const existingAttrDefSet = new Set(tableAttrDefs.map((ad: any) => ad.attributeName));
   const primaryKeyPartitionKeyName = field.name.value ?? 'id';
-  const primaryKeyPartitionKeyType = attrDefs.find((attr) => attr.attributeName === primaryKeyPartitionKeyName)?.attributeType ?? 'S';
+  const primaryKeyPartitionKeyType = attrDefs.find(attr => attr.attributeName === primaryKeyPartitionKeyName)?.attributeType ?? 'S';
 
   // First, remove any attribute definitions in the current primary key.
   for (const existingKey of tableKeySchema) {
@@ -235,7 +235,7 @@ function modelObjectKeySnippet(config: PrimaryKeyDirectiveConfiguration, isMutat
   if (sortKeyFields.length > 1) {
     const compositeSortKey = getSortKeyName(config);
     const compositeSortKeyValue = sortKeyFields
-      .map((keyField) => `\${${argsPrefix}.${keyField}}`)
+      .map(keyField => `\${${argsPrefix}.${keyField}}`)
       .join(ModelResourceIDs.ModelCompositeKeySeparator());
 
     modelObject[compositeSortKey] = ref(`util.dynamodb.toDynamoDB("${compositeSortKeyValue}")`);
@@ -255,9 +255,9 @@ function ensureCompositeKeySnippet(config: PrimaryKeyDirectiveConfiguration, con
 
   const argsPrefix = 'mergedValues';
   const condensedSortKey = getSortKeyName(config);
-  const dynamoDBFriendlySortKeyName = toCamelCase(sortKeyFields.map((f) => graphqlName(f)));
+  const dynamoDBFriendlySortKeyName = toCamelCase(sortKeyFields.map(f => graphqlName(f)));
   const condensedSortKeyValue = sortKeyFields
-    .map((keyField) => `\${${argsPrefix}.${keyField}}`)
+    .map(keyField => `\${${argsPrefix}.${keyField}}`)
     .join(ModelResourceIDs.ModelCompositeKeySeparator());
 
   return print(
@@ -293,7 +293,7 @@ function setQuerySnippet(config: PrimaryKeyDirectiveConfiguration, ctx: Transfor
   const { field, sortKey, sortKeyFields } = config;
   const keyFields = [field, ...sortKey];
   const keyNames = [field.name.value, ...sortKeyFields];
-  const keyTypes = keyFields.map((k) => attributeTypeFromType(k.type, ctx));
+  const keyTypes = keyFields.map(k => attributeTypeFromType(k.type, ctx));
   const expressions: Expression[] = [];
 
   if (keyNames.length === 1) {
@@ -334,8 +334,8 @@ export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: T
   const primaryKeyPartitionKeyName = primaryKeyField?.name?.value ?? 'id';
   const partitionKeyName = keySchema[0]?.attributeName;
   const sortKeyName = keySchema?.[1]?.attributeName;
-  const partitionKeyType = attrDefs.find((attr) => attr.attributeName === partitionKeyName)?.attributeType ?? 'S';
-  const sortKeyType = sortKeyName ? attrDefs.find((attr) => attr.attributeName === sortKeyName)?.attributeType ?? 'S' : undefined;
+  const partitionKeyType = attrDefs.find(attr => attr.attributeName === partitionKeyName)?.attributeType ?? 'S';
+  const sortKeyType = sortKeyName ? attrDefs.find(attr => attr.attributeName === sortKeyName)?.attributeType ?? 'S' : undefined;
   const defaultGSI = ctx.featureFlags.getBoolean('secondaryKeyAsGSI', false);
 
   if (!defaultGSI && primaryKeyPartitionKeyName === partitionKeyName) {
@@ -560,7 +560,7 @@ function validateIndexArgumentSnippet(config: IndexDirectiveConfiguration, keyOp
   return printBlock(`Validate ${keyOperation} mutation for @index '${name}'`)(
     compoundExpression([
       set(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), bool(false)),
-      set(ref('keyFieldNames'), list(sortKeyFields.map((f) => str(f)))),
+      set(ref('keyFieldNames'), list(sortKeyFields.map(f => str(f)))),
       forEach(ref('keyFieldName'), ref('keyFieldNames'), [
         iff(raw('$mergedValues.containsKey("$keyFieldName")'), set(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), bool(true)), true),
       ]),
@@ -651,7 +651,7 @@ function setSyncQueryFilterSnippet(deltaSyncTableTtl: number) {
       generateDeltaTableTTLCheck(
         'isLastSyncInDeltaTTLWindow',
         deltaSyncTableTtl,
-        'ctx.args.lastSync',
+        'ctx.args.lastSync'
       ),
       ifElse(
         raw('!$util.isNullOrEmpty($filterArgsMap) && !$isLastSyncInDeltaTTLWindow'),
@@ -691,7 +691,7 @@ function setSyncQueryFilterSnippet(deltaSyncTableTtl: number) {
 const generateDeltaTableTTLCheck = (
   deltaTTLCheckRefName: string,
   deltaTTLInMinutes: number,
-  lastSyncRefName: string,
+  lastSyncRefName: string
 ): Expression => {
   const deltaTTLInMilliSeconds = deltaTTLInMinutes * 60 * 1000;
   return compoundExpression([
@@ -704,9 +704,9 @@ const generateDeltaTableTTLCheck = (
         raw(`$minLastSync <= $${lastSyncRefName}`),
       ]),
       set(ref(deltaTTLCheckRefName), bool(true)),
-    ),
+    )
   ]);
-};
+}
 
 function setSyncKeyExpressionForHashKey(queryExprReference: string) {
   const expressions: Expression[] = [];
@@ -888,7 +888,7 @@ export const getDeltaSyncTableTtl = (resourceOverrides: $TSAny, resource: Transf
   const modelName = _.get(resource, ['datasource', 'name'])?.replace(new RegExp('Table$'), '');
   const deltaSyncTtlOverride = _.get(resourceOverrides, ['models', modelName, 'modelDatasource', 'dynamoDbConfig', 'deltaSyncConfig', 'deltaSyncTableTtl']);
   return deltaSyncTtlOverride || SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
-};
+}
 
 export const getResourceOverrides = (transformers: TransformerPluginProvider[], stackManager?: StackManagerProvider | null): $TSAny => {
   try {
@@ -898,12 +898,12 @@ export const getResourceOverrides = (transformers: TransformerPluginProvider[], 
       const backendDir = pathManager.getBackendDirPath();
       const overrideDir = path.join(backendDir, 'api', gqlApiName);
       const localGraphQLTransformObj = new GraphQLTransform({
-        transformers,
+        transformers: transformers,
         overrideConfig: {
           overrideFlag: true,
-          overrideDir,
-          resourceName: gqlApiName,
-        },
+          overrideDir: overrideDir,
+          resourceName: gqlApiName
+        }
       });
       return localGraphQLTransformObj.applyOverride(stackManager as StackManager);
     }
@@ -912,4 +912,4 @@ export const getResourceOverrides = (transformers: TransformerPluginProvider[], 
     return {};
   }
   return {};
-};
+}

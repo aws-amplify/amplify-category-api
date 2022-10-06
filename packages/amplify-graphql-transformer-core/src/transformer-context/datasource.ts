@@ -20,7 +20,11 @@ export class TransformerDataSourceManager implements TransformerDataSourceManage
     return this.dataSourceMap.get(key)!;
   };
 
-  collectDataSources = (): Readonly<Map<string, BackedDataSource>> => this.dataSourceMap;
+  collectDataSources = (): Readonly<Map<string, BackedDataSource>> => {
+    return this.dataSourceMap;
+  };
 
-  has = (name: string): boolean => this.dataSourceMap.has(name);
+  has = (name: string): boolean => {
+    return this.dataSourceMap.has(name);
+  };
 }
