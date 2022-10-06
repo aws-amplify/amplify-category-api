@@ -1,15 +1,15 @@
-import { AuthorizationConfig, AuthorizationType } from '@aws-cdk/aws-appsync';
-import { UserPool } from '@aws-cdk/aws-cognito';
-import { Duration, Expiration } from '@aws-cdk/core';
-import { StackManager } from '../transformer-context/stack-manager';
+import { AuthorizationConfig, AuthorizationType } from '@aws-cdk/aws-appsync-alpha';
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { Duration, Expiration } from 'aws-cdk-lib';
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
+import { StackManager } from '../transformer-context/stack-manager';
 
 const authTypeMap: Record<AppSyncAuthMode, any> = {
   API_KEY: AuthorizationType.API_KEY,
   AMAZON_COGNITO_USER_POOLS: AuthorizationType.USER_POOL,
   AWS_IAM: AuthorizationType.IAM,
   OPENID_CONNECT: AuthorizationType.OIDC,
-  AWS_LAMBDA: "AWS_LAMBDA",
+  AWS_LAMBDA: 'AWS_LAMBDA',
 };
 
 export const IAM_AUTH_ROLE_PARAMETER = 'authRoleName';
@@ -18,7 +18,7 @@ export const IAM_UNAUTH_ROLE_PARAMETER = 'unauthRoleName';
 export function adoptAuthModes(stack: StackManager, authConfig: AppSyncAuthConfiguration): AuthorizationConfig {
   return {
     defaultAuthorization: adoptAuthMode(stack, authConfig.defaultAuthentication),
-    additionalAuthorizationModes: authConfig.additionalAuthenticationProviders?.map(entry => adoptAuthMode(stack, entry)),
+    additionalAuthorizationModes: authConfig.additionalAuthenticationProviders?.map((entry) => adoptAuthMode(stack, entry)),
   };
 }
 
@@ -39,7 +39,7 @@ export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConf
       const userPoolId = stackManager.addParameter('AuthCognitoUserPoolId', {
         type: 'String',
       }).valueAsString;
-      const rootStack = stackManager.rootStack;
+      const { rootStack } = stackManager;
       return {
         authorizationType: authType,
         userPoolConfig: {

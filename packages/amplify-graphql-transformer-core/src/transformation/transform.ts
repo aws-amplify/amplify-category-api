@@ -6,10 +6,10 @@ import {
   TransformerPluginProvider,
   TransformHostProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
+import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync-alpha';
 import {
   App, Aws, CfnOutput, CfnResource, Fn,
-} from '@aws-cdk/core';
+} from 'aws-cdk-lib';
 import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import {
@@ -31,6 +31,7 @@ import _ from 'lodash';
 import os from 'os';
 import * as path from 'path';
 import * as vm from 'vm2';
+import { DocumentNode } from 'graphql/language';
 import { ResolverConfig, TransformConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
@@ -54,7 +55,6 @@ import {
   sortTransformerPlugins,
 } from './utils';
 import { validateAuthModes, validateModelSchema } from './validation';
-import { DocumentNode } from 'graphql/language';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { AmplifyApiGraphQlResourceStackTemplate } from '../types/amplify-api-resource-stack-types';
 
@@ -148,19 +148,19 @@ export class GraphQLTransform {
     const context = new TransformerPreProcessContext(schema, this?.options?.featureFlags);
 
     this.transformers
-        .filter(transformer => isFunction(transformer.preMutateSchema))
-        .map(transformer => transformer.preMutateSchema as Function)
-        .forEach(preMutateSchema => preMutateSchema(context));
+      .filter((transformer) => isFunction(transformer.preMutateSchema))
+      .map((transformer) => transformer.preMutateSchema as Function)
+      .forEach((preMutateSchema) => preMutateSchema(context));
 
     return this.transformers
-      .filter(transformer => isFunction(transformer.mutateSchema))
-      .map(transformer => transformer.mutateSchema as Function)
+      .filter((transformer) => isFunction(transformer.mutateSchema))
+      .map((transformer) => transformer.mutateSchema as Function)
       .reduce((mutateContext, mutateSchema) => {
         const updatedSchema = mutateSchema(mutateContext);
         return {
           ...mutateContext,
           inputDocument: updatedSchema,
-        }
+        };
       }, context).inputDocument;
   }
 
@@ -305,21 +305,21 @@ export class GraphQLTransform {
     return this.synthesize(context);
   }
 
-  public applyOverride = (stackManager: StackManager): AmplifyApiGraphQlResourceStackTemplate  => {
+  public applyOverride = (stackManager: StackManager): AmplifyApiGraphQlResourceStackTemplate => {
     const stacks: string[] = [];
     const amplifyApiObj: any = {};
-    stackManager.rootStack.node.findAll().forEach(node => {
+    stackManager.rootStack.node.findAll().forEach((node) => {
       const resource = node as CfnResource;
       if (resource.cfnResourceType === 'AWS::CloudFormation::Stack') {
         stacks.push(node.node.id.split('.')[0]);
       }
     });
 
-    stackManager.rootStack.node.findAll().forEach(node => {
+    stackManager.rootStack.node.findAll().forEach((node) => {
       const resource = node as CfnResource;
       let pathArr;
       if (node.node.id === 'Resource') {
-        pathArr = node.node.path.split('/').filter(key => key !== node.node.id);
+        pathArr = node.node.path.split('/').filter((key) => key !== node.node.id);
       } else {
         pathArr = node.node.path.split('/');
       }
@@ -393,7 +393,7 @@ export class GraphQLTransform {
       environmentName: envName.valueAsString,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
-      mode => mode?.authorizationType,
+      (mode) => mode?.authorizationType,
     );
 
     const hasLegacyAPIKeyConfigDisabled = 'CreateAPIKey' in this.buildParameters && this.buildParameters.CreateAPIKey !== 1;
@@ -402,7 +402,7 @@ export class GraphQLTransform {
       const apiKeyConfig: AuthorizationMode | undefined = [
         authorizationConfig.defaultAuthorization,
         ...(authorizationConfig.additionalAuthorizationModes || []),
-      ].find(auth => auth?.authorizationType == AuthorizationType.API_KEY);
+      ].find((auth) => auth?.authorizationType == AuthorizationType.API_KEY);
       const apiKeyDescription = apiKeyConfig!.apiKeyConfig?.description;
       const apiKeyExpirationDays = apiKeyConfig!.apiKeyConfig?.expires;
 
@@ -472,7 +472,7 @@ export class GraphQLTransform {
     for (const [resolverName] of resolverEntries) {
       const userSlots = this.userDefinedSlots[resolverName] || [];
 
-      userSlots.forEach(slot => {
+      userSlots.forEach((slot) => {
         const fileName = slot.requestResolver?.fileName;
         if (fileName && fileName in resolvers) {
           userOverriddenSlots.push(fileName);
@@ -498,7 +498,7 @@ export class GraphQLTransform {
     for (const [resolverName, resolver] of resolverEntries) {
       const userSlots = this.userDefinedSlots[resolverName] || [];
 
-      userSlots.forEach(slot => {
+      userSlots.forEach((slot) => {
         const requestTemplate = slot.requestResolver
           ? MappingTemplate.s3MappingTemplateFromString(slot.requestResolver.template, slot.requestResolver.fileName)
           : undefined;

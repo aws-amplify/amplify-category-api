@@ -1,10 +1,12 @@
 import { GraphQLAPIProvider, ModelFieldMap, TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { CfnParameter, Token } from '@aws-cdk/core';
+import { CfnParameter, Token } from 'aws-cdk-lib';
 import { ModelResourceIDs } from 'graphql-transformer-common';
 import md5 from 'md5';
+import {
+  DirectiveNode, FieldNode, ObjectTypeDefinitionNode, ObjectTypeExtensionNode,
+} from 'graphql';
 import { ModelFieldMapImpl } from './model-field-map';
 import { StackManager } from './stack-manager';
-import { DirectiveNode, FieldNode, ObjectTypeDefinitionNode, ObjectTypeExtensionNode } from 'graphql';
 
 /**
  * Contains helper methods for transformers to access and compile context about resource generation
@@ -99,7 +101,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
       this.#modelFieldMaps
         .get(modelName)
         ?.getMappedFields()
-        .find(entry => entry.currentFieldName === fieldName)?.originalFieldName || fieldName
+        .find((entry) => entry.currentFieldName === fieldName)?.originalFieldName || fieldName
     );
   };
 
@@ -117,9 +119,10 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
    * @param directive the directive
    */
   addDirectiveConfigExclusion = (
-      object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
-      field: FieldNode | undefined,
-      directive: DirectiveNode): void => {
+    object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
+    field: FieldNode | undefined,
+    directive: DirectiveNode,
+  ): void => {
     this.exclusionSet.add(this.convertDirectiveConfigToKey(object, field, directive));
   };
 
@@ -131,11 +134,10 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
    * @return boolean true if the configuration has been excluded
    */
   isDirectiveConfigExcluded = (
-      object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
-      field: FieldNode | undefined,
-      directive: DirectiveNode): boolean => {
-    return this.exclusionSet.has(this.convertDirectiveConfigToKey(object, field, directive));
-  };
+    object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
+    field: FieldNode | undefined,
+    directive: DirectiveNode,
+  ): boolean => this.exclusionSet.has(this.convertDirectiveConfigToKey(object, field, directive));
 
   private ensureEnv = (): void => {
     if (!this.stackManager.getParameter('env')) {
@@ -147,12 +149,11 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
   };
 
   private convertDirectiveConfigToKey = (
-      object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
-      field: FieldNode | undefined,
-      directive: DirectiveNode): string => {
-    const argString = directive?.arguments?.map(arg => {
-      return `${arg?.name?.value}|${arg?.value?.kind === 'StringValue' || arg?.value?.kind === 'IntValue' || arg?.value?.kind === 'FloatValue' ? arg.value.value : 'NullValue'}`
-    })?.join('-');
+    object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
+    field: FieldNode | undefined,
+    directive: DirectiveNode,
+  ): string => {
+    const argString = directive?.arguments?.map((arg) => `${arg?.name?.value}|${arg?.value?.kind === 'StringValue' || arg?.value?.kind === 'IntValue' || arg?.value?.kind === 'FloatValue' ? arg.value.value : 'NullValue'}`)?.join('-');
     return `${object.name.value}/${field?.name?.value ?? 'NullField'}/${directive.name.value}/${argString}`;
   }
 }

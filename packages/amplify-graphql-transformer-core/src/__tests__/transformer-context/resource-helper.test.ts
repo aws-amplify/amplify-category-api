@@ -1,5 +1,5 @@
 import { GraphQLAPIProvider, TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { CfnParameter } from '@aws-cdk/core';
+import { CfnParameter } from 'aws-cdk-lib';
 import { TransformerResourceHelper } from '../../transformer-context/resource-helper';
 import { StackManager } from '../../transformer-context/stack-manager';
 
@@ -15,7 +15,7 @@ beforeEach(() => {
 describe('generateTableName', () => {
   it('throws if api not initialized', () => {
     resourceHelper = getResourceHelper(false);
-    expect(() => resourceHelper.generateTableName('Test')).toThrowErrorMatchingInlineSnapshot(`"API not initialized"`);
+    expect(() => resourceHelper.generateTableName('Test')).toThrowErrorMatchingInlineSnapshot('"API not initialized"');
   });
 
   it('uses model name if no rename specified', () => {

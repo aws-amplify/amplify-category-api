@@ -7,8 +7,9 @@ import {
   TransformerResolverProvider,
   TransformerResolversManagerProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationType, CfnFunctionConfiguration } from '@aws-cdk/aws-appsync';
-import { isResolvableObject, Stack, CfnParameter } from '@aws-cdk/core';
+import { AuthorizationType } from '@aws-cdk/aws-appsync-alpha';
+import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
+import { isResolvableObject, Stack, CfnParameter } from 'aws-cdk-lib';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
 import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
@@ -210,7 +211,7 @@ export class TransformerResolver implements TransformerResolverProvider {
         (slotEntry.requestMappingTemplate as any)?.name ?? 'NOT-FOUND',
         (slotEntry.responseMappingTemplate as any)?.name ?? 'NOT-FOUND',
       ]
-        .map(name => name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex));
+        .map((name) => name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex));
 
       // If both request and response mapping templates are inline, skip check
       if (slotEntryRequestMappingTemplate === '' && slotEntryResponseMappingTemplate === '') {
@@ -250,7 +251,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     const requestFns = this.synthesizeResolvers(stack, api, this.requestSlots);
     const responseFns = this.synthesizeResolvers(stack, api, this.responseSlots);
     // substitue template name values
-    [this.requestMappingTemplate, this.requestMappingTemplate].map(template => this.substitueSlotInfo(template, 'main', 0));
+    [this.requestMappingTemplate, this.requestMappingTemplate].map((template) => this.substitueSlotInfo(template, 'main', 0));
 
     const dataSourceProviderFn = api.host.addAppSyncFunction(
       toPascalCase([this.typeName, this.fieldName, 'DataResolverFn']),
@@ -335,7 +336,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     ${dataSource}
     `;
     const authModes = [context.authConfig.defaultAuthentication, ...(context.authConfig.additionalAuthenticationProviders || [])].map(
-      mode => mode?.authenticationType,
+      (mode) => mode?.authenticationType,
     );
     if (authModes.includes(AuthorizationType.IAM)) {
       const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
@@ -357,7 +358,7 @@ export class TransformerResolver implements TransformerResolverProvider {
       MappingTemplate.inlineTemplateFromString('$util.toJson($ctx.prev.result)'),
       this.resolverLogicalId,
       undefined,
-      [...requestFns, dataSourceProviderFn, ...responseFns].map(fn => fn.functionId),
+      [...requestFns, dataSourceProviderFn, ...responseFns].map((fn) => fn.functionId),
       stack,
     );
   };
@@ -399,7 +400,9 @@ export class TransformerResolver implements TransformerResolverProvider {
     // with copies of the class, which happens with custom transformers.
     // See: https://github.com/aws-amplify/amplify-cli/issues/9362
     if (template.constructor.name === S3MappingTemplate.name) {
-      (template as S3MappingTemplate).substitueValues({ slotName, slotIndex: index, typeName: this.typeName, fieldName: this.fieldName });
+      (template as S3MappingTemplate).substitueValues({
+        slotName, slotIndex: index, typeName: this.typeName, fieldName: this.fieldName,
+      });
     }
   }
 

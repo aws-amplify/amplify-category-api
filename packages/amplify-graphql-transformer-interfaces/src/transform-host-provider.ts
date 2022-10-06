@@ -1,22 +1,22 @@
-import { Duration, Stack } from '@aws-cdk/core';
+import { Duration, Stack } from 'aws-cdk-lib';
 import {
   BaseDataSource,
-  CfnResolver,
   DynamoDbDataSource,
   GraphqlApiBase,
   HttpDataSource,
   LambdaDataSource,
   NoneDataSource,
-} from '@aws-cdk/aws-appsync';
-import { ITable } from '@aws-cdk/aws-dynamodb';
-import { IFunction, ILayerVersion, Runtime } from '@aws-cdk/aws-lambda';
+} from '@aws-cdk/aws-appsync-alpha';
+import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
+import { ITable } from 'aws-cdk-lib/aws-dynamodb';
+import { IFunction, ILayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { IRole } from 'aws-cdk-lib/aws-iam';
 import {
   AppSyncFunctionConfigurationProvider,
   DataSourceOptions,
   SearchableDataSourceOptions,
   MappingTemplateProvider,
 } from './graphql-api-provider';
-import { IRole } from '@aws-cdk/aws-iam';
 
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
   /**
@@ -26,19 +26,19 @@ export interface DynamoDbDataSourceOptions extends DataSourceOptions {
 }
 
 export interface TransformHostProvider {
-  setAPI(api: GraphqlApiBase): void;
+  setAPI: (api: GraphqlApiBase) => void;
 
-  addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, stack?: Stack): HttpDataSource;
-  addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource;
-  addNoneDataSource(name: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource;
-  addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource;
-  addSearchableDataSource(
+  addHttpDataSource: (name: string, endpoint: string, options?: DataSourceOptions, stack?: Stack) => HttpDataSource;
+  addDynamoDbDataSource: (name: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack) => DynamoDbDataSource;
+  addNoneDataSource: (name: string, options?: DataSourceOptions, stack?: Stack) => NoneDataSource;
+  addLambdaDataSource: (name: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack) => LambdaDataSource;
+  addSearchableDataSource: (
     name: string,
     endpoint: string,
     region: string,
     options?: SearchableDataSourceOptions,
     stack?: Stack,
-  ): BaseDataSource;
+  ) => BaseDataSource;
 
   addAppSyncFunction: (
     name: string,

@@ -1,5 +1,5 @@
-import { CfnGraphQLSchema } from '@aws-cdk/aws-appsync';
-import { Lazy } from '@aws-cdk/core';
+import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
+import { Lazy } from 'aws-cdk-lib';
 import { GraphQLApi } from '../graphql-api';
 import { FileAsset } from './file-asset';
 
@@ -15,7 +15,7 @@ export class TransformerSchema {
       this.api = api;
       this.schemaConstruct = new CfnGraphQLSchema(api, 'TransformerSchema', {
         apiId: api.apiId,
-        definitionS3Location: Lazy.stringValue({
+        definitionS3Location: Lazy.string({
           produce: () => {
             const asset = schema.addAsset();
             return asset.s3Url;
@@ -35,6 +35,7 @@ export class TransformerSchema {
     }
     return this.asset;
   };
+
   addToSchema = (addition: string, delimiter: string): void => {
     const sep = delimiter ?? '';
     this.definition = `${this.definition}${sep}${addition}\n`;

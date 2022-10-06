@@ -1,6 +1,6 @@
 import {
   ISynthesisSession, Stack, LegacyStackSynthesizer, FileAssetSource, FileAssetLocation, CfnParameter,
-} from '@aws-cdk/core';
+} from 'aws-cdk-lib';
 import Template from '../transformation/types';
 import { TransformerRootStack } from './root-stack';
 
@@ -79,7 +79,7 @@ export class TransformerStackSythesizer extends LegacyStackSynthesizer {
     const s3ObjectUrl = `s3://${bucketName}/${rootKey}/${asset.fileName}`;
 
     return {
-      bucketName, objectKey, httpUrl, s3ObjectUrl, s3Url: httpUrl,
+      bucketName, objectKey, httpUrl, s3ObjectUrl,
     };
   }
 

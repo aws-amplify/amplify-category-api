@@ -1,7 +1,7 @@
-import { BackedDataSource, HttpDataSource } from '@aws-cdk/aws-appsync';
-import { ITable } from '@aws-cdk/aws-dynamodb';
-import { CfnDomain } from '@aws-cdk/aws-elasticsearch';
-import { IFunction } from '@aws-cdk/aws-lambda';
+import { BackedDataSource, HttpDataSource } from '@aws-cdk/aws-appsync-alpha';
+import { ITable } from 'aws-cdk-lib/aws-dynamodb';
+import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
+import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 
 export enum AppSyncDataSourceType {
@@ -20,9 +20,9 @@ export interface NoneDataSourceProvider {
 export type DataSourceInstance = ITable | CfnDomain | HttpDataSource | IFunction | NoneDataSourceProvider;
 
 export interface TransformerDataSourceManagerProvider {
-  add(type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: DataSourceInstance): void;
-  get(type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): DataSourceInstance;
-  has(name: string): boolean;
+  add: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: DataSourceInstance) => void;
+  get: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode) => DataSourceInstance;
+  has: (name: string) => boolean;
 }
 
-export interface DataSourceProvider extends BackedDataSource {}
+export type DataSourceProvider = BackedDataSource

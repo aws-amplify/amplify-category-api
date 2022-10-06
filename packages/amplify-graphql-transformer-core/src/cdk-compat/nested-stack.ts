@@ -2,7 +2,6 @@ import {
   Aws,
   CfnResource,
   CfnStack,
-  Construct,
   FileAssetPackaging,
   Fn,
   IResolveContext,
@@ -11,10 +10,12 @@ import {
   NestedStackProps,
   Stack,
   Token,
-} from '@aws-cdk/core';
+} from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import * as crypto from 'crypto';
 import { TransformerRootStack } from './root-stack';
 import { TransformerStackSythesizer } from './stack-synthesizer';
+
 export type TransformerNestedStackProps = NestedStackProps & {
   synthesizer?: IStackSynthesizer;
 };
@@ -47,12 +48,10 @@ export class TransformerNestedStack extends TransformerRootStack {
     this.parameters = props.parameters || {};
 
     this.resource = new CfnStack(parentScope, `${id}.NestedStackResource`, {
-      templateUrl: Lazy.stringValue({
-        produce: () => {
-          return this._templateUrl || '<unresolved>';
-        },
+      templateUrl: Lazy.string({
+        produce: () => this._templateUrl || '<unresolved>',
       }),
-      parameters: Lazy.anyValue({
+      parameters: Lazy.any({
         produce: () => (Object.keys(this.parameters).length > 0 ? this.parameters : undefined),
       }),
       notificationArns: props.notificationArns,
@@ -147,9 +146,8 @@ export class TransformerNestedStack extends TransformerRootStack {
       resolve: (context: IResolveContext) => {
         if (Stack.of(context.scope) === this) {
           return innerValue;
-        } else {
-          return outerValue;
         }
+        return outerValue;
       },
     });
   }
@@ -159,7 +157,7 @@ function findRootStack(scope: Construct): Stack {
     throw new Error('Nested stacks cannot be defined as a root construct');
   }
 
-  const rootStack = scope.node.scopes.find(p => Stack.isStack(p));
+  const rootStack = scope.node.scopes.find((p) => Stack.isStack(p));
   if (!rootStack) {
     throw new Error('Nested stacks must be defined within scope of another non-nested stack');
   }

@@ -1,5 +1,5 @@
-import { BackedDataSourceProps, BaseDataSource } from '@aws-cdk/aws-appsync';
-import { Construct } from '@aws-cdk/core';
+import { BackedDataSourceProps, BaseDataSource } from '@aws-cdk/aws-appsync-alpha';
+import { Construct } from 'constructs';
 
 /**
  * Properties for an AppSync searchable data source

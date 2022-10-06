@@ -1,4 +1,6 @@
-import { CfnElement, Stack, CfnResource, ISynthesisSession } from '@aws-cdk/core';
+import {
+  CfnElement, Stack, CfnResource, ISynthesisSession,
+} from 'aws-cdk-lib';
 
 export class TransformerRootStack extends Stack {
   private readonly resourceTypeToPreserveLogicalName: string[] = [
@@ -20,7 +22,7 @@ export class TransformerRootStack extends Stack {
     const regExPattern = /[^A-Za-z0-9]/g;
     if (cfnElement instanceof CfnResource && this.resourceTypeToPreserveLogicalName.includes(cfnElement.cfnResourceType)) {
       // Each L2 Construct creates a lower level CFN socpe with name Resource. We want to get the id of the parent scope
-      const scope = cfnElement.node.scopes.reverse().find(scope => scope.node.id !== 'Resource');
+      const scope = cfnElement.node.scopes.reverse().find((scope) => scope.node.id !== 'Resource');
       if (scope) {
         const logicalId = scope.node.id.replace('.NestedStackResource', '');
         // if the id contains non alphanumeric char, fallback to CDK resource naming
@@ -37,7 +39,5 @@ export class TransformerRootStack extends Stack {
    * @param session
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public renderCloudFormationTemplate = (_:ISynthesisSession): string => {
-    return JSON.stringify((this as any)._toCloudFormation(), undefined, 2);
-  };
+  public renderCloudFormationTemplate = (_:ISynthesisSession): string => JSON.stringify((this as any)._toCloudFormation(), undefined, 2);
 }

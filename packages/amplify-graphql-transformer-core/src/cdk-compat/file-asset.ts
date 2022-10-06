@@ -1,20 +1,21 @@
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import * as crypto from 'crypto';
+import { FileAssetPackaging, Stack } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { TransformerStackSythesizer } from './stack-synthesizer';
-import { Construct, FileAssetPackaging, Stack } from '@aws-cdk/core';
 
 export interface TemplateProps {
   readonly fileContent: string;
   readonly fileName: string;
 }
 
-export class FileAsset extends cdk.Construct implements cdk.IAsset {
+export class FileAsset extends Construct implements cdk.IAsset {
   public readonly assetHash: string;
   public readonly httpUrl: string;
   public readonly s3BucketName: string;
   public readonly s3ObjectKey: string;
   public readonly s3Url: string;
-  constructor(scope: cdk.Construct, id: string, props: TemplateProps) {
+  constructor(scope: Construct, id: string, props: TemplateProps) {
     super(scope, id);
 
     const rootStack = findRootStack(scope);
@@ -50,11 +51,10 @@ function findRootStack(scope: Construct): Stack {
     throw new Error('Nested stacks cannot be defined as a root construct');
   }
 
-  const rootStack = scope.node.scopes.find(p => Stack.isStack(p));
+  const rootStack = scope.node.scopes.find((p) => Stack.isStack(p));
   if (!rootStack) {
     throw new Error('Nested stacks must be defined within scope of another non-nested stack');
   }
 
   return rootStack as Stack;
 }
-
