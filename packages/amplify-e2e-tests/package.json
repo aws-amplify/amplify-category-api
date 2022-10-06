@@ -24,7 +24,7 @@
     "clean-stale-test-buckets": "ts-node ./src/cleanup-stale-test-buckets.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "0.17.12",
+    "@aws-amplify/graphql-transformer-core": "1.0.0",
     "amplify-app": "^4.2.39",
     "amplify-category-api-e2e-core": "4.0.8",
     "aws-amplify": "^4.2.8",
