@@ -169,8 +169,8 @@ function runE2eTest {
 
 # Accepts the value as an input parameter, i.e. 1 for success, 0 for failure.
 # Only executes if IS_CANARY env variable is set
-function emitCanarySuccessRate {
-    if [[ -v IS_CANARY ]]; then
+function emitCanarySuccessMetric {
+    if [[ "$CIRCLE_BRANCH" = main ]]; then
         USE_PARENT_ACCOUNT=1
         setAwsAccountCredentials 
         aws cloudwatch \
@@ -178,8 +178,23 @@ function emitCanarySuccessRate {
             --metric-name CanarySuccessRate \
             --namespace amplify-category-api-e2e-tests \
             --unit Count \
-            --value $1 \
-            --dimensions branch=$CIRCLE_BRANCH \
+            --value 1 \
+            --dimensions branch=main \
+            --region us-west-2
+    fi
+}
+
+function emitCanaryFailureMetric {
+    if [[ "$CIRCLE_BRANCH" = main ]]; then
+        USE_PARENT_ACCOUNT=1
+        setAwsAccountCredentials 
+        aws cloudwatch \
+            put-metric-data \
+            --metric-name CanarySuccessRate \
+            --namespace amplify-category-api-e2e-tests \
+            --unit Count \
+            --value 0 \
+            --dimensions branch=main \
             --region us-west-2
     fi
 }
