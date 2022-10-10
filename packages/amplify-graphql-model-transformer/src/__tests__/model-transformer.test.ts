@@ -13,7 +13,7 @@ import {
   verifyInputCount,
   verifyMatchingTypes,
 } from './test-utils/helpers';
-import { expect as cdkExpect, haveResource } from '@aws-cdk/assert';
+import { Template } from 'aws-cdk-lib/assertions';
 
 const featureFlags = {
   getBoolean: jest.fn(),
@@ -1027,8 +1027,8 @@ describe('ModelTransformer: ', () => {
 
     const iamStackResource = out.stacks.ThisIsAVeryLongNameModelThatShouldNotGenerateIAMRoleNamesOver64Characters;
     expect(iamStackResource).toBeDefined();
-    cdkExpect(iamStackResource).to(
-      haveResource('AWS::IAM::Role', {
+    Template.fromJSON(iamStackResource)
+      .hasResourceProperties('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
           Statement: [
             {
@@ -1056,8 +1056,7 @@ describe('ModelTransformer: ', () => {
             ],
           ],
         },
-      }),
-    );
+      });
 
     validateModelSchema(parsed);
   });
@@ -1122,8 +1121,8 @@ describe('ModelTransformer: ', () => {
     expect(out.resolvers['Query.syncTodos.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Query.syncTodos.res.vtl']).toMatchSnapshot();
     // ds table
-    cdkExpect(out.rootStack).to(
-      haveResource('AWS::DynamoDB::Table', {
+    Template.fromJSON(out.rootStack)
+      .hasResourceProperties('AWS::DynamoDB::Table', {
         KeySchema: [
           {
             AttributeName: 'ds_pk',
@@ -1167,8 +1166,7 @@ describe('ModelTransformer: ', () => {
           AttributeName: '_ttl',
           Enabled: true,
         },
-      }),
-    );
+      });
   });
 
   it('should add the model parameters at the root sack', () => {

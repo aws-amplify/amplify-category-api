@@ -38,7 +38,6 @@
     "graphql-transformer-common": "4.24.0"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "~2.41.0",
     "@types/node": "^12.12.6"
   },
   "jest": {
