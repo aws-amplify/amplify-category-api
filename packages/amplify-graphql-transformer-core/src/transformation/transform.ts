@@ -6,10 +6,10 @@ import {
   TransformerPluginProvider,
   TransformHostProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
+import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync-alpha';
 import {
   App, Aws, CfnOutput, CfnResource, Fn,
-} from '@aws-cdk/core';
+} from 'aws-cdk-lib';
 import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import {

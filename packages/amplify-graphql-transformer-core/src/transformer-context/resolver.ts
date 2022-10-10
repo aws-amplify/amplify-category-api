@@ -7,8 +7,9 @@ import {
   TransformerResolverProvider,
   TransformerResolversManagerProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationType, CfnFunctionConfiguration } from '@aws-cdk/aws-appsync';
-import { isResolvableObject, Stack, CfnParameter } from '@aws-cdk/core';
+import { AuthorizationType } from '@aws-cdk/aws-appsync-alpha';
+import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
+import { isResolvableObject, Stack, CfnParameter } from 'aws-cdk-lib';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
 import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';

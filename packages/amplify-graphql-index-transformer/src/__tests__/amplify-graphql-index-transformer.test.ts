@@ -7,7 +7,7 @@ import {
   Template,
 } from '@aws-amplify/graphql-transformer-core';
 import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { expect as cdkExpect, haveResourceLike } from '@aws-cdk/assert';
+import { Template as AssertionTemplate } from 'aws-cdk-lib/assertions';
 import { DocumentNode, parse } from 'graphql';
 import { IndexTransformer, PrimaryKeyTransformer } from '..';
 import * as resolverUtils from '../resolvers';
@@ -338,8 +338,8 @@ test('@index with multiple sort keys adds a query field and GSI correctly', () =
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::DynamoDB::Table', {
+  AssertionTemplate.fromJSON(stack)
+    .hasResourceProperties('AWS::DynamoDB::Table', {
       KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
       AttributeDefinitions: [
         { AttributeName: 'id', AttributeType: 'S' },
@@ -366,15 +366,13 @@ test('@index with multiple sort keys adds a query field and GSI correctly', () =
           },
         },
       ],
-    }),
-  );
+    });
 
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::AppSync::Resolver', {
+  AssertionTemplate.fromJSON(stack)
+    .hasResourceProperties('AWS::AppSync::Resolver', {
       FieldName: 'listByEmailKindDate',
       TypeName: 'Query',
-    }),
-  );
+    });
 
   expect(out.resolvers).toMatchSnapshot();
 
@@ -435,8 +433,8 @@ test('@index with a single sort key adds a query field and GSI correctly', () =>
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::DynamoDB::Table', {
+  AssertionTemplate.fromJSON(stack)
+    .hasResourceProperties('AWS::DynamoDB::Table', {
       KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
       AttributeDefinitions: [
         { AttributeName: 'id', AttributeType: 'S' },
@@ -452,8 +450,7 @@ test('@index with a single sort key adds a query field and GSI correctly', () =>
           ],
         },
       ],
-    }),
-  );
+    });
 
   expect(out.resolvers).toMatchSnapshot();
 
@@ -510,8 +507,8 @@ test('@index with no sort key field adds a query field and GSI correctly', () =>
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::DynamoDB::Table', {
+  AssertionTemplate.fromJSON(stack)
+    .hasResourceProperties('AWS::DynamoDB::Table', {
       KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
       AttributeDefinitions: [
         { AttributeName: 'id', AttributeType: 'S' },
@@ -523,8 +520,7 @@ test('@index with no sort key field adds a query field and GSI correctly', () =>
           KeySchema: [{ AttributeName: 'email', KeyType: 'HASH' }],
         },
       ],
-    }),
-  );
+    });
 
   expect(out.resolvers).toMatchSnapshot();
 
@@ -613,8 +609,8 @@ test('creates a primary key and a secondary index', () => {
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::DynamoDB::Table', {
+  AssertionTemplate.fromJSON(stack)
+    .hasResourceProperties('AWS::DynamoDB::Table', {
       KeySchema: [
         { AttributeName: 'email', KeyType: 'HASH' },
         { AttributeName: 'createdAt', KeyType: 'RANGE' },
@@ -633,8 +629,7 @@ test('creates a primary key and a secondary index', () => {
           ],
         },
       ],
-    }),
-  );
+    });
 
   expect(out.resolvers).toMatchSnapshot();
 
@@ -785,8 +780,8 @@ test('@index adds an LSI with secondaryKeyAsGSI FF set to false', () => {
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::DynamoDB::Table', {
+  AssertionTemplate.fromJSON(stack)
+    .hasResourceProperties('AWS::DynamoDB::Table', {
       KeySchema: [
         { AttributeName: 'email', KeyType: 'HASH' },
         { AttributeName: 'createdAt', KeyType: 'RANGE' },
@@ -805,8 +800,7 @@ test('@index adds an LSI with secondaryKeyAsGSI FF set to false', () => {
           ],
         },
       ],
-    }),
-  );
+    });
 
   const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as any;
   const queryIndexField = queryType.fields.find((f: any) => f.name && f.name.value === 'testsByEmailByUpdatedAt');
@@ -832,8 +826,8 @@ test('@index adds a GSI with secondaryKeyAsGSI FF set to true', () => {
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::DynamoDB::Table', {
+  AssertionTemplate.fromJSON(stack)
+    .hasResourceProperties('AWS::DynamoDB::Table', {
       KeySchema: [
         { AttributeName: 'email', KeyType: 'HASH' },
         { AttributeName: 'createdAt', KeyType: 'RANGE' },
@@ -852,8 +846,7 @@ test('@index adds a GSI with secondaryKeyAsGSI FF set to true', () => {
           ],
         },
       ],
-    }),
-  );
+    });
 
   const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as any;
   const queryIndexField = queryType.fields.find((f: any) => f.name && f.name.value === 'testsByEmailByUpdatedAt');
@@ -1281,16 +1274,15 @@ describe('automatic name generation', () => {
     if (sortKeyName) {
       keySchema.push({ AttributeName: sortKeyName, KeyType: 'RANGE' });
     }
-    cdkExpect(stack).to(
-      haveResourceLike('AWS::DynamoDB::Table', {
+    AssertionTemplate.fromJSON(stack)
+      .hasResourceProperties('AWS::DynamoDB::Table', {
         GlobalSecondaryIndexes: [
           {
             IndexName: indexName,
             KeySchema: keySchema,
           },
         ],
-      }),
-    );
+      });
   };
   const expectGeneratedQueryLike = (
     {

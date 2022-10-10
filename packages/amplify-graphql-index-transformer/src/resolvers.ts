@@ -1,9 +1,13 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import { MappingTemplate, GraphQLTransform, AmplifyApiGraphQlResourceStackTemplate, SyncUtils, StackManager } from '@aws-amplify/graphql-transformer-core';
-import { DataSourceProvider, StackManagerProvider, TransformerContextProvider, TransformerPluginProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
-import { Table } from '@aws-cdk/aws-dynamodb';
-import * as cdk from '@aws-cdk/core';
+import {
+  MappingTemplate, GraphQLTransform, AmplifyApiGraphQlResourceStackTemplate, SyncUtils, StackManager,
+} from '@aws-amplify/graphql-transformer-core';
+import {
+  DataSourceProvider, StackManagerProvider, TransformerContextProvider, TransformerPluginProvider, TransformerResolverProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
+import { DynamoDbDataSource } from '@aws-cdk/aws-appsync-alpha';
+import { Table } from 'aws-cdk-lib/aws-dynamodb';
+import * as cdk from 'aws-cdk-lib';
 import { Kind, ObjectTypeDefinitionNode, TypeNode } from 'graphql';
 import {
   and,
@@ -645,8 +649,8 @@ function setSyncQueryFilterSnippet(deltaSyncTableTtl: number) {
     compoundExpression([
       set(ref('filterArgsMap'), ref('ctx.args.filter.get("and")')),
       generateDeltaTableTTLCheck(
-        'isLastSyncInDeltaTTLWindow', 
-        deltaSyncTableTtl, 
+        'isLastSyncInDeltaTTLWindow',
+        deltaSyncTableTtl,
         'ctx.args.lastSync'
       ),
       ifElse(
@@ -685,8 +689,8 @@ function setSyncQueryFilterSnippet(deltaSyncTableTtl: number) {
 }
 
 const generateDeltaTableTTLCheck = (
-  deltaTTLCheckRefName: string, 
-  deltaTTLInMinutes: number, 
+  deltaTTLCheckRefName: string,
+  deltaTTLInMinutes: number,
   lastSyncRefName: string
 ): Expression => {
   const deltaTTLInMilliSeconds = deltaTTLInMinutes * 60 * 1000;

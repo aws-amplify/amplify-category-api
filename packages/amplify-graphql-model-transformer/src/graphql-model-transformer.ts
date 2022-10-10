@@ -35,11 +35,11 @@ import {
   StreamViewType,
   Table,
   TableEncryption,
-} from '@aws-cdk/aws-dynamodb';
-import * as iam from '@aws-cdk/aws-iam';
-import { CfnRole } from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
-import { CfnDataSource } from '@aws-cdk/aws-appsync';
+} from 'aws-cdk-lib/aws-dynamodb';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { CfnRole } from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib/core';
+import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import {
   DirectiveNode,
   FieldDefinitionNode,
