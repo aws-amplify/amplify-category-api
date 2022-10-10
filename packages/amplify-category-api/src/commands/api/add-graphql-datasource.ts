@@ -44,7 +44,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     const { resourceName, databaseName } = answers;
 
     /**
-     * Write the new env specific datasource information into
+     * Setting the params using getEnvParamManager.getResourceParamManager.setParams updates
      * the team-provider-info file
      */
     const currentEnv = context.amplify.getEnvInfo().envName;
