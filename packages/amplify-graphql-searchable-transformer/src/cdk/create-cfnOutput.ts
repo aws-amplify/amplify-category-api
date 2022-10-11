@@ -1,6 +1,6 @@
 /* eslint-disable no-new */
-import { Construct, Fn } from '@aws-cdk/core';
-import { CfnOutput } from '@aws-cdk/core';
+import { CfnOutput, Fn } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { ResourceConstants } from 'graphql-transformer-common';
 
 export const createStackOutputs = (stack: Construct, endpoint: string, apiId: string, arn: string): void => {

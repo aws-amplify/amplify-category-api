@@ -1,6 +1,8 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { anything, expect as cdkExpect, haveResource } from '@aws-cdk/assert';
+import {
+  Match, Template,
+} from 'aws-cdk-lib/assertions';
 import * as path from 'path';
 import { SearchableModelTransformer } from '..';
 
@@ -40,10 +42,10 @@ test('it overrides expected resources', () => {
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   const searchableStack = out.stacks.SearchableStack;
-  cdkExpect(searchableStack).to(
-    haveResource('AWS::AppSync::DataSource', {
+  Template.fromJSON(searchableStack)
+    .hasResourceProperties('AWS::AppSync::DataSource', {
       ApiId: {
-        Ref: anything(),
+        Ref: Match.anyValue(),
       },
       Name: 'OpenSearchDataSource',
       Type: 'AMAZON_ELASTICSEARCH',
@@ -55,7 +57,7 @@ test('it overrides expected resources', () => {
               'Fn::Split': [
                 ':',
                 {
-                  'Fn::GetAtt': ['OpenSearchDomain', 'Arn'],
+                  'Fn::GetAtt': ['OpenSearchDomain85D65221', 'Arn'],
                 },
               ],
             },
@@ -67,47 +69,44 @@ test('it overrides expected resources', () => {
             [
               'https://',
               {
-                'Fn::GetAtt': ['OpenSearchDomain', 'DomainEndpoint'],
+                'Fn::GetAtt': ['OpenSearchDomain85D65221', 'DomainEndpoint'],
               },
             ],
           ],
         },
       },
       ServiceRoleArn: 'mockArn',
-    }),
-  );
-  cdkExpect(searchableStack).to(
-    haveResource('AWS::Elasticsearch::Domain', {
-      DomainName: anything(),
-      EBSOptions: anything(),
-      ElasticsearchClusterConfig: anything(),
+    });
+  Template.fromJSON(searchableStack)
+    .hasResourceProperties('AWS::Elasticsearch::Domain', {
+      DomainName: Match.anyValue(),
+      EBSOptions: Match.anyValue(),
+      ElasticsearchClusterConfig: Match.anyValue(),
       ElasticsearchVersion: '7.10',
       EncryptionAtRestOptions: {
         Enabled: true,
         KmsKeyId: '1a2a3a4-1a2a-3a4a-5a6a-1a2a3a4a5a6a',
       },
-    }),
-  );
-  cdkExpect(searchableStack).to(
-    haveResource('AWS::AppSync::Resolver', {
+    });
+  Template.fromJSON(searchableStack)
+    .hasResourceProperties('AWS::AppSync::Resolver', {
       ApiId: {
-        Ref: anything(),
+        Ref: Match.anyValue(),
       },
-      FieldName: anything(),
+      FieldName: Match.anyValue(),
       TypeName: 'Query',
       Kind: 'PIPELINE',
       PipelineConfig: {
         Functions: [
           {
-            Ref: anything(),
+            Ref: Match.anyValue(),
           },
           {
-            'Fn::GetAtt': [anything(), 'FunctionId'],
+            'Fn::GetAtt': [Match.anyValue(), 'FunctionId'],
           },
         ],
       },
       RequestMappingTemplate: 'mockTemplate',
       ResponseMappingTemplate: '$util.toJson($ctx.prev.result)',
-    }),
-  );
+    });
 });

@@ -1,13 +1,14 @@
 import { GraphQLAPIProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   EventSourceMapping, IFunction, LayerVersion, Runtime, StartingPosition,
-} from '@aws-cdk/aws-lambda';
+} from 'aws-cdk-lib/aws-lambda';
 import {
-  CfnParameter, Construct, Fn, Stack, Duration,
-} from '@aws-cdk/core';
+  CfnParameter, Fn, Stack, Duration,
+} from 'aws-cdk-lib';
 import {
   Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal,
-} from '@aws-cdk/aws-iam';
+} from 'aws-cdk-lib/aws-iam';
+import { Construct } from 'constructs';
 import { ResourceConstants, SearchableResourceIDs } from 'graphql-transformer-common';
 import * as path from 'path';
 
