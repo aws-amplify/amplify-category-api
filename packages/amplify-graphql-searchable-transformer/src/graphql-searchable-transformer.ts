@@ -1,8 +1,9 @@
 import {
-  TransformerPluginBase,
+  DirectiveWrapper,
   generateGetArgumentsInput,
   InvalidDirectiveError,
-  MappingTemplate, DirectiveWrapper,
+  MappingTemplate,
+  TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -11,11 +12,12 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
-import { Table } from '@aws-cdk/aws-dynamodb';
+import { DynamoDbDataSource } from '@aws-cdk/aws-appsync-alpha';
+import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import {
-  CfnCondition, CfnParameter, Fn, IConstruct,
-} from '@aws-cdk/core';
+  ArnFormat, CfnCondition, CfnParameter, Fn,
+} from 'aws-cdk-lib';
+import { IConstruct } from 'constructs';
 import { DirectiveNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { Expression, str } from 'graphql-mapping-template';
 import {
@@ -301,7 +303,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     domain.grantReadWrite(openSearchRole);
 
-    const { region } = stack.parseArn(domain.domainArn);
+    const { region } = stack.splitArn(domain.domainArn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!region) {
       throw new Error('Could not access region from search domain');
     }
