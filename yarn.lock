@@ -260,6 +260,21 @@
     graphql-mapping-template "4.20.5"
     graphql-transformer-common "4.24.0"
 
+"@aws-amplify/graphql-predictions-transformer@0.6.28":
+  version "0.6.28"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-predictions-transformer/-/graphql-predictions-transformer-0.6.28.tgz#6d56977ddeadee5d1036f613e1d5cc1055c0a1a6"
+  integrity sha512-frbSqhWqv4JqyfXMpV0Kf/HGVUl/mOkx1LHA20BYPf6t4NUJ/rZVRhZS1AKXceQ4sm7sfKFExl0pVeAuXH4JqA==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "0.17.12"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.7"
+    "@aws-cdk/aws-appsync" "~1.124.0"
+    "@aws-cdk/aws-iam" "~1.124.0"
+    "@aws-cdk/aws-lambda" "~1.124.0"
+    "@aws-cdk/core" "~1.124.0"
+    graphql "^14.5.8"
+    graphql-mapping-template "4.20.5"
+    graphql-transformer-common "4.24.0"
+
 "@aws-amplify/graphql-transformer-core@0.17.12", "@aws-amplify/graphql-transformer-core@^0.17.11":
   version "0.17.12"
   resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-transformer-core/-/graphql-transformer-core-0.17.12.tgz#b965a07a8d23df2cf349366f39656a7ed2908154"

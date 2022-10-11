@@ -1,5 +1,5 @@
 'use strict';
-import { anything, countResources, expect as cdkExpect, haveResourceLike } from '@aws-cdk/assert';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import { PredictionsTransformer } from '..';
@@ -36,15 +36,15 @@ test('lambda function is added to pipeline when lambda dependent action is added
   expect(out.schema).toMatchSnapshot();
   const stack = out.stacks.PredictionsDirectiveStack;
   expect(stack).toBeDefined();
-  cdkExpect(stack).to(countResources('AWS::IAM::Role', 4));
-  cdkExpect(stack).to(countResources('AWS::IAM::Policy', 4));
-  cdkExpect(stack).to(countResources('AWS::AppSync::DataSource', 2));
-  cdkExpect(stack).to(countResources('AWS::AppSync::FunctionConfiguration', 2));
-  cdkExpect(stack).to(countResources('AWS::Lambda::Function', 1));
-  cdkExpect(stack).to(countResources('AWS::AppSync::Resolver', 1));
+  Template.fromJSON(stack).resourceCountIs('AWS::IAM::Role', 4);
+  Template.fromJSON(stack).resourceCountIs('AWS::IAM::Policy', 4);
+  Template.fromJSON(stack).resourceCountIs('AWS::AppSync::DataSource', 2);
+  Template.fromJSON(stack).resourceCountIs('AWS::AppSync::FunctionConfiguration', 2);
+  Template.fromJSON(stack).resourceCountIs('AWS::Lambda::Function', 1);
+  Template.fromJSON(stack).resourceCountIs('AWS::AppSync::Resolver', 1);
   expect(out.schema).toContain('speakTranslatedText(input: SpeakTranslatedTextInput!): String');
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::IAM::Role', {
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -57,23 +57,21 @@ test('lambda function is added to pipeline when lambda dependent action is added
         ],
         Version: '2012-10-17',
       },
-    }),
-  );
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::IAM::Policy', {
+    });
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 's3:GetObject',
             Effect: 'Allow',
-            Resource: anything(),
+            Resource: Match.anyValue(),
           },
         ],
       },
-    }),
-  );
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::IAM::Policy', {
+    });
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -83,29 +81,27 @@ test('lambda function is added to pipeline when lambda dependent action is added
           },
         ],
       },
-    }),
-  );
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::IAM::Policy', {
+    });
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
-            Resource: { 'Fn::GetAtt': [anything(), 'Arn'] },
+            Resource: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
           },
         ],
       },
-    }),
-  );
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::AppSync::Resolver', {
-      ApiId: { Ref: anything() },
+    });
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::AppSync::Resolver', {
+      ApiId: { Ref: Match.anyValue() },
       FieldName: 'speakTranslatedText',
       TypeName: 'Query',
       Kind: 'PIPELINE',
       PipelineConfig: {
-        Functions: [{ 'Fn::GetAtt': [anything(), 'FunctionId'] }, { 'Fn::GetAtt': [anything(), 'FunctionId'] }],
+        Functions: [{ 'Fn::GetAtt': [Match.anyValue(), 'FunctionId'] }, { 'Fn::GetAtt': [Match.anyValue(), 'FunctionId'] }],
       },
       RequestMappingTemplate: {
         'Fn::Join': [
@@ -121,7 +117,7 @@ test('lambda function is added to pipeline when lambda dependent action is added
                       hash: {
                         'Fn::Select': [3, { 'Fn::Split': ['-', { Ref: 'AWS::StackName' }] }],
                       },
-                      env: { Ref: anything() },
+                      env: { Ref: Match.anyValue() },
                     },
                   ],
                 },
@@ -143,8 +139,7 @@ test('lambda function is added to pipeline when lambda dependent action is added
       },
       ResponseMappingTemplate:
         '## If the result is a list return the result as a list **\n#if( $ctx.stash.get("isList") )\n  #set( $result = $ctx.result.split("[ ,]+") )\n  $util.toJson($result)\n#else\n  $util.toJson($ctx.result)\n#end',
-    }),
-  );
+    });
 });
 
 test('return type is a list based on the action', () => {
@@ -162,10 +157,10 @@ test('return type is a list based on the action', () => {
   expect(out.schema).toMatchSnapshot();
   const stack = out.stacks.PredictionsDirectiveStack;
   expect(stack).toBeDefined();
-  cdkExpect(stack).to(countResources('AWS::IAM::Role', 3));
-  cdkExpect(stack).to(countResources('AWS::AppSync::DataSource', 2));
-  cdkExpect(stack).to(countResources('AWS::AppSync::FunctionConfiguration', 2));
-  cdkExpect(stack).to(countResources('AWS::AppSync::Resolver', 1));
+  Template.fromJSON(stack).resourceCountIs('AWS::IAM::Role', 3);
+  Template.fromJSON(stack).resourceCountIs('AWS::AppSync::DataSource', 2);
+  Template.fromJSON(stack).resourceCountIs('AWS::AppSync::FunctionConfiguration', 2);
+  Template.fromJSON(stack).resourceCountIs('AWS::AppSync::Resolver', 1);
   expect(out.schema).toContain('translateLabels(input: TranslateLabelsInput!): [String]');
 });
 
