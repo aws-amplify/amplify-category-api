@@ -8,8 +8,8 @@ import {
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationType } from '@aws-cdk/aws-appsync';
-import * as cdk from '@aws-cdk/core';
+import { AuthorizationType } from '@aws-cdk/aws-appsync-alpha';
+import * as cdk from 'aws-cdk-lib';
 import {
   DirectiveNode,
   FieldDefinitionNode,
