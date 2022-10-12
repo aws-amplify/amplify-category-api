@@ -52,7 +52,7 @@ const transformSchema = (schema: string): DeploymentResources => {
 describe('mapsTo with manyToMany', () => {
   it('creates resources with original GSIs and field names', () => {
     const out = transformSchema(manyToManyMapped);
-    expect(out.stacks.EmployeeTask!.Resources!.EmployeeTaskTable.Properties.GlobalSecondaryIndexes).toMatchSnapshot();
+    expect(out.stacks.EmployeeTask!.Resources!.EmployeeTaskTable09DF6270.Properties.GlobalSecondaryIndexes).toMatchSnapshot();
     const outSchema = parse(out.schema);
     const EmployeeTaskFields = (
       outSchema.definitions.find((def) => (def as any)?.name.value === 'EmployeeTask')! as ObjectTypeDefinitionNode

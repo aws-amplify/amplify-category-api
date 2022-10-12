@@ -46,8 +46,8 @@ import {
   toUpper,
   isListType,
 } from 'graphql-transformer-common';
-import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib';
 import { getConnectionAttributeName, getSortKeyConnectionAttributeName, getObjectPrimaryKey } from '@aws-amplify/graphql-relational-transformer';
 import {
   generateAuthExpressionForCreate,
