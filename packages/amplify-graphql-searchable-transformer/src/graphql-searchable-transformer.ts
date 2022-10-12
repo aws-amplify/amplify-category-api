@@ -2,7 +2,8 @@ import {
   TransformerPluginBase,
   generateGetArgumentsInput,
   InvalidDirectiveError,
-  MappingTemplate, DirectiveWrapper,
+  MappingTemplate,
+  DirectiveWrapper,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -71,8 +72,11 @@ const getTable = (context: TransformerContextProvider, definition: ObjectTypeDef
 
 const getNonKeywordFields = (def: ObjectTypeDefinitionNode): Expression[] => {
   const nonKeywordTypeSet = new Set(nonKeywordTypes);
-  return def.fields?.filter((field) => nonKeywordTypeSet.has(getBaseType(field.type))
-    && !DATASTORE_SYNC_FIELDS.includes(field.name.value)).map((field) => str(field.name.value)) || [];
+  return (
+    def.fields
+      ?.filter((field) => nonKeywordTypeSet.has(getBaseType(field.type)) && !DATASTORE_SYNC_FIELDS.includes(field.name.value))
+      .map((field) => str(field.name.value)) || []
+  );
 };
 
 /**
@@ -327,6 +331,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       domain.domainEndpoint,
       isProjectUsingDataStore,
       region,
+      this.searchableObjectTypeDefinitions,
     );
 
     for (const def of this.searchableObjectTypeDefinitions) {
@@ -362,7 +367,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         MappingTemplate.s3MappingTemplateFromString(
           requestTemplate(
             attributeName,
-            getNonKeywordFields((context.output.getObject(type))as ObjectTypeDefinitionNode),
+            getNonKeywordFields(context.output.getObject(type) as ObjectTypeDefinitionNode),
             context.isProjectUsingDataStore(),
             openSearchIndexName,
             keyFields,
