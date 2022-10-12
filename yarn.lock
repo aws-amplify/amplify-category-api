@@ -233,6 +233,19 @@
     graphql-mapping-template "4.20.5"
     graphql-transformer-common "4.24.0"
 
+"@aws-amplify/graphql-http-transformer@0.8.28":
+  version "0.8.28"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-http-transformer/-/graphql-http-transformer-0.8.28.tgz#3f3f666ca1342c5c140c1e3f026a262fb636e061"
+  integrity sha512-D7Y8tafsSuwC9aXbgeoZrt34PAbNr18iH0AFFweyTkVJyhNNb47NeMy6Xz7gz2uVXJ352giN7zwaY+xSAvlwvw==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "0.17.12"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.7"
+    "@aws-cdk/aws-appsync" "~1.124.0"
+    "@aws-cdk/core" "~1.124.0"
+    graphql "^14.5.8"
+    graphql-mapping-template "4.20.5"
+    graphql-transformer-common "4.24.0"
+
 "@aws-amplify/graphql-index-transformer@0.14.0":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-index-transformer/-/graphql-index-transformer-0.14.0.tgz#7a9e9996e285622d638bf7f2f9ffa2f61c596fe9"
