@@ -60,6 +60,26 @@ class Searchable_Exception(Exception):
         Exception.__init__(
             self, 'Searchable_Exception: status_code={}, payload={}'.format(status_code, payload))
 
+# Custom mapper to match Python types to GraphQL Schema types
+def map_to_gql_types(fields, table):
+    mapped_fields = {}
+    # Get GraphQL schema types
+    schema_types = getGQLSchema(table)
+
+    for field in fields:
+        v = fields[field]
+        data_type = schema_types[field] if field in schema_types else None
+        if data_type == 'Float' and isinstance(v, int):
+            mapped_fields[field] = float(v)
+        else:
+            mapped_fields[field] = v
+    return mapped_fields
+
+# Gets schema from json file
+def getGQLSchema(table):
+    with open('schema_datatypes.json') as f:
+        schema = json.load(f)
+    return schema[table]
 
 # Low-level POST data to Amazon OpenSearch Service generating a Sigv4 signed request
 def post_data_to_opensearch(payload, region, creds, host, path, method='POST', proto='https://'):
@@ -188,6 +208,11 @@ def _lambda_handler(event, context):
         logger.debug(image_name + ': %s', ddb[image_name])
         # Deserialize DynamoDB type to Python types
         doc_fields = ddb_deserializer.deserialize({'M': ddb[image_name]})
+
+        logger.debug('Deserialized doc_fields before GraphQL Schema mapping: %s', doc_fields)
+
+        # Map python types to match GrahpQL schema types
+        doc_fields = map_to_gql_types(doc_fields, doc_opensearch_index_name)
         
         # Sync enabled APIs do soft delete. We need to delete the record in OpenSearch if _deleted field is set
         if OPENSEARCH_USE_EXTERNAL_VERSIONING and event_name == 'MODIFY' and '_deleted' in  doc_fields and doc_fields['_deleted']:

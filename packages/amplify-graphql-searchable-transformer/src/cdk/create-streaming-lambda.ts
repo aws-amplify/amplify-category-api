@@ -9,7 +9,60 @@ import {
   Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal,
 } from '@aws-cdk/aws-iam';
 import { ResourceConstants, SearchableResourceIDs } from 'graphql-transformer-common';
+import {
+  ObjectTypeDefinitionNode,
+  TypeNode,
+} from 'graphql';
 import * as path from 'path';
+import * as fs from 'fs';
+import AdmZip from 'adm-zip';
+
+const DATA_TYPE_SCHEMA_FILENAME = 'schema_datatypes.json';
+const STREAMING_FUNCTION_FILENAME = 'python_streaming_function.py';
+const STREAMING_LAMBDA_ZIP_FILENAME = 'streaming-lambda.zip';
+interface AttributeTypes {
+  [attribute: string]: string;
+}
+interface SchemaDataTypes {
+  [modelName: string]: AttributeTypes;
+}
+
+const findNamedType = (typeNode: TypeNode) : string => {
+  switch (typeNode.kind) {
+    case 'NamedType':
+      return typeNode.name.value;
+    case 'ListType':
+    case 'NonNullType':
+      return findNamedType(typeNode.type);
+    default:
+      throw new Error(`Unknown type ${typeNode}`);
+  }
+};
+
+const generateSchemaDataTypes = (searchableObjectTypeDefinitions: { node: ObjectTypeDefinitionNode; fieldName: string; }[]): void => {
+  const schemaDataTypes: SchemaDataTypes = {};
+  for (const def of searchableObjectTypeDefinitions) {
+    const modelName = def.node.name.value.toLowerCase();
+
+    const attributeTypes: AttributeTypes = {};
+    def.node.fields?.forEach((f) => {
+      attributeTypes[f.name.value] = findNamedType(f.type);
+    });
+    schemaDataTypes[modelName] = attributeTypes;
+  }
+
+  // Paths to export JSON file and lambda function script
+  const libPath = path.join(__dirname, '..', '..', 'lib');
+  const schemaPath = path.join(libPath, DATA_TYPE_SCHEMA_FILENAME);
+  const streamingFunctionPath = path.join(libPath, STREAMING_FUNCTION_FILENAME);
+  fs.writeFileSync(schemaPath, JSON.stringify(schemaDataTypes));
+
+  // Zip the file
+  const zip = new AdmZip();
+  zip.addLocalFile(schemaPath);
+  zip.addLocalFile(streamingFunctionPath);
+  zip.writeZip(path.join(libPath, STREAMING_LAMBDA_ZIP_FILENAME));
+};
 
 export const createLambda = (
   stack: Stack,
@@ -19,6 +72,7 @@ export const createLambda = (
   endpoint: string,
   isProjectUsingDataStore: boolean,
   region: string,
+  searchableObjectTypeDefinitions: { node: ObjectTypeDefinitionNode; fieldName: string }[],
 ): IFunction => {
   const { OpenSearchStreamingLambdaFunctionLogicalID } = ResourceConstants.RESOURCES;
   const { OpenSearchStreamingLambdaHandlerName, OpenSearchDebugStreamingLambda } = ResourceConstants.PARAMETERS;
@@ -29,11 +83,13 @@ export const createLambda = (
     OPENSEARCH_USE_EXTERNAL_VERSIONING: isProjectUsingDataStore.toString(),
   };
 
+  generateSchemaDataTypes(searchableObjectTypeDefinitions);
+
   return apiGraphql.host.addLambdaFunction(
     OpenSearchStreamingLambdaFunctionLogicalID,
     `functions/${OpenSearchStreamingLambdaFunctionLogicalID}.zip`,
     parameterMap.get(OpenSearchStreamingLambdaHandlerName)!.valueAsString,
-    path.resolve(__dirname, '..', '..', 'lib', 'streaming-lambda.zip'),
+    path.resolve(__dirname, '..', '..', 'lib', STREAMING_LAMBDA_ZIP_FILENAME),
     Runtime.PYTHON_3_8,
     [
       LayerVersion.fromLayerVersionArn(
