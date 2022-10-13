@@ -82,7 +82,7 @@ describe('amplify add api (GraphQL)', () => {
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
   });
 
-  it.only('init a project and add v1 rds datasource', async () => {
+  it('init a project and add v1 rds datasource', async () => {
     const appName = createRandomName();
     await initJSProjectWithProfile(projRoot, { name: appName });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
