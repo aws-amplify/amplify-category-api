@@ -24,7 +24,6 @@ executors:
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
-      NODE_OPTIONS: --max-old-space-size=4096
 
 defaults: &defaults
   working_directory: ~/repo
@@ -98,6 +97,8 @@ jobs:
       - run:
           name: Collect code coverage
           command: yarn coverage
+    environment:
+      NODE_OPTIONS: --max-old-space-size=4096
 
   lint:
     <<: *linux-e2e-executor
