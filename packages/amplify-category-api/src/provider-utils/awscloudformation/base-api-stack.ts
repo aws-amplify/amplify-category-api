@@ -1,14 +1,15 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as ecr from '@aws-cdk/aws-ecr';
-import * as ecs from '@aws-cdk/aws-ecs';
-import * as iam from '@aws-cdk/aws-iam';
-import { CfnFunction } from '@aws-cdk/aws-lambda';
-import * as logs from '@aws-cdk/aws-logs';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as ssm from '@aws-cdk/aws-secretsmanager';
-import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import * as cdk from '@aws-cdk/core';
-import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as ssm from 'aws-cdk-lib/aws-secretsmanager';
+import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
+import * as cdk from 'aws-cdk-lib';
+import { Construct } from 'constructs';
+import { prepareApp } from 'aws-cdk-lib/core/lib/private/prepare-app';
 import { NETWORK_STACK_LOGICAL_ID } from '../../category-constants';
 import Container from './docker-compose/ecs-objects/container';
 import { GitHubSourceActionInfo, PipelineWithAwaiter } from './pipeline-with-awaiter';
@@ -74,7 +75,7 @@ export abstract class ContainersStack extends cdk.Stack {
   protected readonly deploymentBucketName: string;
   protected readonly awaiterS3Key: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: ContainersStackProps) {
+  constructor(scope: Construct, id: string, private readonly props: ContainersStackProps) {
     super(scope, id);
 
     const {

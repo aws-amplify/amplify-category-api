@@ -13,7 +13,7 @@ import { $TSAny, $TSContext, JSONUtilities, pathManager, readCFNTemplate } from 
 import { DEPLOYMENT_MECHANISM } from '../base-api-stack';
 import { setExistingSecretArns } from './containers/set-existing-secret-arns';
 import { category } from '../../../category-constants';
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 
 export const cfnFileName = (resourceName: string) => `${resourceName}-cloudformation-template.json`;
 
