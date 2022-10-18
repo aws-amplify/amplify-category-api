@@ -57,7 +57,7 @@ test('it overrides expected resources', () => {
               'Fn::Split': [
                 ':',
                 {
-                  'Fn::GetAtt': ['OpenSearchDomain85D65221', 'Arn'],
+                  'Fn::GetAtt': ['OpenSearchDomain', 'Arn'],
                 },
               ],
             },
@@ -69,7 +69,7 @@ test('it overrides expected resources', () => {
             [
               'https://',
               {
-                'Fn::GetAtt': ['OpenSearchDomain85D65221', 'DomainEndpoint'],
+                'Fn::GetAtt': ['OpenSearchDomain', 'DomainEndpoint'],
               },
             ],
           ],

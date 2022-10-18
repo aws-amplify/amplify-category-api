@@ -1238,6 +1238,10 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     });
     const cfnTable = table.node.defaultChild as CfnTable;
 
+    // CDK started to append hash to logical id of dynamodb table.
+    // This line overrides that behavior to avoid deletion and re-creation of existing tables.
+    cfnTable.overrideLogicalId(tableLogicalName);
+
     cfnTable.provisionedThroughput = cdk.Fn.conditionIf(usePayPerRequestBilling.logicalId, cdk.Fn.ref('AWS::NoValue'), {
       ReadCapacityUnits: readIops,
       WriteCapacityUnits: writeIops,

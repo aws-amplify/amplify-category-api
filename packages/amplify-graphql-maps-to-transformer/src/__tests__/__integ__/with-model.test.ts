@@ -15,7 +15,7 @@ describe('@mapsTo directive on model type', () => {
       sandboxModeEnabled: true,
     });
     const out = transformer.transform(basicSchema);
-    expect(out.stacks.Task.Resources!.TaskTable22070546!.Properties.TableName).toMatchInlineSnapshot(`
+    expect(out.stacks.Task.Resources!.TaskTable!.Properties.TableName).toMatchInlineSnapshot(`
       Object {
         "Fn::Join": Array [
           "",

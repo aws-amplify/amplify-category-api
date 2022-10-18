@@ -249,7 +249,7 @@ test('it generates expected resources', () => {
               'Fn::Split': [
                 ':',
                 {
-                  'Fn::GetAtt': ['OpenSearchDomain85D65221', 'Arn'],
+                  'Fn::GetAtt': ['OpenSearchDomain', 'Arn'],
                 },
               ],
             },
@@ -261,7 +261,7 @@ test('it generates expected resources', () => {
             [
               'https://',
               {
-                'Fn::GetAtt': ['OpenSearchDomain85D65221', 'DomainEndpoint'],
+                'Fn::GetAtt': ['OpenSearchDomain', 'DomainEndpoint'],
               },
             ],
           ],
@@ -300,7 +300,7 @@ test('it generates expected resources', () => {
             },
             '"))\n$util.qr($ctx.stash.put("endpoint", "https://',
             {
-              'Fn::GetAtt': ['OpenSearchDomain85D65221', 'DomainEndpoint'],
+              'Fn::GetAtt': ['OpenSearchDomain', 'DomainEndpoint'],
             },
             '"))\n$util.toJson({})',
           ],
