@@ -38,7 +38,7 @@ import {
 } from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnRole } from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib/core';
+import * as cdk from 'aws-cdk-lib';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import {
   DirectiveNode,
