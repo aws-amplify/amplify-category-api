@@ -3,7 +3,10 @@ import { EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
 import { CfnDomain, Domain, ElasticsearchVersion } from '@aws-cdk/aws-elasticsearch';
 import { IRole, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import {
-  CfnParameter, Construct, Fn, RemovalPolicy,
+  CfnParameter,
+  Construct,
+  Fn,
+  RemovalPolicy,
 } from '@aws-cdk/core';
 import { ResourceConstants } from 'graphql-transformer-common';
 

@@ -1,5 +1,8 @@
 import {
-  TransformerPluginBase, InvalidDirectiveError, MappingTemplate, DirectiveWrapper,
+  TransformerPluginBase,
+  generateGetArgumentsInput,
+  InvalidDirectiveError,
+  MappingTemplate, DirectiveWrapper,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -394,7 +397,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     }
 
     const directiveWrapped = new DirectiveWrapper(directive);
-    const directiveArguments = directiveWrapped.getArguments({}) as any;
+    const directiveArguments = directiveWrapped.getArguments({}, generateGetArgumentsInput(ctx.featureFlags)) as any;
     let shouldMakeSearch = true;
     let searchFieldNameOverride;
 

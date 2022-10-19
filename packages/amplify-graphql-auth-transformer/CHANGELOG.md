@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.0.4...@aws-amplify/graphql-auth-transformer@1.1.0) (2022-10-04)
+
+
+### Features
+
+* **graphql:** subscriptions rtf support ([#837](https://github.com/aws-amplify/amplify-category-api/issues/837)) ([99caa22](https://github.com/aws-amplify/amplify-category-api/commit/99caa22d4d48c317ce98bdc7ae7f19d7e3c0ce94))
+
+
+
+
+
+## [1.0.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.0.3...@aws-amplify/graphql-auth-transformer@1.0.4) (2022-09-20)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+
+
+
+
+## [1.0.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.0.2...@aws-amplify/graphql-auth-transformer@1.0.3) (2022-09-14)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+
+
+
+
 ## [1.0.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.0.1...@aws-amplify/graphql-auth-transformer@1.0.2) (2022-08-23)
 
 

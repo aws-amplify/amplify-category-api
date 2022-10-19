@@ -8,6 +8,7 @@ import {
   AuthRule,
   AuthTransformerConfig,
   ConfiguredAuthProviders,
+  GetAuthRulesOptions,
   ModelOperation,
   RoleDefinition,
   RolesByProvider,
@@ -35,7 +36,7 @@ export const splitRoles = (roles: Array<RoleDefinition>): RolesByProvider => ({
 /**
  * returns @auth directive rules
  */
-export const getAuthDirectiveRules = (authDir: DirectiveWrapper, isField = false): AuthRule[] => {
+export const getAuthDirectiveRules = (authDir: DirectiveWrapper, options?: GetAuthRulesOptions): AuthRule[] => {
   const splitReadOperation = (rule: AuthRule): void => {
     const operations: (ModelOperation | 'read')[] = rule.operations ?? [];
     const indexOfRead = operations.indexOf('read', 0);
@@ -51,11 +52,17 @@ export const getAuthDirectiveRules = (authDir: DirectiveWrapper, isField = false
     }
   };
 
-  const { rules } = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] });
-  rules.forEach(rule => {
+  const { rules } = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }, options);
+  rules.forEach((rule) => {
     const operations: (ModelOperation | 'read')[] = rule.operations ?? MODEL_OPERATIONS;
 
-    if (isField && rule.operations && (rule.operations.some((operation: ModelOperation | 'read') => operation !== 'read' && READ_MODEL_OPERATIONS.includes(operation)))) {
+    // In case a customer defines a single dynamic group as a string, put it to an array
+    if (rule.groups && typeof rule.groups === 'string') {
+      // eslint-disable-next-line no-param-reassign
+      rule.groups = [rule.groups];
+    }
+
+    if (options?.isField && rule.operations && (rule.operations.some((operation: ModelOperation | 'read') => operation !== 'read' && READ_MODEL_OPERATIONS.includes(operation)))) {
       const offendingOperation = operations.filter(operation => operation !== 'read' && READ_MODEL_OPERATIONS.includes(operation));
       throw new InvalidDirectiveError(
         `'${offendingOperation}' operation is not allowed at the field level.`,

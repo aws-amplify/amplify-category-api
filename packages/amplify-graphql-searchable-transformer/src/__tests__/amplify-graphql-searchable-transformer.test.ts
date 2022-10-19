@@ -52,6 +52,8 @@ test('SearchableModelTransformer vtl', () => {
 
   const out = transformer.transform(validSchema);
   expect(parse(out.schema)).toBeDefined();
+  expect(out.resolvers['Query.searchPosts.req.vtl']).toBeDefined();
+  expect(out.resolvers['Query.searchPosts.req.vtl']).toContain('$util.qr($aggregateValues.put("$aggItem.name", $aggregateValue))');
   expect(out.resolvers).toMatchSnapshot();
 });
 
@@ -77,6 +79,8 @@ test('SearchableModelTransformer with datastore enabled vtl', () => {
 
   const out = transformer.transform(validSchema);
   expect(parse(out.schema)).toBeDefined();
+  expect(out.resolvers['Query.searchPosts.req.vtl']).toBeDefined();
+  expect(out.resolvers['Query.searchPosts.req.vtl']).toContain('$util.qr($aggregateValues.put("$aggItem.name", $aggregateValue))');
   expect(out.resolvers['Query.searchPosts.req.vtl']).toMatchSnapshot();
   expect(out.resolvers['Query.searchPosts.res.vtl']).toMatchSnapshot();
   expect(out.resolvers['Query.searchPosts.res.vtl']).toContain('$util.qr($row.put("_version", $entry.get("_version")))');

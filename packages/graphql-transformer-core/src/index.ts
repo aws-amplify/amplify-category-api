@@ -1,6 +1,6 @@
 import './polyfills/Object.assign';
 import { print } from 'graphql';
-import { TransformerContext } from './TransformerContext';
+import { TransformerContext, MappingParameters } from './TransformerContext';
 import { Transformer } from './Transformer';
 import { ITransformer } from './ITransformer';
 import { GraphQLTransform } from './GraphQLTransform';
@@ -47,6 +47,7 @@ export {
   GraphQLTransform,
   TransformConfig,
   TransformerContext,
+  MappingParameters,
   Transformer,
   ITransformer,
   collectDirectiveNames,

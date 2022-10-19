@@ -34,7 +34,7 @@ import * as vm from 'vm2';
 import { ResolverConfig, TransformConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
-import { TransformerContext } from '../transformer-context';
+import { TransformerContext, TransformerResolver } from '../transformer-context';
 import { TransformerOutput } from '../transformer-context/output';
 import { StackManager } from '../transformer-context/stack-manager';
 import { ConstructResourceMeta } from '../types/types';
@@ -493,9 +493,20 @@ export class GraphQLTransform {
   }
 
   private collectResolvers(context: TransformerContext, api: GraphQLAPIProvider): void {
-    const resolverEntries = context.resolvers.collectResolvers();
-
-    for (const [resolverName, resolver] of resolverEntries) {
+    const resolverEntries = context.resolvers.collectResolvers() as Map<string, TransformerResolver>;
+    //Sort resolvers by stack name to group each resolver before synthesis to avoid circular dependency
+    const sortedResolverEntries = new Map([...resolverEntries].sort((a,b) => {
+      const left = a[1].getStackName();
+      const right = b[1].getStackName();
+      if (left > right) {
+        return 1;
+      }
+      if (left === right) {
+        return 0
+      }
+      return -1;
+    }));
+    for (const [resolverName, resolver] of sortedResolverEntries) {
       const userSlots = this.userDefinedSlots[resolverName] || [];
 
       userSlots.forEach(slot => {

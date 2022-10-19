@@ -1,5 +1,10 @@
 /* eslint-disable no-param-reassign */
-import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import {
+  DirectiveWrapper,
+  generateGetArgumentsInput,
+  InvalidDirectiveError,
+  TransformerPluginBase,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
@@ -15,6 +20,9 @@ import {
   ObjectTypeDefinitionNode,
   ObjectTypeExtensionNode,
 } from 'graphql';
+import produce from 'immer';
+import { WritableDraft } from 'immer/dist/types/types-external';
+import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { makeQueryConnectionWithKeyResolver, updateTableForConnection } from './resolvers';
 import {
   addFieldsToDefinition,
@@ -35,9 +43,6 @@ import {
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
-import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import produce from 'immer';
-import { WritableDraft } from 'immer/dist/types/types-external';
 
 const directiveName = 'hasMany';
 const defaultLimit = 100;
@@ -68,7 +73,7 @@ export class HasManyTransformer extends TransformerPluginBase {
       field: definition,
       directive,
       limit: defaultLimit,
-    } as HasManyDirectiveConfiguration);
+    } as HasManyDirectiveConfiguration, generateGetArgumentsInput(context.featureFlags));
 
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);

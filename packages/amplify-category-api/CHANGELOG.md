@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.4...@aws-amplify/amplify-category-api@4.0.5) (2022-10-04)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+
+
+
+
+## [4.0.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.3...@aws-amplify/amplify-category-api@4.0.4) (2022-09-20)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+
+
+
+
+## [4.0.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.2...@aws-amplify/amplify-category-api@4.0.3) (2022-09-14)
+
+
+### Bug Fixes
+
+* **api:** gateway response dropping on update api ([#764](https://github.com/aws-amplify/amplify-category-api/issues/764)) ([942d1d1](https://github.com/aws-amplify/amplify-category-api/commit/942d1d18a4a6b09fe2fe23e3d48fe591a43abf9f))
+
+
+
+
+
 ## [4.0.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.1...@aws-amplify/amplify-category-api@4.0.2) (2022-08-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

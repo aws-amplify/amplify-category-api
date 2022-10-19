@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.14.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.13.8...@aws-amplify/graphql-index-transformer@0.14.0) (2022-10-04)
+
+
+### Features
+
+* **graphql:** subscriptions rtf support ([#837](https://github.com/aws-amplify/amplify-category-api/issues/837)) ([99caa22](https://github.com/aws-amplify/amplify-category-api/commit/99caa22d4d48c317ce98bdc7ae7f19d7e3c0ce94))
+
+
+
+
+
+## [0.13.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.13.7...@aws-amplify/graphql-index-transformer@0.13.8) (2022-09-20)
+
+
+### Bug Fixes
+
+* **amplify-graphql-index-transformer:** set default lastSync correctly ([c3fd699](https://github.com/aws-amplify/amplify-category-api/commit/c3fd699f729bd49739694da7448a09468455e6bc))
+
+
+
+
+
+## [0.13.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.13.6...@aws-amplify/graphql-index-transformer@0.13.7) (2022-09-14)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+
+
+
+
 ## [0.13.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.13.5...@aws-amplify/graphql-index-transformer@0.13.6) (2022-08-23)
 
 

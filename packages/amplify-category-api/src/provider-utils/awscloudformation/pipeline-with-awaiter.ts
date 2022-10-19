@@ -8,6 +8,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as custom from '@aws-cdk/custom-resources';
+import { RemovalPolicy } from '@aws-cdk/core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { DEPLOYMENT_MECHANISM } from './base-api-stack';
@@ -256,6 +257,9 @@ export class PipelineWithAwaiter extends cdk.Construct {
               stack = cdk.Stack.of(this);
               env = {} as any;
               node = service.node;
+              public applyRemovalPolicy(policy: RemovalPolicy): void {
+                // TODO: This is added for CDK upgrade. Modify the behavior if required.
+              }
             })(this, 'tmpService'),
             input: buildOutput,
           }),

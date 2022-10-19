@@ -252,10 +252,19 @@ type Mutation {
   deleteEmployee(input: DeleteEmployeeInput!, condition: ModelEmployeeConditionInput): Employee
 }
 
+input ModelSubscriptionEmployeeFilterInput {
+  id: ModelSubscriptionIDInput
+  firstName: ModelSubscriptionStringInput
+  lastName: ModelSubscriptionStringInput
+  type: ModelSubscriptionStringInput
+  and: [ModelSubscriptionEmployeeFilterInput]
+  or: [ModelSubscriptionEmployeeFilterInput]
+}
+
 type Subscription {
-  onCreateEmployee: Employee @aws_subscribe(mutations: [\\"createEmployee\\"])
-  onUpdateEmployee: Employee @aws_subscribe(mutations: [\\"updateEmployee\\"])
-  onDeleteEmployee: Employee @aws_subscribe(mutations: [\\"deleteEmployee\\"])
+  onCreateEmployee(filter: ModelSubscriptionEmployeeFilterInput): Employee @aws_subscribe(mutations: [\\"createEmployee\\"])
+  onUpdateEmployee(filter: ModelSubscriptionEmployeeFilterInput): Employee @aws_subscribe(mutations: [\\"updateEmployee\\"])
+  onDeleteEmployee(filter: ModelSubscriptionEmployeeFilterInput): Employee @aws_subscribe(mutations: [\\"deleteEmployee\\"])
 }
 
 input SearchableStringFilterInput {
@@ -613,10 +622,19 @@ type Mutation {
   deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
+input ModelSubscriptionPostFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionPostFilterInput]
+  or: [ModelSubscriptionPostFilterInput]
+}
+
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
 
 input SearchableStringFilterInput {
@@ -1226,11 +1244,18 @@ $util.toJson({})
   #else
     $util.error(\\"Unauthorized to run aggregation on field: \${aggItem.field}\\", \\"Unauthorized\\")
   #end
+  #set( $aggregateValue = {} )
+  $util.qr($aggregateValue.put(\\"filter\\", $aggFilter))
+  #set( $aggsValue = {} )
+  #set( $aggItemType = {} )
   #if( $nonKeywordFields.contains($aggItem.field) )
-    $util.qr($aggregateValues.put(\\"$aggItem.name\\", { \\"filter\\": $aggFilter, \\"aggs\\": { \\"$aggItem.name\\": { \\"$aggItem.type\\": { \\"field\\": \\"$aggItem.field\\" }}} }))
+    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"$aggItem.field\\" }))
   #else
-    $util.qr($aggregateValues.put(\\"$aggItem.name\\", { \\"filter\\": $aggFilter, \\"aggs\\": { \\"$aggItem.name\\": { \\"$aggItem.type\\": { \\"field\\": \\"\${aggItem.field}.keyword\\" }}} }))
+    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"\${aggItem.field}.keyword\\" }))
   #end
+  $util.qr($aggsValue.put(\\"$aggItem.name\\", $aggItemType))
+  $util.qr($aggregateValue.put(\\"aggs\\", $aggsValue))
+  $util.qr($aggregateValues.put(\\"$aggItem.name\\", $aggregateValue))
 #end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
@@ -1312,6 +1337,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onCreatePost.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onDeletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -1327,6 +1355,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onDeletePost.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onUpdatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
@@ -1342,6 +1373,9 @@ $util.toJson({
 })
 ## [End] Subscription Request template. **",
   "Subscription.onUpdatePost.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
 }
@@ -1405,11 +1439,18 @@ exports[`SearchableModelTransformer with datastore enabled and sort field define
   #else
     $util.error(\\"Unauthorized to run aggregation on field: \${aggItem.field}\\", \\"Unauthorized\\")
   #end
+  #set( $aggregateValue = {} )
+  $util.qr($aggregateValue.put(\\"filter\\", $aggFilter))
+  #set( $aggsValue = {} )
+  #set( $aggItemType = {} )
   #if( $nonKeywordFields.contains($aggItem.field) )
-    $util.qr($aggregateValues.put(\\"$aggItem.name\\", { \\"filter\\": $aggFilter, \\"aggs\\": { \\"$aggItem.name\\": { \\"$aggItem.type\\": { \\"field\\": \\"$aggItem.field\\" }}} }))
+    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"$aggItem.field\\" }))
   #else
-    $util.qr($aggregateValues.put(\\"$aggItem.name\\", { \\"filter\\": $aggFilter, \\"aggs\\": { \\"$aggItem.name\\": { \\"$aggItem.type\\": { \\"field\\": \\"\${aggItem.field}.keyword\\" }}} }))
+    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"\${aggItem.field}.keyword\\" }))
   #end
+  $util.qr($aggsValue.put(\\"$aggItem.name\\", $aggItemType))
+  $util.qr($aggregateValue.put(\\"aggs\\", $aggsValue))
+  $util.qr($aggregateValues.put(\\"$aggItem.name\\", $aggregateValue))
 #end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
@@ -1543,11 +1584,18 @@ exports[`SearchableModelTransformer with datastore enabled vtl 1`] = `
   #else
     $util.error(\\"Unauthorized to run aggregation on field: \${aggItem.field}\\", \\"Unauthorized\\")
   #end
+  #set( $aggregateValue = {} )
+  $util.qr($aggregateValue.put(\\"filter\\", $aggFilter))
+  #set( $aggsValue = {} )
+  #set( $aggItemType = {} )
   #if( $nonKeywordFields.contains($aggItem.field) )
-    $util.qr($aggregateValues.put(\\"$aggItem.name\\", { \\"filter\\": $aggFilter, \\"aggs\\": { \\"$aggItem.name\\": { \\"$aggItem.type\\": { \\"field\\": \\"$aggItem.field\\" }}} }))
+    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"$aggItem.field\\" }))
   #else
-    $util.qr($aggregateValues.put(\\"$aggItem.name\\", { \\"filter\\": $aggFilter, \\"aggs\\": { \\"$aggItem.name\\": { \\"$aggItem.type\\": { \\"field\\": \\"\${aggItem.field}.keyword\\" }}} }))
+    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"\${aggItem.field}.keyword\\" }))
   #end
+  $util.qr($aggsValue.put(\\"$aggItem.name\\", $aggItemType))
+  $util.qr($aggregateValue.put(\\"aggs\\", $aggsValue))
+  $util.qr($aggregateValues.put(\\"$aggItem.name\\", $aggregateValue))
 #end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
@@ -1883,13 +1931,22 @@ type Mutation {
   deleteUser(input: DeleteUserInput!, condition: ModelUserConditionInput): User
 }
 
+input ModelSubscriptionPostFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionPostFilterInput]
+  or: [ModelSubscriptionPostFilterInput]
+}
+
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
-  onCreateUser: User @aws_subscribe(mutations: [\\"createUser\\"])
-  onUpdateUser: User @aws_subscribe(mutations: [\\"updateUser\\"])
-  onDeleteUser: User @aws_subscribe(mutations: [\\"deleteUser\\"])
+  onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreateUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: [\\"createUser\\"])
+  onUpdateUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: [\\"updateUser\\"])
+  onDeleteUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: [\\"deleteUser\\"])
 }
 
 type ModelUserConnection {
@@ -1924,6 +1981,13 @@ input UpdateUserInput {
 
 input DeleteUserInput {
   id: ID!
+}
+
+input ModelSubscriptionUserFilterInput {
+  id: ModelSubscriptionIDInput
+  name: ModelSubscriptionStringInput
+  and: [ModelSubscriptionUserFilterInput]
+  or: [ModelSubscriptionUserFilterInput]
 }
 
 input SearchableStringFilterInput {
@@ -2298,8 +2362,17 @@ type Mutation {
   customCreatePost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
 }
 
+input ModelSubscriptionPostFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionPostFilterInput]
+  or: [ModelSubscriptionPostFilterInput]
+}
+
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"customCreatePost\\"])
+  onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"customCreatePost\\"])
 }
 
 input SearchableStringFilterInput {
@@ -2652,10 +2725,19 @@ type Mutation {
   deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
+input ModelSubscriptionPostFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionPostFilterInput]
+  or: [ModelSubscriptionPostFilterInput]
+}
+
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
 
 input SearchableStringFilterInput {
@@ -3008,10 +3090,19 @@ type Mutation {
   deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
+input ModelSubscriptionPostFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionPostFilterInput]
+  or: [ModelSubscriptionPostFilterInput]
+}
+
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
 
 input SearchableStringFilterInput {

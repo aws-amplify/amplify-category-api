@@ -1,4 +1,9 @@
-import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import {
+  DirectiveWrapper,
+  generateGetArgumentsInput,
+  InvalidDirectiveError,
+  TransformerPluginBase,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerResolverProvider,
@@ -14,7 +19,6 @@ import {
   ObjectTypeDefinitionNode,
 } from 'graphql';
 import { isListType, isScalarOrEnum } from 'graphql-transformer-common';
-import _ from 'lodash';
 import { appendSecondaryIndex, constructSyncVTL, updateResolversForIndex, getResourceOverrides, getDeltaSyncTableTtl } from './resolvers';
 import { addKeyConditionInputs, ensureQueryField, updateMutationConditionInput } from './schema';
 import { IndexDirectiveConfiguration } from './types';
@@ -47,7 +51,7 @@ export class IndexTransformer extends TransformerPluginBase {
       object: parent as ObjectTypeDefinitionNode,
       field: definition,
       directive,
-    } as IndexDirectiveConfiguration);
+    } as IndexDirectiveConfiguration, generateGetArgumentsInput(context.featureFlags));
 
     /**
      * Impute Optional Fields

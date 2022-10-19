@@ -155,7 +155,6 @@ function runE2eTest {
 
     if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
         echo "using Amplify CLI version: "$(amplify --version)
-        echo "using amplify-app version: "$(amplify-app --version)
         cd $(pwd)/packages/amplify-e2e-tests
     fi
 
@@ -165,5 +164,37 @@ function runE2eTest {
         yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE -t "$failedTests"
     else
         yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
+    fi
+}
+
+# Accepts the value as an input parameter, i.e. 1 for success, 0 for failure.
+# Only executes if IS_CANARY env variable is set
+function emitCanarySuccessMetric {
+    if [[ "$CIRCLE_BRANCH" = main ]]; then
+        USE_PARENT_ACCOUNT=1
+        setAwsAccountCredentials 
+        aws cloudwatch \
+            put-metric-data \
+            --metric-name CanarySuccessRate \
+            --namespace amplify-category-api-e2e-tests \
+            --unit Count \
+            --value 1 \
+            --dimensions branch=main \
+            --region us-west-2
+    fi
+}
+
+function emitCanaryFailureMetric {
+    if [[ "$CIRCLE_BRANCH" = main ]]; then
+        USE_PARENT_ACCOUNT=1
+        setAwsAccountCredentials 
+        aws cloudwatch \
+            put-metric-data \
+            --metric-name CanarySuccessRate \
+            --namespace amplify-category-api-e2e-tests \
+            --unit Count \
+            --value 0 \
+            --dimensions branch=main \
+            --region us-west-2
     fi
 }

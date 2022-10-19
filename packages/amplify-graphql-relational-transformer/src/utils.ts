@@ -37,7 +37,7 @@ export function getRelatedTypeIndex(
       const directiveName = directive.name.value;
       const name = getIndexName(directive);
 
-      if ((!indexName && directiveName === 'primaryKey') || (indexName === name && directiveName === 'index')) {
+      if ((!indexName && directiveName === 'primaryKey') || (indexName && indexName === name && directiveName === 'index')) {
         partitionFieldName = field.name.value;
 
         for (const argument of directive.arguments!) {

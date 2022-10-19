@@ -75,7 +75,9 @@ export const sanityCheckDiffs = (
  */
 export const getCantEditKeySchemaRule = (iterativeUpdatesEnabled = false) => {
   const cantEditKeySchemaRule = (diff: Diff): void => {
-    if (diff.kind === 'E' && diff.path.length === 8 && diff.path[5] === 'KeySchema') {
+    const sortKeyAddedOrRemoved = diff.kind === 'A' && diff.path.length === 6 && diff.path[5] === 'KeySchema' && diff.index === 1;
+    const keySchemaModified = diff.kind === 'E' && diff.path.length === 8 && diff.path[5] === 'KeySchema';
+    if (sortKeyAddedOrRemoved || keySchemaModified) {
       // diff.path = [ "stacks", "Todo.json", "Resources", "TodoTable", "Properties", "KeySchema", 0, "AttributeName"]
       const stackName = path.basename(diff.path[1], '.json');
       const tableName = diff.path[3];

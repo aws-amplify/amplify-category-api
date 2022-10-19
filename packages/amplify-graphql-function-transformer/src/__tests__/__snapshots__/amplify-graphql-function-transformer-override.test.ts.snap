@@ -88,24 +88,52 @@ Object {
             Object {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::If": Array [
-                  "HasEnvironmentParameter",
-                  Object {
-                    "Fn::Sub": Array [
-                      "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction-\${env}",
-                      Object {
-                        "env": Object {
-                          "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+              "Resource": Array [
+                Object {
+                  "Fn::If": Array [
+                    "HasEnvironmentParameter",
+                    Object {
+                      "Fn::Sub": Array [
+                        "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction-\${env}",
+                        Object {
+                          "env": Object {
+                            "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                          },
                         },
+                      ],
+                    },
+                    Object {
+                      "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction",
+                    },
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::If": Array [
+                          "HasEnvironmentParameter",
+                          Object {
+                            "Fn::Sub": Array [
+                              "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction-\${env}",
+                              Object {
+                                "env": Object {
+                                  "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                                },
+                              },
+                            ],
+                          },
+                          Object {
+                            "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction",
+                          },
+                        ],
                       },
+                      ":*",
                     ],
-                  },
-                  Object {
-                    "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction",
-                  },
-                ],
-              },
+                  ],
+                },
+              ],
             },
           ],
           "Version": "2012-10-17",
@@ -272,20 +300,44 @@ Object {
             Object {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::If": Array [
-                  "HasEnvironmentParameter",
-                  Object {
-                    "Fn::Sub": Array [
-                      "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
-                      Object {},
+              "Resource": Array [
+                Object {
+                  "Fn::If": Array [
+                    "HasEnvironmentParameter",
+                    Object {
+                      "Fn::Sub": Array [
+                        "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
+                        Object {},
+                      ],
+                    },
+                    Object {
+                      "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
+                    },
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::If": Array [
+                          "HasEnvironmentParameter",
+                          Object {
+                            "Fn::Sub": Array [
+                              "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
+                              Object {},
+                            ],
+                          },
+                          Object {
+                            "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
+                          },
+                        ],
+                      },
+                      ":*",
                     ],
-                  },
-                  Object {
-                    "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
-                  },
-                ],
-              },
+                  ],
+                },
+              ],
             },
           ],
           "Version": "2012-10-17",

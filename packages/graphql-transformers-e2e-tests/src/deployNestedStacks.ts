@@ -2,7 +2,7 @@ import { S3Client } from './S3Client';
 import { CloudFormationClient } from './CloudFormationClient';
 import * as fs from 'fs';
 import * as path from 'path';
-import { DeploymentResources } from 'graphql-transformer-core/lib/DeploymentResources';
+import { DeploymentResources } from 'graphql-transformer-core';
 import { deleteUserPool, deleteIdentityPool } from './cognitoUtils';
 import { CognitoIdentityServiceProvider, CognitoIdentity } from 'aws-sdk';
 import emptyBucket from './emptyBucket';

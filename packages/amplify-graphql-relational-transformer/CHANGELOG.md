@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.12.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.11.9...@aws-amplify/graphql-relational-transformer@0.12.0) (2022-10-04)
+
+
+### Bug Fixes
+
+* **relation-transformer:** belongsTo resolves to correct connected fields ([c0d92c7](https://github.com/aws-amplify/amplify-category-api/commit/c0d92c703b3838f5a735c438a20ab3c9b4881987))
+
+
+### Features
+
+* **graphql:** subscriptions rtf support ([#837](https://github.com/aws-amplify/amplify-category-api/issues/837)) ([99caa22](https://github.com/aws-amplify/amplify-category-api/commit/99caa22d4d48c317ce98bdc7ae7f19d7e3c0ce94))
+
+
+
+
+
+## [0.11.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.11.8...@aws-amplify/graphql-relational-transformer@0.11.9) (2022-09-20)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+
+
+
+
+## [0.11.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.11.7...@aws-amplify/graphql-relational-transformer@0.11.8) (2022-09-14)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+
+
+
+
 ## [0.11.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.11.6...@aws-amplify/graphql-relational-transformer@0.11.7) (2022-08-23)
 
 

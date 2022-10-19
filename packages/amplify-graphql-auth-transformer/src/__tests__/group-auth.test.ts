@@ -34,6 +34,30 @@ test('happy case with static groups', () => {
   );
 });
 
+test('Static groups with a single group provided as string does not error', () => {
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [],
+  };
+  const invalidSchema = `
+    type Post @model @auth(rules: [{allow: groups, groups: "Admin"}]) {
+      id: ID!
+      title: String!
+      group: String
+      createdAt: String
+      updatedAt: String
+    }`;
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
+  });
+  const out = transformer.transform(invalidSchema);
+  expect(out).toBeDefined();
+});
+
 test('happy case with dynamic groups', () => {
   const authConfig: AppSyncAuthConfiguration = {
     defaultAuthentication: {

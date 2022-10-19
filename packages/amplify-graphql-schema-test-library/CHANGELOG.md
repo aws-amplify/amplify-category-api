@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.14](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@1.1.13...@aws-amplify/graphql-schema-test-library@1.1.14) (2022-10-04)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-test-library
+
+
+
+
+
+## [1.1.13](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@1.1.12...@aws-amplify/graphql-schema-test-library@1.1.13) (2022-09-20)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-test-library
+
+
+
+
+
+## [1.1.12](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@1.1.11...@aws-amplify/graphql-schema-test-library@1.1.12) (2022-09-14)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-test-library
+
+
+
+
+
 ## [1.1.11](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@1.1.10...@aws-amplify/graphql-schema-test-library@1.1.11) (2022-08-23)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-test-library
