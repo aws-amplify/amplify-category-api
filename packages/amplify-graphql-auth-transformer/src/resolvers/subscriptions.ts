@@ -40,7 +40,7 @@ import {
   generateOwnerMultiClaimExpression,
   generateInvalidClaimsCondition,
   getIdentityClaimExp,
-  getOwnerClaimReference
+  getOwnerClaimReference,
 } from './helpers';
 
 const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
@@ -83,6 +83,16 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
         ),
       );
     } else if (role.strategy === 'groups' && !role.static) {
+      groupExpression.push(
+        set(ref(`groupClaim${idx}`), getIdentityClaimExp(str(role.claim!), list([]))),
+        ifElse(
+          methodCall(ref('util.isString'), ref(`groupClaim${idx}`)),
+          set(ref(`groupClaim${idx}`), methodCall(ref('util.parseJson'), ref(`groupClaim${idx}`))),
+          set(ref(`groupClaim${idx}`), list([ref(`groupClaim${idx}`)])),
+        ),
+        qref(methodCall(ref('authGroupRuntimeFilter.add'), raw(`{ "fieldName": "${role.entity}", "operator": "${role.isEntityList ? 'containsAny' : 'in'}", "value": $groupClaim${idx} }`))),
+      );
+    } else if (role.strategy === 'groups' && role.static) {
       // Loop through the cognito groups and set as runtime filter
       groupExpression.push(
         set(ref(`groupClaim${idx}`), getIdentityClaimExp(str(role.claim!), list([]))),
@@ -94,9 +104,7 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
             set(ref(`groupClaim${idx}`), list([ref(`groupClaim${idx}`)])),
           ),
         ),
-        forEach(ref('groupRole'), ref(`groupClaim${idx}`), [
-          qref(methodCall(ref('authGroupRuntimeFilter.add'), raw(`{ "${role.entity}": { "${role.isEntityList ? 'contains' : 'eq'}": $groupRole } }`))),
-        ]),
+        qref(methodCall(ref('authGroupRuntimeFilter.add'), raw(`{ "${role.entity}": { "${role.isEntityList ? 'containsAny' : 'in'}": $groupClaim${idx} } }`))),
       );
     }
   });
@@ -129,11 +137,7 @@ const combineAuthExpressionAndFilter = (ownerExpression: Array<Expression>, grou
       raw('$authRuntimeFilter.size() > 0'),
     ]),
     compoundExpression([
-      ifElse(
-        methodCall(ref('util.isNullOrEmpty'), ref('ctx.args.filter')),
-        set(ref('ctx.args.filter'), raw('{ "or": $authRuntimeFilter }')),
-        set(ref('ctx.args.filter'), raw('{ "and": [ { "or": $authRuntimeFilter }, $ctx.args.filter ]}')),
-      ),
+      methodCall(ref('extensions.setSubscriptionFilter'), raw('{ "filterGroup": [ { "filters": $authRuntimeFilter } ] }')),
       set(ref(IS_AUTHORIZED_FLAG), bool(true)),
     ]),
   ),
