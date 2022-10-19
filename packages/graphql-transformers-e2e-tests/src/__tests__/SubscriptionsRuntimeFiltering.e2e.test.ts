@@ -125,6 +125,15 @@ interface DeleteTaskInput {
   readOwners?: string[]
 }
 
+interface CreateTaskGroupInput {
+  id?: string;
+  title?: string;
+  description?: string;
+  priority?: number;
+  severity?: number;
+  groups?: [string];
+}
+
 interface CreateTodoInput {
   id?: string;
   name?: string;
@@ -483,10 +492,10 @@ test('Multiple owners auth is supported for subscriptions', async () => {
 /**
  * Dynamic groups only model should continue to throw 'unauthorized error'
  */
- test('Dynamic groups only model should throw an unauthorized error', async () => {
+ test('Dynamic groups only model should correctly filter by group', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
-  const failedObserver = API.graphql({
+  const observer = API.graphql({
     // @ts-ignore
     query: gql`
       subscription OnCreateTaskGroup(
@@ -505,15 +514,34 @@ test('Multiple owners auth is supported for subscriptions', async () => {
   }) as unknown as Observable<any>;
   let subscription: ZenObservable.Subscription;
   const subscriptionPromise = new Promise((resolve, _) => {
-    subscription = failedObserver.subscribe(
-      event => {},
-      err => {
-        expect(err.error.errors[0].message).toEqual(
-          'Connection failed: {"errors":[{"errorType":"Unauthorized","message":"Not Authorized to access onCreateTaskGroup on type TaskGroup"}]}',
-        );
+    subscription = observer.subscribe(
+      (event) => {
+        const task = event.value.data.onCreateTaskGroup;
+        subscription.unsubscribe();
+        expect(task.title).toEqual('taskGroup1');
+        expect(task.description).toEqual('taskGroupDesc1');
+        expect(task.priority).toEqual(7);
+        expect(task.severity).toEqual(2);
         resolve(undefined);
       },
+      (err) => {},
     );
+  });
+
+  await createTaskGroup(GRAPHQL_CLIENT_2, {
+    title: 'taskGroup1',
+    description: 'taskGroupDesc1',
+    priority: 7,
+    severity: 2,
+    groups: [INSTRUCTOR_GROUP_NAME],
+  });
+
+  await createTaskGroup(GRAPHQL_CLIENT_1, {
+    title: 'taskGroup2',
+    description: 'taskGroupDesc2',
+    priority: 1,
+    severity: 1,
+    groups: [ADMIN_GROUP_NAME],
   });
 
   return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
@@ -1095,6 +1123,22 @@ const deleteTodo = async (client: AWSAppSyncClient<any>, input: DeleteTodoInput)
         owner
         sharedOwners
         status
+      }
+    }
+  `;
+  return client.mutate<any>({ mutation: request, variables: { input } });
+};
+
+const createTaskGroup = async (client: AWSAppSyncClient<any>, input: CreateTaskGroupInput): Promise<any> => {
+  const request = gql`
+    mutation CreateTaskGroup($input: CreateTaskGroupInput!) {
+      createTaskGroup(input: $input) {
+        id
+        title
+        description
+        priority
+        severity
+        groups
       }
     }
   `;
