@@ -237,7 +237,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
-                "Ref": "PostTable197E3F68",
+                "Ref": "PostTable",
               },
               "\\"))
 $util.toJson({})",
@@ -288,7 +288,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
-                "Ref": "PostTable197E3F68",
+                "Ref": "PostTable",
               },
               "\\"))
 $util.toJson({})",
@@ -414,7 +414,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
-                "Ref": "PostTable197E3F68",
+                "Ref": "PostTable",
               },
               "\\"))
 $util.toJson({})",
@@ -465,7 +465,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
-                "Ref": "PostTable197E3F68",
+                "Ref": "PostTable",
               },
               "\\"))
 $util.toJson({})",
@@ -703,7 +703,7 @@ $util.toJson({})",
             "Ref": "AWS::Region",
           },
           "TableName": Object {
-            "Ref": "PostTable197E3F68",
+            "Ref": "PostTable",
           },
         },
         "Name": "PostTable",
@@ -772,7 +772,7 @@ $util.toJson({})",
               "Resource": Array [
                 Object {
                   "Fn::GetAtt": Array [
-                    "PostTable197E3F68",
+                    "PostTable",
                     "Arn",
                   ],
                 },
@@ -793,7 +793,7 @@ $util.toJson({})",
       },
       "Type": "AWS::IAM::Policy",
     },
-    "PostTable197E3F68": Object {
+    "PostTable": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
         "AttributeDefinitions": Array [
@@ -1212,7 +1212,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
-                "Ref": "PostTable197E3F68",
+                "Ref": "PostTable",
               },
               "\\"))
 $util.toJson({})",
@@ -1410,7 +1410,7 @@ Object {
             "Ref": "AWS::Region",
           },
           "TableName": Object {
-            "Ref": "CommentTableE9F84112",
+            "Ref": "CommentTable",
           },
         },
         "Name": "CommentTable",
@@ -1479,7 +1479,7 @@ Object {
               "Resource": Array [
                 Object {
                   "Fn::GetAtt": Array [
-                    "CommentTableE9F84112",
+                    "CommentTable",
                     "Arn",
                   ],
                 },
@@ -1500,7 +1500,7 @@ Object {
       },
       "Type": "AWS::IAM::Policy",
     },
-    "CommentTableE9F84112": Object {
+    "CommentTable": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
         "AttributeDefinitions": Array [
@@ -1613,7 +1613,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
-                "Ref": "CommentTableE9F84112",
+                "Ref": "CommentTable",
               },
               "\\"))
 $util.toJson({})",
@@ -1661,7 +1661,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
-                "Ref": "CommentTableE9F84112",
+                "Ref": "CommentTable",
               },
               "\\"))
 $util.toJson({})",
@@ -1784,7 +1784,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
-                "Ref": "CommentTableE9F84112",
+                "Ref": "CommentTable",
               },
               "\\"))
 $util.toJson({})",
@@ -1832,7 +1832,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
-                "Ref": "CommentTableE9F84112",
+                "Ref": "CommentTable",
               },
               "\\"))
 $util.toJson({})",
@@ -2261,7 +2261,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
-                "Ref": "CommentTableE9F84112",
+                "Ref": "CommentTable",
               },
               "\\"))
 $util.toJson({})",

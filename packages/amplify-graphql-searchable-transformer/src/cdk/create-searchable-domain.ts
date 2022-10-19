@@ -29,7 +29,13 @@ export const createSearchableDomain = (stack: Construct, parameterMap: Map<strin
     removalPolicy: RemovalPolicy.DESTROY,
   });
 
-  (domain.node.defaultChild as CfnDomain).elasticsearchClusterConfig = {
+  const cfnDomain = domain.node.defaultChild as CfnDomain;
+
+  // CDK started to append hash to logical id of search domain.
+  // This line overrides that behavior to avoid deletion and re-creation of existing domains.
+  cfnDomain.overrideLogicalId(OpenSearchDomainLogicalID);
+
+  cfnDomain.elasticsearchClusterConfig = {
     instanceCount: parameterMap.get(OpenSearchInstanceCount)?.valueAsNumber,
     instanceType: parameterMap.get(OpenSearchInstanceType)?.valueAsString,
   };
