@@ -127,7 +127,6 @@ jobs:
             JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
       - store_test_results:
           path: packages/amplify-util-mock/
-          NODE_OPTIONS: --max-old-space-size=4096
 
   publish_to_local_registry:
     <<: *linux-e2e-executor
