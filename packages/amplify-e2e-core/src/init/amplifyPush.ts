@@ -139,7 +139,7 @@ export function cancelIterativeAmplifyPush(
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
       .wait(`Deploying iterative update ${idx.current} of ${idx.max} into`)
-      .wait(/^.*UPDATE_IN_PROGRESS.*AWS::AppSync::GraphQLSchema.*$/)
+      .wait(/.*AWS::AppSync::GraphQLSchema.*UPDATE_IN_PROGRESS.*/)
       .sendCtrlC()
       .run((err: Error) => {
         if (err && !/Killed the process as no output receive for/.test(err.message)) {
