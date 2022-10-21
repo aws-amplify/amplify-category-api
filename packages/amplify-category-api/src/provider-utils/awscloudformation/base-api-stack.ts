@@ -9,7 +9,6 @@ import * as ssm from 'aws-cdk-lib/aws-secretsmanager';
 import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { prepareApp } from 'aws-cdk-lib/core/lib/private/prepare-app';
 import { NETWORK_STACK_LOGICAL_ID } from '../../category-constants';
 import Container from './docker-compose/ecs-objects/container';
 import { GitHubSourceActionInfo, PipelineWithAwaiter } from './pipeline-with-awaiter';
@@ -511,8 +510,6 @@ export abstract class ContainersStack extends cdk.Stack {
           };
         }
       });
-
-    prepareApp(this);
 
     const cfn = this._toCloudFormation();
 
