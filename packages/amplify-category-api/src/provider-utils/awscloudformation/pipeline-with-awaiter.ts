@@ -248,21 +248,18 @@ export class PipelineWithAwaiter extends Construct {
           new codepipelineactions.EcsDeployAction({
             actionName: 'Deploy',
             service: new (class extends Construct implements ecs.IBaseService {
-              // eslint-disable-next-line class-methods-use-this
-              applyRemovalPolicy(_: cdk.RemovalPolicy): void {
-                // NO-OP
-              }
-
               cluster = {
                 clusterName: service.cluster,
                 env: {},
               } as ecs.ICluster;
-
               serviceArn = cdk.Fn.ref(service.attrServiceArn);
               serviceName = service.serviceName;
               stack = cdk.Stack.of(this);
               env = {} as any;
               node = service.node;
+              public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
+                // TODO: This is added for CDK upgrade. Modify the behavior if required.
+              }
             })(this, 'tmpService'),
             input: buildOutput,
           }),

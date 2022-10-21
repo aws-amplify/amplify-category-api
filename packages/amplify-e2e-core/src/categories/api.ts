@@ -742,6 +742,26 @@ export function addApi(projectDir: string, settings?: any) {
   });
 }
 
+export function addV1RDSDataSource(projectDir: string) {
+  return new Promise<void>((resolve, reject) => {
+    // This test executes only partial workflow
+    // This helps to detect any regression with add graphql datasource command
+    // Make sure that the testing account doesn't contain a Aurora Serverless database.
+    spawn(getCLIPath(), ['add-graphql-datasource', 'api'], { cwd: projectDir, stripColors: true })
+      .wait('Provide the region in which your cluster is located')
+      .sendKeyDown(5) // This will select 6th item on the region list 'ap-southeast-1'
+      .sendCarriageReturn() // This will throw an error 'No properly configured Aurora Serverless clusters found'.
+      .wait('No properly configured Aurora Serverless clusters found')
+      .run((err: Error) => {
+        if (err && !/Killed the process as no output receive for/.test(err.message)) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+ });
+}
+
 function setupAuthType(authType: string, chain: any, settings?: any) {
   switch (authType) {
     case 'API key':
