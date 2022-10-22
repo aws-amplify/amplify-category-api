@@ -14,9 +14,9 @@ import inquirer from 'inquirer';
 import _ from 'lodash';
 import * as path from 'path';
 import { supportedDataSources } from '../../provider-utils/supported-datasources';
+import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 
 const subcommand = 'add-graphql-datasource';
-const categories = 'categories';
 const category = 'api';
 const providerName = 'awscloudformation';
 
@@ -44,20 +44,17 @@ export const run = async (context: $TSContext): Promise<void> => {
     const { resourceName, databaseName } = answers;
 
     /**
-     * Write the new env specific datasource information into
+     * Setting the params using getEnvParamManager.getResourceParamManager.setParams updates
      * the team-provider-info file
      */
     const currentEnv = context.amplify.getEnvInfo().envName;
-    const teamProviderInfo = stateManager.getTeamProviderInfo();
-
-    _.set(teamProviderInfo, [currentEnv, categories, category, resourceName], {
+    
+    getEnvParamManager(currentEnv).getResourceParamManager(category, resourceName).setParams({
       rdsRegion: answers.region,
       rdsClusterIdentifier: answers.dbClusterArn,
       rdsSecretStoreArn: answers.secretStoreArn,
       rdsDatabaseName: answers.databaseName,
     });
-
-    stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
 
     const backendConfig = stateManager.getBackendConfig();
 
