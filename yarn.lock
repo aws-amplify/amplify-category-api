@@ -411,7 +411,7 @@
     "@aws-cdk/cx-api" "1.124.0"
     constructs "^3.3.69"
 
-"@aws-cdk/aws-apigatewayv2-alpha@2.44.0-alpha.0":
+"@aws-cdk/aws-apigatewayv2-alpha@~2.44.0-alpha.0":
   version "2.44.0-alpha.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-apigatewayv2-alpha/-/aws-apigatewayv2-alpha-2.44.0-alpha.0.tgz#89f6af3427bdaa72d2b0f78384acda6469eaaf68"
   integrity sha512-hQGYHa8OhgEQWKj6wNd7I+bOdXANu9RiWMNOyBJszZEo7v0rmUGQA02FtSOnG0jTsoiiSbKuGPkvMR3Us2OGwQ==
@@ -439,7 +439,7 @@
     "@aws-cdk/core" "1.124.0"
     constructs "^3.3.69"
 
-"@aws-cdk/aws-appsync-alpha@2.44.0-alpha.0":
+"@aws-cdk/aws-appsync-alpha@~2.44.0-alpha.0":
   version "2.44.0-alpha.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-appsync-alpha/-/aws-appsync-alpha-2.44.0-alpha.0.tgz#a41ec46c28ce95a34e0eb79c033dd0cc17dd59b6"
   integrity sha512-lapIZMKZQJVB6z56IIFJd3DMOue5UxBWNtOiRUaqdIXJ/dh2+CLudCPQAeno1y6JoGZTuhK0SG8absSCEfmrWw==
@@ -1014,7 +1014,7 @@
     string-width "^4.2.2"
     table "^6.7.1"
 
-"@aws-cdk/cloudformation-diff@2.44.0":
+"@aws-cdk/cloudformation-diff@~2.44.0":
   version "2.44.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/cloudformation-diff/-/cloudformation-diff-2.44.0.tgz#476d85b78e7bb07e79ab09fb6dd96ab41fb34fa8"
   integrity sha512-0s5enXUvsu+hMondGge4nZ9oCUKvmHD7akhmS2lpD/nnP8ob0sU8WSUuKxXF6jSUZYIVcPqt7UsE+HLh1CBwSQ==
@@ -8272,7 +8272,7 @@ aws-appsync@^4.1.1:
     url "^0.11.0"
     uuid "3.x"
 
-aws-cdk-lib@2.44.0:
+aws-cdk-lib@~2.44.0:
   version "2.44.0"
   resolved "https://registry.yarnpkg.com/aws-cdk-lib/-/aws-cdk-lib-2.44.0.tgz#e6157df7a72b8d1a4528f6fb9f9b0ed7aa404bcc"
   integrity sha512-h0lCcS3t2TPF5FIpkA7OcE2t4vChtz/FGcZ5jVaORj21quiUz84eOhGk2BeRoKqfSp1Zqu2QxQUk6p6YpAOrRA==
