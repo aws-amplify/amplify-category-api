@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.14.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@1.14.7...@aws-amplify/graphql-transformer-interfaces@1.14.8) (2022-10-24)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces
+
+
+
+
+
 ## [1.14.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@1.14.6...@aws-amplify/graphql-transformer-interfaces@1.14.7) (2022-08-16)
 
 

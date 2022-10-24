@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.9](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.8...amplify-category-api-e2e-core@4.0.9) (2022-10-24)
+
+
+### Bug Fixes
+
+* **graphql:** add rds datasource v1 fix ([#853](https://github.com/aws-amplify/amplify-category-api/issues/853)) ([9bf32c2](https://github.com/aws-amplify/amplify-category-api/commit/9bf32c21f8e7e7ea6e8d602846c1128f38fb9897))
+
+
+
+
+
 ## [4.0.8](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.7...amplify-category-api-e2e-core@4.0.8) (2022-09-14)
 
 
