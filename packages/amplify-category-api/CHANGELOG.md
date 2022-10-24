@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0-cdkv2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.5...@aws-amplify/amplify-category-api@5.1.0-cdkv2.0) (2022-10-24)
+
+
+### Bug Fixes
+
+* **graphql:** add rds datasource v1 fix ([#853](https://github.com/aws-amplify/amplify-category-api/issues/853)) ([9bf32c2](https://github.com/aws-amplify/amplify-category-api/commit/9bf32c21f8e7e7ea6e8d602846c1128f38fb9897))
+* migrate to cdkv2 - e2e tests fixes ([#910](https://github.com/aws-amplify/amplify-category-api/issues/910)) ([c7b2503](https://github.com/aws-amplify/amplify-category-api/commit/c7b250361bf0c82fc067e03675101b9dfb6a25de))
+* preserve logical id patterns for dynamodb tables and search domain ([#894](https://github.com/aws-amplify/amplify-category-api/issues/894)) ([7530fc2](https://github.com/aws-amplify/amplify-category-api/commit/7530fc2e9254b621dc3782271318dd3f5c97d2b8))
+
+
+### Features
+
+* migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
+
+
+
+
+
 ## [4.0.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.4...@aws-amplify/amplify-category-api@4.0.5) (2022-10-04)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api
