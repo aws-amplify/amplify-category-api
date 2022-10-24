@@ -187,6 +187,17 @@ jobs:
           path: client-test-apps/js/api-model-relationship-app/cypress/screenshots
       - store_artifacts:
           path: client-test-apps/js/api-model-relationship-app/cypress/videos
+      - run:
+          name: Emit Canary Success Metric
+          command: |
+            source .circleci/local_publish_helpers.sh
+            emitCanarySuccessMetric
+      - run:
+          name: Emit Canary Failure Metric
+          command: |
+              source .circleci/local_publish_helpers.sh
+              emitCanaryFailureMetric
+          when: on_fail
 
 # our single workflow, that triggers the setup job defined above
 workflows:

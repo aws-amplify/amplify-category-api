@@ -7,6 +7,7 @@ import { addApiWithBlankSchemaAndConflictDetection, updateApiSchema, getProjectM
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { $TSAny } from 'amplify-cli-core';
 (global as any).fetch = require('node-fetch');
 
 const projectName = 'syncquerytest';
@@ -19,22 +20,21 @@ describe('Sync query V2 resolver tests', () => {
       await initJSProjectWithProfile(projRoot, {
         name: projectName,
       });
-      // await addAuthWithDefault(projRoot, {});
+
+      const v2Schema = 'schema_with_index.graphql';
+      await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 2 });
+      await updateApiSchema(projRoot, projectName, v2Schema);
+      await amplifyPush(projRoot);
+
+      appSyncClient = getAppSyncClientFromProj(projRoot);
     });
   
     afterEach(async () => {
       await deleteProject(projRoot);
       deleteProjectDir(projRoot);
     });
-  
+
     it('Able to sync latest updates with and without lastSync', async () => {
-        const v2Schema = 'schema_with_index.graphql';
-        await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 2 });
-        await updateApiSchema(projRoot, projectName, v2Schema);
-        await amplifyPush(projRoot);
-    
-        appSyncClient = getAppSyncClientFromProj(projRoot);
-        
         const createResult = await createSong('song1', 'rock');
 
         expect(createResult.data).not.toBeNull();
@@ -95,6 +95,60 @@ describe('Sync query V2 resolver tests', () => {
         // sync is re-started with the sync query
         expect(syncResultAfterUpdate.data.syncSongs.startedAt).toBeGreaterThan(syncStartedAt);
     });
+
+    it('Sync query with filter on GSI for model without sort key works', async () => {
+        const testSong = {
+            id: '',
+            name: 'song1',
+            genre: 'rock',
+            lastChangedAt: 0
+        }
+
+        const createResult = await createSong(testSong.name, testSong.genre);
+        verifyCreateSongResult(createResult, testSong, 'createSong');
+        testSong.id = createResult.data.createSong.id;
+        testSong.lastChangedAt = createResult.data.createSong._lastChangedAt;
+
+        // able to sync songs without lastSync specified. This will do a query on base table.
+        const syncResult = await syncSongs(null, { genre: { eq: testSong.genre } });
+        verifySyncQueryResult(syncResult, testSong, 'syncSongs');
+    });
+
+    it('Sync query with filter on primary key part of GSI for model with sort key works', async () => {
+        const testSong = {
+            id: '',
+            name: 'song1',
+            genre: 'rock',
+            lastChangedAt: 0
+        }
+
+        const createResult = await createSongWithSortKey(testSong.name, testSong.genre);
+        verifyCreateSongResult(createResult, testSong, 'createSongWithSortKey');
+        testSong.id = createResult.data.createSongWithSortKey.id;
+        testSong.lastChangedAt = createResult.data.createSongWithSortKey._lastChangedAt;
+
+        // able to sync songs without lastSync specified. This will do a query on base table.
+        const syncResult = await syncSongWithSortKeys(null, { name: { eq: testSong.name } });
+        verifySyncQueryResult(syncResult, testSong, 'syncSongWithSortKeys');
+    });
+
+    it('Sync query with filter on primary and sort keys of GSI for model works', async () => {
+        const testSong = {
+            id: '',
+            name: 'song1',
+            genre: 'rock',
+            lastChangedAt: 0
+        }
+
+        const createResult = await createSongWithSortKey(testSong.name, testSong.genre);
+        verifyCreateSongResult(createResult, testSong, 'createSongWithSortKey');
+        testSong.id = createResult.data.createSongWithSortKey.id;
+        testSong.lastChangedAt = createResult.data.createSongWithSortKey._lastChangedAt;
+
+        // able to sync songs without lastSync specified. This will do a query on base table.
+        const syncResult = await syncSongWithSortKeys(null, { and: { name: { eq: testSong.name }, genre: { eq: testSong.genre } } });
+        verifySyncQueryResult(syncResult, testSong, 'syncSongWithSortKeys');
+    });
   
     const getAppSyncClientFromProj = (projRoot: string) => {
       const meta = getProjectMeta(projRoot);
@@ -114,12 +168,70 @@ describe('Sync query V2 resolver tests', () => {
       });
     };
 
+    const verifySyncQueryResult = (syncResult: $TSAny, testSong: $TSAny, queryName: string) => {
+        expect(syncResult.data).not.toBeNull();
+        expect(syncResult.errors).toBeUndefined();
+        expect(syncResult.data[queryName]).not.toBeNull();
+        expect(syncResult.data[queryName].items?.length).toEqual(1);
+        const songAfterFirstSync = syncResult.data[queryName].items[0];
+        expect(songAfterFirstSync.id).toEqual(testSong.id);
+        expect(songAfterFirstSync.name).toEqual(testSong.name);
+        expect(songAfterFirstSync.genre).toEqual(testSong.genre);
+        expect(songAfterFirstSync._version).toEqual(1);
+        expect(songAfterFirstSync._lastChangedAt).toEqual(testSong.lastChangedAt);
+        // sync is started with the sync query post record creation
+        expect(syncResult.data[queryName].startedAt).toBeGreaterThan(testSong.lastChangedAt);
+    };
+
+    const verifyCreateSongResult = (createResult: $TSAny, testSong: $TSAny, mutationName: string) => {
+        expect(createResult.data).not.toBeNull();
+        expect(createResult.errors).toBeUndefined();
+        expect(createResult.data[mutationName]).not.toBeNull();
+        expect(createResult.data[mutationName].id).toBeDefined();
+        expect(createResult.data[mutationName].name).toEqual(testSong.name);
+        expect(createResult.data[mutationName].genre).toEqual(testSong.genre);
+        expect(createResult.data[mutationName]._version).toEqual(1);
+        expect(createResult.data[mutationName]._lastChangedAt).toBeDefined();
+        expect(createResult.data[mutationName]._deleted).toBeNull();
+    };
+
     const createSong = async (
         name: string, genre: string
     ): Promise<any> => {
         const createMutation = /* GraphQL */ `
             mutation CreateSong($input: CreateSongInput!, $condition: ModelSongConditionInput) {
                 createSong(input: $input, condition: $condition) {
+                    id
+                    name
+                    genre
+                    _lastChangedAt
+                    _version
+                    _deleted
+                }
+            }
+        `;
+
+        const createInput = {
+            input: {
+                name: name,
+                genre: genre
+            },
+        };
+
+        const result: any = await appSyncClient.mutate({
+            mutation: gql(createMutation),
+            fetchPolicy: 'no-cache',
+            variables: createInput,
+        });
+        return result;
+    };
+
+    const createSongWithSortKey = async (
+        name: string, genre: string
+    ): Promise<any> => {
+        const createMutation = /* GraphQL */ `
+            mutation CreateSongWithSortKey($input: CreateSongWithSortKeyInput!, $condition: ModelSongWithSortKeyConditionInput) {
+                createSongWithSortKey(input: $input, condition: $condition) {
                     id
                     name
                     genre
@@ -178,10 +290,10 @@ describe('Sync query V2 resolver tests', () => {
         return result;
     };
 
-    const syncSongs = async (lastSync?: number): Promise<any> => {
+    const syncSongs = async (lastSync?: number, filter?: $TSAny): Promise<any> => {
         const syncQuery = /* GraphQL */ `
-            query SyncSongs($limit: Int, $lastSync: AWSTimestamp) {
-                syncSongs(limit: $limit, lastSync: $lastSync) {
+            query SyncSongs($limit: Int, $lastSync: AWSTimestamp, $filter: ModelSongFilterInput) {
+                syncSongs(limit: $limit, lastSync: $lastSync, filter: $filter) {
                     items {
                         id
                         name
@@ -197,7 +309,40 @@ describe('Sync query V2 resolver tests', () => {
         const syncQueryInput = {
             input: {
                 limit: 10,
-                lastSync: lastSync ? lastSync : null
+                lastSync: lastSync ? lastSync : null,
+                filter: filter ? filter: null
+            },
+        };
+
+        const result: any = await appSyncClient.query({
+            query: gql(syncQuery),
+            fetchPolicy: 'no-cache',
+            variables: syncQueryInput,
+        });
+        return result;
+    };
+
+    const syncSongWithSortKeys = async (lastSync?: number, filter?: $TSAny): Promise<any> => {
+        const syncQuery = /* GraphQL */ `
+            query syncSongWithSortKeys($limit: Int, $lastSync: AWSTimestamp, $filter: ModelSongWithSortKeyFilterInput) {
+                syncSongWithSortKeys(limit: $limit, lastSync: $lastSync, filter: $filter) {
+                    items {
+                        id
+                        name
+                        genre
+                        _version
+                        _lastChangedAt
+                    }
+                    startedAt
+                }
+            }
+        `;
+
+        const syncQueryInput = {
+            input: {
+                limit: 10,
+                lastSync: lastSync ? lastSync : null,
+                filter: filter ? filter: null
             },
         };
 
