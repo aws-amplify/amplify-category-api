@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-maps-to-transformer",
-  "version": "2.1.0-cdkv2.0",
+  "version": "2.1.0-cdkv2.1",
   "description": "Amplify GraphQL @mapsTo transformer",
   "repository": {
     "type": "git",
@@ -29,8 +29,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "1.1.0-cdkv2.0",
-    "@aws-amplify/graphql-transformer-interfaces": "2.1.0-cdkv2.0",
+    "@aws-amplify/graphql-transformer-core": "1.1.0-cdkv2.1",
+    "@aws-amplify/graphql-transformer-interfaces": "2.1.0-cdkv2.1",
     "@aws-cdk/aws-appsync-alpha": "~2.44.0-alpha.0",
     "aws-cdk-lib": "~2.44.0",
     "constructs": "^10.0.5",
@@ -38,10 +38,10 @@
     "graphql-transformer-common": "4.24.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-index-transformer": "1.1.0-cdkv2.0",
-    "@aws-amplify/graphql-model-transformer": "1.1.0-cdkv2.0",
-    "@aws-amplify/graphql-relational-transformer": "1.1.0-cdkv2.0",
-    "@aws-amplify/graphql-searchable-transformer": "1.1.0-cdkv2.0",
+    "@aws-amplify/graphql-index-transformer": "1.1.0-cdkv2.1",
+    "@aws-amplify/graphql-model-transformer": "1.1.0-cdkv2.1",
+    "@aws-amplify/graphql-relational-transformer": "1.1.0-cdkv2.1",
+    "@aws-amplify/graphql-searchable-transformer": "1.1.0-cdkv2.1",
     "graphql": "^14.5.8",
     "mkdirp": "^0.5.5"
   },

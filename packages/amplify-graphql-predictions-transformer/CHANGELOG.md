@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0-cdkv2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@1.1.0-cdkv2.0...@aws-amplify/graphql-predictions-transformer@1.1.0-cdkv2.1) (2022-10-24)
+
+
+### Bug Fixes
+
+* lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
+
+
+
+
+
 # [1.1.0-cdkv2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@0.6.28...@aws-amplify/graphql-predictions-transformer@1.1.0-cdkv2.0) (2022-10-24)
 
 

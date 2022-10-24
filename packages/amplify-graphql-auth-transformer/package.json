@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-auth-transformer",
-  "version": "2.1.0-cdkv2.0",
+  "version": "2.1.0-cdkv2.1",
   "description": "Amplify GraphQL @auth transformer",
   "repository": {
     "type": "git",
@@ -28,10 +28,10 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@aws-amplify/graphql-model-transformer": "1.1.0-cdkv2.0",
-    "@aws-amplify/graphql-relational-transformer": "1.1.0-cdkv2.0",
-    "@aws-amplify/graphql-transformer-core": "1.1.0-cdkv2.0",
-    "@aws-amplify/graphql-transformer-interfaces": "2.1.0-cdkv2.0",
+    "@aws-amplify/graphql-model-transformer": "1.1.0-cdkv2.1",
+    "@aws-amplify/graphql-relational-transformer": "1.1.0-cdkv2.1",
+    "@aws-amplify/graphql-transformer-core": "1.1.0-cdkv2.1",
+    "@aws-amplify/graphql-transformer-interfaces": "2.1.0-cdkv2.1",
     "aws-cdk-lib": "~2.44.0",
     "constructs": "^10.0.5",
     "graphql": "^14.5.8",
@@ -44,8 +44,8 @@
     "amplify-prompts": "^2.0.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-index-transformer": "1.1.0-cdkv2.0",
-    "@aws-amplify/graphql-searchable-transformer": "1.1.0-cdkv2.0",
+    "@aws-amplify/graphql-index-transformer": "1.1.0-cdkv2.1",
+    "@aws-amplify/graphql-searchable-transformer": "1.1.0-cdkv2.1",
     "@types/node": "^12.12.6"
   },
   "jest": {
