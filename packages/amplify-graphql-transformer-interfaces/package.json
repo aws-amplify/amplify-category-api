@@ -26,8 +26,8 @@
     "clean": "rimraf ./lib"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.41.0",
-    "@aws-cdk/aws-appsync-alpha": "^2.41.0-alpha.0",
+    "aws-cdk-lib": "~2.44.0",
+    "@aws-cdk/aws-appsync-alpha": "~2.44.0-alpha.0",
     "constructs": "^10.0.5",
     "graphql": "^14.5.8"
   },
