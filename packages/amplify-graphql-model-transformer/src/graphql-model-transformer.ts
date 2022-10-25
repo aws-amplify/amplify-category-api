@@ -508,13 +508,14 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const resolverKey = `Update${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
       const hasCustomPrimaryKey = this.hasCustomPrimaryKey(type);
+      const partitionKey = this.getPartitionKey(type);
       const resolver = ctx.resolvers.generateMutationResolver(
         typeName,
         fieldName,
         resolverLogicalId,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(
-          generateUpdateRequestTemplate(typeName, isSyncEnabled, hasCustomPrimaryKey),
+          generateUpdateRequestTemplate(typeName, isSyncEnabled, hasCustomPrimaryKey, partitionKey),
           `${typeName}.${fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(
@@ -546,13 +547,14 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `delete${generateResolverKey(typeName, fieldName)}`;
     const hasCustomPrimaryKey = this.hasCustomPrimaryKey(type);
+    const partitionKey = this.getPartitionKey(type);
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateMutationResolver(
         typeName,
         fieldName,
         resolverLogicalId,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(generateDeleteRequestTemplate(isSyncEnabled, hasCustomPrimaryKey), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateDeleteRequestTemplate(isSyncEnabled, hasCustomPrimaryKey, partitionKey), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(
           generateDefaultResponseMappingTemplate(isSyncEnabled, true),
           `${typeName}.${fieldName}.res.vtl`,
@@ -887,12 +889,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const modelIndexFields = type.fields!.filter(field => field.directives?.some(it => it.name.value === 'index')).map(it => it.name.value);
     if (!this.resolverMap[resolverKey]) {
       const hasCustomPrimaryKey = this.hasCustomPrimaryKey(type);
+      const partitionKey = this.getPartitionKey(type);
       const resolver = ctx.resolvers.generateMutationResolver(
         typeName,
         fieldName,
         resolverLogicalId,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(generateCreateRequestTemplate(type.name.value, modelIndexFields, hasCustomPrimaryKey), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateCreateRequestTemplate(type.name.value, modelIndexFields, hasCustomPrimaryKey, partitionKey), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(
           generateDefaultResponseMappingTemplate(isSyncEnabled, true),
           `${typeName}.${fieldName}.res.vtl`,
@@ -1415,11 +1418,28 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
     const primaryKeyDirective = primaryKeyField.directives?.find(directive => directive.name.value === 'primaryKey')!;
     const sortKeysArgument = primaryKeyDirective.arguments?.find(arg => arg.name.value === 'sortKeyFields');
-    if (!sortKeysArgument || (sortKeysArgument.value as ListValueNode)?.values.length === 0) {
+    if (sortKeysArgument && sortKeysArgument.value?.kind == 'StringValue') {
+      return true;
+    }
+    if (!sortKeysArgument || (sortKeysArgument.value as ListValueNode)?.values?.length === 0) {
       return false;
     }
 
     return true;
+  }
+
+  /**
+   * Returns partition key of the type
+   * Custom Primary Key is a renamed partition key with at least one sort key.
+   * @param obj ObjectTypeDefinitionNode
+   * @returns a string
+   */
+   private getPartitionKey = (obj: ObjectTypeDefinitionNode): string => {
+    const primaryKeyField = obj.fields?.find(field => field.directives?.find(directive => directive.name.value === 'primaryKey'));
+    if (!primaryKeyField || primaryKeyField.name.value === DEFAULT_ID_FIELD_NAME) {
+      return DEFAULT_ID_FIELD_NAME;
+    }
+    return primaryKeyField.name.value;
   }
 
   /**

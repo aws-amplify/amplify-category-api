@@ -212,8 +212,18 @@ export const generateSyncRequestTemplate = (hasCustomPrimaryKey: boolean, partit
       limit: ref(`util.defaultIfNull($args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
       lastSync: ref('util.toJson($util.defaultIfNull($args.lastSync, null))'),
       nextToken: ref('util.toJson($util.defaultIfNull($args.nextToken, null))'),
-      basePartitionKey: ifElse(ref('filter'), raw(`${hasCustomPrimaryKey ? `$filter.${partitionKeyName}` : 'null'}`), nul(), true),
-      deltaIndexName: str(SyncResourceIDs.syncGSIName),
+      ...(hasCustomPrimaryKey && {
+        basePartitionKey: ifElse(
+          and([
+            ref('filter'), 
+            ref(`$filter.${partitionKeyName}`),
+          ]),
+          raw(`$filter.${partitionKeyName}.eq`),
+          nul(),
+          true,
+        ),
+        deltaIndexName: str(SyncResourceIDs.syncGSIName),
+      }),
     }),
   ]),
 );

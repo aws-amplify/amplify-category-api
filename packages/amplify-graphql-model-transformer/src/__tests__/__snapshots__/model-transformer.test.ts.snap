@@ -1216,11 +1216,7 @@ $util.toJson({})
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Sync\\",
-  \\"filter\\":   #if( $filter )
-$util.toJson($filter)
-  #else
-null
-  #end,
+  \\"filter\\": #if( $filter ) $util.toJson($filter) #else null #end,
   \\"limit\\": $util.defaultIfNull($args.limit, 100),
   \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
   \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null))
@@ -1758,11 +1754,7 @@ $util.toJson({})
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Sync\\",
-  \\"filter\\":   #if( $filter )
-$util.toJson($filter)
-  #else
-null
-  #end,
+  \\"filter\\": #if( $filter ) $util.toJson($filter) #else null #end,
   \\"limit\\": $util.defaultIfNull($args.limit, 100),
   \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
   \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null))
@@ -2300,11 +2292,7 @@ $util.toJson({})
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Sync\\",
-  \\"filter\\":   #if( $filter )
-$util.toJson($filter)
-  #else
-null
-  #end,
+  \\"filter\\": #if( $filter ) $util.toJson($filter) #else null #end,
   \\"limit\\": $util.defaultIfNull($args.limit, 100),
   \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
   \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null))
@@ -4342,11 +4330,7 @@ exports[`ModelTransformer:  the datastore table should be configured 1`] = `
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Sync\\",
-  \\"filter\\":   #if( $filter )
-$util.toJson($filter)
-  #else
-null
-  #end,
+  \\"filter\\": #if( $filter ) $util.toJson($filter) #else null #end,
   \\"limit\\": $util.defaultIfNull($args.limit, 100),
   \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
   \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null))

@@ -1143,8 +1143,34 @@ describe('ModelTransformer: ', () => {
             AttributeName: 'ds_sk',
             AttributeType: 'S',
           },
+          {
+            AttributeName: 'gsi_ds_pk',
+            AttributeType: 'S',
+          },
+          {
+            AttributeName: 'gsi_ds_sk',
+            AttributeType: 'S',
+          }
         ],
         BillingMode: 'PAY_PER_REQUEST',
+        GlobalSecondaryIndexes: [
+          {
+            IndexName: "deltaSyncGSI",
+            KeySchema: [
+              {
+                AttributeName: "gsi_ds_pk",
+                KeyType: "HASH"
+              },
+              {
+                AttributeName: "gsi_ds_sk",
+                KeyType: "RANGE"
+              }
+            ],
+            Projection: {
+              ProjectionType: "ALL"
+            }
+          }
+        ],
         StreamSpecification: {
           StreamViewType: 'NEW_AND_OLD_IMAGES',
         },
