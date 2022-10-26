@@ -246,6 +246,7 @@ export const executeAmplifyCommand = async (context: $TSContext): Promise<void> 
   }
 
   //TODO: This is a temporary suppression for CDK deprecation warnings, which should be removed after the migration is complete
+  // This is not diabled in CI or debug mode
   disableCDKDeprecationWarning();
 
   const commandModule = await import(commandPath);
