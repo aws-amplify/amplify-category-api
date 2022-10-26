@@ -363,11 +363,12 @@ const canResourceBeTransformed = (
 ): boolean => stateManager.resourceInputsJsonExists(undefined, AmplifyCategories.API, resourceName);
 
 /**
- * Disable the CDK deprecation warning in production but not in CI
+ * Disable the CDK deprecation warning in production but not in CI/debug mode
  */
 const disableCDKDeprecationWarning = () => {
-  const isCI = () => process.env.CI && process.env.CIRCLECI;
-  if (!isCI()) {
+  const isCI = process.env.CI && process.env.CIRCLECI;
+  const isDebug = process.argv.includes('--debug') || process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT === 'true';
+  if (!(isCI || isDebug)) {
     process.env.JSII_DEPRECATED = 'quiet';
   }
 }
