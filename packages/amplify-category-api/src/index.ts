@@ -244,7 +244,10 @@ export const executeAmplifyCommand = async (context: $TSContext): Promise<void> 
   } else {
     commandPath = path.join(commandPath, category, context.input.command);
   }
+
+  //TODO: This is a temporary suppression for CDK deprecation warnings, which should be removed after the migration is complete
   disableCDKDeprecationWarning();
+
   const commandModule = await import(commandPath);
   try {
     await commandModule.run(context);
