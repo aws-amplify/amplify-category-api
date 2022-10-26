@@ -244,7 +244,7 @@ export const executeAmplifyCommand = async (context: $TSContext): Promise<void> 
   } else {
     commandPath = path.join(commandPath, category, context.input.command);
   }
-
+  disableCDKDeprecationWarning();
   const commandModule = await import(commandPath);
   try {
     await commandModule.run(context);
@@ -358,3 +358,13 @@ export const transformCategoryStack = async (context: $TSContext, resource: $TSO
 const canResourceBeTransformed = (
   resourceName: string,
 ): boolean => stateManager.resourceInputsJsonExists(undefined, AmplifyCategories.API, resourceName);
+
+/**
+ * Disable the CDK deprecation warning in production but not in CI
+ */
+const disableCDKDeprecationWarning = () => {
+  const isCI = () => process.env.CI && process.env.CIRCLECI;
+  if (!isCI()) {
+    process.env.JSII_DEPRECATED = 'quiet';
+  }
+}
