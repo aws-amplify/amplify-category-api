@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.6...@aws-amplify/amplify-category-api@4.0.7) (2022-10-26)
+
+
+### Bug Fixes
+
+* suppress CDK deprecation warnings ([d38930f](https://github.com/aws-amplify/amplify-category-api/commit/d38930fe7e563ca350999bb4c5433444f45a8290))
+
+
+
+
+
 ## [4.0.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.5...@aws-amplify/amplify-category-api@4.0.6) (2022-10-24)
 
 

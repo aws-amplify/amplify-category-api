@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-index-transformer",
-  "version": "0.14.1",
+  "version": "0.14.2",
   "description": "Amplify GraphQL index and key transformers",
   "repository": {
     "type": "git",
@@ -27,8 +27,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@aws-amplify/graphql-model-transformer": "0.16.1",
-    "@aws-amplify/graphql-transformer-core": "0.17.13",
+    "@aws-amplify/graphql-model-transformer": "0.16.2",
+    "@aws-amplify/graphql-transformer-core": "0.17.14",
     "@aws-amplify/graphql-transformer-interfaces": "1.14.8",
     "@aws-cdk/aws-appsync": "^1.159.0",
     "@aws-cdk/aws-dynamodb": "^1.159.0",
