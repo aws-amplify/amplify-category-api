@@ -100,6 +100,11 @@ test('happy case with dynamic groups', () => {
   expect(out.resolvers['Mutation.deletePost.auth.1.res.vtl']).toContain('#if( $util.isList($util.parseJson($groupClaim0)) )');
   expect(out.resolvers['Mutation.deletePost.auth.1.res.vtl']).toContain('#set( $groupClaim0 = $util.parseJson($groupClaim0) )');
   expect(out.resolvers['Mutation.deletePost.auth.1.res.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
+
+  expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )');
+  expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.parseJson($groupClaim0) )');
+  expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
+  expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain('$util.qr($authGroupRuntimeFilter.add({ "groups": { "containsAny": $groupClaim0 } }))');
 });
 
 test('\'groups\' @auth with dynamic groups and custom claim on index query', () => {
@@ -290,4 +295,8 @@ test('dynamic group auth generates authorized fields list correctly', () => {
     $util.toJson({})
     ## [End] Authorization Steps. **"
   `);
+});
+
+describe('Dynamic group subscription auth tests', () => {
+
 });
