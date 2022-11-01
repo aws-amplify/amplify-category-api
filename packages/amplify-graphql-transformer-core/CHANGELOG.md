@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.17.15-delta-table-improvements.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.17.14...@aws-amplify/graphql-transformer-core@0.17.15-delta-table-improvements.0) (2022-11-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
+
+
+
+
 ## [0.17.14](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.17.13...@aws-amplify/graphql-transformer-core@0.17.14) (2022-10-26)
 
 

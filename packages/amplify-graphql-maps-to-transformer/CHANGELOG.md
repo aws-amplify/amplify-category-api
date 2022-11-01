@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.34-delta-table-improvements.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@1.1.33...@aws-amplify/graphql-maps-to-transformer@1.1.34-delta-table-improvements.0) (2022-11-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+
+
+
+
 ## [1.1.33](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@1.1.32...@aws-amplify/graphql-maps-to-transformer@1.1.33) (2022-10-26)
 
 **Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.45-delta-table-improvements.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-auth-transformer@7.2.44...graphql-auth-transformer@7.2.45-delta-table-improvements.0) (2022-11-01)
+
+**Note:** Version bump only for package graphql-auth-transformer
+
+
+
+
+
 ## [7.2.44](https://github.com/aws-amplify/amplify-category-api/compare/graphql-auth-transformer@7.2.43...graphql-auth-transformer@7.2.44) (2022-09-14)
 
 **Note:** Version bump only for package graphql-auth-transformer

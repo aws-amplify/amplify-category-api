@@ -1,6 +1,6 @@
 {
   "name": "graphql-predictions-transformer",
-  "version": "3.2.43",
+  "version": "3.2.44-delta-table-improvements.0",
   "description": "Implements the @predictions directive.",
   "repository": {
     "type": "git",
@@ -26,8 +26,8 @@
     "cloudform-types": "^4.2.0",
     "graphql": "^14.5.8",
     "graphql-mapping-template": "4.20.5",
-    "graphql-transformer-common": "4.24.0",
-    "graphql-transformer-core": "7.6.6"
+    "graphql-transformer-common": "4.24.1-delta-table-improvements.0",
+    "graphql-transformer-core": "7.6.7-delta-table-improvements.0"
   },
   "devDependencies": {
     "bestzip": "^2.1.5"

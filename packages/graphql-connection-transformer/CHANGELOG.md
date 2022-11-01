@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.44-delta-table-improvements.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-connection-transformer@5.2.43...graphql-connection-transformer@5.2.44-delta-table-improvements.0) (2022-11-01)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
 ## [5.2.43](https://github.com/aws-amplify/amplify-category-api/compare/graphql-connection-transformer@5.2.42...graphql-connection-transformer@5.2.43) (2022-09-14)
 
 **Note:** Version bump only for package graphql-connection-transformer
