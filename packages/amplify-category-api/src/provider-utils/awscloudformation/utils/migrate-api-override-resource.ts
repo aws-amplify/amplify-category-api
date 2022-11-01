@@ -2,7 +2,7 @@ import {
   $TSAny,
   AmplifyCategories,
   JSONUtilities,
-  NotInitializedError,
+  projectNotInitializedError,
   pathManager,
   ResourceDoesNotExistError,
   stateManager,
@@ -33,7 +33,7 @@ export const migrateResourceToSupportOverride = async (resourceName: string) => 
   const projectPath = pathManager.findProjectRoot();
   if (!projectPath) {
     // New project, hence not able to find the amplify dir
-    throw new NotInitializedError();
+    throw projectNotInitializedError();
   }
   const apiresourceDirPath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.API, resourceName);
   const backupApiResourceFolder = backup(apiresourceDirPath, projectPath, resourceName);
