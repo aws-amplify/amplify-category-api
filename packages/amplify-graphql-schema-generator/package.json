@@ -22,17 +22,9 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rimraf ./lib",
-    "test": "jest"
+    "clean": "rimraf ./lib"
   },
   "dependencies": {
-    "knex": "~2.3.0",
-    "mysql2": "~2.3.3",
-    "graphql": "^14.5.8",
-    "@aws-amplify/graphql-transformer-core": "0.17.15"
-  },
-  "peerDependencies": {
-    "amplify-prompts": "^2.6.0"
   },
   "jest": {
     "transform": {

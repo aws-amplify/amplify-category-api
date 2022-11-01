@@ -1,12 +1,8 @@
 export type FieldType = DefaultType | CustomType | ListType | NonNullType;
 
-export type FieldDataType = 'String' | 'ID' | 'Int' | 'Float' | 'AWSJSON' 
-| 'AWSDate' | 'AWSTime' | 'AWSDateTime' | 'AWSTimestamp'
-| 'Boolean' | 'AWSEmail' | 'AWSPhone' | 'AWSURL' | 'AWSIPAddress';
-
 export interface DefaultType {
   readonly kind: 'Scalar';
-  readonly name: FieldDataType;
+  readonly name: 'String' | 'ID' | 'Int' | 'Float' | 'AWSJSON' | 'AWSDate' | 'AWSTime' | 'AWSDateTime' | 'AWSTimestamp';
 }
 
 export interface CustomType {
@@ -26,12 +22,11 @@ export interface NonNullType {
 
 export interface DefaultValue {
   readonly kind: 'DB_GENERATED' | 'TRANSFORMER_GENERATED';
-  readonly value: string | number | boolean;
+  readonly value: string | number;
 }
 
 export class Field {
-  public default: DefaultValue | undefined = undefined;
-  public length: number | null | undefined;
+  readonly default: DefaultValue | undefined = undefined;
   constructor(public name: string, public type: FieldType) {
   }
 }
@@ -64,7 +59,7 @@ export class Model {
 
   public addField(field: Field): void {
     if (this.hasField(field.name)) {
-      throw new Error(`Field "${field.name}" already exists.`);
+      throw new Error("Field already exists.");
     }
     this.fields.push(field);
   }
@@ -79,17 +74,9 @@ export class Model {
     this.primaryKey = primaryKey;
   }
 
-  public getPrimaryKey(): Index | undefined {
-    return this.primaryKey;
-  }
-
-  public getIndexes(): Index[] {
-    return this.indexes;
-  }
-
   public addIndex(name: string, fields: string[]): void {
     if (this.hasIndex(name)) {
-      throw new Error(`Index "${name}" already exists.`);
+      throw new Error("Index already exists.");
     }
     const index = new Index(name);
     index.setFields(fields);
