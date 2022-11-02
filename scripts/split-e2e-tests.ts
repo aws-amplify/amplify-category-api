@@ -89,7 +89,8 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/schema-predictions.test.ts',
   'src/__tests__/amplify-app.test.ts',
   'src/__tests__/schema-iterative-update-2.test.ts',
-  'src/__tests__/containers-api.test.ts',
+  'src/__tests__/containers-api-1.test.ts',
+  'src/__tests__/containers-api-2.test.ts',
   //<25m
   'src/__tests__/schema-auth-10.test.ts',
   'src/__tests__/schema-key.test.ts',
