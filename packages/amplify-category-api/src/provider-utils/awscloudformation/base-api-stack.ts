@@ -499,6 +499,23 @@ export abstract class ContainersStack extends cdk.Stack {
     const pipelineName = this.getPipelineName();
     return `https://${region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${pipelineName}/view`;
   }
+
+  /**
+   * This function renderers a full CFN template for this stack.
+   * It is inspired by
+   * https://github.com/aws/aws-cdk/blob/bd056d1d38a2d3f43efe4f857c4d38b30fb9b681/packages/%40aws-cdk/assertions/lib/template.ts#L298-L310.
+   * This replaces private prepareApp (from CDK v1) and this._toCloudFormation() (the latter does not function properly without the former).
+   */
+  private renderCfnTemplate(): any {
+    const root = this.node.root as cdk.Stage;
+    const assembly = root.synth();
+    if (this.nestedStackParent) {
+      // if this is a nested stack (it has a parent), then just read the template as a string
+      return JSON.parse(fs.readFileSync(path.join(assembly.directory, this.templateFile)).toString('utf-8'));
+    }
+    return assembly.getStackArtifact(this.artifactId).template;
+  }
+
   toCloudFormation() {
     this.node
       .findAll()
@@ -513,15 +530,7 @@ export abstract class ContainersStack extends cdk.Stack {
         }
       });
 
-    const root = this.node.root as cdk.Stage;
-    const assembly = root.synth();
-    let cfn;
-    if (this.nestedStackParent) {
-      // if this is a nested stack (it has a parent), then just read the template as a string
-      cfn = JSON.parse(fs.readFileSync(path.join(assembly.directory, this.templateFile)).toString('utf-8'));
-    } else {
-      cfn = assembly.getStackArtifact(this.artifactId).template;
-    }
+    const cfn = this.renderCfnTemplate();
 
     Object.keys(cfn.Parameters).forEach(k => {
       if (k.startsWith('AssetParameters')) {
