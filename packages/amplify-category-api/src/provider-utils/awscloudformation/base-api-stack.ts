@@ -514,7 +514,6 @@ export abstract class ContainersStack extends cdk.Stack {
       });
 
     const root = this.node.root as cdk.Stage;
-
     const assembly = root.synth();
     let cfn;
     if (this.nestedStackParent) {
