@@ -6,8 +6,6 @@ import {
   deleteProject,
   deleteProjectDir,
   initJSProjectWithProfile,
-  getProjectMeta,
-  modifyRestAPI,
   retry,
 } from 'amplify-category-api-e2e-core';
 import fetch from 'node-fetch';
@@ -59,18 +57,5 @@ describe('amplify api add', () => {
       },
     );
     expect(result).toEqual(expected);
-  });
-
-  it('init project, enable containers and add multicontainer api push, edit and push', async () => {
-    const envName = 'devtest';
-    const apiName = 'containermodifyapi';
-    await initJSProjectWithProfile(projRoot, { name: 'multicontainer', envName });
-    await setupAmplifyProject(projRoot);
-    await addRestContainerApi(projRoot, { apiName });
-    await amplifyPushWithoutCodegen(projRoot);
-    const meta = await getProjectMeta(projRoot);
-    const api = Object.keys(meta.api)[0];
-    modifyRestAPI(projRoot, api);
-    await amplifyPushWithoutCodegen(projRoot);
   });
 });
