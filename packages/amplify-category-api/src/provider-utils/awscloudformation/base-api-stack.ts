@@ -1,3 +1,5 @@
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
@@ -75,7 +77,7 @@ export abstract class ContainersStack extends cdk.Stack {
   protected readonly awaiterS3Key: string;
 
   constructor(scope: Construct, id: string, private readonly props: ContainersStackProps) {
-    super(scope, id);
+    super(scope, id, { synthesizer: new cdk.LegacyStackSynthesizer() });
 
     const {
       parameters,
@@ -511,7 +513,16 @@ export abstract class ContainersStack extends cdk.Stack {
         }
       });
 
-    const cfn = this._toCloudFormation();
+    const root = this.node.root as cdk.Stage;
+
+    const assembly = root.synth();
+    let cfn;
+    if (this.nestedStackParent) {
+      // if this is a nested stack (it has a parent), then just read the template as a string
+      cfn = JSON.parse(fs.readFileSync(path.join(assembly.directory, this.templateFile)).toString('utf-8'));
+    } else {
+      cfn = assembly.getStackArtifact(this.artifactId).template;
+    }
 
     Object.keys(cfn.Parameters).forEach(k => {
       if (k.startsWith('AssetParameters')) {
