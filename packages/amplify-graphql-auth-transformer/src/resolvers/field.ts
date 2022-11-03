@@ -196,7 +196,7 @@ export const setDeniedFieldFlag = (operation: string, subscriptionsEnabled: bool
       compoundExpression([
         iff(
           equals(methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), nul()), str(operation)),
-          qref(methodCall(ref('ctx.result.put'), str('deniedField'), bool(true))),
+          qref(methodCall(ref('ctx.stash.put'), str('deniedField'), bool(true))),
         ),
       ]),
     );
