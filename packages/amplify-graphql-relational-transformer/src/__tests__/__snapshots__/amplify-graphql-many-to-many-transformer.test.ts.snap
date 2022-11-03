@@ -366,7 +366,7 @@ input ModelIDKeyConditionInput {
 
 exports[`both models with sort key 2`] = `
 Object {
-  "ModelA.models.req.vtl": "#if( $ctx.source.deniedField )
+  "ModelA.models.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
 #if( $util.isNull($ctx.source.id) )
@@ -444,7 +444,7 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "ModelAModelB.modelA.req.vtl": "#if( $ctx.source.deniedField )
+  "ModelAModelB.modelA.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
 #if( $util.isNull($ctx.source.modelAID) || $util.isNull($ctx.source.modelAsortId) )
@@ -482,7 +482,7 @@ $util.unauthorized()
     $util.toJson(null)
   #end
 #end",
-  "ModelAModelB.modelB.req.vtl": "#if( $ctx.source.deniedField )
+  "ModelAModelB.modelB.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
 #if( $util.isNull($ctx.source.modelBID) || $util.isNull($ctx.source.modelBsortId) )
@@ -520,7 +520,7 @@ $util.unauthorized()
     $util.toJson(null)
   #end
 #end",
-  "ModelB.models.req.vtl": "#if( $ctx.source.deniedField )
+  "ModelB.models.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
 #if( $util.isNull($ctx.source.id) )
@@ -4367,7 +4367,7 @@ input ModelSubscriptionFooBarFilterInput {
 
 exports[`valid schema 2`] = `
 Object {
-  "Bar.foos.req.vtl": "#if( $ctx.source.deniedField )
+  "Bar.foos.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
 #if( $util.isNull($ctx.source.id) )
@@ -4443,7 +4443,7 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "Foo.bars.req.vtl": "#if( $ctx.source.deniedField )
+  "Foo.bars.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
 #if( $util.isNull($ctx.source.id) )
@@ -4519,7 +4519,7 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "FooBar.bar.req.vtl": "#if( $ctx.source.deniedField )
+  "FooBar.bar.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
 #if( $util.isNull($ctx.source.barID) )
@@ -4555,7 +4555,7 @@ $util.unauthorized()
     $util.toJson(null)
   #end
 #end",
-  "FooBar.foo.req.vtl": "#if( $ctx.source.deniedField )
+  "FooBar.foo.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
 #if( $util.isNull($ctx.source.fooID) )
