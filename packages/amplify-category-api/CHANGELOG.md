@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0-cdkv2.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.1.0-cdkv2.1...@aws-amplify/amplify-category-api@5.1.0-cdkv2.2) (2022-11-03)
+
+
+### Bug Fixes
+
+* container api cfn generation ([#947](https://github.com/aws-amplify/amplify-category-api/issues/947)) ([0f675f2](https://github.com/aws-amplify/amplify-category-api/commit/0f675f222e24c07084b2907bc62024d7126f574e))
+
+
+
+
+
 # [5.1.0-cdkv2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.1.0-cdkv2.0...@aws-amplify/amplify-category-api@5.1.0-cdkv2.1) (2022-10-24)
 
 
