@@ -156,32 +156,11 @@ interface CreateTaskInput {
   description?: string;
 }
 
-interface UpdateTaskInput {
-  id: string;
-  name?: string;
-  description?: string;
-}
-
-interface DeleteTaskInput {
-  id: string;
-}
-
 interface CreateNoteInput {
   id?: string;
   content: string;
   secretNote?: string;
   taskNotesId?: string;
-}
-
-interface UpdateNoteInput {
-  id: string;
-  content?: string;
-  secretNote?: string;
-  taskNotesId?: string;
-}
-
-interface DeleteNoteInput {
-  id: string;
 }
 
 beforeEach(async () => {
