@@ -272,7 +272,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   }
 
   public createAPIKey(config?: ApiKeyConfig) {
-    if (config?.expires?.isBefore(Duration.days(1)) || config?.expires?.isAfter(Duration.days(365))) {
+    if (config?.expires?.isBefore(Duration.days(1).minus(Duration.seconds(1))) || config?.expires?.isAfter(Duration.days(365)) || (config?.expires == undefined)) {
       throw Error('API key expiration must be between 1 and 365 days.');
     }
     const expires = config?.expires ? config?.expires.toEpoch() : undefined;
