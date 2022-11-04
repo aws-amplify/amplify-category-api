@@ -43,6 +43,36 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [4.0.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.7...@aws-amplify/amplify-category-api@4.0.8) (2022-11-04)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+
+
+
+
+## [4.0.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.6...@aws-amplify/amplify-category-api@4.0.7) (2022-10-26)
+
+
+### Bug Fixes
+
+* suppress CDK deprecation warnings ([d38930f](https://github.com/aws-amplify/amplify-category-api/commit/d38930fe7e563ca350999bb4c5433444f45a8290))
+
+
+
+
+
+## [4.0.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.5...@aws-amplify/amplify-category-api@4.0.6) (2022-10-24)
+
+
+### Bug Fixes
+
+* **graphql:** add rds datasource v1 fix ([#853](https://github.com/aws-amplify/amplify-category-api/issues/853)) ([9bf32c2](https://github.com/aws-amplify/amplify-category-api/commit/9bf32c21f8e7e7ea6e8d602846c1128f38fb9897))
+
+
+
+
+
 ## [4.0.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.4...@aws-amplify/amplify-category-api@4.0.5) (2022-10-04)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

@@ -31,6 +31,28 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [0.17.14](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.17.13...@aws-amplify/graphql-transformer-core@0.17.14) (2022-10-26)
+
+
+### Bug Fixes
+
+* replace deprecated cdk methods ([fa513b5](https://github.com/aws-amplify/amplify-category-api/commit/fa513b54faa9a47d052926ac58ab2d136322e494))
+
+
+
+
+
+## [0.17.13](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.17.12...@aws-amplify/graphql-transformer-core@0.17.13) (2022-10-24)
+
+
+### Bug Fixes
+
+* **transformer:** sort resolvers to avoid circular dependency ([#797](https://github.com/aws-amplify/amplify-category-api/issues/797)) ([e9bf292](https://github.com/aws-amplify/amplify-category-api/commit/e9bf2926e4bf91a3d5cebde002728b4ba6385ea2))
+
+
+
+
+
 ## [0.17.12](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.17.11...@aws-amplify/graphql-transformer-core@0.17.12) (2022-09-14)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-core

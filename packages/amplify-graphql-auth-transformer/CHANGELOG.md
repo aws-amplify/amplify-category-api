@@ -33,6 +33,33 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [1.1.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.1.2...@aws-amplify/graphql-auth-transformer@1.1.3) (2022-11-04)
+
+
+### Bug Fixes
+
+* **graphql:** protect relational fields when fields rules are restrictive ([4d3ad19](https://github.com/aws-amplify/amplify-category-api/commit/4d3ad199cf1a7def474a1b891bec554b86a67ea4))
+
+
+
+
+
+## [1.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.1.1...@aws-amplify/graphql-auth-transformer@1.1.2) (2022-10-26)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+
+
+
+
+## [1.1.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.1.0...@aws-amplify/graphql-auth-transformer@1.1.1) (2022-10-24)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+
+
+
+
 # [1.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.0.4...@aws-amplify/graphql-auth-transformer@1.1.0) (2022-10-04)
 
 

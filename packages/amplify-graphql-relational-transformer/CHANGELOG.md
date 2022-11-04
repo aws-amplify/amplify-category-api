@@ -33,6 +33,33 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [0.12.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.12.2...@aws-amplify/graphql-relational-transformer@0.12.3) (2022-11-04)
+
+
+### Bug Fixes
+
+* **graphql:** protect relational fields when fields rules are restrictive ([4d3ad19](https://github.com/aws-amplify/amplify-category-api/commit/4d3ad199cf1a7def474a1b891bec554b86a67ea4))
+
+
+
+
+
+## [0.12.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.12.1...@aws-amplify/graphql-relational-transformer@0.12.2) (2022-10-26)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+
+
+
+
+## [0.12.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.12.0...@aws-amplify/graphql-relational-transformer@0.12.1) (2022-10-24)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+
+
+
+
 # [0.12.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.11.9...@aws-amplify/graphql-relational-transformer@0.12.0) (2022-10-04)
 
 

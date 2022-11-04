@@ -19,6 +19,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [5.0.9](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-migration-tests@5.0.8...amplify-category-api-migration-tests@5.0.9) (2022-10-24)
+
+**Note:** Version bump only for package amplify-category-api-migration-tests
+
+
+
+
+
 ## [5.0.8](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-migration-tests@5.0.7...amplify-category-api-migration-tests@5.0.8) (2022-09-14)
 
 **Note:** Version bump only for package amplify-category-api-migration-tests

@@ -245,6 +245,11 @@ export const executeAmplifyCommand = async (context: $TSContext): Promise<void> 
     commandPath = path.join(commandPath, category, context.input.command);
   }
 
+  //TODO: This is a temporary suppression for CDK deprecation warnings, which should be removed after the migration is complete
+  // Most of these warning messages are targetting searchable directive, which needs to migrate from elastic search to open search
+  // This is not diabled in debug mode
+  disableCDKDeprecationWarning();
+
   const commandModule = await import(commandPath);
   try {
     await commandModule.run(context);
@@ -358,3 +363,13 @@ export const transformCategoryStack = async (context: $TSContext, resource: $TSO
 const canResourceBeTransformed = (
   resourceName: string,
 ): boolean => stateManager.resourceInputsJsonExists(undefined, AmplifyCategories.API, resourceName);
+
+/**
+ * Disable the CDK deprecation warning in production but not in CI/debug mode
+ */
+const disableCDKDeprecationWarning = () => {
+  const isDebug = process.argv.includes('--debug') || process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT === 'true';
+  if (!isDebug) {
+    process.env.JSII_DEPRECATED = 'quiet';
+  }
+}
