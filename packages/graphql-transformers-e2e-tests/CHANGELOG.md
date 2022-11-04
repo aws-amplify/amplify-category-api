@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.3.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.3.2...amplify-category-api-graphql-transformers-e2e-tests@8.3.3) (2022-11-04)
+
+
+### Bug Fixes
+
+* **graphql:** protect relational fields when fields rules are restrictive ([4d3ad19](https://github.com/aws-amplify/amplify-category-api/commit/4d3ad199cf1a7def474a1b891bec554b86a67ea4))
+
+
+
+
+
 ## [8.3.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.3.1...amplify-category-api-graphql-transformers-e2e-tests@8.3.2) (2022-10-26)
 
 **Note:** Version bump only for package amplify-category-api-graphql-transformers-e2e-tests
