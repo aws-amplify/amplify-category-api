@@ -10450,7 +10450,7 @@ Object {
 
 exports[`validates VTL of a complex schema 1`] = `
 Object {
-  "Child.parents.req.vtl": "#if( $ctx.source.deniedField )
+  "Child.parents.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
 #if( $util.isNull($ctx.source.id) )
@@ -10564,7 +10564,7 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "Friendship.friend.req.vtl": "#if( $ctx.source.deniedField )
+  "Friendship.friend.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
 #if( $util.isNull($ctx.source.friendID) )
@@ -13436,7 +13436,7 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Parent.child.req.vtl": "#if( $ctx.source.deniedField )
+  "Parent.child.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
 #if( $util.isNull($ctx.source.childID) || $util.isNull($ctx.source.childName) )
@@ -13474,7 +13474,7 @@ $util.unauthorized()
     $util.toJson(null)
   #end
 #end",
-  "Post.authors.req.vtl": "#if( $ctx.source.deniedField )
+  "Post.authors.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
 #if( $util.isNull($ctx.source.authorID) )
@@ -13610,7 +13610,7 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "PostAuthor.post.req.vtl": "#if( $ctx.source.deniedField )
+  "PostAuthor.post.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
 #if( $util.isNull($ctx.source.postID) )
@@ -13646,7 +13646,7 @@ $util.unauthorized()
     $util.toJson(null)
   #end
 #end",
-  "PostModel.authors.req.vtl": "#if( $ctx.source.deniedField )
+  "PostModel.authors.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
 #if( $util.isNull($ctx.source.authorID) )
@@ -13724,7 +13724,7 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "PostModel.singleAuthor.req.vtl": "#if( $ctx.source.deniedField )
+  "PostModel.singleAuthor.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
 #if( $util.isNull($ctx.source.authorID) || $util.isNull($ctx.source.authorName) || $util.isNull($ctx.source.authorSurname) )
@@ -15375,7 +15375,7 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "User.friendships.req.vtl": "#if( $ctx.source.deniedField )
+  "User.friendships.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
 #if( $util.isNull($ctx.source.id) )
@@ -15489,7 +15489,7 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "UserModel.authorPosts.req.vtl": "#if( $ctx.source.deniedField )
+  "UserModel.authorPosts.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
 #if( $util.isNull($ctx.source.id) )
