@@ -131,7 +131,28 @@ interface CreateTaskGroupInput {
   description?: string;
   priority?: number;
   severity?: number;
-  groups?: [string];
+  groups?: string[];
+  singleGroup?: string;
+}
+
+interface UpdateTaskGroupInput {
+  id?: string;
+  title?: string;
+  description?: string;
+  priority?: number;
+  severity?: number;
+  groups?: string[];
+  singleGroup?: string;
+}
+
+interface DeleteTaskGroupInput {
+  id?: string;
+  title?: string;
+  description?: string;
+  priority?: number;
+  severity?: number;
+  groups?: string[];
+  singleGroup?: string;
 }
 
 interface CreateTodoInput {
@@ -205,13 +226,16 @@ beforeAll(async () => {
 
   type TaskGroup @model
   @auth(rules: [
-      {allow: groups, groupsField: "groups" }
+      { allow: groups, groupsField: "groups" },
+      { allow: groups, groupsField: "singleGroup" }
   ]) {
       id: String,
       title: String,
       description: String,
       priority: Int,
       severity: Int
+      groups: [String]
+      singleGroup: String
   }
   
   enum TodoStatus {
@@ -308,6 +332,9 @@ beforeAll(async () => {
   await createGroup(USER_POOL_ID, INSTRUCTOR_GROUP_NAME);
   await createGroup(USER_POOL_ID, MEMBER_GROUP_NAME);
   await createGroup(USER_POOL_ID, ADMIN_GROUP_NAME);
+  // User1: Admin and Instructor
+  // User2: Member and Instructor
+  // User3: No group assigned
   await addUserToGroup(ADMIN_GROUP_NAME, USERNAME1, USER_POOL_ID);
   await addUserToGroup(MEMBER_GROUP_NAME, USERNAME2, USER_POOL_ID);
   await addUserToGroup(INSTRUCTOR_GROUP_NAME, USERNAME1, USER_POOL_ID);
@@ -485,66 +512,6 @@ test('Multiple owners auth is supported for subscriptions', async () => {
   });
 
   return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTask Subscription timed out', () => {
-    subscription?.unsubscribe();
-  });
-});
-
-/**
- * Dynamic groups only model should continue to throw 'unauthorized error'
- */
- test('Dynamic groups only model should correctly filter by group', async () => {
-  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
-  await Auth.signIn(USERNAME1, REAL_PASSWORD);
-  const observer = API.graphql({
-    // @ts-ignore
-    query: gql`
-      subscription OnCreateTaskGroup(
-        $filter: ModelSubscriptionTaskGroupFilterInput
-      ) {
-        onCreateTaskGroup(filter: $filter) {
-          id
-          title
-          description
-          priority
-          severity
-        }
-      }
-    `,
-    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-  }) as unknown as Observable<any>;
-  let subscription: ZenObservable.Subscription;
-  const subscriptionPromise = new Promise((resolve, _) => {
-    subscription = observer.subscribe(
-      (event) => {
-        const task = event.value.data.onCreateTaskGroup;
-        subscription.unsubscribe();
-        expect(task.title).toEqual('taskGroup1');
-        expect(task.description).toEqual('taskGroupDesc1');
-        expect(task.priority).toEqual(7);
-        expect(task.severity).toEqual(2);
-        resolve(undefined);
-      },
-      (err) => {},
-    );
-  });
-
-  await createTaskGroup(GRAPHQL_CLIENT_2, {
-    title: 'taskGroup1',
-    description: 'taskGroupDesc1',
-    priority: 7,
-    severity: 2,
-    groups: [INSTRUCTOR_GROUP_NAME],
-  });
-
-  await createTaskGroup(GRAPHQL_CLIENT_1, {
-    title: 'taskGroup2',
-    description: 'taskGroupDesc2',
-    priority: 1,
-    severity: 1,
-    groups: [ADMIN_GROUP_NAME],
-  });
-
-  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
     subscription?.unsubscribe();
   });
 });
@@ -1026,6 +993,496 @@ test('Runtime Filter enum field type should be treated as string', async () => {
   });
 });
 
+/**
+ * Runtime filtering supports dynamic groups
+ * User1: Admin and Instructor
+ * User2: Member and Instructor
+ * User1 is running subscription and User2 is running mutations
+ */
+describe('Runtime Filtering for Dynamic Group Auth', () => {
+  describe('Multiple groups test', () => {
+    test('Filter with create mutation', async () => {
+      reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+      await Auth.signIn(USERNAME1, REAL_PASSWORD);
+      const observer = API.graphql({
+        // @ts-ignore
+        query: gql`
+          subscription OnCreateTaskGroup(
+            $filter: ModelSubscriptionTaskGroupFilterInput
+          ) {
+            onCreateTaskGroup(filter: $filter) {
+              id
+              title
+              description
+              priority
+              severity
+            }
+          }
+        `,
+        authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+        variables:{
+          filter: {
+            and: [
+              { priority: { eq: 8 } },
+              { severity: { gt: 5 } },
+            ]
+          },
+        },
+      }) as unknown as Observable<any>;
+      let subscription: ZenObservable.Subscription;
+      const subscriptionPromise = new Promise((resolve, reject) => {
+        subscription = observer.subscribe(
+          (event) => {
+            // will unsubscribe on the first available subscription data
+            const task = event.value.data.onCreateTaskGroup;
+            subscription.unsubscribe();
+            resolve(task);
+          },
+          (err) => {
+            reject(err);
+          }
+        );
+      });
+      // Wait for a time period for subscription to be setup
+      await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+      // This should not be listened by User1 as User1 is not in member group
+      await createTaskGroup(GRAPHQL_CLIENT_2, {
+        title: 'taskGroup1',
+        description: 'taskGroupDesc1',
+        priority: 8,
+        severity: 6,
+        groups: [ MEMBER_GROUP_NAME ],
+      });
+      // This should not be listend by User1 as it fails the input filter
+      await createTaskGroup(GRAPHQL_CLIENT_2, {
+        title: 'taskGroup2',
+        description: 'taskGroupDesc2',
+        priority: 1,
+        severity: 1,
+        groups: [ INSTRUCTOR_GROUP_NAME, MEMBER_GROUP_NAME ],
+      });
+      // This should be listend by User1
+      await createTaskGroup(GRAPHQL_CLIENT_2, {
+        title: 'taskGroup3',
+        description: 'taskGroupDesc3',
+        priority: 8,
+        severity: 7,
+        groups: [ INSTRUCTOR_GROUP_NAME, MEMBER_GROUP_NAME ],
+      });
+      // Validate the result. Will throw error if there is no data received within timeout or wrong result is listened
+      const result = await withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
+        subscription?.unsubscribe();
+      }) as any;
+      expect(result.title).toEqual('taskGroup3');
+      expect(result.description).toEqual('taskGroupDesc3');
+      expect(result.priority).toEqual(8);
+      expect(result.severity).toEqual(7);
+    });
+    test('Filter with update mutation', async () => {
+      reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+      await Auth.signIn(USERNAME1, REAL_PASSWORD);
+      const observer = API.graphql({
+        // @ts-ignore
+        query: gql`
+          subscription OnUpdateTaskGroup(
+            $filter: ModelSubscriptionTaskGroupFilterInput
+          ) {
+            onUpdateTaskGroup(filter: $filter) {
+              id
+              title
+              description
+              priority
+              severity
+            }
+          }
+        `,
+        authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+        variables:{
+          filter: {
+            or: [
+              { priority: { lt: 5 } },
+              { severity: { lt: 5 } }
+            ],
+          },
+        },
+      }) as unknown as Observable<any>;
+      let subscription: ZenObservable.Subscription;
+      const subscriptionPromise = new Promise((resolve, reject) => {
+        subscription = observer.subscribe(
+          (event) => {
+            // will unsubscribe on the first available subscription data
+            const task = event.value.data.onUpdateTaskGroup;
+            subscription.unsubscribe();
+            resolve(task);
+          },
+          (err) => {
+            reject(err);
+          }
+        );
+      });
+      // Wait for a time period for subscription to be setup
+      await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+      await createTaskGroup(GRAPHQL_CLIENT_2, {
+        id: 'task-group-01',
+        title: 'taskGroup1',
+        description: 'taskGroupDesc1',
+        priority: 8,
+        severity: 6,
+        groups: [ MEMBER_GROUP_NAME ],
+      });
+      await createTaskGroup(GRAPHQL_CLIENT_2, {
+        id: 'task-group-02',
+        title: 'taskGroup2',
+        description: 'taskGroupDesc2',
+        priority: 1,
+        severity: 1,
+        groups: [ INSTRUCTOR_GROUP_NAME, MEMBER_GROUP_NAME ],
+      });
+      // This should not be listened by User1 as User1 is not in member group
+      await updateTaskGroup(GRAPHQL_CLIENT_2, {
+        id: 'task-group-01',
+        title: 'taskGroup1-updated',
+        description: 'taskGroupDesc1-updated',
+        priority: 7,
+        severity: 2,
+      });
+      // This should be listened by User1 as User1 is in instructor group
+      await updateTaskGroup(GRAPHQL_CLIENT_2, {
+        id: 'task-group-02',
+        title: 'taskGroup2-updated',
+        description: 'taskGroupDesc2-updated',
+        priority: 3,
+        severity: 7,
+      });
+      // Validate the result. Will throw error if there is no data received within timeout or wrong result is listened
+      const result = await withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
+        subscription?.unsubscribe();
+      }) as any;
+      expect(result.id).toEqual('task-group-02');
+      expect(result.title).toEqual('taskGroup2-updated');
+      expect(result.description).toEqual('taskGroupDesc2-updated');
+      expect(result.priority).toEqual(3);
+      expect(result.severity).toEqual(7);
+    });
+    test('Filter with delete mutation', async () => {
+      reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+      await Auth.signIn(USERNAME1, REAL_PASSWORD);
+      const observer = API.graphql({
+        // @ts-ignore
+        query: gql`
+          subscription OnDeleteTaskGroup(
+            $filter: ModelSubscriptionTaskGroupFilterInput
+          ) {
+            onDeleteTaskGroup(filter: $filter) {
+              id
+              title
+              description
+              priority
+              severity
+            }
+          }
+        `,
+        authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+        variables:{
+          filter: {
+            severity: { eq: 10 },
+          },
+        },
+      }) as unknown as Observable<any>;
+      let subscription: ZenObservable.Subscription;
+      const subscriptionPromise = new Promise((resolve, reject) => {
+        subscription = observer.subscribe(
+          (event) => {
+            // will unsubscribe on the first available subscription data
+            const task = event.value.data.onDeleteTaskGroup;
+            subscription.unsubscribe();
+            resolve(task);
+          },
+          (err) => {
+            reject(err);
+          }
+        );
+      });
+      // Wait for a time period for subscription to be setup
+      await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+      await createTaskGroup(GRAPHQL_CLIENT_2, {
+        id: 'task-group-03',
+        title: 'taskGroup3',
+        description: 'taskGroupDesc3',
+        priority: 6,
+        severity: 10,
+        groups: [ MEMBER_GROUP_NAME ],
+      });
+      await createTaskGroup(GRAPHQL_CLIENT_2, {
+        id: 'task-group-04',
+        title: 'taskGroup4',
+        description: 'taskGroupDesc4',
+        priority: 3,
+        severity: 10,
+        groups: [ INSTRUCTOR_GROUP_NAME, MEMBER_GROUP_NAME ],
+      });
+      // This should not be listened by User1 as User1 is not in member group
+      await deleteTaskGroup(GRAPHQL_CLIENT_2, {
+        id: 'task-group-03',
+      });
+      // This should be listened by User1 as User1 is in instructor group
+      await deleteTaskGroup(GRAPHQL_CLIENT_2, {
+        id: 'task-group-04',
+      });
+      // Validate the result. Will throw error if there is no data received within timeout or wrong result is listened
+      const result = await withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
+        subscription?.unsubscribe();
+      }) as any;
+      expect(result.id).toEqual('task-group-04');
+      expect(result.title).toEqual('taskGroup4');
+      expect(result.description).toEqual('taskGroupDesc4');
+      expect(result.priority).toEqual(3);
+      expect(result.severity).toEqual(10);
+    });
+  });
+  describe('Single group test', () => {
+    test('Filter with create mutation', async () => {
+      reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+      await Auth.signIn(USERNAME1, REAL_PASSWORD);
+      const observer = API.graphql({
+        // @ts-ignore
+        query: gql`
+          subscription OnCreateTaskGroup(
+            $filter: ModelSubscriptionTaskGroupFilterInput
+          ) {
+            onCreateTaskGroup(filter: $filter) {
+              id
+              title
+              description
+              priority
+              severity
+            }
+          }
+        `,
+        authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+        variables:{
+          filter: {
+            and: [
+              { priority: { eq: 8 } },
+              { severity: { gt: 5 } },
+            ]
+          },
+        },
+      }) as unknown as Observable<any>;
+      let subscription: ZenObservable.Subscription;
+      const subscriptionPromise = new Promise((resolve, reject) => {
+        subscription = observer.subscribe(
+          (event) => {
+            // will unsubscribe on the first available subscription data
+            const task = event.value.data.onCreateTaskGroup;
+            subscription.unsubscribe();
+            resolve(task);
+          },
+          (err) => {
+            reject(err);
+          }
+        );
+      });
+      // Wait for a time period for subscription to be setup
+      await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+      // This should not be listened by User1 as User1 is not in member group
+      await createTaskGroup(GRAPHQL_CLIENT_2, {
+        title: 'taskGroup1',
+        description: 'taskGroupDesc1',
+        priority: 8,
+        severity: 6,
+        singleGroup: MEMBER_GROUP_NAME,
+      });
+      // This should not be listend by User1 as it fails the input filter
+      await createTaskGroup(GRAPHQL_CLIENT_2, {
+        title: 'taskGroup2',
+        description: 'taskGroupDesc2',
+        priority: 1,
+        severity: 1,
+        singleGroup: INSTRUCTOR_GROUP_NAME,
+      });
+      // This should be listend by User1
+      await createTaskGroup(GRAPHQL_CLIENT_2, {
+        title: 'taskGroup3',
+        description: 'taskGroupDesc3',
+        priority: 8,
+        severity: 7,
+        singleGroup: INSTRUCTOR_GROUP_NAME,
+      });
+      // Validate the result. Will throw error if there is no data received within timeout or wrong result is listened
+      const result = await withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
+        subscription?.unsubscribe();
+      }) as any;
+      expect(result.title).toEqual('taskGroup3');
+      expect(result.description).toEqual('taskGroupDesc3');
+      expect(result.priority).toEqual(8);
+      expect(result.severity).toEqual(7);
+    });
+    test('Filter with update mutation', async () => {
+      reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+      await Auth.signIn(USERNAME1, REAL_PASSWORD);
+      const observer = API.graphql({
+        // @ts-ignore
+        query: gql`
+          subscription OnUpdateTaskGroup(
+            $filter: ModelSubscriptionTaskGroupFilterInput
+          ) {
+            onUpdateTaskGroup(filter: $filter) {
+              id
+              title
+              description
+              priority
+              severity
+            }
+          }
+        `,
+        authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+        variables:{
+          filter: {
+            or: [
+              { priority: { lt: 5 } },
+              { severity: { lt: 5 } }
+            ],
+          },
+        },
+      }) as unknown as Observable<any>;
+      let subscription: ZenObservable.Subscription;
+      const subscriptionPromise = new Promise((resolve, reject) => {
+        subscription = observer.subscribe(
+          (event) => {
+            // will unsubscribe on the first available subscription data
+            const task = event.value.data.onUpdateTaskGroup;
+            subscription.unsubscribe();
+            resolve(task);
+          },
+          (err) => {
+            reject(err);
+          }
+        );
+      });
+      // Wait for a time period for subscription to be setup
+      await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+      await createTaskGroup(GRAPHQL_CLIENT_2, {
+        id: 'task-single-group-01',
+        title: 'taskGroup1',
+        description: 'taskGroupDesc1',
+        priority: 8,
+        severity: 6,
+        singleGroup: MEMBER_GROUP_NAME,
+      });
+      await createTaskGroup(GRAPHQL_CLIENT_2, {
+        id: 'task-single-group-02',
+        title: 'taskGroup2',
+        description: 'taskGroupDesc2',
+        priority: 1,
+        severity: 1,
+        singleGroup: INSTRUCTOR_GROUP_NAME,
+      });
+      // This should not be listened by User1 as User1 is not in member group
+      await updateTaskGroup(GRAPHQL_CLIENT_2, {
+        id: 'task-single-group-01',
+        title: 'taskGroup1-updated',
+        description: 'taskGroupDesc1-updated',
+        priority: 7,
+        severity: 2,
+      });
+      // This should be listened by User1 as User1 is in instructor group
+      await updateTaskGroup(GRAPHQL_CLIENT_2, {
+        id: 'task-single-group-02',
+        title: 'taskGroup2-updated',
+        description: 'taskGroupDesc2-updated',
+        priority: 3,
+        severity: 7,
+      });
+      // Validate the result. Will throw error if there is no data received within timeout or wrong result is listened
+      const result = await withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
+        subscription?.unsubscribe();
+      }) as any;
+      expect(result.id).toEqual('task-single-group-02');
+      expect(result.title).toEqual('taskGroup2-updated');
+      expect(result.description).toEqual('taskGroupDesc2-updated');
+      expect(result.priority).toEqual(3);
+      expect(result.severity).toEqual(7);
+    });
+    test('Filter with delete mutation', async () => {
+      reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+      await Auth.signIn(USERNAME1, REAL_PASSWORD);
+      const observer = API.graphql({
+        // @ts-ignore
+        query: gql`
+          subscription OnDeleteTaskGroup(
+            $filter: ModelSubscriptionTaskGroupFilterInput
+          ) {
+            onDeleteTaskGroup(filter: $filter) {
+              id
+              title
+              description
+              priority
+              severity
+            }
+          }
+        `,
+        authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+        variables:{
+          filter: {
+            severity: { eq: 10 },
+          },
+        },
+      }) as unknown as Observable<any>;
+      let subscription: ZenObservable.Subscription;
+      const subscriptionPromise = new Promise((resolve, reject) => {
+        subscription = observer.subscribe(
+          (event) => {
+            // will unsubscribe on the first available subscription data
+            const task = event.value.data.onDeleteTaskGroup;
+            subscription.unsubscribe();
+            resolve(task);
+          },
+          (err) => {
+            reject(err);
+          }
+        );
+      });
+      // Wait for a time period for subscription to be setup
+      await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+      await createTaskGroup(GRAPHQL_CLIENT_2, {
+        id: 'task-single-group-03',
+        title: 'taskGroup3',
+        description: 'taskGroupDesc3',
+        priority: 6,
+        severity: 10,
+        singleGroup: MEMBER_GROUP_NAME,
+      });
+      await createTaskGroup(GRAPHQL_CLIENT_2, {
+        id: 'task-single-group-04',
+        title: 'taskGroup4',
+        description: 'taskGroupDesc4',
+        priority: 3,
+        severity: 10,
+        singleGroup: INSTRUCTOR_GROUP_NAME,
+      });
+      // This should not be listened by User1 as User1 is not in member group
+      await deleteTaskGroup(GRAPHQL_CLIENT_2, {
+        id: 'task-single-group-03',
+      });
+      // This should be listened by User1 as User1 is in instructor group
+      await deleteTaskGroup(GRAPHQL_CLIENT_2, {
+        id: 'task-single-group-04',
+      });
+      // Validate the result. Will throw error if there is no data received within timeout or wrong result is listened
+      const result = await withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
+        subscription?.unsubscribe();
+      }) as any;
+      expect(result.id).toEqual('task-single-group-04');
+      expect(result.title).toEqual('taskGroup4');
+      expect(result.description).toEqual('taskGroupDesc4');
+      expect(result.priority).toEqual(3);
+      expect(result.severity).toEqual(10);
+    });
+  });
+
+});
+
 // mutations
 const createTask = async (client: AWSAppSyncClient<any>, input: CreateTaskInput): Promise<any> => {
   const request = gql`
@@ -1139,6 +1596,41 @@ const createTaskGroup = async (client: AWSAppSyncClient<any>, input: CreateTaskG
         priority
         severity
         groups
+        singleGroup
+      }
+    }
+  `;
+  return client.mutate<any>({ mutation: request, variables: { input } });
+};
+
+const updateTaskGroup = async (client: AWSAppSyncClient<any>, input: UpdateTaskGroupInput): Promise<any> => {
+  const request = gql`
+    mutation UpdateTaskGroup($input: UpdateTaskGroupInput!) {
+      updateTaskGroup(input: $input) {
+        id
+        title
+        description
+        priority
+        severity
+        groups
+        singleGroup
+      }
+    }
+  `;
+  return client.mutate<any>({ mutation: request, variables: { input } });
+};
+
+const deleteTaskGroup = async (client: AWSAppSyncClient<any>, input: DeleteTaskGroupInput): Promise<any> => {
+  const request = gql`
+    mutation DeleteTaskGroup($input: DeleteTaskGroupInput!) {
+      deleteTaskGroup(input: $input) {
+        id
+        title
+        description
+        priority
+        severity
+        groups
+        singleGroup
       }
     }
   `;
