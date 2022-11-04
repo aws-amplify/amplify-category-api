@@ -30,6 +30,30 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [5.1.17](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@5.1.16...amplify-category-api-util-mock@5.1.17) (2022-11-04)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+
+
+
+
+## [5.1.16](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@5.1.15...amplify-category-api-util-mock@5.1.16) (2022-10-26)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+
+
+
+
+## [5.1.15](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@5.1.14...amplify-category-api-util-mock@5.1.15) (2022-10-24)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+
+
+
+
 ## [5.1.14](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@5.1.13...amplify-category-api-util-mock@5.1.14) (2022-10-04)
 
 **Note:** Version bump only for package amplify-category-api-util-mock

@@ -30,6 +30,22 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [0.16.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@0.16.1...@aws-amplify/graphql-searchable-transformer@0.16.2) (2022-10-26)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+
+
+
+
+## [0.16.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@0.16.0...@aws-amplify/graphql-searchable-transformer@0.16.1) (2022-10-24)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+
+
+
+
 # [0.16.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@0.15.7...@aws-amplify/graphql-searchable-transformer@0.16.0) (2022-10-04)
 
 

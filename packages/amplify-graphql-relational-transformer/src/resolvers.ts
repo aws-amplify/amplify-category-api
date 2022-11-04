@@ -113,7 +113,7 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
     MappingTemplate.s3MappingTemplateFromString(
       print(
         compoundExpression([
-          iff(ref('ctx.source.deniedField'), raw('#return($util.toJson(null))')),
+          iff(ref('ctx.stash.deniedField'), raw('#return($util.toJson(null))')),
           ifElse(
             or(localFields.map(f => raw(`$util.isNull($ctx.source.${f})`))),
             raw('#return'),
@@ -262,7 +262,7 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
     MappingTemplate.s3MappingTemplateFromString(
       print(
         compoundExpression([
-          iff(ref('ctx.source.deniedField'), raw('#return($util.toJson(null))')),
+          iff(ref('ctx.stash.deniedField'), raw('#return($util.toJson(null))')),
           ifElse(
             raw(`$util.isNull($ctx.source.${connectionAttributes[0]})`),
             compoundExpression([set(ref('result'), obj({ items: list([]) })), raw('#return($result)')]),

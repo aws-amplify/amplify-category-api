@@ -37,6 +37,35 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [3.10.13](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.12...amplify-category-api-e2e-tests@3.10.13) (2022-11-04)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+
+
+
+
+## [3.10.12](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.11...amplify-category-api-e2e-tests@3.10.12) (2022-10-26)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+
+
+
+
+## [3.10.11](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.10...amplify-category-api-e2e-tests@3.10.11) (2022-10-24)
+
+
+### Bug Fixes
+
+* **e2e:** set longer timeout for searchable migration ([#885](https://github.com/aws-amplify/amplify-category-api/issues/885)) ([64a9c0e](https://github.com/aws-amplify/amplify-category-api/commit/64a9c0efb79253246f5b85c78d1e32c5330ec906))
+* **graphql:** add rds datasource v1 fix ([#853](https://github.com/aws-amplify/amplify-category-api/issues/853)) ([9bf32c2](https://github.com/aws-amplify/amplify-category-api/commit/9bf32c21f8e7e7ea6e8d602846c1128f38fb9897))
+* **transformer:** sort resolvers to avoid circular dependency ([#797](https://github.com/aws-amplify/amplify-category-api/issues/797)) ([e9bf292](https://github.com/aws-amplify/amplify-category-api/commit/e9bf2926e4bf91a3d5cebde002728b4ba6385ea2))
+
+
+
+
+
 ## [3.10.10](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.9...amplify-category-api-e2e-tests@3.10.10) (2022-09-14)
 
 
