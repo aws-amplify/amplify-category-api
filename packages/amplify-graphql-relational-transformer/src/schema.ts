@@ -641,7 +641,7 @@ const updateTypeWithConnectionFields = (
   primaryKeyConnectionFieldType: string,
   field: FieldDefinitionNode,
   sortKeyFields: FieldDefinitionNode[],
-  isConnectionFieldsNonNull: boolean = false,
+  isConnectionFieldsNonNull: boolean,
 ): void => {
   const updatedFields = [...targetObject.fields!];
   updatedFields.push(
