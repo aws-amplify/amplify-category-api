@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-migration-tests",
-  "version": "5.0.8",
+  "version": "5.0.9-405patch1.0",
   "description": "Test suites for migration scenarios",
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },
   "dependencies": {
-    "amplify-category-api-e2e-core": "4.0.8",
+    "amplify-category-api-e2e-core": "4.0.9-405patch1.0",
     "graphql-transformer-core": "7.6.6",
     "lodash": "^4.17.21"
   },

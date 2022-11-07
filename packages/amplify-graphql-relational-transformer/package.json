@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-relational-transformer",
-  "version": "0.12.0",
+  "version": "0.12.1-405patch1.0",
   "description": "Amplify GraphQL relational modeling transformers",
   "repository": {
     "type": "git",
