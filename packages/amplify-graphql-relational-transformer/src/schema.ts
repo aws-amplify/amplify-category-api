@@ -169,13 +169,15 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
   const createInput = ctx.output.getType(createInputName) as InputObjectTypeDefinitionNode;
 
   if (createInput) {
+    //HasOne connenction fields in create input should respect the nullability of the relational field
     updateInputWithConnectionFields(ctx, createInput, object, connectionAttributeName, primaryKeyConnectionFieldType, field, sortKeyFields, isConnectionFieldsNonNull);
   }
 
   const updateInputName = ModelResourceIDs.ModelUpdateInputObjectName(object.name.value);
   const updateInput = ctx.output.getType(updateInputName) as InputObjectTypeDefinitionNode;
   if (updateInput) {
-    updateInputWithConnectionFields(ctx, updateInput, object, connectionAttributeName, primaryKeyConnectionFieldType, field, sortKeyFields);
+    //Connection fields in update input should be always nullable which stays consistent with other fields
+    updateInputWithConnectionFields(ctx, updateInput, object, connectionAttributeName, primaryKeyConnectionFieldType, field, sortKeyFields, false);
   }
 
   const filterInputName = toPascalCase(['Model', object.name.value, 'FilterInput']);
@@ -271,7 +273,7 @@ export const ensureHasManyConnectionField = (
   const isConnectionFieldsNonNull = relatedTypeObject.fields?.some(field =>
     getBaseType(field.type) === object.name.value
     && field.directives?.some(d => d.name.value === 'belongsTo')
-    && isNonNullType(field.type));
+    && isNonNullType(field.type)) ?? false;
 
   const primaryKeyConnectionFieldType = getPrimaryKeyConnectionFieldType(ctx, primaryKeyField);
   if (relatedTypeObject) {
@@ -291,6 +293,7 @@ export const ensureHasManyConnectionField = (
   const createInput = ctx.output.getType(createInputName) as InputObjectTypeDefinitionNode;
 
   if (createInput) {
+    //HasMany connenction fields in create input should respect the nullability of the belongsTo field of connected model
     updateInputWithConnectionFields(ctx, createInput, object, connectionAttributeName, primaryKeyConnectionFieldType, field, sortKeyFields, isConnectionFieldsNonNull);
   }
 
@@ -298,7 +301,8 @@ export const ensureHasManyConnectionField = (
   const updateInput = ctx.output.getType(updateInputName) as InputObjectTypeDefinitionNode;
 
   if (updateInput) {
-    updateInputWithConnectionFields(ctx, updateInput, object, connectionAttributeName, primaryKeyConnectionFieldType, field, sortKeyFields);
+    //Connection fields in update input should be always nullable which stays consistent with other fields
+    updateInputWithConnectionFields(ctx, updateInput, object, connectionAttributeName, primaryKeyConnectionFieldType, field, sortKeyFields, false);
   }
 
   const filterInputName = toPascalCase(['Model', relatedType.name.value, 'FilterInput']);
@@ -578,7 +582,7 @@ const updateInputWithConnectionFields = (
   primaryKeyConnectionFieldType: string,
   field: FieldDefinitionNode,
   sortKeyFields: FieldDefinitionNode[],
-  isConnectionFieldsNonNull: boolean = false,
+  isConnectionFieldsNonNull: boolean,
 ): void => {
   const updatedFields = [...input.fields!];
   updatedFields.push(
