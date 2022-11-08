@@ -15,7 +15,6 @@ import {
   and,
   ifElse,
   comment,
-  forEach,
   list,
   qref,
   raw
@@ -40,7 +39,7 @@ import {
   generateOwnerMultiClaimExpression,
   generateInvalidClaimsCondition,
   getIdentityClaimExp,
-  getOwnerClaimReference
+  getOwnerClaimReference,
 } from './helpers';
 
 const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
@@ -94,9 +93,7 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
             set(ref(`groupClaim${idx}`), list([ref(`groupClaim${idx}`)])),
           ),
         ),
-        forEach(ref('groupRole'), ref(`groupClaim${idx}`), [
-          qref(methodCall(ref('authGroupRuntimeFilter.add'), raw(`{ "${role.entity}": { "${role.isEntityList ? 'contains' : 'eq'}": $groupRole } }`))),
-        ]),
+        qref(methodCall(ref('authGroupRuntimeFilter.add'), raw(`{ "${role.entity}": { "${role.isEntityList ? 'containsAny' : 'in'}": $groupClaim${idx} } }`))),
       );
     }
   });
