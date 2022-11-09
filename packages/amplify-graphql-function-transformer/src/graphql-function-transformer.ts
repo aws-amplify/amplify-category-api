@@ -11,10 +11,13 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { AuthorizationType } from '@aws-cdk/aws-appsync';
 import * as cdk from '@aws-cdk/core';
 import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff, Expression } from 'graphql-mapping-template';
-import { FunctionDirectiveConfig, FunctionResourceIDs, ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
+import { FunctionResourceIDs, ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
 
-interface FunctionDirectiveWithResolverConfig extends FunctionDirectiveConfig {
+type FunctionDirectiveConfiguration = {
+  name: string;
+  region: string | undefined;
+  accountId: string | undefined;
   resolverTypeName: string;
   resolverFieldName: string;
 }
@@ -25,7 +28,7 @@ const directiveDefinition = /* GraphQL */ `
 `;
 
 export class FunctionTransformer extends TransformerPluginBase {
-  private resolverGroups: Map<FieldDefinitionNode, FunctionDirectiveWithResolverConfig[]> = new Map();
+  private resolverGroups: Map<FieldDefinitionNode, FunctionDirectiveConfiguration[]> = new Map();
 
   constructor() {
     super('amplify-function-transformer', directiveDefinition);
@@ -41,7 +44,7 @@ export class FunctionTransformer extends TransformerPluginBase {
     const args = directiveWrapped.getArguments({
       resolverTypeName: parent.name.value,
       resolverFieldName: definition.name.value,
-    }, generateGetArgumentsInput(acc.featureFlags)) as FunctionDirectiveWithResolverConfig;
+    } as FunctionDirectiveConfiguration, generateGetArgumentsInput(acc.featureFlags));
     let resolver = this.resolverGroups.get(definition);
 
     if (resolver === undefined) {
@@ -71,13 +74,13 @@ export class FunctionTransformer extends TransformerPluginBase {
     this.resolverGroups.forEach((resolverFns, fieldDefinition) => {
       resolverFns.forEach(config => {
         // Create data sources that register Lambdas and IAM roles.
-        const dataSourceId = FunctionResourceIDs.FunctionDataSourceID(config);
+        const dataSourceId = FunctionResourceIDs.FunctionDataSourceID(config.name, config.region, config.accountId);
 
         if (!createdResources.has(dataSourceId)) {
           const dataSource = context.api.host.addLambdaDataSource(
             dataSourceId,
             lambda.Function.fromFunctionAttributes(stack, `${dataSourceId}Function`, {
-              functionArn: lambdaArnResource(env, config),
+              functionArn: lambdaArnResource(env, config.name, config.region, config.accountId),
             }),
             {},
             stack,
@@ -86,7 +89,7 @@ export class FunctionTransformer extends TransformerPluginBase {
         }
 
         // Create AppSync functions.
-        const functionId = FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(config);
+        const functionId = FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(config.name, config.region, config.accountId);
         let func = createdResources.get(functionId);
 
         if (func === undefined) {
@@ -179,21 +182,18 @@ export class FunctionTransformer extends TransformerPluginBase {
   };
 }
 
-function lambdaArnResource(env: cdk.CfnParameter, fdConfig: FunctionDirectiveConfig): string {
+function lambdaArnResource(env: cdk.CfnParameter, name: string, region?: string, accountId?: string): string {
   const substitutions: { [key: string]: string } = {};
-  if (fdConfig.name.includes('${env}')) {
+  if (name.includes('${env}')) {
     substitutions.env = env as unknown as string;
   }
   return cdk.Fn.conditionIf(
     ResourceConstants.CONDITIONS.HasEnvironmentParameter,
-    cdk.Fn.sub(lambdaArnKey(fdConfig), substitutions),
-    cdk.Fn.sub(lambdaArnKey({
-      ...fdConfig,
-      name: fdConfig.name.replace(/(-\${env})/, ''),
-    })),
+    cdk.Fn.sub(lambdaArnKey(name, region, accountId), substitutions),
+    cdk.Fn.sub(lambdaArnKey(name.replace(/(-\${env})/, ''), region, accountId)),
   ).toString();
 }
 
-function lambdaArnKey({ name, region, accountId }: FunctionDirectiveConfig): string {
-  return `arn:aws:lambda:${region ?? '${AWS::Region}'}:${accountId ?? '${AWS::AccountId}'}:function:${name}`;
+function lambdaArnKey(name: string, region?: string, accountId?: string): string {
+  return `arn:aws:lambda:${region ? region : '${AWS::Region}'}:${accountId ? accountId : '${AWS::AccountId}'}:function:${name}`;
 }

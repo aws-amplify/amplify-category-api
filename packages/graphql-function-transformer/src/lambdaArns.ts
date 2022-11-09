@@ -1,24 +1,21 @@
-import { Fn, Refs } from 'cloudform-types';
-import { FunctionDirectiveConfig, ResourceConstants } from 'graphql-transformer-common';
+import { Fn } from 'cloudform-types';
+import { ResourceConstants } from 'graphql-transformer-common';
 
-export function lambdaArnResource(fdConfig: FunctionDirectiveConfig) {
+export function lambdaArnResource(name: string, region?: string, accountId?:string) {
   const substitutions = {};
-  if (referencesEnv(fdConfig.name)) {
+  if (referencesEnv(name)) {
     substitutions['env'] = Fn.Ref(ResourceConstants.PARAMETERS.Env);
   }
   return Fn.If(
     ResourceConstants.CONDITIONS.HasEnvironmentParameter,
-    Fn.Sub(lambdaArnKey(fdConfig), substitutions),
-    Fn.Sub(lambdaArnKey({
-      ...fdConfig,
-      name: removeEnvReference(fdConfig.name),
-    }), {})
+    Fn.Sub(lambdaArnKey(name, region, accountId), substitutions),
+    Fn.Sub(lambdaArnKey(removeEnvReference(name), region, accountId), {})
   );
 }
 
-export function lambdaArnKey({ name, region, accountId }: FunctionDirectiveConfig) {
-  const regionSubstr: string = region ?? '${AWS::Region}';
-  const accountIdSubstr: string = accountId ?? '${AWS::AccountId}';
+export function lambdaArnKey(name: string, region?: string, accountId?:string) {
+  const regionSubstr: string = region ? region : '${AWS::Region}';
+  const accountIdSubstr: string = accountId ? accountId : '${AWS::AccountId}';
   return `arn:aws:lambda:${regionSubstr}:${accountIdSubstr}:function:${name}`;
 }
 

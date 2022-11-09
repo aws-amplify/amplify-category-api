@@ -1,11 +1,9 @@
-import { Transformer, gql, TransformerContext } from 'graphql-transformer-core';
+import { Transformer, gql, TransformerContext, getDirectiveArguments, TransformerContractError } from 'graphql-transformer-core';
 import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff } from 'graphql-mapping-template';
 import {
   ResolverResourceIDs,
   FunctionResourceIDs,
   ResourceConstants,
-  parseFunctionDirective,
-  FunctionDirectiveConfig,
 } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode } from 'graphql';
 import { AppSync, IAM, Fn } from 'cloudform-types';
@@ -29,26 +27,29 @@ export class FunctionTransformer extends Transformer {
    * Add the required resources to invoke a lambda function for this field.
    */
   field = (parent: ObjectTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
-    const fdConfig = parseFunctionDirective(directive);
+    const { name, region, accountId } = getDirectiveArguments(directive);
+    if (!name) {
+      throw new TransformerContractError(`Must supply a 'name' to @function.`);
+    }
 
     // Add the iam role if it does not exist.
-    const iamRoleKey = FunctionResourceIDs.FunctionIAMRoleID(fdConfig);
+    const iamRoleKey = FunctionResourceIDs.FunctionIAMRoleID(name, region, accountId);
     if (!ctx.getResource(iamRoleKey)) {
-      ctx.setResource(iamRoleKey, this.role(fdConfig));
+      ctx.setResource(iamRoleKey, this.role(name, region, accountId));
       ctx.mapResourceToStack(FUNCTION_DIRECTIVE_STACK, iamRoleKey);
     }
 
     // Add the data source if it does not exist.
-    const lambdaDataSourceKey = FunctionResourceIDs.FunctionDataSourceID(fdConfig);
+    const lambdaDataSourceKey = FunctionResourceIDs.FunctionDataSourceID(name, region, accountId);
     if (!ctx.getResource(lambdaDataSourceKey)) {
-      ctx.setResource(lambdaDataSourceKey, this.datasource(fdConfig));
+      ctx.setResource(lambdaDataSourceKey, this.datasource(name, region, accountId));
       ctx.mapResourceToStack(FUNCTION_DIRECTIVE_STACK, lambdaDataSourceKey);
     }
 
     // Add function that invokes the lambda function
-    const functionConfigurationKey = FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(fdConfig);
+    const functionConfigurationKey = FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region, accountId);
     if (!ctx.getResource(functionConfigurationKey)) {
-      ctx.setResource(functionConfigurationKey, this.function(fdConfig));
+      ctx.setResource(functionConfigurationKey, this.function(name, region, accountId));
       ctx.mapResourceToStack(FUNCTION_DIRECTIVE_STACK, functionConfigurationKey);
     }
 
@@ -58,12 +59,12 @@ export class FunctionTransformer extends Transformer {
     const resolverKey = ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
     const resolver = ctx.getResource(resolverKey);
     if (!resolver) {
-      ctx.setResource(resolverKey, this.resolver(typeName, fieldName, fdConfig));
+      ctx.setResource(resolverKey, this.resolver(typeName, fieldName, name, region, accountId));
       ctx.mapResourceToStack(FUNCTION_DIRECTIVE_STACK, resolverKey);
     } else if (resolver.Properties.Kind === 'PIPELINE') {
       ctx.setResource(
         resolverKey,
-        this.appendFunctionToResolver(resolver, FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(fdConfig))
+        this.appendFunctionToResolver(resolver, FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region, accountId))
       );
     }
   };
@@ -71,17 +72,17 @@ export class FunctionTransformer extends Transformer {
   /**
    * Create a role that allows our AppSync API to talk to our Lambda function.
    */
-  role = (fdConfig: FunctionDirectiveConfig): any => {
+  role = (name: string, region: string, accountId?: string): any => {
     return new IAM.Role({
       RoleName: Fn.If(
         ResourceConstants.CONDITIONS.HasEnvironmentParameter,
         Fn.Join('-', [
-          FunctionResourceIDs.FunctionIAMRoleName(fdConfig.name, true), // max of 64. 64-10-26-28 = 0
+          FunctionResourceIDs.FunctionIAMRoleName(name, true), // max of 64. 64-10-26-28 = 0
           Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
           Fn.Ref(ResourceConstants.PARAMETERS.Env), // 10
         ]),
         Fn.Join('-', [
-          FunctionResourceIDs.FunctionIAMRoleName(fdConfig.name, false), // max of 64. 64-26-38 = 0
+          FunctionResourceIDs.FunctionIAMRoleName(name, false), // max of 64. 64-26-38 = 0
           Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
         ])
       ),
@@ -106,7 +107,7 @@ export class FunctionTransformer extends Transformer {
               {
                 Effect: 'Allow',
                 Action: ['lambda:InvokeFunction'],
-                Resource: lambdaArnResource(fdConfig),
+                Resource: lambdaArnResource(name, region, accountId),
               },
             ],
           },
@@ -118,28 +119,28 @@ export class FunctionTransformer extends Transformer {
   /**
    * Creates a lambda data source that registers the lambda function and associated role.
    */
-  datasource = (fdConfig: FunctionDirectiveConfig): any => {
+  datasource = (name: string, region: string, accountId?: string): any => {
     return new AppSync.DataSource({
       ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
-      Name: FunctionResourceIDs.FunctionDataSourceID(fdConfig),
+      Name: FunctionResourceIDs.FunctionDataSourceID(name, region, accountId),
       Type: 'AWS_LAMBDA',
-      ServiceRoleArn: Fn.GetAtt(FunctionResourceIDs.FunctionIAMRoleID(fdConfig), 'Arn'),
+      ServiceRoleArn: Fn.GetAtt(FunctionResourceIDs.FunctionIAMRoleID(name, region, accountId), 'Arn'),
       LambdaConfig: {
-        LambdaFunctionArn: lambdaArnResource(fdConfig),
+        LambdaFunctionArn: lambdaArnResource(name, region, accountId),
       },
-    }).dependsOn(FunctionResourceIDs.FunctionIAMRoleID(fdConfig));
+    }).dependsOn(FunctionResourceIDs.FunctionIAMRoleID(name, region, accountId));
   };
 
   /**
    * Create a new pipeline function that calls out to the lambda function and returns the value.
    */
-  function = (fdConfig: FunctionDirectiveConfig): any => {
+  function = (name: string, region: string, accountId?: string): any => {
     return new AppSync.FunctionConfiguration({
       ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
-      Name: FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(fdConfig),
-      DataSourceName: FunctionResourceIDs.FunctionDataSourceID(fdConfig),
+      Name: FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region, accountId),
+      DataSourceName: FunctionResourceIDs.FunctionDataSourceID(name, region, accountId),
       FunctionVersion: '2018-05-29',
-      RequestMappingTemplate: printBlock(`Invoke AWS Lambda data source: ${FunctionResourceIDs.FunctionDataSourceID(fdConfig)}`)(
+      RequestMappingTemplate: printBlock(`Invoke AWS Lambda data source: ${FunctionResourceIDs.FunctionDataSourceID(name, region, accountId)}`)(
         obj({
           version: str('2018-05-29'),
           operation: str('Invoke'),
@@ -160,26 +161,26 @@ export class FunctionTransformer extends Transformer {
           raw('$util.toJson($ctx.result)'),
         ])
       ),
-    }).dependsOn(FunctionResourceIDs.FunctionDataSourceID(fdConfig));
+    }).dependsOn(FunctionResourceIDs.FunctionDataSourceID(name, region, accountId));
   };
 
   /**
    * Create a resolver of one that calls the "function" function.
    */
-  resolver = (type: string, field: string, fdConfig: FunctionDirectiveConfig): any => {
+  resolver = (type: string, field: string, name: string, region?: string, accountId?: string): any => {
     return new AppSync.Resolver({
       ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
       TypeName: type,
       FieldName: field,
       Kind: 'PIPELINE',
       PipelineConfig: {
-        Functions: [Fn.GetAtt(FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(fdConfig), 'FunctionId')],
+        Functions: [Fn.GetAtt(FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region, accountId), 'FunctionId')],
       },
       RequestMappingTemplate: printBlock('Stash resolver specific context.')(
         compoundExpression([qref(`$ctx.stash.put("typeName", "${type}")`), qref(`$ctx.stash.put("fieldName", "${field}")`), obj({})])
       ),
       ResponseMappingTemplate: '$util.toJson($ctx.prev.result)',
-    }).dependsOn(FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(fdConfig));
+    }).dependsOn(FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region, accountId));
   };
 
   appendFunctionToResolver(resolver: any, functionId: string) {
