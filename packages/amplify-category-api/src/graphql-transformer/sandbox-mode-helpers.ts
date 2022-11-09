@@ -46,22 +46,28 @@ function bracketCheck(schema: string): void {
   const stack = [];
   for (let i = 0; i < schema.length; i++) {
     const c = schema.charAt(i);
-    if (!['(', '[', '{', '}', ']', ')'].includes(c)) {
-      switch (c) {
-        case '(': stack.push(')');
-          break;
-        case '[': stack.push(']');
-          break;
-        case '{': stack.push('}');
-          break;
-        default:
-          if (c !== stack.pop()) {
-            break;
-          }
-      }
+    switch (c) {
+      case '(':
+        stack.push(')');
+        break;
+      case '[':
+        stack.push(']');
+        break;
+      case '{':
+        stack.push('}');
+        break;
+      case ')':
+      case ']':
+      case '}':
+        if (c !== stack.pop()) {
+          throw new InvalidBracketsError(`Syntax Error: mismatched brackets found in the schema. Unexpected ${c}`);
+        }
+        break;
+      default:
+        break;
     }
   }
-  if (stack.length) throw new InvalidBracketsError('Syntax error: mismatched brackets found in the schema.');
+  if (stack.length) throw new InvalidBracketsError(`Syntax Error: mismatched brackets found in the schema. Missing ${stack.pop()}`);
 }
 
 export function schemaHasSandboxModeEnabled(schema: string, docLink: string): boolean {
