@@ -66,8 +66,22 @@ describe('amplify add api (GraphQL)', () => {
     expect(error.message).toContain(`${tableName} not found`);
 
     await amplifyOverrideApi(projRoot, {});
-    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-api-gql.ts');
+
+    // this is where we will write overrides to
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'api', `${projName}`, 'override.ts');
+
+    // test override file in compilation error state
+    const srcInvalidOverrideCompileError = path.join(__dirname, '..', '..', 'overrides', 'override-compile-error.txt');
+    fs.copyFileSync(srcInvalidOverrideCompileError, destOverrideFilePath);
+    await expect(amplifyPushOverride(projRoot)).rejects.toThrowError();
+
+    // test override file in runtime error state
+    const srcInvalidOverrideRuntimeError = path.join(__dirname, '..', '..', 'overrides', 'override-runtime-error.txt');
+    fs.copyFileSync(srcInvalidOverrideRuntimeError, destOverrideFilePath);
+    await expect(amplifyPushOverride(projRoot)).rejects.toThrowError();
+
+    // test happy path
+    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-api-gql.ts');
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
     await amplifyPushOverride(projRoot);
     // check overidden config

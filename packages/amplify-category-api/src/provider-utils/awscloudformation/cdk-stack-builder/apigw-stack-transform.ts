@@ -3,6 +3,7 @@ import {
   $TSContext,
   $TSObject,
   AmplifyCategories,
+  AmplifyError,
   buildOverrideDir,
   getAmplifyResourceByCategories,
   JSONUtilities,
@@ -217,8 +218,15 @@ export class ApigwStackTransform {
             external: true,
           },
         });
-
-        await sandboxNode.run(overrideCode, overrideJSFilePath).override(this.resourceTemplateObj as AmplifyApigwResourceStack);
+        try {
+          await sandboxNode.run(overrideCode, overrideJSFilePath).override(this.resourceTemplateObj as AmplifyApigwResourceStack);
+        } catch (err) {
+          throw new AmplifyError('InvalidOverrideError', {
+            message: `Executing overrides failed.`,
+            details: err.message,
+            resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+          }, err);
+        }
       }
     }
   }

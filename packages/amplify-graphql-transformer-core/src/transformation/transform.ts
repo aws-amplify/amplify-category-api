@@ -10,7 +10,6 @@ import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync-alpha
 import {
   App, Aws, CfnOutput, CfnResource, Fn,
 } from 'aws-cdk-lib';
-import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import {
   EnumTypeDefinitionNode,
@@ -57,6 +56,9 @@ import { validateAuthModes, validateModelSchema } from './validation';
 import { DocumentNode } from 'graphql/language';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { AmplifyApiGraphQlResourceStackTemplate } from '../types/amplify-api-resource-stack-types';
+import {
+  AmplifyError
+} from 'amplify-cli-core';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
@@ -305,7 +307,7 @@ export class GraphQLTransform {
     return this.synthesize(context);
   }
 
-  public applyOverride = (stackManager: StackManager): AmplifyApiGraphQlResourceStackTemplate  => {
+  public applyOverride = (stackManager: StackManager): AmplifyApiGraphQlResourceStackTemplate => {
     const stacks: string[] = [];
     const amplifyApiObj: any = {};
     stackManager.rootStack.node.findAll().forEach(node => {
@@ -362,10 +364,11 @@ export class GraphQLTransform {
       try {
         sandboxNode.run(overrideCode, path.join(this.overrideConfig!.overrideDir, 'build', 'override.js')).override(appsyncResourceObj);
       } catch (err) {
-        const error = new Error(`Skipping override due to ${err}${os.EOL}`);
-        printer.error(`${error}`);
-        error.stack = undefined;
-        throw error;
+        throw new AmplifyError('InvalidOverrideError', {
+          message: `Executing overrides failed.`,
+          details: err.message,
+          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+        }, err);
       }
     }
     return appsyncResourceObj;

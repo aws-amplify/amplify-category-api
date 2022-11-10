@@ -106,13 +106,29 @@ describe('API Gateway e2e tests', () => {
     expect(responseAfterAddPath.headers.get('access-control-expose-headers')).toEqual('Date,X-Amzn-ErrorType');
   });
 
-  it('adds and overrides a rest api, then pushes', async () => {
+  it.only('adds and overrides a rest api, then pushes', async () => {
     const restApiName = `e2eRestApi${shortId}`;
 
     await addRestApi(projRoot, { apiName: restApiName });
     await amplifyOverrideApi(projRoot, {});
-    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-api-rest.ts');
+
+    // this is where we will write overrides to
     const destOverrideTsFilePath = path.join(pathManager.getResourceDirectoryPath(projRoot, 'api', restApiName), 'override.ts');
+
+    // test override file in compilation error state
+    const srcInvalidOverrideCompileError = path.join(__dirname, '..', '..', 'overrides', 'override-compile-error.txt');
+    fs.copyFileSync(srcInvalidOverrideCompileError, destOverrideTsFilePath);
+    await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
+    await expect (buildOverrides(projRoot, {})).rejects.toThrowError();
+
+    // test override file in runtime error state
+    const srcInvalidOverrideRuntimeError = path.join(__dirname, '..', '..', 'overrides', 'override-runtime-error.txt');
+    fs.copyFileSync(srcInvalidOverrideRuntimeError, destOverrideTsFilePath);
+    await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
+    await expect (buildOverrides(projRoot, {})).rejects.toThrowError();
+
+    // test happy path
+    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-api-rest.ts');
     fs.copyFileSync(srcOverrideFilePath, destOverrideTsFilePath);
 
     await buildOverrides(projRoot, {});
