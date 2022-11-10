@@ -12,12 +12,15 @@ import { S3Client } from '../S3Client';
 import { default as S3 } from 'aws-sdk/clients/s3';
 import { LambdaHelper } from '../LambdaHelper';
 import { IAMHelper } from '../IAMHelper';
+import { default as STS } from 'aws-sdk/clients/sts';
 
 jest.setTimeout(2000000);
 
-const cf = new CloudFormationClient('us-west-2');
-const customS3Client = new S3Client('us-west-2');
-const awsS3Client = new S3({ region: 'us-west-2' });
+const region = 'us-west-2';
+const cf = new CloudFormationClient(region);
+const customS3Client = new S3Client(region);
+const awsS3Client = new S3({ region: region });
+const sts = new STS();
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `FunctionTransformerTestsV2-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-function-transformer-test-bucket-v2-${BUILD_TIMESTAMP}`;
@@ -39,9 +42,20 @@ function outputValueSelector(key: string) {
     const output = outputs.find((o: Output) => o.OutputKey === key);
     return output ? output.OutputValue : null;
   };
-}
+};
+
+const getCurrentAccountId = async () => {
+  try {
+    const accountDetails = await sts.getCallerIdentity({}).promise();
+    return accountDetails?.Account;
+  } catch (e) {
+    console.warn(`Could not get current AWS account ID: ${e}`);
+    expect(true).toEqual(false);
+  }
+};
 
 beforeAll(async () => {
+  const currAccountId = await getCurrentAccountId();
   const validSchema = `
     type Query {
         echo(msg: String!): Context @function(name: "${ECHO_FUNCTION_NAME}")
@@ -53,6 +67,7 @@ beforeAll(async () => {
         pipelineReverse(msg: String!): Context
             @function(name: "${HELLO_FUNCTION_NAME}")
             @function(name: "${ECHO_FUNCTION_NAME}")
+        echoWithAccountId(msg: String!): Context @function(name: "${ECHO_FUNCTION_NAME}", accountId: "${currAccountId}")
     }
     type Context {
         arguments: Arguments
@@ -229,6 +244,24 @@ test('Test pipelineReverse of @function(s)', async () => {
   expect(response.data.pipelineReverse.arguments.msg).toEqual('Hello');
   expect(response.data.pipelineReverse.typeName).toEqual('Query');
   expect(response.data.pipelineReverse.fieldName).toEqual('pipelineReverse');
+});
+
+test('Test echo function with accountId as the same AWS account', async () => {
+  const response = await GRAPHQL_CLIENT.query(
+    `query {
+      echoWithAccountId(msg: "Hello") {
+        arguments {
+            msg
+        }
+        typeName
+        fieldName
+      }
+    }`,
+    {},
+  );
+  expect(response.data.echoWithAccountId.arguments.msg).toEqual('Hello');
+  expect(response.data.echoWithAccountId.typeName).toEqual('Query');
+  expect(response.data.echoWithAccountId.fieldName).toEqual('echoWithAccountId');
 });
 
 function wait(ms: number) {
