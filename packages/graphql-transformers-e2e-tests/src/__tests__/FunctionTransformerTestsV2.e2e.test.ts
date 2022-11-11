@@ -40,6 +40,8 @@ let GRAPHQL_CLIENT = undefined;
 
 const LAMBDA_HELPER = new LambdaHelper();
 const IAM_HELPER = new IAMHelper();
+const shortWaitForResource = 5000;
+const longWaitForResource = 10000;
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {
@@ -71,7 +73,7 @@ const createEchoFunctionInOtherAccount = async (currentAccountId?: string) => {
       RoleSessionName: `testCrossAccountFunction${BUILD_TIMESTAMP}`,
       DurationSeconds: 900
     }).promise())?.Credentials;
-    if (!accountCredentials?.AccessKeyId || !accountCredentials?.SecretAccessKey || !accountCredentials!.SessionToken) {
+    if (!accountCredentials?.AccessKeyId || !accountCredentials?.SecretAccessKey || !accountCredentials?.SessionToken) {
       console.warn('Could not assume role to access child account');
       expect(true).toEqual(false);
       return;
@@ -79,12 +81,12 @@ const createEchoFunctionInOtherAccount = async (currentAccountId?: string) => {
     const crossAccountLambdaHelper = new LambdaHelper(region, new AWS.Credentials( accountCredentials.AccessKeyId, accountCredentials.SecretAccessKey, accountCredentials.SessionToken));
     const crossAccountIAMHelper = new IAMHelper(region, new AWS.Credentials( accountCredentials.AccessKeyId, accountCredentials.SecretAccessKey, accountCredentials.SessionToken));
     const role = await crossAccountIAMHelper.createLambdaExecutionRole(LAMBDA_EXECUTION_ROLE_NAME);
-    await wait(5000);
+    await wait(shortWaitForResource);
     const policy = await crossAccountIAMHelper.createLambdaExecutionPolicy(LAMBDA_EXECUTION_POLICY_NAME);
-    await wait(5000);
+    await wait(shortWaitForResource);
     CROSS_ACCOUNT_LAMBDA_EXECUTION_POLICY_ARN = policy?.Policy?.Arn;
     await crossAccountIAMHelper.attachLambdaExecutionPolicy(policy?.Policy?.Arn, role.Role.RoleName);
-    await wait(10000);
+    await wait(longWaitForResource);
     await crossAccountLambdaHelper.createFunction(ECHO_FUNCTION_NAME, role.Role.Arn, 'echoFunction');
     await crossAccountLambdaHelper.addAppSyncCrossAccountAccess(currentAccountId, ECHO_FUNCTION_NAME);
     return otherAccountId;
@@ -103,7 +105,7 @@ const deleteEchoFunctionInOtherAccount = async (accountId: string) => {
       RoleSessionName: `testCrossAccountFunction${BUILD_TIMESTAMP}`,
       DurationSeconds: 900
     }).promise())?.Credentials;
-    if (!accountCredentials?.AccessKeyId || !accountCredentials?.SecretAccessKey || !accountCredentials!.SessionToken) {
+    if (!accountCredentials?.AccessKeyId || !accountCredentials?.SecretAccessKey || !accountCredentials?.SessionToken) {
       console.warn('Could not assume role to access child account');
       expect(true).toEqual(false);
       return;
@@ -169,12 +171,12 @@ beforeAll(async () => {
   }
   try {
     const role = await IAM_HELPER.createLambdaExecutionRole(LAMBDA_EXECUTION_ROLE_NAME);
-    await wait(5000);
+    await wait(shortWaitForResource);
     const policy = await IAM_HELPER.createLambdaExecutionPolicy(LAMBDA_EXECUTION_POLICY_NAME);
-    await wait(5000);
+    await wait(shortWaitForResource);
     LAMBDA_EXECUTION_POLICY_ARN = policy.Policy.Arn;
     await IAM_HELPER.attachLambdaExecutionPolicy(policy.Policy.Arn, role.Role.RoleName);
-    await wait(10000);
+    await wait(longWaitForResource);
     await LAMBDA_HELPER.createFunction(ECHO_FUNCTION_NAME, role.Role.Arn, 'echoFunction');
     await LAMBDA_HELPER.createFunction(HELLO_FUNCTION_NAME, role.Role.Arn, 'hello');
   } catch (e) {
