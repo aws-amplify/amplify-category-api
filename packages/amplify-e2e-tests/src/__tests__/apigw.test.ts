@@ -106,7 +106,7 @@ describe('API Gateway e2e tests', () => {
     expect(responseAfterAddPath.headers.get('access-control-expose-headers')).toEqual('Date,X-Amzn-ErrorType');
   });
 
-  it.only('adds and overrides a rest api, then pushes', async () => {
+  it('adds and overrides a rest api, then pushes', async () => {
     const restApiName = `e2eRestApi${shortId}`;
 
     await addRestApi(projRoot, { apiName: restApiName });
