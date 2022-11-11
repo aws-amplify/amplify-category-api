@@ -51,14 +51,8 @@ export class ApigwStackTransform {
     // Generate cloudformation stack from cli-inputs.json
     this.generateStack(authResourceName, pathsWithUserPoolGroups);
 
-    try {
-      // Modify cloudformation files based on overrides
-      await this.applyOverrides();
-    } catch (error) {
-      printer.error(`Failed to override ${this.resourceName} due to: ${error}.`);
-      return;
-    }
-
+    // Modify cloudformation files based on overrides
+    await this.applyOverrides();
     // Generate cloudformation stack input params from cli-inputs.json
     this.generateCfnInputParameters();
 

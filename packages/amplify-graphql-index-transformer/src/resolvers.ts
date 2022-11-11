@@ -891,25 +891,20 @@ export const getDeltaSyncTableTtl = (resourceOverrides: $TSAny, resource: Transf
 }
 
 export const getResourceOverrides = (transformers: TransformerPluginProvider[], stackManager?: StackManagerProvider | null): $TSAny => {
-  try {
-    const meta = stateManager.getCurrentMeta(undefined, { throwIfNotExist: false });
-    const gqlApiName = _.entries(meta?.api).find(([, value]) => (value as { service: string }).service === 'AppSync')?.[0];
-    if (gqlApiName && stackManager) {
-      const backendDir = pathManager.getBackendDirPath();
-      const overrideDir = path.join(backendDir, 'api', gqlApiName);
-      const localGraphQLTransformObj = new GraphQLTransform({
-        transformers: transformers,
-        overrideConfig: {
-          overrideFlag: true,
-          overrideDir: overrideDir,
-          resourceName: gqlApiName
-        }
-      });
-      return localGraphQLTransformObj.applyOverride(stackManager as StackManager);
-    }
-  } catch (error) {
-    // do not throw but return empty overrides
-    return {};
+  const meta = stateManager.getCurrentMeta(undefined, { throwIfNotExist: false });
+  const gqlApiName = _.entries(meta?.api).find(([, value]) => (value as { service: string }).service === 'AppSync')?.[0];
+  if (gqlApiName && stackManager) {
+    const backendDir = pathManager.getBackendDirPath();
+    const overrideDir = path.join(backendDir, 'api', gqlApiName);
+    const localGraphQLTransformObj = new GraphQLTransform({
+      transformers: transformers,
+      overrideConfig: {
+        overrideFlag: true,
+        overrideDir: overrideDir,
+        resourceName: gqlApiName
+      }
+    });
+    return localGraphQLTransformObj.applyOverride(stackManager as StackManager);
   }
   return {};
 }
