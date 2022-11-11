@@ -863,7 +863,7 @@ describe('@hasMany connection field nullability tests', () => {
     getNumber: jest.fn(),
     getObject: jest.fn(),
   };
-  test('Should not affect the nullability of connection fields of the other side when the @hasMany field is non-nullable', () => {
+  test('Should not affect the nullability of connection fields of the other side update input when the @hasMany field is non-nullable', () => {
     const inputSchema = `
       type Todo @model {
         todoid: ID! @primaryKey(sortKeyFields:["name"])
@@ -894,24 +894,24 @@ describe('@hasMany connection field nullability tests', () => {
     expect(objType).toBeDefined();
     const relatedField1 = objType.fields.find((f: any) => f.name.value === connectionFieldName1);
     expect(relatedField1).toBeDefined();
-    expect(relatedField1.type.kind).toBe(Kind.NAMED_TYPE);
-    expect(relatedField1.type.name.value).toBe('ID');
+    expect(relatedField1.type.kind).toBe(Kind.NON_NULL_TYPE);
+    expect(relatedField1.type.type.name.value).toBe('ID');
     const relatedField2 = objType.fields.find((f: any) => f.name.value === connectionFieldName2);
     expect(relatedField2).toBeDefined();
-    expect(relatedField2.type.kind).toBe(Kind.NAMED_TYPE);
-    expect(relatedField2.type.name.value).toBe('String');
+    expect(relatedField2.type.kind).toBe(Kind.NON_NULL_TYPE);
+    expect(relatedField2.type.type.name.value).toBe('String');
     //Create Input
     const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTaskInput') as any;
     expect(createInput).toBeDefined();
     expect(createInput.fields.length).toEqual(5);
     const createInputConnectedField1 = createInput.fields.find((f: any) => f.name.value === connectionFieldName1);
     expect(createInputConnectedField1).toBeDefined();
-    expect(createInputConnectedField1.type.kind).toBe(Kind.NAMED_TYPE);
-    expect(createInputConnectedField1.type.name.value).toBe('ID');
+    expect(createInputConnectedField1.type.kind).toBe(Kind.NON_NULL_TYPE);
+    expect(createInputConnectedField1.type.type.name.value).toBe('ID');
     const createInputConnectedField2 = createInput.fields.find((f: any) => f.name.value === connectionFieldName2);
     expect(createInputConnectedField2).toBeDefined();
-    expect(createInputConnectedField2.type.kind).toBe(Kind.NAMED_TYPE);
-    expect(createInputConnectedField2.type.name.value).toBe('String');
+    expect(createInputConnectedField2.type.kind).toBe(Kind.NON_NULL_TYPE);
+    expect(createInputConnectedField2.type.type.name.value).toBe('String');
     //Update Input
     const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTaskInput') as any;
     expect(updateInput).toBeDefined();

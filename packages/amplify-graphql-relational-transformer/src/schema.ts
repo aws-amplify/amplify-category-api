@@ -268,13 +268,9 @@ export const ensureHasManyConnectionField = (
   const relatedTypeObject = ctx.output.getType(relatedType.name.value) as ObjectTypeDefinitionNode;
   const connectionAttributeName = getConnectionAttributeName(ctx.featureFlags, object.name.value, field.name.value, connectionFieldName);
 
-  // The nullabilty of connection fields for hasMany depends on the other side belongsTo field
+  // The nullabilty of connection fields for hasMany depends on the hasMany field
   // Whereas in update input, they are always optional
-  const isConnectionFieldsNonNull = relatedTypeObject.fields?.some(field =>
-    getBaseType(field.type) === object.name.value
-    && field.directives?.some(d => d.name.value === 'belongsTo')
-    && isNonNullType(field.type)) ?? false;
-
+  const isConnectionFieldsNonNull = isNonNullType(field.type);
   const primaryKeyConnectionFieldType = getPrimaryKeyConnectionFieldType(ctx, primaryKeyField);
   if (relatedTypeObject) {
     updateTypeWithConnectionFields(

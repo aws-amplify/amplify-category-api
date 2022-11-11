@@ -617,7 +617,7 @@ describe('@belongsTo connection field nullability tests', () => {
   });
 
   describe('@belongsTo with @hasMany', () => {
-    test('Should generate nullable connection fields in type definition and create/update input when belongsTo field is nullable', () => {
+    test('Should generate nullable connection fields in type definition and create/update input when hasMany field is nullable', () => {
       const inputSchema = `
         type Todo @model {
           todoid: ID! @primaryKey(sortKeyFields:["name"])
@@ -630,7 +630,7 @@ describe('@belongsTo connection field nullability tests', () => {
           taskid: ID! @primaryKey(sortKeyFields:["name"])
           name: String!
           description: String
-          todo: Todo @belongsTo
+          todo: Todo! @belongsTo
         }
       `;
       const transformer = new GraphQLTransform({
@@ -681,20 +681,20 @@ describe('@belongsTo connection field nullability tests', () => {
       expect(updateInputConnectedField2.type.name.value).toBe('String');
     });
   
-    test('Should generate non-nullable connection fields in type definition and create input while keeping nullable in update input when belongsTo field is non-nullable', () => {
+    test('Should generate non-nullable connection fields in type definition and create input while keeping nullable in update input when hasMany field is non-nullable', () => {
       const inputSchema = `
         type Todo @model {
           todoid: ID! @primaryKey(sortKeyFields:["name"])
           name: String!
           title: String!
           priority: Int
-          tasks: [Task] @hasMany
+          tasks: [Task]! @hasMany
         }
         type Task @model {
           taskid: ID! @primaryKey(sortKeyFields:["name"])
           name: String!
           description: String
-          todo: Todo! @belongsTo
+          todo: Todo @belongsTo
         }
       `;
       const transformer = new GraphQLTransform({
