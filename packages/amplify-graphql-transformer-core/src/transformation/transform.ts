@@ -56,9 +56,6 @@ import { validateAuthModes, validateModelSchema } from './validation';
 import { DocumentNode } from 'graphql/language';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { AmplifyApiGraphQlResourceStackTemplate } from '../types/amplify-api-resource-stack-types';
-import {
-  AmplifyError
-} from 'amplify-cli-core';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
@@ -364,11 +361,10 @@ export class GraphQLTransform {
       try {
         sandboxNode.run(overrideCode, path.join(this.overrideConfig!.overrideDir, 'build', 'override.js')).override(appsyncResourceObj);
       } catch (err) {
-        throw new AmplifyError('InvalidOverrideError', {
-          message: `Executing overrides failed.`,
-          details: err.message,
-          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-        }, err);
+        // this is a workaround for the API repo until we can import AmplifyError without creating a circular dependency
+        const amplifyError = new Error("Executing overrides failed. There may be runtime errors in your overrides file. If so, fix the errors and try again.");
+        (amplifyError as any)['_amplifyErrorType'] = 'InvalidOverrideError';
+        throw amplifyError;
       }
     }
     return appsyncResourceObj;

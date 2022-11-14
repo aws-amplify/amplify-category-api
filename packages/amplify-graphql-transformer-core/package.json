@@ -41,8 +41,7 @@
     "vm2": "^3.9.8"
   },
   "peerDependencies": {
-    "amplify-prompts": "^2.0.1",
-    "amplify-cli-core": "^4.0.0-cdkv2.2"
+    "amplify-prompts": "^2.0.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",

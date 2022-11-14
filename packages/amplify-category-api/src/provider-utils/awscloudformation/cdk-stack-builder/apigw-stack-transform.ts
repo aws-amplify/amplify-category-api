@@ -3,7 +3,6 @@ import {
   $TSContext,
   $TSObject,
   AmplifyCategories,
-  AmplifyError,
   buildOverrideDir,
   getAmplifyResourceByCategories,
   JSONUtilities,
@@ -215,11 +214,10 @@ export class ApigwStackTransform {
         try {
           await sandboxNode.run(overrideCode, overrideJSFilePath).override(this.resourceTemplateObj as AmplifyApigwResourceStack);
         } catch (err) {
-          throw new AmplifyError('InvalidOverrideError', {
-            message: `Executing overrides failed.`,
-            details: err.message,
-            resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-          }, err);
+          // this is a workaround for the API repo until we can import AmplifyError without creating a circular dependency
+          const amplifyError = new Error("Executing overrides failed. There may be runtime errors in your overrides file. If so, fix the errors and try again.");
+          (amplifyError as any)['_amplifyErrorType'] = 'InvalidOverrideError';
+          throw amplifyError;
         }
       }
     }
