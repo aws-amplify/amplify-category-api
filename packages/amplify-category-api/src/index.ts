@@ -102,7 +102,6 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   const datasource = 'Aurora Serverless';
   const service = 'service';
   const rdsInit = 'rdsInit';
-  const rdsRegion = 'rdsRegion';
 
   /**
    * Check if we need to do the walkthrough, by looking to see if previous environments have
