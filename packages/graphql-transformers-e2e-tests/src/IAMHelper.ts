@@ -1,10 +1,11 @@
-import { IAM } from 'aws-sdk';
+import { IAM, Credentials } from 'aws-sdk';
 
 export class IAMHelper {
   client: IAM;
-  constructor(region: string = 'us-west-2') {
+  constructor(region: string = 'us-west-2', credentials?: Credentials) {
     this.client = new IAM({
       region,
+      credentials
     });
   }
 
