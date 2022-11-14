@@ -35,7 +35,7 @@ defaults: &defaults
 
 scan_e2e_test_artifacts: &scan_e2e_test_artifacts
   name: Scan And Cleanup E2E Test Artifacts
-  no_output_timeout: 90m
+  no_output_timeout: 60m
   command: |
     if ! yarn ts-node .circleci/scan_artifacts.ts; then
       echo "Cleaning the repository"
@@ -120,7 +120,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             cd packages/amplify-util-mock/
             yarn e2e
-          no_output_timeout: 90m
+          no_output_timeout: 60m
           environment:
             JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
       - store_test_results:
@@ -178,7 +178,7 @@ jobs:
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: "true"
-          no_output_timeout: 90m
+          no_output_timeout: 60m
       - store_test_results:
           path: packages/graphql-transformers-e2e-tests/
 
@@ -272,7 +272,7 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             retry yarn run migration_v5.2.0 --maxWorkers=3 $TEST_SUITE
-          no_output_timeout: 90m
+          no_output_timeout: 60m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-migration-tests/
@@ -297,7 +297,7 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             retry yarn run migration_v6.1.0 --maxWorkers=3 $TEST_SUITE
-          no_output_timeout: 90m
+          no_output_timeout: 60m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-migration-tests/
@@ -334,7 +334,7 @@ jobs:
           command: |
             cd packages/amplify-e2e-tests
             yarn clean-e2e-resources
-          no_output_timeout: 90m
+          no_output_timeout: 60m
       - run:
           name: "Cleanup Stale Buckets"
           command: |
@@ -358,7 +358,7 @@ jobs:
           command: |
             cd packages/amplify-e2e-tests
             yarn clean-e2e-resources workflow ${CIRCLE_WORKFLOW_ID}
-          no_output_timeout: 90m
+          no_output_timeout: 60m
       - run: *scan_e2e_test_artifacts
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
@@ -572,7 +572,7 @@ commands:
                   source .circleci/local_publish_helpers.sh
                   cd packages/amplify-e2e-tests
                   retry yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
-                no_output_timeout: 90m
+                no_output_timeout: 60m
       - when:
           condition:
             equal: [*linux-e2e-executor, << parameters.os >>]
@@ -585,7 +585,7 @@ commands:
                   source .circleci/local_publish_helpers.sh
                   amplify version
                   retry runE2eTest
-                no_output_timeout: 90m
+                no_output_timeout: 60m
   scan_e2e_test_artifacts:
     description: "Scan And Cleanup E2E Test Artifacts"
     parameters:
@@ -595,7 +595,7 @@ commands:
     steps:
       - run:
           name: Scan E2E artifacts
-          no_output_timeout: 90m
+          no_output_timeout: 60m
           command: |
             if ! yarn ts-node .circleci/scan_artifacts.ts; then
               echo "Cleaning the repository"
@@ -623,7 +623,7 @@ commands:
                   cd client-test-apps/js/api-model-relationship-app
                   npm install
                   retry npm run test:ci
-                no_output_timeout: 90m
+                no_output_timeout: 60m
       - when:
           condition:
             equal: [*linux-e2e-executor, << parameters.os >>]
@@ -638,4 +638,4 @@ commands:
                   cd client-test-apps/js/api-model-relationship-app
                   npm install
                   retry npm run test:ci
-                no_output_timeout: 90m
+                no_output_timeout: 60m
