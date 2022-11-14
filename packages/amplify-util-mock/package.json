@@ -48,6 +48,7 @@
     "which": "^2.0.2"
   },
   "peerDependencies": {
+    "@aws-amplify/amplify-environment-parameters": "^1.1.0",
     "amplify-cli-core": "^3.0.0"
   },
   "devDependencies": {
