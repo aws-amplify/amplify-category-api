@@ -1,5 +1,5 @@
 name: Usage Question
-description: Ask a question about AWS Amplify CLI usage
+description: Ask a question about Amplify API category usage
 labels: ["question", "pending-triage"]
 body:
   - type: markdown
