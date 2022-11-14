@@ -149,12 +149,14 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   }
 
   /**
-   * Check team provider info to ensure it hasn't already been created for current env
+   * Check environment parameter manager to ensure it hasn't already been created for current env
    */
-  const resourceParamManager = (await ensureEnvParamManager()).instance.getResourceParamManager(category, resourceName);
-  if (resourceParamManager.getParam(rdsRegion)) {
+  const envParamManager = (await ensureEnvParamManager()).instance;
+  if (envParamManager.hasResourceParamManager(category, resourceName)) {
     return;
   }
+
+  const apiParameterManager = envParamManager.getResourceParamManager(category, resourceName);
 
   // execute the walkthrough
   await providerController
@@ -163,7 +165,7 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
       /**
        * Update environment parameter manager with answers
        */
-      resourceParamManager.setParams({
+      apiParameterManager.setParams({
         rdsRegion: answers.region,
         rdsClusterIdentifier: answers.dbClusterArn,
         rdsSecretStoreArn: answers.secretStoreArn,
