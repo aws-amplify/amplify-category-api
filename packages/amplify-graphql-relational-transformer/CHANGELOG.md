@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.12.5-rds-support.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.12.4...@aws-amplify/graphql-relational-transformer@0.12.5-rds-support.0) (2022-11-14)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
 ## [0.12.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.12.3...@aws-amplify/graphql-relational-transformer@0.12.4) (2022-11-08)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer

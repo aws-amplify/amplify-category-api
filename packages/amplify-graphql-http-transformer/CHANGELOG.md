@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.32-rds-support.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-http-transformer@0.8.31...@aws-amplify/graphql-http-transformer@0.8.32-rds-support.0) (2022-11-14)
+
+**Note:** Version bump only for package @aws-amplify/graphql-http-transformer
+
 ## [0.8.31](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-http-transformer@0.8.30...@aws-amplify/graphql-http-transformer@0.8.31) (2022-11-08)
 
 **Note:** Version bump only for package @aws-amplify/graphql-http-transformer

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.11-rds-support.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-migration-tests@5.0.10...amplify-category-api-migration-tests@5.0.11-rds-support.0) (2022-11-14)
+
+**Note:** Version bump only for package amplify-category-api-migration-tests
+
 ## [5.0.10](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-migration-tests@5.0.9...amplify-category-api-migration-tests@5.0.10) (2022-11-08)
 
 **Note:** Version bump only for package amplify-category-api-migration-tests
