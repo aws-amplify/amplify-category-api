@@ -1,6 +1,6 @@
 const getParamMock = jest.fn();
 
-import { stateManager, getGraphQLTransformerOpenSearchProductionDocLink, ApiCategoryFacade } from 'amplify-cli-core';
+import { $TSContext, stateManager, getGraphQLTransformerOpenSearchProductionDocLink, ApiCategoryFacade } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { searchablePushChecks } from '../../graphql-transformer/api-utils';
 
@@ -19,7 +19,8 @@ jest.mock('@aws-amplify/amplify-environment-parameters', () => ({
 
 const printerMock = printer as jest.Mocked<typeof printer>;
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
-const getTransformerVersionMock = ApiCategoryFacade.getTransformerVersion as jest.MockedFunction<typeof ApiCategoryFacade.getTransformerVersion>
+const getTransformerVersionMock = ApiCategoryFacade
+  .getTransformerVersion as jest.MockedFunction<typeof ApiCategoryFacade.getTransformerVersion>;
 const getGraphQLTransformerOpenSearchProductionDocLinkMock = getGraphQLTransformerOpenSearchProductionDocLink as jest.MockedFunction<
   typeof getGraphQLTransformerOpenSearchProductionDocLink
 >;
@@ -33,7 +34,10 @@ describe('graphql schema checks', () => {
     amplify: {
       getEnvInfo: jest.fn(),
     },
-  } as unknown as any;
+  } as unknown as $TSContext;
+
+  const printerWarning = 'Your instance type for OpenSearch is t2.small.elasticsearch, you may experience performance issues or data loss.'
+    + ' Consider reconfiguring with the instructions here mockDocsLink';
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -44,9 +48,7 @@ describe('graphql schema checks', () => {
     getParamMock.mockReturnValueOnce(undefined);
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
-    expect(printerMock.warn).lastCalledWith(
-      'Your instance type for OpenSearch is t2.small.elasticsearch, you may experience performance issues or data loss. Consider reconfiguring with the instructions here mockDocsLink',
-    );
+    expect(printerMock.warn).lastCalledWith(printerWarning);
   });
 
   it('should warn users if they use not recommended open search instance with overrides', async () => {
@@ -54,9 +56,7 @@ describe('graphql schema checks', () => {
     stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
-    expect(printerMock.warn).lastCalledWith(
-      'Your instance type for OpenSearch is t2.small.elasticsearch, you may experience performance issues or data loss. Consider reconfiguring with the instructions here mockDocsLink',
-    );
+    expect(printerMock.warn).lastCalledWith(printerWarning);
   });
 
   it('should warn users if they use not recommended elastic search instance with overrides', async () => {
@@ -64,9 +64,7 @@ describe('graphql schema checks', () => {
     stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
-    expect(printerMock.warn).lastCalledWith(
-      'Your instance type for OpenSearch is t2.small.elasticsearch, you may experience performance issues or data loss. Consider reconfiguring with the instructions here mockDocsLink',
-    );
+    expect(printerMock.warn).lastCalledWith(printerWarning);
   });
 
   it('should NOT warn users if they use recommended open search instance', async () => {
@@ -114,8 +112,6 @@ describe('graphql schema checks', () => {
     stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
-    expect(printerMock.warn).lastCalledWith(
-      'Your instance type for OpenSearch is t2.small.elasticsearch, you may experience performance issues or data loss. Consider reconfiguring with the instructions here mockDocsLink',
-    );
+    expect(printerMock.warn).lastCalledWith(printerWarning);
   });
 });
