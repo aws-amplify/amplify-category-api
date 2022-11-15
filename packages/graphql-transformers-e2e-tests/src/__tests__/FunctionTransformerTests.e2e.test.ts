@@ -15,9 +15,10 @@ import { IAMHelper } from '../IAMHelper';
 
 jest.setTimeout(2000000);
 
-const cf = new CloudFormationClient('us-west-2');
-const customS3Client = new S3Client('us-west-2');
-const awsS3Client = new S3({ region: 'us-west-2' });
+const region = 'us-west-2';
+const cf = new CloudFormationClient(region);
+const customS3Client = new S3Client(region);
+const awsS3Client = new S3({ region: region });
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {
