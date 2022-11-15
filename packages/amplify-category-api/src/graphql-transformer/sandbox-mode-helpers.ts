@@ -44,17 +44,14 @@ function matchesGlobalAuth(field: any): boolean {
 
 function bracketCheck(schema: string): void {
   const stack = [];
+  const inverseBrackets = { '{': '}', '[': ']', '(': ')' };
   for (let i = 0; i < schema.length; i++) {
     const c = schema.charAt(i);
     switch (c) {
       case '(':
-        stack.push(')');
-        break;
       case '[':
-        stack.push(']');
-        break;
       case '{':
-        stack.push('}');
+        stack.push(inverseBrackets[c]);
         break;
       case ')':
       case ']':
