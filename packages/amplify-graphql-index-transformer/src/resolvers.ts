@@ -891,9 +891,10 @@ export const getDeltaSyncTableTtl = (resourceOverrides: $TSAny, resource: Transf
 }
 
 export const getResourceOverrides = (transformers: TransformerPluginProvider[], stackManager?: StackManagerProvider | null): $TSAny => {
-  try {
+  if (stateManager.currentMetaFileExists(undefined)) {
     const meta = stateManager.getCurrentMeta(undefined, { throwIfNotExist: false });
-    const gqlApiName = _.entries(meta?.api).find(([, value]) => (value as { service: string }).service === 'AppSync')?.[0];
+    const gqlApiName = _.entries(meta?.api)
+      .find(([, value]) => (value as { service: string }).service === 'AppSync')?.[0];
     if (gqlApiName && stackManager) {
       const backendDir = pathManager.getBackendDirPath();
       const overrideDir = path.join(backendDir, 'api', gqlApiName);
@@ -907,9 +908,6 @@ export const getResourceOverrides = (transformers: TransformerPluginProvider[], 
       });
       return localGraphQLTransformObj.applyOverride(stackManager as StackManager);
     }
-  } catch (error) {
-    // do not throw but return empty overrides
-    return {};
   }
   return {};
 }

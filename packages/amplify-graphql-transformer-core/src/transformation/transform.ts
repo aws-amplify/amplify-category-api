@@ -10,7 +10,6 @@ import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync-alpha
 import {
   App, Aws, CfnOutput, CfnResource, Fn,
 } from 'aws-cdk-lib';
-import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import {
   EnumTypeDefinitionNode,
@@ -305,7 +304,7 @@ export class GraphQLTransform {
     return this.synthesize(context);
   }
 
-  public applyOverride = (stackManager: StackManager): AmplifyApiGraphQlResourceStackTemplate  => {
+  public applyOverride = (stackManager: StackManager): AmplifyApiGraphQlResourceStackTemplate => {
     const stacks: string[] = [];
     const amplifyApiObj: any = {};
     stackManager.rootStack.node.findAll().forEach(node => {
@@ -362,10 +361,10 @@ export class GraphQLTransform {
       try {
         sandboxNode.run(overrideCode, path.join(this.overrideConfig!.overrideDir, 'build', 'override.js')).override(appsyncResourceObj);
       } catch (err) {
-        const error = new Error(`Skipping override due to ${err}${os.EOL}`);
-        printer.error(`${error}`);
-        error.stack = undefined;
-        throw error;
+        // this is a workaround for the API repo until we can import AmplifyError without creating a circular dependency
+        const amplifyError = new Error("Executing overrides failed. There may be runtime errors in your overrides file. If so, fix the errors and try again.");
+        (amplifyError as any)['_amplifyErrorType'] = 'InvalidOverrideError';
+        throw amplifyError;
       }
     }
     return appsyncResourceObj;

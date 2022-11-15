@@ -50,14 +50,8 @@ export class ApigwStackTransform {
     // Generate cloudformation stack from cli-inputs.json
     this.generateStack(authResourceName, pathsWithUserPoolGroups);
 
-    try {
-      // Modify cloudformation files based on overrides
-      await this.applyOverrides();
-    } catch (error) {
-      printer.error(`Failed to override ${this.resourceName} due to: ${error}.`);
-      return;
-    }
-
+    // Modify cloudformation files based on overrides
+    await this.applyOverrides();
     // Generate cloudformation stack input params from cli-inputs.json
     this.generateCfnInputParameters();
 
@@ -217,8 +211,14 @@ export class ApigwStackTransform {
             external: true,
           },
         });
-
-        await sandboxNode.run(overrideCode, overrideJSFilePath).override(this.resourceTemplateObj as AmplifyApigwResourceStack);
+        try {
+          await sandboxNode.run(overrideCode, overrideJSFilePath).override(this.resourceTemplateObj as AmplifyApigwResourceStack);
+        } catch (err) {
+          // this is a workaround for the API repo until we can import AmplifyError without creating a circular dependency
+          const amplifyError = new Error("Executing overrides failed. There may be runtime errors in your overrides file. If so, fix the errors and try again.");
+          (amplifyError as any)['_amplifyErrorType'] = 'InvalidOverrideError';
+          throw amplifyError;
+        }
       }
     }
   }
