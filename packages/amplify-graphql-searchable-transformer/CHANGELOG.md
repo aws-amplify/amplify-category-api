@@ -3,32 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [1.1.0-cdkv2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@1.1.0-cdkv2.0...@aws-amplify/graphql-searchable-transformer@1.1.0-cdkv2.1) (2022-10-24)
-
-
-### Bug Fixes
-
-* lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
-
-
-
-
-
-# [1.1.0-cdkv2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@0.16.0...@aws-amplify/graphql-searchable-transformer@1.1.0-cdkv2.0) (2022-10-24)
-
+# [1.1.0-cdkv2.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@0.16.3...@aws-amplify/graphql-searchable-transformer@1.1.0-cdkv2.2) (2022-11-15)
 
 ### Bug Fixes
 
-* preserve logical id patterns for dynamodb tables and search domain ([#894](https://github.com/aws-amplify/amplify-category-api/issues/894)) ([7530fc2](https://github.com/aws-amplify/amplify-category-api/commit/7530fc2e9254b621dc3782271318dd3f5c97d2b8))
-
+- lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
+- preserve logical id patterns for dynamodb tables and search domain ([#894](https://github.com/aws-amplify/amplify-category-api/issues/894)) ([7530fc2](https://github.com/aws-amplify/amplify-category-api/commit/7530fc2e9254b621dc3782271318dd3f5c97d2b8))
 
 ### Features
 
-* migrate searchable transformer to CDK v2 ([#868](https://github.com/aws-amplify/amplify-category-api/issues/868)) ([9b49aa7](https://github.com/aws-amplify/amplify-category-api/commit/9b49aa7e26fc814fa1d90bd3bde2adb5cf2dd3c4))
+- migrate searchable transformer to CDK v2 ([#868](https://github.com/aws-amplify/amplify-category-api/issues/868)) ([9b49aa7](https://github.com/aws-amplify/amplify-category-api/commit/9b49aa7e26fc814fa1d90bd3bde2adb5cf2dd3c4))
 
+# [1.1.0-cdkv2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@1.1.0-cdkv2.0...@aws-amplify/graphql-searchable-transformer@1.1.0-cdkv2.1) (2022-10-24)
 
+### Bug Fixes
 
+- lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
 
+# [1.1.0-cdkv2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@0.16.0...@aws-amplify/graphql-searchable-transformer@1.1.0-cdkv2.0) (2022-10-24)
+
+### Bug Fixes
+
+- preserve logical id patterns for dynamodb tables and search domain ([#894](https://github.com/aws-amplify/amplify-category-api/issues/894)) ([7530fc2](https://github.com/aws-amplify/amplify-category-api/commit/7530fc2e9254b621dc3782271318dd3f5c97d2b8))
+
+### Features
+
+- migrate searchable transformer to CDK v2 ([#868](https://github.com/aws-amplify/amplify-category-api/issues/868)) ([9b49aa7](https://github.com/aws-amplify/amplify-category-api/commit/9b49aa7e26fc814fa1d90bd3bde2adb5cf2dd3c4))
 
 ## [0.16.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@0.16.2...@aws-amplify/graphql-searchable-transformer@0.16.3) (2022-11-08)
 

@@ -3,32 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0-cdkv2.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@1.1.18...@aws-amplify/graphql-schema-test-library@2.1.0-cdkv2.3) (2022-11-15)
+
+### Features
+
+- migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
+
 # [2.1.0-cdkv2.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@2.1.0-cdkv2.1...@aws-amplify/graphql-schema-test-library@2.1.0-cdkv2.2) (2022-11-03)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-test-library
-
-
-
-
 
 # [2.1.0-cdkv2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@2.1.0-cdkv2.0...@aws-amplify/graphql-schema-test-library@2.1.0-cdkv2.1) (2022-10-24)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-test-library
 
-
-
-
-
 # [2.1.0-cdkv2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@1.1.14...@aws-amplify/graphql-schema-test-library@2.1.0-cdkv2.0) (2022-10-24)
-
 
 ### Features
 
-* migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
-
-
-
-
+- migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
 
 ## [1.1.18](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@1.1.17...@aws-amplify/graphql-schema-test-library@1.1.18) (2022-11-08)
 

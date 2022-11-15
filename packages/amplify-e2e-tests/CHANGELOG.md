@@ -3,39 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-cdkv2.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.14...amplify-category-api-e2e-tests@3.11.0-cdkv2.3) (2022-11-15)
+
+### Bug Fixes
+
+- throw error if invalid override or invalid custom stack error ([#982](https://github.com/aws-amplify/amplify-category-api/issues/982)) ([6dfeeba](https://github.com/aws-amplify/amplify-category-api/commit/6dfeeba627cd84a41eb8b4248856fa487c741f87))
+
+### Features
+
+- migrate index and model transformers to CDK v2 ([#860](https://github.com/aws-amplify/amplify-category-api/issues/860)) ([886ab6c](https://github.com/aws-amplify/amplify-category-api/commit/886ab6c1eb699f9a09f273c76b3c419c73004f9b))
+
 # [3.11.0-cdkv2.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.11.0-cdkv2.1...amplify-category-api-e2e-tests@3.11.0-cdkv2.2) (2022-11-03)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests
-
-
-
-
 
 # [3.11.0-cdkv2.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.11.0-cdkv2.0...amplify-category-api-e2e-tests@3.11.0-cdkv2.1) (2022-10-24)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests
 
-
-
-
-
 # [3.11.0-cdkv2.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.10...amplify-category-api-e2e-tests@3.11.0-cdkv2.0) (2022-10-24)
-
 
 ### Bug Fixes
 
-* **e2e:** set longer timeout for searchable migration ([#885](https://github.com/aws-amplify/amplify-category-api/issues/885)) ([64a9c0e](https://github.com/aws-amplify/amplify-category-api/commit/64a9c0efb79253246f5b85c78d1e32c5330ec906))
-* **graphql:** add rds datasource v1 fix ([#853](https://github.com/aws-amplify/amplify-category-api/issues/853)) ([9bf32c2](https://github.com/aws-amplify/amplify-category-api/commit/9bf32c21f8e7e7ea6e8d602846c1128f38fb9897))
-* **transformer:** sort resolvers to avoid circular dependency ([#797](https://github.com/aws-amplify/amplify-category-api/issues/797)) ([e9bf292](https://github.com/aws-amplify/amplify-category-api/commit/e9bf2926e4bf91a3d5cebde002728b4ba6385ea2))
-
+- **e2e:** set longer timeout for searchable migration ([#885](https://github.com/aws-amplify/amplify-category-api/issues/885)) ([64a9c0e](https://github.com/aws-amplify/amplify-category-api/commit/64a9c0efb79253246f5b85c78d1e32c5330ec906))
+- **graphql:** add rds datasource v1 fix ([#853](https://github.com/aws-amplify/amplify-category-api/issues/853)) ([9bf32c2](https://github.com/aws-amplify/amplify-category-api/commit/9bf32c21f8e7e7ea6e8d602846c1128f38fb9897))
+- **transformer:** sort resolvers to avoid circular dependency ([#797](https://github.com/aws-amplify/amplify-category-api/issues/797)) ([e9bf292](https://github.com/aws-amplify/amplify-category-api/commit/e9bf2926e4bf91a3d5cebde002728b4ba6385ea2))
 
 ### Features
 
-* migrate index and model transformers to CDK v2 ([#860](https://github.com/aws-amplify/amplify-category-api/issues/860)) ([886ab6c](https://github.com/aws-amplify/amplify-category-api/commit/886ab6c1eb699f9a09f273c76b3c419c73004f9b))
-
-
-
-
+- migrate index and model transformers to CDK v2 ([#860](https://github.com/aws-amplify/amplify-category-api/issues/860)) ([886ab6c](https://github.com/aws-amplify/amplify-category-api/commit/886ab6c1eb699f9a09f273c76b3c419c73004f9b))
 
 ## [3.10.14](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.13...amplify-category-api-e2e-tests@3.10.14) (2022-11-08)
 
