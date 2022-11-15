@@ -3,21 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.9-cdkv2.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-migration-tests@5.0.10...amplify-category-api-migration-tests@5.0.9-cdkv2.2) (2022-11-15)
+
+**Note:** Version bump only for package amplify-category-api-migration-tests
+
 ## [5.0.9-cdkv2.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-migration-tests@5.0.9-cdkv2.0...amplify-category-api-migration-tests@5.0.9-cdkv2.1) (2022-11-03)
 
 **Note:** Version bump only for package amplify-category-api-migration-tests
 
-
-
-
-
 ## [5.0.9-cdkv2.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-migration-tests@5.0.8...amplify-category-api-migration-tests@5.0.9-cdkv2.0) (2022-10-24)
 
 **Note:** Version bump only for package amplify-category-api-migration-tests
-
-
-
-
 
 ## [5.0.10](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-migration-tests@5.0.9...amplify-category-api-migration-tests@5.0.10) (2022-11-08)
 
