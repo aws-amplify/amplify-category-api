@@ -2003,12 +2003,16 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@aws-cdk/core@1.172.0", "@aws-cdk/core@^1.159.0", "@aws-cdk/core@~1.172.0":
 =======
 "@aws-cdk/cloudformation-diff@1.180.0", "@aws-cdk/cloudformation-diff@^1.159.0":
 =======
 "@aws-cdk/cloudformation-diff@^1.159.0":
 >>>>>>> 5d4e79c64 (refactor: 💡 Added fallback to switch cases)
+=======
+"@aws-cdk/cloudformation-diff@^1.159.0":
+>>>>>>> 88096a492 (fix: 🐛 VTL issue when field starts with an underscore)
   version "1.180.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/cloudformation-diff/-/cloudformation-diff-1.180.0.tgz#3bc7222a687504e698b60ecbe1509b413adf058d"
   integrity sha512-rXaRDwGlcOcsr0mek+oDZDJrIj/PozSaR3+0CsRNfKsZBDtoE6q43EyiqNQ4sufmRG+bP0GFUWUxgl1J09KgzQ==
@@ -2022,11 +2026,15 @@
     table "^6.8.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@aws-cdk/core@1.172.0", "@aws-cdk/core@~1.172.0":
 >>>>>>> 3f371006e (feat: 🎸 Added extra validation for bracket syntax in schema)
 =======
 "@aws-cdk/core@1.124.0", "@aws-cdk/core@1.172.0", "@aws-cdk/core@^1.159.0", "@aws-cdk/core@~1.124.0", "@aws-cdk/core@~1.172.0":
 >>>>>>> 5d4e79c64 (refactor: 💡 Added fallback to switch cases)
+=======
+"@aws-cdk/core@1.124.0", "@aws-cdk/core@1.172.0", "@aws-cdk/core@^1.159.0", "@aws-cdk/core@~1.124.0", "@aws-cdk/core@~1.172.0":
+>>>>>>> 88096a492 (fix: 🐛 VTL issue when field starts with an underscore)
   version "1.172.0"
   resolved "https://registry.npmjs.org/@aws-cdk/core/-/core-1.172.0.tgz#f47bdbd71648d45900780257ee62276ddbc9b0d5"
   integrity sha512-Hy7jNNzkNSf+oCmhhXnTcybunejTtCuGmfEFNZXsizcWBUjm0zD0K1X3kjD7Fqs0p+4xbaorCTgIB3Cu9qrF1Q==
