@@ -150,7 +150,7 @@ sandbox mode disabled, do not create an API Key.
 
         expect(() => schemaHasSandboxModeEnabled(schema, 'mockLink')).toThrowError(
           new InvalidBracketsError(
-            'Syntax Error: mismatched brackets found in the schema. Missing )',
+            'Syntax Error: mismatched brackets found in the schema. Missing ) at line 7 in the schema.',
           ),
         );
       });
@@ -171,7 +171,7 @@ sandbox mode disabled, do not create an API Key.
 
         expect(() => schemaHasSandboxModeEnabled(schema, 'mockLink')).toThrowError(
           new InvalidBracketsError(
-            'Syntax Error: mismatched brackets found in the schema. Unexpected )',
+            'Syntax Error: mismatched brackets found in the schema. Unexpected ) at line 7 in the schema.',
           ),
         );
       });

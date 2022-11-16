@@ -45,26 +45,33 @@ function matchesGlobalAuth(field: any): boolean {
 function bracketCheck(schema: string): void {
   const stack = [];
   const inverseBrackets = { '{': '}', '[': ']', '(': ')' };
+  let currentLine = 1;
   for (let i = 0; i < schema.length; i++) {
+    if (schema.charAt(i) === '\n') currentLine++;
     const c = schema.charAt(i);
     switch (c) {
       case '(':
       case '[':
       case '{':
-        stack.push(inverseBrackets[c]);
+        stack.push([inverseBrackets[c], currentLine]);
         break;
       case ')':
       case ']':
-      case '}':
-        if (c !== stack.pop()) {
-          throw new InvalidBracketsError(`Syntax Error: mismatched brackets found in the schema. Unexpected ${c}`);
+      case '}': {
+        const popped = stack.pop();
+        if (c !== (popped ? popped[0] : null)) {
+          throw new InvalidBracketsError(`Syntax Error: mismatched brackets found in the schema. Unexpected ${c} at line ${currentLine} in the schema.`);
         }
         break;
+      }
       default:
         break;
     }
   }
-  if (stack.length) throw new InvalidBracketsError(`Syntax Error: mismatched brackets found in the schema. Missing ${stack.pop()}`);
+  if (stack.length) {
+    const popped = stack.pop();
+    throw new InvalidBracketsError(`Syntax Error: mismatched brackets found in the schema. Missing ${popped[0]} at line ${popped[1]} in the schema.`);
+  }
 }
 
 export function schemaHasSandboxModeEnabled(schema: string, docLink: string): boolean {
