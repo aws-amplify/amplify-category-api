@@ -12,6 +12,12 @@ const AUTHORIZATION_RULE = 'AuthRule';
 const ALLOW = 'allow';
 const PUBLIC = 'public';
 
+interface BracketCheckParameters {
+  consecutiveQuotes: number,
+  checkStatus: boolean,
+  multilineComment: boolean
+}
+
 // eslint-disable-next-line consistent-return
 export async function showSandboxModePrompts(context: $TSContext): Promise<any> {
   if (!(await hasApiKey(context))) {
@@ -42,30 +48,61 @@ function matchesGlobalAuth(field: any): boolean {
   return ['global_auth_rule', 'globalAuthRule'].includes(field.name.value);
 }
 
+function toggleBracketCheck(c: string, consecutiveQuotes: number, checkStatus: boolean, multilineComment: boolean): BracketCheckParameters {
+  let quoteCount = consecutiveQuotes;
+  switch (c) {
+    case '"':
+      quoteCount++;
+      if (quoteCount >= 3 && checkStatus) {
+        return { consecutiveQuotes: 0, checkStatus: false, multilineComment: true };
+      } if (quoteCount >= 3) {
+        return { consecutiveQuotes: quoteCount, checkStatus: true, multilineComment: false };
+      }
+      break;
+    case '#':
+      if (!multilineComment) return { consecutiveQuotes, checkStatus: false, multilineComment };
+      break;
+    case '\n':
+      if (!multilineComment) return { consecutiveQuotes, checkStatus: true, multilineComment };
+      break;
+    default: break;
+  }
+  return { consecutiveQuotes: quoteCount, checkStatus, multilineComment };
+}
+
 function bracketCheck(schema: string): void {
   const stack = [];
+  let consecutiveQuotes = 0;
+  let multilineComment = false;
+  let checkStatus = true;
   const inverseBrackets = { '{': '}', '[': ']', '(': ')' };
   let currentLine = 1;
   for (let i = 0; i < schema.length; i++) {
-    if (schema.charAt(i) === '\n') currentLine++;
     const c = schema.charAt(i);
-    switch (c) {
-      case '(':
-      case '[':
-      case '{':
-        stack.push([inverseBrackets[c], currentLine]);
-        break;
-      case ')':
-      case ']':
-      case '}': {
-        const popped = stack.pop();
-        if (c !== (popped ? popped[0] : null)) {
-          throw new InvalidBracketsError(`Syntax Error: mismatched brackets found in the schema. Unexpected ${c} at line ${currentLine} in the schema.`);
+    const bracketCheckParams = toggleBracketCheck(c, consecutiveQuotes, checkStatus, multilineComment);
+    consecutiveQuotes = bracketCheckParams.consecutiveQuotes;
+    checkStatus = bracketCheckParams.checkStatus;
+    multilineComment = bracketCheckParams.multilineComment;
+    if (c === '\n') currentLine++;
+    if (checkStatus) {
+      switch (c) {
+        case '(':
+        case '[':
+        case '{':
+          stack.push([inverseBrackets[c], currentLine]);
+          break;
+        case ')':
+        case ']':
+        case '}': {
+          const popped = stack.pop();
+          if (c !== (popped ? popped[0] : null)) {
+            throw new InvalidBracketsError(`Syntax Error: mismatched brackets found in the schema. Unexpected ${c} at line ${currentLine} in the schema.`);
+          }
+          break;
         }
-        break;
+        default:
+          break;
       }
-      default:
-        break;
     }
   }
   if (stack.length) {

@@ -178,6 +178,9 @@ sandbox mode disabled, do not create an API Key.
 
       it('verifies there are no mismatched brackets in schema', () => {
         const schema = `
+        """
+        ""this is a comment :)""
+        """
         # This "input" configures a global authorization rule to enable public access to
         # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
         input AMPLIFY {
