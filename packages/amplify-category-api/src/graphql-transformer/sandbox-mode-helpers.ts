@@ -75,12 +75,9 @@ function toggleBracketCheck(c: string, consecutiveQuotes: number, checkStatus: b
           consecutiveQuotes: quoteCount, checkStatus: false, multilineComment, stringMode: true,
         };
       }
-      if (quoteCount < 3) {
-        return {
-          consecutiveQuotes: quoteCount, checkStatus, multilineComment, stringMode,
-        };
-      }
-      break;
+      return {
+        consecutiveQuotes: quoteCount, checkStatus, multilineComment, stringMode,
+      };
     case '#':
       if (!multilineComment && !stringMode) {
         return {
