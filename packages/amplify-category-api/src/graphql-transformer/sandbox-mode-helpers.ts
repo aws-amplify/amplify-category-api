@@ -51,51 +51,33 @@ function matchesGlobalAuth(field: any): boolean {
 
 function toggleBracketCheck(c: string, consecutiveQuotes: number, checkStatus: boolean, multilineComment: boolean, stringMode: boolean)
   : BracketCheckParameters {
-  let quoteCount = consecutiveQuotes;
+  let [quoteCount, check, multiLine, str] = [consecutiveQuotes, checkStatus, multilineComment, stringMode];
   switch (c) {
     case '"':
       quoteCount++;
-      if (quoteCount >= 3 && checkStatus) {
-        return {
-          consecutiveQuotes: 0, checkStatus: false, multilineComment: true, stringMode,
-        };
+      if (quoteCount >= 3 && check) {
+        quoteCount = 0;
+        check = false;
+        multiLine = true;
+      } else if (quoteCount >= 3) {
+        check = true;
+        multiLine = false;
+      } else if ((quoteCount === 2 || (quoteCount === 1 && str)) && !multiLine) {
+        check = true;
+        str = false;
+      } else if (quoteCount === 1 && !multiLine) {
+        check = false;
+        str = true;
       }
-      if (quoteCount >= 3) {
-        return {
-          consecutiveQuotes: quoteCount, checkStatus: true, multilineComment: false, stringMode,
-        };
-      }
-      if ((quoteCount === 2 || (quoteCount === 1 && stringMode)) && !multilineComment) {
-        return {
-          consecutiveQuotes: quoteCount, checkStatus: true, multilineComment, stringMode: false,
-        };
-      }
-      if (quoteCount === 1 && !multilineComment) {
-        return {
-          consecutiveQuotes: quoteCount, checkStatus: false, multilineComment, stringMode: true,
-        };
-      }
-      return {
-        consecutiveQuotes: quoteCount, checkStatus, multilineComment, stringMode,
-      };
+      break;
     case '#':
-      if (!multilineComment && !stringMode) {
-        return {
-          consecutiveQuotes, checkStatus: false, multilineComment, stringMode,
-        };
-      }
-      break;
+      if (!multiLine && !str) check = false; break;
     case '\n':
-      if (!multilineComment) {
-        return {
-          consecutiveQuotes, checkStatus: true, multilineComment, stringMode,
-        };
-      }
-      break;
-    default: break;
+      if (!multiLine) check = true; break;
+    default: quoteCount = 0; break;
   }
   return {
-    consecutiveQuotes: 0, checkStatus, multilineComment, stringMode,
+    consecutiveQuotes: quoteCount, checkStatus: check, multilineComment: multiLine, stringMode: str,
   };
 }
 
