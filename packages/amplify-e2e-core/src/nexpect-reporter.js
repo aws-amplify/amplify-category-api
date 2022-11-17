@@ -74,7 +74,8 @@ class AmplifyCLIExecutionReporter {
           const recordings = mergeCliLog(r, result.CLITestRunner.logs.children, r.ancestorTitles);
 
           const recordingWithPath = recordings.map((r, index) => {
-            const commandAndParams = [r.cmd];
+            // the first command is always 'amplify', but r.cmd is the full path to the cli.. so this is more readable
+            const commandAndParams = ['amplify'];
             if(r.params){
               commandAndParams.push(...r.params);
             }
