@@ -136,12 +136,18 @@ sandbox mode disabled, do not create an API Key.
 
       it('checks for missing bracket in schema', () => {
         const schema = `
+        """
+        ""this is a comment :)""
+        Bracket mismatch in this comment (({}))}}}
+        """
+        # This is also a comment :)
         # This "input" configures a global authorization rule to enable public access to
         # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
         input AMPLIFY {
           globalAuthRule: AuthRule = { allow: public }
         } # FOR TESTING ONLY!
-        type Todo @model @auth(rules: [{ allow: owner }] {
+        type Todo @model @auth(rules: [{allow: owner groups: ["Admins#(accounts):)"] operations: [create, update, delete]} 
+                                       {allow: public, operations: [read] }] {
           id: ID!
           name: String!
           description: String
@@ -150,19 +156,25 @@ sandbox mode disabled, do not create an API Key.
 
         expect(() => schemaHasSandboxModeEnabled(schema, 'mockLink')).toThrowError(
           new InvalidBracketsError(
-            'Syntax Error: mismatched brackets found in the schema. Missing ) at line 7 in the schema.',
+            'Syntax Error: mismatched brackets found in the schema. Missing ) for opening bracket at line 12 in the schema.',
           ),
         );
       });
 
       it('checks for extra bracket in schema', () => {
         const schema = `
+        """
+        ""this is a comment :)""
+        Bracket mismatch in this comment (({}))}}}
+        """
+        # This is also a comment :)
         # This "input" configures a global authorization rule to enable public access to
         # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
         input AMPLIFY {
           globalAuthRule: AuthRule = { allow: public }
         } # FOR TESTING ONLY!
-        type Todo @model @auth(rules: [{ allow: owner }])) {
+        type Todo @model @auth(rules: [{allow: owner groups: ["Admins#(accounts):)"] operations: [create, update, delete]} 
+                                       {allow: public, operations: [read] }])) {
           id: ID!
           name: String!
           description: String
@@ -171,7 +183,7 @@ sandbox mode disabled, do not create an API Key.
 
         expect(() => schemaHasSandboxModeEnabled(schema, 'mockLink')).toThrowError(
           new InvalidBracketsError(
-            'Syntax Error: mismatched brackets found in the schema. Unexpected ) at line 7 in the schema.',
+            'Syntax Error: mismatched brackets found in the schema. Unexpected ) at line 13 in the schema.',
           ),
         );
       });
@@ -180,13 +192,24 @@ sandbox mode disabled, do not create an API Key.
         const schema = `
         """
         ""this is a comment :)""
+        Bracket mismatch in this comment (({}))}}}
+        "And this one 
+        And this"
+        ""Also this
+        Also this""
+        # This 2 hashes #
+        #
+        ""
+        "
         """
+        # This is also a comment :)
         # This "input" configures a global authorization rule to enable public access to
         # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
         input AMPLIFY {
           globalAuthRule: AuthRule = { allow: public }
         } # FOR TESTING ONLY!
-        type Todo @model @auth(rules: [{ allow: owner }]) {
+        type Todo @model @auth(rules: [{allow: owner groups: ["Admins#(accounts):)"] operations: [create, update, delete]} 
+                                       {allow: public, operations: [read] }]) {
           id: ID!
           name: String!
           description: String

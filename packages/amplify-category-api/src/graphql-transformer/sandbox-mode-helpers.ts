@@ -16,6 +16,7 @@ interface BracketCheckParameters {
   consecutiveQuotes: number,
   checkStatus: boolean,
   multilineComment: boolean
+  stringMode: boolean
 }
 
 // eslint-disable-next-line consistent-return
@@ -48,26 +49,57 @@ function matchesGlobalAuth(field: any): boolean {
   return ['global_auth_rule', 'globalAuthRule'].includes(field.name.value);
 }
 
-function toggleBracketCheck(c: string, consecutiveQuotes: number, checkStatus: boolean, multilineComment: boolean): BracketCheckParameters {
+function toggleBracketCheck(c: string, consecutiveQuotes: number, checkStatus: boolean, multilineComment: boolean, stringMode: boolean)
+  : BracketCheckParameters {
   let quoteCount = consecutiveQuotes;
   switch (c) {
     case '"':
       quoteCount++;
       if (quoteCount >= 3 && checkStatus) {
-        return { consecutiveQuotes: 0, checkStatus: false, multilineComment: true };
-      } if (quoteCount >= 3) {
-        return { consecutiveQuotes: quoteCount, checkStatus: true, multilineComment: false };
+        return {
+          consecutiveQuotes: 0, checkStatus: false, multilineComment: true, stringMode,
+        };
+      }
+      if (quoteCount >= 3) {
+        return {
+          consecutiveQuotes: quoteCount, checkStatus: true, multilineComment: false, stringMode,
+        };
+      }
+      if ((quoteCount === 2 || (quoteCount === 1 && stringMode)) && !multilineComment) {
+        return {
+          consecutiveQuotes: quoteCount, checkStatus: true, multilineComment, stringMode: false,
+        };
+      }
+      if (quoteCount === 1 && !multilineComment) {
+        return {
+          consecutiveQuotes: quoteCount, checkStatus: false, multilineComment, stringMode: true,
+        };
+      }
+      if (quoteCount < 3) {
+        return {
+          consecutiveQuotes: quoteCount, checkStatus, multilineComment, stringMode,
+        };
       }
       break;
     case '#':
-      if (!multilineComment) return { consecutiveQuotes, checkStatus: false, multilineComment };
+      if (!multilineComment && !stringMode) {
+        return {
+          consecutiveQuotes, checkStatus: false, multilineComment, stringMode,
+        };
+      }
       break;
     case '\n':
-      if (!multilineComment) return { consecutiveQuotes, checkStatus: true, multilineComment };
+      if (!multilineComment) {
+        return {
+          consecutiveQuotes, checkStatus: true, multilineComment, stringMode,
+        };
+      }
       break;
     default: break;
   }
-  return { consecutiveQuotes: quoteCount, checkStatus, multilineComment };
+  return {
+    consecutiveQuotes: 0, checkStatus, multilineComment, stringMode,
+  };
 }
 
 function bracketCheck(schema: string): void {
@@ -75,14 +107,16 @@ function bracketCheck(schema: string): void {
   let consecutiveQuotes = 0;
   let multilineComment = false;
   let checkStatus = true;
+  let stringMode = false;
   const inverseBrackets = { '{': '}', '[': ']', '(': ')' };
   let currentLine = 1;
   for (let i = 0; i < schema.length; i++) {
     const c = schema.charAt(i);
-    const bracketCheckParams = toggleBracketCheck(c, consecutiveQuotes, checkStatus, multilineComment);
+    const bracketCheckParams = toggleBracketCheck(c, consecutiveQuotes, checkStatus, multilineComment, stringMode);
     consecutiveQuotes = bracketCheckParams.consecutiveQuotes;
     checkStatus = bracketCheckParams.checkStatus;
     multilineComment = bracketCheckParams.multilineComment;
+    stringMode = bracketCheckParams.stringMode;
     if (c === '\n') currentLine++;
     if (checkStatus) {
       switch (c) {
@@ -107,7 +141,7 @@ function bracketCheck(schema: string): void {
   }
   if (stack.length) {
     const popped = stack.pop();
-    throw new InvalidBracketsError(`Syntax Error: mismatched brackets found in the schema. Missing ${popped[0]} at line ${popped[1]} in the schema.`);
+    throw new InvalidBracketsError(`Syntax Error: mismatched brackets found in the schema. Missing ${popped[0]} for opening bracket at line ${popped[1]} in the schema.`);
   }
 }
 
