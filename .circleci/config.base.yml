@@ -100,6 +100,18 @@ jobs:
     environment:
       NODE_OPTIONS: --max-old-space-size=4096
 
+  validate_cdk_version:
+    <<: *linux-e2e-executor
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-category-api-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+      - run:
+          name: Validate cdk version
+          command: |
+            yarn ts-node .circleci/validate_cdk_version.ts
+
   lint:
     <<: *linux-e2e-executor
     steps:
@@ -414,6 +426,9 @@ workflows:
                 - l
                 - w
       - lint:
+          requires:
+            - build
+      - validate_cdk_version:
           requires:
             - build
       - test:
