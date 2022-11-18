@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0-beta.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.1.0-cdkv2.3...@aws-amplify/amplify-category-api@5.1.0-beta.0) (2022-11-18)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
 # [5.1.0-cdkv2.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.9...@aws-amplify/amplify-category-api@5.1.0-cdkv2.3) (2022-11-15)
 
 ### Bug Fixes
