@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.19-4.0.9-function-mapping-patch.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@1.1.18...@aws-amplify/graphql-schema-test-library@1.1.19-4.0.9-function-mapping-patch.0) (2022-11-23)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-test-library
+
 ## [1.1.18](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@1.1.17...@aws-amplify/graphql-schema-test-library@1.1.18) (2022-11-08)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-test-library

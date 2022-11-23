@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-function-transformer",
-  "version": "0.7.31",
+  "version": "0.7.32-4.0.9-function-mapping-patch.0",
   "description": "Amplify GraphQL @function transformer",
   "repository": {
     "type": "git",
