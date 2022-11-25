@@ -107,6 +107,34 @@ import {
 } from './utils';
 import { showDefaultIdentityClaimWarning, showOwnerCanReassignWarning } from './utils/warnings';
 
+/**
+ * util to get allowed roles for field
+ * if we have a rule like cognito private we can remove all other related roles from the field since it has top level
+ * access by the provider
+ */
+const getReadRolesForField = (acm: AccessControlMatrix, readRoles: Array<string>, fieldName: string): Array<string> => {
+  const hasCognitoPrivateRole = readRoles.some(r => r === 'userPools:private')
+    && acm.isAllowed('userPools:private', fieldName, 'get')
+    && acm.isAllowed('userPools:private', fieldName, 'list')
+    && acm.isAllowed('userPools:private', fieldName, 'sync')
+    && acm.isAllowed('userPools:private', fieldName, 'search')
+    && acm.isAllowed('userPools:private', fieldName, 'listen');
+  const hasOIDCPrivateRole = readRoles.some(r => r === 'oidc:private')
+    && acm.isAllowed('oidc:private', fieldName, 'get')
+    && acm.isAllowed('oidc:private', fieldName, 'list')
+    && acm.isAllowed('oidc:private', fieldName, 'sync')
+    && acm.isAllowed('oidc:private', fieldName, 'search')
+    && acm.isAllowed('oidc:private', fieldName, 'listen');
+  let allowedRoles = [...readRoles];
+
+  if (hasCognitoPrivateRole) {
+    allowedRoles = allowedRoles.filter(r => !(r.startsWith('userPools:') && r !== 'userPools:private'));
+  }
+  if (hasOIDCPrivateRole) {
+    allowedRoles = allowedRoles.filter(r => !(r.startsWith('oidc:') && r !== 'oidc:private'));
+  }
+  return allowedRoles;
+};
 // @ auth
 // changing the schema
 //  - transformSchema
@@ -190,7 +218,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     this.addTypeToResourceReferences(def.name.value, this.rules);
     // turn rules into roles and add into acm and roleMap
     this.convertRulesToRoles(acm, this.rules, isJoinType, undefined, undefined, context);
-    this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName, context.featureFlags, context.isProjectUsingDataStore()));
+    this.modelDirectiveConfig.set(typeName,
+      getModelConfig(modelDirective, typeName, context.featureFlags, context.isProjectUsingDataStore()));
     this.authModelConfig.set(typeName, acm);
   };
 
@@ -230,7 +259,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const fieldName = field.name.value;
     const getAuthRulesOptions = merge({ isField: true }, generateGetArgumentsInput(context.featureFlags));
     const rules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(directive), getAuthRulesOptions);
-    validateFieldRules(new DirectiveWrapper(directive), isParentTypeBuiltinType, modelDirective !== undefined, field.name.value, context.featureFlags);
+    validateFieldRules(new DirectiveWrapper(directive),
+      isParentTypeBuiltinType, modelDirective !== undefined, field.name.value, context.featureFlags);
     validateRules(rules, this.configuredAuthProviders, field.name.value);
 
     // regardless if a model directive is used we generate the policy for iam auth
@@ -243,7 +273,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       let acm: AccessControlMatrix;
       // check if the parent is already in the model config if not add it
       if (!this.modelDirectiveConfig.has(typeName)) {
-        this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName, context.featureFlags, context.isProjectUsingDataStore()));
+        this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName, context.featureFlags,
+          context.isProjectUsingDataStore()));
         acm = new AccessControlMatrix({
           name: parent.name.value,
           operations: MODEL_OPERATIONS,
@@ -373,12 +404,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         }
       });
       if (errorFields.length > 0 && modelNameConfig.subscriptions?.level === SubscriptionLevel.on) {
-        throw new InvalidDirectiveError(
-          `Because "${def.name.value}" has a field-level authorization rule and subscriptions are enabled,`
-            + ` you need to either apply field-level authorization rules to all required fields where all rules have read access ${JSON.stringify(
-              errorFields,
-            )}, make those fields nullable, or disable subscriptions for "${def.name.value}" (setting level to off or public).`,
-        );
+        throw new InvalidDirectiveError("When using field-level authorization rules you need to add rules to all of the model's required fields with at least read permissions. "
+        + `Found model "${def.name.value}" with required fields ${JSON.stringify(errorFields)} missing field-level authorization rules.\n\n`
+        + 'For more information visit https://docs.amplify.aws/cli/graphql/authorization-rules/#field-level-authorization-rules');
       }
       const mutationFields = getMutationFieldNames(this.modelDirectiveConfig.get(modelName)!);
       mutationFields.forEach(mutation => {
@@ -1371,7 +1399,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         if (directive.name.value === 'hasOne' ||
            (directive.name.value === 'belongsTo' &&
             relatedType.fields.some(f => getBaseType(f.type) === def.name.value && f.directives?.some(d => d.name.value === 'hasOne')))) {
-          allowedFields.add(getConnectionAttributeName(ctx.featureFlags, def.name.value, field, getObjectPrimaryKey(relatedType).name.value));
+          allowedFields.add(getConnectionAttributeName(ctx.featureFlags, def.name.value, field,
+            getObjectPrimaryKey(relatedType).name.value));
           getSortKeyFieldNames(def).forEach(sortKeyFieldName => {
             allowedFields.add(
               getSortKeyConnectionAttributeName(
@@ -1391,32 +1420,3 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     dataStoreFields.forEach(item => allowedFields.add(item));
   };
 }
-
-/**
- * util to get allowed roles for field
- * if we have a rule like cognito private we can remove all other related roles from the field since it has top level
- * access by the provider
- */
-const getReadRolesForField = (acm: AccessControlMatrix, readRoles: Array<string>, fieldName: string): Array<string> => {
-  const hasCognitoPrivateRole = readRoles.some(r => r === 'userPools:private')
-    && acm.isAllowed('userPools:private', fieldName, 'get')
-    && acm.isAllowed('userPools:private', fieldName, 'list')
-    && acm.isAllowed('userPools:private', fieldName, 'sync')
-    && acm.isAllowed('userPools:private', fieldName, 'search')
-    && acm.isAllowed('userPools:private', fieldName, 'listen');
-  const hasOIDCPrivateRole = readRoles.some(r => r === 'oidc:private')
-    && acm.isAllowed('oidc:private', fieldName, 'get')
-    && acm.isAllowed('oidc:private', fieldName, 'list')
-    && acm.isAllowed('oidc:private', fieldName, 'sync')
-    && acm.isAllowed('oidc:private', fieldName, 'search')
-    && acm.isAllowed('oidc:private', fieldName, 'listen');
-  let allowedRoles = [...readRoles];
-
-  if (hasCognitoPrivateRole) {
-    allowedRoles = allowedRoles.filter(r => !(r.startsWith('userPools:') && r !== 'userPools:private'));
-  }
-  if (hasOIDCPrivateRole) {
-    allowedRoles = allowedRoles.filter(r => !(r.startsWith('oidc:') && r !== 'oidc:private'));
-  }
-  return allowedRoles;
-};
