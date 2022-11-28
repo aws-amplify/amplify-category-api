@@ -1,3 +1,4 @@
+import { TransformerContractError } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-index-transformer';
@@ -226,88 +227,6 @@ describe('owner based @auth', () => {
     );
   });
 
-  test('implicit owner fields get added to the type', () => {
-    const authConfig: AppSyncAuthConfiguration = {
-      defaultAuthentication: {
-        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-      },
-      additionalAuthenticationProviders: [],
-    };
-    const transformer = new GraphQLTransform({
-      authConfig,
-      transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags,
-    });
-    const validSchema = `
-    type Post @model
-              @auth(rules: [
-                  {allow: owner, ownerField: "postOwner"}
-                  { allow: owner, ownerField: "customOwner", identityClaim: "sub"}
-              ])
-          {
-              id: ID!
-              title: String
-          }
-    `;
-    const out = transformer.transform(validSchema);
-    expect(out).toBeDefined();
-
-    const schema = parse(out.schema);
-    const postType = getObjectType(schema, 'Post');
-    expect(postType).toBeDefined();
-
-    const postOwnerField = getField(postType!, 'postOwner');
-    expect(postOwnerField).toBeDefined();
-
-    const customOwner = getField(postType!, 'customOwner');
-    expect(customOwner).toBeDefined();
-
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    expect((postOwnerField as any).type.name.value).toEqual('String');
-    expect((customOwner as any).type.name.value).toEqual('String');
-    /* eslint-enable */
-  });
-
-  test('implicit owner fields from field level auth get added to the type', () => {
-    const validSchema = `
-          type Post @model
-          {
-              id: ID
-              title: String
-              protectedField: String @auth(rules: [
-                  {allow: owner, ownerField: "postOwner"}
-                  { allow: owner, ownerField: "customOwner", identityClaim: "sub"}
-              ])
-          }`;
-    const authConfig: AppSyncAuthConfiguration = {
-      defaultAuthentication: {
-        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-      },
-      additionalAuthenticationProviders: [],
-    };
-    const transformer = new GraphQLTransform({
-      authConfig,
-      transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags,
-    });
-    const out = transformer.transform(validSchema);
-    expect(out).toBeDefined();
-    const schema = parse(out.schema);
-    const postType = getObjectType(schema, 'Post');
-    expect(postType).toBeDefined();
-
-    const postOwnerField = getField(postType!, 'postOwner');
-    expect(postOwnerField).toBeDefined();
-
-    const customOwner = getField(postType!, 'customOwner');
-    expect(customOwner).toBeDefined();
-
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    expect((postOwnerField as any).type.name.value).toEqual('String');
-    expect((customOwner as any).type.name.value).toEqual('String');
-    /* eslint-enable */
-  });
-
   test('owner fields on primaryKey create auth filter for scan operation', () => {
     const validSchema = `
     type FamilyMember @model @auth(rules: [
@@ -373,7 +292,6 @@ describe('owner based @auth', () => {
           following: [Follow]! @hasMany(indexName: "byFollower", fields: ["sub"])
           followers: [Follow]! @hasMany(indexName: "byFollowed", fields: ["sub"])
       }
-
       type Follow
         @model
         @auth(rules: [
@@ -382,7 +300,6 @@ describe('owner based @auth', () => {
         ownerSub: String!
           @primaryKey(sortKeyFields: ["followed_sub"])
           @index(name: "byFollower", sortKeyFields: ["createdAt"])
-
         followed_sub: String! @index(name: "byFollowed", sortKeyFields: ["createdAt"])
         createdAt: AWSDateTime!
       }
@@ -727,7 +644,7 @@ describe('owner based @auth', () => {
       );
     });
 
-    test('implicit owner fields get added to the type', () => {
+    test("implicit owner fields don't get added to the type", () => {
       const authConfig: AppSyncAuthConfiguration = {
         defaultAuthentication: {
           authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -745,7 +662,6 @@ describe('owner based @auth', () => {
       const validSchema = `
       type Post @model
                 @auth(rules: [
-                    {allow: owner, ownerField: "postOwner"}
                     { allow: owner, ownerField: "customOwner", identityClaim: "sub"}
                 ])
             {
@@ -753,33 +669,16 @@ describe('owner based @auth', () => {
                 title: String
             }
       `;
-      const out = transformer.transform(validSchema);
-      expect(out).toBeDefined();
-
-      const schema = parse(out.schema);
-      const postType = getObjectType(schema, 'Post');
-      expect(postType).toBeDefined();
-
-      const postOwnerField = getField(postType!, 'postOwner');
-      expect(postOwnerField).toBeDefined();
-
-      const customOwner = getField(postType!, 'customOwner');
-      expect(customOwner).toBeDefined();
-
-      /* eslint-disable @typescript-eslint/no-explicit-any */
-      expect((postOwnerField as any).type.name.value).toEqual('String');
-      expect((customOwner as any).type.name.value).toEqual('String');
-      /* eslint-enable */
+      expect(() => transformer.transform(validSchema)).toThrowError(new TransformerContractError('ownerField "customOwner" is not defined in model Post.'));
     });
 
-    test('implicit owner fields from field level auth get added to the type', () => {
+    test("implicit owner fields from field level auth don't get added to the type", () => {
       const validSchema = `
             type Post @model
             {
                 id: ID
                 title: String
                 protectedField: String @auth(rules: [
-                    {allow: owner, ownerField: "postOwner"}
                     { allow: owner, ownerField: "customOwner", identityClaim: "sub"}
                 ])
             }`;
@@ -797,22 +696,7 @@ describe('owner based @auth', () => {
           ...{ getBoolean: () => false },
         },
       });
-      const out = transformer.transform(validSchema);
-      expect(out).toBeDefined();
-      const schema = parse(out.schema);
-      const postType = getObjectType(schema, 'Post');
-      expect(postType).toBeDefined();
-
-      const postOwnerField = getField(postType!, 'postOwner');
-      expect(postOwnerField).toBeDefined();
-
-      const customOwner = getField(postType!, 'customOwner');
-      expect(customOwner).toBeDefined();
-
-      /* eslint-disable @typescript-eslint/no-explicit-any */
-      expect((postOwnerField as any).type.name.value).toEqual('String');
-      expect((customOwner as any).type.name.value).toEqual('String');
-      /* eslint-enable */
+      expect(() => transformer.transform(validSchema)).toThrowError(new TransformerContractError('ownerField "customOwner" is not defined in model Post.'));
     });
 
     test('owner fields on primaryKey create auth filter for scan operation', () => {
@@ -880,7 +764,6 @@ describe('owner based @auth', () => {
             following: [Follow]! @hasMany(indexName: "byFollower", fields: ["sub"])
             followers: [Follow]! @hasMany(indexName: "byFollowed", fields: ["sub"])
         }
-
         type Follow
           @model
           @auth(rules: [
@@ -889,7 +772,6 @@ describe('owner based @auth', () => {
           ownerSub: String!
             @primaryKey(sortKeyFields: ["followed_sub"])
             @index(name: "byFollower", sortKeyFields: ["createdAt"])
-
           followed_sub: String! @index(name: "byFollowed", sortKeyFields: ["createdAt"])
           createdAt: AWSDateTime!
         }

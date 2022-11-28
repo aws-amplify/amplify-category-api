@@ -75,6 +75,7 @@ const getSchema = (authDirective: string): string => `
     type Post @model ${authDirective} {
         id: ID!
         title: String!
+        editors: String
         createdAt: String
         updatedAt: String
     }`;
@@ -342,7 +343,7 @@ describe('schema generation directive tests', () => {
     });
 
     // Check that owner argument is present when only using owner auth rules
-    subscriptionType?.fields?.forEach(field => {
+    subscriptionType?.fields?.forEach((field) => {
       expect(field.arguments).toHaveLength(2);
       const ownerArg: InputValueDefinitionNode = field?.arguments![1];
       expect(ownerArg.name.value).toEqual('owner');
