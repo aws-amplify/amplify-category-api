@@ -105,7 +105,7 @@ import {
   getAuthDirectiveRules,
   READ_MODEL_OPERATIONS,
 } from './utils';
-import { showDefaultIdentityClaimWarning, showOwnerCanReassignWarning } from './utils/warnings';
+import { showDefaultIdentityClaimWarning, showOwnerCanReassignWarning, showOwnerFieldCaseWarning } from './utils/warnings';
 
 // @ auth
 // changing the schema
@@ -1043,11 +1043,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   addFieldsToObject = (ctx: TransformerTransformSchemaStepContextProvider, modelName: string, ownerFields: Array<string>): void => {
     const modelObject = ctx.output.getObject(modelName)!;
     const existingFields = collectFieldNames(modelObject);
-    const ownerFieldsToAdd = ownerFields.filter(field => !existingFields.includes(field));
-    ownerFieldsToAdd.forEach(ownerField => {
-      /* eslint-disable @typescript-eslint/no-explicit-any */
+    const ownerFieldsToAdd = ownerFields.filter((field) => !existingFields.includes(field));
+    const lowerCaseExistingFields = existingFields.map((field) => field.toLowerCase());
+    ownerFieldsToAdd.forEach((ownerField) => {
+      const warningField = lowerCaseExistingFields.find((field) => field === ownerField.toLowerCase());
+      if (warningField) showOwnerFieldCaseWarning(ownerField, warningField, modelName);
       (modelObject as any).fields.push(makeField(ownerField, [], makeNamedType('String')));
-      /* eslint-enable */
     });
     ctx.output.putType(modelObject);
   }
