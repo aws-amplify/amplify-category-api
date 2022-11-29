@@ -2,12 +2,11 @@ import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { SSMClient } from '../../../../../provider-utils/awscloudformation/utils/rds-secrets/ssmClient';
 import aws from 'aws-sdk';
 
-const secretName = 'mock-test-secret-name';
-const secretValue = 'mock-test-secret-value';
-const mockPutParameter = jest.fn(({ Name, Value, Type, Overwrite }) => { return { promise: () => {} }; });
-const mockDeleteParameter = jest.fn(({ Name }) => { return { promise: () => {} }; });
-const mockDeleteParameters = jest.fn(({ Names }) => { return { promise: () => {} }; });
-const mockGetParameters = jest.fn(({ Names }) => { return { promise: () => Promise.resolve({ Parameters: [{ Name: secretName, Value: secretValue }] }) }; });
+const mockPutParameter = jest.fn(({ Name, Value, Type, Overwrite }) => {
+  return {
+    promise: () => {},
+  };
+});
 
 jest.mock('aws-sdk', () => {
   return {
@@ -18,10 +17,7 @@ jest.mock('aws-sdk', () => {
     },
     SSM: jest.fn(() => {
       return {
-        putParameter: mockPutParameter,
-        deleteParameter: mockDeleteParameter,
-        deleteParameters: mockDeleteParameters,
-        getParameters: mockGetParameters
+        putParameter: mockPutParameter
       };
     }),
   };
@@ -43,6 +39,8 @@ describe('SSM client configuration', () => {
 
   test('able to set the secret value', async () => {
     const ssmClient = await SSMClient.getInstance(mockContext);
+    const secretName = 'mock-test-secret-name';
+    const secretValue = 'mock-test-secret-value';
     
     ssmClient.setSecret(secretName, secretValue);
     expect(mockPutParameter).toBeCalledWith({
@@ -50,33 +48,6 @@ describe('SSM client configuration', () => {
       Overwrite: true,
       Type: 'SecureString',
       Value: secretValue
-    });
-  });
-
-  test('able to get the secret value', async () => {
-    const ssmClient = await SSMClient.getInstance(mockContext);
-    const result = await ssmClient.getSecrets([secretName]);
-
-    expect(mockGetParameters).toBeCalledWith({
-      Names: [secretName],
-      WithDecryption: true
-    });
-    expect(result).toEqual([{"secretName": secretName, "secretValue": secretValue}]);
-  });
-
-  test('able to delete the secret', async () => {
-    const ssmClient = await SSMClient.getInstance(mockContext);
-    ssmClient.deleteSecret(secretName);
-    expect(mockDeleteParameter).toBeCalledWith({
-      Name: secretName
-    });
-  });
-
-  test('able to delete multiple secrets', async () => {
-    const ssmClient = await SSMClient.getInstance(mockContext);
-    ssmClient.deleteSecrets([secretName]);
-    expect(mockDeleteParameters).toBeCalledWith({
-      Names: [secretName]
     });
   });
 });
