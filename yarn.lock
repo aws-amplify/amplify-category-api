@@ -212,6 +212,34 @@
     prettier "^1.19.1"
     yargs "^15.1.0"
 
+"@aws-amplify/graphql-transformer-core@^1.1.0-cdkv2.2":
+  version "1.1.0-cdkv2.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-transformer-core/-/graphql-transformer-core-1.1.0-cdkv2.2.tgz#b0731750462ce2629fde3fae43598a0388106332"
+  integrity sha512-3OyHEeeelldJ+z09tXpsMCX3dTRIYAbRDeTYnTVAOFanhDhmuLO/MB91BruqMBUA8EqZcYb0oL6CX315jdTXTQ==
+  dependencies:
+    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-cdkv2.2"
+    "@aws-cdk/aws-appsync-alpha" "~2.44.0-alpha.0"
+    aws-cdk-lib "~2.44.0"
+    constructs "^10.0.5"
+    fs-extra "^8.1.0"
+    graphql "^14.5.8"
+    graphql-transformer-common "4.24.0"
+    lodash "^4.17.21"
+    md5 "^2.3.0"
+    object-hash "^3.0.0"
+    ts-dedent "^2.0.0"
+    vm2 "^3.9.8"
+
+"@aws-amplify/graphql-transformer-interfaces@2.1.0-cdkv2.2", "@aws-amplify/graphql-transformer-interfaces@^2.1.0-cdkv2.2":
+  version "2.1.0-cdkv2.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-transformer-interfaces/-/graphql-transformer-interfaces-2.1.0-cdkv2.2.tgz#838d40474fdc94517d3d461f730a0002a6b88fcf"
+  integrity sha512-/mmnZgWd/JACxytgnafKiVR+oO0MbKEKVVeng7xLy/vefdPM+RDb8qCqix8MqIx9yPjXItydpBOyP3G20+vvGQ==
+  dependencies:
+    "@aws-cdk/aws-appsync-alpha" "~2.44.0-alpha.0"
+    aws-cdk-lib "~2.44.0"
+    constructs "^10.0.5"
+    graphql "^14.5.8"
+
 "@aws-amplify/graphql-types-generator@3.0.0":
   version "3.0.0"
   resolved "https://registry.npmjs.org/@aws-amplify/graphql-types-generator/-/graphql-types-generator-3.0.0.tgz#6e9dba889ed303fc7c46248154f36d8ba4a30aee"
