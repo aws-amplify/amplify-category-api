@@ -60,7 +60,7 @@
     "graphql-predictions-transformer": "3.2.44-beta.0",
     "graphql-relational-schema-transformer": "2.21.10",
     "graphql-transformer-common": "4.24.0",
-    "graphql-transformer-core": "7.6.7-beta.0",
+    "graphql-transformer-core": "8.0.0-beta.0",
     "graphql-versioned-transformer": "5.2.44-beta.0",
     "import-from": "^3.0.0",
     "import-global": "^0.1.0",

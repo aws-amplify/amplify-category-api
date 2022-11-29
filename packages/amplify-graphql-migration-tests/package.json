@@ -54,7 +54,7 @@
     "graphql-dynamodb-transformer": "7.2.44-beta.0",
     "graphql-http-transformer": "5.2.44-beta.0",
     "graphql-key-transformer": "3.2.44-beta.0",
-    "graphql-transformer-core": "7.6.7-beta.0",
+    "graphql-transformer-core": "8.0.0-beta.0",
     "graphql-versioned-transformer": "5.2.44-beta.0"
   },
   "peerDependencies": {
