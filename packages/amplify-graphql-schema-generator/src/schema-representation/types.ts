@@ -2,7 +2,9 @@ export type FieldType = DefaultType | CustomType | ListType | NonNullType;
 
 export interface DefaultType {
   readonly kind: 'Scalar';
-  readonly name: 'String' | 'ID' | 'Int' | 'Float' | 'AWSJSON' | 'AWSDate' | 'AWSTime' | 'AWSDateTime' | 'AWSTimestamp';
+  readonly name: 'String' | 'ID' | 'Int' | 'Float' | 'AWSJSON' 
+    | 'AWSDate' | 'AWSTime' | 'AWSDateTime' | 'AWSTimestamp'
+    | 'Boolean' | 'AWSEmail' | 'AWSPhone' | 'AWSURL' | 'AWSIPAddress';
 }
 
 export interface CustomType {
@@ -22,7 +24,7 @@ export interface NonNullType {
 
 export interface DefaultValue {
   readonly kind: 'DB_GENERATED' | 'TRANSFORMER_GENERATED';
-  readonly value: string | number;
+  readonly value: string | number | boolean;
 }
 
 export class Field {
@@ -59,7 +61,7 @@ export class Model {
 
   public addField(field: Field): void {
     if (this.hasField(field.name)) {
-      throw new Error("Field already exists.");
+      throw new Error(`Field "${field.name}" already exists.`);
     }
     this.fields.push(field);
   }
@@ -76,7 +78,7 @@ export class Model {
 
   public addIndex(name: string, fields: string[]): void {
     if (this.hasIndex(name)) {
-      throw new Error("Index already exists.");
+      throw new Error(`Index "${name}" already exists.`);
     }
     const index = new Index(name);
     index.setFields(fields);
