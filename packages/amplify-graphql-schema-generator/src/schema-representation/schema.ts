@@ -15,8 +15,9 @@ export class Schema {
   }
 
   public addModel(model: Model): void {
-    if (this.hasModel(model.getName())) {
-      throw new Error("Model already exists");
+    const modelName = model.getName();
+    if (this.hasModel(modelName)) {
+      throw new Error(`Model "${modelName}" already exists`);
     }
     this.models.push(model);
   }
