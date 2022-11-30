@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0-beta.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@2.1.0-beta.0...@aws-amplify/graphql-auth-transformer@2.1.0-beta.1) (2022-11-30)
+
+### Bug Fixes
+
+- 🐛 VTL issue when field starts with an underscore ([941f225](https://github.com/aws-amplify/amplify-category-api/commit/941f225df3ab4dabd87cf986655eb332784815d7)), closes [#735](https://github.com/aws-amplify/amplify-category-api/issues/735)
+
 # [2.1.0-beta.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@2.1.0-cdkv2.3...@aws-amplify/graphql-auth-transformer@2.1.0-beta.0) (2022-11-18)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

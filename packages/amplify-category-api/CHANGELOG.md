@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0-beta.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.1.0-beta.0...@aws-amplify/amplify-category-api@5.1.0-beta.1) (2022-11-30)
+
+### Features
+
+- 🎸 Added bracket mismatch error detection ([40fdd88](https://github.com/aws-amplify/amplify-category-api/commit/40fdd885e5553ea4b087ff15b1305328a37fdecd)), closes [#107](https://github.com/aws-amplify/amplify-category-api/issues/107)
+
 # [5.1.0-beta.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.1.0-cdkv2.3...@aws-amplify/amplify-category-api@5.1.0-beta.0) (2022-11-18)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

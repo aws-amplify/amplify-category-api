@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.0.0-beta.1](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@7.6.7-beta.0...graphql-transformer-core@8.0.0-beta.1) (2022-11-30)
+
+**Note:** Version bump only for package graphql-transformer-core
+
 ## [7.6.7-beta.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@7.6.7-cdkv2.1...graphql-transformer-core@7.6.7-beta.0) (2022-11-18)
 
 **Note:** Version bump only for package graphql-transformer-core
