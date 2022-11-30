@@ -274,3 +274,119 @@ describe('showOwnerCanReassignWarning', () => {
     });
   });
 });
+
+describe('showOwnerFieldCaseWarning', () => {
+  const OWNER_FIELD_CASE_MESSAGE = expect.stringContaining('are getting added to your schema but could be referencing the same owner field. ');
+  const transformTestSchema = (schema: string): void => {
+    const transformer = new GraphQLTransform({
+      authConfig: {
+        defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' },
+        additionalAuthenticationProviders: [],
+      },
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+      featureFlags: {
+        getBoolean: jest.fn(),
+        getNumber: jest.fn(),
+        getObject: jest.fn(),
+      },
+    });
+    transformer.transform(schema);
+  };
+  test('does not show message with case matching fields', () => {
+    const validSchema = `
+type Invoice
+  @model
+  @auth(
+    rules: [
+      { allow: owner, ownerField: "storeId", operations: [create, read] }
+      { allow: owner, ownerField: "customerId", operations: [create, read] }
+      { allow: owner }
+    ]
+  ) {
+  id: ID!
+  items: [String]
+  storeId: ID!
+  customerId: ID!
+}
+`;
+    transformTestSchema(validSchema);
+    expect(printer.warn).not.toBeCalledWith(OWNER_FIELD_CASE_MESSAGE);
+  });
+
+  test('does not show message with no auth rules', () => {
+    const validSchema = `
+type Invoice
+  @model {
+  id: ID!
+  items: [String]
+  storeId: ID!
+  customerId: ID!
+}
+`;
+    transformTestSchema(validSchema);
+    expect(printer.warn).not.toBeCalledWith(OWNER_FIELD_CASE_MESSAGE);
+  });
+  test('shows message once with one case mismatch in fields', () => {
+    const oneCaseMismatchSchema = `
+type Invoice
+  @model
+  @auth(
+    rules: [
+      { allow: owner, ownerField: "storeID", operations: [create, read] }
+      { allow: owner, ownerField: "customerId", operations: [create, read] }
+      { allow: owner }
+    ]
+  ) {
+  id: ID!
+  items: [String]
+  storeId: ID!
+  customerId: ID!
+}
+`;
+    transformTestSchema(oneCaseMismatchSchema);
+    expect(printer.warn).toBeCalledWith('WARNING: Schema field "storeId" and ownerField "storeID" in type Invoice are getting added to your schema but could be referencing the same owner field. If this is not intentional, you may want to change one of the fields to the correct name.\n');
+  });
+
+  test('shows message twice with two case mismatch in fields', () => {
+    const twoCaseMismatchSchema = `
+type Invoice
+  @model
+  @auth(
+    rules: [
+      { allow: owner, ownerField: "storeID", operations: [create, read] }
+      { allow: owner, ownerField: "customerID", operations: [create, read] }
+      { allow: owner }
+    ]
+  ) {
+  id: ID!
+  items: [String]
+  storeId: ID!
+  customerId: ID!
+}
+`;
+    transformTestSchema(twoCaseMismatchSchema);
+    expect(printer.warn).toBeCalledWith('WARNING: Schema field "storeId" and ownerField "storeID" in type Invoice are getting added to your schema but could be referencing the same owner field. If this is not intentional, you may want to change one of the fields to the correct name.\n');
+    expect(printer.warn).toBeCalledWith('WARNING: Schema field "customerId" and ownerField "customerID" in type Invoice are getting added to your schema but could be referencing the same owner field. If this is not intentional, you may want to change one of the fields to the correct name.\n');
+  });
+  test('shows message with implicit owner field', () => {
+    const twoCaseMismatchSchema = `
+type Invoice
+  @model
+  @auth(
+    rules: [
+      { allow: owner, ownerField: "storeId", operations: [create, read] }
+      { allow: owner, ownerField: "customerId", operations: [create, read] }
+      { allow: owner }
+    ]
+  ) {
+  id: ID!
+  items: [String]
+  storeId: ID!
+  customerId: ID!
+  Owner: String
+}
+`;
+    transformTestSchema(twoCaseMismatchSchema);
+    expect(printer.warn).toBeCalledWith('WARNING: Schema field "Owner" and ownerField "owner" in type Invoice are getting added to your schema but could be referencing the same owner field. If this is not intentional, you may want to change one of the fields to the correct name.\n');
+  });
+});
