@@ -54,6 +54,10 @@ const featureFlags = {
 // to deal with subscriptions in node env
 (global as any).WebSocket = require('ws');
 
+import { resolveTestRegion } from '../testSetup';
+
+const AWS_REGION = resolveTestRegion();
+
 // delay times
 const SUBSCRIPTION_DELAY = 10000;
 const PROPAGATION_DELAY = 5000;
@@ -62,7 +66,6 @@ const SUBSCRIPTION_TIMEOUT = 10000;
 
 jest.setTimeout(JEST_TIMEOUT);
 
-const AWS_REGION = 'us-west-2';
 const cf = new CloudFormationClient(AWS_REGION);
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `SubscriptionAuthTests-${BUILD_TIMESTAMP}`;

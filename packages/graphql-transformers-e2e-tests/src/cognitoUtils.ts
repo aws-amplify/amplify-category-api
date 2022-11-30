@@ -15,6 +15,9 @@ import { IAM as cfnIAM, Cognito as cfnCognito } from 'cloudform-types';
 import { CognitoIdentityServiceProvider as CognitoClient, CognitoIdentity } from 'aws-sdk';
 import TestStorage from './TestStorage';
 import DeploymentResources from 'graphql-transformer-core/lib/DeploymentResources';
+import { resolveTestRegion } from './testSetup';
+
+const region = resolveTestRegion();
 
 interface E2Econfiguration {
   STACK_NAME?: string;
@@ -26,13 +29,13 @@ interface E2Econfiguration {
   USER_POOL_ID?: string;
 }
 
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: 'us-west-2' });
+const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: region });
 
 export function configureAmplify(userPoolId: string, userPoolClientId: string, identityPoolId?: string) {
   Amplify.configure({
     Auth: {
       // REQUIRED - Amazon Cognito Region
-      region: 'us-west-2',
+      region: region,
       userPoolId: userPoolId,
       userPoolWebClientId: userPoolClientId,
       storage: new TestStorage(),
