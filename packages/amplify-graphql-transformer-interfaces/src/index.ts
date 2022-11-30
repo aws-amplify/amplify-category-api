@@ -33,3 +33,11 @@ export {
 } from './graphql-api-provider';
 
 export { TransformHostProvider, DynamoDbDataSourceOptions } from './transform-host-provider';
+
+export {
+  DeploymentResources,
+  NestedStacks,
+  ResolversFunctionsAndSchema,
+  StackMapping,
+  Template,
+} from './deployment-resources';

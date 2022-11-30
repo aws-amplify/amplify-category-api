@@ -6,7 +6,7 @@ import { ObjectTypeDefinitionNode, print } from 'graphql';
 import { stripDirectives } from './stripDirectives';
 import { SchemaResourceUtil } from './util/SchemaResourceUtil';
 import splitStack from './util/splitStack';
-import { DeploymentResources, ResolversFunctionsAndSchema, ResolverMap } from './DeploymentResources';
+import { DeploymentResources, ResolversFunctionsAndSchema } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResourceConstants } from 'graphql-transformer-common';
 
 export class TransformFormatter {
@@ -141,10 +141,11 @@ export class TransformFormatter {
       functions: functionsMap,
       pipelineFunctions: pipelineFunctionMap,
       schema,
+      userOverriddenSlots: [],
     };
   }
 
-  private replaceResolverRecord(resourceName: string, ctx: TransformerContext): ResolverMap {
+  private replaceResolverRecord(resourceName: string, ctx: TransformerContext): Record<string, string> {
     const resolverResource = ctx.template.Resources[resourceName];
 
     const requestMappingTemplate = resolverResource.Properties.RequestMappingTemplate;
@@ -169,7 +170,7 @@ export class TransformFormatter {
     return {};
   }
 
-  private replaceFunctionConfigurationRecord(resourceName: string, ctx: TransformerContext): ResolverMap {
+  private replaceFunctionConfigurationRecord(resourceName: string, ctx: TransformerContext): Record<string, string> {
     const functionConfiguration = ctx.template.Resources[resourceName];
 
     const requestMappingTemplate = functionConfiguration.Properties.RequestMappingTemplate;

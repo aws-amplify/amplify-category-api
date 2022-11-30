@@ -1,7 +1,7 @@
 import {
   ISynthesisSession, Stack, LegacyStackSynthesizer, FileAssetSource, FileAssetLocation, CfnParameter,
 } from 'aws-cdk-lib';
-import Template from '../transformation/types';
+import { Template } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerRootStack } from './root-stack';
 
 /**

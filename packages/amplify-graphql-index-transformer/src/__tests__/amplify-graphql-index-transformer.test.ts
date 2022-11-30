@@ -4,9 +4,11 @@ import {
   GraphQLTransform,
   SyncConfig,
   validateModelSchema,
-  Template,
 } from '@aws-amplify/graphql-transformer-core';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  FeatureFlagProvider,
+  Template,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { Template as AssertionTemplate } from 'aws-cdk-lib/assertions';
 import { DocumentNode, parse } from 'graphql';
 import { IndexTransformer, PrimaryKeyTransformer } from '..';

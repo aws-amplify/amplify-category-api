@@ -1,8 +1,10 @@
 /* eslint-disable no-new */
 import {
   AppSyncAuthConfiguration,
+  DeploymentResources,
   FeatureFlagProvider,
   GraphQLAPIProvider,
+  Template,
   TransformerPluginProvider,
   TransformHostProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -42,7 +44,7 @@ import { adoptAuthModes, IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } fr
 import * as SyncUtils from './sync-utils';
 import { MappingTemplate } from '../cdk-compat';
 
-import Template, { DeploymentResources, UserDefinedSlot, OverrideConfig } from './types';
+import { UserDefinedSlot, OverrideConfig } from './types';
 import {
   makeSeenTransformationKey,
   matchArgumentDirective,
