@@ -35,7 +35,7 @@ exports[`does not generate field resolvers when private rule takes precedence ov
 #if( $operation == \\"Mutation\\" )
   $util.toJson(null)
 #else
-  $util.toJson($context.source.ssn)
+  $util.toJson($context.source[\\"ssn\\"])
 #end
 ## [End] Checking for allowed operations which can return this field. **"
 `;
@@ -85,7 +85,7 @@ exports[`generates field resolver for other provider rules even if private remov
 #if( $operation == \\"Mutation\\" )
   $util.toJson(null)
 #else
-  $util.toJson($context.source.ssn)
+  $util.toJson($context.source[\\"ssn\\"])
 #end
 ## [End] Checking for allowed operations which can return this field. **"
 `;
@@ -257,7 +257,7 @@ exports[`with identity claim feature flag disabled does not generate field resol
 #if( $operation == \\"Mutation\\" )
   $util.toJson(null)
 #else
-  $util.toJson($context.source.ssn)
+  $util.toJson($context.source[\\"ssn\\"])
 #end
 ## [End] Checking for allowed operations which can return this field. **"
 `;
@@ -298,7 +298,7 @@ exports[`with identity claim feature flag disabled generates field resolver for 
 #if( $operation == \\"Mutation\\" )
   $util.toJson(null)
 #else
-  $util.toJson($context.source.ssn)
+  $util.toJson($context.source[\\"ssn\\"])
 #end
 ## [End] Checking for allowed operations which can return this field. **"
 `;
