@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.11.0-beta.0...amplify-category-api-e2e-tests@3.11.0-beta.1) (2022-11-30)
+
+### Bug Fixes
+
+- cleanup script does not run if tests fail ([#1000](https://github.com/aws-amplify/amplify-category-api/issues/1000)) ([ee13648](https://github.com/aws-amplify/amplify-category-api/commit/ee1364888fbf5012348b2417a28b8b4aa7fbe239))
+
 # [3.11.0-beta.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.11.0-cdkv2.3...amplify-category-api-e2e-tests@3.11.0-beta.0) (2022-11-18)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests
