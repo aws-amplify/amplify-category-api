@@ -1,12 +1,13 @@
-import { Lambda } from 'aws-sdk';
+import { Credentials, Lambda } from 'aws-sdk';
 import * as fs from 'fs';
 import * as path from 'path';
 
 export class LambdaHelper {
   client: Lambda;
-  constructor(region: string = 'us-west-2') {
+  constructor(region: string = 'us-west-2', credentials?: Credentials) {
     this.client = new Lambda({
       region,
+      credentials
     });
   }
 
@@ -28,5 +29,14 @@ export class LambdaHelper {
 
   async deleteFunction(name: string) {
     return await this.client.deleteFunction({ FunctionName: name }).promise();
+  }
+
+  async addAppSyncCrossAccountAccess(accountId: string, name: string) {
+    await this.client.addPermission( {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: name,
+      Principal: `arn:aws:iam::${accountId}:root`,
+      StatementId: 'cross-account-appsync-lambda-access'
+    }).promise();
   }
 }
