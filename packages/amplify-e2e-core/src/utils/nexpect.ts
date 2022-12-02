@@ -316,7 +316,7 @@ function chain(context: Context): ExecutionContext {
     sendCtrlA: function (): ExecutionContext {
       var _send: ExecutionStep = {
         fn: () => {
-          context.process.write(`${CONTROL_A}${EOL}`);
+          context.process.write(`${CONTROL_A}`);
           return true;
         },
         name: '_send',

@@ -19,10 +19,11 @@ import {
   createUserPoolClient,
   signupUser,
 } from '../cognitoUtils';
+import { resolveTestRegion } from '../testSetup';
+
+const AWS_REGION = resolveTestRegion();
 
 jest.setTimeout(2000000);
-
-const AWS_REGION = 'us-west-2';
 
 const cf = new CloudFormationClient(AWS_REGION);
 const customS3Client = new S3Client(AWS_REGION);

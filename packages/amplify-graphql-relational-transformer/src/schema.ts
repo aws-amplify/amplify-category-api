@@ -148,6 +148,9 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
   const sortKeyFields = getSortKeyFields(ctx, relatedType);
   const primaryKeyConnectionFieldType = getPrimaryKeyConnectionFieldType(ctx, primaryKeyField);
 
+  // The nullabilty of connection fields for hasOne depends on the hasOne field
+  // Whereas in update input, they are always optional
+  const isConnectionFieldsNonNull = isNonNullType(field.type);
   const typeObject = ctx.output.getType(object.name.value) as ObjectTypeDefinitionNode;
   if (typeObject) {
     updateTypeWithConnectionFields(
@@ -158,6 +161,7 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
       primaryKeyConnectionFieldType,
       field,
       sortKeyFields,
+      isConnectionFieldsNonNull,
     );
   }
 
@@ -165,13 +169,15 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
   const createInput = ctx.output.getType(createInputName) as InputObjectTypeDefinitionNode;
 
   if (createInput) {
-    updateInputWithConnectionFields(ctx, createInput, object, connectionAttributeName, primaryKeyConnectionFieldType, field, sortKeyFields);
+    //HasOne connenction fields in create input should respect the nullability of the relational field
+    updateInputWithConnectionFields(ctx, createInput, object, connectionAttributeName, primaryKeyConnectionFieldType, field, sortKeyFields, isConnectionFieldsNonNull);
   }
 
   const updateInputName = ModelResourceIDs.ModelUpdateInputObjectName(object.name.value);
   const updateInput = ctx.output.getType(updateInputName) as InputObjectTypeDefinitionNode;
   if (updateInput) {
-    updateInputWithConnectionFields(ctx, updateInput, object, connectionAttributeName, primaryKeyConnectionFieldType, field, sortKeyFields);
+    //Connection fields in update input should be always nullable which stays consistent with other fields
+    updateInputWithConnectionFields(ctx, updateInput, object, connectionAttributeName, primaryKeyConnectionFieldType, field, sortKeyFields, false);
   }
 
   const filterInputName = toPascalCase(['Model', object.name.value, 'FilterInput']);
@@ -262,6 +268,9 @@ export const ensureHasManyConnectionField = (
   const relatedTypeObject = ctx.output.getType(relatedType.name.value) as ObjectTypeDefinitionNode;
   const connectionAttributeName = getConnectionAttributeName(ctx.featureFlags, object.name.value, field.name.value, connectionFieldName);
 
+  // The nullabilty of connection fields for hasMany depends on the hasMany field
+  // Whereas in update input, they are always optional
+  const isConnectionFieldsNonNull = isNonNullType(field.type);
   const primaryKeyConnectionFieldType = getPrimaryKeyConnectionFieldType(ctx, primaryKeyField);
   if (relatedTypeObject) {
     updateTypeWithConnectionFields(
@@ -272,6 +281,7 @@ export const ensureHasManyConnectionField = (
       primaryKeyConnectionFieldType,
       field,
       sortKeyFields,
+      isConnectionFieldsNonNull,
     );
   }
 
@@ -279,14 +289,16 @@ export const ensureHasManyConnectionField = (
   const createInput = ctx.output.getType(createInputName) as InputObjectTypeDefinitionNode;
 
   if (createInput) {
-    updateInputWithConnectionFields(ctx, createInput, object, connectionAttributeName, primaryKeyConnectionFieldType, field, sortKeyFields);
+    //HasMany connenction fields in create input should respect the nullability of the belongsTo field of connected model
+    updateInputWithConnectionFields(ctx, createInput, object, connectionAttributeName, primaryKeyConnectionFieldType, field, sortKeyFields, isConnectionFieldsNonNull);
   }
 
   const updateInputName = ModelResourceIDs.ModelUpdateInputObjectName(relatedType.name.value);
   const updateInput = ctx.output.getType(updateInputName) as InputObjectTypeDefinitionNode;
 
   if (updateInput) {
-    updateInputWithConnectionFields(ctx, updateInput, object, connectionAttributeName, primaryKeyConnectionFieldType, field, sortKeyFields);
+    //Connection fields in update input should be always nullable which stays consistent with other fields
+    updateInputWithConnectionFields(ctx, updateInput, object, connectionAttributeName, primaryKeyConnectionFieldType, field, sortKeyFields, false);
   }
 
   const filterInputName = toPascalCase(['Model', relatedType.name.value, 'FilterInput']);
@@ -566,6 +578,7 @@ const updateInputWithConnectionFields = (
   primaryKeyConnectionFieldType: string,
   field: FieldDefinitionNode,
   sortKeyFields: FieldDefinitionNode[],
+  isConnectionFieldsNonNull: boolean,
 ): void => {
   const updatedFields = [...input.fields!];
   updatedFields.push(
@@ -573,14 +586,14 @@ const updateInputWithConnectionFields = (
       updatedFields,
       connectionAttributeName,
       primaryKeyConnectionFieldType,
-      isNonNullType(field.type),
+      isConnectionFieldsNonNull,
     ),
   );
   sortKeyFields.forEach(it => {
     updatedFields.push(...getInputFieldsWithConnectionField(updatedFields,
       getSortKeyConnectionAttributeName(object.name.value, field.name.value, it.name.value),
       getBaseType(it.type),
-      isNonNullType(field.type)));
+      isConnectionFieldsNonNull));
   });
   ctx.output.putType({
     ...input,
@@ -624,16 +637,17 @@ const updateTypeWithConnectionFields = (
   primaryKeyConnectionFieldType: string,
   field: FieldDefinitionNode,
   sortKeyFields: FieldDefinitionNode[],
+  isConnectionFieldsNonNull: boolean,
 ): void => {
   const updatedFields = [...targetObject.fields!];
   updatedFields.push(
-    ...getTypeFieldsWithConnectionField(updatedFields, connectionAttributeName, primaryKeyConnectionFieldType, isNonNullType(field.type)),
+    ...getTypeFieldsWithConnectionField(updatedFields, connectionAttributeName, primaryKeyConnectionFieldType, isConnectionFieldsNonNull),
   );
   sortKeyFields.forEach(it => {
     updatedFields.push(...getTypeFieldsWithConnectionField(updatedFields,
       getSortKeyConnectionAttributeName(object.name.value, field.name.value, it.name.value),
       getBaseType(it.type),
-      isNonNullType(field.type)));
+      isConnectionFieldsNonNull));
   });
   ctx.output.putType({
     ...targetObject,

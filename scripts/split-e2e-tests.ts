@@ -75,6 +75,7 @@ const USE_PARENT_ACCOUNT = [
   'api-key-migration4',
   'api-key-migration5',
   'searchable-migration',
+  'FunctionTransformerTestsV2'
 ];
 
 // This array needs to be update periodically when new tests suites get added

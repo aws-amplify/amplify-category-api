@@ -11,11 +11,14 @@ import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
 import { default as S3 } from 'aws-sdk/clients/s3';
 import { deployJsonServer, destroyJsonServer } from '../cdkUtils';
+import { resolveTestRegion } from '../testSetup';
+
+const region = resolveTestRegion();
 
 jest.setTimeout(2000000);
 
-const cf = new CloudFormationClient('us-west-2');
-const customS3Client = new S3Client('us-west-2');
+const cf = new CloudFormationClient(region);
+const customS3Client = new S3Client(region);
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {
