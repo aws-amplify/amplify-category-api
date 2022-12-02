@@ -32,6 +32,7 @@ import _ from 'lodash';
 import os from 'os';
 import * as path from 'path';
 import * as vm from 'vm2';
+import { AmplifyError } from 'amplify-cli-core';
 import { ResolverConfig, TransformConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
@@ -363,10 +364,11 @@ export class GraphQLTransform {
       try {
         sandboxNode.run(overrideCode, path.join(this.overrideConfig!.overrideDir, 'build', 'override.js')).override(appsyncResourceObj);
       } catch (err) {
-        // this is a workaround for the API repo until we can import AmplifyError without creating a circular dependency
-        const amplifyError = new Error("Executing overrides failed. There may be runtime errors in your overrides file. If so, fix the errors and try again.");
-        (amplifyError as any)['_amplifyErrorType'] = 'InvalidOverrideError';
-        throw amplifyError;
+        throw new AmplifyError('InvalidOverrideError', {
+          message: 'Executing overrides failed.',
+          details: err.message,
+          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+        }, err);
       }
     }
     return appsyncResourceObj;
