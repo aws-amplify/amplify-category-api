@@ -74,12 +74,11 @@ describe('amplify add api (GraphQL)', () => {
     const srcInvalidOverrideCompileError = path.join(__dirname, '..', '..', 'overrides', 'override-compile-error.txt');
     fs.copyFileSync(srcInvalidOverrideCompileError, destOverrideFilePath);
     await expect(amplifyPushOverride(projRoot)).rejects.toThrowError();
-    
-    // Commenting the following test out, pending CLI release
-    // // test override file in runtime error state
-    // const srcInvalidOverrideRuntimeError = path.join(__dirname, '..', '..', 'overrides', 'override-runtime-error.txt');
-    // fs.copyFileSync(srcInvalidOverrideRuntimeError, destOverrideFilePath);
-    // await expect(amplifyPushOverride(projRoot)).rejects.toThrowError();
+
+    // test override file in runtime error state
+    const srcInvalidOverrideRuntimeError = path.join(__dirname, '..', '..', 'overrides', 'override-runtime-error.txt');
+    fs.copyFileSync(srcInvalidOverrideRuntimeError, destOverrideFilePath);
+    await expect(amplifyPushOverride(projRoot)).rejects.toThrowError();
 
     // test happy path
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-api-gql.ts');
