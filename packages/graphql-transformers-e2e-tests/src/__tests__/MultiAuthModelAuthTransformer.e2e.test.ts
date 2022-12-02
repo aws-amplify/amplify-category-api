@@ -26,6 +26,7 @@ import 'isomorphic-fetch';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+import { resolveTestRegion } from '../testSetup';
 
 // To overcome of the way of how AmplifyJS picks up currentUserCredentials
 const anyAWS = AWS as any;
@@ -34,9 +35,10 @@ if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
   delete anyAWS.config.credentials;
 }
 
+const REGION = resolveTestRegion();
+
 jest.setTimeout(2000000);
 
-const REGION = 'us-west-2';
 const cf = new CloudFormationClient(REGION);
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {

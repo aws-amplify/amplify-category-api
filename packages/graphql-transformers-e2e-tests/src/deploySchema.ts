@@ -10,10 +10,12 @@ import { cleanupStackAfterTest, deploy } from './deployNestedStacks';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { ResourceConstants } from 'graphql-transformer-common';
 import * as fs from 'fs-extra';
+import { resolveTestRegion } from './testSetup';
 
-const cf = new CloudFormationClient('us-west-2');
-const customS3Client = new S3Client('us-west-2');
-const awsS3Client = new S3({ region: 'us-west-2' });
+const region = resolveTestRegion();
+const cf = new CloudFormationClient(region);
+const customS3Client = new S3Client(region);
+const awsS3Client = new S3({ region: region });
 
 /**
  * Interface for object that can manage graphql api deployments and cleanup for e2e tests

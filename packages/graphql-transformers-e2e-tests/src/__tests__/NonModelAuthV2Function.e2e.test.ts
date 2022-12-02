@@ -21,10 +21,12 @@ import { S3Client } from '../S3Client';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+import { resolveTestRegion } from '../testSetup';
+
+const REGION = resolveTestRegion();
 
 jest.setTimeout(2000000);
 
-const REGION = 'us-west-2';
 const cf = new CloudFormationClient(REGION);
 const identityClient = new CognitoIdentity({ apiVersion: '2014-06-30', region: REGION });
 const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: REGION });
