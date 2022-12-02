@@ -631,7 +631,7 @@ commands:
                   source .circleci/local_publish_helpers.sh
                   amplify version
                   retry runE2eTest
-                no_output_timeout: 60m
+                no_output_timeout: 90m
   scan_e2e_test_artifacts:
     description: "Scan And Cleanup E2E Test Artifacts"
     parameters:
