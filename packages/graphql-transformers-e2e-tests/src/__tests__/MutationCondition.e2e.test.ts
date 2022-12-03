@@ -32,6 +32,9 @@ import IdentityPool from 'cloudform-types/types/cognito/identityPool';
 import IdentityPoolRoleAttachment from 'cloudform-types/types/cognito/identityPoolRoleAttachment';
 import AWS = require('aws-sdk');
 import 'isomorphic-fetch';
+import { resolveTestRegion } from '../testSetup';
+
+const REGION = resolveTestRegion();
 
 jest.setTimeout(2000000);
 const featureFlags = {
@@ -553,7 +556,6 @@ if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
 }
 
 describe(`Deployed Mutation Condition tests`, () => {
-  const REGION = 'us-west-2';
   const cf = new CloudFormationClient(REGION);
 
   const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');

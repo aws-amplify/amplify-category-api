@@ -9,12 +9,15 @@ import { CloudFormationClient } from '../CloudFormationClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { GraphQLClient } from '../GraphQLClient';
 import { S3Client } from '../S3Client';
+import { resolveTestRegion } from '../testSetup';
+
+const region = resolveTestRegion();
 
 jest.setTimeout(2000000);
 
-const cf = new CloudFormationClient('us-west-2');
-const customS3Client = new S3Client('us-west-2');
-const awsS3Client = new S3({ region: 'us-west-2' });
+const cf = new CloudFormationClient(region);
+const customS3Client = new S3Client(region);
+const awsS3Client = new S3({ region: region });
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `DefaultValueTransformerTests-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-default-value-transformer-test-bucket-${BUILD_TIMESTAMP}`;
