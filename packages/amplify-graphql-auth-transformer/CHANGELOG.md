@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.1.4...@aws-amplify/graphql-auth-transformer@1.2.0) (2022-12-03)
+
+### Bug Fixes
+
+- 🐛 VTL issue when field starts with an underscore ([941f225](https://github.com/aws-amplify/amplify-category-api/commit/941f225df3ab4dabd87cf986655eb332784815d7)), closes [#735](https://github.com/aws-amplify/amplify-category-api/issues/735)
+
+### Features
+
+- 🎸 Added descriptive message when using field-level auth ([81c550d](https://github.com/aws-amplify/amplify-category-api/commit/81c550d46a044b1c70e370a3a4322deb5abdee45)), closes [#971](https://github.com/aws-amplify/amplify-category-api/issues/971)
+- 🎸 Added warning when ownerField similar to schema field ([5281be2](https://github.com/aws-amplify/amplify-category-api/commit/5281be23d08eabbdc88021ab024377e211ecb41d)), closes [#957](https://github.com/aws-amplify/amplify-category-api/issues/957)
+
 ## [1.1.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.1.3...@aws-amplify/graphql-auth-transformer@1.1.4) (2022-11-08)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
