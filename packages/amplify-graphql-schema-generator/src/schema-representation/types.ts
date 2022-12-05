@@ -28,7 +28,7 @@ export interface DefaultValue {
 }
 
 export class Field {
-  readonly default: DefaultValue | undefined = undefined;
+  default: DefaultValue | undefined = undefined;
   constructor(public name: string, public type: FieldType) {
   }
 }
