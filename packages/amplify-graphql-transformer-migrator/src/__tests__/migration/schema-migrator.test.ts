@@ -1,3 +1,5 @@
+const getParamMock = jest.fn(); // Mock must be declared before imports: https://jestjs.io/docs/manual-mocks#using-with-es-module-imports
+
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
@@ -8,6 +10,14 @@ import { FeatureFlags, pathManager } from 'amplify-cli-core';
 jest.mock('amplify-prompts');
 const prompter_mock = prompter as jest.Mocked<typeof prompter>;
 prompter_mock.confirmContinue.mockResolvedValue(true);
+
+jest.mock('@aws-amplify/amplify-environment-parameters', () => ({
+  getEnvParamManager: jest.fn().mockReturnValue({
+    getResourceParamManager: jest.fn().mockReturnValue({
+      getParam: getParamMock,
+    }),
+  }),
+}));
 
 const testProjectPath = path.resolve(__dirname, 'mock-projects', 'v1-schema-project');
 
@@ -125,12 +135,8 @@ describe('attemptV2TransformerMigration', () => {
   });
 
   it('fails if GQL API is configured to use SQL', async () => {
+    getParamMock.mockReturnValueOnce('mockRdsParam');
     const apiResourceDir = resourceDir(tempProjectDir);
-    const teamProviderPath = path.join(tempProjectDir, 'amplify', 'team-provider-info.json');
-
-    await fs.writeJSON(teamProviderPath, {
-      [envName]: { categories: { api: { [apiName]: { rdsClusterIdentifier: 'foo' } } } },
-    });
     await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
     expect(printer.info).toHaveBeenCalledWith(expect.stringMatching('GraphQL APIs using Aurora RDS cannot be migrated.'));
 
