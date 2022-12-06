@@ -1,12 +1,14 @@
-import { Field, Index, Model } from "../schema-representation";
+import { Field, FieldType, Index, Model } from "../schema-representation";
 
 export abstract class DataSourceAdapter {
   public abstract getTablesList(): Promise<string[]>;
   public abstract getFields(tableName: string): Promise<Field[]>;
   public abstract getPrimaryKey(tableName: string): Promise<Index | null>;
   public abstract getIndexes(tableName: string): Promise<Index[]>;
+  public abstract mapDataType(type: string, nullable: boolean): FieldType;
+  public abstract initialize(): Promise<void>;
   public abstract cleanup(): void;
-  
+
   public async getModels(): Promise<Model[]> {
     const tableNames = await this.getTablesList();
     const models = [];
