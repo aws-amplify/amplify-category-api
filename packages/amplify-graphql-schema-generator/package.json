@@ -22,9 +22,15 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rimraf ./lib"
+    "clean": "rimraf ./lib",
+    "test": "jest"
   },
   "dependencies": {
+    "knex": "~2.3.0",
+    "mysql2": "~2.3.3"
+  },
+  "peerDependencies": {
+    "amplify-prompts": "^2.6.0"
   },
   "jest": {
     "transform": {
