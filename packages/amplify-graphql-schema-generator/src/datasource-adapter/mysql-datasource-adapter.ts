@@ -78,7 +78,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
   }
 
   public async getTablesList(): Promise<string[]> {
-    let result = (await this.dbBuilder.raw("SHOW TABLES"))[0];
+    const result = (await this.dbBuilder.raw("SHOW TABLES"))[0];
     
     const tables: string[] = result.map((row: any) => {
       const [firstKey] = Object.keys(row);
@@ -116,7 +116,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
   private async loadAllFields(): Promise<void> {
     this.fields = [];
     // Query INFORMATION_SCHEMA.COLUMNS table and load fields of all the tables from the database
-    let columnResult = (await this.dbBuilder.raw(`SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '${this.config.database}'`))[0];
+    const columnResult = (await this.dbBuilder.raw(`SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '${this.config.database}'`))[0];
     this.fields = columnResult.map((item: any) => {
       return {
         tableName: item["TABLE_NAME"],
@@ -133,7 +133,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
   private async loadAllIndexes(): Promise<void> {
     this.indexes = [];
     // Query INFORMATION_SCHEMA.STATISTICS table and load indexes of all the tables from the database
-    let indexResult = (await this.dbBuilder.raw(`SELECT * FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = '${this.config.database}'`))[0];
+    const indexResult = (await this.dbBuilder.raw(`SELECT * FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = '${this.config.database}'`))[0];
     this.indexes = indexResult.map((item: any) => {
       return {
         tableName: item["TABLE_NAME"],
