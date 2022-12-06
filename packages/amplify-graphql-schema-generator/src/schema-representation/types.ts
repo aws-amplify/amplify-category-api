@@ -1,10 +1,12 @@
 export type FieldType = DefaultType | CustomType | ListType | NonNullType;
 
+export type FieldDataType = 'String' | 'ID' | 'Int' | 'Float' | 'AWSJSON' 
+| 'AWSDate' | 'AWSTime' | 'AWSDateTime' | 'AWSTimestamp'
+| 'Boolean' | 'AWSEmail' | 'AWSPhone' | 'AWSURL' | 'AWSIPAddress';
+
 export interface DefaultType {
   readonly kind: 'Scalar';
-  readonly name: 'String' | 'ID' | 'Int' | 'Float' | 'AWSJSON' 
-    | 'AWSDate' | 'AWSTime' | 'AWSDateTime' | 'AWSTimestamp'
-    | 'Boolean' | 'AWSEmail' | 'AWSPhone' | 'AWSURL' | 'AWSIPAddress';
+  readonly name: FieldDataType;
 }
 
 export interface CustomType {
@@ -28,7 +30,8 @@ export interface DefaultValue {
 }
 
 export class Field {
-  default: DefaultValue | undefined = undefined;
+  public default: DefaultValue | undefined = undefined;
+  public length: number | null | undefined;
   constructor(public name: string, public type: FieldType) {
   }
 }
