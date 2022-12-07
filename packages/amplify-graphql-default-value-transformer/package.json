@@ -30,7 +30,7 @@
   "dependencies": {
     "@aws-amplify/graphql-transformer-core": "0.18.0",
     "@aws-amplify/graphql-transformer-interfaces": "1.14.9",
-    "graphql": "^14.5.8",
+    "graphql": "^15.5.0",
     "graphql-mapping-template": "4.20.5",
     "graphql-transformer-common": "4.24.1",
     "libphonenumber-js": "1.9.47"
