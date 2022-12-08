@@ -13,8 +13,7 @@
     "remove",
     "update",
     "help",
-    "import",
-    "generate-schema"
+    "import"
   ],
   "commandAliases": {
     "configure": "update"

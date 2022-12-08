@@ -2,7 +2,7 @@ import { Field, Index, Model, Schema } from '../schema-representation';
 import { Kind, print } from 'graphql';
 import { FieldWrapper, ObjectDefinitionWrapper, DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
 
-export const generateGraphQLSchema = (schema: Schema): string => {
+export const generteGraphQLSchema = (schema: Schema): string => {
   const models = schema.getModels();
   const document: any = {
     kind: Kind.DOCUMENT,
