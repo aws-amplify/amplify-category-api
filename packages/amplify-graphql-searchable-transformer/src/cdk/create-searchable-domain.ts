@@ -17,11 +17,13 @@ export const createSearchableDomain = (stack: Construct, parameterMap: Map<strin
 
   const domain = new Domain(stack, OpenSearchDomainLogicalID, {
     version: { version: '7.10' } as ElasticsearchVersion,
+    
     ebs: {
       enabled: true,
       volumeType: EbsDeviceVolumeType.GP2,
       volumeSize: parameterMap.get(OpenSearchEBSVolumeGB)?.valueAsNumber,
     },
+    nodeToNodeEncryption:true,
     zoneAwareness: {
       enabled: false,
     },
