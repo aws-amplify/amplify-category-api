@@ -2,7 +2,7 @@ import { $TSAny, $TSContext, AmplifyCategories, pathManager, stateManager } from
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import fs from 'fs-extra';
-import { MySQLDataSourceAdapter, generteGraphQLSchema, Schema, Engine } from '@aws-amplify/graphql-schema-generator';
+import { MySQLDataSourceAdapter, generateGraphQLSchema, Schema, Engine } from '@aws-amplify/graphql-schema-generator';
 const subcommand = 'import';
 
 export const name = subcommand;
@@ -25,7 +25,7 @@ export const run = async (context: $TSContext) => {
   const schema = new Schema(new Engine('MySQL'));
   models.forEach(m => schema.addModel(m));
 
-  const schemaString = generteGraphQLSchema(schema);
+  const schemaString = generateGraphQLSchema(schema);
   writeSchemaFile(apiResourceDir, schemaString);
 
   printer.info('Successfully imported the database schema.');
