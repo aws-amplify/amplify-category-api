@@ -79,6 +79,14 @@ export class Model {
     this.primaryKey = primaryKey;
   }
 
+  public getPrimaryKey(): Index | undefined {
+    return this.primaryKey;
+  }
+
+  public getIndexes(): Index[] {
+    return this.indexes;
+  }
+
   public addIndex(name: string, fields: string[]): void {
     if (this.hasIndex(name)) {
       throw new Error(`Index "${name}" already exists.`);
