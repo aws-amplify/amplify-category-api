@@ -219,6 +219,46 @@
     prettier "^1.19.1"
     yargs "^15.1.0"
 
+"@aws-amplify/graphql-transformer-core@^0.17.12":
+  version "0.17.15"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-transformer-core/-/graphql-transformer-core-0.17.15.tgz#f5f6bffc3520dd2f05419a040fbe29a8384a1c6f"
+  integrity sha512-B+zyht8Z7N/emjyeXJ5nh/YYSy2PBDPVz3i6RQqoxa24AYqc/fo0+Tz6bw5RzqbKE3K50pJnfb9MfV08lYqUNg==
+  dependencies:
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.9"
+    "@aws-cdk/aws-applicationautoscaling" "~1.172.0"
+    "@aws-cdk/aws-appsync" "~1.172.0"
+    "@aws-cdk/aws-certificatemanager" "~1.172.0"
+    "@aws-cdk/aws-cloudwatch" "~1.172.0"
+    "@aws-cdk/aws-codeguruprofiler" "~1.172.0"
+    "@aws-cdk/aws-cognito" "~1.172.0"
+    "@aws-cdk/aws-dynamodb" "~1.172.0"
+    "@aws-cdk/aws-ec2" "~1.172.0"
+    "@aws-cdk/aws-efs" "~1.172.0"
+    "@aws-cdk/aws-elasticsearch" "~1.172.0"
+    "@aws-cdk/aws-events" "~1.172.0"
+    "@aws-cdk/aws-iam" "~1.172.0"
+    "@aws-cdk/aws-kms" "~1.172.0"
+    "@aws-cdk/aws-lambda" "~1.172.0"
+    "@aws-cdk/aws-logs" "~1.172.0"
+    "@aws-cdk/aws-route53" "~1.172.0"
+    "@aws-cdk/aws-s3" "~1.172.0"
+    "@aws-cdk/aws-s3-assets" "~1.172.0"
+    "@aws-cdk/aws-sqs" "~1.172.0"
+    "@aws-cdk/cloud-assembly-schema" "~1.172.0"
+    "@aws-cdk/core" "~1.172.0"
+    "@aws-cdk/custom-resources" "~1.172.0"
+    "@aws-cdk/cx-api" "~1.172.0"
+    "@aws-cdk/region-info" "~1.172.0"
+    constructs "^3.3.125"
+    fs-extra "^8.1.0"
+    graphql "^14.5.8"
+    graphql-transformer-common "4.24.0"
+    lodash "^4.17.21"
+    md5 "^2.3.0"
+    object-hash "^3.0.0"
+    ts-dedent "^2.0.0"
+    vm2 "^3.9.8"
+
 "@aws-amplify/graphql-types-generator@3.0.0":
   version "3.0.0"
   resolved "https://registry.npmjs.org/@aws-amplify/graphql-types-generator/-/graphql-types-generator-3.0.0.tgz#6e9dba889ed303fc7c46248154f36d8ba4a30aee"
@@ -11328,6 +11368,16 @@ graphql-tag@^2.10.1, graphql-tag@^2.11.0:
   integrity sha512-FdSNcu2QQcWnM2VNvSCCDCVS5PpPqpzgFT8+GXzqJuoDd0CBncxCY278u4mhRO7tMgo2JjgJA5aZ+nWSQ/Z+xg==
   dependencies:
     tslib "^2.1.0"
+
+graphql-transformer-common@4.24.0:
+  version "4.24.0"
+  resolved "https://registry.yarnpkg.com/graphql-transformer-common/-/graphql-transformer-common-4.24.0.tgz#f3be95c4b5ca2ada23fc3d0b01810810ad87810d"
+  integrity sha512-wleRNCFJLrqhYUT4j3KOfh2zTkvVjA6MX/s0HBIFWbNfnzd/W0VDAvpE9q8sMipOvXJ4zcVIZggI7TttrA/fOw==
+  dependencies:
+    graphql "^14.5.8"
+    graphql-mapping-template "4.20.5"
+    md5 "^2.2.1"
+    pluralize "8.0.0"
 
 graphql@0.13.0:
   version "0.13.0"
