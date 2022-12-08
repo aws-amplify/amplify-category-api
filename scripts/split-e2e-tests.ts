@@ -436,7 +436,7 @@ function main(): void {
   const splitV10MigrationTests = splitTests(
     splitV6MigrationTests,
     'amplify_migration_tests_v10',
-    'build_test_deploy_v3',
+    'build_test_deploy',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
     (tests: string[]) => {

@@ -13,8 +13,8 @@ executors:
       shell: bash.exe
     working_directory: ~/repo
     environment:
-      AMPLIFY_DIR: C:/home/circleci/repo/out
-      AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
+      AMPLIFY_DIR: C:/home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin
+      AMPLIFY_PATH: C:/home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin/amplify
 
   l: &linux-e2e-executor
     docker:
@@ -22,8 +22,8 @@ executors:
     working_directory: ~/repo
     resource_class: large
     environment:
-      AMPLIFY_DIR: /home/circleci/repo/out
-      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
+      AMPLIFY_DIR: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin/amplify
 
 defaults: &defaults
   working_directory: ~/repo
@@ -213,8 +213,6 @@ jobs:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
 
   client_e2e_tests:
-    environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin/amplify
     parameters:
       os:
         type: executor
@@ -260,7 +258,7 @@ jobs:
   amplify_migration_tests_v5:
     <<: *defaults
     environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin/amplify
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     steps:
       - attach_workspace:
           at: ./
@@ -285,7 +283,7 @@ jobs:
   amplify_migration_tests_v6:
     <<: *defaults
     environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin/amplify
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     steps:
       - attach_workspace:
           at: ./
