@@ -56,6 +56,11 @@ export const run = async (context: $TSContext) => {
       name: 'override',
       description: 'Generates overrides file to apply custom modifications to CloudFormation',
     },
+    // TODO: Add it once we enable RDS support
+    // {
+    //   name: 'import',
+    //   description: 'Imports existing datasource to GraphQL API',
+    // },
   ];
 
   context.amplify.showHelp(header, commands);

@@ -1,4 +1,4 @@
-import { DefaultType, Field, FieldDataType, FieldType, Index } from "../schema-representation";
+import { Field, FieldDataType, FieldType, Index } from "../schema-representation";
 import { DataSourceAdapter } from "./datasource-adapter";
 import { knex } from 'knex';
 import { printer } from 'amplify-prompts';
