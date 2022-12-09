@@ -35,7 +35,10 @@
     "rimraf": "^3.0.0",
     "strip-ansi": "^6.0.0",
     "throat": "^5.0.0",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "@aws-sdk/client-ec2": "^3.226.0",
+    "@aws-sdk/client-rds": "^3.226.0",
+    "knex": "~2.3.0"
   },
   "peerDependencies": {
     "amplify-cli-core": "^3.0.0"
