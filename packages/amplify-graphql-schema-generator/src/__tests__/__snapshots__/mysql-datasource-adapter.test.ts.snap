@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`testDataSourceAdapter test generate graphql schema from internal reprensentation 1`] = `
+"type Capital @model {
+  id: Int! @primaryKey
+  name: String
+  countryId: Int @index(name: \\"countryId\\")
+}
+
+type Country @model {
+  id: Int! @default(value: \\"uuid()\\") @primaryKey
+  name: String
+}
+
+type Tasks @model {
+  id: String! @primaryKey(sortKeyFields: [\\"title\\"])
+  title: String @index(name: \\"tasks_title\\") @index(name: \\"tasks_title_description\\", sortKeyFields: [\\"description\\"])
+  description: String
+  priority: String
+}
+"
+`;
