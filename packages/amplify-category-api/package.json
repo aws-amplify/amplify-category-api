@@ -41,7 +41,7 @@
     "@aws-amplify/graphql-transformer-core": "0.18.0",
     "@aws-amplify/graphql-transformer-interfaces": "1.14.9",
     "@aws-amplify/graphql-transformer-migrator": "1.4.12-rds-v2.0",
-    "@aws-amplify/graphql-schema-generator": "0.1.0-rds-v2.0",
+    "@aws-amplify/graphql-schema-generator": "0.1.0-rds-v2.1",
     "@aws-cdk/assets": "~1.172.0",
     "@aws-cdk/aws-apigateway": "~1.172.0",
     "@aws-cdk/aws-apigatewayv2": "~1.172.0",
