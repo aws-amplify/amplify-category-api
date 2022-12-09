@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.1-rds-v2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.2.0...@aws-amplify/graphql-auth-transformer@1.2.1-rds-v2.0) (2022-12-09)
+
+### Bug Fixes
+
+- aggregate fields access for iam auth with admin roles ([f1262d3](https://github.com/aws-amplify/amplify-category-api/commit/f1262d3169e15fbc825ce0df98dda05094171998))
+
 # [1.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.1.4...@aws-amplify/graphql-auth-transformer@1.2.0) (2022-12-03)
 
 ### Bug Fixes

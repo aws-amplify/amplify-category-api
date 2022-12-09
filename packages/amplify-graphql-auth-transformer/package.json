@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-auth-transformer",
-  "version": "1.2.0",
+  "version": "1.2.1-rds-v2.0",
   "description": "Amplify GraphQL @auth transformer",
   "repository": {
     "type": "git",
@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@aws-amplify/graphql-index-transformer": "0.14.4",
-    "@aws-amplify/graphql-searchable-transformer": "0.16.4",
+    "@aws-amplify/graphql-searchable-transformer": "0.16.5-rds-v2.0",
     "@types/node": "^12.12.6"
   },
   "jest": {

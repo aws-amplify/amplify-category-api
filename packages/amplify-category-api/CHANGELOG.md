@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.2.0-rds-v2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.0...@aws-amplify/amplify-category-api@4.2.0-rds-v2.0) (2022-12-09)
+
+### Bug Fixes
+
+- add rdsRegion check back ([6d8736f](https://github.com/aws-amplify/amplify-category-api/commit/6d8736f8f29bbe6d3469e91adcb95ef6f9f8abe6))
+- address PR feedback ([2a119e6](https://github.com/aws-amplify/amplify-category-api/commit/2a119e6b8e86889b5f206f49b5063b4ce99ea859))
+- remove unused variable ([b419119](https://github.com/aws-amplify/amplify-category-api/commit/b41911975c6741c5b66e7cbcf4ca01af2a9e805a))
+
+### Features
+
+- add utils for param store calls ([f6b882f](https://github.com/aws-amplify/amplify-category-api/commit/f6b882f15e179def17d0cea4b5e677528ce66a85))
+- **api:** generate graphql schema from internal schema representation ([9b79605](https://github.com/aws-amplify/amplify-category-api/commit/9b79605239eb47a438deb04fdbda4996563d80ee))
+
 # [4.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.9...@aws-amplify/amplify-category-api@4.1.0) (2022-12-03)
 
 ### Features
