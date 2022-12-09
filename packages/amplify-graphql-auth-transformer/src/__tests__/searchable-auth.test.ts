@@ -128,6 +128,42 @@ test('auth logic is enabled for iam/apiKey auth rules', () => {
   );
 });
 
+test('aggregate items are added to stash for iam public auth rule', () => {
+  const validSchema = `
+    type Todo @model @searchable
+    @auth(
+      rules: [
+        { allow: groups, groups: ["Admin"] }
+        { allow: public, provider: iam }
+      ]
+    ) {
+    id: ID!
+    createdDate: AWSDateTime
+  }`;
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [
+      {
+        authenticationType: 'AWS_IAM',
+      },
+    ],
+  };
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
+    featureFlags,
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.schema).toBeDefined();
+  // expect to set allowed agg fields in stash before return
+  expect(out.resolvers['Query.searchTodos.auth.1.req.vtl']).toContain(
+    '$util.qr($ctx.stash.put("allowedAggFields", $allowedAggFields))'
+  );
+});
+
 describe('identity flag feature flag disabled', () => {
   test('auth logic is enabled on owner/static rules in os request', () => {
     const validSchema = `
