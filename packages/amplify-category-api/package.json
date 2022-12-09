@@ -83,6 +83,7 @@
     "@aws-cdk/custom-resources": "~1.172.0",
     "@aws-cdk/cx-api": "~1.172.0",
     "@aws-cdk/region-info": "~1.172.0",
+    "aws-sdk": "^2.1113.0",
     "@graphql-tools/merge": "^6.0.18",
     "@octokit/rest": "^18.0.9",
     "chalk": "^4.1.1",
