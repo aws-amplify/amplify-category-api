@@ -135,6 +135,6 @@
     "parse-path": "^5.0.0",
     "parse-url": "^8.1.0",
     "moment-timezone": "^0.5.35",
-    "aws-cdk-lib": "~2.44.0"
+    "aws-cdk-lib": "~2.54.0"
   }
 }

@@ -93,6 +93,9 @@ Object {
       "eu-west-3": Object {
         "states": "states.eu-west-3.amazonaws.com",
       },
+      "me-central-1": Object {
+        "states": "states.me-central-1.amazonaws.com",
+      },
       "me-south-1": Object {
         "states": "states.me-south-1.amazonaws.com",
       },
@@ -2371,6 +2374,7 @@ exports.handler = async function({ 'CodePipeline.job': { id: jobId } }) {
               "StartPeriod": 0,
               "Timeout": 5,
             },
+            "Image": "testImage",
             "LogConfiguration": Object {
               "LogDriver": "awslogs",
               "Options": Object {
