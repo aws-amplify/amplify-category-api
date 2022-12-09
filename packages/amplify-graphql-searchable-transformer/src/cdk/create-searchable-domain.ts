@@ -23,6 +23,7 @@ export const createSearchableDomain = (stack: Construct, parameterMap: Map<strin
       volumeType: EbsDeviceVolumeType.GP2,
       volumeSize: parameterMap.get(OpenSearchEBSVolumeGB)?.valueAsNumber,
     },
+    nodeToNodeEncryption:true,
     zoneAwareness: {
       enabled: false,
     },
