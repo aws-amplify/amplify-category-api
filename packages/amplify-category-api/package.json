@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-api",
-  "version": "4.2.0-rds-v2.1",
+  "version": "4.2.0-rds-v2.2",
   "description": "Amplify CLI API category plugin.",
   "repository": {
     "type": "git",
@@ -37,7 +37,7 @@
     "@aws-amplify/graphql-model-transformer": "0.16.4",
     "@aws-amplify/graphql-predictions-transformer": "0.6.32",
     "@aws-amplify/graphql-relational-transformer": "0.12.5",
-    "@aws-amplify/graphql-schema-generator": "0.1.0-rds-v2.1",
+    "@aws-amplify/graphql-schema-generator": "0.1.0-rds-v2.2",
     "@aws-amplify/graphql-searchable-transformer": "0.16.5-rds-v2.0",
     "@aws-amplify/graphql-transformer-core": "0.18.0",
     "@aws-amplify/graphql-transformer-interfaces": "1.14.9",
