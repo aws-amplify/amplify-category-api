@@ -24,6 +24,9 @@
     "clean": "rimraf ./lib",
     "test": "jest"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@aws-amplify/graphql-transformer-core": "0.17.15",
     "graphql": "^14.5.8",
