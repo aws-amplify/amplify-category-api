@@ -2,6 +2,7 @@ import {
   ISynthesisSession, Stack, LegacyStackSynthesizer, FileAssetSource, FileAssetLocation, CfnParameter,
 } from 'aws-cdk-lib';
 import { Template } from '@aws-amplify/graphql-transformer-interfaces';
+import * as crypto from 'crypto';
 import { TransformerRootStack } from './root-stack';
 
 /**
@@ -12,18 +13,12 @@ export class TransformerStackSythesizer extends LegacyStackSynthesizer {
   private readonly mapingTemplateAssets: Map<string, string> = new Map();
   private _deploymentBucket?: CfnParameter;
   private _deploymentRootKey?: CfnParameter;
-  private boundStack?: Stack;
-
-  /**
-   * bind
-   */
-  public bind(stack: Stack): void {
-    this.boundStack = stack;
-    super.bind(stack);
-  }
 
   /**
    * synthesizeStackTemplate
+   *
+   * This method has been deprecated by cdk and is not used in runtime.
+   * @deprecated Replaced by synthesizeTemplate.
    */
   protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): void {
     if (stack instanceof TransformerRootStack) {
@@ -31,6 +26,22 @@ export class TransformerStackSythesizer extends LegacyStackSynthesizer {
       const templateName = stack.node.id;
       this.setStackAsset(templateName, template);
       return;
+    }
+    throw new Error(
+      'Error synthesizing the template. Expected Stack to be either instance of TransformerRootStack or TransformerNestedStack',
+    );
+  }
+
+  protected synthesizeTemplate(session: ISynthesisSession, _?: string): FileAssetSource {
+    const stack = this.boundStack;
+    if (stack instanceof TransformerRootStack) {
+      const template = stack.renderCloudFormationTemplate(session) as string;
+      const templateName = stack.node.id;
+      this.setStackAsset(templateName, template);
+      const contentHash = crypto.createHash('sha256').update(template).digest('hex');
+      return {
+        sourceHash: contentHash,
+      };
     }
     throw new Error(
       'Error synthesizing the template. Expected Stack to be either instance of TransformerRootStack or TransformerNestedStack',
@@ -69,8 +80,6 @@ export class TransformerStackSythesizer extends LegacyStackSynthesizer {
    * addFileAsset
    */
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
-    assertNotNull(this.boundStack);
-
     const bucketName = this.deploymentBucket.valueAsString;
     const rootKey = this.deploymentRootKey.valueAsString;
 
@@ -87,8 +96,6 @@ export class TransformerStackSythesizer extends LegacyStackSynthesizer {
    * ensureDeployementParameters
    */
   private ensureDeployementParameters() {
-    assertNotNull(this.boundStack);
-
     if (!this._deploymentBucket) {
       this._deploymentBucket = new CfnParameter(this.boundStack, 'S3DeploymentBucket', {
         type: 'String',

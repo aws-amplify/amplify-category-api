@@ -19,7 +19,7 @@ describe('ecs stack', () => {
           undefined,
           undefined,
           undefined,
-          undefined,
+          'testImage',
           {
             command: 'foo',
           },
