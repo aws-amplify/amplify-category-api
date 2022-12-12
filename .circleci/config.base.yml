@@ -317,6 +317,7 @@ jobs:
       - run:
           name: Run tests migrating from CLI v10.5.1
           command: |
+            yarn setup-dev
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
