@@ -1,0 +1,14 @@
+#**
+    The value of 'payload' after the template has been evaluated
+    will be passed as the event to AWS Lambda.
+*#
+#set( $args = {} )
+#set( $args.args = $context.arguments )
+#set( $args.table = "todo" )
+#set( $args.operation = "CREATE" )
+#set( $args.operationName = "createTodo" )
+#set( $args.args.input.id = $context.stash.defaultValues.id )
+{
+    "operation": "Invoke",
+    "payload": $util.toJson($args)
+}

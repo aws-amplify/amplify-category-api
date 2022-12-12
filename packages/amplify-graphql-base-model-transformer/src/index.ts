@@ -1,5 +1,5 @@
 export { ModelDirectiveConfiguration, SubscriptionLevel } from './directive';
-export { ModelTransformer } from './graphql-model-transformer';
-export { OPERATION_KEY } from './definitions';
+export { GenericModelTransformer, directiveDefinition } from './graphql-model-transformer-generic';
+export { OPERATION_KEY, API_KEY_DIRECTIVE } from './definitions';
 export * from './graphql-types';
 export * from './resolvers';
