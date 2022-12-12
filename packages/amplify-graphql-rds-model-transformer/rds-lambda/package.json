@@ -1,0 +1,20 @@
+{
+  "type": "module",
+  "devDependencies": {
+    "@types/jest": "^29.1.1",
+    "@types/knex": "0.16.1",
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "babel-jest": "^29.1.2",
+    "jest": "^29.1.2",
+    "knex": "^2.3.0",
+    "pg": "^8.8.0",
+    "ts-jest": "^29.0.3",
+    "uuid": "^9.0.0"
+  },
+  "scripts": {
+    "test": "jest",
+    "build": "tsc && bestzip --force node ../lib/streaming-lambda.zip python_streaming_function.py"
+  }
+}

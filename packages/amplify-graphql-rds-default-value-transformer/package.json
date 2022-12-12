@@ -1,11 +1,11 @@
 {
-  "name": "@aws-amplify/graphql-base-default-value-transformer",
+  "name": "@aws-amplify/graphql-rds-default-value-transformer",
   "version": "0.7.3",
   "description": "Amplify GraphQL default value transformer base",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",
-    "directory": "packages/amplify-graphql-base-default-value-transformer"
+    "directory": "packages/amplify-graphql-rds-default-value-transformer"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",

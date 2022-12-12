@@ -31,14 +31,23 @@ import {
   ObjectTypeDefinitionNode,
 } from 'graphql';
 import {
+  makeDirective,
   ModelResourceIDs,
   ResourceConstants,
   SyncResourceIDs,
 } from 'graphql-transformer-common';
 import {
+  addDirectivesToOperation,
+  addModelConditionInputs,
+  extendTypeWithDirectives,
+  propagateApiKeyToNestedTypes,
+  generateAuthExpressionForSandboxMode,
+  generateDefaultResponseMappingTemplate,
+  generateResolverKey,
   GenericModelTransformer,
-  directiveDefinition as modelDefinition,
-} from './graphql-model-transformer-generic';
+  API_KEY_DIRECTIVE,
+  directiveDefinition as modelDefinition
+} from '@aws-amplify/graphql-base-model-transformer';
 import {
   generateCreateInitSlotTemplate,
   generateCreateRequestTemplate,
@@ -55,7 +64,7 @@ import {
   generateListRequestTemplate,
   generateSyncRequestTemplate,
 } from './resolvers/query';
-import { SubscriptionLevel } from './directive';
+import { ModelDirectiveConfiguration, SubscriptionLevel } from './directive';
 
 /**
  * Nullable
@@ -127,6 +136,7 @@ export class ModelTransformer extends GenericModelTransformer implements Transfo
             resolver = this.generateGetResolver(context, def!, query.typeName, query.fieldName, query.resolverLogicalId);
             break;
           case QueryFieldType.LIST:
+            resolver = this.generateListResolver(context, def!, query.typeName, query.fieldName, query.resolverLogicalId);
             resolver = this.generateListResolver(context, def!, query.typeName, query.fieldName, query.resolverLogicalId);
             break;
           case QueryFieldType.SYNC:
