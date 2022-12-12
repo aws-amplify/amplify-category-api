@@ -18,7 +18,7 @@ export class TransformerStackSythesizer extends LegacyStackSynthesizer {
    * synthesizeStackTemplate
    *
    * This method has been deprecated by cdk and is not used in runtime.
-   * It got replaced by synthesizeTemplate.
+   * @deprecated Replaced by synthesizeTemplate.
    */
   protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): void {
     if (stack instanceof TransformerRootStack) {
