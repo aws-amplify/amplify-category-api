@@ -107,6 +107,15 @@ jobs:
           key: amplify-category-api-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
       - run: chmod +x .circleci/lint_pr.sh && ./.circleci/lint_pr.sh
 
+  verify-api-extract:
+    <<: *linux-e2e-executor
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-category-api-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+      - run: yarn verify-api-extract
+
   mock_e2e_tests:
     <<: *linux-e2e-executor
     steps:
@@ -424,6 +433,9 @@ workflows:
                 - l
                 - w
       - lint:
+          requires:
+            - build
+      - verify-api-extract:
           requires:
             - build
       - test:
