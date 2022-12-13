@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.10.16](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.15...amplify-category-api-e2e-tests@3.10.16) (2022-12-13)
+
+### Bug Fixes
+
+- resolvers generated from index respect StackMappings ([ed0827a](https://github.com/aws-amplify/amplify-category-api/commit/ed0827a8ea154923112461e09effaccb9b185b33))
+
 ## [3.10.15](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.14...amplify-category-api-e2e-tests@3.10.15) (2022-12-03)
 
 ### Bug Fixes
