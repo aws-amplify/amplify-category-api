@@ -26,7 +26,8 @@
     "build": "tsc && mkdirp lib/assets && cd resources/mapping-lambda-function && bestzip --force node ../../lib/assets/mapping-lambda.zip index.js",
     "watch": "tsc -w",
     "clean": "rimraf ./lib tsconfig.tsbuildinfo",
-    "test": "jest"
+    "test": "jest",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "@aws-amplify/graphql-transformer-core": "0.18.0",

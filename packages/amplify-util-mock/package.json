@@ -26,7 +26,8 @@
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
     "velocity": "jest ./src/__tests__/velocity/*.test.ts",
-    "jest": "jest"
+    "jest": "jest",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "@hapi/topo": "^5.0.0",
