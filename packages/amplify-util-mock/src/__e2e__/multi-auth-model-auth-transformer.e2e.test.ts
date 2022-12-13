@@ -5,7 +5,9 @@ import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import gql from 'graphql-tag';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
-import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
+import {
+  deploy, launchDDBLocal, logDebug, terminateDDB,
+} from './utils/index';
 import 'isomorphic-fetch';
 
 jest.setTimeout(2000000);
@@ -16,12 +18,12 @@ let ddbEmulator = null;
 let dbPath = null;
 let server;
 
-let GRAPHQL_ENDPOINT = undefined;
+let GRAPHQL_ENDPOINT;
 
-let APIKEY_GRAPHQL_CLIENT: AWSAppSyncClient<any> = undefined;
-let USER_POOL_AUTH_CLIENT: AWSAppSyncClient<any> = undefined;
+let APIKEY_GRAPHQL_CLIENT: AWSAppSyncClient<any>;
+let USER_POOL_AUTH_CLIENT: AWSAppSyncClient<any>;
 
-let USER_POOL_ID = 'fake_user_pool';
+const USER_POOL_ID = 'fake_user_pool';
 
 const USERNAME1 = 'user1@test.com';
 
@@ -127,7 +129,7 @@ beforeAll(async () => {
       }),
     ],
     featureFlags: {
-      getBoolean: name => (name === 'improvePluralization' ? true : false),
+      getBoolean: (name) => (name === 'improvePluralization'),
     } as FeatureFlagProvider,
   });
 
@@ -141,10 +143,10 @@ beforeAll(async () => {
     const result = await deploy(out, ddbClient);
     server = result.simulator;
 
-    GRAPHQL_ENDPOINT = server.url + '/graphql';
+    GRAPHQL_ENDPOINT = `${server.url}/graphql`;
     logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
-    const apiKey = result.config.appSync.apiKey;
+    const { apiKey } = result.config.appSync;
     logDebug(`API KEY: ${apiKey}`);
     expect(apiKey).toBeTruthy();
 
@@ -172,7 +174,7 @@ beforeAll(async () => {
       region: REGION,
       auth: {
         type: AUTH_TYPE.API_KEY,
-        apiKey: apiKey,
+        apiKey,
       },
       offlineConfig: {
         keyPrefix: 'apikey',
@@ -182,7 +184,7 @@ beforeAll(async () => {
 
     // Wait for any propagation to avoid random
     // "The security token included in the request is invalid" errors
-    await new Promise<void>(res => setTimeout(() => res(), 5000));
+    await new Promise<void>((res) => setTimeout(() => res(), 5000));
   } catch (e) {
     console.error(e);
     expect(true).toEqual(false);
@@ -204,7 +206,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test(`Test 'public' authStrategy`, async () => {
+test('\'public\' authStrategy', async () => {
   try {
     const createMutation = gql`
       mutation {
@@ -224,7 +226,7 @@ test(`Test 'public' authStrategy`, async () => {
       }
     `;
 
-    const response = await APIKEY_GRAPHQL_CLIENT.mutate({
+    const response: any = await APIKEY_GRAPHQL_CLIENT.mutate({
       mutation: createMutation,
       fetchPolicy: 'no-cache',
     });
@@ -252,7 +254,7 @@ test(`Test 'public' authStrategy`, async () => {
   }
 });
 
-test(`Test 'private' authStrategy`, async () => {
+test('\'private\' authStrategy', async () => {
   try {
     const createMutation = gql`
       mutation {
@@ -272,7 +274,7 @@ test(`Test 'private' authStrategy`, async () => {
       }
     `;
 
-    const response = await USER_POOL_AUTH_CLIENT.mutate({
+    const response: any = await USER_POOL_AUTH_CLIENT.mutate({
       mutation: createMutation,
       fetchPolicy: 'no-cache',
     });
@@ -301,7 +303,7 @@ test(`Test 'private' authStrategy`, async () => {
   }
 });
 
-describe(`Connection tests with @auth on type`, () => {
+describe('Connection tests with @auth on type', () => {
   const createPostMutation = gql`
     mutation {
       createPostConnection(input: { title: "Hello, World!" }) {
@@ -372,7 +374,7 @@ describe(`Connection tests with @auth on type`, () => {
   beforeAll(async () => {
     try {
       // Add a comment with ApiKey - Succeed
-      const response = await APIKEY_GRAPHQL_CLIENT.mutate({
+      const response: any = await APIKEY_GRAPHQL_CLIENT.mutate({
         mutation: createPostMutation,
         fetchPolicy: 'no-cache',
       });
@@ -380,7 +382,7 @@ describe(`Connection tests with @auth on type`, () => {
       postId = response.data.createPostConnection.id;
 
       // Add a comment with UserPool - Succeed
-      const commentResponse = await USER_POOL_AUTH_CLIENT.mutate({
+      const commentResponse: any = await USER_POOL_AUTH_CLIENT.mutate({
         mutation: createCommentMutation,
         fetchPolicy: 'no-cache',
         variables: {
