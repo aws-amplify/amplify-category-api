@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.33-upgrade-graphql15.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@0.6.32...@aws-amplify/graphql-predictions-transformer@0.6.33-upgrade-graphql15.0) (2022-12-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer
+
 ## [0.6.32](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@0.6.31...@aws-amplify/graphql-predictions-transformer@0.6.32) (2022-12-03)
 
 **Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer
