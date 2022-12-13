@@ -20,7 +20,8 @@
     "build": "tsc && cd streaming-lambda && bestzip --force node ../lib/streaming-lambda.zip python_streaming_function.py",
     "watch": "tsc -w",
     "clean": "rimraf ./lib",
-    "test": "jest"
+    "test": "jest",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "cloudform-types": "^4.2.0",

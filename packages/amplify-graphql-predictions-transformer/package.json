@@ -24,7 +24,8 @@
     "build": "tsc && cd assets && bestzip --force node ../lib/predictionsLambdaFunction.zip predictionsLambda.js",
     "watch": "tsc -w",
     "clean": "rimraf ./lib",
-    "test": "jest"
+    "test": "jest",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "@aws-amplify/graphql-transformer-core": "0.18.0",

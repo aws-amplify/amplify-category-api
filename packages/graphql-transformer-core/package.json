@@ -20,7 +20,8 @@
     "test": "jest",
     "build": "rimraf ./lib ./tsconfig.tsbuildinfo && tsc",
     "watch": "tsc -w",
-    "clean": "rimraf ./lib"
+    "clean": "rimraf ./lib",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "cloudform-types": "^4.2.0",
