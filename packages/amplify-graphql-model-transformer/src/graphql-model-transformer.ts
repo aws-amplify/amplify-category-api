@@ -137,7 +137,6 @@ export class ModelTransformer extends GenericModelTransformer implements Transfo
             break;
           case QueryFieldType.LIST:
             resolver = this.generateListResolver(context, def!, query.typeName, query.fieldName, query.resolverLogicalId);
-            resolver = this.generateListResolver(context, def!, query.typeName, query.fieldName, query.resolverLogicalId);
             break;
           case QueryFieldType.SYNC:
             resolver = this.generateSyncResolver(context, def!, query.typeName, query.fieldName, query.resolverLogicalId);
