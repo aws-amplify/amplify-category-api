@@ -306,4 +306,23 @@ describe('DefaultValueModelTransformer:', () => {
     const schema = parse(out.schema);
     validateModelSchema(schema);
   });
+
+  it.only('should successfully set the default values when model name starts with lowercase', async () => {
+    const inputSchema = `
+      type post @model {
+        id: ID!
+        stringValue: String @default(value: "hello world")
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer(), new DefaultValueTransformer()],
+    });
+    const out = transformer.transform(inputSchema);
+    expect(out).toBeDefined();
+    expect(out.resolvers).toBeDefined();
+    expect(out.resolvers["Mutation.createPost.init.2.req.vtl"]).toBeDefined();
+    expect(out.resolvers["Mutation.createPost.init.2.req.vtl"]).toMatchSnapshot();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+  });
 });
