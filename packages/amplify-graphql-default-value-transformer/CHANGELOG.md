@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.5-circular-dep-fix.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-default-value-transformer@0.7.4...@aws-amplify/graphql-default-value-transformer@0.7.5-circular-dep-fix.0) (2022-12-15)
+
+### Bug Fixes
+
+- **api:** default value for model name start with lowercase ([df27e63](https://github.com/aws-amplify/amplify-category-api/commit/df27e63dd789c0156a94fdff3142acf65f460c65))
+
 ## [0.7.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-default-value-transformer@0.7.3...@aws-amplify/graphql-default-value-transformer@0.7.4) (2022-12-03)
 
 **Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer

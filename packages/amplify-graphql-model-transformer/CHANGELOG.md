@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.16.5-circular-dep-fix.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@0.16.4...@aws-amplify/graphql-model-transformer@0.16.5-circular-dep-fix.0) (2022-12-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-model-transformer
+
 ## [0.16.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@0.16.3...@aws-amplify/graphql-model-transformer@0.16.4) (2022-12-03)
 
 **Note:** Version bump only for package @aws-amplify/graphql-model-transformer

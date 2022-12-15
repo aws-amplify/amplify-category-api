@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.45-circular-dep-fix.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-versioned-transformer@5.2.44...graphql-versioned-transformer@5.2.45-circular-dep-fix.0) (2022-12-15)
+
+**Note:** Version bump only for package graphql-versioned-transformer
+
 ## [5.2.44](https://github.com/aws-amplify/amplify-category-api/compare/graphql-versioned-transformer@5.2.43...graphql-versioned-transformer@5.2.44) (2022-12-03)
 
 **Note:** Version bump only for package graphql-versioned-transformer
