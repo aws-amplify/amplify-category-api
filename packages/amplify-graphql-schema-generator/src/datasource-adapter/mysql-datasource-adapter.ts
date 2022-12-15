@@ -17,7 +17,7 @@ interface MySQLIndex {
   indexName: string;
   sequence: number;
   columnName: string;
-  nullable: boolean;  
+  nullable: boolean;
 }
 
 interface MySQLColumn {

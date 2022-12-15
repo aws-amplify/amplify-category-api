@@ -1,5 +1,6 @@
-import { $TSAny, $TSMeta, $TSObject, AmplifyCategories, AmplifySupportedService, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSMeta, $TSObject, AmplifyCategories, AmplifySupportedService, stateManager, pathManager } from 'amplify-cli-core';
 import _ from 'lodash';
+import * as path from 'path';
 
 export const authConfigHasApiKey = (authConfig?: $TSAny) => {
   if (!authConfig) {
@@ -30,6 +31,33 @@ export const checkIfAuthExists = () => {
   }
 
   return authResourceName;
+};
+
+export const getAppSyncAPINames = () => {
+  return Object.entries(stateManager.getMeta()?.api || {})
+    .filter(([_, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
+    .map(([name]) => name);
+};
+
+export const ensureNoAppSyncAPIExists = () => {
+  const apiNames = getAppSyncAPINames();
+  // This restriction of having a single AppSync API might change in future.
+  if (apiNames?.length > 0) {
+    throw new Error(`You already have an AppSync API named ${apiNames[0]} in your project. Use the "amplify update api" command to update your existing AppSync API.`);
+  }
+}
+
+export const getAppSyncAPIName = () => {
+  const apiNames = getAppSyncAPINames();
+  // This restriction of having a single AppSync API might change in future.
+  if (apiNames?.length === 0) {
+    throw new Error(`You do not have AppSync API added. Use "amplify add api" or "amplify import api" to add one to your project.`);
+  }
+  return apiNames[0];
+};
+
+export const getAPIResourceDir = (apiName: string) => {
+  return path.join(pathManager.getBackendDirPath(), AmplifyCategories.API, apiName);
 };
 
 // some utility functions to extract the AppSync API name and config from amplify-meta
