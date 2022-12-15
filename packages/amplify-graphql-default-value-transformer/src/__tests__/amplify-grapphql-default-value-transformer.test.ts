@@ -307,7 +307,7 @@ describe('DefaultValueModelTransformer:', () => {
     validateModelSchema(schema);
   });
 
-  it.only('should successfully set the default values when model name starts with lowercase', async () => {
+  it('should successfully set the default values when model name starts with lowercase', async () => {
     const inputSchema = `
       type post @model {
         id: ID!
