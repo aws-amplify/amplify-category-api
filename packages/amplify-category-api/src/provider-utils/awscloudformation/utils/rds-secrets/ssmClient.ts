@@ -1,6 +1,11 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 import aws from 'aws-sdk';
 
+export type Secret = {
+  secretName: string,
+  secretValue: string
+};
+
 /**
  *  SSM client provider for AWS SDK calls
  */
@@ -19,7 +24,7 @@ export class SSMClient {
   /**
    * Returns a list of secret name value pairs
    */
-  getSecrets = async (secretNames: string[]): Promise<$TSAny> => {
+  getSecrets = async (secretNames: string[]): Promise<Secret[]> => {
     if (!secretNames || secretNames?.length === 0) {
       return [];
     }
