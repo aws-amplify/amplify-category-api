@@ -13,8 +13,8 @@ executors:
       shell: bash.exe
     working_directory: ~/repo
     environment:
-      AMPLIFY_DIR: C:/home/circleci/repo/out
-      AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
+      AMPLIFY_DIR: C:/home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin
+      AMPLIFY_PATH: C:/home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin/amplify
 
   l: &linux-e2e-executor
     docker:
@@ -22,8 +22,8 @@ executors:
     working_directory: ~/repo
     resource_class: large
     environment:
-      AMPLIFY_DIR: /home/circleci/repo/out
-      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
+      AMPLIFY_DIR: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin/amplify
 
 defaults: &defaults
   working_directory: ~/repo
@@ -222,8 +222,6 @@ jobs:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
 
   client_e2e_tests:
-    environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin/amplify
     parameters:
       os:
         type: executor
@@ -268,6 +266,8 @@ jobs:
 
   amplify_migration_tests_v5:
     <<: *defaults
+    environment:
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     steps:
       - attach_workspace:
           at: ./
@@ -290,9 +290,9 @@ jobs:
     working_directory: ~/repo
 
   amplify_migration_tests_v6:
-    environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin/amplify
     <<: *defaults
+    environment:
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     steps:
       - attach_workspace:
           at: ./
@@ -310,6 +310,33 @@ jobs:
       - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-migration-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
+    working_directory: ~/repo
+
+  amplify_migration_tests_v10:
+    <<: *defaults
+    environment:
+      AMPLIFY_PATH: /home/circleci/.amplify/bin/amplify
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-category-api-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+      - run:
+          name: Run tests migrating from CLI v10.5.1
+          command: |
+            yarn setup-dev
+            source .circleci/local_publish_helpers.sh
+            changeNpmGlobalPath
+            cd packages/amplify-migration-tests
+            unset IS_AMPLIFY_CI
+            echo $IS_AMPLIFY_CI
+            retry yarn run migration_v10.5.1 --maxWorkers=3 $TEST_SUITE
+          no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
+      - store_test_results:
+          path: ~/repo/packages/amplify-migration-tests/
       - store_artifacts:
           path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
     working_directory: ~/repo
@@ -505,6 +532,19 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - publish_to_local_registry
+      - amplify_migration_tests_v10:
+          context:
+            - e2e-auth-credentials
+            - api-cleanup-resources
+            - api-e2e-test-context
+          filters:
+            branches:
+              only:
+                - main
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
+          requires:
+            - publish_to_local_registry
       - amplify_migration_tests_v5:
           context:
             - e2e-auth-credentials
@@ -554,6 +594,7 @@ workflows:
             - graphql_e2e_tests
             - amplify_e2e_tests
             - client_e2e_tests
+            - amplify_migration_tests_v10
             - amplify_migration_tests_v6
             - amplify_migration_tests_v5
           filters:
