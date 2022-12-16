@@ -2,11 +2,9 @@ import { $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import fs from 'fs-extra';
-import { importAppSyncAPIWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/import-appsync-api-walkthrough';
-import { RDS_SCHEMA_FILE_NAME, ImportedRDSType } from '../../provider-utils/awscloudformation/service-walkthrough-types/import-appsync-api-types';
-import { constructGlobalAmplifyInput } from '../../provider-utils/awscloudformation/utils/import-rds-utils/globalAmplifyInputs';
+import { importAppSyncAPIWalkthrough, writeDefaultGraphQLSchema } from '../../provider-utils/awscloudformation/service-walkthroughs/import-appsync-api-walkthrough';
+import { RDS_SCHEMA_FILE_NAME } from '../../provider-utils/awscloudformation/service-walkthrough-types/import-appsync-api-types';
 import { getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { writeSchemaFile } from '../../provider-utils/awscloudformation/utils/graphql-schema-utils';
 
 const subcommand = 'import';
 
@@ -19,11 +17,10 @@ export const run = async (context: $TSContext) => {
   const apiResourceDir = getAPIResourceDir(importAppSyncAPIWalkInputs.apiName);
   fs.ensureDirSync(apiResourceDir);
 
-  if(Object.values(ImportedRDSType).includes(importAppSyncAPIWalkInputs.dataSourceType)) {
-    const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
-    const globalAmplifyInputTemplate = constructGlobalAmplifyInput(importAppSyncAPIWalkInputs.dataSourceType);
-    writeSchemaFile(pathToSchemaFile, globalAmplifyInputTemplate);
-    printer.info(`Update the database connection details in the file at ${pathToSchemaFile}.`);
-    printer.info('Run "amplify api generate-schema" to fetch the schema.');
-  }
+  const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
+  await writeDefaultGraphQLSchema(context, pathToSchemaFile, importAppSyncAPIWalkInputs.dataSourceType);
+  
+  // print next steps
+  printer.info(`Update the database connection details in the file at ${pathToSchemaFile}.`);
+  printer.info('Run "amplify api generate-schema" to fetch the schema.');
 };
