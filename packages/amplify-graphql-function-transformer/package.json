@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-function-transformer",
-  "version": "0.7.33-circular-dep-fix.0",
+  "version": "0.7.33-circular-dep-fix.1",
   "description": "Amplify GraphQL @function transformer",
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "0.18.1-circular-dep-fix.0",
+    "@aws-amplify/graphql-transformer-core": "0.18.1-circular-dep-fix.1",
     "@aws-amplify/graphql-transformer-interfaces": "1.14.10-circular-dep-fix.0",
     "@aws-cdk/aws-appsync": "~1.172.0",
     "@aws-cdk/aws-lambda": "~1.172.0",

@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformer-core",
-  "version": "7.6.8-circular-dep-fix.0",
+  "version": "7.6.8-circular-dep-fix.1",
   "description": "A framework to transform from GraphQL SDL to AWS cloudFormation.",
   "repository": {
     "type": "git",

@@ -1,6 +1,6 @@
 {
   "name": "graphql-dynamodb-transformer",
-  "version": "7.2.45-circular-dep-fix.0",
+  "version": "7.2.45-circular-dep-fix.1",
   "description": "An AppSync model transform that takes a simple model and creates a DynamoDB table, DynamoDB stream.",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "graphql": "^14.5.8",
     "graphql-mapping-template": "4.20.6-circular-dep-fix.0",
     "graphql-transformer-common": "4.24.2-circular-dep-fix.0",
-    "graphql-transformer-core": "7.6.8-circular-dep-fix.0",
+    "graphql-transformer-core": "7.6.8-circular-dep-fix.1",
     "md5": "^2.2.1",
     "pluralize": "^8.0.0"
   },
