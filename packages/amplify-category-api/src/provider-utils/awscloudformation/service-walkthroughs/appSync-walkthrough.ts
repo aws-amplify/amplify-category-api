@@ -207,7 +207,7 @@ export const openConsole = async (context: $TSContext) => {
   }
 };
 
-const serviceApiInputWalkthrough = async (context: $TSContext, serviceMetadata) => {
+export const serviceApiInputWalkthrough = async (context: $TSContext, serviceMetadata) => {
   let continuePrompt = false;
   let authConfig;
   let defaultAuthType;
