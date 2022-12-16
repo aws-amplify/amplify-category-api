@@ -3,6 +3,7 @@ import { Template } from 'cloudform-types';
 import { throwIfNotJSONExt } from './fileUtils';
 import { ProjectOptions } from './amplifyUtils';
 const fs = require('fs-extra');
+import _ from 'lodash';
 
 export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 export const TRANSFORM_BASE_VERSION = 4;
@@ -255,14 +256,19 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
  * @param projectDirectory The project directory.
  */
 export async function readSchema(projectDirectory: string): Promise<string> {
-  const schemaFilePath = path.join(projectDirectory, 'schema.graphql');
+  const schemaFilePaths = [
+    path.join(projectDirectory, 'schema.graphql'),
+    path.join(projectDirectory, 'schema.rds.graphql')
+  ];
+
+  const schemaFilePath = schemaFilePaths.filter( path => fs.existsSync(path));
   const schemaDirectoryPath = path.join(projectDirectory, 'schema');
-  const schemaFileExists = await fs.exists(schemaFilePath);
-  const schemaDirectoryExists = await fs.exists(schemaDirectoryPath);
+
   let schema;
-  if (schemaFileExists) {
-    schema = (await fs.readFile(schemaFilePath)).toString();
-  } else if (schemaDirectoryExists) {
+  if (!(_.isEmpty(schemaFilePath))) {
+    // Todo: merge all the schemas to a single schema file
+    schema = (await fs.readFile(schemaFilePath[0])).toString();
+  } else if (fs.existsSync(schemaDirectoryPath)) {
     schema = (await readSchemaDocuments(schemaDirectoryPath)).join('\n');
   } else {
     throw new Error(`Could not find a schema at ${schemaFilePath}`);

@@ -94,18 +94,19 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
       path.join(resourceDir, stacksDirName, defaultStackName),
     );
 
-    // write the template buffer to the project folder
-    this.writeSchema(path.join(resourceDir, gqlSchemaFilename), serviceConfig.transformSchema);
-
     const authConfig = this.extractAuthConfig(appsyncCLIInputs.serviceConfiguration);
-
-    await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
-      resourceDir,
-      parameters: this.getCfnParameters(serviceConfig.apiName, authConfig, resourceDir),
-      authConfig,
-    });
-
     const dependsOn = amendDependsOnForAuthConfig([], authConfig);
+
+    if(serviceConfig?.transformSchema) {
+      // write the template buffer to the project folder
+      this.writeSchema(path.join(resourceDir, gqlSchemaFilename), serviceConfig.transformSchema);
+
+      await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
+        resourceDir,
+        parameters: this.getCfnParameters(serviceConfig.apiName, authConfig, resourceDir),
+        authConfig,
+      });
+    }
 
     this.context.amplify.updateamplifyMetaAfterResourceAdd(category, serviceConfig.apiName, this.createAmplifyMeta(authConfig, dependsOn));
     return serviceConfig.apiName;

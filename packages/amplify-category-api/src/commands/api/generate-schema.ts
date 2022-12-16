@@ -2,9 +2,9 @@ import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import fs from 'fs-extra';
-import { MySQLDataSourceAdapter, generateGraphQLSchema, Schema, Engine } from '@aws-amplify/graphql-schema-generator';
+import { MySQLDataSourceAdapter, generateGraphQLSchema, Schema, Engine, DataSourceAdapter } from '@aws-amplify/graphql-schema-generator';
 import { getDBUserSecretsWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/generate-graphql-schema-walkthrough';
-import { RDS_SCHEMA_FILE_NAME } from '../../provider-utils/awscloudformation/service-walkthrough-types/import-appsync-api-types';
+import { ImportedRDSType, RDS_SCHEMA_FILE_NAME } from '../../provider-utils/awscloudformation/service-walkthrough-types/import-appsync-api-types';
 import { readGlobalAmplifyInput, validateInputConfig } from '../../provider-utils/awscloudformation/utils/import-rds-utils/globalAmplifyInputs';
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { getExistingConnectionSecrets, storeConnectionSecrets } from '../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
@@ -35,8 +35,17 @@ export const run = async (context: $TSContext) => {
     config['username'] = secrets?.username;
     config['password'] = secrets?.password;
     
-    // Test the connection
-    const adapter = new MySQLDataSourceAdapter(config);
+    // Establish the connection
+    let adapter: DataSourceAdapter;
+    let schema: Schema;
+    switch(config.dataSourceType) {
+      case ImportedRDSType.MYSQL:
+        adapter = new MySQLDataSourceAdapter(config);
+        schema = new Schema(new Engine('MySQL'));
+      default:
+        printer.error('Only MySQL Data Source is supported.');
+    }
+    
     try {
       await adapter.initialize();
     } catch(error) {
@@ -52,8 +61,6 @@ export const run = async (context: $TSContext) => {
 
     const models = await adapter.getModels();
     adapter.cleanup();
-
-    const schema = new Schema(new Engine('MySQL'));
     models.forEach(m => schema.addModel(m));
 
     const schemaString = generateGraphQLSchema(schema);
