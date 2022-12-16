@@ -23,8 +23,7 @@ export const run = async (context: $TSContext) => {
     const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
     const globalAmplifyInputTemplate = constructGlobalAmplifyInput(importAppSyncAPIWalkInputs.dataSourceType);
     writeSchemaFile(pathToSchemaFile, globalAmplifyInputTemplate);
-    printer.info(`Update the database connection details in the file at ${pathToSchemaFile}. Run "amplify api generate-schema" to fetch the schema.`);
+    printer.info(`Update the database connection details in the file at ${pathToSchemaFile}.`);
+    printer.info('Run "amplify api generate-schema" to fetch the schema.');
   }
-  // TODO: add/update artifacts post add api
-  printer.info('Successfully initialized the API. Run "amplify api generate-schema" to import the GraphQL schema.');
 };

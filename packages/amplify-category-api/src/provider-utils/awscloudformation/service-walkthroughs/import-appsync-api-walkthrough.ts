@@ -1,15 +1,26 @@
-import { v4 as uuid } from 'uuid';
 import { $TSContext } from 'amplify-cli-core';
-import { prompter, alphanumeric } from 'amplify-prompts';
+import { prompter } from 'amplify-prompts';
 import { getAppSyncAPINames } from '../utils/amplify-meta-utils';
 import { ImportAppSyncAPIInputs, ImportedDataSourceType, ImportedRDSType } from '../service-walkthrough-types/import-appsync-api-types';
+import { serviceApiInputWalkthrough } from './appSync-walkthrough';
+import { serviceMetadataFor } from '../utils/dynamic-imports';
+import { getCfnApiArtifactHandler } from '../cfn-api-artifact-handler';
+import { serviceWalkthroughResultToAddApiRequest } from '../utils/service-walkthrough-result-to-add-api-request';
+
+const service = 'AppSync';
 
 export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<ImportAppSyncAPIInputs> => {
+  let apiName:string;
   const existingAPIs = getAppSyncAPINames();
-
-  // Get the name for the imported API
-  const defaultAPIName = context.amplify.getProjectConfig()?.projectName || `api${uuid().split('-')}`;
-  const apiName = await prompter.input('Provide API name:', { validate: alphanumeric(), initial: defaultAPIName });
+  if (existingAPIs?.length > 0) {
+    apiName = existingAPIs[0];
+  }
+  else {
+    const serviceMetadata = await serviceMetadataFor(service);
+    const walkthroughResult = await serviceApiInputWalkthrough(context, serviceMetadata);
+    const importAPIRequest = serviceWalkthroughResultToAddApiRequest(walkthroughResult);
+    apiName = await getCfnApiArtifactHandler(context).createArtifacts(importAPIRequest);
+  }
 
   // Get the Imported Data Source Type
   const supportedDataSourceTypes = [
