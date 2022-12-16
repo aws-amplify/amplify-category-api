@@ -43,7 +43,7 @@
     "md5": "^2.3.0"
   },
   "peerDependencies": {
-    "amplify-prompts": "^2.0.0"
+    "amplify-prompts": "^2.6.1"
   },
   "devDependencies": {
     "@aws-amplify/graphql-index-transformer": "0.14.6-circular-dep-fix.0",
