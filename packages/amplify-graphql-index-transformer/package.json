@@ -42,7 +42,7 @@
     "@aws-cdk/assert": "~1.172.0"
   },
   "peerDependencies": {
-    "amplify-cli-core": "^3.0.0"
+    "amplify-cli-core": "^3.4.0"
   },
   "jest": {
     "transform": {
