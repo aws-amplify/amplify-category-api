@@ -6,6 +6,8 @@ import { serviceApiInputWalkthrough } from './appSync-walkthrough';
 import { serviceMetadataFor } from '../utils/dynamic-imports';
 import { getCfnApiArtifactHandler } from '../cfn-api-artifact-handler';
 import { serviceWalkthroughResultToAddApiRequest } from '../utils/service-walkthrough-result-to-add-api-request';
+import { writeSchemaFile } from '../utils/graphql-schema-utils';
+import { constructGlobalAmplifyInput } from '../utils/import-rds-utils/globalAmplifyInputs';
 
 const service = 'AppSync';
 
@@ -36,4 +38,14 @@ export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<
     apiName: apiName,
     dataSourceType: importedDataSourceType
   };
+};
+
+export const writeDefaultGraphQLSchema = async (context: $TSContext, pathToSchemaFile: string, dataSourceType: ImportedDataSourceType) => {
+  if(Object.values(ImportedRDSType).includes(dataSourceType)) {
+    const globalAmplifyInputTemplate = await constructGlobalAmplifyInput(context, dataSourceType);
+    writeSchemaFile(pathToSchemaFile, globalAmplifyInputTemplate);
+  }
+  else {
+    throw new Error(`Data source type ${dataSourceType} is not supported.`);
+  }
 };
