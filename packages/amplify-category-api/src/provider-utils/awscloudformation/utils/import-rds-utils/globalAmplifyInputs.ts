@@ -80,7 +80,7 @@ export const readGlobalAmplifyInput = async (context: $TSContext, pathToSchemaFi
   expectedInputs.map(input => {
     const value = inputDirective?.fields?.find( 
       field => field?.name?.value === input
-    ).defaultValue?.value;
+    )?.defaultValue?.value;
     if (_.isEmpty(value)) {
       throw new Error(`Invalid value for ${input} input in the GraphQL schema. Correct and re-try.`);
     }
@@ -94,12 +94,12 @@ export const validateInputConfig = async (context: $TSContext, config: { [x: str
   const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL, false)).map(item => item.name);
   const missingInputs = expectedInputs.filter(input => _.isEmpty(config[input]));
   if(!_.isEmpty(missingInputs)) {
-    throw new Error(`The input parameters ${missingInputs.join(',')} are missing. Specify them in the schema and re-run.`);
+    throw new Error(`The database connection parameters: ${missingInputs.join(',')}, are missing. Specify them in the schema and re-run.`);
   }
 
   // The database connection details shouldn't have space
   const invalidInputs = expectedInputs.filter(input => config[input]?.indexOf(' ') >= 0);
   if(!_.isEmpty(invalidInputs)) {
-    throw new Error(`The database connection parameters ${invalidInputs.join(',')} might be invalid. Correct them in the schema and re-run.`);
+    throw new Error(`The database connection parameters: ${invalidInputs.join(',')}, might be invalid. Correct them in the schema and re-run.`);
   }
 };
