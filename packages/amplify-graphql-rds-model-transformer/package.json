@@ -24,7 +24,7 @@
     "build": "tsc && cd rds-lambda && tsc && bestzip --force node ../lib/streaming-lambda.zip ./lib*",
     "watch": "tsc -w",
     "clean": "rimraf ./lib",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "test-watch": "jest --watch"
   },
   "dependencies": {
