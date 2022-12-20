@@ -11,6 +11,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package graphql-transformer-common
 
+## [4.24.1](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.24.0...graphql-transformer-common@4.24.1) (2022-12-03)
+
+**Note:** Version bump only for package graphql-transformer-common
+
 # [4.24.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.23.3...graphql-transformer-common@4.24.0) (2022-07-01)
 
 ### Features

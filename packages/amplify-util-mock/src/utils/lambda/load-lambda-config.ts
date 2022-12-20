@@ -1,9 +1,11 @@
-import { JSONUtilities, pathManager, $TSAny, $TSContext, $TSObject } from 'amplify-cli-core';
-import { lambdaFunctionHandler } from '../../CFNParser/resource-processors/lambda';
+import {
+  JSONUtilities, pathManager, $TSAny, $TSContext, $TSObject,
+} from 'amplify-cli-core';
 import * as path from 'path';
+import detect from 'detect-port';
+import { lambdaFunctionHandler } from '../../CFNParser/resource-processors/lambda';
 import { populateCfnParams } from './populate-cfn-params';
 import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';
-import detect from 'detect-port';
 import { MOCK_API_PORT } from '../../api/api';
 import { populateLambdaMockEnvVars } from './populate-lambda-mock-env-vars';
 
@@ -21,7 +23,7 @@ const CFN_DEFAULT_CONDITIONS = {
 export const loadLambdaConfig = async (
   context: $TSContext,
   resourceName: string,
-  overrideApiToLocal: boolean = false,
+  overrideApiToLocal = false,
 ): Promise<ProcessedLambdaFunction> => {
   overrideApiToLocal = overrideApiToLocal || (await isApiRunning());
   const resourcePath = path.join(pathManager.getBackendDirPath(), 'function', resourceName);
@@ -32,7 +34,7 @@ export const loadLambdaConfig = async (
   if (!lambdaDef) {
     return;
   }
-  const cfnParams = populateCfnParams(context.print, resourceName, overrideApiToLocal);
+  const cfnParams = await populateCfnParams(context.print, resourceName, overrideApiToLocal);
   const processedLambda = lambdaFunctionHandler(lambdaDef[0], lambdaDef[1], {
     conditions: CFN_DEFAULT_CONDITIONS,
     params: cfnParams,

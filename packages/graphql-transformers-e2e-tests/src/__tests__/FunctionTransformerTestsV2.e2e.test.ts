@@ -15,10 +15,12 @@ import { IAMHelper } from '../IAMHelper';
 import { default as STS } from 'aws-sdk/clients/sts';
 import { default as Organizations } from 'aws-sdk/clients/organizations';
 import AWS from 'aws-sdk';
+import { resolveTestRegion } from '../testSetup';
+
+const region = resolveTestRegion();
 
 jest.setTimeout(2000000);
 
-const region = 'us-west-2';
 const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);
 const awsS3Client = new S3({ region: region });

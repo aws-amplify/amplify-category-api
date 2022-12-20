@@ -45,6 +45,27 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - migrate auth, maps-to, relational, default value transformer to CDK v2 ([#875](https://github.com/aws-amplify/amplify-category-api/issues/875)) ([5c714a9](https://github.com/aws-amplify/amplify-category-api/commit/5c714a9a8436be343477574cb5523c23c96c9338))
 
+## [1.2.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.2.1...@aws-amplify/graphql-auth-transformer@1.2.2) (2022-12-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [1.2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.2.0...@aws-amplify/graphql-auth-transformer@1.2.1) (2022-12-09)
+
+### Bug Fixes
+
+- aggregate fields access for iam auth with admin roles ([f1262d3](https://github.com/aws-amplify/amplify-category-api/commit/f1262d3169e15fbc825ce0df98dda05094171998))
+
+# [1.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.1.4...@aws-amplify/graphql-auth-transformer@1.2.0) (2022-12-03)
+
+### Bug Fixes
+
+- 🐛 VTL issue when field starts with an underscore ([941f225](https://github.com/aws-amplify/amplify-category-api/commit/941f225df3ab4dabd87cf986655eb332784815d7)), closes [#735](https://github.com/aws-amplify/amplify-category-api/issues/735)
+
+### Features
+
+- 🎸 Added descriptive message when using field-level auth ([81c550d](https://github.com/aws-amplify/amplify-category-api/commit/81c550d46a044b1c70e370a3a4322deb5abdee45)), closes [#971](https://github.com/aws-amplify/amplify-category-api/issues/971)
+- 🎸 Added warning when ownerField similar to schema field ([5281be2](https://github.com/aws-amplify/amplify-category-api/commit/5281be23d08eabbdc88021ab024377e211ecb41d)), closes [#957](https://github.com/aws-amplify/amplify-category-api/issues/957)
+
 ## [1.1.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.1.3...@aws-amplify/graphql-auth-transformer@1.1.4) (2022-11-08)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

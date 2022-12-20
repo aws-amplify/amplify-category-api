@@ -8,6 +8,7 @@ import {
   pathManager,
   stateManager,
 } from 'amplify-cli-core';
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { printer } from 'amplify-prompts';
 import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
 import * as fs from 'fs-extra';
@@ -43,7 +44,6 @@ export * from './graphql-transformer';
 export * from './force-updates';
 
 const category = AmplifyCategories.API;
-const categories = 'categories';
 
 /**
  * Open the AppSync/API Gateway AWS console
@@ -102,12 +102,6 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   const datasource = 'Aurora Serverless';
   const service = 'service';
   const rdsInit = 'rdsInit';
-  const rdsRegion = 'rdsRegion';
-  const rdsClusterIdentifier = 'rdsClusterIdentifier';
-  const rdsSecretStoreArn = 'rdsSecretStoreArn';
-  const rdsDatabaseName = 'rdsDatabaseName';
-
-  const { amplify } = context;
 
   /**
    * Check if we need to do the walkthrough, by looking to see if previous environments have
@@ -154,43 +148,28 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   }
 
   /**
-   * Check team provider info to ensure it hasn't already been created for current env
+   * Check environment parameter manager to ensure it hasn't already been created for current env
    */
-  const currentEnv = amplify.getEnvInfo().envName;
-  const teamProviderInfo = stateManager.getTeamProviderInfo();
+  const envParamManager = (await ensureEnvParamManager()).instance;
   if (
-    teamProviderInfo[currentEnv][categories]
-    && teamProviderInfo[currentEnv][categories][category]
-    && teamProviderInfo[currentEnv][categories][category][resourceName]
-    && teamProviderInfo[currentEnv][categories][category][resourceName]
-    && teamProviderInfo[currentEnv][categories][category][resourceName][rdsRegion]
+    envParamManager.hasResourceParamManager(category, resourceName)
+    && envParamManager.getResourceParamManager(category, resourceName).getParam('rdsRegion')
   ) {
     return;
   }
-
   // execute the walkthrough
   await providerController
     .addDatasource(context, category, datasource)
     .then(answers => {
       /**
-       * Write the new answers to the team provider info
+       * Update environment parameter manager with answers
        */
-      if (!teamProviderInfo[currentEnv][categories]) {
-        teamProviderInfo[currentEnv][categories] = {};
-      }
-      if (!teamProviderInfo[currentEnv][categories][category]) {
-        teamProviderInfo[currentEnv][categories][category] = {};
-      }
-      if (!teamProviderInfo[currentEnv][categories][category][resourceName]) {
-        teamProviderInfo[currentEnv][categories][category][resourceName] = {};
-      }
-
-      teamProviderInfo[currentEnv][categories][category][resourceName][rdsRegion] = answers.region;
-      teamProviderInfo[currentEnv][categories][category][resourceName][rdsClusterIdentifier] = answers.dbClusterArn;
-      teamProviderInfo[currentEnv][categories][category][resourceName][rdsSecretStoreArn] = answers.secretStoreArn;
-      teamProviderInfo[currentEnv][categories][category][resourceName][rdsDatabaseName] = answers.databaseName;
-
-      stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
+      envParamManager.getResourceParamManager(category, resourceName).setParams({
+        rdsRegion: answers.region,
+        rdsClusterIdentifier: answers.dbClusterArn,
+        rdsSecretStoreArn: answers.secretStoreArn,
+        rdsDatabaseName: answers.databaseName,
+      });
     })
     .then(() => {
       context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { forceCompile: true });
@@ -245,7 +224,7 @@ export const executeAmplifyCommand = async (context: $TSContext): Promise<void> 
     commandPath = path.join(commandPath, category, context.input.command);
   }
 
-  //TODO: This is a temporary suppression for CDK deprecation warnings, which should be removed after the migration is complete
+  // TODO: This is a temporary suppression for CDK deprecation warnings, which should be removed after the migration is complete
   // Most of these warning messages are targetting searchable directive, which needs to migrate from elastic search to open search
   // This is not diabled in debug mode
   disableCDKDeprecationWarning();
@@ -369,4 +348,4 @@ const disableCDKDeprecationWarning = () => {
   if (!isDebug) {
     process.env.JSII_DEPRECATED = 'quiet';
   }
-}
+};

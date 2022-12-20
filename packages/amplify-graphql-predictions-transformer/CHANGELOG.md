@@ -37,6 +37,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - migrate predictions transformer to CDK v2 ([#870](https://github.com/aws-amplify/amplify-category-api/issues/870)) ([8b307b3](https://github.com/aws-amplify/amplify-category-api/commit/8b307b3c737c9345a321c4dffb77464619f2c4cb))
 
+## [0.6.32](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@0.6.31...@aws-amplify/graphql-predictions-transformer@0.6.32) (2022-12-03)
+
+**Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer
+
 ## [0.6.31](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@0.6.30...@aws-amplify/graphql-predictions-transformer@0.6.31) (2022-11-08)
 
 **Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer

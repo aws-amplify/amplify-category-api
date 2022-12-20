@@ -24,12 +24,13 @@ import 'isomorphic-fetch';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+import { resolveTestRegion } from '../testSetup';
+
+const region = resolveTestRegion();
 
 jest.setTimeout(2000000);
 
-const AWS_REGION = 'us-west-2';
-
-const cf = new CloudFormationClient(AWS_REGION);
+const cf = new CloudFormationClient(region);
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `PerFieldAuthV2Tests-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `per-field-authv2-tests-bucket-${BUILD_TIMESTAMP}`;
@@ -67,9 +68,9 @@ const PARTICIPANT_GROUP_NAME = 'Participant';
 const WATCHER_GROUP_NAME = 'Watcher';
 const INSTRUCTOR_GROUP_NAME = 'Instructor';
 
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: 'us-west-2' });
-const customS3Client = new S3Client('us-west-2');
-const awsS3Client = new S3({ region: 'us-west-2' });
+const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: region });
+const customS3Client = new S3Client(region);
+const awsS3Client = new S3({ region: region });
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {

@@ -37,6 +37,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - migrate http transformer to CDK v2 ([#871](https://github.com/aws-amplify/amplify-category-api/issues/871)) ([822a8c9](https://github.com/aws-amplify/amplify-category-api/commit/822a8c97343773621c051821c5470b405fdfa4d1))
 
+## [0.8.32](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-http-transformer@0.8.31...@aws-amplify/graphql-http-transformer@0.8.32) (2022-12-03)
+
+**Note:** Version bump only for package @aws-amplify/graphql-http-transformer
+
 ## [0.8.31](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-http-transformer@0.8.30...@aws-amplify/graphql-http-transformer@0.8.31) (2022-11-08)
 
 **Note:** Version bump only for package @aws-amplify/graphql-http-transformer

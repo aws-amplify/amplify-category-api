@@ -1,4 +1,5 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories, stateManager } from 'amplify-cli-core';
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import _ from 'lodash';
 import { GRAPHQL_API_ENDPOINT_OUTPUT, GRAPHQL_API_KEY_OUTPUT, MOCK_API_KEY, MOCK_API_PORT } from '../../api/api';
 
@@ -7,22 +8,25 @@ import { GRAPHQL_API_ENDPOINT_OUTPUT, GRAPHQL_API_KEY_OUTPUT, MOCK_API_KEY, MOCK
  *
  * Iterates through a list of parameter getters. If multiple getters return the same key, the latter will overwrite the former
  */
-export const populateCfnParams = (
+export const populateCfnParams = async (
   print: $TSContext['print'],
   resourceName: string,
   overrideApiToLocal: boolean = false,
-): Record<string, string> => {
-  return [getCfnPseudoParams, getAmplifyMetaParams, getParametersJsonParams, getTeamProviderParams]
+): Promise<Record<string, string>> => {
+  const cfnParams = [getCfnPseudoParams, getAmplifyMetaParams, getParametersJsonParams]
     .map(paramProvider => paramProvider(print, resourceName, overrideApiToLocal))
     .reduce((acc, it) => ({ ...acc, ...it }), {});
+
+  const resourceParamManager = (await ensureEnvParamManager()).instance.getResourceParamManager(AmplifyCategories.API, resourceName);
+  return { ...cfnParams, ...resourceParamManager.getAllParams() };
 };
 
 const getCfnPseudoParams = (): Record<string, string> => {
   const env = stateManager.getLocalEnvInfo().envName;
-  const teamProvider = stateManager.getTeamProviderInfo();
-  const region = _.get(teamProvider, [env, 'awscloudformation', 'Region'], 'us-test-1');
-  const stackId = _.get(teamProvider, [env, 'awscloudformation', 'StackId'], 'fake-stack-id');
-  const stackName = _.get(teamProvider, [env, 'awscloudformation', 'StackName'], 'local-testing');
+  const meta = stateManager.getMeta();
+  const region = _.get(meta, ['awscloudformation', 'Region'], 'us-test-1');
+  const stackId = _.get(meta, ['awscloudformation', 'StackId'], 'fake-stack-id');
+  const stackName = _.get(meta, ['awscloudformation', 'StackName'], 'local-testing');
   const accountIdMatcher = /arn:aws:cloudformation:.+:(?<accountId>\d+):stack\/.+/;
   const match = accountIdMatcher.exec(stackId);
   const accountId = match ? match.groups.accountId : '12345678910';
@@ -85,12 +89,4 @@ const getAmplifyMetaParams = (
  */
 const getParametersJsonParams = (_, resourceName: string): Record<string, string> => {
   return stateManager.getResourceParametersJson(undefined, 'function', resourceName, { throwIfNotExist: false }) ?? {};
-};
-
-/**
- * Loads CFN parameters for the resource in the team-provider-info.json file (if present)
- */
-const getTeamProviderParams = (__, resourceName: string): Record<string, string> => {
-  const env = stateManager.getLocalEnvInfo().envName;
-  return _.get(stateManager.getTeamProviderInfo(), [env, 'categories', 'function', resourceName], {});
 };

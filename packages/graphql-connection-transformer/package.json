@@ -19,7 +19,8 @@
   "scripts": {
     "test": "jest",
     "build": "tsc",
-    "clean": "rimraf ./lib"
+    "clean": "rimraf ./lib",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "cloudform-types": "^4.2.0",
