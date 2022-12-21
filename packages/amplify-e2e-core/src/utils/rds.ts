@@ -5,7 +5,7 @@ import {
   DeleteDBInstanceCommand,
   waitUntilDBInstanceDeleted 
 } from "@aws-sdk/client-rds";
-import { EC2Client, AuthorizeSecurityGroupIngressCommand } from '@aws-sdk/client-ec2';
+import { EC2Client, AuthorizeSecurityGroupIngressCommand, RevokeSecurityGroupIngressCommand } from '@aws-sdk/client-ec2';
 import { knex } from 'knex';
 
 const DEFAULT_DB_INSTANCE_TYPE = "db.m5.large";
@@ -49,7 +49,11 @@ export const createRDSInstance = async (config: {
       },
     );
 
-    const dbInstance = (availableResponse as any).DBInstances[0];
+    if (availableResponse.state !== 'SUCCESS') {
+      throw new Error("Error in creating a new RDS instance.");
+    }
+
+    const dbInstance = availableResponse.reason.DBInstances[0];
     if (!dbInstance) {
       throw new Error("RDS Instance details are missing.");
     }
@@ -74,17 +78,22 @@ export const deleteDBInstance = async (identifier: string, region: string) => {
   const command = new DeleteDBInstanceCommand(params);
   try {
     await client.send(command);
-    await waitUntilDBInstanceDeleted(
-      {
-        maxWaitTime: 3600,
-        maxDelay: 120,
-        minDelay: 60,
-        client,
-      },
-      {
-        DBInstanceIdentifier: identifier,
-      },
-    );
+    
+    // TODO: Revisit the below logic for waitUntilDBInstanceDeleted.
+    // Right now, when it polls for the status, the database is already deleted and throws 'Resource Not Found'.
+    // The deletion has been initiated but it could take few minutes after test completion.
+    
+    // await waitUntilDBInstanceDeleted(
+    //   {
+    //     maxWaitTime: 3600,
+    //     maxDelay: 120,
+    //     minDelay: 60,
+    //     client,
+    //   },
+    //   {
+    //     DBInstanceIdentifier: identifier,
+    //   },
+    // );
   } catch (error) {
     console.log(error);
     throw new Error("Error in deleting RDS instance.");
@@ -95,6 +104,7 @@ export const addRDSPortInboundRule = async (config: {
   region: string,
   port: number,
   securityGroup?: string,
+  cidrIp: string,
 }) => {
   const ec2_client = new EC2Client({
     region: config.region,
@@ -105,7 +115,34 @@ export const addRDSPortInboundRule = async (config: {
     FromPort: config.port,
     ToPort: config.port,
     IpProtocol: "TCP",
-    CidrIp: "0.0.0.0/0",
+    CidrIp: config.cidrIp,
+  });
+  
+  try {
+    await ec2_client.send(command);
+  } catch (error) {
+    // Ignore this error
+    // It usually throws error if the security group rule is a duplicate
+    // If the rule is not added, we will get an error while establishing connection to the database
+  } 
+};
+
+export const removeRDSPortInboundRule = async (config: {
+  region: string,
+  port: number,
+  securityGroup?: string,
+  cidrIp: string,
+}) => {
+  const ec2_client = new EC2Client({
+    region: config.region,
+  });
+  
+  const command = new RevokeSecurityGroupIngressCommand({
+    GroupName: config.securityGroup ?? DEFAULT_SECURITY_GROUP,
+    FromPort: config.port,
+    ToPort: config.port,
+    IpProtocol: "TCP",
+    CidrIp: config.cidrIp,
   });
   
   try {
