@@ -669,9 +669,7 @@ commands:
                 shell: bash.exe
                 command: |
                   source .circleci/local_publish_helpers.sh
-                  yarn add-cli-no-save
-                  yarn hoist-cli-win
-                  export AMPLIFY_PATH=C:/home/circleci/repo/node_modules/amplify-cli-internal/bin/amplify
+                  forceFromSourceRun
                   cd packages/amplify-e2e-tests
                   retry yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
                 no_output_timeout: 60m
@@ -686,9 +684,7 @@ commands:
                   source $BASH_ENV
                   source .circleci/local_publish_helpers.sh
                   amplify version
-                  yarn add-cli-no-save
-                  yarn hoist-cli
-                  export AMPLIFY_PATH=/home/circleci/repo/node_modules/amplify-cli-internal/bin/amplify
+                  forceFromSourceRun
                   retry runE2eTest
                 no_output_timeout: 90m
   scan_e2e_test_artifacts:
