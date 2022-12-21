@@ -200,12 +200,12 @@ function emitCanaryFailureMetric {
 }
 
 function forceFromSourceRun {
-    if [[ "$TEST_SUITE" == "src/__tests__/amplify-app.test.ts"]]; then
+    if [[ "$TEST_SUITE" == "src/__tests__/amplify-app.test.ts" ]]; then
         echo "Not forcing run from source for $TEST_SUITE"
         return
     fi
 
-    if [[ "$TEST_SUITE" == "src/__tests__/datastore-modelgen.test.ts"]]; then
+    if [[ "$TEST_SUITE" == "src/__tests__/datastore-modelgen.test.ts" ]]; then
         echo "Not forcing run from source for $TEST_SUITE"
         return
     fi
