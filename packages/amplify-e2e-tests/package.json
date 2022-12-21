@@ -40,7 +40,9 @@
     "node-fetch": "^2.6.7",
     "uuid": "^8.3.2",
     "ws": "^7.5.7",
-    "yargs": "^15.1.0"
+    "yargs": "^15.1.0",
+    "axios": "^0.26.0",
+    "generate-password": "~1.7.0"
   },
   "peerDependencies": {
     "amplify-cli-core": "^3.0.0"
