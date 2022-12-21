@@ -24,7 +24,7 @@ describe("RDS Tests", () => {
     const username = db_user;
     const password = db_password;
     const region = 'us-east-1';
-    const identifier = `integtest${db_identifier}`;
+    const identifier = `integ_test_${db_identifier}`;
     const db = await createRDSInstance({
       identifier,
       engine: 'mysql',
