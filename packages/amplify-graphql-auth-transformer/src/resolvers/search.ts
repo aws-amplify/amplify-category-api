@@ -20,7 +20,6 @@ import {
   set,
   ifElse,
 } from 'graphql-mapping-template';
-import { NONE_VALUE } from 'graphql-transformer-common';
 import {
   getIdentityClaimExp,
   emptyPayload,
@@ -88,7 +87,11 @@ const iamExpression = (
   const expression = new Array<Expression>();
   // allow if using an admin role
   if (hasAdminRolesEnabled) {
-    expression.push(iamAdminRoleCheckExpression(adminRoles));
+    const adminCheckExpression = compoundExpression([
+      set(ref(allowedAggFieldsList), ref(totalFields)),
+      qref(methodCall(ref('ctx.stash.put'), str(allowedAggFieldsList), ref(allowedAggFieldsList)))
+    ]);
+    expression.push(iamAdminRoleCheckExpression(adminRoles, undefined, adminCheckExpression));
   }
   if (roles.length === 0) {
     expression.push(ref('util.unauthorized()'));

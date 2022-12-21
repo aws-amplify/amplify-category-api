@@ -42,6 +42,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - migrate searchable transformer to CDK v2 ([#868](https://github.com/aws-amplify/amplify-category-api/issues/868)) ([9b49aa7](https://github.com/aws-amplify/amplify-category-api/commit/9b49aa7e26fc814fa1d90bd3bde2adb5cf2dd3c4))
 
+## [0.16.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@0.16.4...@aws-amplify/graphql-searchable-transformer@0.16.5) (2022-12-09)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+## [0.16.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@0.16.3...@aws-amplify/graphql-searchable-transformer@0.16.4) (2022-12-03)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
 ## [0.16.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@0.16.2...@aws-amplify/graphql-searchable-transformer@0.16.3) (2022-11-08)
 
 **Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer

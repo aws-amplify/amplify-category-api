@@ -23,6 +23,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package graphql-key-transformer
 
+## [3.2.44](https://github.com/aws-amplify/amplify-category-api/compare/graphql-key-transformer@3.2.43...graphql-key-transformer@3.2.44) (2022-12-03)
+
+**Note:** Version bump only for package graphql-key-transformer
+
 ## [3.2.43](https://github.com/aws-amplify/amplify-category-api/compare/graphql-key-transformer@3.2.42...graphql-key-transformer@3.2.43) (2022-09-14)
 
 **Note:** Version bump only for package graphql-key-transformer

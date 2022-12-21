@@ -15,7 +15,8 @@
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "test": "jest",
-    "generateSchemas": "ts-node ./scripts/generateApiSchemas.ts"
+    "generateSchemas": "ts-node ./scripts/generateApiSchemas.ts",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "keywords": [
     "graphql",

@@ -57,6 +57,24 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
 
+## [4.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.1...@aws-amplify/amplify-category-api@4.1.2) (2022-12-13)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+## [4.1.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.0...@aws-amplify/amplify-category-api@4.1.1) (2022-12-09)
+
+### Bug Fixes
+
+- add rdsRegion check back ([6d8736f](https://github.com/aws-amplify/amplify-category-api/commit/6d8736f8f29bbe6d3469e91adcb95ef6f9f8abe6))
+- address PR feedback ([2a119e6](https://github.com/aws-amplify/amplify-category-api/commit/2a119e6b8e86889b5f206f49b5063b4ce99ea859))
+- remove unused variable ([b419119](https://github.com/aws-amplify/amplify-category-api/commit/b41911975c6741c5b66e7cbcf4ca01af2a9e805a))
+
+# [4.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.9...@aws-amplify/amplify-category-api@4.1.0) (2022-12-03)
+
+### Features
+
+- 🎸 Added bracket mismatch error detection ([40fdd88](https://github.com/aws-amplify/amplify-category-api/commit/40fdd885e5553ea4b087ff15b1305328a37fdecd)), closes [#107](https://github.com/aws-amplify/amplify-category-api/issues/107)
+
 ## [4.0.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.8...@aws-amplify/amplify-category-api@4.0.9) (2022-11-08)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

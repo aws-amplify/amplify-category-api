@@ -25,7 +25,8 @@
     "watch": "tsc -w",
     "clean": "rimraf ./lib",
     "test": "jest",
-    "test-watch": "jest --watch"
+    "test-watch": "jest --watch",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "@aws-amplify/graphql-transformer-core": "1.1.0-beta.2",

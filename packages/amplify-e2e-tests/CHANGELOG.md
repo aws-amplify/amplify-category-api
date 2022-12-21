@@ -49,6 +49,18 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - migrate index and model transformers to CDK v2 ([#860](https://github.com/aws-amplify/amplify-category-api/issues/860)) ([886ab6c](https://github.com/aws-amplify/amplify-category-api/commit/886ab6c1eb699f9a09f273c76b3c419c73004f9b))
 
+## [3.10.16](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.15...amplify-category-api-e2e-tests@3.10.16) (2022-12-13)
+
+### Bug Fixes
+
+- resolvers generated from index respect StackMappings ([ed0827a](https://github.com/aws-amplify/amplify-category-api/commit/ed0827a8ea154923112461e09effaccb9b185b33))
+
+## [3.10.15](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.14...amplify-category-api-e2e-tests@3.10.15) (2022-12-03)
+
+### Bug Fixes
+
+- cleanup script does not run if tests fail ([#1000](https://github.com/aws-amplify/amplify-category-api/issues/1000)) ([ee13648](https://github.com/aws-amplify/amplify-category-api/commit/ee1364888fbf5012348b2417a28b8b4aa7fbe239))
+
 ## [3.10.14](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.13...amplify-category-api-e2e-tests@3.10.14) (2022-11-08)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests

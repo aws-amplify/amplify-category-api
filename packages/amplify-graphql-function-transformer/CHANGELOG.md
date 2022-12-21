@@ -37,6 +37,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - migrate function transformer to CDK v2 ([#869](https://github.com/aws-amplify/amplify-category-api/issues/869)) ([298c6b4](https://github.com/aws-amplify/amplify-category-api/commit/298c6b4bb85aa46889d0d6bc9e25a2c4aea283dd))
 
+## [0.7.32](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-function-transformer@0.7.31...@aws-amplify/graphql-function-transformer@0.7.32) (2022-12-03)
+
+**Note:** Version bump only for package @aws-amplify/graphql-function-transformer
+
 ## [0.7.31](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-function-transformer@0.7.30...@aws-amplify/graphql-function-transformer@0.7.31) (2022-11-08)
 
 **Note:** Version bump only for package @aws-amplify/graphql-function-transformer

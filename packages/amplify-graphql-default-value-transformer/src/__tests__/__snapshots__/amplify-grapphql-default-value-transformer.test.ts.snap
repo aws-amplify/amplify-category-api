@@ -220,6 +220,13 @@ type Subscription {
 "
 `;
 
+exports[`DefaultValueModelTransformer: should successfully set the default values when model name starts with lowercase 1`] = `
+"## [Start] Setting \\"stringValue\\" to default value of \\"hello world\\". **
+$util.qr($context.args.input.put(\\"stringValue\\", $util.defaultIfNull($ctx.args.input.stringValue, \\"hello world\\")))
+## [End] Setting \\"stringValue\\" to default value of \\"hello world\\". **
+{}"
+`;
+
 exports[`DefaultValueModelTransformer: should successfully transform simple valid schema 1`] = `
 "
 type Post {

@@ -1,5 +1,8 @@
 import { default as S3 } from 'aws-sdk/clients/s3';
-const awsS3Client = new S3({ region: 'us-west-2' });
+import { resolveTestRegion } from './testSetup';
+
+const region = resolveTestRegion();
+const awsS3Client = new S3({ region: region });
 
 const emptyBucket = async (bucket: string) => {
   let listObjects = await awsS3Client

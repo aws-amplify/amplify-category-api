@@ -20,7 +20,8 @@
     "test": "jest",
     "build": "rimraf ./lib ./tsconfig.tsbuildinfo && tsc",
     "watch": "tsc -w",
-    "clean": "rimraf ./lib"
+    "clean": "rimraf ./lib",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "@aws-amplify/graphql-transformer-interfaces": "2.1.0-beta.2",
