@@ -197,6 +197,45 @@ Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
+        "Code": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "/**
+ * Configure stash variables which will be used downstream in the linked functions.
+ */
+export function request(context) {
+  Object.entries({
+    typeName: 'Mutation',
+    fieldName: 'createPost',
+    conditions: [],
+    metadata: {
+      dataSourceType: 'AMAZON_DYNAMODB',
+      apiId: '",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "',
+    },
+    tableName: '",
+              Object {
+                "Ref": "PostTable",
+              },
+              "',
+  }).forEach(([name, value]) => (context.stash[name] = value));
+  return {};
+}
+
+/**
+ * No-op response function.
+ */
+export function response(context) {
+  return context.prev.result;
+}
+",
+            ],
+          ],
+        },
         "FieldName": "createPost",
         "Kind": "PIPELINE",
         "PipelineConfig": Object {
@@ -221,30 +260,10 @@ Object {
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"createPost\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "PostTable",
-              },
-              "\\"))
-$util.toJson({})",
-            ],
-          ],
+        "Runtime": Object {
+          "Name": "APPSYNC_JS",
+          "RuntimeVersion": "1.0.0",
         },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
         "TypeName": "Mutation",
       },
       "Type": "AWS::AppSync::Resolver",
@@ -253,6 +272,45 @@ $util.toJson({})",
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "Code": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "/**
+ * Configure stash variables which will be used downstream in the linked functions.
+ */
+export function request(context) {
+  Object.entries({
+    typeName: 'Mutation',
+    fieldName: 'deletePost',
+    conditions: [],
+    metadata: {
+      dataSourceType: 'AMAZON_DYNAMODB',
+      apiId: '",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "',
+    },
+    tableName: '",
+              Object {
+                "Ref": "PostTable",
+              },
+              "',
+  }).forEach(([name, value]) => (context.stash[name] = value));
+  return {};
+}
+
+/**
+ * No-op response function.
+ */
+export function response(context) {
+  return context.prev.result;
+}
+",
+            ],
+          ],
         },
         "FieldName": "deletePost",
         "Kind": "PIPELINE",
@@ -272,30 +330,10 @@ $util.toJson({})",
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"deletePost\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "PostTable",
-              },
-              "\\"))
-$util.toJson({})",
-            ],
-          ],
+        "Runtime": Object {
+          "Name": "APPSYNC_JS",
+          "RuntimeVersion": "1.0.0",
         },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
         "TypeName": "Mutation",
       },
       "Type": "AWS::AppSync::Resolver",
@@ -380,6 +418,45 @@ $util.toJson({})",
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
+        "Code": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "/**
+ * Configure stash variables which will be used downstream in the linked functions.
+ */
+export function request(context) {
+  Object.entries({
+    typeName: 'Query',
+    fieldName: 'getPost',
+    conditions: [],
+    metadata: {
+      dataSourceType: 'AMAZON_DYNAMODB',
+      apiId: '",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "',
+    },
+    tableName: '",
+              Object {
+                "Ref": "PostTable",
+              },
+              "',
+  }).forEach(([name, value]) => (context.stash[name] = value));
+  return {};
+}
+
+/**
+ * No-op response function.
+ */
+export function response(context) {
+  return context.prev.result;
+}
+",
+            ],
+          ],
+        },
         "FieldName": "getPost",
         "Kind": "PIPELINE",
         "PipelineConfig": Object {
@@ -398,30 +475,10 @@ $util.toJson({})",
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"getPost\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "PostTable",
-              },
-              "\\"))
-$util.toJson({})",
-            ],
-          ],
+        "Runtime": Object {
+          "Name": "APPSYNC_JS",
+          "RuntimeVersion": "1.0.0",
         },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
         "TypeName": "Query",
       },
       "Type": "AWS::AppSync::Resolver",
@@ -430,6 +487,45 @@ $util.toJson({})",
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "Code": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "/**
+ * Configure stash variables which will be used downstream in the linked functions.
+ */
+export function request(context) {
+  Object.entries({
+    typeName: 'Query',
+    fieldName: 'listPosts',
+    conditions: [],
+    metadata: {
+      dataSourceType: 'AMAZON_DYNAMODB',
+      apiId: '",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "',
+    },
+    tableName: '",
+              Object {
+                "Ref": "PostTable",
+              },
+              "',
+  }).forEach(([name, value]) => (context.stash[name] = value));
+  return {};
+}
+
+/**
+ * No-op response function.
+ */
+export function response(context) {
+  return context.prev.result;
+}
+",
+            ],
+          ],
         },
         "FieldName": "listPosts",
         "Kind": "PIPELINE",
@@ -449,30 +545,10 @@ $util.toJson({})",
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"listPosts\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "PostTable",
-              },
-              "\\"))
-$util.toJson({})",
-            ],
-          ],
+        "Runtime": Object {
+          "Name": "APPSYNC_JS",
+          "RuntimeVersion": "1.0.0",
         },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
         "TypeName": "Query",
       },
       "Type": "AWS::AppSync::Resolver",
@@ -1049,6 +1125,37 @@ $util.toJson({})",
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
+        "Code": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "/**
+ * Configure stash variables which will be used downstream in the linked functions.
+ */
+export function request(context) {
+  Object.entries({
+    typeName: 'Subscription',
+    fieldName: 'onCreatePost',
+    conditions: [],
+    metadata: { dataSourceType: 'NONE', apiId: '",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "' },
+  }).forEach(([name, value]) => (context.stash[name] = value));
+  return {};
+}
+
+/**
+ * No-op response function.
+ */
+export function response(context) {
+  return context.prev.result;
+}
+",
+            ],
+          ],
+        },
         "FieldName": "onCreatePost",
         "Kind": "PIPELINE",
         "PipelineConfig": Object {
@@ -1067,26 +1174,10 @@ $util.toJson({})",
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Subscription\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"onCreatePost\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"NONE\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-
-$util.toJson({})",
-            ],
-          ],
+        "Runtime": Object {
+          "Name": "APPSYNC_JS",
+          "RuntimeVersion": "1.0.0",
         },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
         "TypeName": "Subscription",
       },
       "Type": "AWS::AppSync::Resolver",
@@ -1095,6 +1186,37 @@ $util.toJson({})",
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "Code": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "/**
+ * Configure stash variables which will be used downstream in the linked functions.
+ */
+export function request(context) {
+  Object.entries({
+    typeName: 'Subscription',
+    fieldName: 'onDeletePost',
+    conditions: [],
+    metadata: { dataSourceType: 'NONE', apiId: '",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "' },
+  }).forEach(([name, value]) => (context.stash[name] = value));
+  return {};
+}
+
+/**
+ * No-op response function.
+ */
+export function response(context) {
+  return context.prev.result;
+}
+",
+            ],
+          ],
         },
         "FieldName": "onDeletePost",
         "Kind": "PIPELINE",
@@ -1114,26 +1236,10 @@ $util.toJson({})",
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Subscription\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"onDeletePost\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"NONE\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-
-$util.toJson({})",
-            ],
-          ],
+        "Runtime": Object {
+          "Name": "APPSYNC_JS",
+          "RuntimeVersion": "1.0.0",
         },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
         "TypeName": "Subscription",
       },
       "Type": "AWS::AppSync::Resolver",
@@ -1142,6 +1248,37 @@ $util.toJson({})",
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "Code": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "/**
+ * Configure stash variables which will be used downstream in the linked functions.
+ */
+export function request(context) {
+  Object.entries({
+    typeName: 'Subscription',
+    fieldName: 'onUpdatePost',
+    conditions: [],
+    metadata: { dataSourceType: 'NONE', apiId: '",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "' },
+  }).forEach(([name, value]) => (context.stash[name] = value));
+  return {};
+}
+
+/**
+ * No-op response function.
+ */
+export function response(context) {
+  return context.prev.result;
+}
+",
+            ],
+          ],
         },
         "FieldName": "onUpdatePost",
         "Kind": "PIPELINE",
@@ -1162,7 +1299,10 @@ $util.toJson({})",
           ],
         },
         "RequestMappingTemplate": "mockTemplate",
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "Runtime": Object {
+          "Name": "APPSYNC_JS",
+          "RuntimeVersion": "1.0.0",
+        },
         "TypeName": "Subscription",
       },
       "Type": "AWS::AppSync::Resolver",
@@ -1171,6 +1311,45 @@ $util.toJson({})",
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "Code": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "/**
+ * Configure stash variables which will be used downstream in the linked functions.
+ */
+export function request(context) {
+  Object.entries({
+    typeName: 'Mutation',
+    fieldName: 'updatePost',
+    conditions: [],
+    metadata: {
+      dataSourceType: 'AMAZON_DYNAMODB',
+      apiId: '",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "',
+    },
+    tableName: '",
+              Object {
+                "Ref": "PostTable",
+              },
+              "',
+  }).forEach(([name, value]) => (context.stash[name] = value));
+  return {};
+}
+
+/**
+ * No-op response function.
+ */
+export function response(context) {
+  return context.prev.result;
+}
+",
+            ],
+          ],
         },
         "FieldName": "updatePost",
         "Kind": "PIPELINE",
@@ -1196,30 +1375,10 @@ $util.toJson({})",
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"updatePost\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "PostTable",
-              },
-              "\\"))
-$util.toJson({})",
-            ],
-          ],
+        "Runtime": Object {
+          "Name": "APPSYNC_JS",
+          "RuntimeVersion": "1.0.0",
         },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
         "TypeName": "Mutation",
       },
       "Type": "AWS::AppSync::Resolver",
@@ -1579,6 +1738,45 @@ Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
+        "Code": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "/**
+ * Configure stash variables which will be used downstream in the linked functions.
+ */
+export function request(context) {
+  Object.entries({
+    typeName: 'Mutation',
+    fieldName: 'createComment',
+    conditions: [],
+    metadata: {
+      dataSourceType: 'AMAZON_DYNAMODB',
+      apiId: '",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "',
+    },
+    tableName: '",
+              Object {
+                "Ref": "CommentTable",
+              },
+              "',
+  }).forEach(([name, value]) => (context.stash[name] = value));
+  return {};
+}
+
+/**
+ * No-op response function.
+ */
+export function response(context) {
+  return context.prev.result;
+}
+",
+            ],
+          ],
+        },
         "FieldName": "createComment",
         "Kind": "PIPELINE",
         "PipelineConfig": Object {
@@ -1597,30 +1795,10 @@ Object {
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"createComment\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "CommentTable",
-              },
-              "\\"))
-$util.toJson({})",
-            ],
-          ],
+        "Runtime": Object {
+          "Name": "APPSYNC_JS",
+          "RuntimeVersion": "1.0.0",
         },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
         "TypeName": "Mutation",
       },
       "Type": "AWS::AppSync::Resolver",
@@ -1629,6 +1807,45 @@ $util.toJson({})",
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "Code": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "/**
+ * Configure stash variables which will be used downstream in the linked functions.
+ */
+export function request(context) {
+  Object.entries({
+    typeName: 'Mutation',
+    fieldName: 'deleteComment',
+    conditions: [],
+    metadata: {
+      dataSourceType: 'AMAZON_DYNAMODB',
+      apiId: '",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "',
+    },
+    tableName: '",
+              Object {
+                "Ref": "CommentTable",
+              },
+              "',
+  }).forEach(([name, value]) => (context.stash[name] = value));
+  return {};
+}
+
+/**
+ * No-op response function.
+ */
+export function response(context) {
+  return context.prev.result;
+}
+",
+            ],
+          ],
         },
         "FieldName": "deleteComment",
         "Kind": "PIPELINE",
@@ -1645,30 +1862,10 @@ $util.toJson({})",
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"deleteComment\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "CommentTable",
-              },
-              "\\"))
-$util.toJson({})",
-            ],
-          ],
+        "Runtime": Object {
+          "Name": "APPSYNC_JS",
+          "RuntimeVersion": "1.0.0",
         },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
         "TypeName": "Mutation",
       },
       "Type": "AWS::AppSync::Resolver",
@@ -1753,6 +1950,45 @@ $util.toJson({})",
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
+        "Code": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "/**
+ * Configure stash variables which will be used downstream in the linked functions.
+ */
+export function request(context) {
+  Object.entries({
+    typeName: 'Query',
+    fieldName: 'getComment',
+    conditions: [],
+    metadata: {
+      dataSourceType: 'AMAZON_DYNAMODB',
+      apiId: '",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "',
+    },
+    tableName: '",
+              Object {
+                "Ref": "CommentTable",
+              },
+              "',
+  }).forEach(([name, value]) => (context.stash[name] = value));
+  return {};
+}
+
+/**
+ * No-op response function.
+ */
+export function response(context) {
+  return context.prev.result;
+}
+",
+            ],
+          ],
+        },
         "FieldName": "getComment",
         "Kind": "PIPELINE",
         "PipelineConfig": Object {
@@ -1768,30 +2004,10 @@ $util.toJson({})",
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"getComment\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "CommentTable",
-              },
-              "\\"))
-$util.toJson({})",
-            ],
-          ],
+        "Runtime": Object {
+          "Name": "APPSYNC_JS",
+          "RuntimeVersion": "1.0.0",
         },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
         "TypeName": "Query",
       },
       "Type": "AWS::AppSync::Resolver",
@@ -1800,6 +2016,45 @@ $util.toJson({})",
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "Code": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "/**
+ * Configure stash variables which will be used downstream in the linked functions.
+ */
+export function request(context) {
+  Object.entries({
+    typeName: 'Query',
+    fieldName: 'listComments',
+    conditions: [],
+    metadata: {
+      dataSourceType: 'AMAZON_DYNAMODB',
+      apiId: '",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "',
+    },
+    tableName: '",
+              Object {
+                "Ref": "CommentTable",
+              },
+              "',
+  }).forEach(([name, value]) => (context.stash[name] = value));
+  return {};
+}
+
+/**
+ * No-op response function.
+ */
+export function response(context) {
+  return context.prev.result;
+}
+",
+            ],
+          ],
         },
         "FieldName": "listComments",
         "Kind": "PIPELINE",
@@ -1816,30 +2071,10 @@ $util.toJson({})",
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"listComments\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "CommentTable",
-              },
-              "\\"))
-$util.toJson({})",
-            ],
-          ],
+        "Runtime": Object {
+          "Name": "APPSYNC_JS",
+          "RuntimeVersion": "1.0.0",
         },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
         "TypeName": "Query",
       },
       "Type": "AWS::AppSync::Resolver",
@@ -2104,6 +2339,37 @@ $util.toJson({})",
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
+        "Code": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "/**
+ * Configure stash variables which will be used downstream in the linked functions.
+ */
+export function request(context) {
+  Object.entries({
+    typeName: 'Subscription',
+    fieldName: 'onCreateComment',
+    conditions: [],
+    metadata: { dataSourceType: 'NONE', apiId: '",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "' },
+  }).forEach(([name, value]) => (context.stash[name] = value));
+  return {};
+}
+
+/**
+ * No-op response function.
+ */
+export function response(context) {
+  return context.prev.result;
+}
+",
+            ],
+          ],
+        },
         "FieldName": "onCreateComment",
         "Kind": "PIPELINE",
         "PipelineConfig": Object {
@@ -2116,26 +2382,10 @@ $util.toJson({})",
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Subscription\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"onCreateComment\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"NONE\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-
-$util.toJson({})",
-            ],
-          ],
+        "Runtime": Object {
+          "Name": "APPSYNC_JS",
+          "RuntimeVersion": "1.0.0",
         },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
         "TypeName": "Subscription",
       },
       "Type": "AWS::AppSync::Resolver",
@@ -2144,6 +2394,37 @@ $util.toJson({})",
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "Code": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "/**
+ * Configure stash variables which will be used downstream in the linked functions.
+ */
+export function request(context) {
+  Object.entries({
+    typeName: 'Subscription',
+    fieldName: 'onDeleteComment',
+    conditions: [],
+    metadata: { dataSourceType: 'NONE', apiId: '",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "' },
+  }).forEach(([name, value]) => (context.stash[name] = value));
+  return {};
+}
+
+/**
+ * No-op response function.
+ */
+export function response(context) {
+  return context.prev.result;
+}
+",
+            ],
+          ],
         },
         "FieldName": "onDeleteComment",
         "Kind": "PIPELINE",
@@ -2157,26 +2438,10 @@ $util.toJson({})",
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Subscription\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"onDeleteComment\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"NONE\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-
-$util.toJson({})",
-            ],
-          ],
+        "Runtime": Object {
+          "Name": "APPSYNC_JS",
+          "RuntimeVersion": "1.0.0",
         },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
         "TypeName": "Subscription",
       },
       "Type": "AWS::AppSync::Resolver",
@@ -2185,6 +2450,37 @@ $util.toJson({})",
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "Code": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "/**
+ * Configure stash variables which will be used downstream in the linked functions.
+ */
+export function request(context) {
+  Object.entries({
+    typeName: 'Subscription',
+    fieldName: 'onUpdateComment',
+    conditions: [],
+    metadata: { dataSourceType: 'NONE', apiId: '",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "' },
+  }).forEach(([name, value]) => (context.stash[name] = value));
+  return {};
+}
+
+/**
+ * No-op response function.
+ */
+export function response(context) {
+  return context.prev.result;
+}
+",
+            ],
+          ],
         },
         "FieldName": "onUpdateComment",
         "Kind": "PIPELINE",
@@ -2198,26 +2494,10 @@ $util.toJson({})",
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Subscription\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"onUpdateComment\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"NONE\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-
-$util.toJson({})",
-            ],
-          ],
+        "Runtime": Object {
+          "Name": "APPSYNC_JS",
+          "RuntimeVersion": "1.0.0",
         },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
         "TypeName": "Subscription",
       },
       "Type": "AWS::AppSync::Resolver",
@@ -2226,6 +2506,45 @@ $util.toJson({})",
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "Code": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "/**
+ * Configure stash variables which will be used downstream in the linked functions.
+ */
+export function request(context) {
+  Object.entries({
+    typeName: 'Mutation',
+    fieldName: 'updateComment',
+    conditions: [],
+    metadata: {
+      dataSourceType: 'AMAZON_DYNAMODB',
+      apiId: '",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "',
+    },
+    tableName: '",
+              Object {
+                "Ref": "CommentTable",
+              },
+              "',
+  }).forEach(([name, value]) => (context.stash[name] = value));
+  return {};
+}
+
+/**
+ * No-op response function.
+ */
+export function response(context) {
+  return context.prev.result;
+}
+",
+            ],
+          ],
         },
         "FieldName": "updateComment",
         "Kind": "PIPELINE",
@@ -2245,30 +2564,10 @@ $util.toJson({})",
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"updateComment\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "CommentTable",
-              },
-              "\\"))
-$util.toJson({})",
-            ],
-          ],
+        "Runtime": Object {
+          "Name": "APPSYNC_JS",
+          "RuntimeVersion": "1.0.0",
         },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
         "TypeName": "Mutation",
       },
       "Type": "AWS::AppSync::Resolver",

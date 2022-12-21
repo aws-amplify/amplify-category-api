@@ -17,15 +17,21 @@ import {
 import { ITable } from '@aws-cdk/aws-dynamodb';
 import { IRole } from '@aws-cdk/aws-iam';
 import {
-  CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime,
+  CfnFunction,
+  Code,
+  Function,
+  IFunction,
+  ILayerVersion,
+  Runtime,
 } from '@aws-cdk/aws-lambda';
 import { Duration, Stack, Token } from '@aws-cdk/core';
 import { ResolverResourceIDs, resourceName, toCamelCase } from 'graphql-transformer-common';
 import hash from 'object-hash';
 import { AppSyncFunctionConfiguration } from './appsync-function';
 import { SearchableDataSource } from './cdk-compat/searchable-datasource';
-import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat/template-asset';
+import { S3MappingFunctionCode } from './cdk-compat/template-asset';
 import { GraphQLApi } from './graphql-api';
+import { getStrategyProps } from './utils/execution-strategy-utils';
 
 export interface DefaultTransformHostOptions {
   readonly api: GraphQLApi;
@@ -221,55 +227,47 @@ export class DefaultTransformHost implements TransformHostProvider {
       throw new Error(`DataSource ${dataSourceName} is missing in the API`);
     }
 
-    if (strategy.type !== 'TEMPLATE') {
-      throw new Error('Code Execution strategies are not yet supported for top-level resolvers.');
+    if (!dataSourceName && !pipelineConfig) {
+      throw new Error('Resolver needs either dataSourceName or pipelineConfig to be passed');
     }
 
-    const requestTemplateLocation = strategy.requestMappingTemplate?.bind(this.api);
-    const responseTemplateLocation = strategy.responseMappingTemplate?.bind(this.api);
     const resolverName = toCamelCase([resourceName(typeName), resourceName(fieldName), 'Resolver']);
     const resourceId = resolverLogicalId ?? ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
 
     if (dataSourceName) {
+      if (strategy.type !== 'TEMPLATE') {
+        throw new Error('Code Execution strategies are not supported for UNIT resolvers.');
+      }
+  
       const dataSource = this.dataSources.get(dataSourceName);
+
       const resolver = new CfnResolver(stack || this.api, resolverName, {
         apiId: this.api.apiId,
         fieldName,
         typeName,
         kind: 'UNIT',
         dataSourceName: dataSource?.ds.attrName || dataSourceName,
-        ...(strategy.requestMappingTemplate instanceof InlineTemplate
-          ? { requestMappingTemplate: requestTemplateLocation }
-          : { requestMappingTemplateS3Location: requestTemplateLocation }),
-        ...(strategy.responseMappingTemplate instanceof InlineTemplate
-          ? { responseMappingTemplate: responseTemplateLocation }
-          : { responseMappingTemplateS3Location: responseTemplateLocation }),
+        ...getStrategyProps(this.api, strategy),
       });
       resolver.overrideLogicalId(resourceId);
       this.api.addSchemaDependency(resolver);
-      return resolver;
-    } if (pipelineConfig) {
-      const resolver = new CfnResolver(stack || this.api, resolverName, {
-        apiId: this.api.apiId,
-        fieldName,
-        typeName,
-        kind: 'PIPELINE',
-        ...(strategy.requestMappingTemplate instanceof InlineTemplate
-          ? { requestMappingTemplate: requestTemplateLocation }
-          : { requestMappingTemplateS3Location: requestTemplateLocation }),
-        ...(strategy.responseMappingTemplate instanceof InlineTemplate
-          ? { responseMappingTemplate: responseTemplateLocation }
-          : { responseMappingTemplateS3Location: responseTemplateLocation }),
-        pipelineConfig: {
-          functions: pipelineConfig,
-        },
-      });
-      resolver.overrideLogicalId(resourceId);
-      this.api.addSchemaDependency(resolver);
-      this.resolvers.set(`${typeName}:${fieldName}`, resolver);
       return resolver;
     }
-    throw new Error('Resolver needs either dataSourceName or pipelineConfig to be passed');
+
+    const resolver = new CfnResolver(stack || this.api, resolverName, {
+      apiId: this.api.apiId,
+      fieldName,
+      typeName,
+      kind: 'PIPELINE',
+      ...getStrategyProps(this.api, strategy),
+      pipelineConfig: {
+        functions: pipelineConfig,
+      },
+    });
+    resolver.overrideLogicalId(resourceId);
+    this.api.addSchemaDependency(resolver);
+    this.resolvers.set(`${typeName}:${fieldName}`, resolver);
+    return resolver;
   }
 
   addLambdaFunction = (

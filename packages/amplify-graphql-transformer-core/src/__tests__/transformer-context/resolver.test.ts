@@ -1,10 +1,15 @@
-import { AppSyncExecutionStrategy, DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncExecutionStrategy, DataSourceProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { AuthorizationType } from '@aws-cdk/aws-appsync';
 import { App, Stack } from '@aws-cdk/core';
-import { InlineTemplate, S3MappingTemplate, TransformerRootStack } from '../../cdk-compat';
+import dedent from 'ts-dedent';
+import { InlineTemplate, TransformerRootStack } from '../../cdk-compat';
 import { GraphQLApi } from '../../graphql-api';
 import { DefaultTransformHost } from '../../transform-host';
+import { StackManager } from '../../transformer-context';
 import { ResolverManager, TransformerResolver } from '../../transformer-context/resolver';
+import { IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../../utils';
 
+const CDK_TOKEN_REGEX = /\$\{Token\[.*?\]\}/g;
 const NONE_DS = 'NONE_DS';
 const noopDataSourceProvider = {} as DataSourceProvider;
 const noopTemplate = new InlineTemplate('mylogic');
@@ -122,7 +127,7 @@ describe('TransformerResolver', () => {
   const slotName = 'init';
   let resolver: TransformerResolver;
 
-  const setupSynthState = (): { stack: Stack, api: GraphQLApi } => {
+  const setupSynthState = (): { app: App, stack: Stack, api: GraphQLApi } => {
     const app = new App();
     const stack = new TransformerRootStack(app, 'test-root-stack');
 
@@ -136,7 +141,7 @@ describe('TransformerResolver', () => {
 
     transformHost.addNoneDataSource(NONE_DS);
 
-    return { stack, api };
+    return { app, stack, api };
   };
 
   beforeEach(() => {
@@ -147,6 +152,102 @@ describe('TransformerResolver', () => {
       requestSlots: [slotName],
       responseSlots: [],
       strategy: noopCodeStrategy,
+    });
+  });
+
+  describe('synthesize', () => {
+    it('generates a resolver that sets up state', () => {
+      const { app, api } = setupSynthState();
+
+      const context = {
+        stackManager: new StackManager(app, {}),
+        authConfig: {
+          defaultAuthentication: {
+            authenticationType: AuthorizationType.API_KEY,
+          },
+          additionalAuthenticationProviders: []
+        },
+        isProjectUsingDataStore: () => false,
+        getResolverConfig: () => undefined,
+      } as unknown as TransformerContextProvider;
+
+      resolver.synthesize(context, api);
+
+      // Grab code and replace all cdk tokens
+      const code = api.host.getResolver('Query', 'getTodo')?.code?.replace(CDK_TOKEN_REGEX, 'TOKEN');
+
+      // Validate request method
+      expect(code).toEqual(expect.stringContaining(dedent`
+        export function request(context) {
+          Object.entries({
+            typeName: 'Query',
+            fieldName: 'getTodo',
+            conditions: [],
+            metadata: { dataSourceType: 'NONE', apiId: 'TOKEN' },
+          }).forEach(([name, value]) => (context.stash[name] = value));
+          return {};
+        }
+      `));
+
+      // Validate response method
+      expect(code).toEqual(expect.stringContaining(dedent`
+        export function response(context) {
+          return context.prev.result;
+        }
+      `));
+    });
+
+    it('generates a resolver with IAM auth', () => {
+      const { app, api } = setupSynthState();
+
+      const stackManager = new StackManager(app, {});
+      stackManager.addParameter(IAM_AUTH_ROLE_PARAMETER, {
+        default: 'test-auth-role',
+      });
+      stackManager.addParameter(IAM_UNAUTH_ROLE_PARAMETER, {
+        default: 'test-unauth-role',
+      });
+
+      const context = {
+        stackManager,
+        authConfig: {
+          defaultAuthentication: {
+            authenticationType: AuthorizationType.IAM,
+          },
+          additionalAuthenticationProviders: []
+        },
+        isProjectUsingDataStore: () => false,
+        getResolverConfig: () => undefined,
+      } as unknown as TransformerContextProvider;
+
+      resolver.synthesize(context, api);
+
+      // Grab code and replace all cdk tokens
+      const code = api.host.getResolver('Query', 'getTodo')?.code?.replace(CDK_TOKEN_REGEX, 'TOKEN');
+
+      // Validate request method, tokens aren't playing nicely yet, need to work that out.
+      expect(code).toEqual(expect.stringContaining(dedent`
+        export function request(context) {
+          Object.entries({
+            typeName: 'Query',
+            fieldName: 'getTodo',
+            conditions: [],
+            metadata: { dataSourceType: 'NONE', apiId: 'TOKEN' },
+            authRole:
+              'arn:aws:sts::TOKEN:assumed-role/TOKEN/CognitoIdentityCredentials',
+            unauthRole:
+              'arn:aws:sts::TOKEN:assumed-role/TOKEN/CognitoIdentityCredentials',
+          }).forEach(([name, value]) => (context.stash[name] = value));
+          return {};
+        }
+      `));
+
+      // Validate response method
+      expect(code).toEqual(expect.stringContaining(dedent`
+        export function response(context) {
+          return context.prev.result;
+        }
+      `));
     });
   });
 
@@ -250,7 +351,7 @@ describe('TransformerResolver', () => {
 
       const synthesizedResolvers = resolver.synthesizeResolvers(stack, api, [slotName]);
       expect(synthesizedResolvers.length).toEqual(1);
-      expect((synthesizedResolvers[0] as any).function._cfnProperties.Code).toEqual('myupdatedcode');
+      expect((synthesizedResolvers[0] as any).function.code).toEqual('myupdatedcode');
     });
   });
 });

@@ -279,43 +279,6 @@ test('it generates expected resources', () => {
   );
   cdkExpect(searchableStack).to(countResources('AWS::AppSync::Resolver', 2));
   cdkExpect(searchableStack).to(
-    haveResource('AWS::AppSync::Resolver', {
-      ApiId: {
-        Ref: anything(),
-      },
-      FieldName: anything(),
-      TypeName: 'Query',
-      Kind: 'PIPELINE',
-      PipelineConfig: {
-        Functions: [
-          {
-            Ref: anything(),
-          },
-          {
-            'Fn::GetAtt': [anything(), 'FunctionId'],
-          },
-        ],
-      },
-      RequestMappingTemplate: {
-        'Fn::Join': [
-          '',
-          [
-            anything(),
-            {
-              Ref: anything(),
-            },
-            '"))\n$util.qr($ctx.stash.put("endpoint", "https://',
-            {
-              'Fn::GetAtt': ['OpenSearchDomain', 'DomainEndpoint'],
-            },
-            '"))\n$util.toJson({})',
-          ],
-        ],
-      },
-      ResponseMappingTemplate: '$util.toJson($ctx.prev.result)',
-    }),
-  );
-  cdkExpect(searchableStack).to(
     haveResource('AWS::AppSync::FunctionConfiguration', {
       ApiId: {
         Ref: anything(),

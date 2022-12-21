@@ -139,7 +139,7 @@
     "parse-url": "^8.1.0",
     "moment-timezone": "^0.5.35",
     "@aws-cdk/aws-apigateway": "~1.172.0",
-    "@aws-cdk/aws-appsync": "~1.172.0",
+    "@aws-cdk/aws-appsync": "~1.183.0",
     "@aws-cdk/aws-cognito": "~1.172.0",
     "@aws-cdk/aws-dynamodb": "~1.172.0",
     "@aws-cdk/aws-elasticsearch": "~1.172.0",

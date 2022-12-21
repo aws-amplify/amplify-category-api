@@ -31,7 +31,7 @@
     "@aws-amplify/graphql-model-transformer": "0.16.4",
     "@aws-amplify/graphql-transformer-core": "0.18.0",
     "@aws-amplify/graphql-transformer-interfaces": "1.14.9",
-    "@aws-cdk/aws-appsync": "~1.172.0",
+    "@aws-cdk/aws-appsync": "~1.183.0",
     "@aws-cdk/aws-dynamodb": "~1.172.0",
     "@aws-cdk/core": "~1.172.0",
     "graphql": "^14.5.8",

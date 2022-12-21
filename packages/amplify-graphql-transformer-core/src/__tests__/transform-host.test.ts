@@ -81,22 +81,21 @@ describe('DefaultTransformHost', () => {
       expect(cfnResolver.logicalId).toMatch('testTypeTestfield6a0fResolver.LogicalID'); // have to use match instead of equals because the logicalId is a CDK token that has some non-deterministic stuff in it
     });
 
-    it('throws on CODE strategy type', () => {
-      expect(() => {
-        transformHost.addResolverWithStrategy(
-          'testType',
-          'test_field',
-          {
-            type: 'CODE',
-            code: new InlineTemplate('testTemplate'),
-            runtime: { name: '', runtimeVersion: '' },
-          },
-          undefined,
-          undefined,
-          ['testPipelineConfig'],
-          stack,
-        );
-      }).toThrowErrorMatchingInlineSnapshot('"Code Execution strategies are not yet supported for top-level resolvers."');
+    it('generates resolver name with has for non-alphanumeric field names', () => {
+      const cfnResolver = transformHost.addResolverWithStrategy(
+        'testType2',
+        'test_field2',
+        {
+          type: 'CODE',
+          code: new InlineTemplate('testTemplate2'),
+          runtime: { name: '', runtimeVersion: '' },
+        },
+        undefined,
+        undefined,
+        ['testPipelineConfig'],
+        stack,
+      );
+      expect(cfnResolver.logicalId).toMatch('testType2Testfield20c0fResolver.LogicalID')
     });
   });
 

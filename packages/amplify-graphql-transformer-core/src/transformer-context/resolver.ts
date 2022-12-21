@@ -19,6 +19,7 @@ import { InvalidDirectiveError } from '../errors';
 import * as SyncUtils from '../transformation/sync-utils';
 import { IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils';
 import { StackManager } from './stack-manager';
+import { format }from 'prettier';
 
 type Slot = {
   dataSource?: DataSourceProvider;
@@ -450,15 +451,21 @@ export class TransformerResolver implements TransformerResolverProvider {
       stack,
     );
 
-    let dataSourceType = 'NONE';
-    let dataSource = '';
+    const dataSourceType = this.datasource?.ds.type ?? 'NONE';
+    const stash: Record<string, any> = {
+      typeName: this.typeName,
+      fieldName: this.fieldName,
+      conditions: [],
+      metadata: {
+        dataSourceType,
+        apiId: api.apiId,
+      },
+    };
     if (this.datasource) {
-      dataSourceType = this.datasource.ds.type;
       switch (dataSourceType) {
         case 'AMAZON_DYNAMODB':
           if (this.datasource.ds.dynamoDbConfig && !isResolvableObject(this.datasource.ds.dynamoDbConfig)) {
-            const tableName = this.datasource.ds.dynamoDbConfig?.tableName;
-            dataSource = `$util.qr($ctx.stash.put("tableName", "${tableName}"))`;
+            stash.tableName = this.datasource.ds.dynamoDbConfig?.tableName;
           }
 
           if (context.isProjectUsingDataStore()) {
@@ -485,20 +492,17 @@ export class TransformerResolver implements TransformerResolverProvider {
           break;
         case 'AMAZON_ELASTICSEARCH':
           if (this.datasource.ds.elasticsearchConfig && !isResolvableObject(this.datasource.ds.elasticsearchConfig)) {
-            const endpoint = this.datasource.ds.elasticsearchConfig?.endpoint;
-            dataSource = `$util.qr($ctx.stash.put("endpoint", "${endpoint}"))`;
+            stash.endpoint = this.datasource.ds.elasticsearchConfig?.endpoint;
           }
           break;
         case 'AWS_LAMBDA':
           if (this.datasource.ds.lambdaConfig && !isResolvableObject(this.datasource.ds.lambdaConfig)) {
-            const lambdaFunctionArn = this.datasource.ds.lambdaConfig?.lambdaFunctionArn;
-            dataSource = `$util.qr($ctx.stash.put("lambdaFunctionArn", "${lambdaFunctionArn}"))`;
+            stash.lambdaFunctionArn = this.datasource.ds.lambdaConfig?.lambdaFunctionArn;
           }
           break;
         case 'HTTP':
           if (this.datasource.ds.httpConfig && !isResolvableObject(this.datasource.ds.httpConfig)) {
-            const endpoint = this.datasource.ds.httpConfig?.endpoint;
-            dataSource = `$util.qr($ctx.stash.put("endpoint", "${endpoint}"))`;
+            stash.endpoint = this.datasource.ds.httpConfig?.endpoint;
           }
           break;
         case 'RELATIONAL_DATABASE':
@@ -507,46 +511,55 @@ export class TransformerResolver implements TransformerResolverProvider {
             && !isResolvableObject(this.datasource.ds.relationalDatabaseConfig)
             && !isResolvableObject(this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig)
           ) {
-            const databaseName = this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig!.databaseName;
-            dataSource = `$util.qr($ctx.stash.metadata.put("databaseName", "${databaseName}"))`;
+            stash.metadata.databaseName = this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig!.databaseName;
           }
           break;
         default:
           throw new Error('Unknown DataSource type');
       }
     }
-    let initResolver = dedent`
-    $util.qr($ctx.stash.put("typeName", "${this.typeName}"))
-    $util.qr($ctx.stash.put("fieldName", "${this.fieldName}"))
-    $util.qr($ctx.stash.put("conditions", []))
-    $util.qr($ctx.stash.put("metadata", {}))
-    $util.qr($ctx.stash.metadata.put("dataSourceType", "${dataSourceType}"))
-    $util.qr($ctx.stash.metadata.put("apiId", "${api.apiId}"))
-    ${dataSource}
-    `;
+
+
     const authModes = [context.authConfig.defaultAuthentication, ...(context.authConfig.additionalAuthenticationProviders || [])].map(
       mode => mode?.authenticationType,
     );
     if (authModes.includes(AuthorizationType.IAM)) {
       const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
       const unauthRoleParameter = (context.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
-      initResolver += dedent`\n
-      $util.qr($ctx.stash.put("authRole", "arn:aws:sts::${
-        Stack.of(context.stackManager.rootStack).account
-      }:assumed-role/${authRoleParameter}/CognitoIdentityCredentials"))
-      $util.qr($ctx.stash.put("unauthRole", "arn:aws:sts::${
-        Stack.of(context.stackManager.rootStack).account
-      }:assumed-role/${unauthRoleParameter}/CognitoIdentityCredentials"))
-      `;
+
+      stash.authRole = `arn:aws:sts::${Stack.of(context.stackManager.rootStack).account}:assumed-role/${unauthRoleParameter}/CognitoIdentityCredentials`;
+      stash.unauthRole = `arn:aws:sts::${Stack.of(context.stackManager.rootStack).account}:assumed-role/${authRoleParameter}/CognitoIdentityCredentials`;
     }
-    initResolver += '\n$util.toJson({})';
+    
+    // N.B. context.stash = { <contents> }; doesn't seem to work, so assigning in a foreach.
+    const resolverCode = format(`
+      /**
+       * Configure stash variables which will be used downstream in the linked functions.
+       */
+      export function request (context) {
+        Object.entries(${JSON.stringify(stash)}).forEach(([name, value]) => (context.stash[name] = value));
+        return {};
+      }
+
+      /**
+       * No-op response function.
+       */
+      export function response(context) {
+        return context.prev.result;
+      }
+    `,
+    {
+      parser: 'babel',
+      singleQuote: true,
+    });
+
     api.host.addResolverWithStrategy(
       this.typeName,
       this.fieldName,
       {
-        type: 'TEMPLATE',
-        requestMappingTemplate: MappingTemplate.inlineTemplateFromString(initResolver),
-        responseMappingTemplate: MappingTemplate.inlineTemplateFromString('$util.toJson($ctx.prev.result)'),
+        type: 'CODE',
+        code: MappingTemplate.inlineTemplateFromString(resolverCode),
+        runtime: { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' },
       },
       this.resolverLogicalId,
       undefined,

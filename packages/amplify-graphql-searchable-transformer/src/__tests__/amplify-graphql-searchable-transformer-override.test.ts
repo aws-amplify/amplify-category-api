@@ -106,8 +106,7 @@ test('it overrides expected resources', () => {
           },
         ],
       },
-      RequestMappingTemplate: 'mockTemplate',
-      ResponseMappingTemplate: '$util.toJson($ctx.prev.result)',
+      Code: anything(),
     }),
   );
 });
