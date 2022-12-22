@@ -1,7 +1,9 @@
 import {
   DynamoDbDataSourceOptions,
-  InlineMappingTemplateProvider,
-  MappingTemplateProvider, MappingTemplateType, S3MappingTemplateProvider, SearchableDataSourceOptions, TransformHostProvider,
+  SearchableDataSourceOptions,
+  TransformHostProvider,
+  AppSyncExecutionStrategy,
+  MappingTemplateProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   BaseDataSource, CfnResolver,
@@ -24,12 +26,6 @@ import { AppSyncFunctionConfiguration } from './appsync-function';
 import { SearchableDataSource } from './cdk-compat/searchable-datasource';
 import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat/template-asset';
 import { GraphQLApi } from './graphql-api';
-
-type Slot = {
-  requestMappingTemplate?: string;
-  responseMappingTemplate?: string;
-  dataSource?: string;
-};
 
 export interface DefaultTransformHostOptions {
   readonly api: GraphQLApi;
@@ -118,10 +114,25 @@ export class DefaultTransformHost implements TransformHostProvider {
     return dataSource;
   }
 
+  /**
+   * @deprecated Use addAppSyncFunctionWithStrategy, which adds support for all AppSync runtimes.
+   */
   public addAppSyncFunction = (
     name: string,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
+    dataSourceName: string,
+    stack?: Stack,
+  ): AppSyncFunctionConfiguration => this.addAppSyncFunctionWithStrategy(
+    name,
+    { type: 'TEMPLATE', requestMappingTemplate, responseMappingTemplate },
+    dataSourceName,
+    stack
+  );
+
+  public addAppSyncFunctionWithStrategy = (
+    name: string,
+    strategy: AppSyncExecutionStrategy,
     dataSourceName: string,
     stack?: Stack,
   ): AppSyncFunctionConfiguration => {
@@ -129,36 +140,55 @@ export class DefaultTransformHost implements TransformHostProvider {
       throw new Error(`DataSource ${dataSourceName} is missing in the API`);
     }
 
-    // calculate hash of the slot object
-    // if the slot exists for the hash, then return same fn else create function
-
     const dataSource = this.dataSources.get(dataSourceName);
 
-    const obj :Slot = {
-      dataSource: dataSourceName,
-      requestMappingTemplate: requestMappingTemplate.getTemplateHash(),
-      responseMappingTemplate: responseMappingTemplate.getTemplateHash(),
-    };
-
-    const slotHash = hash(obj);
-    if (this.appsyncFunctions.has(slotHash)) {
-      const appsyncFunction = this.appsyncFunctions.get(slotHash)!;
-      // generating duplicate appsync functions vtl files to help in custom overrides
-      requestMappingTemplate.bind(appsyncFunction);
-      responseMappingTemplate.bind(appsyncFunction);
-      return appsyncFunction;
+    // calculate hash of the slot object
+    // if the slot exists for the hash, then return same fn else create function
+    const slotHash: string = this.computeSlotHash({ dataSource: dataSourceName, strategy });
+    const existingFunction = this.appsyncFunctions.get(slotHash);
+    if (existingFunction) {
+      // generating duplicate appsync functions to help in custom overrides
+      switch(strategy.type) {
+        case 'TEMPLATE':
+          strategy.requestMappingTemplate?.bind(existingFunction);
+          strategy.responseMappingTemplate?.bind(existingFunction);
+          break;
+        case 'CODE':
+          strategy.code.bind(existingFunction);
+          break;
+      }
+      return existingFunction;
     }
 
-    const fn = new AppSyncFunctionConfiguration(stack || this.api, name, {
+    const appSyncFunction = new AppSyncFunctionConfiguration(stack || this.api, name, {
       api: this.api,
       dataSource: dataSource || dataSourceName,
-      requestMappingTemplate,
-      responseMappingTemplate,
-    });
-    this.appsyncFunctions.set(slotHash, fn);
-    return fn;
+      strategy
+    })
+
+    this.appsyncFunctions.set(slotHash, appSyncFunction);
+    return appSyncFunction;
   }
 
+  private computeSlotHash = ({ strategy, dataSource }: { strategy: AppSyncExecutionStrategy, dataSource: string}): string => {
+    switch (strategy.type) {
+      case 'TEMPLATE':
+        return hash({
+          dataSource,
+          requestMappingTemplate: strategy.requestMappingTemplate?.getTemplateHash(),
+          responseMappingTemplate: strategy.responseMappingTemplate?.getTemplateHash(),
+        });
+      case 'CODE':
+        return hash({
+          dataSource,
+          requestMappingTemplate: strategy.code.getTemplateHash(),
+        });
+    }
+  };
+
+  /**
+   * @deprecated Use addResolverWithStrategy, which supports all AppSync runtimes.
+   */
   public addResolver = (
     typeName: string,
     fieldName: string,
@@ -168,13 +198,35 @@ export class DefaultTransformHost implements TransformHostProvider {
     dataSourceName?: string,
     pipelineConfig?: string[],
     stack?: Stack,
+  ): CfnResolver => this.addResolverWithStrategy(
+    typeName,
+    fieldName,
+    { type: 'TEMPLATE', requestMappingTemplate, responseMappingTemplate },
+    resolverLogicalId,
+    dataSourceName,
+    pipelineConfig,
+    stack,
+  );
+
+  public addResolverWithStrategy = (
+    typeName: string,
+    fieldName: string,
+    strategy: AppSyncExecutionStrategy,
+    resolverLogicalId?: string,
+    dataSourceName?: string,
+    pipelineConfig?: string[],
+    stack?: Stack,
   ): CfnResolver => {
     if (dataSourceName && !Token.isUnresolved(dataSourceName) && !this.dataSources.has(dataSourceName)) {
       throw new Error(`DataSource ${dataSourceName} is missing in the API`);
     }
 
-    const requestTemplateLocation = requestMappingTemplate.bind(this.api);
-    const responseTemplateLocation = responseMappingTemplate.bind(this.api);
+    if (strategy.type !== 'TEMPLATE') {
+      throw new Error('Code Execution strategies are not yet supported for top-level resolvers.');
+    }
+
+    const requestTemplateLocation = strategy.requestMappingTemplate?.bind(this.api);
+    const responseTemplateLocation = strategy.responseMappingTemplate?.bind(this.api);
     const resolverName = toCamelCase([resourceName(typeName), resourceName(fieldName), 'Resolver']);
     const resourceId = resolverLogicalId ?? ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
 
@@ -186,10 +238,10 @@ export class DefaultTransformHost implements TransformHostProvider {
         typeName,
         kind: 'UNIT',
         dataSourceName: dataSource?.ds.attrName || dataSourceName,
-        ...(requestMappingTemplate instanceof InlineTemplate
+        ...(strategy.requestMappingTemplate instanceof InlineTemplate
           ? { requestMappingTemplate: requestTemplateLocation }
           : { requestMappingTemplateS3Location: requestTemplateLocation }),
-        ...(responseMappingTemplate instanceof InlineTemplate
+        ...(strategy.responseMappingTemplate instanceof InlineTemplate
           ? { responseMappingTemplate: responseTemplateLocation }
           : { responseMappingTemplateS3Location: responseTemplateLocation }),
       });
@@ -202,10 +254,10 @@ export class DefaultTransformHost implements TransformHostProvider {
         fieldName,
         typeName,
         kind: 'PIPELINE',
-        ...(requestMappingTemplate instanceof InlineTemplate
+        ...(strategy.requestMappingTemplate instanceof InlineTemplate
           ? { requestMappingTemplate: requestTemplateLocation }
           : { requestMappingTemplateS3Location: requestTemplateLocation }),
-        ...(responseMappingTemplate instanceof InlineTemplate
+        ...(strategy.responseMappingTemplate instanceof InlineTemplate
           ? { responseMappingTemplate: responseTemplateLocation }
           : { responseMappingTemplateS3Location: responseTemplateLocation }),
         pipelineConfig: {
