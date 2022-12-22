@@ -104,6 +104,13 @@ export type AppSyncAuthConfigurationUserPoolEntry = {
 export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AWS_LAMBDA';
 
 // @public (undocumented)
+export type AppSyncCodeExecutionStrategy = {
+    type: 'CODE';
+    code: MappingTemplateProvider;
+    runtime: AppSyncRuntime;
+};
+
+// @public (undocumented)
 export enum AppSyncDataSourceType {
     // (undocumented)
     AMAZON_DYNAMODB = "AMAZON_DYNAMODB",
@@ -120,12 +127,28 @@ export enum AppSyncDataSourceType {
 }
 
 // @public (undocumented)
+export type AppSyncExecutionStrategy = AppSyncTemplateExecutionStrategy | AppSyncCodeExecutionStrategy;
+
+// @public (undocumented)
 export interface AppSyncFunctionConfigurationProvider extends IConstruct {
     // (undocumented)
     readonly arn: string;
     // (undocumented)
     readonly functionId: string;
 }
+
+// @public (undocumented)
+export type AppSyncRuntime = {
+    name: string;
+    runtimeVersion: string;
+};
+
+// @public (undocumented)
+export type AppSyncTemplateExecutionStrategy = {
+    type: 'TEMPLATE';
+    requestMappingTemplate?: MappingTemplateProvider;
+    responseMappingTemplate?: MappingTemplateProvider;
+};
 
 // Warning: (ae-forgotten-export) The symbol "NoneDataSourceProvider" needs to be exported by the entry point index.d.ts
 //
@@ -619,6 +642,8 @@ export interface TransformerResolverProvider {
     // (undocumented)
     addToSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
     // (undocumented)
+    addToSlotWithStrategy: (slotName: string, strategy: AppSyncExecutionStrategy, dataSource?: DataSourceProvider) => void;
+    // (undocumented)
     mapToStack: (stack: Stack) => void;
     // (undocumented)
     synthesize: (context: TransformerContextProvider, api: GraphQLAPIProvider) => void;
@@ -633,9 +658,15 @@ export interface TransformerResolversManagerProvider {
     // (undocumented)
     generateMutationResolver: (typeName: string, fieldName: string, resolverLogicalId: string, dataSource: DataSourceProvider, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider) => TransformerResolverProvider;
     // (undocumented)
+    generateMutationResolverWithStrategy: (typeName: string, fieldName: string, resolverLogicalId: string, dataSource: DataSourceProvider, strategy: AppSyncExecutionStrategy) => TransformerResolverProvider;
+    // (undocumented)
     generateQueryResolver: (typeName: string, fieldName: string, resolverLogicalId: string, dataSource: DataSourceProvider, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider) => TransformerResolverProvider;
     // (undocumented)
+    generateQueryResolverWithStrategy: (typeName: string, fieldName: string, resolverLogicalId: string, dataSource: DataSourceProvider, strategy: AppSyncExecutionStrategy) => TransformerResolverProvider;
+    // (undocumented)
     generateSubscriptionResolver: (typeName: string, fieldName: string, resolverLogicalId: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider) => TransformerResolverProvider;
+    // (undocumented)
+    generateSubscriptionResolverWithStrategy: (typeName: string, fieldName: string, resolverLogicalId: string, strategy: AppSyncExecutionStrategy) => TransformerResolverProvider;
     // (undocumented)
     getResolver: (typeName: string, fieldName: string) => TransformerResolverProvider | void;
     // (undocumented)
@@ -690,6 +721,8 @@ export interface TransformHostProvider {
     // (undocumented)
     addAppSyncFunction: (name: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, dataSourceName: string, stack?: Stack) => AppSyncFunctionConfigurationProvider;
     // (undocumented)
+    addAppSyncFunctionWithStrategy: (name: string, strategy: AppSyncExecutionStrategy, dataSourceName: string, stack?: Stack) => AppSyncFunctionConfigurationProvider;
+    // (undocumented)
     addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource;
     // (undocumented)
     addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, stack?: Stack): HttpDataSource;
@@ -703,6 +736,8 @@ export interface TransformHostProvider {
     addNoneDataSource(name: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource;
     // (undocumented)
     addResolver: (typeName: string, fieldName: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, resolverLogicalId?: string, dataSourceName?: string, pipelineConfig?: string[], stack?: Stack) => CfnResolver;
+    // (undocumented)
+    addResolverWithStrategy: (typeName: string, fieldName: string, strategy: AppSyncExecutionStrategy, resolverLogicalId?: string, dataSourceName?: string, pipelineConfig?: string[], stack?: Stack) => CfnResolver;
     // (undocumented)
     addSearchableDataSource(name: string, endpoint: string, region: string, options?: SearchableDataSourceOptions, stack?: Stack): BaseDataSource;
     // (undocumented)

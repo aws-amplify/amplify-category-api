@@ -9,6 +9,7 @@ import { ApiKeyConfig } from 'aws-cdk-lib/aws-appsync';
 import { App } from 'aws-cdk-lib';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncExecutionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { AppSyncFunctionConfigurationProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationConfig } from 'aws-cdk-lib/aws-appsync';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
@@ -609,23 +610,46 @@ export interface TransformerProjectConfig {
 
 // @public (undocumented)
 export class TransformerResolver implements TransformerResolverProvider {
-    constructor(typeName: string, fieldName: string, resolverLogicalId: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, requestSlots: string[], responseSlots: string[], datasource?: DataSourceProvider | undefined);
+    constructor(typeName: string, fieldName: string, resolverLogicalId: string, requestMappingTemplate: MappingTemplateProvider | undefined, responseMappingTemplate: MappingTemplateProvider | undefined, requestSlots: string[], responseSlots: string[], datasource?: DataSourceProvider | undefined, strategy?: AppSyncExecutionStrategy);
     // (undocumented)
     addToSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
+    // (undocumented)
+    addToSlotWithStrategy: (slotName: string, strategy: AppSyncExecutionStrategy, dataSource?: DataSourceProvider) => void;
     // Warning: (ae-forgotten-export) The symbol "Slot" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     findSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider) => Slot | undefined;
     // (undocumented)
+    findSlotForStrategy: ({ slotName, strategy, }: {
+        slotName: string;
+        strategy: AppSyncExecutionStrategy;
+    }) => Slot | undefined;
+    // (undocumented)
+    static fromStrategy: ({ typeName, fieldName, resolverLogicalId, requestSlots, responseSlots, datasource, strategy, }: {
+        typeName: string;
+        fieldName: string;
+        resolverLogicalId: string;
+        requestSlots: string[];
+        responseSlots: string[];
+        datasource?: DataSourceProvider | undefined;
+        strategy: AppSyncExecutionStrategy;
+    }) => TransformerResolver;
+    // (undocumented)
+    getStackName: () => string;
+    // (undocumented)
     mapToStack: (stack: Stack) => void;
     // (undocumented)
     slotExists: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider) => boolean;
+    // (undocumented)
+    slotExistsForStrategy: (slotName: string, strategy: AppSyncExecutionStrategy) => boolean;
     // (undocumented)
     synthesize: (context: TransformerContextProvider, api: GraphQLAPIProvider) => void;
     // (undocumented)
     synthesizeResolvers: (stack: Stack, api: GraphQLAPIProvider, slotsNames: string[]) => AppSyncFunctionConfigurationProvider[];
     // (undocumented)
     updateSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider) => void;
+    // (undocumented)
+    updateSlotForStrategy: (slotName: string, strategy: AppSyncExecutionStrategy) => void;
 }
 
 // @public (undocumented)

@@ -6,6 +6,9 @@ import {
   TransformerContextProvider,
   TransformerResolverProvider,
   TransformerResolversManagerProvider,
+  AppSyncExecutionStrategy,
+  AppSyncTemplateExecutionStrategy,
+  AppSyncCodeExecutionStrategy,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
@@ -19,13 +22,15 @@ import { IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils';
 import { StackManager } from './stack-manager';
 
 type Slot = {
-  requestMappingTemplate?: MappingTemplateProvider;
-  responseMappingTemplate?: MappingTemplateProvider;
   dataSource?: DataSourceProvider;
+  strategy: AppSyncExecutionStrategy;
 };
 
 // Name of the None Data source used for pipeline resolver
 const NONE_DATA_SOURCE_NAME = 'NONE_DS';
+
+const FILE_FORMAT_PATTERN = /\.[a-zA-Z]*$/;
+const TEMPLATE_SLOT_FILENAME_PATTERN = /\.(req|res).vtl$/;
 
 /**
  * ResolverManager
@@ -33,57 +38,103 @@ const NONE_DATA_SOURCE_NAME = 'NONE_DS';
 export class ResolverManager implements TransformerResolversManagerProvider {
   private resolvers: Map<string, TransformerResolverProvider> = new Map();
 
+  /**
+   * @deprecated use generateQueryResolverWithStrategy, which supports all appsync runtimes
+   */
   generateQueryResolver = (
     typeName: string,
     fieldName: string,
     resolverLogicalId: string,
-    dataSource: DataSourceProvider,
+    datasource: DataSourceProvider,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
-  ): TransformerResolver => new TransformerResolver(
+  ): TransformerResolver => this.generateQueryResolverWithStrategy(
     typeName,
     fieldName,
     resolverLogicalId,
-    requestMappingTemplate,
-    responseMappingTemplate,
-    ['init', 'preAuth', 'auth', 'postAuth', 'preDataLoad'],
-    ['postDataLoad', 'finish'],
-    dataSource,
+    datasource,
+    { type: 'TEMPLATE', requestMappingTemplate, responseMappingTemplate },
   );
 
+  generateQueryResolverWithStrategy = (
+    typeName: string,
+    fieldName: string,
+    resolverLogicalId: string,
+    datasource: DataSourceProvider,
+    strategy: AppSyncExecutionStrategy,
+  ): TransformerResolver => TransformerResolver.fromStrategy({
+    typeName,
+    fieldName,
+    resolverLogicalId,
+    strategy,
+    requestSlots: ['init', 'preAuth', 'auth', 'postAuth', 'preDataLoad'],
+    responseSlots: ['postDataLoad', 'finish'],
+    datasource,
+  });
+
+  /**
+   * @deprecated use generateMutationResolverWithStrategy, which supports all appsync runtimes
+   */
   generateMutationResolver = (
     typeName: string,
     fieldName: string,
     resolverLogicalId: string,
-    dataSource: DataSourceProvider,
+    datasource: DataSourceProvider,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
-  ): TransformerResolver => new TransformerResolver(
+  ): TransformerResolver => this.generateMutationResolverWithStrategy(
     typeName,
     fieldName,
     resolverLogicalId,
-    requestMappingTemplate,
-    responseMappingTemplate,
-    ['init', 'preAuth', 'auth', 'postAuth', 'preUpdate'],
-    ['postUpdate', 'finish'],
-    dataSource,
+    datasource,
+    { type: 'TEMPLATE', requestMappingTemplate, responseMappingTemplate },
   );
 
+  generateMutationResolverWithStrategy = (
+    typeName: string,
+    fieldName: string,
+    resolverLogicalId: string,
+    datasource: DataSourceProvider,
+    strategy: AppSyncExecutionStrategy,
+  ): TransformerResolver => TransformerResolver.fromStrategy({
+    typeName,
+    fieldName,
+    resolverLogicalId,
+    strategy,
+    requestSlots: ['init', 'preAuth', 'auth', 'postAuth', 'preUpdate'],
+    responseSlots: ['postUpdate', 'finish'],
+    datasource,
+  });
+
+  /**
+   * @deprecated use generateSubscriptionResolverWithStrategy, which supports all appsync runtimes
+   */
   generateSubscriptionResolver = (
     typeName: string,
     fieldName: string,
     resolverLogicalId: string,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
-  ): TransformerResolver => new TransformerResolver(
+  ): TransformerResolver => this.generateSubscriptionResolverWithStrategy(
     typeName,
     fieldName,
     resolverLogicalId,
-    requestMappingTemplate,
-    responseMappingTemplate,
-    ['init', 'preAuth', 'auth', 'postAuth', 'preSubscribe'],
-    [],
+    { type: 'TEMPLATE', requestMappingTemplate, responseMappingTemplate },
   );
+
+  generateSubscriptionResolverWithStrategy = (
+    typeName: string,
+    fieldName: string,
+    resolverLogicalId: string,
+    strategy: AppSyncExecutionStrategy,
+  ): TransformerResolver => TransformerResolver.fromStrategy({
+    typeName,
+    fieldName,
+    resolverLogicalId,
+    strategy,
+    requestSlots: ['init', 'preAuth', 'auth', 'postAuth', 'preSubscribe'],
+    responseSlots: [],
+  });
 
   addResolver = (typeName: string, fieldName: string, resolver: TransformerResolverProvider): TransformerResolverProvider => {
     const key = `${typeName}.${fieldName}`;
@@ -118,6 +169,7 @@ export class ResolverManager implements TransformerResolversManagerProvider {
 
   collectResolvers = (): Map<string, TransformerResolverProvider> => new Map(this.resolvers.entries());
 }
+
 /**
  * TransformerResolver
  */
@@ -125,15 +177,18 @@ export class TransformerResolver implements TransformerResolverProvider {
   private readonly slotMap: Map<string, Slot[]> = new Map();
   private readonly slotNames: Set<string>;
   private stack?: Stack;
+  private strategy: AppSyncExecutionStrategy
+
   constructor(
     private typeName: string,
     private fieldName: string,
     private resolverLogicalId: string,
-    private requestMappingTemplate: MappingTemplateProvider,
-    private responseMappingTemplate: MappingTemplateProvider,
+    requestMappingTemplate: MappingTemplateProvider | undefined,
+    responseMappingTemplate: MappingTemplateProvider | undefined,
     private requestSlots: string[],
     private responseSlots: string[],
     private datasource?: DataSourceProvider,
+    strategy? : AppSyncExecutionStrategy,
   ) {
     if (!typeName) {
       throw new InvalidDirectiveError('typeName is required');
@@ -144,23 +199,67 @@ export class TransformerResolver implements TransformerResolverProvider {
     if (!resolverLogicalId) {
       throw new InvalidDirectiveError('resolverLogicalId is required');
     }
-    if (!requestMappingTemplate) {
-      throw new InvalidDirectiveError('requestMappingTemplate is required');
+
+    if (strategy) {
+      this.strategy = strategy;
+    } else if (requestMappingTemplate && responseMappingTemplate) {
+    this.strategy = { type: 'TEMPLATE', requestMappingTemplate, responseMappingTemplate };
+    } else {
+      throw new InvalidDirectiveError('Either strategy, or both requestMappingTemplate and responseMappingTemplate must be provided.');
     }
-    if (!responseMappingTemplate) {
-      throw new InvalidDirectiveError('responseMappingTemplate is required');
-    }
+
     this.slotNames = new Set([...requestSlots, ...responseSlots]);
   }
+
+  static fromStrategy = ({
+    typeName,
+    fieldName,
+    resolverLogicalId,
+    requestSlots,
+    responseSlots,
+    datasource,
+    strategy,
+  }: {
+    typeName: string,
+    fieldName: string,
+    resolverLogicalId: string,
+    requestSlots: string[],
+    responseSlots: string[],
+    datasource?: DataSourceProvider,
+    strategy : AppSyncExecutionStrategy,
+  }): TransformerResolver => new TransformerResolver(
+    typeName,
+    fieldName,
+    resolverLogicalId,
+    undefined,
+    undefined,
+    requestSlots,
+    responseSlots,
+    datasource,
+    strategy,
+  );
 
   mapToStack = (stack: Stack) => {
     this.stack = stack;
   };
 
+  /**
+   * @deprecated use addToSlotWithStrategy, which supports all appsync runtimes
+   */
   addToSlot = (
     slotName: string,
     requestMappingTemplate?: MappingTemplateProvider,
     responseMappingTemplate?: MappingTemplateProvider,
+    dataSource?: DataSourceProvider,
+  ): void => this.addToSlotWithStrategy(
+    slotName,
+    { type: 'TEMPLATE', requestMappingTemplate, responseMappingTemplate },
+    dataSource,
+  );
+
+  addToSlotWithStrategy = (
+    slotName: string,
+    strategy: AppSyncExecutionStrategy,
     dataSource?: DataSourceProvider,
   ): void => {
     if (!this.slotNames.has(slotName)) {
@@ -173,75 +272,161 @@ export class TransformerResolver implements TransformerResolverProvider {
       slotEntry = [];
     }
 
-    if (this.slotExists(slotName, requestMappingTemplate, responseMappingTemplate)) {
-      this.updateSlot(slotName, requestMappingTemplate, responseMappingTemplate);
+    if (this.slotExistsForStrategy(slotName, strategy)) {
+      this.updateSlotForStrategy(slotName, strategy);
     } else {
-      slotEntry.push({
-        requestMappingTemplate,
-        responseMappingTemplate,
-        dataSource,
-      });
+      slotEntry.push({ strategy, dataSource });
     }
     this.slotMap.set(slotName, slotEntry);
   };
 
+  /**
+   * @deprecated - use slotExistsForStrategy instead.
+   */
   slotExists = (
     slotName: string,
     requestMappingTemplate?: MappingTemplateProvider,
     responseMappingTemplate?: MappingTemplateProvider,
-  ): boolean => this.findSlot(slotName, requestMappingTemplate, responseMappingTemplate) !== undefined
+  ) => this.slotExistsForStrategy(
+    slotName,
+    { type: 'TEMPLATE', requestMappingTemplate, responseMappingTemplate },
+  );
 
+  /**
+   * Determine if we can find an existing function in a given slot that matches up by name.
+   */
+  slotExistsForStrategy = (
+    slotName: string,
+    strategy: AppSyncExecutionStrategy,
+  ): boolean => this.findSlotForStrategy({ slotName, strategy }) !== undefined
+
+  /**
+   * Determine if the templates are already defined in a given slot, for use in the decision to create/update functions.
+   * @deprecated - use findSlotForStrategy instead
+   */
   findSlot = (
     slotName: string,
     requestMappingTemplate?: MappingTemplateProvider,
     responseMappingTemplate?: MappingTemplateProvider,
-  ): Slot | undefined => {
+  ) => this.findSlotForStrategy({
+    slotName,
+    strategy: { type: 'TEMPLATE', requestMappingTemplate, responseMappingTemplate} },
+  );
+
+  /**
+   * Find a slot for a given slot name and strategy, this is done by matching up the names, using trimmed names to
+   * compare between different strategy types.
+   * e.g. Query.getBlog.postDataLoad.1.req.vtl will collide with Query.getBlog.postDataLoad.1.js
+   */
+  findSlotForStrategy = ({
+    slotName,
+    strategy,
+  }: {
+    slotName: string,
+    strategy: AppSyncExecutionStrategy,
+  }): Slot | undefined => {
     const slotEntries = this.slotMap.get(slotName);
-    const requestMappingTemplateName = (requestMappingTemplate as any)?.name ?? '';
-    const responseMappingTemplateName = (responseMappingTemplate as any)?.name ?? '';
-    if (!slotEntries
-      || requestMappingTemplateName.includes('{slotIndex}')
-      || responseMappingTemplateName.includes('{slotIndex}')) {
+
+    const requestMappingTemplateName: string = strategy.type === 'TEMPLATE' ? (strategy.requestMappingTemplate as any)?.name?.replace(TEMPLATE_SLOT_FILENAME_PATTERN, '') ?? '' : '';
+    const responseMappingTemplateName: string = strategy.type === 'TEMPLATE' ? (strategy.responseMappingTemplate as any)?.name?.replace(TEMPLATE_SLOT_FILENAME_PATTERN, '') ?? '' : '';
+    const codeTemplateName: string = strategy.type === 'CODE' ? (strategy.code as any)?.name?.replace(FILE_FORMAT_PATTERN, '') ?? '' : '';
+
+    if (!slotEntries || [requestMappingTemplateName, responseMappingTemplateName, codeTemplateName].some(name => name.includes('{slotIndex}'))) {
       return;
     }
 
     let slotIndex = 1;
     for (const slotEntry of slotEntries) {
-      const [slotEntryRequestMappingTemplate, slotEntryResponseMappingTemplate] = [
-        (slotEntry.requestMappingTemplate as any)?.name ?? 'NOT-FOUND',
-        (slotEntry.responseMappingTemplate as any)?.name ?? 'NOT-FOUND',
-      ]
-        .map(name => name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex));
 
-      // If both request and response mapping templates are inline, skip check
-      if (slotEntryRequestMappingTemplate === '' && slotEntryResponseMappingTemplate === '') {
-        continue;
+      const isSameStrategyType = strategy.type === slotEntry.strategy.type;
+
+      switch(slotEntry.strategy.type) {
+        case 'TEMPLATE':
+          const [slotEntryRequestMappingTemplate, slotEntryResponseMappingTemplate]: string[] = [
+            (slotEntry.strategy.requestMappingTemplate as any)?.name ?? 'NOT-FOUND',
+            (slotEntry.strategy.responseMappingTemplate as any)?.name ?? 'NOT-FOUND',
+          ]
+            .map(name => name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex).replace(TEMPLATE_SLOT_FILENAME_PATTERN, ''));
+    
+          // If both request and response mapping templates are inline, skip check
+          if (slotEntryRequestMappingTemplate === '' && slotEntryResponseMappingTemplate === '') {
+            continue;
+          }
+    
+          // If type and name matches, then it is an overridden resolver
+          // If type mismatches and trimmed names match, then it is an overridden resolver
+          // This is really verbose, keeping it this way for now
+          if (
+            (isSameStrategyType && (
+              slotEntryRequestMappingTemplate === requestMappingTemplateName ||
+              slotEntryResponseMappingTemplate === responseMappingTemplateName
+            )) ||
+            (!isSameStrategyType && [slotEntryRequestMappingTemplate, slotEntryResponseMappingTemplate].some(name => name === codeTemplateName))
+          ) {
+            return slotEntry;
+          }
+          break;
+        case 'CODE':
+          const slotEntryCodeTemplate = ((slotEntry.strategy.code as any)?.name ?? 'NOT-FOUND')
+            .replace('{slotName}', slotName)
+            .replace('{slotIndex}', slotIndex)
+            .replace(FILE_FORMAT_PATTERN, '')
+
+          // If inline, skip check
+          if (slotEntryCodeTemplate === '') {
+            continue;
+          }
+    
+          // If type and name matches, then it is an overridden resolver
+          // If type mismatches and trimmed names match, then it is an overridden resolver
+          // This is really verbose, keeping it this way for now
+          if (
+            (isSameStrategyType && codeTemplateName === slotEntryCodeTemplate) ||
+            (!isSameStrategyType && [requestMappingTemplateName, responseMappingTemplateName].some(name => name === slotEntryCodeTemplate))
+          ) {
+            return slotEntry;
+          }
+          break;
       }
 
-      // If name matches, then it is an overridden resolver
-      if (
-        slotEntryRequestMappingTemplate === requestMappingTemplateName
-        || slotEntryResponseMappingTemplate === responseMappingTemplateName
-      ) {
-        return slotEntry;
-      }
       slotIndex++;
     }
   }
 
+  /**
+   * @deprecated - use updateSlotForStrategy instead
+   */
   updateSlot = (
     slotName: string,
     requestMappingTemplate?: MappingTemplateProvider,
     responseMappingTemplate?: MappingTemplateProvider,
+  ) => this.updateSlotForStrategy(
+    slotName,
+    { type: 'TEMPLATE', requestMappingTemplate, responseMappingTemplate },
+  );
+
+  /**
+   * Update an existing function with a new strategy, and merge templates if possible.
+   */
+ updateSlotForStrategy = (
+    slotName: string,
+    strategy: AppSyncExecutionStrategy,
   ): void => {
-    const slot = this.findSlot(slotName, requestMappingTemplate, responseMappingTemplate);
+    const slot = this.findSlotForStrategy({ slotName, strategy });
     if (slot) {
-      slot.requestMappingTemplate = (requestMappingTemplate as any)?.name
-        ? requestMappingTemplate
-        : slot.requestMappingTemplate;
-      slot.responseMappingTemplate = (responseMappingTemplate as any)?.name
-        ? responseMappingTemplate
-        : slot.responseMappingTemplate;
+      // If we're updating an atomic 'strategy', as in the case of code strategies, or when replacing a code strategy, replace whole hog.
+      if (strategy.type === 'CODE' || slot.strategy.type === 'CODE') {
+        slot.strategy = strategy;
+        return;
+      }
+
+      // If we're updating template-based mappings with another template mapping, merge in the templates (to allow independent req/res templates)
+      slot.strategy.requestMappingTemplate = (strategy.requestMappingTemplate as any)?.name
+        ? strategy.requestMappingTemplate
+        : slot.strategy.requestMappingTemplate;
+      slot.strategy.responseMappingTemplate = (strategy.responseMappingTemplate as any)?.name
+        ? strategy.responseMappingTemplate
+        : slot.strategy.responseMappingTemplate;
     }
   }
 
@@ -250,13 +435,12 @@ export class TransformerResolver implements TransformerResolverProvider {
     this.ensureNoneDataSource(api);
     const requestFns = this.synthesizeResolvers(stack, api, this.requestSlots);
     const responseFns = this.synthesizeResolvers(stack, api, this.responseSlots);
-    // substitue template name values
-    [this.requestMappingTemplate, this.requestMappingTemplate].map(template => this.substitueSlotInfo(template, 'main', 0));
+      
+    this.substituteSlotInfoForStrategy(this.strategy, 'main', 0);
 
-    const dataSourceProviderFn = api.host.addAppSyncFunction(
+    const dataSourceProviderFn = api.host.addAppSyncFunctionWithStrategy(
       toPascalCase([this.typeName, this.fieldName, 'DataResolverFn']),
-      this.requestMappingTemplate,
-      this.responseMappingTemplate,
+      this.strategy,
       this.datasource?.name || NONE_DATA_SOURCE_NAME,
       stack,
     );
@@ -355,11 +539,14 @@ export class TransformerResolver implements TransformerResolverProvider {
       `;
     }
     initResolver += '\n$util.toJson({})';
-    api.host.addResolver(
+    api.host.addResolverWithStrategy(
       this.typeName,
       this.fieldName,
-      MappingTemplate.inlineTemplateFromString(initResolver),
-      MappingTemplate.inlineTemplateFromString('$util.toJson($ctx.prev.result)'),
+      {
+        type: 'TEMPLATE',
+        requestMappingTemplate: MappingTemplate.inlineTemplateFromString(initResolver),
+        responseMappingTemplate: MappingTemplate.inlineTemplateFromString('$util.toJson($ctx.prev.result)'),
+      },
       this.resolverLogicalId,
       undefined,
       [...requestFns, dataSourceProviderFn, ...responseFns].map(fn => fn.functionId),
@@ -367,6 +554,10 @@ export class TransformerResolver implements TransformerResolverProvider {
     );
   };
 
+  /**
+   * For all functions in all defined slots, render out to AppSyncFunctionConfigurationProviders,
+   * attached to the relevant stacks and api.
+   */
   synthesizeResolvers = (stack: Stack, api: GraphQLAPIProvider, slotsNames: string[]): AppSyncFunctionConfigurationProvider[] => {
     const appSyncFunctions: AppSyncFunctionConfigurationProvider[] = [];
 
@@ -377,19 +568,16 @@ export class TransformerResolver implements TransformerResolverProvider {
         let index = 0;
         for (const slotItem of slotEntries!) {
           const name = `${this.typeName}${this.fieldName}${slotName}${index++}Function`;
-          const { requestMappingTemplate, responseMappingTemplate, dataSource } = slotItem;
-          // eslint-disable-next-line no-unused-expressions
-          requestMappingTemplate && this.substitueSlotInfo(requestMappingTemplate, slotName, index);
-          // eslint-disable-next-line no-unused-expressions
-          responseMappingTemplate && this.substitueSlotInfo(responseMappingTemplate, slotName, index);
-          const fn = api.host.addAppSyncFunction(
+          const { strategy, dataSource } = slotItem;
+
+          this.substituteSlotInfoForStrategy(strategy, slotName, index);
+
+          appSyncFunctions.push(api.host.addAppSyncFunctionWithStrategy(
             name,
-            requestMappingTemplate || MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
-            responseMappingTemplate || MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
+            this.imputeMappingTemplates(strategy),
             dataSource?.name || NONE_DATA_SOURCE_NAME,
             stack,
-          );
-          appSyncFunctions.push(fn);
+          ));
         }
       }
     }
@@ -397,15 +585,38 @@ export class TransformerResolver implements TransformerResolverProvider {
   };
 
   /**
-   * substitueSlotInfo
+   * For TEMPLATE based strategies, fill in either a missing req or res mapping template.
    */
-  private substitueSlotInfo(template: MappingTemplateProvider, slotName: string, index: number) {
-    // Check the constructor name instead of using 'instanceof' because the latter does not work
-    // with copies of the class, which happens with custom transformers.
-    // See: https://github.com/aws-amplify/amplify-cli/issues/9362
-    if (template.constructor.name === S3MappingTemplate.name) {
-      (template as S3MappingTemplate).substitueValues({ slotName, slotIndex: index, typeName: this.typeName, fieldName: this.fieldName });
+  private imputeMappingTemplates = (strategy: AppSyncExecutionStrategy): AppSyncExecutionStrategy => {
+    if (strategy.type === 'CODE') {
+      return strategy;
     }
+
+    return {
+      type: strategy.type,
+      requestMappingTemplate: strategy.requestMappingTemplate || MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
+      responseMappingTemplate: strategy.responseMappingTemplate || MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
+    }
+  };
+
+  /**
+   * Perform substitutions in the Mapping names for all mappings in a strategy.
+   */
+  private substituteSlotInfoForStrategy(strategy: AppSyncExecutionStrategy, slotName: string, index: number) {
+    [
+      (strategy as AppSyncTemplateExecutionStrategy).requestMappingTemplate,
+      (strategy as AppSyncTemplateExecutionStrategy).responseMappingTemplate,
+      (strategy as AppSyncCodeExecutionStrategy).code,
+    ]
+      .filter(template => template !== undefined)
+      .forEach(template => {
+        // Check the constructor name instead of using 'instanceof' because the latter does not work
+        // with copies of the class, which happens with custom transformers.
+        // See: https://github.com/aws-amplify/amplify-cli/issues/9362
+        if (template?.constructor.name === S3MappingTemplate.name) {
+          (template as S3MappingTemplate).substitueValues({ slotName, slotIndex: index, typeName: this.typeName, fieldName: this.fieldName });
+        }
+      });
   }
 
   /**

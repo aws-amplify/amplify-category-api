@@ -9,7 +9,7 @@ export {
   TransformerAuthProvider,
 } from './transformer-model-provider';
 export { FeatureFlagProvider } from './feature-flag-provider';
-
+export * from './appsync-execution-strategy';
 export {
   GraphQLAPIProvider,
   AppSyncFunctionConfigurationProvider,

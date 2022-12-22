@@ -17,6 +17,7 @@ import {
   SearchableDataSourceOptions,
   MappingTemplateProvider,
 } from './graphql-api-provider';
+import { AppSyncExecutionStrategy } from './appsync-execution-strategy';
 
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
   /**
@@ -40,6 +41,9 @@ export interface TransformHostProvider {
     stack?: Stack,
   ): BaseDataSource;
 
+  /**
+   * @deprecated Use addAppSyncFunctionWithStrategy, which adds support for all AppSync runtimes.
+   */
   addAppSyncFunction: (
     name: string,
     requestMappingTemplate: MappingTemplateProvider,
@@ -48,11 +52,31 @@ export interface TransformHostProvider {
     stack?: Stack,
   ) => AppSyncFunctionConfigurationProvider;
 
+  addAppSyncFunctionWithStrategy: (
+    name: string,
+    strategy: AppSyncExecutionStrategy,
+    dataSourceName: string,
+    stack?: Stack,
+  ) => AppSyncFunctionConfigurationProvider;
+
+  /**
+   * @deprecated Use addResolverWithStrategy, which supports all AppSync runtimes.
+   */
   addResolver: (
     typeName: string,
     fieldName: string,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
+    resolverLogicalId?: string,
+    dataSourceName?: string,
+    pipelineConfig?: string[],
+    stack?: Stack,
+  ) => CfnResolver;
+
+  addResolverWithStrategy: (
+    typeName: string,
+    fieldName: string,
+    strategy: AppSyncExecutionStrategy,
     resolverLogicalId?: string,
     dataSourceName?: string,
     pipelineConfig?: string[],

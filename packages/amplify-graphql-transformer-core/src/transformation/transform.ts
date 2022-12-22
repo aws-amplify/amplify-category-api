@@ -7,6 +7,7 @@ import {
   Template,
   TransformerPluginProvider,
   TransformHostProvider,
+  AppSyncRuntime,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import {
@@ -43,7 +44,6 @@ import { convertToAppsyncResourceObj, getStackMeta } from '../types/utils';
 import { adoptAuthModes, IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils/authType';
 import * as SyncUtils from './sync-utils';
 import { MappingTemplate } from '../cdk-compat';
-
 import { UserDefinedSlot, OverrideConfig } from './types';
 import {
   makeSeenTransformationKey,
@@ -58,6 +58,11 @@ import { validateAuthModes, validateModelSchema } from './validation';
 import { DocumentNode } from 'graphql/language';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { AmplifyApiGraphQlResourceStackTemplate } from '../types/amplify-api-resource-stack-types';
+
+const JS_RUNTIME: AppSyncRuntime = {
+  name: 'APPSYNC_JS',
+  runtimeVersion: '1.0.0',
+}
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
@@ -515,17 +520,37 @@ export class GraphQLTransform {
       const userSlots = this.userDefinedSlots[resolverName] || [];
 
       userSlots.forEach(slot => {
-        const requestTemplate = slot.requestResolver
-          ? MappingTemplate.s3MappingTemplateFromString(slot.requestResolver.template, slot.requestResolver.fileName)
-          : undefined;
-        const responseTemplate = slot.responseResolver
-          ? MappingTemplate.s3MappingTemplateFromString(slot.responseResolver.template, slot.responseResolver.fileName)
-          : undefined;
-        resolver.addToSlot(slot.slotName, requestTemplate, responseTemplate);
+        if (this.isSlotAJSResolver(slot)) {
+          const code = MappingTemplate.s3MappingTemplateFromString(
+            // eslint-disable-next-line @typescript-eslint/no-extra-non-null-assertion
+            slot.requestResolver!!.template,
+            // eslint-disable-next-line @typescript-eslint/no-extra-non-null-assertion
+            slot.requestResolver!!.fileName,
+          );
+          resolver.addToSlotWithStrategy(slot.slotName, { type: 'CODE', code, runtime: JS_RUNTIME});
+        } else {
+          const requestMappingTemplate = slot.requestResolver
+            ? MappingTemplate.s3MappingTemplateFromString(slot.requestResolver.template, slot.requestResolver.fileName)
+            : undefined;
+          const responseMappingTemplate = slot.responseResolver
+            ? MappingTemplate.s3MappingTemplateFromString(slot.responseResolver.template, slot.responseResolver.fileName)
+            : undefined;
+          resolver.addToSlotWithStrategy(slot.slotName, { type: 'TEMPLATE', requestMappingTemplate, responseMappingTemplate },
+          );
+        }
       });
 
       resolver.synthesize(context, api);
     }
+  }
+
+  /**
+   * We impute that a slot is a code-based resolver if there is only a request resolver, and the filename ends in either js or ts.
+   */
+  private isSlotAJSResolver = (slot: UserDefinedSlot): boolean => {
+    const hasJSRuntimeFileMatch = slot.requestResolver?.fileName.match(/\.(ts|js)$/);
+    const hasJSRuntimeFileEnding: boolean = hasJSRuntimeFileMatch !== undefined && hasJSRuntimeFileMatch !== null;
+    return slot.responseResolver === undefined && slot.requestResolver !== undefined && hasJSRuntimeFileEnding;
   }
 
   private transformObject(
