@@ -72,7 +72,7 @@ export const validateNotOwnerAuth = (
 
   if (!authDir || !featureFlagEnabled) return true;
 
-  const authDirRules = (authDir.arguments?.find((arg) => arg.name.value === 'rules')?.value as ListValueNode | undefined)?.values || [];
+  const authDirRules = (authDir.arguments?.find(arg => arg.name.value === 'rules')?.value as ListValueNode | undefined)?.values || [];
 
   return !authDirRules.map(ownerFieldsFromOwnerRule).includes(sortKeyField);
 };
@@ -110,11 +110,3 @@ export const generateKeyAndQueryNameForConfig = (config: IndexDirectiveConfigura
   const { sortKeyFields } = config;
   return `${toLower(pluralize(modelName))}By${[fieldName, ...sortKeyFields].map(toUpper).join('And')}`;
 };
-
-export const cpkFeatureFlagName = 'respectPrimaryKeyAttributesOnConnectionField';
-
-// Read the CPK Feature flag
-/**
- * @param ctx
- */
-export const isCPKFeatureEnabled = (ctx: TransformerContextProvider): boolean => ctx.featureFlags.getBoolean(cpkFeatureFlagName);
