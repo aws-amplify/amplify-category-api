@@ -31,6 +31,7 @@ import _ from 'lodash';
 import os from 'os';
 import * as path from 'path';
 import * as vm from 'vm2';
+import { DocumentNode } from 'graphql/language';
 import { ResolverConfig, TransformConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
@@ -52,9 +53,10 @@ import {
   matchFieldDirective,
   matchInputFieldDirective,
   sortTransformerPlugins,
+  isCPKFeatureEnabled,
+  cpkFeatureFlagName,
 } from './utils';
 import { validateAuthModes, validateModelSchema } from './validation';
-import { DocumentNode } from 'graphql/language';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { AmplifyApiGraphQlResourceStackTemplate } from '../types/amplify-api-resource-stack-types';
 
@@ -211,6 +213,7 @@ export class GraphQLTransform {
       throw new SchemaValidationError(errors);
     }
 
+    this.validateCPKFeatureFlag(context);
     for (const transformer of this.transformers) {
       if (isFunction(transformer.before)) {
         transformer.before(context);
@@ -822,4 +825,17 @@ export class GraphQLTransform {
       index++;
     }
   }
+
+// Checks if DataStore is enabled and CPK Feature Flag is true. Throws a warning otherwise.
+public validateCPKFeatureFlag = (context: TransformerContext ) => {
+  const isDataStoreEnabled = context.isProjectUsingDataStore();
+  if (isDataStoreEnabled && !isCPKFeatureEnabled(context) && context.isProjectUsingCPK()) {
+    printer.info(
+      `
+⚠️  WARNING: Your schema has a custom primary key but the Feature Flag "${cpkFeatureFlagName}" is disabled. Check the value in your "amplify/cli.json" file, change it to "true" and re-run
+  `,
+      'yellow',
+    );
+  }
+}
 }

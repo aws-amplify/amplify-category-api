@@ -9,7 +9,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { App } from '@aws-cdk/core';
-import { DocumentNode } from 'graphql';
+import { DocumentNode, ObjectTypeDefinitionNode } from 'graphql';
 import { ResolverConfig } from '../config/transformer-config';
 import { TransformerDataSourceManager } from './datasource';
 import { NoopFeatureFlagProvider } from './noop-feature-flag';
@@ -21,6 +21,9 @@ import { StackManager } from './stack-manager';
 
 export { TransformerResolver } from './resolver';
 export { StackManager } from './stack-manager';
+
+const DEFAULT_ID_FIELD_NAME = 'id';
+
 export class TransformerContextMetadata implements TransformerContextMetadataProvider {
   /**
    * Used by transformers to pass information between one another.
@@ -79,7 +82,7 @@ export class TransformerContext implements TransformerContextProvider {
 
   /**
    * Internal method to set the GraphQL API
-   * @param api API instance available publicaly when the transformation starts
+   * @param api API instance available publicly when the transformation starts
    * @internal
    */
   public bind(api: GraphQLAPIProvider) {
@@ -97,5 +100,13 @@ export class TransformerContext implements TransformerContextProvider {
 
   public isProjectUsingDataStore(): boolean {
     return !!this.resolverConfig?.project || !!this.resolverConfig?.models;
+  }
+
+  public isProjectUsingCPK = (): boolean => {
+    const obj = this.inputDocument.definitions.find(def => def.kind === 'ObjectTypeDefinition') as ObjectTypeDefinitionNode;
+    const primaryKeyField = obj.fields?.find(field => field.directives?.find(directive => directive.name.value === 'primaryKey'));
+    if (!primaryKeyField || primaryKeyField.name.value === DEFAULT_ID_FIELD_NAME) {
+      return false;
+    } else return true;
   }
 }

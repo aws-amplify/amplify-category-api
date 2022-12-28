@@ -8,7 +8,7 @@ import {
   TypeSystemDefinitionNode,
   Kind,
 } from 'graphql';
-import { TransformerPluginProvider, TransformerPluginType } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerContextProvider, TransformerPluginProvider, TransformerPluginType } from '@aws-amplify/graphql-transformer-interfaces';
 
 export function makeSeenTransformationKey(
   directive: DirectiveNode,
@@ -179,3 +179,8 @@ export function sortTransformerPlugins(plugins: TransformerPluginProvider[]): Tr
     return aIdx - bIdx;
   });
 }
+
+export const cpkFeatureFlagName = 'respectPrimaryKeyAttributesOnConnectionField';
+
+// Read the CPK Feature flag
+export const isCPKFeatureEnabled = (ctx: TransformerContextProvider): boolean => ctx.featureFlags.getBoolean(cpkFeatureFlagName);
