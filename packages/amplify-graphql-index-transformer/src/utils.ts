@@ -72,7 +72,7 @@ export const validateNotOwnerAuth = (
 
   if (!authDir || !featureFlagEnabled) return true;
 
-  const authDirRules = (authDir.arguments?.find(arg => arg.name.value === 'rules')?.value as ListValueNode | undefined)?.values || [];
+  const authDirRules = (authDir.arguments?.find((arg) => arg.name.value === 'rules')?.value as ListValueNode | undefined)?.values || [];
 
   return !authDirRules.map(ownerFieldsFromOwnerRule).includes(sortKeyField);
 };
