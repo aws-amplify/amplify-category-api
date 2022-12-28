@@ -65,6 +65,8 @@ function isFunction(obj: any): obj is Function {
   return obj && typeof obj === 'function';
 }
 
+const DEFAULT_ID_FIELD_NAME = 'id';
+
 type TypeDefinitionOrExtension = TypeDefinitionNode | TypeExtensionNode;
 
 /**
@@ -827,9 +829,9 @@ export class GraphQLTransform {
   }
 
 // Checks if DataStore is enabled and CPK Feature Flag is true. Throws a warning otherwise.
-public validateCPKFeatureFlag = (context: TransformerContext) => {
+public validateCPKFeatureFlag = (context: TransformerContext ) => {
   const isDataStoreEnabled = context.isProjectUsingDataStore();
-  if (isDataStoreEnabled && !isCPKFeatureEnabled(context)) {
+  if (isDataStoreEnabled && !isCPKFeatureEnabled(context) && context.isProjectUsingCPK()) {
     console?.warn(`WARNING: Your schema has a custom primary key but the Feature Flag "${cpkFeatureFlagName}" is disabled. Check the value in your "amplify/cli.json" file, change it to "true" and re-run.`);
   }
 };
