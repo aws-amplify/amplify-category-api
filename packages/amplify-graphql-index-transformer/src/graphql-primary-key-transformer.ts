@@ -116,7 +116,6 @@ function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
   const { object, field, sortKeyFields } = config;
 
   validateNotSelfReferencing(config);
-  
   const modelDirective = object.directives!.find(directive => {
     return directive.name.value === 'model';
   });
