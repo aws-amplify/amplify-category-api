@@ -58,6 +58,6 @@
     "graphql-versioned-transformer": "5.2.44-beta.3"
   },
   "peerDependencies": {
-    "amplify-prompts": "^2.6.2-beta.2"
+    "amplify-prompts": "^2.6.2-beta.3"
   }
 }
