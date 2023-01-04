@@ -219,6 +219,46 @@
     prettier "^1.19.1"
     yargs "^15.1.0"
 
+"@aws-amplify/graphql-transformer-core@^0.17.12":
+  version "0.17.15"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-transformer-core/-/graphql-transformer-core-0.17.15.tgz#f5f6bffc3520dd2f05419a040fbe29a8384a1c6f"
+  integrity sha512-B+zyht8Z7N/emjyeXJ5nh/YYSy2PBDPVz3i6RQqoxa24AYqc/fo0+Tz6bw5RzqbKE3K50pJnfb9MfV08lYqUNg==
+  dependencies:
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.9"
+    "@aws-cdk/aws-applicationautoscaling" "~1.172.0"
+    "@aws-cdk/aws-appsync" "~1.172.0"
+    "@aws-cdk/aws-certificatemanager" "~1.172.0"
+    "@aws-cdk/aws-cloudwatch" "~1.172.0"
+    "@aws-cdk/aws-codeguruprofiler" "~1.172.0"
+    "@aws-cdk/aws-cognito" "~1.172.0"
+    "@aws-cdk/aws-dynamodb" "~1.172.0"
+    "@aws-cdk/aws-ec2" "~1.172.0"
+    "@aws-cdk/aws-efs" "~1.172.0"
+    "@aws-cdk/aws-elasticsearch" "~1.172.0"
+    "@aws-cdk/aws-events" "~1.172.0"
+    "@aws-cdk/aws-iam" "~1.172.0"
+    "@aws-cdk/aws-kms" "~1.172.0"
+    "@aws-cdk/aws-lambda" "~1.172.0"
+    "@aws-cdk/aws-logs" "~1.172.0"
+    "@aws-cdk/aws-route53" "~1.172.0"
+    "@aws-cdk/aws-s3" "~1.172.0"
+    "@aws-cdk/aws-s3-assets" "~1.172.0"
+    "@aws-cdk/aws-sqs" "~1.172.0"
+    "@aws-cdk/cloud-assembly-schema" "~1.172.0"
+    "@aws-cdk/core" "~1.172.0"
+    "@aws-cdk/custom-resources" "~1.172.0"
+    "@aws-cdk/cx-api" "~1.172.0"
+    "@aws-cdk/region-info" "~1.172.0"
+    constructs "^3.3.125"
+    fs-extra "^8.1.0"
+    graphql "^14.5.8"
+    graphql-transformer-common "4.24.0"
+    lodash "^4.17.21"
+    md5 "^2.3.0"
+    object-hash "^3.0.0"
+    ts-dedent "^2.0.0"
+    vm2 "^3.9.8"
+
 "@aws-amplify/graphql-types-generator@3.0.0":
   version "3.0.0"
   resolved "https://registry.npmjs.org/@aws-amplify/graphql-types-generator/-/graphql-types-generator-3.0.0.tgz#6e9dba889ed303fc7c46248154f36d8ba4a30aee"
@@ -11432,6 +11472,16 @@ graphql-tag@^2.10.1, graphql-tag@^2.11.0:
   dependencies:
     tslib "^2.1.0"
 
+graphql-transformer-common@4.24.0:
+  version "4.24.0"
+  resolved "https://registry.yarnpkg.com/graphql-transformer-common/-/graphql-transformer-common-4.24.0.tgz#f3be95c4b5ca2ada23fc3d0b01810810ad87810d"
+  integrity sha512-wleRNCFJLrqhYUT4j3KOfh2zTkvVjA6MX/s0HBIFWbNfnzd/W0VDAvpE9q8sMipOvXJ4zcVIZggI7TttrA/fOw==
+  dependencies:
+    graphql "^14.5.8"
+    graphql-mapping-template "4.20.5"
+    md5 "^2.2.1"
+    pluralize "8.0.0"
+
 graphql@0.13.0:
   version "0.13.0"
   resolved "https://registry.npmjs.org/graphql/-/graphql-0.13.0.tgz#d1b44a282279a9ce0a6ec1037329332f4c1079b6"
@@ -13138,9 +13188,9 @@ json5@2.x, json5@^2.1.2, json5@^2.2.1:
   integrity sha512-1hqLFMSrGHRHxav9q9gNjJ5EXznIxGVO09xQRrwplcS8qs28pZ8s8hupZAmqDwZUmVZ2Qb2jnyPOWcDH8m8dlA==
 
 json5@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/json5/-/json5-1.0.1.tgz#779fb0018604fa854eacbf6252180d83543e3dbe"
-  integrity sha512-aKS4WQjPenRxiQsC93MNfjx+nbF4PAdYzmd/1JIj8HYzqfbu86beTuNgXDzPknWk0n0uARlyewZo4s++ES36Ow==
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/json5/-/json5-1.0.2.tgz#63d98d60f21b313b77c4d6da18bfa69d80e1d593"
+  integrity sha512-g1MWMLBiz8FKi1e4w0UyVL3w+iJceWAFBAaBnnGKOpNa5f8TLktkbre1+s6oICydWAm+HRUGTmI+//xv2hvXYA==
   dependencies:
     minimist "^1.2.0"
 
@@ -13854,7 +13904,7 @@ minimist-options@4.1.0:
 
 minimist@^1.1.1, minimist@^1.2.0, minimist@^1.2.3, minimist@^1.2.5, minimist@^1.2.6:
   version "1.2.7"
-  resolved "https://registry.npmjs.org/minimist/-/minimist-1.2.7.tgz#daa1c4d91f507390437c6a8bc01078e7000c4d18"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.7.tgz#daa1c4d91f507390437c6a8bc01078e7000c4d18"
   integrity sha512-bzfL1YUZsP41gmu/qjrEk0Q6i2ix/cVeAhbCbqH9u3zYutS1cLg00qhrD0M2MVdCcx4Sc0UpP2eBWo9rotpq6g==
 
 minipass-collect@^1.0.2:
