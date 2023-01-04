@@ -65,7 +65,7 @@ function toggleBracketCheck(c: string, consecutiveQuotes: number, checkStatus: b
       } else if ((quoteCount === 2 || (quoteCount === 1 && str)) && !multiLine) {
         check = true;
         str = false;
-      } else if (quoteCount === 1 && !multiLine) {
+      } else if (quoteCount === 1 && !multiLine && check) {
         check = false;
         str = true;
       }
