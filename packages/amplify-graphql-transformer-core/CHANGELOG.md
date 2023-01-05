@@ -3,12 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.18.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.17.15...@aws-amplify/graphql-transformer-core@0.18.0) (2022-12-03)
-
-### Features
-
-- 🎸 Added bracket mismatch error detection ([40fdd88](https://github.com/aws-amplify/amplify-category-api/commit/40fdd885e5553ea4b087ff15b1305328a37fdecd)), closes [#107](https://github.com/aws-amplify/amplify-category-api/issues/107)
-
 ## [0.17.15](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.17.14...@aws-amplify/graphql-transformer-core@0.17.15) (2022-11-08)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-core

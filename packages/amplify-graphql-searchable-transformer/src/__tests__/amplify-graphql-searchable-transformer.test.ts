@@ -5,7 +5,6 @@ import {
 } from '@aws-cdk/assert';
 import { parse } from 'graphql';
 import { SearchableModelTransformer } from '..';
-import {ALLOWABLE_SEARCHABLE_INSTANCE_TYPES} from '../constants';
 
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name): boolean => {
@@ -408,11 +407,5 @@ describe('SearchableModelTransformer with datastore enabled and sort field defin
     expect(parse(out.schema)).toBeDefined();
     expect(out.resolvers['Query.searchPosts.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Query.searchPosts.res.vtl']).toMatchSnapshot();
-  });
-});
-
-describe('Searchable Instance Type Validation Test', () => {
-  it('Should include search instances', () => {
-    expect(ALLOWABLE_SEARCHABLE_INSTANCE_TYPES).toContain('t3.medium.search');
   });
 });

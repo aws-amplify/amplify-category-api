@@ -10,13 +10,10 @@ import { default as moment } from 'moment';
 import { default as S3 } from 'aws-sdk/clients/s3';
 import { S3Client } from '../S3Client';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
-import { resolveTestRegion } from '../testSetup';
-
-const region = resolveTestRegion();
 
 jest.setTimeout(2000000);
 
-const cf = new CloudFormationClient(region);
+const cf = new CloudFormationClient('us-west-2');
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {
@@ -35,8 +32,8 @@ const S3_ROOT_DIR_KEY = 'deployments';
 
 let GRAPHQL_CLIENT = undefined;
 
-const customS3Client = new S3Client(region);
-const awsS3Client = new S3({ region: region });
+const customS3Client = new S3Client('us-west-2');
+const awsS3Client = new S3({ region: 'us-west-2' });
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {

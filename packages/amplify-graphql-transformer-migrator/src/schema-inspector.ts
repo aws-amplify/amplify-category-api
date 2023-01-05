@@ -1,15 +1,18 @@
-import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { AmplifyCategories, FeatureFlags, pathManager } from 'amplify-cli-core';
+import { FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
 import { DocumentNode } from 'graphql/language';
 import { visit } from 'graphql';
 import { collectDirectives, collectDirectivesByTypeNames } from '@aws-amplify/graphql-transformer-core';
+import { listContainsOnlySetString } from './utils';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { listContainsOnlySetString } from './utils';
 
 export function graphQLUsingSQL(apiName: string): boolean {
-  const apiParameterManager = getEnvParamManager().getResourceParamManager(AmplifyCategories.API, apiName);
-  return !!apiParameterManager.getParam('rdsClusterIdentifier');
+  const teamProviderInfo = stateManager.getTeamProviderInfo();
+  const env = stateManager.getLocalEnvInfo().envName;
+  if (teamProviderInfo?.[env]?.categories?.api?.[apiName]?.rdsClusterIdentifier) {
+    return true;
+  }
+  return false;
 }
 
 export function detectCustomRootTypes(schema: DocumentNode): boolean {
@@ -38,9 +41,9 @@ export function detectOverriddenResolvers(apiName: string): boolean {
 export async function detectPassthroughDirectives(schema: string): Promise<Array<string>> {
   const supportedDirectives = new Set<string>(['connection', 'key', 'auth', 'model', 'function', 'predictions', 'aws_subscribe']);
   const directiveMap: any = collectDirectivesByTypeNames(schema).types;
-  const passthroughDirectiveSet = new Set<string>();
-  for (const type of Object.keys(directiveMap)) {
-    for (const dirName of listContainsOnlySetString(directiveMap[type], supportedDirectives)) {
+  let passthroughDirectiveSet = new Set<string>();
+  for (let type of Object.keys(directiveMap)) {
+    for (let dirName of listContainsOnlySetString(directiveMap[type], supportedDirectives)) {
       passthroughDirectiveSet.add(dirName);
     }
   }

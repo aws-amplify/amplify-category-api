@@ -1,26 +1,13 @@
-const getParamMock = jest.fn();
-
-import { $TSContext, stateManager, getGraphQLTransformerOpenSearchProductionDocLink, ApiCategoryFacade } from 'amplify-cli-core';
+import { stateManager, getGraphQLTransformerOpenSearchProductionDocLink, ApiCategoryFacade } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { searchablePushChecks } from '../../graphql-transformer/api-utils';
 
 jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
 
-jest.mock('@aws-amplify/amplify-environment-parameters', () => ({
-  ensureEnvParamManager: jest.fn().mockResolvedValue({
-    instance: {
-      getResourceParamManager: jest.fn().mockReturnValue({
-        getParam: getParamMock,
-      }),
-    },
-  }),
-}));
-
 const printerMock = printer as jest.Mocked<typeof printer>;
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
-const getTransformerVersionMock = ApiCategoryFacade
-  .getTransformerVersion as jest.MockedFunction<typeof ApiCategoryFacade.getTransformerVersion>;
+const getTransformerVersionMock = ApiCategoryFacade.getTransformerVersion as jest.MockedFunction<typeof ApiCategoryFacade.getTransformerVersion>
 const getGraphQLTransformerOpenSearchProductionDocLinkMock = getGraphQLTransformerOpenSearchProductionDocLink as jest.MockedFunction<
   typeof getGraphQLTransformerOpenSearchProductionDocLink
 >;
@@ -34,84 +21,171 @@ describe('graphql schema checks', () => {
     amplify: {
       getEnvInfo: jest.fn(),
     },
-  } as unknown as $TSContext;
-
-  const printerWarning = 'Your instance type for OpenSearch is t2.small.elasticsearch, you may experience performance issues or data loss.'
-    + ' Consider reconfiguring with the instructions here mockDocsLink';
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('should warn users if they use not recommended open search instance without overrides', async () => {
-    stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
-    getParamMock.mockReturnValueOnce(undefined);
+    stateManagerMock.getTeamProviderInfo.mockReturnValue({});
+    contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
-    expect(printerMock.warn).lastCalledWith(printerWarning);
+    expect(printerMock.warn).lastCalledWith(
+      'Your instance type for OpenSearch is t2.small.elasticsearch, you may experience performance issues or data loss. Consider reconfiguring with the instructions here mockDocsLink',
+    );
   });
 
   it('should warn users if they use not recommended open search instance with overrides', async () => {
-    getParamMock.mockReturnValueOnce('t2.small.elasticsearch');
-    stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
+    stateManagerMock.getTeamProviderInfo.mockReturnValue({
+      test: {
+        categories: {
+          api: {
+            test_api_name: {
+              OpenSearchInstanceType: 't2.small.elasticsearch',
+            },
+          },
+        },
+      },
+    });
+    contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
-    expect(printerMock.warn).lastCalledWith(printerWarning);
+    expect(printerMock.warn).lastCalledWith(
+      'Your instance type for OpenSearch is t2.small.elasticsearch, you may experience performance issues or data loss. Consider reconfiguring with the instructions here mockDocsLink',
+    );
   });
 
   it('should warn users if they use not recommended elastic search instance with overrides', async () => {
-    getParamMock.mockReturnValueOnce('t2.small.elasticsearch');
-    stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
+    stateManagerMock.getTeamProviderInfo.mockReturnValue({
+      test: {
+        categories: {
+          api: {
+            test_api_name: {
+              ElasticSearchInstanceType: 't2.small.elasticsearch',
+            },
+          },
+        },
+      },
+    });
+    contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
-    expect(printerMock.warn).lastCalledWith(printerWarning);
+    expect(printerMock.warn).lastCalledWith(
+      'Your instance type for OpenSearch is t2.small.elasticsearch, you may experience performance issues or data loss. Consider reconfiguring with the instructions here mockDocsLink',
+    );
   });
 
   it('should NOT warn users if they use recommended open search instance', async () => {
-    getParamMock.mockReturnValueOnce('t2.medium.elasticsearch');
-    stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
+    stateManagerMock.getTeamProviderInfo.mockReturnValue({
+      test: {
+        categories: {
+          api: {
+            test_api_name: {
+              OpenSearchInstanceType: 't2.medium.elasticsearch',
+            },
+          },
+        },
+      },
+    });
+    contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
     expect(printerMock.warn).not.toBeCalled();
   });
 
   it('should NOT warn users if they use recommended elastic search instance', async () => {
-    getParamMock.mockReturnValueOnce('t2.medium.elasticsearch');
-    stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
+    stateManagerMock.getTeamProviderInfo.mockReturnValue({
+      test: {
+        categories: {
+          api: {
+            test_api_name: {
+              ElasticSearchInstanceType: 't2.medium.elasticsearch',
+            },
+          },
+        },
+      },
+    });
+    contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
     expect(printerMock.warn).not.toBeCalled();
   });
 
   it('should NOT warn users if they use recommended open search instance on the environment', async () => {
-    getParamMock.mockReturnValueOnce('t2.medium.elasticsearch');
-    stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'prod' });
+    stateManagerMock.getTeamProviderInfo.mockReturnValue({
+      dev: {
+        categories: {
+          api: {
+            test_api_name: {
+              OpenSearchInstanceType: 't2.small.elasticsearch',
+            },
+          },
+        },
+      },
+      prod: {
+        categories: {
+          api: {
+            test_api_name: {
+              OpenSearchInstanceType: 't2.medium.elasticsearch',
+            },
+          },
+        },
+      },
+    });
+    contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'prod' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
     expect(printerMock.warn).not.toBeCalled();
   });
 
   it('should NOT warn users if they use recommended elastic search instance on the environment', async () => {
-    getParamMock.mockReturnValueOnce('t2.medium.elasticsearch');
-    stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'prod' });
+    stateManagerMock.getTeamProviderInfo.mockReturnValue({
+      dev: {
+        categories: {
+          api: {
+            test_api_name: {
+              ElasticSearchInstanceType: 't2.small.elasticsearch',
+            },
+          },
+        },
+      },
+      prod: {
+        categories: {
+          api: {
+            test_api_name: {
+              ElasticSearchInstanceType: 't2.medium.elasticsearch',
+            },
+          },
+        },
+      },
+    });
+    contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'prod' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
     expect(printerMock.warn).not.toBeCalled();
   });
 
   it('should NOT warn users if they do NOT use searchable', async () => {
-    getParamMock.mockReturnValueOnce(undefined);
-    stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
+    stateManagerMock.getTeamProviderInfo.mockReturnValue({});
+    contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
     expect(printerMock.warn).not.toBeCalled();
   });
 
   it('should warn users if they use not recommended open search instance with overrides', async () => {
-    getParamMock.mockReturnValueOnce(undefined);
-    stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
+    stateManagerMock.getTeamProviderInfo.mockReturnValue({
+      test: {
+        categories: {},
+      },
+    });
+    contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
-    expect(printerMock.warn).lastCalledWith(printerWarning);
+    expect(printerMock.warn).lastCalledWith(
+      'Your instance type for OpenSearch is t2.small.elasticsearch, you may experience performance issues or data loss. Consider reconfiguring with the instructions here mockDocsLink',
+    );
   });
 });

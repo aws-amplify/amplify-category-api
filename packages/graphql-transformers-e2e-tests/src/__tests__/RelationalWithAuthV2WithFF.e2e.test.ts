@@ -27,16 +27,13 @@ import {
 } from '../cognitoUtils';
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
-import { resolveTestRegion } from '../testSetup';
-
-const region = resolveTestRegion();
 
 jest.setTimeout(2000000);
 
-const cf = new CloudFormationClient(region);
-const customS3Client = new S3Client(region);
-const awsS3Client = new S3({ region: region });
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: region });
+const cf = new CloudFormationClient('us-west-2');
+const customS3Client = new S3Client('us-west-2');
+const awsS3Client = new S3({ region: 'us-west-2' });
+const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: 'us-west-2' });
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `RelationalAuthV2TransformersTest-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-relational-auth-transformer-test-${BUILD_TIMESTAMP}`;

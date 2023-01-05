@@ -1,11 +1,8 @@
 import { IAM, Credentials } from 'aws-sdk';
-import { resolveTestRegion } from './testSetup';
-
-const REGION = resolveTestRegion();
 
 export class IAMHelper {
   client: IAM;
-  constructor(region: string = REGION, credentials?: Credentials) {
+  constructor(region: string = 'us-west-2', credentials?: Credentials) {
     this.client = new IAM({
       region,
       credentials

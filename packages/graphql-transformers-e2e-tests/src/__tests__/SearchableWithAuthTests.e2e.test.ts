@@ -49,12 +49,10 @@ if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
-import { resolveTestRegion } from '../testSetup';
-
-const AWS_REGION = resolveTestRegion();
 
 jest.setTimeout(9700000);
 
+const AWS_REGION = 'us-west-2';
 const cf = new CloudFormationClient(AWS_REGION);
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `SearchableAuthTests-${BUILD_TIMESTAMP}`;

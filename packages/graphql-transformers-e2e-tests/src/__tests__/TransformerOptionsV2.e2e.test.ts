@@ -13,11 +13,10 @@ import moment from 'moment';
 import { createUserPool, createUserPoolClient, configureAmplify } from '../cognitoUtils';
 import { ResourceConstants } from 'graphql-transformer-common';
 import gql from 'graphql-tag';
-import { resolveTestRegion } from '../testSetup';
-
-const AWS_REGION = resolveTestRegion();
 
 jest.setTimeout(2000000);
+
+const AWS_REGION = 'us-west-2';
 
 describe('V2 transformer options', () => {
   const cf = new CloudFormationClient(AWS_REGION);

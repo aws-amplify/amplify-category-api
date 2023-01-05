@@ -66,10 +66,3 @@ export const showOwnerCanReassignWarning = (
     printer.debug(`Error caught while checking whether owners have reassign permissions: ${JSON.stringify(e)}`);
   }
 };
-
-export const showOwnerFieldCaseWarning = (ownerField: string, warningField: string, modelName: string): void => {
-  printer.warn(
-    `WARNING: Schema field "${warningField}" and ownerField "${ownerField}" in type ${modelName} are getting added to your schema but could be referencing the same owner field. `
-    + 'If this is not intentional, you may want to change one of the fields to the correct name.\n',
-  );
-};

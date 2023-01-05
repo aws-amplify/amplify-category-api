@@ -1,6 +1,6 @@
 {
   "name": "graphql-versioned-transformer",
-  "version": "5.2.44",
+  "version": "5.2.43",
   "description": "A GraphQL transform that enabled object versioning and conflict resolution for a @model type.",
   "repository": {
     "type": "git",
@@ -19,17 +19,16 @@
   "scripts": {
     "test": "jest",
     "build": "tsc",
-    "clean": "rimraf ./lib",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "clean": "rimraf ./lib"
   },
   "dependencies": {
     "graphql": "^14.5.8",
     "graphql-mapping-template": "4.20.5",
-    "graphql-transformer-common": "4.24.1",
-    "graphql-transformer-core": "7.6.7"
+    "graphql-transformer-common": "4.24.0",
+    "graphql-transformer-core": "7.6.6"
   },
   "devDependencies": {
-    "graphql-dynamodb-transformer": "7.2.44"
+    "graphql-dynamodb-transformer": "7.2.43"
   },
   "jest": {
     "transform": {

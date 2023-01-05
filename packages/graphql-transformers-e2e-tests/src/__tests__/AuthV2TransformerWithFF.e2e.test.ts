@@ -22,18 +22,15 @@ import {
   signupUser,
 } from '../cognitoUtils';
 import { GraphQLClient } from '../GraphQLClient';
-import { resolveTestRegion } from '../testSetup';
-
-const region = resolveTestRegion();
 
 jest.setTimeout(2000000);
 
 describe('@model with @auth', () => {
   // setup clients
-  const cf = new CloudFormationClient(region);
-  const customS3Client = new S3Client(region);
-  const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: region });
-  const awsS3Client = new S3({ region: region });
+  const cf = new CloudFormationClient('us-west-2');
+  const customS3Client = new S3Client('us-west-2');
+  const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: 'us-west-2' });
+  const awsS3Client = new S3({ region: 'us-west-2' });
 
   // stack info
   const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');

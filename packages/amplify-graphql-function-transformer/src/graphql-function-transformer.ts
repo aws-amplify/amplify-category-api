@@ -77,14 +77,13 @@ export class FunctionTransformer extends TransformerPluginBase {
         const dataSourceId = FunctionResourceIDs.FunctionDataSourceID(config.name, config.region, config.accountId);
 
         if (!createdResources.has(dataSourceId)) {
-          const dataSourceStack = context.stackManager.getStackFor(dataSourceId, FUNCTION_DIRECTIVE_STACK);
           const dataSource = context.api.host.addLambdaDataSource(
             dataSourceId,
             lambda.Function.fromFunctionAttributes(stack, `${dataSourceId}Function`, {
               functionArn: lambdaArnResource(env, config.name, config.region, config.accountId),
             }),
             {},
-            dataSourceStack,
+            stack,
           );
           createdResources.set(dataSourceId, dataSource);
         }
@@ -94,7 +93,6 @@ export class FunctionTransformer extends TransformerPluginBase {
         let func = createdResources.get(functionId);
 
         if (func === undefined) {
-          const funcStack = context.stackManager.getStackFor(functionId, FUNCTION_DIRECTIVE_STACK);
           func = context.api.host.addAppSyncFunction(
             functionId,
             MappingTemplate.s3MappingTemplateFromString(
@@ -125,7 +123,7 @@ export class FunctionTransformer extends TransformerPluginBase {
               `${functionId}.res.vtl`,
             ),
             dataSourceId,
-            funcStack,
+            stack,
           );
 
           createdResources.set(functionId, func);
@@ -162,7 +160,6 @@ export class FunctionTransformer extends TransformerPluginBase {
 
         if (resolver === undefined) {
           // TODO: update function to use resolver manager
-          const resolverStack = context.stackManager.getStackFor(resolverId, FUNCTION_DIRECTIVE_STACK);
           resolver = context.api.host.addResolver(
             config.resolverTypeName,
             config.resolverFieldName,
@@ -171,10 +168,10 @@ export class FunctionTransformer extends TransformerPluginBase {
               '$util.toJson($ctx.prev.result)',
               `${config.resolverTypeName}.${config.resolverFieldName}.res.vtl`,
             ),
-            resolverId,
+            undefined,
             undefined,
             [],
-            resolverStack,
+            stack,
           );
           createdResources.set(resolverId, resolver);
         }
