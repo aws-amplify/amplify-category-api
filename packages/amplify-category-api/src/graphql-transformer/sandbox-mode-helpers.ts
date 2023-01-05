@@ -91,7 +91,6 @@ function bracketCheck(schema: string): void {
   let currentLine = 1;
   for (let i = 0; i < schema.length; i++) {
     const c = schema.charAt(i);
-<<<<<<< HEAD
     const bracketCheckParams = toggleBracketCheck(c, consecutiveQuotes, checkStatus, multilineComment, stringMode);
     consecutiveQuotes = bracketCheckParams.consecutiveQuotes;
     checkStatus = bracketCheckParams.checkStatus;
@@ -123,30 +122,6 @@ function bracketCheck(schema: string): void {
     const popped = stack.pop();
     throw new InvalidBracketsError(`Syntax Error: mismatched brackets found in the schema. Missing ${popped[0]} for opening bracket at line ${popped[1]} in the schema.`);
   }
-=======
-    switch (c) {
-      case '(':
-        stack.push(')');
-        break;
-      case '[':
-        stack.push(']');
-        break;
-      case '{':
-        stack.push('}');
-        break;
-      case ')':
-      case ']':
-      case '}':
-        if (c !== stack.pop()) {
-          throw new InvalidBracketsError(`Syntax Error: mismatched brackets found in the schema. Unexpected ${c}`);
-        }
-        break;
-      default:
-        break;
-    }
-  }
-  if (stack.length) throw new InvalidBracketsError(`Syntax Error: mismatched brackets found in the schema. Missing ${stack.pop()}`);
->>>>>>> 60822fbe0 (feat: 🎸 Added border case for additional bracket checking)
 }
 
 export function schemaHasSandboxModeEnabled(schema: string, docLink: string): boolean {
