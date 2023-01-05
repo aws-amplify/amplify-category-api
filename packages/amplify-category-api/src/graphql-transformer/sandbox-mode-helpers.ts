@@ -90,7 +90,6 @@ function bracketCheck(schema: string): void {
   const inverseBrackets = { '{': '}', '[': ']', '(': ')' };
   let currentLine = 1;
   for (let i = 0; i < schema.length; i++) {
-    if (schema.charAt(i) === '\n') currentLine++;
     const c = schema.charAt(i);
     const bracketCheckParams = toggleBracketCheck(c, consecutiveQuotes, checkStatus, multilineComment, stringMode);
     consecutiveQuotes = bracketCheckParams.consecutiveQuotes;
