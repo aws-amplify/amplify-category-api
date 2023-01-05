@@ -24,9 +24,6 @@ import 'isomorphic-fetch';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
-import { resolveTestRegion } from '../testSetup';
-
-const REGION = resolveTestRegion();
 
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
@@ -49,6 +46,7 @@ if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
 
 jest.setTimeout(2000000);
 
+const REGION = 'us-west-2';
 const cf = new CloudFormationClient(REGION);
 const customS3Client = new S3Client(REGION);
 const awsS3Client = new S3({ region: REGION });

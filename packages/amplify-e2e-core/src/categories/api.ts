@@ -8,9 +8,7 @@ import {
   ExecutionContext,
   getCLIPath,
   getProjectMeta,
-  getTransformConfig,
   nspawn as spawn,
-  setTransformConfig,
   setTransformerVersionFlag,
   updateSchema,
 } from '..';
@@ -980,10 +978,4 @@ export async function validateRestApiMeta(projRoot: string, meta?: any) {
     seenAtLeastOneFunc = true;
   }
   expect(seenAtLeastOneFunc).toBe(true);
-}
-
-export function setStackMapping(projRoot: string, projectName: string, stackMapping: Record<string, string>) {
-  const transformConfig = getTransformConfig(projRoot, projectName);
-  transformConfig.StackMapping = stackMapping;
-  setTransformConfig(projRoot, projectName, transformConfig);
 }

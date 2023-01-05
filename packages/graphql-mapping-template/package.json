@@ -21,8 +21,7 @@
     "test": "jest",
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rimraf ./lib",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "clean": "rimraf ./lib"
   },
   "jest": {
     "transform": {

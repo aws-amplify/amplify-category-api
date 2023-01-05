@@ -1,6 +1,6 @@
 {
   "name": "graphql-predictions-transformer",
-  "version": "3.2.44",
+  "version": "3.2.43",
   "description": "Implements the @predictions directive.",
   "repository": {
     "type": "git",
@@ -20,15 +20,14 @@
     "build": "tsc && cd lambdaFunction && bestzip --force node ../lib/predictionsLambdaFunction.zip predictionsLambda.js",
     "watch": "tsc -w",
     "test": "jest",
-    "clean": "rimraf ./lib",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "clean": "rimraf ./lib"
   },
   "dependencies": {
     "cloudform-types": "^4.2.0",
     "graphql": "^14.5.8",
     "graphql-mapping-template": "4.20.5",
-    "graphql-transformer-common": "4.24.1",
-    "graphql-transformer-core": "7.6.7"
+    "graphql-transformer-common": "4.24.0",
+    "graphql-transformer-core": "7.6.6"
   },
   "devDependencies": {
     "bestzip": "^2.1.5"

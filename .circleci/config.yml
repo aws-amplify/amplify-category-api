@@ -257,4 +257,4 @@ commands:
             cd client-test-apps/js/api-model-relationship-app
             npm install
             retry npm run test:ci
-          no_output_timeout: 60m
+          no_output_timeout: 90m

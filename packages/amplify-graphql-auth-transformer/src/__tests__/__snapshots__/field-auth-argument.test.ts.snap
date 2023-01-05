@@ -35,16 +35,12 @@ exports[`does not generate field resolvers when private rule takes precedence ov
 #if( $operation == \\"Mutation\\" )
   $util.toJson(null)
 #else
-  $util.toJson($context.source[\\"ssn\\"])
+  $util.toJson($context.source.ssn)
 #end
 ## [End] Checking for allowed operations which can return this field. **"
 `;
 
-exports[`error on non null fields which need resolvers 1`] = `
-"When using field-level authorization rules you need to add rules to all of the model's required fields with at least read permissions. Found model \\"Post\\" with required fields [\\"id\\",\\"name\\",\\"ssn\\"] missing field-level authorization rules.
-
-For more information visit https://docs.amplify.aws/cli/graphql/authorization-rules/#field-level-authorization-rules"
-`;
+exports[`error on non null fields which need resolvers 1`] = `"Because \\"Post\\" has a field-level authorization rule and subscriptions are enabled, you need to either apply field-level authorization rules to all required fields where all rules have read access [\\"id\\",\\"name\\",\\"ssn\\"], make those fields nullable, or disable subscriptions for \\"Post\\" (setting level to off or public)."`;
 
 exports[`generates field resolver for other provider rules even if private removes all provided-related rules 1`] = `
 "## [Start] Field Authorization Steps. **
@@ -85,7 +81,7 @@ exports[`generates field resolver for other provider rules even if private remov
 #if( $operation == \\"Mutation\\" )
   $util.toJson(null)
 #else
-  $util.toJson($context.source[\\"ssn\\"])
+  $util.toJson($context.source.ssn)
 #end
 ## [End] Checking for allowed operations which can return this field. **"
 `;
@@ -257,7 +253,7 @@ exports[`with identity claim feature flag disabled does not generate field resol
 #if( $operation == \\"Mutation\\" )
   $util.toJson(null)
 #else
-  $util.toJson($context.source[\\"ssn\\"])
+  $util.toJson($context.source.ssn)
 #end
 ## [End] Checking for allowed operations which can return this field. **"
 `;
@@ -298,7 +294,7 @@ exports[`with identity claim feature flag disabled generates field resolver for 
 #if( $operation == \\"Mutation\\" )
   $util.toJson(null)
 #else
-  $util.toJson($context.source[\\"ssn\\"])
+  $util.toJson($context.source.ssn)
 #end
 ## [End] Checking for allowed operations which can return this field. **"
 `;

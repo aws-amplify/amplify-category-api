@@ -26,10 +26,6 @@ import {
 } from '../cognitoUtils';
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
-import { resolveTestRegion } from '../testSetup';
-
-const AWS_REGION = resolveTestRegion();
-
 // To overcome of the way of how AmplifyJS picks up currentUserCredentials
 const anyAWS = AWS as any;
 if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
@@ -38,6 +34,7 @@ if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
 
 // tslint:disable: no-magic-numbers
 jest.setTimeout(60000 * 60);
+const AWS_REGION = 'us-west-2';
 
 const cf = new CloudFormationClient(AWS_REGION);
 const customS3Client = new S3Client(AWS_REGION);

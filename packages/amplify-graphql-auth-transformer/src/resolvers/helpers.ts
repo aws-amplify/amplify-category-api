@@ -168,23 +168,19 @@ export const iamExpression = (
 /**
  * Creates iam admin role check helper
  */
-export const iamAdminRoleCheckExpression = (adminRoles: Array<string>, fieldName?: string, adminCheckExpression?: Expression): Expression => {
-  const returnStatement = fieldName ? raw(`#return($context.source.${fieldName})`) : raw('#return($util.toJson({}))');
-  const fullReturnExpression = adminCheckExpression ? compoundExpression([ adminCheckExpression, returnStatement ]) : returnStatement;
-  return compoundExpression([
-    set(ref('adminRoles'), raw(JSON.stringify(adminRoles))),
-    forEach(/* for */ ref('adminRole'), /* in */ ref('adminRoles'), [
-      iff(
-        and([
-          methodCall(ref('ctx.identity.userArn.contains'), ref('adminRole')),
-          notEquals(ref('ctx.identity.userArn'), ref('ctx.stash.authRole')),
-          notEquals(ref('ctx.identity.userArn'), ref('ctx.stash.unauthRole')),
-        ]),
-        fullReturnExpression
-      ),
-    ]),
-  ])
-};
+export const iamAdminRoleCheckExpression = (adminRoles: Array<string>, fieldName?: string): Expression => compoundExpression([
+  set(ref('adminRoles'), raw(JSON.stringify(adminRoles))),
+  forEach(/* for */ ref('adminRole'), /* in */ ref('adminRoles'), [
+    iff(
+      and([
+        methodCall(ref('ctx.identity.userArn.contains'), ref('adminRole')),
+        notEquals(ref('ctx.identity.userArn'), ref('ctx.stash.authRole')),
+        notEquals(ref('ctx.identity.userArn'), ref('ctx.stash.unauthRole')),
+      ]),
+      fieldName ? raw(`#return($context.source.${fieldName})`) : raw('#return($util.toJson({}))'),
+    ),
+  ]),
+]);
 
 /**
  * Creates generate auth request helper

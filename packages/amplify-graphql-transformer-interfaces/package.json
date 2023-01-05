@@ -23,8 +23,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rimraf ./lib",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "clean": "rimraf ./lib"
   },
   "dependencies": {
     "@aws-cdk/aws-appsync": "~1.172.0",

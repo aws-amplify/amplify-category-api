@@ -27,10 +27,6 @@ import { S3Client } from '../S3Client';
 // to deal with subscriptions in node env
 (global as any).WebSocket = require('ws');
 
-import { resolveTestRegion } from '../testSetup';
-
-const AWS_REGION = resolveTestRegion();
-
 // To overcome of the way of how AmplifyJS picks up currentUserCredentials
 const anyAWS = AWS as any;
 if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
@@ -52,6 +48,7 @@ function outputValueSelector(key: string) {
   };
 }
 
+const AWS_REGION = 'us-west-2';
 const cf = new CloudFormationClient(AWS_REGION);
 const customS3Client = new S3Client(AWS_REGION);
 const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: AWS_REGION });

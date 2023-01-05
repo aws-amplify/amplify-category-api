@@ -458,11 +458,10 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
     throw new Error(`Could not find datasource with name ${dataSourceName} in context.`);
   }
 
-  const resolverResourceId = ResolverResourceIDs.ResolverResourceID(queryTypeName, queryField);
   const resolver = ctx.resolvers.generateQueryResolver(
     queryTypeName,
     queryField,
-    resolverResourceId,
+    ResolverResourceIDs.ResolverResourceID(queryTypeName, queryField),
     dataSource as DataSourceProvider,
     MappingTemplate.s3MappingTemplateFromString(
       print(
@@ -538,8 +537,7 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
       `${queryTypeName}.${queryField}.{slotName}.{slotIndex}.res.vtl`,
     ),
   );
-
-  resolver.mapToStack(ctx.stackManager.getStackFor(resolverResourceId, table.stack.node.id));
+  resolver.mapToStack(table.stack);
   ctx.resolvers.addResolver(object.name.value, queryField, resolver);
 }
 

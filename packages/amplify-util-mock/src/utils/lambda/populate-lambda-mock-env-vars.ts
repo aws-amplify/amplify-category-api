@@ -1,11 +1,9 @@
-import {
-  $TSContext, AmplifyCategories, pathManager, stateManager,
-} from 'amplify-cli-core';
+import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
+import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
 import { loadConfigurationForEnv, resolveAppId } from 'amplify-provider-awscloudformation';
-import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';
 
 /**
  * Appends default labmda environment variables to the environment property of the processedLambda
@@ -15,14 +13,16 @@ import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';
 export const populateLambdaMockEnvVars = async (context: $TSContext, processedLambda: ProcessedLambdaFunction) => {
   processedLambda.environment = (
     await Promise.all(
-      [getAwsCredentials, getStaticDefaults, getDynamicDefaults, getDotEnvValues].map((envVarGetter) => envVarGetter(processedLambda, context)),
+      [getAwsCredentials, getStaticDefaults, getDynamicDefaults, getDotEnvValues].map(envVarGetter =>
+        envVarGetter(processedLambda, context),
+      ),
     )
   ).reduce((acc, it) => ({ ...acc, ...it }), processedLambda.environment);
 };
 
 const getAwsCredentials = async (_, context: $TSContext): Promise<Record<string, string>> => {
   const env = stateManager.getLocalEnvInfo().envName;
-  let appId: string | undefined;
+  let appId: string | undefined = undefined;
   try {
     appId = resolveAppId(context);
   } catch {
@@ -48,10 +48,11 @@ const getStaticDefaults = (): Record<string, string> => ({
 });
 
 const getDynamicDefaults = (processedLambda: ProcessedLambdaFunction): Record<string, string> => {
-  const meta = stateManager.getMeta();
-  const region = meta?.providers?.awscloudformation?.Region;
+  const env = stateManager.getLocalEnvInfo().envName;
+  const teamProvider = stateManager.getTeamProviderInfo();
+  const region = _.get(teamProvider, [env, 'awscloudformation', 'Region']);
   // This isn't exactly in parity with what the path will be when deployed but we don't have a good mechanism for getting a better value
-  const lambdaPath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.FUNCTION, processedLambda.name);
+  const lambdaPath = path.join(pathManager.getBackendDirPath(), 'function', processedLambda.name);
 
   return {
     _HANDLER: processedLambda.handler,
@@ -64,11 +65,7 @@ const getDynamicDefaults = (processedLambda: ProcessedLambdaFunction): Record<st
 
 const getDotEnvValues = (processedLambda: ProcessedLambdaFunction): Record<string, string> => {
   try {
-    const result = dotenv.config({
-      path: path.join(
-        pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.FUNCTION, processedLambda.name), '.env',
-      ),
-    });
+    const result = dotenv.config({ path: path.join(pathManager.getBackendDirPath(), 'function', processedLambda.name, '.env') });
     if (result.error) {
       throw result.error;
     }
