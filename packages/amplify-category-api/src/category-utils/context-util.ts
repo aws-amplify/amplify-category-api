@@ -73,6 +73,22 @@ export class ContextUtil {
     this.resourceDir = resourceDir;
     return resourceDir;
   }
+
+  getGraphQLAPIResourceName = async (
+    context: $TSContext,
+  ): Promise<string> => {
+    const { allResources } = await context.amplify.getResourceStatus(AmplifyCategories.API);
+    const resources = allResources.filter((resource) => resource.service === APPSYNC_RESOURCE_SERVICE);
+    if (resources.length > 0) {
+      const resource = resources[0];
+      if (resource.providerPlugin !== PROVIDER_NAME) {
+        return undefined;
+      }
+      const { resourceName } = resource;
+      return resourceName;
+    }
+    return undefined;
+  }
 }
 
 export const contextUtil = new ContextUtil();
