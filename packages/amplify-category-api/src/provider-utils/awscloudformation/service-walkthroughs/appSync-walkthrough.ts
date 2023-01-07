@@ -1,9 +1,5 @@
 import { Duration, Expiration } from '@aws-cdk/core';
 import {
-  AppSyncClient,
-  ListApiKeysCommand,
-} from '@aws-sdk/client-appsync';
-import {
   $TSContext,
   $TSObject,
   exitOnNextTick,
@@ -403,7 +399,7 @@ const updateApiInputWalkthrough = async (context: $TSContext, project: $TSObject
     resolverConfig = await askResolverConflictHandlerQuestion(context, modelTypes);
   }
   else if (updateOption === 'API_KEY_EXTENSION') {
-    apiKeyExtension = await askApiKeyExtension(context);
+    apiKeyExtension = await askApiKeyExtension();
   }
 
   return {
@@ -517,7 +513,9 @@ export const updateWalkthrough = async (context: $TSContext): Promise<UpdateApiR
           ? authConfig.additionalAuthenticationProviders.map(authConfigToAppSyncAuthType)
           : undefined,
       conflictResolution: resolverConfigToConflictResolution(resolverConfig),
-      apiKeyExpiration: apiKeyExtension,
+      apiKeyExpiration: {
+        days: apiKeyExtension,
+      },
     },
   };
 };
