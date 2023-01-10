@@ -12,6 +12,11 @@ const DEFAULT_DB_INSTANCE_TYPE = "db.m5.large";
 const DEFAULT_DB_STORAGE = 8;
 const DEFAULT_SECURITY_GROUP = "default";
 
+/**
+ * Creates a new RDS instance using the given input configuration and returns the details of the created RDS instance.
+ * @param config Configuration of the database instance
+ * @returns EndPoint address, port and database name of the created RDS instance.
+ */
 export const createRDSInstance = async (config: {
   identifier: string,
   engine: 'mysql',
@@ -21,7 +26,7 @@ export const createRDSInstance = async (config: {
   region: string,
   instanceClass?: string,
   storage?: number,
-}) => {
+}): Promise<{endpoint: string, port: number, dbName: string}> => {
   const client = new RDSClient({ region: config.region });
   const params = {
     /** input parameters */
@@ -59,17 +64,22 @@ export const createRDSInstance = async (config: {
     }
 
     return {
-      endpoint: dbInstance.Endpoint.Address,
-      port: dbInstance.Endpoint.Port,
-      dbName: dbInstance.DBName,
+      endpoint: dbInstance.Endpoint.Address as string,
+      port: dbInstance.Endpoint.Port as number,
+      dbName: dbInstance.DBName as string,
     };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     throw new Error("Error in creating RDS instance.");
   }
 };
 
-export const deleteDBInstance = async (identifier: string, region: string) => {
+/**
+ * Deletes the given RDS instance
+ * @param identifier RDS Instance identifier to delete
+ * @param region RDS Instance region
+ */
+export const deleteDBInstance = async (identifier: string, region: string): Promise<void> => {
   const client = new RDSClient({ region });
   const params = {
     "DBInstanceIdentifier": identifier,
@@ -100,12 +110,16 @@ export const deleteDBInstance = async (identifier: string, region: string) => {
   }  
 };
 
+/**
+ * Adds the given inbound rule to the security group.
+ * @param config Inbound rule configuration
+ */
 export const addRDSPortInboundRule = async (config: {
   region: string,
   port: number,
   securityGroup?: string,
   cidrIp: string,
-}) => {
+}): Promise<void> => {
   const ec2_client = new EC2Client({
     region: config.region,
   });
@@ -127,12 +141,16 @@ export const addRDSPortInboundRule = async (config: {
   } 
 };
 
+/**
+ * Removes the given Inbound rule to the security group
+ * @param config Inbound rule configuration
+ */
 export const removeRDSPortInboundRule = async (config: {
   region: string,
   port: number,
   securityGroup?: string,
   cidrIp: string,
-}) => {
+}): Promise<void> => {
   const ec2_client = new EC2Client({
     region: config.region,
   });
