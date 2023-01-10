@@ -58,6 +58,7 @@ import { createSearchableDomain, createSearchableDomainRole } from './cdk/create
 import { createSearchableDataSource } from './cdk/create-searchable-datasource';
 import { createEventSourceMapping, createLambda, createLambdaRole } from './cdk/create-streaming-lambda';
 import { createStackOutputs } from './cdk/create-cfnOutput';
+import { shouldEnableNodeToNodeEncryption } from './nodeToNodeEncryption';
 
 const nonKeywordTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSDate', 'AWSDateTime'];
 const STACK_NAME = 'SearchableStack';
@@ -258,7 +259,8 @@ const generateSearchableInputs = (ctx: TransformerSchemaVisitStepContextProvider
 export class SearchableModelTransformer extends TransformerPluginBase {
   searchableObjectTypeDefinitions: { node: ObjectTypeDefinitionNode; fieldName: string }[];
   searchableObjectNames: string[];
-  constructor() {
+
+  constructor(private apiName?: string) {
     super(
       'amplify-searchable-transformer',
       /* GraphQL */ `
@@ -295,7 +297,9 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     const parameterMap = createParametersInStack(context.stackManager.rootStack);
 
-    const domain = createSearchableDomain(stack, parameterMap, context.api.apiId);
+    const nodeToNodeEncryption = this.apiName ? shouldEnableNodeToNodeEncryption(this.apiName) : false;
+
+    const domain = createSearchableDomain(stack, parameterMap, context.api.apiId, nodeToNodeEncryption);
 
     const openSearchRole = createSearchableDomainRole(context, stack, parameterMap);
 
