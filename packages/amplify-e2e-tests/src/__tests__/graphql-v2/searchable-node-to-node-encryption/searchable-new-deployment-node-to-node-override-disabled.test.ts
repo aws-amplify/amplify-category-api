@@ -49,7 +49,8 @@ describe('searchable deployments succeed with various NodeToNodeEncryption flag 
     const searchableStack = JSON.parse(fs.readFileSync(searchableStackPath).toString());
     const searchDomainProps = searchableStack.Resources.OpenSearchDomain.Properties;
 
-    expect(searchDomainProps).not.toHaveProperty('NodeToNodeEncryptionOptions');
+    expect(searchDomainProps).toHaveProperty('NodeToNodeEncryptionOptions');
+    expect(searchDomainProps.NodeToNodeEncryptionOptions.Enabled).toEqual(false);
   });
 
   const getAppSyncClientFromProj = (projRoot: string) => {

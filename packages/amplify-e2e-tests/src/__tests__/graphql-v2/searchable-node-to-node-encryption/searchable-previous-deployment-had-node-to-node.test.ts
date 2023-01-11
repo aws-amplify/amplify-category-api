@@ -6,6 +6,7 @@ import {
   addAuthWithDefault,
   setTransformConfigValue,
   removeTransformConfigValue,
+  amplifyPushUpdate,
 } from 'amplify-category-api-e2e-core';
 import { addApiWithoutSchema, updateApiSchema, getProjectMeta } from 'amplify-category-api-e2e-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
@@ -58,7 +59,7 @@ describe('searchable deployment when previous deployed state had node to node en
 
     // Subsequent deploy without flag set
     removeTransformConfigValue(projRoot, projectName, 'NodeToNodeEncryption');
-    await amplifyPush(projRoot);
+    await amplifyPushUpdate(projRoot);
 
     appSyncClient = getAppSyncClientFromProj(projRoot);
     await runAndValidateQuery('test1', 'test1', 10, 2); // Expect two records

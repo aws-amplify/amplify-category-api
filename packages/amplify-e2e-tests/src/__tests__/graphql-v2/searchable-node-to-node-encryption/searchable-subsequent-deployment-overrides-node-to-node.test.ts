@@ -5,7 +5,7 @@ import {
   createRandomName,
   addAuthWithDefault,
   setTransformConfigValue,
-  removeTransformConfigValue,
+  amplifyPushUpdate,
 } from 'amplify-category-api-e2e-core';
 import { addApiWithoutSchema, updateApiSchema, getProjectMeta } from 'amplify-category-api-e2e-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
@@ -52,11 +52,12 @@ describe('searchable deployment user flag overrides previous deployment state', 
     const searchableStackFirstDeploy = JSON.parse(fs.readFileSync(searchableStackPath).toString());
     const searchDomainPropsFirstDeploy = searchableStackFirstDeploy.Resources.OpenSearchDomain.Properties;
 
-    expect(searchDomainPropsFirstDeploy).not.toHaveProperty('NodeToNodeEncryptionOptions');
+    expect(searchDomainPropsFirstDeploy).toHaveProperty('NodeToNodeEncryptionOptions');
+    expect(searchDomainPropsFirstDeploy.NodeToNodeEncryptionOptions.Enabled).toEqual(false);
 
-    // Subsequent deploy with flag set
+    // Subsequent deploy with flag set to true
     setTransformConfigValue(projRoot, projectName, 'NodeToNodeEncryption', true);
-    await amplifyPush(projRoot);
+    await amplifyPushUpdate(projRoot);
 
     appSyncClient = getAppSyncClientFromProj(projRoot);
     await runAndValidateQuery('test1', 'test1', 10, 2); // Expect two records
