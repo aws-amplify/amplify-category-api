@@ -1,12 +1,12 @@
 import {
   DeploymentResources,
   GraphQLTransform,
-  OverrideConfig,
-  ResolverConfig,
-  Template,
-  TransformerProjectConfig,
 } from '@aws-amplify/graphql-transformer-core';
-import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  AppSyncAuthConfigurationAPIKeyEntry,
+  AppSyncAuthConfigurationEntry,
+  AppSyncAuthConfiguration,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import {
   $TSContext,
   AmplifyCategories,
@@ -22,18 +22,16 @@ import {
 } from 'graphql-transformer-core';
 import _ from 'lodash';
 import path from 'path';
-/* eslint-disable-next-line import/no-cycle */
-import { searchablePushChecks } from './api-utils';
+import { AuthorizationType } from '@aws-cdk/aws-appsync';
 import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import { isAuthModeUpdated } from './auth-mode-compare';
-import { showSandboxModePrompts } from './sandbox-mode-helpers';
 import { parseUserDefinedSlots } from './user-defined-slots';
 import {
   mergeUserConfigWithTransformOutput, writeDeploymentToDisk,
 } from './utils';
 import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerFactoryArgs, TransformerProjectOptions } from './transformer-options-types';
-import { ProjectOptions } from './transform-config';
+import { getApiKeyStatus } from '../provider-utils/awscloudformation/utils/manage-api-key';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
@@ -191,6 +189,20 @@ const buildAPIProject = async (
   }
 
   const builtProject = await _buildProject(opts);
+  const apiKeyEntry: AppSyncAuthConfigurationAPIKeyEntry = [
+    opts.authConfig.defaultAuthentication, ...opts.authConfig.additionalAuthenticationProviders,
+  ].find(
+    (mode: AppSyncAuthConfigurationEntry) => mode.authenticationType === AuthorizationType.API_KEY && mode.apiKeyConfig,
+  ) as AppSyncAuthConfigurationAPIKeyEntry;
+  const config = apiKeyEntry?.apiKeyConfig;
+  const apiKeyId = `${(config as any)?.name || 'Default'}ApiKey`;
+  const properties = builtProject.rootStack.Resources?.[apiKeyId]?.Properties;
+  const apiKeyStatus = await getApiKeyStatus(context);
+  if (properties.Expires) {
+    if (apiKeyStatus.exists && apiKeyStatus.expiration > properties.Expires) {
+      properties.Expires = apiKeyStatus.expiration;
+    }
+  }
 
   const buildLocation = path.join(opts.projectDirectory, 'build');
   const currentCloudLocation = opts.currentCloudBackendDirectory ? path.join(opts.currentCloudBackendDirectory, 'build') : undefined;
