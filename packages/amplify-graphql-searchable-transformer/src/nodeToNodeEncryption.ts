@@ -53,7 +53,7 @@ const getCurrentCloudBackendStackFiles = (apiName: string): any[] => {
 };
 
 /**
- * Given a Stack file, determine whether or not NodeToNodeEncryption is defined in a search domain.
+ * Given a Stack file, determine whether or not NodeToNodeEncryption is defined in a search domain
  * @param stackDefinition the stack to inspect
  * @returns whether or not NodeToNodeEncryption was found, else false
  */

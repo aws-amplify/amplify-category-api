@@ -9,7 +9,6 @@ const FUNCTION_DIRECTIVE_STACK = 'FunctionDirectiveStack';
 
 export class FunctionTransformer extends Transformer {
   constructor() {
-    // TODO remove once prettier is upgraded
     // prettier-ignore
     super(
       'FunctionTransformer',
