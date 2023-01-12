@@ -38,7 +38,9 @@ const warnOnExistingNodeToNodeEncryption = (doesExistingBackendHaveNodeToNodeEnc
     return;
   }
 
-  printer.warn('NodeToNodeEncryption is enabled for this Search Domain, disabling this flag, or reverting to Amplify CLI <= 10.5.2 will result in this being disabled, which will trigger a rebuild of the Search Index, triggering a necessary backfill https://docs.amplify.aws/cli/graphql/troubleshooting/#backfill-opensearch-index-from-dynamodb-table');
+  printer.warn(`
+NodeToNodeEncryption is enabled for this Search Domain, disabling this flag or reverting to Amplify CLI <= 10.5.2 will result in this being disabled, triggering a rebuild of the Search Index. To backfill your search domain see https://docs.amplify.aws/cli/graphql/troubleshooting/#backfill-opensearch-index-from-dynamodb-table.
+`);
 };
 
 const getCurrentCloudBackendStackFiles = (apiName: string): any[] => {

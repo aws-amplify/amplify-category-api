@@ -44,7 +44,7 @@ describe('searchable deployment when previous deployed state had node to node en
 
     const searchableStackPath = path.join(projRoot, 'amplify', 'backend', 'api', projectName, 'build', 'stacks', 'SearchableStack.json');
 
-    // Initial Deploy with flag explicitly set
+    // Initial Deploy with flag explicitly set to true
     setTransformConfigValue(projRoot, projectName, 'NodeToNodeEncryption', true);
     await amplifyPush(projRoot);
 
