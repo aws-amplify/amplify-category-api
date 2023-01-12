@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.2...@aws-amplify/amplify-category-api@4.1.3) (2023-01-12)
+
+### Bug Fixes
+
+- disable searchable nodeToNode encryption unless it is already deployed to mitigate impact from enabling or disabling. ([#1152](https://github.com/aws-amplify/amplify-category-api/issues/1152)) ([4a1c360](https://github.com/aws-amplify/amplify-category-api/commit/4a1c36091cff6162b4803651b72ed03c594c01dc))
+
+### Reverts
+
+- remove bracket check since it's causing customer issues in hosting ([44d6e89](https://github.com/aws-amplify/amplify-category-api/commit/44d6e8904b2698581bfd88b092587d00cbda50b7))
+
 ## [4.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.1...@aws-amplify/amplify-category-api@4.1.2) (2022-12-13)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api
