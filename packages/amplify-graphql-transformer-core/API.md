@@ -336,11 +336,6 @@ export class InputObjectDefinitionWrapper {
 }
 
 // @public (undocumented)
-export class InvalidBracketsError extends Error {
-    constructor(message: string);
-}
-
-// @public (undocumented)
 export class InvalidDirectiveError extends Error {
     constructor(message: string);
 }
