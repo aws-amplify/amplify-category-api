@@ -982,8 +982,31 @@ export async function validateRestApiMeta(projRoot: string, meta?: any) {
   expect(seenAtLeastOneFunc).toBe(true);
 }
 
-export function setStackMapping(projRoot: string, projectName: string, stackMapping: Record<string, string>) {
-  const transformConfig = getTransformConfig(projRoot, projectName);
-  transformConfig.StackMapping = stackMapping;
-  setTransformConfig(projRoot, projectName, transformConfig);
+export function setStackMapping(projRoot: string, apiName: string, stackMapping: Record<string, string>) {
+  setTransformConfigValue(projRoot, apiName, 'StackMapping', stackMapping);
 }
+
+/**
+ * Set a specific key in the `transform.conf.json` file.
+ * @param projRoot root directory for the project
+ * @param apiName the name of the api to modify
+ * @param key the key in the transform.conf.json value
+ * @param value the value to set in the file
+ */
+export const setTransformConfigValue = (projRoot: string, apiName: string, key: string, value: any): void => {
+  const transformConfig = getTransformConfig(projRoot, apiName);
+  transformConfig[key] = value;
+  setTransformConfig(projRoot, apiName, transformConfig);
+};
+
+/**
+ * Remove a specified key from the `transform.conf.json` file.
+ * @param projRoot root directory for the project
+ * @param apiName the name of the api to modify
+ * @param key the key in the transform.conf.json value
+ */
+export const removeTransformConfigValue = (projRoot: string, apiName: string, key: string): void => {
+  const transformConfig = getTransformConfig(projRoot, apiName);
+  delete transformConfig[key];
+  setTransformConfig(projRoot, apiName, transformConfig);
+};

@@ -4,20 +4,12 @@ import chalk from 'chalk';
 import { $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { parse } from 'graphql';
-import { InvalidBracketsError } from '@aws-amplify/graphql-transformer-core';
 import { hasApiKey } from './api-key-helpers';
 
 const AMPLIFY = 'AMPLIFY';
 const AUTHORIZATION_RULE = 'AuthRule';
 const ALLOW = 'allow';
 const PUBLIC = 'public';
-
-interface BracketCheckParameters {
-  consecutiveQuotes: number,
-  checkStatus: boolean,
-  multilineComment: boolean
-  stringMode: boolean
-}
 
 // eslint-disable-next-line consistent-return
 export async function showSandboxModePrompts(context: $TSContext): Promise<any> {
@@ -49,83 +41,7 @@ function matchesGlobalAuth(field: any): boolean {
   return ['global_auth_rule', 'globalAuthRule'].includes(field.name.value);
 }
 
-function toggleBracketCheck(c: string, consecutiveQuotes: number, checkStatus: boolean, multilineComment: boolean, stringMode: boolean)
-  : BracketCheckParameters {
-  let [quoteCount, check, multiLine, str] = [consecutiveQuotes, checkStatus, multilineComment, stringMode];
-  switch (c) {
-    case '"':
-      quoteCount++;
-      if (quoteCount >= 3 && check) {
-        quoteCount = 0;
-        check = false;
-        multiLine = true;
-      } else if (quoteCount >= 3) {
-        check = true;
-        multiLine = false;
-      } else if ((quoteCount === 2 || (quoteCount === 1 && str)) && !multiLine) {
-        check = true;
-        str = false;
-      } else if (quoteCount === 1 && !multiLine) {
-        check = false;
-        str = true;
-      }
-      break;
-    case '#':
-      if (!multiLine && !str) check = false; break;
-    case '\n':
-      if (!multiLine) check = true; break;
-    default: quoteCount = 0; break;
-  }
-  return {
-    consecutiveQuotes: quoteCount, checkStatus: check, multilineComment: multiLine, stringMode: str,
-  };
-}
-
-function bracketCheck(schema: string): void {
-  const stack = [];
-  let consecutiveQuotes = 0;
-  let multilineComment = false;
-  let checkStatus = true;
-  let stringMode = false;
-  const inverseBrackets = { '{': '}', '[': ']', '(': ')' };
-  let currentLine = 1;
-  for (let i = 0; i < schema.length; i++) {
-    const c = schema.charAt(i);
-    const bracketCheckParams = toggleBracketCheck(c, consecutiveQuotes, checkStatus, multilineComment, stringMode);
-    consecutiveQuotes = bracketCheckParams.consecutiveQuotes;
-    checkStatus = bracketCheckParams.checkStatus;
-    multilineComment = bracketCheckParams.multilineComment;
-    stringMode = bracketCheckParams.stringMode;
-    if (c === '\n') currentLine++;
-    if (checkStatus) {
-      switch (c) {
-        case '(':
-        case '[':
-        case '{':
-          stack.push([inverseBrackets[c], currentLine]);
-          break;
-        case ')':
-        case ']':
-        case '}': {
-          const popped = stack.pop();
-          if (c !== (popped ? popped[0] : null)) {
-            throw new InvalidBracketsError(`Syntax Error: mismatched brackets found in the schema. Unexpected ${c} at line ${currentLine} in the schema.`);
-          }
-          break;
-        }
-        default:
-          break;
-      }
-    }
-  }
-  if (stack.length) {
-    const popped = stack.pop();
-    throw new InvalidBracketsError(`Syntax Error: mismatched brackets found in the schema. Missing ${popped[0]} for opening bracket at line ${popped[1]} in the schema.`);
-  }
-}
-
 export function schemaHasSandboxModeEnabled(schema: string, docLink: string): boolean {
-  bracketCheck(schema);
   const { definitions } = parse(schema);
   const amplifyInputType: any = definitions.find((d: any) => d.kind === 'InputObjectTypeDefinition' && d.name.value === AMPLIFY);
   if (!amplifyInputType) {

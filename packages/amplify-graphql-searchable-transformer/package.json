@@ -24,7 +24,8 @@
     "build": "tsc && cd streaming-lambda && bestzip --force node ../lib/streaming-lambda.zip python_streaming_function.py",
     "watch": "tsc -w",
     "clean": "rimraf ./lib",
-    "test": "jest"
+    "test": "jest",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "@aws-amplify/graphql-model-transformer": "0.16.4",
@@ -44,6 +45,10 @@
   "devDependencies": {
     "@aws-cdk/assert": "~1.172.0",
     "@types/node": "^12.12.6"
+  },
+  "peerDependencies": {
+    "amplify-cli-core": "^3.0.0",
+    "amplify-prompts": "^2.0.1"
   },
   "jest": {
     "transform": {

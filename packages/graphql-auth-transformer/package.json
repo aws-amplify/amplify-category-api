@@ -20,7 +20,8 @@
     "test": "jest",
     "build": "tsc",
     "clean": "rimraf ./lib",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "graphql": "^14.5.8",
