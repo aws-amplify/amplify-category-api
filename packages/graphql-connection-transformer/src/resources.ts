@@ -41,7 +41,7 @@ export class ResourceFactory {
   }
 
   /**
-   * Creates the barebones template for an application.
+   * Creates the barebones template for an application
    */
   public initTemplate(): Template {
     return {

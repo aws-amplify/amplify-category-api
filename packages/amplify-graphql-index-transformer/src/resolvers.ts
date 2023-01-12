@@ -56,7 +56,7 @@ const API_KEY = 'API Key Authorization';
  * replaceDdbPrimaryKey
  */
 export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
-  // Replace the table's primary key with the value from @primaryKey.
+  // Replace the table's primary key with the value from @primaryKey
   const { field, object } = config;
   const table = getTable(ctx, object) as any;
   const cfnTable = table.table;

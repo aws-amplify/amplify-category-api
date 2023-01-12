@@ -7,7 +7,7 @@ const log = require('logdown')('dynamodb-emulator');
 const execa = require('execa');
 const { pathManager } = require('amplify-cli-core');
 
-// random port I chose in the ephemeral range.
+// random port I chose in the ephemeral range
 const basePort = 62224;
 
 const defaultOptions = {

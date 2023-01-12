@@ -1,6 +1,9 @@
 import { parseValue } from 'graphql';
 import { defaultProviderMap } from '../auth';
 
+/**
+ * Create a graphql name node given a name value
+ */
 export function createNameNode(name: any) {
   return {
     kind: 'Name',
