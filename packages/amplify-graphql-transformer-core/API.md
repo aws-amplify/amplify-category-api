@@ -504,6 +504,8 @@ export interface Template {
 // @public (undocumented)
 export interface TransformConfig {
     // (undocumented)
+    NodeToNodeEncryption?: boolean;
+    // (undocumented)
     StackMapping?: {
         [resourceId: string]: string;
     };
