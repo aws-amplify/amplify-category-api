@@ -10,7 +10,7 @@ function getAuthConfigForCompare(options) {
     return {};
   }
 
-  // Deep copy the authConfig for comparision
+  // Deep copy the authConfig for comparison
   let authConfig = _.cloneDeep(options.authConfig);
   let previousAuthConfig = _.cloneDeep(options.previousAuthConfig);
 
