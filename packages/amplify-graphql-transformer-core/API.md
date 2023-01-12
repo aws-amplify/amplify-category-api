@@ -327,11 +327,6 @@ export class InputObjectDefinitionWrapper {
 }
 
 // @public (undocumented)
-export class InvalidBracketsError extends Error {
-    constructor(message: string);
-}
-
-// @public (undocumented)
 export class InvalidDirectiveError extends Error {
     constructor(message: string);
 }
@@ -473,6 +468,8 @@ export { SyncUtils }
 
 // @public (undocumented)
 export interface TransformConfig {
+    // (undocumented)
+    NodeToNodeEncryption?: boolean;
     // (undocumented)
     StackMapping?: {
         [resourceId: string]: string;

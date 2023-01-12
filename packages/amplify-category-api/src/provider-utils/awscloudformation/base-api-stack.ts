@@ -19,7 +19,7 @@ const PIPELINE_AWAITER_ZIP = 'custom-resource-pipeline-awaiter.zip';
 
 export enum DEPLOYMENT_MECHANISM {
   /**
-   * on every amplify push
+   * on every amplify push.
    */
   FULLY_MANAGED = 'FULLY_MANAGED',
   /**

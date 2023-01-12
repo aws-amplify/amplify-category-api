@@ -17,7 +17,7 @@ export const run = async (globalConfig, config, environment, runtime, testPath) 
       // This prevents the jest process from exiting without being forced.
       // Exiting here as a workaround, only on windows.
       // A timeout is used to give Jest time to render the list of passed/failed tests.
-      // See https://github.com/microsoft/node-pty/issues/437
+      // See https://github.com/microsoft/node-pty/issues/437.
       process.exit(result.numFailingTests !== 0);
     }
   }, 1000);

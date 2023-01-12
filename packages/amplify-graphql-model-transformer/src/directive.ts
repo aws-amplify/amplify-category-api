@@ -11,7 +11,7 @@ export enum SubscriptionLevel {
 }
 
 /**
- * ModelDirectiveConfiguration
+ * ModelDirectiveConfiguration.
  */
 export type ModelDirectiveConfiguration = {
   queries?: Partial<{

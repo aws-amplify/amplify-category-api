@@ -133,7 +133,7 @@ export class HttpTransformer extends TransformerPluginBase {
       params = params.map(p => p.replace(':', ''));
 
       // If there are URL parameters, remove them from the array used to
-      // create the query and body types.
+      // create the query and body types
       args.queryAndBodyArgs = args.queryAndBodyArgs.filter(arg => {
         return isScalar(arg.type) && !(params as string[]).includes(arg.name.value);
       });

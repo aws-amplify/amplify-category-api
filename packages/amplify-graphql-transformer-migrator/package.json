@@ -31,7 +31,7 @@
     "fs-extra": "^8.1.0",
     "glob": "^7.2.0",
     "graphql": "^14.5.8",
-    "graphql-transformer-common": "4.24.1-beta.2",
+    "graphql-transformer-common": "4.24.3",
     "lodash": "^4.17.21"
   },
   "peerDependencies": {

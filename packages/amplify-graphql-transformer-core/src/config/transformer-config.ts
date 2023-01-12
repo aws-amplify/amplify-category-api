@@ -65,4 +65,9 @@ export interface TransformConfig {
 
   // Custom transformer plugins
   transformers?: string[];
+
+  /**
+   * Override NodeToNodeEncryption parameter on Search Domain
+   */
+  NodeToNodeEncryption?: boolean;
 }

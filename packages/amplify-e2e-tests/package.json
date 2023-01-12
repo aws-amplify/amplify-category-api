@@ -26,7 +26,7 @@
   "dependencies": {
     "@aws-amplify/graphql-transformer-core": "1.1.0-beta.3",
     "amplify-app": "4.3.4-beta.4",
-    "amplify-category-api-e2e-core": "4.0.9-beta.3",
+    "amplify-category-api-e2e-core": "4.0.14",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1113.0",
