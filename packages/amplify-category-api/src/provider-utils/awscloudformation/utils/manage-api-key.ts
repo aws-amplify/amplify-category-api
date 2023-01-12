@@ -1,5 +1,6 @@
 import { $TSContext, stateManager } from 'amplify-cli-core';
 import { AppSyncClient, ListApiKeysCommand, UpdateApiKeyCommand } from '@aws-sdk/client-appsync';
+import { loadConfigurationForEnv } from 'amplify-provider-awscloudformation';
 import { contextUtil } from '../../../category-utils/context-util';
 
 const SECONDS_PER_DAY = 86400;
@@ -13,7 +14,8 @@ export interface ApiKeyStatus {
 }
 
 const getAppSyncClient = async (context: $TSContext): Promise<AppSyncClient> => {
-  const credentials = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'retrieveAwsConfig');
+  // const credentials = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'retrieveAwsConfig');
+  const credentials = await loadConfigurationForEnv(context, stateManager.getCurrentEnvName());
   return new AppSyncClient({
     credentials: {
       accessKeyId: credentials.accessKeyId,

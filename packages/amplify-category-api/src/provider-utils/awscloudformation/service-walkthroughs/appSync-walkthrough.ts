@@ -374,7 +374,7 @@ const updateApiInputWalkthrough = async (context: $TSContext, project: $TSObject
 
   if (hasAPIKey()) {
     updateChoices.push({
-      name: `{bold Extend API key expiration:} `,
+      name: 'Extend API key expiration: ',
       value: 'API_KEY_EXTENSION',
     });
   }
@@ -405,7 +405,7 @@ const updateApiInputWalkthrough = async (context: $TSContext, project: $TSObject
   return {
     authConfig,
     resolverConfig,
-    apiKeyExtension
+    apiKeyExtension,
   };
 };
 
