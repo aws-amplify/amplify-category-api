@@ -68,7 +68,7 @@ export class VersionedModelTransformer extends Transformer {
   };
 
   /**
-   * Set the "version"  to 1.
+   * Set the "version"  to 1
    * @param ctx
    * @param versionField
    * @param versionInput

@@ -20,7 +20,7 @@ export class MapsToTransformer extends TransformerPluginBase {
   }
 
   /**
-   * During the AST tree walking, the mapsTo transformer registers any renamed models with the ctx.resourceHelper
+   * During the AST tree walking, the mapsTo transformer registers any renamed models with the ctx.resourceHelper.
    */
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider) => {
     updateTypeMapping(definition, directive, ctx.inputDocument, ctx.resourceHelper.setModelNameMapping);

@@ -7,7 +7,7 @@ import { amplifyConfigure as configure, isCI, installAmplifyCLI, injectSessionTo
  */
 
 async function setupAmplify(version: string = 'latest') {
-  // install CLI to be used for migration test initial project
+  // install CLI to be used for migration test initial project.
   await installAmplifyCLI(version);
 
   console.log("INSTALLED CLI:", version);

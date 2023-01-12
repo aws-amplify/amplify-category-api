@@ -110,7 +110,7 @@ import { showDefaultIdentityClaimWarning, showOwnerCanReassignWarning, showOwner
 /**
  * util to get allowed roles for field
  * if we have a rule like cognito private we can remove all other related roles from the field since it has top level
- * access by the provider
+ * access by the provider.
  */
 const getReadRolesForField = (acm: AccessControlMatrix, readRoles: Array<string>, fieldName: string): Array<string> => {
   const hasCognitoPrivateRole = readRoles.some((r) => r === 'userPools:private')
