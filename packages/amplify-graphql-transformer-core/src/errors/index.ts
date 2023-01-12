@@ -110,13 +110,3 @@ export class UnknownDirectiveError extends Error {
     }
   }
 }
-export class InvalidBracketsError extends Error {
-  constructor(message: string) {
-    super(message);
-    Object.setPrototypeOf(this, InvalidBracketsError.prototype);
-    this.name = 'InvalidBracketsError';
-    if ((Error as any).captureStackTrace) {
-      (Error as any).captureStackTrace(this, InvalidBracketsError);
-    }
-  }
-}
