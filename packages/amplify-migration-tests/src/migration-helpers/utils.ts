@@ -15,7 +15,7 @@ import {
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import { Writable } from 'stream';
 import { AmplifyCategories } from 'amplify-cli-core';
-import strip from 'strip-ansi';
+import stripAnsi = require('strip-ansi');
 
 /**
  * generates a random string
@@ -142,7 +142,7 @@ export const collectCloudformationDiffBetweenProjects = (projectRoot1: string, p
       }
     }
   }
-  return strip(stream.toString());
+  return stripAnsi(stream.toString());
 };
 
 /**

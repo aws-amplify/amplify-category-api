@@ -14,7 +14,7 @@ import {
   updateApiSchema,
 } from 'amplify-category-api-e2e-core';
 import * as fs from 'fs-extra';
-import path from 'path';
+import * as path from 'path';
 import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
 import {
   assertNoParameterChangesBetweenProjects,
