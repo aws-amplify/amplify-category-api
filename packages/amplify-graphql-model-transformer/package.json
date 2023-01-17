@@ -28,7 +28,6 @@
     "test-watch": "jest --watch"
   },
   "dependencies": {
-    "@aws-amplify/graphql-base-model-transformer": "0.1.0",
     "@aws-amplify/graphql-transformer-core": "0.17.15",
     "@aws-amplify/graphql-transformer-interfaces": "1.14.9",
     "@aws-cdk/aws-applicationautoscaling": "~1.172.0",
