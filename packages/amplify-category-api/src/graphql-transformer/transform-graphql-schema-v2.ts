@@ -189,6 +189,7 @@ const buildAPIProject = async (
   }
 
   const builtProject = await _buildProject(opts);
+  const apiKeyStatus = await getApiKeyStatus(context);
   const apiKeyEntry: AppSyncAuthConfigurationAPIKeyEntry = [
     opts.authConfig.defaultAuthentication, ...opts.authConfig.additionalAuthenticationProviders,
   ].find(
@@ -196,9 +197,9 @@ const buildAPIProject = async (
   ) as AppSyncAuthConfigurationAPIKeyEntry;
   const config = apiKeyEntry?.apiKeyConfig;
   const apiKeyId = `${(config as any)?.name || 'Default'}ApiKey`;
-  const properties = builtProject.rootStack.Resources?.[apiKeyId]?.Properties;
-  const apiKeyStatus = await getApiKeyStatus(context);
-  if (properties.Expires) {
+  const apiKeyResourceID = _.keys(builtProject.rootStack.Resources).find((id) => id.includes(apiKeyId));
+  if (apiKeyResourceID) {
+    const properties = builtProject.rootStack.Resources?.[apiKeyResourceID]?.Properties;
     if (apiKeyStatus.exists && apiKeyStatus.expiration > properties.Expires) {
       properties.Expires = apiKeyStatus.expiration;
     }
