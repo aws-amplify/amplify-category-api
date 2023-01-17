@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.24-upgrade-graphql15-2.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@5.1.23...amplify-category-api-util-mock@5.1.24-upgrade-graphql15-2.0) (2023-01-17)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
 ## [5.1.23](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@5.1.22...amplify-category-api-util-mock@5.1.23) (2023-01-12)
 
 **Note:** Version bump only for package amplify-category-api-util-mock
