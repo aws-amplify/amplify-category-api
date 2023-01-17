@@ -1,9 +1,4 @@
 import {
-  directiveDefinition as modelDefinition,
-  generateResolverKey,
-  GenericModelTransformer,
-} from '@aws-amplify/graphql-base-model-transformer';
-import {
   MappingTemplate,
   SyncConfig,
 } from '@aws-amplify/graphql-transformer-core';
@@ -14,13 +9,18 @@ import {
   TransformerResolverProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode, DirectiveDefinitionNode } from 'graphql';
+import { ResourceConstants } from 'graphql-transformer-common';
+import {
+  directiveDefinition as modelDefinition,
+  GenericModelTransformer,
+} from './graphql-model-transformer-generic';
 import {
   createRdsLambda,
   createRdsLambdaRole,
   generateDefaultLambdaResponseMappingTemplate,
   generateLambdaRequestTemplate,
-} from './resolvers/lambda';
-import { ResourceConstants } from 'graphql-transformer-common';
+  generateResolverKey,
+} from './resolvers';
 
 export const directiveDefinition = modelDefinition.replace('@model', '@rdsModel');
 
