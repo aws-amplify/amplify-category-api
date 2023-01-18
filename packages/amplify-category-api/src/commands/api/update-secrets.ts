@@ -3,15 +3,14 @@ import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import fs from 'fs-extra';
 import _ from 'lodash';
-import { MySQLDataSourceAdapter, generateGraphQLSchema, Schema, Engine, DataSourceAdapter } from '@aws-amplify/graphql-schema-generator';
+import { MySQLDataSourceAdapter, DataSourceAdapter } from '@aws-amplify/graphql-schema-generator';
 import { getDBUserSecretsWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/generate-graphql-schema-walkthrough';
 import { ImportedRDSType, RDS_SCHEMA_FILE_NAME } from '../../provider-utils/awscloudformation/service-walkthrough-types/import-appsync-api-types';
 import { readGlobalAmplifyInput, validateInputConfig } from '../../provider-utils/awscloudformation/utils/import-rds-utils/globalAmplifyInputs';
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { getExistingConnectionSecrets, storeConnectionSecrets } from '../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
-import { writeSchemaFile } from '../../provider-utils/awscloudformation/utils/graphql-schema-utils';
+import { storeConnectionSecrets } from '../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 
-const subcommand = 'generate-schema';
+const subcommand = 'update-secrets';
 
 export const name = subcommand;
 
@@ -26,24 +25,17 @@ export const run = async (context: $TSContext) => {
     const config: $TSAny = await readGlobalAmplifyInput(context, pathToSchemaFile);
     // ensure that the required database connection details exist
     await validateInputConfig(context, config);
-
-    // read and validate the RDS connection secrets
-    let secretsExistInParameterStore = true;
-    let secrets = await getExistingConnectionSecrets(context, config.database, apiName);
-    if(!secrets) {
-      secrets = await getDBUserSecretsWalkthrough(config.database);
-      secretsExistInParameterStore = false;
-    }
+    const secrets = await getDBUserSecretsWalkthrough(config.database);
     config['username'] = secrets?.username;
     config['password'] = secrets?.password;
+
+    await storeConnectionSecrets(context, config.database, secrets, apiName);
     
     // Establish the connection
     let adapter: DataSourceAdapter;
-    let schema: Schema;
     switch(config.engine) {
       case ImportedRDSType.MYSQL:
         adapter = new MySQLDataSourceAdapter(config);
-        schema = new Schema(new Engine('MySQL'));
         break;
       default:
         printer.error('Only MySQL Data Source is supported.');
@@ -56,25 +48,9 @@ export const run = async (context: $TSContext) => {
       console.log(error?.message);
       throw(error);      
     };
-
-    // If connection is successful, store the secrets in parameter store
-    if(!secretsExistInParameterStore) {
-      await storeConnectionSecrets(context, config.database, secrets, apiName);
-    }
-
-    const models = await adapter.getModels();
     adapter.cleanup();
-    models.forEach(m => schema.addModel(m));
-
-    const schemaString = generateGraphQLSchema(schema);
-    writeSchemaFile(pathToSchemaFile, schemaString);
-
-    if(_.isEmpty(schemaString)) {
-      printer.warn('If your schema file is empty, it is likely that your database has no tables.');
-    }
-    printer.info(`Successfully imported the schema definition for ${config.database} database into ${pathToSchemaFile}`);
   }
   else {
-    printer.info('No imported Data Sources to Generate GraphQL Schema.');
+    printer.info('No imported Data Sources to update the secrets.');
   }
 };

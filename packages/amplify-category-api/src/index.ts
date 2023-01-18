@@ -22,6 +22,11 @@ import { askAuthQuestions } from './provider-utils/awscloudformation/service-wal
 import { authConfigToAppSyncAuthType } from './provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { checkAppsyncApiResourceMigration } from './provider-utils/awscloudformation/utils/check-appsync-api-migration';
 import { getAppSyncApiResourceName } from './provider-utils/awscloudformation/utils/getAppSyncApiName';
+import { ImportedRDSType, RDS_SCHEMA_FILE_NAME } from './provider-utils/awscloudformation/service-walkthrough-types/import-appsync-api-types';
+import { readGlobalAmplifyInput, validateInputConfig } from './provider-utils/awscloudformation/utils/import-rds-utils/globalAmplifyInputs';
+import { getAPIResourceDir } from './provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { configureMultiEnvDBSecrets } from './provider-utils/awscloudformation/utils/rds-secrets/multi-env-database-secrets';
+import _ from 'lodash';
 
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
 export { addAdminQueriesApi, updateAdminQueriesApi } from './provider-utils/awscloudformation';
@@ -102,6 +107,13 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   const datasource = 'Aurora Serverless';
   const service = 'service';
   const rdsInit = 'rdsInit';
+  const rdsRegion = 'rdsRegion';
+  const rdsClusterIdentifier = 'rdsClusterIdentifier';
+  const rdsSecretStoreArn = 'rdsSecretStoreArn';
+  const rdsDatabaseName = 'rdsDatabaseName';
+
+  const { amplify } = context;
+  const { envName } = amplify.getEnvInfo();
 
   /**
    * Check if we need to do the walkthrough, by looking to see if previous environments have
@@ -133,6 +145,23 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   // If an AppSync API does not exist, no need to prompt for rds datasource
   if (!resourceName) {
     return;
+  }
+
+  // proceed if there are any existing imported Relational Data Sources
+  const apiResourceDir = getAPIResourceDir(resourceName);
+  const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
+  if(fs.existsSync(pathToSchemaFile)) {
+    // read and validate the RDS connection parameters
+    const config: $TSAny = await readGlobalAmplifyInput(context, pathToSchemaFile);
+    // ensure that the required database connection details exist
+    await validateInputConfig(context, config);
+    const envInfo = {
+      isNewEnv: context.exeInfo?.isNewEnv,
+      sourceEnv: context.exeInfo?.sourceEnvName,
+      yesFlagSet: _.get(context, ['parameters', 'options', 'yes'], false),
+      envName: envName
+    }
+    await configureMultiEnvDBSecrets(context, config.database, envInfo);
   }
 
   // If an AppSync API has not been initialized with RDS, no need to prompt
