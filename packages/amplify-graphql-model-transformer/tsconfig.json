@@ -9,5 +9,10 @@
     {"path": "../graphql-mapping-template"},
     {"path": "../amplify-graphql-transformer-core"},
     {"path": "../graphql-transformer-common"},
+  ],
+  "exclude": [
+    "rds-lambda/*",
+    "lib",
+    "**/__tests__/**/*"
   ]
 }
