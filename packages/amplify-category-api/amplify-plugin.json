@@ -14,7 +14,8 @@
     "update",
     "help",
     "import",
-    "generate-schema"
+    "generate-schema",
+    "update-secrets"
   ],
   "commandAliases": {
     "configure": "update"
