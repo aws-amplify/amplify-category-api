@@ -1,4 +1,4 @@
-import { makeModelSortDirectionEnumObject } from '@aws-amplify/graphql-base-model-transformer';
+import { makeModelSortDirectionEnumObject } from '@aws-amplify/graphql-model-transformer';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   EnumTypeDefinitionNode,
@@ -32,9 +32,9 @@ import {
   withNamedNodeNamed,
   wrapNonNull,
 } from 'graphql-transformer-common';
+import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
 import { lookupResolverName } from './utils';
-import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 
 export function addKeyConditionInputs(
   config: PrimaryKeyDirectiveConfiguration | IndexDirectiveConfiguration,
