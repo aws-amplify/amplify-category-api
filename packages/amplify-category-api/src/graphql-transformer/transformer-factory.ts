@@ -7,7 +7,7 @@ import {
   PrimaryKeyTransformer as PrimaryKeyTransformerV2,
 } from '@aws-amplify/graphql-index-transformer';
 import { MapsToTransformer as MapsToTransformerV2 } from '@aws-amplify/graphql-maps-to-transformer';
-import { ModelTransformer as ModelTransformerV2 } from '@aws-amplify/graphql-model-transformer';
+import { ModelTransformer as ModelTransformerV2, RdsModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { PredictionsTransformer as PredictionsTransformerV2 } from '@aws-amplify/graphql-predictions-transformer';
 import {
   BelongsToTransformer as BelongsToTransformerV2,
@@ -78,6 +78,7 @@ const getTransformerFactoryV2 = (
   resourceDir: string,
 ): (options: TransformerFactoryArgs) => Promise<TransformerPluginProviderV2[]> => async (options?: TransformerFactoryArgs) => {
   const modelTransformer = new ModelTransformerV2();
+  const rdsModelTransformer = new RdsModelTransformer();
   const indexTransformer = new IndexTransformerV2();
   const hasOneTransformer = new HasOneTransformerV2();
   const authTransformer = new AuthTransformerV2({
@@ -86,6 +87,7 @@ const getTransformerFactoryV2 = (
   });
   const transformerList: TransformerPluginProviderV2[] = [
     modelTransformer,
+    rdsModelTransformer,
     new FunctionTransformerV2(),
     new HttpTransformerV2(),
     new PredictionsTransformerV2(options?.storageConfig),
