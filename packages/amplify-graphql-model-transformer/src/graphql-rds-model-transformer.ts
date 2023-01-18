@@ -37,7 +37,7 @@ type RdsModelTransformerOptions = {
 export class RdsModelTransformer extends GenericModelTransformer implements TransformerModelProvider {
   private rdsLambdaDataSource?: DataSourceProvider;
 
-  constructor(options: RdsModelTransformerOptions) {
+  constructor(options: RdsModelTransformerOptions = {}) {
     super('amplify-rds-model-transformer', directiveDefinition);
     this.options = this.getOptions(options);
   }

@@ -31,23 +31,14 @@ import {
   ObjectTypeDefinitionNode,
 } from 'graphql';
 import {
-  makeDirective,
   ModelResourceIDs,
   ResourceConstants,
   SyncResourceIDs,
 } from 'graphql-transformer-common';
 import {
-  addDirectivesToOperation,
-  addModelConditionInputs,
-  extendTypeWithDirectives,
-  propagateApiKeyToNestedTypes,
-  generateAuthExpressionForSandboxMode,
-  generateDefaultResponseMappingTemplate,
-  generateResolverKey,
   GenericModelTransformer,
-  API_KEY_DIRECTIVE,
-  directiveDefinition as modelDefinition
-} from '@aws-amplify/graphql-base-model-transformer';
+  directiveDefinition as modelDefinition,
+} from './graphql-model-transformer-generic';
 import {
   generateCreateInitSlotTemplate,
   generateCreateRequestTemplate,
@@ -64,7 +55,7 @@ import {
   generateListRequestTemplate,
   generateSyncRequestTemplate,
 } from './resolvers/query';
-import { ModelDirectiveConfiguration, SubscriptionLevel } from './directive';
+import { SubscriptionLevel } from './directive';
 
 /**
  * Nullable

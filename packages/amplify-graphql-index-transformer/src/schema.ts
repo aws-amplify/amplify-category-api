@@ -1,4 +1,4 @@
-import { makeModelSortDirectionEnumObject } from '@aws-amplify/graphql-base-model-transformer';
+import { makeModelSortDirectionEnumObject } from '@aws-amplify/graphql-model-transformer';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   EnumTypeDefinitionNode,
