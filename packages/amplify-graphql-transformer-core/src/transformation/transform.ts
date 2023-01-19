@@ -57,6 +57,7 @@ import { validateAuthModes, validateModelSchema } from './validation';
 import { DocumentNode } from 'graphql/language';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { AmplifyApiGraphQlResourceStackTemplate } from '../types/amplify-api-resource-stack-types';
+import { DatasourceType } from '../config/project-config';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
@@ -172,13 +173,14 @@ export class GraphQLTransform {
    * @param schema The model schema.
    * @param references Any cloudformation references.
    */
-  public transform(schema: string): DeploymentResources {
+  public transform(schema: string, modelToDatasourceMap: Map<string, DatasourceType>): DeploymentResources {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
     this.app = new App();
     const context = new TransformerContext(
       this.app,
       parsedDocument,
+      modelToDatasourceMap,
       this.stackMappingOverrides,
       this.authConfig,
       this.options.sandboxModeEnabled,

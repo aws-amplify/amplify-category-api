@@ -13,4 +13,10 @@ export interface TransformerProjectConfig {
   resolvers: Record<string, string>;
   stacks: Record<string, Template>;
   config: TransformConfig;
+  modelToDatasourceMap: Map<string, DatasourceType>;
+}
+
+export interface DatasourceType {
+  dbType: 'MySQL' | 'DDB';
+  provisionDB: boolean;
 }

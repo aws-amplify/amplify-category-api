@@ -26,3 +26,8 @@ export interface TransformerDataSourceManagerProvider {
 }
 
 export interface DataSourceProvider extends BackedDataSource {}
+
+export interface DatasourceType {
+  dbType: 'MySQL' | 'DDB';
+  provisionDB: boolean;
+}
