@@ -131,7 +131,6 @@ export class StorageTest {
       }
 
       const config = await loadLambdaConfig(context, triggerName);
-      // @ts-ignore
       const invoker = await getInvoker(context, { handler: config.handler, resourceName: triggerName, envVars: config.environment });
       try {
         await invoker({ event: eventObj });
