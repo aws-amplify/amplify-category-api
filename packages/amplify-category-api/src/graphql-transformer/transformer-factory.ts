@@ -78,7 +78,6 @@ const getTransformerFactoryV2 = (
   resourceDir: string,
 ): (options: TransformerFactoryArgs) => Promise<TransformerPluginProviderV2[]> => async (options?: TransformerFactoryArgs) => {
   const modelTransformer = new ModelTransformerV2();
-  const rdsModelTransformer = new RdsModelTransformer();
   const indexTransformer = new IndexTransformerV2();
   const hasOneTransformer = new HasOneTransformerV2();
   const authTransformer = new AuthTransformerV2({
@@ -87,7 +86,6 @@ const getTransformerFactoryV2 = (
   });
   const transformerList: TransformerPluginProviderV2[] = [
     modelTransformer,
-    rdsModelTransformer,
     new FunctionTransformerV2(),
     new HttpTransformerV2(),
     new PredictionsTransformerV2(options?.storageConfig),

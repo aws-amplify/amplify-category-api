@@ -266,34 +266,28 @@ export async function readSchema(projectDirectory: string): Promise<{schema: str
     path.join(projectDirectory, 'schema.rds.graphql')
   ];
 
-  const schemaFilePath = schemaFilePaths.filter( path => fs.existsSync(path));
+  const existingSchemaFiles = schemaFilePaths.filter( path => fs.existsSync(path));
   const schemaDirectoryPath = path.join(projectDirectory, 'schema');
 
   let schema = "";
-  if (!(_.isEmpty(schemaFilePaths))) {
+  if (!(_.isEmpty(existingSchemaFiles))) {
     // Schema.graphql contains the models for DynamoDB datasource
     // Schema.rds.graphql contains the models for imported 'MySQL' datasource 
     // Intentionally using 'for ... of ...' instead of 'object.foreach' to process this in sequence 
-    for (const file of schemaFilePaths) {
+    for (const file of existingSchemaFiles) {
       const datasourceType = file.endsWith('.rds.graphql') ? constructDataSourceType("MySQL", false) : constructDataSourceType("DDB");
       const fileSchema = (await fs.readFile(file)).toString();
-      modelToDatasourceMap = {
-        ...modelToDatasourceMap,
-        ...constructDataSourceMap(fileSchema, datasourceType),
-      };
+      modelToDatasourceMap = new Map([...modelToDatasourceMap.entries(), ...constructDataSourceMap(fileSchema, datasourceType).entries()]);
       schema += fileSchema;
     }
   } else if (fs.existsSync(schemaDirectoryPath)) {
     // Schema folder is used only for DynamoDB datasource
     const datasourceType = constructDataSourceType("DDB");
     const schemaInDirectory = (await readSchemaDocuments(schemaDirectoryPath)).join('\n');
-    modelToDatasourceMap = {
-      ...modelToDatasourceMap,
-      ...constructDataSourceMap(schemaInDirectory, datasourceType),
-    };
+    modelToDatasourceMap = new Map([...modelToDatasourceMap.entries(), ...constructDataSourceMap(schemaInDirectory, datasourceType).entries()]);
     schema += schemaInDirectory;
   } else {
-    throw new Error(`Could not find a schema at ${schemaFilePath}`);
+    throw new Error(`Could not find a schema at ${schemaFilePaths[0]}`);
   }
   return {
     schema,
@@ -339,7 +333,7 @@ function constructDataSourceMap(schema: string, datasourceType: DatasourceType):
   const result = new Map<string, DatasourceType>();
   parsedSchema.definitions
     .filter(obj => obj.kind === Kind.OBJECT_TYPE_DEFINITION && obj.directives.some(dir => dir.name.value === MODEL_DIRECTIVE_NAME))
-    .map(type => {
+    .forEach(type => {
       result.set(
         (type as ObjectTypeDefinitionNode).name.value,
         datasourceType,
