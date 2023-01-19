@@ -316,12 +316,14 @@ async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[
   return schemaDocuments;
 }
 
+export type DBType = 'MySQL' | 'DDB';
+
 export interface DatasourceType {
-  dbType: 'MySQL' | 'DDB';
+  dbType: DBType;
   provisionDB: boolean;
 }
 
-function constructDataSourceType(dbType: 'MySQL' | 'DDB', provisionDB: boolean = true): DatasourceType {
+function constructDataSourceType(dbType: DBType, provisionDB: boolean = true): DatasourceType {
   return {
     dbType,
     provisionDB,
