@@ -173,14 +173,14 @@ export class GraphQLTransform {
    * @param schema The model schema.
    * @param references Any cloudformation references.
    */
-  public transform(schema: string, modelToDatasourceMap: Map<string, DatasourceType>): DeploymentResources {
+  public transform(schema: string, modelToDatasourceMap?: Map<string, DatasourceType>): DeploymentResources {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
     this.app = new App();
     const context = new TransformerContext(
       this.app,
       parsedDocument,
-      modelToDatasourceMap,
+      modelToDatasourceMap ?? new Map<string, DatasourceType>(),
       this.stackMappingOverrides,
       this.authConfig,
       this.options.sandboxModeEnabled,
