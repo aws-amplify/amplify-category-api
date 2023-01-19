@@ -13,7 +13,7 @@ export interface TransformerProjectConfig {
   resolvers: Record<string, string>;
   stacks: Record<string, Template>;
   config: TransformConfig;
-  modelToDatasourceMap: Map<string, DatasourceType>;
+  modelToDatasourceMap: Map<string, DatasourceType> | undefined;
 }
 
 export type DBType = 'MySQL' | 'DDB';

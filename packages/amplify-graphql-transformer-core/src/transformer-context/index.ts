@@ -53,13 +53,13 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly authConfig: AppSyncAuthConfiguration;
   public readonly sandboxModeEnabled: boolean;
   private resolverConfig: ResolverConfig | undefined;
-  public readonly modelToDatasourceMap: Map<string, DatasourceType>;
+  public readonly modelToDatasourceMap: Map<string, DatasourceType> | undefined;
 
   public metadata: TransformerContextMetadata;
   constructor(
     app: App,
     public readonly inputDocument: DocumentNode,
-    modelToDatasourceMap: Map<string, DatasourceType>,
+    modelToDatasourceMap: Map<string, DatasourceType> | undefined,
     stackMapping: Record<string, string>,
     authConfig: AppSyncAuthConfiguration,
     sandboxModeEnabled?: boolean,
