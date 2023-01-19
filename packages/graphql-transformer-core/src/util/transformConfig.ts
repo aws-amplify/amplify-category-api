@@ -4,10 +4,12 @@ import { throwIfNotJSONExt } from './fileUtils';
 import { ProjectOptions } from './amplifyUtils';
 const fs = require('fs-extra');
 import _ from 'lodash';
+import { parse, Kind, ObjectTypeDefinitionNode } from 'graphql';
 
 export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 export const TRANSFORM_BASE_VERSION = 4;
 export const TRANSFORM_CURRENT_VERSION = 5;
+const MODEL_DIRECTIVE_NAME = 'model';
 
 export interface TransformMigrationConfig {
   V1?: {
@@ -160,10 +162,11 @@ interface ProjectConfiguration {
     [k: string]: Template;
   };
   config: TransformConfig;
+  modelToDatasourceMap: Map<string, DatasourceType>;
 }
 export async function loadProject(projectDirectory: string, opts?: ProjectOptions): Promise<ProjectConfiguration> {
   // Schema
-  const schema = await readSchema(projectDirectory);
+  const { schema, modelToDatasourceMap } = await readSchema(projectDirectory);
 
   // Load functions
   const functions = {};
@@ -246,6 +249,7 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
     resolvers,
     schema,
     config,
+    modelToDatasourceMap,
   };
 }
 
@@ -255,7 +259,8 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
  * Preference is given to the `schema.graphql` if provided.
  * @param projectDirectory The project directory.
  */
-export async function readSchema(projectDirectory: string): Promise<string> {
+export async function readSchema(projectDirectory: string): Promise<{schema: string, modelToDatasourceMap: Map<string, DatasourceType>}> {
+  let modelToDatasourceMap = new Map<string, DatasourceType>();
   const schemaFilePaths = [
     path.join(projectDirectory, 'schema.graphql'),
     path.join(projectDirectory, 'schema.rds.graphql')
@@ -264,16 +269,36 @@ export async function readSchema(projectDirectory: string): Promise<string> {
   const schemaFilePath = schemaFilePaths.filter( path => fs.existsSync(path));
   const schemaDirectoryPath = path.join(projectDirectory, 'schema');
 
-  let schema;
-  if (!(_.isEmpty(schemaFilePath))) {
-    // Todo: merge all the schemas to a single schema file
-    schema = (await fs.readFile(schemaFilePath[0])).toString();
+  let schema = "";
+  if (!(_.isEmpty(schemaFilePaths))) {
+    // Schema.graphql contains the models for DynamoDB datasource
+    // Schema.rds.graphql contains the models for imported 'MySQL' datasource 
+    // Intentionally using 'for ... of ...' instead of 'object.foreach' to process this in sequence 
+    for (const file of schemaFilePaths) {
+      const datasourceType = file.endsWith('.rds.graphql') ? constructDataSourceType("MySQL", false) : constructDataSourceType("DDB");
+      const fileSchema = (await fs.readFile(file)).toString();
+      modelToDatasourceMap = {
+        ...modelToDatasourceMap,
+        ...constructDataSourceMap(fileSchema, datasourceType),
+      };
+      schema += fileSchema;
+    }
   } else if (fs.existsSync(schemaDirectoryPath)) {
-    schema = (await readSchemaDocuments(schemaDirectoryPath)).join('\n');
+    // Schema folder is used only for DynamoDB datasource
+    const datasourceType = constructDataSourceType("DDB");
+    const schemaInDirectory = (await readSchemaDocuments(schemaDirectoryPath)).join('\n');
+    modelToDatasourceMap = {
+      ...modelToDatasourceMap,
+      ...constructDataSourceMap(schemaInDirectory, datasourceType),
+    };
+    schema += schemaInDirectory;
   } else {
     throw new Error(`Could not find a schema at ${schemaFilePath}`);
   }
-  return schema;
+  return {
+    schema,
+    modelToDatasourceMap,
+  };
 }
 
 async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[]> {
@@ -295,4 +320,30 @@ async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[
     }
   }
   return schemaDocuments;
+}
+
+export interface DatasourceType {
+  dbType: 'MySQL' | 'DDB';
+  provisionDB: boolean;
+}
+
+function constructDataSourceType(dbType: 'MySQL' | 'DDB', provisionDB: boolean = true): DatasourceType {
+  return {
+    dbType,
+    provisionDB,
+  }
+}
+
+function constructDataSourceMap(schema: string, datasourceType: DatasourceType): Map<string, DatasourceType> {
+  const parsedSchema = parse(schema);
+  const result = new Map<string, DatasourceType>();
+  parsedSchema.definitions
+    .filter(obj => obj.kind === Kind.OBJECT_TYPE_DEFINITION && obj.directives.some(dir => dir.name.value === MODEL_DIRECTIVE_NAME))
+    .map(type => {
+      result.set(
+        (type as ObjectTypeDefinitionNode).name.value,
+        datasourceType,
+      );
+    });
+  return result;
 }

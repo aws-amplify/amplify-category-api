@@ -10,6 +10,7 @@ import {
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { App } from '@aws-cdk/core';
 import { DocumentNode } from 'graphql';
+import { DatasourceType } from '../config/project-config';
 import { ResolverConfig } from '../config/transformer-config';
 import { TransformerDataSourceManager } from './datasource';
 import { NoopFeatureFlagProvider } from './noop-feature-flag';
@@ -52,11 +53,13 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly authConfig: AppSyncAuthConfiguration;
   public readonly sandboxModeEnabled: boolean;
   private resolverConfig: ResolverConfig | undefined;
+  public readonly modelToDatasourceMap: Map<string, DatasourceType>;
 
   public metadata: TransformerContextMetadata;
   constructor(
     app: App,
     public readonly inputDocument: DocumentNode,
+    modelToDatasourceMap: Map<string, DatasourceType>,
     stackMapping: Record<string, string>,
     authConfig: AppSyncAuthConfiguration,
     sandboxModeEnabled?: boolean,
@@ -75,6 +78,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.featureFlags = featureFlags ?? new NoopFeatureFlagProvider();
     this.resolverConfig = resolverConfig;
     this.metadata = new TransformerContextMetadata();
+    this.modelToDatasourceMap = modelToDatasourceMap;
   }
 
   /**

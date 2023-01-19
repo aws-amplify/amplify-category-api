@@ -510,7 +510,7 @@ interface AmplifyApiV1Project {
  */
 export async function readV1ProjectConfiguration(projectDirectory: string): Promise<AmplifyApiV1Project> {
   // Schema
-  const schema = await readSchema(projectDirectory);
+  const { schema } = await readSchema(projectDirectory);
 
   // Get the template
   const cloudFormationTemplatePath = path.join(projectDirectory, CLOUDFORMATION_FILE_NAME);

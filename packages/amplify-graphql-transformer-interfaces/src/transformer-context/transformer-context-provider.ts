@@ -1,5 +1,5 @@
 import { TransformerResolversManagerProvider } from './transformer-resolver-provider';
-import { TransformerDataSourceManagerProvider } from './transformer-datasource-provider';
+import { TransformerDataSourceManagerProvider, DatasourceType } from './transformer-datasource-provider';
 import { TransformerProviderRegistry } from './transformer-provider-registry';
 import { DocumentNode } from 'graphql';
 import { TransformerContextOutputProvider } from './transformer-context-output-provider';
@@ -21,6 +21,7 @@ export interface TransformerContextProvider {
   providerRegistry: TransformerProviderRegistry;
 
   inputDocument: DocumentNode;
+  modelToDatasourceMap: Map<string, DatasourceType>;
   output: TransformerContextOutputProvider;
   stackManager: StackManagerProvider;
   api: GraphQLAPIProvider;
@@ -35,11 +36,20 @@ export interface TransformerContextProvider {
 
 export type TransformerBeforeStepContextProvider = Pick<
   TransformerContextProvider,
-  'inputDocument' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'sandboxModeEnabled'
+  | 'inputDocument'
+  | 'modelToDatasourceMap'
+  | 'featureFlags'
+  | 'isProjectUsingDataStore'
+  | 'getResolverConfig'
+  | 'authConfig'
+  | 'stackManager'
+  | 'sandboxModeEnabled'
 >;
+
 export type TransformerSchemaVisitStepContextProvider = Pick<
   TransformerContextProvider,
   | 'inputDocument'
+  | 'modelToDatasourceMap'
   | 'output'
   | 'providerRegistry'
   | 'featureFlags'
@@ -50,9 +60,11 @@ export type TransformerSchemaVisitStepContextProvider = Pick<
   | 'resourceHelper'
   | 'sandboxModeEnabled'
 >;
+
 export type TransformerValidationStepContextProvider = Pick<
   TransformerContextProvider,
   | 'inputDocument'
+  | 'modelToDatasourceMap'
   | 'output'
   | 'providerRegistry'
   | 'dataSources'
@@ -66,5 +78,7 @@ export type TransformerValidationStepContextProvider = Pick<
   | 'resolvers'
   | 'stackManager'
 >;
+
 export type TransformerPrepareStepContextProvider = TransformerValidationStepContextProvider;
+
 export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;
