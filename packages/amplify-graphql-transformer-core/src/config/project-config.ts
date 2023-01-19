@@ -16,7 +16,9 @@ export interface TransformerProjectConfig {
   modelToDatasourceMap: Map<string, DatasourceType>;
 }
 
+export type DBType = 'MySQL' | 'DDB';
+
 export interface DatasourceType {
-  dbType: 'MySQL' | 'DDB';
+  dbType: DBType;
   provisionDB: boolean;
 }
