@@ -21,7 +21,7 @@ export interface TransformerContextProvider {
   providerRegistry: TransformerProviderRegistry;
 
   inputDocument: DocumentNode;
-  modelToDatasourceMap: Map<string, DatasourceType>;
+  modelToDatasourceMap: Map<string, DatasourceType> | undefined;
   output: TransformerContextOutputProvider;
   stackManager: StackManagerProvider;
   api: GraphQLAPIProvider;
