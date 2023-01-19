@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.18.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.18.1...@aws-amplify/graphql-transformer-core@0.18.2) (2023-01-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
+## [0.18.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.18.0...@aws-amplify/graphql-transformer-core@0.18.1) (2023-01-12)
+
+### Bug Fixes
+
+- disable searchable nodeToNode encryption unless it is already deployed to mitigate impact from enabling or disabling. ([#1152](https://github.com/aws-amplify/amplify-category-api/issues/1152)) ([4a1c360](https://github.com/aws-amplify/amplify-category-api/commit/4a1c36091cff6162b4803651b72ed03c594c01dc))
+
+### Reverts
+
+- remove bracket check since it's causing customer issues in hosting ([44d6e89](https://github.com/aws-amplify/amplify-category-api/commit/44d6e8904b2698581bfd88b092587d00cbda50b7))
+
+# [0.18.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.17.15...@aws-amplify/graphql-transformer-core@0.18.0) (2022-12-03)
+
+### Features
+
+- 🎸 Added bracket mismatch error detection ([40fdd88](https://github.com/aws-amplify/amplify-category-api/commit/40fdd885e5553ea4b087ff15b1305328a37fdecd)), closes [#107](https://github.com/aws-amplify/amplify-category-api/issues/107)
+
 ## [0.17.15](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.17.14...@aws-amplify/graphql-transformer-core@0.17.15) (2022-11-08)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-core

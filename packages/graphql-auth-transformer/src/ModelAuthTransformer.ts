@@ -44,7 +44,7 @@ import { ModelDirectiveConfiguration, ModelDirectiveOperationType, ModelSubscrip
 import { OWNER_AUTH_STRATEGY, GROUPS_AUTH_STRATEGY, DEFAULT_OWNER_FIELD, AUTH_NON_MODEL_TYPES } from './constants';
 
 /**
- * Implements the ModelAuthTransformer.
+ * Implements the ModelAuthTransformer
  *
  * Owner Auth Usage:
  *

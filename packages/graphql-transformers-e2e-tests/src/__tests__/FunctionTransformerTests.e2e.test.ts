@@ -12,10 +12,12 @@ import { S3Client } from '../S3Client';
 import { default as S3 } from 'aws-sdk/clients/s3';
 import { LambdaHelper } from '../LambdaHelper';
 import { IAMHelper } from '../IAMHelper';
+import { resolveTestRegion } from '../testSetup';
+
+const region = resolveTestRegion();
 
 jest.setTimeout(2000000);
 
-const region = 'us-west-2';
 const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);
 const awsS3Client = new S3({ region: region });

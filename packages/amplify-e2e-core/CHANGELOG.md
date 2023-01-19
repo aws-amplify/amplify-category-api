@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.14](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.13...amplify-category-api-e2e-core@4.0.14) (2023-01-12)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+## [4.0.13](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.12...amplify-category-api-e2e-core@4.0.13) (2023-01-12)
+
+### Bug Fixes
+
+- disable searchable nodeToNode encryption unless it is already deployed to mitigate impact from enabling or disabling. ([#1152](https://github.com/aws-amplify/amplify-category-api/issues/1152)) ([4a1c360](https://github.com/aws-amplify/amplify-category-api/commit/4a1c36091cff6162b4803651b72ed03c594c01dc))
+
+## [4.0.12](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.11...amplify-category-api-e2e-core@4.0.12) (2022-12-13)
+
+### Bug Fixes
+
+- resolvers generated from index respect StackMappings ([ed0827a](https://github.com/aws-amplify/amplify-category-api/commit/ed0827a8ea154923112461e09effaccb9b185b33))
+
+## [4.0.11](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.10...amplify-category-api-e2e-core@4.0.11) (2022-12-03)
+
+### Bug Fixes
+
+- added human readable labels to artifacts ([787dfe7](https://github.com/aws-amplify/amplify-category-api/commit/787dfe7ef91f778ff2cfeeff51467d4519e887f7))
+- cleanup names a bit ([e00242c](https://github.com/aws-amplify/amplify-category-api/commit/e00242caf1febee4f092201aa5c5663b01a3b393))
+- redundant carriage return leads to unexpected behavior ([#993](https://github.com/aws-amplify/amplify-category-api/issues/993)) ([7d6971d](https://github.com/aws-amplify/amplify-category-api/commit/7d6971d08ef452dae49bdb3cbb08e00cc14a835c))
+
 ## [4.0.10](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.9...amplify-category-api-e2e-core@4.0.10) (2022-11-08)
 
 **Note:** Version bump only for package amplify-category-api-e2e-core

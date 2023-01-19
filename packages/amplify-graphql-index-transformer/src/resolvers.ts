@@ -56,7 +56,7 @@ const API_KEY = 'API Key Authorization';
  * replaceDdbPrimaryKey
  */
 export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
-  // Replace the table's primary key with the value from @primaryKey.
+  // Replace the table's primary key with the value from @primaryKey
   const { field, object } = config;
   const table = getTable(ctx, object) as any;
   const cfnTable = table.table;
@@ -458,10 +458,11 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
     throw new Error(`Could not find datasource with name ${dataSourceName} in context.`);
   }
 
+  const resolverResourceId = ResolverResourceIDs.ResolverResourceID(queryTypeName, queryField);
   const resolver = ctx.resolvers.generateQueryResolver(
     queryTypeName,
     queryField,
-    ResolverResourceIDs.ResolverResourceID(queryTypeName, queryField),
+    resolverResourceId,
     dataSource as DataSourceProvider,
     MappingTemplate.s3MappingTemplateFromString(
       print(
@@ -537,7 +538,8 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
       `${queryTypeName}.${queryField}.{slotName}.{slotIndex}.res.vtl`,
     ),
   );
-  resolver.mapToStack(table.stack);
+
+  resolver.mapToStack(ctx.stackManager.getStackFor(resolverResourceId, table.stack.node.id));
   ctx.resolvers.addResolver(object.name.value, queryField, resolver);
 }
 

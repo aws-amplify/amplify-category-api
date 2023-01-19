@@ -31,6 +31,7 @@ import {
   isListType,
   isScalarOrEnum,
   ModelResourceIDs,
+  toCamelCase,
 } from 'graphql-transformer-common';
 import { DefaultValueDirectiveConfiguration } from './types';
 import { TypeValidators } from './validators';
@@ -141,7 +142,7 @@ export class DefaultValueTransformer extends TransformerPluginBase {
         snippets.push(this.makeDefaultValueSnippet(fieldName, defaultValue, !nonStringTypes.includes(getBaseType(config.field.type))));
       }
 
-      this.updateResolverWithDefaultValues(context, `create${typeName}`, snippets);
+      this.updateResolverWithDefaultValues(context, toCamelCase(['create', typeName]), snippets);
     }
   };
 

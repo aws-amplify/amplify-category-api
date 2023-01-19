@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.12.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.12.7...@aws-amplify/graphql-relational-transformer@0.12.8) (2023-01-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [0.12.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.12.6...@aws-amplify/graphql-relational-transformer@0.12.7) (2023-01-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [0.12.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.12.5...@aws-amplify/graphql-relational-transformer@0.12.6) (2022-12-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [0.12.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.12.4...@aws-amplify/graphql-relational-transformer@0.12.5) (2022-12-03)
+
+### Bug Fixes
+
+- **relation-transformer:** relation field nullability in object and input type ([43b7ae3](https://github.com/aws-amplify/amplify-category-api/commit/43b7ae38cb028ae5f0900a7c2aeb3ee695d803dc))
+- remove default false ([c48a885](https://github.com/aws-amplify/amplify-category-api/commit/c48a8858d746d2d33c5c3b90d5823903e8045b3f))
+- revert the change for belongsTo in hasMany ([05bb29c](https://github.com/aws-amplify/amplify-category-api/commit/05bb29c8ad9d168abdaae3f5028dc56b2157959b))
+
 ## [0.12.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.12.3...@aws-amplify/graphql-relational-transformer@0.12.4) (2022-11-08)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer

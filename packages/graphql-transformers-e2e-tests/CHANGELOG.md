@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.3.9](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.3.8...amplify-category-api-graphql-transformers-e2e-tests@8.3.9) (2023-01-12)
+
+**Note:** Version bump only for package amplify-category-api-graphql-transformers-e2e-tests
+
+## [8.3.8](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.3.7...amplify-category-api-graphql-transformers-e2e-tests@8.3.8) (2023-01-12)
+
+**Note:** Version bump only for package amplify-category-api-graphql-transformers-e2e-tests
+
+## [8.3.7](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.3.6...amplify-category-api-graphql-transformers-e2e-tests@8.3.7) (2022-12-13)
+
+**Note:** Version bump only for package amplify-category-api-graphql-transformers-e2e-tests
+
+## [8.3.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.3.5...amplify-category-api-graphql-transformers-e2e-tests@8.3.6) (2022-12-09)
+
+**Note:** Version bump only for package amplify-category-api-graphql-transformers-e2e-tests
+
+## [8.3.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.3.4...amplify-category-api-graphql-transformers-e2e-tests@8.3.5) (2022-12-03)
+
+### Bug Fixes
+
+- resolve test region dynamically ([13e3196](https://github.com/aws-amplify/amplify-category-api/commit/13e31960917c3dd27a46457ac001054a48436aa8))
+
 ## [8.3.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.3.3...amplify-category-api-graphql-transformers-e2e-tests@8.3.4) (2022-11-08)
 
 **Note:** Version bump only for package amplify-category-api-graphql-transformers-e2e-tests

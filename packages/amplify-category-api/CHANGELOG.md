@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.4...@aws-amplify/amplify-category-api@4.1.5) (2023-01-12)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+## [4.1.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.3...@aws-amplify/amplify-category-api@4.1.4) (2023-01-12)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+## [4.1.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.2...@aws-amplify/amplify-category-api@4.1.3) (2023-01-12)
+
+### Bug Fixes
+
+- disable searchable nodeToNode encryption unless it is already deployed to mitigate impact from enabling or disabling. ([#1152](https://github.com/aws-amplify/amplify-category-api/issues/1152)) ([4a1c360](https://github.com/aws-amplify/amplify-category-api/commit/4a1c36091cff6162b4803651b72ed03c594c01dc))
+
+### Reverts
+
+- remove bracket check since it's causing customer issues in hosting ([44d6e89](https://github.com/aws-amplify/amplify-category-api/commit/44d6e8904b2698581bfd88b092587d00cbda50b7))
+
+## [4.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.1...@aws-amplify/amplify-category-api@4.1.2) (2022-12-13)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+## [4.1.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.0...@aws-amplify/amplify-category-api@4.1.1) (2022-12-09)
+
+### Bug Fixes
+
+- add rdsRegion check back ([6d8736f](https://github.com/aws-amplify/amplify-category-api/commit/6d8736f8f29bbe6d3469e91adcb95ef6f9f8abe6))
+- address PR feedback ([2a119e6](https://github.com/aws-amplify/amplify-category-api/commit/2a119e6b8e86889b5f206f49b5063b4ce99ea859))
+- remove unused variable ([b419119](https://github.com/aws-amplify/amplify-category-api/commit/b41911975c6741c5b66e7cbcf4ca01af2a9e805a))
+
+# [4.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.9...@aws-amplify/amplify-category-api@4.1.0) (2022-12-03)
+
+### Features
+
+- 🎸 Added bracket mismatch error detection ([40fdd88](https://github.com/aws-amplify/amplify-category-api/commit/40fdd885e5553ea4b087ff15b1305328a37fdecd)), closes [#107](https://github.com/aws-amplify/amplify-category-api/issues/107)
+
 ## [4.0.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.8...@aws-amplify/amplify-category-api@4.0.9) (2022-11-08)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

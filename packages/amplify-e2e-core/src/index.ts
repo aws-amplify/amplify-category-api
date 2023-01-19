@@ -6,6 +6,7 @@ import * as ini from 'ini';
 import { spawnSync, execSync } from 'child_process';
 import { v4 as uuid } from 'uuid';
 import { pathManager } from 'amplify-cli-core';
+import { gt } from 'semver';
 
 export * from './configure/';
 export * from './init/';
@@ -29,13 +30,14 @@ const amplifyTestsDir = 'amplify-e2e-tests';
 export function getCLIPath(testingWithLatestCodebase = false) {
   if (!testingWithLatestCodebase) {
     if (process.env.AMPLIFY_PATH && fs.existsSync(process.env.AMPLIFY_PATH)) {
+      console.log("Resolving CLI path to AMPLIFY_PATH:", process.env.AMPLIFY_PATH);
       return process.env.AMPLIFY_PATH;
     }
-
+    console.log("Resolving CLI path to present executable:", process.platform === 'win32' ? 'amplify.exe' : 'amplify');
     return process.platform === 'win32' ? 'amplify.exe' : 'amplify';
   }
-
   const amplifyScriptPath = path.join(__dirname, '..', '..', '..', 'node_modules', 'amplify-cli-internal', 'bin', 'amplify');
+  console.log("Resolving CLI Path to source code:", amplifyScriptPath);
   return amplifyScriptPath;
 }
 
@@ -89,10 +91,19 @@ export async function installAmplifyCLI(version: string = 'latest') {
     env: process.env,
     stdio: 'inherit',
   });
-  process.env.AMPLIFY_PATH =
-    process.platform === 'win32'
-      ? path.join(os.homedir(), '..', '..', 'Program` Files', 'nodejs', 'node_modules', '@aws-amplify', 'cli', 'bin', 'amplify')
-      : path.join(os.homedir(), '.npm-global', 'bin', 'amplify');
+  
+  console.log("SETTING PATH:");
+  if(gt(version, '10.0.0')){
+    process.env.AMPLIFY_PATH = process.platform === 'win32'
+    ? path.join(os.homedir(), '.amplify', 'bin', 'amplify')
+    : path.join(os.homedir(), '.amplify', 'bin', 'amplify');
+  } else {
+    process.env.AMPLIFY_PATH = process.platform === 'win32'
+    ? path.join(os.homedir(), '..', '..', 'Program` Files', 'nodejs', 'node_modules', '@aws-amplify', 'cli', 'bin', 'amplify')
+    : path.join(os.homedir(), '.npm-global', 'bin', 'amplify');
+  }
+  
+  console.log("PATH SET:", process.env.AMPLIFY_PATH);
 }
 
 export async function createNewProjectDir(

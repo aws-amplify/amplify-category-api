@@ -4,7 +4,7 @@ import {
 import { Grant, IGrantable, IRole } from '@aws-cdk/aws-iam';
 import { TransformHostProvider } from './transform-host-provider';
 
-// Auth Config
+// Auth Config Modes
 export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AWS_LAMBDA';
 export type AppSyncAuthConfiguration = {
   defaultAuthentication: AppSyncAuthConfigurationEntry;

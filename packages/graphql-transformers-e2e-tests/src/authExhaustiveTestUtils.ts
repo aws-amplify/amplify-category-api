@@ -24,8 +24,9 @@ import {
 import { cleanupStackAfterTest, deploy } from './deployNestedStacks';
 import { IAMHelper } from './IAMHelper';
 import { S3Client } from './S3Client';
+import { resolveTestRegion } from './testSetup';
 
-const REGION = 'us-west-2';
+const REGION = resolveTestRegion();
 const IAM_HELPER = new IAMHelper(REGION);
 const CF = new CloudFormationClient(REGION);
 const COGNITO_CLIENT = new CognitoClient({ apiVersion: '2016-04-19', region: REGION });

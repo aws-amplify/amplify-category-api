@@ -10,18 +10,20 @@ import {
 } from '@aws-cdk/core';
 import { ResourceConstants } from 'graphql-transformer-common';
 
-export const createSearchableDomain = (stack: Construct, parameterMap: Map<string, CfnParameter>, apiId: string): Domain => {
+export const createSearchableDomain = (stack: Construct, parameterMap: Map<string, CfnParameter>, apiId: string, nodeToNodeEncryption: boolean): Domain => {
   const { OpenSearchEBSVolumeGB, OpenSearchInstanceType, OpenSearchInstanceCount } = ResourceConstants.PARAMETERS;
   const { OpenSearchDomainLogicalID } = ResourceConstants.RESOURCES;
   const { HasEnvironmentParameter } = ResourceConstants.CONDITIONS;
 
   const domain = new Domain(stack, OpenSearchDomainLogicalID, {
     version: { version: '7.10' } as ElasticsearchVersion,
+    enforceHttps:true,
     ebs: {
       enabled: true,
       volumeType: EbsDeviceVolumeType.GP2,
       volumeSize: parameterMap.get(OpenSearchEBSVolumeGB)?.valueAsNumber,
     },
+    nodeToNodeEncryption,
     zoneAwareness: {
       enabled: false,
     },

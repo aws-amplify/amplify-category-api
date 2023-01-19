@@ -124,7 +124,7 @@ export class PredictionsTransformer extends TransformerPluginBase {
         }
       });
 
-      // Generate the input type based on operation name.
+      // Generate the input type based on operation name
       context.output.addInput(makeActionInputObject(directive.resolverFieldName, actionInputObjectFields));
 
       // Add arguments into operation.
