@@ -14,7 +14,11 @@ import {
   ApiCategoryFacade,
 } from 'amplify-cli-core';
 import { UpdateApiRequest } from 'amplify-headless-interface';
-import { printer, prompter } from 'amplify-prompts';
+import {
+  integer,
+  printer,
+  prompter,
+} from 'amplify-prompts';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import { collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
@@ -879,16 +883,19 @@ export async function askApiKeyQuestions(authSettings: $TSObject = undefined) {
   };
 }
 
-export async function askApiKeyExtension() {
+export async function askApiKeyExtension(): Promise<number> {
   const apiKeyExtensionQuestion = {
     message: 'Days to extend API key expiration:',
-    default: '0',
+    default: 7,
   };
-  const expirationDaysNum = Number(await prompter.input(
+  return prompter.input<'one', number>(
     apiKeyExtensionQuestion.message,
-    { initial: apiKeyExtensionQuestion.default as string },
-  ));
-  return expirationDaysNum;
+    {
+      transform: (input) => Number.parseInt(input, 10),
+      validate: integer(),
+      initial: apiKeyExtensionQuestion.default,
+    },
+  );
 }
 
 async function askOpenIDConnectQuestions(authSettings: $TSObject) {
