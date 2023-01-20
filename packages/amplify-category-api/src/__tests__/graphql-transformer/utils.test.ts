@@ -72,6 +72,7 @@ describe('graphql transformer utils', () => {
           pipelineFunctions: {},
           resolvers: {},
           stacks: {},
+          modelToDatasourceMap: undefined,
           config: { Version: 5, ElasticsearchWarning: true },
         } as TransformerProjectConfig;
       });
@@ -93,6 +94,7 @@ describe('graphql transformer utils', () => {
             'Query.listTodos.req.vtl': '$util.unauthorized\n',
           },
           stacks: {},
+          modelToDatasourceMap: undefined,
           config: { Version: 5, ElasticsearchWarning: true },
         } as TransformerProjectConfig;
       });
@@ -114,6 +116,7 @@ describe('graphql transformer utils', () => {
           },
           resolvers: {},
           stacks: {},
+          modelToDatasourceMap: undefined,
           config: { Version: 5, ElasticsearchWarning: true },
         } as TransformerProjectConfig;
       });
@@ -199,6 +202,7 @@ describe('graphql transformer utils', () => {
               },
             },
           },
+          modelToDatasourceMap: undefined,
           config: { Version: 5, ElasticsearchWarning: true },
         } as unknown as TransformerProjectConfig;
       });
