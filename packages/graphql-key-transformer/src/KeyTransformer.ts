@@ -76,7 +76,6 @@ interface KeyArguments {
 
 export class KeyTransformer extends Transformer {
   constructor() {
-    // TODO remove once prettier is upgraded
     // prettier-ignore
     super(
       'KeyTransformer',

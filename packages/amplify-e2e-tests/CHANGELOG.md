@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.10.18](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.17...amplify-category-api-e2e-tests@3.10.18) (2023-01-12)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.10.17](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.16...amplify-category-api-e2e-tests@3.10.17) (2023-01-12)
+
+### Bug Fixes
+
+- disable searchable nodeToNode encryption unless it is already deployed to mitigate impact from enabling or disabling. ([#1152](https://github.com/aws-amplify/amplify-category-api/issues/1152)) ([4a1c360](https://github.com/aws-amplify/amplify-category-api/commit/4a1c36091cff6162b4803651b72ed03c594c01dc))
+
 ## [3.10.16](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.15...amplify-category-api-e2e-tests@3.10.16) (2022-12-13)
 
 ### Bug Fixes

@@ -14,7 +14,7 @@ import { toUpper } from 'graphql-transformer-common';
 
 /**
  * A class to manage interactions with a Aurora Serverless MySQL Relational Databse
- * using the Aurora Data API
+ * using the Aurora Data API.
  */
 export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader {
   auroraClient: AuroraDataAPIClient;

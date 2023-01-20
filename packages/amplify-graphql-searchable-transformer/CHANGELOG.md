@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.16.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@0.16.6...@aws-amplify/graphql-searchable-transformer@0.16.7) (2023-01-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+## [0.16.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@0.16.5...@aws-amplify/graphql-searchable-transformer@0.16.6) (2023-01-12)
+
+### Bug Fixes
+
+- disable searchable nodeToNode encryption unless it is already deployed to mitigate impact from enabling or disabling. ([#1152](https://github.com/aws-amplify/amplify-category-api/issues/1152)) ([4a1c360](https://github.com/aws-amplify/amplify-category-api/commit/4a1c36091cff6162b4803651b72ed03c594c01dc))
+
 ## [0.16.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@0.16.4...@aws-amplify/graphql-searchable-transformer@0.16.5) (2022-12-09)
 
 **Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer

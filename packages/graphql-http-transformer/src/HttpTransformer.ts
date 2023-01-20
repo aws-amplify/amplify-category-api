@@ -29,7 +29,7 @@ interface HttpDirectiveArgs {
 }
 
 /**
- * The @http transform.
+ * The @http transform
  *
  * This transform attaches http resolvers to any fields with the @http directive.
  * Works with GET, POST, PUT, DELETE requests.

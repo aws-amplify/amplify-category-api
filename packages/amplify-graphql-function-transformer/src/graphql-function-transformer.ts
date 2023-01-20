@@ -161,7 +161,7 @@ export class FunctionTransformer extends TransformerPluginBase {
         requestTemplate.push(obj({}));
 
         if (resolver === undefined) {
-          // TODO: update function to use resolver manager
+          // TODO: update function to use resolver manager.
           const resolverStack = context.stackManager.getStackFor(resolverId, FUNCTION_DIRECTIVE_STACK);
           resolver = context.api.host.addResolver(
             config.resolverTypeName,
