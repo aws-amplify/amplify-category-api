@@ -75,13 +75,16 @@ import { ModelDirectiveConfiguration, SubscriptionLevel } from './directive';
  */
 export type Nullable<T> = T | null;
 
-export const directiveDefinition = /* GraphQl */ `
+export const modelDirectiveDefinition = /* GraphQL */ `
   directive @model(
     queries: ModelQueryMap
     mutations: ModelMutationMap
     subscriptions: ModelSubscriptionMap
     timestamps: TimestampConfiguration
   ) on OBJECT
+`;
+
+export const directiveInputDefinitions = /* GraphQL */ `
   input ModelMutationMap {
     create: String
     update: String
@@ -106,6 +109,11 @@ export const directiveDefinition = /* GraphQl */ `
     createdAt: String
     updatedAt: String
   }
+`;
+
+export const directiveDefinition = /* GraphQl */ `
+${modelDirectiveDefinition}
+${directiveInputDefinitions}
 `;
 
 type ModelTransformerOptions = {

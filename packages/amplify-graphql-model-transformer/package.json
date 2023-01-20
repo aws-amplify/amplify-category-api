@@ -21,7 +21,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc && cd rds-lambda && tsc && bestzip --force node ../lib/streaming-lambda.zip ./lib*",
+    "build": "tsc && cd rds-lambda && tsc && bestzip --force node ../lib/rds-resolver-lambda.zip ./lib*",
     "watch": "tsc -w",
     "clean": "rimraf ./lib",
     "test": "jest",

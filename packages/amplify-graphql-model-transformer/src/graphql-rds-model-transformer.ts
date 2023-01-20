@@ -21,8 +21,7 @@ import {
   generateLambdaRequestTemplate,
   generateResolverKey,
 } from './resolvers';
-
-export const directiveDefinition = modelDefinition.replace('@model', '@rdsModel');
+import { modelOrchestrator } from './model-orchestrator';
 
 export const RDS_STACK_NAME = 'RdsApiStack';
 
@@ -38,7 +37,10 @@ export class RdsModelTransformer extends GenericModelTransformer implements Tran
   private rdsLambdaDataSource?: DataSourceProvider;
 
   constructor(options: RdsModelTransformerOptions = {}) {
-    super('amplify-rds-model-transformer', directiveDefinition);
+    super(
+      'amplify-rds-model-transformer',
+      modelOrchestrator.getModelPluginDefinition('RdsModelTransformer', { directiveRename: 'rdsModel' }),
+    );
     this.options = this.getOptions(options);
   }
 

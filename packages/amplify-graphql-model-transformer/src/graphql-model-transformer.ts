@@ -56,6 +56,7 @@ import {
   generateSyncRequestTemplate,
 } from './resolvers/query';
 import { SubscriptionLevel } from './directive';
+import {modelOrchestrator} from './model-orchestrator';
 
 /**
  * Nullable
@@ -74,7 +75,7 @@ type ModelTransformerOptions = {
  */
 export class ModelTransformer extends GenericModelTransformer implements TransformerModelProvider {
   constructor(options: ModelTransformerOptions = {}) {
-    super('amplify-model-transformer', directiveDefinition);
+    super('amplify-model-transformer', modelOrchestrator.getModelPluginDefinition('ModelTransformer'));
     this.options = this.getOptions(options);
   }
 
