@@ -22,8 +22,8 @@ import { askAuthQuestions } from './provider-utils/awscloudformation/service-wal
 import { authConfigToAppSyncAuthType } from './provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { checkAppsyncApiResourceMigration } from './provider-utils/awscloudformation/utils/check-appsync-api-migration';
 import { getAppSyncApiResourceName } from './provider-utils/awscloudformation/utils/getAppSyncApiName';
-import { ImportedRDSType, RDS_SCHEMA_FILE_NAME } from './provider-utils/awscloudformation/service-walkthrough-types/import-appsync-api-types';
-import { readGlobalAmplifyInput, validateInputConfig } from './provider-utils/awscloudformation/utils/import-rds-utils/globalAmplifyInputs';
+import { RDS_SCHEMA_FILE_NAME } from './provider-utils/awscloudformation/service-walkthrough-types/import-appsync-api-types';
+import { getRDSGlobalAmplifyInput, getRDSDBConfigFromAmplifyInput } from './provider-utils/awscloudformation/utils/import-rds-utils/globalAmplifyInputs';
 import { getAPIResourceDir } from './provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { configureMultiEnvDBSecrets } from './provider-utils/awscloudformation/utils/rds-secrets/multi-env-database-secrets';
 import _ from 'lodash';
@@ -107,10 +107,6 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   const datasource = 'Aurora Serverless';
   const service = 'service';
   const rdsInit = 'rdsInit';
-  const rdsRegion = 'rdsRegion';
-  const rdsClusterIdentifier = 'rdsClusterIdentifier';
-  const rdsSecretStoreArn = 'rdsSecretStoreArn';
-  const rdsDatabaseName = 'rdsDatabaseName';
 
   const { amplify } = context;
   const { envName } = amplify.getEnvInfo();
@@ -152,9 +148,9 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
   if(fs.existsSync(pathToSchemaFile)) {
     // read and validate the RDS connection parameters
-    const config: $TSAny = await readGlobalAmplifyInput(context, pathToSchemaFile);
-    // ensure that the required database connection details exist
-    await validateInputConfig(context, config);
+    const amplifyInput = await getRDSGlobalAmplifyInput(context, pathToSchemaFile);
+    const config = await getRDSDBConfigFromAmplifyInput(context, amplifyInput);
+
     const envInfo = {
       isNewEnv: context.exeInfo?.isNewEnv,
       sourceEnv: context.exeInfo?.sourceEnvName,
