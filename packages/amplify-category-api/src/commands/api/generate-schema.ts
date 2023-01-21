@@ -1,15 +1,16 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import fs from 'fs-extra';
 import _ from 'lodash';
-import { MySQLDataSourceAdapter, generateGraphQLSchema, Schema, Engine, DataSourceAdapter } from '@aws-amplify/graphql-schema-generator';
+import { MySQLDataSourceAdapter, generateGraphQLSchema, Schema, Engine, DataSourceAdapter, MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
 import { getDBUserSecretsWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/generate-graphql-schema-walkthrough';
 import { ImportedRDSType, RDS_SCHEMA_FILE_NAME } from '../../provider-utils/awscloudformation/service-walkthrough-types/import-appsync-api-types';
-import { readGlobalAmplifyInput, validateInputConfig } from '../../provider-utils/awscloudformation/utils/import-rds-utils/globalAmplifyInputs';
+import { getRDSGlobalAmplifyInput, getRDSDBConfigFromAmplifyInput, constructRDSGlobalAmplifyInput } from '../../provider-utils/awscloudformation/utils/import-rds-utils/globalAmplifyInputs';
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { getExistingConnectionSecrets, storeConnectionSecrets } from '../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 import { writeSchemaFile } from '../../provider-utils/awscloudformation/utils/graphql-schema-utils';
+import * as os from 'os';
 
 const subcommand = 'generate-schema';
 
@@ -23,9 +24,8 @@ export const run = async (context: $TSContext) => {
   const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
   if(fs.existsSync(pathToSchemaFile)) {
     // read and validate the RDS connection parameters
-    const config: $TSAny = await readGlobalAmplifyInput(context, pathToSchemaFile);
-    // ensure that the required database connection details exist
-    await validateInputConfig(context, config);
+    const amplifyInput = await getRDSGlobalAmplifyInput(context, pathToSchemaFile);
+    const config = await getRDSDBConfigFromAmplifyInput(context, amplifyInput);
 
     // read and validate the RDS connection secrets
     let secretsExistInParameterStore = true;
@@ -34,15 +34,15 @@ export const run = async (context: $TSContext) => {
       secrets = await getDBUserSecretsWalkthrough(config.database);
       secretsExistInParameterStore = false;
     }
-    config['username'] = secrets?.username;
-    config['password'] = secrets?.password;
+    config.username = secrets?.username;
+    config.password = secrets?.password;
     
     // Establish the connection
     let adapter: DataSourceAdapter;
     let schema: Schema;
     switch(config.engine) {
       case ImportedRDSType.MYSQL:
-        adapter = new MySQLDataSourceAdapter(config);
+        adapter = new MySQLDataSourceAdapter(config as MySQLDataSourceConfig);
         schema = new Schema(new Engine('MySQL'));
         break;
       default:
@@ -66,7 +66,7 @@ export const run = async (context: $TSContext) => {
     adapter.cleanup();
     models.forEach(m => schema.addModel(m));
 
-    const schemaString = generateGraphQLSchema(schema);
+    const schemaString = await constructRDSGlobalAmplifyInput(context, config, amplifyInput) + os.EOL + os.EOL + generateGraphQLSchema(schema);
     writeSchemaFile(pathToSchemaFile, schemaString);
 
     if(_.isEmpty(schemaString)) {

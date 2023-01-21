@@ -1,12 +1,12 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import fs from 'fs-extra';
 import _ from 'lodash';
-import { MySQLDataSourceAdapter, DataSourceAdapter } from '@aws-amplify/graphql-schema-generator';
+import { MySQLDataSourceAdapter, DataSourceAdapter, MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
 import { getDBUserSecretsWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/generate-graphql-schema-walkthrough';
 import { ImportedRDSType, RDS_SCHEMA_FILE_NAME } from '../../provider-utils/awscloudformation/service-walkthrough-types/import-appsync-api-types';
-import { readGlobalAmplifyInput, validateInputConfig } from '../../provider-utils/awscloudformation/utils/import-rds-utils/globalAmplifyInputs';
+import { getRDSGlobalAmplifyInput, getRDSDBConfigFromAmplifyInput } from '../../provider-utils/awscloudformation/utils/import-rds-utils/globalAmplifyInputs';
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { storeConnectionSecrets } from '../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 
@@ -22,12 +22,12 @@ export const run = async (context: $TSContext) => {
   const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
   if(fs.existsSync(pathToSchemaFile)) {
     // read and validate the RDS connection parameters
-    const config: $TSAny = await readGlobalAmplifyInput(context, pathToSchemaFile);
-    // ensure that the required database connection details exist
-    await validateInputConfig(context, config);
+    const amplifyInput = await getRDSGlobalAmplifyInput(context, pathToSchemaFile);
+    const config = await getRDSDBConfigFromAmplifyInput(context, amplifyInput);
+
     const secrets = await getDBUserSecretsWalkthrough(config.database);
-    config['username'] = secrets?.username;
-    config['password'] = secrets?.password;
+    config.username = secrets?.username;
+    config.password = secrets?.password;
 
     await storeConnectionSecrets(context, config.database, secrets, apiName);
     
@@ -35,7 +35,7 @@ export const run = async (context: $TSContext) => {
     let adapter: DataSourceAdapter;
     switch(config.engine) {
       case ImportedRDSType.MYSQL:
-        adapter = new MySQLDataSourceAdapter(config);
+        adapter = new MySQLDataSourceAdapter(config as MySQLDataSourceConfig);
         break;
       default:
         printer.error('Only MySQL Data Source is supported.');
