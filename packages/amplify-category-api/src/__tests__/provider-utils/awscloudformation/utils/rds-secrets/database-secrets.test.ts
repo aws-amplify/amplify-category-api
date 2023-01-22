@@ -1,7 +1,8 @@
-import { $TSAny, $TSContext, stateManager } from 'amplify-cli-core';
-import { getExistingConnectionSecrets, storeConnectionSecrets, getParameterStoreSecretPath } from '../../../../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
+import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { getExistingConnectionSecrets, getParameterStoreSecretPath } from '../../../../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 
 const mockDatabase = 'mockdatabase';
+const mockAPIName = 'mockapi';
 
 jest.mock('../../../../../provider-utils/awscloudformation/utils/rds-secrets/ssmClient', () => ({
   SSMClient: {
@@ -35,15 +36,15 @@ describe('Test database secrets management', () => {
   });
 
   it('Returns correct path for secrets in parameter store for a database', () => {
-    const usernamePath = getParameterStoreSecretPath('username', mockDatabase);
-    expect(usernamePath).toEqual('/amplify/fake-app-id/test/mockdatabase/AMPLIFY_username');
+    const usernamePath = getParameterStoreSecretPath('username', mockDatabase, mockAPIName);
+    expect(usernamePath).toEqual('/amplify/fake-app-id/test/AMPLIFY_apimockapimockdatabase_username');
 
-    const passwordPath = getParameterStoreSecretPath('password', mockDatabase);
-    expect(passwordPath).toEqual('/amplify/fake-app-id/test/mockdatabase/AMPLIFY_password');
+    const passwordPath = getParameterStoreSecretPath('password', mockDatabase, mockAPIName);
+    expect(passwordPath).toEqual('/amplify/fake-app-id/test/AMPLIFY_apimockapimockdatabase_password');
   });
 
   it('Returns undefined if secrets do not exist in parameter store for a database', async () => {
-    const fetchedSecrets = await getExistingConnectionSecrets(mockContext, mockDatabase);
+    const fetchedSecrets = await getExistingConnectionSecrets(mockContext, mockDatabase, mockAPIName);
     expect(fetchedSecrets).not.toBeDefined();
   });
 });

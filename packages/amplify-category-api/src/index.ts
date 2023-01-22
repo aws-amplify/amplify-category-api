@@ -26,6 +26,7 @@ import { RDS_SCHEMA_FILE_NAME } from './provider-utils/awscloudformation/service
 import { getRDSGlobalAmplifyInput, getRDSDBConfigFromAmplifyInput } from './provider-utils/awscloudformation/utils/import-rds-utils/globalAmplifyInputs';
 import { getAPIResourceDir } from './provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { configureMultiEnvDBSecrets } from './provider-utils/awscloudformation/utils/rds-secrets/multi-env-database-secrets';
+import { deleteConnectionSecrets } from './provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 import _ from 'lodash';
 
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
@@ -157,7 +158,7 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
       yesFlagSet: _.get(context, ['parameters', 'options', 'yes'], false),
       envName: envName
     }
-    await configureMultiEnvDBSecrets(context, config.database, envInfo);
+    await configureMultiEnvDBSecrets(context, config.database, resourceName, envInfo);
   }
 
   // If an AppSync API has not been initialized with RDS, no need to prompt
@@ -290,11 +291,21 @@ export const executeAmplifyHeadlessCommand = async (context: $TSContext, headles
 };
 
 /**
- * Not yet implemented
+ * Handle state changes in Amplify app.
  */
-export const handleAmplifyEvent = async (_: $TSContext, args): Promise<void> => {
-  printer.info(`${category} handleAmplifyEvent to be implemented`);
-  printer.info(`Received event args ${args}`);
+export const handleAmplifyEvent = async (context: $TSContext, args: $TSAny): Promise<void> => {
+  switch (args.event) {
+    case 'InternalOnlyPostEnvRemove':
+      const meta = stateManager.getMeta();
+      const apiName = getAppSyncResourceName(meta);
+      if (!apiName) {
+        return;
+      }
+      await deleteConnectionSecrets(context, apiName, args?.data?.envName);
+      break;
+    default:
+      // other event handlers not implemented
+  }
 };
 
 /**
