@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { constructGlobalAmplifyInput, readGlobalAmplifyInput, validateInputConfig } from '../../../../../provider-utils/awscloudformation/utils/import-rds-utils/globalAmplifyInputs';
+import { constructDefaultGlobalAmplifyInput, getRDSGlobalAmplifyInput, getRDSDBConfigFromAmplifyInput, validateRDSInputDBConfig } from '../../../../../provider-utils/awscloudformation/utils/import-rds-utils/globalAmplifyInputs';
 import { ImportedRDSType } from '../../../../../provider-utils/awscloudformation/service-walkthrough-types/import-appsync-api-types';
 import * as fs from 'fs-extra';
 
@@ -25,7 +25,7 @@ describe('Amplify Input read/write from schema', () => {
     jest.resetAllMocks();
   });
 
-  it('constructs valid input parameters for MySQL datasource with global auth rule', async () => {
+  it('constructs valid default input parameters for MySQL datasource with global auth rule', async () => {
     const expectedGraphQLInputString = `input Amplify {
       engine: String = \"mysql\"  
       host: String = \"ENTER YOUR DATABASE HOSTNAME HERE\"  
@@ -33,7 +33,7 @@ describe('Amplify Input read/write from schema', () => {
       database: String = \"ENTER YOUR DATABASE NAME HERE\" 
       globalAuthRule: AuthRule = { allow: public } # This "input" configures a global authorization rule to enable public access to all models in this schema. Learn more about authorization rules here:https://docs.amplify.aws/cli/graphql/authorization-rules 
     }`;
-    const constructedInputString = await constructGlobalAmplifyInput(mockContext, ImportedRDSType.MYSQL);
+    const constructedInputString = await constructDefaultGlobalAmplifyInput(mockContext, ImportedRDSType.MYSQL);
     expect(constructedInputString?.replace(/\s/g, '')).toEqual(expectedGraphQLInputString.replace(/\s/g, ''));
   });
 
@@ -54,9 +54,10 @@ describe('Amplify Input read/write from schema', () => {
     }`;
     readFileSync_mock.mockReturnValue(mockInputSchema);
 
-    const readInputs = await readGlobalAmplifyInput(mockContext, '');
+    const readInputs = await getRDSGlobalAmplifyInput(mockContext, '');
+    const readConfig = await getRDSDBConfigFromAmplifyInput(mockContext, readInputs);
     
-    expect(readInputs).toEqual(mockValidInputs);
+    expect(readConfig).toEqual(mockValidInputs);
   });
 
   it('reports missing input arguments for database connection details', async () => {
@@ -67,7 +68,7 @@ describe('Amplify Input read/write from schema', () => {
     };
 
     try {
-      await validateInputConfig(mockContext, mockInvalidInputs);
+      await validateRDSInputDBConfig(mockContext, mockInvalidInputs);
       fail('invalid input configuration is not reported');
     }
     catch(error) {
@@ -84,7 +85,7 @@ describe('Amplify Input read/write from schema', () => {
     };
 
     try {
-      await validateInputConfig(mockContext, mockInvalidInputs);
+      await validateRDSInputDBConfig(mockContext, mockInvalidInputs);
       fail('invalid input configuration is not reported');
     }
     catch(error) {

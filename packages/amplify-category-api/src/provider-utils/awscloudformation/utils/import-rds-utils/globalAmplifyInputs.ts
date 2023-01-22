@@ -1,9 +1,8 @@
 import { ImportedRDSType } from '../../service-walkthrough-types/import-appsync-api-types';
-import { parse, Kind, print, DefinitionNode } from 'graphql';
+import { parse, print, DefinitionNode } from 'graphql';
 import * as fs from 'fs-extra';
 import { $TSAny, $TSContext, ApiCategoryFacade, getGraphQLTransformerAuthDocLink } from 'amplify-cli-core';
 import _ from 'lodash';
-import { InputObjectDefinitionWrapper, FieldWrapper, InputFieldWrapper } from '@aws-amplify/graphql-transformer-core';
 import { MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
 
 type AmplifyInputEntry = {

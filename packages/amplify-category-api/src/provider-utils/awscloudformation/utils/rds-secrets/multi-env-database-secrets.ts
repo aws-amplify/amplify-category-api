@@ -1,8 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
-import { getDBUserSecretsWalkthrough } from '../../service-walkthroughs/generate-graphql-schema-walkthrough';
-import { MySQLDataSourceAdapter, DataSourceAdapter } from '@aws-amplify/graphql-schema-generator';
-import { storeConnectionSecrets } from '../../utils/rds-secrets/database-secrets';
-import { printer, prompter } from 'amplify-prompts';
+import { storeConnectionSecrets, getExistingConnectionSecrets } from '../../utils/rds-secrets/database-secrets';
+import { printer } from 'amplify-prompts';
 
 type EnvironmentInfo = {
   isNewEnv: boolean,
@@ -11,10 +9,19 @@ type EnvironmentInfo = {
   envName: string
 };
 
-export const configureMultiEnvDBSecrets = async (context: $TSContext, database: string, envInfo: EnvironmentInfo) => {
-  const secretsPrompt = 'You have configured database secrets for your API. How do you want to proceed?';
-  const secretsOptions = {
+export const configureMultiEnvDBSecrets = async (context: $TSContext, database: string, apiName: string, envInfo: EnvironmentInfo) => {
+  // For existing environments, the secrets are already set in parameter store
+  if(!envInfo.isNewEnv) {
+    return;
+  }
 
-  };
-  
+  // For new environments, the secrets are copied over from the source environment.
+  const secrets = await getExistingConnectionSecrets(context, database, apiName, envInfo.sourceEnv);
+  if (!secrets) {
+    printer.warn(`Could not copy over the user secrets for database ${database}. Run "amplify api update-secrets" to set them for the current environment.`);
+    return;
+  }
+
+  await storeConnectionSecrets(context, database, secrets, apiName);
+  return;
 };
