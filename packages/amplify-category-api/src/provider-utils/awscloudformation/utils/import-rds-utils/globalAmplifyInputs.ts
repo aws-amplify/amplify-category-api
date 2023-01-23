@@ -107,7 +107,9 @@ export const constructRDSGlobalAmplifyInput = async (context: $TSContext, config
     const inputNodeField = inputNode?.fields?.find( 
       field => field?.name?.value === input
     );
-    inputNodeField.defaultValue.value = config[input];
+    if(inputNodeField && config[input]) {
+      inputNodeField.defaultValue.value = config[input];
+    }
   });
 
   const result = print(inputNode);
