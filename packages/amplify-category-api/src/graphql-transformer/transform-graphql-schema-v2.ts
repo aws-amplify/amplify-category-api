@@ -8,6 +8,7 @@ import {
   AppSyncAuthConfiguration,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
+  $TSAny,
   $TSContext,
   AmplifyCategories,
   AmplifySupportedService,
@@ -196,7 +197,7 @@ const buildAPIProject = async (
     (mode: AppSyncAuthConfigurationEntry) => mode.authenticationType === AuthorizationType.API_KEY && mode.apiKeyConfig,
   ) as AppSyncAuthConfigurationAPIKeyEntry;
   const config = apiKeyEntry?.apiKeyConfig;
-  const apiKeyId = `${(config as any)?.name || 'Default'}ApiKey`;
+  const apiKeyId = `${(config as $TSAny)?.name || 'Default'}ApiKey`;
   const apiKeyResourceID = _.keys(builtProject.rootStack.Resources).find((id) => id.includes(apiKeyId));
   if (apiKeyResourceID) {
     const properties = builtProject.rootStack.Resources?.[apiKeyResourceID]?.Properties;
