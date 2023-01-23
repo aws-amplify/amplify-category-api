@@ -24,6 +24,7 @@ export {
   SyncConfigLambda,
   TransformConfig,
   TransformerProjectConfig,
+  DatasourceType,
 } from './config/index';
 export {
   GetArgumentsOptions,
