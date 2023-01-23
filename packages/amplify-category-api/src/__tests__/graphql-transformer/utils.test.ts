@@ -1,5 +1,5 @@
 import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from '../../graphql-transformer/utils';
-import { TransformerProjectConfig, DeploymentResources } from '@aws-amplify/graphql-transformer-core';
+import { TransformerProjectConfig, DeploymentResources, DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { $TSContext, CloudformationProviderFacade } from 'amplify-cli-core';
@@ -72,7 +72,7 @@ describe('graphql transformer utils', () => {
           pipelineFunctions: {},
           resolvers: {},
           stacks: {},
-          modelToDatasourceMap: undefined,
+          modelToDatasourceMap: new Map<string, DatasourceType>(),
           config: { Version: 5, ElasticsearchWarning: true },
         } as TransformerProjectConfig;
       });
@@ -94,7 +94,7 @@ describe('graphql transformer utils', () => {
             'Query.listTodos.req.vtl': '$util.unauthorized\n',
           },
           stacks: {},
-          modelToDatasourceMap: undefined,
+          modelToDatasourceMap: new Map<string, DatasourceType>(),
           config: { Version: 5, ElasticsearchWarning: true },
         } as TransformerProjectConfig;
       });
@@ -116,7 +116,7 @@ describe('graphql transformer utils', () => {
           },
           resolvers: {},
           stacks: {},
-          modelToDatasourceMap: undefined,
+          modelToDatasourceMap: new Map<string, DatasourceType>(),
           config: { Version: 5, ElasticsearchWarning: true },
         } as TransformerProjectConfig;
       });
@@ -202,7 +202,7 @@ describe('graphql transformer utils', () => {
               },
             },
           },
-          modelToDatasourceMap: undefined,
+          modelToDatasourceMap: new Map<string, DatasourceType>(),
           config: { Version: 5, ElasticsearchWarning: true },
         } as unknown as TransformerProjectConfig;
       });
