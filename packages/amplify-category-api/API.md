@@ -133,7 +133,7 @@ export const getResolverConfig: (context: $TSContext, resourceName: string) => P
 export const getTransformerVersion: (context: any) => Promise<number>;
 
 // @public (undocumented)
-export const handleAmplifyEvent: (context: $TSContext, args: $TSAny) => Promise<void>;
+export const handleAmplifyEvent: (_: $TSContext, args: any) => Promise<void>;
 
 // @public (undocumented)
 export const initEnv: (context: $TSContext) => Promise<void>;
