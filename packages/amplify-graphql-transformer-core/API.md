@@ -637,7 +637,7 @@ export interface TransformerProjectConfig {
     // (undocumented)
     functions: Record<string, string>;
     // (undocumented)
-    modelToDatasourceMap: Map<string, DatasourceType>;
+    modelToDatasourceMap: Map<string, DatasourceType> | undefined;
     // (undocumented)
     pipelineFunctions: Record<string, string>;
     // (undocumented)

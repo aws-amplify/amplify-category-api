@@ -385,7 +385,7 @@ export interface TransformerContextProvider {
     // Warning: (ae-forgotten-export) The symbol "DatasourceType" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    modelToDatasourceMap: Map<string, DatasourceType>;
+    modelToDatasourceMap: Map<string, DatasourceType> | undefined;
     // (undocumented)
     output: TransformerContextOutputProvider;
     // (undocumented)
