@@ -1,8 +1,9 @@
 import { ImportedRDSType } from '../../service-walkthrough-types/import-appsync-api-types';
-import { parse } from 'graphql';
+import { parse, print, DefinitionNode } from 'graphql';
 import * as fs from 'fs-extra';
 import { $TSAny, $TSContext, ApiCategoryFacade, getGraphQLTransformerAuthDocLink } from 'amplify-cli-core';
 import _ from 'lodash';
+import { MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
 
 type AmplifyInputEntry = {
   name: string,
@@ -10,6 +11,8 @@ type AmplifyInputEntry = {
   default: string|number,
   comment?: string|undefined
 };
+
+export type RDSDBConfig = MySQLDataSourceConfig & { engine: string; };
 
 const getGlobalAmplifyInputEntries = async (
   context: $TSContext, 
@@ -52,7 +55,7 @@ const getGlobalAmplifyInputEntries = async (
   return inputs;
 };
 
-export const constructGlobalAmplifyInput = async (context: $TSContext, dataSourceType: ImportedRDSType) => {
+export const constructDefaultGlobalAmplifyInput = async (context: $TSContext, dataSourceType: ImportedRDSType) => {
   const inputs = await getGlobalAmplifyInputEntries(context, dataSourceType);
   const inputsString = inputs.reduce((acc: string, input): string =>
     acc + ` ${input.name}: ${input.type} = ${input.type === 'String' ? '"'+ input.default + '"' : input.default} ${input.comment ? '# ' + input.comment: ''} \n`
@@ -60,7 +63,7 @@ export const constructGlobalAmplifyInput = async (context: $TSContext, dataSourc
   return `input Amplify {\n${inputsString}}\n`;
 };
 
-export const readGlobalAmplifyInput = async (context: $TSContext, pathToSchemaFile: string) => {
+export const readRDSGlobalAmplifyInput = async (pathToSchemaFile: string): Promise<DefinitionNode> => {
   const schemaContent = fs.readFileSync(pathToSchemaFile, 'utf-8');
   if(_.isEmpty(schemaContent?.replace(/[\r\n]/gm, ''))) {
     throw new Error('The schema file is empty');
@@ -68,17 +71,19 @@ export const readGlobalAmplifyInput = async (context: $TSContext, pathToSchemaFi
 
   const parsedSchema = parse(schemaContent);
 
-  const inputDirective: $TSAny = parsedSchema.definitions.find(
+  return parsedSchema.definitions.find(
     definition =>
      definition.kind === 'InputObjectTypeDefinition' &&
      definition.name &&
      definition.name.value === 'Amplify'
   );
+};
 
+export const getRDSDBConfigFromAmplifyInput = async (context:$TSContext, inputNode: $TSAny): Promise<Partial<RDSDBConfig>> => {
   const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL, false)).map(item => item.name);
   const inputs = {};
   expectedInputs.map(input => {
-    const value = inputDirective?.fields?.find( 
+    const value = inputNode?.fields?.find( 
       field => field?.name?.value === input
     )?.defaultValue?.value;
     if (_.isEmpty(value)) {
@@ -86,11 +91,32 @@ export const readGlobalAmplifyInput = async (context: $TSContext, pathToSchemaFi
     }
     inputs[input] = value;
   });
-
   return inputs;
 };
 
-export const validateInputConfig = async (context: $TSContext, config: { [x: string]: any; }) => {
+export const getRDSGlobalAmplifyInput = async (context: $TSContext, pathToSchemaFile: string) => {
+  const inputNode = await readRDSGlobalAmplifyInput(pathToSchemaFile);
+  const config = await getRDSDBConfigFromAmplifyInput(context, inputNode);
+  await validateRDSInputDBConfig(context, config);
+  return inputNode;
+};
+
+export const constructRDSGlobalAmplifyInput = async (context: $TSContext, config: Partial<RDSDBConfig>, inputNode: $TSAny): Promise<string> => {
+  const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL, false)).map(item => item.name);
+  expectedInputs.map( input => {
+    const inputNodeField = inputNode?.fields?.find( 
+      field => field?.name?.value === input
+    );
+    if(inputNodeField && config[input]) {
+      inputNodeField.defaultValue.value = config[input];
+    }
+  });
+
+  const result = print(inputNode);
+  return result;
+};
+
+export const validateRDSInputDBConfig = async (context: $TSContext, config: { [x: string]: any; }) => {
   const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL, false)).map(item => item.name);
   const missingInputs = expectedInputs.filter(input => _.isEmpty(config[input]));
   if(!_.isEmpty(missingInputs)) {

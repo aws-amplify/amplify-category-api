@@ -1,0 +1,260 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Amplify Input read/write from schema constructs the global Amplify input from given config 1`] = `
+"input Amplify {
+  engine: String = \\"mysql\\"
+  host: String = \\"otherdatabase.rds.amazonaws.com\\"
+  port: Int = 2020
+  database: String = \\"otherdatabase\\"
+  globalAuthRule: AuthRule = {allow: public}
+}"
+`;
+
+exports[`Amplify Input read/write from schema reads global Amplify input type in the schema 1`] = `
+Object {
+  "description": undefined,
+  "directives": Array [],
+  "fields": Array [
+    Object {
+      "defaultValue": Object {
+        "block": false,
+        "kind": "StringValue",
+        "loc": Object {
+          "end": 46,
+          "start": 39,
+        },
+        "value": "mysql",
+      },
+      "description": undefined,
+      "directives": Array [],
+      "kind": "InputValueDefinition",
+      "loc": Object {
+        "end": 46,
+        "start": 22,
+      },
+      "name": Object {
+        "kind": "Name",
+        "loc": Object {
+          "end": 28,
+          "start": 22,
+        },
+        "value": "engine",
+      },
+      "type": Object {
+        "kind": "NamedType",
+        "loc": Object {
+          "end": 36,
+          "start": 30,
+        },
+        "name": Object {
+          "kind": "Name",
+          "loc": Object {
+            "end": 36,
+            "start": 30,
+          },
+          "value": "String",
+        },
+      },
+    },
+    Object {
+      "defaultValue": Object {
+        "block": false,
+        "kind": "StringValue",
+        "loc": Object {
+          "end": 102,
+          "start": 70,
+        },
+        "value": "mockdatabase.rds.amazonaws.com",
+      },
+      "description": undefined,
+      "directives": Array [],
+      "kind": "InputValueDefinition",
+      "loc": Object {
+        "end": 102,
+        "start": 55,
+      },
+      "name": Object {
+        "kind": "Name",
+        "loc": Object {
+          "end": 59,
+          "start": 55,
+        },
+        "value": "host",
+      },
+      "type": Object {
+        "kind": "NamedType",
+        "loc": Object {
+          "end": 67,
+          "start": 61,
+        },
+        "name": Object {
+          "kind": "Name",
+          "loc": Object {
+            "end": 67,
+            "start": 61,
+          },
+          "value": "String",
+        },
+      },
+    },
+    Object {
+      "defaultValue": Object {
+        "kind": "IntValue",
+        "loc": Object {
+          "end": 127,
+          "start": 123,
+        },
+        "value": "1010",
+      },
+      "description": undefined,
+      "directives": Array [],
+      "kind": "InputValueDefinition",
+      "loc": Object {
+        "end": 127,
+        "start": 111,
+      },
+      "name": Object {
+        "kind": "Name",
+        "loc": Object {
+          "end": 115,
+          "start": 111,
+        },
+        "value": "port",
+      },
+      "type": Object {
+        "kind": "NamedType",
+        "loc": Object {
+          "end": 120,
+          "start": 117,
+        },
+        "name": Object {
+          "kind": "Name",
+          "loc": Object {
+            "end": 120,
+            "start": 117,
+          },
+          "value": "Int",
+        },
+      },
+    },
+    Object {
+      "defaultValue": Object {
+        "block": false,
+        "kind": "StringValue",
+        "loc": Object {
+          "end": 192,
+          "start": 178,
+        },
+        "value": "mockdatabase",
+      },
+      "description": undefined,
+      "directives": Array [],
+      "kind": "InputValueDefinition",
+      "loc": Object {
+        "end": 192,
+        "start": 159,
+      },
+      "name": Object {
+        "kind": "Name",
+        "loc": Object {
+          "end": 167,
+          "start": 159,
+        },
+        "value": "database",
+      },
+      "type": Object {
+        "kind": "NamedType",
+        "loc": Object {
+          "end": 175,
+          "start": 169,
+        },
+        "name": Object {
+          "kind": "Name",
+          "loc": Object {
+            "end": 175,
+            "start": 169,
+          },
+          "value": "String",
+        },
+      },
+    },
+    Object {
+      "defaultValue": Object {
+        "fields": Array [
+          Object {
+            "kind": "ObjectField",
+            "loc": Object {
+              "end": 242,
+              "start": 229,
+            },
+            "name": Object {
+              "kind": "Name",
+              "loc": Object {
+                "end": 234,
+                "start": 229,
+              },
+              "value": "allow",
+            },
+            "value": Object {
+              "kind": "EnumValue",
+              "loc": Object {
+                "end": 242,
+                "start": 236,
+              },
+              "value": "public",
+            },
+          },
+        ],
+        "kind": "ObjectValue",
+        "loc": Object {
+          "end": 244,
+          "start": 227,
+        },
+      },
+      "description": undefined,
+      "directives": Array [],
+      "kind": "InputValueDefinition",
+      "loc": Object {
+        "end": 244,
+        "start": 200,
+      },
+      "name": Object {
+        "kind": "Name",
+        "loc": Object {
+          "end": 214,
+          "start": 200,
+        },
+        "value": "globalAuthRule",
+      },
+      "type": Object {
+        "kind": "NamedType",
+        "loc": Object {
+          "end": 224,
+          "start": 216,
+        },
+        "name": Object {
+          "kind": "Name",
+          "loc": Object {
+            "end": 224,
+            "start": 216,
+          },
+          "value": "AuthRule",
+        },
+      },
+    },
+  ],
+  "kind": "InputObjectTypeDefinition",
+  "loc": Object {
+    "end": 458,
+    "start": 0,
+  },
+  "name": Object {
+    "kind": "Name",
+    "loc": Object {
+      "end": 13,
+      "start": 6,
+    },
+    "value": "Amplify",
+  },
+}
+`;
