@@ -1399,7 +1399,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     ...options,
   });
 
-  private getVTLGenerator = (type: DatasourceType) => {
+  private getVTLGenerator = (type: 'MySQL' | 'DDB') => {
     if (type === 'MySQL') {
       return new RDSVTLGenerator();
     }
