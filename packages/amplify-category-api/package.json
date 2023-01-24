@@ -43,6 +43,7 @@
     "@aws-amplify/graphql-transformer-interfaces": "1.14.11",
     "@aws-amplify/graphql-transformer-migrator": "1.4.14",
     "@aws-cdk/assets": "~1.172.0",
+    "@aws-cdk/aws-appsync": "~1.172.0",
     "@aws-cdk/aws-apigateway": "~1.172.0",
     "@aws-cdk/aws-apigatewayv2": "~1.172.0",
     "@aws-cdk/aws-applicationautoscaling": "~1.172.0",
@@ -84,6 +85,7 @@
     "@aws-cdk/custom-resources": "~1.172.0",
     "@aws-cdk/cx-api": "~1.172.0",
     "@aws-cdk/region-info": "~1.172.0",
+    "@aws-sdk/client-appsync": "~3.236.0",
     "@graphql-tools/merge": "^6.0.18",
     "@octokit/rest": "^18.0.9",
     "chalk": "^4.1.1",
@@ -115,7 +117,7 @@
   "peerDependencies": {
     "@aws-amplify/amplify-environment-parameters": "^1.1.1",
     "amplify-cli-core": "^3.0.0",
-    "amplify-headless-interface": "^1.15.0",
+    "amplify-headless-interface": "^1.16.0",
     "amplify-prompts": "^2.2.0",
     "amplify-provider-awscloudformation": "^6.6.0",
     "amplify-util-headless-input": "^1.9.6"
