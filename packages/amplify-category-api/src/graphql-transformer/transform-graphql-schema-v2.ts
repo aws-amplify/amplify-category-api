@@ -237,8 +237,8 @@ const _buildProject = async (opts: TransformerProjectOptions<TransformerFactoryA
     overrideConfig: opts.overrideConfig,
   });
 
-  const schema = userProjectConfig.schema.toString();
-  const transformOutput = transform.transform(schema);
+  const { schema, modelToDatasourceMap } = userProjectConfig;
+  const transformOutput = transform.transform(schema.toString(), modelToDatasourceMap);
 
   return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput, opts);
 };
