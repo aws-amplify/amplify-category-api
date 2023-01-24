@@ -3,12 +3,12 @@ import { DataSourceAdapter } from "./datasource-adapter";
 import { knex } from 'knex';
 import { printer } from 'amplify-prompts';
 
-interface MySQLDataSourceConfig {
-  readonly host: string;
-  readonly port: number;
-  readonly database: string;
-  readonly username: string;
-  readonly password: string;
+export interface MySQLDataSourceConfig {
+  host: string;
+  port: number;
+  database: string;
+  username: string;
+  password: string;
 }
 
 interface MySQLIndex {
