@@ -443,7 +443,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const isSyncEnabled = ctx.isProjectUsingDataStore();
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Get${generateResolverKey(typeName, fieldName)}`;
-    const dbInfo = ctx.modelToDatasourceMap.get(typeName);
+    const dbInfo = ctx.modelToDatasourceMap.get(type.name.value);
     const dbType = dbInfo ? dbInfo.dbType : 'DDB';
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
@@ -468,7 +468,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const isSyncEnabled = ctx.isProjectUsingDataStore();
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `List${generateResolverKey(typeName, fieldName)}`;
-    const dbInfo = ctx.modelToDatasourceMap.get(typeName);
+    const dbInfo = ctx.modelToDatasourceMap.get(type.name.value);
     const dbType = dbInfo ? dbInfo.dbType : 'DDB';
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
@@ -496,7 +496,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const isSyncEnabled = ctx.isProjectUsingDataStore();
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Update${generateResolverKey(typeName, fieldName)}`;
-    const dbInfo = ctx.modelToDatasourceMap.get(typeName);
+    const dbInfo = ctx.modelToDatasourceMap.get(type.name.value);
     const dbType = dbInfo ? dbInfo.dbType : 'DDB';
     if (!this.resolverMap[resolverKey]) {
       const resolver = ctx.resolvers.generateMutationResolver(
@@ -536,7 +536,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const isSyncEnabled = ctx.isProjectUsingDataStore();
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `delete${generateResolverKey(typeName, fieldName)}`;
-    const dbInfo = ctx.modelToDatasourceMap.get(typeName);
+    const dbInfo = ctx.modelToDatasourceMap.get(type.name.value);
     const dbType = dbInfo ? dbInfo.dbType : 'DDB';
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateMutationResolver(
@@ -561,8 +561,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     resolverLogicalId: string,
   ): TransformerResolverProvider => {
     const resolverKey = `OnCreate${generateResolverKey(typeName, fieldName)}`;
-    const dbInfo = ctx.modelToDatasourceMap.get(typeName);
-    const dbType = dbInfo ? dbInfo.dbType : 'DDB';
+    const dbType = 'DDB'; // Subscription resolvers are common for DDB and RDS
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateSubscriptionResolver(
         typeName,
@@ -582,8 +581,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     resolverLogicalId: string,
   ): TransformerResolverProvider => {
     const resolverKey = `OnUpdate${generateResolverKey(typeName, fieldName)}`;
-    const dbInfo = ctx.modelToDatasourceMap.get(typeName);
-    const dbType = dbInfo ? dbInfo.dbType : 'DDB';
+    const dbType = 'DDB'; // Subscription resolvers are common for DDB and RDS
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateSubscriptionResolver(
         typeName,
@@ -603,8 +601,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     resolverLogicalId: string,
   ): TransformerResolverProvider => {
     const resolverKey = `OnDelete${generateResolverKey(typeName, fieldName)}`;
-    const dbInfo = ctx.modelToDatasourceMap.get(typeName);
-    const dbType = dbInfo ? dbInfo.dbType : 'DDB';
+    const dbType = 'DDB'; // Subscription resolvers are common for DDB and RDS
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateSubscriptionResolver(
         typeName,
@@ -627,7 +624,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const isSyncEnabled = ctx.isProjectUsingDataStore();
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Sync${generateResolverKey(typeName, fieldName)}`;
-    const dbInfo = ctx.modelToDatasourceMap.get(typeName);
+    const dbInfo = ctx.modelToDatasourceMap.get(type.name.value);
     const dbType = dbInfo ? dbInfo.dbType : 'DDB';
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
@@ -882,7 +879,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const isSyncEnabled = ctx.isProjectUsingDataStore();
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Create${generateResolverKey(typeName, fieldName)}`;
-    const dbInfo = ctx.modelToDatasourceMap.get(typeName);
+    const dbInfo = ctx.modelToDatasourceMap.get(type.name.value);
     const dbType = dbInfo ? dbInfo.dbType : 'DDB';
     const modelIndexFields = type.fields!.filter(field => field.directives?.some(it => it.name.value === 'index')).map(it => it.name.value);
     if (!this.resolverMap[resolverKey]) {
