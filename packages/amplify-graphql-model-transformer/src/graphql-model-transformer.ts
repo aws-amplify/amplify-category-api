@@ -83,8 +83,8 @@ import {
 import {
   generateAuthExpressionForSandboxMode,
   generateResolverKey,
-  DynamoDBVTLGenerator,
-  RDSVTLGenerator,
+  DynamoDBModelVTLGenerator,
+  RDSModelVTLGenerator,
 } from './resolvers';
 import { API_KEY_DIRECTIVE } from './definitions';
 import { ModelDirectiveConfiguration, SubscriptionLevel } from './directive';
@@ -1402,8 +1402,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   private getVTLGenerator = (dbInfo: DatasourceType | undefined) => {
     const dbType = dbInfo ? dbInfo.dbType : 'DDB';
     if (dbType === 'MySQL') {
-      return new RDSVTLGenerator();
+      return new RDSModelVTLGenerator();
     }
-    return new DynamoDBVTLGenerator();
+    return new DynamoDBModelVTLGenerator();
   };
 }

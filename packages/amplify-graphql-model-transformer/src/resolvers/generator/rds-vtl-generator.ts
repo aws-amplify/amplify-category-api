@@ -1,5 +1,5 @@
 import { ModelDirectiveConfiguration } from "../../directive";
-import { OperationConfig, VTLGenerator } from "./vtl-generator";
+import { OperationConfig, ModelVTLGenerator } from "./vtl-generator";
 import {
   generateDefaultLambdaResponseMappingTemplate,
   generateGetLambdaResponseTemplate,
@@ -7,7 +7,7 @@ import {
 } from '../rds';
 
 // TODO: This class is created only to show the class structure. This needs a revisit to generate correct resolvers for RDS.
-export class RDSVTLGenerator implements VTLGenerator {
+export class RDSModelVTLGenerator implements ModelVTLGenerator {
   generateUpdateRequestTemplate(modelName: string, isSyncEnabled: boolean, config?: OperationConfig | undefined): string {
     return generateLambdaRequestTemplate(modelName, config?.operation!, config?.operationName!);
   }

@@ -5,7 +5,7 @@ export interface OperationConfig {
   operationName?: string;
 }
 
-export interface VTLGenerator {
+export interface ModelVTLGenerator {
   generateUpdateRequestTemplate(modelName: string, isSyncEnabled: boolean, config?: OperationConfig): string;
   generateCreateRequestTemplate(modelName: string, modelIndexFields: string[], config?: OperationConfig): string;
   generateCreateInitSlotTemplate(modelConfig: ModelDirectiveConfiguration, config?: OperationConfig): string;
