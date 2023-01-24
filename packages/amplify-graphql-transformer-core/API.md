@@ -153,6 +153,16 @@ function createSyncLambdaIAMPolicy(context: TransformerContextProvider, stack: c
 // @public (undocumented)
 function createSyncTable(context: TransformerContext): void;
 
+// @public (undocumented)
+export interface DatasourceType {
+    // Warning: (ae-forgotten-export) The symbol "DBType" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    dbType: DBType;
+    // (undocumented)
+    provisionDB: boolean;
+}
+
 // Warning: (ae-forgotten-export) The symbol "ResolversFunctionsAndSchema" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "NestedStacks" needs to be exported by the entry point index.d.ts
 //
@@ -248,7 +258,7 @@ export class GraphQLTransform {
     // (undocumented)
     preProcessSchema(schema: DocumentNode): DocumentNode;
     // (undocumented)
-    transform(schema: string): DeploymentResources;
+    transform(schema: string, modelToDatasourceMap?: Map<string, DatasourceType>): DeploymentResources;
 }
 
 // @public (undocumented)
@@ -626,6 +636,8 @@ export interface TransformerProjectConfig {
     config: TransformConfig;
     // (undocumented)
     functions: Record<string, string>;
+    // (undocumented)
+    modelToDatasourceMap: Map<string, DatasourceType>;
     // (undocumented)
     pipelineFunctions: Record<string, string>;
     // (undocumented)
