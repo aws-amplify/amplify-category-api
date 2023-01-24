@@ -7,7 +7,7 @@ import {
   PrimaryKeyTransformer as PrimaryKeyTransformerV2,
 } from '@aws-amplify/graphql-index-transformer';
 import { MapsToTransformer as MapsToTransformerV2 } from '@aws-amplify/graphql-maps-to-transformer';
-import { ModelTransformer as ModelTransformerV2, RdsModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { ModelTransformer as ModelTransformerV2 } from '@aws-amplify/graphql-model-transformer';
 import { PredictionsTransformer as PredictionsTransformerV2 } from '@aws-amplify/graphql-predictions-transformer';
 import {
   BelongsToTransformer as BelongsToTransformerV2,
