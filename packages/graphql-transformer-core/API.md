@@ -107,6 +107,17 @@ export const enum ConflictHandlerType {
     OPTIMISTIC = "OPTIMISTIC_CONCURRENCY"
 }
 
+// @public (undocumented)
+export interface DatasourceType {
+    // (undocumented)
+    dbType: DBType;
+    // (undocumented)
+    provisionDB: boolean;
+}
+
+// @public (undocumented)
+export type DBType = 'MySQL' | 'DDB';
+
 // Warning: (ae-forgotten-export) The symbol "ResolversFunctionsAndSchema" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "NestedStacks" needs to be exported by the entry point index.d.ts
 //
@@ -281,7 +292,10 @@ export const PARAMETERS_FILE_NAME = "parameters.json";
 export type ProjectRule = (diffs: Diff[], currentBuild: DiffableProject, nextBuild: DiffableProject) => void;
 
 // @public (undocumented)
-function readSchema(projectDirectory: string): Promise<string>;
+function readSchema(projectDirectory: string): Promise<{
+    schema: string;
+    modelToDatasourceMap: Map<string, DatasourceType>;
+}>;
 export { readSchema as readProjectSchema }
 export { readSchema }
 
