@@ -15,7 +15,7 @@ export class RDSVTLGenerator implements VTLGenerator {
     return generateLambdaRequestTemplate(modelName, config?.operation!, config?.operationName!);
   }
   generateCreateInitSlotTemplate(modelConfig: ModelDirectiveConfiguration, config?: OperationConfig | undefined): string {
-    throw new Error("Method not implemented.");
+    return generateDefaultLambdaResponseMappingTemplate(false);
   }
   generateDeleteRequestTemplate(modelName: string, isSyncEnabled: boolean, config?: OperationConfig | undefined): string {
     return generateLambdaRequestTemplate(modelName, config?.operation!, config?.operationName!);
