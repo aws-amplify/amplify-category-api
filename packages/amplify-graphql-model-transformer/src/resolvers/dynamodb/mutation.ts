@@ -19,7 +19,7 @@ import {
   printBlock,
 } from 'graphql-mapping-template';
 import { setArgs } from 'graphql-transformer-common';
-import { ModelDirectiveConfiguration } from '../directive';
+import { ModelDirectiveConfiguration } from '../../directive';
 import { generateConditionSlot } from './common';
 
 /**
@@ -256,7 +256,7 @@ export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
  * Generates VTL template in delete mutation
  *
  */
-export const generateDeleteRequestTemplate = (isSyncEnabled: boolean): string => {
+export const generateDeleteRequestTemplate = (modelName:string, isSyncEnabled: boolean): string => {
   const statements: Expression[] = [
     setArgs,
     set(

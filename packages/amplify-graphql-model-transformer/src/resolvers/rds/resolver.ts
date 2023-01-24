@@ -1,3 +1,5 @@
+// TODO: Split this file into seperated query, mutations and subscriptions files.
+
 import {
   str,
   Expression,
