@@ -1,4 +1,4 @@
-import { VTLGenerator } from "./vtl-generator";
+import { ModelVTLGenerator } from "./vtl-generator";
 import {
   generateUpdateRequestTemplate,
   generateCreateRequestTemplate,
@@ -14,7 +14,7 @@ import {
   generateDefaultResponseMappingTemplate,
 } from '../dynamodb';
 
-export class DynamoDBVTLGenerator implements VTLGenerator {
+export class DynamoDBModelVTLGenerator implements ModelVTLGenerator {
   public generateUpdateRequestTemplate = generateUpdateRequestTemplate;
   public generateCreateRequestTemplate = generateCreateRequestTemplate;
   public generateCreateInitSlotTemplate = generateCreateInitSlotTemplate;
