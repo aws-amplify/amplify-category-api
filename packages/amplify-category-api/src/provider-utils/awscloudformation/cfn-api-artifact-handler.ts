@@ -28,6 +28,7 @@ import {
 import { appSyncAuthTypeToAuthConfig } from './utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { printApiKeyWarnings } from './utils/print-api-key-warnings';
 import { conflictResolutionToResolverConfig } from './utils/resolver-config-to-conflict-resolution-bi-di-mapper';
+import { getApiKeyStatus, updateApiKeyExpiration } from './utils/manage-api-key';
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
@@ -160,6 +161,13 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     const newDependsOn = amendDependsOnForAuthConfig(existingDependsOn, authConfig);
     this.context.amplify.updateBackendConfigAfterResourceUpdate(category, apiName, 'dependsOn', newDependsOn);
     this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'dependsOn', newDependsOn);
+
+    if (updates?.apiKeyExpiration?.days && updates.apiKeyExpiration.days > 0) {
+      const apiKeyStatus = await getApiKeyStatus(this.context);
+      if (apiKeyStatus.exists) {
+        await updateApiKeyExpiration(this.context, apiKeyStatus, updates.apiKeyExpiration.days);
+      }
+    }
 
     printApiKeyWarnings(oldConfigHadApiKey, authConfigHasApiKey(authConfig));
   };
