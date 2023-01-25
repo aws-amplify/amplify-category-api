@@ -27,7 +27,6 @@
     "@aws-amplify/graphql-transformer-core": "0.18.2",
     "amplify-app": "^4.3.4",
     "amplify-category-api-e2e-core": "4.0.14",
-    "amplify-headless-interface": "^1.16.1",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1113.0",

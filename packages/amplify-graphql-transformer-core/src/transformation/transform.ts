@@ -416,12 +416,6 @@ export class GraphQLTransform {
         description: 'Your GraphQL API ID.',
         exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiKey']),
       });
-
-      new CfnOutput(rootStack, 'GraphQLAPIKeyExpirationOutput', {
-        value: apiKey.expires?.toString() ?? '',
-        description: 'Expiration epoch time for API Key',
-        exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiKeyExpiration']),
-      });
     }
 
     if (authModes.includes(AuthorizationType.IAM)) {
