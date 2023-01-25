@@ -14,11 +14,7 @@ import {
   ApiCategoryFacade,
 } from 'amplify-cli-core';
 import { UpdateApiRequest } from 'amplify-headless-interface';
-import {
-  integer,
-  printer,
-  prompter,
-} from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import { collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
@@ -347,12 +343,6 @@ const serviceApiInputWalkthrough = async (context: $TSContext, serviceMetadata) 
 const updateApiInputWalkthrough = async (context: $TSContext, project: $TSObject, resolverConfig, modelTypes) => {
   let authConfig;
   let defaultAuthType;
-  let apiKeyExtension;
-
-  const currentAuthConfig = getAppSyncAuthConfig(stateManager.getMeta());
-  const hasAPIKey = () => currentAuthConfig.defaultAuthentication.authenticationType === 'API_KEY' ||
-    authConfig.additionalAuthenticationProviders.some((authProvider) => authProvider.authenticationType === 'API_KEY');
-
   const updateChoices = [
     {
       name: 'Authorization modes',
@@ -376,13 +366,6 @@ const updateApiInputWalkthrough = async (context: $TSContext, project: $TSObject
     });
   }
 
-  if (hasAPIKey()) {
-    updateChoices.push({
-      name: 'Extend API key expiration: ',
-      value: 'API_KEY_EXTENSION',
-    });
-  }
-
   const updateOptionQuestion = {
     type: 'list',
     name: 'updateOption',
@@ -402,14 +385,10 @@ const updateApiInputWalkthrough = async (context: $TSContext, project: $TSObject
   } else if (updateOption === 'CONFLICT_STRATEGY') {
     resolverConfig = await askResolverConflictHandlerQuestion(context, modelTypes);
   }
-  else if (updateOption === 'API_KEY_EXTENSION') {
-    apiKeyExtension = await askApiKeyExtension();
-  }
 
   return {
     authConfig,
     resolverConfig,
-    apiKeyExtension,
   };
 };
 
@@ -462,7 +441,6 @@ export const updateWalkthrough = async (context: $TSContext): Promise<UpdateApiR
   let resourceName;
   let resource;
   let authConfig;
-  let apiKeyExtension;
   const resources = allResources.filter(resource => resource.service === 'AppSync');
   await addLambdaAuthorizerChoice(context);
 
@@ -505,7 +483,7 @@ export const updateWalkthrough = async (context: $TSContext): Promise<UpdateApiR
     });
   }
 
-  ({ authConfig, resolverConfig, apiKeyExtension } = await updateApiInputWalkthrough(context, project, resolverConfig, modelTypes));
+  ({ authConfig, resolverConfig } = await updateApiInputWalkthrough(context, project, resolverConfig, modelTypes));
 
   return {
     version: 1,
@@ -517,9 +495,6 @@ export const updateWalkthrough = async (context: $TSContext): Promise<UpdateApiR
           ? authConfig.additionalAuthenticationProviders.map(authConfigToAppSyncAuthType)
           : undefined,
       conflictResolution: resolverConfigToConflictResolution(resolverConfig),
-      apiKeyExpiration: {
-        days: apiKeyExtension,
-      },
     },
   };
 };
@@ -871,7 +846,7 @@ export async function askApiKeyQuestions(authSettings: $TSObject = undefined) {
 
   const apiKeyConfig: $TSObject = {};
   for (const apiKeyQuestion of apiKeyQuestions) {
-    apiKeyConfig[apiKeyQuestion.name] = await prompter.input(apiKeyQuestion.message, { initial: apiKeyQuestion.default as string });
+    apiKeyConfig[apiKeyQuestion.name] = await prompter.input(apiKeyQuestion.message, { initial: apiKeyQuestion.default as string })
   }
   const apiKeyExpirationDaysNum = Number(apiKeyConfig.apiKeyExpirationDays);
   apiKeyConfig.apiKeyExpirationDate = Expiration.after(Duration.days(apiKeyExpirationDaysNum)).date;
@@ -881,21 +856,6 @@ export async function askApiKeyQuestions(authSettings: $TSObject = undefined) {
     authenticationType: 'API_KEY',
     apiKeyConfig,
   };
-}
-
-export async function askApiKeyExtension(): Promise<number> {
-  const apiKeyExtensionQuestion = {
-    message: 'Days to extend API key expiration:',
-    default: 7,
-  };
-  return prompter.input<'one', number>(
-    apiKeyExtensionQuestion.message,
-    {
-      transform: (input) => Number.parseInt(input, 10),
-      validate: integer(),
-      initial: apiKeyExtensionQuestion.default,
-    },
-  );
 }
 
 async function askOpenIDConnectQuestions(authSettings: $TSObject) {
