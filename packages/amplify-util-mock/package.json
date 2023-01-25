@@ -34,7 +34,7 @@
     "@aws-amplify/amplify-appsync-simulator": "2.8.1-codegen-graphql15.0",
     "amplify-category-api-dynamodb-simulator": "2.4.4",
     "amplify-category-function": "^4.2.1",
-    "amplify-codegen": "3.3.5-graphql15.0",
+    "amplify-codegen": "3.3.6",
     "amplify-provider-awscloudformation": "6.9.2-codegen-graphql15.0",
     "amplify-storage-simulator": "^1.7.0",
     "chokidar": "^3.5.3",
