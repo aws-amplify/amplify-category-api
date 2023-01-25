@@ -13,7 +13,7 @@ import {
   verifyInputCount,
   verifyMatchingTypes,
 } from './test-utils/helpers';
-import { expect as cdkExpect, haveResource } from '@aws-cdk/assert';
+import { expect as cdkExpect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 
 const featureFlags = {
   getBoolean: jest.fn(),
@@ -1170,7 +1170,95 @@ describe('ModelTransformer: ', () => {
       }),
     );
   });
+  it("the conflict detection of per model rule should be respected", () => {
+    const validSchema = `
+      type Todo @model {
+        name: String
+      }
+      type Author @model {
+        name: String
+      }
+    `;
 
+    const transformer = new GraphQLTransform({
+      transformConfig: {},
+      resolverConfig: {
+        project: {
+          ConflictDetection: "VERSION",
+          ConflictHandler: ConflictHandlerType.AUTOMERGE
+        },
+        models: {
+          Todo: {
+            ConflictDetection: "VERSION",
+            ConflictHandler: ConflictHandlerType.LAMBDA,
+            LambdaConflictHandler: {
+              name: "myTodoConflictHandler"
+            }
+          },
+          Author: {
+            ConflictDetection: "VERSION",
+            ConflictHandler: ConflictHandlerType.AUTOMERGE
+          }
+        }
+      },
+      sandboxModeEnabled: true,
+      transformers: [new ModelTransformer()]
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+    // nested stacks for models
+    const todoStack = out.stacks["Todo"];
+    const authorStack = out.stacks["Author"];
+    // Todo stack should have lambda for conflict detect rather than auto merge
+    cdkExpect(todoStack).to(
+      haveResourceLike(
+        "AWS::AppSync::FunctionConfiguration",
+        {
+          SyncConfig: {
+            ConflictDetection: "VERSION",
+            ConflictHandler: "LAMBDA",
+          }
+        }
+      )
+    );
+    cdkExpect(todoStack).notTo(
+      haveResourceLike(
+        "AWS::AppSync::FunctionConfiguration",
+        {
+          SyncConfig: {
+            ConflictDetection: "VERSION",
+            ConflictHandler: "AUTOMERGE",
+          }
+        }
+      )
+    );
+    // Author stack should have automerge for conflict detect rather than lambda
+    cdkExpect(authorStack).notTo(
+      haveResourceLike(
+        "AWS::AppSync::FunctionConfiguration",
+        {
+          SyncConfig: {
+            ConflictDetection: "VERSION",
+            ConflictHandler: "LAMBDA",
+          }
+        }
+      )
+    );
+    cdkExpect(authorStack).to(
+      haveResourceLike(
+        "AWS::AppSync::FunctionConfiguration",
+        {
+          SyncConfig: {
+            ConflictDetection: "VERSION",
+            ConflictHandler: "AUTOMERGE",
+          }
+        }
+      )
+    );
+
+  });
   it('should add the model parameters at the root sack', () => {
     const modelParams = {
       DynamoDBModelTableReadIOPS: expect.objectContaining({
