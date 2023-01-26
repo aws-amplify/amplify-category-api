@@ -47,29 +47,29 @@ export const createEnumModelFilters: (ctx: TransformerTransformSchemaStepContext
 // @public (undocumented)
 export class DynamoDBModelVTLGenerator implements ModelVTLGenerator {
     // (undocumented)
-    generateCreateInitSlotTemplate: (modelConfig: ModelDirectiveConfiguration) => string;
+    generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
     // (undocumented)
-    generateCreateRequestTemplate: (modelName: string, modelIndexFields: string[]) => string;
+    generateCreateRequestTemplate(config: ModelCreateRequestConfig): string;
     // (undocumented)
-    generateDefaultResponseMappingTemplate: (isSyncEnabled: boolean, mutation?: boolean) => string;
+    generateDefaultResponseMappingTemplate(config: ModelDefaultResponseConfig): string;
     // (undocumented)
-    generateDeleteRequestTemplate: (modelName: string, isSyncEnabled: boolean) => string;
+    generateDeleteRequestTemplate(config: ModelUpdateRequestConfig): string;
     // (undocumented)
-    generateGetRequestTemplate: () => string;
+    generateGetRequestTemplate(config: ModelRequestConfig): string;
     // (undocumented)
-    generateGetResponseTemplate: (isSyncEnabled: boolean) => string;
+    generateGetResponseTemplate(config: ModelUpdateRequestConfig): string;
     // (undocumented)
-    generateListRequestTemplate: () => string;
+    generateListRequestTemplate(config: ModelRequestConfig): string;
     // (undocumented)
-    generateSubscriptionRequestTemplate: () => string;
+    generateSubscriptionRequestTemplate(): string;
     // (undocumented)
-    generateSubscriptionResponseTemplate: () => string;
+    generateSubscriptionResponseTemplate(): string;
     // (undocumented)
-    generateSyncRequestTemplate: () => string;
+    generateSyncRequestTemplate(config: ModelRequestConfig): string;
     // (undocumented)
-    generateUpdateInitSlotTemplate: (modelConfig: ModelDirectiveConfiguration) => string;
+    generateUpdateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
     // (undocumented)
-    generateUpdateRequestTemplate: (modelName: string, isSyncEnabled: boolean) => string;
+    generateUpdateRequestTemplate(config: ModelUpdateRequestConfig): string;
 }
 
 // @public (undocumented)
@@ -136,6 +136,26 @@ export const makeSubscriptionQueryFilterInput: (ctx: TransformerTransformSchemaS
 export const makeUpdateInputField: (obj: ObjectTypeDefinitionNode, modelDirectiveConfig: ModelDirectiveConfiguration, knownModelTypes: Set<string>, document: DocumentNode, isSyncEnabled: boolean) => InputObjectTypeDefinitionNode;
 
 // @public (undocumented)
+export type ModelCreateInitSlotConfig = {
+    modelConfig: ModelDirectiveConfiguration;
+};
+
+// @public (undocumented)
+export type ModelCreateRequestConfig = ModelRequestConfig & {
+    modelName: string;
+    modelIndexFields: string[];
+};
+
+// @public (undocumented)
+export type ModelDefaultResponseConfig = ModelRequestConfig & {
+    isSyncEnabled: boolean;
+    mutation: boolean;
+};
+
+// @public (undocumented)
+export type ModelDeleteRequestConfig = ModelUpdateRequestConfig;
+
+// @public (undocumented)
 export type ModelDirectiveConfiguration = {
     queries?: Partial<{
         get: Partial<string>;
@@ -157,6 +177,15 @@ export type ModelDirectiveConfiguration = {
         createdAt: Partial<string>;
         updatedAt: Partial<string>;
     }>;
+};
+
+// @public (undocumented)
+export type ModelGetResponseConfig = ModelUpdateRequestConfig;
+
+// @public (undocumented)
+export type ModelRequestConfig = {
+    operation: string;
+    operationName: string;
 };
 
 // @public (undocumented)
@@ -242,43 +271,44 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 }
 
 // @public (undocumented)
+export type ModelUpdateInitSlotConfig = ModelCreateInitSlotConfig;
+
+// @public (undocumented)
+export type ModelUpdateRequestConfig = ModelRequestConfig & {
+    modelName: string;
+    isSyncEnabled: boolean;
+};
+
+// @public (undocumented)
 export interface ModelVTLGenerator {
     // (undocumented)
-    generateCreateInitSlotTemplate(modelConfig: ModelDirectiveConfiguration, config?: OperationConfig): string;
+    generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
     // (undocumented)
-    generateCreateRequestTemplate(modelName: string, modelIndexFields: string[], config?: OperationConfig): string;
+    generateCreateRequestTemplate(config: ModelCreateRequestConfig): string;
     // (undocumented)
-    generateDefaultResponseMappingTemplate(isSyncEnabled: boolean, mutation: boolean): string;
+    generateDefaultResponseMappingTemplate(config: ModelDefaultResponseConfig): string;
     // (undocumented)
-    generateDeleteRequestTemplate(modelName: string, isSyncEnabled: boolean, config?: OperationConfig): string;
+    generateDeleteRequestTemplate(config: ModelDeleteRequestConfig): string;
     // (undocumented)
-    generateGetRequestTemplate(config?: OperationConfig): string;
+    generateGetRequestTemplate(config: ModelRequestConfig): string;
     // (undocumented)
-    generateGetResponseTemplate(isSyncEnabled: boolean, config?: OperationConfig): string;
+    generateGetResponseTemplate(config: ModelGetResponseConfig): string;
     // (undocumented)
-    generateListRequestTemplate(config?: OperationConfig): string;
+    generateListRequestTemplate(config: ModelRequestConfig): string;
     // (undocumented)
-    generateSubscriptionRequestTemplate(config?: OperationConfig): string;
+    generateSubscriptionRequestTemplate(): string;
     // (undocumented)
-    generateSubscriptionResponseTemplate(config?: OperationConfig): string;
+    generateSubscriptionResponseTemplate(): string;
     // (undocumented)
-    generateSyncRequestTemplate(config?: OperationConfig): string;
+    generateSyncRequestTemplate(config: ModelRequestConfig): string;
     // (undocumented)
-    generateUpdateInitSlotTemplate(modelConfig: ModelDirectiveConfiguration, config?: OperationConfig): string;
+    generateUpdateInitSlotTemplate(config: ModelUpdateInitSlotConfig): string;
     // (undocumented)
-    generateUpdateRequestTemplate(modelName: string, isSyncEnabled: boolean, config?: OperationConfig): string;
+    generateUpdateRequestTemplate(config: ModelUpdateRequestConfig): string;
 }
 
 // @public (undocumented)
 export const OPERATION_KEY = "__operation";
-
-// @public (undocumented)
-export interface OperationConfig {
-    // (undocumented)
-    operation?: string;
-    // (undocumented)
-    operationName?: string;
-}
 
 // @public (undocumented)
 export const propagateApiKeyToNestedTypes: (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode, seenNonModelTypes: Set<string>) => void;
@@ -286,29 +316,29 @@ export const propagateApiKeyToNestedTypes: (ctx: TransformerContextProvider, def
 // @public (undocumented)
 export class RDSModelVTLGenerator implements ModelVTLGenerator {
     // (undocumented)
-    generateCreateInitSlotTemplate(modelConfig: ModelDirectiveConfiguration, config?: OperationConfig | undefined): string;
+    generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
     // (undocumented)
-    generateCreateRequestTemplate(modelName: string, modelIndexFields: string[], config?: OperationConfig | undefined): string;
+    generateCreateRequestTemplate(config: ModelCreateRequestConfig): string;
     // (undocumented)
-    generateDefaultResponseMappingTemplate(isSyncEnabled: boolean, mutation: boolean): string;
+    generateDefaultResponseMappingTemplate(config: ModelDefaultResponseConfig): string;
     // (undocumented)
-    generateDeleteRequestTemplate(modelName: string, isSyncEnabled: boolean, config?: OperationConfig | undefined): string;
+    generateDeleteRequestTemplate(config: ModelUpdateRequestConfig): string;
     // (undocumented)
-    generateGetRequestTemplate(config?: OperationConfig | undefined): string;
+    generateGetRequestTemplate(config: ModelRequestConfig): string;
     // (undocumented)
-    generateGetResponseTemplate(isSyncEnabled: boolean, config?: OperationConfig | undefined): string;
+    generateGetResponseTemplate(config: ModelUpdateRequestConfig): string;
     // (undocumented)
-    generateListRequestTemplate(config?: OperationConfig | undefined): string;
+    generateListRequestTemplate(config: ModelRequestConfig): string;
     // (undocumented)
-    generateSubscriptionRequestTemplate(config?: OperationConfig | undefined): string;
+    generateSubscriptionRequestTemplate(): string;
     // (undocumented)
-    generateSubscriptionResponseTemplate(config?: OperationConfig | undefined): string;
+    generateSubscriptionResponseTemplate(): string;
     // (undocumented)
-    generateSyncRequestTemplate(config?: OperationConfig | undefined): string;
+    generateSyncRequestTemplate(config: ModelRequestConfig): string;
     // (undocumented)
-    generateUpdateInitSlotTemplate(modelConfig: ModelDirectiveConfiguration, config?: OperationConfig | undefined): string;
+    generateUpdateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
     // (undocumented)
-    generateUpdateRequestTemplate(modelName: string, isSyncEnabled: boolean, config?: OperationConfig | undefined): string;
+    generateUpdateRequestTemplate(config: ModelUpdateRequestConfig): string;
 }
 
 // @public (undocumented)

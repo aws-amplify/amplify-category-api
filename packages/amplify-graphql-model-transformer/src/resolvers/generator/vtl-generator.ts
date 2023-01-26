@@ -1,21 +1,46 @@
 import { ModelDirectiveConfiguration } from "../../directive";
 
-export interface OperationConfig {
-  operation?: string;
-  operationName?: string;
+export type ModelRequestConfig = {
+  operation: string;
+  operationName: string;
+}
+
+export type ModelUpdateRequestConfig = ModelRequestConfig & {
+  modelName: string;
+  isSyncEnabled: boolean;
+}
+
+export type ModelDeleteRequestConfig = ModelUpdateRequestConfig;
+
+export type ModelCreateRequestConfig = ModelRequestConfig & {
+  modelName: string;
+  modelIndexFields: string[];
+}
+
+export type ModelCreateInitSlotConfig = {
+  modelConfig: ModelDirectiveConfiguration;
+}
+
+export type ModelUpdateInitSlotConfig = ModelCreateInitSlotConfig;
+
+export type ModelGetResponseConfig = ModelUpdateRequestConfig;
+
+export type ModelDefaultResponseConfig = ModelRequestConfig & {
+  isSyncEnabled: boolean;
+  mutation: boolean;
 }
 
 export interface ModelVTLGenerator {
-  generateUpdateRequestTemplate(modelName: string, isSyncEnabled: boolean, config?: OperationConfig): string;
-  generateCreateRequestTemplate(modelName: string, modelIndexFields: string[], config?: OperationConfig): string;
-  generateCreateInitSlotTemplate(modelConfig: ModelDirectiveConfiguration, config?: OperationConfig): string;
-  generateDeleteRequestTemplate(modelName: string, isSyncEnabled: boolean, config?: OperationConfig): string;
-  generateUpdateInitSlotTemplate(modelConfig: ModelDirectiveConfiguration, config?: OperationConfig): string;
-  generateGetRequestTemplate(config?: OperationConfig): string;
-  generateGetResponseTemplate(isSyncEnabled: boolean, config?: OperationConfig): string;
-  generateListRequestTemplate(config?: OperationConfig): string;
-  generateSyncRequestTemplate(config?: OperationConfig): string;
-  generateSubscriptionRequestTemplate(config?: OperationConfig): string;
-  generateSubscriptionResponseTemplate(config?: OperationConfig): string;
-  generateDefaultResponseMappingTemplate(isSyncEnabled: boolean, mutation: boolean): string;
+  generateUpdateRequestTemplate(config: ModelUpdateRequestConfig): string;
+  generateCreateRequestTemplate(config: ModelCreateRequestConfig): string;
+  generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
+  generateDeleteRequestTemplate(config: ModelDeleteRequestConfig): string;
+  generateUpdateInitSlotTemplate(config: ModelUpdateInitSlotConfig): string;
+  generateGetRequestTemplate(config: ModelRequestConfig): string;
+  generateGetResponseTemplate(config: ModelGetResponseConfig): string;
+  generateListRequestTemplate(config: ModelRequestConfig): string;
+  generateSyncRequestTemplate(config: ModelRequestConfig): string;
+  generateSubscriptionRequestTemplate(): string;
+  generateSubscriptionResponseTemplate(): string;
+  generateDefaultResponseMappingTemplate(config: ModelDefaultResponseConfig): string;
 }
