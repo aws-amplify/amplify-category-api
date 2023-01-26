@@ -6,28 +6,20 @@
 
 import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from '@aws-cdk/core';
-import { CompoundExpressionNode } from 'graphql-mapping-template';
-import { Construct } from '@aws-cdk/core';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
-import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql';
 import { EnumTypeDefinitionNode } from 'graphql';
 import { Expression } from 'graphql-mapping-template';
 import { FieldDefinitionNode } from 'graphql';
 import { FieldWrapper } from '@aws-amplify/graphql-transformer-core';
-import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import * as iam from '@aws-cdk/aws-iam';
-import { IFunction } from '@aws-cdk/aws-lambda';
 import { InputObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
 import { InputObjectTypeDefinitionNode } from 'graphql';
 import { InputValueDefinitionNode } from 'graphql';
-import { IRole } from '@aws-cdk/aws-iam';
 import { MutationFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
-import { Stack } from '@aws-cdk/core';
 import { SubscriptionFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { SyncConfig } from '@aws-amplify/graphql-transformer-core';
 import { TransformerBeforeStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -53,10 +45,32 @@ export const addModelConditionInputs: (ctx: TransformerTransformSchemaStepContex
 export const createEnumModelFilters: (ctx: TransformerTransformSchemaStepContextProvider, type: ObjectTypeDefinitionNode) => InputObjectTypeDefinitionNode[];
 
 // @public (undocumented)
-export const createRdsLambda: (stack: Stack, apiGraphql: GraphQLAPIProvider, lambdaRole: IRole) => IFunction;
-
-// @public (undocumented)
-export const createRdsLambdaRole: (roleName: string, stack: Construct) => IRole;
+export class DynamoDBModelVTLGenerator implements ModelVTLGenerator {
+    // (undocumented)
+    generateCreateInitSlotTemplate: (modelConfig: ModelDirectiveConfiguration) => string;
+    // (undocumented)
+    generateCreateRequestTemplate: (modelName: string, modelIndexFields: string[]) => string;
+    // (undocumented)
+    generateDefaultResponseMappingTemplate: (isSyncEnabled: boolean, mutation?: boolean) => string;
+    // (undocumented)
+    generateDeleteRequestTemplate: (modelName: string, isSyncEnabled: boolean) => string;
+    // (undocumented)
+    generateGetRequestTemplate: () => string;
+    // (undocumented)
+    generateGetResponseTemplate: (isSyncEnabled: boolean) => string;
+    // (undocumented)
+    generateListRequestTemplate: () => string;
+    // (undocumented)
+    generateSubscriptionRequestTemplate: () => string;
+    // (undocumented)
+    generateSubscriptionResponseTemplate: () => string;
+    // (undocumented)
+    generateSyncRequestTemplate: () => string;
+    // (undocumented)
+    generateUpdateInitSlotTemplate: (modelConfig: ModelDirectiveConfiguration) => string;
+    // (undocumented)
+    generateUpdateRequestTemplate: (modelName: string, isSyncEnabled: boolean) => string;
+}
 
 // @public (undocumented)
 export const extendTypeWithDirectives: (ctx: TransformerTransformSchemaStepContextProvider, typeName: string, directives: Array<DirectiveNode>) => void;
@@ -68,46 +82,10 @@ export const generateApplyDefaultsToInputTemplate: (target: string) => Expressio
 export const generateAuthExpressionForSandboxMode: (enabled: boolean) => string;
 
 // @public (undocumented)
-export const generateConditionSlot: (inputConditionObjectName: string, conditionOutputVariableName: string) => CompoundExpressionNode;
-
-// @public (undocumented)
-export const generateCreateInitSlotTemplate: (modelConfig: ModelDirectiveConfiguration) => string;
-
-// @public (undocumented)
-export const generateCreateRequestTemplate: (modelName: string, modelIndexFields: string[]) => string;
-
-// @public (undocumented)
-export const generateDefaultLambdaResponseMappingTemplate: (isSyncEnabled: boolean, mutation?: boolean) => string;
-
-// @public (undocumented)
-export const generateDefaultResponseMappingTemplate: (isSyncEnabled: boolean, mutation?: boolean) => string;
-
-// @public (undocumented)
-export const generateDeleteRequestTemplate: (isSyncEnabled: boolean) => string;
-
-// @public (undocumented)
-export const generateGetLambdaResponseTemplate: (isSyncEnabled: boolean) => string;
-
-// @public (undocumented)
-export const generateLambdaRequestTemplate: (tableName: string, operation: string, operationName: string) => string;
-
-// @public (undocumented)
 export function generateModelScalarFilterInputName(typeName: string, includeFilter: boolean, isSubscriptionFilter?: boolean): string;
 
 // @public (undocumented)
 export const generateResolverKey: (typeName: string, fieldName: string) => string;
-
-// @public (undocumented)
-export const generateSubscriptionRequestTemplate: () => string;
-
-// @public (undocumented)
-export const generateSubscriptionResponseTemplate: () => string;
-
-// @public (undocumented)
-export const generateUpdateInitSlotTemplate: (modelConfig: ModelDirectiveConfiguration) => string;
-
-// @public (undocumented)
-export const generateUpdateRequestTemplate: (modelName: string, isSyncEnabled: boolean) => string;
 
 // @public (undocumented)
 export const getSubscriptionFilterInputName: (name: string) => string;
@@ -181,16 +159,16 @@ export type ModelDirectiveConfiguration = {
     }>;
 };
 
-// Warning: (ae-forgotten-export) The symbol "GenericModelTransformer" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
-export class ModelTransformer extends GenericModelTransformer implements TransformerModelProvider {
-    // Warning: (ae-forgotten-export) The symbol "ModelTransformerOptions_2" needs to be exported by the entry point index.d.ts
-    constructor(options?: ModelTransformerOptions_2);
+export class ModelTransformer extends TransformerModelBase implements TransformerModelProvider {
+    // Warning: (ae-forgotten-export) The symbol "ModelTransformerOptions" needs to be exported by the entry point index.d.ts
+    constructor(options?: ModelTransformerOptions);
     // (undocumented)
     before: (ctx: TransformerBeforeStepContextProvider) => void;
     // (undocumented)
     createIAMRole: (context: TransformerContextProvider, def: ObjectTypeDefinitionNode, stack: cdk.Stack, tableName: string) => iam.Role;
+    // (undocumented)
+    ensureModelSortDirectionEnum: (ctx: TransformerValidationStepContextProvider) => void;
     // (undocumented)
     generateCreateResolver: (ctx: TransformerContextProvider, type: ObjectTypeDefinitionNode, typeName: string, fieldName: string, resolverLogicalId: string) => TransformerResolverProvider;
     // (undocumented)
@@ -200,42 +178,137 @@ export class ModelTransformer extends GenericModelTransformer implements Transfo
     // (undocumented)
     generateListResolver: (ctx: TransformerContextProvider, type: ObjectTypeDefinitionNode, typeName: string, fieldName: string, resolverLogicalId: string) => TransformerResolverProvider;
     // (undocumented)
+    generateOnCreateResolver: (ctx: TransformerContextProvider, typeName: string, fieldName: string, resolverLogicalId: string) => TransformerResolverProvider;
+    // (undocumented)
+    generateOnDeleteResolver: (ctx: TransformerContextProvider, typeName: string, fieldName: string, resolverLogicalId: string) => TransformerResolverProvider;
+    // (undocumented)
+    generateOnUpdateResolver: (ctx: TransformerContextProvider, typeName: string, fieldName: string, resolverLogicalId: string) => TransformerResolverProvider;
+    // (undocumented)
     generateResolvers: (context: TransformerContextProvider) => void;
     // (undocumented)
     generateSyncResolver: (ctx: TransformerContextProvider, type: ObjectTypeDefinitionNode, typeName: string, fieldName: string, resolverLogicalId: string) => TransformerResolverProvider;
     // (undocumented)
     generateUpdateResolver: (ctx: TransformerContextProvider, type: ObjectTypeDefinitionNode, typeName: string, fieldName: string, resolverLogicalId: string) => TransformerResolverProvider;
     // (undocumented)
+    getDataSourceResource: (type: ObjectTypeDefinitionNode) => DataSourceInstance;
+    // (undocumented)
     getDataSourceType: () => AppSyncDataSourceType;
+    // (undocumented)
+    getInputs: (ctx: TransformerTransformSchemaStepContextProvider, type: ObjectTypeDefinitionNode, operation: {
+        fieldName: string;
+        typeName: string;
+        type: QueryFieldType | MutationFieldType | SubscriptionFieldType;
+    }) => InputValueDefinitionNode[];
+    // (undocumented)
+    getMutationFieldNames: (type: ObjectTypeDefinitionNode) => Set<{
+        fieldName: string;
+        typeName: string;
+        type: MutationFieldType;
+        resolverLogicalId: string;
+    }>;
+    // (undocumented)
+    getMutationName: (subscriptionType: SubscriptionFieldType, mutationMap: Set<{
+        fieldName: string;
+        typeName: string;
+        type: MutationFieldType;
+        resolverLogicalId: string;
+    }>) => string;
+    // (undocumented)
+    getOutputType: (ctx: TransformerTransformSchemaStepContextProvider, type: ObjectTypeDefinitionNode, operation: {
+        fieldName: string;
+        typeName: string;
+        type: QueryFieldType | MutationFieldType | SubscriptionFieldType;
+    }) => ObjectTypeDefinitionNode;
+    // (undocumented)
+    getQueryFieldNames: (type: ObjectTypeDefinitionNode) => Set<{
+        fieldName: string;
+        typeName: string;
+        type: QueryFieldType;
+        resolverLogicalId: string;
+    }>;
+    // (undocumented)
+    getSubscriptionFieldNames: (type: ObjectTypeDefinitionNode) => Set<{
+        fieldName: string;
+        typeName: string;
+        type: SubscriptionFieldType;
+        resolverLogicalId: string;
+    }>;
+    // (undocumented)
+    object: (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider) => void;
+    // (undocumented)
+    prepare: (context: TransformerPrepareStepContextProvider) => void;
+    // (undocumented)
+    transformSchema: (ctx: TransformerTransformSchemaStepContextProvider) => void;
+}
+
+// @public (undocumented)
+export interface ModelVTLGenerator {
+    // (undocumented)
+    generateCreateInitSlotTemplate(modelConfig: ModelDirectiveConfiguration, config?: OperationConfig): string;
+    // (undocumented)
+    generateCreateRequestTemplate(modelName: string, modelIndexFields: string[], config?: OperationConfig): string;
+    // (undocumented)
+    generateDefaultResponseMappingTemplate(isSyncEnabled: boolean, mutation: boolean): string;
+    // (undocumented)
+    generateDeleteRequestTemplate(modelName: string, isSyncEnabled: boolean, config?: OperationConfig): string;
+    // (undocumented)
+    generateGetRequestTemplate(config?: OperationConfig): string;
+    // (undocumented)
+    generateGetResponseTemplate(isSyncEnabled: boolean, config?: OperationConfig): string;
+    // (undocumented)
+    generateListRequestTemplate(config?: OperationConfig): string;
+    // (undocumented)
+    generateSubscriptionRequestTemplate(config?: OperationConfig): string;
+    // (undocumented)
+    generateSubscriptionResponseTemplate(config?: OperationConfig): string;
+    // (undocumented)
+    generateSyncRequestTemplate(config?: OperationConfig): string;
+    // (undocumented)
+    generateUpdateInitSlotTemplate(modelConfig: ModelDirectiveConfiguration, config?: OperationConfig): string;
+    // (undocumented)
+    generateUpdateRequestTemplate(modelName: string, isSyncEnabled: boolean, config?: OperationConfig): string;
 }
 
 // @public (undocumented)
 export const OPERATION_KEY = "__operation";
 
 // @public (undocumented)
-export type OPERATIONS = 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'SYNC';
+export interface OperationConfig {
+    // (undocumented)
+    operation?: string;
+    // (undocumented)
+    operationName?: string;
+}
 
 // @public (undocumented)
 export const propagateApiKeyToNestedTypes: (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode, seenNonModelTypes: Set<string>) => void;
 
 // @public (undocumented)
-export class RdsModelTransformer extends GenericModelTransformer implements TransformerModelProvider {
-    // Warning: (ae-forgotten-export) The symbol "RdsModelTransformerOptions" needs to be exported by the entry point index.d.ts
-    constructor(options?: RdsModelTransformerOptions);
+export class RDSModelVTLGenerator implements ModelVTLGenerator {
     // (undocumented)
-    generateCreateResolver: (ctx: TransformerContextProvider, type: ObjectTypeDefinitionNode, typeName: string, fieldName: string, resolverLogicalId: string, directive?: DirectiveDefinitionNode | undefined) => TransformerResolverProvider;
+    generateCreateInitSlotTemplate(modelConfig: ModelDirectiveConfiguration, config?: OperationConfig | undefined): string;
     // (undocumented)
-    generateDeleteResolver: (ctx: TransformerContextProvider, type: ObjectTypeDefinitionNode, typeName: string, fieldName: string, resolverLogicalId: string, directive?: DirectiveDefinitionNode | undefined) => TransformerResolverProvider;
+    generateCreateRequestTemplate(modelName: string, modelIndexFields: string[], config?: OperationConfig | undefined): string;
     // (undocumented)
-    generateGetResolver: (ctx: TransformerContextProvider, type: ObjectTypeDefinitionNode, typeName: string, fieldName: string, resolverLogicalId: string, directive?: DirectiveDefinitionNode | undefined) => TransformerResolverProvider;
+    generateDefaultResponseMappingTemplate(isSyncEnabled: boolean, mutation: boolean): string;
     // (undocumented)
-    generateListResolver: (ctx: TransformerContextProvider, type: ObjectTypeDefinitionNode, typeName: string, fieldName: string, resolverLogicalId: string, directive?: DirectiveDefinitionNode | undefined) => TransformerResolverProvider;
+    generateDeleteRequestTemplate(modelName: string, isSyncEnabled: boolean, config?: OperationConfig | undefined): string;
     // (undocumented)
-    generateResolvers(context: TransformerContextProvider): void;
+    generateGetRequestTemplate(config?: OperationConfig | undefined): string;
     // (undocumented)
-    generateSyncResolver: (ctx: TransformerContextProvider, type: ObjectTypeDefinitionNode, typeName: string, fieldName: string, resolverLogicalId: string, directive?: DirectiveDefinitionNode | undefined) => TransformerResolverProvider;
+    generateGetResponseTemplate(isSyncEnabled: boolean, config?: OperationConfig | undefined): string;
     // (undocumented)
-    generateUpdateResolver: (ctx: TransformerContextProvider, type: ObjectTypeDefinitionNode, typeName: string, fieldName: string, resolverLogicalId: string, directive?: DirectiveDefinitionNode | undefined) => TransformerResolverProvider;
+    generateListRequestTemplate(config?: OperationConfig | undefined): string;
+    // (undocumented)
+    generateSubscriptionRequestTemplate(config?: OperationConfig | undefined): string;
+    // (undocumented)
+    generateSubscriptionResponseTemplate(config?: OperationConfig | undefined): string;
+    // (undocumented)
+    generateSyncRequestTemplate(config?: OperationConfig | undefined): string;
+    // (undocumented)
+    generateUpdateInitSlotTemplate(modelConfig: ModelDirectiveConfiguration, config?: OperationConfig | undefined): string;
+    // (undocumented)
+    generateUpdateRequestTemplate(modelName: string, isSyncEnabled: boolean, config?: OperationConfig | undefined): string;
 }
 
 // @public (undocumented)
