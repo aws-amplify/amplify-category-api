@@ -452,7 +452,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const responseConfig = {
       ...requestConfig,
       isSyncEnabled,
-      modelName: typeName,
+      modelName: type.name.value,
     };
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
@@ -520,7 +520,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       operation: 'UPDATE',
       operationName: fieldName,
       isSyncEnabled,
-      modelName: typeName,
+      modelName: type.name.value,
     };
     const responseConfig = {
       operation: 'UPDATE',
@@ -577,7 +577,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       operation: 'DELETE',
       operationName: fieldName,
       isSyncEnabled,
-      modelName: typeName,
+      modelName: type.name.value,
     };
     const responseConfig = {
       operation: 'DELETE',
@@ -945,7 +945,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       operation: 'CREATE',
       operationName: fieldName,
       modelIndexFields,
-      modelName: typeName,
+      modelName: type.name.value,
     };
     const responseConfig = {
       operation: 'CREATE',
