@@ -38,27 +38,31 @@ const convertInternalFieldTypeToGraphQL = (field: Field): FieldWrapper => {
 
   // construct the default directive
   const fieldDirectives = [];
-  if (field.default) {
-    fieldDirectives.push(new DirectiveWrapper({
-      kind: Kind.DIRECTIVE,
-      name: {
-        kind: "Name",
-        value: "default",
-      },
-      arguments: [
-        {
-          kind: "Argument",
-          name: {
-            kind: "Name",
-            value: "value",
-          },
-          value: {
-            kind: "StringValue",
-            value: field.default.value as string,
-          },              
+  const fieldHasDefaultValue = field?.default && field?.default?.value;
+  if(fieldHasDefaultValue) {
+    const defaultStringValue = String(field.default.value);
+    if(!isComputeExpression(defaultStringValue)) {
+      fieldDirectives.push(new DirectiveWrapper({
+        kind: Kind.DIRECTIVE,
+        name: {
+          kind: "Name",
+          value: "default",
         },
-      ],
-    }));
+        arguments: [
+          {
+            kind: "Argument",
+            name: {
+              kind: "Name",
+              value: "value",
+            },
+            value: {
+              kind: "StringValue",
+              value: defaultStringValue,
+            },              
+          },
+        ],
+      }));
+    }
   }
 
   // Construct the field wrapper object
@@ -82,7 +86,7 @@ const convertInternalFieldTypeToGraphQL = (field: Field): FieldWrapper => {
     const wrapperType = typeWrappers.pop();
     if (wrapperType === "List") {
       result.wrapListType();
-    } else if (wrapperType === "NonNull") {
+    } else if (wrapperType === "NonNull" && !fieldHasDefaultValue) {
       result.makeNonNullable();
     }
   }
@@ -204,4 +208,14 @@ const addPrimaryKey = (type: ObjectDefinitionWrapper, primaryKey: Index): void =
       arguments: keyArguments,
     }),
   );
+};
+
+/**
+ * Checks if the user defined default for a field is a compute expression
+ * @param value The default value for a field
+ * @returns if the default value is a compute expression like for example (RAND() * RAND()))
+ */
+export const isComputeExpression = (value: string) => {
+  // As per MySQL 8.x, Expression default values are enclosed within parentheses to distinguish them from literal constant default values
+  return value.startsWith('(') && value.endsWith(')');
 };

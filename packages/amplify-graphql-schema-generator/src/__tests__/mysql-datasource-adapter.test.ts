@@ -95,7 +95,7 @@ describe("testDataSourceAdapter", () => {
 
     model = new Model("Country");
     const countryIdField = new Field("id", { "kind": "NonNull", "type": { "kind": "Scalar", "name": "Int" } });
-    countryIdField.default = { kind: "DB_GENERATED", value: "uuid()" };
+    countryIdField.default = { kind: "DB_GENERATED", value: "(uuid())" };
     model.addField(countryIdField);
     model.addField(new Field("name", { "kind": "Scalar", "name": "String" }));
     model.setPrimaryKey(["id"]);
@@ -111,6 +111,44 @@ describe("testDataSourceAdapter", () => {
     model.addIndex("tasks_title_description", ["title", "description"])
     dbschema.addModel(model);
 
+    const graphqlSchema = generateGraphQLSchema(dbschema);
+    expect(graphqlSchema).toMatchSnapshot();
+  });
+
+  it("generates a default directive and optional types for fields with literal default values", () => {
+    const dbschema = new Schema(new Engine("MySQL"));
+
+    let model = new Model("Account");
+    model.addField(new Field("id", { "kind": "NonNull", "type": { "kind": "Scalar", "name": "Int" } }));
+    const serialNoField = new Field("serialNumber", { "kind": "NonNull", "type": { "kind": "Scalar", "name": "Int" } });
+    const ownerNameField = new Field("ownerName", { "kind": "NonNull", "type": { "kind": "Scalar", "name": "String" } });
+    const amountField = new Field("amount", { "kind": "NonNull", "type": { "kind": "Scalar", "name": "Float" } });
+    
+    serialNoField.default = { kind: "DB_GENERATED", value: -1 };
+    ownerNameField.default = { kind: "DB_GENERATED", value: "na" };
+    amountField.default = { kind: "DB_GENERATED", value: 101.101 };
+    model.addField(serialNoField);
+    model.addField(ownerNameField);
+    model.addField(amountField);
+    model.setPrimaryKey(["id"]);
+
+    dbschema.addModel(model);
+    const graphqlSchema = generateGraphQLSchema(dbschema);
+    expect(graphqlSchema).toMatchSnapshot();
+  });
+
+  it("generates optional type but no default directive for fields with computed default values", () => {
+    const dbschema = new Schema(new Engine("MySQL"));
+
+    let model = new Model("Account");
+    model.addField(new Field("id", { "kind": "NonNull", "type": { "kind": "Scalar", "name": "Int" } }));
+    const computedField = new Field("computed", { "kind": "NonNull", "type": { "kind": "Scalar", "name": "Float" } });
+    
+    computedField.default = { kind: "DB_GENERATED", value: "(RAND() * RAND())" };
+    model.addField(computedField);
+    model.setPrimaryKey(["id"]);
+
+    dbschema.addModel(model);
     const graphqlSchema = generateGraphQLSchema(dbschema);
     expect(graphqlSchema).toMatchSnapshot();
   });
