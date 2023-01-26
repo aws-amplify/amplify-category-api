@@ -1,4 +1,11 @@
-import { ModelCreateInitSlotConfig, ModelCreateRequestConfig, ModelDefaultResponseConfig, ModelRequestConfig, ModelUpdateRequestConfig, ModelVTLGenerator } from "./vtl-generator";
+import {
+  ModelCreateInitSlotConfig,
+  ModelCreateRequestConfig,
+  ModelDefaultResponseConfig,
+  ModelRequestConfig,
+  ModelUpdateRequestConfig,
+  ModelVTLGenerator,
+} from "./vtl-generator";
 import {
   generateUpdateRequestTemplate,
   generateCreateRequestTemplate,
