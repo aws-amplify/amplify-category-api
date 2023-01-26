@@ -26,7 +26,7 @@ exports[`testDataSourceAdapter test generate graphql schema from internal repren
 }
 
 type Country @model {
-  id: Int @primaryKey
+  id: Int! @primaryKey
   name: String
 }
 
