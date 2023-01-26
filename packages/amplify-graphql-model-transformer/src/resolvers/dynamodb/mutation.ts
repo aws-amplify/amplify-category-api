@@ -145,7 +145,7 @@ export const generateUpdateRequestTemplate = (modelName: string, isSyncEnabled: 
     ),
     toJson(ref('UpdateItem')),
   ];
-  return printBlock(`${modelName} Update resolver`)(compoundExpression(statements));
+  return printBlock(`Mutation Update resolver`)(compoundExpression(statements));
 };
 
 /**
