@@ -1,7 +1,7 @@
 import {
   generateDefaultLambdaResponseMappingTemplate,
   generateGetLambdaResponseTemplate,
-  generateLambdaRequestTemplate
+  generateLambdaRequestTemplate,
 } from '../rds';
 import { 
   ModelCreateInitSlotConfig, 
@@ -9,7 +9,7 @@ import {
   ModelDefaultResponseConfig, 
   ModelRequestConfig, 
   ModelUpdateRequestConfig, 
-  ModelVTLGenerator 
+  ModelVTLGenerator, 
 } from "./vtl-generator";
 
 // TODO: This class is created only to show the class structure. This needs a revisit to generate correct resolvers for RDS.
