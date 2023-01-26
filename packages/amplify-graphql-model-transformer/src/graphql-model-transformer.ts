@@ -526,7 +526,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       operation: 'UPDATE',
       operationName: fieldName,
       isSyncEnabled,
-      mutation: false,
+      mutation: true,
     };
     if (!this.resolverMap[resolverKey]) {
       const resolver = ctx.resolvers.generateMutationResolver(
@@ -583,7 +583,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       operation: 'DELETE',
       operationName: fieldName,
       isSyncEnabled,
-      mutation: false,
+      mutation: true,
     };
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateMutationResolver(
@@ -951,7 +951,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       operation: 'CREATE',
       operationName: fieldName,
       isSyncEnabled,
-      mutation: false,
+      mutation: true,
     };
     if (!this.resolverMap[resolverKey]) {
       const resolver = ctx.resolvers.generateMutationResolver(
