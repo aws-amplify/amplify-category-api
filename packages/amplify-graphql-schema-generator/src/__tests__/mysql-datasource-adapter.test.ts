@@ -1,6 +1,6 @@
 import { DataSourceAdapter, MySQLDataSourceAdapter } from "../datasource-adapter";
 import { Engine, Field, FieldType, Index, Model, Schema } from "../schema-representation";
-import { generateGraphQLSchema } from "../schema-generator";
+import { generateGraphQLSchema, isComputeExpression } from "../schema-generator";
 class TestDataSourceAdapter extends DataSourceAdapter {
   public async initialize(): Promise<void> {
     // Do Nothing
@@ -95,7 +95,7 @@ describe("testDataSourceAdapter", () => {
 
     model = new Model("Country");
     const countryIdField = new Field("id", { "kind": "NonNull", "type": { "kind": "Scalar", "name": "Int" } });
-    countryIdField.default = { kind: "DB_GENERATED", value: "(uuid())" };
+    countryIdField.default = { kind: "DB_GENERATED", value: "uuid()" };
     model.addField(countryIdField);
     model.addField(new Field("name", { "kind": "Scalar", "name": "String" }));
     model.setPrimaryKey(["id"]);
@@ -151,5 +151,24 @@ describe("testDataSourceAdapter", () => {
     dbschema.addModel(model);
     const graphqlSchema = generateGraphQLSchema(dbschema);
     expect(graphqlSchema).toMatchSnapshot();
+  });
+
+  it('identifies the computed default values', () => {
+    const testComputedExpressions = [
+      "RAND()",
+      "COS(PI())",
+      "CONV(-17,10,-18)",
+      "COS(CONV(-17,10,-18))",
+      "LOG(CONV(-17,10,-18), 10)",
+      "(RAND())",
+      "(COS(PI()) * RAND())",
+      "(CONV(-17,10,-18) + LOG(10, 100))",
+      "(COS(CONV(-17,10,-18)))",
+      "(LOG(CONV(-17,10,-18), 10))",
+    ];
+
+    testComputedExpressions.map( expr => {
+      expect(isComputeExpression(expr)).toEqual(true);
+    });
   });
 });

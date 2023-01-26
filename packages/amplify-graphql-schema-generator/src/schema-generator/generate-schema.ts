@@ -13,8 +13,9 @@ export const generateGraphQLSchema = (schema: Schema): string => {
     const type = constructObjectType(model);
     
     const fields = model.getFields();
+    const primaryKeyField = model.getPrimaryKey().getFields()[0];
     fields.forEach(f => {
-      const field: any = convertInternalFieldTypeToGraphQL(f);
+      const field: any = convertInternalFieldTypeToGraphQL(f, f.name === primaryKeyField);
       type.fields.push(field);
     });
     
@@ -28,7 +29,7 @@ export const generateGraphQLSchema = (schema: Schema): string => {
   return schemaStr;
 };
 
-const convertInternalFieldTypeToGraphQL = (field: Field): FieldWrapper => {
+const convertInternalFieldTypeToGraphQL = (field: Field, isPrimaryKeyField: boolean): FieldWrapper => {
   const typeWrappers = [];
   let fieldType = field.type;
   while (fieldType.kind !== "Scalar" && fieldType.kind !== "Custom") {
@@ -39,6 +40,7 @@ const convertInternalFieldTypeToGraphQL = (field: Field): FieldWrapper => {
   // construct the default directive
   const fieldDirectives = [];
   const fieldHasDefaultValue = field?.default && field?.default?.value;
+  const fieldIsOptional = fieldHasDefaultValue && !isPrimaryKeyField;
   if(fieldHasDefaultValue) {
     const defaultStringValue = String(field.default.value);
     if(!isComputeExpression(defaultStringValue)) {
@@ -86,7 +88,7 @@ const convertInternalFieldTypeToGraphQL = (field: Field): FieldWrapper => {
     const wrapperType = typeWrappers.pop();
     if (wrapperType === "List") {
       result.wrapListType();
-    } else if (wrapperType === "NonNull" && !fieldHasDefaultValue) {
+    } else if (wrapperType === "NonNull" && !fieldIsOptional) {
       result.makeNonNullable();
     }
   }
@@ -216,6 +218,15 @@ const addPrimaryKey = (type: ObjectDefinitionWrapper, primaryKey: Index): void =
  * @returns if the default value is a compute expression like for example (RAND() * RAND()))
  */
 export const isComputeExpression = (value: string) => {
-  // As per MySQL 8.x, Expression default values are enclosed within parentheses to distinguish them from literal constant default values
-  return value.startsWith('(') && value.endsWith(')');
+  /* As per MySQL 8.x, 
+    Complex computed expression default values like "(RAND() * RAND())" are enclosed within parentheses.
+    Simple computed expression default values like "RAND()" are not. 
+    These functions could have one or more arguments too, like "COS(PI())".
+  */
+  const isSimpleComputedExpression = value.match(/^[a-zA-Z0-9]+\(.*\)/);
+  const isComplexComputedExpression = value.match(/^\([a-zA-Z0-9]+\(.*\)\)/);
+  if(isSimpleComputedExpression || isComplexComputedExpression) {
+    return true;
+  }
+  return false;
 };
