@@ -505,6 +505,10 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
                 methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref('filter'))),
               ),
               iff(
+                isNullOrEmpty(ref('filterExpression')),
+                methodCall(ref('util.error'), str('Unable to process the filter expression'), str('Unrecognized Filter')),
+              ),
+              iff(
                 not(methodCall(ref('util.isNullOrBlank'), ref('filterExpression.expression'))),
                 compoundExpression([
                   iff(
