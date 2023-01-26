@@ -929,7 +929,7 @@ $util.toJson({
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
-  "Mutation.updatePost.req.vtl": "## [Start] Post Update resolver. **
+  "Mutation.updatePost.req.vtl": "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -1059,7 +1059,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($UpdateItem)
-## [End] Post Update resolver. **",
+## [End] Mutation Update resolver. **",
   "Mutation.updatePost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
@@ -1471,7 +1471,7 @@ $util.toJson({
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
-  "Mutation.updatePost.req.vtl": "## [Start] Post Update resolver. **
+  "Mutation.updatePost.req.vtl": "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -1601,7 +1601,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($UpdateItem)
-## [End] Post Update resolver. **",
+## [End] Mutation Update resolver. **",
   "Mutation.updatePost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
@@ -2013,7 +2013,7 @@ $util.toJson({
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
-  "Mutation.updatePost.req.vtl": "## [Start] Post Update resolver. **
+  "Mutation.updatePost.req.vtl": "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -2143,7 +2143,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($UpdateItem)
-## [End] Post Update resolver. **",
+## [End] Mutation Update resolver. **",
   "Mutation.updatePost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
@@ -2674,7 +2674,7 @@ $util.toJson($PutObject)
 `;
 
 exports[`ModelTransformer:  should have timestamps as nullable fields when the type makes it non-nullable 3`] = `
-"## [Start] Post Update resolver. **
+"## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -2803,7 +2803,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($UpdateItem)
-## [End] Post Update resolver. **"
+## [End] Mutation Update resolver. **"
 `;
 
 exports[`ModelTransformer:  should not add default primary key when ID is defined 1`] = `
@@ -3341,7 +3341,7 @@ $util.toJson($PutObject)
 `;
 
 exports[`ModelTransformer:  should not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime 3`] = `
-"## [Start] Post Update resolver. **
+"## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -3470,7 +3470,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($UpdateItem)
-## [End] Post Update resolver. **"
+## [End] Mutation Update resolver. **"
 `;
 
 exports[`ModelTransformer:  should not to include createdAt and updatedAt field when timestamps is set to null 1`] = `
@@ -3761,7 +3761,7 @@ $util.toJson($PutObject)
 `;
 
 exports[`ModelTransformer:  should not to include createdAt and updatedAt field when timestamps is set to null 3`] = `
-"## [Start] Post Update resolver. **
+"## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -3890,7 +3890,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($UpdateItem)
-## [End] Post Update resolver. **"
+## [End] Mutation Update resolver. **"
 `;
 
 exports[`ModelTransformer:  should support timestamp parameters when generating resolvers and output schema 1`] = `
@@ -4183,7 +4183,7 @@ $util.toJson($PutObject)
 `;
 
 exports[`ModelTransformer:  should support timestamp parameters when generating resolvers and output schema 3`] = `
-"## [Start] Post Update resolver. **
+"## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -4312,7 +4312,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($UpdateItem)
-## [End] Post Update resolver. **"
+## [End] Mutation Update resolver. **"
 `;
 
 exports[`ModelTransformer:  the datastore table should be configured 1`] = `
