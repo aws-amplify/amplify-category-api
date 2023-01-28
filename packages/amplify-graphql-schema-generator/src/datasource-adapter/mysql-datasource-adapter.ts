@@ -1,4 +1,4 @@
-import { Field, FieldDataType, FieldType, Index } from "../schema-representation";
+import { EnumType, Field, FieldDataType, FieldType, Index } from "../schema-representation";
 import { DataSourceAdapter } from "./datasource-adapter";
 import { knex } from 'knex';
 import { printer } from 'amplify-prompts';
@@ -26,6 +26,7 @@ interface MySQLColumn {
   sequence: number;
   default: string;
   datatype: string;
+  columnType: string;
   nullable: boolean;  
   length: number | null | undefined;  
 }
@@ -34,6 +35,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
   private dbBuilder: any;
   private indexes: MySQLIndex[] = [];
   private fields: MySQLColumn[] = [];
+  private enums: Map<string, EnumType> = new Map<string, EnumType>();
   private readonly PRIMARY_KEY_INDEX_NAME = 'PRIMARY';
 
   constructor(private config: MySQLDataSourceConfig) {
@@ -100,7 +102,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
         .find(field => field.tableName === tableName && field.columnName === columnName)!;
       const field: Field = {
         name: dbField.columnName,
-        type: this.mapDataType(dbField.datatype, dbField.nullable),
+        type: this.mapDataType(dbField.datatype, dbField.nullable, tableName, dbField.columnName, dbField.columnType),
         length: dbField.length,
         default: dbField.default ? {
           kind: 'DB_GENERATED',
@@ -124,6 +126,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
         default: item["COLUMN_DEFAULT"],
         sequence: item["ORDINAL_POSITION"],
         datatype: item["DATA_TYPE"],
+        columnType: item["COLUMN_TYPE"],
         nullable: item["IS_NULLABLE"] === 'YES' ? true : false,
         length: item["CHARACTER_MAXIMUM_LENGTH"],
       };
@@ -181,11 +184,11 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     this.dbBuilder && this.dbBuilder.destroy();
   }
   
-  public mapDataType(type: string, nullable: boolean): FieldType {
-    let datatype: FieldDataType = 'String';
+  public mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName:string, columntype: string): FieldType {
+    let fieldDatatype: FieldDataType = 'String';
     let listtype = false;
 
-    switch (type.toUpperCase()) {
+    switch (datatype.toUpperCase()) {
       case 'VARCHAR':
       case 'CHAR':
       case 'BINARY':
@@ -198,16 +201,15 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
       case 'MEDIUMBLOB':
       case 'LONGTEXT':
       case 'LONGBLOB':
-      case 'ENUM':
-        datatype = 'String';
+        fieldDatatype = 'String';
         break;
       case 'SET':
-        datatype = 'String';
+        fieldDatatype = 'String';
         listtype = true;
         break;
       case 'BOOLEAN':
       case 'BOOL':
-        datatype = 'Boolean';
+        fieldDatatype = 'Boolean';
         break;
       case 'BIT':
       case 'TINYINT':
@@ -217,39 +219,54 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
       case 'INTEGER':
       case 'BIGINT':
       case 'YEAR':
-        datatype = 'Int';
+        fieldDatatype = 'Int';
         break;
       case 'FLOAT':
       case 'DOUBLE':
       case 'DECIMAL':
       case 'DEC':
       case 'NUMERIC':
-        datatype = 'Float';
+        fieldDatatype = 'Float';
         break;
       case 'DATE':
-        datatype = 'AWSDate';
+        fieldDatatype = 'AWSDate';
         break;
       case 'DATETIME':
-        datatype = 'AWSDateTime';
+        fieldDatatype = 'AWSDateTime';
         break;
       case 'TIMESTAMP':
-        datatype = 'AWSTimestamp';
+        fieldDatatype = 'AWSTimestamp';
         break;
       case 'TIME':
-        datatype = 'AWSTime';
+        fieldDatatype = 'AWSTime';
         break;
       case 'JSON':
-        datatype = 'AWSJSON';
+        fieldDatatype = 'AWSJSON';
+        break;
+      case 'ENUM':
+        fieldDatatype = 'ENUM';
         break;
       default:
-        datatype = 'String';
+        fieldDatatype = 'String';
         break;
     }
 
-    let result: FieldType = {
-      kind: 'Scalar',
-      name: datatype,
-    };
+    let result: FieldType;
+    if (fieldDatatype === 'ENUM') {
+      const enumName = this.generateEnumName(tableName, fieldName);
+      result = {
+        kind: 'Enum',
+        values: this.getEnumValues(columntype),
+        name: this.generateEnumName(tableName, fieldName),
+      };
+      this.enums.set(enumName, result);
+    }
+    else {
+      result = {
+        kind: 'Scalar',
+        name: fieldDatatype,
+      };
+    }
 
     if (!nullable) {
       result = {
@@ -259,5 +276,23 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     }
 
     return result;
+  }
+
+  private getEnumValues(value: string): string[] {
+    // RegEx matches strings with quotes 'match' or "match"
+    const regex = /(["'])(?:(?=(\\?))\2.)*?\1/g;
+    // Remove the first and last character from the matched string which contains the quote
+    return value.match(regex).map(a => a.slice(1, -1));
+  }
+
+  private generateEnumName(tableName: string, fieldName: string) {
+    let enumNamePrefix = [tableName, fieldName].join("_");
+    let enumName = enumNamePrefix;
+    let counter = 0;
+    while (this.enums.has(enumName)) {
+      enumName = [enumNamePrefix, counter.toString()].join("_");
+      counter++;
+    }
+    return enumName;
   }
 }
