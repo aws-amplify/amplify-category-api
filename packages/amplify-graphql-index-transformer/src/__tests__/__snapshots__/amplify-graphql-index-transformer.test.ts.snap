@@ -514,7 +514,7 @@ $util.toJson({})
   \\"index\\": \\"CategoryGSI\\"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == \\"DESC\\" )
+                && $ctx.args.sortDirection == \\"DESC\\" )
   #set( $QueryRequest.scanIndexForward = false )
 #else
   #set( $QueryRequest.scanIndexForward = true )
@@ -1161,7 +1161,7 @@ $util.toJson({})
   \\"index\\": \\"GSI\\"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == \\"DESC\\" )
+                && $ctx.args.sortDirection == \\"DESC\\" )
   #set( $QueryRequest.scanIndexForward = false )
 #else
   #set( $QueryRequest.scanIndexForward = true )
@@ -1787,7 +1787,7 @@ $util.toJson({})
   \\"index\\": \\"GSI_Email\\"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == \\"DESC\\" )
+                && $ctx.args.sortDirection == \\"DESC\\" )
   #set( $QueryRequest.scanIndexForward = false )
 #else
   #set( $QueryRequest.scanIndexForward = true )
@@ -2704,7 +2704,7 @@ $util.toJson({})
   \\"index\\": \\"CategoryGSI\\"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == \\"DESC\\" )
+                && $ctx.args.sortDirection == \\"DESC\\" )
   #set( $QueryRequest.scanIndexForward = false )
 #else
   #set( $QueryRequest.scanIndexForward = true )
@@ -3298,7 +3298,7 @@ $util.toJson({})
   \\"index\\": \\"ByCreatedAt\\"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == \\"DESC\\" )
+                && $ctx.args.sortDirection == \\"DESC\\" )
   #set( $QueryRequest.scanIndexForward = false )
 #else
   #set( $QueryRequest.scanIndexForward = true )
@@ -3402,7 +3402,7 @@ $util.toJson({})
   \\"index\\": \\"ByStatus\\"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == \\"DESC\\" )
+                && $ctx.args.sortDirection == \\"DESC\\" )
   #set( $QueryRequest.scanIndexForward = false )
 #else
   #set( $QueryRequest.scanIndexForward = true )
@@ -4461,7 +4461,7 @@ $util.toJson({})
   \\"index\\": \\"byGenre\\"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == \\"DESC\\" )
+                && $ctx.args.sortDirection == \\"DESC\\" )
   #set( $QueryRequest.scanIndexForward = false )
 #else
   #set( $QueryRequest.scanIndexForward = true )
@@ -5210,7 +5210,7 @@ $util.toJson({})
   \\"index\\": \\"byGenre\\"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == \\"DESC\\" )
+                && $ctx.args.sortDirection == \\"DESC\\" )
   #set( $QueryRequest.scanIndexForward = false )
 #else
   #set( $QueryRequest.scanIndexForward = true )
@@ -5986,7 +5986,7 @@ $util.toJson({})
   \\"index\\": \\"ByCreatedAt\\"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == \\"DESC\\" )
+                && $ctx.args.sortDirection == \\"DESC\\" )
   #set( $QueryRequest.scanIndexForward = false )
 #else
   #set( $QueryRequest.scanIndexForward = true )
@@ -6090,7 +6090,7 @@ $util.toJson({})
   \\"index\\": \\"ByStatus\\"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == \\"DESC\\" )
+                && $ctx.args.sortDirection == \\"DESC\\" )
   #set( $QueryRequest.scanIndexForward = false )
 #else
   #set( $QueryRequest.scanIndexForward = true )

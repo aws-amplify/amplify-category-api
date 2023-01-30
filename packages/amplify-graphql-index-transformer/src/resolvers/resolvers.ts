@@ -1,24 +1,17 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import { MappingTemplate, GraphQLTransform, AmplifyApiGraphQlResourceStackTemplate, SyncUtils, StackManager } from '@aws-amplify/graphql-transformer-core';
-import { DataSourceProvider, StackManagerProvider, TransformerContextProvider, TransformerPluginProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
-import { Table } from '@aws-cdk/aws-dynamodb';
+import { MappingTemplate, GraphQLTransform, SyncUtils, StackManager } from '@aws-amplify/graphql-transformer-core';
+import { StackManagerProvider, TransformerContextProvider, TransformerPluginProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from '@aws-cdk/core';
-import { Kind, ObjectTypeDefinitionNode, TypeNode } from 'graphql';
 import {
   and,
   block,
   bool,
   compoundExpression,
-  DynamoDBMappingTemplate,
-  equals,
-  Expression,
+  DynamoDBMappingTemplate, Expression,
   forEach,
   ifElse,
   iff,
-  int,
-  isNullOrEmpty,
-  list,
+  int, list,
   methodCall,
   nul,
   not,
@@ -31,26 +24,20 @@ import {
   RESOLVER_VERSION_ID,
   set,
   str,
-  notEquals,
-  toJson,
+  notEquals
 } from 'graphql-mapping-template';
 import {
-  applyKeyExpressionForCompositeKey,
-  attributeTypeFromScalar,
-  getBaseType,
   graphqlName,
-  ModelResourceIDs,
-  ResolverResourceIDs,
-  ResourceConstants,
-  toCamelCase,
+  ModelResourceIDs, ResourceConstants,
+  toCamelCase
 } from 'graphql-transformer-common';
-import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
-import { lookupResolverName } from './utils';
+import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../types';
+import { lookupResolverName } from '../utils';
 import { stateManager, pathManager, $TSAny } from 'amplify-cli-core';
 import * as path from 'path';
 import _ from 'lodash';
-
-const API_KEY = 'API Key Authorization';
+import { getTable, attributeDefinitions, getSortKeyName, setQuerySnippet, getDBType } from "./common";
+import { makeQueryResolver } from "./query";
 
 /**
  * replaceDdbPrimaryKey
@@ -142,17 +129,6 @@ export function updateResolvers(
   }
 }
 
-function getTable(context: TransformerContextProvider, object: ObjectTypeDefinitionNode): Table {
-  const ddbDataSource = context.dataSources.get(object) as DynamoDbDataSource;
-  const tableName = ModelResourceIDs.ModelTableResourceID(object.name.value);
-  const table = ddbDataSource.ds.stack.node.findChild(tableName) as Table;
-
-  if (!table) {
-    throw new Error(`Table not found in stack with table name ${tableName}`);
-  }
-  return table;
-}
-
 function getDdbKeySchema(config: PrimaryKeyDirectiveConfiguration) {
   const schema = [{ attributeName: config.field.name.value, keyType: 'HASH' }];
 
@@ -161,38 +137,6 @@ function getDdbKeySchema(config: PrimaryKeyDirectiveConfiguration) {
   }
 
   return schema;
-}
-
-export function attributeTypeFromType(type: TypeNode, ctx: TransformerContextProvider) {
-  const baseTypeName = getBaseType(type);
-  const ofType = ctx.output.getType(baseTypeName);
-  if (ofType && ofType.kind === Kind.ENUM_TYPE_DEFINITION) {
-    return 'S';
-  }
-  return attributeTypeFromScalar(type);
-}
-
-function attributeDefinitions(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider) {
-  const { field, sortKey, sortKeyFields } = config;
-  const definitions = [{ attributeName: field.name.value, attributeType: attributeTypeFromType(field.type, ctx) }];
-
-  if (sortKeyFields.length === 1) {
-    definitions.push({
-      attributeName: sortKeyFields[0],
-      attributeType: attributeTypeFromType(sortKey[0].type, ctx),
-    });
-  } else if (sortKeyFields.length > 1) {
-    definitions.push({
-      attributeName: getSortKeyName(config),
-      attributeType: 'S',
-    });
-  }
-
-  return definitions;
-}
-
-function getSortKeyName(config: PrimaryKeyDirectiveConfiguration): string {
-  return config.sortKeyFields.join(ModelResourceIDs.ModelCompositeKeySeparator());
 }
 
 function getResolverObject(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, op: string) {
@@ -285,45 +229,15 @@ function ensureCompositeKeySnippet(config: PrimaryKeyDirectiveConfiguration, con
   );
 }
 
-function setQuerySnippet(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, isListResolver: boolean) {
-  const { field, sortKey, sortKeyFields } = config;
-  const keyFields = [field, ...sortKey];
-  const keyNames = [field.name.value, ...sortKeyFields];
-  const keyTypes = keyFields.map(k => attributeTypeFromType(k.type, ctx));
-  const expressions: Expression[] = [];
-
-  if (keyNames.length === 1) {
-    const sortDirectionValidation = iff(
-      raw('!$util.isNull($ctx.args.sortDirection)'),
-      raw('$util.error("sortDirection is not supported for List operations without a Sort key defined.", "InvalidArgumentsError")'),
-    );
-
-    expressions.push(sortDirectionValidation);
-  } else if (isListResolver === true && keyNames.length >= 1) {
-    // This check is only needed for List queries.
-    const sortDirectionValidation = iff(
-      and([raw(`$util.isNull($ctx.args.${keyNames[0]})`), raw('!$util.isNull($ctx.args.sortDirection)')]),
-      raw(
-        `$util.error("When providing argument 'sortDirection' you must also provide argument '${keyNames[0]}'.", "InvalidArgumentsError")`,
-      ),
-    );
-
-    expressions.push(sortDirectionValidation);
-  }
-
-  expressions.push(
-    set(ref(ResourceConstants.SNIPPETS.ModelQueryExpression), obj({})),
-    applyKeyExpressionForCompositeKey(keyNames, keyTypes, ResourceConstants.SNIPPETS.ModelQueryExpression)!,
-  );
-
-  return block('Set query expression for key', expressions);
-}
-
 /**
  * appendSecondaryIndex
  */
 export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const { name, object, primaryKeyField } = config;
+  const dbType = getDBType(ctx, object.name.value);
+  if (dbType === 'MySQL') {
+    return;
+  }
   const table = getTable(ctx, object) as any;
   const keySchema = getDdbKeySchema(config);
   const attrDefs = attributeDefinitions(config, ctx);
@@ -398,7 +312,7 @@ export function updateResolversForIndex(
   ctx: TransformerContextProvider,
   resolverMap: Map<TransformerResolverProvider, string>,
 ): void {
-  const { name, queryField } = config;
+  const { name, queryField, object } = config;
   if (!name) {
     throw new Error('Expected name while updating index resolvers.');
   }
@@ -407,9 +321,11 @@ export function updateResolversForIndex(
   const deleteResolver = getResolverObject(config, ctx, 'delete');
   const syncResolver = getResolverObject(config, ctx, 'sync');
 
+  const dbType = getDBType(ctx, object.name.value);
+  const isDynamoDB = dbType === 'DDB';
   // Ensure any composite sort key values and validate update operations to
   // protect the integrity of composite sort keys.
-  if (createResolver) {
+  if (isDynamoDB && createResolver) {
     const checks = [validateIndexArgumentSnippet(config, 'create'), ensureCompositeKeySnippet(config, true)];
 
     if (checks[0] || checks[1]) {
@@ -417,7 +333,7 @@ export function updateResolversForIndex(
     }
   }
 
-  if (updateResolver) {
+  if (isDynamoDB && updateResolver) {
     const checks = [validateIndexArgumentSnippet(config, 'update'), ensureCompositeKeySnippet(config, true)];
 
     if (checks[0] || checks[1]) {
@@ -425,7 +341,7 @@ export function updateResolversForIndex(
     }
   }
 
-  if (deleteResolver) {
+  if (isDynamoDB && deleteResolver) {
     const checks = [ensureCompositeKeySnippet(config, false)];
 
     if (checks[0]) {
@@ -437,111 +353,12 @@ export function updateResolversForIndex(
     makeQueryResolver(config, ctx);
   }
 
-  if (syncResolver) {
+  if (isDynamoDB && syncResolver) {
     makeSyncResolver(name, config, ctx, syncResolver, resolverMap);
   }
 }
 
-function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider) {
-  const { name, object, queryField } = config;
-  if (!(name && queryField)) {
-    throw new Error('Expected name and queryField to be defined while generating resolver.');
-  }
-  const dataSourceName = `${object.name.value}Table`;
-  const dataSource = ctx.api.host.getDataSource(dataSourceName);
-  const queryTypeName = ctx.output.getQueryTypeName() as string;
-  const table = getTable(ctx, object);
-  const authFilter = ref('ctx.stash.authFilter');
-  const requestVariable = 'QueryRequest';
 
-  if (!dataSource) {
-    throw new Error(`Could not find datasource with name ${dataSourceName} in context.`);
-  }
-
-  const resolverResourceId = ResolverResourceIDs.ResolverResourceID(queryTypeName, queryField);
-  const resolver = ctx.resolvers.generateQueryResolver(
-    queryTypeName,
-    queryField,
-    resolverResourceId,
-    dataSource as DataSourceProvider,
-    MappingTemplate.s3MappingTemplateFromString(
-      print(
-        compoundExpression([
-          setQuerySnippet(config, ctx, false),
-          set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT})`)),
-          set(
-            ref(requestVariable),
-            obj({
-              version: str(RESOLVER_VERSION_ID),
-              operation: str('Query'),
-              limit: ref('limit'),
-              query: ref(ResourceConstants.SNIPPETS.ModelQueryExpression),
-              index: str(name),
-            }),
-          ),
-          ifElse(
-            raw(`!$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == "DESC"`),
-            set(ref(`${requestVariable}.scanIndexForward`), bool(false)),
-            set(ref(`${requestVariable}.scanIndexForward`), bool(true)),
-          ),
-          iff(ref('context.args.nextToken'), set(ref(`${requestVariable}.nextToken`), ref('context.args.nextToken')), true),
-          ifElse(
-            not(isNullOrEmpty(authFilter)),
-            compoundExpression([
-              set(ref('filter'), authFilter),
-              iff(
-                not(isNullOrEmpty(ref('ctx.args.filter'))),
-                set(ref('filter'), obj({ and: list([ref('filter'), ref('ctx.args.filter')]) })),
-              ),
-            ]),
-            iff(not(isNullOrEmpty(ref('ctx.args.filter'))), set(ref('filter'), ref('ctx.args.filter'))),
-          ),
-          iff(
-            not(isNullOrEmpty(ref('filter'))),
-            compoundExpression([
-              set(
-                ref('filterExpression'),
-                methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref('filter'))),
-              ),
-              iff(
-                not(methodCall(ref('util.isNullOrBlank'), ref('filterExpression.expression'))),
-                compoundExpression([
-                  iff(
-                    equals(methodCall(ref('filterExpression.expressionValues.size')), int(0)),
-                    qref(methodCall(ref('filterExpression.remove'), str('expressionValues'))),
-                  ),
-                  set(ref(`${requestVariable}.filter`), ref('filterExpression')),
-                ]),
-              ),
-            ]),
-          ),
-          raw(`$util.toJson($${requestVariable})`),
-        ]),
-      ),
-      `${queryTypeName}.${queryField}.req.vtl`,
-    ),
-    MappingTemplate.s3MappingTemplateFromString(
-      print(
-        compoundExpression([
-          iff(ref('ctx.error'), raw('$util.error($ctx.error.message, $ctx.error.type)')),
-          raw('$util.toJson($ctx.result)'),
-        ]),
-      ),
-      `${queryTypeName}.${queryField}.res.vtl`,
-    ),
-  );
-  resolver.addToSlot(
-    'postAuth',
-    MappingTemplate.s3MappingTemplateFromString(
-      generateAuthExpressionForSandboxMode(ctx.sandboxModeEnabled),
-      `${queryTypeName}.${queryField}.{slotName}.{slotIndex}.res.vtl`,
-    ),
-  );
-
-  resolver.mapToStack(ctx.stackManager.getStackFor(resolverResourceId, table.stack.node.id));
-  ctx.resolvers.addResolver(object.name.value, queryField, resolver);
-}
 
 // When issuing an create/update mutation that creates/changes one part of a composite sort key,
 // you must supply the entire key so that the underlying composite key can be resaved
@@ -865,19 +682,6 @@ function generateSyncResolverInit() {
   );
   return block('Set map initialization for @key', expressions);
 }
-/**
- * Util function to generate sandbox mode expression
- */
-export const generateAuthExpressionForSandboxMode = (enabled: boolean): string => {
-  let exp;
-
-  if (enabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY)), methodCall(ref('util.unauthorized')));
-  else exp = methodCall(ref('util.unauthorized'));
-
-  return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
-    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), exp), toJson(obj({}))]),
-  );
-};
 
 export const getDeltaSyncTableTtl = (resourceOverrides: $TSAny, resource: TransformerResolverProvider) => {
   if (_.get(resource, 'typeName') !== 'Query') {
