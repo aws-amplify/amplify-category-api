@@ -1,4 +1,4 @@
-import { ModelVTLGenerator } from "./vtl-generator";
+import { ModelVTLGenerator } from './vtl-generator';
 import {
   generateUpdateRequestTemplate,
   generateCreateRequestTemplate,

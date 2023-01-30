@@ -1,4 +1,4 @@
-import { ModelDirectiveConfiguration } from "../../directive";
+import { ModelDirectiveConfiguration } from '../../directive';
 
 export interface OperationConfig {
   operation?: string;

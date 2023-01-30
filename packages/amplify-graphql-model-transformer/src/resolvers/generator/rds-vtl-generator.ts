@@ -1,5 +1,5 @@
-import { ModelDirectiveConfiguration } from "../../directive";
-import { OperationConfig, ModelVTLGenerator } from "./vtl-generator";
+import { ModelDirectiveConfiguration } from '../../directive';
+import { OperationConfig, ModelVTLGenerator } from './vtl-generator';
 import {
   generateDefaultLambdaResponseMappingTemplate,
   generateGetLambdaResponseTemplate,
