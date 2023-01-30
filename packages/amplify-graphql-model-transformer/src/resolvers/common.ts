@@ -38,7 +38,7 @@ export const generateResolverKey = (typeName: string, fieldName: string): string
 /**
  * Util function to convert any GraphQL input filter argument to an AWS RDS query expression 
  */
-export const toRDSQueryExpression = (filter: any): string => { 
+export const toRDSFilterExpression = (filter: any): string => { 
   let rdsExpression = '';
   if (filter !== null && filter !== undefined) { 
     const subExpressions = [];
