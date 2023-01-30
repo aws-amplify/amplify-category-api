@@ -16,8 +16,6 @@ import {
   DirectiveNode,
   EnumTypeDefinitionNode,
   ValueNode,
-  ListValueNode,
-  ObjectValueNode,
   InputObjectTypeDefinitionNode,
   UnionTypeDefinitionNode,
   DocumentNode,

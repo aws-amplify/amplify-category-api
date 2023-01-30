@@ -30,7 +30,7 @@
     "@aws-cdk/aws-appsync-alpha": "~2.53.0-alpha.0",
     "aws-cdk-lib": "~2.53.0",
     "constructs": "^10.0.5",
-    "graphql": "^14.5.8"
+    "graphql": "^15.5.0"
   },
   "jest": {
     "transform": {

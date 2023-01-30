@@ -36,7 +36,7 @@ export * from './util';
 export { getTableNameForModel } from './tableNameMap';
 
 /**
- * Returns the extra set of directives that are supported by AppSync service
+ * Returns the set of directives that are supported by AppSync service
  */
 export function getAppSyncServiceExtraDirectives(): string {
   return print(EXTRA_DIRECTIVES_DOCUMENT);

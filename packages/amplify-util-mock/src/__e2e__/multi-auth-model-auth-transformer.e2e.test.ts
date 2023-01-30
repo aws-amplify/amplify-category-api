@@ -224,7 +224,7 @@ test(`Test 'public' authStrategy`, async () => {
       }
     `;
 
-    const response = await APIKEY_GRAPHQL_CLIENT.mutate({
+    const response: any = await APIKEY_GRAPHQL_CLIENT.mutate({
       mutation: createMutation,
       fetchPolicy: 'no-cache',
     });
@@ -272,7 +272,7 @@ test(`Test 'private' authStrategy`, async () => {
       }
     `;
 
-    const response = await USER_POOL_AUTH_CLIENT.mutate({
+    const response: any = await USER_POOL_AUTH_CLIENT.mutate({
       mutation: createMutation,
       fetchPolicy: 'no-cache',
     });
@@ -372,7 +372,7 @@ describe(`Connection tests with @auth on type`, () => {
   beforeAll(async () => {
     try {
       // Add a comment with ApiKey - Succeed
-      const response = await APIKEY_GRAPHQL_CLIENT.mutate({
+      const response: any = await APIKEY_GRAPHQL_CLIENT.mutate({
         mutation: createPostMutation,
         fetchPolicy: 'no-cache',
       });
@@ -380,7 +380,7 @@ describe(`Connection tests with @auth on type`, () => {
       postId = response.data.createPostConnection.id;
 
       // Add a comment with UserPool - Succeed
-      const commentResponse = await USER_POOL_AUTH_CLIENT.mutate({
+      const commentResponse: any = await USER_POOL_AUTH_CLIENT.mutate({
         mutation: createCommentMutation,
         fetchPolicy: 'no-cache',
         variables: {

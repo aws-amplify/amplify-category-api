@@ -102,7 +102,9 @@ const getTransformerFactoryV2 = (
   ];
 
   if (options?.addSearchableTransformer) {
-    transformerList.push(new SearchableModelTransformerV2());
+    const resourceDirParts = resourceDir.split(path.sep);
+    const apiName = resourceDirParts[resourceDirParts.length - 1];
+    transformerList.push(new SearchableModelTransformerV2(apiName));
   }
 
   const customTransformersConfig = await loadProject(resourceDir);

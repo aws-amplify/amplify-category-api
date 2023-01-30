@@ -24,6 +24,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 **Note:** Version bump only for package graphql-transformer-core
 
 ## [7.6.7-cdkv2.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@7.6.6...graphql-transformer-core@7.6.7-cdkv2.0) (2022-11-03)
+## [7.6.10](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@7.6.9...graphql-transformer-core@7.6.10) (2023-01-26)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+## [7.6.9](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@7.6.8...graphql-transformer-core@7.6.9) (2023-01-12)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+## [7.6.8](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@7.6.7...graphql-transformer-core@7.6.8) (2023-01-12)
 
 **Note:** Version bump only for package graphql-transformer-core
 

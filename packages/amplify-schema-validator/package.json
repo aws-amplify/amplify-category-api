@@ -1,0 +1,50 @@
+{
+  "name": "@aws-amplify/graphql-schema-validation",
+  "main": "./dist/index.js",
+  "private": true,
+  "types": "./dist/index.d.ts",
+  "version": "0.1.0",
+  "files": [
+    "dist",
+    "!**/__tests__/**/*"
+  ],
+  "scripts": {
+    "build": "tsc && npm run size",
+    "clean": "rm -rf build node_modules dist coverage",
+    "prettier": "prettier --write '**/*.{js,ts,json,md}'",
+    "test": "jest --coverage",
+    "size": "size-limit",
+    "lint-staged": "lint-staged"
+  },
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^2.2.4",
+    "@types/jest": "^24.0.18",
+    "fs-extra": "^11.1.0",
+    "jest": "^29.0.0",
+    "jest-environment-jsdom": "^29.3.1",
+    "lint-staged": "^9.2.5",
+    "ts-jest": "^29.0.2",
+    "ts-node": "^8.5.0"
+  },
+  "dependencies": {
+    "graphql": "^16.6.0"
+  },
+  "lint-staged": {
+    "*.{js,ts,json,md,scss,html}": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.{js,ts}": [
+      "eslint --fix"
+    ]
+  },
+  "size-limit": [
+    {
+      "path": "./dist/index.js",
+      "limit": "5 KB",
+      "ignore": [
+        "graphql"
+      ]
+    }
+  ]
+}

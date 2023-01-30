@@ -43,9 +43,6 @@ import {
 } from './types';
 import { getConnectionAttributeName, getObjectPrimaryKey, getSortKeyConnectionAttributeName } from './utils';
 
-/**
- * extendTypeWithConnection
- */
 export const extendTypeWithConnection = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field, object } = config;
 

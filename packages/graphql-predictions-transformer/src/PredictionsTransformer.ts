@@ -43,7 +43,7 @@ export class PredictionsTransformer extends Transformer {
   }
 
   public field = (parent: ObjectTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
-    // validate @predictions is defined on a field under a query object
+    // validate @predictions is defined on a field under a query object.
     if (parent.name.value !== ctx.getQueryTypeName()) {
       throw new InvalidDirectiveError('@predictions directive only works under Query operations.');
     }
