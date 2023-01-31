@@ -213,7 +213,7 @@ export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: T
     const args = [createHashField(config)];
 
     const dbInfo = ctx.modelToDatasourceMap.get(config.object.name.value);
-    if (dbInfo?.dbType === 'DDB') {
+    if (dbInfo?.dbType !== 'MySQL') {
       const sortField = tryAndCreateSortField(config, ctx);
       if (sortField) {
         args.push(sortField);
