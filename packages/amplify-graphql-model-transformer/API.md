@@ -5,7 +5,6 @@
 ```ts
 
 import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
-import * as cdk from '@aws-cdk/core';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql';
@@ -13,7 +12,6 @@ import { EnumTypeDefinitionNode } from 'graphql';
 import { Expression } from 'graphql-mapping-template';
 import { FieldDefinitionNode } from 'graphql';
 import { FieldWrapper } from '@aws-amplify/graphql-transformer-core';
-import * as iam from '@aws-cdk/aws-iam';
 import { InputObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
 import { InputObjectTypeDefinitionNode } from 'graphql';
 import { InputValueDefinitionNode } from 'graphql';
@@ -194,8 +192,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     constructor(options?: ModelTransformerOptions);
     // (undocumented)
     before: (ctx: TransformerBeforeStepContextProvider) => void;
-    // (undocumented)
-    createIAMRole: (context: TransformerContextProvider, def: ObjectTypeDefinitionNode, stack: cdk.Stack, tableName: string) => iam.Role;
     // (undocumented)
     ensureModelSortDirectionEnum: (ctx: TransformerValidationStepContextProvider) => void;
     // (undocumented)
