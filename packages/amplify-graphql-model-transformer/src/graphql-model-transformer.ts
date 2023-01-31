@@ -63,10 +63,8 @@ import {
   makeUpdateInputField,
   propagateApiKeyToNestedTypes,
 } from './graphql-types';
-import {
-  DynamoDBModelVTLGenerator,
-  RDSModelVTLGenerator,
-} from './resolvers';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { API_KEY_DIRECTIVE } from './definitions';
 import { ModelDirectiveConfiguration, SubscriptionLevel } from './directive';
 import { ModelResourceGenerator } from './resources/model-resource-generator';
@@ -744,6 +742,14 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     return outputType;
   };
 
+  /**
+   * createIAMRole
+   */
+  createIAMRole = (context: TransformerContextProvider, def: ObjectTypeDefinitionNode, stack: cdk.Stack, tableName: string): iam.Role => {
+    const ddbGenerator = this.resourceGeneratorMap.get(DDB_DB_TYPE) as DynamoModelResourceGenerator;
+    return ddbGenerator.createIAMRole(context, def, stack, tableName);
+  }
+
   private createNonModelInputs = (ctx: TransformerTransformSchemaStepContextProvider, obj: ObjectTypeDefinitionNode): void => {
     (obj.fields ?? []).forEach(field => {
       if (!isScalar(field.type)) {
@@ -850,12 +856,4 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     EnableDeletionProtection: false,
     ...options,
   });
-
-  private getVTLGenerator = (dbInfo: DatasourceType | undefined) => {
-    const dbType = dbInfo ? dbInfo.dbType : 'DDB';
-    if (dbType === 'MySQL') {
-      return new RDSModelVTLGenerator();
-    }
-    return new DynamoDBModelVTLGenerator();
-  };
 }
