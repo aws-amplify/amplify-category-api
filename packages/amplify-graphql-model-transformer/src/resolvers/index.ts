@@ -1,4 +1,4 @@
-export * from './generator';
+export * from './generators';
 export * from './common';
 export {
   generateApplyDefaultsToInputTemplate

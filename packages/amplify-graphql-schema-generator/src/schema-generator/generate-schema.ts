@@ -13,14 +13,14 @@ export const generateGraphQLSchema = (schema: Schema): string => {
     const type = constructObjectType(model);
     
     const fields = model.getFields();
-    const primaryKeyField = model.getPrimaryKey().getFields()[0];
+    const primaryKeyFields = model.getPrimaryKey().getFields();
     fields.forEach(f => {
       if (f.type.kind === 'Enum') {
         const enumType = constructEnumType(f.type);
         document.definitions.push(enumType.serialize());
       }
 
-      const field: any = convertInternalFieldTypeToGraphQL(f, f.name === primaryKeyField);
+      const field: any = convertInternalFieldTypeToGraphQL(f, primaryKeyFields.includes(f.name));
       type.fields.push(field);
     });
     
