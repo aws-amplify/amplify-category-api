@@ -1,5 +1,5 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import { MappingTemplate, GraphQLTransform, AmplifyApiGraphQlResourceStackTemplate, SyncUtils, StackManager } from '@aws-amplify/graphql-transformer-core';
+import { MappingTemplate, GraphQLTransform, SyncUtils, StackManager } from '@aws-amplify/graphql-transformer-core';
 import { DataSourceProvider, StackManagerProvider, TransformerContextProvider, TransformerPluginProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
 import { Table } from '@aws-cdk/aws-dynamodb';
@@ -44,8 +44,8 @@ import {
   ResourceConstants,
   toCamelCase,
 } from 'graphql-transformer-common';
-import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
-import { lookupResolverName } from './utils';
+import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../types';
+import { lookupResolverName } from '../utils';
 import { stateManager, pathManager, $TSAny } from 'amplify-cli-core';
 import * as path from 'path';
 import _ from 'lodash';
@@ -195,7 +195,7 @@ function getSortKeyName(config: PrimaryKeyDirectiveConfiguration): string {
   return config.sortKeyFields.join(ModelResourceIDs.ModelCompositeKeySeparator());
 }
 
-function getResolverObject(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, op: string) {
+export function getResolverObject(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, op: string) {
   const resolverName = lookupResolverName(config, ctx, op);
 
   if (!resolverName) {
@@ -242,7 +242,7 @@ function modelObjectKeySnippet(config: PrimaryKeyDirectiveConfiguration, isMutat
   return obj(modelObject);
 }
 
-function ensureCompositeKeySnippet(config: PrimaryKeyDirectiveConfiguration, conditionallySetSortKey: boolean): string {
+export function ensureCompositeKeySnippet(config: PrimaryKeyDirectiveConfiguration, conditionallySetSortKey: boolean): string {
   const { sortKeyFields } = config;
 
   if (sortKeyFields.length < 2) {
@@ -290,6 +290,22 @@ function setQuerySnippet(config: PrimaryKeyDirectiveConfiguration, ctx: Transfor
   const keyFields = [field, ...sortKey];
   const keyNames = [field.name.value, ...sortKeyFields];
   const keyTypes = keyFields.map(k => attributeTypeFromType(k.type, ctx));
+  const expressions = validateSortDirectionInput(config);
+  expressions.push(
+    set(ref(ResourceConstants.SNIPPETS.ModelQueryExpression), obj({})),
+    applyKeyExpressionForCompositeKey(keyNames, keyTypes, ResourceConstants.SNIPPETS.ModelQueryExpression)!,
+  );
+
+  return block('Set query expression for key', expressions);
+}
+
+/**
+ * Validations for sort direction input
+ */
+export function validateSortDirectionInput(config: PrimaryKeyDirectiveConfiguration): Expression[] {
+  const { field, sortKeyFields } = config;
+  const keyNames = [field.name.value, ...sortKeyFields];
+
   const expressions: Expression[] = [];
 
   if (keyNames.length === 1) {
@@ -299,7 +315,7 @@ function setQuerySnippet(config: PrimaryKeyDirectiveConfiguration, ctx: Transfor
     );
 
     expressions.push(sortDirectionValidation);
-  } else if (isListResolver === true && keyNames.length >= 1) {
+  } else if (keyNames.length >= 1) {
     // This check is only needed for List queries.
     const sortDirectionValidation = iff(
       and([raw(`$util.isNull($ctx.args.${keyNames[0]})`), raw('!$util.isNull($ctx.args.sortDirection)')]),
@@ -311,12 +327,7 @@ function setQuerySnippet(config: PrimaryKeyDirectiveConfiguration, ctx: Transfor
     expressions.push(sortDirectionValidation);
   }
 
-  expressions.push(
-    set(ref(ResourceConstants.SNIPPETS.ModelQueryExpression), obj({})),
-    applyKeyExpressionForCompositeKey(keyNames, keyTypes, ResourceConstants.SNIPPETS.ModelQueryExpression)!,
-  );
-
-  return block('Set query expression for key', expressions);
+  return expressions;
 }
 
 /**
@@ -575,11 +586,11 @@ function validateIndexArgumentSnippet(config: IndexDirectiveConfiguration, keyOp
   );
 }
 
-function mergeInputsAndDefaultsSnippet() {
+export function mergeInputsAndDefaultsSnippet() {
   return printBlock('Merge default values and inputs')(generateApplyDefaultsToInputTemplate('mergedValues'));
 }
 
-function addIndexToResolverSlot(resolver: TransformerResolverProvider, lines: string[], isSync = false): void {
+export function addIndexToResolverSlot(resolver: TransformerResolverProvider, lines: string[], isSync = false): void {
   const res = resolver as any;
 
   res.addToSlot(

@@ -18,6 +18,16 @@ exports[`testDataSourceAdapter generates optional type but no default directive 
 "
 `;
 
+exports[`testDataSourceAdapter generates primary key fields as required without the default directive added 1`] = `
+"type Account @model {
+  id: Int! @primaryKey(sortKeyFields: [\\"serialNumber\\"])
+  serialNumber: Int!
+  ownerName: String
+  amount: Float!
+}
+"
+`;
+
 exports[`testDataSourceAdapter test generate graphql schema from internal reprensentation 1`] = `
 "type Capital @model {
   id: Int! @primaryKey

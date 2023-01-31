@@ -1,7 +1,7 @@
 import { Knex } from 'knex';
 import { DBClient } from '../DBClient.js';
 import { BaseRequest, Request } from '../../interfaces/BaseRequest.js';
-import { ListRequest } from '../../interfaces/ListRequest';
+import { ListRequest, SortDirection } from '../../interfaces/ListRequest';
 
 export abstract class PostgresClient implements DBClient {
     client: Knex;
@@ -37,15 +37,16 @@ export abstract class PostgresClient implements DBClient {
     }
 
     private executeGet = async (request: Request): Promise<any> => {
-      const query = (await this.getClient())(request.table).where('id', request.args.input.get('id')).select();
-      const result = await query;
+      const query = (await this.getClient())(request.table);
+      this.addKeyConditions(query, request);
+      const result = await query.select();
       return result ? result[0] : {};
     }
 
     private executeUpdate = async (request: Request): Promise<any> => {
-      const query = (await this.getClient())(request.table).update(request.args.input);
-      query.where('id', request.args.input.get('id'));
-      return query.returning('*');
+      const query = (await this.getClient())(request.table);
+      this.addKeyConditions(query, request);
+      return query.update(request.args.input).returning('*');
     }
 
     private executeList = async (request: ListRequest): Promise<any> => {
@@ -55,13 +56,38 @@ export abstract class PostgresClient implements DBClient {
         Object.keys(request.args.filter).filter((key) => request.args.hasOwnProperty(key)).forEach((key) => {
           query.whereLike(key, request.args.filter[key]);
         });
+        this.addSortConditions(query, request);
       }
       const nextToken = Buffer.from((nextOffset + request.args.limit).toString());
       return { items: (await query.returning('*')), nextToken };
     }
 
     private executeDelete = async (request: Request): Promise<any> => {
-      const query = (await this.getClient())(request.table).delete().where('id');
-      return query.returning('*');
+      const query = (await this.getClient())(request.table);
+      this.addKeyConditions(query, request);
+      return query.delete().returning('*');
+    }
+
+    private addKeyConditions = (query: any, request: Request) => {
+      const keys = request.args.metadata.keys || [];
+      keys.map( key => {
+        query.where(key, request.args.input.get(key));
+      });
+    }
+
+    private addSortConditions = (query: any, request: ListRequest) => {
+      // order using sort keys
+      const sortDirection = request.args.sortDirection || SortDirection.ASC;
+      const keys = request.args.metadata.keys || [];
+      if(keys.length > 1) {
+        const sortKeys = request.args.metadata.keys.slice(1);
+        const orderByConditions = sortKeys.map( sortKey => {
+          return {
+            column: sortKey,
+            order: sortDirection.toString().toLowerCase()
+          }
+        });
+        query.orderBy(orderByConditions);
+      }
     }
 }
