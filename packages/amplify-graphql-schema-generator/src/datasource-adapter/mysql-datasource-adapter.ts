@@ -286,7 +286,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
   }
 
   private generateEnumName(tableName: string, fieldName: string) {
-    let enumNamePrefix = [tableName, fieldName].join("_");
+    const enumNamePrefix = [tableName, fieldName].join("_");
     let enumName = enumNamePrefix;
     let counter = 0;
     while (this.enums.has(enumName)) {
