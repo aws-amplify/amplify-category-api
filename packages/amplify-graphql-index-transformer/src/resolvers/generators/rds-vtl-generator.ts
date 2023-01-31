@@ -16,7 +16,6 @@ import {
   addIndexToResolverSlot,
   getResolverObject,
   mergeInputsAndDefaultsSnippet,
-  ensureCompositeKeySnippet,
   validateSortDirectionInput
 } from '../resolvers';
 import {
@@ -35,36 +34,30 @@ export class RDSPrimaryKeyVTLGenerator implements PrimaryKeyVTLGenerator {
     const updateResolver = getResolverObject(config, ctx, 'update');
     const deleteResolver = getResolverObject(config, ctx, 'delete');
 
+    const primaryKeySnippet = this.setPrimaryKeySnippet(config);
+
     if (getResolver) {
-      addIndexToResolverSlot(getResolver, [this.setPrimaryKeySnippet(config)]);
+      addIndexToResolverSlot(getResolver, [primaryKeySnippet]);
     }
 
     if (listResolver) {
       const sortDirectionValidation = printBlock('Validate the sort direction input')(compoundExpression(validateSortDirectionInput(config)));
       addIndexToResolverSlot(listResolver, [
-        this.setPrimaryKeySnippet(config),
+        primaryKeySnippet,
         sortDirectionValidation
       ]);
     }
 
     if (createResolver) {
-      addIndexToResolverSlot(createResolver, [
-        mergeInputsAndDefaultsSnippet(),
-        this.setPrimaryKeySnippet(config),
-        ensureCompositeKeySnippet(config, false),
-      ]);
+      addIndexToResolverSlot(createResolver, [primaryKeySnippet]);
     }
 
     if (updateResolver) {
-      addIndexToResolverSlot(updateResolver, [
-        mergeInputsAndDefaultsSnippet(),
-        this.setPrimaryKeySnippet(config),
-        ensureCompositeKeySnippet(config, false),
-      ]);
+      addIndexToResolverSlot(updateResolver, [primaryKeySnippet]);
     }
 
     if (deleteResolver) {
-      addIndexToResolverSlot(deleteResolver, [mergeInputsAndDefaultsSnippet(), this.setPrimaryKeySnippet(config)]);
+      addIndexToResolverSlot(deleteResolver, [primaryKeySnippet]);
     }
   };
 

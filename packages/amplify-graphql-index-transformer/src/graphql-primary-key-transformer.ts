@@ -38,7 +38,8 @@ import {
   updateInputObjects,
   updateMutationConditionInput,
   createHashField,
-  ensureModelSortDirectionEnum
+  ensureModelSortDirectionEnum,
+  tryAndCreateSortField
 } from './schema';
 import { PrimaryKeyDirectiveConfiguration } from './types';
 import {
@@ -210,6 +211,14 @@ export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: T
   let listField = query.fields!.find((field: FieldDefinitionNode) => field.name.value === resolverName) as FieldDefinitionNode;
   if (listField) {
     const args = [createHashField(config)];
+
+    const dbInfo = ctx.modelToDatasourceMap.get(config.object.name.value);
+    if (dbInfo?.dbType === 'DDB') {
+      const sortField = tryAndCreateSortField(config, ctx);
+      if (sortField) {
+        args.push(sortField);
+      }
+    }
 
     if (Array.isArray(listField.arguments)) {
       args.push(...listField.arguments);
