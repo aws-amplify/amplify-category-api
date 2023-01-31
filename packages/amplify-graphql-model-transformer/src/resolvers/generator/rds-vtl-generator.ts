@@ -1,18 +1,16 @@
-import { ModelDirectiveConfiguration } from '../../directive';
-import { OperationConfig, ModelVTLGenerator } from './vtl-generator';
 import {
   generateDefaultLambdaResponseMappingTemplate,
   generateGetLambdaResponseTemplate,
   generateLambdaRequestTemplate,
 } from '../rds';
-import { 
-  ModelCreateInitSlotConfig, 
-  ModelCreateRequestConfig, 
-  ModelDefaultResponseConfig, 
-  ModelRequestConfig, 
-  ModelUpdateRequestConfig, 
-  ModelVTLGenerator, 
-} from "./vtl-generator";
+import {
+  ModelCreateInitSlotConfig,
+  ModelCreateRequestConfig,
+  ModelDefaultResponseConfig,
+  ModelRequestConfig,
+  ModelUpdateRequestConfig,
+  ModelVTLGenerator,
+} from './vtl-generator';
 
 // TODO: This class is created only to show the class structure. This needs a revisit to generate correct resolvers for RDS.
 export class RDSModelVTLGenerator implements ModelVTLGenerator {
