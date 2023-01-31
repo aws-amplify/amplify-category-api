@@ -290,7 +290,7 @@ function setQuerySnippet(config: PrimaryKeyDirectiveConfiguration, ctx: Transfor
   const keyFields = [field, ...sortKey];
   const keyNames = [field.name.value, ...sortKeyFields];
   const keyTypes = keyFields.map(k => attributeTypeFromType(k.type, ctx));
-  const expressions = validateSortDirectionInput(config);
+  const expressions = validateSortDirectionInput(config, isListResolver);
   expressions.push(
     set(ref(ResourceConstants.SNIPPETS.ModelQueryExpression), obj({})),
     applyKeyExpressionForCompositeKey(keyNames, keyTypes, ResourceConstants.SNIPPETS.ModelQueryExpression)!,
@@ -302,7 +302,7 @@ function setQuerySnippet(config: PrimaryKeyDirectiveConfiguration, ctx: Transfor
 /**
  * Validations for sort direction input
  */
-export function validateSortDirectionInput(config: PrimaryKeyDirectiveConfiguration): Expression[] {
+export function validateSortDirectionInput(config: PrimaryKeyDirectiveConfiguration, isListResolver: boolean): Expression[] {
   const { field, sortKeyFields } = config;
   const keyNames = [field.name.value, ...sortKeyFields];
 
@@ -315,7 +315,7 @@ export function validateSortDirectionInput(config: PrimaryKeyDirectiveConfigurat
     );
 
     expressions.push(sortDirectionValidation);
-  } else if (keyNames.length >= 1) {
+  } else if (isListResolver === true && keyNames.length >= 1) {
     // This check is only needed for List queries.
     const sortDirectionValidation = iff(
       and([raw(`$util.isNull($ctx.args.${keyNames[0]})`), raw('!$util.isNull($ctx.args.sortDirection)')]),

@@ -41,7 +41,7 @@ export class RDSPrimaryKeyVTLGenerator implements PrimaryKeyVTLGenerator {
     }
 
     if (listResolver) {
-      const sortDirectionValidation = printBlock('Validate the sort direction input')(compoundExpression(validateSortDirectionInput(config)));
+      const sortDirectionValidation = printBlock('Validate the sort direction input')(compoundExpression(validateSortDirectionInput(config, true)));
       addIndexToResolverSlot(listResolver, [
         primaryKeySnippet,
         sortDirectionValidation
