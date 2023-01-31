@@ -228,14 +228,23 @@ export abstract class ModelResourceGenerator {
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Get${generateResolverKey(typeName, fieldName)}`;
     const vtlGenerator = this.getVTLGenerator();
+    const requestConfig = {
+      operation: 'GET',
+      operationName: fieldName,
+    };
+    const responseConfig = {
+      ...requestConfig,
+      isSyncEnabled,
+      modelName: type.name.value,
+    };
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
         typeName,
         fieldName,
         resolverLogicalId,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateGetRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
-        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateGetResponseTemplate(isSyncEnabled), `${typeName}.${fieldName}.res.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateGetRequestTemplate(requestConfig), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateGetResponseTemplate(responseConfig), `${typeName}.${fieldName}.res.vtl`),
       );
     }
     return this.resolverMap[resolverKey];
@@ -252,15 +261,24 @@ export abstract class ModelResourceGenerator {
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `List${generateResolverKey(typeName, fieldName)}`;
     const vtlGenerator = this.getVTLGenerator();
+    const requestConfig = {
+      operation: 'LIST',
+      operationName: fieldName,
+    };
+    const responseConfig = {
+      ...requestConfig,
+      isSyncEnabled,
+      mutation: false,
+    };
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
         typeName,
         fieldName,
         resolverLogicalId,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateListRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateListRequestTemplate(requestConfig), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateDefaultResponseMappingTemplate(isSyncEnabled, false),
+          vtlGenerator.generateDefaultResponseMappingTemplate(responseConfig),
           `${typeName}.${fieldName}.res.vtl`,
         ),
       );
@@ -298,9 +316,9 @@ export abstract class ModelResourceGenerator {
         fieldName,
         resolverLogicalId,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateCreateRequestTemplate(requestConfig.modelName, requestConfig.modelIndexFields, requestConfig), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateCreateRequestTemplate(requestConfig), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateDefaultResponseMappingTemplate(responseConfig.isSyncEnabled, responseConfig.mutation),
+          vtlGenerator.generateDefaultResponseMappingTemplate(responseConfig),
           `${typeName}.${fieldName}.res.vtl`,
         ),
       );
@@ -313,7 +331,7 @@ export abstract class ModelResourceGenerator {
       resolver.addToSlot(
         'init',
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateCreateInitSlotTemplate(this.modelDirectiveMap.get(type.name.value)!, initSlotConfig),
+          vtlGenerator.generateCreateInitSlotTemplate(initSlotConfig),
           `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
         ),
       );
@@ -333,6 +351,18 @@ export abstract class ModelResourceGenerator {
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Update${generateResolverKey(typeName, fieldName)}`;
     const vtlGenerator = this.getVTLGenerator();
+    const requestConfig = {
+      operation: 'UPDATE',
+      operationName: fieldName,
+      isSyncEnabled,
+      modelName: type.name.value,
+    };
+    const responseConfig = {
+      operation: 'UPDATE',
+      operationName: fieldName,
+      isSyncEnabled,
+      mutation: true,
+    };
     if (!this.resolverMap[resolverKey]) {
       const resolver = ctx.resolvers.generateMutationResolver(
         typeName,
@@ -340,19 +370,24 @@ export abstract class ModelResourceGenerator {
         resolverLogicalId,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateUpdateRequestTemplate(typeName, isSyncEnabled),
+          vtlGenerator.generateUpdateRequestTemplate(requestConfig),
           `${typeName}.${fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateDefaultResponseMappingTemplate(isSyncEnabled, true),
+          vtlGenerator.generateDefaultResponseMappingTemplate(responseConfig),
           `${typeName}.${fieldName}.res.vtl`,
         ),
       );
       // Todo: get the slot index from the resolver to keep the name unique and show the order of functions
+      const updateInitConfig = {
+        modelConfig: this.modelDirectiveMap.get(type.name.value)!,
+        operation: 'UPDATE',
+        operationName: fieldName,
+      };
       resolver.addToSlot(
         'init',
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateUpdateInitSlotTemplate(modelConfig),
+          vtlGenerator.generateUpdateInitSlotTemplate(updateInitConfig),
           `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
         ),
       );
@@ -372,15 +407,27 @@ export abstract class ModelResourceGenerator {
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `delete${generateResolverKey(typeName, fieldName)}`;
     const vtlGenerator = this.getVTLGenerator();
+    const requestConfig = {
+      operation: 'DELETE',
+      operationName: fieldName,
+      isSyncEnabled,
+      modelName: type.name.value,
+    };
+    const responseConfig = {
+      operation: 'DELETE',
+      operationName: fieldName,
+      isSyncEnabled,
+      mutation: true,
+    };
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateMutationResolver(
         typeName,
         fieldName,
         resolverLogicalId,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateDeleteRequestTemplate(typeName, isSyncEnabled), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateDeleteRequestTemplate(requestConfig), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateDefaultResponseMappingTemplate(isSyncEnabled, true),
+          vtlGenerator.generateDefaultResponseMappingTemplate(responseConfig),
           `${typeName}.${fieldName}.res.vtl`,
         ),
       );
@@ -459,15 +506,24 @@ export abstract class ModelResourceGenerator {
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Sync${generateResolverKey(typeName, fieldName)}`;
     const vtlGenerator = this.getVTLGenerator();
+    const requestConfig = {
+      operation: 'SYNC',
+      operationName: fieldName,
+    };
+    const responseConfig = {
+      ...requestConfig,
+      isSyncEnabled,
+      mutation: false,
+    };
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
         typeName,
         fieldName,
         resolverLogicalId,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateSyncRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateSyncRequestTemplate(requestConfig), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateDefaultResponseMappingTemplate(isSyncEnabled, false),
+          vtlGenerator.generateDefaultResponseMappingTemplate(responseConfig),
           `${typeName}.${fieldName}.res.vtl`,
         ),
       );
