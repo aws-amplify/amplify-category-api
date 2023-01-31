@@ -1,5 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`testDataSourceAdapter generates a default directive and optional types for fields with literal default values 1`] = `
+"type Account @model {
+  id: Int! @primaryKey
+  serialNumber: Int @default(value: \\"-1\\")
+  ownerName: String @default(value: \\"na\\")
+  amount: Float @default(value: \\"101.101\\")
+}
+"
+`;
+
+exports[`testDataSourceAdapter generates optional type but no default directive for fields with computed default values 1`] = `
+"type Account @model {
+  id: Int! @primaryKey
+  computed: Float
+}
+"
+`;
+
 exports[`testDataSourceAdapter test generate graphql schema from internal reprensentation 1`] = `
 "type Capital @model {
   id: Int! @primaryKey
@@ -8,7 +26,7 @@ exports[`testDataSourceAdapter test generate graphql schema from internal repren
 }
 
 type Country @model {
-  id: Int! @default(value: \\"uuid()\\") @primaryKey
+  id: Int! @primaryKey
   name: String
 }
 
