@@ -1,7 +1,7 @@
-export type FieldType = DefaultType | CustomType | ListType | NonNullType;
+export type FieldType = DefaultType | CustomType | ListType | NonNullType | EnumType;
 
 export type FieldDataType = 'String' | 'ID' | 'Int' | 'Float' | 'AWSJSON' 
-| 'AWSDate' | 'AWSTime' | 'AWSDateTime' | 'AWSTimestamp'
+| 'AWSDate' | 'AWSTime' | 'AWSDateTime' | 'AWSTimestamp' | 'ENUM'
 | 'Boolean' | 'AWSEmail' | 'AWSPhone' | 'AWSURL' | 'AWSIPAddress';
 
 export interface DefaultType {
@@ -21,7 +21,13 @@ export interface ListType {
 
 export interface NonNullType {
   readonly kind: 'NonNull';
-  readonly type: DefaultType | CustomType | ListType;
+  readonly type: DefaultType | CustomType | ListType | EnumType;
+}
+
+export interface EnumType {
+  readonly kind: 'Enum';
+  name: string;
+  readonly values: string[];
 }
 
 export interface DefaultValue {

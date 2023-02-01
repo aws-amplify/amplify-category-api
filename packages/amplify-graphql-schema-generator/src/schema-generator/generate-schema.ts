@@ -1,6 +1,6 @@
-import { Field, Index, Model, Schema } from '../schema-representation';
-import { Kind, print } from 'graphql';
-import { FieldWrapper, ObjectDefinitionWrapper, DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
+import { EnumType, Field, Index, Model, Schema } from '../schema-representation';
+import { EnumValueDefinitionNode, Kind, print } from 'graphql';
+import { FieldWrapper, ObjectDefinitionWrapper, DirectiveWrapper, EnumWrapper } from '@aws-amplify/graphql-transformer-core';
 
 export const generateGraphQLSchema = (schema: Schema): string => {
   const models = schema.getModels();
@@ -15,6 +15,11 @@ export const generateGraphQLSchema = (schema: Schema): string => {
     const fields = model.getFields();
     const primaryKeyField = model.getPrimaryKey().getFields()[0];
     fields.forEach(f => {
+      if (f.type.kind === 'Enum') {
+        const enumType = constructEnumType(f.type);
+        document.definitions.push(enumType.serialize());
+      }
+
       const field: any = convertInternalFieldTypeToGraphQL(f, f.name === primaryKeyField);
       type.fields.push(field);
     });
@@ -32,7 +37,7 @@ export const generateGraphQLSchema = (schema: Schema): string => {
 const convertInternalFieldTypeToGraphQL = (field: Field, isPrimaryKeyField: boolean): FieldWrapper => {
   const typeWrappers = [];
   let fieldType = field.type;
-  while (fieldType.kind !== "Scalar" && fieldType.kind !== "Custom") {
+  while (fieldType.kind !== "Scalar" && fieldType.kind !== "Custom" && fieldType.kind !== "Enum") {
     typeWrappers.push(fieldType.kind);
     fieldType = (fieldType as any).type;
   }
@@ -115,6 +120,27 @@ const constructObjectType = (model: Model) => {
     ],
   });
 };
+
+const constructEnumType = (type: EnumType) => {
+  const enumValues = type.values.map(t => {
+    return {
+      kind: Kind.ENUM_VALUE_DEFINITION,
+      name: {
+        kind: "Name",
+        value: t,
+      },
+    } as EnumValueDefinitionNode;
+  });
+  const enumType = new EnumWrapper({
+    kind: Kind.ENUM_TYPE_DEFINITION,
+    name: {
+      kind: "Name",
+      value: type.name,
+    },
+    values: enumValues,
+  });
+  return enumType;
+}
 
 const addIndexes = (type: ObjectDefinitionWrapper, indexes: Index[]): void => {
   indexes.forEach(index => {

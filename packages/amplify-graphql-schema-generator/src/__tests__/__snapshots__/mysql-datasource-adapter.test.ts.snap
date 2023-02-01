@@ -38,3 +38,17 @@ type Tasks @model {
 }
 "
 `;
+
+exports[`testDataSourceAdapter test generate graphql schema on model with enum field 1`] = `
+"enum Profile_type {
+  Manager
+  Employee
+}
+
+type Profile @model {
+  id: Int! @primaryKey
+  name: String
+  type: Profile_type
+}
+"
+`;

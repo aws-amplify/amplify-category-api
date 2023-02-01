@@ -52,27 +52,28 @@ describe("testDataSourceAdapter", () => {
       password: "password",
     };
     const adapter = new MySQLDataSourceAdapter(config);
-    expect(adapter.mapDataType("varchar", true)).toEqual({
+    expect(adapter.mapDataType("varchar", true, "table", "field", "varchar(50)")).toEqual({
       "kind": "Scalar",
       "name": "String",
     });
-    expect(adapter.mapDataType("char", true)).toEqual({
+    expect(adapter.mapDataType("char", true, "table", "field", "varchar(50)")).toEqual({
       "kind": "Scalar",
       "name": "String",
     });
-    expect(adapter.mapDataType("enum", true)).toEqual({
-      "kind": "Scalar",
-      "name": "String",
+    expect(adapter.mapDataType("enum", true, "table", "field", "enum(\"OPEN\",\"CLOSED\")")).toEqual({
+      "kind": "Enum",
+      "name": "table_field",
+      "values": ["OPEN", "CLOSED"]
     });
-    expect(adapter.mapDataType("bool", true)).toEqual({
+    expect(adapter.mapDataType("bool", true, "table", "field", "varchar(50)")).toEqual({
       "kind": "Scalar",
       "name": "Boolean",
     });
-    expect(adapter.mapDataType("decimal", true)).toEqual({
+    expect(adapter.mapDataType("decimal", true, "table", "field", "varchar(50)")).toEqual({
       "kind": "Scalar",
       "name": "Float",
     });
-    expect(adapter.mapDataType("year", false)).toEqual({
+    expect(adapter.mapDataType("year", false, "table", "field", "varchar(50)")).toEqual({
       "kind": "NonNull",
       "type": {
         "kind": "Scalar",
@@ -170,5 +171,18 @@ describe("testDataSourceAdapter", () => {
     testComputedExpressions.map( expr => {
       expect(isComputeExpression(expr)).toEqual(true);
     });
+  });
+  it("test generate graphql schema on model with enum field", () => {
+    const dbschema = new Schema(new Engine("MySQL"));
+
+    let model = new Model("Profile");
+    model.addField(new Field("id", { "kind": "NonNull", "type": { "kind": "Scalar", "name": "Int" } }));
+    model.addField(new Field("name", { "kind": "Scalar", "name": "String" }));
+    model.addField(new Field("type", { "kind": "Enum", "name": "Profile_type", "values": ["Manager", "Employee"] }));
+    model.setPrimaryKey(["id"]);
+    dbschema.addModel(model);
+
+    const graphqlSchema = generateGraphQLSchema(dbschema);
+    expect(graphqlSchema).toMatchSnapshot();
   });
 });
