@@ -10,7 +10,7 @@ import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces
 import { expect as cdkExpect, haveResourceLike } from '@aws-cdk/assert';
 import { DocumentNode, parse } from 'graphql';
 import { IndexTransformer, PrimaryKeyTransformer } from '..';
-import * as resolverUtils from '../resolvers';
+import * as resolverUtils from '../resolvers/resolvers';
 
 const generateFeatureFlagWithBooleanOverrides = (overrides: Record<string, boolean>): FeatureFlagProvider => ({
   getBoolean: (name: string, defaultValue?: boolean): boolean => {

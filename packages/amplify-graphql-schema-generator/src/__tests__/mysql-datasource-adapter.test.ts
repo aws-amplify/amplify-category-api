@@ -172,6 +172,7 @@ describe("testDataSourceAdapter", () => {
       expect(isComputeExpression(expr)).toEqual(true);
     });
   });
+
   it("test generate graphql schema on model with enum field", () => {
     const dbschema = new Schema(new Engine("MySQL"));
 
@@ -182,6 +183,25 @@ describe("testDataSourceAdapter", () => {
     model.setPrimaryKey(["id"]);
     dbschema.addModel(model);
 
+    const graphqlSchema = generateGraphQLSchema(dbschema);
+    expect(graphqlSchema).toMatchSnapshot();
+  });
+
+  it("generates primary key fields as required without the default directive added", () => {
+    const dbschema = new Schema(new Engine("MySQL"));
+
+    let model = new Model("Account");
+    model.addField(new Field("id", { "kind": "NonNull", "type": { "kind": "Scalar", "name": "Int" } }));
+    const serialNoField = new Field("serialNumber", { "kind": "NonNull", "type": { "kind": "Scalar", "name": "Int" } });
+    const ownerNameField = new Field("ownerName", { "kind": "Scalar", "name": "String" });
+    const amountField = new Field("amount", { "kind": "NonNull", "type": { "kind": "Scalar", "name": "Float" } });
+    
+    model.addField(serialNoField);
+    model.addField(ownerNameField);
+    model.addField(amountField);
+    model.setPrimaryKey(["id", "serialNumber"]);
+
+    dbschema.addModel(model);
     const graphqlSchema = generateGraphQLSchema(dbschema);
     expect(graphqlSchema).toMatchSnapshot();
   });
