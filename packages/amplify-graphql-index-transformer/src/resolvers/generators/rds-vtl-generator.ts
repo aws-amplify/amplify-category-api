@@ -15,15 +15,14 @@ import _ from 'lodash';
 import {
   addIndexToResolverSlot,
   getResolverObject,
-  mergeInputsAndDefaultsSnippet,
   validateSortDirectionInput
 } from '../resolvers';
 import {
-  PrimaryKeyVTLGenerator,
+  IndexVTLGenerator,
 } from "./vtl-generator";
 
-export class RDSPrimaryKeyVTLGenerator implements PrimaryKeyVTLGenerator {
-  generate = (config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, resolverMap: Map<TransformerResolverProvider, string>): void => {
+export class RDSIndexVTLGenerator implements IndexVTLGenerator {
+  generatePrimaryKeyVTL = (config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, resolverMap: Map<TransformerResolverProvider, string>): void => {
     this.updateResolvers(config, ctx, resolverMap);
   };
 

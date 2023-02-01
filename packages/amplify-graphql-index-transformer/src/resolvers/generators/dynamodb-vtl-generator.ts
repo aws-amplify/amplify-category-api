@@ -8,11 +8,11 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { PrimaryKeyDirectiveConfiguration } from '../../types';
 import {
-  PrimaryKeyVTLGenerator,
+  IndexVTLGenerator,
 } from "./vtl-generator";
 
-export class DynamoDBPrimaryKeyVTLGenerator implements PrimaryKeyVTLGenerator {
-  generate = (config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, resolverMap: Map<TransformerResolverProvider, string>): void => {
+export class DynamoDBIndexVTLGenerator implements IndexVTLGenerator {
+  generatePrimaryKeyVTL = (config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, resolverMap: Map<TransformerResolverProvider, string>): void => {
     replaceDdbPrimaryKey(config, ctx);
     updateResolvers(config, ctx, resolverMap);
   };
