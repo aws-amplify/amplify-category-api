@@ -51,6 +51,18 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - migrate auth, maps-to, relational, default value transformer to CDK v2 ([#875](https://github.com/aws-amplify/amplify-category-api/issues/875)) ([5c714a9](https://github.com/aws-amplify/amplify-category-api/commit/5c714a9a8436be343477574cb5523c23c96c9338))
 
+## [0.12.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.12.8...@aws-amplify/graphql-relational-transformer@0.12.9) (2023-01-26)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [0.12.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.12.7...@aws-amplify/graphql-relational-transformer@0.12.8) (2023-01-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [0.12.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.12.6...@aws-amplify/graphql-relational-transformer@0.12.7) (2023-01-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
 ## [0.12.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.12.5...@aws-amplify/graphql-relational-transformer@0.12.6) (2022-12-13)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer

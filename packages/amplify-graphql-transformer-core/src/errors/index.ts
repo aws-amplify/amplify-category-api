@@ -19,7 +19,7 @@ export class SchemaValidationError extends Error {
       if (!error.message.startsWith('Unknown directive')) {
         return true;
       }
-      const dir = GRAPHQL_TRANSFORMER_V1_DIRECTIVES.find(d => error.message.endsWith(`"${d}".`));
+      const dir = GRAPHQL_TRANSFORMER_V1_DIRECTIVES.find(d => error.message.endsWith(`"@${d}".`));
       if (!dir) {
         return true;
       }
@@ -107,16 +107,6 @@ export class UnknownDirectiveError extends Error {
     this.name = 'UnknownDirectiveError';
     if ((Error as any).captureStackTrace) {
       (Error as any).captureStackTrace(this, UnknownDirectiveError);
-    }
-  }
-}
-export class InvalidBracketsError extends Error {
-  constructor(message: string) {
-    super(message);
-    Object.setPrototypeOf(this, InvalidBracketsError.prototype);
-    this.name = 'InvalidBracketsError';
-    if ((Error as any).captureStackTrace) {
-      (Error as any).captureStackTrace(this, InvalidBracketsError);
     }
   }
 }

@@ -4,7 +4,7 @@ export class HttpMappingTemplate {
   static RESOLVER_VERSION_ID = '2018-05-29';
 
   /**
-   * Create a mapping template for HTTP GET requests.
+   * Create a mapping template for HTTP GET requests
    */
   public static getRequest({ resourcePath, params }: { resourcePath: string; params: ObjectNode }): ObjectNode {
     return obj({

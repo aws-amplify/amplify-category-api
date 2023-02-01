@@ -3,27 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.4.4-beta.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-dynamodb-simulator@2.4.4-beta.0...amplify-category-api-dynamodb-simulator@2.4.4-beta.3) (2022-12-27)
-
-**Note:** Version bump only for package amplify-category-api-dynamodb-simulator
-
-## [2.4.4-beta.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-dynamodb-simulator@2.4.4-beta.0...amplify-category-api-dynamodb-simulator@2.4.4-beta.2) (2022-12-12)
-
-**Note:** Version bump only for package amplify-category-api-dynamodb-simulator
-
-## [2.4.4-beta.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-dynamodb-simulator@2.4.4-beta.0...amplify-category-api-dynamodb-simulator@2.4.4-beta.1) (2022-11-30)
-
-**Note:** Version bump only for package amplify-category-api-dynamodb-simulator
-
-## [2.4.4-beta.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-dynamodb-simulator@2.4.4-cdkv2.1...amplify-category-api-dynamodb-simulator@2.4.4-beta.0) (2022-11-18)
-
-**Note:** Version bump only for package amplify-category-api-dynamodb-simulator
-
-## [2.4.4-cdkv2.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-dynamodb-simulator@2.4.4-cdkv2.0...amplify-category-api-dynamodb-simulator@2.4.4-cdkv2.1) (2022-11-15)
-
-**Note:** Version bump only for package amplify-category-api-dynamodb-simulator
-
-## [2.4.4-cdkv2.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-dynamodb-simulator@2.4.3...amplify-category-api-dynamodb-simulator@2.4.4-cdkv2.0) (2022-11-03)
+## [2.4.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-dynamodb-simulator@2.4.3...amplify-category-api-dynamodb-simulator@2.4.4) (2023-01-12)
 
 **Note:** Version bump only for package amplify-category-api-dynamodb-simulator
 

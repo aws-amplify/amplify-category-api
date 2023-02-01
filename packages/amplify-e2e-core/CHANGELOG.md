@@ -3,39 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [4.0.9-beta.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.12...amplify-category-api-e2e-core@4.0.9-beta.3) (2022-12-27)
+## [4.0.15](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.14...amplify-category-api-e2e-core@4.0.15) (2023-01-26)
 
 **Note:** Version bump only for package amplify-category-api-e2e-core
 
-## [4.0.9-beta.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.9-beta.0...amplify-category-api-e2e-core@4.0.9-beta.2) (2022-12-12)
+## [4.0.14](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.13...amplify-category-api-e2e-core@4.0.14) (2023-01-12)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+## [4.0.13](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.12...amplify-category-api-e2e-core@4.0.13) (2023-01-12)
 
 ### Bug Fixes
 
-- redundant carriage return leads to unexpected behavior ([#993](https://github.com/aws-amplify/amplify-category-api/issues/993)) ([7d6971d](https://github.com/aws-amplify/amplify-category-api/commit/7d6971d08ef452dae49bdb3cbb08e00cc14a835c))
-
-## [4.0.9-beta.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.9-beta.0...amplify-category-api-e2e-core@4.0.9-beta.1) (2022-11-30)
-
-### Bug Fixes
-
-- redundant carriage return leads to unexpected behavior ([#993](https://github.com/aws-amplify/amplify-category-api/issues/993)) ([7d6971d](https://github.com/aws-amplify/amplify-category-api/commit/7d6971d08ef452dae49bdb3cbb08e00cc14a835c))
-
-## [4.0.9-beta.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.9-cdkv2.2...amplify-category-api-e2e-core@4.0.9-beta.0) (2022-11-18)
-
-**Note:** Version bump only for package amplify-category-api-e2e-core
-
-## [4.0.9-cdkv2.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.10...amplify-category-api-e2e-core@4.0.9-cdkv2.2) (2022-11-15)
-
-**Note:** Version bump only for package amplify-category-api-e2e-core
-
-## [4.0.9-cdkv2.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.9-cdkv2.0...amplify-category-api-e2e-core@4.0.9-cdkv2.1) (2022-11-03)
-
-**Note:** Version bump only for package amplify-category-api-e2e-core
-
-## [4.0.9-cdkv2.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.8...amplify-category-api-e2e-core@4.0.9-cdkv2.0) (2022-10-24)
-
-### Bug Fixes
-
-- **graphql:** add rds datasource v1 fix ([#853](https://github.com/aws-amplify/amplify-category-api/issues/853)) ([9bf32c2](https://github.com/aws-amplify/amplify-category-api/commit/9bf32c21f8e7e7ea6e8d602846c1128f38fb9897))
+- disable searchable nodeToNode encryption unless it is already deployed to mitigate impact from enabling or disabling. ([#1152](https://github.com/aws-amplify/amplify-category-api/issues/1152)) ([4a1c360](https://github.com/aws-amplify/amplify-category-api/commit/4a1c36091cff6162b4803651b72ed03c594c01dc))
 
 ## [4.0.12](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.11...amplify-category-api-e2e-core@4.0.12) (2022-12-13)
 

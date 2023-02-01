@@ -1,7 +1,7 @@
 import { TestEntry } from './test-case-types';
 
 /*
-  REGISTER TEST CASES HERE
+  REGISTER TEST CASES HERE!
 */
 export const getTestCaseRegistry = (): TestEntry[] => [
   ['bi-di connection', biDiConnectionSchema],
@@ -26,7 +26,7 @@ export const getTestCaseRegistry = (): TestEntry[] => [
 ];
 
 /*
-  DEFINE TEST SCHEMAS BELOW
+  DEFINE TEST SCHEMAS BELOW!
 */
 
 const biDiConnectionSchema = /* GraphQL */ `

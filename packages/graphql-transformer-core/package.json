@@ -29,8 +29,8 @@
     "deep-diff": "^1.0.2",
     "fs-extra": "^8.1.0",
     "glob": "^7.2.0",
-    "graphql": "^14.5.8",
-    "graphql-transformer-common": "4.24.1-beta.2",
+    "graphql": "^15.5.0",
+    "graphql-transformer-common": "4.24.4",
     "lodash": "^4.17.21"
   },
   "peerDependencies": {

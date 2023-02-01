@@ -3,27 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [5.2.44-beta.3](https://github.com/aws-amplify/amplify-category-api/compare/graphql-connection-transformer@5.2.44...graphql-connection-transformer@5.2.44-beta.3) (2022-12-27)
+## [5.2.47](https://github.com/aws-amplify/amplify-category-api/compare/graphql-connection-transformer@5.2.46...graphql-connection-transformer@5.2.47) (2023-01-26)
 
 **Note:** Version bump only for package graphql-connection-transformer
 
-## [5.2.44-beta.2](https://github.com/aws-amplify/amplify-category-api/compare/graphql-connection-transformer@5.2.44-beta.0...graphql-connection-transformer@5.2.44-beta.2) (2022-12-12)
+## [5.2.46](https://github.com/aws-amplify/amplify-category-api/compare/graphql-connection-transformer@5.2.45...graphql-connection-transformer@5.2.46) (2023-01-12)
 
 **Note:** Version bump only for package graphql-connection-transformer
 
-## [5.2.44-beta.1](https://github.com/aws-amplify/amplify-category-api/compare/graphql-connection-transformer@5.2.44-beta.0...graphql-connection-transformer@5.2.44-beta.1) (2022-11-30)
-
-**Note:** Version bump only for package graphql-connection-transformer
-
-## [5.2.44-beta.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-connection-transformer@5.2.44-cdkv2.1...graphql-connection-transformer@5.2.44-beta.0) (2022-11-18)
-
-**Note:** Version bump only for package graphql-connection-transformer
-
-## [5.2.44-cdkv2.1](https://github.com/aws-amplify/amplify-category-api/compare/graphql-connection-transformer@5.2.44-cdkv2.0...graphql-connection-transformer@5.2.44-cdkv2.1) (2022-11-15)
-
-**Note:** Version bump only for package graphql-connection-transformer
-
-## [5.2.44-cdkv2.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-connection-transformer@5.2.43...graphql-connection-transformer@5.2.44-cdkv2.0) (2022-11-03)
+## [5.2.45](https://github.com/aws-amplify/amplify-category-api/compare/graphql-connection-transformer@5.2.44...graphql-connection-transformer@5.2.45) (2023-01-12)
 
 **Note:** Version bump only for package graphql-connection-transformer
 

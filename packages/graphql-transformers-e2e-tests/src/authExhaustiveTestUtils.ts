@@ -3,7 +3,7 @@ import {
 } from '@aws-amplify/graphql-auth-transformer';
 import {
   JWTToken,
-} from 'amplify-appsync-simulator';
+} from '@aws-amplify/amplify-appsync-simulator';
 import { Auth } from 'aws-amplify';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { CognitoIdentity, S3 } from 'aws-sdk';
