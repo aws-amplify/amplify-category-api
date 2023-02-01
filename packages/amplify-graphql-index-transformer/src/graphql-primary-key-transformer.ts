@@ -29,8 +29,10 @@ import {
 import {
   constructSyncVTL,
   getResourceOverrides,
-  getDeltaSyncTableTtl
-} from './resolvers/resolvers';
+  getDeltaSyncTableTtl,
+  RDSIndexVTLGenerator, 
+  DynamoDBIndexVTLGenerator
+} from './resolvers';
 import {
   addKeyConditionInputs,
   removeAutoCreatedPrimaryKey,
@@ -47,7 +49,6 @@ import {
   validateNotOwnerAuth,
   lookupResolverName
 } from './utils';
-import { RDSPrimaryKeyVTLGenerator, DynamoDBPrimaryKeyVTLGenerator } from './resolvers/generators';
 
 const directiveName = 'primaryKey';
 const directiveDefinition = `
@@ -117,16 +118,16 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
     for (const config of this.directiveList) {
       const dbInfo = ctx.modelToDatasourceMap.get(config.object.name.value);
       const vtlGenerator = this.getVTLGenerator(dbInfo);
-      vtlGenerator.generate(config, ctx, this.resolverMap);
+      vtlGenerator.generatePrimaryKeyVTL(config, ctx, this.resolverMap);
     }
   };
 
   private getVTLGenerator = (dbInfo: DatasourceType | undefined) => {
     const dbType = dbInfo ? dbInfo.dbType : 'DDB';
     if (dbType === 'MySQL') {
-      return new RDSPrimaryKeyVTLGenerator();
+      return new RDSIndexVTLGenerator();
     }
-    return new DynamoDBPrimaryKeyVTLGenerator();
+    return new DynamoDBIndexVTLGenerator();
   };
 }
 

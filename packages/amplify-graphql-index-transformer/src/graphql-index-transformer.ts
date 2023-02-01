@@ -19,7 +19,7 @@ import {
   ObjectTypeDefinitionNode,
 } from 'graphql';
 import { isListType, isScalarOrEnum } from 'graphql-transformer-common';
-import { appendSecondaryIndex, constructSyncVTL, updateResolversForIndex, getResourceOverrides, getDeltaSyncTableTtl } from './resolvers/resolvers';
+import { appendSecondaryIndex, constructSyncVTL, updateResolversForIndex, getResourceOverrides, getDeltaSyncTableTtl } from './resolvers';
 import { addKeyConditionInputs, ensureQueryField, updateMutationConditionInput } from './schema';
 import { IndexDirectiveConfiguration } from './types';
 import { generateKeyAndQueryNameForConfig, validateNotSelfReferencing } from './utils';
