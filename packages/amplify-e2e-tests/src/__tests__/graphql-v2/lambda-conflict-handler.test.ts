@@ -9,6 +9,8 @@ import {
   amplifyPush,
   addApiWithBlankSchemaAndConflictDetection,
   updateApiConflictHandlerType,
+  listAppSyncFunctions,
+  updateApiConflictHandlerTypePerModel,
 } from 'amplify-category-api-e2e-core';
 import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
 
@@ -77,6 +79,18 @@ describe('amplify api (GraphQL) - Customer Lambda Conflict Handler', () => {
 
     await verifyApiExists(meta, projName);
     verifyFunctionDefined(meta);
+
+    const region = meta.providers.awscloudformation.Region;
+    const { GraphQLAPIIdOutput } = meta.api[projName]['output'];
+    const { functions } = await listAppSyncFunctions(GraphQLAPIIdOutput, region);
+    expect(functions).toBeDefined();
+    const lambdaArn = Object.values(meta.function)[0]['output']['Arn']
+    const todoFunctions = functions.filter(f => f.dataSourceName === 'TodoTable');
+    todoFunctions.forEach(func => {
+      expect(func.syncConfig.conflictHandler).toBe('LAMBDA');
+      expect(func.syncConfig.conflictDetection).toBe('VERSION');
+      expect(func.syncConfig.lambdaConflictHandlerConfig.lambdaConflictHandlerArn).toBe(lambdaArn);
+    });
   });
 
   it('amplify update api (GraphQL) - Custom Lambda Conflict Resolver', async () => {
@@ -92,5 +106,53 @@ describe('amplify api (GraphQL) - Customer Lambda Conflict Handler', () => {
 
     await verifyApiExists(meta, projName);
     verifyFunctionDefined(meta);
+
+    const region = meta.providers.awscloudformation.Region;
+    const { GraphQLAPIIdOutput } = meta.api[projName]['output'];
+    const { functions } = await listAppSyncFunctions(GraphQLAPIIdOutput, region);
+    expect(functions).toBeDefined();
+    const lambdaArn = Object.values(meta.function)[0]['output']['Arn']
+    const todoFunctions = functions.filter(f => f.dataSourceName === 'TodoTable');
+    todoFunctions.forEach(func => {
+      expect(func.syncConfig.conflictHandler).toBe('LAMBDA');
+      expect(func.syncConfig.conflictDetection).toBe('VERSION');
+      expect(func.syncConfig.lambdaConflictHandlerConfig.lambdaConflictHandlerArn).toBe(lambdaArn);
+    });
   });
+
+  it('amplify update api (GraphQL) - Per model rule of Conflict Resolution', async () => {
+    const envName = 'test';
+    const projName = 'permodelconflict';
+    console.log(projRoot)
+    await initJSProjectWithProfile(projRoot, { name: projName, envName });
+    await addApiWithBlankSchemaAndConflictDetection(projRoot);
+    await updateApiSchema(projRoot, projName, 'simple_two_models.graphql');
+    await updateApiConflictHandlerTypePerModel(projRoot);
+    await amplifyPush(projRoot);
+
+    const meta = getProjectMeta(projRoot);
+
+    await verifyApiExists(meta, projName);
+    verifyFunctionDefined(meta);
+
+    const region = meta.providers.awscloudformation.Region;
+    const { GraphQLAPIIdOutput } = meta.api[projName]['output'];
+    const { functions } = await listAppSyncFunctions(GraphQLAPIIdOutput, region);
+    expect(functions).toBeDefined();
+    const lambdaArn = Object.values(meta.function)[0]['output']['Arn']
+    const todoFunctions = functions.filter(f => f.dataSourceName === 'TodoTable');
+    todoFunctions.forEach(func => {
+      console.log(func.name)
+      expect(func.syncConfig.conflictHandler).toBe('LAMBDA');
+      expect(func.syncConfig.conflictDetection).toBe('VERSION');
+      expect(func.syncConfig.lambdaConflictHandlerConfig.lambdaConflictHandlerArn).toBe(lambdaArn);
+    })
+    const authorFunctions = functions.filter(f => f.dataSourceName === 'AuthorTable');
+    authorFunctions.forEach(func => {
+      console.log(func.name)
+      expect(func.syncConfig.conflictHandler).toBe('AUTOMERGE');
+      expect(func.syncConfig.conflictDetection).toBe('VERSION');
+      expect(func.syncConfig.lambdaConflictHandlerConfig).not.toBeDefined();
+    })
+  })
 });
