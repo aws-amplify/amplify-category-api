@@ -30,8 +30,7 @@ import {
   constructSyncVTL,
   getResourceOverrides,
   getDeltaSyncTableTtl,
-  RDSIndexVTLGenerator, 
-  DynamoDBIndexVTLGenerator
+  getVTLGenerator,
 } from './resolvers';
 import {
   addKeyConditionInputs,
@@ -117,17 +116,9 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
   generateResolvers = (ctx: TransformerContextProvider): void => {
     for (const config of this.directiveList) {
       const dbInfo = ctx.modelToDatasourceMap.get(config.object.name.value);
-      const vtlGenerator = this.getVTLGenerator(dbInfo);
+      const vtlGenerator = getVTLGenerator(dbInfo);
       vtlGenerator.generatePrimaryKeyVTL(config, ctx, this.resolverMap);
     }
-  };
-
-  private getVTLGenerator = (dbInfo: DatasourceType | undefined) => {
-    const dbType = dbInfo ? dbInfo.dbType : 'DDB';
-    if (dbType === 'MySQL') {
-      return new RDSIndexVTLGenerator();
-    }
-    return new DynamoDBIndexVTLGenerator();
   };
 }
 

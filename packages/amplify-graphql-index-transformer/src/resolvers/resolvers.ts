@@ -1,5 +1,5 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import { MappingTemplate, GraphQLTransform, SyncUtils, StackManager } from '@aws-amplify/graphql-transformer-core';
+import { MappingTemplate, GraphQLTransform, SyncUtils, StackManager, DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import { DataSourceProvider, StackManagerProvider, TransformerContextProvider, TransformerPluginProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
 import { Table } from '@aws-cdk/aws-dynamodb';
@@ -49,6 +49,10 @@ import { lookupResolverName } from '../utils';
 import { stateManager, pathManager, $TSAny } from 'amplify-cli-core';
 import * as path from 'path';
 import _ from 'lodash';
+import {
+  RDSIndexVTLGenerator, 
+  DynamoDBIndexVTLGenerator
+} from './generators';
 
 const API_KEY = 'API Key Authorization';
 
@@ -285,7 +289,7 @@ export function ensureCompositeKeySnippet(config: PrimaryKeyDirectiveConfigurati
   );
 }
 
-function setQuerySnippet(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, isListResolver: boolean) {
+export function setQuerySnippet(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, isListResolver: boolean) {
   const { field, sortKey, sortKeyFields } = config;
   const keyFields = [field, ...sortKey];
   const keyNames = [field.name.value, ...sortKeyFields];
@@ -335,6 +339,11 @@ export function validateSortDirectionInput(config: PrimaryKeyDirectiveConfigurat
  */
 export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const { name, object, primaryKeyField } = config;
+  const dbType = getDBType(ctx, object.name.value);
+  if (dbType === 'MySQL') {
+    return;
+  }
+
   const table = getTable(ctx, object) as any;
   const keySchema = getDdbKeySchema(config);
   const attrDefs = attributeDefinitions(config, ctx);
@@ -409,7 +418,7 @@ export function updateResolversForIndex(
   ctx: TransformerContextProvider,
   resolverMap: Map<TransformerResolverProvider, string>,
 ): void {
-  const { name, queryField } = config;
+  const { name, queryField, object } = config;
   if (!name) {
     throw new Error('Expected name while updating index resolvers.');
   }
@@ -418,9 +427,12 @@ export function updateResolversForIndex(
   const deleteResolver = getResolverObject(config, ctx, 'delete');
   const syncResolver = getResolverObject(config, ctx, 'sync');
 
+  const dbType = getDBType(ctx, object.name.value);
+  const isDynamoDB = dbType === 'DDB';
+
   // Ensure any composite sort key values and validate update operations to
   // protect the integrity of composite sort keys.
-  if (createResolver) {
+  if (isDynamoDB && createResolver) {
     const checks = [validateIndexArgumentSnippet(config, 'create'), ensureCompositeKeySnippet(config, true)];
 
     if (checks[0] || checks[1]) {
@@ -428,7 +440,7 @@ export function updateResolversForIndex(
     }
   }
 
-  if (updateResolver) {
+  if (isDynamoDB && updateResolver) {
     const checks = [validateIndexArgumentSnippet(config, 'update'), ensureCompositeKeySnippet(config, true)];
 
     if (checks[0] || checks[1]) {
@@ -436,7 +448,7 @@ export function updateResolversForIndex(
     }
   }
 
-  if (deleteResolver) {
+  if (isDynamoDB && deleteResolver) {
     const checks = [ensureCompositeKeySnippet(config, false)];
 
     if (checks[0]) {
@@ -448,7 +460,7 @@ export function updateResolversForIndex(
     makeQueryResolver(config, ctx);
   }
 
-  if (syncResolver) {
+  if (isDynamoDB && syncResolver) {
     makeSyncResolver(name, config, ctx, syncResolver, resolverMap);
   }
 }
@@ -458,13 +470,13 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
   if (!(name && queryField)) {
     throw new Error('Expected name and queryField to be defined while generating resolver.');
   }
+  const modelName = object.name.value;
+  const dbInfo = getDBInfo(ctx, modelName);
   const dataSourceName = `${object.name.value}Table`;
   const dataSource = ctx.api.host.getDataSource(dataSourceName);
   const queryTypeName = ctx.output.getQueryTypeName() as string;
   const table = getTable(ctx, object);
-  const authFilter = ref('ctx.stash.authFilter');
-  const requestVariable = 'QueryRequest';
-
+  
   if (!dataSource) {
     throw new Error(`Could not find datasource with name ${dataSourceName} in context.`);
   }
@@ -476,60 +488,7 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
     resolverResourceId,
     dataSource as DataSourceProvider,
     MappingTemplate.s3MappingTemplateFromString(
-      print(
-        compoundExpression([
-          setQuerySnippet(config, ctx, false),
-          set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT})`)),
-          set(
-            ref(requestVariable),
-            obj({
-              version: str(RESOLVER_VERSION_ID),
-              operation: str('Query'),
-              limit: ref('limit'),
-              query: ref(ResourceConstants.SNIPPETS.ModelQueryExpression),
-              index: str(name),
-            }),
-          ),
-          ifElse(
-            raw(`!$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == "DESC"`),
-            set(ref(`${requestVariable}.scanIndexForward`), bool(false)),
-            set(ref(`${requestVariable}.scanIndexForward`), bool(true)),
-          ),
-          iff(ref('context.args.nextToken'), set(ref(`${requestVariable}.nextToken`), ref('context.args.nextToken')), true),
-          ifElse(
-            not(isNullOrEmpty(authFilter)),
-            compoundExpression([
-              set(ref('filter'), authFilter),
-              iff(
-                not(isNullOrEmpty(ref('ctx.args.filter'))),
-                set(ref('filter'), obj({ and: list([ref('filter'), ref('ctx.args.filter')]) })),
-              ),
-            ]),
-            iff(not(isNullOrEmpty(ref('ctx.args.filter'))), set(ref('filter'), ref('ctx.args.filter'))),
-          ),
-          iff(
-            not(isNullOrEmpty(ref('filter'))),
-            compoundExpression([
-              set(
-                ref('filterExpression'),
-                methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref('filter'))),
-              ),
-              iff(
-                not(methodCall(ref('util.isNullOrBlank'), ref('filterExpression.expression'))),
-                compoundExpression([
-                  iff(
-                    equals(methodCall(ref('filterExpression.expressionValues.size')), int(0)),
-                    qref(methodCall(ref('filterExpression.remove'), str('expressionValues'))),
-                  ),
-                  set(ref(`${requestVariable}.filter`), ref('filterExpression')),
-                ]),
-              ),
-            ]),
-          ),
-          raw(`$util.toJson($${requestVariable})`),
-        ]),
-      ),
+      getVTLGenerator(dbInfo).generateIndexQueryRequestTemplate(config, ctx, modelName, queryField),
       `${queryTypeName}.${queryField}.req.vtl`,
     ),
     MappingTemplate.s3MappingTemplateFromString(
@@ -922,3 +881,23 @@ export const getResourceOverrides = (transformers: TransformerPluginProvider[], 
   }
   return {};
 }
+
+export function getDBInfo(ctx: TransformerContextProvider, modelName: string) {
+  const dbInfo = ctx.modelToDatasourceMap.get(modelName);
+  const result = dbInfo ?? { dbType: 'DDB', provisionDB: true };
+  return result;
+}
+
+export function getDBType(ctx: TransformerContextProvider, modelName: string) {
+  const dbInfo = getDBInfo(ctx, modelName);
+  const dbType = dbInfo ? dbInfo.dbType : 'DDB';
+  return dbType;
+}
+
+export function getVTLGenerator(dbInfo: DatasourceType | undefined) {
+  const dbType = dbInfo ? dbInfo.dbType : 'DDB';
+  if (dbType === 'MySQL') {
+    return new RDSIndexVTLGenerator();
+  }
+  return new DynamoDBIndexVTLGenerator();
+};
