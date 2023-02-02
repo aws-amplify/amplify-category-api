@@ -123,7 +123,6 @@ describe('amplify api (GraphQL) - Customer Lambda Conflict Handler', () => {
   it('amplify update api (GraphQL) - Per model rule of Conflict Resolution', async () => {
     const envName = 'test';
     const projName = 'permodelconflict';
-    console.log(projRoot)
     await initJSProjectWithProfile(projRoot, { name: projName, envName });
     await addApiWithBlankSchemaAndConflictDetection(projRoot);
     await updateApiSchema(projRoot, projName, 'simple_two_models.graphql');
@@ -142,14 +141,12 @@ describe('amplify api (GraphQL) - Customer Lambda Conflict Handler', () => {
     const lambdaArn = Object.values(meta.function)[0]['output']['Arn']
     const todoFunctions = functions.filter(f => f.dataSourceName === 'TodoTable');
     todoFunctions.forEach(func => {
-      console.log(func.name)
       expect(func.syncConfig.conflictHandler).toBe('LAMBDA');
       expect(func.syncConfig.conflictDetection).toBe('VERSION');
       expect(func.syncConfig.lambdaConflictHandlerConfig.lambdaConflictHandlerArn).toBe(lambdaArn);
     })
     const authorFunctions = functions.filter(f => f.dataSourceName === 'AuthorTable');
     authorFunctions.forEach(func => {
-      console.log(func.name)
       expect(func.syncConfig.conflictHandler).toBe('AUTOMERGE');
       expect(func.syncConfig.conflictDetection).toBe('VERSION');
       expect(func.syncConfig.lambdaConflictHandlerConfig).not.toBeDefined();
