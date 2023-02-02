@@ -10,7 +10,6 @@ import {
   str,
   not,
 } from 'graphql-mapping-template';
-
 const API_KEY = 'API Key Authorization';
 /**
  * Util function to generate sandbox mode expression
@@ -36,52 +35,70 @@ export const generateResolverKey = (typeName: string, fieldName: string): string
 };
 
 /**
- * Util function to convert any GraphQL input filter argument to an AWS RDS query expression 
+ * Util method to convert any GraphQL input filter argument to an AWS RDS query expression 
  */
-export const toRDSFilterExpression = (filter: any): string => { 
-  let rdsExpression = '';
-  if (filter !== null && filter !== undefined) { 
-    const subExpressions = [];
-    for (const key in filter) {
-      const filterValue = filter[key];
-      if (filterValue !== null && filterValue !== undefined) {
-        if (key === 'contains') {
-          subExpressions.push(` like '%${filterValue}%'`);
-        } else if (key === 'eq') {
-          subExpressions.push(` = '${filterValue}'`);
-        } else if (key === 'ne') {
-          subExpressions.push(` != '${filterValue}'`);
-        } else if (key === 'lt') {
-          subExpressions.push(` < '${filterValue}'`);
-        } else if (key === 'le') {
-          subExpressions.push(` <= '${filterValue}'`);
-        } else if (key === 'gt') {
-          subExpressions.push(` > '${filterValue}'`);
-        } else if (key === 'ge') {
-          subExpressions.push(` >= '${filterValue}'`);
-        } else if (key === 'between') {
-          subExpressions.push(` between '${filterValue[0]}' and '${filterValue[1]}'`);
-        } else if (key === 'beginsWith') {
-          subExpressions.push(` like '${filterValue}%'`);
-        } else if (key === 'attributeExists') {
-          subExpressions.push(` is not null`);
-        } else if (key === 'attributeType') {
-          subExpressions.push(` is ${filterValue}`);
-        } else if (key === 'attributeNotExists') {
-          subExpressions.push(` is null`);
-        } else if (key === 'in') {
-          subExpressions.push(` in (${filterValue.join(',')})`);
-        } else if (key === 'notContains') {
-          subExpressions.push(` not like '%${filterValue}%'`);
-        } else if (key === 'notIn') {
-          subExpressions.push(` not in (${filterValue.join(',')})`);
-        } else if (key === 'and' || key === 'or') {
-          const subExpression = toRDSFilterExpression(filterValue);
-          subExpressions.push(` ${key} ${subExpression}`);
-        }
-      }
-    } 
-    rdsExpression = subExpressions.join(' and ');
-  }
-  return rdsExpression;
+
+export const toRDSQueryExpression = (filter: any): string => {
+    let rdsExpression = '';
+    Object.entries(filter).forEach(([key, value]:any, index) => {
+        switch(key) {
+            case 'and':
+            case `or`:
+                rdsExpression += value.map(toRDSQueryExpression).join(` ${key.toUpperCase()} `);
+                break;
+            case `not`:
+                // todo: equivalent of `not` in RDS
+                rdsExpression += `NOT ${toRDSQueryExpression(value)}`;
+                break;
+            default:
+                Object.entries(value).forEach(([operator, operand]:any) => {
+                    if (index != 0) {
+                        rdsExpression += ` AND `;
+                    }
+                    switch(operator) {
+                    case `attributeExists`:
+                        rdsExpression += `${key} IS NOT NULL`;
+                        break;
+                    case `beginsWith`:
+                        rdsExpression += `${key} LIKE '${operand}%'`;
+                        break;
+                    case `between`:
+                        if(Array.isArray(operand) && operand.length === 2) {
+                        rdsExpression += `${key} BETWEEN '${operand[0]}' AND '${operand[1]}'`;
+                        } else console.error(`Invalid input for 'between' operator. Expected an array of length 2`);
+                        break;
+                    case `contains`:
+                        rdsExpression += `${key} LIKE '%${operand}%'`;
+                        break;
+                    case `eq`:
+                        rdsExpression += `${key} = '${operand}'`;
+                        break;
+                    case `ge`:
+                        rdsExpression += `${key} >= '${operand}'`;
+                        break;
+                    case `gt`:
+                        rdsExpression += `${key} > '${operand}'`;
+                        break;
+                    case `le`:
+                        rdsExpression += `${key} <= '${operand}'`;
+                        break;    
+                    case `lt`:
+                        rdsExpression += `${key} < '${operand}'`;
+                        break; 
+                    case `ne`:
+                        rdsExpression += `${key} != '${operand}'`;
+                        break;
+                    case `notContains`:
+                        rdsExpression += `${key} NOT LIKE '%${operand}%'`;
+                        break;
+                    case `size`:
+                        // implement size
+                        break;
+                    default:
+                        console.log(`Unsupported operator: ${operator}`);   
+                    }
+                });
+            }
+        });
+    return `(${rdsExpression})`;
 };
