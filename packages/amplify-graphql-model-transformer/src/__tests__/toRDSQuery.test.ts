@@ -109,15 +109,14 @@ describe('filterToRdsExpression', () => {
     expect(toRDSQueryExpression(filter)).toEqual("(id = '123' AND age BETWEEN '18' AND '60' AND org != 'AWS')");
     });
 
-    it(`should throw error if between: doesn't have 2 values`, () => {
-    const filter = {
-        id : {  eq : '123' },
-        age: { between : ['18'] },
-    };
-    //console.error
-    // Invalid input for 'between' operator. Expected an array of length 2
-    expect(toRDSQueryExpression(filter)).toEqual("(id = '123' AND )");
-    });
+    test('filterToRdsExpression > should throw error if between: doesn\'t have 2 values', () => {
+        const filter = {
+          id : { eq : '123' },
+          age: { between : ['18'] },
+          org: { ne : 'AWS' },
+        };
+        expect(() => {toRDSQueryExpression(filter);}).toThrowError(/between condition must have two values/);
+      });
 
     // nested QueryGroup & Operators
     it('should convert nested and: or: with Operators ', () => {

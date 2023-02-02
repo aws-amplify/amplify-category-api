@@ -37,7 +37,6 @@ export const generateResolverKey = (typeName: string, fieldName: string): string
 /**
  * Util method to convert any GraphQL input filter argument to an AWS RDS query expression 
  */
-
 export const toRDSQueryExpression = (filter: any): string => {
     let rdsExpression = '';
     Object.entries(filter).forEach(([key, value]:any, index) => {
@@ -63,9 +62,11 @@ export const toRDSQueryExpression = (filter: any): string => {
                         rdsExpression += `${key} LIKE '${operand}%'`;
                         break;
                     case `between`:
-                        if(Array.isArray(operand) && operand.length === 2) {
+                        case 'between':
+                        if(!Array.isArray(operand) || operand.length !== 2) {
+                            throw new Error(`between condition must have two values, but got: ${operand}.length`);
+                        } 
                         rdsExpression += `${key} BETWEEN '${operand[0]}' AND '${operand[1]}'`;
-                        } else console.error(`Invalid input for 'between' operator. Expected an array of length 2`);
                         break;
                     case `contains`:
                         rdsExpression += `${key} LIKE '%${operand}%'`;
