@@ -25,7 +25,7 @@ import { DynamoDBModelVTLGenerator, ModelVTLGenerator } from '../resolvers';
  * providing necessary utilities to generate the DynamoDB resources for models
  */
 export class DynamoModelResourceGenerator extends ModelResourceGenerator {
-  protected generatorType = 'DynamoModelResourceGenerator';
+  protected readonly generatorType = 'DynamoModelResourceGenerator';
 
   generateResources(ctx: TransformerContextProvider): void {
     if (!this.isEnabled()) {

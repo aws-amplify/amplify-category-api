@@ -380,7 +380,7 @@ export abstract class ModelResourceGenerator {
       );
       // Todo: get the slot index from the resolver to keep the name unique and show the order of functions
       const updateInitConfig = {
-        modelConfig: this.modelDirectiveMap.get(type.name.value)!,
+        modelConfig: modelConfig,
         operation: 'UPDATE',
         operationName: fieldName,
       };

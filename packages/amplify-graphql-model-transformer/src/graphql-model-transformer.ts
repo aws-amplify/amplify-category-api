@@ -399,10 +399,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     fieldName: string,
     resolverLogicalId: string,
   ): TransformerResolverProvider => {
-    const dbInfo = { dbType: 'DDB', provisioned: true };
-    if (dbInfo?.dbType && this.resourceGeneratorMap.has(dbInfo.dbType)) {
+    if (this.resourceGeneratorMap.has(DDB_DB_TYPE)) {
       // Coercing this into being defined as we're running a check on it first
-      return this.resourceGeneratorMap.get(dbInfo.dbType)!.generateOnCreateResolver(ctx, typeName, fieldName, resolverLogicalId);
+      return this.resourceGeneratorMap.get(DDB_DB_TYPE)!.generateOnCreateResolver(ctx, typeName, fieldName, resolverLogicalId);
     }
     throw new Error('Resource generator not provided for DDB');
   };
@@ -413,10 +412,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     fieldName: string,
     resolverLogicalId: string,
   ): TransformerResolverProvider => {
-    const dbInfo = { dbType: 'DDB', provisioned: true };
-    if (dbInfo?.dbType && this.resourceGeneratorMap.has(dbInfo.dbType)) {
+    if (this.resourceGeneratorMap.has(DDB_DB_TYPE)) {
       // Coercing this into being defined as we're running a check on it first
-      return this.resourceGeneratorMap.get(dbInfo.dbType)!.generateOnUpdateResolver(ctx, typeName, fieldName, resolverLogicalId);
+      return this.resourceGeneratorMap.get(DDB_DB_TYPE)!.generateOnUpdateResolver(ctx, typeName, fieldName, resolverLogicalId);
     }
     throw new Error('Resource generator not provided for DDB');
   };
@@ -427,10 +425,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     fieldName: string,
     resolverLogicalId: string,
   ): TransformerResolverProvider => {
-    const dbInfo = { dbType: 'DDB', provisioned: true };
-    if (dbInfo?.dbType && this.resourceGeneratorMap.has(dbInfo.dbType)) {
+    if (this.resourceGeneratorMap.has(DDB_DB_TYPE)) {
       // Coercing this into being defined as we're running a check on it first
-      return this.resourceGeneratorMap.get(dbInfo.dbType)!.generateOnDeleteResolver(ctx, typeName, fieldName, resolverLogicalId);
+      return this.resourceGeneratorMap.get(DDB_DB_TYPE)!.generateOnDeleteResolver(ctx, typeName, fieldName, resolverLogicalId);
     }
     throw new Error('Resource generator not provided for DDB');
   };
