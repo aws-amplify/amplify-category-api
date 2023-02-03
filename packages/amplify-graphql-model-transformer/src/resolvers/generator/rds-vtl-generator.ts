@@ -30,13 +30,13 @@ export class RDSModelVTLGenerator implements ModelVTLGenerator {
     return generateDefaultLambdaResponseMappingTemplate(false);
   }
   generateGetRequestTemplate(config: ModelRequestConfig): string {
-    return generateGetLambdaResponseTemplate(false);
+    return generateLambdaRequestTemplate(config.modelName, config.operation, config.operationName);
   }
   generateGetResponseTemplate(config: ModelUpdateRequestConfig): string {
-    return generateDefaultLambdaResponseMappingTemplate(false);
+    return generateGetLambdaResponseTemplate(false);
   }
   generateListRequestTemplate(config: ModelRequestConfig): string {
-    return generateDefaultLambdaResponseMappingTemplate(false);
+    return generateLambdaRequestTemplate(config.modelName, config.operation, config.operationName);
   }
   generateSyncRequestTemplate(config: ModelRequestConfig): string {
     return generateDefaultLambdaResponseMappingTemplate(false);

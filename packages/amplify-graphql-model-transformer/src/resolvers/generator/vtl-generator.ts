@@ -1,19 +1,18 @@
 import { ModelDirectiveConfiguration } from '../../directive';
 
 export type ModelRequestConfig = {
+  modelName: string;
   operation: string;
   operationName: string;
 }
 
 export type ModelUpdateRequestConfig = ModelRequestConfig & {
-  modelName: string;
   isSyncEnabled: boolean;
 }
 
 export type ModelDeleteRequestConfig = ModelUpdateRequestConfig;
 
 export type ModelCreateRequestConfig = ModelRequestConfig & {
-  modelName: string;
   modelIndexFields: string[];
 }
 

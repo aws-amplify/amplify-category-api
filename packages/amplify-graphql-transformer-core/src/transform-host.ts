@@ -1,7 +1,6 @@
 import {
   DynamoDbDataSourceOptions,
-  InlineMappingTemplateProvider,
-  MappingTemplateProvider, MappingTemplateType, S3MappingTemplateProvider, SearchableDataSourceOptions, TransformHostProvider,
+  MappingTemplateProvider, SearchableDataSourceOptions, TransformHostProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   BaseDataSource, CfnResolver,

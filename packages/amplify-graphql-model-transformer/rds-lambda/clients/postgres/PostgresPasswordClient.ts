@@ -25,9 +25,9 @@ export class PostgresPasswordClient extends PostgresClient {
         connection: {
           host: process.env.DATABASE_HOST,
           port: Number.parseInt(process.env.DATABASE_PORT ?? '5432', 10),
-          user: 'postgres',
-          password: 'postgres',
-          database: 'postgres',
+          user: '',
+          password: '',
+          database: '',
         },
       });
     }

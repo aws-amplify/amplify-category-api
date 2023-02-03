@@ -3,6 +3,8 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import { ModelResourceGenerator } from './model-resource-generator';
 import { ModelVTLGenerator, RDSModelVTLGenerator } from '../resolvers';
 import { createRdsLambda, createRdsLambdaRole } from '../resolvers/rds';
+import { MYSQL_DB_TYPE } from '../types';
+import {RDSConnectionSecrets} from '@aws-amplify/graphql-transformer-core';
 
 export const RDS_STACK_NAME = 'RdsApiStack';
 
@@ -14,19 +16,50 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
   protected readonly generatorType = 'RdsModelResourceGenerator';
 
   generateResources(context: TransformerContextProvider): void {
-    const { RDSLambdaIAMRoleLogicalID, RDSLambdaLogicalID, RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-    const lambdaRoleStack = context.stackManager.getStackFor(RDSLambdaIAMRoleLogicalID, RDS_STACK_NAME);
-    const lambdaStack = context.stackManager.getStackFor(RDSLambdaLogicalID, RDS_STACK_NAME);
-    const role = createRdsLambdaRole(context.resourceHelper.generateIAMRoleName(RDSLambdaIAMRoleLogicalID), lambdaRoleStack);
-    const lambda = createRdsLambda(lambdaStack, context.api, role);
+    if (this.isEnabled()) {
+      const secretEntry = context.datasourceSecretParameterLocations.get(MYSQL_DB_TYPE);
+      if (!secretEntry) {
+        throw new Error('Secret entry not found for RDS access, unable to create lambda');
+      }
+      const {
+        RDSLambdaIAMRoleLogicalID,
+        RDSLambdaLogicalID,
+        RDSLambdaDataSourceLogicalID,
+        RDSLambdaDataSourceLogicalName,
+      } = ResourceConstants.RESOURCES;
+      const lambdaRoleStack = context.stackManager.getStackFor(RDSLambdaIAMRoleLogicalID, RDS_STACK_NAME);
+      const lambdaStack = context.stackManager.getStackFor(RDSLambdaLogicalID, RDS_STACK_NAME);
+      const role = createRdsLambdaRole(
+        context.resourceHelper.generateIAMRoleName(RDSLambdaIAMRoleLogicalID),
+        lambdaRoleStack,
+        secretEntry as RDSConnectionSecrets,
+      );
+      const lambda = createRdsLambda(
+        lambdaStack,
+        context.api,
+        role,
+        {
+          username: secretEntry?.username ?? '',
+          password: secretEntry?.password ?? '',
+          host: secretEntry?.host ?? '',
+          port: secretEntry?.port ?? '',
+          database: secretEntry?.database ?? '',
+        },
+      );
 
-    const lambdaDataSourceStack = context.stackManager.getStackFor(RDSLambdaDataSourceLogicalID, RDS_STACK_NAME);
-    const rdsDatasource = context.api.host.addLambdaDataSource(
-      `${RDSLambdaDataSourceLogicalID}DataSource`,
-      lambda,
-      { name: RDSLambdaDataSourceLogicalID },
-      lambdaDataSourceStack,
-    );
+      const lambdaDataSourceStack = context.stackManager.getStackFor(RDSLambdaDataSourceLogicalID, RDS_STACK_NAME);
+      const rdsDatasource = context.api.host.addLambdaDataSource(
+        `${RDSLambdaDataSourceLogicalID}`,
+        lambda,
+        {},
+        lambdaDataSourceStack,
+      );
+      this.models.forEach((model) => {
+        context.dataSources.add(model, rdsDatasource);
+        this.datasourceMap[model.name.value] = rdsDatasource;
+      });
+    }
+    this.generateResolvers(context);
   }
 
   // eslint-disable-next-line class-methods-use-this

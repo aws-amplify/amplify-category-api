@@ -19,6 +19,7 @@ import { TransformerContextProviderRegistry } from './provider-registry';
 import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
+import {RDSConnectionSecrets} from '../types';
 
 export { TransformerResolver } from './resolver';
 export { StackManager } from './stack-manager';
@@ -54,6 +55,7 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly sandboxModeEnabled: boolean;
   private resolverConfig: ResolverConfig | undefined;
   public readonly modelToDatasourceMap: Map<string, DatasourceType>;
+  public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
 
   public metadata: TransformerContextMetadata;
   constructor(
@@ -65,6 +67,7 @@ export class TransformerContext implements TransformerContextProvider {
     sandboxModeEnabled?: boolean,
     featureFlags?: FeatureFlagProvider,
     resolverConfig?: ResolverConfig,
+    datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
   ) {
     this.output = new TransformerOutput(inputDocument);
     this.resolvers = new ResolverManager();
@@ -79,6 +82,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.resolverConfig = resolverConfig;
     this.metadata = new TransformerContextMetadata();
     this.modelToDatasourceMap = modelToDatasourceMap;
+    this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
   }
 
   /**

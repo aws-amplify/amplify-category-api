@@ -3,7 +3,7 @@ import { DBClient } from '../DBClient.js';
 import { BaseRequest, Request } from '../../interfaces/BaseRequest.js';
 import { ListRequest, SortDirection } from '../../interfaces/ListRequest.js';
 
-export abstract class PostgresClient implements DBClient {
+export abstract class MySQLClient implements DBClient {
   client: Knex;
   abstract getClient(): Promise<any>;
 
@@ -81,11 +81,11 @@ export abstract class PostgresClient implements DBClient {
     const keys = request.args.metadata.keys || [];
     if(keys.length > 1) {
       const sortKeys = request.args.metadata.keys.slice(1);
-      const orderByConditions = sortKeys.map( sortKey => {
+      const orderByConditions = sortKeys.map((sortKey) => {
         return {
           column: sortKey,
-          order: sortDirection.toString().toLowerCase()
-        }
+          order: sortDirection.toString().toLowerCase(),
+        };
       });
       query.orderBy(orderByConditions);
     }

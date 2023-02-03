@@ -27,16 +27,23 @@ export {
   DatasourceType,
 } from './config/index';
 export {
+  constructDefaultGlobalAmplifyInput,
+  constructRDSGlobalAmplifyInput,
   GetArgumentsOptions,
   generateGetArgumentsInput,
   getTable,
   getKeySchema,
   getSortKeyFieldNames,
+  getParameterStoreSecretPath,
+  getRDSDBConfigFromAmplifyInput,
   collectDirectives,
   collectDirectivesByTypeNames,
   DirectiveWrapper,
   IAM_AUTH_ROLE_PARAMETER,
   IAM_UNAUTH_ROLE_PARAMETER,
+  getRDSGlobalAmplifyInput,
+  readRDSGlobalAmplifyInput,
+  RDSDBConfig,
 } from './utils';
 export * from './utils/operation-names';
 export * from './errors';
@@ -47,6 +54,13 @@ export {
   TransformerAuthBase,
 } from './transformation/transformer-plugin-base';
 export { TransformerResolver, StackManager } from './transformer-context';
+export {
+  ImportAppSyncAPIInputs,
+  ImportedDataSourceType,
+  ImportedRDSType,
+  RDS_SCHEMA_FILE_NAME,
+  RDSConnectionSecrets,
+} from './types';
 /**
  * Returns the extra set of directives that are supported by AppSync service.
  */

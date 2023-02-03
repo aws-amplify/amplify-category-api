@@ -31,6 +31,7 @@ export class ResourceConstants {
     RDSLambdaIAMRoleLogicalID: 'RDSLambdaIAMRole',
     RDSLambdaLogicalID: 'RDSLambdaLogicalID',
     RDSLambdaDataSourceLogicalID: 'RDSLambdaDataSource',
+    RDSLambdaDataSourceLogicalName: 'RDSLambdaDatabase',
 
     // Local. Try not to collide with model data sources.
     NoneDataSource: 'NoneDataSource',

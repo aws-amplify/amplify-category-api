@@ -26,6 +26,7 @@ import {
 import { IFunction, Runtime } from '@aws-cdk/aws-lambda';
 import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import path from 'path';
+import {RDSConnectionSecrets} from '@aws-amplify/graphql-transformer-core';
 
 export type OPERATIONS = 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'SYNC';
 
@@ -35,24 +36,25 @@ export const createRdsLambda = (
   stack: Stack,
   apiGraphql: GraphQLAPIProvider,
   lambdaRole: IRole,
+  environment?: { [key: string]: string },
 ): IFunction => {
   const { RDSLambdaLogicalID } = ResourceConstants.RESOURCES;
 
   return apiGraphql.host.addLambdaFunction(
     RDSLambdaLogicalID,
     `functions/${RDSLambdaLogicalID}.zip`,
-    'handler',
-    path.resolve(__dirname, '..', '..', 'lib', 'rds-resolver-lambda.zip'),
+    'handler.run',
+    path.resolve(__dirname, '..', '..', '..', 'lib', 'rds-lambda.zip'),
     Runtime.NODEJS_16_X,
     [],
     lambdaRole,
-    {},
+    environment,
     undefined,
     stack,
   );
 };
 
-export const createRdsLambdaRole = (roleName: string, stack: Construct): IRole => {
+export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEntry: RDSConnectionSecrets): IRole => {
   const { RDSLambdaIAMRoleLogicalID } = ResourceConstants.RESOURCES;
   const role = new Role(stack, RDSLambdaIAMRoleLogicalID, {
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
@@ -65,6 +67,11 @@ export const createRdsLambdaRole = (roleName: string, stack: Construct): IRole =
           actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
           effect: Effect.ALLOW,
           resources: ['arn:aws:logs:*:*:*'],
+        }),
+        new PolicyStatement({
+          actions: ['ssm:GetParameter', 'ssm:GetParameters'],
+          effect: Effect.ALLOW,
+          resources: [`arn:aws:ssm:*:*:parameter/${secretEntry.username}`, `arn:aws:ssm:*:*:parameter/${secretEntry.password}`]
         }),
       ],
     }),

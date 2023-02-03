@@ -1,5 +1,5 @@
 import { prompter } from 'amplify-prompts';
-import { RDSConnectionSecrets } from '../utils/rds-secrets/database-secrets';
+import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 
 export const getDBUserSecretsWalkthrough = async (database: string): Promise<RDSConnectionSecrets> => {
   // Get the database user credentials

@@ -5,8 +5,12 @@ import fs from 'fs-extra';
 import _ from 'lodash';
 import { MySQLDataSourceAdapter, DataSourceAdapter, MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
 import { getDBUserSecretsWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/generate-graphql-schema-walkthrough';
-import { ImportedRDSType, RDS_SCHEMA_FILE_NAME } from '../../provider-utils/awscloudformation/service-walkthrough-types/import-appsync-api-types';
-import { getRDSGlobalAmplifyInput, getRDSDBConfigFromAmplifyInput } from '../../provider-utils/awscloudformation/utils/import-rds-utils/globalAmplifyInputs';
+import {
+  ImportedRDSType,
+  RDS_SCHEMA_FILE_NAME,
+  getRDSGlobalAmplifyInput,
+  getRDSDBConfigFromAmplifyInput,
+} from '@aws-amplify/graphql-transformer-core';
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { storeConnectionSecrets } from '../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 
@@ -34,7 +38,7 @@ export const run = async (context: $TSContext) => {
   config.password = secrets.password;
 
   await storeConnectionSecrets(context, config.database, secrets, apiName);
-  
+
   // Establish the connection
   let adapter: DataSourceAdapter;
   switch(config.engine) {
@@ -44,13 +48,13 @@ export const run = async (context: $TSContext) => {
     default:
       printer.error('Only MySQL Data Source is supported.');
   }
-  
+
   try {
     await adapter.initialize();
   } catch(error) {
     printer.error('Failed to connect to the specified RDS Data Source. Check the connection details in the schema and re-try. Use "amplify api update-secrets" to update the user credentials.');
     console.log(error?.message);
-    throw(error);      
+    throw(error);
   };
   adapter.cleanup();
   printer.info(`Successfully updated the secrets for ${config.database} database.`);

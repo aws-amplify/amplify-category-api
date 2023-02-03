@@ -70,7 +70,7 @@ import { ModelDirectiveConfiguration, SubscriptionLevel } from './directive';
 import { ModelResourceGenerator } from './resources/model-resource-generator';
 import { DynamoModelResourceGenerator } from './resources/dynamo-model-resource-generator';
 import { RdsModelResourceGenerator } from './resources/rds-model-resource-generator';
-import { ModelTransformerOptions } from './types';
+import { DDB_DB_TYPE, MYSQL_DB_TYPE, ModelTransformerOptions } from './types';
 
 /**
  * Nullable
@@ -109,9 +109,6 @@ export const directiveDefinition = /* GraphQl */ `
     updatedAt: String
   }
 `;
-
-const MYSQL_DB_TYPE = 'MySQL';
-const DDB_DB_TYPE = 'DDB';
 
 const DDB_DATASOURCE_TYPE = { dbType: DDB_DB_TYPE, provisioned: true };
 

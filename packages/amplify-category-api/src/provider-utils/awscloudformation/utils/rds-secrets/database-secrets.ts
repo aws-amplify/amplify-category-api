@@ -1,15 +1,10 @@
-import { stateManager, $TSContext, AmplifyCategories } from 'amplify-cli-core';
-import { __promisify__ } from 'glob';
+import { $TSContext } from 'amplify-cli-core';
 import _ from 'lodash';
-import * as path from 'path';
+import { getParameterStoreSecretPath, RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { SSMClient } from './ssmClient';
+import { RDSDBConfig } from '@aws-amplify/graphql-transformer-core';
 
 const secretNames = ['username', 'password'];
-
-export type RDSConnectionSecrets = {
-  username: string,
-  password: string
-};
 
 export const getExistingConnectionSecrets = async (context: $TSContext, database: string, apiName: string, envName?: string): Promise<RDSConnectionSecrets|undefined> => {
   try {
@@ -21,7 +16,7 @@ export const getExistingConnectionSecrets = async (context: $TSContext, database
     if(_.isEmpty(secrets)) {
       return;
     }
-  
+
     const existingSecrets = secretNames.map( secretName => {
       const secretPath = getParameterStoreSecretPath(secretName, database, apiName, envName);
       const matchingSecret = secrets?.find( secret => (secret?.secretName === secretPath) && !_.isEmpty(secret?.secretValue) );
@@ -45,28 +40,48 @@ export const getExistingConnectionSecrets = async (context: $TSContext, database
   }
 };
 
+export const getExistingConnectionSecretNames = async (context: $TSContext, config: Partial<RDSDBConfig>, apiName: string, envName?: string): Promise<RDSConnectionSecrets|undefined> => {
+  try {
+    const ssmClient = await SSMClient.getInstance(context);
+    const secrets = await ssmClient.getSecrets(
+      secretNames.map( secret => getParameterStoreSecretPath(secret, config.database, apiName, envName))
+    );
+
+    if(_.isEmpty(secrets)) {
+      return;
+    }
+
+    const existingSecrets = secretNames.map((secretName) => {
+      const secretPath = getParameterStoreSecretPath(secretName, config.database, apiName, envName);
+      const matchingSecret = secrets?.find((secret) => (secret?.secretName === secretPath) && !_.isEmpty(secret?.secretValue));
+      const result = {};
+      if (matchingSecret) {
+        result[secretName] = secretPath;
+      }
+      return result;
+    }).reduce((result, current) => {
+      if (!_.isEmpty(current)) {
+        return Object.assign(result, current);
+      }
+    }, {});
+
+    if (existingSecrets && (Object.keys(existingSecrets)?.length === secretNames?.length)) {
+      existingSecrets.database = config.database;
+      existingSecrets.host = config.host;
+      existingSecrets.port = config.port;
+      return existingSecrets;
+    }
+  } catch (error) {
+    return;
+  }
+};
+
 export const storeConnectionSecrets = async (context: $TSContext, database: string, secrets: RDSConnectionSecrets, apiName: string) => {
   const ssmClient = await SSMClient.getInstance(context);
   secretNames.map( async (secret) => {
     const parameterPath = getParameterStoreSecretPath(secret, database, apiName);
     await ssmClient.setSecret(parameterPath, secrets[secret]);
   });
-};
-
-/* This adheres to the following convention:
-  /amplify/<appId>/<envName>/AMPLIFY_${categoryName}${resourceName}${paramName}
-  where paramName is databaseName_<secretName>
-*/
-export const getParameterStoreSecretPath = (secret: string, database:string, apiName: string, envName?: string): string => {
-  const appId = stateManager.getAppID();
-  const environmentName = envName || stateManager.getCurrentEnvName();
-  const categoryName = AmplifyCategories.API;
-  const paramName = getParameterNameForDBSecret(secret, database);
-  return path.posix.join('/amplify', appId, environmentName, `AMPLIFY_${categoryName}${apiName}${paramName}`);
-};
-
-const getParameterNameForDBSecret = (secret: string, database: string): string => {
-  return `${database}_${secret}`;
 };
 
 export const deleteConnectionSecrets = async (context: $TSContext, database: string, apiName: string, envName?: string) => {

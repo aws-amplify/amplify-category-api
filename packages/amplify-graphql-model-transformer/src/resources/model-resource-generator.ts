@@ -231,6 +231,7 @@ export abstract class ModelResourceGenerator {
     const requestConfig = {
       operation: 'GET',
       operationName: fieldName,
+      modelName: type.name.value,
     };
     const responseConfig = {
       ...requestConfig,
@@ -264,6 +265,7 @@ export abstract class ModelResourceGenerator {
     const requestConfig = {
       operation: 'LIST',
       operationName: fieldName,
+      modelName: type.name.value,
     };
     const responseConfig = {
       ...requestConfig,
@@ -309,6 +311,7 @@ export abstract class ModelResourceGenerator {
       operationName: fieldName,
       isSyncEnabled,
       mutation: true,
+      modelName: type.name.value,
     };
     if (!this.resolverMap[resolverKey]) {
       const resolver = ctx.resolvers.generateMutationResolver(
@@ -362,6 +365,7 @@ export abstract class ModelResourceGenerator {
       operationName: fieldName,
       isSyncEnabled,
       mutation: true,
+      modelName: type.name.value,
     };
     if (!this.resolverMap[resolverKey]) {
       const resolver = ctx.resolvers.generateMutationResolver(
@@ -418,6 +422,7 @@ export abstract class ModelResourceGenerator {
       operationName: fieldName,
       isSyncEnabled,
       mutation: true,
+      modelName: type.name.value,
     };
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateMutationResolver(
@@ -509,11 +514,13 @@ export abstract class ModelResourceGenerator {
     const requestConfig = {
       operation: 'SYNC',
       operationName: fieldName,
+      modelName: type.name.value,
     };
     const responseConfig = {
       ...requestConfig,
       isSyncEnabled,
       mutation: false,
+      modelName: type.name.value,
     };
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(

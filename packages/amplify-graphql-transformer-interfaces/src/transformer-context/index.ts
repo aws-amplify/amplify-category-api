@@ -15,6 +15,7 @@ export {
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerValidationStepContextProvider,
+  TransformerSecrets,
 } from './transformer-context-provider';
 export { TransformerSchemaHelperProvider } from './schema-helper-provider';
 export { TransformerPreProcessContextProvider } from './transformer-preprocess-context-provider';
