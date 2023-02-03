@@ -41,6 +41,18 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - migrate index and model transformers to CDK v2 ([#860](https://github.com/aws-amplify/amplify-category-api/issues/860)) ([886ab6c](https://github.com/aws-amplify/amplify-category-api/commit/886ab6c1eb699f9a09f273c76b3c419c73004f9b))
 
+## [1.14.12](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@1.14.11...@aws-amplify/graphql-transformer-interfaces@1.14.12) (2023-01-26)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces
+
+## [1.14.11](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@1.14.10...@aws-amplify/graphql-transformer-interfaces@1.14.11) (2023-01-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces
+
+## [1.14.10](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@1.14.9...@aws-amplify/graphql-transformer-interfaces@1.14.10) (2023-01-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces
+
 ## [1.14.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@1.14.8...@aws-amplify/graphql-transformer-interfaces@1.14.9) (2022-11-08)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces

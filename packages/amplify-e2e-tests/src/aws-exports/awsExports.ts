@@ -8,7 +8,7 @@ export function getAWSExportsPath(projRoot: string): string {
 export function getAWSExports(projectRoot: string) {
   const awsExportsPath = getAWSExportsPath(projectRoot);
   // From Jest 25, ESM modules can only be loaded with mjs extension and Jest takes over
-  // require, that's why we need to copy the file.
+  // require, that's why we need to copy the file
   const awsExportsMJSPath = awsExportsPath.replace('.js', '.mjs');
   fs.copySync(awsExportsPath, awsExportsMJSPath, { overwrite: true });
   const localRequire = require('esm')(module);

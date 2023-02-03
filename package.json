@@ -138,6 +138,7 @@
     "parse-path": "^5.0.0",
     "parse-url": "^8.1.0",
     "moment-timezone": "^0.5.35",
-    "aws-cdk-lib": "~2.53.0"
+    "aws-cdk-lib": "~2.53.0",
+    "amplify-cli-core": "^4.0.0-beta.4"
   }
 }

@@ -3,27 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [7.2.44-beta.3](https://github.com/aws-amplify/amplify-category-api/compare/graphql-dynamodb-transformer@7.2.44...graphql-dynamodb-transformer@7.2.44-beta.3) (2022-12-27)
+## [7.2.47](https://github.com/aws-amplify/amplify-category-api/compare/graphql-dynamodb-transformer@7.2.46...graphql-dynamodb-transformer@7.2.47) (2023-01-26)
 
 **Note:** Version bump only for package graphql-dynamodb-transformer
 
-## [7.2.44-beta.2](https://github.com/aws-amplify/amplify-category-api/compare/graphql-dynamodb-transformer@7.2.44-beta.0...graphql-dynamodb-transformer@7.2.44-beta.2) (2022-12-12)
+## [7.2.46](https://github.com/aws-amplify/amplify-category-api/compare/graphql-dynamodb-transformer@7.2.45...graphql-dynamodb-transformer@7.2.46) (2023-01-12)
 
 **Note:** Version bump only for package graphql-dynamodb-transformer
 
-## [7.2.44-beta.1](https://github.com/aws-amplify/amplify-category-api/compare/graphql-dynamodb-transformer@7.2.44-beta.0...graphql-dynamodb-transformer@7.2.44-beta.1) (2022-11-30)
-
-**Note:** Version bump only for package graphql-dynamodb-transformer
-
-## [7.2.44-beta.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-dynamodb-transformer@7.2.44-cdkv2.1...graphql-dynamodb-transformer@7.2.44-beta.0) (2022-11-18)
-
-**Note:** Version bump only for package graphql-dynamodb-transformer
-
-## [7.2.44-cdkv2.1](https://github.com/aws-amplify/amplify-category-api/compare/graphql-dynamodb-transformer@7.2.44-cdkv2.0...graphql-dynamodb-transformer@7.2.44-cdkv2.1) (2022-11-15)
-
-**Note:** Version bump only for package graphql-dynamodb-transformer
-
-## [7.2.44-cdkv2.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-dynamodb-transformer@7.2.43...graphql-dynamodb-transformer@7.2.44-cdkv2.0) (2022-11-03)
+## [7.2.45](https://github.com/aws-amplify/amplify-category-api/compare/graphql-dynamodb-transformer@7.2.44...graphql-dynamodb-transformer@7.2.45) (2023-01-12)
 
 **Note:** Version bump only for package graphql-dynamodb-transformer
 

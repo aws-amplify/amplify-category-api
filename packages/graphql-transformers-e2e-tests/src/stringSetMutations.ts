@@ -2,7 +2,7 @@ import { DeploymentResources } from 'graphql-transformer-core';
 
 /**
  * Used with SearchableModelTransformer Tests
- * Changes userItems list to stringsets in dynamo so the lambda function can support it
+ * Changes userItems list to stringsets in dynamo so the lambda function can support them
  */
 
 const createStringSetVTL = `

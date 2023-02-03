@@ -3,61 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [3.11.0-beta.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.16...amplify-category-api-e2e-tests@3.11.0-beta.3) (2022-12-27)
-
-### Bug Fixes
-
-- throw error if invalid override or invalid custom stack error ([#982](https://github.com/aws-amplify/amplify-category-api/issues/982)) ([6dfeeba](https://github.com/aws-amplify/amplify-category-api/commit/6dfeeba627cd84a41eb8b4248856fa487c741f87))
-
-### Features
-
-- migrate index and model transformers to CDK v2 ([#860](https://github.com/aws-amplify/amplify-category-api/issues/860)) ([886ab6c](https://github.com/aws-amplify/amplify-category-api/commit/886ab6c1eb699f9a09f273c76b3c419c73004f9b))
-
-# [3.11.0-beta.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.11.0-beta.0...amplify-category-api-e2e-tests@3.11.0-beta.2) (2022-12-12)
-
-### Bug Fixes
-
-- cleanup script does not run if tests fail ([#1000](https://github.com/aws-amplify/amplify-category-api/issues/1000)) ([ee13648](https://github.com/aws-amplify/amplify-category-api/commit/ee1364888fbf5012348b2417a28b8b4aa7fbe239))
-
-# [3.11.0-beta.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.11.0-beta.0...amplify-category-api-e2e-tests@3.11.0-beta.1) (2022-11-30)
-
-### Bug Fixes
-
-- cleanup script does not run if tests fail ([#1000](https://github.com/aws-amplify/amplify-category-api/issues/1000)) ([ee13648](https://github.com/aws-amplify/amplify-category-api/commit/ee1364888fbf5012348b2417a28b8b4aa7fbe239))
-
-# [3.11.0-beta.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.11.0-cdkv2.3...amplify-category-api-e2e-tests@3.11.0-beta.0) (2022-11-18)
+## [3.10.19](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.18...amplify-category-api-e2e-tests@3.10.19) (2023-01-26)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests
 
-# [3.11.0-cdkv2.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.14...amplify-category-api-e2e-tests@3.11.0-cdkv2.3) (2022-11-15)
-
-### Bug Fixes
-
-- throw error if invalid override or invalid custom stack error ([#982](https://github.com/aws-amplify/amplify-category-api/issues/982)) ([6dfeeba](https://github.com/aws-amplify/amplify-category-api/commit/6dfeeba627cd84a41eb8b4248856fa487c741f87))
-
-### Features
-
-- migrate index and model transformers to CDK v2 ([#860](https://github.com/aws-amplify/amplify-category-api/issues/860)) ([886ab6c](https://github.com/aws-amplify/amplify-category-api/commit/886ab6c1eb699f9a09f273c76b3c419c73004f9b))
-
-# [3.11.0-cdkv2.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.11.0-cdkv2.1...amplify-category-api-e2e-tests@3.11.0-cdkv2.2) (2022-11-03)
+## [3.10.18](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.17...amplify-category-api-e2e-tests@3.10.18) (2023-01-12)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests
 
-# [3.11.0-cdkv2.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.11.0-cdkv2.0...amplify-category-api-e2e-tests@3.11.0-cdkv2.1) (2022-10-24)
-
-**Note:** Version bump only for package amplify-category-api-e2e-tests
-
-# [3.11.0-cdkv2.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.10...amplify-category-api-e2e-tests@3.11.0-cdkv2.0) (2022-10-24)
+## [3.10.17](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.16...amplify-category-api-e2e-tests@3.10.17) (2023-01-12)
 
 ### Bug Fixes
 
-- **e2e:** set longer timeout for searchable migration ([#885](https://github.com/aws-amplify/amplify-category-api/issues/885)) ([64a9c0e](https://github.com/aws-amplify/amplify-category-api/commit/64a9c0efb79253246f5b85c78d1e32c5330ec906))
-- **graphql:** add rds datasource v1 fix ([#853](https://github.com/aws-amplify/amplify-category-api/issues/853)) ([9bf32c2](https://github.com/aws-amplify/amplify-category-api/commit/9bf32c21f8e7e7ea6e8d602846c1128f38fb9897))
-- **transformer:** sort resolvers to avoid circular dependency ([#797](https://github.com/aws-amplify/amplify-category-api/issues/797)) ([e9bf292](https://github.com/aws-amplify/amplify-category-api/commit/e9bf2926e4bf91a3d5cebde002728b4ba6385ea2))
-
-### Features
-
-- migrate index and model transformers to CDK v2 ([#860](https://github.com/aws-amplify/amplify-category-api/issues/860)) ([886ab6c](https://github.com/aws-amplify/amplify-category-api/commit/886ab6c1eb699f9a09f273c76b3c419c73004f9b))
+- disable searchable nodeToNode encryption unless it is already deployed to mitigate impact from enabling or disabling. ([#1152](https://github.com/aws-amplify/amplify-category-api/issues/1152)) ([4a1c360](https://github.com/aws-amplify/amplify-category-api/commit/4a1c36091cff6162b4803651b72ed03c594c01dc))
 
 ## [3.10.16](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.15...amplify-category-api-e2e-tests@3.10.16) (2022-12-13)
 

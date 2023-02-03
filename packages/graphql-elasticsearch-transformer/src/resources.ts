@@ -35,7 +35,7 @@ import { MappingParameters } from 'graphql-transformer-core';
  */
 export class ResourceFactory {
   /**
-   * makeParams
+   * Generate CFN Parameters section
    */
   public makeParams() {
     return {
