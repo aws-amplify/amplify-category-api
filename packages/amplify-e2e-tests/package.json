@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-e2e-tests",
-  "version": "3.11.0-beta.3",
+  "version": "3.11.0-beta.4",
   "description": "E2e test suite",
   "repository": {
     "type": "git",
@@ -24,9 +24,9 @@
     "clean-stale-test-buckets": "ts-node ./src/cleanup-stale-test-buckets.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "1.1.0-beta.3",
+    "@aws-amplify/graphql-transformer-core": "1.1.0-beta.4",
     "amplify-app": "4.3.4-beta.4",
-    "amplify-category-api-e2e-core": "4.0.15",
+    "amplify-category-api-e2e-core": "4.0.16-beta.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1113.0",
@@ -35,7 +35,7 @@
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
     "graphql-tag": "^2.10.1",
-    "graphql-transformer-core": "8.0.0-beta.3",
+    "graphql-transformer-core": "8.0.0-beta.4",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
     "uuid": "^8.3.2",

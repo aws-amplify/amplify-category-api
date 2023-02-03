@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0-beta.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-http-transformer@0.8.35...@aws-amplify/graphql-http-transformer@1.1.0-beta.4) (2023-02-03)
+
+### Bug Fixes
+
+- lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
+
+### Features
+
+- migrate http transformer to CDK v2 ([#871](https://github.com/aws-amplify/amplify-category-api/issues/871)) ([822a8c9](https://github.com/aws-amplify/amplify-category-api/commit/822a8c97343773621c051821c5470b405fdfa4d1))
+
 # [1.1.0-beta.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-http-transformer@0.8.32...@aws-amplify/graphql-http-transformer@1.1.0-beta.3) (2022-12-27)
 
 ### Bug Fixes
