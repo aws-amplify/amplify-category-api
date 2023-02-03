@@ -16,6 +16,6 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "tsc && bestzip --force node ../lib/streaming-lambda.zip python_streaming_function.py"
+    "build": "tsc && cd lib && tsc && bestzip --force node ../../../lib/rds-lambda.zip ./*"
   }
 }
