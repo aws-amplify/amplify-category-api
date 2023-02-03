@@ -62,7 +62,6 @@ export const toRDSQueryExpression = (filter: any): string => {
                         rdsExpression += `${key} LIKE '${operand}%'`;
                         break;
                     case `between`:
-                        case 'between':
                         if(!Array.isArray(operand) || operand.length !== 2) {
                             throw new Error(`between condition must have two values, but got: ${operand}.length`);
                         } 
