@@ -39,31 +39,31 @@ export const generateResolverKey = (typeName: string, fieldName: string): string
  */
 export const toRDSQueryExpression = (filter: any) => {
     let rdsExpression = '';
-    let isANDappended = false;
+    let isAndAppended = false;
     Object.entries(filter).forEach(([key, value]: any, index) => {
-        if (index != 0) {
+        if(index != 0) {
             rdsExpression += ` AND `;
-            isANDappended = true;
+            isAndAppended = true;
         }
-        switch (key) {
+        switch(key) {
             case 'and':
-            case `or`:
+            case 'or':
                 rdsExpression += value.map(toRDSQueryExpression).join(` ${key.toUpperCase()} `);
                 break;
-            case `not`:
-                // todo: equivalent of `not` in RDS
+            case 'not':
+                // todo: equivalent of 'not' in RDS
                 rdsExpression += `NOT ${toRDSQueryExpression(value)}`;
                 break;
             default:
                 Object.entries(value).forEach(([operator, operand]) => {
-                    if (index != 0 && !isANDappended) {
+                    if(index != 0 && !isAndAppended) {
                         rdsExpression += ` AND `;
                     }
-                    switch (operator) {
-                        case `attributeExists`:
+                    switch(operator) {
+                        case 'attributeExists':
                             rdsExpression += `${key} IS NOT NULL`;
                             break;
-                        case `beginsWith`:
+                        case 'beginsWith':
                             rdsExpression += `${key} LIKE '${operand}%'`;
                             break;
                         case 'between':
@@ -72,31 +72,31 @@ export const toRDSQueryExpression = (filter: any) => {
                             }
                             rdsExpression += `${key} BETWEEN '${operand[0]}' AND '${operand[1]}'`;
                             break;
-                        case `contains`:
+                        case 'contains':
                             rdsExpression += `${key} LIKE '%${operand}%'`;
                             break;
-                        case `eq`:
+                        case 'eq':
                             rdsExpression += `${key} = '${operand}'`;
                             break;
-                        case `ge`:
+                        case 'ge':
                             rdsExpression += `${key} >= '${operand}'`;
                             break;
-                        case `gt`:
+                        case 'gt':
                             rdsExpression += `${key} > '${operand}'`;
                             break;
-                        case `le`:
+                        case 'le':
                             rdsExpression += `${key} <= '${operand}'`;
                             break;
-                        case `lt`:
+                        case 'lt':
                             rdsExpression += `${key} < '${operand}'`;
                             break;
-                        case `ne`:
+                        case 'ne':
                             rdsExpression += `${key} != '${operand}'`;
                             break;
-                        case `notContains`:
+                        case 'notContains':
                             rdsExpression += `${key} NOT LIKE '%${operand}%'`;
                             break;
-                        case `size`:
+                        case 'size':
                             // implement size
                             break;
                         default:
