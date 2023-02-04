@@ -37,10 +37,15 @@ export const generateResolverKey = (typeName: string, fieldName: string): string
 /**
  * Util method to convert any GraphQL input filter argument to an AWS RDS query expression 
  */
-export const toRDSQueryExpression = (filter: any): string => {
+export const toRDSQueryExpression = (filter: any) => {
     let rdsExpression = '';
-    Object.entries(filter).forEach(([key, value]:any, index) => {
-        switch(key) {
+    let isANDappended = false;
+    Object.entries(filter).forEach(([key, value]: any, index) => {
+        if (index != 0) {
+            rdsExpression += ` AND `;
+            isANDappended = true;
+        }
+        switch (key) {
             case 'and':
             case `or`:
                 rdsExpression += value.map(toRDSQueryExpression).join(` ${key.toUpperCase()} `);
@@ -50,55 +55,56 @@ export const toRDSQueryExpression = (filter: any): string => {
                 rdsExpression += `NOT ${toRDSQueryExpression(value)}`;
                 break;
             default:
-                Object.entries(value).forEach(([operator, operand]:any) => {
-                    if (index != 0) {
+                Object.entries(value).forEach(([operator, operand]) => {
+                    if (index != 0 && !isANDappended) {
                         rdsExpression += ` AND `;
                     }
-                    switch(operator) {
-                    case `attributeExists`:
-                        rdsExpression += `${key} IS NOT NULL`;
-                        break;
-                    case `beginsWith`:
-                        rdsExpression += `${key} LIKE '${operand}%'`;
-                        break;
-                    case `between`:
-                        if(!Array.isArray(operand) || operand.length !== 2) {
-                            throw new Error(`between condition must have two values, but got: ${operand}.length`);
-                        } 
-                        rdsExpression += `${key} BETWEEN '${operand[0]}' AND '${operand[1]}'`;
-                        break;
-                    case `contains`:
-                        rdsExpression += `${key} LIKE '%${operand}%'`;
-                        break;
-                    case `eq`:
-                        rdsExpression += `${key} = '${operand}'`;
-                        break;
-                    case `ge`:
-                        rdsExpression += `${key} >= '${operand}'`;
-                        break;
-                    case `gt`:
-                        rdsExpression += `${key} > '${operand}'`;
-                        break;
-                    case `le`:
-                        rdsExpression += `${key} <= '${operand}'`;
-                        break;    
-                    case `lt`:
-                        rdsExpression += `${key} < '${operand}'`;
-                        break; 
-                    case `ne`:
-                        rdsExpression += `${key} != '${operand}'`;
-                        break;
-                    case `notContains`:
-                        rdsExpression += `${key} NOT LIKE '%${operand}%'`;
-                        break;
-                    case `size`:
-                        // implement size
-                        break;
-                    default:
-                        console.log(`Unsupported operator: ${operator}`);   
+                    switch (operator) {
+                        case `attributeExists`:
+                            rdsExpression += `${key} IS NOT NULL`;
+                            break;
+                        case `beginsWith`:
+                            rdsExpression += `${key} LIKE '${operand}%'`;
+                            break;
+                        case 'between':
+                            if (!Array.isArray(operand) || operand.length !== 2) {
+                                throw new Error(`between condition must have two values, but got: ${operand}.length`);
+                            }
+                            rdsExpression += `${key} BETWEEN '${operand[0]}' AND '${operand[1]}'`;
+                            break;
+                        case `contains`:
+                            rdsExpression += `${key} LIKE '%${operand}%'`;
+                            break;
+                        case `eq`:
+                            rdsExpression += `${key} = '${operand}'`;
+                            break;
+                        case `ge`:
+                            rdsExpression += `${key} >= '${operand}'`;
+                            break;
+                        case `gt`:
+                            rdsExpression += `${key} > '${operand}'`;
+                            break;
+                        case `le`:
+                            rdsExpression += `${key} <= '${operand}'`;
+                            break;
+                        case `lt`:
+                            rdsExpression += `${key} < '${operand}'`;
+                            break;
+                        case `ne`:
+                            rdsExpression += `${key} != '${operand}'`;
+                            break;
+                        case `notContains`:
+                            rdsExpression += `${key} NOT LIKE '%${operand}%'`;
+                            break;
+                        case `size`:
+                            // implement size
+                            break;
+                        default:
+                            console.log(`Unsupported operator: ${operator}`);
                     }
                 });
             }
-        });
+    });
     return `(${rdsExpression})`;
 };
+

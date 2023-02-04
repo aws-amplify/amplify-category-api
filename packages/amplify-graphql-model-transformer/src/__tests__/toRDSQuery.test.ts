@@ -166,11 +166,68 @@ describe('filterToRdsExpression', () => {
                 { name : { eq : 'Amplify' } },
                 { and : [
                     { org : { eq : 'AWS' } },
-                    { age : { between : [`18`, `160`] } },
+                    { age : { between : [`18`, `60`] } },
                 ]},
             ]},
         ],
     };
-    expect(toRDSQueryExpression(filter)).toEqual("((id = '123') AND ((name = 'Amplify') OR ((org = 'AWS') AND (age BETWEEN '18' AND '160'))))");
+    expect(toRDSQueryExpression(filter)).toEqual("((id = '123') AND ((name = 'Amplify') OR ((org = 'AWS') AND (age BETWEEN '18' AND '60'))))");
     });
+
+    it(`should convert deep nested query and: or: and: with multiple operators`, () => {
+    const filter = {
+        id: { eq: '123' },
+        and : [
+            { or : [
+                { name : { eq : 'Amplify' } },
+                { and : [
+                    { org : { eq : 'AWS' } },
+                    { age : { between : [`18`, `60`] } },
+                    { name : { beginsWith : 'Amplify' } },
+                ]},
+            ]},
+        ],
+    };
+    expect(toRDSQueryExpression(filter)).toEqual("(id = '123' AND ((name = 'Amplify') OR ((org = 'AWS') AND (age BETWEEN '18' AND '60') AND (name LIKE 'Amplify%'))))");
+    });
+
+    it(`should convert deep nested query and: or: and: with multiple operators`, () => {
+    const filter = {
+        id: { ne: '123' },
+        and : [
+            { or : [
+                { name : { eq : 'Amplify' } },
+                { and : [
+                    { org : { ne : 'AWS' } },
+                    { age : { between : [`18`, `60`] } },
+                    { name : { beginsWith : 'Amplify' } },
+                ]},
+            ]},
+        ],
+        or : [
+            { name : { eq : 'Amplify' } },  
+            { org : { eq : 'AWS' } },
+        ],
+    };
+    expect(toRDSQueryExpression(filter)).toEqual("(id != '123' AND ((name = 'Amplify') OR ((org = 'AWS') AND (age BETWEEN '18' AND '60') AND (name LIKE 'Amplify%'))) AND (name = 'Amplify') OR (org = 'AWS'))");
+    });
+
+    it(`should convert deep nested query and: or: and: with multiple operators`, () => {
+        const filter = {
+            name : { beginsWith : 'A' },
+            or : [
+                { name : { eq : 'Amplify' } },
+                { and : [
+                    { org : { eq : 'AWS' } },
+                    { age : { between : [`18`, `60`] } },
+                    { name : { eq : 'Amplify' } },
+                ]},
+            ],
+            and : [
+                { name : { eq : 'Amplify' } },  
+                { org : { eq : 'AWS' } },
+            ],
+        };
+    expect(toRDSQueryExpression(filter)).toEqual("(name LIKE 'A%' AND (name = 'Amplify') OR ((org = 'AWS') AND (age BETWEEN '18' AND '60') AND (name = 'Amplify')) AND (name = 'Amplify') AND (org = 'AWS'))");
+     });
 });
