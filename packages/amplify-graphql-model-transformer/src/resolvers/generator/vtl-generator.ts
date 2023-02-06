@@ -7,6 +7,7 @@ export type ModelRequestConfig = {
 }
 
 export type ModelUpdateRequestConfig = ModelRequestConfig & {
+  modelIndexFields: string[];
   isSyncEnabled: boolean;
 }
 

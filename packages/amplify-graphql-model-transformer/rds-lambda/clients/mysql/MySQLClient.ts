@@ -1,7 +1,7 @@
 import { Knex } from 'knex';
-import { DBClient } from '../DBClient.js';
-import { BaseRequest, Request } from '../../interfaces/BaseRequest.js';
-import { ListRequest, SortDirection } from '../../interfaces/ListRequest.js';
+import { DBClient } from '../DBClient';
+import { BaseRequest, Request } from '../../interfaces/BaseRequest';
+import { ListRequest, SortDirection } from '../../interfaces/ListRequest';
 
 export abstract class MySQLClient implements DBClient {
   client: Knex;
@@ -25,15 +25,14 @@ export abstract class MySQLClient implements DBClient {
       }
     };
 
-    const result = await doExecute();
-    const data = {};
-    data[request.operationName] = result;
-    return result;
+    return doExecute();
   }
 
   private executeCreate = async (request: Request): Promise<any> => {
-    const result = await (await this.getClient())(request.table).insert(request.args.input).returning('*');
-    return result;
+    await (await this.getClient())(request.table).insert(request.args.input);
+    const data = {};
+    data[request.operationName] = request.args.input;
+    return data;
   }
 
   private executeGet = async (request: Request): Promise<any> => {
@@ -46,13 +45,18 @@ export abstract class MySQLClient implements DBClient {
   private executeUpdate = async (request: Request): Promise<any> => {
     const query = (await this.getClient())(request.table);
     this.addKeyConditions(query, request);
-    return query.update(request.args.input).returning('*');
+    await query.update(request.args.input);
+    const data = {};
+    data[request.operationName] = request.args.input;
+    return data;
   }
 
   private executeList = async (request: ListRequest): Promise<any> => {
-    const nextOffset = Number.parseInt(Buffer.from(request.args.nextToken, 'base64').toString('base64'), 10);
-    const query = (await this.getClient())(request.table).select().offset(nextOffset).limit(request.args.limit);
-    if (request.args) {
+    const nextOffset = request.args?.nextToken
+      ? Number.parseInt(Buffer.from(request.args.nextToken, 'base64').toString('base64'), 10)
+      : 0;
+    const query = (await this.getClient())(request.table).select().offset(nextOffset).limit(request.args?.limit ?? 100);
+    if (request.args?.filter) {
       Object.keys(request.args.filter).filter((key) => request.args.hasOwnProperty(key)).forEach((key) => {
         query.whereLike(key, request.args.filter[key]);
       });
@@ -64,8 +68,13 @@ export abstract class MySQLClient implements DBClient {
 
   private executeDelete = async (request: Request): Promise<any> => {
     const query = (await this.getClient())(request.table);
-    this.addKeyConditions(query, request);
-    return query.delete().returning('*');
+    Object.keys(request.args.input).filter((key) => request.args.input.hasOwnProperty(key)).forEach((key) => {
+      query.whereLike(key, request.args.input[key]);
+    });
+    await query.delete();
+    const data = {};
+    data[request.operationName] = request.args.input;
+    return data;
   }
 
   private addKeyConditions = (query: any, request: Request) => {

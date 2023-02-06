@@ -1,5 +1,5 @@
 import Knex from 'knex';
-import { PostgresClient } from './PostgresClient.js';
+import { PostgresClient } from './PostgresClient';
 
 /**
  * Postgres client with password connection implementation

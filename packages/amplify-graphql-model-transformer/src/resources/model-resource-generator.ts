@@ -228,6 +228,7 @@ export abstract class ModelResourceGenerator {
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Get${generateResolverKey(typeName, fieldName)}`;
     const vtlGenerator = this.getVTLGenerator();
+    const modelIndexFields = type.fields!.filter((field) => field.directives?.some((it) => it.name.value === 'index')).map((it) => it.name.value);
     const requestConfig = {
       operation: 'GET',
       operationName: fieldName,
@@ -237,6 +238,7 @@ export abstract class ModelResourceGenerator {
       ...requestConfig,
       isSyncEnabled,
       modelName: type.name.value,
+      modelIndexFields,
     };
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
@@ -354,11 +356,13 @@ export abstract class ModelResourceGenerator {
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Update${generateResolverKey(typeName, fieldName)}`;
     const vtlGenerator = this.getVTLGenerator();
+    const modelIndexFields = type.fields!.filter((field) => field.directives?.some((it) => it.name.value === 'index')).map((it) => it.name.value);
     const requestConfig = {
       operation: 'UPDATE',
       operationName: fieldName,
       isSyncEnabled,
       modelName: type.name.value,
+      modelIndexFields,
     };
     const responseConfig = {
       operation: 'UPDATE',
@@ -384,7 +388,7 @@ export abstract class ModelResourceGenerator {
       );
       // Todo: get the slot index from the resolver to keep the name unique and show the order of functions
       const updateInitConfig = {
-        modelConfig: modelConfig,
+        modelConfig,
         operation: 'UPDATE',
         operationName: fieldName,
       };
@@ -411,11 +415,13 @@ export abstract class ModelResourceGenerator {
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `delete${generateResolverKey(typeName, fieldName)}`;
     const vtlGenerator = this.getVTLGenerator();
+    const modelIndexFields = type.fields!.filter((field) => field.directives?.some((it) => it.name.value === 'index')).map((it) => it.name.value);
     const requestConfig = {
       operation: 'DELETE',
       operationName: fieldName,
       isSyncEnabled,
       modelName: type.name.value,
+      modelIndexFields,
     };
     const responseConfig = {
       operation: 'DELETE',

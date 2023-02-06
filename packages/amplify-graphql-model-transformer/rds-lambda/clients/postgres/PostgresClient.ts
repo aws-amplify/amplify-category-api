@@ -1,7 +1,7 @@
 import { Knex } from 'knex';
-import { DBClient } from '../DBClient.js';
-import { BaseRequest, Request } from '../../interfaces/BaseRequest.js';
-import { ListRequest, SortDirection } from '../../interfaces/ListRequest.js';
+import { DBClient } from '../DBClient';
+import { BaseRequest, Request } from '../../interfaces/BaseRequest';
+import { ListRequest, SortDirection } from '../../interfaces/ListRequest';
 
 export abstract class PostgresClient implements DBClient {
   client: Knex;

@@ -11,7 +11,7 @@ import {
   compoundExpression,
   iff,
   toJson,
-  printBlock, and, not, equals, int, nul, set,
+  printBlock, and, not, equals, int, nul, set, comment,
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { Construct, Stack } from '@aws-cdk/core';
@@ -71,7 +71,7 @@ export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEn
         new PolicyStatement({
           actions: ['ssm:GetParameter', 'ssm:GetParameters'],
           effect: Effect.ALLOW,
-          resources: [`arn:aws:ssm:*:*:parameter/${secretEntry.username}`, `arn:aws:ssm:*:*:parameter/${secretEntry.password}`]
+          resources: [`arn:aws:ssm:*:*:parameter${secretEntry.username}`, `arn:aws:ssm:*:*:parameter${secretEntry.password}`]
         }),
       ],
     }),
@@ -83,15 +83,15 @@ export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEn
 export const generateLambdaRequestTemplate = (tableName: string, operation: string, operationName: string): string => {
   return printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
-      set(ref('args'), obj({})),
-      set(ref('args.args'), ref('context.arguments')),
-      set(ref('args.table'), str(tableName)),
-      set(ref('args.operation'), str(operation)),
-      set(ref('args.operationName'), str(operationName)),
+      set(ref('lambdaInput'), obj({})),
+      set(ref('lambdaInput.args'), ref('context.arguments')),
+      set(ref('lambdaInput.table'), str(tableName)),
+      set(ref('lambdaInput.operation'), str(operation)),
+      set(ref('lambdaInput.operationName'), str(operationName)),
       obj({
         version: str('2018-05-29'),
         operation: str('Invoke'),
-        payload: methodCall(ref('util.toJson'), ref('args')),
+        payload: methodCall(ref('util.toJson'), ref('lambdaInput')),
       }),
     ]),
   );
