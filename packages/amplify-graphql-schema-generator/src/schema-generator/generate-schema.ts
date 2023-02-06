@@ -1,6 +1,6 @@
-import { Field, Index, Model, Schema } from '../schema-representation';
-import { Kind, print } from 'graphql';
-import { FieldWrapper, ObjectDefinitionWrapper, DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
+import { EnumType, Field, Index, Model, Schema } from '../schema-representation';
+import { EnumValueDefinitionNode, Kind, print } from 'graphql';
+import { FieldWrapper, ObjectDefinitionWrapper, DirectiveWrapper, EnumWrapper } from '@aws-amplify/graphql-transformer-core';
 
 export const generateGraphQLSchema = (schema: Schema): string => {
   const models = schema.getModels();
@@ -13,8 +13,14 @@ export const generateGraphQLSchema = (schema: Schema): string => {
     const type = constructObjectType(model);
     
     const fields = model.getFields();
+    const primaryKeyFields = model.getPrimaryKey().getFields();
     fields.forEach(f => {
-      const field: any = convertInternalFieldTypeToGraphQL(f);
+      if (f.type.kind === 'Enum') {
+        const enumType = constructEnumType(f.type);
+        document.definitions.push(enumType.serialize());
+      }
+
+      const field: any = convertInternalFieldTypeToGraphQL(f, primaryKeyFields.includes(f.name));
       type.fields.push(field);
     });
     
@@ -28,37 +34,42 @@ export const generateGraphQLSchema = (schema: Schema): string => {
   return schemaStr;
 };
 
-const convertInternalFieldTypeToGraphQL = (field: Field): FieldWrapper => {
+const convertInternalFieldTypeToGraphQL = (field: Field, isPrimaryKeyField: boolean): FieldWrapper => {
   const typeWrappers = [];
   let fieldType = field.type;
-  while (fieldType.kind !== "Scalar" && fieldType.kind !== "Custom") {
+  while (fieldType.kind !== "Scalar" && fieldType.kind !== "Custom" && fieldType.kind !== "Enum") {
     typeWrappers.push(fieldType.kind);
     fieldType = (fieldType as any).type;
   }
 
   // construct the default directive
   const fieldDirectives = [];
-  if (field.default) {
-    fieldDirectives.push(new DirectiveWrapper({
-      kind: Kind.DIRECTIVE,
-      name: {
-        kind: "Name",
-        value: "default",
-      },
-      arguments: [
-        {
-          kind: "Argument",
-          name: {
-            kind: "Name",
-            value: "value",
-          },
-          value: {
-            kind: "StringValue",
-            value: field.default.value as string,
-          },              
+  const fieldHasDefaultValue = field?.default && field?.default?.value;
+  const fieldIsOptional = fieldHasDefaultValue && !isPrimaryKeyField;
+  if(fieldHasDefaultValue) {
+    const defaultStringValue = String(field.default.value);
+    if(!isComputeExpression(defaultStringValue)) {
+      fieldDirectives.push(new DirectiveWrapper({
+        kind: Kind.DIRECTIVE,
+        name: {
+          kind: "Name",
+          value: "default",
         },
-      ],
-    }));
+        arguments: [
+          {
+            kind: "Argument",
+            name: {
+              kind: "Name",
+              value: "value",
+            },
+            value: {
+              kind: "StringValue",
+              value: defaultStringValue,
+            },              
+          },
+        ],
+      }));
+    }
   }
 
   // Construct the field wrapper object
@@ -82,7 +93,7 @@ const convertInternalFieldTypeToGraphQL = (field: Field): FieldWrapper => {
     const wrapperType = typeWrappers.pop();
     if (wrapperType === "List") {
       result.wrapListType();
-    } else if (wrapperType === "NonNull") {
+    } else if (wrapperType === "NonNull" && !fieldIsOptional) {
       result.makeNonNullable();
     }
   }
@@ -109,6 +120,27 @@ const constructObjectType = (model: Model) => {
     ],
   });
 };
+
+const constructEnumType = (type: EnumType) => {
+  const enumValues = type.values.map(t => {
+    return {
+      kind: Kind.ENUM_VALUE_DEFINITION,
+      name: {
+        kind: "Name",
+        value: t,
+      },
+    } as EnumValueDefinitionNode;
+  });
+  const enumType = new EnumWrapper({
+    kind: Kind.ENUM_TYPE_DEFINITION,
+    name: {
+      kind: "Name",
+      value: type.name,
+    },
+    values: enumValues,
+  });
+  return enumType;
+}
 
 const addIndexes = (type: ObjectDefinitionWrapper, indexes: Index[]): void => {
   indexes.forEach(index => {
@@ -204,4 +236,23 @@ const addPrimaryKey = (type: ObjectDefinitionWrapper, primaryKey: Index): void =
       arguments: keyArguments,
     }),
   );
+};
+
+/**
+ * Checks if the user defined default for a field is a compute expression
+ * @param value The default value for a field
+ * @returns if the default value is a compute expression like for example (RAND() * RAND()))
+ */
+export const isComputeExpression = (value: string) => {
+  /* As per MySQL 8.x, 
+    Complex computed expression default values like "(RAND() * RAND())" are enclosed within parentheses.
+    Simple computed expression default values like "RAND()" are not. 
+    These functions could have one or more arguments too, like "COS(PI())".
+  */
+  const isSimpleComputedExpression = value.match(/^[a-zA-Z0-9]+\(.*\)/);
+  const isComplexComputedExpression = value.match(/^\([a-zA-Z0-9]+\(.*\)\)/);
+  if(isSimpleComputedExpression || isComplexComputedExpression) {
+    return true;
+  }
+  return false;
 };

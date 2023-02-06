@@ -37,8 +37,6 @@ export const run = async (context: $TSContext) => {
   config.username = secrets.username;
   config.password = secrets.password;
 
-  await storeConnectionSecrets(context, config.database, secrets, apiName);
-
   // Establish the connection
   let adapter: DataSourceAdapter;
   switch(config.engine) {
@@ -57,5 +55,6 @@ export const run = async (context: $TSContext) => {
     throw(error);
   };
   adapter.cleanup();
+  await storeConnectionSecrets(context, config.database, secrets, apiName);
   printer.info(`Successfully updated the secrets for ${config.database} database.`);
 };
