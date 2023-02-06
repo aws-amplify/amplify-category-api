@@ -209,7 +209,7 @@ describe('filterToRdsExpression', () => {
             { org : { eq : 'AWS' } },
         ],
     };
-    expect(toRDSQueryExpression(filter)).toEqual("(id != '123' AND ((name = 'Amplify') OR ((org = 'AWS') AND (age BETWEEN '18' AND '60') AND (name LIKE 'Amplify%'))) AND (name = 'Amplify') OR (org = 'AWS'))");
+    expect(toRDSQueryExpression(filter)).toEqual("(id != '123' AND ((name = 'Amplify') OR ((org != 'AWS') AND (age BETWEEN '18' AND '60') AND (name LIKE 'Amplify%'))) AND (name = 'Amplify') OR (org = 'AWS'))");
     });
 
     it(`should convert deep nested query and: or: and: with multiple operators`, () => {
