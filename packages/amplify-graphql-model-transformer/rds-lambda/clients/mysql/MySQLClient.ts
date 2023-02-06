@@ -30,9 +30,7 @@ export abstract class MySQLClient implements DBClient {
 
   private executeCreate = async (request: Request): Promise<any> => {
     await (await this.getClient())(request.table).insert(request.args.input);
-    const data = {};
-    data[request.operationName] = request.args.input;
-    return data;
+    return request.args.input;
   }
 
   private executeGet = async (request: Request): Promise<any> => {
@@ -45,10 +43,7 @@ export abstract class MySQLClient implements DBClient {
   private executeUpdate = async (request: Request): Promise<any> => {
     const query = (await this.getClient())(request.table);
     this.addKeyConditions(query, request);
-    await query.update(request.args.input);
-    const data = {};
-    data[request.operationName] = request.args.input;
-    return data;
+    return request.args.input;
   }
 
   private executeList = async (request: ListRequest): Promise<any> => {
@@ -72,9 +67,7 @@ export abstract class MySQLClient implements DBClient {
       query.whereLike(key, request.args.input[key]);
     });
     await query.delete();
-    const data = {};
-    data[request.operationName] = request.args.input;
-    return data;
+    return request.args.input;
   }
 
   private addKeyConditions = (query: any, request: Request) => {

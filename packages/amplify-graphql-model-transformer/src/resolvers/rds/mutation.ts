@@ -61,7 +61,7 @@ export const generateLambdaCreateRequestTemplate = (tableName: string, operation
       comment('Set the default values to put request'),
       set(ref('lambdaInput.args.input'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
       comment('copy the values from input'),
-      qref(methodCall(ref('lambdaInput.args.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
+      qref(methodCall(ref('lambdaInput.args.input.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments.input'), obj({})))),
       obj({
         version: str('2018-05-29'),
         operation: str('Invoke'),
@@ -119,7 +119,7 @@ export const generateLambdaUpdateRequestTemplate = (tableName: string, operation
       comment('Set the default values to put request'),
       set(ref('lambdaInput.args.input'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
       comment('copy the values from input'),
-      qref(methodCall(ref('lambdaInput.args.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
+      qref(methodCall(ref('lambdaInput.args.input.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments.input'), obj({})))),
       obj({
         version: str('2018-05-29'),
         operation: str('Invoke'),
