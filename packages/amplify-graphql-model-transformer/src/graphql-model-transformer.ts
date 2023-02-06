@@ -1,4 +1,6 @@
 import {
+  DDB_DB_TYPE,
+  MYSQL_DB_TYPE,
   DirectiveWrapper,
   FieldWrapper,
   generateGetArgumentsInput,
@@ -70,7 +72,7 @@ import { ModelDirectiveConfiguration, SubscriptionLevel } from './directive';
 import { ModelResourceGenerator } from './resources/model-resource-generator';
 import { DynamoModelResourceGenerator } from './resources/dynamo-model-resource-generator';
 import { RdsModelResourceGenerator } from './resources/rds-model-resource-generator';
-import { DDB_DB_TYPE, MYSQL_DB_TYPE, ModelTransformerOptions } from './types';
+import { ModelTransformerOptions } from './types';
 
 /**
  * Nullable

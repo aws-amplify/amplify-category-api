@@ -21,3 +21,6 @@ export type RDSConnectionSecrets = TransformerSecrets & {
   database?: string,
   port?: string,
 };
+
+export const MYSQL_DB_TYPE = 'MySQL';
+export const DDB_DB_TYPE = 'DDB';

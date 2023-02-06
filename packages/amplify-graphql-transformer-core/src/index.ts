@@ -55,9 +55,11 @@ export {
 } from './transformation/transformer-plugin-base';
 export { TransformerResolver, StackManager } from './transformer-context';
 export {
+  DDB_DB_TYPE,
   ImportAppSyncAPIInputs,
   ImportedDataSourceType,
   ImportedRDSType,
+  MYSQL_DB_TYPE,
   RDS_SCHEMA_FILE_NAME,
   RDSConnectionSecrets,
 } from './types';

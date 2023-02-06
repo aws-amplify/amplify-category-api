@@ -40,7 +40,7 @@ export class MySQLPasswordClient extends MySQLClient {
 
   private async getSSMValue(client: SSMClient, key: string | undefined): Promise<string> {
     if (!key) {
-      return '';
+      throw Error('Key not provided to retrieve database connection secret');
     }
     const parameterCommand = new GetParameterCommand({
       Name: key,
