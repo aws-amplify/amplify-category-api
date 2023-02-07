@@ -1,9 +1,9 @@
 import { Knex } from 'knex';
 import { DBClient } from '../DBClient';
 import { BaseRequest, Request } from '../../interfaces/BaseRequest';
-import { ListRequest, SortDirection } from '../../interfaces/ListRequest';
+import { ListRequest } from '../../interfaces/ListRequest';
 
-export abstract class MySQLClient implements DBClient {
+export abstract class MySQLClient extends DBClient {
   client: Knex;
   abstract getClient(): Promise<any>;
 

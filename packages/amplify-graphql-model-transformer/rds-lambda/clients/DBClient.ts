@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
-import {Request} from '../interfaces/BaseRequest';
-import {ListRequest, SortDirection} from '../interfaces/ListRequest';
+import { Request } from '../interfaces/BaseRequest';
+import { ListRequest, SortDirection } from '../interfaces/ListRequest';
 
 export abstract class DBClient {
   client: Knex;
