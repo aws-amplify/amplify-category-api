@@ -51,12 +51,11 @@ export const toRDSQueryExpression = (filter: any) => {
                 rdsExpression += value.map(toRDSQueryExpression).join(` ${key.toUpperCase()} `);
                 break;
             case 'not':
-                // todo: equivalent of 'not' in RDS
                 rdsExpression += `NOT ${toRDSQueryExpression(value)}`;
                 break;
             default:
-                Object.entries(value).forEach(([operator, operand]) => {
-                    if(index != 0 && !isAndAppended) {
+                Object.entries(value).forEach(([operator, operand]: any, secondIndex) => {
+                    if(secondIndex != 0) {
                         rdsExpression += ` AND `;
                     }
                     switch(operator) {
@@ -94,10 +93,47 @@ export const toRDSQueryExpression = (filter: any) => {
                             rdsExpression += `${key} != '${operand}'`;
                             break;
                         case 'notContains':
+                            // key : name , operand : 'a' , operator : notContains
                             rdsExpression += `${key} NOT LIKE '%${operand}%'`;
                             break;
                         case 'size':
-                            // implement size
+                            // size has nested operators:- between, eq, ge, gt, le, lt, ne
+                            Object.entries(operand).forEach(([sizeOperator, sizeOperand]: any) => {
+                                if(index != 0 && !isAndAppended) {
+                                    rdsExpression += ` AND `;
+                                    isAndAppended = true;
+                                }
+                                switch(sizeOperator) {
+                                    case 'between':
+                                        if (!Array.isArray(sizeOperand) || sizeOperand.length !== 2) {
+                                            throw new Error(`between condition must have two values, but got: ${sizeOperand}.length`);
+                                        }
+                                        rdsExpression += `LENGTH (${key}) BETWEEN '${sizeOperand[0]}' AND '${sizeOperand[1]}'`;
+                                        break;
+                                    case 'eq':
+                                        rdsExpression += `LENGTH (${key}) = '${sizeOperand}'`; // key : name, sizeOperand : 2, sizeOperator : eq
+                                        // name : { eq: 'a', size: {eq: 2} 
+                                        break;
+                                    case 'ge':
+                                        rdsExpression += `LENGTH (${key}) >= '${sizeOperand}'`;
+                                        break;
+                                    case 'gt':
+                                        rdsExpression += `LENGTH (${key}) > '${sizeOperand}'`;
+                                        break;
+                                    case 'le':
+                                        rdsExpression += `LENGTH (${key}) <= '${sizeOperand}'`;
+                                        break;
+                                    case 'lt':
+                                        rdsExpression += `LENGTH (${key}) < '${sizeOperand}'`;
+                                        break;
+                                    case 'ne':
+                                        rdsExpression += `LENGTH (${key}) != '${sizeOperand}'`;
+                                        break;
+                                    default:
+                                        console.log(`Unsupported operator: ${sizeOperator}`);
+                                }
+                            });
+                            // rdsExpression += `LENGTH (${key}) (${toRDSQueryExpression(operand)})`;
                             break;
                         default:
                             console.log(`Unsupported operator: ${operator}`);

@@ -1,3 +1,4 @@
+import { lte } from 'semver';
 import { toRDSQueryExpression } from '../resolvers/common';
 
 describe('filterToRdsExpression', () => {
@@ -10,7 +11,7 @@ describe('filterToRdsExpression', () => {
         ],
     };
     expect(toRDSQueryExpression(filter)).toEqual("((id = '123') AND (name = 'Amplify'))");
-}); 
+    }); 
     it('should convert or: QueryGroup ', () => {
     const filter = {
         or : [
@@ -230,4 +231,70 @@ describe('filterToRdsExpression', () => {
         };
     expect(toRDSQueryExpression(filter)).toEqual("(name LIKE 'A%' AND (name = 'Amplify') OR ((org = 'AWS') AND (age BETWEEN '18' AND '60') AND (name = 'Amplify')) AND (name = 'Amplify') AND (org = 'AWS'))");
      });
+
+     // size operator tests
+    it(`should work on size: gt: operator`, () => {
+    const filter = {
+        id : { eq : '123', size : { gt : 1 } },
+    }
+    expect(toRDSQueryExpression(filter)).toEqual("(id = '123' AND LENGTH (id) > '1')");
+    });
+
+    it(`should work on size: ge: operator`, () => {
+        const filter = {
+            id : { eq : '123', size : { ge : 1 } },
+        }
+    expect(toRDSQueryExpression(filter)).toEqual("(id = '123' AND LENGTH (id) >= '1')");
+    });
+
+    it(`should work on size: lt: operator`, () => {
+        const filter = {
+            id : { eq : '123', size : { lt : 1 } },
+        }
+    expect(toRDSQueryExpression(filter)).toEqual("(id = '123' AND LENGTH (id) < '1')");
+    });
+
+    it(`should work on size: le: operator`, () => {
+        const filter = {
+            id : { eq : '123', size : { le : 1 } },
+        }
+    expect(toRDSQueryExpression(filter)).toEqual("(id = '123' AND LENGTH (id) <= '1')");
+    });
+
+    it(`should work on size: eq: operator along with and: QueryGroup`, () => {
+        const filter = {
+            and : [
+                { id : { eq : '123', size : { eq : 1 } } },
+            ],
+        }
+        expect(toRDSQueryExpression(filter)).toEqual("((id = '123' AND LENGTH (id) = '1'))");
+    });
+
+    it(`should work on size: eq: operator along with or: QueryGroup`, () => {
+        const filter = {
+            or : [
+                { id : { eq : '123', size : { eq : 2 } } },
+            ],
+            and : [
+                { age : { eq : '30', size : { eq : 3 } } },
+            ],
+        }
+        expect(toRDSQueryExpression(filter)).toEqual("((id = '123' AND LENGTH (id) = '2') AND (age = '30' AND LENGTH (age) = '3'))");
+    });
+
+    it(`should work on size: eq: operator along with or: and: QueryGroup`, () => {
+        const filter = {
+            or : [
+                { id : { eq : '123', size : { eq : 2 } } },
+                { and : [
+                    { age : { eq : '30', size : { eq : 3 } } },
+                ]},
+            ],
+            and : [
+                { age : { eq : '20', size : { eq : 3 } } },
+                { org: { eq : 'AWS', size : { eq : 3 } } },
+            ],
+        }
+        expect(toRDSQueryExpression(filter)).toEqual("((id = '123' AND LENGTH (id) = '2') OR ((age = '30' AND LENGTH (age) = '3')) AND (age = '20' AND LENGTH (age) = '3') AND (org = 'AWS' AND LENGTH (org) = '3'))");
+    });
 });
