@@ -1,6 +1,11 @@
 import {
-  DeploymentResources, getParameterStoreSecretPath, getRDSDBConfigFromAmplifyInput,
-  GraphQLTransform, RDS_SCHEMA_FILE_NAME, RDSConnectionSecrets, readRDSGlobalAmplifyInput,
+  DeploymentResources,
+  getRDSDBConfigFromAmplifyInput,
+  GraphQLTransform,
+  MYSQL_DB_TYPE,
+  RDS_SCHEMA_FILE_NAME,
+  RDSConnectionSecrets,
+  readRDSGlobalAmplifyInput,
 } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import {
@@ -27,9 +32,9 @@ import {
 } from './utils';
 import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerFactoryArgs, TransformerProjectOptions } from './transformer-options-types';
-import {contextUtil} from '../category-utils/context-util';
-import {getExistingConnectionSecretNames} from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
-import {getAppSyncAPIName} from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { contextUtil } from '../category-utils/context-util';
+import { getExistingConnectionSecretNames } from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
+import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
@@ -243,7 +248,7 @@ const _buildProject = async (context: $TSContext, opts: TransformerProjectOption
   return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput, opts);
 };
 
-const getDatasourceSecretMap = async (context: $TSContext) => {
+const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, RDSConnectionSecrets>> => {
   const outputMap = new Map<string, RDSConnectionSecrets>();
   let inputNode;
   try {
@@ -255,7 +260,7 @@ const getDatasourceSecretMap = async (context: $TSContext) => {
   const config = await getRDSDBConfigFromAmplifyInput(context, inputNode);
   const rdsSecretPaths = await getExistingConnectionSecretNames(context, config, getAppSyncAPIName(), stateManager.getCurrentEnvName());
   if (rdsSecretPaths) {
-    outputMap.set('MySQL', rdsSecretPaths);
+    outputMap.set(MYSQL_DB_TYPE, rdsSecretPaths);
   }
   return outputMap;
-}
+};

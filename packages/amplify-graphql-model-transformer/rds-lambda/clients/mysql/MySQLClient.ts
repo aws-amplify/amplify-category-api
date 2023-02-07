@@ -69,27 +69,4 @@ export abstract class MySQLClient implements DBClient {
     await query.delete();
     return request.args.input;
   }
-
-  private addKeyConditions = (query: any, request: Request) => {
-    const keys = request.args.metadata.keys || [];
-    keys.forEach((key) => {
-      query.where(key, request.args.input.get(key));
-    });
-  }
-
-  private addSortConditions = (query: any, request: ListRequest) => {
-    // order using sort keys
-    const sortDirection = request.args.sortDirection || SortDirection.ASC;
-    const keys = request.args.metadata.keys || [];
-    if(keys.length > 1) {
-      const sortKeys = request.args.metadata.keys.slice(1);
-      const orderByConditions = sortKeys.map((sortKey) => {
-        return {
-          column: sortKey,
-          order: sortDirection.toString().toLowerCase(),
-        };
-      });
-      query.orderBy(orderByConditions);
-    }
-  }
 }
