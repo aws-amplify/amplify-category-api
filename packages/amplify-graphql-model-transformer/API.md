@@ -354,6 +354,9 @@ export enum SubscriptionLevel {
     public = "public"
 }
 
+// @public (undocumented)
+export const toRDSQueryExpression: (filter: any) => string;
+
 // (No @packageDocumentation comment for this package)
 
 ```
