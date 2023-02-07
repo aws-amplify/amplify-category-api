@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-e2e-tests",
-  "version": "3.10.18",
+  "version": "3.10.19-rds-support.0",
   "description": "E2e test suite",
   "repository": {
     "type": "git",
@@ -24,25 +24,25 @@
     "clean-stale-test-buckets": "ts-node ./src/cleanup-stale-test-buckets.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "0.18.2",
+    "@aws-amplify/graphql-transformer-core": "0.19.0-rds-support.0",
     "amplify-app": "^4.3.4",
-    "amplify-category-api-e2e-core": "4.0.14",
+    "amplify-category-api-e2e-core": "4.0.15-rds-support.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1113.0",
+    "axios": "^0.26.0",
     "circleci-api": "^4.1.4",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
+    "generate-password": "~1.7.0",
     "graphql-tag": "^2.10.1",
-    "graphql-transformer-core": "7.6.9",
+    "graphql-transformer-core": "7.7.0-rds-support.0",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
     "uuid": "^8.3.2",
     "ws": "^7.5.7",
-    "yargs": "^15.1.0",
-    "axios": "^0.26.0",
-    "generate-password": "~1.7.0"
+    "yargs": "^15.1.0"
   },
   "peerDependencies": {
     "amplify-cli-core": "^3.0.0"

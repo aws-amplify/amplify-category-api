@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-schema-generator",
-  "version": "0.0.1",
+  "version": "0.1.0-rds-support.0",
   "description": "Amplify GraphQL schema generator",
   "repository": {
     "type": "git",
@@ -26,10 +26,10 @@
     "test": "jest"
   },
   "dependencies": {
-    "knex": "~2.3.0",
-    "mysql2": "~2.3.3",
+    "@aws-amplify/graphql-transformer-core": "0.17.15",
     "graphql": "^14.5.8",
-    "@aws-amplify/graphql-transformer-core": "0.17.15"
+    "knex": "~2.3.0",
+    "mysql2": "~2.3.3"
   },
   "peerDependencies": {
     "amplify-prompts": "^2.6.0"
