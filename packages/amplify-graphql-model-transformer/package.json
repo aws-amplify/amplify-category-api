@@ -21,7 +21,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc && cd rds-lambda && mkdir -p node_modules && rm -rf node_modules && npm install && tsc && cp -r node_modules lib cd lib && bestzip --force node ../../lib/rds-lambda.zip ./*",
+    "build": "tsc && cd rds-lambda && mkdir -p node_modules && rm -rf node_modules && npm install && tsc && cp -r node_modules lib && cd lib && bestzip --force node ../../lib/rds-lambda.zip ./*",
     "watch": "tsc -w",
     "clean": "rimraf ./lib",
     "test": "jest",
