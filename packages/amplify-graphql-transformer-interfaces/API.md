@@ -371,6 +371,8 @@ export interface TransformerContextProvider {
     // (undocumented)
     dataSources: TransformerDataSourceManagerProvider;
     // (undocumented)
+    datasourceSecretParameterLocations: Map<string, TransformerSecrets>;
+    // (undocumented)
     featureFlags: FeatureFlagProvider;
     // (undocumented)
     getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
@@ -620,6 +622,11 @@ export interface TransformerSchemaHelperProvider {
 
 // @public (undocumented)
 export type TransformerSchemaVisitStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'sandboxModeEnabled'>;
+
+// @public (undocumented)
+export type TransformerSecrets = {
+    [key: string]: string;
+};
 
 // @public (undocumented)
 export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;

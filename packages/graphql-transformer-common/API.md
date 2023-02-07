@@ -389,6 +389,7 @@ export class ResourceConstants {
         RDSLambdaIAMRoleLogicalID: string;
         RDSLambdaLogicalID: string;
         RDSLambdaDataSourceLogicalID: string;
+        RDSLambdaDataSourceLogicalName: string;
         NoneDataSource: string;
         AuthCognitoUserPoolLogicalID: string;
         AuthCognitoUserPoolNativeClientLogicalID: string;

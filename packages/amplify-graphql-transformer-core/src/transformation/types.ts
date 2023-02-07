@@ -1,3 +1,6 @@
+import { DatasourceType } from '../config';
+import { RDSConnectionSecrets } from '../types';
+
 export default interface Template {
   AWSTemplateFormatVersion?: string;
   Description?: string;
@@ -69,3 +72,8 @@ export type OverrideConfig = {
   overrideDir: string;
   resourceName: string;
 };
+
+export type DatasourceTransormationConfig = {
+  modelToDatasourceMap?: Map<string, DatasourceType>;
+  datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
+}

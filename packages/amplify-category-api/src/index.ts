@@ -13,6 +13,7 @@ import { printer } from 'amplify-prompts';
 import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { RDS_SCHEMA_FILE_NAME, getRDSGlobalAmplifyInput, getRDSDBConfigFromAmplifyInput } from '@aws-amplify/graphql-transformer-core';
 import { run } from './commands/api/console';
 import { getAppSyncAuthConfig, getAppSyncResourceName } from './provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { provider } from './provider-utils/awscloudformation/aws-constants';
@@ -22,8 +23,6 @@ import { askAuthQuestions } from './provider-utils/awscloudformation/service-wal
 import { authConfigToAppSyncAuthType } from './provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { checkAppsyncApiResourceMigration } from './provider-utils/awscloudformation/utils/check-appsync-api-migration';
 import { getAppSyncApiResourceName } from './provider-utils/awscloudformation/utils/getAppSyncApiName';
-import { RDS_SCHEMA_FILE_NAME } from './provider-utils/awscloudformation/service-walkthrough-types/import-appsync-api-types';
-import { getRDSGlobalAmplifyInput, getRDSDBConfigFromAmplifyInput } from './provider-utils/awscloudformation/utils/import-rds-utils/globalAmplifyInputs';
 import { getAPIResourceDir } from './provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { configureMultiEnvDBSecrets } from './provider-utils/awscloudformation/utils/rds-secrets/multi-env-database-secrets';
 import { deleteConnectionSecrets } from './provider-utils/awscloudformation/utils/rds-secrets/database-secrets';

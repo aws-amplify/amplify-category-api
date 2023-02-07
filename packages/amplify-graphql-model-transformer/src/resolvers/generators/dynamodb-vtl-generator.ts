@@ -5,7 +5,7 @@ import {
   ModelRequestConfig,
   ModelUpdateRequestConfig,
   ModelVTLGenerator,
-} from "./vtl-generator";
+} from './vtl-generator';
 import {
   generateUpdateRequestTemplate,
   generateCreateRequestTemplate,

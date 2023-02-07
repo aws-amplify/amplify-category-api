@@ -1,18 +1,19 @@
 import {
   DeploymentResources,
+  getRDSDBConfigFromAmplifyInput,
   GraphQLTransform,
-  OverrideConfig,
-  ResolverConfig,
-  Template,
-  TransformerProjectConfig,
+  MYSQL_DB_TYPE,
+  RDS_SCHEMA_FILE_NAME,
+  RDSConnectionSecrets,
+  readRDSGlobalAmplifyInput,
 } from '@aws-amplify/graphql-transformer-core';
-import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   $TSContext,
   AmplifyCategories,
   AmplifySupportedService,
   JSONUtilities,
-  pathManager,
+  pathManager, stateManager,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import fs from 'fs-extra';
@@ -23,17 +24,17 @@ import {
 import _ from 'lodash';
 import path from 'path';
 /* eslint-disable-next-line import/no-cycle */
-import { searchablePushChecks } from './api-utils';
 import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import { isAuthModeUpdated } from './auth-mode-compare';
-import { showSandboxModePrompts } from './sandbox-mode-helpers';
 import { parseUserDefinedSlots } from './user-defined-slots';
 import {
   mergeUserConfigWithTransformOutput, writeDeploymentToDisk,
 } from './utils';
 import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerFactoryArgs, TransformerProjectOptions } from './transformer-options-types';
-import { ProjectOptions } from './transform-config';
+import { contextUtil } from '../category-utils/context-util';
+import { getExistingConnectionSecretNames } from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
+import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
@@ -190,7 +191,7 @@ const buildAPIProject = async (
     return undefined;
   }
 
-  const builtProject = await _buildProject(opts);
+  const builtProject = await _buildProject(context, opts);
 
   const buildLocation = path.join(opts.projectDirectory, 'build');
   const currentCloudLocation = opts.currentCloudBackendDirectory ? path.join(opts.currentCloudBackendDirectory, 'build') : undefined;
@@ -212,7 +213,7 @@ const buildAPIProject = async (
   return builtProject;
 };
 
-const _buildProject = async (opts: TransformerProjectOptions<TransformerFactoryArgs>): Promise<DeploymentResources> => {
+const _buildProject = async (context: $TSContext, opts: TransformerProjectOptions<TransformerFactoryArgs>): Promise<DeploymentResources> => {
   const userProjectConfig = opts.projectConfig;
   const stackMapping = userProjectConfig.config.StackMapping;
   const userDefinedSlots = {
@@ -238,7 +239,28 @@ const _buildProject = async (opts: TransformerProjectOptions<TransformerFactoryA
   });
 
   const { schema, modelToDatasourceMap } = userProjectConfig;
-  const transformOutput = transform.transform(schema.toString(), modelToDatasourceMap);
+  const datasourceSecretMap = await getDatasourceSecretMap(context);
+  const transformOutput = transform.transform(schema.toString(), {
+    modelToDatasourceMap,
+    datasourceSecretParameterLocations: datasourceSecretMap,
+  });
 
   return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput, opts);
+};
+
+const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, RDSConnectionSecrets>> => {
+  const outputMap = new Map<string, RDSConnectionSecrets>();
+  let inputNode;
+  try {
+    inputNode = await readRDSGlobalAmplifyInput(path.join(await contextUtil.getResourceDir(context, {}), RDS_SCHEMA_FILE_NAME));
+  } catch (error) {
+    // Unable to read file (probably doesn't exist)
+    return outputMap;
+  }
+  const config = await getRDSDBConfigFromAmplifyInput(context, inputNode);
+  const rdsSecretPaths = await getExistingConnectionSecretNames(context, config, getAppSyncAPIName(), stateManager.getCurrentEnvName());
+  if (rdsSecretPaths) {
+    outputMap.set(MYSQL_DB_TYPE, rdsSecretPaths);
+  }
+  return outputMap;
 };

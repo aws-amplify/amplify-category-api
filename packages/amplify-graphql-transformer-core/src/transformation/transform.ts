@@ -43,7 +43,7 @@ import { adoptAuthModes, IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } fr
 import * as SyncUtils from './sync-utils';
 import { MappingTemplate } from '../cdk-compat';
 
-import Template, { DeploymentResources, UserDefinedSlot, OverrideConfig } from './types';
+import Template, {DeploymentResources, UserDefinedSlot, OverrideConfig, DatasourceTransormationConfig} from './types';
 import {
   makeSeenTransformationKey,
   matchArgumentDirective,
@@ -161,7 +161,7 @@ export class GraphQLTransform {
         return {
           ...mutateContext,
           inputDocument: updatedSchema,
-        }
+        };
       }, context).inputDocument;
   }
 
@@ -171,21 +171,22 @@ export class GraphQLTransform {
    * on to the next transformer. At the end of the transformation a
    * cloudformation template is returned.
    * @param schema The model schema.
-   * @param references Any cloudformation references.
+   * @param datasourceConfig Additional supporting configuration when additional datasources are added
    */
-  public transform(schema: string, modelToDatasourceMap?: Map<string, DatasourceType>): DeploymentResources {
+  public transform(schema: string, datasourceConfig?: DatasourceTransormationConfig): DeploymentResources {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
     this.app = new App();
     const context = new TransformerContext(
       this.app,
       parsedDocument,
-      modelToDatasourceMap ?? new Map<string, DatasourceType>(),
+      datasourceConfig?.modelToDatasourceMap ?? new Map<string, DatasourceType>(),
       this.stackMappingOverrides,
       this.authConfig,
       this.options.sandboxModeEnabled,
       this.options.featureFlags,
       this.resolverConfig,
+      datasourceConfig?.datasourceSecretParameterLocations,
     );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),

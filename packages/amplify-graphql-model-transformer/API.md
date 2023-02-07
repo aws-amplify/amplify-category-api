@@ -142,7 +142,6 @@ export type ModelCreateInitSlotConfig = {
 
 // @public (undocumented)
 export type ModelCreateRequestConfig = ModelRequestConfig & {
-    modelName: string;
     modelIndexFields: string[];
 };
 
@@ -184,6 +183,7 @@ export type ModelGetResponseConfig = ModelUpdateRequestConfig;
 
 // @public (undocumented)
 export type ModelRequestConfig = {
+    modelName: string;
     operation: string;
     operationName: string;
 };
@@ -275,7 +275,7 @@ export type ModelUpdateInitSlotConfig = ModelCreateInitSlotConfig;
 
 // @public (undocumented)
 export type ModelUpdateRequestConfig = ModelRequestConfig & {
-    modelName: string;
+    modelIndexFields: string[];
     isSyncEnabled: boolean;
 };
 

@@ -4,6 +4,8 @@
 
 ```ts
 
+import { $TSAny } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 import { APIIAMResourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ApiKeyConfig } from '@aws-cdk/aws-appsync';
 import { App } from '@aws-cdk/core';
@@ -33,6 +35,7 @@ import { CfnTable } from '@aws-cdk/aws-dynamodb';
 import { Construct } from '@aws-cdk/core';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DefinitionNode } from 'graphql';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql/language';
@@ -61,6 +64,7 @@ import { LogConfig } from '@aws-cdk/aws-appsync';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelFieldMap } from '@aws-amplify/graphql-transformer-interfaces';
 import { MutationFieldType } from '@aws-amplify/graphql-transformer-interfaces';
+import { MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
 import { NamedTypeNode } from 'graphql';
 import { NestedStackProps } from '@aws-cdk/core';
 import { ObjectTypeDefinitionNode } from 'graphql';
@@ -86,6 +90,7 @@ import { TransformerResolverProvider } from '@aws-amplify/graphql-transformer-in
 import { TransformerResolversManagerProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerSecrets } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TypeDefinitionNode } from 'graphql';
@@ -146,6 +151,12 @@ export const enum ConflictHandlerType {
 }
 
 // @public (undocumented)
+export const constructDefaultGlobalAmplifyInput: (context: $TSContext, dataSourceType: ImportedRDSType) => Promise<string>;
+
+// @public (undocumented)
+export const constructRDSGlobalAmplifyInput: (context: $TSContext, config: Partial<RDSDBConfig>, inputNode: $TSAny) => Promise<string>;
+
+// @public (undocumented)
 function createSyncLambdaIAMPolicy(context: TransformerContextProvider, stack: cdk.Stack, name: string, region?: string): iam.Policy;
 
 // Warning: (ae-forgotten-export) The symbol "TransformerContext" needs to be exported by the entry point index.d.ts
@@ -162,6 +173,9 @@ export interface DatasourceType {
     // (undocumented)
     provisionDB: boolean;
 }
+
+// @public (undocumented)
+export const DDB_DB_TYPE = "DDB";
 
 // Warning: (ae-forgotten-export) The symbol "ResolversFunctionsAndSchema" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "NestedStacks" needs to be exported by the entry point index.d.ts
@@ -237,6 +251,15 @@ export const getFieldNameFor: (op: Operation, typeName: string) => string;
 export const getKeySchema: (table: any, indexName?: string) => any;
 
 // @public (undocumented)
+export const getParameterStoreSecretPath: (secret: string, database: string, apiName: string, envName?: string) => string;
+
+// @public (undocumented)
+export const getRDSDBConfigFromAmplifyInput: (context: $TSContext, inputNode: $TSAny) => Promise<Partial<RDSDBConfig>>;
+
+// @public (undocumented)
+export const getRDSGlobalAmplifyInput: (context: $TSContext, pathToSchemaFile: string) => Promise<DefinitionNode | undefined>;
+
+// @public (undocumented)
 export const getSortKeyFieldNames: (type: ObjectTypeDefinitionNode) => string[];
 
 // @public (undocumented)
@@ -257,8 +280,10 @@ export class GraphQLTransform {
     protected generateGraphQlApi(stackManager: StackManager, output: TransformerOutput): GraphQLApi;
     // (undocumented)
     preProcessSchema(schema: DocumentNode): DocumentNode;
+    // Warning: (ae-forgotten-export) The symbol "DatasourceTransormationConfig" needs to be exported by the entry point index.d.ts
+    //
     // (undocumented)
-    transform(schema: string, modelToDatasourceMap?: Map<string, DatasourceType>): DeploymentResources;
+    transform(schema: string, datasourceConfig?: DatasourceTransormationConfig): DeploymentResources;
 }
 
 // @public (undocumented)
@@ -296,6 +321,23 @@ export const IAM_AUTH_ROLE_PARAMETER = "authRoleName";
 
 // @public (undocumented)
 export const IAM_UNAUTH_ROLE_PARAMETER = "unauthRoleName";
+
+// @public (undocumented)
+export type ImportAppSyncAPIInputs = {
+    apiName: string;
+    dataSourceType: ImportedDataSourceType;
+};
+
+// @public (undocumented)
+export type ImportedDataSourceType = ImportedRDSType;
+
+// @public (undocumented)
+export enum ImportedRDSType {
+    // (undocumented)
+    MYSQL = "mysql",
+    // (undocumented)
+    POSTGRESQL = "postgresql"
+}
 
 // @public (undocumented)
 export class InputFieldWrapper extends GenericFieldWrapper {
@@ -380,6 +422,9 @@ export class MappingTemplate {
 }
 
 // @public (undocumented)
+export const MYSQL_DB_TYPE = "MySQL";
+
+// @public (undocumented)
 export class ObjectDefinitionWrapper {
     constructor(node: ObjectTypeDefinitionNode);
     // (undocumented)
@@ -408,6 +453,26 @@ export type OverrideConfig = {
     overrideDir: string;
     resourceName: string;
 };
+
+// @public (undocumented)
+export const RDS_SCHEMA_FILE_NAME = "schema.rds.graphql";
+
+// @public (undocumented)
+export type RDSConnectionSecrets = TransformerSecrets & {
+    username: string;
+    password: string;
+    host?: string;
+    database?: string;
+    port?: string;
+};
+
+// @public (undocumented)
+export type RDSDBConfig = MySQLDataSourceConfig & {
+    engine: string;
+};
+
+// @public (undocumented)
+export const readRDSGlobalAmplifyInput: (pathToSchemaFile: string) => Promise<DefinitionNode | undefined>;
 
 // @public (undocumented)
 export type ResolverConfig = {
@@ -695,6 +760,11 @@ export type UserDefinedSlot = {
 
 // @public (undocumented)
 export const validateModelSchema: (doc: DocumentNode) => readonly GraphQLError[];
+
+// @public (undocumented)
+export const validateRDSInputDBConfig: (context: $TSContext, config: {
+    [x: string]: any;
+}) => Promise<void>;
 
 // @public (undocumented)
 function validateResolverConfigForType(ctx: TransformerSchemaVisitStepContextProvider, typeName: string): void;

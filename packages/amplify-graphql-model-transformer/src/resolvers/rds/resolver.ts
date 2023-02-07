@@ -11,7 +11,7 @@ import {
   compoundExpression,
   iff,
   toJson,
-  printBlock, and, not, equals, int, nul, set,
+  printBlock, and, not, equals, int, nul, set, comment,
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { Construct, Stack } from '@aws-cdk/core';
@@ -26,6 +26,7 @@ import {
 import { IFunction, Runtime } from '@aws-cdk/aws-lambda';
 import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import path from 'path';
+import {RDSConnectionSecrets} from '@aws-amplify/graphql-transformer-core';
 
 export type OPERATIONS = 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'SYNC';
 
@@ -35,24 +36,25 @@ export const createRdsLambda = (
   stack: Stack,
   apiGraphql: GraphQLAPIProvider,
   lambdaRole: IRole,
+  environment?: { [key: string]: string },
 ): IFunction => {
   const { RDSLambdaLogicalID } = ResourceConstants.RESOURCES;
 
   return apiGraphql.host.addLambdaFunction(
     RDSLambdaLogicalID,
     `functions/${RDSLambdaLogicalID}.zip`,
-    'handler',
-    path.resolve(__dirname, '..', '..', 'lib', 'rds-resolver-lambda.zip'),
+    'handler.run',
+    path.resolve(__dirname, '..', '..', '..', 'lib', 'rds-lambda.zip'),
     Runtime.NODEJS_16_X,
     [],
     lambdaRole,
-    {},
+    environment,
     undefined,
     stack,
   );
 };
 
-export const createRdsLambdaRole = (roleName: string, stack: Construct): IRole => {
+export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEntry: RDSConnectionSecrets): IRole => {
   const { RDSLambdaIAMRoleLogicalID } = ResourceConstants.RESOURCES;
   const role = new Role(stack, RDSLambdaIAMRoleLogicalID, {
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
@@ -66,6 +68,13 @@ export const createRdsLambdaRole = (roleName: string, stack: Construct): IRole =
           effect: Effect.ALLOW,
           resources: ['arn:aws:logs:*:*:*'],
         }),
+        new PolicyStatement({
+          actions: ['ssm:GetParameter', 'ssm:GetParameters'],
+          effect: Effect.ALLOW,
+          resources: secretEntry
+            ? [`arn:aws:ssm:*:*:parameter${secretEntry.username}`, `arn:aws:ssm:*:*:parameter${secretEntry.password}`]
+            : [],
+        }),
       ],
     }),
   );
@@ -76,15 +85,15 @@ export const createRdsLambdaRole = (roleName: string, stack: Construct): IRole =
 export const generateLambdaRequestTemplate = (tableName: string, operation: string, operationName: string): string => {
   return printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
-      set(ref('args'), obj({})),
-      set(ref('args.args'), ref('context.arguments')),
-      set(ref('args.table'), str(tableName)),
-      set(ref('args.operation'), str(operation)),
-      set(ref('args.operationName'), str(operationName)),
+      set(ref('lambdaInput'), obj({})),
+      set(ref('lambdaInput.args'), ref('context.arguments')),
+      set(ref('lambdaInput.table'), str(tableName)),
+      set(ref('lambdaInput.operation'), str(operation)),
+      set(ref('lambdaInput.operationName'), str(operationName)),
       obj({
         version: str('2018-05-29'),
         operation: str('Invoke'),
-        payload: methodCall(ref('util.toJson'), ref('args')),
+        payload: methodCall(ref('util.toJson'), ref('lambdaInput')),
       }),
     ]),
   );
