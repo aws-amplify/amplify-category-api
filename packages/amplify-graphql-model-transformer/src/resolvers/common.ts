@@ -111,8 +111,7 @@ export const toRDSQueryExpression = (filter: any) => {
                                         rdsExpression += `LENGTH (${key}) BETWEEN '${sizeOperand[0]}' AND '${sizeOperand[1]}'`;
                                         break;
                                     case 'eq':
-                                        rdsExpression += `LENGTH (${key}) = '${sizeOperand}'`; // key : name, sizeOperand : 2, sizeOperator : eq
-                                        // name : { eq: 'a', size: {eq: 2} 
+                                        rdsExpression += `LENGTH (${key}) = '${sizeOperand}'`; 
                                         break;
                                     case 'ge':
                                         rdsExpression += `LENGTH (${key}) >= '${sizeOperand}'`;
@@ -133,7 +132,6 @@ export const toRDSQueryExpression = (filter: any) => {
                                         console.log(`Unsupported operator: ${sizeOperator}`);
                                 }
                             });
-                            // rdsExpression += `LENGTH (${key}) (${toRDSQueryExpression(operand)})`;
                             break;
                         default:
                             console.log(`Unsupported operator: ${operator}`);
