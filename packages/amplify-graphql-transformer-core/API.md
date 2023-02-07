@@ -762,6 +762,11 @@ export type UserDefinedSlot = {
 export const validateModelSchema: (doc: DocumentNode) => readonly GraphQLError[];
 
 // @public (undocumented)
+export const validateRDSInputDBConfig: (context: $TSContext, config: {
+    [x: string]: any;
+}) => Promise<void>;
+
+// @public (undocumented)
 function validateResolverConfigForType(ctx: TransformerSchemaVisitStepContextProvider, typeName: string): void;
 
 // Warnings were encountered during analysis:
