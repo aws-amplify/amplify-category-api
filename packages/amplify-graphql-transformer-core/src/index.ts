@@ -44,6 +44,7 @@ export {
   getRDSGlobalAmplifyInput,
   readRDSGlobalAmplifyInput,
   RDSDBConfig,
+  validateRDSInputDBConfig,
 } from './utils';
 export * from './utils/operation-names';
 export * from './errors';

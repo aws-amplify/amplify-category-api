@@ -1,5 +1,6 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { getExistingConnectionSecrets, getParameterStoreSecretPath } from '../../../../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
+import { getParameterStoreSecretPath } from '@aws-amplify/graphql-transformer-core';
+import { getExistingConnectionSecrets } from '../../../../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 
 const mockDatabase = 'mockdatabase';
 const mockAPIName = 'mockapi';

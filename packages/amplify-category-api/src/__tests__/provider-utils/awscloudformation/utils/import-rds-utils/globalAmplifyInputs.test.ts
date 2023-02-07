@@ -1,6 +1,13 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { constructDefaultGlobalAmplifyInput, getRDSGlobalAmplifyInput, getRDSDBConfigFromAmplifyInput, validateRDSInputDBConfig, readRDSGlobalAmplifyInput, constructRDSGlobalAmplifyInput } from '../../../../../../../amplify-graphql-transformer-core/src/utils/globalAmplifyInputs';
-import { ImportedRDSType } from '../../../../../../../amplify-graphql-transformer-core/src/types/import-appsync-api-types';
+import {
+  constructDefaultGlobalAmplifyInput,
+  getRDSGlobalAmplifyInput,
+  getRDSDBConfigFromAmplifyInput,
+  validateRDSInputDBConfig,
+  readRDSGlobalAmplifyInput,
+  constructRDSGlobalAmplifyInput,
+  ImportedRDSType,
+} from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 
 jest.mock('fs-extra', () => ({
