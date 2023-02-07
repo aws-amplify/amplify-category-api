@@ -8,9 +8,10 @@ import {
   list,
   qref,
   methodCall,
-  str
+  str,
+  obj,
 } from 'graphql-mapping-template';
-import { PrimaryKeyDirectiveConfiguration } from '../../types';
+import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../../types';
 import _ from 'lodash';
 import {
   addIndexToResolverSlot,
@@ -22,6 +23,30 @@ import {
 } from "./vtl-generator";
 
 export class RDSIndexVTLGenerator implements IndexVTLGenerator {
+
+  generateIndexQueryRequestTemplate(
+    config: IndexDirectiveConfiguration,
+    ctx: TransformerContextProvider,
+    tableName: string,
+    operationName: string,
+  ): string {
+    //TODO: Verify correctness of template once Lambda code is merged.
+    return printBlock('Invoke RDS Lambda data source')(
+      compoundExpression([
+        set(ref('args'), obj({})),
+        set(ref('args.args'), ref('context.arguments')),
+        set(ref('args.table'), str(tableName)),
+        set(ref('args.operation'), str('QUERY')),
+        set(ref('args.operationName'), str(operationName)),
+        obj({
+          version: str('2018-05-29'),
+          operation: str('Invoke'),
+          payload: methodCall(ref('util.toJson'), ref('args')),
+        }),
+      ]),
+    );
+  }
+
   generatePrimaryKeyVTL = (config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, resolverMap: Map<TransformerResolverProvider, string>): void => {
     this.updateResolvers(config, ctx, resolverMap);
   };
