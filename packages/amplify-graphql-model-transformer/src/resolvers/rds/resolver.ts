@@ -71,7 +71,9 @@ export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEn
         new PolicyStatement({
           actions: ['ssm:GetParameter', 'ssm:GetParameters'],
           effect: Effect.ALLOW,
-          resources: [`arn:aws:ssm:*:*:parameter${secretEntry.username}`, `arn:aws:ssm:*:*:parameter${secretEntry.password}`]
+          resources: secretEntry
+            ? [`arn:aws:ssm:*:*:parameter${secretEntry.username}`, `arn:aws:ssm:*:*:parameter${secretEntry.password}`]
+            : [],
         }),
       ],
     }),
