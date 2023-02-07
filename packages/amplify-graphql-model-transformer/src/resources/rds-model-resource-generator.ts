@@ -17,9 +17,6 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
   generateResources(context: TransformerContextProvider): void {
     if (this.isEnabled()) {
       const secretEntry = context.datasourceSecretParameterLocations.get(MYSQL_DB_TYPE);
-      if (!secretEntry) {
-        throw new Error('Secret entry not found for RDS access, unable to create lambda');
-      }
       const {
         RDSLambdaIAMRoleLogicalID,
         RDSLambdaLogicalID,
