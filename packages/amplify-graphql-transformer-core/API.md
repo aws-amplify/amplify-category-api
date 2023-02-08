@@ -166,13 +166,14 @@ function createSyncTable(context: TransformerContext): void;
 
 // @public (undocumented)
 export interface DatasourceType {
-    // Warning: (ae-forgotten-export) The symbol "DBType" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     dbType: DBType;
     // (undocumented)
     provisionDB: boolean;
 }
+
+// @public (undocumented)
+export type DBType = 'MySQL' | 'DDB';
 
 // @public (undocumented)
 export const DDB_DB_TYPE = "DDB";
