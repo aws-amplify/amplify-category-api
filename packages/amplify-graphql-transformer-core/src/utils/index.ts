@@ -11,5 +11,4 @@ export {
   getRDSDBConfigFromAmplifyInput,
   readRDSGlobalAmplifyInput,
   RDSDBConfig,
-  validateRDSInputDBConfig,
 } from './rds-input-utils';

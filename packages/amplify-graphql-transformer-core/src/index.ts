@@ -43,7 +43,6 @@ export {
   IAM_UNAUTH_ROLE_PARAMETER,
   readRDSGlobalAmplifyInput,
   RDSDBConfig,
-  validateRDSInputDBConfig,
 } from './utils';
 export * from './utils/operation-names';
 export * from './errors';

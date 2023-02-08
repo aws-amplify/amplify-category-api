@@ -2,7 +2,8 @@ import {
   DeploymentResources,
   GraphQLTransform,
   RDSConnectionSecrets,
-  ImportedRDSType
+  ImportedRDSType,
+  MYSQL_DB_TYPE,
 } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import {
