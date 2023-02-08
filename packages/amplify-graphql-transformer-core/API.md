@@ -154,7 +154,7 @@ export const enum ConflictHandlerType {
 export const constructDefaultGlobalAmplifyInput: (context: $TSContext, dataSourceType: ImportedRDSType) => Promise<string>;
 
 // @public (undocumented)
-export const constructRDSGlobalAmplifyInput: (context: $TSContext, config: Partial<RDSDBConfig>, inputNode: $TSAny) => Promise<string>;
+export const constructRDSGlobalAmplifyInput: (context: $TSContext, config: $TSAny, pathToSchemaFile: string) => Promise<string>;
 
 // @public (undocumented)
 function createSyncLambdaIAMPolicy(context: TransformerContextProvider, stack: cdk.Stack, name: string, region?: string): iam.Policy;
@@ -257,9 +257,6 @@ export const getParameterStoreSecretPath: (secret: string, database: string, api
 export const getRDSDBConfigFromAmplifyInput: (context: $TSContext, inputNode: $TSAny) => Promise<Partial<RDSDBConfig>>;
 
 // @public (undocumented)
-export const getRDSGlobalAmplifyInput: (context: $TSContext, pathToSchemaFile: string) => Promise<DefinitionNode | undefined>;
-
-// @public (undocumented)
 export const getSortKeyFieldNames: (type: ObjectTypeDefinitionNode) => string[];
 
 // @public (undocumented)
@@ -325,8 +322,11 @@ export const IAM_UNAUTH_ROLE_PARAMETER = "unauthRoleName";
 // @public (undocumented)
 export type ImportAppSyncAPIInputs = {
     apiName: string;
-    dataSourceType: ImportedDataSourceType;
+    dataSourceConfig: ImportedDataSourceConfig;
 };
+
+// @public (undocumented)
+export type ImportedDataSourceConfig = RDSDataSourceConfig;
 
 // @public (undocumented)
 export type ImportedDataSourceType = ImportedRDSType;
@@ -461,9 +461,14 @@ export const RDS_SCHEMA_FILE_NAME = "schema.rds.graphql";
 export type RDSConnectionSecrets = TransformerSecrets & {
     username: string;
     password: string;
-    host?: string;
-    database?: string;
-    port?: string;
+    host: string;
+    database: string;
+    port: number;
+};
+
+// @public (undocumented)
+export type RDSDataSourceConfig = RDSConnectionSecrets & {
+    engine: ImportedRDSType;
 };
 
 // @public (undocumented)
@@ -760,11 +765,6 @@ export type UserDefinedSlot = {
 
 // @public (undocumented)
 export const validateModelSchema: (doc: DocumentNode) => readonly GraphQLError[];
-
-// @public (undocumented)
-export const validateRDSInputDBConfig: (context: $TSContext, config: {
-    [x: string]: any;
-}) => Promise<void>;
 
 // @public (undocumented)
 function validateResolverConfigForType(ctx: TransformerSchemaVisitStepContextProvider, typeName: string): void;
