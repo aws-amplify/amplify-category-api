@@ -11,7 +11,7 @@ import {
   ImportAppSyncAPIInputs,
   ImportedDataSourceType,
   ImportedRDSType,
-  ImportedDataSourceConfig
+  ImportedDataSourceConfig,
 } from '@aws-amplify/graphql-transformer-core';
 import { PREVIEW_BANNER, category } from '../../../category-constants';
 import { storeConnectionSecrets, testDatabaseConnection } from '../utils/rds-secrets/database-secrets';
