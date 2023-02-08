@@ -1,4 +1,4 @@
-import { obj, str, ObjectNode, ListNode } from 'graphql-mapping-template';
+import { obj, str, ObjectNode, ListNode, ref } from 'graphql-mapping-template';
 
 /**
  * The class that contains the resolver templates for interacting
@@ -10,10 +10,11 @@ export class RelationalDBMappingTemplate {
    *
    * @param param0 - the SQL statement to use when querying the RDS cluster
    */
-  public static rdsQuery({ statements }: { statements: ListNode }): ObjectNode {
+  public static rdsQuery({ statements, variableMapRefName }: { statements: ListNode, variableMapRefName?: string }): ObjectNode {
     return obj({
       version: str('2018-05-29'),
       statements: statements,
+      variableMap: variableMapRefName ? ref(variableMapRefName) : obj({})
     });
   }
 }
