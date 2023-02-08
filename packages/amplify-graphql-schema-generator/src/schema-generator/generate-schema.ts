@@ -10,10 +10,14 @@ export const generateGraphQLSchema = (schema: Schema): string => {
   };
 
   models.forEach(model => {
-    const type = constructObjectType(model);
+    const primaryKey = model.getPrimaryKey();
+    if (!primaryKey) {
+      return;
+    }
     
+    const type = constructObjectType(model);
     const fields = model.getFields();
-    const primaryKeyFields = model.getPrimaryKey().getFields();
+    const primaryKeyFields = primaryKey?.getFields();
     fields.forEach(f => {
       if (f.type.kind === 'Enum') {
         const enumType = constructEnumType(f.type);
