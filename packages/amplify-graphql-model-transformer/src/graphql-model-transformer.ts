@@ -162,6 +162,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       || definition.name.value === ctx.output.getMutationTypeName()
       || definition.name.value === ctx.output.getSubscriptionTypeName();
 
+    const isDynamoDB = (ctx.modelToDatasourceMap.get(definition.name.value) ?? DDB_DATASOURCE_TYPE).dbType === DDB_DB_TYPE;
     if (isTypeNameReserved) {
       throw new InvalidDirectiveError(
         `'${definition.name.value}' is a reserved type name and currently in use within the default schema element.`,
@@ -192,9 +193,12 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         onDelete: [getFieldNameFor('onDelete', typeName)],
         onUpdate: [getFieldNameFor('onUpdate', typeName)],
       },
-      timestamps: {
+      timestamps: isDynamoDB ? {
         createdAt: 'createdAt',
         updatedAt: 'updatedAt',
+      } : {
+        createdAt: undefined,
+        updatedAt: undefined,
       },
     }, generateGetArgumentsInput(ctx.featureFlags));
 
