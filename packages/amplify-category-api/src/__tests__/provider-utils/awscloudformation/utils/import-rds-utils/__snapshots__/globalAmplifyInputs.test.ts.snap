@@ -2,10 +2,7 @@
 
 exports[`Amplify Input read/write from schema constructs the global Amplify input from given config 1`] = `
 "input Amplify {
-  engine: String = \\"mysql\\"
-  host: String = \\"otherdatabase.rds.amazonaws.com\\"
-  port: Int = 2020
-  database: String = \\"otherdatabase\\"
+  engine: String = \\"postgresql\\"
   globalAuthRule: AuthRule = {allow: public}
 }"
 `;
