@@ -1,5 +1,5 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import { MappingTemplate, GraphQLTransform, SyncUtils, StackManager, DatasourceType, MYSQL_DB_TYPE, DDB_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
+import { MappingTemplate, GraphQLTransform, SyncUtils, StackManager, DatasourceType, MYSQL_DB_TYPE, DDB_DB_TYPE, DBType } from '@aws-amplify/graphql-transformer-core';
 import { DataSourceProvider, StackManagerProvider, TransformerContextProvider, TransformerPluginProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
 import { Table } from '@aws-cdk/aws-dynamodb';
@@ -53,7 +53,6 @@ import {
   RDSIndexVTLGenerator, 
   DynamoDBIndexVTLGenerator
 } from './generators';
-import { DBType } from '@aws-amplify/graphql-transformer-core/src/config';
 
 const API_KEY = 'API Key Authorization';
 
