@@ -7,9 +7,14 @@ export enum ImportedRDSType {
 
 export type ImportedDataSourceType = ImportedRDSType;
 
+export type ImportedDataSourceConfig = RDSDataSourceConfig;
+export type RDSDataSourceConfig = RDSConnectionSecrets & {
+  engine: ImportedRDSType
+};
+
 export type ImportAppSyncAPIInputs = {
   apiName: string,
-  dataSourceType: ImportedDataSourceType
+  dataSourceConfig: ImportedDataSourceConfig
 };
 
 export const RDS_SCHEMA_FILE_NAME = 'schema.rds.graphql';
@@ -17,9 +22,9 @@ export const RDS_SCHEMA_FILE_NAME = 'schema.rds.graphql';
 export type RDSConnectionSecrets = TransformerSecrets & {
   username: string,
   password: string,
-  host?: string,
-  database?: string,
-  port?: string,
+  host: string,
+  database: string,
+  port: number,
 };
 
 export const MYSQL_DB_TYPE = 'MySQL';

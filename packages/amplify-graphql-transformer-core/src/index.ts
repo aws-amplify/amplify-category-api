@@ -41,7 +41,6 @@ export {
   DirectiveWrapper,
   IAM_AUTH_ROLE_PARAMETER,
   IAM_UNAUTH_ROLE_PARAMETER,
-  getRDSGlobalAmplifyInput,
   readRDSGlobalAmplifyInput,
   RDSDBConfig,
   validateRDSInputDBConfig,
@@ -63,6 +62,8 @@ export {
   MYSQL_DB_TYPE,
   RDS_SCHEMA_FILE_NAME,
   RDSConnectionSecrets,
+  ImportedDataSourceConfig,
+  RDSDataSourceConfig,
 } from './types';
 /**
  * Returns the extra set of directives that are supported by AppSync service.

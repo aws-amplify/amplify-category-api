@@ -29,23 +29,7 @@ const getGlobalAmplifyInputEntries = async (
       name: 'engine',
       type: 'String',
       default: dataSourceType,
-    },
-    {
-      name: 'host',
-      type: 'String',
-      default: 'ENTER YOUR DATABASE HOSTNAME HERE',
-    },
-    {
-      name: 'port',
-      type: 'Int',
-      default: 3306,
-      comment: 'ENTER PORT NUMBER HERE',
-    },
-    {
-      name: 'database',
-      type: 'String',
-      default: 'ENTER YOUR DATABASE NAME HERE',
-    },
+    }
   ];
 
   if (includeAuthRule && (await ApiCategoryFacade.getTransformerVersion(context) === 2)) {
@@ -99,36 +83,15 @@ export const getRDSDBConfigFromAmplifyInput = async (context:$TSContext, inputNo
   return inputs;
 };
 
-export const validateRDSInputDBConfig = async (context: $TSContext, config: { [x: string]: any; }) => {
-  const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL, false)).map((item) => item.name);
-  const missingInputs = expectedInputs.filter((input) => _.isEmpty(config[input]));
-  if (!_.isEmpty(missingInputs)) {
-    throw new Error(`The database connection parameters: ${missingInputs.join(',')}, are missing. Specify them in the schema and re-run.`);
-  }
-
-  // The database connection details shouldn't have space
-  const invalidInputs = expectedInputs.filter((input) => config[input]?.indexOf(' ') >= 0);
-  if (!_.isEmpty(invalidInputs)) {
-    throw new Error(`The database connection parameters: ${invalidInputs.join(',')}, might be invalid. Correct them in the schema and re-run.`);
-  }
-};
-
-export const getRDSGlobalAmplifyInput = async (context: $TSContext, pathToSchemaFile: string) => {
-  const inputNode = await readRDSGlobalAmplifyInput(pathToSchemaFile);
-  const config = await getRDSDBConfigFromAmplifyInput(context, inputNode);
-  await validateRDSInputDBConfig(context, config);
-  return inputNode;
-};
-
-export const constructRDSGlobalAmplifyInput = async (context: $TSContext, config: Partial<RDSDBConfig>, inputNode: $TSAny): Promise<string> => {
-  const rdsConfig = config as $TSAny;
+export const constructRDSGlobalAmplifyInput = async (context: $TSContext, config: $TSAny, pathToSchemaFile: string): Promise<string> => {
+  const inputNode: $TSAny = await readRDSGlobalAmplifyInput(pathToSchemaFile);
   const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL, false)).map(item => item.name);
   expectedInputs.forEach((input) => {
     const inputNodeField = inputNode?.fields?.find(
       (field: $TSAny) => field?.name?.value === input,
     );
-    if (inputNodeField && rdsConfig[input]) {
-      inputNodeField.defaultValue.value = rdsConfig[input];
+    if (inputNodeField && config[input]) {
+      inputNodeField.defaultValue.value = config[input];
     }
   });
 

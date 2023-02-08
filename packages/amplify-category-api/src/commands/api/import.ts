@@ -18,9 +18,8 @@ export const run = async (context: $TSContext) => {
   fs.ensureDirSync(apiResourceDir);
 
   const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
-  await writeDefaultGraphQLSchema(context, pathToSchemaFile, importAppSyncAPIWalkInputs.dataSourceType);
+  await writeDefaultGraphQLSchema(context, pathToSchemaFile, importAppSyncAPIWalkInputs.dataSourceConfig.engine);
 
   // print next steps
-  printer.info(`Update the database connection details in the file at ${pathToSchemaFile}.`);
   printer.info('Run "amplify api generate-schema" to fetch the schema.');
 };
