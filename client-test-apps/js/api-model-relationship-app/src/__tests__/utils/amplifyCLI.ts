@@ -145,8 +145,6 @@ const amplifyConfigure = (settings: AmplifyConfiguration): Promise<void> => {
   singleSelect(chain, s.region, amplifyRegions);
 
   return chain
-    .wait('user name:')
-    .sendCarriageReturn()
     .wait('Press Enter to continue')
     .sendCarriageReturn()
     .wait('accessKeyId')
@@ -254,25 +252,25 @@ export class AmplifyCLI {
     let env: any;
 
     addCircleCITags(this.projectRoot);
-  
+
     if (s.disableAmplifyAppCreation === true) {
       env = {
         CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
       };
     }
-  
+
     const cliArgs = ['init'];
     const providerConfigSpecified = !!s.providerConfig && typeof s.providerConfig === 'object';
     if (providerConfigSpecified) {
       cliArgs.push('--providers', JSON.stringify(s.providerConfig));
     }
-  
+
     if (s.permissionsBoundaryArn) {
       cliArgs.push('--permissions-boundary', s.permissionsBoundaryArn);
     }
-  
+
     if (s?.name?.length > 20) console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
-  
+
     const chain = spawn(getCLIPath(), cliArgs, { cwd: this.projectRoot, env, disableCIDetection: s.disableCIDetection })
       .wait('Enter a name for the project')
       .sendLine(s.name)
@@ -294,7 +292,7 @@ export class AmplifyCLI {
       .sendLine(s.buildCmd)
       .wait('Start Command:')
       .sendCarriageReturn();
-  
+
     if (!providerConfigSpecified) {
       chain
         .wait('Using default provider  awscloudformation')
@@ -303,12 +301,12 @@ export class AmplifyCLI {
         .wait('Please choose the profile you want to use')
         .sendLine(s.profileName);
     }
-  
+
     chain
       .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/);
-    
+
     return chain.runAsync();
   }
 
@@ -373,7 +371,7 @@ export class AmplifyCLI {
       .wait('Do you want to generate/update all possible GraphQL operations - queries, mutations and subscriptions')
       .sendConfirmYes()
       .wait('Enter maximum statement depth');
-    
+
       if (opts?.statementDepth) {
         chain.sendLine(String(opts.statementDepth));
       }
