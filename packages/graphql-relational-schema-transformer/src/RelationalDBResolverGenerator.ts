@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 
-import { compoundExpression, forEach, iff, list, methodCall, obj, print, ref, ret, set, str } from 'graphql-mapping-template';
+import { compoundExpression, forEach, iff, list, methodCall, obj, print, ref, ret, set, str, ReferenceNode, StringNode } from 'graphql-mapping-template';
 import { graphqlName, plurality, toUpper } from 'graphql-transformer-common';
 
 import AppSync from 'cloudform-types/types/appSync';
@@ -91,7 +91,7 @@ export class RelationalDBResolverGenerator {
         set(ref('cols'), list([])),
         set(ref('vals'), list([])),
         set(ref(this.variableMapRefName), obj({})),
-        methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(`:$${primaryKey}`), str(primaryKeyRef))),
+        methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(`:$${primaryKey}`), primaryKeyRef)),
         forEach(ref('entry'), ref(`ctx.args.create${tableName}Input.keySet()`), [
           set(ref('discard'), ref(`cols.add($entry)`)),
           set(ref('discard'), ref(`vals.add(":$entry")`)),
@@ -149,7 +149,7 @@ export class RelationalDBResolverGenerator {
     const reqTemplate = print(
       compoundExpression([
         set(ref(this.variableMapRefName), obj({})),
-        methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(`:$${primaryKey}`), str(primaryKeyRef))),
+        methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(`:$${primaryKey}`), primaryKeyRef)),
         RelationalDBMappingTemplate.rdsQuery({
           statements: list([str(selectSql)]),
           variableMapRefName: this.variableMapRefName
@@ -213,7 +213,7 @@ export class RelationalDBResolverGenerator {
       compoundExpression([
         set(ref('updateList'), obj({})),
         set(ref(this.variableMapRefName), obj({})),
-        methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(`:$${primaryKey}`), str(primaryKeyRef))),
+        methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(`:$${primaryKey}`), primaryKeyRef)),
         forEach(ref('entry'), ref(`ctx.args.update${tableName}Input.keySet()`), [
           methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(':$entry'), str(`'$ctx.args.update${tableName}Input[$entry]'`))),
           set(ref('discard'), ref(`updateList.put($entry, ":$entry")`)),
@@ -281,7 +281,7 @@ export class RelationalDBResolverGenerator {
     const reqTemplate = print(
       compoundExpression([
         set(ref(this.variableMapRefName), obj({})),
-        methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(`:$${primaryKey}`), str(primaryKeyRef))),
+        methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(`:$${primaryKey}`), primaryKeyRef)),
         RelationalDBMappingTemplate.rdsQuery({
           statements: list([str(selectSql), str(deleteSql)]),
           variableMapRefName: this.variableMapRefName
@@ -433,15 +433,15 @@ export class RelationalDBResolverGenerator {
     return `SELECT * FROM ${tableName} WHERE ${primaryKey}=:${primaryKey}`;
   }
 
-  private getPrimaryKeyRef(type: string, operationType: GRAPHQL_RESOLVER_OPERATION): string {
+  private getPrimaryKeyRef(type: string, operationType: GRAPHQL_RESOLVER_OPERATION): ReferenceNode|StringNode {
     const tableName = this.getTableName(type);
     const primaryKey = this.getTablePrimaryKey(type);
     const hasToAppendOperationInput = ![GRAPHQL_RESOLVER_OPERATION.Get, GRAPHQL_RESOLVER_OPERATION.Delete].includes(operationType);
     const operationInput = hasToAppendOperationInput ? `${operationType}${tableName}Input.` : '';
     if (this.isPrimaryKeyAStringType(type)) {
-      return `\'$ctx.args.${operationInput}${primaryKey}\'`;
+      return str(`$ctx.args.${operationInput}${primaryKey}`);
     }
-    return `$ctx.args.${operationInput}${primaryKey}`;
+    return ref(`ctx.args.${operationInput}${primaryKey}`);
   }
 
   /**
