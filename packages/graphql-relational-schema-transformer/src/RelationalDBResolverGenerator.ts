@@ -30,6 +30,7 @@ export class RelationalDBResolverGenerator {
   intFieldMap: Map<string, string[]>;
   resolverFilePath: string;
   typePrimaryKeyTypeMap: Map<string, string>;
+  variableMapRefName: string;
 
   constructor(context: TemplateContext) {
     this.document = context.schemaDoc;
@@ -37,6 +38,7 @@ export class RelationalDBResolverGenerator {
     this.stringFieldMap = context.stringFieldMap;
     this.intFieldMap = context.intFieldMap;
     this.typePrimaryKeyTypeMap = context.typePrimaryKeyTypeMap;
+    this.variableMapRefName = 'variableMap'
   }
 
   /**
@@ -81,19 +83,25 @@ export class RelationalDBResolverGenerator {
     const selectSql = this.generateSelectByPrimaryKeyStatement(type, operationType);
     const reqFileName = `${mutationTypeName}.${fieldName}.req.vtl`;
     const resFileName = `${mutationTypeName}.${fieldName}.res.vtl`;
+    const primaryKey = this.getTablePrimaryKey(type);
+    const primaryKeyRef = this.getPrimaryKeyRef(type, operationType);
 
     const reqTemplate = print(
       compoundExpression([
         set(ref('cols'), list([])),
         set(ref('vals'), list([])),
+        set(ref(this.variableMapRefName), obj({})),
+        methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(`:$${primaryKey}`), str(primaryKeyRef))),
         forEach(ref('entry'), ref(`ctx.args.create${tableName}Input.keySet()`), [
           set(ref('discard'), ref(`cols.add($entry)`)),
-          set(ref('discard'), ref(`vals.add("'$ctx.args.create${tableName}Input[$entry]'")`)),
+          set(ref('discard'), ref(`vals.add(":$entry")`)),
+          methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(':$entry'), str(`'$ctx.args.create${tableName}Input[$entry]'`))),
         ]),
         set(ref('valStr'), ref('vals.toString().replace("[","(").replace("]",")")')),
         set(ref('colStr'), ref('cols.toString().replace("[","(").replace("]",")")')),
         RelationalDBMappingTemplate.rdsQuery({
           statements: list([str(createSql), str(selectSql)]),
+          variableMapRefName: this.variableMapRefName
         }),
       ]),
     );
@@ -135,11 +143,16 @@ export class RelationalDBResolverGenerator {
     const selectSql = this.generateSelectByPrimaryKeyStatement(type, operationType);
     const reqFileName = `${queryTypeName}.${fieldName}.req.vtl`;
     const resFileName = `${queryTypeName}.${fieldName}.res.vtl`;
+    const primaryKey = this.getTablePrimaryKey(type);
+    const primaryKeyRef = this.getPrimaryKeyRef(type, operationType);
 
     const reqTemplate = print(
       compoundExpression([
+        set(ref(this.variableMapRefName), obj({})),
+        methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(`:$${primaryKey}`), str(primaryKeyRef))),
         RelationalDBMappingTemplate.rdsQuery({
           statements: list([str(selectSql)]),
+          variableMapRefName: this.variableMapRefName
         }),
       ]),
     );
@@ -193,16 +206,22 @@ export class RelationalDBResolverGenerator {
     const selectSql = this.generateSelectByPrimaryKeyStatement(type, operationType);
     const reqFileName = `${mutationTypeName}.${fieldName}.req.vtl`;
     const resFileName = `${mutationTypeName}.${fieldName}.res.vtl`;
+    const primaryKey = this.getTablePrimaryKey(type);
+    const primaryKeyRef = this.getPrimaryKeyRef(type, operationType);
 
     const reqTemplate = print(
       compoundExpression([
         set(ref('updateList'), obj({})),
+        set(ref(this.variableMapRefName), obj({})),
+        methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(`:$${primaryKey}`), str(primaryKeyRef))),
         forEach(ref('entry'), ref(`ctx.args.update${tableName}Input.keySet()`), [
-          set(ref('discard'), ref(`updateList.put($entry, "'$ctx.args.update${tableName}Input[$entry]'")`)),
+          methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(':$entry'), str(`'$ctx.args.update${tableName}Input[$entry]'`))),
+          set(ref('discard'), ref(`updateList.put($entry, ":$entry")`)),
         ]),
         set(ref('update'), ref(`updateList.toString().replace("{","").replace("}","")`)),
         RelationalDBMappingTemplate.rdsQuery({
           statements: list([str(updateSql), str(selectSql)]),
+          variableMapRefName: this.variableMapRefName
         }),
       ]),
     );
@@ -256,10 +275,16 @@ export class RelationalDBResolverGenerator {
     const deleteSql = this.generateDeleteStatement(type);
     const reqFileName = `${mutationTypeName}.${fieldName}.req.vtl`;
     const resFileName = `${mutationTypeName}.${fieldName}.res.vtl`;
+    const primaryKey = this.getTablePrimaryKey(type);
+    const primaryKeyRef = this.getPrimaryKeyRef(type, operationType);
+
     const reqTemplate = print(
       compoundExpression([
+        set(ref(this.variableMapRefName), obj({})),
+        methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(`:$${primaryKey}`), str(primaryKeyRef))),
         RelationalDBMappingTemplate.rdsQuery({
           statements: list([str(selectSql), str(deleteSql)]),
+          variableMapRefName: this.variableMapRefName
         }),
       ]),
     );
@@ -405,12 +430,18 @@ export class RelationalDBResolverGenerator {
   private generateSelectByPrimaryKeyStatement(type: string, operationType: GRAPHQL_RESOLVER_OPERATION): string {
     const tableName = this.getTableName(type);
     const primaryKey = this.getTablePrimaryKey(type);
+    return `SELECT * FROM ${tableName} WHERE ${primaryKey}=:${primaryKey}`;
+  }
+
+  private getPrimaryKeyRef(type: string, operationType: GRAPHQL_RESOLVER_OPERATION): string {
+    const tableName = this.getTableName(type);
+    const primaryKey = this.getTablePrimaryKey(type);
     const hasToAppendOperationInput = ![GRAPHQL_RESOLVER_OPERATION.Get, GRAPHQL_RESOLVER_OPERATION.Delete].includes(operationType);
     const operationInput = hasToAppendOperationInput ? `${operationType}${tableName}Input.` : '';
     if (this.isPrimaryKeyAStringType(type)) {
-      return `SELECT * FROM ${tableName} WHERE ${primaryKey}=\'$ctx.args.${operationInput}${primaryKey}\'`;
+      return `\'$ctx.args.${operationInput}${primaryKey}\'`;
     }
-    return `SELECT * FROM ${tableName} WHERE ${primaryKey}=$ctx.args.${operationInput}${primaryKey}`;
+    return `$ctx.args.${operationInput}${primaryKey}`;
   }
 
   /**
@@ -431,12 +462,8 @@ export class RelationalDBResolverGenerator {
    * @returns string with the sql statement
    */
   private generateUpdateStatement(type: string): string {
-    const tableName = this.getTableName(type);
     const primaryKey = this.getTablePrimaryKey(type);
-    if (this.isPrimaryKeyAStringType(type)) {
-      return `UPDATE ${type} SET $update WHERE ${primaryKey}=\'$ctx.args.update${tableName}Input.${primaryKey}\'`;
-    }
-    return `UPDATE ${type} SET $update WHERE ${primaryKey}=$ctx.args.update${tableName}Input.${primaryKey}`;
+    return `UPDATE ${type} SET $update WHERE ${primaryKey}=:${primaryKey}`;
   }
 
   /**
@@ -447,10 +474,7 @@ export class RelationalDBResolverGenerator {
    */
   private generateDeleteStatement(type: string): string {
     const primaryKey = this.getTablePrimaryKey(type);
-    if (this.isPrimaryKeyAStringType(type)) {
-      return `DELETE FROM ${type} WHERE ${primaryKey}=\'$ctx.args.${primaryKey}\'`;
-    }
-    return `DELETE FROM ${type} WHERE ${primaryKey}=$ctx.args.${primaryKey}`;
+    return `DELETE FROM ${type} WHERE ${primaryKey}=:${primaryKey}`;
   }
 }
 
