@@ -61,17 +61,16 @@ export abstract class MySQLClient extends DBClient {
 
   private executeList = async (request: ListRequest): Promise<any> => {
     const nextOffset = request.args?.nextToken
-      ? Number.parseInt(Buffer.from(request.args.nextToken, 'base64').toString('base64'), 10)
+      ? Number.parseInt(Buffer.from(request.args.nextToken, 'base64').toString('utf-8'), 10)
       : 0;
-    const query = (await this.getClient())(request.table).select().offset(nextOffset).limit(request.args?.limit ?? 100);
-    if (request.args?.filter) {
-      Object.keys(request.args.filter).filter((key) => request.args.hasOwnProperty(key)).forEach((key) => {
-        query.whereLike(key, request.args.filter[key]);
-      });
-      this.addSortConditions(query, request);
-    }
-    const nextToken = Buffer.from((nextOffset + request.args.limit).toString());
-    return { items: (await query.returning('*')), nextToken };
+    const limit = request.args?.limit ?? 100;
+    const query = (await this.getClient())(request.table).select().offset(nextOffset).limit(limit);
+
+    this.addSortConditions(query, request);
+    const result = await query.returning('*');
+    const endOfResults = result?.length && result?.length < limit;
+    const nextToken = endOfResults ? null : Buffer.from((nextOffset + request.args.limit).toString()).toString('base64');
+    return { items: result, nextToken };
   }
 
   private executeDelete = async (request: Request): Promise<any> => {
@@ -79,7 +78,7 @@ export abstract class MySQLClient extends DBClient {
     const resultQuery = (await this.getClient())(request.table);
     this.addKeyConditions(resultQuery, request);
     const result = await resultQuery.select();
-    
+
     // Delete the record
     const query = (await this.getClient())(request.table);
     Object.keys(request.args.input).filter((key) => request.args.input.hasOwnProperty(key)).forEach((key) => {

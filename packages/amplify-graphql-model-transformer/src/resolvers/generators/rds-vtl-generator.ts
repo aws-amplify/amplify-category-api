@@ -7,6 +7,7 @@ import {
   generateUpdateInitSlotTemplate,
   generateLambdaUpdateRequestTemplate,
   generateLambdaDeleteRequestTemplate,
+  generateLambdaListRequestTemplate,
 } from '../rds';
 import {
   generateSubscriptionRequestTemplate,
@@ -45,7 +46,7 @@ export class RDSModelVTLGenerator implements ModelVTLGenerator {
     return generateGetLambdaResponseTemplate(false);
   }
   generateListRequestTemplate(config: ModelRequestConfig): string {
-    return generateLambdaRequestTemplate(config.modelName, config.operation, config.operationName);
+    return generateLambdaListRequestTemplate(config.modelName, config.operation, config.operationName);
   }
   generateSyncRequestTemplate(config: ModelRequestConfig): string {
     return generateDefaultLambdaResponseMappingTemplate(false);

@@ -27,8 +27,8 @@ interface MySQLColumn {
   default: string;
   datatype: string;
   columnType: string;
-  nullable: boolean;  
-  length: number | null | undefined;  
+  nullable: boolean;
+  length: number | null | undefined;
 }
 
 export class MySQLDataSourceAdapter extends DataSourceAdapter {
@@ -41,7 +41,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
   constructor(private config: MySQLDataSourceConfig) {
     super();
   }
-  
+
   public async initialize(): Promise<void> {
     await this.establishDBConnection();
     await this.loadAllFields();
@@ -62,7 +62,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
         client: 'mysql2',
         connection: databaseConfig,
         pool: {
-          min: 5, 
+          min: 5,
           max: 30,
           createTimeoutMillis: 30000,
           acquireTimeoutMillis: 30000,
@@ -81,13 +81,13 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
 
   public async getTablesList(): Promise<string[]> {
     const result = (await this.dbBuilder.raw("SHOW TABLES"))[0];
-    
+
     const tables: string[] = result.map((row: any) => {
       const [firstKey] = Object.keys(row);
       const tableName = row[firstKey];
       return tableName;
     });
-    
+
     return tables;
   }
 
@@ -95,8 +95,8 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     const fieldsName: string[] = [...new Set(this.fields
       .filter(f => f.tableName === tableName)
       .sort((a,b) => a.sequence - b.sequence)
-      .map(f => f.columnName))]; 
-    
+      .map(f => f.columnName))];
+
     const modelFields = fieldsName.map(columnName => {
       const dbField = this.fields
         .find(field => field.tableName === tableName && field.columnName === columnName)!;
@@ -157,7 +157,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     if (!key || key.length == 0) {
       return null;
     }
-    
+
     const index: Index = new Index(key[0].indexName);
     index.setFields(key.map(k => k.columnName));
 
@@ -166,8 +166,8 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
 
   public async getIndexes(tableName: string): Promise<Index[]> {
     const indexNames: string[] = [...new Set(this.indexes
-      .filter(i => i.tableName === tableName && i.indexName !== this.PRIMARY_KEY_INDEX_NAME).map(i => i.indexName))]; 
-    
+      .filter(i => i.tableName === tableName && i.indexName !== this.PRIMARY_KEY_INDEX_NAME).map(i => i.indexName))];
+
     const tableIndexes = indexNames.map((indexName: string) => {
       const key = this.indexes
         .filter(index => index.tableName == tableName && index.indexName === indexName)
@@ -183,7 +183,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
   public cleanup(): void {
     this.dbBuilder && this.dbBuilder.destroy();
   }
-  
+
   public mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName:string, columntype: string): FieldType {
     let fieldDatatype: FieldDataType = 'String';
     let listtype = false;
@@ -231,11 +231,9 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
       case 'DATE':
         fieldDatatype = 'AWSDate';
         break;
+      case 'TIMESTAMP':
       case 'DATETIME':
         fieldDatatype = 'AWSDateTime';
-        break;
-      case 'TIMESTAMP':
-        fieldDatatype = 'AWSTimestamp';
         break;
       case 'TIME':
         fieldDatatype = 'AWSTime';
