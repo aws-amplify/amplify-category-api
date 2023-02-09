@@ -11,7 +11,14 @@ import {
   compoundExpression,
   iff,
   toJson,
-  printBlock, and, not, equals, int, nul, set, comment,
+  printBlock,
+  and,
+  not,
+  equals,
+  int,
+  nul,
+  set,
+  list,
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { Construct, Stack } from '@aws-cdk/core';
@@ -86,10 +93,15 @@ export const generateLambdaRequestTemplate = (tableName: string, operation: stri
   return printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
-      set(ref('lambdaInput.args'), ref('context.arguments')),
+      set(ref('lambdaInput.args'), obj({})),
       set(ref('lambdaInput.table'), str(tableName)),
       set(ref('lambdaInput.operation'), str(operation)),
       set(ref('lambdaInput.operationName'), str(operationName)),
+      set(ref('lambdaInput.args.metadata'), obj({})),
+      set(ref('lambdaInput.args.metadata.keys'), list([])),
+      qref(methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([])))),
+      set(ref('lambdaInput.args.input'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
+      qref(methodCall(ref('lambdaInput.args.input.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
       obj({
         version: str('2018-05-29'),
         operation: str('Invoke'),
@@ -100,25 +112,22 @@ export const generateLambdaRequestTemplate = (tableName: string, operation: stri
 };
 
 export const generateGetLambdaResponseTemplate = (isSyncEnabled: boolean): string => {
-  const statements = new Array<Expression>();
+  const statements: Expression[] = [];
   if (isSyncEnabled) {
     statements.push(
-      iff(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type'), ref('ctx.result'))),
+      ifElse(
+        ref('ctx.error'),
+        methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type'), ref('ctx.result')),
+        toJson(ref('ctx.result')),
+      ),
     );
   } else {
-    statements.push(iff(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type'))));
+    statements.push(
+      ifElse(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')), toJson(ref('ctx.result'))),
+    );
   }
-  statements.push(
-    ifElse(
-      and([not(ref('ctx.result.items.isEmpty()')), equals(ref('ctx.result.scannedCount'), int(1))]),
-      toJson(ref('ctx.result.items[0]')),
-      compoundExpression([
-        iff(and([ref('ctx.result.items.isEmpty()'), equals(ref('ctx.result.scannedCount'), int(1))]), ref('util.unauthorized()')),
-        toJson(nul()),
-      ]),
-    ),
-  );
-  return printBlock('Get Response template')(compoundExpression(statements));
+
+  return printBlock('ResponseTemplate')(compoundExpression(statements));
 };
 
 /**

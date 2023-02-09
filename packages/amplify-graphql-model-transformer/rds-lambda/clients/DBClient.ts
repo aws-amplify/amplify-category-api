@@ -9,7 +9,7 @@ export abstract class DBClient {
   protected addKeyConditions = (query: any, request: Request) => {
     const keys = request.args.metadata.keys || [];
     keys.forEach((key) => {
-      query.where(key, request.args.input.get(key));
+      query.where(key, request.args.input[key]);
     });
   }
 
