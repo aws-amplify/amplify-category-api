@@ -1,6 +1,7 @@
-import Knex from 'knex';
+import knex, { Knex } from 'knex';
 import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
 import { MySQLClient } from './MySQLClient';
+import * as mysql2 from 'mysql2/promise';
 
 /**
  * Postgres client with password connection implementation
@@ -22,8 +23,8 @@ export class MySQLPasswordClient extends MySQLClient {
       return this.client;
     }
     const passwordClient = this.getSSMClient();
-    return Knex({
-      client: 'mysql',
+    return knex({
+      client: 'mysql2',
       connection: {
         host: process.env.host,
         port: Number.parseInt(process.env.port ?? '3306', 10),

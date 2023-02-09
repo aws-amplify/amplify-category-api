@@ -25,6 +25,7 @@ export {
   TransformConfig,
   TransformerProjectConfig,
   DatasourceType,
+  DBType,
 } from './config/index';
 export {
   constructDefaultGlobalAmplifyInput,

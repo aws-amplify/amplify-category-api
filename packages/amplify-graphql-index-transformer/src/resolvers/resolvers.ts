@@ -1,5 +1,5 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import { MappingTemplate, GraphQLTransform, SyncUtils, StackManager, DatasourceType } from '@aws-amplify/graphql-transformer-core';
+import { MappingTemplate, GraphQLTransform, SyncUtils, StackManager, DatasourceType, MYSQL_DB_TYPE, DDB_DB_TYPE, DBType } from '@aws-amplify/graphql-transformer-core';
 import { DataSourceProvider, StackManagerProvider, TransformerContextProvider, TransformerPluginProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
 import { Table } from '@aws-cdk/aws-dynamodb';
@@ -457,7 +457,7 @@ export function updateResolversForIndex(
   }
 
   if (queryField) {
-    makeQueryResolver(config, ctx);
+    makeQueryResolver(config, ctx, dbType);
   }
 
   if (isDynamoDB && syncResolver) {
@@ -465,17 +465,27 @@ export function updateResolversForIndex(
   }
 }
 
-function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider) {
+function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider, dbType: DBType) {
+  const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
+  const isDynamoDB = dbType === DDB_DB_TYPE;
   const { name, object, queryField } = config;
   if (!(name && queryField)) {
     throw new Error('Expected name and queryField to be defined while generating resolver.');
   }
   const modelName = object.name.value;
   const dbInfo = getDBInfo(ctx, modelName);
-  const dataSourceName = `${object.name.value}Table`;
+  let dataSourceName = `${object.name.value}Table`;
+  if (dbType === MYSQL_DB_TYPE) {
+    dataSourceName = RDSLambdaDataSourceLogicalID;
+  }
   const dataSource = ctx.api.host.getDataSource(dataSourceName);
   const queryTypeName = ctx.output.getQueryTypeName() as string;
-  const table = getTable(ctx, object);
+
+  let stackId = object.name.value;
+  if (isDynamoDB) {
+    const table = getTable(ctx, object);
+    stackId = table.stack.node.id;
+  }
   
   if (!dataSource) {
     throw new Error(`Could not find datasource with name ${dataSourceName} in context.`);
@@ -509,7 +519,7 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
     ),
   );
 
-  resolver.mapToStack(ctx.stackManager.getStackFor(resolverResourceId, table.stack.node.id));
+  resolver.mapToStack(ctx.stackManager.getStackFor(resolverResourceId, stackId));
   ctx.resolvers.addResolver(object.name.value, queryField, resolver);
 }
 

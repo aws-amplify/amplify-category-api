@@ -29,8 +29,14 @@ export abstract class MySQLClient extends DBClient {
   }
 
   private executeCreate = async (request: Request): Promise<any> => {
+    // Insert the record
     await (await this.getClient())(request.table).insert(request.args.input);
-    return request.args.input;
+
+    // Select the record
+    const resultQuery = (await this.getClient())(request.table);
+    this.addKeyConditions(resultQuery, request);
+    const result = await resultQuery.select();
+    return result ? result[0] : {};
   }
 
   private executeGet = async (request: Request): Promise<any> => {
@@ -41,9 +47,16 @@ export abstract class MySQLClient extends DBClient {
   }
 
   private executeUpdate = async (request: Request): Promise<any> => {
+    // Update the record
     const query = (await this.getClient())(request.table);
     this.addKeyConditions(query, request);
-    return request.args.input;
+    await query.update(request.args.input);
+
+    // Select the record
+    const resultQuery = (await this.getClient())(request.table);
+    this.addKeyConditions(resultQuery, request);
+    const result = await resultQuery.select();
+    return result ? result[0] : {};
   }
 
   private executeList = async (request: ListRequest): Promise<any> => {
@@ -62,11 +75,18 @@ export abstract class MySQLClient extends DBClient {
   }
 
   private executeDelete = async (request: Request): Promise<any> => {
+    // Select the record
+    const resultQuery = (await this.getClient())(request.table);
+    this.addKeyConditions(resultQuery, request);
+    const result = await resultQuery.select();
+    
+    // Delete the record
     const query = (await this.getClient())(request.table);
     Object.keys(request.args.input).filter((key) => request.args.input.hasOwnProperty(key)).forEach((key) => {
-      query.whereLike(key, request.args.input[key]);
+      query.where(key, request.args.input[key]);
     });
     await query.delete();
-    return request.args.input;
+
+    return result ? result[0] : {};
   }
 }

@@ -97,7 +97,7 @@ export class RDSIndexVTLGenerator implements IndexVTLGenerator {
       );
     });
 
-    expressions.push(qref(methodCall(ref('ctx.args.metadata.put'), str('keys'), ref('keys'))),);
+    expressions.push(qref(methodCall(ref('ctx.stash.put'), str('keys'), ref('keys'))),);
 
     return printBlock('Set the primary key information in metadata')(compoundExpression(expressions));
   };
