@@ -20,7 +20,7 @@ export class SchemaValidationError extends Error {
       if (!error.message.startsWith('Unknown directive')) {
         return true;
       }
-      const dir = GRAPHQL_TRANSFORMER_V2_DIRECTIVES.find(d => error.message.endsWith(`"${d}".`));
+      const dir = GRAPHQL_TRANSFORMER_V2_DIRECTIVES.find(d => error.message.endsWith(`"@${d}".`));
       if (!dir) {
         return true;
       }

@@ -278,7 +278,10 @@ export class TransformerResolver implements TransformerResolverProvider {
           }
 
           if (context.isProjectUsingDataStore()) {
-            const syncConfig = SyncUtils.getSyncConfig(context, this.typeName)!;
+            //Remove the suffix "Table" from the datasource name
+            //The stack name cannot be retrieved as during the runtime it is tokenized and value not being revealed
+            const modelName = this.datasource.name.slice(0, -5);
+            const syncConfig = SyncUtils.getSyncConfig(context, modelName)!;
             const funcConf = dataSourceProviderFn.node.children.find(
               (it: any) => it.cfnResourceType === 'AWS::AppSync::FunctionConfiguration',
             ) as CfnFunctionConfiguration;
