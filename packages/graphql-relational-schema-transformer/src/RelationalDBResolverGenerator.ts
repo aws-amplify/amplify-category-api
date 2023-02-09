@@ -97,7 +97,7 @@ export class RelationalDBResolverGenerator {
             methodCall(
               ref(`${this.variableMapRefName}.put`), 
               str(':$entry'),
-              methodCall(ref('util.toJson'), ref(`ctx.args.create${tableName}Input[$entry]`))
+              ref(`ctx.args.create${tableName}Input[$entry]`)
             )
           ),
         ]),
@@ -221,7 +221,7 @@ export class RelationalDBResolverGenerator {
             methodCall(
               ref(`${this.variableMapRefName}.put`), 
               str(':$entry'),
-              methodCall(ref('util.toJson'), ref(`ctx.args.update${tableName}Input[$entry]`))
+              ref(`ctx.args.update${tableName}Input[$entry]`)
             )
           ),
           set(ref('discard'), ref(`updateList.put($entry, ":$entry")`)),
