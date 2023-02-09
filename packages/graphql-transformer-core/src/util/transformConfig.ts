@@ -167,6 +167,7 @@ interface ProjectConfiguration {
 export async function loadProject(projectDirectory: string, opts?: ProjectOptions): Promise<ProjectConfiguration> {
   // Schema
   const { schema, modelToDatasourceMap } = await readSchema(projectDirectory);
+  validateIfSchemaIsPreviewOneReady(schema);
 
   // Load functions
   const functions = {};
@@ -270,6 +271,7 @@ export async function readSchema(projectDirectory: string): Promise<{schema: str
   const schemaDirectoryPath = path.join(projectDirectory, 'schema');
 
   let schema = "";
+
   if (!(_.isEmpty(existingSchemaFiles))) {
     // Schema.graphql contains the models for DynamoDB datasource
     // Schema.rds.graphql contains the models for imported 'MySQL' datasource 
@@ -343,3 +345,18 @@ function constructDataSourceMap(schema: string, datasourceType: DatasourceType):
     });
   return result;
 }
+//[RDS preview1] throw an error if schema contains unsupported directives: @searchable, @auth, @hasOne, @hasMany, @mapsTo, @http, @function directives
+function validateIfSchemaIsPreviewOneReady(schema: string): boolean {
+  const parsedSchema = parse(schema);
+  const unsupportedDirectives = ['searchable', 'auth', 'hasOne', 'hasMany', 'mapsTo', 'http', 'function'];
+  const unsupportedDirectivesInSchema = parsedSchema.definitions
+    .filter(obj => obj.kind === Kind.OBJECT_TYPE_DEFINITION && obj.directives.some(dir => unsupportedDirectives.includes(dir.name.value)))
+    .map(type => (type as ObjectTypeDefinitionNode).name.value);
+  if (unsupportedDirectivesInSchema.length > 0) {
+    console.error(`The following directives of a schema are not yet supported for an RDS DataSource: 
+    ${unsupportedDirectivesInSchema.join(', ')} `+ `Please remove them from your schema and try again.`);
+    return false;
+  }
+  return true;
+}
+
