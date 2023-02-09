@@ -1,4 +1,4 @@
-import { obj, str, ObjectNode, ListNode, ref } from 'graphql-mapping-template';
+import { obj, str, ObjectNode, ListNode, ref, methodCall } from 'graphql-mapping-template';
 
 /**
  * The class that contains the resolver templates for interacting
@@ -14,7 +14,7 @@ export class RelationalDBMappingTemplate {
     return obj({
       version: str('2018-05-29'),
       statements: statements,
-      variableMap: variableMapRefName ? ref(variableMapRefName) : obj({})
+      variableMap: variableMapRefName ? methodCall(ref('util.toJson'), ref(variableMapRefName)) : obj({})
     });
   }
 }
