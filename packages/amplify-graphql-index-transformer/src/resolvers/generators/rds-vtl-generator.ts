@@ -30,18 +30,22 @@ export class RDSIndexVTLGenerator implements IndexVTLGenerator {
     tableName: string,
     operationName: string,
   ): string {
-    //TODO: Verify correctness of template once Lambda code is merged.
     return printBlock('Invoke RDS Lambda data source')(
       compoundExpression([
-        set(ref('args'), obj({})),
-        set(ref('args.args'), ref('context.arguments')),
-        set(ref('args.table'), str(tableName)),
-        set(ref('args.operation'), str('QUERY')),
-        set(ref('args.operationName'), str(operationName)),
+        set(ref('lambdaInput'), obj({})),
+        set(ref('lambdaInput.args'), obj({})),
+        set(ref('lambdaInput.table'), str(tableName)),
+        set(ref('lambdaInput.operation'), str('INDEX')),
+        set(ref('lambdaInput.operationName'), str(operationName)),
+        set(ref('lambdaInput.args.metadata'), obj({})),
+        set(ref('lambdaInput.args.metadata.keys'), list([])),
+        qref(methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([])))),
+        set(ref('lambdaInput.args.input'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
+        qref(methodCall(ref('lambdaInput.args.input.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
         obj({
           version: str('2018-05-29'),
           operation: str('Invoke'),
-          payload: methodCall(ref('util.toJson'), ref('args')),
+          payload: methodCall(ref('util.toJson'), ref('lambdaInput')),
         }),
       ]),
     );

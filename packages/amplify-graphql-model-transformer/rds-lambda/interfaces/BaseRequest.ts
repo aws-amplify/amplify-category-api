@@ -9,14 +9,14 @@ export interface RequestArgs extends BaseRequestArgs {
 
 export interface BaseRequest {
   table: string;
-  operation: 'GET' | 'LIST' | 'CREATE' | 'UPDATE' | 'DELETE';
+  operation: 'GET' | 'LIST' | 'CREATE' | 'UPDATE' | 'DELETE' | 'INDEX';
   operationName: string;
   args: BaseRequestArgs;
 }
 
 export interface Request extends BaseRequest {
   table: string;
-  operation: 'GET' | 'LIST' | 'CREATE' | 'UPDATE' | 'DELETE';
+  operation: 'GET' | 'LIST' | 'CREATE' | 'UPDATE' | 'DELETE' | 'INDEX';
   operationName: string;
   args: RequestArgs;
 }

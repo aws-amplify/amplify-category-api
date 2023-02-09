@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
 import { Request } from '../interfaces/BaseRequest';
-import { ListRequest, SortDirection } from '../interfaces/ListRequest';
+import { IndexRequest, ListRequest, SortDirection } from '../interfaces/ListRequest';
 
 export abstract class DBClient {
   client: Knex;
@@ -13,7 +13,7 @@ export abstract class DBClient {
     });
   }
 
-  protected addSortConditions = (query: any, request: ListRequest) => {
+  protected addSortConditions = (query: any, request: ListRequest | IndexRequest) => {
     // order using sort keys
     const sortDirection = request.args.sortDirection || SortDirection.ASC;
     const keys = request.args.metadata.keys || [];

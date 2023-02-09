@@ -18,3 +18,14 @@ export interface ListRequest extends BaseRequest {
   operationName: string;
   args: ListRequestArgs;
 }
+
+export interface IndexRequestArgs extends ListRequestArgs {
+  [key: string]: any;
+}
+
+export interface IndexRequest extends BaseRequest {
+  table: string;
+  operation: 'INDEX';
+  operationName: string;
+  args: IndexRequestArgs;
+}
