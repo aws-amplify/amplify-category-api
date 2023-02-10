@@ -2,6 +2,7 @@ import { Knex } from 'knex';
 import { DBClient } from '../DBClient';
 import { BaseRequest, Request } from '../../interfaces/BaseRequest';
 import { ListRequest } from '../../interfaces/ListRequest';
+import { toRDSQueryExpression } from '../../utils/rds_utils';
 
 export abstract class MySQLClient extends DBClient {
   client: Knex;
@@ -64,10 +65,16 @@ export abstract class MySQLClient extends DBClient {
       ? Number.parseInt(Buffer.from(request.args.nextToken, 'base64').toString('utf-8'), 10)
       : 0;
     const limit = request.args?.limit ?? 100;
-    const query = (await this.getClient())(request.table).select().offset(nextOffset).limit(limit);
+    const client = (await this.getClient());
+    let query = client(request.table).offset(nextOffset).limit(limit);
+
+    if (request.args.filter) {
+      const { rawSql, queryParams } = toRDSQueryExpression(request.args.filter);
+      query = query.where(client.raw(rawSql, queryParams));
+    }
 
     this.addSortConditions(query, request);
-    const result = await query.returning('*');
+    const result = await query.select().returning('*');
     const endOfResults = result?.length && result?.length < limit;
     const nextToken = endOfResults ? null : Buffer.from((nextOffset + request.args.limit).toString()).toString('base64');
     return { items: result, nextToken };
