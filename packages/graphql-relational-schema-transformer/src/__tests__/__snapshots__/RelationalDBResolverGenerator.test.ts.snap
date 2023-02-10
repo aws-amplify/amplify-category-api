@@ -5,15 +5,18 @@ exports[`verify generated templates 1`] = `"testFilePath/Mutation.createTomatoes
 exports[`verify generated templates 2`] = `
 "#set( $cols = [] )
 #set( $vals = [] )
+#set( $variableMap = {} )
 #foreach( $entry in $ctx.args.createTomatoesInput.keySet() )
   #set( $discard = $cols.add($entry) )
-  #set( $discard = $vals.add(\\"'$ctx.args.createTomatoesInput[$entry]'\\") )
+  #set( $discard = $vals.add(\\":$entry\\") )
+  $util.qr($variableMap.put(\\":$entry\\", $ctx.args.createTomatoesInput[$entry]))
 #end
 #set( $valStr = $vals.toString().replace(\\"[\\",\\"(\\").replace(\\"]\\",\\")\\") )
 #set( $colStr = $cols.toString().replace(\\"[\\",\\"(\\").replace(\\"]\\",\\")\\") )
 {
   \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"INSERT INTO Tomatoes $colStr VALUES $valStr\\", \\"SELECT * FROM Tomatoes WHERE Id='$ctx.args.createTomatoesInput.Id'\\"]
+  \\"statements\\":   [\\"INSERT INTO Tomatoes $colStr VALUES $valStr\\", \\"SELECT * FROM Tomatoes WHERE Id=:Id\\"],
+  \\"variableMap\\":   $util.toJson($variableMap)
 }"
 `;
 
@@ -24,9 +27,12 @@ exports[`verify generated templates 4`] = `"$utils.toJson($utils.parseJson($util
 exports[`verify generated templates 5`] = `"testFilePath/Query.getTomatoes.req.vtl"`;
 
 exports[`verify generated templates 6`] = `
-"{
+"#set( $variableMap = {} )
+$util.qr($variableMap.put(\\":Id\\", \\"$ctx.args.Id\\"))
+{
   \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Tomatoes WHERE Id='$ctx.args.Id'\\"]
+  \\"statements\\":   [\\"SELECT * FROM Tomatoes WHERE Id=:Id\\"],
+  \\"variableMap\\":   $util.toJson($variableMap)
 }"
 `;
 
@@ -48,13 +54,16 @@ exports[`verify generated templates 9`] = `"testFilePath/Mutation.updateTomatoes
 
 exports[`verify generated templates 10`] = `
 "#set( $updateList = {} )
+#set( $variableMap = {} )
 #foreach( $entry in $ctx.args.updateTomatoesInput.keySet() )
-  #set( $discard = $updateList.put($entry, \\"'$ctx.args.updateTomatoesInput[$entry]'\\") )
+  $util.qr($variableMap.put(\\":$entry\\", $ctx.args.updateTomatoesInput[$entry]))
+  #set( $discard = $updateList.put($entry, \\":$entry\\") )
 #end
 #set( $update = $updateList.toString().replace(\\"{\\",\\"\\").replace(\\"}\\",\\"\\") )
 {
   \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"UPDATE Tomatoes SET $update WHERE Id='$ctx.args.updateTomatoesInput.Id'\\", \\"SELECT * FROM Tomatoes WHERE Id='$ctx.args.updateTomatoesInput.Id'\\"]
+  \\"statements\\":   [\\"UPDATE Tomatoes SET $update WHERE Id=:Id\\", \\"SELECT * FROM Tomatoes WHERE Id=:Id\\"],
+  \\"variableMap\\":   $util.toJson($variableMap)
 }"
 `;
 
@@ -75,9 +84,12 @@ $utils.toJson($output[0])"
 exports[`verify generated templates 13`] = `"testFilePath/Mutation.deleteTomatoes.req.vtl"`;
 
 exports[`verify generated templates 14`] = `
-"{
+"#set( $variableMap = {} )
+$util.qr($variableMap.put(\\":Id\\", \\"$ctx.args.Id\\"))
+{
   \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Tomatoes WHERE Id='$ctx.args.Id'\\", \\"DELETE FROM Tomatoes WHERE Id='$ctx.args.Id'\\"]
+  \\"statements\\":   [\\"SELECT * FROM Tomatoes WHERE Id=:Id\\", \\"DELETE FROM Tomatoes WHERE Id=:Id\\"],
+  \\"variableMap\\":   $util.toJson($variableMap)
 }"
 `;
 
@@ -100,7 +112,8 @@ exports[`verify generated templates 17`] = `"testFilePath/Query.listTomatoes.req
 exports[`verify generated templates 18`] = `
 "{
   \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Tomatoes\\"]
+  \\"statements\\":   [\\"SELECT * FROM Tomatoes\\"],
+  \\"variableMap\\": {}
 }"
 `;
 
@@ -113,15 +126,18 @@ exports[`verify generated templates using a Int primary key 1`] = `"testFilePath
 exports[`verify generated templates using a Int primary key 2`] = `
 "#set( $cols = [] )
 #set( $vals = [] )
+#set( $variableMap = {} )
 #foreach( $entry in $ctx.args.createApplesInput.keySet() )
   #set( $discard = $cols.add($entry) )
-  #set( $discard = $vals.add(\\"'$ctx.args.createApplesInput[$entry]'\\") )
+  #set( $discard = $vals.add(\\":$entry\\") )
+  $util.qr($variableMap.put(\\":$entry\\", $ctx.args.createApplesInput[$entry]))
 #end
 #set( $valStr = $vals.toString().replace(\\"[\\",\\"(\\").replace(\\"]\\",\\")\\") )
 #set( $colStr = $cols.toString().replace(\\"[\\",\\"(\\").replace(\\"]\\",\\")\\") )
 {
   \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"INSERT INTO Apples $colStr VALUES $valStr\\", \\"SELECT * FROM Apples WHERE Id=$ctx.args.createApplesInput.Id\\"]
+  \\"statements\\":   [\\"INSERT INTO Apples $colStr VALUES $valStr\\", \\"SELECT * FROM Apples WHERE Id=:Id\\"],
+  \\"variableMap\\":   $util.toJson($variableMap)
 }"
 `;
 
@@ -132,9 +148,12 @@ exports[`verify generated templates using a Int primary key 4`] = `"$utils.toJso
 exports[`verify generated templates using a Int primary key 5`] = `"testFilePath/Query.getApples.req.vtl"`;
 
 exports[`verify generated templates using a Int primary key 6`] = `
-"{
+"#set( $variableMap = {} )
+$util.qr($variableMap.put(\\":Id\\", $ctx.args.Id))
+{
   \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Apples WHERE Id=$ctx.args.Id\\"]
+  \\"statements\\":   [\\"SELECT * FROM Apples WHERE Id=:Id\\"],
+  \\"variableMap\\":   $util.toJson($variableMap)
 }"
 `;
 
@@ -156,13 +175,16 @@ exports[`verify generated templates using a Int primary key 9`] = `"testFilePath
 
 exports[`verify generated templates using a Int primary key 10`] = `
 "#set( $updateList = {} )
+#set( $variableMap = {} )
 #foreach( $entry in $ctx.args.updateApplesInput.keySet() )
-  #set( $discard = $updateList.put($entry, \\"'$ctx.args.updateApplesInput[$entry]'\\") )
+  $util.qr($variableMap.put(\\":$entry\\", $ctx.args.updateApplesInput[$entry]))
+  #set( $discard = $updateList.put($entry, \\":$entry\\") )
 #end
 #set( $update = $updateList.toString().replace(\\"{\\",\\"\\").replace(\\"}\\",\\"\\") )
 {
   \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"UPDATE Apples SET $update WHERE Id=$ctx.args.updateApplesInput.Id\\", \\"SELECT * FROM Apples WHERE Id=$ctx.args.updateApplesInput.Id\\"]
+  \\"statements\\":   [\\"UPDATE Apples SET $update WHERE Id=:Id\\", \\"SELECT * FROM Apples WHERE Id=:Id\\"],
+  \\"variableMap\\":   $util.toJson($variableMap)
 }"
 `;
 
@@ -183,9 +205,12 @@ $utils.toJson($output[0])"
 exports[`verify generated templates using a Int primary key 13`] = `"testFilePath/Mutation.deleteApples.req.vtl"`;
 
 exports[`verify generated templates using a Int primary key 14`] = `
-"{
+"#set( $variableMap = {} )
+$util.qr($variableMap.put(\\":Id\\", $ctx.args.Id))
+{
   \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Apples WHERE Id=$ctx.args.Id\\", \\"DELETE FROM Apples WHERE Id=$ctx.args.Id\\"]
+  \\"statements\\":   [\\"SELECT * FROM Apples WHERE Id=:Id\\", \\"DELETE FROM Apples WHERE Id=:Id\\"],
+  \\"variableMap\\":   $util.toJson($variableMap)
 }"
 `;
 
@@ -208,7 +233,8 @@ exports[`verify generated templates using a Int primary key 17`] = `"testFilePat
 exports[`verify generated templates using a Int primary key 18`] = `
 "{
   \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Apples\\"]
+  \\"statements\\":   [\\"SELECT * FROM Apples\\"],
+  \\"variableMap\\": {}
 }"
 `;
 
@@ -221,15 +247,18 @@ exports[`verify generated templates with old pluralization 1`] = `"testFilePath/
 exports[`verify generated templates with old pluralization 2`] = `
 "#set( $cols = [] )
 #set( $vals = [] )
+#set( $variableMap = {} )
 #foreach( $entry in $ctx.args.createApplesInput.keySet() )
   #set( $discard = $cols.add($entry) )
-  #set( $discard = $vals.add(\\"'$ctx.args.createApplesInput[$entry]'\\") )
+  #set( $discard = $vals.add(\\":$entry\\") )
+  $util.qr($variableMap.put(\\":$entry\\", $ctx.args.createApplesInput[$entry]))
 #end
 #set( $valStr = $vals.toString().replace(\\"[\\",\\"(\\").replace(\\"]\\",\\")\\") )
 #set( $colStr = $cols.toString().replace(\\"[\\",\\"(\\").replace(\\"]\\",\\")\\") )
 {
   \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"INSERT INTO Apples $colStr VALUES $valStr\\", \\"SELECT * FROM Apples WHERE Id=$ctx.args.createApplesInput.Id\\"]
+  \\"statements\\":   [\\"INSERT INTO Apples $colStr VALUES $valStr\\", \\"SELECT * FROM Apples WHERE Id=:Id\\"],
+  \\"variableMap\\":   $util.toJson($variableMap)
 }"
 `;
 
@@ -240,9 +269,12 @@ exports[`verify generated templates with old pluralization 4`] = `"$utils.toJson
 exports[`verify generated templates with old pluralization 5`] = `"testFilePath/Query.getApples.req.vtl"`;
 
 exports[`verify generated templates with old pluralization 6`] = `
-"{
+"#set( $variableMap = {} )
+$util.qr($variableMap.put(\\":Id\\", $ctx.args.Id))
+{
   \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Apples WHERE Id=$ctx.args.Id\\"]
+  \\"statements\\":   [\\"SELECT * FROM Apples WHERE Id=:Id\\"],
+  \\"variableMap\\":   $util.toJson($variableMap)
 }"
 `;
 
@@ -264,13 +296,16 @@ exports[`verify generated templates with old pluralization 9`] = `"testFilePath/
 
 exports[`verify generated templates with old pluralization 10`] = `
 "#set( $updateList = {} )
+#set( $variableMap = {} )
 #foreach( $entry in $ctx.args.updateApplesInput.keySet() )
-  #set( $discard = $updateList.put($entry, \\"'$ctx.args.updateApplesInput[$entry]'\\") )
+  $util.qr($variableMap.put(\\":$entry\\", $ctx.args.updateApplesInput[$entry]))
+  #set( $discard = $updateList.put($entry, \\":$entry\\") )
 #end
 #set( $update = $updateList.toString().replace(\\"{\\",\\"\\").replace(\\"}\\",\\"\\") )
 {
   \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"UPDATE Apples SET $update WHERE Id=$ctx.args.updateApplesInput.Id\\", \\"SELECT * FROM Apples WHERE Id=$ctx.args.updateApplesInput.Id\\"]
+  \\"statements\\":   [\\"UPDATE Apples SET $update WHERE Id=:Id\\", \\"SELECT * FROM Apples WHERE Id=:Id\\"],
+  \\"variableMap\\":   $util.toJson($variableMap)
 }"
 `;
 
@@ -291,9 +326,12 @@ $utils.toJson($output[0])"
 exports[`verify generated templates with old pluralization 13`] = `"testFilePath/Mutation.deleteApples.req.vtl"`;
 
 exports[`verify generated templates with old pluralization 14`] = `
-"{
+"#set( $variableMap = {} )
+$util.qr($variableMap.put(\\":Id\\", $ctx.args.Id))
+{
   \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Apples WHERE Id=$ctx.args.Id\\", \\"DELETE FROM Apples WHERE Id=$ctx.args.Id\\"]
+  \\"statements\\":   [\\"SELECT * FROM Apples WHERE Id=:Id\\", \\"DELETE FROM Apples WHERE Id=:Id\\"],
+  \\"variableMap\\":   $util.toJson($variableMap)
 }"
 `;
 
@@ -316,7 +354,8 @@ exports[`verify generated templates with old pluralization 17`] = `"testFilePath
 exports[`verify generated templates with old pluralization 18`] = `
 "{
   \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Apples\\"]
+  \\"statements\\":   [\\"SELECT * FROM Apples\\"],
+  \\"variableMap\\": {}
 }"
 `;
 
