@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.17.0-rdsv2preview.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@0.16.7...@aws-amplify/graphql-model-transformer@0.17.0-rdsv2preview.0) (2023-02-10)
+
+### Bug Fixes
+
+- **graphql:** import rds errors due to primary key and index ([dbb8efe](https://github.com/aws-amplify/amplify-category-api/commit/dbb8efe89a9dbc60c4f3b975117a0481ad9475de))
+- **graphql:** index rds query ([73389da](https://github.com/aws-amplify/amplify-category-api/commit/73389da088e794f89b5c649342ee680cbbb441c9))
+- PR feedback, windows build fix ([5a3f9cc](https://github.com/aws-amplify/amplify-category-api/commit/5a3f9cc09b6f63cd3520e5fd200d26ea3e4b7503))
+- **transformer:** conflict detection respects to per model rule ([#1201](https://github.com/aws-amplify/amplify-category-api/issues/1201)) ([9fd7e16](https://github.com/aws-amplify/amplify-category-api/commit/9fd7e166c78c265c704653213adce47a5c8a55f7))
+
+### Features
+
+- add RDS primary key transformer ([b6cd813](https://github.com/aws-amplify/amplify-category-api/commit/b6cd813dcc36843c0a5686133e8af1600cd1badb))
+
 ## [0.16.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@0.16.6...@aws-amplify/graphql-model-transformer@0.16.7) (2023-01-26)
 
 **Note:** Version bump only for package @aws-amplify/graphql-model-transformer

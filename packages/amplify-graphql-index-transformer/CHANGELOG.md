@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.15.0-rdsv2preview.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.14.8...@aws-amplify/graphql-index-transformer@0.15.0-rdsv2preview.0) (2023-02-10)
+
+### Bug Fixes
+
+- **graphql:** import rds errors due to primary key and index ([dbb8efe](https://github.com/aws-amplify/amplify-category-api/commit/dbb8efe89a9dbc60c4f3b975117a0481ad9475de))
+- **graphql:** index rds query ([73389da](https://github.com/aws-amplify/amplify-category-api/commit/73389da088e794f89b5c649342ee680cbbb441c9))
+- minor changes to resolver generation ([dee51d5](https://github.com/aws-amplify/amplify-category-api/commit/dee51d58b6cb5e1538ea8da11c90e732626e83bf))
+- simplify the RDS VTL generation ([55ab18a](https://github.com/aws-amplify/amplify-category-api/commit/55ab18a2612948aeb3cbd581fa935a93ee7d6bad))
+
+### Features
+
+- add RDS primary key transformer ([b6cd813](https://github.com/aws-amplify/amplify-category-api/commit/b6cd813dcc36843c0a5686133e8af1600cd1badb))
+- **graphql:** add index directive support for rds ([bb2fdb7](https://github.com/aws-amplify/amplify-category-api/commit/bb2fdb7b31ad66f5d61ce4de99cfd3d471bcd494))
+
 ## [0.14.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.14.7...@aws-amplify/graphql-index-transformer@0.14.8) (2023-01-26)
 
 ### Bug Fixes

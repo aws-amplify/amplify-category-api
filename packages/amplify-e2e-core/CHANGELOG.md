@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.16-rdsv2preview.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.15...amplify-category-api-e2e-core@4.0.16-rdsv2preview.0) (2023-02-10)
+
+### Bug Fixes
+
+- **transformer:** conflict detection respects to per model rule ([#1201](https://github.com/aws-amplify/amplify-category-api/issues/1201)) ([9fd7e16](https://github.com/aws-amplify/amplify-category-api/commit/9fd7e166c78c265c704653213adce47a5c8a55f7))
+
 ## [4.0.15](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.14...amplify-category-api-e2e-core@4.0.15) (2023-01-26)
 
 **Note:** Version bump only for package amplify-category-api-e2e-core

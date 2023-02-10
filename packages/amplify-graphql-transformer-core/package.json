@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-transformer-core",
-  "version": "0.18.3",
+  "version": "0.19.0-rdsv2preview.0",
   "description": "A framework to transform from GraphQL SDL to AWS CloudFormation.",
   "repository": {
     "type": "git",
@@ -28,8 +28,8 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-interfaces": "1.14.12",
-    "@aws-amplify/graphql-schema-generator": "0.0.1",
+    "@aws-amplify/graphql-schema-generator": "0.1.0-rdsv2preview.0",
+    "@aws-amplify/graphql-transformer-interfaces": "1.15.0-rdsv2preview.0",
     "@aws-cdk/aws-applicationautoscaling": "~1.172.0",
     "@aws-cdk/aws-appsync": "~1.172.0",
     "@aws-cdk/aws-certificatemanager": "~1.172.0",
@@ -57,7 +57,7 @@
     "constructs": "^3.3.125",
     "fs-extra": "^8.1.0",
     "graphql": "^15.5.0",
-    "graphql-transformer-common": "4.24.4",
+    "graphql-transformer-common": "4.24.5-rdsv2preview.0",
     "lodash": "^4.17.21",
     "md5": "^2.3.0",
     "object-hash": "^3.0.0",
@@ -65,8 +65,8 @@
     "vm2": "^3.9.8"
   },
   "peerDependencies": {
-    "amplify-prompts": "^2.0.1",
-    "amplify-cli-core": "^3.0.0"
+    "amplify-cli-core": "^3.0.0",
+    "amplify-prompts": "^2.0.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",

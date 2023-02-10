@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.19.0-rdsv2preview.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.18.3...@aws-amplify/graphql-transformer-core@0.19.0-rdsv2preview.0) (2023-02-10)
+
+### Bug Fixes
+
+- **graphql:** import rds errors due to primary key and index ([dbb8efe](https://github.com/aws-amplify/amplify-category-api/commit/dbb8efe89a9dbc60c4f3b975117a0481ad9475de))
+- PR feedback, windows build fix ([5a3f9cc](https://github.com/aws-amplify/amplify-category-api/commit/5a3f9cc09b6f63cd3520e5fd200d26ea3e4b7503))
+- **transformer:** conflict detection respects to per model rule ([#1201](https://github.com/aws-amplify/amplify-category-api/issues/1201)) ([9fd7e16](https://github.com/aws-amplify/amplify-category-api/commit/9fd7e166c78c265c704653213adce47a5c8a55f7))
+
+### Features
+
+- **graphql:** read datasource type from schema file ([d7f50e5](https://github.com/aws-amplify/amplify-category-api/commit/d7f50e5ca026a3bbf378437cf6a165cc5b438bb5))
+
 ## [0.18.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.18.2...@aws-amplify/graphql-transformer-core@0.18.3) (2023-01-26)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-core

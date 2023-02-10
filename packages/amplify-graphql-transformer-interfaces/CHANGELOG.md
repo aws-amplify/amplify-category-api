@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.15.0-rdsv2preview.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@1.14.12...@aws-amplify/graphql-transformer-interfaces@1.15.0-rdsv2preview.0) (2023-02-10)
+
+### Features
+
+- **graphql:** read datasource type from schema file ([d7f50e5](https://github.com/aws-amplify/amplify-category-api/commit/d7f50e5ca026a3bbf378437cf6a165cc5b438bb5))
+
 ## [1.14.12](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@1.14.11...@aws-amplify/graphql-transformer-interfaces@1.14.12) (2023-01-26)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces
