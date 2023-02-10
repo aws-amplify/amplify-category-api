@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-api",
-  "version": "4.1.5",
+  "version": "4.1.6-legacyrdsfix.0",
   "description": "Amplify CLI API category plugin.",
   "repository": {
     "type": "git",
@@ -99,7 +99,7 @@
     "graphql-http-transformer": "5.2.46",
     "graphql-key-transformer": "3.2.46",
     "graphql-predictions-transformer": "3.2.46",
-    "graphql-relational-schema-transformer": "2.21.13",
+    "graphql-relational-schema-transformer": "2.21.14-legacyrdsfix.0",
     "graphql-transformer-common": "4.24.3",
     "graphql-transformer-core": "7.6.9",
     "graphql-versioned-transformer": "5.2.46",

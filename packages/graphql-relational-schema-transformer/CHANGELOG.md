@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.14-legacyrdsfix.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-relational-schema-transformer@2.21.13...graphql-relational-schema-transformer@2.21.14-legacyrdsfix.0) (2023-02-10)
+
+### Bug Fixes
+
+- add util.toJson to values of variableMap ([9c24386](https://github.com/aws-amplify/amplify-category-api/commit/9c243869cca8487355474ecc93da73e68d743fb7))
+- convert the variableMap toJson only once ([18ecfb0](https://github.com/aws-amplify/amplify-category-api/commit/18ecfb07174213f18aab51929425d4060714c7f8))
+- use parameterized SQL statements and variableMap ([0de9914](https://github.com/aws-amplify/amplify-category-api/commit/0de991486c4a63bc182bcebf8afe7bbdb928e853))
+
 ## [2.21.13](https://github.com/aws-amplify/amplify-category-api/compare/graphql-relational-schema-transformer@2.21.12...graphql-relational-schema-transformer@2.21.13) (2023-01-12)
 
 **Note:** Version bump only for package graphql-relational-schema-transformer
