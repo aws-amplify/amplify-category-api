@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.2.0-rds-support-preview1.0.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.5...@aws-amplify/amplify-category-api@4.2.0-rds-support-preview1.0.0) (2023-02-10)
+
+### Bug Fixes
+
+- handle edge cases in the user experience ([ebd1ba9](https://github.com/aws-amplify/amplify-category-api/commit/ebd1ba9e828c58856e072e5fc51064c9d5c0ed69))
+- retain user Amplify input in the schema ([df3dbec](https://github.com/aws-amplify/amplify-category-api/commit/df3dbecba54183262c544499424c8dbbcc78b421))
+
+### Features
+
+- add api import, generate-schema workflows ([a92c223](https://github.com/aws-amplify/amplify-category-api/commit/a92c223ee6b27d089991bbb1b1b4b7cd8592f910))
+- add multi-env secret management ([6c70600](https://github.com/aws-amplify/amplify-category-api/commit/6c70600bbb0fba5d6a33ac3a37739b5a65eef7a6))
+- add update RDS secrets workflow ([6966161](https://github.com/aws-amplify/amplify-category-api/commit/6966161eedf6fc7bac3266746fd8c5a39648bb0c))
+- add utils for param store calls ([bc26e71](https://github.com/aws-amplify/amplify-category-api/commit/bc26e71a99e279dc2fe2e7d2507ee50ee0d5c5fb))
+- **api:** generate graphql schema from internal schema representation ([5362983](https://github.com/aws-amplify/amplify-category-api/commit/5362983e7fa46f164f63f72c44c805dceb5f3f94))
+- **graphql:** read datasource type from schema file ([d7f50e5](https://github.com/aws-amplify/amplify-category-api/commit/d7f50e5ca026a3bbf378437cf6a165cc5b438bb5))
+- RDS generate schema handles default values ([e866dfa](https://github.com/aws-amplify/amplify-category-api/commit/e866dfa7cb113a736f52f4749dfc160350476970))
+- re-use the common flows b/w add and import api ([463bffc](https://github.com/aws-amplify/amplify-category-api/commit/463bffcf6d0b30d9e25027ca5a93d8dce15de0cf))
+
 ## [4.1.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.4...@aws-amplify/amplify-category-api@4.1.5) (2023-01-12)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.7.0-rds-support-preview1.0.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@7.6.9...graphql-transformer-core@7.7.0-rds-support-preview1.0.0) (2023-02-10)
+
+### Features
+
+- **graphql:** read datasource type from schema file ([d7f50e5](https://github.com/aws-amplify/amplify-category-api/commit/d7f50e5ca026a3bbf378437cf6a165cc5b438bb5))
+- re-use the common flows b/w add and import api ([463bffc](https://github.com/aws-amplify/amplify-category-api/commit/463bffcf6d0b30d9e25027ca5a93d8dce15de0cf))
+
 ## [7.6.9](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@7.6.8...graphql-transformer-core@7.6.9) (2023-01-12)
 
 **Note:** Version bump only for package graphql-transformer-core
