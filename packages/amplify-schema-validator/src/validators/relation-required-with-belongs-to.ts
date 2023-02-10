@@ -2,10 +2,10 @@ import {
   DocumentNode,
   Kind,
   ObjectTypeDefinitionNode,
-  NamedTypeNode,
 } from 'graphql';
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
 import { getObjectWithName } from '../helpers/get-object-with-name';
+import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
 
 /**
  * The @belongsTo directive requires that a @hasOne or @hasMany relationship already exists from parent to the related model.
@@ -24,10 +24,14 @@ export const validateRequireBelongsToRelation = (schema: DocumentNode): Error[] 
       (directive) => directive.name.value === 'belongsTo',
     ));
     belongsToFields?.forEach((belongsToField) => {
-      const typeName = (belongsToField.type as NamedTypeNode)?.name.value;
+      const typeName = resolveFieldTypeName(belongsToField.type);
+      if (!typeName) {
+        /* istanbul ignore next */
+        return;
+      }
       const objectOfType = getObjectWithName(schema, typeName);
       const relationField = objectOfType?.fields?.find(
-        (field) => (field.type as NamedTypeNode)?.name?.value === objectName,
+        (field) => resolveFieldTypeName(field.type) === objectName,
       );
       const relationDirective = relationField?.directives?.find((directive) => ['hasOne', 'hasMany'].includes(directive.name.value));
       if (!relationDirective) {
