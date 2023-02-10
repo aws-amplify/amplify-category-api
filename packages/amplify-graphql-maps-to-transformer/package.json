@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-maps-to-transformer",
-  "version": "1.1.41",
+  "version": "1.1.42",
   "description": "Amplify GraphQL @mapsTo transformer",
   "repository": {
     "type": "git",
@@ -30,7 +30,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "0.18.3",
+    "@aws-amplify/graphql-transformer-core": "0.18.4",
     "@aws-amplify/graphql-transformer-interfaces": "1.14.12",
     "@aws-cdk/aws-appsync": "~1.172.0",
     "@aws-cdk/aws-iam": "~1.172.0",
@@ -40,9 +40,9 @@
     "graphql-transformer-common": "4.24.4"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-model-transformer": "0.16.7",
-    "@aws-amplify/graphql-relational-transformer": "0.12.9",
-    "@aws-amplify/graphql-searchable-transformer": "0.16.8",
+    "@aws-amplify/graphql-model-transformer": "0.16.8",
+    "@aws-amplify/graphql-relational-transformer": "0.12.10",
+    "@aws-amplify/graphql-searchable-transformer": "0.16.9",
     "graphql": "^15.5.0",
     "mkdirp": "^0.5.5"
   },

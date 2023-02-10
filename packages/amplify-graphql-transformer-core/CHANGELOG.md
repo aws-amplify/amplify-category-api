@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.18.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.18.3...@aws-amplify/graphql-transformer-core@0.18.4) (2023-02-10)
+
+### Bug Fixes
+
+- **transformer:** conflict detection respects to per model rule ([#1201](https://github.com/aws-amplify/amplify-category-api/issues/1201)) ([9fd7e16](https://github.com/aws-amplify/amplify-category-api/commit/9fd7e166c78c265c704653213adce47a5c8a55f7))
+
 ## [0.18.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.18.2...@aws-amplify/graphql-transformer-core@0.18.3) (2023-01-26)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-core
