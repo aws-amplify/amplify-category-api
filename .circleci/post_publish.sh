@@ -29,6 +29,7 @@ function createVersionBumpPR {
   curr_dir=$pwd
   echo "Current Directory: $curr_dir"
   cd $tmp_dir
+  echo "Current Temp Directory: $pwd"
 
   # Clone the CLI repo
   git clone $REPO_URL --depth 1
