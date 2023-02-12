@@ -366,8 +366,7 @@ jobs:
       - restore_cache:
           keys:
             - amplify-category-api-ssh-deps-{{ .Branch }}
-      - install_github_cli:
-          os: << parameters.os >>
+      - install_github_cli
       - run:
           name: Run Post Publish Tasks
           command: |
