@@ -148,6 +148,87 @@ test('allow: custom and provider: iam error out for invalid combination', () => 
   );
 });
 
+// test if custom auth mode allows two different lambda functions to access the graphql api
+test('allow: custom with provider: two lambda functions authorized to access the graphql api to be pushed in the cloud', () => {
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AWS_LAMBDA',
+      lambdaAuthorizerConfig: {
+        lambdaFunction: 'test',
+        ttlSeconds: 600,
+      },
+    },
+    additionalAuthenticationProviders: [
+      {
+        authenticationType: 'AWS_LAMBDA',
+        lambdaAuthorizerConfig: {
+          lambdaFunction: 'test2',
+          ttlSeconds: 600,
+        },
+      },
+    ],
+  };
+  const validSchema = ` 
+    type Post @model @auth(rules: [{ allow: custom, provider: function }]) {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+    }`;
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.rootStack!.Resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual('AWS_LAMBDA');
+  expect(
+    out.rootStack!.Resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AdditionalAuthenticationProviders[0]
+      .AuthenticationType,
+  ).toEqual('AWS_LAMBDA');
+});
+
+test('allow: custom without provider: two lambda functions authorized to access the graphql api to be pushed in the cloud', () => {
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AWS_LAMBDA',
+      lambdaAuthorizerConfig: {
+        lambdaFunction: 'test',
+        ttlSeconds: 600,
+      },
+    },
+    additionalAuthenticationProviders: [  
+      {
+        authenticationType: 'AWS_LAMBDA',
+        lambdaAuthorizerConfig: {
+          lambdaFunction: 'test2',
+          ttlSeconds: 600,
+        },
+      },
+    ],
+  };
+  const validSchema = `
+    type Post @model @auth(rules: [{ allow: custom }]) {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+    }`;
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.rootStack!.Resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual('AWS_LAMBDA');
+  expect(
+    out.rootStack!.Resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AdditionalAuthenticationProviders[0]
+      .AuthenticationType,
+  ).toEqual('AWS_LAMBDA');
+});
+
 test('allow: non-custom and provider: function error out for invalid combination', () => {
   const authConfig: AppSyncAuthConfiguration = {
     defaultAuthentication: {
