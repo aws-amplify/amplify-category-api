@@ -17,7 +17,7 @@ import {
   comment,
   list,
   qref,
-  raw
+  raw,
 } from 'graphql-mapping-template';
 import {
   COGNITO_AUTH_TYPE,
@@ -122,7 +122,7 @@ const combineAuthExpressionAndFilter = (ownerExpression: Array<Expression>, grou
   ),
   iff(
     and([
-      not(ref(IS_AUTHORIZED_FLAG)),
+      not(raw('$util.isNullOrEmpty($ctx.args.filter)')),
       raw('$authRuntimeFilter.size() > 0'),
     ]),
     compoundExpression([
