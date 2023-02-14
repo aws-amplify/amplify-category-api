@@ -17,7 +17,8 @@ import {
   comment,
   list,
   qref,
-  raw
+  raw,
+  parens
 } from 'graphql-mapping-template';
 import {
   COGNITO_AUTH_TYPE,
@@ -41,6 +42,8 @@ import {
   getIdentityClaimExp,
   getOwnerClaimReference,
 } from './helpers';
+
+const HAS_VALID_OWNER_ARGUMENT_FLAG = 'hasValidOwnerArgument';
 
 const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
   const dynamicExpression = new Array<Expression>();
@@ -73,7 +76,10 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
                     equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
                     methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
                   ]),
-                  set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                  compoundExpression([
+                    set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                    set(ref(HAS_VALID_OWNER_ARGUMENT_FLAG), bool(true)),
+                  ]),
                   methodCall(ref('util.unauthorized')),
                 ),
               ]),
@@ -122,7 +128,10 @@ const combineAuthExpressionAndFilter = (ownerExpression: Array<Expression>, grou
   ),
   iff(
     and([
-      not(ref(IS_AUTHORIZED_FLAG)),
+      parens(or([
+        not(ref(IS_AUTHORIZED_FLAG)),
+        ref(HAS_VALID_OWNER_ARGUMENT_FLAG),
+      ])),
       raw('$authRuntimeFilter.size() > 0'),
     ]),
     compoundExpression([
@@ -157,7 +166,11 @@ export const generateAuthExpressionForSubscriptions = (providers: ConfiguredAuth
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
-        compoundExpression([...generateStaticRoleExpression(cognitoStaticRoles), ...dynamicRoleExpression(cognitoDynamicRoles)]),
+        compoundExpression([
+          set(ref(HAS_VALID_OWNER_ARGUMENT_FLAG), bool(false)),
+          ...generateStaticRoleExpression(cognitoStaticRoles),
+          ...dynamicRoleExpression(cognitoDynamicRoles),
+        ]),
       ),
     );
   }
