@@ -4,7 +4,7 @@ REPO_NAME=amplify-cli
 REPO_URL="git@github.com:aws-amplify/$REPO_NAME.git"
 GIT_USER_NAME="amplify-data-dev-git"
 GIT_USER_EMAIL="amplify-data-dev+github@amazon.com"
-FEATURE_BRANCH=guest/data/update-data-packages
+FEATURE_BRANCH=guest/data/update-data-packages-test
 BASE_BRANCH=dev
 COMMIT_MESSAGE="chore: bump API plugin dependencies"
 PR_BODY="
@@ -46,6 +46,7 @@ git checkout -b $FEATURE_BRANCH
 git pull
 
 # Bump the versions locally
+npm install -g ncu
 yarn update-data-packages
 
 # Stage and commit the files

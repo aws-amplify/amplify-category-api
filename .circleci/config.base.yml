@@ -367,12 +367,10 @@ jobs:
           keys:
             - amplify-category-api-ssh-deps-{{ .Branch }}
       - install_github_cli
-      - run: chmod +x .circleci/post_publish.sh && ./.circleci/post_publish.sh
-      # - run:
-      #     name: Run Post Publish Tasks
-      #     command: |
-      #       source .circleci/post_publish.sh
-      #       createVersionBumpPR || echo "Failed to create PR in CLI repo. Please follow https://w.amazon.com/bin/view/AWS/Amplify/Data/Operations/Runbooks/APICategoryReleaseProcess/#HUpdateCategoryDependenciesinAmplifyCLIRepo and create the PR manually."
+      - run:
+          name: Run Post Publish Tasks
+          command: |
+            chmod +x .circleci/post_publish.sh && ./.circleci/post_publish.sh
 
   cleanup_resources:
     <<: *linux-e2e-executor
