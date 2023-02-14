@@ -18,7 +18,8 @@ import {
   list,
   qref,
   raw,
-  parens
+  parens,
+  int
 } from 'graphql-mapping-template';
 import {
   COGNITO_AUTH_TYPE,
@@ -44,6 +45,7 @@ import {
 } from './helpers';
 
 const HAS_VALID_OWNER_ARGUMENT_FLAG = 'hasValidOwnerArgument';
+const IS_OWNER_AUTH_AUTHORIZED_AND_NO_OTHER_FILTERS_FLAG = 'isOwnerAuthAuthorizedAndNoOtherFilters';
 
 const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
   const dynamicExpression = new Array<Expression>();
@@ -126,8 +128,23 @@ const combineAuthExpressionAndFilter = (ownerExpression: Array<Expression>, grou
     raw('$authGroupRuntimeFilter.size() > 0'),
     qref(methodCall(ref('authRuntimeFilter.addAll'), ref('authGroupRuntimeFilter'))),
   ),
+  // isOwnerAuthAuthorizedAndNoOtherFilter is defined as user authorized
+  // with an owner param which we've verified matches their token claims,
+  // and they have aonly a single rtf filter (e.g. their user) and no
+  // additional input filters. In this case we can rely on
+  // Subscription basic filtering which is computationally less expensive
+  // than Runtime filtering, and faster for the customer.
+  set(
+    ref(IS_OWNER_AUTH_AUTHORIZED_AND_NO_OTHER_FILTERS_FLAG),
+    and([
+      ref(HAS_VALID_OWNER_ARGUMENT_FLAG),
+      equals(methodCall(ref('authRuntimeFilter.size')), int(1)),
+      equals(methodCall(ref('ctx.args.filter.size')), int(0)),
+    ]),
+  ),
   iff(
     and([
+      not(ref(IS_OWNER_AUTH_AUTHORIZED_AND_NO_OTHER_FILTERS_FLAG)),
       parens(or([
         not(ref(IS_AUTHORIZED_FLAG)),
         ref(HAS_VALID_OWNER_ARGUMENT_FLAG),
