@@ -620,14 +620,12 @@ workflows:
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
       - post_deploy:
-          context:
-            - api-e2e-test-context
           requires:
-            - test
+            - deploy
           filters:
             branches:
               only:
-                - automate-cli-pr
+                - release
 commands:
   install_yarn:
     description: "Install yarn dependency for windows"
