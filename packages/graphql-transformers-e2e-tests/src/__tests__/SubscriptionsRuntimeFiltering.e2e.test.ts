@@ -19,7 +19,7 @@ import {
 } from '../cognitoUtils';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { IAMHelper } from '../IAMHelper';
-import { withTimeOut } from '../promiseWithTimeout';
+import { expectTimeOut, withTimeOut } from '../promiseWithTimeout';
 import { S3Client } from '../S3Client';
 
 // to deal with bug in cognito-identity-js
@@ -810,6 +810,56 @@ test('Static group auth should get precedence over owner argument', async () => 
   });
 });
 
+test('Static group auth should get precedence over owner argument and filter', async () => {
+  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+  await Auth.signIn(USERNAME1, REAL_PASSWORD);
+  const observer = API.graphql({
+    // @ts-ignore
+    query: gql`
+      subscription OnCreateTodo {
+        onCreateTodo(
+          owner: "${USERNAME2}",
+          filter: { name: { eq: "todo1" } },
+        ) {
+          id
+          name
+          description
+          level
+          owner
+          sharedOwners
+          status
+        }
+      }
+    `,
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  }) as unknown as Observable<any>;
+  let subscription: ZenObservable.Subscription;
+  const subscriptionPromise = new Promise((resolve, _) => {
+    subscription = observer.subscribe((event: any) => {
+      const todo = event.value.data.onCreateTodo;
+      subscription.unsubscribe();
+      expect(todo.name).toEqual('todo1');
+      expect(todo.description).toEqual('description1');
+      expect(todo.level).toEqual(4);
+      resolve(undefined);
+    });
+  });
+
+  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+
+  await createTodo(GRAPHQL_CLIENT_2, {
+    name: 'todo1',
+    description: 'description1',
+    level: 4,
+    owner: USERNAME2,
+    status: 'NOTSTARTED',
+  });
+
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTodo Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
+});
+
 test('Runtime Filter with AND condition and IN & BEGINSWITH operators', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
@@ -993,6 +1043,71 @@ test('Runtime Filter enum field type should be treated as string', async () => {
 
   return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTodo Subscription timed out', () => {
     subscription?.unsubscribe();
+  });
+});
+
+describe('Runtime filtering with owner auth', () => {
+  describe('Multi User Owner Auth - No Static Auth', () => {
+    ['Positive', 'Negative'].forEach((caseType) => {
+      test(`${caseType} Scenario`, async () => {
+        reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+        await Auth.signIn(USERNAME1, REAL_PASSWORD);
+        const observer = API.graphql({
+          // @ts-ignore
+          query: gql`
+            subscription OnCreateTask {
+              onCreateTask(
+                owner: USERNAME1,
+                filter: { priority: { eq: 8 } }
+              ) {
+                id
+                title
+                description
+                priority
+                severity
+                owner
+                readOwners
+              }
+            }
+          `,
+          authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+        }) as unknown as Observable<any>;
+        let subscription: ZenObservable.Subscription;
+        const subscriptionPromise = new Promise((resolve, _) => {
+          subscription = observer.subscribe((event: any) => {
+            const task = event.value.data.onCreateTask;
+            subscription.unsubscribe();
+            expect(task.title).toEqual('task1');
+            expect(task.priority).toEqual(8);
+            resolve(undefined);
+          });
+        });
+
+        await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
+
+        if (caseType === 'Negative') {
+          await Auth.signOut();
+          await Auth.signIn(USERNAME2, REAL_PASSWORD);
+        }
+
+        // Should receive in positive case only
+        await createTask(GRAPHQL_CLIENT_1, {
+          title: 'task1',
+          priority: 8,
+        });
+
+        // Should not receive in either case
+        await createTask(GRAPHQL_CLIENT_1, {
+          title: 'task2',
+          priority: 5,
+        });
+
+        const expectationCommand = caseType === 'Positive' ? withTimeOut : expectTimeOut;
+        return expectationCommand(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTask Subscription', () => {
+          subscription?.unsubscribe();
+        });
+      });
+    });
   });
 });
 
@@ -1483,7 +1598,6 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
       expect(result.severity).toEqual(10);
     });
   });
-
 });
 
 // mutations

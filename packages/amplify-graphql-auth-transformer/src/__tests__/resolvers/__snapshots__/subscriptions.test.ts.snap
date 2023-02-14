@@ -123,8 +123,13 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #if( $authGroupRuntimeFilter.size() > 0 )
     $util.qr($authRuntimeFilter.addAll($authGroupRuntimeFilter))
   #end
-  #set( $isOwnerAuthAuthorizedAndNoOtherFilters = $hasValidOwnerArgument && $authRuntimeFilter.size() == 1 && $ctx.args.filter.size() == 0 )
-  #if( !$isOwnerAuthAuthorizedAndNoOtherFilters && (!$isAuthorized || $hasValidOwnerArgument) && $authRuntimeFilter.size() > 0 )
+  #set( $filterArgsSize = 0 )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filterArgsSize = $ctx.args.filter.size() )
+  #end
+  #set( $isOwnerAuthAuthorizedAndNoOtherFilters = $hasValidOwnerArgument && $authRuntimeFilter.size() == 1 && $filterArgsSize == 0 )
+  #set( $isOwnerOrDynamicAuthAuthorizedWithFilters = (!$isAuthorized || $hasValidOwnerArgument) && $authRuntimeFilter.size() > 0 )
+  #if( !$isOwnerAuthAuthorizedAndNoOtherFilters && $isOwnerOrDynamicAuthAuthorizedWithFilters )
     #if( $util.isNullOrEmpty($ctx.args.filter) )
       #set( $ctx.args.filter = { \\"or\\": $authRuntimeFilter } )
     #else
@@ -190,8 +195,13 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #if( $authGroupRuntimeFilter.size() > 0 )
     $util.qr($authRuntimeFilter.addAll($authGroupRuntimeFilter))
   #end
-  #set( $isOwnerAuthAuthorizedAndNoOtherFilters = $hasValidOwnerArgument && $authRuntimeFilter.size() == 1 && $ctx.args.filter.size() == 0 )
-  #if( !$isOwnerAuthAuthorizedAndNoOtherFilters && (!$isAuthorized || $hasValidOwnerArgument) && $authRuntimeFilter.size() > 0 )
+  #set( $filterArgsSize = 0 )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filterArgsSize = $ctx.args.filter.size() )
+  #end
+  #set( $isOwnerAuthAuthorizedAndNoOtherFilters = $hasValidOwnerArgument && $authRuntimeFilter.size() == 1 && $filterArgsSize == 0 )
+  #set( $isOwnerOrDynamicAuthAuthorizedWithFilters = (!$isAuthorized || $hasValidOwnerArgument) && $authRuntimeFilter.size() > 0 )
+  #if( !$isOwnerAuthAuthorizedAndNoOtherFilters && $isOwnerOrDynamicAuthAuthorizedWithFilters )
     #if( $util.isNullOrEmpty($ctx.args.filter) )
       #set( $ctx.args.filter = { \\"or\\": $authRuntimeFilter } )
     #else
@@ -272,8 +282,13 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #if( $authGroupRuntimeFilter.size() > 0 )
     $util.qr($authRuntimeFilter.addAll($authGroupRuntimeFilter))
   #end
-  #set( $isOwnerAuthAuthorizedAndNoOtherFilters = $hasValidOwnerArgument && $authRuntimeFilter.size() == 1 && $ctx.args.filter.size() == 0 )
-  #if( !$isOwnerAuthAuthorizedAndNoOtherFilters && (!$isAuthorized || $hasValidOwnerArgument) && $authRuntimeFilter.size() > 0 )
+  #set( $filterArgsSize = 0 )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filterArgsSize = $ctx.args.filter.size() )
+  #end
+  #set( $isOwnerAuthAuthorizedAndNoOtherFilters = $hasValidOwnerArgument && $authRuntimeFilter.size() == 1 && $filterArgsSize == 0 )
+  #set( $isOwnerOrDynamicAuthAuthorizedWithFilters = (!$isAuthorized || $hasValidOwnerArgument) && $authRuntimeFilter.size() > 0 )
+  #if( !$isOwnerAuthAuthorizedAndNoOtherFilters && $isOwnerOrDynamicAuthAuthorizedWithFilters )
     #if( $util.isNullOrEmpty($ctx.args.filter) )
       #set( $ctx.args.filter = { \\"or\\": $authRuntimeFilter } )
     #else
@@ -377,8 +392,13 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #if( $authGroupRuntimeFilter.size() > 0 )
     $util.qr($authRuntimeFilter.addAll($authGroupRuntimeFilter))
   #end
-  #set( $isOwnerAuthAuthorizedAndNoOtherFilters = $hasValidOwnerArgument && $authRuntimeFilter.size() == 1 && $ctx.args.filter.size() == 0 )
-  #if( !$isOwnerAuthAuthorizedAndNoOtherFilters && (!$isAuthorized || $hasValidOwnerArgument) && $authRuntimeFilter.size() > 0 )
+  #set( $filterArgsSize = 0 )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filterArgsSize = $ctx.args.filter.size() )
+  #end
+  #set( $isOwnerAuthAuthorizedAndNoOtherFilters = $hasValidOwnerArgument && $authRuntimeFilter.size() == 1 && $filterArgsSize == 0 )
+  #set( $isOwnerOrDynamicAuthAuthorizedWithFilters = (!$isAuthorized || $hasValidOwnerArgument) && $authRuntimeFilter.size() > 0 )
+  #if( !$isOwnerAuthAuthorizedAndNoOtherFilters && $isOwnerOrDynamicAuthAuthorizedWithFilters )
     #if( $util.isNullOrEmpty($ctx.args.filter) )
       #set( $ctx.args.filter = { \\"or\\": $authRuntimeFilter } )
     #else

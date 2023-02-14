@@ -14,3 +14,20 @@ export async function withTimeOut<T>(
   });
   return Promise.race([promiseToWait, timeoutPromise]);
 }
+
+export async function expectTimeOut<T>(
+  promiseToWait: Promise<T>,
+  timeout: number,
+  timeoutMessage: string,
+  cleanupFn?: () => void,
+): Promise<T> {
+  const timeoutPromise = new Promise<T>((_, reject) => {
+    setTimeout(async () => {
+      if (cleanupFn) {
+        await cleanupFn();
+      }
+      resolve(timeoutMessage);
+    }, timeout);
+  });
+  return Promise.race([promiseToWait, timeoutPromise]);
+}
