@@ -4,7 +4,7 @@ REPO_NAME=amplify-cli
 REPO_URL="git@github.com:aws-amplify/$REPO_NAME.git"
 GIT_USER_NAME="amplify-data-dev-git"
 GIT_USER_EMAIL="amplify-data-dev+github@amazon.com"
-FEATURE_BRANCH=guest/data/update-data-packages-test
+FEATURE_BRANCH=guest/data/update-data-packages
 BASE_BRANCH=dev
 COMMIT_MESSAGE="chore: bump API plugin dependencies"
 PR_BODY="
@@ -28,9 +28,8 @@ By submitting this pull request, I confirm that my contribution is made under th
 # Create a temporary directory
 tmp_dir=$(mktemp -d)
 curr_dir=$pwd
-echo "Current Directory: $curr_dir"
 cd $tmp_dir
-echo "Current Temp Directory: $tmp_dir"
+echo "Using Temp Directory: $tmp_dir"
 
 # Clone the CLI repo
 git clone $REPO_URL --depth 1
@@ -46,7 +45,7 @@ git checkout -b $FEATURE_BRANCH
 git pull
 
 # Bump the versions locally
-npm install -g ncu
+sudo npm install -g npm-check-updates --force
 yarn update-data-packages
 
 # Stage and commit the files
@@ -65,3 +64,6 @@ git push --set-upstream origin $FEATURE_BRANCH
 
 # Create a PR to dev branch of CLI
 gh pr create --base $BASE_BRANCH --head $FEATURE_BRANCH --title "'$COMMIT_MESSAGE'" --body "'$PR_BODY'"
+
+# Start e2e tests on the PR
+yarn cloud-e2e
