@@ -1048,64 +1048,103 @@ test('Runtime Filter enum field type should be treated as string', async () => {
 
 describe('Runtime filtering with owner auth', () => {
   describe('Multi User Owner Auth - No Static Auth', () => {
-    ['Positive', 'Negative'].forEach((caseType) => {
-      test(`${caseType} Scenario`, async () => {
-        reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
-        await Auth.signIn(USERNAME1, REAL_PASSWORD);
-        const observer = API.graphql({
-          // @ts-ignore
-          query: gql`
-            subscription OnCreateTask {
-              onCreateTask(
-                owner: USERNAME1,
-                filter: { priority: { eq: 8 } }
-              ) {
-                id
-                title
-                description
-                priority
-                severity
-                owner
-                readOwners
-              }
+    test('Positive Scenario', async () => {
+      reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+      await Auth.signIn(USERNAME1, REAL_PASSWORD);
+      const observer = API.graphql({
+        // @ts-ignore
+        query: gql`
+          subscription OnCreateTask {
+            onCreateTask(
+              owner: "${USERNAME1}",
+              filter: { priority: { eq: 8 } }
+            ) {
+              id
+              title
+              priority
+              owner
             }
-          `,
-          authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-        }) as unknown as Observable<any>;
-        let subscription: ZenObservable.Subscription;
-        const subscriptionPromise = new Promise((resolve, _) => {
-          subscription = observer.subscribe((event: any) => {
-            const task = event.value.data.onCreateTask;
-            subscription.unsubscribe();
-            expect(task.title).toEqual('task1');
-            expect(task.priority).toEqual(8);
-            resolve(undefined);
-          });
+          }
+        `,
+        authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+      }) as unknown as Observable<any>;
+      let subscription: ZenObservable.Subscription;
+      const subscriptionPromise = new Promise((resolve, _) => {
+        subscription = observer.subscribe((event: any) => {
+          const task = event.value.data.onCreateTask;
+          subscription.unsubscribe();
+          expect(task.title).toEqual('task1');
+          expect(task.priority).toEqual(8);
+          resolve(undefined);
         });
+      });
 
-        await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
+      await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
-        if (caseType === 'Negative') {
-          await Auth.signOut();
-          await Auth.signIn(USERNAME2, REAL_PASSWORD);
-        }
+      // Should receive in positive case only
+      await createTask(GRAPHQL_CLIENT_1, {
+        title: 'task1',
+        priority: 8,
+      });
 
-        // Should receive in positive case only
-        await createTask(GRAPHQL_CLIENT_1, {
-          title: 'task1',
-          priority: 8,
+      // Should not receive in either case
+      await createTask(GRAPHQL_CLIENT_1, {
+        title: 'task2',
+        priority: 5,
+      });
+
+      return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTask Subscription', () => {
+        subscription?.unsubscribe();
+      });
+    });
+
+    test('Negative Scenario', async () => {
+      reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+      await Auth.signIn(USERNAME1, REAL_PASSWORD);
+      const observer = API.graphql({
+        // @ts-ignore
+        query: gql`
+          subscription OnCreateTask {
+            onCreateTask(
+              owner: "${USERNAME1}",
+              filter: { priority: { eq: 8 } }
+            ) {
+              id
+              title
+              priority
+              owner
+            }
+          }
+        `,
+        authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+      }) as unknown as Observable<any>;
+      let subscription: ZenObservable.Subscription;
+      const subscriptionPromise = new Promise((_, reject) => {
+        subscription = observer.subscribe(() => {
+          subscription.unsubscribe();
+          reject(new Error('data not expected'));
         });
+      });
 
-        // Should not receive in either case
-        await createTask(GRAPHQL_CLIENT_1, {
-          title: 'task2',
-          priority: 5,
-        });
+      await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
-        const expectationCommand = caseType === 'Positive' ? withTimeOut : expectTimeOut;
-        return expectationCommand(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTask Subscription', () => {
-          subscription?.unsubscribe();
-        });
+      await Auth.signOut();
+      await Auth.signIn(USERNAME2, REAL_PASSWORD);
+
+      // Should receive in positive case only
+      await createTask(GRAPHQL_CLIENT_2, {
+        title: 'task1',
+        priority: 8,
+      });
+
+      // Should not receive in either case
+      await createTask(GRAPHQL_CLIENT_2, {
+        title: 'task2',
+        priority: 5,
+      });
+
+      return expectTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTask Subscription', () => {
+        subscription?.unsubscribe();
       });
     });
   });
