@@ -1,6 +1,5 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { constructDefaultGlobalAmplifyInput, readRDSGlobalAmplifyInput, getRDSDBConfigFromAmplifyInput, constructRDSGlobalAmplifyInput } from '@aws-amplify/graphql-transformer-core';
-import { ImportedRDSType } from '../../../../../../../amplify-graphql-transformer-core/src/types/import-appsync-api-types';
+import { constructDefaultGlobalAmplifyInput, readRDSGlobalAmplifyInput, ImportedRDSType, constructRDSGlobalAmplifyInput } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 
 jest.mock('fs-extra', () => ({
@@ -58,7 +57,7 @@ describe('Amplify Input read/write from schema', () => {
 
   it('constructs the global Amplify input from given config', async () => {
     const mockValidInputs = {
-      engine: 'postgresql',
+      engine: 'mysql',
       host: 'mockdatabase.rds.amazonaws.com',
       port: '1010',
       database: 'mockdatabase'

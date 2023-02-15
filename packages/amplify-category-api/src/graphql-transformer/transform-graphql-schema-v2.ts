@@ -30,8 +30,8 @@ import {
 } from './utils';
 import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerFactoryArgs, TransformerProjectOptions } from './transformer-options-types';
-import {getExistingConnectionSecretNames, readDatabaseNameFromMeta} from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
-import {getAppSyncAPIName} from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { getExistingConnectionSecretNames, readDatabaseNameFromMeta } from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
+import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
