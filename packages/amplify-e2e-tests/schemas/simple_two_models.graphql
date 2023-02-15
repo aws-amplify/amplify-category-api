@@ -1,0 +1,8 @@
+type Todo @model {
+  id: ID!
+  content: String
+}
+type Author @model {
+  id: ID!
+  name: String
+}

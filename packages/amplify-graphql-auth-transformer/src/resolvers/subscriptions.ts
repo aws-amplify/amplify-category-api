@@ -17,7 +17,9 @@ import {
   comment,
   list,
   qref,
-  raw
+  raw,
+  parens,
+  int
 } from 'graphql-mapping-template';
 import {
   COGNITO_AUTH_TYPE,
@@ -41,6 +43,11 @@ import {
   getIdentityClaimExp,
   getOwnerClaimReference,
 } from './helpers';
+
+const HAS_VALID_OWNER_ARGUMENT_FLAG = 'hasValidOwnerArgument';
+const IS_OWNER_AUTH_AUTHORIZED_AND_NO_OTHER_FILTERS_FLAG = 'isOwnerAuthAuthorizedAndNoOtherFilters';
+const IS_OWNER_OR_DYNAMIC_AUTH_AUTHORIZED_WITH_FILTERS_FLAG = 'isOwnerOrDynamicAuthAuthorizedWithFilters';
+const FILTER_ARGS_SIZE_FLAG = 'filterArgsSize';
 
 const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
   const dynamicExpression = new Array<Expression>();
@@ -73,7 +80,10 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
                     equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
                     methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
                   ]),
-                  set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                  compoundExpression([
+                    set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                    set(ref(HAS_VALID_OWNER_ARGUMENT_FLAG), bool(true)),
+                  ]),
                   methodCall(ref('util.unauthorized')),
                 ),
               ]),
@@ -106,6 +116,7 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
 };
 
 const combineAuthExpressionAndFilter = (ownerExpression: Array<Expression>, groupExpression: Array<Expression>): Array<Expression> => [
+  set(ref(HAS_VALID_OWNER_ARGUMENT_FLAG), bool(false)),
   set(ref('authRuntimeFilter'), list([])),
   set(ref('authOwnerRuntimeFilter'), list([])),
   set(ref('authGroupRuntimeFilter'), list([])),
@@ -120,10 +131,45 @@ const combineAuthExpressionAndFilter = (ownerExpression: Array<Expression>, grou
     raw('$authGroupRuntimeFilter.size() > 0'),
     qref(methodCall(ref('authRuntimeFilter.addAll'), ref('authGroupRuntimeFilter'))),
   ),
+  set(
+    ref(FILTER_ARGS_SIZE_FLAG),
+    int(0),
+  ),
+  iff(
+    not(methodCall(ref('util.isNullOrEmpty'), ref('ctx.args.filter'))),
+    set(
+      ref(FILTER_ARGS_SIZE_FLAG),
+      methodCall(ref('ctx.args.filter.size')),
+    ),
+  ),
+  // isOwnerAuthAuthorizedAndNoOtherFilter is defined as user authorized
+  // with an owner param which we've verified matches their token claims,
+  // and they have aonly a single rtf filter (e.g. their user) and no
+  // additional input filters. In this case we can rely on
+  // Subscription basic filtering which is computationally less expensive
+  // than Runtime filtering, and faster for the customer.
+  set(
+    ref(IS_OWNER_AUTH_AUTHORIZED_AND_NO_OTHER_FILTERS_FLAG),
+    and([
+      ref(HAS_VALID_OWNER_ARGUMENT_FLAG),
+      equals(methodCall(ref('authRuntimeFilter.size')), int(1)),
+      equals(ref(FILTER_ARGS_SIZE_FLAG), int(0)),
+    ]),
+  ),
+  set(
+    ref(IS_OWNER_OR_DYNAMIC_AUTH_AUTHORIZED_WITH_FILTERS_FLAG),
+    and([
+      parens(or([
+        not(ref(IS_AUTHORIZED_FLAG)),
+        ref(HAS_VALID_OWNER_ARGUMENT_FLAG),
+      ])),
+      raw('$authRuntimeFilter.size() > 0'),
+    ]),
+  ),
   iff(
     and([
-      not(ref(IS_AUTHORIZED_FLAG)),
-      raw('$authRuntimeFilter.size() > 0'),
+      not(ref(IS_OWNER_AUTH_AUTHORIZED_AND_NO_OTHER_FILTERS_FLAG)),
+      ref(IS_OWNER_OR_DYNAMIC_AUTH_AUTHORIZED_WITH_FILTERS_FLAG),
     ]),
     compoundExpression([
       ifElse(

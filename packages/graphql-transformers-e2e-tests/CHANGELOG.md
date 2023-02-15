@@ -14,6 +14,16 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 - migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
 - migrate auth, maps-to, relational, default value transformer to CDK v2 ([#875](https://github.com/aws-amplify/amplify-category-api/issues/875)) ([5c714a9](https://github.com/aws-amplify/amplify-category-api/commit/5c714a9a8436be343477574cb5523c23c96c9338))
 
+## [8.3.12](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.3.11...amplify-category-api-graphql-transformers-e2e-tests@8.3.12) (2023-02-15)
+
+### Bug Fixes
+
+- explicitly set a flag when owner param in subscriptions is authorized ([#1251](https://github.com/aws-amplify/amplify-category-api/issues/1251)) ([8cf7eae](https://github.com/aws-amplify/amplify-category-api/commit/8cf7eae14214d3f28570bf2be40d2cd71d6ef84e))
+
+## [8.3.11](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.3.10...amplify-category-api-graphql-transformers-e2e-tests@8.3.11) (2023-02-10)
+
+**Note:** Version bump only for package amplify-category-api-graphql-transformers-e2e-tests
+
 ## [8.3.10](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.3.9...amplify-category-api-graphql-transformers-e2e-tests@8.3.10) (2023-01-26)
 
 **Note:** Version bump only for package amplify-category-api-graphql-transformers-e2e-tests

@@ -65,6 +65,16 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - migrate auth, maps-to, relational, default value transformer to CDK v2 ([#875](https://github.com/aws-amplify/amplify-category-api/issues/875)) ([5c714a9](https://github.com/aws-amplify/amplify-category-api/commit/5c714a9a8436be343477574cb5523c23c96c9338))
 
+## [1.2.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.2.6...@aws-amplify/graphql-auth-transformer@1.2.7) (2023-02-15)
+
+### Bug Fixes
+
+- explicitly set a flag when owner param in subscriptions is authorized ([#1251](https://github.com/aws-amplify/amplify-category-api/issues/1251)) ([8cf7eae](https://github.com/aws-amplify/amplify-category-api/commit/8cf7eae14214d3f28570bf2be40d2cd71d6ef84e))
+
+## [1.2.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.2.5...@aws-amplify/graphql-auth-transformer@1.2.6) (2023-02-10)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
 ## [1.2.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.2.4...@aws-amplify/graphql-auth-transformer@1.2.5) (2023-01-26)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

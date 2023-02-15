@@ -409,6 +409,42 @@ export function updateApiConflictHandlerType(
   });
 }
 
+export function updateApiConflictHandlerTypePerModel(
+  cwd: string,
+  opts?: Partial<AddApiOptions>
+) {
+  const options = _.assign(defaultOptions, opts);
+  return new Promise<void>((resolve, reject) => {
+    const chain = spawn(getCLIPath(options.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
+      .wait('Select from one of the below mentioned services:')
+      .sendCarriageReturn()
+      .wait(/.*Select a setting to edit*/)
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait(/.*Select the default resolution strategy.*/)
+      .sendCarriageReturn() // Select Automerge Handler for project
+      .wait(/.*Do you want to override default per model settings*/)
+      .sendConfirmYes()
+      .wait('Select the models from below:')
+      .send('a')
+      .sendCarriageReturn()
+      .wait('Select the resolution strategy for') //First model
+      .sendKeyDown(2).sendCarriageReturn() // Select Lambda Handler
+      .wait(/.*Select from the options below.*/)
+      .sendCarriageReturn() // Create a new Lambda
+      .wait('Select the resolution strategy for') //Second model
+      .sendCarriageReturn() // Select Automerge Handler
+      .wait(/.*Successfully updated resource*/)
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function apiEnableDataStore(cwd: string, settings: any) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })

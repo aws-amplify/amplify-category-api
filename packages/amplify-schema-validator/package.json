@@ -3,7 +3,7 @@
   "main": "./dist/index.js",
   "private": true,
   "types": "./dist/index.d.ts",
-  "version": "0.1.1-beta.0",
+  "version": "0.1.1",
   "files": [
     "dist",
     "!**/__tests__/**/*"

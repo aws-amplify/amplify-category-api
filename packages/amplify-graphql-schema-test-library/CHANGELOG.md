@@ -47,6 +47,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
 
+## [1.1.26](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@1.1.25...@aws-amplify/graphql-schema-test-library@1.1.26) (2023-02-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-test-library
+
+## [1.1.25](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@1.1.24...@aws-amplify/graphql-schema-test-library@1.1.25) (2023-02-10)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-test-library
+
 ## [1.1.24](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@1.1.23...@aws-amplify/graphql-schema-test-library@1.1.24) (2023-01-26)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-test-library
