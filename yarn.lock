@@ -4609,6 +4609,13 @@
   dependencies:
     regenerator-runtime "^0.13.10"
 
+"@babel/runtime@^7.5.5":
+  version "7.20.13"
+  resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.20.13.tgz#7055ab8a7cff2b8f6058bf6ae45ff84ad2aded4b"
+  integrity sha512-gt3PKXs0DBoL9xCvOIIZ2NEqAGZqHjAnmVbfQtB620V0uReIQutpel14KcneZuer7UioY8ALKZ7iocavvzTNFA==
+  dependencies:
+    regenerator-runtime "^0.13.11"
+
 "@babel/template@^7.18.10", "@babel/template@^7.3.3":
   version "7.18.10"
   resolved "https://registry.npmjs.org/@babel/template/-/template-7.18.10.tgz#6f9134835970d1dbf0835c0d100c9f38de0c5e71"
@@ -6501,6 +6508,14 @@
     "@pnpm/network.ca-file" "^1.0.1"
     config-chain "^1.1.11"
 
+"@redux-offline/redux-offline@2.5.2-native.0":
+  version "2.5.2-native.0"
+  resolved "https://registry.npmjs.org/@redux-offline/redux-offline/-/redux-offline-2.5.2-native.0.tgz#e8c3c65038d20df13389a88eb6f4de4248c59cf4"
+  integrity sha512-ZRH1E0oz9VAnfBZJsyH8O2D3tjQOd0Yz/piPmRsbE1wuoUb+eVM9SZNQetIdJvqmiNs1n3VDfcEeADEbT2dhyg==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    redux-persist "^4.6.0"
+
 "@redux-offline/redux-offline@2.6.0-native.1":
   version "2.6.0-native.1"
   resolved "https://registry.npmjs.org/@redux-offline/redux-offline/-/redux-offline-2.6.0-native.1.tgz#93a735ea05f5d72e0616e569e62ee00eec76a386"
@@ -7713,6 +7728,21 @@ apollo-link-context@1.0.11:
   dependencies:
     apollo-link "^1.2.5"
 
+apollo-link-context@1.0.9:
+  version "1.0.9"
+  resolved "https://registry.npmjs.org/apollo-link-context/-/apollo-link-context-1.0.9.tgz#7fbc034de44546e957a840be76b2f6277c785e8f"
+  integrity sha512-gcC1WH7mTyNtS0bF4fPijepXqnERwZjm1JCkuOT6ADBTpDTXIqK+Ec+/QkVawDO26EV9OX5ujWe4kI1qC6T6tA==
+  dependencies:
+    apollo-link "^1.2.3"
+
+apollo-link-context@^1.0.9:
+  version "1.0.20"
+  resolved "https://registry.npmjs.org/apollo-link-context/-/apollo-link-context-1.0.20.tgz#1939ac5dc65d6dff0c855ee53521150053c24676"
+  integrity sha512-MLLPYvhzNb8AglNsk2NcL9AvhO/Vc9hn2ZZuegbhRHGet3oGr0YH9s30NS9+ieoM0sGT11p7oZ6oAILM/kiRBA==
+  dependencies:
+    apollo-link "^1.2.14"
+    tslib "^1.9.3"
+
 apollo-link-dedup@^1.0.0:
   version "1.0.21"
   resolved "https://registry.npmjs.org/apollo-link-dedup/-/apollo-link-dedup-1.0.21.tgz#7fcbb209bdf11ce42e0e31f58f3f8008f960f240"
@@ -7721,7 +7751,7 @@ apollo-link-dedup@^1.0.0:
     apollo-link "^1.2.14"
     tslib "^1.9.3"
 
-apollo-link-http-common@^0.2.7:
+apollo-link-http-common@^0.2.16, apollo-link-http-common@^0.2.7:
   version "0.2.16"
   resolved "https://registry.npmjs.org/apollo-link-http-common/-/apollo-link-http-common-0.2.16.tgz#756749dafc732792c8ca0923f9a40564b7c59ecc"
   integrity sha512-2tIhOIrnaF4UbQHf7kjeQA/EmSorB7+HyJIIrUjJOKBgnXwuexi8aMecRlqTIDWcyVXCeqLhUnztMa6bOH/jTg==
@@ -7729,6 +7759,13 @@ apollo-link-http-common@^0.2.7:
     apollo-link "^1.2.14"
     ts-invariant "^0.4.0"
     tslib "^1.9.3"
+
+apollo-link-http@1.3.1:
+  version "1.3.1"
+  resolved "https://registry.npmjs.org/apollo-link-http/-/apollo-link-http-1.3.1.tgz#c58aee1a27d1bf43dc9e9c634b8a91c68d21a082"
+  integrity sha512-41L2NA49h8FGaKlQSnQbSrMkO0XHfxGD4fqkLve12OWmqCJaoGb/5Qn+OFiAZm/E8e/MiMJ+6+4Agutw6REu2g==
+  dependencies:
+    apollo-link "^1.0.6"
 
 apollo-link-http@1.5.8:
   version "1.5.8"
@@ -7738,6 +7775,23 @@ apollo-link-http@1.5.8:
     apollo-link "^1.2.5"
     apollo-link-http-common "^0.2.7"
 
+apollo-link-http@^1.3.1:
+  version "1.5.17"
+  resolved "https://registry.npmjs.org/apollo-link-http/-/apollo-link-http-1.5.17.tgz#499e9f1711bf694497f02c51af12d82de5d8d8ba"
+  integrity sha512-uWcqAotbwDEU/9+Dm9e1/clO7hTB2kQ/94JYcGouBVLjoKmTeJTUPQKcJGpPwUjZcSqgYicbFqQSoJIW0yrFvg==
+  dependencies:
+    apollo-link "^1.2.14"
+    apollo-link-http-common "^0.2.16"
+    tslib "^1.9.3"
+
+apollo-link-retry@2.2.5:
+  version "2.2.5"
+  resolved "https://registry.npmjs.org/apollo-link-retry/-/apollo-link-retry-2.2.5.tgz#7c92170ea502685e96db32538f5ad070ddd007be"
+  integrity sha512-DZUyTVDBH5toiqtgJxM955wnXVXeRDRkXrFOEUvXsXyEJ0Bb9ej5YfrdJBPyQL2vB6yP/1l8nEFR1ivV88ivgw==
+  dependencies:
+    "@types/zen-observable" "0.8.0"
+    apollo-link "^1.2.3"
+
 apollo-link-retry@2.2.7:
   version "2.2.7"
   resolved "https://registry.npmjs.org/apollo-link-retry/-/apollo-link-retry-2.2.7.tgz#d078847b593d1292bb01c4a72ee90cbb7d33cbcf"
@@ -7745,6 +7799,23 @@ apollo-link-retry@2.2.7:
   dependencies:
     "@types/zen-observable" "0.8.0"
     apollo-link "^1.2.5"
+
+apollo-link-retry@^2.2.5:
+  version "2.2.16"
+  resolved "https://registry.npmjs.org/apollo-link-retry/-/apollo-link-retry-2.2.16.tgz#745ff51e60a7a68b34c8d382832856c43a9c306c"
+  integrity sha512-7F9+meFAz4dw5gtgtLsRFqJW6QzNOhTzt5R5Hsy+yFhkTW9LddgYO7gxN9n7RN/7Ouosh3TcpUkdHs2laC+0sA==
+  dependencies:
+    "@types/zen-observable" "0.8.0"
+    apollo-link "^1.2.14"
+    tslib "^1.9.3"
+
+apollo-link@1.2.3:
+  version "1.2.3"
+  resolved "https://registry.npmjs.org/apollo-link/-/apollo-link-1.2.3.tgz#9bd8d5fe1d88d31dc91dae9ecc22474d451fb70d"
+  integrity sha512-iL9yS2OfxYhigme5bpTbmRyC+Htt6tyo2fRMHT3K1XRL/C5IQDDz37OjpPy4ndx7WInSvfSZaaOTKFja9VWqSw==
+  dependencies:
+    apollo-utilities "^1.0.0"
+    zen-observable-ts "^0.8.10"
 
 apollo-link@1.2.5:
   version "1.2.5"
@@ -7754,7 +7825,7 @@ apollo-link@1.2.5:
     apollo-utilities "^1.0.0"
     zen-observable-ts "^0.8.12"
 
-apollo-link@^1.0.0, apollo-link@^1.2.14, apollo-link@^1.2.3, apollo-link@^1.2.5:
+apollo-link@^1.0.0, apollo-link@^1.0.6, apollo-link@^1.2.14, apollo-link@^1.2.3, apollo-link@^1.2.5:
   version "1.2.14"
   resolved "https://registry.npmjs.org/apollo-link/-/apollo-link-1.2.14.tgz#3feda4b47f9ebba7f4160bef8b977ba725b684d9"
   integrity sha512-p67CMEFP7kOG1JZ0ZkYZwRDa369w5PIjtMjvrQd/HnIV8FRsHRqLqK+oAZQnFa1DDdZtOtHTi+aMIW6EatC2jg==
@@ -8035,6 +8106,15 @@ aws-amplify@^4.2.8:
     "@aws-amplify/ui" "2.0.7"
     "@aws-amplify/xr" "3.0.61"
 
+aws-appsync-auth-link@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/aws-appsync-auth-link/-/aws-appsync-auth-link-1.0.1.tgz#16092b2392675a50cdc6743de0f36f621e1140d6"
+  integrity sha512-8JYRjhzhzz+9GYeEDfyjUVoV2hUQb0INuey7Vtlnr4h8lAQjdneosuv4UzBvjbfDsaSfWCoSFSYkmH1c5qnKkw==
+  dependencies:
+    apollo-link "^1.2.3"
+    aws-sdk "^2.518.0"
+    debug "2.6.9"
+
 aws-appsync-auth-link@^2.0.8:
   version "2.0.8"
   resolved "https://registry.npmjs.org/aws-appsync-auth-link/-/aws-appsync-auth-link-2.0.8.tgz#f1e8491a08fa8a76bfc820e6a7f525733cae5e56"
@@ -8045,6 +8125,18 @@ aws-appsync-auth-link@^2.0.8:
     "@aws-sdk/util-hex-encoding" "^3.29.0"
     apollo-link "1.2.5"
     debug "2.6.9"
+
+aws-appsync-subscription-link@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/aws-appsync-subscription-link/-/aws-appsync-subscription-link-1.0.1.tgz#4e6f36df49cbb23f6ba23a531b51b807ab035cc9"
+  integrity sha512-JqR2xsMGBGe5dXKrEldK6YnicBgm1V3SWq521ll3uTURm3t1hJ3Dr3q70HhwaSz5VANqmLM2wjDMUmoSpcVKQA==
+  dependencies:
+    apollo-link "^1.2.3"
+    apollo-link-context "^1.0.9"
+    apollo-link-http "^1.3.1"
+    apollo-link-retry "^2.2.5"
+    debug "2.6.9"
+    url "^0.11.0"
 
 aws-appsync-subscription-link@^2.4.1:
   version "2.4.1"
@@ -8060,19 +8152,28 @@ aws-appsync-subscription-link@^2.4.1:
     url "^0.11.0"
     zen-observable-ts "^1.2.5"
 
-aws-appsync-subscription-link@^2.4.2:
-  version "2.4.2"
-  resolved "https://registry.npmjs.org/aws-appsync-subscription-link/-/aws-appsync-subscription-link-2.4.2.tgz#ea98c6a912d265f9f42515fc29b55a52330f11bd"
-  integrity sha512-r/PdEd/aLALB2os1MhFglXO9RWkwx7JTcFS6ARo2c8ObAErrfaKekzX/SQjVDzY1fAQeEdTny8WRCwbzMECEsA==
+aws-appsync@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.npmjs.org/aws-appsync/-/aws-appsync-2.0.2.tgz#967902946c90a137a6b4aa8fbdc1a333701f7b81"
+  integrity sha512-SHz+/B8N1bPZK4XrprwtZnJrovUA4edw8SU6YGLjvBeLZc3gwo20kvUNqpRk6ntjNabfnQ4zgzd2vr2+0mXo6g==
   dependencies:
-    apollo-link "1.2.5"
-    apollo-link-context "1.0.11"
-    apollo-link-http "1.5.8"
-    apollo-link-retry "2.2.7"
-    aws-appsync-auth-link "^2.0.8"
+    "@redux-offline/redux-offline" "2.5.2-native.0"
+    apollo-cache-inmemory "1.3.12"
+    apollo-client "2.4.6"
+    apollo-link "1.2.3"
+    apollo-link-context "1.0.9"
+    apollo-link-http "1.3.1"
+    apollo-link-retry "2.2.5"
+    aws-appsync-auth-link "^1.0.1"
+    aws-appsync-subscription-link "^1.0.1"
+    aws-sdk "2.518.0"
     debug "2.6.9"
+    graphql "0.13.0"
+    redux "^3.7.2"
+    redux-thunk "^2.2.0"
+    setimmediate "^1.0.5"
     url "^0.11.0"
-    zen-observable-ts "^1.2.5"
+    uuid "3.x"
 
 aws-appsync@^4.1.1:
   version "4.1.8"
@@ -8099,31 +8200,6 @@ aws-appsync@^4.1.1:
     url "^0.11.0"
     uuid "3.x"
 
-aws-appsync@^4.1.9:
-  version "4.1.9"
-  resolved "https://registry.npmjs.org/aws-appsync/-/aws-appsync-4.1.9.tgz#ec084d9b6a3a40334822e49864fed14fbf9558ef"
-  integrity sha512-YlOxC81Ij25UmSUVocbFF+TA5tItYAkL+04Y+gPBvZGCmrKI4+g/Z9b6c6IrX4IaG0eh4msizeZuwlUUjsEvlQ==
-  dependencies:
-    "@aws-crypto/sha256-universal" "^1.1.1"
-    "@aws-sdk/client-s3" "^3.25.0"
-    "@aws-sdk/lib-storage" "^3.25.0"
-    "@aws-sdk/types" "^3.25.0"
-    "@redux-offline/redux-offline" "2.6.0-native.1"
-    apollo-cache-inmemory "1.3.12"
-    apollo-client "2.4.6"
-    apollo-link "1.2.5"
-    apollo-link-context "1.0.11"
-    apollo-link-http "1.5.8"
-    apollo-link-retry "2.2.7"
-    aws-appsync-auth-link "^2.0.8"
-    aws-appsync-subscription-link "^2.4.2"
-    debug "2.6.9"
-    redux "^3.7.2"
-    redux-thunk "^2.2.0"
-    setimmediate "^1.0.5"
-    url "^0.11.0"
-    uuid "3.x"
-
 aws-sdk-mock@^5.6.2:
   version "5.8.0"
   resolved "https://registry.npmjs.org/aws-sdk-mock/-/aws-sdk-mock-5.8.0.tgz#2556a79010a883f4bd5a566ce63bc244cee67579"
@@ -8133,7 +8209,7 @@ aws-sdk-mock@^5.6.2:
     sinon "^14.0.1"
     traverse "^0.6.6"
 
-aws-sdk@2.518.0, aws-sdk@^2.1113.0, aws-sdk@^2.1141.0, aws-sdk@^2.1231.0, aws-sdk@^2.1233.0:
+aws-sdk@2.518.0, aws-sdk@^2.1113.0, aws-sdk@^2.1141.0, aws-sdk@^2.1231.0, aws-sdk@^2.1233.0, aws-sdk@^2.518.0:
   version "2.1249.0"
   resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1249.0.tgz#23f0be6fc8d98aa12dfa13c21eb859122450224a"
   integrity sha512-kJXbCgdqvhmylwq2ncoTv6mx/0zIll3fsN5NQ08qDSOTZtZRYkm4I/IS1vQSeVCmsnkfO7WpyA5Uv1Gt4MJApg==
@@ -11477,6 +11553,13 @@ graphql-transformer-common@4.24.0:
     md5 "^2.2.1"
     pluralize "8.0.0"
 
+graphql@0.13.0:
+  version "0.13.0"
+  resolved "https://registry.npmjs.org/graphql/-/graphql-0.13.0.tgz#d1b44a282279a9ce0a6ec1037329332f4c1079b6"
+  integrity sha512-WlO+ZJT9aY3YrBT+H5Kk+eVb3OVVehB9iRD/xqeHdmrrn4AFl5FIcOpfHz/vnBr6Y6JthGMlnFqU8XRnDjSR7A==
+  dependencies:
+    iterall "1.1.x"
+
 graphql@15.8.0:
   version "15.8.0"
   resolved "https://registry.npmjs.org/graphql/-/graphql-15.8.0.tgz#33410e96b012fa3bdb1091cc99a94769db212b38"
@@ -12594,6 +12677,11 @@ istanbul-reports@^3.0.2:
   dependencies:
     html-escaper "^2.0.0"
     istanbul-lib-report "^3.0.0"
+
+iterall@1.1.x:
+  version "1.1.4"
+  resolved "https://registry.npmjs.org/iterall/-/iterall-1.1.4.tgz#0db40d38fdcf53ae14dc8ec674e62ab190d52cfc"
+  integrity sha512-eaDsM/PY8D/X5mYQhecVc5/9xvSHED7yPON+ffQroBeTuqUVm7dfphMkK8NksXuImqZlVRoKtrNfMIVCYIqaUQ==
 
 iterall@^1.1.3, iterall@^1.2.2, iterall@^1.3.0:
   version "1.3.0"
@@ -15788,6 +15876,11 @@ regenerator-runtime@^0.13.10:
   resolved "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.13.10.tgz#ed07b19616bcbec5da6274ebc75ae95634bfc2ee"
   integrity sha512-KepLsg4dU12hryUO7bp/axHAKvwGOCV0sGloQtpagJ12ai+ojVDqkeGSiRX1zlq+kjIMZ1t7gpze+26QqtdGqw==
 
+regenerator-runtime@^0.13.11:
+  version "0.13.11"
+  resolved "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz#f6dca3e7ceec20590d07ada785636a90cdca17f9"
+  integrity sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==
+
 regex-not@^1.0.0, regex-not@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/regex-not/-/regex-not-1.0.2.tgz#1f4ece27e00b0b65e0247a6810e6a85d83a5752c"
@@ -18209,7 +18302,7 @@ zen-observable-ts@0.8.19:
     tslib "^1.9.3"
     zen-observable "^0.8.0"
 
-zen-observable-ts@^0.8.12, zen-observable-ts@^0.8.21:
+zen-observable-ts@^0.8.10, zen-observable-ts@^0.8.12, zen-observable-ts@^0.8.21:
   version "0.8.21"
   resolved "https://registry.npmjs.org/zen-observable-ts/-/zen-observable-ts-0.8.21.tgz#85d0031fbbde1eba3cd07d3ba90da241215f421d"
   integrity sha512-Yj3yXweRc8LdRMrCC8nIc4kkjWecPAUVh0TI0OUrWXx6aX790vLcDlWca6I4vsyCGH3LpWxq0dJRcMOFoVqmeg==
