@@ -89,6 +89,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
       #end
     #end
   #end
+  #set( $hasValidOwnerArgument = false )
   #set( $authRuntimeFilter = [] )
   #set( $authOwnerRuntimeFilter = [] )
   #set( $authGroupRuntimeFilter = [] )
@@ -150,7 +151,6 @@ exports[`subscriptions generateAuthExpressionForSubscriptions userPools renders 
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #if( $util.authType() == \\"User Pool Authorization\\" )
-  #set( $hasValidOwnerArgument = false )
   #if( !$isAuthorized )
     #set( $staticGroupRoles = [{\\"claim\\":\\"cognito:groups\\",\\"entity\\":\\"Admin\\"}] )
     #foreach( $groupRole in $staticGroupRoles )
@@ -161,6 +161,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
       #end
     #end
   #end
+  #set( $hasValidOwnerArgument = false )
   #set( $authRuntimeFilter = [] )
   #set( $authOwnerRuntimeFilter = [] )
   #set( $authGroupRuntimeFilter = [] )
@@ -237,7 +238,6 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #end
 #end
 #if( $util.authType() == \\"User Pool Authorization\\" )
-  #set( $hasValidOwnerArgument = false )
   #if( !$isAuthorized )
     #set( $staticGroupRoles = [{\\"claim\\":\\"cognito:groups\\",\\"entity\\":\\"Admin\\"}] )
     #foreach( $groupRole in $staticGroupRoles )
@@ -248,6 +248,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
       #end
     #end
   #end
+  #set( $hasValidOwnerArgument = false )
   #set( $authRuntimeFilter = [] )
   #set( $authOwnerRuntimeFilter = [] )
   #set( $authGroupRuntimeFilter = [] )
@@ -347,7 +348,6 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #end
 #end
 #if( $util.authType() == \\"User Pool Authorization\\" )
-  #set( $hasValidOwnerArgument = false )
   #if( !$isAuthorized )
     #set( $staticGroupRoles = [{\\"claim\\":\\"cognito:groups\\",\\"entity\\":\\"Admin\\"}] )
     #foreach( $groupRole in $staticGroupRoles )
@@ -358,6 +358,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
       #end
     #end
   #end
+  #set( $hasValidOwnerArgument = false )
   #set( $authRuntimeFilter = [] )
   #set( $authOwnerRuntimeFilter = [] )
   #set( $authGroupRuntimeFilter = [] )

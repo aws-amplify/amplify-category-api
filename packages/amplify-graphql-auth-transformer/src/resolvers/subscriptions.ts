@@ -116,6 +116,7 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
 };
 
 const combineAuthExpressionAndFilter = (ownerExpression: Array<Expression>, groupExpression: Array<Expression>): Array<Expression> => [
+  set(ref(HAS_VALID_OWNER_ARGUMENT_FLAG), bool(false)),
   set(ref('authRuntimeFilter'), list([])),
   set(ref('authOwnerRuntimeFilter'), list([])),
   set(ref('authGroupRuntimeFilter'), list([])),
@@ -202,11 +203,7 @@ export const generateAuthExpressionForSubscriptions = (providers: ConfiguredAuth
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
-        compoundExpression([
-          set(ref(HAS_VALID_OWNER_ARGUMENT_FLAG), bool(false)),
-          ...generateStaticRoleExpression(cognitoStaticRoles),
-          ...dynamicRoleExpression(cognitoDynamicRoles),
-        ]),
+        compoundExpression([...generateStaticRoleExpression(cognitoStaticRoles), ...dynamicRoleExpression(cognitoDynamicRoles)]),
       ),
     );
   }
