@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.3.13-alhotpatchfeb.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.3.9...amplify-category-api-graphql-transformers-e2e-tests@8.3.13-alhotpatchfeb.0) (2023-02-15)
+
+### Bug Fixes
+
+- explicitly set a flag when owner param in subscriptions is authorized ([#1251](https://github.com/aws-amplify/amplify-category-api/issues/1251)) ([8d25c7e](https://github.com/aws-amplify/amplify-category-api/commit/8d25c7e27783bcf7f8bc080ba82537d70f947993))
+
 ## [8.3.9](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.3.8...amplify-category-api-graphql-transformers-e2e-tests@8.3.9) (2023-01-12)
 
 **Note:** Version bump only for package amplify-category-api-graphql-transformers-e2e-tests

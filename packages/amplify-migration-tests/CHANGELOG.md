@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.17-alhotpatchfeb.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-migration-tests@5.0.14...amplify-category-api-migration-tests@5.0.17-alhotpatchfeb.0) (2023-02-15)
+
+**Note:** Version bump only for package amplify-category-api-migration-tests
+
 ## [5.0.14](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-migration-tests@5.0.13...amplify-category-api-migration-tests@5.0.14) (2023-01-12)
 
 **Note:** Version bump only for package amplify-category-api-migration-tests

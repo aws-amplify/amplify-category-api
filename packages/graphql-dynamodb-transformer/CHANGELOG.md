@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.48-alhotpatchfeb.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-dynamodb-transformer@7.2.46...graphql-dynamodb-transformer@7.2.48-alhotpatchfeb.0) (2023-02-15)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
 ## [7.2.46](https://github.com/aws-amplify/amplify-category-api/compare/graphql-dynamodb-transformer@7.2.45...graphql-dynamodb-transformer@7.2.46) (2023-01-12)
 
 **Note:** Version bump only for package graphql-dynamodb-transformer
