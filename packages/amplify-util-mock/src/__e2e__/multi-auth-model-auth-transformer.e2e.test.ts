@@ -228,10 +228,10 @@ test(`Test 'public' authStrategy`, async () => {
       mutation: createMutation,
       fetchPolicy: 'no-cache',
     });
-    expect(response.data.createPostPublic.id).toBeDefined();
-    expect(response.data.createPostPublic.title).toEqual('Hello, World!');
+    expect((response.data as any).createPostPublic.id).toBeDefined();
+    expect((response.data as any).createPostPublic.title).toEqual('Hello, World!');
 
-    const postId = response.data.createPostPublic.id;
+    const postId = (response.data as any).createPostPublic.id;
 
     // Authenticate User Pools user must fail
     try {
@@ -276,10 +276,10 @@ test(`Test 'private' authStrategy`, async () => {
       mutation: createMutation,
       fetchPolicy: 'no-cache',
     });
-    expect(response.data.createPostPrivate.id).toBeDefined();
-    expect(response.data.createPostPrivate.title).toEqual('Hello, World!');
+    expect((response.data as any).createPostPrivate.id).toBeDefined();
+    expect((response.data as any).createPostPrivate.title).toEqual('Hello, World!');
 
-    const postId = response.data.createPostPrivate.id;
+    const postId = (response.data as any).createPostPrivate.id;
 
     // Authenticate API Key fail
     try {
@@ -377,7 +377,7 @@ describe(`Connection tests with @auth on type`, () => {
         fetchPolicy: 'no-cache',
       });
 
-      postId = response.data.createPostConnection.id;
+      postId = (response.data as any).createPostConnection.id;
 
       // Add a comment with UserPool - Succeed
       const commentResponse = await USER_POOL_AUTH_CLIENT.mutate({
@@ -388,7 +388,7 @@ describe(`Connection tests with @auth on type`, () => {
         },
       });
 
-      commentId = commentResponse.data.createCommentConnection.id;
+      commentId = (commentResponse.data as any).createCommentConnection.id;
     } catch (e) {
       console.error(e);
       expect(true).toEqual(false);

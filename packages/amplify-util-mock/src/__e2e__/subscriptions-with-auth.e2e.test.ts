@@ -316,11 +316,11 @@ test('Test a subscription on update', async () => {
     ssn: 'CCC-01-SNSN',
   });
 
-  expect(student3.data.createStudent).toBeDefined();
-  const student3ID = student3.data.createStudent.id;
-  expect(student3.data.createStudent.name).toEqual('student3');
-  expect(student3.data.createStudent.email).toEqual('changeThisEmail@domain.com');
-  expect(student3.data.createStudent.ssn).toBeNull();
+  expect((student3.data as any).createStudent).toBeDefined();
+  const student3ID = (student3.data as any).createStudent.id;
+  expect((student3.data as any).createStudent.name).toEqual('student3');
+  expect((student3.data as any).createStudent.email).toEqual('changeThisEmail@domain.com');
+  expect((student3.data as any).createStudent.ssn).toBeNull();
 
   await updateStudent(GRAPHQL_CLIENT_1, {
     id: student3ID,
@@ -365,9 +365,9 @@ test('Test a subscription on delete', async () => {
     ssn: 'DDD-02-SNSN',
   });
   expect(student4).toBeDefined();
-  const student4ID = student4.data.createStudent.id;
-  expect(student4.data.createStudent.email).toEqual('plsDelete@domain.com');
-  expect(student4.data.createStudent.ssn).toBeNull();
+  const student4ID = (student4.data as any).createStudent.id;
+  expect((student4.data as any).createStudent.email).toEqual('plsDelete@domain.com');
+  expect((student4.data as any).createStudent.ssn).toBeNull();
 
   await deleteStudent(GRAPHQL_CLIENT_1, { id: student4ID });
 
