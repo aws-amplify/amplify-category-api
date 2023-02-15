@@ -5,12 +5,16 @@ import { parse } from 'graphql';
 import { validateIndexScalarTypes } from './validators/index-scalar-types';
 import { validateRequireBelongsToRelation } from './validators/relation-required-with-belongs-to';
 import { validateManyToManyTwoLocations } from './validators/two-many-to-many-locations';
+import { validateFieldInParentModel } from './validators/fields-passed-are-in-parent-model';
 import { ValidationError } from './exceptions/validation-error';
+import { validateFieldIsDefinedOnce } from './validators/field-is-defined-once';
 
 const allValidators = [
   validateIndexScalarTypes,
   validateRequireBelongsToRelation,
   validateManyToManyTwoLocations,
+  validateFieldInParentModel,
+  validateFieldIsDefinedOnce
 ];
 
 /**
