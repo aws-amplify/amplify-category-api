@@ -13,6 +13,12 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - migrate index and model transformers to CDK v2 ([#860](https://github.com/aws-amplify/amplify-category-api/issues/860)) ([886ab6c](https://github.com/aws-amplify/amplify-category-api/commit/886ab6c1eb699f9a09f273c76b3c419c73004f9b))
 
+## [3.10.20](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.19...amplify-category-api-e2e-tests@3.10.20) (2023-02-10)
+
+### Bug Fixes
+
+- **transformer:** conflict detection respects to per model rule ([#1201](https://github.com/aws-amplify/amplify-category-api/issues/1201)) ([9fd7e16](https://github.com/aws-amplify/amplify-category-api/commit/9fd7e166c78c265c704653213adce47a5c8a55f7))
+
 ## [3.10.19](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.18...amplify-category-api-e2e-tests@3.10.19) (2023-01-26)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests

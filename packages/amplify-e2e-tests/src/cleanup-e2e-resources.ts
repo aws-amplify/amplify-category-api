@@ -6,7 +6,7 @@ import * as aws from 'aws-sdk';
 import _ from 'lodash';
 import fs from 'fs-extra';
 import path from 'path';
-import { deleteS3Bucket } from 'amplify-category-api-e2e-core';
+import { deleteS3Bucket, sleep } from 'amplify-category-api-e2e-core';
 
 // Ensure to update scripts/split-e2e-tests.ts is also updated this gets updated
 const AWS_REGIONS_TO_RUN_TESTS = [
@@ -86,6 +86,7 @@ type CCIJobInfo = {
 };
 
 type AWSAccountInfo = {
+  accountId: string;
   accessKeyId: string;
   secretAccessKey: string;
   sessionToken: string;
@@ -421,12 +422,12 @@ const deleteAmplifyApps = async (account: AWSAccountInfo, accountIndex: number, 
 
 const deleteAmplifyApp = async (account: AWSAccountInfo, accountIndex: number, app: AmplifyAppInfo): Promise<void> => {
   const { name, appId, region } = app;
-  console.log(`[ACCOUNT ${accountIndex}] Deleting App ${name}(${appId})`);
+  console.log(`${generateAccountInfo(account, accountIndex)} Deleting App ${name}(${appId})`);
   const amplifyClient = new aws.Amplify(getAWSConfig(account, region));
   try {
     await amplifyClient.deleteApp({ appId }).promise();
   } catch (e) {
-    console.log(`[ACCOUNT ${accountIndex}] Deleting Amplify App ${appId} failed with the following error`, e);
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting Amplify App ${appId} failed with the following error`, e);
     if (e.code === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
@@ -434,19 +435,26 @@ const deleteAmplifyApp = async (account: AWSAccountInfo, accountIndex: number, a
 };
 
 const deleteIamRoles = async (account: AWSAccountInfo, accountIndex: number, roles: IamRoleInfo[]): Promise<void> => {
-  await Promise.all(roles.map(role => deleteIamRole(account, accountIndex, role)));
+  // Sending consecutive delete role requests is throwing Rate limit exceeded exception.
+  // We introduce a brief delay between batches
+  const batchSize = 20;
+  for (var i = 0; i < roles.length; i += batchSize) {
+    const rolesToDelete = roles.slice(i, i + batchSize);
+    await Promise.all(rolesToDelete.map(role => deleteIamRole(account, accountIndex, role)));
+    await sleep(5000);
+  }
 };
 
 const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role: IamRoleInfo): Promise<void> => {
   const { name: roleName } = role;
   try {
-    console.log(`[ACCOUNT ${accountIndex}] Deleting Iam Role ${roleName}`);
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting Iam Role ${roleName}`);
     const iamClient = new aws.IAM(getAWSConfig(account));
     await deleteAttachedRolePolicies(account, accountIndex, roleName);
     await deleteRolePolicies(account, accountIndex, roleName);
     await iamClient.deleteRole({ RoleName: roleName }).promise();
   } catch (e) {
-    console.log(`[ACCOUNT ${accountIndex}] Deleting iam role ${roleName} failed with error ${e.message}`);
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting iam role ${roleName} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
@@ -470,11 +478,11 @@ const detachIamAttachedRolePolicy = async (
   policy: aws.IAM.AttachedPolicy,
 ): Promise<void> => {
   try {
-    console.log(`[ACCOUNT ${accountIndex}] Detach Iam Attached Role Policy ${policy.PolicyName}`);
+    console.log(`${generateAccountInfo(account, accountIndex)} Detach Iam Attached Role Policy ${policy.PolicyName}`);
     const iamClient = new aws.IAM(getAWSConfig(account));
     await iamClient.detachRolePolicy({ RoleName: roleName, PolicyArn: policy.PolicyArn }).promise();
   } catch (e) {
-    console.log(`[ACCOUNT ${accountIndex}] Detach iam role policy ${policy.PolicyName} failed with error ${e.message}`);
+    console.log(`${generateAccountInfo(account, accountIndex)} Detach iam role policy ${policy.PolicyName} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
@@ -498,11 +506,11 @@ const deleteIamRolePolicy = async (
   policyName: string,
 ): Promise<void> => {
   try {
-    console.log(`[ACCOUNT ${accountIndex}] Deleting Iam Role Policy ${policyName}`);
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting Iam Role Policy ${policyName}`);
     const iamClient = new aws.IAM(getAWSConfig(account));
     await iamClient.deleteRolePolicy({ RoleName: roleName, PolicyName: policyName }).promise();
   } catch (e) {
-    console.log(`[ACCOUNT ${accountIndex}] Deleting iam role policy ${policyName} failed with error ${e.message}`);
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting iam role policy ${policyName} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
@@ -516,11 +524,11 @@ const deleteBuckets = async (account: AWSAccountInfo, accountIndex: number, buck
 const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucket: S3BucketInfo): Promise<void> => {
   const { name } = bucket;
   try {
-    console.log(`[ACCOUNT ${accountIndex}] Deleting S3 Bucket ${name}`);
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting S3 Bucket ${name}`);
     const s3 = new aws.S3(getAWSConfig(account));
     await deleteS3Bucket(name, s3);
   } catch (e) {
-    console.log(`[ACCOUNT ${accountIndex}] Deleting bucket ${name} failed with error ${e.message}`);
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting bucket ${name} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
@@ -534,7 +542,7 @@ const deleteCfnStacks = async (account: AWSAccountInfo, accountIndex: number, st
 const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, stack: StackInfo): Promise<void> => {
   const { stackName, region, resourcesFailedToDelete } = stack;
   const resourceToRetain = resourcesFailedToDelete.length ? resourcesFailedToDelete : undefined;
-  console.log(`[ACCOUNT ${accountIndex}] Deleting CloudFormation stack ${stackName}`);
+  console.log(`${generateAccountInfo(account, accountIndex)} Deleting CloudFormation stack ${stackName}`);
   try {
     const cfnClient = new aws.CloudFormation(getAWSConfig(account, region));
     await cfnClient.deleteStack({ StackName: stackName, RetainResources: resourceToRetain }).promise();
@@ -627,6 +635,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
     const accountCredentialPromises = orgAccounts.Accounts.map(async account => {
       if (account.Id === parentAccountIdentity.Account) {
         return {
+          accountId: account.Id,
           accessKeyId: process.env.AWS_ACCESS_KEY_ID,
           secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
           sessionToken: process.env.AWS_SESSION_TOKEN,
@@ -643,6 +652,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
         })
         .promise();
       return {
+        accountId: account.Id,
         accessKeyId: assumeRoleRes.Credentials.AccessKeyId,
         secretAccessKey: assumeRoleRes.Credentials.SecretAccessKey,
         sessionToken: assumeRoleRes.Credentials.SessionToken,
@@ -654,6 +664,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
     console.log('Error assuming child account role. This could be because the script is already running from within a child account. Running on current AWS account only.');
     return [
       {
+        accountId: parentAccountIdentity.Account,
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
         sessionToken: process.env.AWS_SESSION_TOKEN,
@@ -680,7 +691,11 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
 
   generateReport(staleResources);
   await deleteResources(account, accountIndex, staleResources);
-  console.log(`[ACCOUNT ${accountIndex}] Cleanup done!`);
+  console.log(`${generateAccountInfo(account, accountIndex)} Cleanup done!`);
+};
+
+const generateAccountInfo = (account: AWSAccountInfo, accountIndex: number): string => {
+  return (`[ACCOUNT ${accountIndex}][${account.accountId}]`);
 };
 
 /**

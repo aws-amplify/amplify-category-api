@@ -225,6 +225,11 @@ export const getAppSyncApi = async (appSyncApiId: string, region: string) => {
   return await service.getGraphqlApi({ apiId: appSyncApiId }).promise();
 };
 
+export const listAppSyncFunctions = async (appSyncApiId: string, region: string) => {
+  const service = new AppSync({ region });
+  return await service.listFunctions({ apiId: appSyncApiId }).promise();
+}
+
 export const getCloudWatchLogs = async (region: string, logGroupName: string, logStreamName: string | undefined = undefined) => {
   const cloudwatchlogs = new CloudWatchLogs({ region, retryDelayOptions: { base: 500 } });
 

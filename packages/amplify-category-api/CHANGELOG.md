@@ -85,6 +85,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
 
+## [4.1.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.7...@aws-amplify/amplify-category-api@4.1.8) (2023-02-15)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+## [4.1.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.6...@aws-amplify/amplify-category-api@4.1.7) (2023-02-10)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
 ## [4.1.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.5...@aws-amplify/amplify-category-api@4.1.6) (2023-01-26)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api
