@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.2.4...@aws-amplify/graphql-auth-transformer@) (2023-02-15)
+
+### Bug Fixes
+
+- explicitly set a flag when owner param in subscriptions is authorized ([#1251](https://github.com/aws-amplify/amplify-category-api/issues/1251)) ([8d25c7e](https://github.com/aws-amplify/amplify-category-api/commit/8d25c7e27783bcf7f8bc080ba82537d70f947993))
+
 ## [1.2.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@1.2.3...@aws-amplify/graphql-auth-transformer@1.2.4) (2023-01-12)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
