@@ -369,8 +369,7 @@ jobs:
       - install_github_cli
       - run:
           name: Run Post Publish Tasks
-          command: |
-            chmod +x .circleci/post_publish.sh && ./.circleci/post_publish.sh
+          command: ./.circleci/post_publish.sh
 
   cleanup_resources:
     <<: *linux-e2e-executor
