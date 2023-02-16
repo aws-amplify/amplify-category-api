@@ -14,7 +14,7 @@ const allValidators = [
   validateRequireBelongsToRelation,
   validateManyToManyTwoLocations,
   validateFieldInParentModel,
-  validateFieldIsDefinedOnce
+  validateFieldIsDefinedOnce,
 ];
 
 /**
