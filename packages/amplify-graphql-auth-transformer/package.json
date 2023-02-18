@@ -42,7 +42,7 @@
     "md5": "^2.3.0"
   },
   "peerDependencies": {
-    "amplify-prompts": "^2.6.4-beta.0"
+    "amplify-prompts": "^2.6.4-beta.2"
   },
   "devDependencies": {
     "@aws-amplify/graphql-index-transformer": "1.1.0-beta.5",

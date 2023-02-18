@@ -42,8 +42,8 @@
     "@types/node": "^12.12.6"
   },
   "peerDependencies": {
-    "amplify-cli-core": "^4.0.0-beta.5",
-    "amplify-prompts": "^2.6.4-beta.0"
+    "amplify-cli-core": "^4.0.0-beta.7",
+    "amplify-prompts": "^2.6.4-beta.2"
   },
   "jest": {
     "transform": {
