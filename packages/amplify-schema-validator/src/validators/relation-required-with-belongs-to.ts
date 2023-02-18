@@ -25,10 +25,6 @@ export const validateRequireBelongsToRelation = (schema: DocumentNode): Error[] 
     ));
     belongsToFields?.forEach((belongsToField) => {
       const typeName = resolveFieldTypeName(belongsToField.type);
-      if (!typeName) {
-        /* istanbul ignore next */
-        return;
-      }
       const objectOfType = getObjectWithName(schema, typeName);
       const relationField = objectOfType?.fields?.find(
         (field) => resolveFieldTypeName(field.type) === objectName,

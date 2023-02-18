@@ -9,7 +9,7 @@ import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
    * Field is defined once in a model
    *
    * @param schema graphql schema
-   * @returns true
+   * @returns true if a field is defined once in a model
    */
 export const validateFieldIsDefinedOnce = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
