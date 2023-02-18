@@ -142,7 +142,7 @@ export function cancelIterativeAmplifyPush(
       .wait(/.*AWS::AppSync::GraphQLSchema.*UPDATE_IN_PROGRESS.*/)
       .sendCtrlC()
       .run((err: Error) => {
-        if (err && !/Killed the process as no output receive for/.test(err.message)) {
+        if (err && !/Process exited with non zero exit code 130/.test(err.message)) {
           reject(err);
         } else {
           resolve();
