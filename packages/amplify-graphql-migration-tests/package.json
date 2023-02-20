@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-graphql-migration-tests",
-  "version": "2.3.27",
+  "version": "2.3.28-mxp.0",
   "description": "Tests migration from v1 to v2 of the Amplify GraphQL transformer",
   "main": "lib/index.js",
   "private": true,
@@ -49,7 +49,7 @@
     "@aws-amplify/graphql-transformer-migrator": "1.4.16",
     "@aws-cdk/cloudformation-diff": "~1.172.0",
     "fs-extra": "^8.1.0",
-    "graphql-auth-transformer": "7.2.48",
+    "graphql-auth-transformer": "7.2.49-mxp.0",
     "graphql-connection-transformer": "5.2.47",
     "graphql-dynamodb-transformer": "7.2.47",
     "graphql-http-transformer": "5.2.47",

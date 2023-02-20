@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-e2e-tests",
-  "version": "3.10.20",
+  "version": "3.10.21-mxp.0",
   "description": "E2e test suite",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
   "dependencies": {
     "@aws-amplify/graphql-transformer-core": "0.18.4",
     "amplify-app": "^4.3.4",
-    "amplify-category-api-e2e-core": "4.0.16",
+    "amplify-category-api-e2e-core": "4.0.17-mxp.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1113.0",

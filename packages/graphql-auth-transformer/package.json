@@ -1,6 +1,6 @@
 {
   "name": "graphql-auth-transformer",
-  "version": "7.2.48",
+  "version": "7.2.49-mxp.0",
   "description": "Implements the @auth directive for the appsync model transform.",
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
   "devDependencies": {
     "cloudform-types": "^4.2.0",
     "graphql-dynamodb-transformer": "7.2.47",
-    "graphql-elasticsearch-transformer": "5.2.48",
+    "graphql-elasticsearch-transformer": "5.2.49-mxp.0",
     "graphql-function-transformer": "3.3.38",
     "lodash": "^4.17.21",
     "rimraf": "^3.0.0"
