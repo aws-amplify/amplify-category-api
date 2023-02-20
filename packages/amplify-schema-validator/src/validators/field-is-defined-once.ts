@@ -3,7 +3,7 @@ import {
   Kind,
   ObjectTypeDefinitionNode,
 } from 'graphql';
-import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
+import { ValidationError } from '../exceptions/validation-error';
 
 /**
    * Field is defined once in a model
@@ -30,7 +30,7 @@ export const validateFieldIsDefinedOnce = (schema: DocumentNode): Error[] => {
       if (!uniquefields.includes(val)) {
         uniquefields.push(val);
       } else {
-        errors.push(new InvalidDirectiveError(
+        errors.push(new ValidationError(
           `Schema validation failed. Field ${objectName}.${val} can only be defined once.`,
         ));
       }

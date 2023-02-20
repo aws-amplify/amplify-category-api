@@ -5,7 +5,7 @@ import {
   ObjectTypeDefinitionNode,
   StringValueNode,
 } from 'graphql';
-import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
+import { ValidationError } from '../exceptions/validation-error';
 import { getObjectWithName } from '../helpers/get-object-with-name';
 import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
 
@@ -48,7 +48,7 @@ export const validateFieldsMatchInRelatedModel = (schema: DocumentNode): Error[]
         fieldArgVals.forEach((fieldArgVal) => {
           const val = (fieldArgVal as StringValueNode).value;
           if (!fieldVals.includes(val)) {
-            errors.push(new InvalidDirectiveError(
+            errors.push(new ValidationError(
               `${val} is not a field in ${objectOfType.name.value}`,
             ));
           }

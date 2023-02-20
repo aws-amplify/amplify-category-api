@@ -8,6 +8,7 @@ import { validateManyToManyTwoLocations } from './validators/two-many-to-many-lo
 import { validateFieldsMatchInRelatedModel } from './validators/fields-match-in-related-model';
 import { ValidationError } from './exceptions/validation-error';
 import { validateFieldIsDefinedOnce } from './validators/field-is-defined-once';
+import { validatetypeIsDefinedOnce } from './validators/type-is-defined-once';
 
 const allValidators = [
   validateIndexScalarTypes,
@@ -15,6 +16,7 @@ const allValidators = [
   validateManyToManyTwoLocations,
   validateFieldsMatchInRelatedModel,
   validateFieldIsDefinedOnce,
+  validatetypeIsDefinedOnce,
 ];
 
 /**
