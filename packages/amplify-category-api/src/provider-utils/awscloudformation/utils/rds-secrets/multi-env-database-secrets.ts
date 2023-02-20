@@ -22,6 +22,6 @@ export const configureMultiEnvDBSecrets = async (context: $TSContext, database: 
     return;
   }
 
-  await storeConnectionSecrets(context, database, secrets, apiName);
+  await storeConnectionSecrets(context, secrets, apiName);
   return;
 };

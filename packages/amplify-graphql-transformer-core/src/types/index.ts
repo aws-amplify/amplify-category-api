@@ -6,4 +6,6 @@ export {
   MYSQL_DB_TYPE,
   RDS_SCHEMA_FILE_NAME,
   RDSConnectionSecrets,
+  ImportedDataSourceConfig,
+  RDSDataSourceConfig,
 } from './import-appsync-api-types';

@@ -625,7 +625,7 @@ export type TransformerSchemaVisitStepContextProvider = Pick<TransformerContextP
 
 // @public (undocumented)
 export type TransformerSecrets = {
-    [key: string]: string;
+    [key: string]: any;
 };
 
 // @public (undocumented)

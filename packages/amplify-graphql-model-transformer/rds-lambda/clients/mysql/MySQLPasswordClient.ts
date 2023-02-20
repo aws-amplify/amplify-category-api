@@ -26,8 +26,8 @@ export class MySQLPasswordClient extends MySQLClient {
     return knex({
       client: 'mysql2',
       connection: {
-        host: process.env.host,
-        port: Number.parseInt(process.env.port ?? '3306', 10),
+        host: await this.getSSMValue(passwordClient, process.env.host),
+        port: Number.parseInt(await this.getSSMValue(passwordClient, process.env.port)) || 3306,
         user: await this.getSSMValue(passwordClient, process.env.username),
         password: await this.getSSMValue(passwordClient, process.env.password),
         database: process.env.database,

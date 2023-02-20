@@ -14,7 +14,7 @@ export interface TransformerContextMetadataProvider {
   has(key: string): boolean;
 }
 
-export type TransformerSecrets = {[key: string]: string};
+export type TransformerSecrets = {[key: string]: any};
 
 export interface TransformerContextProvider {
   metadata: TransformerContextMetadataProvider;

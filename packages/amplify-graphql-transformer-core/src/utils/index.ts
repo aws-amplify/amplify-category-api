@@ -9,8 +9,6 @@ export {
   constructDefaultGlobalAmplifyInput,
   constructRDSGlobalAmplifyInput,
   getRDSDBConfigFromAmplifyInput,
-  getRDSGlobalAmplifyInput,
   readRDSGlobalAmplifyInput,
   RDSDBConfig,
-  validateRDSInputDBConfig,
 } from './rds-input-utils';

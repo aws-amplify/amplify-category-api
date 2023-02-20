@@ -1,5 +1,5 @@
 import { $TSContext } from 'amplify-cli-core';
-import { prompter } from 'amplify-prompts';
+import { prompter, printer, integer } from 'amplify-prompts';
 import { getAppSyncAPINames } from '../utils/amplify-meta-utils';
 import { serviceApiInputWalkthrough } from './appSync-walkthrough';
 import { serviceMetadataFor } from '../utils/dynamic-imports';
@@ -11,11 +11,15 @@ import {
   ImportAppSyncAPIInputs,
   ImportedDataSourceType,
   ImportedRDSType,
+  ImportedDataSourceConfig,
 } from '@aws-amplify/graphql-transformer-core';
+import { PREVIEW_BANNER, category } from '../../../category-constants';
+import { storeConnectionSecrets, testDatabaseConnection } from '../utils/rds-secrets/database-secrets';
 
 const service = 'AppSync';
 
 export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<ImportAppSyncAPIInputs> => {
+  printer.warn(PREVIEW_BANNER);
   let apiName:string;
   const existingAPIs = getAppSyncAPINames();
   if (existingAPIs?.length > 0) {
@@ -27,19 +31,15 @@ export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<
     apiName = await getCfnApiArtifactHandler(context).createArtifacts(importAPIRequest);
   }
 
-  // Get the Imported Data Source Type
-  const supportedDataSourceTypes = [
-    { name: 'GraphQL (Existing MySQL data source)', value: ImportedRDSType.MYSQL },
-    { name: 'GraphQL (Existing PostgreSQL data source)', value: ImportedRDSType.POSTGRESQL },
-  ];
-  const importedDataSourceType = await prompter.pick<'one', string>(
-    'Select from one of the below mentioned services:',
-    supportedDataSourceTypes,
-  ) as ImportedDataSourceType;
+  const engine = ImportedRDSType.MYSQL;
+  const databaseConfig: ImportedDataSourceConfig = await databaseConfigurationInputWalkthrough(engine);
 
+  await testDatabaseConnection(databaseConfig);
+  await storeConnectionSecrets(context, databaseConfig, apiName);
+  await updateAPIArtifacts(context, apiName, engine, databaseConfig.database);
   return {
     apiName: apiName,
-    dataSourceType: importedDataSourceType,
+    dataSourceConfig: databaseConfig,
   };
 };
 
@@ -51,4 +51,32 @@ export const writeDefaultGraphQLSchema = async (context: $TSContext, pathToSchem
   else {
     throw new Error(`Data source type ${dataSourceType} is not supported.`);
   }
+};
+
+export const updateAPIArtifacts = async (context: $TSContext, apiName: string, engine: ImportedDataSourceType, database: string) => {
+  const dataSourceConfig = {};
+  dataSourceConfig[engine] = database; // This will eventually be a list
+  context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'dataSourceConfig', dataSourceConfig);
+};
+
+export const databaseConfigurationInputWalkthrough = async (engine: ImportedDataSourceType, database?: string): Promise<ImportedDataSourceConfig> => {
+  const databaseName = database || await prompter.input(`Enter the name of the ${engine} database to import:`);
+  const host = await prompter.input(`Enter the host for ${databaseName} database:`);
+  const port = await prompter.input<'one', number>(`Enter the port for ${databaseName} database:`, { 
+    transform: input => Number.parseInt(input, 10),
+    validate: integer(),
+    initial: 3306
+  });
+  // Get the database user credentials
+  const username = await prompter.input(`Enter the username for ${databaseName} database user:`);
+  const password = await prompter.input(`Enter the password for ${databaseName} database user:`, { hidden: true });
+  
+  return {
+    engine: engine,
+    database: databaseName,
+    host: host,
+    port: port,
+    username: username,
+    password: password
+  };
 };

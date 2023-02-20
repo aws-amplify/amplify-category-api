@@ -5,6 +5,7 @@ import fs from 'fs-extra';
 import { importAppSyncAPIWalkthrough, writeDefaultGraphQLSchema } from '../../provider-utils/awscloudformation/service-walkthroughs/import-appsync-api-walkthrough';
 import { RDS_SCHEMA_FILE_NAME } from '@aws-amplify/graphql-transformer-core';
 import { getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { writeSchemaFile, generateRDSSchema } from '../../provider-utils/awscloudformation/utils/graphql-schema-utils';
 
 const subcommand = 'import';
 
@@ -18,9 +19,10 @@ export const run = async (context: $TSContext) => {
   fs.ensureDirSync(apiResourceDir);
 
   const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
-  await writeDefaultGraphQLSchema(context, pathToSchemaFile, importAppSyncAPIWalkInputs.dataSourceType);
+  await writeDefaultGraphQLSchema(context, pathToSchemaFile, importAppSyncAPIWalkInputs.dataSourceConfig.engine);
+  const schemaString = await generateRDSSchema(context, importAppSyncAPIWalkInputs.dataSourceConfig, pathToSchemaFile);
+  writeSchemaFile(pathToSchemaFile, schemaString);
 
   // print next steps
-  printer.info(`Update the database connection details in the file at ${pathToSchemaFile}.`);
-  printer.info('Run "amplify api generate-schema" to fetch the schema.');
+  printer.info(`Successfully imported the database schema into ${pathToSchemaFile}.`);
 };
