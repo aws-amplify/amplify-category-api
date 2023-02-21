@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-transformer-core": "1.1.0-beta.5",
-    "amplify-app": "4.3.10-beta.0",
+    "amplify-app": "4.3.10-beta.2",
     "amplify-category-api-e2e-core": "4.0.17-beta.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
@@ -43,7 +43,7 @@
     "yargs": "^15.1.0"
   },
   "peerDependencies": {
-    "amplify-cli-core": "^4.0.0-beta.5"
+    "amplify-cli-core": "^4.0.0-beta.7"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.149",

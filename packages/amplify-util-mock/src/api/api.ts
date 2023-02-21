@@ -13,7 +13,7 @@ import { ResolverOverrides } from './resolver-overrides';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { configureDDBDataSource, createAndUpdateTable } from '../utils/dynamo-db';
 import { getMockConfig } from '../utils/mock-config-file';
-import { getInvoker } from 'amplify-category-function';
+import { getInvoker } from '@aws-amplify/amplify-category-function';
 import { lambdaArnToConfig } from './lambda-arn-to-config';
 import { timeConstrainedInvoker } from '../func';
 

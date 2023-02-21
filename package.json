@@ -39,7 +39,7 @@
     "update-versions": "lerna version --yes --no-commit-hooks --no-push --exact --conventional-commits --no-git-tag-version",
     "commit": "git-cz",
     "coverage": "codecov || exit 0",
-    "add-cli-no-save": "yarn add @aws-amplify/cli-internal@^11.0.0-beta.1 -W  && git checkout -- package.json",
+    "add-cli-no-save": "yarn add @aws-amplify/cli-internal@11.0.0-beta.7 -W  && git checkout -- package.json",
     "hoist-cli": "rm -rf node_modules/amplify-cli-internal && mkdir node_modules/amplify-cli-internal && cp -r node_modules/@aws-amplify/cli-internal/* node_modules/amplify-cli-internal",
     "hoist-cli-win": "rimraf node_modules/amplify-cli-internal && mkdir node_modules\\amplify-cli-internal && xcopy /e /q node_modules\\@aws-amplify\\cli-internal node_modules\\amplify-cli-internal\\",
     "publish:main": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --no-verify-access --yes",
@@ -139,14 +139,14 @@
     "parse-url": "^8.1.0",
     "moment-timezone": "^0.5.35",
     "aws-cdk-lib": "~2.53.0",
-    "**/amplify-cli-core": "4.0.0-beta.5",
-    "**/@aws-amplify/amplify-environment-parameters": "1.3.4-beta.0",
-    "**/amplify-category-function": "4.3.2-beta.0",
-    "**/amplify-cli-logger": "1.2.4-beta.0",
-    "**/amplify-cli-shared-interfaces": "1.1.1-beta.3",
-    "**/amplify-function-plugin-interface": "1.9.6-beta.3",
-    "**/amplify-headless-interface": "1.17.1-beta.0",
-    "**/amplify-storage-simulator": "1.7.3-beta.0",
-    "**/amplify-util-headless-input": "1.9.10-beta.0"
+    "**/amplify-cli-core": "4.0.0-beta.7",
+    "**/@aws-amplify/amplify-environment-parameters": "1.4.0-beta.1",
+    "**/@aws-amplify/amplify-category-function": "5.0.0-beta.1",
+    "**/@aws-amplify/amplify-cli-logger": "1.3.0-beta.0",
+    "**/amplify-cli-shared-interfaces": "1.1.1-beta.5",
+    "**/amplify-function-plugin-interface": "1.9.6-beta.5",
+    "**/amplify-headless-interface": "1.17.1-beta.2",
+    "**/amplify-storage-simulator": "1.7.3-beta.2",
+    "**/amplify-util-headless-input": "1.9.10-beta.2"
   }
 }
