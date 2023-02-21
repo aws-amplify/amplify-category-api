@@ -308,20 +308,29 @@ export class GraphQLTransform {
   }
 
   public applyOverride = (stackManager: StackManager): AmplifyApiGraphQlResourceStackTemplate => {
+    if (!this.overrideConfig?.overrideFlag) {
+      return {};
+    }
+
+    const overrideFilePath = path.join(this.overrideConfig!.overrideDir, 'build', 'override.js');
+    if (!fs.existsSync(overrideFilePath)) {
+      return {};
+    }
+
     const stacks: string[] = [];
     const amplifyApiObj: any = {};
-    stackManager.rootStack.node.findAll().forEach(node => {
+    stackManager.rootStack.node.findAll().forEach((node) => {
       const resource = node as CfnResource;
       if (resource.cfnResourceType === 'AWS::CloudFormation::Stack') {
         stacks.push(node.node.id.split('.')[0]);
       }
     });
 
-    stackManager.rootStack.node.findAll().forEach(node => {
+    stackManager.rootStack.node.findAll().forEach((node) => {
       const resource = node as CfnResource;
       let pathArr;
       if (node.node.id === 'Resource') {
-        pathArr = node.node.path.split('/').filter(key => key !== node.node.id);
+        pathArr = node.node.path.split('/').filter((key) => key !== node.node.id);
       } else {
         pathArr = node.node.path.split('/');
       }
@@ -349,27 +358,25 @@ export class GraphQLTransform {
     });
 
     const appsyncResourceObj = convertToAppsyncResourceObj(amplifyApiObj);
-    if (!_.isEmpty(this.overrideConfig) && this.overrideConfig!.overrideFlag) {
-      const overrideCode: string = fs.readFileSync(path.join(this.overrideConfig!.overrideDir, 'build', 'override.js'), 'utf-8');
-      const sandboxNode = new vm.NodeVM({
-        console: 'inherit',
-        timeout: 5000,
-        sandbox: {},
-        require: {
-          context: 'sandbox',
-          builtin: ['path'],
-          external: true,
-        },
-      });
-      try {
-        sandboxNode.run(overrideCode, path.join(this.overrideConfig!.overrideDir, 'build', 'override.js')).override(appsyncResourceObj);
-      } catch (err) {
-        throw new AmplifyError('InvalidOverrideError', {
-          message: 'Executing overrides failed.',
-          details: err.message,
-          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-        }, err);
-      }
+    const overrideCode: string = fs.readFileSync(overrideFilePath, 'utf-8');
+    const sandboxNode = new vm.NodeVM({
+      console: 'inherit',
+      timeout: 5000,
+      sandbox: {},
+      require: {
+        context: 'sandbox',
+        builtin: ['path'],
+        external: true,
+      },
+    });
+    try {
+      sandboxNode.run(overrideCode, overrideFilePath).override(appsyncResourceObj);
+    } catch (err) {
+      throw new AmplifyError('InvalidOverrideError', {
+        message: 'Executing overrides failed.',
+        details: err.message,
+        resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+      }, err);
     }
     return appsyncResourceObj;
   };
