@@ -308,73 +308,77 @@ export class GraphQLTransform {
   }
 
   public applyOverride = (stackManager: StackManager): AmplifyApiGraphQlResourceStackTemplate => {
-    const overrideFilePath = path.join(this.overrideConfig!.overrideDir, 'build', 'override.js');
-    if (!_.isEmpty(this.overrideConfig) && this.overrideConfig!.overrideFlag && fs.existsSync(overrideFilePath)) {
-      const stacks: string[] = [];
-      const amplifyApiObj: any = {};
-      stackManager.rootStack.node.findAll().forEach((node) => {
-        const resource = node as CfnResource;
-        if (resource.cfnResourceType === 'AWS::CloudFormation::Stack') {
-          stacks.push(node.node.id.split('.')[0]);
-        }
-      });
-
-      stackManager.rootStack.node.findAll().forEach((node) => {
-        const resource = node as CfnResource;
-        let pathArr;
-        if (node.node.id === 'Resource') {
-          pathArr = node.node.path.split('/').filter((key) => key !== node.node.id);
-        } else {
-          pathArr = node.node.path.split('/');
-        }
-        let constructPathObj: ConstructResourceMeta;
-        if (resource.cfnResourceType) {
-          constructPathObj = getStackMeta(pathArr, node.node.id, stacks, resource);
-          if (!_.isEmpty(constructPathObj.rootStack)) {
-            // api scope
-            const field = constructPathObj.rootStack!.stackType;
-            const { resourceName } = constructPathObj;
-            _.set(amplifyApiObj, [field, resourceName], resource);
-          } else if (!_.isEmpty(constructPathObj.nestedStack)) {
-            const fieldType = constructPathObj.nestedStack!.stackType;
-            const fieldName = constructPathObj.nestedStack!.stackName;
-            const { resourceName } = constructPathObj;
-            if (constructPathObj.resourceType.includes('Resolver')) {
-              _.set(amplifyApiObj, [fieldType, fieldName, 'resolvers', resourceName], resource);
-            } else if (constructPathObj.resourceType.includes('FunctionConfiguration')) {
-              _.set(amplifyApiObj, [fieldType, fieldName, 'appsyncFunctions', resourceName], resource);
-            } else {
-              _.set(amplifyApiObj, [fieldType, fieldName, resourceName], resource);
-            }
-          }
-        }
-      });
-
-      const appsyncResourceObj = convertToAppsyncResourceObj(amplifyApiObj);
-      const overrideCode: string = fs.readFileSync(overrideFilePath, 'utf-8');
-      const sandboxNode = new vm.NodeVM({
-        console: 'inherit',
-        timeout: 5000,
-        sandbox: {},
-        require: {
-          context: 'sandbox',
-          builtin: ['path'],
-          external: true,
-        },
-      });
-      try {
-        sandboxNode.run(overrideCode, overrideFilePath).override(appsyncResourceObj);
-      } catch (err) {
-        throw new AmplifyError('InvalidOverrideError', {
-          message: 'Executing overrides failed.',
-          details: err.message,
-          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-        }, err);
-      }
-      return appsyncResourceObj;
+    if (!this.overrideConfig?.overrideFlag) {
+      return {};
     }
 
-    return {};
+    const overrideFilePath = path.join(this.overrideConfig!.overrideDir, 'build', 'override.js');
+    if (!fs.existsSync(overrideFilePath)) {
+      return {};
+    }
+
+    const stacks: string[] = [];
+    const amplifyApiObj: any = {};
+    stackManager.rootStack.node.findAll().forEach((node) => {
+      const resource = node as CfnResource;
+      if (resource.cfnResourceType === 'AWS::CloudFormation::Stack') {
+        stacks.push(node.node.id.split('.')[0]);
+      }
+    });
+
+    stackManager.rootStack.node.findAll().forEach((node) => {
+      const resource = node as CfnResource;
+      let pathArr;
+      if (node.node.id === 'Resource') {
+        pathArr = node.node.path.split('/').filter((key) => key !== node.node.id);
+      } else {
+        pathArr = node.node.path.split('/');
+      }
+      let constructPathObj: ConstructResourceMeta;
+      if (resource.cfnResourceType) {
+        constructPathObj = getStackMeta(pathArr, node.node.id, stacks, resource);
+        if (!_.isEmpty(constructPathObj.rootStack)) {
+          // api scope
+          const field = constructPathObj.rootStack!.stackType;
+          const { resourceName } = constructPathObj;
+          _.set(amplifyApiObj, [field, resourceName], resource);
+        } else if (!_.isEmpty(constructPathObj.nestedStack)) {
+          const fieldType = constructPathObj.nestedStack!.stackType;
+          const fieldName = constructPathObj.nestedStack!.stackName;
+          const { resourceName } = constructPathObj;
+          if (constructPathObj.resourceType.includes('Resolver')) {
+            _.set(amplifyApiObj, [fieldType, fieldName, 'resolvers', resourceName], resource);
+          } else if (constructPathObj.resourceType.includes('FunctionConfiguration')) {
+            _.set(amplifyApiObj, [fieldType, fieldName, 'appsyncFunctions', resourceName], resource);
+          } else {
+            _.set(amplifyApiObj, [fieldType, fieldName, resourceName], resource);
+          }
+        }
+      }
+    });
+
+    const appsyncResourceObj = convertToAppsyncResourceObj(amplifyApiObj);
+    const overrideCode: string = fs.readFileSync(overrideFilePath, 'utf-8');
+    const sandboxNode = new vm.NodeVM({
+      console: 'inherit',
+      timeout: 5000,
+      sandbox: {},
+      require: {
+        context: 'sandbox',
+        builtin: ['path'],
+        external: true,
+      },
+    });
+    try {
+      sandboxNode.run(overrideCode, overrideFilePath).override(appsyncResourceObj);
+    } catch (err) {
+      throw new AmplifyError('InvalidOverrideError', {
+        message: 'Executing overrides failed.',
+        details: err.message,
+        resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+      }, err);
+    }
+    return appsyncResourceObj;
   };
 
   protected generateGraphQlApi(stackManager: StackManager, output: TransformerOutput): GraphQLApi {
