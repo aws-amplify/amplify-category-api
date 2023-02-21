@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.20...amplify-category-api-e2e-tests@3.11.0-beta.6) (2023-02-21)
+
+### Bug Fixes
+
+- throw error if invalid override or invalid custom stack error ([#982](https://github.com/aws-amplify/amplify-category-api/issues/982)) ([6dfeeba](https://github.com/aws-amplify/amplify-category-api/commit/6dfeeba627cd84a41eb8b4248856fa487c741f87))
+
+### Features
+
+- migrate index and model transformers to CDK v2 ([#860](https://github.com/aws-amplify/amplify-category-api/issues/860)) ([886ab6c](https://github.com/aws-amplify/amplify-category-api/commit/886ab6c1eb699f9a09f273c76b3c419c73004f9b))
+
 # [3.11.0-beta.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.10.20...amplify-category-api-e2e-tests@3.11.0-beta.5) (2023-02-15)
 
 ### Bug Fixes
