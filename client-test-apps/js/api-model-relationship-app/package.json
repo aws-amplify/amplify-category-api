@@ -41,11 +41,11 @@
     "build": "react-scripts build",
     "eject": "react-scripts eject",
     "test": "react-scripts test src/__tests__/api.test.ts",
-    "test:setup": "cross-env TEST_HARNESS_STAGE=setup npm run test",
-    "test:execute": "cross-env TEST_HARNESS_STAGE=execute npm run test",
-    "test:watch": "cross-env TEST_HARNESS_STAGE=watch npm run test",
-    "test:teardown": "cross-env TEST_HARNESS_STAGE=teardown npm run test",
-    "test:ci": "npm run test --testResultsProcessor=\"jest-junit\""
+    "test:setup": "cross-env TEST_HARNESS_STAGE=setup yarn test",
+    "test:execute": "cross-env TEST_HARNESS_STAGE=execute yarn test",
+    "test:watch": "cross-env TEST_HARNESS_STAGE=watch yarn test",
+    "test:teardown": "cross-env TEST_HARNESS_STAGE=teardown yarn test",
+    "test:ci": "yarn test --testResultsProcessor=\"jest-junit\""
   },
   "eslintConfig": {
     "extends": [
