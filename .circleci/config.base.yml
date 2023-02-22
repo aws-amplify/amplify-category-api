@@ -51,7 +51,7 @@ install_cli_from_local_registry: &install_cli_from_local_registry
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
-    npm install -g @aws-amplify/cli-internal@10.7.1
+    npm install -g @aws-amplify/cli-internal@10.8.0-rc.b80571744.0
     echo "using Amplify CLI version: "$(amplify --version)
     unsetNpmRegistryUrl
 
