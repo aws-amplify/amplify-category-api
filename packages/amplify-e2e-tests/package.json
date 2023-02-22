@@ -43,7 +43,7 @@
     "yargs": "^15.1.0"
   },
   "peerDependencies": {
-    "amplify-cli-core": "^3.0.0"
+    "amplify-cli-core": "3.7.0-rc.b80571744.0"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.149",

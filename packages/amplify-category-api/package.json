@@ -114,7 +114,7 @@
   },
   "peerDependencies": {
     "@aws-amplify/amplify-environment-parameters": "^1.1.1",
-    "amplify-cli-core": "^3.0.0",
+    "amplify-cli-core": "3.7.0-rc.b80571744.0",
     "amplify-headless-interface": "^1.15.0",
     "amplify-prompts": "^2.2.0",
     "amplify-provider-awscloudformation": "^6.6.0",
