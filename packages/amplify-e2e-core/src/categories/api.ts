@@ -1,4 +1,4 @@
-import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
+import {ConflictHandlerType, RDSConnectionSecrets} from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
@@ -12,7 +12,7 @@ import {
   nspawn as spawn,
   setTransformConfig,
   setTransformerVersionFlag,
-  updateSchema,
+  updateSchema, writeRdsSchemaBlank,
 } from '..';
 import { multiSelect, singleSelect } from '../utils/selectors';
 import { selectRuntime, selectTemplate } from './lambda-function';
@@ -1046,3 +1046,34 @@ export const removeTransformConfigValue = (projRoot: string, apiName: string, ke
   delete transformConfig[key];
   setTransformConfig(projRoot, apiName, transformConfig);
 };
+
+export function importApiAndGenerateSchema(cwd: string, settings: any, connectionSecrets: RDSConnectionSecrets) {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(settings.testingWithLatestCodebase), ['import', 'api'], { cwd, stripColors: true })
+      .wait('Select from one of the below mentioned services:')
+      .sendCarriageReturn()
+      .wait('Run "amplify api generate-schema" to fetch the schem')
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          writeRdsSchemaBlank(connectionSecrets);
+          spawn(getCLIPath(settings.testingWithLatestCodebase), ['api', 'generate-schema'], { cwd, stripColors: true })
+            .wait('Enter the username for stuff database user:')
+            .sendLine(connectionSecrets.username)
+            .wait('Enter the password for stuff database user:')
+            .sendLine(connectionSecrets.password)
+            .wait(/.*Successfully imported the schema definition for.*/)
+            .sendEof()
+            .run((secondErr: Error) => {
+              if (!secondErr) {
+                resolve();
+              } else {
+                reject(secondErr);
+              }
+            });
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
