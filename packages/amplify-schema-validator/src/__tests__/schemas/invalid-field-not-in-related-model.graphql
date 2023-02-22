@@ -1,0 +1,11 @@
+type Test @model {
+  id: ID!
+  email: String
+  testObj: Test1 @belongsTo(fields: ["id", "email"])
+}
+
+type Test1 @model {
+  id: ID! @primaryKey(sortKeyFields: ["name"])
+  friendID: ID!
+  name: String!
+}

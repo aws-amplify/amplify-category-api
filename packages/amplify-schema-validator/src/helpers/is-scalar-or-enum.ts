@@ -49,7 +49,7 @@ export const isScalarOrEnum = (
     return isScalarOrEnum(type.type, enums);
   } if (type.kind === Kind.LIST_TYPE) {
     /* istanbul ignore next */
-    return isScalarOrEnum(type.type, enums);
+    return false;
   }
   for (const e of enums) {
     if (e.name.value === type.name.value) {
