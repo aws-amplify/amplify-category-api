@@ -832,7 +832,7 @@ public validateCPKFeatureFlag = (context: TransformerContext ) => {
   if (isDataStoreEnabled && !isCPKFeatureEnabled(context) && context.isProjectUsingCPK()) {
     printer.info(
       `
-⚠️  WARNING: Your schema has a custom primary key but the Feature Flag "${cpkFeatureFlagName}" is disabled. Check the value in your "amplify/cli.json" file, change it to "true" and re-run
+⚠️  WARNING: Your schema has a custom primary key but the Feature Flag "${cpkFeatureFlagName}" is disabled. Check the value in your "amplify/cli.json" file, change it to `true`, and execute `amplify codegen models` with the CLI
   `,
       'yellow',
     );
