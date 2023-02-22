@@ -10,7 +10,8 @@ const tempPassword = 'tempPassword';
 //setupUser will add user to a cognito group and make its status to be "CONFIRMED",
 //if groupName is specified, add the user to the group.
 export async function setupUser(userPoolId: string, username: string, password: string, groupName?: string) {
-  const cognitoClient = getConfiguredCognitoClient();
+  const region = userPoolId.split("_")[0]; // UserPoolId is in format `region_randomid`
+  const cognitoClient = getConfiguredCognitoClient(region);
   await cognitoClient
     .adminCreateUser({
       UserPoolId: userPoolId,
@@ -49,14 +50,14 @@ export async function addUserToGroup(
     .promise();
 }
 
-export function getConfiguredCognitoClient(): CognitoIdentityServiceProvider {
+export function getConfiguredCognitoClient(region: string = process.env.CLI_REGION): CognitoIdentityServiceProvider {
   const cognitoClient = new CognitoIdentityServiceProvider({ apiVersion: '2016-04-19', region: process.env.CLI_REGION });
 
   const awsconfig = {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     sessionToken: process.env.AWS_SESSION_TOKEN,
-    region: process.env.CLI_REGION,
+    region,
   };
 
   cognitoClient.config.update(awsconfig);
