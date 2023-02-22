@@ -94,13 +94,13 @@
     winston "^3.3.3"
     winston-daily-rotate-file "^4.5.0"
 
-"@aws-amplify/amplify-environment-parameters@1.3.1":
-  version "1.3.1"
-  resolved "https://registry.npmjs.org/@aws-amplify/amplify-environment-parameters/-/amplify-environment-parameters-1.3.1.tgz#71c20f23c04f96d6d6717f944121966336771a76"
-  integrity sha512-K8gq5fgZ/hrxFVdD7W42WWnwUqyqBC/YIDQ1ttWDnrmfAuB/RctcnMRHrMVkgY5CT3npD2j11dndARNFrS1y7g==
+"@aws-amplify/amplify-environment-parameters@1.3.4":
+  version "1.3.4"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-environment-parameters/-/amplify-environment-parameters-1.3.4.tgz#af2b13f6a1222592c52b5a6688f4a80228928ff4"
+  integrity sha512-kDNuElyP06l8wvVjRRgiNF/ecyJiAphLLbjcGyKXKHVFX+oWz7LGYlJr7N3jk0IXTClhqWjERoizgElau+8aNQ==
   dependencies:
     ajv "^6.12.6"
-    amplify-cli-core "3.5.1"
+    amplify-cli-core "3.6.2"
     lodash "^4.17.21"
 
 "@aws-amplify/amplify-environment-parameters@1.3.5-rc.b80571744.0":
@@ -110,6 +110,50 @@
   dependencies:
     ajv "^6.12.6"
     amplify-cli-core "3.7.0-rc.b80571744.0"
+    lodash "^4.17.21"
+
+"@aws-amplify/amplify-frontend-android@3.5.0-rc.b80571744.0":
+  version "3.5.0-rc.b80571744.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-frontend-android/-/amplify-frontend-android-3.5.0-rc.b80571744.0.tgz#bf4aacf9e6b9e3eb160090ea387eca790736fdb5"
+  integrity sha512-7Frt+cjyeetwqGlcxKIIoPhYy5KSd54ntwIiW1sj42+Jrrkjdj+z2EZRpB5Vrv5CzG5p959JBLUNW0goFl+RXw==
+  dependencies:
+    fs-extra "^8.1.0"
+    graphql-config "^2.2.1"
+    inquirer "^7.3.3"
+
+"@aws-amplify/amplify-frontend-flutter@1.4.0-rc.b80571744.0":
+  version "1.4.0-rc.b80571744.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-frontend-flutter/-/amplify-frontend-flutter-1.4.0-rc.b80571744.0.tgz#8ec8710150a6da9339144f3b2df643895409557e"
+  integrity sha512-Gg3Ndgq6FqD86+MyVR8z715dCMOfazgqtymvByStj3l+timDWIo66VDCprCeQrp7EtlMeFDALNpJSItwlFscSA==
+  dependencies:
+    fs-extra "^8.1.0"
+    graphql-config "^2.2.1"
+    inquirer "^7.3.3"
+
+"@aws-amplify/amplify-frontend-ios@3.6.0-rc.b80571744.0":
+  version "3.6.0-rc.b80571744.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-frontend-ios/-/amplify-frontend-ios-3.6.0-rc.b80571744.0.tgz#51bffdd71c5127b2691b345faf8e7aace40d8b9a"
+  integrity sha512-iD4SUNBjhhwR5lk3el9/F373vYhTKmaXw+yMpgFGcswSdBkaoDWc99XcAI7kfhA0Y9wo9faOPLJFdJUbhrwGkA==
+  dependencies:
+    amplify-cli-core "3.7.0-rc.b80571744.0"
+    execa "^5.1.1"
+    fs-extra "^8.1.0"
+    graphql-config "^2.2.1"
+    lodash "^4.17.21"
+
+"@aws-amplify/amplify-frontend-javascript@3.8.0-rc.b80571744.0":
+  version "3.8.0-rc.b80571744.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-frontend-javascript/-/amplify-frontend-javascript-3.8.0-rc.b80571744.0.tgz#53e4a76f700e4f40833b67c26eb4a13654fee6f1"
+  integrity sha512-i5XLLZcZ6frfSNia4VxbAWpt8LSeNIaRAtPWv8O/YaEzsufpZDJbbbb7ZuW5AvPWVovCtjswWwfaMuQmaG/C+A==
+  dependencies:
+    "@babel/core" "^7.10.5"
+    "@babel/plugin-transform-modules-commonjs" "7.10.4"
+    amplify-cli-core "3.7.0-rc.b80571744.0"
+    chalk "^4.1.1"
+    execa "^5.1.1"
+    fs-extra "^8.1.0"
+    graphql-config "^2.2.1"
+    inquirer "^7.3.3"
     lodash "^4.17.21"
 
 "@aws-amplify/amplify-provider-awscloudformation@7.0.0-rc.b80571744.0":
@@ -7882,15 +7926,15 @@ amazon-cognito-identity-js@5.2.12:
     isomorphic-unfetch "^3.0.0"
     js-cookie "^2.2.1"
 
-amplify-app@^4.3.4:
-  version "4.3.4"
-  resolved "https://registry.npmjs.org/amplify-app/-/amplify-app-4.3.4.tgz#5ca68e7a0ca3cb3c8919b087abb2575603e3e6d2"
-  integrity sha512-Ii2LGWx9kxRSOng4ssYxlP6ww9+gwiVNggP93m62TQPlCs9tBoURU/an+RACdyvkN5KxOSloOiuiY0Q09HstJA==
+amplify-app@^4.3.11-rc.b80571744.0:
+  version "4.3.11-rc.b80571744.0"
+  resolved "https://registry.npmjs.org/amplify-app/-/amplify-app-4.3.11-rc.b80571744.0.tgz#8bcbf21a95e99179b802c535e448d222ec9dd131"
+  integrity sha512-OiLw6W4eTR9MZe8ORkSuE118YLZA/f62z87pwZZ3G5hj+R61nqCMOTHHJ7GJNftSvI2avsHO/Y/xfPYtDdrVNQ==
   dependencies:
-    amplify-frontend-android "3.4.0"
-    amplify-frontend-flutter "1.3.5"
-    amplify-frontend-ios "3.5.4"
-    amplify-frontend-javascript "3.7.0"
+    "@aws-amplify/amplify-frontend-android" "3.5.0-rc.b80571744.0"
+    "@aws-amplify/amplify-frontend-flutter" "1.4.0-rc.b80571744.0"
+    "@aws-amplify/amplify-frontend-ios" "3.6.0-rc.b80571744.0"
+    "@aws-amplify/amplify-frontend-javascript" "3.8.0-rc.b80571744.0"
     chalk "^4.1.1"
     execa "^5.1.1"
     fs-extra "^8.1.0"
@@ -7903,15 +7947,15 @@ amplify-app@^4.3.4:
     xcode "^2.1.0"
     yargs "^15.1.0"
 
-amplify-category-function@^4.2.1:
-  version "4.2.3"
-  resolved "https://registry.npmjs.org/amplify-category-function/-/amplify-category-function-4.2.3.tgz#d0b8a84138efd5cc1da74fddffc6bf43dc41ce76"
-  integrity sha512-uZJVyGCLLXA2kAegl7TK0am3MoALW9tDA7kXghm029YSqwC6MVkOoUvPJWrqSiV8v2QGz0vtnQE9oyU5HN4EIA==
+amplify-category-function@^4.3.2-rc.5b0f8f170.0:
+  version "4.3.2"
+  resolved "https://registry.npmjs.org/amplify-category-function/-/amplify-category-function-4.3.2.tgz#5239c47fae5f2997610c327853d6b109c0ca5bbd"
+  integrity sha512-/wro4VPpUfhunzma//1fJmE23um71nWKn00Kb2b+rYi3xoAg1dMiynZYZ5dT3qbXkZsaOTLUfQd19s83vw3jiA==
   dependencies:
-    "@aws-amplify/amplify-environment-parameters" "1.3.1"
-    amplify-cli-core "3.5.1"
+    "@aws-amplify/amplify-environment-parameters" "1.3.4"
+    amplify-cli-core "3.6.2"
     amplify-function-plugin-interface "1.9.6"
-    amplify-prompts "2.6.2"
+    amplify-prompts "2.6.3"
     archiver "^5.3.0"
     aws-sdk "^2.1233.0"
     chalk "^4.1.1"
@@ -7920,7 +7964,7 @@ amplify-category-function@^4.2.1:
     folder-hash "^4.0.2"
     fs-extra "^8.1.0"
     globby "^11.0.3"
-    graphql-transformer-core "^7.6.9"
+    graphql-transformer-core "^7.6.11-alhotpatchfeb.0"
     inquirer "^7.3.3"
     inquirer-datepicker "^2.0.0"
     jstreemap "^1.28.2"
@@ -7929,7 +7973,7 @@ amplify-category-function@^4.2.1:
     promise-sequential "^1.1.1"
     uuid "^8.3.2"
 
-amplify-cli-core@3.3.0, amplify-cli-core@3.5.1, amplify-cli-core@3.7.0-rc.b80571744.0, amplify-cli-core@^3.5.1:
+amplify-cli-core@3.6.2, amplify-cli-core@3.7.0-rc.b80571744.0, amplify-cli-core@^3.5.1:
   version "3.5.1"
   resolved "https://registry.npmjs.org/amplify-cli-core/-/amplify-cli-core-3.5.1.tgz#cf16d1bb58fa9bfc6abc9f76bffeff9ec699d42b"
   integrity sha512-jE9Vp3WIktHlHLcR9dYopM5ZyZiqmrFRy42VlkQQakiE2YAvwwgCyvcZavjuXBk62iGKK0mZ2vKMPXFswy9fOA==
@@ -7997,77 +8041,33 @@ amplify-codegen@3.3.6, amplify-codegen@^3.3.6:
     semver "^7.3.5"
     slash "^3.0.0"
 
-amplify-frontend-android@3.4.0:
-  version "3.4.0"
-  resolved "https://registry.npmjs.org/amplify-frontend-android/-/amplify-frontend-android-3.4.0.tgz#15b37dce216c3bf4beb0de94711f013948edf6da"
-  integrity sha512-ZIToaDR2Vqm5L+xUF00a/xS8LxaroJIPGVJr3VEoLulXnuMwFQcab91+/E+48aaCGRxl0Q7fWG6/KY34Xf8+oA==
-  dependencies:
-    fs-extra "^8.1.0"
-    graphql-config "^2.2.1"
-    inquirer "^7.3.3"
-
-amplify-frontend-flutter@1.3.5:
-  version "1.3.5"
-  resolved "https://registry.npmjs.org/amplify-frontend-flutter/-/amplify-frontend-flutter-1.3.5.tgz#71b47c786a506c7f658f39992ac1b682c7273955"
-  integrity sha512-xkcFPsUYYToLfnFZ48bguutdkV3SjAhhxSGBjjyRnOkcNHvEJrAAmitulG2/5iD11NpVwWYUSeWgQfNMCcHsFQ==
-  dependencies:
-    fs-extra "^8.1.0"
-    graphql-config "^2.2.1"
-    inquirer "^7.3.3"
-
-amplify-frontend-ios@3.5.4:
-  version "3.5.4"
-  resolved "https://registry.npmjs.org/amplify-frontend-ios/-/amplify-frontend-ios-3.5.4.tgz#86ee79f338df63f06443b51ce296df5325755d4a"
-  integrity sha512-r0NZIjv4wjwKdujO2+hFd1KYbTjk47K+ofdTIShifhXEOtagCm7paw51ho+wlg5fw+Xt+VsnnOto1v9xPDxSeQ==
-  dependencies:
-    amplify-cli-core "3.3.0"
-    execa "^5.1.1"
-    fs-extra "^8.1.0"
-    graphql-config "^2.2.1"
-    lodash "^4.17.21"
-
-amplify-frontend-javascript@3.7.0:
-  version "3.7.0"
-  resolved "https://registry.npmjs.org/amplify-frontend-javascript/-/amplify-frontend-javascript-3.7.0.tgz#7fb4a420575aa3c591e32b544bbb1e97ff1493d7"
-  integrity sha512-MgiDZ0dkdqpdc+CRgdBEHarAodKw/PtOeEyeuS1cfBRM0QqCdbhfo67mDRo0IAzPxwlHoMEViWN+qPnYbmfBvw==
-  dependencies:
-    "@babel/core" "^7.10.5"
-    "@babel/plugin-transform-modules-commonjs" "7.10.4"
-    amplify-cli-core "3.3.0"
-    chalk "^4.1.1"
-    execa "^5.1.1"
-    fs-extra "^8.1.0"
-    graphql-config "^2.2.1"
-    inquirer "^7.3.3"
-    lodash "^4.17.21"
-
-amplify-function-plugin-interface@1.9.5, amplify-function-plugin-interface@^1.9.5:
-  version "1.9.5"
-  resolved "https://registry.npmjs.org/amplify-function-plugin-interface/-/amplify-function-plugin-interface-1.9.5.tgz#caa95891f7976d29a3d43c51f7c6a372178b9a81"
-  integrity sha512-x49gI8U1863JC7akkUTQ5WrAhOPD8/PRx9LCwRshl1RJNMH4AaF40Gx+ueDVV/SLAsFc2GM0xoigxsvX+Cu4qQ==
-
 amplify-function-plugin-interface@1.9.6:
   version "1.9.6"
   resolved "https://registry.npmjs.org/amplify-function-plugin-interface/-/amplify-function-plugin-interface-1.9.6.tgz#4773369c2e8f964579a7563142bb6eb404855764"
   integrity sha512-kVXgfRsSYspg6i8McFK3JCxzArCD1vfoMstWNEj7ut3QmU6zgJEsoY8z0RoOZq5yftXSr8NCpvgzlJVwLTwPWA==
 
-amplify-headless-interface@1.15.0:
-  version "1.15.0"
-  resolved "https://registry.npmjs.org/amplify-headless-interface/-/amplify-headless-interface-1.15.0.tgz#a72d001d11d230ab48844b6e57b5f5c9f1cb030e"
-  integrity sha512-6U22nhKLu67i6/zbBXZO+1TYmLXym+/e9fnwqeOhnctMCybU56RdWvj4/MhQIywn4DyOTHvYBkRT5o4f1hFSPg==
+amplify-function-plugin-interface@1.9.7-rc.b80571744.0:
+  version "1.9.7-rc.b80571744.0"
+  resolved "https://registry.npmjs.org/amplify-function-plugin-interface/-/amplify-function-plugin-interface-1.9.7-rc.b80571744.0.tgz#ae8087768f283332d6698aded6be330a11040a1e"
+  integrity sha512-9TkqBWoX1DOGBZPezDuooVnnF9eYFe4k6i9RdG7CwJQ5Xa1KA+Tnqn02Vocx8vVvy7EQALo82bpNgVcaPo01pg==
 
-amplify-headless-interface@^1.15.0:
-  version "1.16.1"
-  resolved "https://registry.npmjs.org/amplify-headless-interface/-/amplify-headless-interface-1.16.1.tgz#0698aff4ad87978ec07ef372098a9c92503d9ebe"
-  integrity sha512-26WQFsRFrNEPoK5UtxRa7n+ygLUwCQik+xXMLEqMXJV1siqilrEdLAxrTXU/cG7Qw1Vxf0mpfd2FvXCzPc4CNw==
+amplify-function-plugin-interface@^1.9.7-rc.b80571744.0:
+  version "1.9.7-rc.e0c735015.0"
+  resolved "https://registry.npmjs.org/amplify-function-plugin-interface/-/amplify-function-plugin-interface-1.9.7-rc.e0c735015.0.tgz#90aa07c4629dc45ae27c659ba9dcbb7e9b9a7823"
+  integrity sha512-5PdHYQnyS3pGCLI5KmrD95IG1+Jv5COws61XM+FqhiGtFA/a3sto9mxpNYX35uxn6UTEQnaUo2j+xboaudpeRA==
 
-amplify-nodejs-function-runtime-provider@^2.3.4:
-  version "2.3.4"
-  resolved "https://registry.npmjs.org/amplify-nodejs-function-runtime-provider/-/amplify-nodejs-function-runtime-provider-2.3.4.tgz#8080618c384fa56dddd76e7e47fa4549eae7151c"
-  integrity sha512-vDrqOF8u+7/LO7G1euzncq/hSsrDblS/0uzqylY7zJw+ycXgoOFjLMEyDAsc/6qeyZWo/dCDgKDp9UtOz3SUmA==
+amplify-headless-interface@1.17.1-rc.e0c735015.0, amplify-headless-interface@^1.17.1-rc.b80571744.0:
+  version "1.17.1-rc.e0c735015.0"
+  resolved "https://registry.npmjs.org/amplify-headless-interface/-/amplify-headless-interface-1.17.1-rc.e0c735015.0.tgz#686a7ccaa2748b7b7c8c7175b0324edac251196e"
+  integrity sha512-SdtbDLf409J+gLFHdBKhVssVEC1viupVfSA6ktSZMvpxImmd7zFHOgUpiv+QaIyrZepL9YhbRhyVGt99k3m7MA==
+
+amplify-nodejs-function-runtime-provider@^2.3.11-rc.b80571744.0:
+  version "2.3.11-rc.b80571744.0"
+  resolved "https://registry.npmjs.org/amplify-nodejs-function-runtime-provider/-/amplify-nodejs-function-runtime-provider-2.3.11-rc.b80571744.0.tgz#cd914483baa02a16d9a603e2a30e3b4d555e0523"
+  integrity sha512-OlV10RlzQEP7ZjaEwt9ZTBLsVe5/KF4oGeSecV+++cST4Z25Ik2GPTQfTxGJvH0fE32ieJTlQEHXArnM2CywHg==
   dependencies:
-    amplify-cli-core "3.3.0"
-    amplify-function-plugin-interface "1.9.5"
+    amplify-cli-core "3.7.0-rc.b80571744.0"
+    amplify-function-plugin-interface "1.9.7-rc.b80571744.0"
     execa "^5.1.1"
     exit "^0.1.2"
     fs-extra "^8.1.0"
@@ -8082,6 +8082,15 @@ amplify-prompts@2.6.2:
     chalk "^4.1.1"
     enquirer "^2.3.6"
 
+amplify-prompts@2.6.3:
+  version "2.6.3"
+  resolved "https://registry.npmjs.org/amplify-prompts/-/amplify-prompts-2.6.3.tgz#4b891500be3909f6fdabec85caccfb2bfb50f37e"
+  integrity sha512-jtOSA48wX7cSb4DfptpxuXR84HERr5Ty+vXXlvlKld1CaFzR7WB+1cVLobYHEFWZmC8mCMJG8PezaUXAOWvldw==
+  dependencies:
+    amplify-cli-shared-interfaces "1.1.1"
+    chalk "^4.1.1"
+    enquirer "^2.3.6"
+
 amplify-prompts@2.6.4-rc.b80571744.0:
   version "2.6.4-rc.b80571744.0"
   resolved "https://registry.npmjs.org/amplify-prompts/-/amplify-prompts-2.6.4-rc.b80571744.0.tgz#37ced5cfdde155c91cb0861034425309e448347c"
@@ -8091,10 +8100,10 @@ amplify-prompts@2.6.4-rc.b80571744.0:
     chalk "^4.1.1"
     enquirer "^2.3.6"
 
-amplify-storage-simulator@^1.7.0:
-  version "1.7.0"
-  resolved "https://registry.npmjs.org/amplify-storage-simulator/-/amplify-storage-simulator-1.7.0.tgz#ddefbe7bf1f074ed247c36269c70ff55f844047b"
-  integrity sha512-4l/0wFHWZIlqtzv54mzKt9JsdhP5aIBGfoPjMG0tTjUKbzDOQHawNtHgix34rpy8gldodtmFBzAw94G+K5eDNg==
+amplify-storage-simulator@^1.7.3-rc.b80571744.0:
+  version "1.7.3-rc.e0c735015.0"
+  resolved "https://registry.npmjs.org/amplify-storage-simulator/-/amplify-storage-simulator-1.7.3-rc.e0c735015.0.tgz#b976a9a2570a3e5e2745c71e1181ef78219153a6"
+  integrity sha512-u3W/A1T3CoAYwS6XcgO4zTP0W6tgqA33rtSWQMx+RG9QE6dmJnXou13YOfeJu4QP6bEr3z0LUbmWzWPwYCLTvw==
   dependencies:
     body-parser "^1.19.2"
     cors "^2.8.5"
@@ -8109,13 +8118,13 @@ amplify-storage-simulator@^1.7.0:
     xml "^1.0.1"
     xml-js "^1.6.11"
 
-amplify-util-headless-input@^1.9.6:
-  version "1.9.6"
-  resolved "https://registry.npmjs.org/amplify-util-headless-input/-/amplify-util-headless-input-1.9.6.tgz#b196215b484e9442564392f736a17957566a671b"
-  integrity sha512-8gp+s4fWD94xpsJwVxNmNn7VzSJB+2Maq+WvC1HE/pFO2uVwfkGfA9AiZs47993vQzNxE5/nnZ4fBWL0O2Jodw==
+amplify-util-headless-input@^1.9.10-rc.b80571744.0:
+  version "1.9.10-rc.e0c735015.0"
+  resolved "https://registry.npmjs.org/amplify-util-headless-input/-/amplify-util-headless-input-1.9.10-rc.e0c735015.0.tgz#1969bfdb6bd3f84779d2bd84619cf0d18079054b"
+  integrity sha512-SbeGg7/j6Vjm7ohMA6jXdqo5YbKbKM7ZMQodzOjM/ORR+g6d6Zk/OYyv7VQeQgJkznTyJNModuwPjRnu682cgw==
   dependencies:
     ajv "^6.12.6"
-    amplify-headless-interface "1.15.0"
+    amplify-headless-interface "1.17.1-rc.e0c735015.0"
 
 amplify-velocity-template@1.4.9-rc.b80571744.0:
   version "1.4.9-rc.b80571744.0"
@@ -12821,10 +12830,40 @@ graphql-tag@^2.10.1, graphql-tag@^2.11.0:
   dependencies:
     tslib "^2.1.0"
 
+graphql-transformer-common@4.24.5-alhotpatchfeb.0:
+  version "4.24.5-alhotpatchfeb.0"
+  resolved "https://registry.npmjs.org/graphql-transformer-common/-/graphql-transformer-common-4.24.5-alhotpatchfeb.0.tgz#89dd1c3522560d1647c451894c50619eeb5dce61"
+  integrity sha512-2R0d1npXW1HJE3u0EsLo2bL4V4UD+qyF/gJM4hBY4lyzAkcszuKUbbJmXV4TXxkIwkF58C6FMz/90XlrKhMgbQ==
+  dependencies:
+    graphql "^14.5.8"
+    graphql-mapping-template "4.20.7"
+    md5 "^2.2.1"
+    pluralize "8.0.0"
+
+graphql-transformer-core@^7.6.11-alhotpatchfeb.0:
+  version "7.6.11-alhotpatchfeb.0"
+  resolved "https://registry.npmjs.org/graphql-transformer-core/-/graphql-transformer-core-7.6.11-alhotpatchfeb.0.tgz#5e3163dc2989b9137d71e84c9c73ab0f466a0190"
+  integrity sha512-Mm6n2NZzG4mix0cYVIz9gOQqtanhpZVpR2G7G7danw9Ksfb8JzGhQSrKcZabhKp+txuGkFKg4vw0RJHNMrRN2Q==
+  dependencies:
+    cloudform-types "^4.2.0"
+    deep-diff "^1.0.2"
+    fs-extra "^8.1.0"
+    glob "^7.2.0"
+    graphql "^14.5.8"
+    graphql-transformer-common "4.24.5-alhotpatchfeb.0"
+    lodash "^4.17.21"
+
 graphql@15.8.0, graphql@^15.5.0:
   version "15.8.0"
   resolved "https://registry.npmjs.org/graphql/-/graphql-15.8.0.tgz#33410e96b012fa3bdb1091cc99a94769db212b38"
   integrity sha512-5gghUc24tP9HRznNpV2+FIoq3xKkj5dTQqf4v0CpdPbFVwFkWoxOM+o+2OC9ZSvjEMTjfmG9QT+gcvggTwW1zw==
+
+graphql@^14.5.8:
+  version "14.7.0"
+  resolved "https://registry.npmjs.org/graphql/-/graphql-14.7.0.tgz#7fa79a80a69be4a31c27dda824dc04dac2035a72"
+  integrity sha512-l0xWZpoPKpppFzMfvVyFmp9vLN7w/ZZJPefUicMCepfJeQ8sMcztloGYY9DfjVPo6tIUDzU5Hw3MUbIjj9AVVA==
+  dependencies:
+    iterall "^1.2.2"
 
 graphql@^16.6.0:
   version "16.6.0"
@@ -14101,7 +14140,7 @@ istanbul-reports@^3.0.2, istanbul-reports@^3.1.3:
     html-escaper "^2.0.0"
     istanbul-lib-report "^3.0.0"
 
-iterall@^1.3.0:
+iterall@^1.2.2, iterall@^1.3.0:
   version "1.3.0"
   resolved "https://registry.npmjs.org/iterall/-/iterall-1.3.0.tgz#afcb08492e2915cbd8a0884eb93a8c94d0d72fea"
   integrity sha512-QZ9qOMdF+QLHxy1QIpUHUU1D5pS2CG2P69LF6L6CPjPYA/XMOmKV3PZpawHoAjHNyB0swdVTRxdYT4tbBbxqwg==
