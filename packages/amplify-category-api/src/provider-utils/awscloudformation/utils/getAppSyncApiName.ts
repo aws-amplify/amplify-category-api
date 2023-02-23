@@ -1,4 +1,4 @@
-import { $TSContext, AmplifySupportedService } from 'amplify-cli-core';
+import { $TSContext, AmplifySupportedService, AmplifyError } from 'amplify-cli-core';
 
 export const getAppSyncApiResourceName = async (context: $TSContext): Promise<string> => {
   const { allResources } = await context.amplify.getResourceStatus();
@@ -9,7 +9,10 @@ export const getAppSyncApiResourceName = async (context: $TSContext): Promise<st
     const resource = apiResource[0];
     apiResourceName = resource.resourceName;
   } else {
-    throw new Error(`${AmplifySupportedService.APPSYNC} API does not exist. To add an api, use "amplify update api".`);
+    throw new AmplifyError('NotImplementedError', {
+      message: `${AmplifySupportedService.APPSYNC} API does not exist`,
+      resolution: 'To add an api, use amplify add api',
+    });
   }
   return apiResourceName;
 };
