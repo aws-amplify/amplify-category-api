@@ -6,8 +6,6 @@ import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionConte
 import { VelocityTemplateSimulator, AppSyncVTLContext, getGenericToken } from '../../velocity';
 import { featureFlags } from './test-helper';
 
-jest.mock('amplify-prompts');
-
 // oidc needs claim values to know where to check in the token otherwise it will use cognito defaults precendence order below
 // - owner: 'username' -> 'cognito:username' -> default to null
 // - group: 'cognito:groups' -> default to null or empty list

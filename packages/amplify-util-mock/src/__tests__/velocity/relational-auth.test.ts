@@ -8,8 +8,6 @@ import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionConte
 import { featureFlags } from '@aws-amplify/graphql-auth-transformer/src/__tests__/test-helpers';
 import { VelocityTemplateSimulator, getJWTToken, getIAMToken } from '../../velocity';
 
-jest.mock('amplify-prompts');
-
 const USER_POOL_ID = 'us-fake-1ID';
 
 describe('relational tests', () => {

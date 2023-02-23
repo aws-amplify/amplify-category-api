@@ -8,8 +8,6 @@ import {
 } from '../../velocity';
 import { featureFlags } from './test-helper';
 
-jest.mock('amplify-prompts');
-
 describe('admin roles query checks', () => {
   const ADMIN_UI_ROLE = 'us-fake-1_uuid_Full-access/CognitoIdentityCredentials';
   let vtlTemplate: VelocityTemplateSimulator;

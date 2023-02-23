@@ -266,6 +266,7 @@ export const constructGraphQLTransformV2 = async (opts: TransformerProjectOption
     userDefinedSlots,
     resolverConfig: opts.resolverConfig,
     overrideConfig: opts.overrideConfig,
+    printer,
   });
 
   return transform;

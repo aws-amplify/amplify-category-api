@@ -7,8 +7,6 @@ import {
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { featureFlags } from './test-helpers';
 
-jest.mock('amplify-prompts');
-
 const userPoolsDefaultConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {
     authenticationType: 'AMAZON_COGNITO_USER_POOLS',

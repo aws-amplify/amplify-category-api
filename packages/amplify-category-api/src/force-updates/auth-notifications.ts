@@ -203,7 +203,7 @@ export const notifyFieldAuthSecurityChange = async (context: $TSContext): Promis
   }
 
   const project = await readProjectConfiguration(apiResourceDir);
-  const directiveMap = collectDirectivesByType(project.schema);
+  const directiveMap = collectDirectivesByType(printer, project.schema);
   const doc: DocumentNode = parse(project.schema);
   const fieldDirectives: Set<string> = hasFieldAuthDirectives(doc);
 
@@ -314,7 +314,7 @@ export const notifySecurityEnhancement = async (context: $TSContext): Promise<vo
 
     const project = await readProjectConfiguration(apiResourceDir);
 
-    const directiveMap = collectDirectivesByTypeNames(project.schema);
+    const directiveMap = collectDirectivesByTypeNames(printer, project.schema);
     const notifyAuthWithKey = Object.keys(directiveMap.types).some(
       (type) => directiveMap.types[type].includes('auth') && directiveMap.types[type].includes('primaryKey'),
     );

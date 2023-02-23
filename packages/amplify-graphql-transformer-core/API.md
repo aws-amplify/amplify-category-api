@@ -30,6 +30,7 @@ import { CfnResource } from '@aws-cdk/core';
 import { CfnRole } from '@aws-cdk/aws-iam';
 import { CfnStack } from '@aws-cdk/core';
 import { CfnTable } from '@aws-cdk/aws-dynamodb';
+import { Color } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from '@aws-cdk/core';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -54,6 +55,7 @@ import { InputObjectTypeExtensionNode } from 'graphql';
 import { InputValueDefinitionNode } from 'graphql';
 import { InterfaceTypeDefinitionNode } from 'graphql';
 import { InterfaceTypeExtensionNode } from 'graphql';
+import { IPrinter } from '@aws-amplify/graphql-transformer-interfaces';
 import { IStackSynthesizer } from '@aws-cdk/core';
 import { ISynthesisSession } from '@aws-cdk/core';
 import { Location as Location_2 } from 'graphql';
@@ -144,6 +146,11 @@ export const enum ConflictHandlerType {
     // (undocumented)
     OPTIMISTIC = "OPTIMISTIC_CONCURRENCY"
 }
+
+// Warning: (ae-forgotten-export) The symbol "ConsolePrinter" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export const consolePrinter: ConsolePrinter;
 
 // @public (undocumented)
 function createSyncLambdaIAMPolicy(context: TransformerContextProvider, stack: cdk.Stack, name: string, region?: string): iam.Policy;
@@ -263,6 +270,8 @@ export interface GraphQLTransformOptions {
     readonly host?: TransformHostProvider;
     // (undocumented)
     readonly overrideConfig?: OverrideConfig;
+    // (undocumented)
+    readonly printer?: IPrinter;
     // (undocumented)
     readonly resolverConfig?: ResolverConfig;
     // (undocumented)

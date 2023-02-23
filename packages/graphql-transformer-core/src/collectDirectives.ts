@@ -12,7 +12,8 @@ import {
   parse,
   Kind,
 } from 'graphql';
-import { printer } from 'amplify-prompts';
+import { IPrinter } from './printer';
+
 export function collectDirectiveNames(sdl: string): string[] {
   const dirs = collectDirectives(sdl);
   return dirs.map(d => d.name.value);
@@ -47,8 +48,8 @@ export function collectDirectives(sdl: string): DirectiveNode[] {
   return directives;
 }
 
-export function collectDirectivesByTypeNames(sdl: string) {
-  let types = collectDirectivesByType(sdl);
+export function collectDirectivesByTypeNames(printer: IPrinter, sdl: string) {
+  let types = collectDirectivesByType(printer, sdl);
   const directives: Set<string> = new Set();
   Object.keys(types).forEach(dir => {
     let set: Set<string> = new Set();
@@ -61,7 +62,7 @@ export function collectDirectivesByTypeNames(sdl: string) {
   return { types, directives: Array.from(directives) };
 }
 
-export function collectDirectivesByType(sdl: string): Object {
+export function collectDirectivesByType(printer: IPrinter, sdl: string): Object {
   if (!sdl) {
     return {};
   }

@@ -8,8 +8,6 @@ import {
 import { AuthTransformer, SEARCHABLE_AGGREGATE_TYPES } from '..';
 import { featureFlags } from './test-helpers';
 
-jest.mock('amplify-prompts');
-
 const getObjectType = (
   doc: DocumentNode,
   type: string,

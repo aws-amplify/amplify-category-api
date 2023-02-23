@@ -3,6 +3,7 @@ import {
   AppSyncAuthConfiguration,
   FeatureFlagProvider,
   GraphQLAPIProvider,
+  IPrinter,
   TransformerPluginProvider,
   TransformHostProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -10,7 +11,6 @@ import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
 import {
   App, Aws, CfnOutput, CfnResource, Fn,
 } from '@aws-cdk/core';
-import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import {
   EnumTypeDefinitionNode,
@@ -57,6 +57,7 @@ import { validateAuthModes, validateModelSchema } from './validation';
 import { DocumentNode } from 'graphql/language';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { AmplifyApiGraphQlResourceStackTemplate } from '../types/amplify-api-resource-stack-types';
+import { consolePrinter } from '../utils';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
@@ -88,6 +89,7 @@ export interface GraphQLTransformOptions {
   readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   readonly resolverConfig?: ResolverConfig;
   readonly overrideConfig?: OverrideConfig;
+  readonly printer?: IPrinter;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
@@ -100,6 +102,7 @@ export class GraphQLTransform {
   private readonly buildParameters: Record<string, any>;
   private readonly userDefinedSlots: Record<string, UserDefinedSlot[]>;
   private readonly overrideConfig?: OverrideConfig;
+  private readonly printer: IPrinter;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
   // that specifies we have run already run a directive at a given location.
@@ -132,6 +135,7 @@ export class GraphQLTransform {
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
     this.resolverConfig = options.resolverConfig || {};
     this.overrideConfig = options.overrideConfig;
+    this.printer = options.printer || consolePrinter;
   }
 
   /**
@@ -181,6 +185,7 @@ export class GraphQLTransform {
       parsedDocument,
       this.stackMappingOverrides,
       this.authConfig,
+      this.printer,
       this.options.sandboxModeEnabled,
       this.options.featureFlags,
       this.resolverConfig,
@@ -363,7 +368,7 @@ export class GraphQLTransform {
         sandboxNode.run(overrideCode, path.join(this.overrideConfig!.overrideDir, 'build', 'override.js')).override(appsyncResourceObj);
       } catch (err) {
         const error = new Error(`Skipping override due to ${err}${os.EOL}`);
-        printer.error(`${error}`);
+        this.printer.error(`${error}`);
         error.stack = undefined;
         throw error;
       }

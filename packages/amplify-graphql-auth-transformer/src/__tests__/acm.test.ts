@@ -5,8 +5,6 @@ import { AuthTransformer } from '..';
 import { AcmTest, acmTests } from './acm-test-library';
 import { featureFlags } from './test-helpers';
 
-jest.mock('amplify-prompts');
-
 const testSchemaACM = (test: AcmTest): void => {
   const authTransformer = new AuthTransformer();
   const transformer = new GraphQLTransform({

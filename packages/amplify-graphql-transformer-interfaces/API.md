@@ -127,6 +127,9 @@ export interface AppSyncFunctionConfigurationProvider extends IConstruct {
     readonly functionId: string;
 }
 
+// @public (undocumented)
+export type Color = 'green' | 'blue' | 'yellow' | 'red' | 'reset';
+
 // Warning: (ae-forgotten-export) The symbol "NoneDataSourceProvider" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -195,6 +198,16 @@ export interface InlineMappingTemplateProvider {
     // (undocumented)
     type: MappingTemplateType.INLINE;
 }
+
+// @public (undocumented)
+export type IPrinter = {
+    debug: (line: string) => void;
+    info: (line: string, color?: Color) => void;
+    blankLine: () => void;
+    success: (line: string) => void;
+    warn: (line: string) => void;
+    error: (line: string) => void;
+};
 
 // @public (undocumented)
 export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingTemplateProvider;
@@ -384,6 +397,8 @@ export interface TransformerContextProvider {
     metadata: TransformerContextMetadataProvider;
     // (undocumented)
     output: TransformerContextOutputProvider;
+    // (undocumented)
+    printer: IPrinter;
     // (undocumented)
     providerRegistry: TransformerProviderRegistry;
     // (undocumented)
@@ -621,7 +636,7 @@ export type TransformerSchemaVisitStepContextProvider = Pick<TransformerContextP
 export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;
 
 // @public (undocumented)
-export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'output' | 'providerRegistry' | 'dataSources' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'sandboxModeEnabled' | 'resourceHelper' | 'resolvers' | 'stackManager'>;
+export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'output' | 'providerRegistry' | 'dataSources' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'sandboxModeEnabled' | 'resourceHelper' | 'resolvers' | 'stackManager' | 'printer'>;
 
 // @public (undocumented)
 export interface TransformHostProvider {

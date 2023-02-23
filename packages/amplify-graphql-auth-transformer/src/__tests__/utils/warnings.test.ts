@@ -1,15 +1,17 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { printer } from 'amplify-prompts';
+import { IPrinter } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '../../graphql-auth-transformer';
 import { showDefaultIdentityClaimWarning } from '../../utils/warnings';
 
-jest.mock('amplify-prompts', () => ({
-  printer: {
-    warn: jest.fn(),
-    debug: jest.fn(),
-  },
-}));
+const printer: IPrinter = {
+  warn: jest.fn(),
+  debug: jest.fn(),
+  info: jest.fn(),
+  blankLine: jest.fn(),
+  success: jest.fn(),
+  error: jest.fn(),
+};
 
 describe('showDefaultIdentityClaimWarning', () => {
   describe('owner based @auth', () => {
@@ -21,6 +23,7 @@ describe('showDefaultIdentityClaimWarning', () => {
             getNumber: jest.fn(),
             getObject: jest.fn(),
           },
+          printer,
         };
 
         showDefaultIdentityClaimWarning(context, [{ allow: 'owner' }]);
@@ -38,6 +41,7 @@ describe('showDefaultIdentityClaimWarning', () => {
               getNumber: jest.fn(),
               getObject: jest.fn(),
             },
+            printer,
           };
           showDefaultIdentityClaimWarning(context, [{ allow: 'owner', identityClaim: 'cognito:username' }]);
 
@@ -53,6 +57,7 @@ describe('showDefaultIdentityClaimWarning', () => {
               getNumber: jest.fn(),
               getObject: jest.fn(),
             },
+            printer,
           };
           showDefaultIdentityClaimWarning(context, [{ allow: 'owner', identityClaim: 'username' }]);
 
@@ -70,6 +75,7 @@ describe('showDefaultIdentityClaimWarning', () => {
               getNumber: jest.fn(),
               getObject: jest.fn(),
             },
+            printer,
           };
           showDefaultIdentityClaimWarning(context, [{ allow: 'owner', identityClaim: 'cognito:username' }]);
 
@@ -85,6 +91,7 @@ describe('showDefaultIdentityClaimWarning', () => {
               getNumber: jest.fn(),
               getObject: jest.fn(),
             },
+            printer,
           };
           showDefaultIdentityClaimWarning(context, [{ allow: 'owner', identityClaim: 'username' }]);
 
@@ -101,6 +108,7 @@ describe('showDefaultIdentityClaimWarning', () => {
             getNumber: jest.fn(),
             getObject: jest.fn(),
           },
+          printer,
         };
         showDefaultIdentityClaimWarning(context, [{ allow: 'owner' }]);
 
@@ -141,6 +149,7 @@ describe('showOwnerCanReassignWarning', () => {
         getNumber: jest.fn(),
         getObject: jest.fn(),
       },
+      printer,
     });
 
     transformer.transform(schema);
@@ -289,6 +298,7 @@ describe('showOwnerFieldCaseWarning', () => {
         getNumber: jest.fn(),
         getObject: jest.fn(),
       },
+      printer,
     });
     transformer.transform(schema);
   };

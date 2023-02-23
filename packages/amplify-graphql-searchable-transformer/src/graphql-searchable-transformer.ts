@@ -297,7 +297,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     const parameterMap = createParametersInStack(context.stackManager.rootStack);
 
-    const nodeToNodeEncryption = this.apiName ? shouldEnableNodeToNodeEncryption(this.apiName) : false;
+    const nodeToNodeEncryption = this.apiName ? shouldEnableNodeToNodeEncryption(context.printer, this.apiName) : false;
 
     const domain = createSearchableDomain(stack, parameterMap, context.api.apiId, nodeToNodeEncryption);
 

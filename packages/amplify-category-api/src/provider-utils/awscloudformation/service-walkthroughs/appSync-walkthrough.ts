@@ -472,7 +472,7 @@ export const updateWalkthrough = async (context: $TSContext): Promise<UpdateApiR
   await displayApiInformation(context, resource, project);
 
   // Check for common errors
-  const directiveMap = collectDirectivesByTypeNames(project.schema);
+  const directiveMap = collectDirectivesByTypeNames(printer, project.schema);
   let modelTypes = [];
 
   if (directiveMap.types) {

@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { TransformConfig } from '@aws-amplify/graphql-transformer-core/lib';
 import { TRANSFORM_CONFIG_FILE_NAME } from 'graphql-transformer-core';
-import { printer } from 'amplify-prompts';
+import { IPrinter } from "@aws-amplify/graphql-transformer-interfaces";
 
 /**
  * Return whether or not NodeToNodeEncryption should be enabled for the API.
@@ -15,12 +15,12 @@ import { printer } from 'amplify-prompts';
  * @param apiName the name of the api to attempt and pull the flag from.
  * @returns whether or not NodeToNodeEncryption should be enabled on a searchable instance.
  */
-export const shouldEnableNodeToNodeEncryption = (apiName: string): boolean => {
+export const shouldEnableNodeToNodeEncryption = (printer: IPrinter, apiName: string): boolean => {
   try {
     const nodeToNodeEncryptionParameter = getNodeToNodeEncryptionConfigValue(apiName);
     const doesExistingBackendHaveNodeToNodeEncryption = getCurrentCloudBackendStackFiles(apiName).some(definition => hasNodeToNodeEncryptionOptions(definition));
 
-    warnOnExistingNodeToNodeEncryption(doesExistingBackendHaveNodeToNodeEncryption);
+    warnOnExistingNodeToNodeEncryption(printer, doesExistingBackendHaveNodeToNodeEncryption);
 
     if (nodeToNodeEncryptionParameter !== undefined) {
       return nodeToNodeEncryptionParameter;
@@ -33,7 +33,7 @@ export const shouldEnableNodeToNodeEncryption = (apiName: string): boolean => {
   }
 };
 
-const warnOnExistingNodeToNodeEncryption = (doesExistingBackendHaveNodeToNodeEncryption: boolean): void => {
+const warnOnExistingNodeToNodeEncryption = (printer: IPrinter, doesExistingBackendHaveNodeToNodeEncryption: boolean): void => {
   if (!doesExistingBackendHaveNodeToNodeEncryption) {
     return;
   }

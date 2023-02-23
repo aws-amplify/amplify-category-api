@@ -235,6 +235,7 @@ const _buildProject = async (opts: TransformerProjectOptions<TransformerFactoryA
     userDefinedSlots,
     resolverConfig: opts.resolverConfig,
     overrideConfig: opts.overrideConfig,
+    printer,
   });
 
   const schema = userProjectConfig.schema.toString();

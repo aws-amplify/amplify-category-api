@@ -225,7 +225,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
 
   after = (context: TransformerContextProvider): void => {
     showDefaultIdentityClaimWarning(context, this.rules);
-    showOwnerCanReassignWarning(this.authModelConfig);
+    showOwnerCanReassignWarning(context.printer, this.authModelConfig);
   };
 
   field = (
@@ -1074,7 +1074,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const ownerFieldsToAdd = ownerFields.filter((field) => !existingFields.includes(field));
     ownerFieldsToAdd.forEach((ownerField) => {
       const warningField = existingFields.find((field) => field.toLowerCase() === ownerField.toLowerCase());
-      if (warningField) showOwnerFieldCaseWarning(ownerField, warningField, modelName);
+      if (warningField) showOwnerFieldCaseWarning(ctx.printer, ownerField, warningField, modelName);
       (modelObject as any).fields.push(makeField(ownerField, [], makeNamedType('String')));
     });
     ctx.output.putType(modelObject);

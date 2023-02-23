@@ -8,8 +8,6 @@ import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer'
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { getField, getObjectType, featureFlags } from './test-helpers';
 
-jest.mock('amplify-prompts');
-
 describe('owner based @auth', () => {
   test('auth transformer validation happy case', () => {
     const authConfig: AppSyncAuthConfiguration = {

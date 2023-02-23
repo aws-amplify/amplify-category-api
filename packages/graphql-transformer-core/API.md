@@ -86,10 +86,10 @@ export const CLOUDFORMATION_FILE_NAME = "cloudformation-template.json";
 export function collectDirectiveNames(sdl: string): string[];
 
 // @public (undocumented)
-export function collectDirectivesByType(sdl: string): Object;
+export function collectDirectivesByType(printer: IPrinter, sdl: string): Object;
 
 // @public (undocumented)
-export function collectDirectivesByTypeNames(sdl: string): {
+export function collectDirectivesByTypeNames(printer: IPrinter, sdl: string): {
     types: Object;
     directives: string[];
 };
@@ -106,6 +106,27 @@ export const enum ConflictHandlerType {
     // (undocumented)
     OPTIMISTIC = "OPTIMISTIC_CONCURRENCY"
 }
+
+// @public (undocumented)
+export class ConsolePrinter implements IPrinter {
+    // (undocumented)
+    blankLine(): void;
+    // (undocumented)
+    debug(line: string): void;
+    // (undocumented)
+    error(line: string): void;
+    // Warning: (ae-forgotten-export) The symbol "Color" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    info(line: string, _?: Color): void;
+    // (undocumented)
+    success(line: string): void;
+    // (undocumented)
+    warn(line: string): void;
+}
+
+// @public (undocumented)
+export const consolePrinter: ConsolePrinter;
 
 // Warning: (ae-forgotten-export) The symbol "ResolversFunctionsAndSchema" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "NestedStacks" needs to be exported by the entry point index.d.ts
@@ -164,7 +185,7 @@ export function getSanityCheckRules(isNewAppSyncAPI: boolean, ff: FeatureFlagPro
 };
 
 // @public (undocumented)
-export function getTableNameForModel(sdl: string, modelName: string): string;
+export function getTableNameForModel(printer: IPrinter, sdl: string, modelName: string): string;
 
 // @public (undocumented)
 export function gql(literals: TemplateStringsArray, ...placeholders: string[]): DocumentNode;
@@ -206,6 +227,16 @@ export class InvalidMigrationError extends Error {
 export class InvalidTransformerError extends Error {
     constructor(message: string);
 }
+
+// @public (undocumented)
+export type IPrinter = {
+    debug: (line: string) => void;
+    info: (line: string, color?: Color) => void;
+    blankLine: () => void;
+    success: (line: string) => void;
+    warn: (line: string) => void;
+    error: (line: string) => void;
+};
 
 // @public (undocumented)
 export const isDataStoreEnabled: (projectDir: string) => Promise<boolean>;

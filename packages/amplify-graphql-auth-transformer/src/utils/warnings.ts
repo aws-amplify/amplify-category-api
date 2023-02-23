@@ -1,5 +1,4 @@
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { printer } from 'amplify-prompts';
+import { IPrinter, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthRule } from '.';
 import { AccessControlMatrix } from '../accesscontrol';
 
@@ -16,7 +15,7 @@ export const showDefaultIdentityClaimWarning = (context: TransformerContextProvi
 
     if (hasFeatureFlagEnabled) return;
 
-    printer.warn(
+    context.printer.warn(
       ' WARNING: Amplify CLI will change the default identity claim from \'username\' '
         + 'to use \'sub::username\'. To continue using only usernames, set \'identityClaim: "username"\' on your '
         + '\'owner\' rules on your schema. The default will be officially switched with v9.0.0. To read '
@@ -27,9 +26,11 @@ export const showDefaultIdentityClaimWarning = (context: TransformerContextProvi
 
 /**
  * Display a warning when an 'owner' has access to update their own owner field.
+ * @param printer the printer to use for rendering warning message
  * @param authModelConfig The model to ACM map we generate for the given ruleset.
  */
 export const showOwnerCanReassignWarning = (
+  printer: IPrinter,
   authModelConfig: Map<string, AccessControlMatrix>,
 ): void => {
   try {
@@ -67,7 +68,7 @@ export const showOwnerCanReassignWarning = (
   }
 };
 
-export const showOwnerFieldCaseWarning = (ownerField: string, warningField: string, modelName: string): void => {
+export const showOwnerFieldCaseWarning = (printer: IPrinter, ownerField: string, warningField: string, modelName: string): void => {
   printer.warn(
     `WARNING: Schema field "${warningField}" and ownerField "${ownerField}" in type ${modelName} are getting added to your schema but could be referencing the same owner field. `
     + 'If this is not intentional, you may want to change one of the fields to the correct name.\n',

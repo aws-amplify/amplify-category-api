@@ -1,4 +1,5 @@
-import { InvalidDirectiveError } from '.';
+import { InvalidDirectiveError } from './errors';
+import { IPrinter } from './printer';
 import { collectDirectivesByType } from './collectDirectives';
 
 // this must be kept in sync with the directive name defined in the MapsToTransformer
@@ -10,8 +11,8 @@ const directiveName = 'mapsTo';
  * @param modelName The model name to translate
  * @returns The modelName if the type does not have an @mapsTo directive on it. Otherwise it returns the name specified in @mapsTo
  */
-export function getTableNameForModel(sdl: string, modelName: string): string {
-  const directivesByType = collectDirectivesByType(sdl);
+export function getTableNameForModel(printer: IPrinter, sdl: string, modelName: string): string {
+  const directivesByType = collectDirectivesByType(printer, sdl);
   const mapsToDirective = directivesByType?.[modelName]?.find(directive => directive.name.value === directiveName);
   if (!mapsToDirective) {
     return modelName;

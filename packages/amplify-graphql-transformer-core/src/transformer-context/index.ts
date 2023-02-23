@@ -6,6 +6,7 @@ import {
   TransformerContextProvider,
   TransformerDataSourceManagerProvider,
   AppSyncAuthConfiguration,
+  IPrinter,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { App } from '@aws-cdk/core';
@@ -59,6 +60,7 @@ export class TransformerContext implements TransformerContextProvider {
     public readonly inputDocument: DocumentNode,
     stackMapping: Record<string, string>,
     authConfig: AppSyncAuthConfiguration,
+    public printer: IPrinter,
     sandboxModeEnabled?: boolean,
     featureFlags?: FeatureFlagProvider,
     resolverConfig?: ResolverConfig,

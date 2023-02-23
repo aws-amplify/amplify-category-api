@@ -36,6 +36,7 @@ export {
   DirectiveWrapper,
   IAM_AUTH_ROLE_PARAMETER,
   IAM_UNAUTH_ROLE_PARAMETER,
+  consolePrinter,
 } from './utils';
 export * from './utils/operation-names';
 export * from './errors';
@@ -49,9 +50,7 @@ export { TransformerResolver, StackManager } from './transformer-context';
 /**
  * Returns the extra set of directives that are supported by AppSync service.
  */
-export const getAppSyncServiceExtraDirectives = (): string => {
-  return print(EXTRA_DIRECTIVES_DOCUMENT);
-};
+export const getAppSyncServiceExtraDirectives = (): string => print(EXTRA_DIRECTIVES_DOCUMENT);
 
 export { MappingTemplate, TransformerNestedStack } from './cdk-compat';
 export {

@@ -86,8 +86,8 @@ describe("@model with relational transformers", () => {
             }
 
             return defaultValue;
-          }
-        } as FeatureFlagProvider
+          },
+        } as FeatureFlagProvider,
       });
       const out = transformer.transform(validSchema);
 

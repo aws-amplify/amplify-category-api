@@ -4,12 +4,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { attemptV2TransformerMigration, revertV2Migration } from '../../schema-migrator';
-import { printer, prompter } from 'amplify-prompts';
 import { FeatureFlags, pathManager } from 'amplify-cli-core';
-
-jest.mock('amplify-prompts');
-const prompter_mock = prompter as jest.Mocked<typeof prompter>;
-prompter_mock.confirmContinue.mockResolvedValue(true);
 
 jest.mock('@aws-amplify/amplify-environment-parameters', () => ({
   getEnvParamManager: jest.fn().mockReturnValue({
@@ -18,6 +13,19 @@ jest.mock('@aws-amplify/amplify-environment-parameters', () => ({
     }),
   }),
 }));
+
+const prompter = {
+  confirmContinue: jest.fn(async () => Promise.resolve(true)),
+};
+
+const printer = {
+  warn: jest.fn(),
+  debug: jest.fn(),
+  info: jest.fn(),
+  blankLine: jest.fn(),
+  success: jest.fn(),
+  error: jest.fn(),
+};
 
 const testProjectPath = path.resolve(__dirname, 'mock-projects', 'v1-schema-project');
 
@@ -42,7 +50,7 @@ describe('attemptV2TransformerMigration', () => {
 
   it('migrates schemas and sets FF', async () => {
     const apiResourceDir = resourceDir(tempProjectDir);
-    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
+    await attemptV2TransformerMigration(printer, apiResourceDir, apiName, envName);
     expect(await fs.readFile(path.join(apiResourceDir, 'schema', 'Mud.graphql'), 'utf8')).toMatchInlineSnapshot(`
       "type Mud @model @auth(rules: [{allow: public}]) {
         id: ID!
@@ -67,8 +75,8 @@ describe('attemptV2TransformerMigration', () => {
 
   it('leaves project unchanged when migrating and rolling back', async () => {
     const apiResourceDir = resourceDir(tempProjectDir);
-    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
-    await revertV2Migration(apiResourceDir, envName);
+    await attemptV2TransformerMigration(printer, apiResourceDir, apiName, envName);
+    await revertV2Migration(printer, prompter, apiResourceDir, envName);
     const projectSchema1 = await fs.readFile(path.join(apiResourceDir, 'schema', 'Mud.graphql'), 'utf8');
     const projectSchema2 = await fs.readFile(path.join(apiResourceDir, 'schema', 'nested', 'Obligation.graphql'), 'utf8');
     const projectCliJson = await fs.readJSON(cliJsonPath(tempProjectDir), { encoding: 'utf8' });
@@ -90,7 +98,7 @@ describe('attemptV2TransformerMigration', () => {
 
     fs.mkdirSync(resolversDir);
     fs.writeFileSync(overwrittenPath, '{}');
-    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
+    await attemptV2TransformerMigration(printer, apiResourceDir, apiName, envName);
     expect(printer.info).toHaveBeenCalledWith(expect.stringMatching('You have overridden an Amplify generated resolver'));
 
     const cliJsonFile = await fs.readJSON(cliJsonPath(tempProjectDir), { encoding: 'utf8' });
@@ -105,7 +113,7 @@ describe('attemptV2TransformerMigration', () => {
     const schemaPath = path.join(apiResourceDir, 'schema', 'schema.graphql');
 
     fs.writeFileSync(schemaPath, 'type Query { listFoos: String }');
-    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
+    await attemptV2TransformerMigration(printer, apiResourceDir, apiName, envName);
     expect(printer.info).toHaveBeenCalledWith(
       expect.stringMatching('You have defined custom Queries, Mutations, and/or Subscriptions in your GraphQL schema'),
     );
@@ -124,7 +132,7 @@ describe('attemptV2TransformerMigration', () => {
     cliJsonFile.features.graphqltransformer.improvepluralization = false;
     await fs.writeJSON(cliJsonPath(tempProjectDir), cliJsonFile);
     await FeatureFlags.reloadValues();
-    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
+    await attemptV2TransformerMigration(printer, apiResourceDir, apiName, envName);
     expect(printer.info).toHaveBeenCalledWith(expect.stringMatching('You do not have the "improvePluralization" Feature Flag enabled'));
 
     cliJsonFile = await fs.readJSON(cliJsonPath(tempProjectDir), { encoding: 'utf8' });
@@ -137,7 +145,7 @@ describe('attemptV2TransformerMigration', () => {
   it('fails if GQL API is configured to use SQL', async () => {
     getParamMock.mockReturnValueOnce('mockRdsParam');
     const apiResourceDir = resourceDir(tempProjectDir);
-    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
+    await attemptV2TransformerMigration(printer, apiResourceDir, apiName, envName);
     expect(printer.info).toHaveBeenCalledWith(expect.stringMatching('GraphQL APIs using Aurora RDS cannot be migrated.'));
 
     const cliJsonFile = await fs.readJSON(cliJsonPath(tempProjectDir), { encoding: 'utf8' });
@@ -161,7 +169,7 @@ describe('attemptV2TransformerMigration', () => {
       }
     `,
     );
-    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
+    await attemptV2TransformerMigration(printer, apiResourceDir, apiName, envName);
     expect(printer.info).toHaveBeenCalledWith(expect.stringMatching('You are using queries or mutations in at least one @auth rule.'));
 
     const cliJsonFile = await fs.readJSON(cliJsonPath(tempProjectDir), { encoding: 'utf8' });
@@ -185,7 +193,7 @@ describe('attemptV2TransformerMigration', () => {
       }
     `,
     );
-    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
+    await attemptV2TransformerMigration(printer, apiResourceDir, apiName, envName);
     expect(printer.info).toHaveBeenCalledWith(expect.stringMatching('You are using queries or mutations in at least one @auth rule.'));
 
     const cliJsonFile = await fs.readJSON(cliJsonPath(tempProjectDir), { encoding: 'utf8' });

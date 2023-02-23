@@ -33,6 +33,7 @@ import {
 import { exitOnNextTick } from 'amplify-cli-core';
 import { searchablePushChecks } from './api-utils';
 import { getTransformerFactory } from './transformer-factory';
+import { printer } from 'amplify-prompts';
 
 const apiCategory = 'api';
 const parametersFileName = 'parameters.json';
@@ -355,7 +356,7 @@ export async function transformGraphQLSchemaV1(context, options) {
   const project = await readProjectConfiguration(resourceDir);
 
   // Check for common errors
-  const directiveMap = collectDirectivesByTypeNames(project.schema);
+  const directiveMap = collectDirectivesByTypeNames(printer, project.schema);
   await warnOnAuth(context, directiveMap.types);
   await searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
 

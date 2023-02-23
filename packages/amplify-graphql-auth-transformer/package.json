@@ -42,9 +42,6 @@
     "lodash": "^4.17.21",
     "md5": "^2.3.0"
   },
-  "peerDependencies": {
-    "amplify-prompts": "^2.0.0"
-  },
   "devDependencies": {
     "@aws-amplify/graphql-index-transformer": "0.14.9",
     "@aws-amplify/graphql-searchable-transformer": "0.16.9",

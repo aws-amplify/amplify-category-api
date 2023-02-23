@@ -1,5 +1,5 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import { MappingTemplate, GraphQLTransform, AmplifyApiGraphQlResourceStackTemplate, SyncUtils, StackManager } from '@aws-amplify/graphql-transformer-core';
+import { MappingTemplate, GraphQLTransform, SyncUtils, StackManager } from '@aws-amplify/graphql-transformer-core';
 import { DataSourceProvider, StackManagerProvider, TransformerContextProvider, TransformerPluginProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
 import { Table } from '@aws-cdk/aws-dynamodb';
@@ -44,6 +44,7 @@ import {
   ResourceConstants,
   toCamelCase,
 } from 'graphql-transformer-common';
+import { IPrinter } from '@aws-amplify/graphql-transformer-interfaces';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
 import { lookupResolverName } from './utils';
 import { stateManager, pathManager, $TSAny } from 'amplify-cli-core';
@@ -892,7 +893,11 @@ export const getDeltaSyncTableTtl = (resourceOverrides: $TSAny, resource: Transf
   return deltaSyncTtlOverride || SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
 }
 
-export const getResourceOverrides = (transformers: TransformerPluginProvider[], stackManager?: StackManagerProvider | null): $TSAny => {
+export const getResourceOverrides = (
+  printer: IPrinter,
+  transformers: TransformerPluginProvider[],
+  stackManager?: StackManagerProvider | null,
+): $TSAny => {
   try {
     const meta = stateManager.getCurrentMeta(undefined, { throwIfNotExist: false });
     const gqlApiName = _.entries(meta?.api).find(([, value]) => (value as { service: string }).service === 'AppSync')?.[0];
@@ -900,12 +905,13 @@ export const getResourceOverrides = (transformers: TransformerPluginProvider[], 
       const backendDir = pathManager.getBackendDirPath();
       const overrideDir = path.join(backendDir, 'api', gqlApiName);
       const localGraphQLTransformObj = new GraphQLTransform({
-        transformers: transformers,
+        transformers,
         overrideConfig: {
           overrideFlag: true,
-          overrideDir: overrideDir,
-          resourceName: gqlApiName
-        }
+          overrideDir,
+          resourceName: gqlApiName,
+        },
+        printer,
       });
       return localGraphQLTransformObj.applyOverride(stackManager as StackManager);
     }

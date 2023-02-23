@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext, AmplifyCategories, pathManager, stateManager } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import { attemptV2TransformerMigration, revertV2Migration } from '@aws-amplify/graphql-transformer-migrator';
 import * as path from 'path';
 import { checkAppsyncApiResourceMigration } from '../../provider-utils/awscloudformation/utils/check-appsync-api-migration';
@@ -33,8 +33,8 @@ export const run = async (context: $TSContext) => {
   }
 
   if (context.parameters?.options?.revert) {
-    await revertV2Migration(apiResourceDir, stateManager.getCurrentEnvName());
+    await revertV2Migration(printer, prompter, apiResourceDir, stateManager.getCurrentEnvName());
     return;
   }
-  await attemptV2TransformerMigration(apiResourceDir, apiName, stateManager.getCurrentEnvName());
+  await attemptV2TransformerMigration(printer, apiResourceDir, apiName, stateManager.getCurrentEnvName());
 };

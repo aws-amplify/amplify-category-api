@@ -5,7 +5,7 @@ import { migrateAuth } from './migrators/auth';
 import { migrateConnection } from './migrators/connection';
 import { combineSchemas, getDefaultAuth, replaceFile, SchemaDocument } from './utils';
 import { DocumentNode } from 'graphql/language';
-import { printer, prompter } from 'amplify-prompts';
+import { IPrompter } from './prompter';
 import * as path from 'path';
 import {
   authRuleUsesQueriesOrMutations,
@@ -23,6 +23,7 @@ import { GRAPHQL_DIRECTIVES_SCHEMA } from './constants/graphql-directives';
 import * as os from 'os';
 import { backupLocation, backupSchemas, doesBackupExist, restoreSchemas } from './schema-backup';
 import * as glob from 'glob';
+import { IPrinter } from '@aws-amplify/graphql-transformer-interfaces';
 
 const cliToMigratorAuthMap: Map<string, string> = new Map<string, string>([
   ['API_KEY', 'apiKey'],
@@ -33,7 +34,7 @@ const cliToMigratorAuthMap: Map<string, string> = new Map<string, string>([
 
 const MIGRATION_DOCS_URL = 'https://docs.amplify.aws/cli/migration/transformer-migration/';
 
-export async function attemptV2TransformerMigration(resourceDir: string, apiName: string, envName?: string): Promise<void> {
+export async function attemptV2TransformerMigration(printer: IPrinter, resourceDir: string, apiName: string, envName?: string): Promise<void> {
   const schemaDocs = await getSchemaDocs(resourceDir);
   const fullSchema = combineSchemas(schemaDocs);
   const autoMigrationDetectionResult = await canAutoMigrate(fullSchema, apiName, resourceDir);
@@ -81,7 +82,7 @@ export async function attemptV2TransformerMigration(resourceDir: string, apiName
   printer.info(`To revert the migration run 'amplify migrate api --revert'`);
 }
 
-export async function revertV2Migration(resourceDir: string, envName: string) {
+export async function revertV2Migration(printer: IPrinter, prompter: IPrompter, resourceDir: string, envName: string) {
   if (!doesBackupExist(resourceDir)) {
     printer.error(`No backup found at ${backupLocation(resourceDir)}`);
     return;

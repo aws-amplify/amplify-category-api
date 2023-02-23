@@ -56,8 +56,5 @@
     "graphql-key-transformer": "3.2.47",
     "graphql-transformer-core": "7.6.10",
     "graphql-versioned-transformer": "5.2.47"
-  },
-  "peerDependencies": {
-    "amplify-prompts": "^2.0.1"
   }
 }
