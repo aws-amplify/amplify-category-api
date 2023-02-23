@@ -1,3 +1,6 @@
+/**
+ * List of Constants
+ */
 export class ResourceConstants {
   public static NONE = 'NONE';
 
@@ -35,6 +38,7 @@ export class ResourceConstants {
     AuthCognitoUserPoolNativeClientLogicalID: 'AuthCognitoUserPoolNativeClient',
     AuthCognitoUserPoolJSClientLogicalID: 'AuthCognitoUserPoolJSClient',
   };
+
   public static PARAMETERS = {
     // cli
     Env: 'env',
@@ -85,6 +89,7 @@ export class ResourceConstants {
     // Auth
     AuthCognitoUserPoolId: 'AuthCognitoUserPoolId',
   };
+
   public static MAPPINGS = {};
   public static CONDITIONS = {
     // Environment
@@ -99,6 +104,7 @@ export class ResourceConstants {
     ShouldCreateAPIKey: 'ShouldCreateAPIKey',
     APIKeyExpirationEpochIsPositive: 'APIKeyExpirationEpochIsPositive',
   };
+
   public static OUTPUTS = {
     // AppSync
     GraphQLAPIEndpointOutput: 'GraphQLAPIEndpointOutput',
@@ -122,6 +128,7 @@ export class ResourceConstants {
     AuthCognitoUserPoolNativeClientOutput: 'AuthCognitoUserPoolNativeClientId',
     AuthCognitoUserPoolJSClientOutput: 'AuthCognitoUserPoolJSClientId',
   };
+
   public static METADATA = {};
 
   public static readonly SNIPPETS = {

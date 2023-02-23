@@ -26,7 +26,7 @@ import { generateConditionSlot } from './common';
  * Generates VTL template in update mutation
  * @param modelName Name of the model
  */
-export const generateUpdateRequestTemplate = (modelName: string, isSyncEnabled: boolean): string => {
+export const generateUpdateRequestTemplate = (modelName: string, isSyncEnabled: boolean, hasCustomPrimaryKey: boolean, partitionKey: string): string => {
   const objectKeyVariable = 'ctx.stash.metadata.modelObjectKey';
   const keyFields: StringNode[] = [str('id')];
   if (isSyncEnabled) {
@@ -133,6 +133,10 @@ export const generateUpdateRequestTemplate = (modelName: string, isSyncEnabled: 
         operation: str('UpdateItem'),
         key: ref('Key'),
         update: ref('update'),
+        ...(hasCustomPrimaryKey && {
+          customPartitionKey: str(`${partitionKey}`),
+          populateIndexFields: raw(`${hasCustomPrimaryKey}`),
+        }), 
         ...(isSyncEnabled && { _version: ref('util.defaultIfNull($args.input["_version"], 0)') }),
       }),
     ),
@@ -152,7 +156,7 @@ export const generateUpdateRequestTemplate = (modelName: string, isSyncEnabled: 
  * Generates VTL template in create mutation
  * @param modelName Name of the model
  */
-export const generateCreateRequestTemplate = (modelName: string, modelIndexFields: string[]): string => {
+export const generateCreateRequestTemplate = (modelName: string, modelIndexFields: string[], hasCustomPrimaryKey: boolean, partitionKey: string): string => {
   const statements: Expression[] = [
     setArgs,
     // Generate conditions
@@ -182,6 +186,10 @@ export const generateCreateRequestTemplate = (modelName: string, modelIndexField
         operation: str('PutItem'),
         attributeValues: methodCall(ref('util.dynamodb.toMapValues'), ref('mergedValues')),
         condition: ref('condition'),
+        ...(hasCustomPrimaryKey && {
+          customPartitionKey: str(`${partitionKey}`),
+          populateIndexFields: raw(`${hasCustomPrimaryKey}`),
+        }),
       }),
     ),
 
@@ -256,7 +264,7 @@ export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
  * Generates VTL template in delete mutation
  *
  */
-export const generateDeleteRequestTemplate = (isSyncEnabled: boolean): string => {
+export const generateDeleteRequestTemplate = (isSyncEnabled: boolean, hasCustomPrimaryKey: boolean, partitionKey: string): string => {
   const statements: Expression[] = [
     setArgs,
     set(
@@ -264,6 +272,10 @@ export const generateDeleteRequestTemplate = (isSyncEnabled: boolean): string =>
       obj({
         version: str('2018-05-29'),
         operation: str('DeleteItem'),
+        ...(hasCustomPrimaryKey && {
+          customPartitionKey: str(`${partitionKey}`),
+          populateIndexFields: raw(`${hasCustomPrimaryKey}`),
+        }),
       }),
     ),
     ifElse(
