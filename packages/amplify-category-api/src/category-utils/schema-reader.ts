@@ -45,7 +45,7 @@ export class SchemaReader {
     } else {
       throw new AmplifyError('ApiCategorySchemaNotFoundError', {
         message: 'No schema found',
-        resolution: `your graphql schema should be in either ${schemaFilePath} or ${schemaDirPath}`,
+        resolution: `Your graphql schema should be in either ${schemaFilePath} or ${schemaDirPath}`,
       });
     }
     return this.schemaPath;

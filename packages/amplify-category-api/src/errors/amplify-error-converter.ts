@@ -2,7 +2,7 @@ import {
   $TSAny, AmplifyError, AmplifyErrorType,
 } from 'amplify-cli-core';
 
-const amplifyErrorList = [
+const amplifyGraphQLErrorCodes = new Set([
   'InvalidDirectiveError',
   'InvalidTransformerError',
   'SchemaValidationError',
@@ -12,18 +12,18 @@ const amplifyErrorList = [
   'InvalidGSIMigrationError',
   'UnknownDirectiveError',
   'GraphQLError',
-];
+]);
 
 /**
  * error can be an AmplifyException Type or  Error type or any type
  */
-export class AmplifyErrorConverter {
+export abstract class AmplifyGraphQLTransformerErrorConverter {
   /**
    * create
   * @param error : default error to be thrown if not present in list : amplifyErrorList
    */
-  create = (error: $TSAny): $TSAny => {
-    if (error instanceof Error && error?.name && amplifyErrorList.includes(error.name)) {
+  static convert = (error: $TSAny): $TSAny => {
+    if (error instanceof Error && error?.name && amplifyGraphQLErrorCodes.has(error.name)) {
       const amplifyErrorType = `${error.name}` as AmplifyErrorType;
       return new AmplifyError(
         amplifyErrorType,

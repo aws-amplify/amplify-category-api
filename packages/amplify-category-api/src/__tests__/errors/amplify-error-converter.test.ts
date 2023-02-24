@@ -1,5 +1,5 @@
 import { AmplifyError, AmplifyErrorType, AmplifyException } from 'amplify-cli-core';
-import { AmplifyErrorConverter } from '../../errors/amplify-error-converter';
+import { AmplifyErrorConverter, AmplifyGraphQLTransformerErrorConverter } from '../../errors/amplify-error-converter';
 
 const errorType: AmplifyErrorType = 'DeploymentError';
 // converted error to amplifyException
@@ -14,17 +14,17 @@ const amplifyError = new AmplifyError('AmplifyStudioError', {
 });
 
 test('returns error if the error isnt mentioned in list', async () => {
-  expect(new AmplifyErrorConverter().create(error)).toBeInstanceOf(Error);
-  expect(new AmplifyErrorConverter().create(error).name).toMatch(errorType);
+  expect(AmplifyGraphQLTransformerErrorConverter.convert(error)).toBeInstanceOf(Error);
+  expect(AmplifyGraphQLTransformerErrorConverter.convert(error).name).toMatch(errorType);
 });
 
-test('returns adefault error if the error isnt instance of Error', async () => {
-  expect(new AmplifyErrorConverter().create(amplifyError).name).toMatch('AmplifyStudioError');
+test('returns a default error if the error isnt instance of Error', async () => {
+  expect(AmplifyGraphQLTransformerErrorConverter.convert(amplifyError).name).toMatch('AmplifyStudioError');
 });
 
 test('returns user error if the error is present in list', async () => {
   // error name is user error list
   error.name = 'InvalidDirectiveError';
-  expect(new AmplifyErrorConverter().create(error)).toBeInstanceOf(AmplifyException);
-  expect(new AmplifyErrorConverter().create(error).name).toMatch('InvalidDirectiveError');
+  expect(AmplifyGraphQLTransformerErrorConverter.convert(error)).toBeInstanceOf(AmplifyException);
+  expect(AmplifyGraphQLTransformerErrorConverter.convert(error).name).toMatch('InvalidDirectiveError');
 });

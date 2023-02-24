@@ -23,7 +23,7 @@ import { askAuthQuestions } from './provider-utils/awscloudformation/service-wal
 import { authConfigToAppSyncAuthType } from './provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { checkAppsyncApiResourceMigration } from './provider-utils/awscloudformation/utils/check-appsync-api-migration';
 import { getAppSyncApiResourceName } from './provider-utils/awscloudformation/utils/getAppSyncApiName';
-import { AmplifyErrorConverter } from './errors/amplify-error-converter';
+import { AmplifyGraphQLTransformerErrorConverter } from './errors/amplify-error-converter';
 
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
 export { addAdminQueriesApi, updateAdminQueriesApi } from './provider-utils/awscloudformation';
@@ -335,7 +335,7 @@ export const transformCategoryStack = async (context: $TSContext, resource: $TSO
           },
         ]);
       } catch (error) {
-        throw new AmplifyErrorConverter().create(error);
+        throw AmplifyGraphQLTransformerErrorConverter.convert(error);
       }
     } else if (resource.service === AmplifySupportedService.APIGW) {
       if (canResourceBeTransformed(resource.resourceName)) {
