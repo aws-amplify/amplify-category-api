@@ -18,7 +18,6 @@ async function setupAmplify(version: string = 'latest') {
     if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
       throw new Error('Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in .env');
     }
-
     const validSemver = semver.parse(version);
     if (!validSemver || semver.gt(version, '10.7.0')) {
       // version is either after 10.7 or it's a tag name like latest so use the current configure function

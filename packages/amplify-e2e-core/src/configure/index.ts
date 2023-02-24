@@ -1,5 +1,5 @@
-import { EOL } from 'os';
 import { nspawn as spawn, getCLIPath, singleSelect } from '..';
+import { EOL } from 'os';
 
 type AmplifyConfiguration = {
   accessKeyId: string;
@@ -42,10 +42,11 @@ const MANDATORY_PARAMS = ['accessKeyId', 'secretAccessKey', 'region'];
 
 export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> {
   const s = { ...defaultSettings, ...settings };
-  const missingParam = MANDATORY_PARAMS.filter((p) => !Object.keys(s).includes(p));
+  const missingParam = MANDATORY_PARAMS.filter(p => !Object.keys(s).includes(p));
   if (missingParam.length) {
     throw new Error(`mandatory params ${missingParam.join(' ')} are missing`);
   }
+
   const chain = spawn(getCLIPath(), ['configure'], { stripColors: true })
     .wait('Sign in to your AWS administrator account:')
     .wait('Press Enter to continue')
@@ -75,7 +76,6 @@ export const amplifyConfigureBeforeOrAtV10_7 = (settings: AmplifyConfiguration):
   if (missingParam.length) {
     throw new Error(`mandatory params ${missingParam.join(' ')} are missing`);
   }
-
   const chain = spawn(getCLIPath(), ['configure'], { stripColors: true })
     .wait('Sign in to your AWS administrator account:')
     .wait('Press Enter to continue')

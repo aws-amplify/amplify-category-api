@@ -14,7 +14,6 @@ export interface ProjectOptions {
   disablePipelineFunctionOverrides?: boolean;
   disableResolverOverrides?: boolean;
   buildParameters?: Object;
-  minify?: boolean;
 }
 
 /**

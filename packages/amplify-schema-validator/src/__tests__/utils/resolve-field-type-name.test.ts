@@ -1,5 +1,5 @@
-import { TypeNode } from "graphql";
-import { resolveFieldTypeName } from "../../helpers/resolve-field-type-name";
+import { TypeNode } from 'graphql';
+import { resolveFieldTypeName } from '../../helpers/resolve-field-type-name';
 
 describe('resolve field type name', () => {
   it('resolves field type for NamedType case', () => {
@@ -37,8 +37,7 @@ describe('resolve field type name', () => {
         },
       },
     };
-    const value = resolveFieldTypeName(example as TypeNode);
-    expect(value).toBe(undefined);
+    expect(() => resolveFieldTypeName(example as TypeNode)).toThrow(`Unknown type ${example}`);
   });
 
   it('resolves field type for NonNullType / ListType case', () => {
@@ -94,8 +93,7 @@ describe('resolve field type name', () => {
         },
       },
     };
-    const value = resolveFieldTypeName(example as TypeNode);
-    expect(value).toBe(undefined);
+    expect(() => resolveFieldTypeName(example as TypeNode)).toThrow(`Unknown type ${example}`);
   });
 
   it('resolves field type for other case', () => {
@@ -105,8 +103,7 @@ describe('resolve field type name', () => {
         value: '',
       },
     };
-    const value = resolveFieldTypeName(example as TypeNode);
-    expect(value).toBe(undefined);
+    expect(() => resolveFieldTypeName(example as TypeNode)).toThrow(`Unknown type ${example}`);
   });
 
   it('resolves field type for ListType / NamedType case', () => {
@@ -153,7 +150,6 @@ describe('resolve field type name', () => {
         },
       },
     };
-    const value = resolveFieldTypeName(example as TypeNode);
-    expect(value).toBe(undefined);
+    expect(() => resolveFieldTypeName(example as TypeNode)).toThrow(`Unknown type ${example}`);
   });
 });

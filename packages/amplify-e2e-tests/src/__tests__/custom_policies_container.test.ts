@@ -46,12 +46,10 @@ it(`should init and deploy a api container, attach custom policies to the Fargat
   const envName = 'devtest';
   const containerName = 'container';
   const name = 'containertest';
-  await initJSProjectWithProfile(projRoot, { name: containerName, envName });
+  const region = 'us-east-1';
+  await initJSProjectWithProfile(projRoot, { name: containerName, envName, region });
   await setupAmplifyProject(projRoot);
   await addRestContainerApiForCustomPolicies(projRoot, { name: name });
-
-  const meta = getProjectMeta(projRoot);
-  const { Region: region } = meta?.providers?.awscloudformation;
 
   // Put SSM parameter
   const ssmClient = new AWS.SSM({ region });

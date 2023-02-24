@@ -4,13 +4,13 @@ This test app has capabilities to deploy a backend amplify project, tear down sa
 
 To facilitate easier dev/test cycles, the `test` there are 4 test lifecycles defined with custom targets to make it easier to develop.
 
-`npm run test` will execute all of these lifecycles.
-`npm run test:setup` will strictly setup the amplify app in your DEFAULT aws profile.
-`npm run test:teardown` will execute an `amplify delete` on the project.
-`npm run test:execute` will start the webapp, and run the cypress suite against it.
-`npm run test:watch` will start the app, and open a cypress watch against it.
+`yarn test` will execute all of these lifecycles.
+`yarn test:setup` will strictly setup the amplify app in your DEFAULT aws profile.
+`yarn test:teardown` will execute an `amplify delete` on the project.
+`yarn test:execute` will start the webapp, and run the cypress suite against it.
+`yarn test:watch` will start the app, and open a cypress watch against it.
 
-In addition to these targets, `npm start` can still be used to run the app locally (recommended after `npm run test:setup` to develop new test pages/cases), and `npx cypress open` can be used to interactively run/re-run the cypress suite, this is probably preferable to using just `npm run test:watch` but I don't have a strong opinion on that yet.
+In addition to these targets, `npm start` can still be used to run the app locally (recommended after `yarn test:setup` to develop new test pages/cases), and `npx cypress open` can be used to interactively run/re-run the cypress suite, this is probably preferable to using just `yarn test:watch` but I don't have a strong opinion on that yet.
 
 ## Test Structure
 
