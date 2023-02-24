@@ -333,25 +333,19 @@ export const deleteAppClient = async (profileName: string, projectRoot: string, 
 };
 
 /**
- * sets up a project with auth (userpool only or userpool & identitypool)
- * @param ogProjectRoot
- * @param ogProjectSettings
- * @param withIdentityPool
+ * sets up a project with auth (UserPool only or UserPool & IdentityPool)
  */
 export const setupOgProjectWithAuth = async (
   ogProjectRoot: string,
   ogProjectSettings: { name: string },
-  withIdentityPool: boolean = false,
-) => {
+  withIdentityPool = false,
+): Promise<AuthProjectDetails> => {
   const ogShortId = getShortId();
-  const ogSettings = withIdentityPool
-    ? createIDPAndUserPoolWithOAuthSettings(ogProjectSettings.name, ogShortId)
-    : createUserPoolOnlyWithOAuthSettings(ogProjectSettings.name, ogShortId);
 
-  if ('identityPoolName' in ogSettings) {
-    await addAuthIdentityPoolAndUserPoolWithOAuth(ogProjectRoot, ogSettings);
+  if (withIdentityPool) {
+    await addAuthIdentityPoolAndUserPoolWithOAuth(ogProjectRoot, createIDPAndUserPoolWithOAuthSettings(ogProjectSettings.name, ogShortId));
   } else {
-    await addAuthUserPoolOnlyWithOAuth(ogProjectRoot, ogSettings);
+    await addAuthUserPoolOnlyWithOAuth(ogProjectRoot, createUserPoolOnlyWithOAuthSettings(ogProjectSettings.name, ogShortId));
   }
   await amplifyPushAuth(ogProjectRoot);
 

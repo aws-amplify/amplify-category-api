@@ -30,7 +30,6 @@ export type TransformerProjectOptions<T> = {
   transformersFactoryArgs: T;
   rootStackFileName: 'cloudformation-template.json';
   currentCloudBackendDirectory?: string;
-  minify: boolean;
   lastDeployedProjectConfig?: TransformerProjectConfig;
   projectConfig: TransformerProjectConfig;
   resolverConfig?: ResolverConfig;

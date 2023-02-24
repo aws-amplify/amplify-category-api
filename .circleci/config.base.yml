@@ -373,6 +373,19 @@ jobs:
             bash ./.circleci/publish.sh
       - run: *scan_e2e_test_artifacts
 
+  post_deploy:
+    <<: *linux-e2e-executor
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          keys:
+            - amplify-category-api-ssh-deps-{{ .Branch }}
+      - install_github_cli
+      - run:
+          name: Run Post Publish Tasks
+          command: ./.circleci/post_publish.sh
+
   cleanup_resources:
     <<: *linux-e2e-executor
     steps:
@@ -623,6 +636,13 @@ workflows:
                 - beta
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
+      - post_deploy:
+          requires:
+            - deploy
+          filters:
+            branches:
+              only:
+                - release
 commands:
   install_yarn:
     description: "Install yarn dependency for windows"
@@ -652,6 +672,27 @@ commands:
                 name: Install Java
                 command: |
                   sudo apt-get update && sudo apt-get install default-jdk
+
+  install_github_cli:
+    description: "Install Github CLI tool"
+    parameters:
+      os:
+        type: executor
+        default: l
+    steps:
+      - when:
+          condition:
+            equal: [*linux-e2e-executor, << parameters.os >>]
+          steps:
+            - run:
+                name: Install Github CLI
+                command: |
+                  type -p curl >/dev/null || sudo apt install curl -y
+                  curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+                  && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+                  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+                  && sudo apt update \
+                  && sudo apt install gh -y
 
   run_e2e_tests:
     description: "Run Amplify E2E tests"
@@ -737,6 +778,6 @@ commands:
                   source .circleci/local_publish_helpers.sh
                   export CLI_REGION=us-west-2
                   cd client-test-apps/js/api-model-relationship-app
-                  npm install
-                  retry npm run test:ci
+                  yarn
+                  retry yarn test:ci
                 no_output_timeout: 60m
