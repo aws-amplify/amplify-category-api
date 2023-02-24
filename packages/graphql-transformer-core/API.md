@@ -590,8 +590,8 @@ export { writeConfig as writeTransformerConfiguration }
 
 // Warnings were encountered during analysis:
 //
-// src/util/amplifyUtils.ts:51:3 - (ae-forgotten-export) The symbol "StringMap" needs to be exported by the entry point index.d.ts
-// src/util/amplifyUtils.ts:55:3 - (ae-forgotten-export) The symbol "StackMapping_3" needs to be exported by the entry point index.d.ts
+// src/util/amplifyUtils.ts:50:3 - (ae-forgotten-export) The symbol "StringMap" needs to be exported by the entry point index.d.ts
+// src/util/amplifyUtils.ts:54:3 - (ae-forgotten-export) The symbol "StackMapping_3" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
