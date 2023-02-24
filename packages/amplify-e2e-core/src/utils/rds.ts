@@ -227,7 +227,3 @@ export class RDSTestDataProvider {
     }
   }
 }
-
-export function writeRdsSchemaBlank(fileLocation: string, connectionSecrets: RDSConnectionSecrets) {
-  const fileContents = 5;
-}

@@ -12,7 +12,7 @@ import {
   nspawn as spawn,
   setTransformConfig,
   setTransformerVersionFlag,
-  updateSchema, writeRdsSchemaBlank,
+  updateSchema,
 } from '..';
 import { multiSelect, singleSelect } from '../utils/selectors';
 import { selectRuntime, selectTemplate } from './lambda-function';
@@ -1047,30 +1047,24 @@ export const removeTransformConfigValue = (projRoot: string, apiName: string, ke
   setTransformConfig(projRoot, apiName, transformConfig);
 };
 
-export function importApiAndGenerateSchema(cwd: string, settings: any, connectionSecrets: RDSConnectionSecrets) {
+export const importApiAndGenerateSchema = (cwd: string, settings: any, connectionSecrets: RDSConnectionSecrets) => {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(settings.testingWithLatestCodebase), ['import', 'api'], { cwd, stripColors: true })
-      .wait('Select from one of the below mentioned services:')
-      .sendCarriageReturn()
-      .wait('Run "amplify api generate-schema" to fetch the schem')
+      .wait('Enter the name of the mysql database to import:')
+      .sendLine(connectionSecrets.database)
+      .wait('Enter the host for stuff database:')
+      .sendLine(connectionSecrets.host)
+      .wait('Enter the port for stuff database:')
+      .sendLine(connectionSecrets.port.toString())
+      .wait('Enter the username for stuff database user:')
+      .sendLine(connectionSecrets.username)
+      .wait('Enter the password for stuff database user:')
+      .sendLine(connectionSecrets.password)
+      .wait(/.*Successfully imported the database schema.*/)
       .sendEof()
       .run((err: Error) => {
         if (!err) {
-          writeRdsSchemaBlank('', connectionSecrets);
-          spawn(getCLIPath(settings.testingWithLatestCodebase), ['api', 'generate-schema'], { cwd, stripColors: true })
-            .wait('Enter the username for stuff database user:')
-            .sendLine(connectionSecrets.username)
-            .wait('Enter the password for stuff database user:')
-            .sendLine(connectionSecrets.password)
-            .wait(/.*Successfully imported the schema definition for.*/)
-            .sendEof()
-            .run((secondErr: Error) => {
-              if (!secondErr) {
-                resolve();
-              } else {
-                reject(secondErr);
-              }
-            });
+          resolve();
         } else {
           reject(err);
         }
