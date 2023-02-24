@@ -55,7 +55,7 @@ export function throwIfNotJSONExt(stackFile: string): void {
   if (extension !== '.json') {
     throw new AmplifyError('CloudFormationTemplateError' ,{
       message: `Invalid extension ${extension} for stack ${stackFile}`,
-      resolution: `Please convert the CloudFormation stack ${stackFile} to json.`,
+      resolution: `Convert the CloudFormation stack ${stackFile} to json.`,
     });
   }
 }
@@ -79,7 +79,7 @@ export async function readSchema(projectDirectory: string): Promise<string> {
   } else {
     throw new AmplifyError('ApiCategorySchemaNotFoundError', {
       message: 'No schema found',
-      resolution: `graphql schema should be either in ${schemaFilePath} or at schema directory ${schemaDirectoryPath}`,
+      resolution: `GraphQL schema should be either in ${schemaFilePath} or at schema directory ${schemaDirectoryPath}`,
     });
   }
   return schema;

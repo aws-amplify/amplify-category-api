@@ -121,7 +121,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     } else {
       throw new AmplifyError('ApiCategorySchemaNotFoundError', {
         message: 'No schema found',
-        resolution: `your rds schema should be in either ${graphqlSchemaFilePath} or schema directory ${schemaDirectoryPath}`,
+        resolution: `Your RDS schema should be in either ${graphqlSchemaFilePath} or schema directory ${schemaDirectoryPath}`,
       });
     }
 
@@ -238,7 +238,8 @@ export const readSchema = (graphqlSchemaFilePath: string): graphql.DocumentNode 
     const relativePathToInput = path.relative(process.cwd(), graphqlSchemaRaw);
     // can be changed to GraphQlError when the error type "GraphQlError"  gets updated in amplify-cli-core
     throw new AmplifyError('UserInputError', {
-      message: `Could not parse graphql schema \n${relativePathToInput}\n${err.message}`,
+      message: `Could not parse graphql scehma \n${relativePathToInput}\n`,
+      details: err.message,
       link: 'https://docs.amplify.aws/cli-legacy/graphql-transformer/relational/',
     });
   }

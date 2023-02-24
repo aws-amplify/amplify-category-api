@@ -80,7 +80,7 @@ export class SchemaReader {
       if (!fileContentsList.length) {
         throw new AmplifyError('ApiCategorySchemaNotFoundError', {
           message: 'No schema found',
-          resolution: `your graphql schema should be in either ${schemaPath}`,
+          resolution: `Your graphql schema should be in ${schemaPath}`,
         });
       }
 
