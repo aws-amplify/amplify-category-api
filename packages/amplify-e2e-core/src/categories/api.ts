@@ -1,4 +1,4 @@
-import {ConflictHandlerType, RDSConnectionSecrets} from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType, RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
@@ -1056,7 +1056,7 @@ export function importApiAndGenerateSchema(cwd: string, settings: any, connectio
       .sendEof()
       .run((err: Error) => {
         if (!err) {
-          writeRdsSchemaBlank(connectionSecrets);
+          writeRdsSchemaBlank('', connectionSecrets);
           spawn(getCLIPath(settings.testingWithLatestCodebase), ['api', 'generate-schema'], { cwd, stripColors: true })
             .wait('Enter the username for stuff database user:')
             .sendLine(connectionSecrets.username)

@@ -1,4 +1,4 @@
-import {TransformerSecrets} from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerSecrets } from '@aws-amplify/graphql-transformer-interfaces';
 
 export enum ImportedRDSType {
   MYSQL = 'mysql',
