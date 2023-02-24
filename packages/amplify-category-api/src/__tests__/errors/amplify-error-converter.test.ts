@@ -1,5 +1,5 @@
 import { AmplifyError, AmplifyErrorType, AmplifyException } from 'amplify-cli-core';
-import { AmplifyErrorConverter, AmplifyGraphQLTransformerErrorConverter } from '../../errors/amplify-error-converter';
+import { AmplifyGraphQLTransformerErrorConverter } from '../../errors/amplify-error-converter';
 
 const errorType: AmplifyErrorType = 'DeploymentError';
 // converted error to amplifyException
