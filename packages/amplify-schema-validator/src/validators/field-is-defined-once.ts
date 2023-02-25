@@ -25,8 +25,8 @@ export const validateFieldIsDefinedOnce = (schema: DocumentNode): Error[] => {
     }
 
     const uniquefields: string[] = [];
-    for (let i = 0; i < fields?.length; i++) {
-      const val = fields[i].name.value;
+    fields?.forEach((field) => {
+      const val = field.name.value;
       if (!uniquefields.includes(val)) {
         uniquefields.push(val);
       } else {
@@ -34,7 +34,7 @@ export const validateFieldIsDefinedOnce = (schema: DocumentNode): Error[] => {
           `Schema validation failed. Field ${objectName}.${val} can only be defined once.`,
         ));
       }
-    }
+    });
   });
   return errors;
 };

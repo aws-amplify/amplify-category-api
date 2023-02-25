@@ -1,6 +1,5 @@
 type Project @model {
   id: ID!
-  name: String
   team: Team @hasMany
 }
 

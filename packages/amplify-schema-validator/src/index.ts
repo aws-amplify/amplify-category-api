@@ -5,18 +5,26 @@ import { parse } from 'graphql';
 import { validateIndexScalarTypes } from './validators/index-scalar-types';
 import { validateRequireBelongsToRelation } from './validators/relation-required-with-belongs-to';
 import { validateManyToManyTwoLocations } from './validators/two-many-to-many-locations';
-import { validateFieldsMatchInRelatedModel } from './validators/fields-match-in-related-model';
+import { validateFieldsMatchInParentModel } from './validators/fields-match-in-parent-model';
 import { ValidationError } from './exceptions/validation-error';
 import { validateFieldIsDefinedOnce } from './validators/field-is-defined-once';
 import { validatetypeIsDefinedOnce } from './validators/type-is-defined-once';
+import { validateIndexIsDefinedOnce } from './validators/one-index-with-same-name';
+import { validateIndexExistsInRelatedModel } from './validators/index-exists-in-related-model';
+import { validateEnumIsDefinedOnce } from './validators/enum-is-defined-once';
+import { validateKeyExistsInRelatedModel } from './validators/key-exists-in-related-model';
 
 const allValidators = [
   validateIndexScalarTypes,
   validateRequireBelongsToRelation,
   validateManyToManyTwoLocations,
-  validateFieldsMatchInRelatedModel,
   validateFieldIsDefinedOnce,
   validatetypeIsDefinedOnce,
+  validateIndexIsDefinedOnce,
+  validateFieldsMatchInParentModel,
+  validateIndexExistsInRelatedModel,
+  validateEnumIsDefinedOnce,
+  validateKeyExistsInRelatedModel,
 ];
 
 /**
