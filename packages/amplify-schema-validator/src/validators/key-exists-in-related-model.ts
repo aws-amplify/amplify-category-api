@@ -25,7 +25,9 @@ export const validateKeyExistsInRelatedModel = (schema: DocumentNode): Error[] =
     ));
 
     connectionDirectiveFields?.forEach((connectionDirectiveField) => {
-      const connectionDirectiveArgs = connectionDirectiveField.directives?.filter((connectionDirectiveField) => connectionDirectiveField.arguments && connectionDirectiveField.arguments.length > 0);
+      const connectionDirectiveArgs = connectionDirectiveField.directives?.filter(
+        (connectionDirective) => connectionDirective.arguments && connectionDirective.arguments.length > 0,
+      );
       connectionDirectiveArgs?.forEach((connectionDirectiveArg) => {
         const keyNameFieldArg = connectionDirectiveArg?.arguments?.find((arg) => arg.name.value === 'keyName');
         if (!keyNameFieldArg) {

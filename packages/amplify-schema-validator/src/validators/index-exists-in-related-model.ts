@@ -25,7 +25,9 @@ export const validateIndexExistsInRelatedModel = (schema: DocumentNode): Error[]
     ));
 
     hasManyDirectiveFields?.forEach((hasManyDirectiveField) => {
-      const hasManyDirectiveArgs = hasManyDirectiveField.directives?.filter((hasManyDirective) => hasManyDirective.arguments && hasManyDirective.arguments.length > 0);
+      const hasManyDirectiveArgs = hasManyDirectiveField.directives?.filter(
+        (hasManyDirective) => hasManyDirective.arguments && hasManyDirective.arguments.length > 0,
+      );
       hasManyDirectiveArgs?.forEach((hasManyDirectiveArg) => {
         const indexNameFieldArg = hasManyDirectiveArg?.arguments?.find((arg) => arg.name.value === 'indexName');
         if (!indexNameFieldArg) {
@@ -43,7 +45,9 @@ export const validateIndexExistsInRelatedModel = (schema: DocumentNode): Error[]
 
         const indexNameInRelatedModel: string[] = [];
         indexDirectiveFields?.forEach((indexDirectiveField) => {
-          const indexDirectiveArgs = indexDirectiveField.directives?.filter((indexDirective) => indexDirective.arguments && indexDirective.arguments.length > 0);
+          const indexDirectiveArgs = indexDirectiveField.directives?.filter(
+            (indexDirective) => indexDirective.arguments && indexDirective.arguments.length > 0,
+          );
           indexDirectiveArgs?.forEach((indexDirectiveArg) => {
             const nameFieldArg = indexDirectiveArg?.arguments?.find((arg) => arg.name.value === 'name');
             if (!nameFieldArg) {
