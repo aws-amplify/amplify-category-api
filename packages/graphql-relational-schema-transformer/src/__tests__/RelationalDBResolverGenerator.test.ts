@@ -87,6 +87,33 @@ test('verify generated templates', () => {
   });
 });
 
+test('verify generated templates with non-id named primary key', () => {
+  // SETUP
+  const schema = parse(`
+      type Tomatoes {
+        tomatoId: String
+        name: String
+      }
+    `);
+  let simpleStringFieldMap = new Map<string, string[]>();
+  let simpleIntFieldMap = new Map<string, string[]>();
+  let simplePrimaryKeyMap = new Map<string, string>();
+  let simplePrimaryKeyTypeMap = new Map<string, string>();
+
+  simplePrimaryKeyMap.set('Tomatoes', 'tomatoId');
+  simplePrimaryKeyTypeMap.set('Tomatoes', 'String');
+  const context = new TemplateContext(schema, simplePrimaryKeyMap, simpleStringFieldMap, simpleIntFieldMap, simplePrimaryKeyTypeMap);
+  const generator = new RelationalDBResolverGenerator(context);
+  generator.createRelationalResolvers('testFilePath', true);
+  expect(writeFileSync_mock.mock.calls.length).toBe(10);
+  writeFileSync_mock.mock.calls.forEach(call => {
+    expect(call.length).toBe(3);
+    expect(call[0]).toMatchSnapshot();
+    expect(call[1]).toMatchSnapshot();
+    expect(call[2]).toBe('utf8');
+  });
+});
+
 test('verify generated templates using a Int primary key', () => {
   // SETUP
   const schema = parse(`
