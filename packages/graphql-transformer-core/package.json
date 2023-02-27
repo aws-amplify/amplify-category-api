@@ -33,7 +33,7 @@
     "lodash": "^4.17.21"
   },
   "peerDependencies": {
-    "amplify-cli-core": "3.7.0-rc.b80571744.0"
+    "amplify-cli-core": "^3.7.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
