@@ -116,6 +116,15 @@ jobs:
           key: amplify-category-api-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
       - run: yarn verify-api-extract
 
+  verify-yarn-lock:
+    <<: *linux-e2e-executor
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-category-api-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+      - run: yarn verify-yarn-lock
+
   mock_e2e_tests:
     <<: *linux-e2e-executor
     steps:
@@ -476,6 +485,9 @@ workflows:
           requires:
             - build
       - verify-api-extract:
+          requires:
+            - build
+      - verify-yarn-lock:
           requires:
             - build
       - test:
