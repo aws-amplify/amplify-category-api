@@ -123,7 +123,9 @@ jobs:
           at: ./
       - restore_cache:
           key: amplify-category-api-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
-      - run: yarn verify-yarn-lock
+      - run: |
+          yarn config set registry https://registry.npmjs.org
+          yarn verify-yarn-lock
 
   mock_e2e_tests:
     <<: *linux-e2e-executor
