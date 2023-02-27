@@ -40,7 +40,7 @@
     signedsource "^1.0.0"
     yargs "^15.3.1"
 
-"@aws-amplify/amplify-appsync-simulator@2.10.0":
+"@aws-amplify/amplify-appsync-simulator@^2.10.0":
   version "2.10.0"
   resolved "https://registry.npmjs.org/@aws-amplify/amplify-appsync-simulator/-/amplify-appsync-simulator-2.10.0.tgz#2e47a717756c0a67ae123818e092393151921464"
   integrity sha512-6ES645pKvs00wJ4jBl11Umth4HZpG/8pjwg2F23vsmZ54C8DFb3DityLCAX48Lvag9GU2M1sqypckC2eYrNNRA==
@@ -173,7 +173,7 @@
     inquirer "^7.3.3"
     lodash "^4.17.21"
 
-"@aws-amplify/amplify-provider-awscloudformation@7.0.0":
+"@aws-amplify/amplify-provider-awscloudformation@^7.0.0":
   version "7.0.0"
   resolved "https://registry.npmjs.org/@aws-amplify/amplify-provider-awscloudformation/-/amplify-provider-awscloudformation-7.0.0.tgz#fa81b3ac5a27a90ba8acee54093d37890bc5b091"
   integrity sha512-bjIB0/NhynmN5WIPfCWRRqVe+/GvnprDCNNH43wS4/vFkhnyCiPzfXMUBazGYeIQBgAYWeMgOx8nr7TATMlAmg==
