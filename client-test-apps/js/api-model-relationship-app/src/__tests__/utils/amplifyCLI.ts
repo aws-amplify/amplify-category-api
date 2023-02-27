@@ -145,8 +145,6 @@ const amplifyConfigure = (settings: AmplifyConfiguration): Promise<void> => {
   singleSelect(chain, s.region, amplifyRegions);
 
   return chain
-    .wait('user name:')
-    .sendCarriageReturn()
     .wait('Press Enter to continue')
     .sendCarriageReturn()
     .wait('accessKeyId')

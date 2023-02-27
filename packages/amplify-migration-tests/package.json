@@ -26,7 +26,8 @@
   "dependencies": {
     "amplify-category-api-e2e-core": "4.0.16",
     "graphql-transformer-core": "7.6.10",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "semver": "^7.3.5"
   },
   "jest": {
     "verbose": false,
