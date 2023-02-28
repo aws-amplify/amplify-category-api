@@ -46,7 +46,8 @@
     "refresh-lockfile": "rimraf yarn.lock && yarn",
     "update-cli-packages": "./scripts/update-cli-dependencies.sh && yarn",
     "extract-api": "lerna run extract-api",
-    "verify-api-extract": "yarn extract-api && ./scripts/verify-extract-api.sh"
+    "verify-api-extract": "yarn extract-api && ./scripts/verify-extract-api.sh",
+    "verify-yarn-lock": "./scripts/verify-yarn-lock.sh"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-category-api/issues"

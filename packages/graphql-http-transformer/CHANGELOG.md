@@ -3,15 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [5.2.48-beta.2](https://github.com/aws-amplify/amplify-category-api/compare/graphql-http-transformer@5.2.48-beta.0...graphql-http-transformer@5.2.48-beta.2) (2023-02-21)
-
-**Note:** Version bump only for package graphql-http-transformer
-
-## [5.2.48-beta.1](https://github.com/aws-amplify/amplify-category-api/compare/graphql-http-transformer@5.2.48-beta.0...graphql-http-transformer@5.2.48-beta.1) (2023-02-15)
-
-**Note:** Version bump only for package graphql-http-transformer
-
-## [5.2.48-beta.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-http-transformer@5.2.47...graphql-http-transformer@5.2.48-beta.0) (2023-02-03)
+## [5.2.48](https://github.com/aws-amplify/amplify-category-api/compare/graphql-http-transformer@5.2.47...graphql-http-transformer@5.2.48) (2023-02-27)
 
 **Note:** Version bump only for package graphql-http-transformer
 

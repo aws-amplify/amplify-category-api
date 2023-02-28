@@ -59,6 +59,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
 
+## [5.1.27](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@5.1.26...amplify-category-api-util-mock@5.1.27) (2023-02-27)
+
+### Bug Fixes
+
+- **test:** remove references to graphql 14 module ([ad79a84](https://github.com/aws-amplify/amplify-category-api/commit/ad79a84f0a7edeb84aa40f056c734961f445070b))
+- **test:** update cli dependencies to use the cli rc packages ([#1294](https://github.com/aws-amplify/amplify-category-api/issues/1294)) ([7b13884](https://github.com/aws-amplify/amplify-category-api/commit/7b138841bf2c26fa16465ef263af0de7ce5a4122))
+
 ## [5.1.26](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@5.1.25...amplify-category-api-util-mock@5.1.26) (2023-02-15)
 
 **Note:** Version bump only for package amplify-category-api-util-mock

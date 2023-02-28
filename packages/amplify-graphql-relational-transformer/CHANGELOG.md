@@ -81,6 +81,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - migrate auth, maps-to, relational, default value transformer to CDK v2 ([#875](https://github.com/aws-amplify/amplify-category-api/issues/875)) ([5c714a9](https://github.com/aws-amplify/amplify-category-api/commit/5c714a9a8436be343477574cb5523c23c96c9338))
 
+## [0.12.11](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.12.10...@aws-amplify/graphql-relational-transformer@0.12.11) (2023-02-27)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
 ## [0.12.10](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@0.12.9...@aws-amplify/graphql-relational-transformer@0.12.10) (2023-02-10)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer

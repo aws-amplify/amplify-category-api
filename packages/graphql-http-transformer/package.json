@@ -1,6 +1,6 @@
 {
   "name": "graphql-http-transformer",
-  "version": "5.2.48-beta.2",
+  "version": "5.2.48",
   "description": "An AppSync model transform for HTTP resolvers.",
   "repository": {
     "type": "git",

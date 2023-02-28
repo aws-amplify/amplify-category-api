@@ -3,13 +3,11 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [5.0.17-beta.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-migration-tests@5.0.16...amplify-category-api-migration-tests@5.0.17-beta.1) (2023-02-21)
+## [5.0.17](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-migration-tests@5.0.16...amplify-category-api-migration-tests@5.0.17) (2023-02-27)
 
-**Note:** Version bump only for package amplify-category-api-migration-tests
+### Bug Fixes
 
-## [5.0.17-beta.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-migration-tests@5.0.16...amplify-category-api-migration-tests@5.0.17-beta.0) (2023-02-15)
-
-**Note:** Version bump only for package amplify-category-api-migration-tests
+- **test:** update cli dependencies to use the cli rc packages ([#1294](https://github.com/aws-amplify/amplify-category-api/issues/1294)) ([7b13884](https://github.com/aws-amplify/amplify-category-api/commit/7b138841bf2c26fa16465ef263af0de7ce5a4122))
 
 ## [5.0.16](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-migration-tests@5.0.15...amplify-category-api-migration-tests@5.0.16) (2023-02-10)
 
