@@ -37,6 +37,8 @@ This section should get you running with **Amplify API Category** and get you fa
 
    > If you are using Yarn v2, run `yarn set version classic` to change to Yarn Classic.
 
+1. Ensure you are using the npm registry, even with yarn by running `yarn config set registry https://registry.npmjs.org`
+
 1. Start by [forking](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the _main_ branch of [amplify-category-api](https://github.com/aws-amplify/amplify-category-api). Then clone it to your machine to work with it locally using one of the following methods:
 
    ```sh

@@ -87,6 +87,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - migrate index and model transformers to CDK v2 ([#860](https://github.com/aws-amplify/amplify-category-api/issues/860)) ([886ab6c](https://github.com/aws-amplify/amplify-category-api/commit/886ab6c1eb699f9a09f273c76b3c419c73004f9b))
 
+## [0.16.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@0.16.8...@aws-amplify/graphql-model-transformer@0.16.9) (2023-02-27)
+
+**Note:** Version bump only for package @aws-amplify/graphql-model-transformer
+
 ## [0.16.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@0.16.7...@aws-amplify/graphql-model-transformer@0.16.8) (2023-02-10)
 
 ### Bug Fixes
