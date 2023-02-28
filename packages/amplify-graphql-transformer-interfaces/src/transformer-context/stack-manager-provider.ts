@@ -1,4 +1,4 @@
-import { CfnParameter, CfnParameterProps, Stack } from '@aws-cdk/core';
+import { CfnParameter, CfnParameterProps, Stack } from 'aws-cdk-lib';
 
 export interface StackManagerProvider {
   readonly rootStack: Stack;

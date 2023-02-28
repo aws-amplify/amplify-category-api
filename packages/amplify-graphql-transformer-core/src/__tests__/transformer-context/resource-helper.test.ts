@@ -1,5 +1,5 @@
 import { GraphQLAPIProvider, TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { CfnParameter } from '@aws-cdk/core';
+import { CfnParameter } from 'aws-cdk-lib';
 import { TransformerResourceHelper } from '../../transformer-context/resource-helper';
 import { StackManager } from '../../transformer-context/stack-manager';
 

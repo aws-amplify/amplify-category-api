@@ -1,8 +1,9 @@
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import {
   $TSContext,
   $TSObject,
   AmplifyCategories,
+  AmplifyError,
   buildOverrideDir,
   getAmplifyResourceByCategories,
   JSONUtilities,
@@ -50,14 +51,8 @@ export class ApigwStackTransform {
     // Generate cloudformation stack from cli-inputs.json
     this.generateStack(authResourceName, pathsWithUserPoolGroups);
 
-    try {
-      // Modify cloudformation files based on overrides
-      await this.applyOverrides();
-    } catch (error) {
-      printer.error(`Failed to override ${this.resourceName} due to: ${error}.`);
-      return;
-    }
-
+    // Modify cloudformation files based on overrides
+    await this.applyOverrides();
     // Generate cloudformation stack input params from cli-inputs.json
     this.generateCfnInputParameters();
 
@@ -217,8 +212,15 @@ export class ApigwStackTransform {
             external: true,
           },
         });
-
-        await sandboxNode.run(overrideCode, overrideJSFilePath).override(this.resourceTemplateObj as AmplifyApigwResourceStack);
+        try {
+          await sandboxNode.run(overrideCode, overrideJSFilePath).override(this.resourceTemplateObj as AmplifyApigwResourceStack);
+        } catch (err) {
+          throw new AmplifyError('InvalidOverrideError', {
+            message: 'Executing overrides failed.',
+            details: err.message,
+            resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+          }, err);
+        }
       }
     }
   }

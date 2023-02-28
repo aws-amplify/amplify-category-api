@@ -314,10 +314,7 @@ export const transformCategoryStack = async (context: $TSContext, resource: $TSO
     if (canResourceBeTransformed(resource.resourceName)) {
       const backendDir = pathManager.getBackendDirPath();
       const overrideDir = path.join(backendDir, resource.category, resource.resourceName);
-      const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
-        printer.error(`Build error : ${error.message}`);
-        throw new Error(error);
-      });
+      const isBuild = await buildOverrideDir(backendDir, overrideDir);
       await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [
         context,
         {

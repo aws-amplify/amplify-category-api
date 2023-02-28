@@ -22,3 +22,24 @@ test('it generates resources with overrides', () => {
   expect(out).toBeDefined();
   expect(out.stacks).toMatchSnapshot();
 });
+
+test('it skips override if override file does not exist', () => {
+  const validSchema = /* GraphQL */ `
+    type Query {
+      speakTranslatedIdentifiedText: String @predictions(actions: [identifyText, translateText, convertTextToSpeech])
+      speakTranslatedLabelText: String @predictions(actions: [identifyLabels, translateText, convertTextToSpeech])
+    }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new PredictionsTransformer({ bucketName: 'myStorage${hash}-${env}' })],
+    overrideConfig: {
+      overrideDir: path.join(__dirname, 'non-existing-override-directory'),
+      overrideFlag: true,
+      resourceName: 'myResource',
+    },
+  });
+
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.stacks).toMatchSnapshot();
+});

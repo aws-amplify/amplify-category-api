@@ -4,13 +4,13 @@
 import {
   AppSyncAuthConfiguration,
   TransformerPluginProvider,
+  Template
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   OverrideConfig,
   ResolverConfig,
   TransformerProjectConfig,
 } from '@aws-amplify/graphql-transformer-core';
-import Template from '@aws-amplify/graphql-transformer-core/lib/transformation/types';
 import {
   DiffRule,
   ProjectRule,

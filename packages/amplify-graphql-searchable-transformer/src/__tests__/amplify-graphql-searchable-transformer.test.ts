@@ -1,8 +1,8 @@
 import { ConflictHandlerType, GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import {
-  anything, countResources, expect as cdkExpect, haveResource, ResourcePart,
-} from '@aws-cdk/assert';
+  Match, Template,
+} from 'aws-cdk-lib/assertions';
 import { parse } from 'graphql';
 import { SearchableModelTransformer } from '..';
 import {ALLOWABLE_SEARCHABLE_INSTANCE_TYPES} from '../constants';
@@ -193,8 +193,8 @@ test('it generates expected resources', () => {
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   const searchableStack = out.stacks.SearchableStack;
-  cdkExpect(searchableStack).to(
-    haveResource('AWS::IAM::Role', {
+  Template.fromJSON(searchableStack)
+    .hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -207,10 +207,9 @@ test('it generates expected resources', () => {
         ],
         Version: '2012-10-17',
       },
-    }),
-  );
-  cdkExpect(searchableStack).to(
-    haveResource('AWS::IAM::Role', {
+    });
+  Template.fromJSON(searchableStack)
+    .hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -223,26 +222,23 @@ test('it generates expected resources', () => {
         ],
         Version: '2012-10-17',
       },
-    }),
-  );
-  cdkExpect(searchableStack).to(
-    haveResource('AWS::Elasticsearch::Domain', {
-      DomainName: anything(),
-      EBSOptions: anything(),
-      ElasticsearchClusterConfig: anything(),
+    });
+  Template.fromJSON(searchableStack)
+    .hasResourceProperties('AWS::Elasticsearch::Domain', {
+      DomainName: Match.anyValue(),
+      EBSOptions: Match.anyValue(),
+      ElasticsearchClusterConfig: Match.anyValue(),
       ElasticsearchVersion: '7.10',
-    }, ResourcePart.Properties),
-  );
-  cdkExpect(searchableStack).to(
-    haveResource('AWS::Elasticsearch::Domain', {
+    });
+  Template.fromJSON(searchableStack)
+    .hasResource('AWS::Elasticsearch::Domain', {
       UpdateReplacePolicy: 'Delete',
       DeletionPolicy: 'Delete',
-    }, ResourcePart.CompleteDefinition),
-  );
-  cdkExpect(searchableStack).to(
-    haveResource('AWS::AppSync::DataSource', {
+    });
+  Template.fromJSON(searchableStack)
+    .hasResourceProperties('AWS::AppSync::DataSource', {
       ApiId: {
-        Ref: anything(),
+        Ref: Match.anyValue(),
       },
       Name: 'OpenSearchDataSource',
       Type: 'AMAZON_ELASTICSEARCH',
@@ -275,24 +271,23 @@ test('it generates expected resources', () => {
       ServiceRoleArn: {
         'Fn::GetAtt': ['OpenSearchAccessIAMRole6A1D9CC5', 'Arn'],
       },
-    }),
-  );
-  cdkExpect(searchableStack).to(countResources('AWS::AppSync::Resolver', 2));
-  cdkExpect(searchableStack).to(
-    haveResource('AWS::AppSync::Resolver', {
+    });
+  Template.fromJSON(searchableStack).resourceCountIs('AWS::AppSync::Resolver', 2);
+  Template.fromJSON(searchableStack)
+    .hasResourceProperties('AWS::AppSync::Resolver', {
       ApiId: {
-        Ref: anything(),
+        Ref: Match.anyValue(),
       },
-      FieldName: anything(),
+      FieldName: Match.anyValue(),
       TypeName: 'Query',
       Kind: 'PIPELINE',
       PipelineConfig: {
         Functions: [
           {
-            Ref: anything(),
+            Ref: Match.anyValue(),
           },
           {
-            'Fn::GetAtt': [anything(), 'FunctionId'],
+            'Fn::GetAtt': [Match.anyValue(), 'FunctionId'],
           },
         ],
       },
@@ -300,9 +295,9 @@ test('it generates expected resources', () => {
         'Fn::Join': [
           '',
           [
-            anything(),
+            Match.anyValue(),
             {
-              Ref: anything(),
+              Ref: Match.anyValue(),
             },
             '"))\n$util.qr($ctx.stash.put("endpoint", "https://',
             {
@@ -313,31 +308,30 @@ test('it generates expected resources', () => {
         ],
       },
       ResponseMappingTemplate: '$util.toJson($ctx.prev.result)',
-    }),
-  );
-  cdkExpect(searchableStack).to(
-    haveResource('AWS::AppSync::FunctionConfiguration', {
+    });
+  Template.fromJSON(searchableStack)
+    .hasResourceProperties('AWS::AppSync::FunctionConfiguration', {
       ApiId: {
-        Ref: anything(),
+        Ref: Match.anyValue(),
       },
       DataSourceName: {
-        'Fn::GetAtt': [anything(), 'Name'],
+        'Fn::GetAtt': [Match.anyValue(), 'Name'],
       },
       FunctionVersion: '2018-05-29',
-      Name: anything(),
+      Name: Match.anyValue(),
       RequestMappingTemplateS3Location: {
         'Fn::Join': [
           '',
           [
             's3://',
             {
-              Ref: anything(),
+              Ref: Match.anyValue(),
             },
             '/',
             {
-              Ref: anything(),
+              Ref: Match.anyValue(),
             },
-            anything(),
+            Match.anyValue(),
           ],
         ],
       },
@@ -347,18 +341,17 @@ test('it generates expected resources', () => {
           [
             's3://',
             {
-              Ref: anything(),
+              Ref: Match.anyValue(),
             },
             '/',
             {
-              Ref: anything(),
+              Ref: Match.anyValue(),
             },
-            anything(),
+            Match.anyValue(),
           ],
         ],
       },
-    }),
-  );
+    });
 });
 
 test('SearchableModelTransformer enum type generates StringFilterInput', () => {

@@ -51,7 +51,7 @@ install_cli_from_local_registry: &install_cli_from_local_registry
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
-    npm install -g @aws-amplify/cli-internal
+    npm install -g @aws-amplify/cli-internal@^11.0.0-beta.1
     echo "using Amplify CLI version: "$(amplify --version)
     unsetNpmRegistryUrl
 
@@ -97,6 +97,20 @@ jobs:
       - run:
           name: Collect code coverage
           command: yarn coverage
+    environment:
+      NODE_OPTIONS: --max-old-space-size=4096
+
+  validate_cdk_version:
+    <<: *linux-e2e-executor
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-category-api-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+      - run:
+          name: Validate cdk version
+          command: |
+            yarn ts-node .circleci/validate_cdk_version.ts
 
   lint:
     <<: *linux-e2e-executor
@@ -143,6 +157,7 @@ jobs:
           no_output_timeout: 60m
           environment:
             JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
+            NODE_OPTIONS: --max-old-space-size=4096
       - store_test_results:
           path: packages/amplify-util-mock/
 
@@ -486,6 +501,9 @@ workflows:
       - lint:
           requires:
             - build
+      - validate_cdk_version:
+          requires:
+            - build
       - verify-api-extract:
           requires:
             - build
@@ -706,6 +724,7 @@ commands:
                 shell: bash.exe
                 command: |
                   source .circleci/local_publish_helpers.sh
+                  forceFromSourceRun
                   cd packages/amplify-e2e-tests
                   retry yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
                 no_output_timeout: 60m
@@ -720,6 +739,7 @@ commands:
                   source $BASH_ENV
                   source .circleci/local_publish_helpers.sh
                   amplify version
+                  forceFromSourceRun
                   retry runE2eTest
                 no_output_timeout: 90m
   scan_e2e_test_artifacts:
