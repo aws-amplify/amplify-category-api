@@ -525,7 +525,14 @@ describe('with identity claim feature flag disabled', () => {
     #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), null)) )
     #if( !$util.isNull($ownerClaim0) )
 
-      #set( $ownerClaimsList0 = [] )
+      #set( $ownerClaimsList0 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), [])) )
+      #if( $util.isString($ownerClaimsList0) )
+        #if( $util.isList($util.parseJson($ownerClaimsList0)) )
+          #set( $ownerClaimsList0 = $util.parseJson($ownerClaimsList0) )
+        #else
+          #set( $ownerClaimsList0 = [$ownerClaimsList0] )
+        #end
+      #end
       #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
         #set( $isAuthorized = true )
       #end
@@ -622,7 +629,14 @@ describe('with identity claim feature flag disabled', () => {
     #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), null)) )
     #if( !$util.isNull($ownerClaim0) )
 
-      #set( $ownerClaimsList0 = [] )
+      #set( $ownerClaimsList0 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), [])) )
+      #if( $util.isString($ownerClaimsList0) )
+        #if( $util.isList($util.parseJson($ownerClaimsList0)) )
+          #set( $ownerClaimsList0 = $util.parseJson($ownerClaimsList0) )
+        #else
+          #set( $ownerClaimsList0 = [$ownerClaimsList0] )
+        #end
+      #end
       #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
         #set( $isAuthorized = true )
       #end

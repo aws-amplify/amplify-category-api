@@ -178,7 +178,14 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
       $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
     #end
     #if( !$isAuthorized )
-      #set( $ownerClaimsList0 = [] )
+      #set( $ownerClaimsList0 = $util.defaultIfNull($ctx.identity.claims.get(\\"custom:my_field\\"), []) )
+      #if( $util.isString($ownerClaimsList0) )
+        #if( $util.isList($util.parseJson($ownerClaimsList0)) )
+          #set( $ownerClaimsList0 = $util.parseJson($ownerClaimsList0) )
+        #else
+          #set( $ownerClaimsList0 = [$ownerClaimsList0] )
+        #end
+      #end
       #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
       #set( $isAuthorizedOnAllFields0 = true )
       #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
@@ -305,7 +312,14 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #set( $parentClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
   #if( !$util.isNull($parentClaim) )
 
-    #set( $ownerClaimsList0 = [] )
+    #set( $ownerClaimsList0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), []) )
+    #if( $util.isString($ownerClaimsList0) )
+      #if( $util.isList($util.parseJson($ownerClaimsList0)) )
+        #set( $ownerClaimsList0 = $util.parseJson($ownerClaimsList0) )
+      #else
+        #set( $ownerClaimsList0 = [$ownerClaimsList0] )
+      #end
+    #end
     $util.qr($ownerClaimsList0.add($parentClaim))
     #if( !$util.isNull($ctx.args.parent) )
       #if( $util.isString($ctx.args.parent) )
@@ -335,7 +349,14 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #set( $childClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
   #if( !$util.isNull($childClaim) )
 
-    #set( $ownerClaimsList1 = [] )
+    #set( $ownerClaimsList1 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), []) )
+    #if( $util.isString($ownerClaimsList1) )
+      #if( $util.isList($util.parseJson($ownerClaimsList1)) )
+        #set( $ownerClaimsList1 = $util.parseJson($ownerClaimsList1) )
+      #else
+        #set( $ownerClaimsList1 = [$ownerClaimsList1] )
+      #end
+    #end
     $util.qr($ownerClaimsList1.add($childClaim))
     #if( !$util.isNull($ctx.args.child) )
       #if( $util.isString($ctx.args.child) )
@@ -601,7 +622,14 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
       $util.qr($ctx.args.input.put(\\"editors\\", [$ownerClaim0]))
     #end
     #if( !$isAuthorized )
-      #set( $ownerClaimsList0 = [] )
+      #set( $ownerClaimsList0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), [])) )
+      #if( $util.isString($ownerClaimsList0) )
+        #if( $util.isList($util.parseJson($ownerClaimsList0)) )
+          #set( $ownerClaimsList0 = $util.parseJson($ownerClaimsList0) )
+        #else
+          #set( $ownerClaimsList0 = [$ownerClaimsList0] )
+        #end
+      #end
       #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"editors\\",\\"createdAt\\",\\"updatedAt\\"] )
       #set( $isAuthorizedOnAllFields0 = true )
       #foreach( $allowedOwner in $ownerEntity0 )
@@ -731,7 +759,14 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #set( $parentClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
   #if( !$util.isNull($parentClaim) )
 
-    #set( $ownerClaimsList0 = [] )
+    #set( $ownerClaimsList0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), []) )
+    #if( $util.isString($ownerClaimsList0) )
+      #if( $util.isList($util.parseJson($ownerClaimsList0)) )
+        #set( $ownerClaimsList0 = $util.parseJson($ownerClaimsList0) )
+      #else
+        #set( $ownerClaimsList0 = [$ownerClaimsList0] )
+      #end
+    #end
     $util.qr($ownerClaimsList0.add($parentClaim))
     #if( !$util.isNull($ctx.args.parent) )
       #if( $util.isString($ctx.args.parent) )
@@ -761,7 +796,14 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #set( $childClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
   #if( !$util.isNull($childClaim) )
 
-    #set( $ownerClaimsList1 = [] )
+    #set( $ownerClaimsList1 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), []) )
+    #if( $util.isString($ownerClaimsList1) )
+      #if( $util.isList($util.parseJson($ownerClaimsList1)) )
+        #set( $ownerClaimsList1 = $util.parseJson($ownerClaimsList1) )
+      #else
+        #set( $ownerClaimsList1 = [$ownerClaimsList1] )
+      #end
+    #end
     $util.qr($ownerClaimsList1.add($childClaim))
     #if( !$util.isNull($ctx.args.child) )
       #if( $util.isString($ctx.args.child) )
