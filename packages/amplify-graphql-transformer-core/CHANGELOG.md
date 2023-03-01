@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.18.5...@aws-amplify/graphql-transformer-core@1.1.0) (2023-03-01)
+
+### Bug Fixes
+
+- error in transformers if override has never been setup ([#1270](https://github.com/aws-amplify/amplify-category-api/issues/1270)) ([bba14c3](https://github.com/aws-amplify/amplify-category-api/commit/bba14c349bb840d911572acc79438c428b4f95cd))
+- lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
+- resolution of nested stack template url ([#893](https://github.com/aws-amplify/amplify-category-api/issues/893)) ([d18ff1a](https://github.com/aws-amplify/amplify-category-api/commit/d18ff1a0f0ea3a1cf99e6062f0fe92c0d15f611e))
+- throw error if invalid override or invalid custom stack error ([#982](https://github.com/aws-amplify/amplify-category-api/issues/982)) ([6dfeeba](https://github.com/aws-amplify/amplify-category-api/commit/6dfeeba627cd84a41eb8b4248856fa487c741f87))
+
+### Features
+
+- migrate index and model transformers to CDK v2 ([#860](https://github.com/aws-amplify/amplify-category-api/issues/860)) ([886ab6c](https://github.com/aws-amplify/amplify-category-api/commit/886ab6c1eb699f9a09f273c76b3c419c73004f9b))
+
 # [1.1.0-beta.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.18.4...@aws-amplify/graphql-transformer-core@1.1.0-beta.6) (2023-02-21)
 
 ### Bug Fixes

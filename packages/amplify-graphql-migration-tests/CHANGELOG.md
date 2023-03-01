@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.29](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-migration-tests@2.3.28...amplify-category-api-graphql-migration-tests@2.3.29) (2023-03-01)
+
+### Bug Fixes
+
+- lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
+- migrate to cdkv2 - e2e tests fixes ([#910](https://github.com/aws-amplify/amplify-category-api/issues/910)) ([c7b2503](https://github.com/aws-amplify/amplify-category-api/commit/c7b250361bf0c82fc067e03675101b9dfb6a25de))
+
 ## [2.3.28](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-migration-tests@2.3.27...amplify-category-api-graphql-migration-tests@2.3.28) (2023-02-27)
 
 **Note:** Version bump only for package amplify-category-api-graphql-migration-tests

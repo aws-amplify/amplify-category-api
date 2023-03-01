@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@0.6.37...@aws-amplify/graphql-predictions-transformer@1.1.0) (2023-03-01)
+
+### Bug Fixes
+
+- error in transformers if override has never been setup ([#1270](https://github.com/aws-amplify/amplify-category-api/issues/1270)) ([bba14c3](https://github.com/aws-amplify/amplify-category-api/commit/bba14c349bb840d911572acc79438c428b4f95cd))
+- lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
+
+### Features
+
+- migrate predictions transformer to CDK v2 ([#870](https://github.com/aws-amplify/amplify-category-api/issues/870)) ([8b307b3](https://github.com/aws-amplify/amplify-category-api/commit/8b307b3c737c9345a321c4dffb77464619f2c4cb))
+
 # [1.1.0-beta.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@0.6.36...@aws-amplify/graphql-predictions-transformer@1.1.0-beta.6) (2023-02-21)
 
 ### Bug Fixes
