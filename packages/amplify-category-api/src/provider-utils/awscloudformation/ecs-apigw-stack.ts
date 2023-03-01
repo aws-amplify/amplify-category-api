@@ -1,5 +1,7 @@
-import * as apigw2 from '@aws-cdk/aws-apigatewayv2';
-import * as cdk from '@aws-cdk/core';
+import * as apigw2 from 'aws-cdk-lib/aws-apigatewayv2';
+import * as apigw2alpha from '@aws-cdk/aws-apigatewayv2-alpha';
+import * as cdk from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { ContainersStack, ContainersStackProps } from './base-api-stack';
 import { API_TYPE } from './service-walkthroughs/containers-walkthrough';
 
@@ -9,7 +11,7 @@ type EcsStackProps = Readonly<
   }
 >;
 export class EcsStack extends ContainersStack {
-  constructor(scope: cdk.Construct, id: string, private readonly ecsProps: EcsStackProps) {
+  constructor(scope: Construct, id: string, private readonly ecsProps: EcsStackProps) {
     super(scope, id, {
       ...ecsProps,
       createCloudMapService: true,
@@ -42,7 +44,7 @@ export class EcsStack extends ContainersStack {
       corsConfiguration: {
         allowHeaders: ['*'],
         allowOrigins: ['*'],
-        allowMethods: Object.values(apigw2.HttpMethod).filter(m => m !== apigw2.HttpMethod.ANY),
+        allowMethods: Object.values(apigw2alpha.HttpMethod).filter(m => m !== apigw2alpha.HttpMethod.ANY),
       },
     });
 
@@ -54,9 +56,9 @@ export class EcsStack extends ContainersStack {
 
     const integration = new apigw2.CfnIntegration(this, 'ANYIntegration', {
       apiId: cdk.Fn.ref(api.logicalId),
-      integrationType: apigw2.HttpIntegrationType.HTTP_PROXY,
+      integrationType: apigw2alpha.HttpIntegrationType.HTTP_PROXY,
       connectionId: this.vpcLinkId,
-      connectionType: apigw2.HttpConnectionType.VPC_LINK,
+      connectionType: apigw2alpha.HttpConnectionType.VPC_LINK,
       integrationMethod: 'ANY',
       integrationUri: this.cloudMapService.attrArn,
       payloadFormatVersion: '1.0',

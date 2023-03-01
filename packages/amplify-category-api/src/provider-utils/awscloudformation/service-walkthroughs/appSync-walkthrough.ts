@@ -1,4 +1,4 @@
-import { Duration, Expiration } from '@aws-cdk/core';
+import { Duration, Expiration } from 'aws-cdk-lib';
 import {
   $TSContext,
   $TSObject,

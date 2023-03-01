@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import * as path from 'path';
-import { TransformerProjectConfig, DeploymentResources } from '@aws-amplify/graphql-transformer-core';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerProjectConfig } from '@aws-amplify/graphql-transformer-core';
 import rimraf from 'rimraf';
 import { $TSContext, AmplifyCategories, CloudformationProviderFacade, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import { CloudFormation, Fn } from 'cloudform';

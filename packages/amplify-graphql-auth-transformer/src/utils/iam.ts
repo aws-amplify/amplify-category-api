@@ -1,4 +1,5 @@
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
+
 interface PolicyDocument {
   [key: string]: any;
 }

@@ -15,7 +15,7 @@ import {
   TypeSystemDefinitionNode,
   UnionTypeDefinitionNode,
 } from 'graphql';
-import { DeploymentResources } from './DeploymentResources';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from './errors';
 import { TransformerContext } from './TransformerContext';
 import { Transformer } from './Transformer';

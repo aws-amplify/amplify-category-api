@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.1.0-beta.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@5.1.26...amplify-category-api-util-mock@6.1.0-beta.6) (2023-02-21)
+
+### Features
+
+- migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
+
+# [6.1.0-beta.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@5.1.26...amplify-category-api-util-mock@6.1.0-beta.5) (2023-02-15)
+
+### Features
+
+- migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
+
+# [6.1.0-beta.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@5.1.24...amplify-category-api-util-mock@6.1.0-beta.4) (2023-02-03)
+
+### Features
+
+- migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
+
+# [6.1.0-beta.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@5.1.21...amplify-category-api-util-mock@6.1.0-beta.3) (2022-12-27)
+
+### Features
+
+- migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
+
+# [6.1.0-beta.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.1.0-beta.0...amplify-category-api-util-mock@6.1.0-beta.2) (2022-12-12)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+# [6.1.0-beta.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.1.0-beta.0...amplify-category-api-util-mock@6.1.0-beta.1) (2022-11-30)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+# [6.1.0-beta.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.1.0-cdkv2.3...amplify-category-api-util-mock@6.1.0-beta.0) (2022-11-18)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+# [6.1.0-cdkv2.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@5.1.18...amplify-category-api-util-mock@6.1.0-cdkv2.3) (2022-11-15)
+
+### Features
+
+- migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
+
+# [6.1.0-cdkv2.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.1.0-cdkv2.1...amplify-category-api-util-mock@6.1.0-cdkv2.2) (2022-11-03)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+# [6.1.0-cdkv2.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.1.0-cdkv2.0...amplify-category-api-util-mock@6.1.0-cdkv2.1) (2022-10-24)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+# [6.1.0-cdkv2.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@5.1.14...amplify-category-api-util-mock@6.1.0-cdkv2.0) (2022-10-24)
+
+### Features
+
+- migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
+
 ## [5.1.27](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@5.1.26...amplify-category-api-util-mock@5.1.27) (2023-02-27)
 
 ### Bug Fixes

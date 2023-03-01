@@ -6,7 +6,7 @@ import { ITransformer } from './ITransformer';
 import { GraphQLTransform } from './GraphQLTransform';
 import { collectDirectiveNames, collectDirectivesByType, collectDirectivesByTypeNames } from './collectDirectives';
 import { stripDirectives } from './stripDirectives';
-import { DeploymentResources } from './DeploymentResources';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   buildProject as buildAPIProject,
   uploadDeployment as uploadAPIProject,
