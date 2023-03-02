@@ -11,7 +11,7 @@ import { ValidationError } from '../exceptions/validation-error';
  * @param schema graphql schema
  * @returns true if a type is defined once in the schema
  */
-export const validatetypeIsDefinedOnce = (schema: DocumentNode): Error[] => {
+export const validateTypeIsDefinedOnce = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,
