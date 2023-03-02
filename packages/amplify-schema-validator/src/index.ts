@@ -8,6 +8,12 @@ import { validateManyToManyTwoLocations } from './validators/two-many-to-many-lo
 import { validateFieldsMatchInRelatedModel } from './validators/fields-match-in-related-model';
 import { ValidationError } from './exceptions/validation-error';
 import { validateFieldIsDefinedOnce } from './validators/field-is-defined-once';
+import { validateAuthIsAnnotatedWithModel } from './validators/auth-must-be-annotated-with-model';
+import { validateSortKeyFieldsExistsInModel } from './validators/sort-key-field-exists';
+import { validateReservedTypeNames } from './validators/reserved-type-name';
+// import { validateCorrectTypeInManyToManyRelation } from './validators/correct-type-in-many-to-many-relation';
+import { validateReservedFieldNames } from './validators/reserved-field-name';
+import { validateRelationNameDoesNotConflictWithTypeName } from './validators/relationname-doesnot-conflict-with-typename';
 
 const allValidators = [
   validateIndexScalarTypes,
@@ -15,6 +21,12 @@ const allValidators = [
   validateManyToManyTwoLocations,
   validateFieldsMatchInRelatedModel,
   validateFieldIsDefinedOnce,
+  validateAuthIsAnnotatedWithModel,
+  validateSortKeyFieldsExistsInModel,
+  validateReservedTypeNames,
+  // validateCorrectTypeInManyToManyRelation,
+  validateReservedFieldNames,
+  validateRelationNameDoesNotConflictWithTypeName,
 ];
 
 /**
