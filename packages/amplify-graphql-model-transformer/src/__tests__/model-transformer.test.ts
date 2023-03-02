@@ -55,6 +55,7 @@ describe('ModelTransformer: ', () => {
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
+
     validateModelSchema(parse(out.schema));
     parse(out.schema);
   });
@@ -77,6 +78,7 @@ describe('ModelTransformer: ', () => {
     });
     const out = transformer.transform(alsoValidSchema);
     expect(out).toBeDefined();
+    
     validateModelSchema(parse(out.schema));
     parse(out.schema);
   });
