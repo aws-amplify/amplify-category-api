@@ -41,6 +41,46 @@ describe('ModelTransformer: ', () => {
     parse(out.schema);
   });
 
+  // should successfully transform simple Embeddable type (non-model) schema
+  it('should successfully transform simple Embeddable type (non-model) schema', async () => {
+    const validSchema = `
+      type NonModelType {
+          id: ID!
+          title: String!
+      }
+      `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    validateModelSchema(parse(out.schema));
+    parse(out.schema);
+  });
+  // should successfully transform simple non-capitalized Embeddable type (non-model) name schema
+  it('should successfully transform simple non-capitalized Model/Embeddable type (non-model) name schema', async () => {
+    const alsoValidSchema = `
+      type modelType @model {
+          id: ID!
+          title: String!
+          nonModelTypeValue: nonModelType
+      }
+      type nonModelType {
+          id: ID!
+          title: String!
+      }
+      `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const out = transformer.transform(alsoValidSchema);
+    expect(out).toBeDefined();
+    validateModelSchema(parse(out.schema));
+    parse(out.schema);
+  });
+
   it('should support custom query overrides', () => {
     const validSchema = `type Post @model(queries: { get: "customGetPost", list: "customListPost" }) {
           id: ID!
