@@ -8,11 +8,11 @@ import {
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
 
 /**
-   * Validates that fields match in the parent model
-   *
-   * @param schema graphql schema
-   * @returns true if fields match in parent model
-   */
+ * Validates that fields match in the parent model
+ *
+ * @param schema graphql schema
+ * @returns true if fields match in parent model
+ */
 export const validateFieldsMatchInParentModel = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(

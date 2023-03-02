@@ -8,7 +8,7 @@ import { validateManyToManyTwoLocations } from './validators/two-many-to-many-lo
 import { validateFieldsMatchInParentModel } from './validators/fields-match-in-parent-model';
 import { ValidationError } from './exceptions/validation-error';
 import { validateFieldIsDefinedOnce } from './validators/field-is-defined-once';
-import { validatetypeIsDefinedOnce } from './validators/type-is-defined-once';
+import { validateTypeIsDefinedOnce } from './validators/type-is-defined-once';
 import { validateIndexIsDefinedOnce } from './validators/index-is-defined-once-in-model';
 import { validateIndexExistsInRelatedModel } from './validators/index-exists-in-related-model';
 import { validateEnumIsDefinedOnce } from './validators/enum-is-defined-once';
@@ -19,7 +19,7 @@ const allValidators = [
   validateRequireBelongsToRelation,
   validateManyToManyTwoLocations,
   validateFieldIsDefinedOnce,
-  validatetypeIsDefinedOnce,
+  validateTypeIsDefinedOnce,
   validateIndexIsDefinedOnce,
   validateFieldsMatchInParentModel,
   validateIndexExistsInRelatedModel,

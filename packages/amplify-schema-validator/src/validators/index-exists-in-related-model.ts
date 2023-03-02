@@ -9,11 +9,11 @@ import { getObjectWithName } from '../helpers/get-object-with-name';
 import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
 
 /**
-     * Validates that index exists in the related model
-     *
-     * @param schema graphql schema
-     * @returns true if index exists in the related model
-     */
+ * Validates that index exists in the related model
+ *
+ * @param schema graphql schema
+ * @returns true if index exists in the related model
+ */
 export const validateIndexExistsInRelatedModel = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(

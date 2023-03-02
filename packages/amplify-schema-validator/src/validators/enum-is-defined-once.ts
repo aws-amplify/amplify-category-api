@@ -6,11 +6,11 @@ import {
 import { ValidationError } from '../exceptions/validation-error';
 
 /**
-     * Enum is defined once
-     *
-     * @param schema graphql schema
-     * @returns true if a enum is defined once
-     */
+ * Enum is defined once
+ *
+ * @param schema graphql schema
+ * @returns true if an enum is defined once
+ */
 export const validateEnumIsDefinedOnce = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const enumTypeDefinitions = schema.definitions.filter(
@@ -24,7 +24,6 @@ export const validateEnumIsDefinedOnce = (schema: DocumentNode): Error[] => {
       /* istanbul ignore next */
       return;
     }
-    console.log('schema definition --- ', enumValues);
 
     const uniqueEnums: string[] = [];
     enumValues?.forEach((enumVal) => {
