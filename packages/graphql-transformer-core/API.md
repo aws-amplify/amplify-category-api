@@ -107,6 +107,17 @@ export const enum ConflictHandlerType {
     OPTIMISTIC = "OPTIMISTIC_CONCURRENCY"
 }
 
+// @public (undocumented)
+export interface DatasourceType {
+    // (undocumented)
+    dbType: DBType;
+    // (undocumented)
+    provisionDB: boolean;
+}
+
+// @public (undocumented)
+export type DBType = 'MySQL' | 'DDB';
+
 export { DeploymentResources }
 
 // @public (undocumented)

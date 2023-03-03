@@ -35,6 +35,7 @@ import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DefinitionNode } from 'graphql';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
@@ -64,7 +65,6 @@ import { LogConfig } from '@aws-cdk/aws-appsync-alpha';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelFieldMap } from '@aws-amplify/graphql-transformer-interfaces';
 import { MutationFieldType } from '@aws-amplify/graphql-transformer-interfaces';
-import { MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
 import { NamedTypeNode } from 'graphql';
 import { NestedStackProps } from 'aws-cdk-lib';
 import { ObjectTypeDefinitionNode } from 'graphql';
@@ -166,6 +166,20 @@ function createSyncLambdaIAMPolicy(context: TransformerContextProvider, stack: c
 function createSyncTable(context: TransformerContext): void;
 
 // @public (undocumented)
+export interface DatasourceType {
+    // (undocumented)
+    dbType: DBType;
+    // (undocumented)
+    provisionDB: boolean;
+}
+
+// @public (undocumented)
+export type DBType = 'MySQL' | 'DDB';
+
+// @public (undocumented)
+export const DDB_DB_TYPE = "DDB";
+
+// @public (undocumented)
 export class DirectiveWrapper {
     constructor(node: DirectiveNode);
     // (undocumented)
@@ -231,7 +245,7 @@ export const getKeySchema: (table: any, indexName?: string) => any;
 export const getParameterStoreSecretPath: (secret: string, database: string, apiName: string, envName?: string) => string;
 
 // @public (undocumented)
-export const getRDSDBConfigFromAmplifyInput: (context: $TSContext, inputNode: $TSAny) => Promise<Partial<RDSDBConfig>>;
+export const getRDSDBConfigFromAmplifyInput: (context: $TSContext, inputNode: $TSAny) => Promise<Partial<ImportedDataSourceConfig>>;
 
 // @public (undocumented)
 export const getSortKeyFieldNames: (type: ObjectTypeDefinitionNode) => string[];
@@ -446,11 +460,6 @@ export type RDSConnectionSecrets = TransformerSecrets & {
 // @public (undocumented)
 export type RDSDataSourceConfig = RDSConnectionSecrets & {
     engine: ImportedRDSType;
-};
-
-// @public (undocumented)
-export type RDSDBConfig = MySQLDataSourceConfig & {
-    engine: string;
 };
 
 // @public (undocumented)

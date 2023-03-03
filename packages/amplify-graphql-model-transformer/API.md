@@ -6,7 +6,6 @@
 
 import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
-import { CompoundExpressionNode } from 'graphql-mapping-template';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql';
