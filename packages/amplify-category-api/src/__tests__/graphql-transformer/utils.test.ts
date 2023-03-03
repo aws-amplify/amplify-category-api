@@ -1,5 +1,5 @@
 import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from '../../graphql-transformer/utils';
-import { TransformerProjectConfig } from '@aws-amplify/graphql-transformer-core';
+import { TransformerProjectConfig, DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import * as fs from 'fs-extra';
 import * as path from 'path';
