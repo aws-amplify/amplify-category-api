@@ -1,10 +1,12 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema, DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { $TSAny } from 'amplify-cli-core';
 
-import { Template } from 'aws-cdk-lib/assertions';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import { Kind, parse } from 'graphql';
 import { PrimaryKeyTransformer } from '..';
+import _ from 'lodash';
 
 test('throws if multiple primary keys are defined on an object', () => {
   const schema = `
@@ -1003,18 +1005,7 @@ describe('RDS primary key transformer tests', () => {
     validateModelSchema(schema);
 
     // DDB resources are not created
-    cdkExpect(stack).notTo(
-      haveResourceLike('AWS::DynamoDB::Table', {
-        KeySchema: [
-          { AttributeName: 'email', KeyType: 'HASH' },
-          { AttributeName: 'kind', KeyType: 'RANGE' },
-        ],
-        AttributeDefinitions: [
-          { AttributeName: 'email', AttributeType: 'S' },
-          { AttributeName: 'kind', AttributeType: 'N' },
-        ],
-      }),
-    );
+    expect(getDDBTableResources(stack)?.length).toEqual(0);
 
     expect(out.resolvers).toMatchSnapshot();
 
@@ -1048,12 +1039,7 @@ describe('RDS primary key transformer tests', () => {
     const stack = out.stacks.Test;
 
     validateModelSchema(schema);
-    cdkExpect(stack).notTo(
-      haveResourceLike('AWS::DynamoDB::Table', {
-        KeySchema: [{ AttributeName: 'email', KeyType: 'HASH' }],
-        AttributeDefinitions: [{ AttributeName: 'email', AttributeType: 'S' }],
-      }),
-    );
+    expect(getDDBTableResources(stack)?.length).toEqual(0);
 
     expect(out.resolvers).toMatchSnapshot();
 
@@ -1104,18 +1090,7 @@ describe('RDS primary key transformer tests', () => {
     const stack = out.stacks.Test;
 
     validateModelSchema(schema);
-    cdkExpect(stack).notTo(
-      haveResourceLike('AWS::DynamoDB::Table', {
-        KeySchema: [
-          { AttributeName: 'email', KeyType: 'HASH' },
-          { AttributeName: 'kind#other', KeyType: 'RANGE' },
-        ],
-        AttributeDefinitions: [
-          { AttributeName: 'email', AttributeType: 'S' },
-          { AttributeName: 'kind#other', AttributeType: 'S' },
-        ],
-      }),
-    );
+    expect(getDDBTableResources(stack)?.length).toEqual(0);
 
     expect(out.resolvers).toMatchSnapshot();
 
@@ -1339,3 +1314,14 @@ describe('RDS primary key transformer tests', () => {
     expect(getQuery).toBeDefined();
   });
 });
+
+const getDDBTableResources = (stack: $TSAny): string[] => {
+  const ddbTables: string[] = [];
+  const allResources: [string: $TSAny] = stack?.Resources;
+  if (!allResources || Object.keys(allResources)?.length === 0) {
+    return ddbTables;
+  }
+  return Object.keys(_.pickBy(allResources, function(value, key) {
+    return value?.Type === "AWS::DynamoDB::Table";
+  }));
+} ;
