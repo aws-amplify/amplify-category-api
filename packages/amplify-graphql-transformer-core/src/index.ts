@@ -7,9 +7,7 @@ export {
   SyncUtils,
 } from './transformation';
 export {
-  DeploymentResources,
   OverrideConfig,
-  default as Template,
   UserDefinedSlot,
   UserDefinedResolver,
 } from './transformation/types';

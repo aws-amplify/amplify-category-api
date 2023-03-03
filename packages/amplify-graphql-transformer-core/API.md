@@ -7,35 +7,35 @@
 import { $TSAny } from 'amplify-cli-core';
 import { $TSContext } from 'amplify-cli-core';
 import { APIIAMResourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ApiKeyConfig } from '@aws-cdk/aws-appsync';
-import { App } from '@aws-cdk/core';
+import { ApiKeyConfig } from '@aws-cdk/aws-appsync-alpha';
+import { App } from 'aws-cdk-lib';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import { AppSyncFunctionConfigurationProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationConfig } from '@aws-cdk/aws-appsync';
-import { AuthorizationType } from '@aws-cdk/aws-appsync';
-import * as cdk from '@aws-cdk/core';
-import { CfnApiKey } from '@aws-cdk/aws-appsync';
-import { CfnDataSource } from '@aws-cdk/aws-appsync';
-import { CfnDomain } from '@aws-cdk/aws-elasticsearch';
-import { CfnElement } from '@aws-cdk/core';
-import { CfnEventSourceMapping } from '@aws-cdk/aws-lambda';
-import { CfnFunction } from '@aws-cdk/aws-lambda';
-import { CfnFunctionConfiguration } from '@aws-cdk/aws-appsync';
-import { CfnGraphQLApi } from '@aws-cdk/aws-appsync';
-import { CfnGraphQLSchema } from '@aws-cdk/aws-appsync';
-import { CfnParameter } from '@aws-cdk/core';
-import { CfnParameterProps } from '@aws-cdk/core';
-import { CfnPolicy } from '@aws-cdk/aws-iam';
-import { CfnResolver } from '@aws-cdk/aws-appsync';
-import { CfnResource } from '@aws-cdk/core';
-import { CfnRole } from '@aws-cdk/aws-iam';
-import { CfnStack } from '@aws-cdk/core';
-import { CfnTable } from '@aws-cdk/aws-dynamodb';
-import { Construct } from '@aws-cdk/core';
+import { AuthorizationConfig } from '@aws-cdk/aws-appsync-alpha';
+import { AuthorizationType } from '@aws-cdk/aws-appsync-alpha';
+import * as cdk from 'aws-cdk-lib';
+import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
+import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
+import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
+import { CfnElement } from 'aws-cdk-lib';
+import { CfnEventSourceMapping } from 'aws-cdk-lib/aws-lambda';
+import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
+import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
+import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
+import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
+import { CfnParameter } from 'aws-cdk-lib';
+import { CfnParameterProps } from 'aws-cdk-lib';
+import { CfnPolicy } from 'aws-cdk-lib/aws-iam';
+import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
+import { CfnResource } from 'aws-cdk-lib';
+import { CfnRole } from 'aws-cdk-lib/aws-iam';
+import { CfnStack } from 'aws-cdk-lib';
+import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
+import { Construct } from 'constructs';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DefinitionNode } from 'graphql';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql/language';
@@ -45,37 +45,38 @@ import { EnumTypeExtensionNode } from 'graphql';
 import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode } from 'graphql';
 import { FieldNode } from 'graphql';
-import { Grant } from '@aws-cdk/aws-iam';
-import { GraphqlApiBase } from '@aws-cdk/aws-appsync';
+import { Grant } from 'aws-cdk-lib/aws-iam';
+import { GraphqlApiBase } from '@aws-cdk/aws-appsync-alpha';
 import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLError } from 'graphql';
-import * as iam from '@aws-cdk/aws-iam';
-import { IGrantable } from '@aws-cdk/aws-iam';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { IGrantable } from 'aws-cdk-lib/aws-iam';
 import { InlineMappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { InputObjectTypeDefinitionNode } from 'graphql';
 import { InputObjectTypeExtensionNode } from 'graphql';
 import { InputValueDefinitionNode } from 'graphql';
 import { InterfaceTypeDefinitionNode } from 'graphql';
 import { InterfaceTypeExtensionNode } from 'graphql';
-import { IStackSynthesizer } from '@aws-cdk/core';
-import { ISynthesisSession } from '@aws-cdk/core';
+import { IStackSynthesizer } from 'aws-cdk-lib';
+import { ISynthesisSession } from 'aws-cdk-lib';
 import { Location as Location_2 } from 'graphql';
-import { LogConfig } from '@aws-cdk/aws-appsync';
+import { LogConfig } from '@aws-cdk/aws-appsync-alpha';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelFieldMap } from '@aws-amplify/graphql-transformer-interfaces';
 import { MutationFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
 import { NamedTypeNode } from 'graphql';
-import { NestedStackProps } from '@aws-cdk/core';
+import { NestedStackProps } from 'aws-cdk-lib';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeExtensionNode } from 'graphql';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { S3MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { SchemaDefinitionNode } from 'graphql';
-import { Stack } from '@aws-cdk/core';
+import { Stack } from 'aws-cdk-lib';
 import { StackManagerProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { StringValueNode } from 'graphql';
 import { SubscriptionFieldType } from '@aws-amplify/graphql-transformer-interfaces';
+import { Template } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerAuthProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -163,31 +164,6 @@ function createSyncLambdaIAMPolicy(context: TransformerContextProvider, stack: c
 //
 // @public (undocumented)
 function createSyncTable(context: TransformerContext): void;
-
-// @public (undocumented)
-export interface DatasourceType {
-    // (undocumented)
-    dbType: DBType;
-    // (undocumented)
-    provisionDB: boolean;
-}
-
-// @public (undocumented)
-export type DBType = 'MySQL' | 'DDB';
-
-// @public (undocumented)
-export const DDB_DB_TYPE = "DDB";
-
-// Warning: (ae-forgotten-export) The symbol "ResolversFunctionsAndSchema" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "NestedStacks" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export interface DeploymentResources extends ResolversFunctionsAndSchema, NestedStacks {
-    // Warning: (ae-forgotten-export) The symbol "StackMapping_2" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    stackMapping: StackMapping_2;
-}
 
 // @public (undocumented)
 export class DirectiveWrapper {
@@ -555,32 +531,6 @@ declare namespace SyncUtils {
     }
 }
 export { SyncUtils }
-
-// @public (undocumented)
-export interface Template {
-    // (undocumented)
-    AWSTemplateFormatVersion?: string;
-    // (undocumented)
-    Conditions?: Record<string, any>;
-    // (undocumented)
-    Description?: string;
-    // (undocumented)
-    Mappings?: {
-        [key: string]: {
-            [key: string]: Record<string, string | number | string[]>;
-        };
-    };
-    // (undocumented)
-    Metadata?: Record<string, any>;
-    // (undocumented)
-    Outputs?: Record<string, any>;
-    // (undocumented)
-    Parameters?: Record<string, any>;
-    // (undocumented)
-    Resources?: Record<string, any>;
-    // (undocumented)
-    Transform?: any;
-}
 
 // @public (undocumented)
 export interface TransformConfig {

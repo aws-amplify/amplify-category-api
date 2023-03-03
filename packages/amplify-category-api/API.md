@@ -7,13 +7,14 @@
 import { $TSAny } from 'amplify-cli-core';
 import { $TSContext } from 'amplify-cli-core';
 import { $TSObject } from 'amplify-cli-core';
-import * as cdk from '@aws-cdk/core';
-import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-core';
+import * as cdk from 'aws-cdk-lib';
+import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
+import { Construct } from 'constructs';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import { DeploymentResources as DeploymentResources_2 } from 'graphql-transformer-core';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as ecs from '@aws-cdk/aws-ecs';
-import * as iam from '@aws-cdk/aws-iam';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { ResolverConfig } from 'graphql-transformer-core';
 import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 
@@ -78,13 +79,13 @@ export enum DEPLOYMENT_MECHANISM {
 // @public (undocumented)
 export class EcsAlbStack extends ContainersStack {
     // Warning: (ae-forgotten-export) The symbol "EcsStackProps" needs to be exported by the entry point index.d.ts
-    constructor(scope: cdk.Construct, id: string, ecsProps: EcsStackProps);
+    constructor(scope: Construct, id: string, ecsProps: EcsStackProps);
 }
 
 // @public (undocumented)
 export class EcsStack extends ContainersStack {
     // Warning: (ae-forgotten-export) The symbol "EcsStackProps_2" needs to be exported by the entry point index.d.ts
-    constructor(scope: cdk.Construct, id: string, ecsProps: EcsStackProps_2);
+    constructor(scope: Construct, id: string, ecsProps: EcsStackProps_2);
 }
 
 // @public (undocumented)

@@ -1,5 +1,5 @@
 import { GraphQLAPIProvider, ModelFieldMap, TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { CfnParameter, Token } from '@aws-cdk/core';
+import { CfnParameter, Token } from 'aws-cdk-lib';
 import { ModelResourceIDs } from 'graphql-transformer-common';
 import md5 from 'md5';
 import { ModelFieldMapImpl } from './model-field-map';

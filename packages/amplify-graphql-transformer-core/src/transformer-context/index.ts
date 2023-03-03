@@ -8,7 +8,7 @@ import {
   AppSyncAuthConfiguration,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
-import { App } from '@aws-cdk/core';
+import { App } from 'aws-cdk-lib';
 import { DocumentNode } from 'graphql';
 import { DatasourceType } from '../config/project-config';
 import { ResolverConfig } from '../config/transformer-config';

@@ -381,7 +381,6 @@ export async function transformGraphQLSchemaV1(context, options) {
     transformersFactoryArgs: [searchableTransformerFlag, storageConfig],
     rootStackFileName: 'cloudformation-template.json',
     currentCloudBackendDirectory: previouslyDeployedBackendDir,
-    minify: options.minify,
     featureFlags: ff,
     sanityCheckRules: sanityCheckRulesList,
   };

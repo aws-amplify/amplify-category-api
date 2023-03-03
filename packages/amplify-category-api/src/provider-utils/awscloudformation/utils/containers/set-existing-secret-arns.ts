@@ -1,6 +1,6 @@
 import { $TSAny } from 'amplify-cli-core';
 import _ from 'lodash';
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 
 /**
  * Check if the template contains existing secret configuration and if so, add it to the secretsMap

@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   ModelResourceIDs,
@@ -13,10 +13,10 @@ import {
   StreamViewType,
   Table,
   TableEncryption,
-} from '@aws-cdk/aws-dynamodb';
-import * as iam from '@aws-cdk/aws-iam';
-import { CfnDataSource } from '@aws-cdk/aws-appsync';
-import { CfnRole } from '@aws-cdk/aws-iam';
+} from 'aws-cdk-lib/aws-dynamodb';
+import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { CfnRole } from 'aws-cdk-lib/aws-iam';
 import { ModelResourceGenerator } from './model-resource-generator';
 import { DynamoDBModelVTLGenerator, ModelVTLGenerator } from '../resolvers';
 

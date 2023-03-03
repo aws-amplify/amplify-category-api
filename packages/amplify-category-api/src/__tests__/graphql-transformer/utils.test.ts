@@ -1,5 +1,6 @@
 import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from '../../graphql-transformer/utils';
-import { TransformerProjectConfig, DeploymentResources, DatasourceType } from '@aws-amplify/graphql-transformer-core';
+import { TransformerProjectConfig } from '@aws-amplify/graphql-transformer-core';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { $TSContext, CloudformationProviderFacade } from 'amplify-cli-core';

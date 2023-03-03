@@ -51,7 +51,7 @@ install_cli_from_local_registry: &install_cli_from_local_registry
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
-    npm install -g @aws-amplify/cli-internal
+    npm install -g @aws-amplify/cli-internal@^11.0.0-beta.1
     echo "using Amplify CLI version: "$(amplify --version)
     unsetNpmRegistryUrl
 
@@ -97,6 +97,20 @@ jobs:
       - run:
           name: Collect code coverage
           command: yarn coverage
+    environment:
+      NODE_OPTIONS: --max-old-space-size=4096
+
+  validate_cdk_version:
+    <<: *linux-e2e-executor
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-category-api-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+      - run:
+          name: Validate cdk version
+          command: |
+            yarn ts-node .circleci/validate_cdk_version.ts
 
   lint:
     <<: *linux-e2e-executor
@@ -116,6 +130,17 @@ jobs:
           key: amplify-category-api-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
       - run: yarn verify-api-extract
 
+  verify-yarn-lock:
+    <<: *linux-e2e-executor
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-category-api-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+      - run: |
+          yarn config set registry https://registry.npmjs.org
+          yarn verify-yarn-lock
+
   mock_e2e_tests:
     <<: *linux-e2e-executor
     steps:
@@ -132,6 +157,7 @@ jobs:
           no_output_timeout: 60m
           environment:
             JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
+            NODE_OPTIONS: --max-old-space-size=4096
       - store_test_results:
           path: packages/amplify-util-mock/
 
@@ -358,6 +384,19 @@ jobs:
             bash ./.circleci/publish.sh
       - run: *scan_e2e_test_artifacts
 
+  post_deploy:
+    <<: *linux-e2e-executor
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          keys:
+            - amplify-category-api-ssh-deps-{{ .Branch }}
+      - install_github_cli
+      - run:
+          name: Run Post Publish Tasks
+          command: ./.circleci/post_publish.sh
+
   cleanup_resources:
     <<: *linux-e2e-executor
     steps:
@@ -462,7 +501,13 @@ workflows:
       - lint:
           requires:
             - build
+      - validate_cdk_version:
+          requires:
+            - build
       - verify-api-extract:
+          requires:
+            - build
+      - verify-yarn-lock:
           requires:
             - build
       - test:
@@ -605,6 +650,13 @@ workflows:
                 - beta
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
+      - post_deploy:
+          requires:
+            - deploy
+          filters:
+            branches:
+              only:
+                - release
 commands:
   install_yarn:
     description: "Install yarn dependency for windows"
@@ -635,6 +687,27 @@ commands:
                 command: |
                   sudo apt-get update && sudo apt-get install default-jdk
 
+  install_github_cli:
+    description: "Install Github CLI tool"
+    parameters:
+      os:
+        type: executor
+        default: l
+    steps:
+      - when:
+          condition:
+            equal: [*linux-e2e-executor, << parameters.os >>]
+          steps:
+            - run:
+                name: Install Github CLI
+                command: |
+                  type -p curl >/dev/null || sudo apt install curl -y
+                  curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+                  && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+                  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+                  && sudo apt update \
+                  && sudo apt install gh -y
+
   run_e2e_tests:
     description: "Run Amplify E2E tests"
     parameters:
@@ -651,6 +724,7 @@ commands:
                 shell: bash.exe
                 command: |
                   source .circleci/local_publish_helpers.sh
+                  forceFromSourceRun
                   cd packages/amplify-e2e-tests
                   retry yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
                 no_output_timeout: 60m
@@ -665,6 +739,7 @@ commands:
                   source $BASH_ENV
                   source .circleci/local_publish_helpers.sh
                   amplify version
+                  forceFromSourceRun
                   retry runE2eTest
                 no_output_timeout: 90m
   scan_e2e_test_artifacts:
@@ -717,6 +792,6 @@ commands:
                   source .circleci/local_publish_helpers.sh
                   export CLI_REGION=us-west-2
                   cd client-test-apps/js/api-model-relationship-app
-                  npm install
-                  retry npm run test:ci
+                  yarn
+                  retry yarn test:ci
                 no_output_timeout: 60m

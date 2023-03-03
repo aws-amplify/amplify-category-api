@@ -3,6 +3,116 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.14.10...@aws-amplify/graphql-index-transformer@1.1.0) (2023-03-01)
+
+### Bug Fixes
+
+- lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
+- throw error if invalid override or invalid custom stack error ([#982](https://github.com/aws-amplify/amplify-category-api/issues/982)) ([6dfeeba](https://github.com/aws-amplify/amplify-category-api/commit/6dfeeba627cd84a41eb8b4248856fa487c741f87))
+
+### Features
+
+- migrate index and model transformers to CDK v2 ([#860](https://github.com/aws-amplify/amplify-category-api/issues/860)) ([886ab6c](https://github.com/aws-amplify/amplify-category-api/commit/886ab6c1eb699f9a09f273c76b3c419c73004f9b))
+
+# [1.1.0-beta.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.14.9...@aws-amplify/graphql-index-transformer@1.1.0-beta.6) (2023-02-21)
+
+### Bug Fixes
+
+- lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
+- throw error if invalid override or invalid custom stack error ([#982](https://github.com/aws-amplify/amplify-category-api/issues/982)) ([6dfeeba](https://github.com/aws-amplify/amplify-category-api/commit/6dfeeba627cd84a41eb8b4248856fa487c741f87))
+
+### Features
+
+- migrate index and model transformers to CDK v2 ([#860](https://github.com/aws-amplify/amplify-category-api/issues/860)) ([886ab6c](https://github.com/aws-amplify/amplify-category-api/commit/886ab6c1eb699f9a09f273c76b3c419c73004f9b))
+
+# [1.1.0-beta.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.14.9...@aws-amplify/graphql-index-transformer@1.1.0-beta.5) (2023-02-15)
+
+### Bug Fixes
+
+- lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
+- throw error if invalid override or invalid custom stack error ([#982](https://github.com/aws-amplify/amplify-category-api/issues/982)) ([6dfeeba](https://github.com/aws-amplify/amplify-category-api/commit/6dfeeba627cd84a41eb8b4248856fa487c741f87))
+
+### Features
+
+- migrate index and model transformers to CDK v2 ([#860](https://github.com/aws-amplify/amplify-category-api/issues/860)) ([886ab6c](https://github.com/aws-amplify/amplify-category-api/commit/886ab6c1eb699f9a09f273c76b3c419c73004f9b))
+
+# [1.1.0-beta.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.14.8...@aws-amplify/graphql-index-transformer@1.1.0-beta.4) (2023-02-03)
+
+### Bug Fixes
+
+- lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
+- throw error if invalid override or invalid custom stack error ([#982](https://github.com/aws-amplify/amplify-category-api/issues/982)) ([6dfeeba](https://github.com/aws-amplify/amplify-category-api/commit/6dfeeba627cd84a41eb8b4248856fa487c741f87))
+
+### Features
+
+- migrate index and model transformers to CDK v2 ([#860](https://github.com/aws-amplify/amplify-category-api/issues/860)) ([886ab6c](https://github.com/aws-amplify/amplify-category-api/commit/886ab6c1eb699f9a09f273c76b3c419c73004f9b))
+
+# [1.1.0-beta.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.14.5...@aws-amplify/graphql-index-transformer@1.1.0-beta.3) (2022-12-27)
+
+### Bug Fixes
+
+- lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
+- throw error if invalid override or invalid custom stack error ([#982](https://github.com/aws-amplify/amplify-category-api/issues/982)) ([6dfeeba](https://github.com/aws-amplify/amplify-category-api/commit/6dfeeba627cd84a41eb8b4248856fa487c741f87))
+
+### Features
+
+- migrate index and model transformers to CDK v2 ([#860](https://github.com/aws-amplify/amplify-category-api/issues/860)) ([886ab6c](https://github.com/aws-amplify/amplify-category-api/commit/886ab6c1eb699f9a09f273c76b3c419c73004f9b))
+
+# [1.1.0-beta.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@1.1.0-beta.0...@aws-amplify/graphql-index-transformer@1.1.0-beta.2) (2022-12-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+# [1.1.0-beta.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@1.1.0-beta.0...@aws-amplify/graphql-index-transformer@1.1.0-beta.1) (2022-11-30)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+# [1.1.0-beta.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@1.1.0-cdkv2.3...@aws-amplify/graphql-index-transformer@1.1.0-beta.0) (2022-11-18)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+# [1.1.0-cdkv2.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.14.3...@aws-amplify/graphql-index-transformer@1.1.0-cdkv2.3) (2022-11-15)
+
+### Bug Fixes
+
+- lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
+- throw error if invalid override or invalid custom stack error ([#982](https://github.com/aws-amplify/amplify-category-api/issues/982)) ([6dfeeba](https://github.com/aws-amplify/amplify-category-api/commit/6dfeeba627cd84a41eb8b4248856fa487c741f87))
+
+### Features
+
+- migrate index and model transformers to CDK v2 ([#860](https://github.com/aws-amplify/amplify-category-api/issues/860)) ([886ab6c](https://github.com/aws-amplify/amplify-category-api/commit/886ab6c1eb699f9a09f273c76b3c419c73004f9b))
+
+# [1.1.0-cdkv2.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@1.1.0-cdkv2.1...@aws-amplify/graphql-index-transformer@1.1.0-cdkv2.2) (2022-11-03)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+# [1.1.0-cdkv2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@1.1.0-cdkv2.0...@aws-amplify/graphql-index-transformer@1.1.0-cdkv2.1) (2022-10-24)
+
+### Bug Fixes
+
+- lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
+
+# [1.1.0-cdkv2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.14.0...@aws-amplify/graphql-index-transformer@1.1.0-cdkv2.0) (2022-10-24)
+
+### Features
+
+- migrate index and model transformers to CDK v2 ([#860](https://github.com/aws-amplify/amplify-category-api/issues/860)) ([886ab6c](https://github.com/aws-amplify/amplify-category-api/commit/886ab6c1eb699f9a09f273c76b3c419c73004f9b))
+
+## [0.14.10](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.14.9...@aws-amplify/graphql-index-transformer@0.14.10) (2023-02-27)
+
+### Bug Fixes
+
+- **test:** update cli dependencies to use the cli rc packages ([#1294](https://github.com/aws-amplify/amplify-category-api/issues/1294)) ([7b13884](https://github.com/aws-amplify/amplify-category-api/commit/7b138841bf2c26fa16465ef263af0de7ce5a4122))
+
+## [0.14.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.14.8...@aws-amplify/graphql-index-transformer@0.14.9) (2023-02-10)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [0.14.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.14.7...@aws-amplify/graphql-index-transformer@0.14.8) (2023-01-26)
+
+### Bug Fixes
+
+- **graphql:** add filter null check to index query resolver ([#1182](https://github.com/aws-amplify/amplify-category-api/issues/1182)) ([fff5402](https://github.com/aws-amplify/amplify-category-api/commit/fff54027a4a79658b4cbc35b8c8bfe932fb78199))
+
 ## [0.14.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@0.14.6...@aws-amplify/graphql-index-transformer@0.14.7) (2023-01-12)
 
 **Note:** Version bump only for package @aws-amplify/graphql-index-transformer

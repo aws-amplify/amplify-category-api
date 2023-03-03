@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import glob from 'glob';
 import { CloudFormation, Fn, Template } from 'cloudform-types';
-import { DeploymentResources } from '../DeploymentResources';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform, StackMapping } from '../GraphQLTransform';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { readFromPath, writeToPath, throwIfNotJSONExt, emptyDirectory, handleFile, FileHandler } from './fileUtils';
@@ -37,7 +37,6 @@ export interface ProjectOptions {
   disablePipelineFunctionOverrides?: boolean;
   disableResolverOverrides?: boolean;
   buildParameters?: Object;
-  minify?: boolean;
   featureFlags: FeatureFlagProvider;
   sanityCheckRules: SanityCheckRules;
 }
@@ -57,8 +56,7 @@ export async function buildProject(opts: ProjectOptions) {
       builtProject,
       path.join(opts.projectDirectory, 'build'),
       opts.rootStackFileName,
-      opts.buildParameters,
-      opts.minify,
+      opts.buildParameters
     );
 
     const lastBuildPath =
@@ -386,8 +384,7 @@ async function writeDeploymentToDisk(
   deployment: DeploymentResources,
   directory: string,
   rootStackFileName: string = 'rootStack.json',
-  buildParameters: Object,
-  minify = false,
+  buildParameters: Object
 ) {
   // Delete the last deployments resources.
   await emptyDirectory(directory);
@@ -431,8 +428,6 @@ async function writeDeploymentToDisk(
     stackString =
       typeof stackString === 'string'
         ? deployment.stacks[stackFileName]
-        : minify
-        ? JSON.stringify(deployment.stacks[stackFileName])
         : JSON.stringify(deployment.stacks[stackFileName], null, 4);
     fs.writeFileSync(fullStackPath, stackString);
   }
@@ -450,7 +445,7 @@ async function writeDeploymentToDisk(
   }
   const rootStack = deployment.rootStack;
   const rootStackPath = path.normalize(directory + `/${rootStackFileName}`);
-  const rootStackString = minify ? JSON.stringify(rootStack) : JSON.stringify(rootStack, null, 4);
+  const rootStackString = JSON.stringify(rootStack, null, 4);
   fs.writeFileSync(rootStackPath, rootStackString);
 
   // Write params to disk

@@ -255,7 +255,6 @@ export const generateTransformerOptions = async (
     },
     rootStackFileName: 'cloudformation-template.json',
     currentCloudBackendDirectory: previouslyDeployedBackendDir,
-    minify: options.minify,
     projectConfig: project,
     lastDeployedProjectConfig,
     authConfig,

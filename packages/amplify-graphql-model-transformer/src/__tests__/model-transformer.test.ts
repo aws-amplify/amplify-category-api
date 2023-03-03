@@ -13,7 +13,7 @@ import {
   verifyInputCount,
   verifyMatchingTypes,
 } from './test-utils/helpers';
-import { expect as cdkExpect, haveResource } from '@aws-cdk/assert';
+import { Template } from 'aws-cdk-lib/assertions';
 
 const featureFlags = {
   getBoolean: jest.fn(),
@@ -1027,8 +1027,8 @@ describe('ModelTransformer: ', () => {
 
     const iamStackResource = out.stacks.ThisIsAVeryLongNameModelThatShouldNotGenerateIAMRoleNamesOver64Characters;
     expect(iamStackResource).toBeDefined();
-    cdkExpect(iamStackResource).to(
-      haveResource('AWS::IAM::Role', {
+    Template.fromJSON(iamStackResource)
+      .hasResourceProperties('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
           Statement: [
             {
@@ -1056,8 +1056,7 @@ describe('ModelTransformer: ', () => {
             ],
           ],
         },
-      }),
-    );
+      });
 
     validateModelSchema(parsed);
   });
@@ -1122,8 +1121,8 @@ describe('ModelTransformer: ', () => {
     expect(out.resolvers['Query.syncTodos.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Query.syncTodos.res.vtl']).toMatchSnapshot();
     // ds table
-    cdkExpect(out.rootStack).to(
-      haveResource('AWS::DynamoDB::Table', {
+    Template.fromJSON(out.rootStack)
+      .hasResourceProperties('AWS::DynamoDB::Table', {
         KeySchema: [
           {
             AttributeName: 'ds_pk',
@@ -1167,10 +1166,91 @@ describe('ModelTransformer: ', () => {
           AttributeName: '_ttl',
           Enabled: true,
         },
-      }),
-    );
+      });
   });
+  it("the conflict detection of per model rule should be respected", () => {
+    const validSchema = `
+      type Todo @model {
+        name: String
+      }
+      type Author @model {
+        name: String
+      }
+    `;
 
+    const transformer = new GraphQLTransform({
+      transformConfig: {},
+      resolverConfig: {
+        project: {
+          ConflictDetection: "VERSION",
+          ConflictHandler: ConflictHandlerType.AUTOMERGE
+        },
+        models: {
+          Todo: {
+            ConflictDetection: "VERSION",
+            ConflictHandler: ConflictHandlerType.LAMBDA,
+            LambdaConflictHandler: {
+              name: "myTodoConflictHandler"
+            }
+          },
+          Author: {
+            ConflictDetection: "VERSION",
+            ConflictHandler: ConflictHandlerType.AUTOMERGE
+          }
+        }
+      },
+      sandboxModeEnabled: true,
+      transformers: [new ModelTransformer()]
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+    // nested stacks for models
+    const todoStack = out.stacks["Todo"];
+    const authorStack = out.stacks["Author"];
+    // Todo stack should have lambda for conflict detect rather than auto merge
+    Template.fromJSON(todoStack).hasResourceProperties(
+      "AWS::AppSync::FunctionConfiguration",
+      {
+        SyncConfig: {
+          ConflictDetection: "VERSION",
+          ConflictHandler: "LAMBDA",
+        }
+      }
+    );
+    Template.fromJSON(todoStack).resourcePropertiesCountIs(
+      "AWS::AppSync::FunctionConfiguration",
+      {
+        SyncConfig: {
+          ConflictDetection: "VERSION",
+          ConflictHandler: "AUTOMERGE",
+        }
+      },
+      0
+    );
+    // Author stack should have automerge for conflict detect rather than lambda
+    Template.fromJSON(authorStack).resourcePropertiesCountIs(
+      "AWS::AppSync::FunctionConfiguration",
+      {
+        SyncConfig: {
+          ConflictDetection: "VERSION",
+          ConflictHandler: "LAMBDA",
+        }
+      },
+      0
+    );
+    Template.fromJSON(authorStack).hasResourceProperties(
+      "AWS::AppSync::FunctionConfiguration",
+      {
+        SyncConfig: {
+          ConflictDetection: "VERSION",
+          ConflictHandler: "AUTOMERGE",
+        }
+      }
+    );
+
+  });
   it('should add the model parameters at the root sack', () => {
     const modelParams = {
       DynamoDBModelTableReadIOPS: expect.objectContaining({

@@ -37,4 +37,33 @@ describe('ModelTransformer: ', () => {
     expect(postStack).toMatchSnapshot();
     expect(commentStack).toMatchSnapshot();
   });
+
+  it('should not override model objects when override file does not exist', () => {
+    const validSchema = `
+      type Post @model {
+        id: ID!
+        comments: [Comment]
+      }
+      type Comment @model{
+        id: String!
+        text: String!
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      overrideConfig: {
+        overrideDir: path.join(__dirname, 'non-existing-override-directory'),
+        overrideFlag: true,
+        resourceName: 'myResource',
+      },
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    const postStack = out.stacks.Post;
+    const commentStack = out.stacks.Comment;
+
+    expect(postStack).toMatchSnapshot();
+    expect(commentStack).toMatchSnapshot();
+  });
 });

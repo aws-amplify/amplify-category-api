@@ -8,8 +8,5 @@ export const run = async (context: $TSContext) => {
   const {
     parameters: { options },
   } = context;
-  return context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
-    forceCompile: true,
-    minify: options['minify'],
-  });
+  return context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { forceCompile: true });
 };

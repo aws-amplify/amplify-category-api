@@ -1,11 +1,18 @@
 import {
-  DeploymentResources,
   GraphQLTransform,
   RDSConnectionSecrets,
   ImportedRDSType,
   MYSQL_DB_TYPE,
+  OverrideConfig,
+  ResolverConfig,
+  TransformerProjectConfig,
 } from '@aws-amplify/graphql-transformer-core';
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  AppSyncAuthConfiguration,
+  DeploymentResources,
+  Template,
+  TransformerPluginProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import {
   $TSContext,
   AmplifyCategories,
@@ -194,7 +201,7 @@ const buildAPIProject = async (
   const currentCloudLocation = opts.currentCloudBackendDirectory ? path.join(opts.currentCloudBackendDirectory, 'build') : undefined;
 
   if (opts.projectDirectory && !opts.dryRun) {
-    await writeDeploymentToDisk(context, builtProject, buildLocation, opts.rootStackFileName, opts.buildParameters, opts.minify);
+    await writeDeploymentToDisk(context, builtProject, buildLocation, opts.rootStackFileName, opts.buildParameters);
     await sanityCheckProject(
       currentCloudLocation,
       buildLocation,

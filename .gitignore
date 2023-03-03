@@ -37,6 +37,7 @@ packages/amplify-category-api/lib
 packages/amplify-e2e-tests/amplify-e2e-reports
 packages/amplify-migration-tests/amplify-migration-reports
 packages/amplify-migration-tests/lib
+packages/amplify-schema-validator/dist/
 packages/*/node_modules
 packages/*/package-lock.json
 **/.env

@@ -1,5 +1,5 @@
-import { CfnGraphQLSchema } from '@aws-cdk/aws-appsync';
-import { Lazy } from '@aws-cdk/core';
+import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
+import { Lazy } from 'aws-cdk-lib';
 import { GraphQLApi } from '../graphql-api';
 import { FileAsset } from './file-asset';
 

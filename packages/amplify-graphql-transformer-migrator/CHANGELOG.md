@@ -3,6 +3,82 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-migrator@1.4.17...@aws-amplify/graphql-transformer-migrator@2.1.0) (2023-03-01)
+
+### Features
+
+- migrate auth, maps-to, relational, default value transformer to CDK v2 ([#875](https://github.com/aws-amplify/amplify-category-api/issues/875)) ([5c714a9](https://github.com/aws-amplify/amplify-category-api/commit/5c714a9a8436be343477574cb5523c23c96c9338))
+
+# [2.1.0-beta.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-migrator@1.4.16...@aws-amplify/graphql-transformer-migrator@2.1.0-beta.6) (2023-02-21)
+
+### Features
+
+- migrate auth, maps-to, relational, default value transformer to CDK v2 ([#875](https://github.com/aws-amplify/amplify-category-api/issues/875)) ([5c714a9](https://github.com/aws-amplify/amplify-category-api/commit/5c714a9a8436be343477574cb5523c23c96c9338))
+
+# [2.1.0-beta.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-migrator@1.4.16...@aws-amplify/graphql-transformer-migrator@2.1.0-beta.5) (2023-02-15)
+
+### Features
+
+- migrate auth, maps-to, relational, default value transformer to CDK v2 ([#875](https://github.com/aws-amplify/amplify-category-api/issues/875)) ([5c714a9](https://github.com/aws-amplify/amplify-category-api/commit/5c714a9a8436be343477574cb5523c23c96c9338))
+
+# [2.1.0-beta.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-migrator@1.4.15...@aws-amplify/graphql-transformer-migrator@2.1.0-beta.4) (2023-02-03)
+
+### Features
+
+- migrate auth, maps-to, relational, default value transformer to CDK v2 ([#875](https://github.com/aws-amplify/amplify-category-api/issues/875)) ([5c714a9](https://github.com/aws-amplify/amplify-category-api/commit/5c714a9a8436be343477574cb5523c23c96c9338))
+
+# [2.1.0-beta.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-migrator@1.4.12...@aws-amplify/graphql-transformer-migrator@2.1.0-beta.3) (2022-12-27)
+
+### Features
+
+- migrate auth, maps-to, relational, default value transformer to CDK v2 ([#875](https://github.com/aws-amplify/amplify-category-api/issues/875)) ([5c714a9](https://github.com/aws-amplify/amplify-category-api/commit/5c714a9a8436be343477574cb5523c23c96c9338))
+
+# [2.1.0-beta.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-migrator@2.1.0-beta.0...@aws-amplify/graphql-transformer-migrator@2.1.0-beta.2) (2022-12-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-migrator
+
+# [2.1.0-beta.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-migrator@2.1.0-beta.0...@aws-amplify/graphql-transformer-migrator@2.1.0-beta.1) (2022-11-30)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-migrator
+
+# [2.1.0-beta.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-migrator@2.1.0-cdkv2.3...@aws-amplify/graphql-transformer-migrator@2.1.0-beta.0) (2022-11-18)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-migrator
+
+# [2.1.0-cdkv2.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-migrator@1.4.10...@aws-amplify/graphql-transformer-migrator@2.1.0-cdkv2.3) (2022-11-15)
+
+### Features
+
+- migrate auth, maps-to, relational, default value transformer to CDK v2 ([#875](https://github.com/aws-amplify/amplify-category-api/issues/875)) ([5c714a9](https://github.com/aws-amplify/amplify-category-api/commit/5c714a9a8436be343477574cb5523c23c96c9338))
+
+# [2.1.0-cdkv2.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-migrator@2.1.0-cdkv2.1...@aws-amplify/graphql-transformer-migrator@2.1.0-cdkv2.2) (2022-11-03)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-migrator
+
+# [2.1.0-cdkv2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-migrator@2.1.0-cdkv2.0...@aws-amplify/graphql-transformer-migrator@2.1.0-cdkv2.1) (2022-10-24)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-migrator
+
+# [2.1.0-cdkv2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-migrator@1.4.7...@aws-amplify/graphql-transformer-migrator@2.1.0-cdkv2.0) (2022-10-24)
+
+### Features
+
+- migrate auth, maps-to, relational, default value transformer to CDK v2 ([#875](https://github.com/aws-amplify/amplify-category-api/issues/875)) ([5c714a9](https://github.com/aws-amplify/amplify-category-api/commit/5c714a9a8436be343477574cb5523c23c96c9338))
+
+## [1.4.17](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-migrator@1.4.16...@aws-amplify/graphql-transformer-migrator@1.4.17) (2023-02-27)
+
+### Bug Fixes
+
+- **test:** update cli dependencies to use the cli rc packages ([#1294](https://github.com/aws-amplify/amplify-category-api/issues/1294)) ([7b13884](https://github.com/aws-amplify/amplify-category-api/commit/7b138841bf2c26fa16465ef263af0de7ce5a4122))
+
+## [1.4.16](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-migrator@1.4.15...@aws-amplify/graphql-transformer-migrator@1.4.16) (2023-02-10)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-migrator
+
+## [1.4.15](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-migrator@1.4.14...@aws-amplify/graphql-transformer-migrator@1.4.15) (2023-01-26)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-migrator
+
 ## [1.4.14](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-migrator@1.4.13...@aws-amplify/graphql-transformer-migrator@1.4.14) (2023-01-12)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-migrator
