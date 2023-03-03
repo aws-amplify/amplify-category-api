@@ -7,8 +7,7 @@ import {
   getGraphQLTransformerAuthDocLink,
 } from 'amplify-cli-core';
 import _ from 'lodash';
-import { MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
-import { ImportedRDSType } from '../types/import-appsync-api-types';
+import { ImportedRDSType, ImportedDataSourceConfig } from '../types/import-appsync-api-types';
 
 type AmplifyInputEntry = {
   name: string,
@@ -16,8 +15,6 @@ type AmplifyInputEntry = {
   default: string|number,
   comment?: string|undefined
 };
-
-export type RDSDBConfig = MySQLDataSourceConfig & { engine: string; };
 
 const getGlobalAmplifyInputEntries = async (
   context: $TSContext,
@@ -68,7 +65,7 @@ export const readRDSGlobalAmplifyInput = async (pathToSchemaFile: string): Promi
   );
 };
 
-export const getRDSDBConfigFromAmplifyInput = async (context:$TSContext, inputNode: $TSAny): Promise<Partial<RDSDBConfig>> => {
+export const getRDSDBConfigFromAmplifyInput = async (context:$TSContext, inputNode: $TSAny): Promise<Partial<ImportedDataSourceConfig>> => {
   const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL, false)).map(item => item.name);
   const inputs: $TSAny = {};
   expectedInputs.map((input) => {
