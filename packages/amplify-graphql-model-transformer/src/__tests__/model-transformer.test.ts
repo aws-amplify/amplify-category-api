@@ -58,6 +58,7 @@ describe('ModelTransformer: ', () => {
 
     validateModelSchema(parse(out.schema));
     parse(out.schema);
+    expect(out.schema).toMatchSnapshot();
   });
   // should successfully transform simple non-capitalized Embeddable type (non-model) name schema
   it('should successfully transform simple non-capitalized Model/Embeddable type (non-model) name schema', async () => {
@@ -81,6 +82,7 @@ describe('ModelTransformer: ', () => {
     
     validateModelSchema(parse(out.schema));
     parse(out.schema);
+    expect(out.schema).toMatchSnapshot();
   });
 
   it('should support custom query overrides', () => {
