@@ -17,5 +17,5 @@ type commentConnection {
 }
 
 type Query {
-  commentsForTodo(todoId: ID!, limit: Int, nextToken: String): CommentConnection
+  commentsForTodo(todoId: ID!, limit: Int, nextToken: String): commentConnection
 }
