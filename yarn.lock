@@ -73,6 +73,92 @@
     uuid "^8.3.2"
     ws "^8.5.0"
 
+"@aws-amplify/amplify-category-analytics@5.0.0-beta.2":
+  version "5.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-analytics/-/amplify-category-analytics-5.0.0-beta.2.tgz#fc48b49c24ace89395b6c38883f57916dc054d35"
+  integrity sha512-0pvEkIgr+48y7nARNOowA3Np3Z5HhSOPQxe8cpk8c1SyRBv9IwopJYlkxFh/DVsKppu0zmcDSu6lmkJda0zW/w==
+  dependencies:
+    "@aws-amplify/amplify-environment-parameters" "1.4.0-beta.2"
+    amplify-cli-core "4.0.0-beta.8"
+    amplify-prompts "2.6.4-beta.3"
+    fs-extra "^8.1.0"
+    uuid "^8.3.2"
+
+"@aws-amplify/amplify-category-api@5.1.0-beta.6":
+  version "5.1.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-api/-/amplify-category-api-5.1.0-beta.6.tgz#87891a2bc7062d0eca4d3f05b02457e68eca8c7f"
+  integrity sha512-nY/HLJN4uekkDwtKJvarxZDMjIR3MS22L1+3fiB7SeBcLEmz/qTtkAk+e4B2KllAzvD4Wac92mRrxyuVS1GFjA==
+  dependencies:
+    "@aws-amplify/graphql-auth-transformer" "2.1.0-beta.6"
+    "@aws-amplify/graphql-default-value-transformer" "1.1.0-beta.6"
+    "@aws-amplify/graphql-function-transformer" "1.1.0-beta.6"
+    "@aws-amplify/graphql-http-transformer" "1.1.0-beta.6"
+    "@aws-amplify/graphql-index-transformer" "1.1.0-beta.6"
+    "@aws-amplify/graphql-maps-to-transformer" "2.1.0-beta.6"
+    "@aws-amplify/graphql-model-transformer" "1.1.0-beta.6"
+    "@aws-amplify/graphql-predictions-transformer" "1.1.0-beta.6"
+    "@aws-amplify/graphql-relational-transformer" "1.1.0-beta.6"
+    "@aws-amplify/graphql-searchable-transformer" "1.1.0-beta.6"
+    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
+    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
+    "@aws-amplify/graphql-transformer-migrator" "2.1.0-beta.6"
+    "@aws-cdk/aws-apigatewayv2-alpha" "~2.53.0-alpha.0"
+    "@graphql-tools/merge" "^6.0.18"
+    "@octokit/rest" "^18.0.9"
+    aws-cdk-lib "~2.53.0"
+    chalk "^4.1.1"
+    cloudform "^4.2.0"
+    constructs "^10.0.5"
+    fs-extra "^8.1.0"
+    graphql "^15.5.0"
+    graphql-auth-transformer "7.2.49-beta.2"
+    graphql-connection-transformer "5.2.48-beta.2"
+    graphql-dynamodb-transformer "7.2.48-beta.2"
+    graphql-elasticsearch-transformer "5.2.49-beta.2"
+    graphql-function-transformer "3.3.39-beta.2"
+    graphql-http-transformer "5.2.48-beta.2"
+    graphql-key-transformer "3.2.48-beta.2"
+    graphql-predictions-transformer "3.2.48-beta.2"
+    graphql-relational-schema-transformer "2.21.16-beta.1"
+    graphql-transformer-common "4.24.5-beta.2"
+    graphql-transformer-core "8.0.0-beta.6"
+    graphql-versioned-transformer "5.2.48-beta.2"
+    import-from "^3.0.0"
+    import-global "^0.1.0"
+    inquirer "^7.3.3"
+    js-yaml "^4.0.0"
+    lodash "^4.17.21"
+    ora "^4.0.3"
+    rimraf "^3.0.0"
+    uuid "^8.3.2"
+
+"@aws-amplify/amplify-category-auth@3.0.0-beta.8":
+  version "3.0.0-beta.8"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-auth/-/amplify-category-auth-3.0.0-beta.8.tgz#37dbf2831277c8e44339c6aeed225746456c9db7"
+  integrity sha512-M+4gCtRzeoKbBn2owXjkT9myDyTCJYdsdoZ0GHdm3N1L68rnk5iHevGJRcExS62KK9s2GXL3aX7cs39xD9FYtA==
+  dependencies:
+    "@aws-amplify/amplify-environment-parameters" "1.4.0-beta.2"
+    "@aws-amplify/amplify-util-import" "2.4.0-beta.1"
+    "@aws-amplify/cli-extensibility-helper" "3.0.0-beta.8"
+    amplify-cli-core "4.0.0-beta.8"
+    amplify-headless-interface "1.17.1-beta.3"
+    amplify-prompts "2.6.4-beta.3"
+    amplify-util-headless-input "1.9.10-beta.3"
+    aws-cdk-lib "~2.53.0"
+    aws-sdk "^2.1233.0"
+    chalk "^4.1.1"
+    change-case "^4.1.1"
+    constructs "^10.0.5"
+    enquirer "^2.3.6"
+    fs-extra "^8.1.0"
+    inquirer "^7.3.3"
+    lodash "^4.17.21"
+    mime-types "^2.1.26"
+    ora "^4.0.3"
+    promise-sequential "^1.1.1"
+    uuid "^8.3.2"
+    vm2 "^3.9.8"
+
 "@aws-amplify/amplify-category-custom@3.0.0-beta.8":
   version "3.0.0-beta.8"
   resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-custom/-/amplify-category-custom-3.0.0-beta.8.tgz#6d1637c5607b0472d7c89ebd00f42e073a4708ba"
@@ -112,6 +198,97 @@
     ora "^4.0.3"
     promise-sequential "^1.1.1"
     uuid "^8.3.2"
+
+"@aws-amplify/amplify-category-geo@3.0.0-beta.8":
+  version "3.0.0-beta.8"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-geo/-/amplify-category-geo-3.0.0-beta.8.tgz#402896c8a038e6426a452397c7374793d6b064b8"
+  integrity sha512-ZcWM30kzCrMa0A/pRla7bsFCS4x26LeZ2xKzNCWxiAE+JOmRNg7so+TbgRDBK0uudRg+Q3bVcrJTUn5RcWMRUg==
+  dependencies:
+    ajv "^6.12.6"
+    amplify-cli-core "4.0.0-beta.8"
+    amplify-headless-interface "1.17.1-beta.3"
+    amplify-prompts "2.6.4-beta.3"
+    amplify-util-headless-input "1.9.10-beta.3"
+    aws-cdk-lib "~2.53.0"
+    aws-sdk "^2.1233.0"
+    constructs "^10.0.5"
+    fs-extra "^8.1.0"
+    lodash "^4.17.21"
+    uuid "^8.3.2"
+
+"@aws-amplify/amplify-category-hosting@3.5.0-beta.2":
+  version "3.5.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-hosting/-/amplify-category-hosting-3.5.0-beta.2.tgz#66f573a87315514c801fd7ee5b2e40ac1bb4c78a"
+  integrity sha512-uunr97RzAprii0QLtGNYFV0E60TiKwBKg39J9nZ/1MjyXmbdW+HwGQMp+UKJlMY+zL4LBjxqPqnaOXDfB7UpDA==
+  dependencies:
+    amplify-cli-core "4.0.0-beta.8"
+    amplify-prompts "2.6.4-beta.3"
+    chalk "^4.1.1"
+    fs-extra "^8.1.0"
+    mime-types "^2.1.26"
+    minimatch "^3.0.4"
+    moment "^2.24.0"
+    ora "^4.0.3"
+    promise-sequential "^1.1.1"
+
+"@aws-amplify/amplify-category-interactions@5.0.0-beta.2":
+  version "5.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-interactions/-/amplify-category-interactions-5.0.0-beta.2.tgz#e44fa752d5fef4f121c979656145be36489e76fe"
+  integrity sha512-Sb7ufcKHn/MaHkONnwmjqhpRVQAtq9rl0A8OO+SiHYZJmawJoiL7VGw6AW0RsdfE20gUWG4x+vlUzXfxWS8G4Q==
+  dependencies:
+    amplify-cli-core "4.0.0-beta.8"
+    amplify-prompts "2.6.4-beta.3"
+    fs-extra "^8.1.0"
+    fuzzy "^0.1.3"
+    uuid "^8.3.2"
+
+"@aws-amplify/amplify-category-notifications@2.24.0-beta.1":
+  version "2.24.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-notifications/-/amplify-category-notifications-2.24.0-beta.1.tgz#b1c2a9633be0bab60a1f5e58adb5df03290fd99b"
+  integrity sha512-qccBPaFJVTpYBEGQucT1zmpjz33eN/60lm6m3fC5JJV2TtyTjSPBz2NYveTq7CUANc/c8zVumYbGQ4rff/4kmg==
+  dependencies:
+    "@aws-amplify/amplify-environment-parameters" "1.4.0-beta.2"
+    amplify-cli-core "4.0.0-beta.8"
+    amplify-prompts "2.6.4-beta.3"
+    chalk "^4.1.1"
+    fs-extra "^8.1.0"
+    lodash "^4.17.21"
+    ora "^4.0.3"
+    promise-sequential "^1.1.1"
+
+"@aws-amplify/amplify-category-predictions@5.0.0-beta.1":
+  version "5.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-predictions/-/amplify-category-predictions-5.0.0-beta.1.tgz#2410db6958ca85ea35987c77bad9833faa544de6"
+  integrity sha512-E2JntNDmPIzc+Oudzm1ZEioLuIkLKVSWQlILhXSz3mu7jtc2nfsEXz7vgc/Xe9WFDoSR+zHxTx+60mUAaD0f1g==
+  dependencies:
+    amplify-cli-core "4.0.0-beta.8"
+    amplify-prompts "2.6.4-beta.3"
+    aws-sdk "^2.1233.0"
+    chalk "^4.1.1"
+    fs-extra "^8.1.0"
+    uuid "^8.3.2"
+
+"@aws-amplify/amplify-category-storage@5.0.0-beta.6":
+  version "5.0.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-storage/-/amplify-category-storage-5.0.0-beta.6.tgz#e39207eb845623602e1bf68f1beb5dada7ac027e"
+  integrity sha512-HPUhVvc1y0dhRdp2xLrMOgLLNHEm2tkoGZZwt3CRbPjf2hXqJqByOGJj4y57CeJUJB9OA+x7k++da4i7zx6rSg==
+  dependencies:
+    "@aws-amplify/amplify-environment-parameters" "1.4.0-beta.2"
+    "@aws-amplify/amplify-util-import" "2.4.0-beta.1"
+    "@aws-amplify/cli-extensibility-helper" "3.0.0-beta.8"
+    amplify-cli-core "4.0.0-beta.8"
+    amplify-headless-interface "1.17.1-beta.3"
+    amplify-prompts "2.6.4-beta.3"
+    aws-cdk-lib "~2.53.0"
+    aws-sdk "^2.1233.0"
+    chalk "^4.1.1"
+    constructs "^10.0.5"
+    enquirer "^2.3.6"
+    fs-extra "^8.1.0"
+    lodash "^4.17.21"
+    promise-sequential "^1.1.1"
+    uuid "^8.3.2"
+    vm2 "^3.9.8"
 
 "@aws-amplify/amplify-cli-logger@1.3.0-beta.1":
   version "1.3.0-beta.1"
@@ -174,6 +351,42 @@
     inquirer "^7.3.3"
     lodash "^4.17.21"
 
+"@aws-amplify/amplify-go-function-template-provider@1.4.0-beta.1":
+  version "1.4.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-go-function-template-provider/-/amplify-go-function-template-provider-1.4.0-beta.1.tgz#3be307f8742ad2dc09ba7645ec6372ba61b63859"
+  integrity sha512-s7REhXQn32UTHWFIlNUftibPeg0ONRH7doth5HNJDWtCOO1FZL+THAJ5uP7jtoc0WLhdaoDOTpihpFvKJfO6qg==
+  dependencies:
+    amplify-function-plugin-interface "1.9.6-beta.6"
+
+"@aws-amplify/amplify-nodejs-function-template-provider@2.7.0-beta.1":
+  version "2.7.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-nodejs-function-template-provider/-/amplify-nodejs-function-template-provider-2.7.0-beta.1.tgz#288266a245555f3eebb138a729e215befa9863f0"
+  integrity sha512-YNNJGKc0NFZnzXy/J3fXlWNUsufWF+aVmXlRLysYQL9hHaaRmAETO41k7Sfm9O+2vv6XQYBdQkdEgSt6h6OyDg==
+  dependencies:
+    amplify-cli-core "4.0.0-beta.8"
+    amplify-function-plugin-interface "1.9.6-beta.6"
+    graphql-transformer-core "8.0.0-beta.6"
+    lodash "^4.17.21"
+
+"@aws-amplify/amplify-opensearch-simulator@1.2.2-beta.3":
+  version "1.2.2-beta.3"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-opensearch-simulator/-/amplify-opensearch-simulator-1.2.2-beta.3.tgz#60fbbb37e3e2bc34cbd85f3bd0537105848d8760"
+  integrity sha512-IODXsjVG2id/qGJILMY8PtiC0/B0BIzjqxBLKoA6m8oMijxd/ETmwSpfma0Y0f48gd1h9pODBdPKbtYdTeElDw==
+  dependencies:
+    amplify-cli-core "4.0.0-beta.8"
+    amplify-prompts "2.6.4-beta.3"
+    aws-sdk "^2.1233.0"
+    detect-port "^1.3.0"
+    execa "^5.1.1"
+    fs-extra "^8.1.0"
+    get-port "^5.1.1"
+    gunzip-maybe "^1.4.2"
+    node-fetch "^2.6.7"
+    openpgp "^4.10.10"
+    promise-toolbox "^0.20.0"
+    tar "^6.1.11"
+    wait-port "^0.2.7"
+
 "@aws-amplify/amplify-provider-awscloudformation@7.0.0-beta.8":
   version "7.0.0-beta.8"
   resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-provider-awscloudformation/-/amplify-provider-awscloudformation-7.0.0-beta.8.tgz#e9fe3e4162145d2ca347f8bb3c428e38539f017c"
@@ -223,12 +436,59 @@
     vm2 "^3.9.8"
     xstate "^4.14.0"
 
+"@aws-amplify/amplify-python-function-template-provider@1.4.0-beta.1":
+  version "1.4.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-python-function-template-provider/-/amplify-python-function-template-provider-1.4.0-beta.1.tgz#ee47043cbf45c67fce407c2e2d21105bdda4d979"
+  integrity sha512-Wz27IPuciUExcgol8DQZHBhOq7ARx4v5dZg4pyGWxDv8zFJnMglmFJLWql+zf+iA6X6zR64+CrjoDtVzv35VNA==
+  dependencies:
+    amplify-function-plugin-interface "1.9.6-beta.6"
+
 "@aws-amplify/amplify-util-import@2.4.0-beta.1":
   version "2.4.0-beta.1"
   resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-util-import/-/amplify-util-import-2.4.0-beta.1.tgz#ee67e518940d132018fe6c0aa462efcba30730fa"
   integrity sha512-jcts25I+uI1MBE8TfKsJ+84nZ4KMC5YBOj1XDRpFBehCZYZFRR2hdcQMivqv/nc7YLPHbdD6GSrmEUQJE/nSmw==
   dependencies:
     aws-sdk "^2.1233.0"
+
+"@aws-amplify/amplify-util-mock@5.0.0-beta.1":
+  version "5.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-util-mock/-/amplify-util-mock-5.0.0-beta.1.tgz#448b2ca83809681a566c67efba9259e7a10119bb"
+  integrity sha512-x9+9u1bDV7AlUhbS2mD9bLI/mccGoYPRZC8F3Q6B9pQpitFM6F9m8qTC5pRAv1hNBeVq8IrhSleEaYs1vGJ2dw==
+  dependencies:
+    "@aws-amplify/amplify-appsync-simulator" "2.10.0-beta.3"
+    "@aws-amplify/amplify-category-function" "5.0.0-beta.2"
+    "@aws-amplify/amplify-opensearch-simulator" "1.2.2-beta.3"
+    "@aws-amplify/amplify-provider-awscloudformation" "7.0.0-beta.8"
+    "@hapi/topo" "^5.0.0"
+    amplify-cli-core "4.0.0-beta.8"
+    amplify-codegen "^3.3.6"
+    amplify-dynamodb-simulator "2.5.6-beta.3"
+    amplify-prompts "2.6.4-beta.3"
+    amplify-storage-simulator "1.7.3-beta.3"
+    chokidar "^3.5.3"
+    detect-port "^1.3.0"
+    dotenv "^8.2.0"
+    execa "^5.1.1"
+    fs-extra "^8.1.0"
+    inquirer "^7.3.3"
+    lodash "^4.17.21"
+    node-fetch "^2.6.7"
+    semver "^7.3.5"
+    which "^2.0.2"
+
+"@aws-amplify/amplify-util-uibuilder@1.6.8-beta.3":
+  version "1.6.8-beta.3"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-util-uibuilder/-/amplify-util-uibuilder-1.6.8-beta.3.tgz#b4bb1945faa7eb08d42a32b5d65bb36c8467ef8a"
+  integrity sha512-2APlzd401XHOUaboQl2oDF9FmmVPtsA7GLXnk4oYbp6yuYw/lkxlj6rzF0f7LY9SxzHLHWvnkhgjeoUECHPUFA==
+  dependencies:
+    "@aws-amplify/codegen-ui" "2.8.0"
+    "@aws-amplify/codegen-ui-react" "2.8.0"
+    amplify-cli-core "4.0.0-beta.8"
+    amplify-prompts "2.6.4-beta.3"
+    aws-sdk "^2.1233.0"
+    fs-extra "^8.1.0"
+    ora "^4.0.3"
+    tiny-async-pool "^2.1.0"
 
 "@aws-amplify/analytics@5.2.28":
   version "5.2.28"
@@ -319,6 +579,102 @@
     amplify-cli-core "4.0.0-beta.8"
     aws-cdk-lib "~2.53.0"
 
+"@aws-amplify/cli-internal@11.0.0-beta.8":
+  version "11.0.0-beta.8"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/cli-internal/-/cli-internal-11.0.0-beta.8.tgz#561f17e905e505433da37fc4a043799773cf94b9"
+  integrity sha512-d9fgw5sLyRUstwAc7BELapiOvJh1r1gjKzRgkZLtfcP9c7Rlm4QFLYUqdo3WA2nnJJh+Sur3MVkPgnOSvpmucg==
+  dependencies:
+    "@aws-amplify/amplify-category-analytics" "5.0.0-beta.2"
+    "@aws-amplify/amplify-category-api" "5.1.0-beta.6"
+    "@aws-amplify/amplify-category-auth" "3.0.0-beta.8"
+    "@aws-amplify/amplify-category-custom" "3.0.0-beta.8"
+    "@aws-amplify/amplify-category-function" "5.0.0-beta.2"
+    "@aws-amplify/amplify-category-geo" "3.0.0-beta.8"
+    "@aws-amplify/amplify-category-hosting" "3.5.0-beta.2"
+    "@aws-amplify/amplify-category-interactions" "5.0.0-beta.2"
+    "@aws-amplify/amplify-category-notifications" "2.24.0-beta.1"
+    "@aws-amplify/amplify-category-predictions" "5.0.0-beta.1"
+    "@aws-amplify/amplify-category-storage" "5.0.0-beta.6"
+    "@aws-amplify/amplify-cli-logger" "1.3.0-beta.1"
+    "@aws-amplify/amplify-environment-parameters" "1.4.0-beta.2"
+    "@aws-amplify/amplify-frontend-android" "3.5.0-beta.3"
+    "@aws-amplify/amplify-frontend-flutter" "1.4.0-beta.3"
+    "@aws-amplify/amplify-frontend-ios" "3.6.0-beta.3"
+    "@aws-amplify/amplify-frontend-javascript" "3.8.0-beta.3"
+    "@aws-amplify/amplify-go-function-template-provider" "1.4.0-beta.1"
+    "@aws-amplify/amplify-nodejs-function-template-provider" "2.7.0-beta.1"
+    "@aws-amplify/amplify-provider-awscloudformation" "7.0.0-beta.8"
+    "@aws-amplify/amplify-python-function-template-provider" "1.4.0-beta.1"
+    "@aws-amplify/amplify-util-import" "2.4.0-beta.1"
+    "@aws-amplify/amplify-util-mock" "5.0.0-beta.1"
+    "@aws-amplify/amplify-util-uibuilder" "1.6.8-beta.3"
+    "@aws-amplify/graphql-auth-transformer" "2.1.0-beta.6"
+    "@aws-cdk/cloudformation-diff" "~2.53.0"
+    amplify-app "4.3.10-beta.3"
+    amplify-cli-core "4.0.0-beta.8"
+    amplify-cli-shared-interfaces "1.1.1-beta.6"
+    amplify-codegen "^3.3.6"
+    amplify-console-hosting "2.4.2-beta.3"
+    amplify-container-hosting "2.5.12-beta.1"
+    amplify-dotnet-function-runtime-provider "1.7.2-beta.3"
+    amplify-dotnet-function-template-provider "2.4.4-beta.3"
+    amplify-go-function-runtime-provider "2.3.10-beta.3"
+    amplify-java-function-runtime-provider "2.3.10-beta.3"
+    amplify-java-function-template-provider "1.5.15-beta.6"
+    amplify-nodejs-function-runtime-provider "2.3.10-beta.3"
+    amplify-prompts "2.6.4-beta.3"
+    amplify-python-function-runtime-provider "2.4.10-beta.3"
+    aws-cdk-lib "~2.53.0"
+    aws-sdk "^2.1233.0"
+    chalk "^4.1.1"
+    ci-info "^2.0.0"
+    cli-table3 "^0.6.0"
+    cloudform-types "^4.2.0"
+    colors "1.4.0"
+    ejs "^3.1.7"
+    env-editor "^0.5.0"
+    execa "^5.1.1"
+    folder-hash "^4.0.2"
+    fs-extra "^8.1.0"
+    glob "^7.2.0"
+    graphql "^15.5.0"
+    graphql-transformer-core "8.0.0-beta.6"
+    gunzip-maybe "^1.4.2"
+    hidefile "^3.0.0"
+    ini "^1.3.5"
+    inquirer "^7.3.3"
+    lodash "^4.17.21"
+    node-fetch "^2.6.7"
+    open "^8.4.0"
+    ora "^4.0.3"
+    progress "^2.0.3"
+    promise-sequential "^1.1.1"
+    semver "^7.3.5"
+    tar-fs "^2.1.1"
+    treeify "^1.1.0"
+    update-notifier "^5.1.0"
+    uuid "^8.3.2"
+    which "^2.0.2"
+
+"@aws-amplify/codegen-ui-react@2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/codegen-ui-react/-/codegen-ui-react-2.8.0.tgz#49b70919f74016914968cf7f58e657462d199a7d"
+  integrity sha512-EF/l35yk0ilXnp4VtqUekHbAbNXT5tOvfqUznOy1h2uniAf99Z+tRZYG4HGLzFfpraUB8psumXs3C/p3FVDMaA==
+  dependencies:
+    "@aws-amplify/codegen-ui" "2.8.0"
+    "@typescript/vfs" "~1.3.5"
+    typescript "<=4.5.0"
+  optionalDependencies:
+    prettier "2.3.2"
+
+"@aws-amplify/codegen-ui@2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/codegen-ui/-/codegen-ui-2.8.0.tgz#7cfde751d67b029371b5f708802160b2bf3257a1"
+  integrity sha512-3I+k2hWJeVwHVGiexvZqwScpt9o8sMD7WZ/svpCo2/byvs83bYj4VJRly7Hj0n+QqkJWHDxECs4b27lIb1E8YA==
+  dependencies:
+    change-case "^4.1.2"
+    yup "^0.32.11"
+
 "@aws-amplify/core@4.7.12":
   version "4.7.12"
   resolved "https://registry.npmjs.org/@aws-amplify/core/-/core-4.7.12.tgz#ee7a19908812f3d5a447d221e869acacd5c812f0"
@@ -369,6 +725,35 @@
     "@turf/boolean-clockwise" "6.5.0"
     camelcase-keys "6.2.2"
 
+"@aws-amplify/graphql-auth-transformer@2.1.0-beta.6":
+  version "2.1.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-auth-transformer/-/graphql-auth-transformer-2.1.0-beta.6.tgz#44d4b56dffe3669c92fdc8a66e9241cc4b304f96"
+  integrity sha512-1pdJajVNyghhO13k5IoiEq/X4GCfGIUs1tJqZeYlsxh3jUJTWz3noKDR788z7dEUEp76X5RXd1dItG10tflY9Q==
+  dependencies:
+    "@aws-amplify/graphql-model-transformer" "1.1.0-beta.6"
+    "@aws-amplify/graphql-relational-transformer" "1.1.0-beta.6"
+    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
+    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
+    aws-cdk-lib "~2.53.0"
+    constructs "^10.0.5"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-beta.2"
+    graphql-transformer-common "4.24.5-beta.2"
+    lodash "^4.17.21"
+    md5 "^2.3.0"
+
+"@aws-amplify/graphql-default-value-transformer@1.1.0-beta.6":
+  version "1.1.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-default-value-transformer/-/graphql-default-value-transformer-1.1.0-beta.6.tgz#5805522c9b8f6bef73fc09e6c9b4b08bae56a589"
+  integrity sha512-v8gIQO3oEgcXo7tFYfmml787++/WOyCDzrx8lXTSSMPB7OlfDPtbGFVAMUnXfGQBBj6KDMVuLJK+ZGS8fJ4Oug==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
+    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-beta.2"
+    graphql-transformer-common "4.24.5-beta.2"
+    libphonenumber-js "1.9.47"
+
 "@aws-amplify/graphql-docs-generator@3.0.3":
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-docs-generator/-/graphql-docs-generator-3.0.3.tgz#1bc720b6b70293b14bdc8195b47b0fc196aaf4e7"
@@ -378,6 +763,121 @@
     handlebars "4.7.7"
     prettier "^1.19.1"
     yargs "^15.1.0"
+
+"@aws-amplify/graphql-function-transformer@1.1.0-beta.6":
+  version "1.1.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-function-transformer/-/graphql-function-transformer-1.1.0-beta.6.tgz#e59defbf9d7bca4875b0cca2b1df845696328c4a"
+  integrity sha512-z6fHNaYFkUlUygEOtU/3rfeyZwbLdC//GzBSl4g3meCcKWwjSi4gb7KLG8JsUMHcN4xILaJdxtkBtjF64cre3w==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
+    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
+    "@aws-cdk/aws-appsync-alpha" "~2.53.0-alpha.0"
+    aws-cdk-lib "~2.53.0"
+    constructs "^10.0.5"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-beta.2"
+    graphql-transformer-common "4.24.5-beta.2"
+
+"@aws-amplify/graphql-http-transformer@1.1.0-beta.6":
+  version "1.1.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-http-transformer/-/graphql-http-transformer-1.1.0-beta.6.tgz#3696b2368a3d3fe6fddf3e6a68d42b4b2f548ca1"
+  integrity sha512-SnpnLwkr7eJ/ELoE4o//KvdkxfmjH8aaM69r/LjBsTdQBGEkMLyZXl8X9jDHso6U+h98552nIPFaJL9+H3JsvQ==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
+    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
+    "@aws-cdk/aws-appsync-alpha" "~2.53.0-alpha.0"
+    aws-cdk-lib "~2.53.0"
+    constructs "^10.0.5"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-beta.2"
+    graphql-transformer-common "4.24.5-beta.2"
+
+"@aws-amplify/graphql-index-transformer@1.1.0-beta.6":
+  version "1.1.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-index-transformer/-/graphql-index-transformer-1.1.0-beta.6.tgz#198e9e7edbe5a2d0cf032f07719d9dd0f98b3d36"
+  integrity sha512-YDecyUOBYkViFIu1Kdh+qfawpq6600rwQtrGg5sNQNKulLc/oDkoRHRmYhIiockwHlZxrJ32x4jyx/8U8/maQQ==
+  dependencies:
+    "@aws-amplify/graphql-model-transformer" "1.1.0-beta.6"
+    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
+    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
+    "@aws-cdk/aws-appsync-alpha" "~2.53.0-alpha.0"
+    aws-cdk-lib "~2.53.0"
+    constructs "^10.0.5"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-beta.2"
+    graphql-transformer-common "4.24.5-beta.2"
+
+"@aws-amplify/graphql-maps-to-transformer@2.1.0-beta.6":
+  version "2.1.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-maps-to-transformer/-/graphql-maps-to-transformer-2.1.0-beta.6.tgz#d88d2014d9d3e87043dd25abc9c613748f97eb6e"
+  integrity sha512-lxQetMQFdMuXh2mr/Oc/FPuXIPXDyQsHfxNHDOMZEZH2NFRye6aP3u8M/wPQ5CCBhNkZIep3jQT0yyWeTGn47w==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
+    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
+    "@aws-cdk/aws-appsync-alpha" "~2.53.0-alpha.0"
+    aws-cdk-lib "~2.53.0"
+    constructs "^10.0.5"
+    graphql-mapping-template "4.20.8-beta.2"
+    graphql-transformer-common "4.24.5-beta.2"
+
+"@aws-amplify/graphql-model-transformer@1.1.0-beta.6":
+  version "1.1.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-model-transformer/-/graphql-model-transformer-1.1.0-beta.6.tgz#dc5adf2b2f4d70a3ae73a7852a08a987c835e44c"
+  integrity sha512-gCZPjZc//rNP6tlFcLcUp10xXhY5yMKsKJS6UbDcsElyytC+3BAyZFMmYp0UvVsl8N3z6DVm0ZD5eqCyKMP7+g==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
+    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
+    "@aws-cdk/aws-appsync-alpha" "~2.53.0-alpha.0"
+    aws-cdk-lib "~2.53.0"
+    constructs "^10.0.5"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-beta.2"
+    graphql-transformer-common "4.24.5-beta.2"
+
+"@aws-amplify/graphql-predictions-transformer@1.1.0-beta.6":
+  version "1.1.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-predictions-transformer/-/graphql-predictions-transformer-1.1.0-beta.6.tgz#47c24768320c68d5c65419c30801b31e650faf91"
+  integrity sha512-cjaENm7NS6WGBSuS3dYRpLbdTP3hpew27Zw0TrdK8KBg3x8ctd25OviOle5MPM2YlB5wyH87EXIug5g9y84hyg==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
+    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
+    "@aws-cdk/aws-appsync-alpha" "~2.53.0-alpha.0"
+    aws-cdk-lib "~2.53.0"
+    constructs "^10.0.5"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-beta.2"
+    graphql-transformer-common "4.24.5-beta.2"
+
+"@aws-amplify/graphql-relational-transformer@1.1.0-beta.6":
+  version "1.1.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-relational-transformer/-/graphql-relational-transformer-1.1.0-beta.6.tgz#60c594065d1338a2cabd2737fd0577f25309f417"
+  integrity sha512-M1P4hBS+co081fmWWYcLHzuTxgFoGjYDtECUZKh0lGInxncJUWJCnkqdXPUAWmMgYTbprnmTZxSYCO0lOsiCzQ==
+  dependencies:
+    "@aws-amplify/graphql-index-transformer" "1.1.0-beta.6"
+    "@aws-amplify/graphql-model-transformer" "1.1.0-beta.6"
+    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
+    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
+    aws-cdk-lib "~2.53.0"
+    constructs "^10.0.5"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-beta.2"
+    graphql-transformer-common "4.24.5-beta.2"
+    immer "^9.0.12"
+
+"@aws-amplify/graphql-searchable-transformer@1.1.0-beta.6":
+  version "1.1.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-searchable-transformer/-/graphql-searchable-transformer-1.1.0-beta.6.tgz#53b05bd40db0ab33ed2a9f9099d8f86c7c257eb1"
+  integrity sha512-lKb+efYyABVQcOMxfRpNP+s4UHkIXDuhaUjqiaTbG/atDwOMXYNVER7twXyyYYXljyckuvqmTujPsLUXN7U3aQ==
+  dependencies:
+    "@aws-amplify/graphql-model-transformer" "1.1.0-beta.6"
+    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
+    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
+    "@aws-cdk/aws-appsync-alpha" "~2.53.0-alpha.0"
+    aws-cdk-lib "~2.53.0"
+    constructs "^10.0.5"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-beta.2"
+    graphql-transformer-common "4.24.5-beta.2"
 
 "@aws-amplify/graphql-transformer-core@1.1.0-beta.6":
   version "1.1.0-beta.6"
@@ -406,6 +906,18 @@
     aws-cdk-lib "~2.53.0"
     constructs "^10.0.5"
     graphql "^15.5.0"
+
+"@aws-amplify/graphql-transformer-migrator@2.1.0-beta.6":
+  version "2.1.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-transformer-migrator/-/graphql-transformer-migrator-2.1.0-beta.6.tgz#0bbaa9403a40ae1a2f838d802c7f60dbbba2551f"
+  integrity sha512-8yf8kwbgbrSbNCjdQd12vkMZvHzjzLittRLAocnP3IwiqECaaWh3oZt1gTE6bXIf3ZUt8sHWmuBqa0cr11e+Uw==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
+    fs-extra "^8.1.0"
+    glob "^7.2.0"
+    graphql "^15.5.0"
+    graphql-transformer-common "4.24.5-beta.2"
+    lodash "^4.17.21"
 
 "@aws-amplify/graphql-types-generator@3.0.1":
   version "3.0.1"
@@ -3986,6 +4498,13 @@
   dependencies:
     regenerator-runtime "^0.13.10"
 
+"@babel/runtime@^7.15.4":
+  version "7.21.0"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.21.0.tgz#5b55c9d394e5fcf304909a8b00c07dc217b56673"
+  integrity sha512-xwII0//EObnq89Ji5AKYQaRYiW/nZ3llSv29d49IuxPhKbtJoLP+9QUUZ4nVragQVtaVGeZrpB+ZtG/Pdy/POw==
+  dependencies:
+    regenerator-runtime "^0.13.11"
+
 "@babel/template@^7.18.10", "@babel/template@^7.3.3":
   version "7.18.10"
   resolved "https://registry.npmjs.org/@babel/template/-/template-7.18.10.tgz#6f9134835970d1dbf0835c0d100c9f38de0c5e71"
@@ -6168,6 +6687,11 @@
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.25.21.tgz#763b05a4b472c93a8db29b2c3e359d55b29ce272"
   integrity sha512-gFukHN4t8K4+wVC+ECqeqwzBDeFeTzBXroBTqE6vcWrQGbEUpHO7LYdG0f4xnvYq4VOEwITSlHlp0JBAIFMS/g==
 
+"@sindresorhus/is@^0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
+  integrity sha512-9NET910DNaIPngYnLLPeg+Ogzqsi9uM4mSboU5y6p8S5DzMTVEsJZrawi+BoDNUVBa2DhJqQYUFvMDfgU062LQ==
+
 "@sindresorhus/is@^5.2.0":
   version "5.3.0"
   resolved "https://registry.npmjs.org/@sindresorhus/is/-/is-5.3.0.tgz#0ec9264cf54a527671d990eb874e030b55b70dcc"
@@ -6259,6 +6783,13 @@
     style-loader "^1.1.2"
     webpack "^4.41.4"
     webpack-bundle-analyzer "^3.6.0"
+
+"@szmarczak/http-timer@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@szmarczak/http-timer/-/http-timer-1.1.2.tgz#b1665e2c461a2cd92f4c1bbf50d5454de0d4b421"
+  integrity sha512-XIB2XbzHTN6ieIjfIMV9hlVcfPU26s2vafYWQcZHWXHOxiaRZYEDKEwdl129Zyg50+foYV2jCgtrqSA6qNuNSA==
+  dependencies:
+    defer-to-connect "^1.0.1"
 
 "@szmarczak/http-timer@^5.0.1":
   version "5.0.1"
@@ -6505,6 +7036,11 @@
   version "4.14.188"
   resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.188.tgz#e4990c4c81f7c9b00c5ff8eae389c10f27980da5"
   integrity sha512-zmEmF5OIM3rb7SbLCFYoQhO4dGt2FRM9AMkxvA3LaADOF1n8in/zGJlWji9fmafLoNyz+FoL6FE0SLtGIArD7w==
+
+"@types/lodash@^4.14.175":
+  version "4.14.191"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.191.tgz#09511e7f7cba275acd8b419ddac8da9a6a79e2fa"
+  integrity sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==
 
 "@types/md5@^2.3.1":
   version "2.3.2"
@@ -6786,6 +7322,13 @@
   dependencies:
     "@typescript-eslint/types" "5.42.1"
     eslint-visitor-keys "^3.3.0"
+
+"@typescript/vfs@~1.3.5":
+  version "1.3.6"
+  resolved "https://registry.yarnpkg.com/@typescript/vfs/-/vfs-1.3.6.tgz#02ed6de964ecdd73cd71a506b78e50e177682291"
+  integrity sha512-VSLn7rs46Qhe4gYxbK1/IB4NPLvgKl0I6SgeVyJwW5efYAELvDVqf1gVOG7JaKtW8qlMtBaZP02/4TRN39AkEQ==
+  dependencies:
+    debug "^4.1.1"
 
 "@webassemblyjs/ast@1.9.0":
   version "1.9.0"
@@ -7214,6 +7757,71 @@ amplify-codegen@3.3.6, amplify-codegen@^3.3.6:
     semver "^7.3.5"
     slash "^3.0.0"
 
+amplify-console-hosting@2.4.2-beta.3:
+  version "2.4.2-beta.3"
+  resolved "https://registry.yarnpkg.com/amplify-console-hosting/-/amplify-console-hosting-2.4.2-beta.3.tgz#6ef482e4d4a41d417b3848a36016fad9a579077d"
+  integrity sha512-dt4I7x9za8NBRhquWw20ZcUo/jtFRLpBIH9YPmk345cChIOpsTX+TFgUYkabfEyX4Alt+sTE6ysfSjJHN51djw==
+  dependencies:
+    "@aws-amplify/amplify-environment-parameters" "1.4.0-beta.2"
+    amplify-cli-core "4.0.0-beta.8"
+    archiver "^5.3.0"
+    chalk "^4.1.1"
+    cli-table3 "^0.6.0"
+    execa "^5.1.1"
+    fs-extra "^8.1.0"
+    glob "^7.2.0"
+    inquirer "^7.3.3"
+    node-fetch "^2.6.7"
+    ora "^4.0.3"
+
+amplify-container-hosting@2.5.12-beta.1:
+  version "2.5.12-beta.1"
+  resolved "https://registry.yarnpkg.com/amplify-container-hosting/-/amplify-container-hosting-2.5.12-beta.1.tgz#c0656b46becbbd39f407c5f7a1af73e563761f14"
+  integrity sha512-MtMI8Uw+bpZlsDI95F7s6LFrUUaLtAjjsqHdVLIBjjgrYWAGDDIBvDTs5nirKl8r4Dikq/jq/uIEqhiHg8xRhA==
+  dependencies:
+    "@aws-amplify/amplify-category-api" "5.1.0-beta.6"
+    amplify-cli-core "4.0.0-beta.8"
+    fs-extra "^8.1.0"
+    inquirer "^7.3.3"
+    mime-types "^2.1.26"
+    promise-sequential "^1.1.1"
+
+amplify-dotnet-function-runtime-provider@1.7.2-beta.3:
+  version "1.7.2-beta.3"
+  resolved "https://registry.yarnpkg.com/amplify-dotnet-function-runtime-provider/-/amplify-dotnet-function-runtime-provider-1.7.2-beta.3.tgz#6fa075b83e3f9ec98228f58f47e582a1259d508f"
+  integrity sha512-1CGqW3lR35xxuKXcuhflPRKntl74XMkTQ/9y45sqTkIHrtTgNDHkwzdvySUVMYqiQ57tqdpFbmErg7piVGG20g==
+  dependencies:
+    amplify-function-plugin-interface "1.9.6-beta.6"
+    amplify-prompts "2.6.4-beta.3"
+    execa "^5.1.1"
+    fs-extra "^8.1.0"
+    glob "^7.2.0"
+    which "^2.0.2"
+
+amplify-dotnet-function-template-provider@2.4.4-beta.3:
+  version "2.4.4-beta.3"
+  resolved "https://registry.yarnpkg.com/amplify-dotnet-function-template-provider/-/amplify-dotnet-function-template-provider-2.4.4-beta.3.tgz#b1573f4d3fc0d2d8d5d2bb91d92ba00f3775b8a1"
+  integrity sha512-JbSP2Wo+dGd9gb58dVCFz2ArY1HBkhJxHuyilekJ4irv7BljWTTQRQItZ1T3nwJZPgs7bqbaM5yPD0QMxtKBMw==
+  dependencies:
+    amplify-cli-core "4.0.0-beta.8"
+    amplify-function-plugin-interface "1.9.6-beta.6"
+    graphql-transformer-core "8.0.0-beta.6"
+
+amplify-dynamodb-simulator@2.5.6-beta.3:
+  version "2.5.6-beta.3"
+  resolved "https://registry.yarnpkg.com/amplify-dynamodb-simulator/-/amplify-dynamodb-simulator-2.5.6-beta.3.tgz#645b8c521e76c7a9e5ab79d7c0f3f9cb66762a5d"
+  integrity sha512-3LJgA+CDXhbxtKhLUAI1O5Wr1K5TOCA52Sl1Z4lwSeUF3PFBiey49V/NSEuwotFlR1mvvCx08H9irHmAzbhwBA==
+  dependencies:
+    amplify-cli-core "4.0.0-beta.8"
+    aws-sdk "^2.1233.0"
+    detect-port "^1.3.0"
+    execa "^5.1.1"
+    fs-extra "^8.1.0"
+    logdown "^3.3.0"
+    promise-toolbox "^0.20.0"
+    wait-port "^0.2.7"
+    which "^2.0.2"
+
 amplify-function-plugin-interface@1.9.6-beta.6:
   version "1.9.6-beta.6"
   resolved "https://registry.yarnpkg.com/amplify-function-plugin-interface/-/amplify-function-plugin-interface-1.9.6-beta.6.tgz#55d00ccbce91c827ea56d0e5436893d053ceb388"
@@ -7224,10 +7832,45 @@ amplify-function-plugin-interface@^1.9.6-beta.6:
   resolved "https://registry.yarnpkg.com/amplify-function-plugin-interface/-/amplify-function-plugin-interface-1.9.6.tgz#4773369c2e8f964579a7563142bb6eb404855764"
   integrity sha512-kVXgfRsSYspg6i8McFK3JCxzArCD1vfoMstWNEj7ut3QmU6zgJEsoY8z0RoOZq5yftXSr8NCpvgzlJVwLTwPWA==
 
+amplify-go-function-runtime-provider@2.3.10-beta.3:
+  version "2.3.10-beta.3"
+  resolved "https://registry.yarnpkg.com/amplify-go-function-runtime-provider/-/amplify-go-function-runtime-provider-2.3.10-beta.3.tgz#8c7b01570ee72ae46c7800a08784c8135fbd0afc"
+  integrity sha512-PybFp3T6ndxJ64+g4uTFb5Cpz4HMel/EOxaYgPk0JoYU1OBzTI23kCr1uRltwKoSWxgdqpfqLtOVBogY7NvfNw==
+  dependencies:
+    amplify-cli-core "4.0.0-beta.8"
+    amplify-function-plugin-interface "1.9.6-beta.6"
+    archiver "^5.3.0"
+    execa "^5.1.1"
+    fs-extra "^8.1.0"
+    get-port "^5.1.1"
+    glob "^7.2.0"
+    semver "^7.3.5"
+    which "^2.0.2"
+
 amplify-headless-interface@1.17.1-beta.3:
   version "1.17.1-beta.3"
   resolved "https://registry.yarnpkg.com/amplify-headless-interface/-/amplify-headless-interface-1.17.1-beta.3.tgz#d6e5f582444c9e19b8d0f33aa60df2dcd349ba6a"
   integrity sha512-s5keF3owxIT/ywLCQ/F7x5b9FGuSc3s3eOhgcZmTgO5o0voTUWwbxIZ2tlpuZ+B2K8StvojMhYXdMbYu9okV2w==
+
+amplify-java-function-runtime-provider@2.3.10-beta.3:
+  version "2.3.10-beta.3"
+  resolved "https://registry.yarnpkg.com/amplify-java-function-runtime-provider/-/amplify-java-function-runtime-provider-2.3.10-beta.3.tgz#40a634138a464df687638b69e4466cb8667a68cd"
+  integrity sha512-cmCA2kvHG5MaZN6C9aJEE1P65OzTYpp3MnberDVAajC2bW5ovLk7ck8HzUmLKHvi847G4xw85+Mh8D49HQqo7Q==
+  dependencies:
+    amplify-cli-core "4.0.0-beta.8"
+    amplify-function-plugin-interface "1.9.6-beta.6"
+    execa "^5.1.1"
+    fs-extra "^8.1.0"
+    glob "^7.2.0"
+    semver "^7.3.5"
+    which "^2.0.2"
+
+amplify-java-function-template-provider@1.5.15-beta.6:
+  version "1.5.15-beta.6"
+  resolved "https://registry.yarnpkg.com/amplify-java-function-template-provider/-/amplify-java-function-template-provider-1.5.15-beta.6.tgz#70188f49aeefd79ca45a7d9010ffc67b100dafda"
+  integrity sha512-LmwHVIfkiTXazKIaycSG9QVszhmzumNz3dbco35Ygu/BhbFL1giqjhECe7FxDCXtv6312NnSXZsR3nsemkKOmg==
+  dependencies:
+    amplify-function-plugin-interface "1.9.6-beta.6"
 
 amplify-nodejs-function-runtime-provider@2.3.10-beta.3:
   version "2.3.10-beta.3"
@@ -7249,6 +7892,37 @@ amplify-prompts@2.6.4-beta.3:
     amplify-cli-shared-interfaces "1.1.1-beta.6"
     chalk "^4.1.1"
     enquirer "^2.3.6"
+
+amplify-python-function-runtime-provider@2.4.10-beta.3:
+  version "2.4.10-beta.3"
+  resolved "https://registry.yarnpkg.com/amplify-python-function-runtime-provider/-/amplify-python-function-runtime-provider-2.4.10-beta.3.tgz#23f03357b2adf9b98b75ffcadba56a506097d895"
+  integrity sha512-fq9ViACXP65LbVqC/GH2+USb47XGKdgFfGqbIGBDxx+p2xxDsctRcoH+XBeR6be6ySyJ4OxwPIkmzAfJuNQzTw==
+  dependencies:
+    amplify-cli-core "4.0.0-beta.8"
+    amplify-function-plugin-interface "1.9.6-beta.6"
+    execa "^5.1.1"
+    glob "^7.2.0"
+    ini "^1.3.5"
+    semver "^7.3.5"
+    which "^2.0.2"
+
+amplify-storage-simulator@1.7.3-beta.3:
+  version "1.7.3-beta.3"
+  resolved "https://registry.yarnpkg.com/amplify-storage-simulator/-/amplify-storage-simulator-1.7.3-beta.3.tgz#ce4d7f029a23b03b5079fa0028680631c52c5b97"
+  integrity sha512-9d6BeGBFT8xTI61AkOekLKfzPGK/CWFdpuDST6dx1jtPhUax+c/zlyNy5q2l+HXAxGDNYb7YfH9j8srDus7W9w==
+  dependencies:
+    body-parser "^1.19.2"
+    cors "^2.8.5"
+    etag "^1.8.1"
+    express "^4.17.3"
+    fs-extra "^8.1.0"
+    glob "^7.2.0"
+    object-to-xml "^2.0.0"
+    promise-toolbox "^0.20.0"
+    serve-static "^1.14.2"
+    uuid "^8.3.2"
+    xml "^1.0.1"
+    xml-js "^1.6.11"
 
 amplify-storage-simulator@^1.7.3-beta.3:
   version "1.7.3-rc.e0c735015.0"
@@ -7283,7 +7957,7 @@ amplify-velocity-template@1.4.9-beta.1:
   dependencies:
     lodash "^4.17.21"
 
-ansi-align@^3.0.1:
+ansi-align@^3.0.0, ansi-align@^3.0.1:
   version "3.0.1"
   resolved "https://registry.npmjs.org/ansi-align/-/ansi-align-3.0.1.tgz#0cdf12e111ace773a86e9a1fad1225c43cb19a59"
   integrity sha512-IOfwwBF5iczOjp/WeY4YxyjqAFMQoZufdQWDd19SEExbVLNXqvpzSJ/M7Za4/sCPmQ0+GRquoA7bGcINcxew6w==
@@ -7678,7 +8352,7 @@ asap@^2.0.0, asap@~2.0.3:
   resolved "https://registry.npmjs.org/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
   integrity sha512-BSHWgDSAiKs50o2Re8ppvp3seVHXSRM44cdSsT9FfNEUUZLOGWVCsiWaRPWM1Znn+mqZ1OfVZ3z3DWEzSp7hRA==
 
-asn1.js@^5.2.0:
+asn1.js@^5.0.0, asn1.js@^5.2.0:
   version "5.4.1"
   resolved "https://registry.yarnpkg.com/asn1.js/-/asn1.js-5.4.1.tgz#11a980b84ebb91781ce35b0fdc2ee294e3783f07"
   integrity sha512-+I//4cYPccV8LdmBLiX8CYvf9Sp3vQsrqu2QNXRcrbiWvcx/UdlFiqUJJzxRQxgsZmvhXhn4cSKeSmoFjVdupA==
@@ -8304,6 +8978,20 @@ bowser@^2.11.0:
   resolved "https://registry.npmjs.org/bowser/-/bowser-2.11.0.tgz#5ca3c35757a7aa5771500c70a73a9f91ef420a8f"
   integrity sha512-AlcaJBi/pqqJBIQ8U9Mcpc9i8Aqxn88Skv5d+xBX006BY5u8N3mGLHa5Lgppa7L/HfwgwLgZ6NYs+Ag6uUmJRA==
 
+boxen@^5.0.0:
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/boxen/-/boxen-5.1.2.tgz#788cb686fc83c1f486dfa8a40c68fc2b831d2b50"
+  integrity sha512-9gYgQKXx+1nP8mP7CzFyaUARhg7D3n1dF/FnErWmu9l6JvGpNUN278h0aSb+QjoiKSWG+iZ3uHrcqk0qrY9RQQ==
+  dependencies:
+    ansi-align "^3.0.0"
+    camelcase "^6.2.0"
+    chalk "^4.1.0"
+    cli-boxes "^2.2.1"
+    string-width "^4.2.2"
+    type-fest "^0.20.2"
+    widest-line "^3.1.0"
+    wrap-ansi "^7.0.0"
+
 boxen@^7.0.0:
   version "7.0.0"
   resolved "https://registry.npmjs.org/boxen/-/boxen-7.0.0.tgz#9e5f8c26e716793fc96edcf7cf754cdf5e3fbf32"
@@ -8651,6 +9339,19 @@ cacheable-request@^10.2.1:
     normalize-url "^7.2.0"
     responselike "^3.0.0"
 
+cacheable-request@^6.0.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/cacheable-request/-/cacheable-request-6.1.0.tgz#20ffb8bd162ba4be11e9567d823db651052ca912"
+  integrity sha512-Oj3cAGPCqOZX7Rz64Uny2GYAZNliQSqfbePrgAQ1wKAihYmCUnraBtJtKcGR4xz7wF+LoJC+ssFZvv5BgF9Igg==
+  dependencies:
+    clone-response "^1.0.2"
+    get-stream "^5.1.0"
+    http-cache-semantics "^4.0.0"
+    keyv "^3.0.0"
+    lowercase-keys "^2.0.0"
+    normalize-url "^4.1.0"
+    responselike "^1.0.2"
+
 call-bind@^1.0.0, call-bind@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/call-bind/-/call-bind-1.0.2.tgz#b1d4e89e688119c3c9a903ad30abb2f6a919be3c"
@@ -8971,6 +9672,11 @@ clean-stack@^2.0.0:
   resolved "https://registry.npmjs.org/clean-stack/-/clean-stack-2.2.0.tgz#ee8472dbb129e727b31e8a10a427dee9dfe4008b"
   integrity sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==
 
+cli-boxes@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/cli-boxes/-/cli-boxes-2.2.1.tgz#ddd5035d25094fce220e9cab40a45840a440318f"
+  integrity sha512-y4coMcylgSCdVinjiDBuR8PCC2bLjyGTwEmPb9NHR/QaNU6EUOXcTY/s6VjGMD6ENSEaeQYHCY0GNGS5jfMwPw==
+
 cli-boxes@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/cli-boxes/-/cli-boxes-3.0.0.tgz#71a10c716feeba005e4504f36329ef0b17cf3145"
@@ -9069,6 +9775,13 @@ clone-deep@^4.0.1:
     is-plain-object "^2.0.4"
     kind-of "^6.0.2"
     shallow-clone "^3.0.0"
+
+clone-response@^1.0.2:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/clone-response/-/clone-response-1.0.3.tgz#af2032aa47816399cf5f0a1d0db902f517abb8c3"
+  integrity sha512-ROoL94jJH2dUVML2Y/5PEDNaSHgeOdSDicUyS7izcF63G6sTc/FTjLub4b8Il9S8S0beOfYt0TaA5qvFK+w0wA==
+  dependencies:
+    mimic-response "^1.0.0"
 
 clone@^1.0.2:
   version "1.0.4"
@@ -9328,6 +10041,18 @@ config-chain@^1.1.11, config-chain@^1.1.12:
   dependencies:
     ini "^1.3.4"
     proto-list "~1.2.1"
+
+configstore@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/configstore/-/configstore-5.0.1.tgz#d365021b5df4b98cdd187d6a3b0e3f6a7cc5ed96"
+  integrity sha512-aMKprgk5YhBNyH25hj8wGt2+D52Sw1DRRIzqBwLp2Ya9mFmY8KPvvtvmna8SxVR9JMZ4kzMD68N22vlaRpkeFA==
+  dependencies:
+    dot-prop "^5.2.0"
+    graceful-fs "^4.1.2"
+    make-dir "^3.0.0"
+    unique-string "^2.0.0"
+    write-file-atomic "^3.0.0"
+    xdg-basedir "^4.0.0"
 
 configstore@^6.0.0:
   version "6.0.0"
@@ -9704,6 +10429,11 @@ crypto-js@^4.1.1:
   resolved "https://registry.npmjs.org/crypto-js/-/crypto-js-4.1.1.tgz#9e485bcf03521041bd85844786b83fb7619736cf"
   integrity sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw==
 
+crypto-random-string@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/crypto-random-string/-/crypto-random-string-2.0.0.tgz#ef2a7a966ec11083388369baa02ebead229b30d5"
+  integrity sha512-v1plID3y9r/lPhviJ1wrXpLeyUIGAZ2SHNYTEapm7/8A9nLPoyvVp3RK/EPFqn5kEznyWgYZNsRtYYIWbuG8KA==
+
 crypto-random-string@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npmjs.org/crypto-random-string/-/crypto-random-string-4.0.0.tgz#5a3cc53d7dd86183df5da0312816ceeeb5bb1fc2"
@@ -10003,6 +10733,13 @@ decode-uri-component@^0.2.0:
   resolved "https://registry.npmjs.org/decode-uri-component/-/decode-uri-component-0.2.0.tgz#eb3913333458775cb84cd1a1fae062106bb87545"
   integrity sha512-hjf+xovcEn31w/EUYdTXQh/8smFL/dzYjohQGEIgjyNavaJfBY2p5F527Bo1VPATxv0VYTUC2bOcXvqFwk78Og==
 
+decompress-response@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/decompress-response/-/decompress-response-3.3.0.tgz#80a4dd323748384bfa248083622aedec982adff3"
+  integrity sha512-BzRPQuY1ip+qDonAOz42gRm/pg9F768C+npV/4JOsxRC2sq+Rlk+Q4ZCAsOhnIaMrgarILY+RMUIvMmmX1qAEA==
+  dependencies:
+    mimic-response "^1.0.0"
+
 decompress-response@^4.2.0:
   version "4.2.1"
   resolved "https://registry.npmjs.org/decompress-response/-/decompress-response-4.2.1.tgz#414023cc7a302da25ce2ec82d0d5238ccafd8986"
@@ -10048,6 +10785,11 @@ defaults@^1.0.3:
   integrity sha512-eFuaLoy/Rxalv2kr+lqMlUnrDWV+3j4pljOIJgLIhI058IQfWJ7vXhyEIHu+HtC738klGALYxOKDO0bQP3tg8A==
   dependencies:
     clone "^1.0.2"
+
+defer-to-connect@^1.0.1:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/defer-to-connect/-/defer-to-connect-1.1.3.tgz#331ae050c08dcf789f8c83a7b81f0ed94f4ac591"
+  integrity sha512-0ISdNousHvZT2EiFlZeZAHBUvSxmKswVCEf8hW7KWgG4a8MVEu/3Vb6uWYozkjylyCxe0JBIiRB1jV45S70WVQ==
 
 defer-to-connect@^2.0.1:
   version "2.0.1"
@@ -10331,6 +11073,11 @@ dotenv@~10.0.0:
   resolved "https://registry.npmjs.org/dotenv/-/dotenv-10.0.0.tgz#3d4227b8fb95f81096cdd2b66653fb2c7085ba81"
   integrity sha512-rlBi9d8jpv9Sf1klPjNfFAuWDjKLwTIJJ/VxtoTwIR6hnZxcEOQCZg2oIL3MWBYw5GpUDKOEnND7LXTbIpQ03Q==
 
+duplexer3@^0.1.4:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/duplexer3/-/duplexer3-0.1.5.tgz#0b5e4d7bad5de8901ea4440624c8e1d20099217e"
+  integrity sha512-1A8za6ws41LQgv9HrE/66jyC5yuSjQ3L/KOpFtoBilsAK2iA2wuS5rTt1OCzIvtS2V7nVmedsUU+DGRcjBmOYA==
+
 duplexer@^0.1.1:
   version "0.1.2"
   resolved "https://registry.npmjs.org/duplexer/-/duplexer-0.1.2.tgz#3abe43aef3835f8ae077d136ddce0f276b0400e6"
@@ -10473,6 +11220,11 @@ entities@^4.4.0:
   resolved "https://registry.yarnpkg.com/entities/-/entities-4.4.0.tgz#97bdaba170339446495e653cfd2db78962900174"
   integrity sha512-oYp7156SP8LkeGD0GF85ad1X9Ai79WtRsZ2gxJqtBuzH+98YUV6jkHEKlZkMbcrjJjIVJNIDP/3WL9wQkoPbWA==
 
+env-editor@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/env-editor/-/env-editor-0.5.0.tgz#03d82facf6899fc73f5e7c8562fdeca3eda51ca0"
+  integrity sha512-ig2BZVD0/9p4NsPvFJIXu3EbXrgjHgRmhRkKKflx8jlZoADhD2O6rf6wCy0vZ56HnmrQTimR/oN4s34pMt5CAw==
+
 env-paths@^2.2.0:
   version "2.2.1"
   resolved "https://registry.npmjs.org/env-paths/-/env-paths-2.2.1.tgz#420399d416ce1fbe9bc0a07c62fa68d67fd0f8f2"
@@ -10605,6 +11357,11 @@ escalade@^3.1.1:
   version "3.1.1"
   resolved "https://registry.npmjs.org/escalade/-/escalade-3.1.1.tgz#d8cfdc7000965c5a0174b4a82eaa5c0552742e40"
   integrity sha512-k0er2gUkLf8O0zKJiAhmkTnJlTvINGv7ygDNPbeIsX/TJjGJZHuh9B2UxbsaEkmlEo9MfhrSzmhIlhRlI2GXnw==
+
+escape-goat@^2.0.0:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/escape-goat/-/escape-goat-2.1.1.tgz#1b2dc77003676c457ec760b2dc68edb648188675"
+  integrity sha512-8/uIhbG12Csjy2JEW7D9pHbreaVaS/OpN3ycnyvElTdwM5n6GY6W6e2IPemfvGZeUMqZ9A/3GqIZMgKnBhAw/Q==
 
 escape-goat@^4.0.0:
   version "4.0.0"
@@ -11626,6 +12383,11 @@ fsevents@^2.1.2, fsevents@^2.3.2, fsevents@~2.3.2:
   resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.2.tgz#8a526f78b8fdf4623b709e0b975c52c24c02fd1a"
   integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
 
+fswin@^3.18.918:
+  version "3.23.119"
+  resolved "https://registry.yarnpkg.com/fswin/-/fswin-3.23.119.tgz#0cdf3c4d1dc19b237d9c092f8467fc6935b78d08"
+  integrity sha512-OzyPAua0GO/ii2z+uB2IdqU+5rvWJy1dX6/K0PQm82tPl/gh59Js84RArk06TxpPq7/WiHOpM56Fo8UnphPhow==
+
 ftp@^0.3.10:
   version "0.3.10"
   resolved "https://registry.npmjs.org/ftp/-/ftp-0.3.10.tgz#9197d861ad8142f3e63d5a83bfe4c59f7330885d"
@@ -11658,6 +12420,11 @@ functions-have-names@^1.2.2:
   version "1.2.3"
   resolved "https://registry.npmjs.org/functions-have-names/-/functions-have-names-1.2.3.tgz#0404fe4ee2ba2f607f0e0ec3c80bae994133b834"
   integrity sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==
+
+fuzzy@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/fuzzy/-/fuzzy-0.1.3.tgz#4c76ec2ff0ac1a36a9dccf9a00df8623078d4ed8"
+  integrity sha512-/gZffu4ykarLrCiP3Ygsa86UAo1E5vEVlvTrpkKywXSbP9Xhln3oSp9QSV57gEq3JFFpGJ4GZ+5zdEp3FcUh4w==
 
 gauge@^4.0.3:
   version "4.0.4"
@@ -11741,7 +12508,7 @@ get-stdin@^8.0.0:
   resolved "https://registry.npmjs.org/get-stdin/-/get-stdin-8.0.0.tgz#cbad6a73feb75f6eeb22ba9e01f89aa28aa97a53"
   integrity sha512-sY22aA6xchAzprjyqmSEQv4UbAAzRN0L2dQB0NlN5acTTK9Don6nhoc3eAbUnpZiCANAMfd/+40kVdKfFygohg==
 
-get-stream@^4.0.0:
+get-stream@^4.0.0, get-stream@^4.1.0:
   version "4.1.0"
   resolved "https://registry.npmjs.org/get-stream/-/get-stream-4.1.0.tgz#c1b255575f3dc21d59bfc79cd3d2b46b1c3a54b5"
   integrity sha512-GMat4EJ5161kIy2HevLlr4luNjBgvmj413KaQA7jt4V8B4RDsfpHk7WQ9GVqfYyyx8OS/L66Kox+rJRNklLK7w==
@@ -11972,10 +12739,38 @@ got@^12.1.0:
     p-cancelable "^3.0.0"
     responselike "^3.0.0"
 
+got@^9.6.0:
+  version "9.6.0"
+  resolved "https://registry.yarnpkg.com/got/-/got-9.6.0.tgz#edf45e7d67f99545705de1f7bbeeeb121765ed85"
+  integrity sha512-R7eWptXuGYxwijs0eV+v3o6+XH1IqVK8dJOEecQfTmkncw9AV4dcw/Dhxi8MdlqPthxxpZyizMzyg8RTmEsG+Q==
+  dependencies:
+    "@sindresorhus/is" "^0.14.0"
+    "@szmarczak/http-timer" "^1.1.2"
+    cacheable-request "^6.0.0"
+    decompress-response "^3.3.0"
+    duplexer3 "^0.1.4"
+    get-stream "^4.1.0"
+    lowercase-keys "^1.0.1"
+    mimic-response "^1.0.1"
+    p-cancelable "^1.0.0"
+    to-readable-stream "^1.0.0"
+    url-parse-lax "^3.0.0"
+
 graceful-fs@4.2.10, graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.2, graceful-fs@^4.2.4, graceful-fs@^4.2.6, graceful-fs@^4.2.9, graceful-fs@~4.2.9:
   version "4.2.10"
   resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.10.tgz#147d3a006da4ca3ce14728c7aefc287c367d7a6c"
   integrity sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==
+
+graphql-auth-transformer@7.2.49-beta.2:
+  version "7.2.49-beta.2"
+  resolved "https://registry.yarnpkg.com/graphql-auth-transformer/-/graphql-auth-transformer-7.2.49-beta.2.tgz#7b2c7d713235794c63a04df560342438fe9b6a22"
+  integrity sha512-xLxh009nSD4kJFw2ArtXcieJ03RFu5z4Q3/nv9Od5KjptP7uN/za1DL5ZJ1Tuhg5hVQF/pKNf2MQVbU5FDTGkg==
+  dependencies:
+    graphql "^15.5.0"
+    graphql-connection-transformer "5.2.48-beta.2"
+    graphql-mapping-template "4.20.8-beta.2"
+    graphql-transformer-common "4.24.5-beta.2"
+    graphql-transformer-core "8.0.0-beta.6"
 
 graphql-config@^2.2.1:
   version "2.2.2"
@@ -11987,6 +12782,66 @@ graphql-config@^2.2.1:
     js-yaml "^3.10.0"
     lodash "^4.17.4"
     minimatch "^3.0.4"
+
+graphql-connection-transformer@5.2.48-beta.2:
+  version "5.2.48-beta.2"
+  resolved "https://registry.yarnpkg.com/graphql-connection-transformer/-/graphql-connection-transformer-5.2.48-beta.2.tgz#502c843b5599f02ec77eb7675493a6a07335ad89"
+  integrity sha512-Kj7/ex9oZb0svkbMEdw9W5sAklbYMQBJEvdzONGxAgnyeGk5gb2bFMq1wfFSWTgZk+n8qTdRzo/QYkgy4n+Wbw==
+  dependencies:
+    cloudform-types "^4.2.0"
+    graphql "^15.5.0"
+    graphql-dynamodb-transformer "7.2.48-beta.2"
+    graphql-key-transformer "3.2.48-beta.2"
+    graphql-mapping-template "4.20.8-beta.2"
+    graphql-transformer-common "4.24.5-beta.2"
+    graphql-transformer-core "8.0.0-beta.6"
+
+graphql-dynamodb-transformer@7.2.48-beta.2:
+  version "7.2.48-beta.2"
+  resolved "https://registry.yarnpkg.com/graphql-dynamodb-transformer/-/graphql-dynamodb-transformer-7.2.48-beta.2.tgz#f1708dce230953e86fa2edc96c63ccb890e78bf0"
+  integrity sha512-izWs74nlmztYhzGHp462FH5kAg9gNa0rAm3SewB0sJPvYpiXWRqdzEiY0jl7vu0N4P9HtN7s5O2hYHNsKZzOug==
+  dependencies:
+    "@types/pluralize" "^0.0.29"
+    cloudform-types "^4.2.0"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-beta.2"
+    graphql-transformer-common "4.24.5-beta.2"
+    graphql-transformer-core "8.0.0-beta.6"
+    md5 "^2.2.1"
+    pluralize "^8.0.0"
+
+graphql-elasticsearch-transformer@5.2.49-beta.2:
+  version "5.2.49-beta.2"
+  resolved "https://registry.yarnpkg.com/graphql-elasticsearch-transformer/-/graphql-elasticsearch-transformer-5.2.49-beta.2.tgz#97af79b10b0354679bef77a668b3030856cf0174"
+  integrity sha512-mbcmoM/L143wYCPCRviFAUI/CNE/PYgnKVcrnQQrTR21yQYIpN1qIdUw/U59k4FueCZe9rFj6nnRkZwSHsqm9g==
+  dependencies:
+    cloudform-types "^4.2.0"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-beta.2"
+    graphql-transformer-common "4.24.5-beta.2"
+    graphql-transformer-core "8.0.0-beta.6"
+
+graphql-function-transformer@3.3.39-beta.2:
+  version "3.3.39-beta.2"
+  resolved "https://registry.yarnpkg.com/graphql-function-transformer/-/graphql-function-transformer-3.3.39-beta.2.tgz#6adc242c1d197c191141e289e12acd3e8cff96ca"
+  integrity sha512-iaoHEwWS4OS/vXnLUg8j4nzqQh+WhXSelSEXXjBrf1aOF9i13hI+wIp5xRMtMovergoFgkzpQ5CShSr/u5KXDg==
+  dependencies:
+    cloudform-types "^4.2.0"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-beta.2"
+    graphql-transformer-common "4.24.5-beta.2"
+    graphql-transformer-core "8.0.0-beta.6"
+
+graphql-http-transformer@5.2.48-beta.2:
+  version "5.2.48-beta.2"
+  resolved "https://registry.yarnpkg.com/graphql-http-transformer/-/graphql-http-transformer-5.2.48-beta.2.tgz#aac1d264fb93d6e0d7f993d3ac2246c631b3b84f"
+  integrity sha512-O6W8p3QVmZJzp+rfj/SgxsaCjEV8UCbU6zu7mKt67TVJT5UdBf93em0BVJOuGkWzexATGHJyv3QtWSj1tF+flA==
+  dependencies:
+    cloudform-types "^4.2.0"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-beta.2"
+    graphql-transformer-common "4.24.5-beta.2"
+    graphql-transformer-core "8.0.0-beta.6"
 
 graphql-import@^0.7.1:
   version "0.7.1"
@@ -12001,10 +12856,46 @@ graphql-iso-date@^3.6.1:
   resolved "https://registry.npmjs.org/graphql-iso-date/-/graphql-iso-date-3.6.1.tgz#bd2d0dc886e0f954cbbbc496bbf1d480b57ffa96"
   integrity sha512-AwFGIuYMJQXOEAgRlJlFL4H1ncFM8n8XmoVDTNypNOZyQ8LFDG2ppMFlsS862BSTCDcSUfHp8PD3/uJhv7t59Q==
 
+graphql-key-transformer@3.2.48-beta.2:
+  version "3.2.48-beta.2"
+  resolved "https://registry.yarnpkg.com/graphql-key-transformer/-/graphql-key-transformer-3.2.48-beta.2.tgz#f88ac7eaf423f359aa681571e3178ba09a4dba68"
+  integrity sha512-CTIpQ2NVqhgzR+ypi7Q6epUdvqr55LmEIBHL0dJ00m1ap2IZknun88ruKeAag4KPE4EW8Hg+HB+b2VGYh/Q1JA==
+  dependencies:
+    cloudform-types "^4.2.0"
+    graphql "^15.5.0"
+    graphql-dynamodb-transformer "7.2.48-beta.2"
+    graphql-mapping-template "4.20.8-beta.2"
+    graphql-transformer-common "4.24.5-beta.2"
+    graphql-transformer-core "8.0.0-beta.6"
+    lodash "^4.17.21"
+
 graphql-mapping-template@4.20.8-beta.2:
   version "4.20.8-beta.2"
   resolved "https://registry.yarnpkg.com/graphql-mapping-template/-/graphql-mapping-template-4.20.8-beta.2.tgz#1cb03e05178438cb724fa5084c02c0c58af2fd2b"
   integrity sha512-9Lje+k2JihzKkvH9pF4K5bOXYNA04H8Zo0v8kGcBM1V0sMfvR1dIR2XynaVSvzJKEEHrRYlhRNFzEiLfVCrfWQ==
+
+graphql-predictions-transformer@3.2.48-beta.2:
+  version "3.2.48-beta.2"
+  resolved "https://registry.yarnpkg.com/graphql-predictions-transformer/-/graphql-predictions-transformer-3.2.48-beta.2.tgz#b91844109788e57c3773bcb569909a03a5bed6e8"
+  integrity sha512-OeAvtFBwdwSmGi55UKb/WLdSHw77qfnsWWVrK32wCZCN2bjgeM+2in2AOZ9cNL58DQ1sPi4ePnfNAGVpbiKbfg==
+  dependencies:
+    cloudform-types "^4.2.0"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-beta.2"
+    graphql-transformer-common "4.24.5-beta.2"
+    graphql-transformer-core "8.0.0-beta.6"
+
+graphql-relational-schema-transformer@2.21.16-beta.1:
+  version "2.21.16-beta.1"
+  resolved "https://registry.yarnpkg.com/graphql-relational-schema-transformer/-/graphql-relational-schema-transformer-2.21.16-beta.1.tgz#7bb1f952b9c8a09a8bb163c65bbb48da23f19a4b"
+  integrity sha512-DXEKNAM0k6xdaigNqSswX4jM3ci/HALRtuauhwg1x53tMViqy2tFUwe/6l5do2Ana9H2cahiM5427Cv1Tx6fuw==
+  dependencies:
+    cloudform "^4.2.0"
+    cloudform-types "^4.2.0"
+    fs-extra "^8.1.0"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-beta.2"
+    graphql-transformer-common "4.24.5-beta.2"
 
 graphql-request@^1.5.0:
   version "1.8.2"
@@ -12050,6 +12941,16 @@ graphql-transformer-core@8.0.0-beta.6:
     graphql "^15.5.0"
     graphql-transformer-common "4.24.5-beta.2"
     lodash "^4.17.21"
+
+graphql-versioned-transformer@5.2.48-beta.2:
+  version "5.2.48-beta.2"
+  resolved "https://registry.yarnpkg.com/graphql-versioned-transformer/-/graphql-versioned-transformer-5.2.48-beta.2.tgz#153a573db0dc6d660e0147e428a13d6723013f80"
+  integrity sha512-buuh7ApdTmugWdDhM4rdddYwMmYsP36ZlM7QNIFSTl9bhdsQd2vM1artfxil45QL1esWAmWcm/ah/62d2R2TVQ==
+  dependencies:
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-beta.2"
+    graphql-transformer-common "4.24.5-beta.2"
+    graphql-transformer-core "8.0.0-beta.6"
 
 graphql@15.8.0, graphql@^15.5.0:
   version "15.8.0"
@@ -12185,6 +13086,11 @@ has-values@^1.0.0:
     is-number "^3.0.0"
     kind-of "^4.0.0"
 
+has-yarn@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/has-yarn/-/has-yarn-2.1.0.tgz#137e11354a7b5bf11aa5cb649cf0c6f3ff2b2e77"
+  integrity sha512-UqBRqi4ju7T+TqGNdqAO0PaSVGsDGJUBQvk9eUWNGRY1CFGDzYhLWoM7JQEemnlvVcv/YEmc2wNW8BC24EnUsw==
+
 has-yarn@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/has-yarn/-/has-yarn-3.0.0.tgz#c3c21e559730d1d3b57e28af1f30d06fac38147d"
@@ -12226,6 +13132,13 @@ hex-color-regex@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/hex-color-regex/-/hex-color-regex-1.1.0.tgz#4c06fccb4602fe2602b3c93df82d7e7dbf1a8a8e"
   integrity sha512-l9sfDFsuqtOqKDsQdqrMRk0U85RZc0RtOR9yPI7mRVOa4FsR/BVnZ0shmQRM96Ji99kYZP/7hn1cedc1+ApsTQ==
+
+hidefile@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/hidefile/-/hidefile-3.0.0.tgz#5d2fb892a00a9285385ca8cc4aefc6952084ac2c"
+  integrity sha512-AvJ9joE59PQPGOB78smS63K60KKpTK5GBIagupfK9Hw6zpA0JKba2D9uAnDycaI8/bN30ltHWGZVXIkQ4BU6oA==
+  dependencies:
+    winattr "^3.0.0"
 
 hjson@^3.2.1:
   version "3.2.2"
@@ -12300,6 +13213,11 @@ html-escaper@^2.0.0:
   version "2.0.2"
   resolved "https://registry.npmjs.org/html-escaper/-/html-escaper-2.0.2.tgz#dfd60027da36a36dfcbe236262c00a5822681453"
   integrity sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==
+
+http-cache-semantics@^4.0.0:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/http-cache-semantics/-/http-cache-semantics-4.1.1.tgz#abe02fcb2985460bf0323be664436ec3476a6d5a"
+  integrity sha512-er295DKPVsV82j5kw1Gjt+ADA/XYHsajl82cGNQG2eyoPkvgUhX+nDIyelzhIWbbsXP39EHcI6l5tYs2FYqYXQ==
 
 http-cache-semantics@^4.1.0:
   version "4.1.0"
@@ -12526,6 +13444,11 @@ import-global@^0.1.0:
   integrity sha512-8+hPJLML+m1ym9NSeZXTXFkY5+ml0fYFAzO5yhZiaFQvk9kO0NkE7vd7e7kCVjkTmAxsDPbrWwLQACMwGTDgIg==
   dependencies:
     global-dirs "^0.1.0"
+
+import-lazy@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/import-lazy/-/import-lazy-2.1.0.tgz#05698e3d45c88e8d7e9d92cb0584e77f096f3e43"
+  integrity sha512-m7ZEHgtw69qOGw+jwxXkHlrlIPdTGkyh66zXZ1ajZbxkDBNjSY/LGbmjc7h0s2ELsUDTAhFr55TrPSSqJGPG0A==
 
 import-lazy@^4.0.0, import-lazy@~4.0.0:
   version "4.0.0"
@@ -13019,6 +13942,11 @@ is-negative-zero@^2.0.2:
   resolved "https://registry.npmjs.org/is-negative-zero/-/is-negative-zero-2.0.2.tgz#7bf6f03a28003b8b3965de3ac26f664d765f3150"
   integrity sha512-dqJvarLawXsFbNDeJW7zAz8ItJ9cd28YufuuFzh0G8pNHjJMnY08Dv7sYX2uF5UpQOwieAeOExEYAWWfu7ZZUA==
 
+is-npm@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/is-npm/-/is-npm-5.0.0.tgz#43e8d65cc56e1b67f8d47262cf667099193f45a8"
+  integrity sha512-WW/rQLOazUq+ST/bCAVBp/2oMERWLsR7OrKyt052dNDk4DHcDE0/7QSXITlmi+VBcV13DfIbysG3tZJm5RfdBA==
+
 is-npm@^6.0.0:
   version "6.0.0"
   resolved "https://registry.npmjs.org/is-npm/-/is-npm-6.0.0.tgz#b59e75e8915543ca5d881ecff864077cba095261"
@@ -13230,6 +14158,11 @@ is-wsl@^2.2.0:
   integrity sha512-fKzAra0rGJUUBwGBgNkHZuToZcn+TtXHpeCgmkMJMMYx1sQDYaCSyjJBSCa2nH1DGm7s3n1oBnohoVTBaN7Lww==
   dependencies:
     is-docker "^2.0.0"
+
+is-yarn-global@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/is-yarn-global/-/is-yarn-global-0.3.0.tgz#d502d3382590ea3004893746754c89139973e232"
+  integrity sha512-VjSeb/lHmkoyd8ryPVIKvOCn4D1koMqY+vqyjjUfc3xyKtP4dYOxM44sZrnqQSzSds3xyOrUTLTC9LVCVgLngw==
 
 is-yarn-global@^0.4.0:
   version "0.4.0"
@@ -14267,6 +15200,11 @@ jsesc@^2.5.1:
   resolved "https://registry.npmjs.org/jsesc/-/jsesc-2.5.2.tgz#80564d2e483dacf6e8ef209650a67df3f0c283a4"
   integrity sha512-OYu7XEzjkCQ3C5Ps3QIZsQfNpqoJyZZA99wd9aWd05NCtC5pWOkShK2mkL6HXQR6/Cy2lbNdPlZBpuQHXE63gA==
 
+json-buffer@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/json-buffer/-/json-buffer-3.0.0.tgz#5b1f397afc75d677bde8bcfc0e47e1f9a3d9a898"
+  integrity sha512-CuUqjv0FUZIdXkHPI8MezCnFCdaTAacej1TZYulLoAg1h/PhwkdXFN4V/gzY4g+fMBCOV2xF+rp7t2XD2ns/NQ==
+
 json-buffer@3.0.1:
   version "3.0.1"
   resolved "https://registry.npmjs.org/json-buffer/-/json-buffer-3.0.1.tgz#9338802a30d3b6605fbe0613e094008ca8c05a13"
@@ -14437,6 +15375,13 @@ jwt-decode@^2.2.0:
   resolved "https://registry.npmjs.org/jwt-decode/-/jwt-decode-2.2.0.tgz#7d86bd56679f58ce6a84704a657dd392bba81a79"
   integrity sha512-86GgN2vzfUu7m9Wcj63iUkuDzFNYFVmjeDm2GzWpUk+opB0pEpMsw6ePCMrhYkumz2C1ihqtZzOMAg7FiXcNoQ==
 
+keyv@^3.0.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/keyv/-/keyv-3.1.0.tgz#ecc228486f69991e49e9476485a5be1e8fc5c4d9"
+  integrity sha512-9ykJ/46SN/9KPM/sichzQ7OvXyGDYKGTaDlKMGCAlg2UK8KRy4jb0d8sFc+0Tt0YYnThq8X2RZgCg74RPxgcVA==
+  dependencies:
+    json-buffer "3.0.0"
+
 keyv@^4.5.0:
   version "4.5.2"
   resolved "https://registry.npmjs.org/keyv/-/keyv-4.5.2.tgz#0e310ce73bf7851ec702f2eaf46ec4e3805cce56"
@@ -14502,6 +15447,13 @@ last-call-webpack-plugin@^3.0.0:
   dependencies:
     lodash "^4.17.5"
     webpack-sources "^1.1.0"
+
+latest-version@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/latest-version/-/latest-version-5.1.0.tgz#119dfe908fe38d15dfa43ecd13fa12ec8832face"
+  integrity sha512-weT+r0kTkRQdCdYCNtkMwWXQTMEswKrFBkm4ckQOMVhhqhIMI1UT2hMj+1iigIhgSZm5gTmrRXBNoGUgaTY1xA==
+  dependencies:
+    package-json "^6.3.0"
 
 latest-version@^7.0.0:
   version "7.0.0"
@@ -14745,7 +15697,7 @@ locate-path@^6.0.0:
   dependencies:
     p-locate "^5.0.0"
 
-lodash-es@^4.17.4, lodash-es@^4.2.1:
+lodash-es@^4.17.21, lodash-es@^4.17.4, lodash-es@^4.2.1:
   version "4.17.21"
   resolved "https://registry.npmjs.org/lodash-es/-/lodash-es-4.17.21.tgz#43e626c46e6591b7750beb2b50117390c609e3ee"
   integrity sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==
@@ -14889,6 +15841,16 @@ lower-case@^2.0.2:
   integrity sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==
   dependencies:
     tslib "^2.0.3"
+
+lowercase-keys@^1.0.0, lowercase-keys@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/lowercase-keys/-/lowercase-keys-1.0.1.tgz#6f9e30b47084d971a7c820ff15a6c5167b74c26f"
+  integrity sha512-G2Lj61tXDnVFFOi8VZds+SoQjtQC3dgokKdDG2mTm1tx4m50NUHBOZSBwQQHyy0V12A0JTG4icfZQH+xPyh8VA==
+
+lowercase-keys@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/lowercase-keys/-/lowercase-keys-2.0.0.tgz#2603e78b7b4b0006cbca2fbcc8a3202558ac9479"
+  integrity sha512-tqNXrS78oMOE73NMxK4EMLQsQowWf8jKooH9g7xPavRT706R6bkQJ6DY2Te7QukaZsulxa30wQ7bk0pm4XiHmA==
 
 lowercase-keys@^3.0.0:
   version "3.0.0"
@@ -15111,7 +16073,7 @@ mime-db@1.52.0:
   resolved "https://registry.npmjs.org/mime-db/-/mime-db-1.52.0.tgz#bbabcdc02859f4987301c856e3387ce5ec43bf70"
   integrity sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==
 
-mime-types@^2.1.12, mime-types@~2.1.24, mime-types@~2.1.34:
+mime-types@^2.1.12, mime-types@^2.1.26, mime-types@~2.1.24, mime-types@~2.1.34:
   version "2.1.35"
   resolved "https://registry.npmjs.org/mime-types/-/mime-types-2.1.35.tgz#381a871b62a734450660ae3deee44813f70d959a"
   integrity sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==
@@ -15132,6 +16094,11 @@ mimic-fn@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/mimic-fn/-/mimic-fn-2.1.0.tgz#7ed2c2ccccaf84d3ffcb7a69b57711fc2083401b"
   integrity sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg==
+
+mimic-response@^1.0.0, mimic-response@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/mimic-response/-/mimic-response-1.0.1.tgz#4923538878eef42063cb8a3e3b0798781487ab1b"
+  integrity sha512-j5EctnkH7amfV/q5Hgmoal1g2QHFJRraOtmx0JpIqkxhBhI/lJSl1nMpQ45hVarwNETOoWEimndZ4QK0RHxuxQ==
 
 mimic-response@^2.0.0:
   version "2.1.0"
@@ -15400,6 +16367,11 @@ nan@^2.12.1, nan@^2.14.0:
   resolved "https://registry.npmjs.org/nan/-/nan-2.17.0.tgz#c0150a2368a182f033e9aa5195ec76ea41a199cb"
   integrity sha512-2ZTgtl0nJsO0KQCjEpxcIr5D+Yv90plTitZt9JBfQvVJDS5seMl3FOvsh3+9CoYWXf/1l5OaZzzF6nDm4cagaQ==
 
+nanoclone@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/nanoclone/-/nanoclone-0.2.1.tgz#dd4090f8f1a110d26bb32c49ed2f5b9235209ed4"
+  integrity sha512-wynEP02LmIbLpcYw8uBKpcfF6dmg2vcpKqxeH5UcoKEYdExslsdUA4ugFauuaeYdTB76ez6gJW8XAZ6CgkXYxA==
+
 nanoid@^2.1.8:
   version "2.1.11"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-2.1.11.tgz#ec24b8a758d591561531b4176a01e3ab4f0f0280"
@@ -15490,7 +16462,7 @@ node-emoji@^1.10.0:
   dependencies:
     lodash "^4.17.21"
 
-node-fetch@^2.6.1, node-fetch@^2.6.6, node-fetch@^2.6.7:
+node-fetch@^2.1.2, node-fetch@^2.6.1, node-fetch@^2.6.6, node-fetch@^2.6.7:
   version "2.6.7"
   resolved "https://registry.npmjs.org/node-fetch/-/node-fetch-2.6.7.tgz#24de9fba827e3b4ae44dc8b20256a379160052ad"
   integrity sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==
@@ -15551,6 +16523,13 @@ node-libs-browser@^2.2.1:
     url "^0.11.0"
     util "^0.11.0"
     vm-browserify "^1.0.1"
+
+node-localstorage@~1.3.0:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/node-localstorage/-/node-localstorage-1.3.1.tgz#3177ef42837f398aee5dd75e319b281e40704243"
+  integrity sha512-NMWCSWWc6JbHT5PyWlNT2i8r7PgGYXVntmKawY83k/M0UJScZ5jirb61TLnqKwd815DfBQu+lR3sRw08SPzIaQ==
+  dependencies:
+    write-file-atomic "^1.1.4"
 
 node-notifier@^8.0.0:
   version "8.0.2"
@@ -15649,6 +16628,11 @@ normalize-url@^3.0.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-3.3.0.tgz#b2e1c4dc4f7c6d57743df733a4f5978d18650559"
   integrity sha512-U+JJi7duF1o+u2pynbp2zXDW2/PADgC30f0GsHZtRh+HOcXHnw137TrNlyxxRvWW5fjKd3bcLHPxofWuCjaeZg==
+
+normalize-url@^4.1.0:
+  version "4.5.1"
+  resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-4.5.1.tgz#0dd90cf1288ee1d1313b87081c9a5932ee48518a"
+  integrity sha512-9UZCFRHQdNrfTpGg8+1INIg93B6zE0aXMVFkw1WFwvO4SlZywU6aLg5Of0Ap/PgcbSw4LNxvMWXMeugwMCX0AA==
 
 normalize-url@^7.2.0:
   version "7.2.0"
@@ -16055,6 +17039,15 @@ opener@^1.5.1:
   resolved "https://registry.yarnpkg.com/opener/-/opener-1.5.2.tgz#5d37e1f35077b9dcac4301372271afdeb2a13598"
   integrity sha512-ur5UIdyw5Y7yEj9wLzhqXiy6GZ3Mwx0yGI+5sMn2r0N0v3cKJvUmFH5yPP+WXh9e0xfyzyJX95D8l088DNFj7A==
 
+openpgp@^4.10.10:
+  version "4.10.10"
+  resolved "https://registry.yarnpkg.com/openpgp/-/openpgp-4.10.10.tgz#65b58d24466c278120c7f2d1ebc88ef9b15d6361"
+  integrity sha512-Ub48OogGPjNsr0G/wnJ/SyAQzt/tfcXZTWVZdjKFpXCQV1Ca+upFdSPPkBlGG3lb9EQGOKZJ2tzYNH6ZyKMkDQ==
+  dependencies:
+    asn1.js "^5.0.0"
+    node-fetch "^2.1.2"
+    node-localstorage "~1.3.0"
+
 optimism@^0.6.8:
   version "0.6.9"
   resolved "https://registry.npmjs.org/optimism/-/optimism-0.6.9.tgz#19258ff8b3be0cea29ac35f06bff818e026e30bb"
@@ -16132,6 +17125,11 @@ os-tmpdir@~1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/os-tmpdir/-/os-tmpdir-1.0.2.tgz#bbe67406c79aa85c5cfec766fe5734555dfa1274"
   integrity sha512-D2FR03Vir7FIu45XBY20mTb+/ZSWB00sjU9jdQXt83gDrI4Ztz5Fs7/yy74g2N5SVQY4xY1qDr4rNddwYRVX0g==
+
+p-cancelable@^1.0.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/p-cancelable/-/p-cancelable-1.1.0.tgz#d078d15a3af409220c886f1d9a0ca2e441ab26cc"
+  integrity sha512-s73XxOZ4zpt1edZYZzvhqFa6uvQc1vwUa0K0BdtIZgQMAJj9IbebH+JkgKZc9h+B05PKHLOTl4ajG1BmNrVZlw==
 
 p-cancelable@^3.0.0:
   version "3.0.0"
@@ -16296,6 +17294,16 @@ pac-resolver@^5.0.0:
     degenerator "^3.0.2"
     ip "^1.1.5"
     netmask "^2.0.2"
+
+package-json@^6.3.0:
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/package-json/-/package-json-6.5.0.tgz#6feedaca35e75725876d0b0e64974697fed145b0"
+  integrity sha512-k3bdm2n25tkyxcjSKzB5x8kfVxlMdgsbPr0GkZcwHsLpba6cBjqCt1KlcChKEvxHIcTB1FVMuwoijZ26xex5MQ==
+  dependencies:
+    got "^9.6.0"
+    registry-auth-token "^4.0.0"
+    registry-url "^5.0.0"
+    semver "^6.2.0"
 
 package-json@^8.1.0:
   version "8.1.0"
@@ -17057,6 +18065,16 @@ prelude-ls@~1.1.2:
   resolved "https://registry.npmjs.org/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"
   integrity sha512-ESF23V4SKG6lVSGZgYNpbsiaAkdab6ZgOxe52p7+Kid3W3u3bxR4Vfd/o21dmN7jSt0IwgZ4v5MUd26FEtXE9w==
 
+prepend-http@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/prepend-http/-/prepend-http-2.0.0.tgz#e92434bfa5ea8c19f41cdfd401d741a3c819d897"
+  integrity sha512-ravE6m9Atw9Z/jjttRUZ+clIXogdghyZAuWJ3qEzjT+jI/dL1ifAqhZeC5VHzQp1MSt1+jxKkFNemj/iO7tVUA==
+
+prettier@2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.3.2.tgz#ef280a05ec253712e486233db5c6f23441e7342d"
+  integrity sha512-lnJzDfJ66zkMy58OL5/NY5zp70S7Nz6KqcKkXYzn2tMVrNxvbqaBpg7H3qHaLxCJ5lNMsGuM8+ohS7cZrthdLQ==
+
 prettier@^1.19.1:
   version "1.19.1"
   resolved "https://registry.npmjs.org/prettier/-/prettier-1.19.1.tgz#f7d7f5ff8a9cd872a7be4ca142095956a60797cb"
@@ -17185,6 +18203,11 @@ prop-types@^15.8.1:
     object-assign "^4.1.1"
     react-is "^16.13.1"
 
+property-expr@^2.0.4:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/property-expr/-/property-expr-2.0.5.tgz#278bdb15308ae16af3e3b9640024524f4dc02cb4"
+  integrity sha512-IJUkICM5dP5znhCckHSv30Q4b5/JA5enCtkRHYaOVOAocnH/1BQEYTC5NMfT3AVl/iXKdr3aqQbQn9DxyWknwA==
+
 proto-list@~1.2.1:
   version "1.2.4"
   resolved "https://registry.npmjs.org/proto-list/-/proto-list-1.2.4.tgz#212d5bfe1318306a420f6402b8e26ff39647a849"
@@ -17284,6 +18307,13 @@ punycode@^2.1.0, punycode@^2.1.1:
   resolved "https://registry.npmjs.org/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
   integrity sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==
 
+pupa@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/pupa/-/pupa-2.1.1.tgz#f5e8fd4afc2c5d97828faa523549ed8744a20d62"
+  integrity sha512-l1jNAspIBSFqbT+y+5FosojNpVpF94nlI+wDUpqP9enwOTfHx9f0gh5nB96vl+6yTpsJsypeNrwfzPrKuHB41A==
+  dependencies:
+    escape-goat "^2.0.0"
+
 pupa@^3.1.0:
   version "3.1.0"
   resolved "https://registry.npmjs.org/pupa/-/pupa-3.1.0.tgz#f15610274376bbcc70c9a3aa8b505ea23f41c579"
@@ -17373,7 +18403,7 @@ rc-config-loader@^4.1.1:
     json5 "^2.2.1"
     require-from-string "^2.0.2"
 
-rc@1.2.8, rc@^1.2.7:
+rc@1.2.8, rc@^1.2.7, rc@^1.2.8:
   version "1.2.8"
   resolved "https://registry.npmjs.org/rc/-/rc-1.2.8.tgz#cd924bf5200a075b83c188cd6b9e211b7fc0d3ed"
   integrity sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==
@@ -17596,6 +18626,11 @@ regenerator-runtime@^0.13.10:
   resolved "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.13.10.tgz#ed07b19616bcbec5da6274ebc75ae95634bfc2ee"
   integrity sha512-KepLsg4dU12hryUO7bp/axHAKvwGOCV0sGloQtpagJ12ai+ojVDqkeGSiRX1zlq+kjIMZ1t7gpze+26QqtdGqw==
 
+regenerator-runtime@^0.13.11:
+  version "0.13.11"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz#f6dca3e7ceec20590d07ada785636a90cdca17f9"
+  integrity sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==
+
 regex-not@^1.0.0, regex-not@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/regex-not/-/regex-not-1.0.2.tgz#1f4ece27e00b0b65e0247a6810e6a85d83a5752c"
@@ -17623,12 +18658,26 @@ regextras@^0.8.0:
   resolved "https://registry.npmjs.org/regextras/-/regextras-0.8.0.tgz#ec0f99853d4912839321172f608b544814b02217"
   integrity sha512-k519uI04Z3SaY0fLX843MRXnDeG2+vHOFsyhiPZvNLe7r8rD2YNRjq4BQLZZ0oAr2NrtvZlICsXysGNFPGa3CQ==
 
+registry-auth-token@^4.0.0:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/registry-auth-token/-/registry-auth-token-4.2.2.tgz#f02d49c3668884612ca031419491a13539e21fac"
+  integrity sha512-PC5ZysNb42zpFME6D/XlIgtNGdTl8bBOCw90xQLVMpzuuubJKYDWFAEuUNc+Cn8Z8724tg2SDhDRrkVEsqfDMg==
+  dependencies:
+    rc "1.2.8"
+
 registry-auth-token@^5.0.1:
   version "5.0.1"
   resolved "https://registry.npmjs.org/registry-auth-token/-/registry-auth-token-5.0.1.tgz#5e6cd106e6c251135a046650c58476fc03e92833"
   integrity sha512-UfxVOj8seK1yaIOiieV4FIP01vfBDLsY0H9sQzi9EbbUdJiuuBjJgLa1DpImXMNPnVkBD4eVxTEXcrZA6kfpJA==
   dependencies:
     "@pnpm/npm-conf" "^1.0.4"
+
+registry-url@^5.0.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/registry-url/-/registry-url-5.1.0.tgz#e98334b50d5434b81136b44ec638d9c2009c5009"
+  integrity sha512-8acYXXTI0AkQv6RAOjE3vOaIXZkT9wo4LOFbBKYQEEnnMNBpKqdUrI6S4NT0KPIo/WVvJ5tE/X5LF/TQUf0ekw==
+  dependencies:
+    rc "^1.2.8"
 
 registry-url@^6.0.0:
   version "6.0.1"
@@ -17776,6 +18825,13 @@ resolve@~1.19.0:
   dependencies:
     is-core-module "^2.1.0"
     path-parse "^1.0.6"
+
+responselike@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/responselike/-/responselike-1.0.2.tgz#918720ef3b631c5642be068f15ade5a46f4ba1e7"
+  integrity sha512-/Fpe5guzJk1gPqdJLJR5u7eG/gNY4nImjbRDaVWVMRhne55TCmj2i9Q+54PBRfatRC8v/rIiv9BN0pMd9OV5EQ==
+  dependencies:
+    lowercase-keys "^1.0.0"
 
 responselike@^3.0.0:
   version "3.0.0"
@@ -17998,6 +19054,13 @@ semver-compare@^1.0.0:
   resolved "https://registry.npmjs.org/semver-compare/-/semver-compare-1.0.0.tgz#0dee216a1c941ab37e9efb1788f6afc5ff5537fc"
   integrity sha512-YM3/ITh2MJ5MtzaM429anh+x2jiLVjqILF4m4oyQB18W7Ggea7BfqdH/wGMK7dDiMghv/6WG7znWMwUDzJiXow==
 
+semver-diff@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/semver-diff/-/semver-diff-3.1.1.tgz#05f77ce59f325e00e2706afd67bb506ddb1ca32b"
+  integrity sha512-GX0Ix/CJcHyB8c4ykpHGIAvLyOwOobtM/8d+TQkAd81/bEjgPHrfba41Vpesr7jX/t8Uh+R3EX9eAS5be+jQYg==
+  dependencies:
+    semver "^6.3.0"
+
 semver-diff@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npmjs.org/semver-diff/-/semver-diff-4.0.0.tgz#3afcf5ed6d62259f5c72d0d5d50dffbdc9680df5"
@@ -18036,7 +19099,7 @@ semver@7.x, semver@^7.0.0, semver@^7.1.1, semver@^7.2.1, semver@^7.3.2, semver@^
   dependencies:
     lru-cache "^6.0.0"
 
-semver@^6.0.0, semver@^6.3.0:
+semver@^6.0.0, semver@^6.2.0, semver@^6.3.0:
   version "6.3.0"
   resolved "https://registry.npmjs.org/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
@@ -18256,6 +19319,11 @@ slice-ansi@^4.0.0:
     ansi-styles "^4.0.0"
     astral-regex "^2.0.0"
     is-fullwidth-code-point "^3.0.0"
+
+slide@^1.1.5:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/slide/-/slide-1.1.6.tgz#56eb027d65b4d2dce6cb2e2d32c4d4afc9e1d707"
+  integrity sha512-NwrtjCg+lZoqhFU8fOwl4ay2ei8PaqCBOUV3/ektPY9trO1yQ1oXEfmHAhKArUVUr/hOHvy5f6AdP17dCM0zMw==
 
 smart-buffer@^4.2.0:
   version "4.2.0"
@@ -18597,7 +19665,7 @@ string-width@^1.0.1:
     is-fullwidth-code-point "^1.0.0"
     strip-ansi "^3.0.0"
 
-"string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+"string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.2, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://registry.npmjs.org/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -19035,6 +20103,11 @@ timsort@^0.3.0:
   resolved "https://registry.yarnpkg.com/timsort/-/timsort-0.3.0.tgz#405411a8e7e6339fe64db9a234de11dc31e02bd4"
   integrity sha512-qsdtZH+vMoCARQtyod4imc2nIJwg9Cc7lPRrw9CzF8ZKR0khdr8+2nX80PBhET3tcyTtJDxAffGh2rXH4tyU8A==
 
+tiny-async-pool@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/tiny-async-pool/-/tiny-async-pool-2.1.0.tgz#3ec126568c18a7916912fb9fbecf812337ec6b84"
+  integrity sha512-ltAHPh/9k0STRQqaoUX52NH4ZQYAJz24ZAEwf1Zm+HYg3l9OXTWeqWKyYsHu40wF/F0rxd2N2bk5sLvX2qlSvg==
+
 title-case@^3.0.3:
   version "3.0.3"
   resolved "https://registry.npmjs.org/title-case/-/title-case-3.0.3.tgz#bc689b46f02e411f1d1e1d081f7c3deca0489982"
@@ -19083,6 +20156,11 @@ to-object-path@^0.3.0:
   dependencies:
     kind-of "^3.0.2"
 
+to-readable-stream@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/to-readable-stream/-/to-readable-stream-1.0.0.tgz#ce0aa0c2f3df6adf852efb404a783e77c0475771"
+  integrity sha512-Iq25XBt6zD5npPhlLVXGFN3/gyR2/qODcKNNyTMd4vbm39HUaOiAM4PMq0eMVC/Tkxz+Zjdsc55g9yyz+Yq00Q==
+
 to-regex-range@^2.1.0:
   version "2.1.1"
   resolved "https://registry.npmjs.org/to-regex-range/-/to-regex-range-2.1.1.tgz#7c80c17b9dfebe599e27367e0d4dd5590141db38"
@@ -19112,6 +20190,11 @@ toidentifier@1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/toidentifier/-/toidentifier-1.0.1.tgz#3be34321a88a820ed1bd80dfaa33e479fbb8dd35"
   integrity sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==
+
+toposort@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/toposort/-/toposort-2.0.2.tgz#ae21768175d1559d48bef35420b2f4962f09c330"
+  integrity sha512-0a5EOkAUp8D4moMi2W8ZF8jcga7BgZd91O/yabJCFY8az+XSzeGyTKs0Aoo897iV1Nj6guFq8orWDS96z91oGg==
 
 tough-cookie@^4.0.0, tough-cookie@^4.1.2:
   version "4.1.2"
@@ -19146,6 +20229,11 @@ traverse@^0.6.6:
   version "0.6.7"
   resolved "https://registry.npmjs.org/traverse/-/traverse-0.6.7.tgz#46961cd2d57dd8706c36664acde06a248f1173fe"
   integrity sha512-/y956gpUo9ZNCb99YjxG7OaslxZWHfCHAUUfshwqOXmxUIvqLjVO581BT+gM59+QV9tFe6/CGG53tsA1Y7RSdg==
+
+treeify@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/treeify/-/treeify-1.1.0.tgz#4e31c6a463accd0943879f30667c4fdaff411bb8"
+  integrity sha512-1m4RA7xVAJrSGrrXGs0L3YTwyvBs2S8PbRHaLZAkFw7JR8oIFwYtysxlBZhYIa7xSyiYJKZ3iGrrk55cGA3i9A==
 
 treeverse@^2.0.0:
   version "2.0.0"
@@ -19404,6 +20492,11 @@ typescript-json-schema@~0.52.0:
     typescript "~4.4.4"
     yargs "^17.1.1"
 
+typescript@<=4.5.0, typescript@~4.4.4:
+  version "4.4.4"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-4.4.4.tgz#2cd01a1a1f160704d3101fd5a58ff0f9fcb8030c"
+  integrity sha512-DqGhF5IKoBl8WNf8C1gu8q0xZSInh9j1kJJMqT3a94w1JzVaBU4EXOSMrz9yDqMT0xt3selp83fuFMQ0uzv6qA==
+
 "typescript@^3 || ^4", typescript@^4.4.3, typescript@^4.5.5, typescript@~4.8.4:
   version "4.8.4"
   resolved "https://registry.npmjs.org/typescript/-/typescript-4.8.4.tgz#c464abca159669597be5f96b8943500b238e60e6"
@@ -19413,11 +20506,6 @@ typescript@^3.8.3:
   version "3.9.10"
   resolved "https://registry.npmjs.org/typescript/-/typescript-3.9.10.tgz#70f3910ac7a51ed6bef79da7800690b19bf778b8"
   integrity sha512-w6fIxVE/H1PkLKcCPsFqKE7Kv7QUwhU8qQY2MueZXWx5cPZdwFupLgKK3vntcK98BtNHZtAF4LA/yl2a7k8R6Q==
-
-typescript@~4.4.4:
-  version "4.4.4"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-4.4.4.tgz#2cd01a1a1f160704d3101fd5a58ff0f9fcb8030c"
-  integrity sha512-DqGhF5IKoBl8WNf8C1gu8q0xZSInh9j1kJJMqT3a94w1JzVaBU4EXOSMrz9yDqMT0xt3selp83fuFMQ0uzv6qA==
 
 ua-parser-js@^0.7.30:
   version "0.7.32"
@@ -19516,6 +20604,13 @@ unique-slug@^4.0.0:
   dependencies:
     imurmurhash "^0.1.4"
 
+unique-string@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/unique-string/-/unique-string-2.0.0.tgz#39c6451f81afb2749de2b233e3f7c5e8843bd89d"
+  integrity sha512-uNaeirEPvpZWSgzwsPGtU2zVSTrn/8L5q/IexZmH0eH6SA73CmAA5U4GwORTxQAZs95TAXLNqeLoPPNO5gZfWg==
+  dependencies:
+    crypto-random-string "^2.0.0"
+
 unique-string@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/unique-string/-/unique-string-3.0.0.tgz#84a1c377aff5fd7a8bc6b55d8244b2bd90d75b9a"
@@ -19592,6 +20687,26 @@ update-browserslist-db@^1.0.10, update-browserslist-db@^1.0.9:
     escalade "^3.1.1"
     picocolors "^1.0.0"
 
+update-notifier@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/update-notifier/-/update-notifier-5.1.0.tgz#4ab0d7c7f36a231dd7316cf7729313f0214d9ad9"
+  integrity sha512-ItnICHbeMh9GqUy31hFPrD1kcuZ3rpxDZbf4KUDavXwS0bW5m7SLbDQpGX3UYr072cbrF5hFUs3r5tUsPwjfHw==
+  dependencies:
+    boxen "^5.0.0"
+    chalk "^4.1.0"
+    configstore "^5.0.1"
+    has-yarn "^2.1.0"
+    import-lazy "^2.1.0"
+    is-ci "^2.0.0"
+    is-installed-globally "^0.4.0"
+    is-npm "^5.0.0"
+    is-yarn-global "^0.3.0"
+    latest-version "^5.1.0"
+    pupa "^2.1.1"
+    semver "^7.3.4"
+    semver-diff "^3.1.1"
+    xdg-basedir "^4.0.0"
+
 update-notifier@^6.0.2:
   version "6.0.2"
   resolved "https://registry.npmjs.org/update-notifier/-/update-notifier-6.0.2.tgz#a6990253dfe6d5a02bd04fbb6a61543f55026b60"
@@ -19637,6 +20752,13 @@ urix@^0.1.0:
   version "0.1.0"
   resolved "https://registry.npmjs.org/urix/-/urix-0.1.0.tgz#da937f7a62e21fec1fd18d49b35c2935067a6c72"
   integrity sha512-Am1ousAhSLBeB9cG/7k7r2R0zj50uDRlZHPGbazid5s9rlF1F/QKYObEKSIunSjIOkJZqwRRLpvewjEkM7pSqg==
+
+url-parse-lax@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/url-parse-lax/-/url-parse-lax-3.0.0.tgz#16b5cafc07dbe3676c1b1999177823d6503acb0c"
+  integrity sha512-NjFKA0DidqPa5ciFcSrXnAltTtzz84ogy+NebPvfEgAck0+TNg4UJ4IN+fB7zRZfbgUf0syOo9MDxFkDSMuFaQ==
+  dependencies:
+    prepend-http "^2.0.0"
 
 url-parse@^1.5.3:
   version "1.5.10"
@@ -20078,12 +21200,26 @@ wide-align@^1.1.0, wide-align@^1.1.5:
   dependencies:
     string-width "^1.0.2 || 2 || 3 || 4"
 
+widest-line@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/widest-line/-/widest-line-3.1.0.tgz#8292333bbf66cb45ff0de1603b136b7ae1496eca"
+  integrity sha512-NsmoXalsWVDMGupxZ5R08ka9flZjjiLvHVAWYOKtiKM8ujtZWr9cRffak+uSE48+Ob8ObalXpwyeUiyDD6QFgg==
+  dependencies:
+    string-width "^4.0.0"
+
 widest-line@^4.0.1:
   version "4.0.1"
   resolved "https://registry.npmjs.org/widest-line/-/widest-line-4.0.1.tgz#a0fc673aaba1ea6f0a0d35b3c2795c9a9cc2ebf2"
   integrity sha512-o0cyEG0e8GPzT4iGHphIOh0cJOV8fivsXxddQasHPHfoZf1ZexrfeA21w2NaEN1RHE+fXlfISmOE8R9N3u3Qig==
   dependencies:
     string-width "^5.0.1"
+
+winattr@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/winattr/-/winattr-3.0.0.tgz#33e430c41510ce4018a0daaabb24927c162f1b1d"
+  integrity sha512-dt33rYsTYcGbB+I1ubB6ZLODibRSCW//TgY/SuajLllR9kHnHnbUMqnXIe0osYsXUdRLGs770zb3t9z/ScGUpw==
+  dependencies:
+    fswin "^3.18.918"
 
 winston-daily-rotate-file@^4.5.0:
   version "4.7.1"
@@ -20178,6 +21314,15 @@ wrappy@1:
   resolved "https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==
 
+write-file-atomic@^1.1.4:
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/write-file-atomic/-/write-file-atomic-1.3.4.tgz#f807a4f0b1d9e913ae7a48112e6cc3af1991b45f"
+  integrity sha512-SdrHoC/yVBPpV0Xq/mUZQIpW2sWXAShb/V4pomcJXh92RuaO+f3UTWItiR3Px+pLnV2PvC2/bfn5cwr5X6Vfxw==
+  dependencies:
+    graceful-fs "^4.1.11"
+    imurmurhash "^0.1.4"
+    slide "^1.1.5"
+
 write-file-atomic@^2.4.2:
   version "2.4.3"
   resolved "https://registry.npmjs.org/write-file-atomic/-/write-file-atomic-2.4.3.tgz#1fd2e9ae1df3e75b8d8c367443c692d4ca81f481"
@@ -20270,6 +21415,11 @@ xcode@^2.1.0:
   dependencies:
     simple-plist "^1.0.0"
     uuid "^3.3.2"
+
+xdg-basedir@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/xdg-basedir/-/xdg-basedir-4.0.0.tgz#4bc8d9984403696225ef83a1573cbbcb4e79db13"
+  integrity sha512-PSNhEJDejZYV7h50BohL09Er9VaIefr2LMAf3OEmpCkjOi34eYyQYAXUTjEQtZJTKcF0E2UKTh+osDLsgNim9Q==
 
 xdg-basedir@^5.0.1, xdg-basedir@^5.1.0:
   version "5.1.0"
@@ -20454,6 +21604,19 @@ yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.npmjs.org/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+
+yup@^0.32.11:
+  version "0.32.11"
+  resolved "https://registry.yarnpkg.com/yup/-/yup-0.32.11.tgz#d67fb83eefa4698607982e63f7ca4c5ed3cf18c5"
+  integrity sha512-Z2Fe1bn+eLstG8DRR6FTavGD+MeAwyfmouhHsIUgaADz8jvFKbO/fXc2trJKZg+5EBjh4gGm3iU/t3onKlXHIg==
+  dependencies:
+    "@babel/runtime" "^7.15.4"
+    "@types/lodash" "^4.14.175"
+    lodash "^4.17.21"
+    lodash-es "^4.17.21"
+    nanoclone "^0.2.1"
+    property-expr "^2.0.4"
+    toposort "^2.0.2"
 
 z-schema@~5.0.2:
   version "5.0.5"
