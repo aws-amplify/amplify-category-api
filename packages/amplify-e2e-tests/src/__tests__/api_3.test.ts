@@ -188,5 +188,4 @@ describe('amplify add api (GraphQL)', () => {
       expect(err.message).toBe(`GraphQL API ${GraphQLAPIIdOutput} not found.`);
     }
   });
-
 });

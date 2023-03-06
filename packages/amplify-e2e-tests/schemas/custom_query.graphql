@@ -11,7 +11,7 @@ type Comment @model {
   todo: Todo @hasOne
 }
 
-type CommentConnection {
+type commentConnection {
   items: [Comment]
   nextToken: String
 }

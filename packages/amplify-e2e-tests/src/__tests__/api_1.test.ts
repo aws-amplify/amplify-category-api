@@ -68,7 +68,6 @@ describe('amplify add api (GraphQL)', () => {
     expect(error.message).toContain(`${tableName} not found`);
   });
 
-
   it('init a project then add and remove api', async () => {
     const envName = 'devtest';
     const projName = 'simplemodel';
