@@ -40,6 +40,27 @@
     signedsource "^1.0.0"
     yargs "^15.3.1"
 
+"@aws-amplify/amplify-app@5.0.0-zzz-beta.0":
+  version "5.0.0-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-app/-/amplify-app-5.0.0-zzz-beta.0.tgz#eaa9e41e8157cf8ce60479165d1e0cef4aa0de72"
+  integrity sha512-WsV4pc+OxCb7g7YR+rHz4+aGJOEpYuLaRjiHNLLuCnAUsbLU2rWHUXDmAJQ1ke33ASKpuRrtbgmMLiYLjHn5TA==
+  dependencies:
+    "@aws-amplify/amplify-frontend-android" "3.5.1-zzz-beta.0"
+    "@aws-amplify/amplify-frontend-flutter" "1.4.0"
+    "@aws-amplify/amplify-frontend-ios" "3.6.2-zzz-beta.0"
+    "@aws-amplify/amplify-frontend-javascript" "3.9.0-zzz-beta.0"
+    chalk "^4.1.1"
+    execa "^5.1.1"
+    fs-extra "^8.1.0"
+    ini "^1.3.5"
+    inquirer "^7.3.3"
+    node-emoji "^1.10.0"
+    ora "^4.0.3"
+    rimraf "^3.0.0"
+    semver "^7.3.5"
+    xcode "^2.1.0"
+    yargs "^15.1.0"
+
 "@aws-amplify/amplify-appsync-simulator@2.10.0-beta.3":
   version "2.10.0-beta.3"
   resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-appsync-simulator/-/amplify-appsync-simulator-2.10.0-beta.3.tgz#2344d74bea2b89980251dc7e01ef1f60286231d1"
@@ -73,77 +94,62 @@
     uuid "^8.3.2"
     ws "^8.5.0"
 
-"@aws-amplify/amplify-category-analytics@5.0.0-beta.2":
-  version "5.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-analytics/-/amplify-category-analytics-5.0.0-beta.2.tgz#fc48b49c24ace89395b6c38883f57916dc054d35"
-  integrity sha512-0pvEkIgr+48y7nARNOowA3Np3Z5HhSOPQxe8cpk8c1SyRBv9IwopJYlkxFh/DVsKppu0zmcDSu6lmkJda0zW/w==
+"@aws-amplify/amplify-appsync-simulator@2.10.2-zzz-beta.0":
+  version "2.10.2-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-appsync-simulator/-/amplify-appsync-simulator-2.10.2-zzz-beta.0.tgz#55466c5539231d72eb83ada2e33a204d9d733f43"
+  integrity sha512-L0q99LvOIrK8u67Yn8sjpQEWRt+Xje5QKwB/nK2ZtI+ITohX3i5m47os5a9J0o+Y7066cRvM7ECSN71GY86NeA==
   dependencies:
-    "@aws-amplify/amplify-environment-parameters" "1.4.0-beta.2"
-    amplify-cli-core "4.0.0-beta.8"
-    amplify-prompts "2.6.4-beta.3"
-    fs-extra "^8.1.0"
-    uuid "^8.3.2"
-
-"@aws-amplify/amplify-category-api@5.1.0-beta.6":
-  version "5.1.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-api/-/amplify-category-api-5.1.0-beta.6.tgz#87891a2bc7062d0eca4d3f05b02457e68eca8c7f"
-  integrity sha512-nY/HLJN4uekkDwtKJvarxZDMjIR3MS22L1+3fiB7SeBcLEmz/qTtkAk+e4B2KllAzvD4Wac92mRrxyuVS1GFjA==
-  dependencies:
-    "@aws-amplify/graphql-auth-transformer" "2.1.0-beta.6"
-    "@aws-amplify/graphql-default-value-transformer" "1.1.0-beta.6"
-    "@aws-amplify/graphql-function-transformer" "1.1.0-beta.6"
-    "@aws-amplify/graphql-http-transformer" "1.1.0-beta.6"
-    "@aws-amplify/graphql-index-transformer" "1.1.0-beta.6"
-    "@aws-amplify/graphql-maps-to-transformer" "2.1.0-beta.6"
-    "@aws-amplify/graphql-model-transformer" "1.1.0-beta.6"
-    "@aws-amplify/graphql-predictions-transformer" "1.1.0-beta.6"
-    "@aws-amplify/graphql-relational-transformer" "1.1.0-beta.6"
-    "@aws-amplify/graphql-searchable-transformer" "1.1.0-beta.6"
-    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
-    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
-    "@aws-amplify/graphql-transformer-migrator" "2.1.0-beta.6"
-    "@aws-cdk/aws-apigatewayv2-alpha" "~2.53.0-alpha.0"
-    "@graphql-tools/merge" "^6.0.18"
-    "@octokit/rest" "^18.0.9"
-    aws-cdk-lib "~2.53.0"
+    "@graphql-tools/schema" "^8.3.1"
+    "@graphql-tools/utils" "^8.5.1"
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    amplify-prompts "2.6.5-zzz-beta.0"
+    amplify-velocity-template "1.4.9"
+    aws-sdk "^2.1233.0"
     chalk "^4.1.1"
-    cloudform "^4.2.0"
-    constructs "^10.0.5"
-    fs-extra "^8.1.0"
+    cors "^2.8.5"
+    dataloader "^2.0.0"
+    express "^4.17.3"
+    get-port "^5.1.1"
     graphql "^15.5.0"
-    graphql-auth-transformer "7.2.49-beta.2"
-    graphql-connection-transformer "5.2.48-beta.2"
-    graphql-dynamodb-transformer "7.2.48-beta.2"
-    graphql-elasticsearch-transformer "5.2.49-beta.2"
-    graphql-function-transformer "3.3.39-beta.2"
-    graphql-http-transformer "5.2.48-beta.2"
-    graphql-key-transformer "3.2.48-beta.2"
-    graphql-predictions-transformer "3.2.48-beta.2"
-    graphql-relational-schema-transformer "2.21.16-beta.1"
-    graphql-transformer-common "4.24.5-beta.2"
-    graphql-transformer-core "8.0.0-beta.6"
-    graphql-versioned-transformer "5.2.48-beta.2"
-    import-from "^3.0.0"
-    import-global "^0.1.0"
-    inquirer "^7.3.3"
-    js-yaml "^4.0.0"
+    graphql-iso-date "^3.6.1"
+    graphql-subscriptions "^1.1.0"
+    ip "^1.1.5"
+    js-string-escape "^1.0.1"
+    jwt-decode "^2.2.0"
+    libphonenumber-js "1.9.47"
     lodash "^4.17.21"
-    ora "^4.0.3"
-    rimraf "^3.0.0"
+    moment "^2.24.0"
+    moment-jdateformatparser "^1.2.1"
+    moment-timezone "0.5.35"
+    promise-toolbox "^0.20.0"
+    slash "^3.0.0"
+    ulid "^2.3.0"
+    uuid "^8.3.2"
+    ws "^8.5.0"
+
+"@aws-amplify/amplify-category-analytics@5.0.2-zzz-beta.0":
+  version "5.0.2-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-analytics/-/amplify-category-analytics-5.0.2-zzz-beta.0.tgz#88319aa2dfc082ca46564623396817f954648c87"
+  integrity sha512-SIWXL8Ar4YfSRYuQCrWKXswb/b4A32GydOG14dXZmizMzYL125HbHj/2LpZ11C19xL2KDp0B3vTDu4Pi36MdgA==
+  dependencies:
+    "@aws-amplify/amplify-environment-parameters" "1.4.0-zzz-beta.0"
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    amplify-prompts "2.6.5-zzz-beta.0"
+    fs-extra "^8.1.0"
     uuid "^8.3.2"
 
-"@aws-amplify/amplify-category-auth@3.0.0-beta.8":
-  version "3.0.0-beta.8"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-auth/-/amplify-category-auth-3.0.0-beta.8.tgz#37dbf2831277c8e44339c6aeed225746456c9db7"
-  integrity sha512-M+4gCtRzeoKbBn2owXjkT9myDyTCJYdsdoZ0GHdm3N1L68rnk5iHevGJRcExS62KK9s2GXL3aX7cs39xD9FYtA==
+"@aws-amplify/amplify-category-auth@3.0.0-zzz-beta.0":
+  version "3.0.0-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-auth/-/amplify-category-auth-3.0.0-zzz-beta.0.tgz#3249affa82b68d554624d7139379d487128475d9"
+  integrity sha512-dhIlfC6/AivcQDUOMRH+ILzbDlSZeGhrdy825mwD8yMnHrWa6QSuQcXGgb+18kvKhbH+FOa0T9g4WYDlTGMeWQ==
   dependencies:
-    "@aws-amplify/amplify-environment-parameters" "1.4.0-beta.2"
-    "@aws-amplify/amplify-util-import" "2.4.0-beta.1"
-    "@aws-amplify/cli-extensibility-helper" "3.0.0-beta.8"
-    amplify-cli-core "4.0.0-beta.8"
-    amplify-headless-interface "1.17.1-beta.3"
-    amplify-prompts "2.6.4-beta.3"
-    amplify-util-headless-input "1.9.10-beta.3"
+    "@aws-amplify/amplify-environment-parameters" "1.4.0-zzz-beta.0"
+    "@aws-amplify/amplify-util-import" "2.4.0"
+    "@aws-amplify/cli-extensibility-helper" "3.0.0-zzz-beta.0"
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    amplify-headless-interface "1.17.1"
+    amplify-prompts "2.6.5-zzz-beta.0"
+    amplify-util-headless-input "1.9.10"
     aws-cdk-lib "~2.53.0"
     aws-sdk "^2.1233.0"
     chalk "^4.1.1"
@@ -166,6 +172,20 @@
   dependencies:
     amplify-cli-core "4.0.0-beta.8"
     amplify-prompts "2.6.4-beta.3"
+    aws-cdk-lib "~2.53.0"
+    execa "^5.1.1"
+    fs-extra "^8.1.0"
+    glob "^7.2.0"
+    ora "^4.0.3"
+    uuid "^8.3.2"
+
+"@aws-amplify/amplify-category-custom@3.0.0-zzz-beta.0":
+  version "3.0.0-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-custom/-/amplify-category-custom-3.0.0-zzz-beta.0.tgz#cf369a11a81653f63deeffee1ec50df26b985c76"
+  integrity sha512-QRnjySh+/m2GnaPmjPIOR+cdP+KLxEIGRWoCqy4pGEhOzSfDp32bIK1ZAoS0j7QkVSyzl6MyvknbcefUWELpnQ==
+  dependencies:
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    amplify-prompts "2.6.5-zzz-beta.0"
     aws-cdk-lib "~2.53.0"
     execa "^5.1.1"
     fs-extra "^8.1.0"
@@ -199,16 +219,42 @@
     promise-sequential "^1.1.1"
     uuid "^8.3.2"
 
-"@aws-amplify/amplify-category-geo@3.0.0-beta.8":
-  version "3.0.0-beta.8"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-geo/-/amplify-category-geo-3.0.0-beta.8.tgz#402896c8a038e6426a452397c7374793d6b064b8"
-  integrity sha512-ZcWM30kzCrMa0A/pRla7bsFCS4x26LeZ2xKzNCWxiAE+JOmRNg7so+TbgRDBK0uudRg+Q3bVcrJTUn5RcWMRUg==
+"@aws-amplify/amplify-category-function@5.1.0-zzz-beta.0":
+  version "5.1.0-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-function/-/amplify-category-function-5.1.0-zzz-beta.0.tgz#e25d80531cb37a48621f0d7be6a6ba07d05b85d4"
+  integrity sha512-+h7B5tud9Bp8VtOp8MLe79Ssp9yPUe2kXpk/rFK2dzsIXYVOV0tFARTgYMyvNyXf5kK3Lnz4+pd4kZIUTEIoiQ==
+  dependencies:
+    "@aws-amplify/amplify-environment-parameters" "1.4.0-zzz-beta.0"
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    amplify-function-plugin-interface "1.9.7"
+    amplify-prompts "2.6.5-zzz-beta.0"
+    archiver "^5.3.0"
+    aws-sdk "^2.1233.0"
+    chalk "^4.1.1"
+    cloudform-types "^4.2.0"
+    enquirer "^2.3.6"
+    folder-hash "^4.0.2"
+    fs-extra "^8.1.0"
+    globby "^11.0.3"
+    graphql-transformer-core "^8.0.0"
+    inquirer "^7.3.3"
+    inquirer-datepicker "^2.0.0"
+    jstreemap "^1.28.2"
+    lodash "^4.17.21"
+    ora "^4.0.3"
+    promise-sequential "^1.1.1"
+    uuid "^8.3.2"
+
+"@aws-amplify/amplify-category-geo@3.0.0-zzz-beta.0":
+  version "3.0.0-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-geo/-/amplify-category-geo-3.0.0-zzz-beta.0.tgz#3103fbe16140030db6a9479b36e50163e07b7a9d"
+  integrity sha512-ZQMY+/j3k0HQiBEZjkWezFIG6Ar40BdV8txl6T2YRZK2HiJo8BCtRXDgEJFgNnP8GS+3Cdkb2730n37C0VqAWQ==
   dependencies:
     ajv "^6.12.6"
-    amplify-cli-core "4.0.0-beta.8"
-    amplify-headless-interface "1.17.1-beta.3"
-    amplify-prompts "2.6.4-beta.3"
-    amplify-util-headless-input "1.9.10-beta.3"
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    amplify-headless-interface "1.17.1"
+    amplify-prompts "2.6.5-zzz-beta.0"
+    amplify-util-headless-input "1.9.10"
     aws-cdk-lib "~2.53.0"
     aws-sdk "^2.1233.0"
     constructs "^10.0.5"
@@ -216,13 +262,13 @@
     lodash "^4.17.21"
     uuid "^8.3.2"
 
-"@aws-amplify/amplify-category-hosting@3.5.0-beta.2":
-  version "3.5.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-hosting/-/amplify-category-hosting-3.5.0-beta.2.tgz#66f573a87315514c801fd7ee5b2e40ac1bb4c78a"
-  integrity sha512-uunr97RzAprii0QLtGNYFV0E60TiKwBKg39J9nZ/1MjyXmbdW+HwGQMp+UKJlMY+zL4LBjxqPqnaOXDfB7UpDA==
+"@aws-amplify/amplify-category-hosting@3.5.2-zzz-beta.0":
+  version "3.5.2-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-hosting/-/amplify-category-hosting-3.5.2-zzz-beta.0.tgz#fc042934c224dfc1a2ea6068cdc6f8bf750fe55e"
+  integrity sha512-IYr7IT8ciKHzzNeyn9gf7NQp0A1Pu8twpnXL7WAyD+g3tFtCg+lGXl+ihoeeMj4bO3OK5KMXcxPU4H+4eRFCuw==
   dependencies:
-    amplify-cli-core "4.0.0-beta.8"
-    amplify-prompts "2.6.4-beta.3"
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    amplify-prompts "2.6.5-zzz-beta.0"
     chalk "^4.1.1"
     fs-extra "^8.1.0"
     mime-types "^2.1.26"
@@ -231,54 +277,54 @@
     ora "^4.0.3"
     promise-sequential "^1.1.1"
 
-"@aws-amplify/amplify-category-interactions@5.0.0-beta.2":
-  version "5.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-interactions/-/amplify-category-interactions-5.0.0-beta.2.tgz#e44fa752d5fef4f121c979656145be36489e76fe"
-  integrity sha512-Sb7ufcKHn/MaHkONnwmjqhpRVQAtq9rl0A8OO+SiHYZJmawJoiL7VGw6AW0RsdfE20gUWG4x+vlUzXfxWS8G4Q==
+"@aws-amplify/amplify-category-interactions@5.0.2-zzz-beta.0":
+  version "5.0.2-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-interactions/-/amplify-category-interactions-5.0.2-zzz-beta.0.tgz#7b36f3b91f243d23a1814cea8358405abbf88358"
+  integrity sha512-emQHmeOcTqbLtXssG8cDVODj4kusoI801DSzJK8MrW8Kdc/9ic9rKWUmTjYXHwSVwPUxPyrLfSulwhPj66eTcw==
   dependencies:
-    amplify-cli-core "4.0.0-beta.8"
-    amplify-prompts "2.6.4-beta.3"
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    amplify-prompts "2.6.5-zzz-beta.0"
     fs-extra "^8.1.0"
     fuzzy "^0.1.3"
     uuid "^8.3.2"
 
-"@aws-amplify/amplify-category-notifications@2.24.0-beta.1":
-  version "2.24.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-notifications/-/amplify-category-notifications-2.24.0-beta.1.tgz#b1c2a9633be0bab60a1f5e58adb5df03290fd99b"
-  integrity sha512-qccBPaFJVTpYBEGQucT1zmpjz33eN/60lm6m3fC5JJV2TtyTjSPBz2NYveTq7CUANc/c8zVumYbGQ4rff/4kmg==
+"@aws-amplify/amplify-category-notifications@2.24.2-zzz-beta.0":
+  version "2.24.2-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-notifications/-/amplify-category-notifications-2.24.2-zzz-beta.0.tgz#fe19d74cbfd87aef693c58d399ecc6033b3e8509"
+  integrity sha512-wi6CoYAytx9zAloVd+dprRCJl1q6DBCs/HBZqv2u/IBtP7p2R90CnyXBf0nVZjCtLJ4vy8nTEo9O/jeJzlxPtg==
   dependencies:
-    "@aws-amplify/amplify-environment-parameters" "1.4.0-beta.2"
-    amplify-cli-core "4.0.0-beta.8"
-    amplify-prompts "2.6.4-beta.3"
+    "@aws-amplify/amplify-environment-parameters" "1.4.0-zzz-beta.0"
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    amplify-prompts "2.6.5-zzz-beta.0"
     chalk "^4.1.1"
     fs-extra "^8.1.0"
     lodash "^4.17.21"
     ora "^4.0.3"
     promise-sequential "^1.1.1"
 
-"@aws-amplify/amplify-category-predictions@5.0.0-beta.1":
-  version "5.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-predictions/-/amplify-category-predictions-5.0.0-beta.1.tgz#2410db6958ca85ea35987c77bad9833faa544de6"
-  integrity sha512-E2JntNDmPIzc+Oudzm1ZEioLuIkLKVSWQlILhXSz3mu7jtc2nfsEXz7vgc/Xe9WFDoSR+zHxTx+60mUAaD0f1g==
+"@aws-amplify/amplify-category-predictions@5.0.2-zzz-beta.0":
+  version "5.0.2-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-predictions/-/amplify-category-predictions-5.0.2-zzz-beta.0.tgz#e1f8a2aa2d8ea5cce2921686d781d63828f9f6c7"
+  integrity sha512-GRO7PKQImbyEAbm5RxzY5rd5BItmCoW5TkYRGLBnawfKd4KJUMEyefPFPuceLxDj2l/vr5pHoKELGnscboZPZw==
   dependencies:
-    amplify-cli-core "4.0.0-beta.8"
-    amplify-prompts "2.6.4-beta.3"
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    amplify-prompts "2.6.5-zzz-beta.0"
     aws-sdk "^2.1233.0"
     chalk "^4.1.1"
     fs-extra "^8.1.0"
     uuid "^8.3.2"
 
-"@aws-amplify/amplify-category-storage@5.0.0-beta.6":
-  version "5.0.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-storage/-/amplify-category-storage-5.0.0-beta.6.tgz#e39207eb845623602e1bf68f1beb5dada7ac027e"
-  integrity sha512-HPUhVvc1y0dhRdp2xLrMOgLLNHEm2tkoGZZwt3CRbPjf2hXqJqByOGJj4y57CeJUJB9OA+x7k++da4i7zx6rSg==
+"@aws-amplify/amplify-category-storage@5.0.0-zzz-beta.0":
+  version "5.0.0-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-storage/-/amplify-category-storage-5.0.0-zzz-beta.0.tgz#f96209df33c1a22622886cadf96eb5d759390127"
+  integrity sha512-7Z+WMYTYJBVGG3QDoWQfuhnrRUy99fH6Qfq0VbFAWg96zW7qmTbTij4aMwTS0jARvOJidhUSr6UpyyAY/pNqeg==
   dependencies:
-    "@aws-amplify/amplify-environment-parameters" "1.4.0-beta.2"
-    "@aws-amplify/amplify-util-import" "2.4.0-beta.1"
-    "@aws-amplify/cli-extensibility-helper" "3.0.0-beta.8"
-    amplify-cli-core "4.0.0-beta.8"
-    amplify-headless-interface "1.17.1-beta.3"
-    amplify-prompts "2.6.4-beta.3"
+    "@aws-amplify/amplify-environment-parameters" "1.4.0-zzz-beta.0"
+    "@aws-amplify/amplify-util-import" "2.4.0"
+    "@aws-amplify/cli-extensibility-helper" "3.0.0-zzz-beta.0"
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    amplify-headless-interface "1.17.1"
+    amplify-prompts "2.6.5-zzz-beta.0"
     aws-cdk-lib "~2.53.0"
     aws-sdk "^2.1233.0"
     chalk "^4.1.1"
@@ -290,6 +336,14 @@
     uuid "^8.3.2"
     vm2 "^3.9.8"
 
+"@aws-amplify/amplify-cli-logger@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-cli-logger/-/amplify-cli-logger-1.3.0.tgz#7bc68710837a5ecb2f990a38f8103555150f9213"
+  integrity sha512-ijfo6YY4mgn38HD7KId/MgGJla7oCod4n0/gTVPVHfr9zlpUC8B2L/QuydFjpLBR8LrBYO4xfrQa8UhelyPzGA==
+  dependencies:
+    winston "^3.3.3"
+    winston-daily-rotate-file "^4.5.0"
+
 "@aws-amplify/amplify-cli-logger@1.3.0-beta.1":
   version "1.3.0-beta.1"
   resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-cli-logger/-/amplify-cli-logger-1.3.0-beta.1.tgz#1cdcb4de0fe11f78b138e5f605e3e7841da9c1a5"
@@ -297,6 +351,49 @@
   dependencies:
     winston "^3.3.3"
     winston-daily-rotate-file "^4.5.0"
+
+"@aws-amplify/amplify-cli-shared-interfaces@1.2.0-zzz-beta.0":
+  version "1.2.0-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-cli-shared-interfaces/-/amplify-cli-shared-interfaces-1.2.0-zzz-beta.0.tgz#766d89d56978c07d3d71eeb1ec0357f4ff0a74c3"
+  integrity sha512-BIDQLLqwsNgMdlkiqI0bxJC4m7TzwjMPljsJTQd1z7E7TdUX9Uj3+QkgLH9Ki+VseKA8v0KhcswDs0+9g57BJA==
+
+"@aws-amplify/amplify-console-hosting@2.5.0-zzz-beta.0":
+  version "2.5.0-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-console-hosting/-/amplify-console-hosting-2.5.0-zzz-beta.0.tgz#cd17bcfaae9c4f0608e7f87f7ad40eb4975f5956"
+  integrity sha512-u97PiMZfAxebl+sEefWx4hkKfZtIvu+CYXaqrpeQNj6IMg44HUU51jAXnvEiupAIQlEvso1MHfGdUMx7xHz1pg==
+  dependencies:
+    "@aws-amplify/amplify-environment-parameters" "1.4.0-zzz-beta.0"
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    archiver "^5.3.0"
+    chalk "^4.1.1"
+    cli-table3 "^0.6.0"
+    execa "^5.1.1"
+    fs-extra "^8.1.0"
+    glob "^7.2.0"
+    inquirer "^7.3.3"
+    node-fetch "^2.6.7"
+    ora "^4.0.3"
+
+"@aws-amplify/amplify-container-hosting@2.6.0-zzz-beta.0":
+  version "2.6.0-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-container-hosting/-/amplify-container-hosting-2.6.0-zzz-beta.0.tgz#124dacd8503eced3c075ea6adee18e058344671c"
+  integrity sha512-/6TC3n7MJb6GR33kZuCPJkexuq1pjTTcyYSxPecXhcqdcgsUbQbDy9zJ19JVWnYRlA1DmPe+vdQGfwy7bIRYgA==
+  dependencies:
+    "@aws-amplify/amplify-category-api" "^5.1.0"
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    fs-extra "^8.1.0"
+    inquirer "^7.3.3"
+    mime-types "^2.1.26"
+    promise-sequential "^1.1.1"
+
+"@aws-amplify/amplify-dotnet-function-template-provider@2.5.0-zzz-beta.0":
+  version "2.5.0-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-dotnet-function-template-provider/-/amplify-dotnet-function-template-provider-2.5.0-zzz-beta.0.tgz#cda272452fb8f4db524e23b53da0ebd70988616a"
+  integrity sha512-A/gK2XyOy3p9dgLpcgrA3NlgGnlItpMxi4Z+ie3XA8yqMDwfc4RtpD/IkwuasETT5NKneM0Vii5VfEmm8tZ+gg==
+  dependencies:
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    amplify-function-plugin-interface "1.9.7"
+    graphql-transformer-core "^8.0.0"
 
 "@aws-amplify/amplify-environment-parameters@1.4.0-beta.2":
   version "1.4.0-beta.2"
@@ -307,10 +404,37 @@
     amplify-cli-core "4.0.0-beta.8"
     lodash "^4.17.21"
 
+"@aws-amplify/amplify-environment-parameters@1.4.0-zzz-beta.0":
+  version "1.4.0-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-environment-parameters/-/amplify-environment-parameters-1.4.0-zzz-beta.0.tgz#0102af73fd6f21099538c151bd842339195088e6"
+  integrity sha512-sB4QVml9a3uOzHnD/OPRR27pzy0Fnu/X7N/nXcxlQdWclYfsjWHyf1xwl0BL48o7zZrIQRmqktEDul/G+xI1XQ==
+  dependencies:
+    ajv "^6.12.6"
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    lodash "^4.17.21"
+
 "@aws-amplify/amplify-frontend-android@3.5.0-beta.3":
   version "3.5.0-beta.3"
   resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-frontend-android/-/amplify-frontend-android-3.5.0-beta.3.tgz#b4cbfe5b5a4ac023c564149d371f0aaeb44757dd"
   integrity sha512-YtCxfSmsZNEtPOhFClgKtL2MfCq17R/MXoHH6U20xKc8D8LK0EVdTZNxAojgnU357cgurixk1u4O6X4BSpBrmA==
+  dependencies:
+    fs-extra "^8.1.0"
+    graphql-config "^2.2.1"
+    inquirer "^7.3.3"
+
+"@aws-amplify/amplify-frontend-android@3.5.1-zzz-beta.0":
+  version "3.5.1-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-frontend-android/-/amplify-frontend-android-3.5.1-zzz-beta.0.tgz#d108342fcd9d8a9bc870df3d3bb988155a66a06e"
+  integrity sha512-qr+6oudRzDtM3CEEE0VrRC2KH2bS0ju0f//clgu3vO50sjDXnLetkWO6T6d2hsANB8qE2hiIRm1S7MTVpzHY3A==
+  dependencies:
+    fs-extra "^8.1.0"
+    graphql-config "^2.2.1"
+    inquirer "^7.3.3"
+
+"@aws-amplify/amplify-frontend-flutter@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-frontend-flutter/-/amplify-frontend-flutter-1.4.0.tgz#d3ac40e3b81e777e78471e13c44301302f882f55"
+  integrity sha512-CNOtEDG6im4U8JtYm+aOcR5w2ba+gqsgb+URmyvp5DQcX9QlHFr5HeJNbow6MlNecam3wi67Ldewpso0+F0wbQ==
   dependencies:
     fs-extra "^8.1.0"
     graphql-config "^2.2.1"
@@ -336,6 +460,17 @@
     graphql-config "^2.2.1"
     lodash "^4.17.21"
 
+"@aws-amplify/amplify-frontend-ios@3.6.2-zzz-beta.0":
+  version "3.6.2-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-frontend-ios/-/amplify-frontend-ios-3.6.2-zzz-beta.0.tgz#516c1ca85a270c1d10e8c0a34adfe1b86d217e87"
+  integrity sha512-Fr0UQl40hYaNnoVMwnJvXS9wqgxqIxGzF1RyEeGyTL8gpDj2sGW6e8eku/h4kQTrPLvTqJiccpmNBbgkTJj4Ew==
+  dependencies:
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    execa "^5.1.1"
+    fs-extra "^8.1.0"
+    graphql-config "^2.2.1"
+    lodash "^4.17.21"
+
 "@aws-amplify/amplify-frontend-javascript@3.8.0-beta.3":
   version "3.8.0-beta.3"
   resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-frontend-javascript/-/amplify-frontend-javascript-3.8.0-beta.3.tgz#d7988195ff9b0ea39b40538a902f39c360e926e1"
@@ -351,30 +486,45 @@
     inquirer "^7.3.3"
     lodash "^4.17.21"
 
-"@aws-amplify/amplify-go-function-template-provider@1.4.0-beta.1":
-  version "1.4.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-go-function-template-provider/-/amplify-go-function-template-provider-1.4.0-beta.1.tgz#3be307f8742ad2dc09ba7645ec6372ba61b63859"
-  integrity sha512-s7REhXQn32UTHWFIlNUftibPeg0ONRH7doth5HNJDWtCOO1FZL+THAJ5uP7jtoc0WLhdaoDOTpihpFvKJfO6qg==
+"@aws-amplify/amplify-frontend-javascript@3.9.0-zzz-beta.0":
+  version "3.9.0-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-frontend-javascript/-/amplify-frontend-javascript-3.9.0-zzz-beta.0.tgz#bb1fd2ba4cd1357be11133987b0bb0bdb289c0c3"
+  integrity sha512-XhNPl0Fu81Wl1ubnkkVm5+NHujTORbcywzvRrrW7Evl8CXQ14XaZmRkcUrwqox9qKSfZyeaPCS73Lnbkl1F/7A==
   dependencies:
-    amplify-function-plugin-interface "1.9.6-beta.6"
-
-"@aws-amplify/amplify-nodejs-function-template-provider@2.7.0-beta.1":
-  version "2.7.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-nodejs-function-template-provider/-/amplify-nodejs-function-template-provider-2.7.0-beta.1.tgz#288266a245555f3eebb138a729e215befa9863f0"
-  integrity sha512-YNNJGKc0NFZnzXy/J3fXlWNUsufWF+aVmXlRLysYQL9hHaaRmAETO41k7Sfm9O+2vv6XQYBdQkdEgSt6h6OyDg==
-  dependencies:
-    amplify-cli-core "4.0.0-beta.8"
-    amplify-function-plugin-interface "1.9.6-beta.6"
-    graphql-transformer-core "8.0.0-beta.6"
+    "@babel/core" "^7.10.5"
+    "@babel/plugin-transform-modules-commonjs" "7.10.4"
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    chalk "^4.1.1"
+    execa "^5.1.1"
+    fs-extra "^8.1.0"
+    graphql-config "^2.2.1"
+    inquirer "^7.3.3"
     lodash "^4.17.21"
 
-"@aws-amplify/amplify-opensearch-simulator@1.2.2-beta.3":
-  version "1.2.2-beta.3"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-opensearch-simulator/-/amplify-opensearch-simulator-1.2.2-beta.3.tgz#60fbbb37e3e2bc34cbd85f3bd0537105848d8760"
-  integrity sha512-IODXsjVG2id/qGJILMY8PtiC0/B0BIzjqxBLKoA6m8oMijxd/ETmwSpfma0Y0f48gd1h9pODBdPKbtYdTeElDw==
+"@aws-amplify/amplify-go-function-template-provider@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-go-function-template-provider/-/amplify-go-function-template-provider-1.4.0.tgz#d65bdc4b92dd49a7dac0b6350caa91c72dae8a10"
+  integrity sha512-jf3z+mhNvE5BAx1PEiWnk7c13fCuWvEdv/gs2jYoCpCA0dgQ7Cr4MquUUw7GKfrd4A/LfQNPfoB0QEcCNunQvg==
   dependencies:
-    amplify-cli-core "4.0.0-beta.8"
-    amplify-prompts "2.6.4-beta.3"
+    amplify-function-plugin-interface "1.9.7"
+
+"@aws-amplify/amplify-nodejs-function-template-provider@2.7.2-zzz-beta.0":
+  version "2.7.2-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-nodejs-function-template-provider/-/amplify-nodejs-function-template-provider-2.7.2-zzz-beta.0.tgz#48d6c1ea526d12fe8e72eb1fff680b162fa14e88"
+  integrity sha512-94HZqcmkLbaK/TFHHWEx7AhE+3C9WiFriLc5Q9KvDKFMt3+0czjbiSYs4Q7Yg0LXKdDR1OQ3pgVm7G2KUvl1Ww==
+  dependencies:
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    amplify-function-plugin-interface "1.9.7"
+    graphql-transformer-core "^8.0.0"
+    lodash "^4.17.21"
+
+"@aws-amplify/amplify-opensearch-simulator@1.2.2-zzz-beta.0":
+  version "1.2.2-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-opensearch-simulator/-/amplify-opensearch-simulator-1.2.2-zzz-beta.0.tgz#4cc1c71f04df446da412f010b02014012bde1c99"
+  integrity sha512-QwCv+vPAsUuEQUoHp97RGgtlnYa0l13UGTFDs1Lnb7SMF7doBlxQ2IKIpPT6reqluUmdsoVgkhEn5eKy2xlaWA==
+  dependencies:
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    amplify-prompts "2.6.5-zzz-beta.0"
     aws-sdk "^2.1233.0"
     detect-port "^1.3.0"
     execa "^5.1.1"
@@ -436,12 +586,68 @@
     vm2 "^3.9.8"
     xstate "^4.14.0"
 
-"@aws-amplify/amplify-python-function-template-provider@1.4.0-beta.1":
-  version "1.4.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-python-function-template-provider/-/amplify-python-function-template-provider-1.4.0-beta.1.tgz#ee47043cbf45c67fce407c2e2d21105bdda4d979"
-  integrity sha512-Wz27IPuciUExcgol8DQZHBhOq7ARx4v5dZg4pyGWxDv8zFJnMglmFJLWql+zf+iA6X6zR64+CrjoDtVzv35VNA==
+"@aws-amplify/amplify-provider-awscloudformation@8.0.0-zzz-beta.0":
+  version "8.0.0-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-provider-awscloudformation/-/amplify-provider-awscloudformation-8.0.0-zzz-beta.0.tgz#e7e863d424c6ae85686fcb5c2d8cfb6c74b9ed2e"
+  integrity sha512-+DJDWC0JlCGt0oSMaD4pBSdduhCbyxWdWEk5Bhkr6wytNpW3l12q+xEtTUaMgFQHXTpvksOZRlaX6AOMk5e+Qg==
   dependencies:
-    amplify-function-plugin-interface "1.9.6-beta.6"
+    "@aws-amplify/amplify-category-custom" "3.0.0-zzz-beta.0"
+    "@aws-amplify/amplify-cli-logger" "1.3.0"
+    "@aws-amplify/amplify-environment-parameters" "1.4.0-zzz-beta.0"
+    "@aws-amplify/amplify-util-import" "2.4.0"
+    "@aws-amplify/cli-extensibility-helper" "3.0.0-zzz-beta.0"
+    "@aws-amplify/graphql-transformer-core" "^1.1.0"
+    "@aws-amplify/graphql-transformer-interfaces" "^2.1.0"
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    amplify-codegen "^3.3.6"
+    amplify-prompts "2.6.5-zzz-beta.0"
+    archiver "^5.3.0"
+    aws-cdk-lib "~2.53.0"
+    aws-sdk "^2.1233.0"
+    bottleneck "2.19.5"
+    chalk "^4.1.1"
+    cloudform "^4.2.0"
+    cloudform-types "^4.2.0"
+    columnify "^1.5.4"
+    constructs "^10.0.5"
+    cors "^2.8.5"
+    deep-diff "^1.0.2"
+    extract-zip "^2.0.1"
+    folder-hash "^4.0.2"
+    fs-extra "^8.1.0"
+    glob "^7.2.0"
+    graphql "^15.5.0"
+    graphql-transformer-core "^8.0.0"
+    ignore "^5.2.0"
+    ini "^1.3.5"
+    inquirer "^7.3.3"
+    is-wsl "^2.2.0"
+    jose "^4.3.7"
+    lodash "^4.17.21"
+    lodash.throttle "^4.1.1"
+    moment "^2.24.0"
+    netmask "^2.0.2"
+    node-fetch "^2.6.7"
+    ora "^4.0.3"
+    promise-sequential "^1.1.1"
+    proxy-agent "^5.0.0"
+    rimraf "^3.0.0"
+    vm2 "^3.9.8"
+    xstate "^4.14.0"
+
+"@aws-amplify/amplify-python-function-template-provider@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-python-function-template-provider/-/amplify-python-function-template-provider-1.4.0.tgz#a4ff6c7dd177ae2e9576a9e7b7052e822d226cb1"
+  integrity sha512-Vu2mtusyhzV73x1xiZS2KsalbCdn/Du1nTuA/Y8S3zwJZyf6UrQHQJxWjZzZQ3Fs5s7iJJNML/2D6ewJb/gxOg==
+  dependencies:
+    amplify-function-plugin-interface "1.9.7"
+
+"@aws-amplify/amplify-util-import@2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-util-import/-/amplify-util-import-2.4.0.tgz#7dc31e53e3a7794ca0ae7d1a80d6697157f6a114"
+  integrity sha512-vW3R0JKNH4wW/UxonWs/HMHs525Yi8xKBow+9mOWz2NSjLolU9h+zcOwUV65twe33yyrevAi0RPGXJ7uueBM3A==
+  dependencies:
+    aws-sdk "^2.1233.0"
 
 "@aws-amplify/amplify-util-import@2.4.0-beta.1":
   version "2.4.0-beta.1"
@@ -450,21 +656,21 @@
   dependencies:
     aws-sdk "^2.1233.0"
 
-"@aws-amplify/amplify-util-mock@5.0.0-beta.1":
-  version "5.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-util-mock/-/amplify-util-mock-5.0.0-beta.1.tgz#448b2ca83809681a566c67efba9259e7a10119bb"
-  integrity sha512-x9+9u1bDV7AlUhbS2mD9bLI/mccGoYPRZC8F3Q6B9pQpitFM6F9m8qTC5pRAv1hNBeVq8IrhSleEaYs1vGJ2dw==
+"@aws-amplify/amplify-util-mock@5.0.2-zzz-beta.0":
+  version "5.0.2-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-util-mock/-/amplify-util-mock-5.0.2-zzz-beta.0.tgz#960a85f62726feb80ce9560decb2e05acc6e6a89"
+  integrity sha512-LTAbOvzMJRrYw9T7kSJxcitOE2sLKjgvwvmF3BxjqY8pnG9jB8+3EucCRr27qjMTMApgsP1sMa07IRBXMye0rQ==
   dependencies:
-    "@aws-amplify/amplify-appsync-simulator" "2.10.0-beta.3"
-    "@aws-amplify/amplify-category-function" "5.0.0-beta.2"
-    "@aws-amplify/amplify-opensearch-simulator" "1.2.2-beta.3"
-    "@aws-amplify/amplify-provider-awscloudformation" "7.0.0-beta.8"
+    "@aws-amplify/amplify-appsync-simulator" "2.10.2-zzz-beta.0"
+    "@aws-amplify/amplify-category-function" "5.1.0-zzz-beta.0"
+    "@aws-amplify/amplify-opensearch-simulator" "1.2.2-zzz-beta.0"
+    "@aws-amplify/amplify-provider-awscloudformation" "8.0.0-zzz-beta.0"
     "@hapi/topo" "^5.0.0"
-    amplify-cli-core "4.0.0-beta.8"
+    amplify-cli-core "4.0.0-zzz-beta.0"
     amplify-codegen "^3.3.6"
-    amplify-dynamodb-simulator "2.5.6-beta.3"
-    amplify-prompts "2.6.4-beta.3"
-    amplify-storage-simulator "1.7.3-beta.3"
+    amplify-dynamodb-simulator "2.5.9-zzz-beta.0"
+    amplify-prompts "2.6.5-zzz-beta.0"
+    amplify-storage-simulator "1.7.3"
     chokidar "^3.5.3"
     detect-port "^1.3.0"
     dotenv "^8.2.0"
@@ -476,15 +682,15 @@
     semver "^7.3.5"
     which "^2.0.2"
 
-"@aws-amplify/amplify-util-uibuilder@1.6.8-beta.3":
-  version "1.6.8-beta.3"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-util-uibuilder/-/amplify-util-uibuilder-1.6.8-beta.3.tgz#b4bb1945faa7eb08d42a32b5d65bb36c8467ef8a"
-  integrity sha512-2APlzd401XHOUaboQl2oDF9FmmVPtsA7GLXnk4oYbp6yuYw/lkxlj6rzF0f7LY9SxzHLHWvnkhgjeoUECHPUFA==
+"@aws-amplify/amplify-util-uibuilder@1.6.11-zzz-beta.0":
+  version "1.6.11-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-util-uibuilder/-/amplify-util-uibuilder-1.6.11-zzz-beta.0.tgz#402ca48e179c4b1c7e8cb140ee1ac82aaba1b93f"
+  integrity sha512-F8JDY7jBYimTCyphYjTrsjWWZmvjyC3aaDQbvWNhAImY/5TjpnhwaaZIgn21KDInG06Mtj4zf+8w1yxOxfxJqg==
   dependencies:
     "@aws-amplify/codegen-ui" "2.8.0"
     "@aws-amplify/codegen-ui-react" "2.8.0"
-    amplify-cli-core "4.0.0-beta.8"
-    amplify-prompts "2.6.4-beta.3"
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    amplify-prompts "2.6.5-zzz-beta.0"
     aws-sdk "^2.1233.0"
     fs-extra "^8.1.0"
     ora "^4.0.3"
@@ -579,51 +785,60 @@
     amplify-cli-core "4.0.0-beta.8"
     aws-cdk-lib "~2.53.0"
 
-"@aws-amplify/cli-internal@11.0.0-beta.8":
-  version "11.0.0-beta.8"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/cli-internal/-/cli-internal-11.0.0-beta.8.tgz#561f17e905e505433da37fc4a043799773cf94b9"
-  integrity sha512-d9fgw5sLyRUstwAc7BELapiOvJh1r1gjKzRgkZLtfcP9c7Rlm4QFLYUqdo3WA2nnJJh+Sur3MVkPgnOSvpmucg==
+"@aws-amplify/cli-extensibility-helper@3.0.0-zzz-beta.0":
+  version "3.0.0-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/cli-extensibility-helper/-/cli-extensibility-helper-3.0.0-zzz-beta.0.tgz#41ad9983c1ce7136249db2a7366c309afb6ab209"
+  integrity sha512-YxvduymHm4/V9On4xxglCynMcw7hn2qKgWromrMhGzHHYymlAgklwWYy3n+8vkoCZRA0bQ4VVA4p9aHKjb29Mw==
   dependencies:
-    "@aws-amplify/amplify-category-analytics" "5.0.0-beta.2"
-    "@aws-amplify/amplify-category-api" "5.1.0-beta.6"
-    "@aws-amplify/amplify-category-auth" "3.0.0-beta.8"
-    "@aws-amplify/amplify-category-custom" "3.0.0-beta.8"
-    "@aws-amplify/amplify-category-function" "5.0.0-beta.2"
-    "@aws-amplify/amplify-category-geo" "3.0.0-beta.8"
-    "@aws-amplify/amplify-category-hosting" "3.5.0-beta.2"
-    "@aws-amplify/amplify-category-interactions" "5.0.0-beta.2"
-    "@aws-amplify/amplify-category-notifications" "2.24.0-beta.1"
-    "@aws-amplify/amplify-category-predictions" "5.0.0-beta.1"
-    "@aws-amplify/amplify-category-storage" "5.0.0-beta.6"
-    "@aws-amplify/amplify-cli-logger" "1.3.0-beta.1"
-    "@aws-amplify/amplify-environment-parameters" "1.4.0-beta.2"
-    "@aws-amplify/amplify-frontend-android" "3.5.0-beta.3"
-    "@aws-amplify/amplify-frontend-flutter" "1.4.0-beta.3"
-    "@aws-amplify/amplify-frontend-ios" "3.6.0-beta.3"
-    "@aws-amplify/amplify-frontend-javascript" "3.8.0-beta.3"
-    "@aws-amplify/amplify-go-function-template-provider" "1.4.0-beta.1"
-    "@aws-amplify/amplify-nodejs-function-template-provider" "2.7.0-beta.1"
-    "@aws-amplify/amplify-provider-awscloudformation" "7.0.0-beta.8"
-    "@aws-amplify/amplify-python-function-template-provider" "1.4.0-beta.1"
-    "@aws-amplify/amplify-util-import" "2.4.0-beta.1"
-    "@aws-amplify/amplify-util-mock" "5.0.0-beta.1"
-    "@aws-amplify/amplify-util-uibuilder" "1.6.8-beta.3"
-    "@aws-amplify/graphql-auth-transformer" "2.1.0-beta.6"
+    "@aws-amplify/amplify-category-custom" "3.0.0-zzz-beta.0"
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    aws-cdk-lib "~2.53.0"
+
+"@aws-amplify/cli-internal@^11.0.0-beta.8":
+  version "11.0.0-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/cli-internal/-/cli-internal-11.0.0-zzz-beta.0.tgz#de002cc41e327c76a2e9e8d8e44971d372f00bbc"
+  integrity sha512-iXDtBAwZ5hcWLqn5d9A0N96AVuFRMjPp0KSP8Li9S1+kKOh26C+weAb9L0BoCJOi+LHKhmv7bYiczbU3810iuA==
+  dependencies:
+    "@aws-amplify/amplify-app" "5.0.0-zzz-beta.0"
+    "@aws-amplify/amplify-category-analytics" "5.0.2-zzz-beta.0"
+    "@aws-amplify/amplify-category-api" "^5.1.0"
+    "@aws-amplify/amplify-category-auth" "3.0.0-zzz-beta.0"
+    "@aws-amplify/amplify-category-custom" "3.0.0-zzz-beta.0"
+    "@aws-amplify/amplify-category-function" "5.1.0-zzz-beta.0"
+    "@aws-amplify/amplify-category-geo" "3.0.0-zzz-beta.0"
+    "@aws-amplify/amplify-category-hosting" "3.5.2-zzz-beta.0"
+    "@aws-amplify/amplify-category-interactions" "5.0.2-zzz-beta.0"
+    "@aws-amplify/amplify-category-notifications" "2.24.2-zzz-beta.0"
+    "@aws-amplify/amplify-category-predictions" "5.0.2-zzz-beta.0"
+    "@aws-amplify/amplify-category-storage" "5.0.0-zzz-beta.0"
+    "@aws-amplify/amplify-cli-logger" "1.3.0"
+    "@aws-amplify/amplify-cli-shared-interfaces" "1.2.0-zzz-beta.0"
+    "@aws-amplify/amplify-console-hosting" "2.5.0-zzz-beta.0"
+    "@aws-amplify/amplify-container-hosting" "2.6.0-zzz-beta.0"
+    "@aws-amplify/amplify-dotnet-function-template-provider" "2.5.0-zzz-beta.0"
+    "@aws-amplify/amplify-environment-parameters" "1.4.0-zzz-beta.0"
+    "@aws-amplify/amplify-frontend-android" "3.5.1-zzz-beta.0"
+    "@aws-amplify/amplify-frontend-flutter" "1.4.0"
+    "@aws-amplify/amplify-frontend-ios" "3.6.2-zzz-beta.0"
+    "@aws-amplify/amplify-frontend-javascript" "3.9.0-zzz-beta.0"
+    "@aws-amplify/amplify-go-function-template-provider" "1.4.0"
+    "@aws-amplify/amplify-nodejs-function-template-provider" "2.7.2-zzz-beta.0"
+    "@aws-amplify/amplify-provider-awscloudformation" "8.0.0-zzz-beta.0"
+    "@aws-amplify/amplify-python-function-template-provider" "1.4.0"
+    "@aws-amplify/amplify-util-import" "2.4.0"
+    "@aws-amplify/amplify-util-mock" "5.0.2-zzz-beta.0"
+    "@aws-amplify/amplify-util-uibuilder" "1.6.11-zzz-beta.0"
+    "@aws-amplify/graphql-auth-transformer" "^2.1.0"
     "@aws-cdk/cloudformation-diff" "~2.53.0"
-    amplify-app "4.3.10-beta.3"
-    amplify-cli-core "4.0.0-beta.8"
-    amplify-cli-shared-interfaces "1.1.1-beta.6"
+    amplify-cli-core "4.0.0-zzz-beta.0"
     amplify-codegen "^3.3.6"
-    amplify-console-hosting "2.4.2-beta.3"
-    amplify-container-hosting "2.5.12-beta.1"
-    amplify-dotnet-function-runtime-provider "1.7.2-beta.3"
-    amplify-dotnet-function-template-provider "2.4.4-beta.3"
-    amplify-go-function-runtime-provider "2.3.10-beta.3"
-    amplify-java-function-runtime-provider "2.3.10-beta.3"
-    amplify-java-function-template-provider "1.5.15-beta.6"
-    amplify-nodejs-function-runtime-provider "2.3.10-beta.3"
-    amplify-prompts "2.6.4-beta.3"
-    amplify-python-function-runtime-provider "2.4.10-beta.3"
+    amplify-dotnet-function-runtime-provider "1.7.3-zzz-beta.0"
+    amplify-go-function-runtime-provider "2.3.13-zzz-beta.0"
+    amplify-java-function-runtime-provider "2.3.13-zzz-beta.0"
+    amplify-java-function-template-provider "1.5.16"
+    amplify-nodejs-function-runtime-provider "2.3.13-zzz-beta.0"
+    amplify-prompts "2.6.5-zzz-beta.0"
+    amplify-python-function-runtime-provider "2.4.13-zzz-beta.0"
     aws-cdk-lib "~2.53.0"
     aws-sdk "^2.1233.0"
     chalk "^4.1.1"
@@ -638,14 +853,13 @@
     fs-extra "^8.1.0"
     glob "^7.2.0"
     graphql "^15.5.0"
-    graphql-transformer-core "8.0.0-beta.6"
+    graphql-transformer-core "^8.0.0"
     gunzip-maybe "^1.4.2"
     hidefile "^3.0.0"
     ini "^1.3.5"
     inquirer "^7.3.3"
     lodash "^4.17.21"
     node-fetch "^2.6.7"
-    open "^8.4.0"
     ora "^4.0.3"
     progress "^2.0.3"
     promise-sequential "^1.1.1"
@@ -725,35 +939,6 @@
     "@turf/boolean-clockwise" "6.5.0"
     camelcase-keys "6.2.2"
 
-"@aws-amplify/graphql-auth-transformer@2.1.0-beta.6":
-  version "2.1.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-auth-transformer/-/graphql-auth-transformer-2.1.0-beta.6.tgz#44d4b56dffe3669c92fdc8a66e9241cc4b304f96"
-  integrity sha512-1pdJajVNyghhO13k5IoiEq/X4GCfGIUs1tJqZeYlsxh3jUJTWz3noKDR788z7dEUEp76X5RXd1dItG10tflY9Q==
-  dependencies:
-    "@aws-amplify/graphql-model-transformer" "1.1.0-beta.6"
-    "@aws-amplify/graphql-relational-transformer" "1.1.0-beta.6"
-    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
-    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
-    aws-cdk-lib "~2.53.0"
-    constructs "^10.0.5"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8-beta.2"
-    graphql-transformer-common "4.24.5-beta.2"
-    lodash "^4.17.21"
-    md5 "^2.3.0"
-
-"@aws-amplify/graphql-default-value-transformer@1.1.0-beta.6":
-  version "1.1.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-default-value-transformer/-/graphql-default-value-transformer-1.1.0-beta.6.tgz#5805522c9b8f6bef73fc09e6c9b4b08bae56a589"
-  integrity sha512-v8gIQO3oEgcXo7tFYfmml787++/WOyCDzrx8lXTSSMPB7OlfDPtbGFVAMUnXfGQBBj6KDMVuLJK+ZGS8fJ4Oug==
-  dependencies:
-    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
-    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8-beta.2"
-    graphql-transformer-common "4.24.5-beta.2"
-    libphonenumber-js "1.9.47"
-
 "@aws-amplify/graphql-docs-generator@3.0.3":
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-docs-generator/-/graphql-docs-generator-3.0.3.tgz#1bc720b6b70293b14bdc8195b47b0fc196aaf4e7"
@@ -763,121 +948,6 @@
     handlebars "4.7.7"
     prettier "^1.19.1"
     yargs "^15.1.0"
-
-"@aws-amplify/graphql-function-transformer@1.1.0-beta.6":
-  version "1.1.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-function-transformer/-/graphql-function-transformer-1.1.0-beta.6.tgz#e59defbf9d7bca4875b0cca2b1df845696328c4a"
-  integrity sha512-z6fHNaYFkUlUygEOtU/3rfeyZwbLdC//GzBSl4g3meCcKWwjSi4gb7KLG8JsUMHcN4xILaJdxtkBtjF64cre3w==
-  dependencies:
-    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
-    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
-    "@aws-cdk/aws-appsync-alpha" "~2.53.0-alpha.0"
-    aws-cdk-lib "~2.53.0"
-    constructs "^10.0.5"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8-beta.2"
-    graphql-transformer-common "4.24.5-beta.2"
-
-"@aws-amplify/graphql-http-transformer@1.1.0-beta.6":
-  version "1.1.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-http-transformer/-/graphql-http-transformer-1.1.0-beta.6.tgz#3696b2368a3d3fe6fddf3e6a68d42b4b2f548ca1"
-  integrity sha512-SnpnLwkr7eJ/ELoE4o//KvdkxfmjH8aaM69r/LjBsTdQBGEkMLyZXl8X9jDHso6U+h98552nIPFaJL9+H3JsvQ==
-  dependencies:
-    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
-    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
-    "@aws-cdk/aws-appsync-alpha" "~2.53.0-alpha.0"
-    aws-cdk-lib "~2.53.0"
-    constructs "^10.0.5"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8-beta.2"
-    graphql-transformer-common "4.24.5-beta.2"
-
-"@aws-amplify/graphql-index-transformer@1.1.0-beta.6":
-  version "1.1.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-index-transformer/-/graphql-index-transformer-1.1.0-beta.6.tgz#198e9e7edbe5a2d0cf032f07719d9dd0f98b3d36"
-  integrity sha512-YDecyUOBYkViFIu1Kdh+qfawpq6600rwQtrGg5sNQNKulLc/oDkoRHRmYhIiockwHlZxrJ32x4jyx/8U8/maQQ==
-  dependencies:
-    "@aws-amplify/graphql-model-transformer" "1.1.0-beta.6"
-    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
-    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
-    "@aws-cdk/aws-appsync-alpha" "~2.53.0-alpha.0"
-    aws-cdk-lib "~2.53.0"
-    constructs "^10.0.5"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8-beta.2"
-    graphql-transformer-common "4.24.5-beta.2"
-
-"@aws-amplify/graphql-maps-to-transformer@2.1.0-beta.6":
-  version "2.1.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-maps-to-transformer/-/graphql-maps-to-transformer-2.1.0-beta.6.tgz#d88d2014d9d3e87043dd25abc9c613748f97eb6e"
-  integrity sha512-lxQetMQFdMuXh2mr/Oc/FPuXIPXDyQsHfxNHDOMZEZH2NFRye6aP3u8M/wPQ5CCBhNkZIep3jQT0yyWeTGn47w==
-  dependencies:
-    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
-    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
-    "@aws-cdk/aws-appsync-alpha" "~2.53.0-alpha.0"
-    aws-cdk-lib "~2.53.0"
-    constructs "^10.0.5"
-    graphql-mapping-template "4.20.8-beta.2"
-    graphql-transformer-common "4.24.5-beta.2"
-
-"@aws-amplify/graphql-model-transformer@1.1.0-beta.6":
-  version "1.1.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-model-transformer/-/graphql-model-transformer-1.1.0-beta.6.tgz#dc5adf2b2f4d70a3ae73a7852a08a987c835e44c"
-  integrity sha512-gCZPjZc//rNP6tlFcLcUp10xXhY5yMKsKJS6UbDcsElyytC+3BAyZFMmYp0UvVsl8N3z6DVm0ZD5eqCyKMP7+g==
-  dependencies:
-    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
-    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
-    "@aws-cdk/aws-appsync-alpha" "~2.53.0-alpha.0"
-    aws-cdk-lib "~2.53.0"
-    constructs "^10.0.5"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8-beta.2"
-    graphql-transformer-common "4.24.5-beta.2"
-
-"@aws-amplify/graphql-predictions-transformer@1.1.0-beta.6":
-  version "1.1.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-predictions-transformer/-/graphql-predictions-transformer-1.1.0-beta.6.tgz#47c24768320c68d5c65419c30801b31e650faf91"
-  integrity sha512-cjaENm7NS6WGBSuS3dYRpLbdTP3hpew27Zw0TrdK8KBg3x8ctd25OviOle5MPM2YlB5wyH87EXIug5g9y84hyg==
-  dependencies:
-    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
-    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
-    "@aws-cdk/aws-appsync-alpha" "~2.53.0-alpha.0"
-    aws-cdk-lib "~2.53.0"
-    constructs "^10.0.5"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8-beta.2"
-    graphql-transformer-common "4.24.5-beta.2"
-
-"@aws-amplify/graphql-relational-transformer@1.1.0-beta.6":
-  version "1.1.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-relational-transformer/-/graphql-relational-transformer-1.1.0-beta.6.tgz#60c594065d1338a2cabd2737fd0577f25309f417"
-  integrity sha512-M1P4hBS+co081fmWWYcLHzuTxgFoGjYDtECUZKh0lGInxncJUWJCnkqdXPUAWmMgYTbprnmTZxSYCO0lOsiCzQ==
-  dependencies:
-    "@aws-amplify/graphql-index-transformer" "1.1.0-beta.6"
-    "@aws-amplify/graphql-model-transformer" "1.1.0-beta.6"
-    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
-    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
-    aws-cdk-lib "~2.53.0"
-    constructs "^10.0.5"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8-beta.2"
-    graphql-transformer-common "4.24.5-beta.2"
-    immer "^9.0.12"
-
-"@aws-amplify/graphql-searchable-transformer@1.1.0-beta.6":
-  version "1.1.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-searchable-transformer/-/graphql-searchable-transformer-1.1.0-beta.6.tgz#53b05bd40db0ab33ed2a9f9099d8f86c7c257eb1"
-  integrity sha512-lKb+efYyABVQcOMxfRpNP+s4UHkIXDuhaUjqiaTbG/atDwOMXYNVER7twXyyYYXljyckuvqmTujPsLUXN7U3aQ==
-  dependencies:
-    "@aws-amplify/graphql-model-transformer" "1.1.0-beta.6"
-    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
-    "@aws-amplify/graphql-transformer-interfaces" "2.1.0-beta.6"
-    "@aws-cdk/aws-appsync-alpha" "~2.53.0-alpha.0"
-    aws-cdk-lib "~2.53.0"
-    constructs "^10.0.5"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8-beta.2"
-    graphql-transformer-common "4.24.5-beta.2"
 
 "@aws-amplify/graphql-transformer-core@1.1.0-beta.6":
   version "1.1.0-beta.6"
@@ -906,18 +976,6 @@
     aws-cdk-lib "~2.53.0"
     constructs "^10.0.5"
     graphql "^15.5.0"
-
-"@aws-amplify/graphql-transformer-migrator@2.1.0-beta.6":
-  version "2.1.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-transformer-migrator/-/graphql-transformer-migrator-2.1.0-beta.6.tgz#0bbaa9403a40ae1a2f838d802c7f60dbbba2551f"
-  integrity sha512-8yf8kwbgbrSbNCjdQd12vkMZvHzjzLittRLAocnP3IwiqECaaWh3oZt1gTE6bXIf3ZUt8sHWmuBqa0cr11e+Uw==
-  dependencies:
-    "@aws-amplify/graphql-transformer-core" "1.1.0-beta.6"
-    fs-extra "^8.1.0"
-    glob "^7.2.0"
-    graphql "^15.5.0"
-    graphql-transformer-common "4.24.5-beta.2"
-    lodash "^4.17.21"
 
 "@aws-amplify/graphql-types-generator@3.0.1":
   version "3.0.1"
@@ -7698,7 +7756,7 @@ amplify-app@4.3.10-beta.3:
     xcode "^2.1.0"
     yargs "^15.1.0"
 
-amplify-cli-core@4.0.0-beta.8:
+amplify-cli-core@4.0.0-beta.8, amplify-cli-core@4.0.0-zzz-beta.0:
   version "4.0.0-beta.8"
   resolved "https://registry.yarnpkg.com/amplify-cli-core/-/amplify-cli-core-4.0.0-beta.8.tgz#5cca928511244fd1075c7bde58b9c7705c542bc3"
   integrity sha512-7S48zI7UeyqRRzmZ3oGYwy51EAiz0urOcGyxSfPV+ZgKZGd34uocYPkx+9Us9IvpIh1UIyPLcJo1BS/VmBQrww==
@@ -7757,62 +7815,24 @@ amplify-codegen@3.3.6, amplify-codegen@^3.3.6:
     semver "^7.3.5"
     slash "^3.0.0"
 
-amplify-console-hosting@2.4.2-beta.3:
-  version "2.4.2-beta.3"
-  resolved "https://registry.yarnpkg.com/amplify-console-hosting/-/amplify-console-hosting-2.4.2-beta.3.tgz#6ef482e4d4a41d417b3848a36016fad9a579077d"
-  integrity sha512-dt4I7x9za8NBRhquWw20ZcUo/jtFRLpBIH9YPmk345cChIOpsTX+TFgUYkabfEyX4Alt+sTE6ysfSjJHN51djw==
+amplify-dotnet-function-runtime-provider@1.7.3-zzz-beta.0:
+  version "1.7.3-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/amplify-dotnet-function-runtime-provider/-/amplify-dotnet-function-runtime-provider-1.7.3-zzz-beta.0.tgz#f01f9eae5d569b7afc9d3171fbb58941f0f8ab76"
+  integrity sha512-g+iu3a8J7dMhO556An2K2QNOgNdvq7N2EvDHAo9d9xOfpxn6tnCniYG1C9dDzLVyE63zN+jPk1RnOa3G8fLTUg==
   dependencies:
-    "@aws-amplify/amplify-environment-parameters" "1.4.0-beta.2"
-    amplify-cli-core "4.0.0-beta.8"
-    archiver "^5.3.0"
-    chalk "^4.1.1"
-    cli-table3 "^0.6.0"
-    execa "^5.1.1"
-    fs-extra "^8.1.0"
-    glob "^7.2.0"
-    inquirer "^7.3.3"
-    node-fetch "^2.6.7"
-    ora "^4.0.3"
-
-amplify-container-hosting@2.5.12-beta.1:
-  version "2.5.12-beta.1"
-  resolved "https://registry.yarnpkg.com/amplify-container-hosting/-/amplify-container-hosting-2.5.12-beta.1.tgz#c0656b46becbbd39f407c5f7a1af73e563761f14"
-  integrity sha512-MtMI8Uw+bpZlsDI95F7s6LFrUUaLtAjjsqHdVLIBjjgrYWAGDDIBvDTs5nirKl8r4Dikq/jq/uIEqhiHg8xRhA==
-  dependencies:
-    "@aws-amplify/amplify-category-api" "5.1.0-beta.6"
-    amplify-cli-core "4.0.0-beta.8"
-    fs-extra "^8.1.0"
-    inquirer "^7.3.3"
-    mime-types "^2.1.26"
-    promise-sequential "^1.1.1"
-
-amplify-dotnet-function-runtime-provider@1.7.2-beta.3:
-  version "1.7.2-beta.3"
-  resolved "https://registry.yarnpkg.com/amplify-dotnet-function-runtime-provider/-/amplify-dotnet-function-runtime-provider-1.7.2-beta.3.tgz#6fa075b83e3f9ec98228f58f47e582a1259d508f"
-  integrity sha512-1CGqW3lR35xxuKXcuhflPRKntl74XMkTQ/9y45sqTkIHrtTgNDHkwzdvySUVMYqiQ57tqdpFbmErg7piVGG20g==
-  dependencies:
-    amplify-function-plugin-interface "1.9.6-beta.6"
-    amplify-prompts "2.6.4-beta.3"
+    amplify-function-plugin-interface "1.9.7"
+    amplify-prompts "2.6.5-zzz-beta.0"
     execa "^5.1.1"
     fs-extra "^8.1.0"
     glob "^7.2.0"
     which "^2.0.2"
 
-amplify-dotnet-function-template-provider@2.4.4-beta.3:
-  version "2.4.4-beta.3"
-  resolved "https://registry.yarnpkg.com/amplify-dotnet-function-template-provider/-/amplify-dotnet-function-template-provider-2.4.4-beta.3.tgz#b1573f4d3fc0d2d8d5d2bb91d92ba00f3775b8a1"
-  integrity sha512-JbSP2Wo+dGd9gb58dVCFz2ArY1HBkhJxHuyilekJ4irv7BljWTTQRQItZ1T3nwJZPgs7bqbaM5yPD0QMxtKBMw==
+amplify-dynamodb-simulator@2.5.9-zzz-beta.0:
+  version "2.5.9-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/amplify-dynamodb-simulator/-/amplify-dynamodb-simulator-2.5.9-zzz-beta.0.tgz#12d3a7fb747bed474069514260ad1cc30ed09388"
+  integrity sha512-PLRZjIXL7YdYjcl8fAStfwtefmA8W5txceAEpiWjgRCQKnAYjzzyMX1kmECi7CqcsTewkkMxguu5LmKmDtci2g==
   dependencies:
-    amplify-cli-core "4.0.0-beta.8"
-    amplify-function-plugin-interface "1.9.6-beta.6"
-    graphql-transformer-core "8.0.0-beta.6"
-
-amplify-dynamodb-simulator@2.5.6-beta.3:
-  version "2.5.6-beta.3"
-  resolved "https://registry.yarnpkg.com/amplify-dynamodb-simulator/-/amplify-dynamodb-simulator-2.5.6-beta.3.tgz#645b8c521e76c7a9e5ab79d7c0f3f9cb66762a5d"
-  integrity sha512-3LJgA+CDXhbxtKhLUAI1O5Wr1K5TOCA52Sl1Z4lwSeUF3PFBiey49V/NSEuwotFlR1mvvCx08H9irHmAzbhwBA==
-  dependencies:
-    amplify-cli-core "4.0.0-beta.8"
+    amplify-cli-core "4.0.0-zzz-beta.0"
     aws-sdk "^2.1233.0"
     detect-port "^1.3.0"
     execa "^5.1.1"
@@ -7827,18 +7847,23 @@ amplify-function-plugin-interface@1.9.6-beta.6:
   resolved "https://registry.yarnpkg.com/amplify-function-plugin-interface/-/amplify-function-plugin-interface-1.9.6-beta.6.tgz#55d00ccbce91c827ea56d0e5436893d053ceb388"
   integrity sha512-cKm9U/CHCFdANYnIxopEiw950eUIXCbMPqiGUdXZzyk4zkK6h4blPmgC674vMEQ2/3CBvREIEP/bCM2VUyi02Q==
 
+amplify-function-plugin-interface@1.9.7:
+  version "1.9.7"
+  resolved "https://registry.yarnpkg.com/amplify-function-plugin-interface/-/amplify-function-plugin-interface-1.9.7.tgz#cd872a8c619f5b50661e7ca073fa59feaed12b28"
+  integrity sha512-CMch7pWKtnEP8Y0OC8CTJ0vJSoT82yshG2e7dffkoxk29n7aeHgirMUFKgQ+MUFEXYsU+G5zJ4iksU/VtVQJ4w==
+
 amplify-function-plugin-interface@^1.9.6-beta.6:
   version "1.9.6"
   resolved "https://registry.yarnpkg.com/amplify-function-plugin-interface/-/amplify-function-plugin-interface-1.9.6.tgz#4773369c2e8f964579a7563142bb6eb404855764"
   integrity sha512-kVXgfRsSYspg6i8McFK3JCxzArCD1vfoMstWNEj7ut3QmU6zgJEsoY8z0RoOZq5yftXSr8NCpvgzlJVwLTwPWA==
 
-amplify-go-function-runtime-provider@2.3.10-beta.3:
-  version "2.3.10-beta.3"
-  resolved "https://registry.yarnpkg.com/amplify-go-function-runtime-provider/-/amplify-go-function-runtime-provider-2.3.10-beta.3.tgz#8c7b01570ee72ae46c7800a08784c8135fbd0afc"
-  integrity sha512-PybFp3T6ndxJ64+g4uTFb5Cpz4HMel/EOxaYgPk0JoYU1OBzTI23kCr1uRltwKoSWxgdqpfqLtOVBogY7NvfNw==
+amplify-go-function-runtime-provider@2.3.13-zzz-beta.0:
+  version "2.3.13-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/amplify-go-function-runtime-provider/-/amplify-go-function-runtime-provider-2.3.13-zzz-beta.0.tgz#00e970721bb19dc2b2b8c5a8ca92443e728f627c"
+  integrity sha512-jqEbcfdv/8IHx4TR5YH38bOW8McYFvUt/FO/inCZDexMXQPPU2LtuE6iMqHtq7Qjk/FDqZLZut4+mmfT1UtWBA==
   dependencies:
-    amplify-cli-core "4.0.0-beta.8"
-    amplify-function-plugin-interface "1.9.6-beta.6"
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    amplify-function-plugin-interface "1.9.7"
     archiver "^5.3.0"
     execa "^5.1.1"
     fs-extra "^8.1.0"
@@ -7847,30 +7872,35 @@ amplify-go-function-runtime-provider@2.3.10-beta.3:
     semver "^7.3.5"
     which "^2.0.2"
 
+amplify-headless-interface@1.17.1:
+  version "1.17.1"
+  resolved "https://registry.yarnpkg.com/amplify-headless-interface/-/amplify-headless-interface-1.17.1.tgz#37ffe7b0d51d91a3830500a6b138290dbe1244c8"
+  integrity sha512-sieL6xE4srcwqJ1LxzDrcI12uNGm9YoVi52hZUc//WbOGp5o0Qt7fmtI/zYqmiRA0tHiiL9wBwdsOnyhJ60twA==
+
 amplify-headless-interface@1.17.1-beta.3:
   version "1.17.1-beta.3"
   resolved "https://registry.yarnpkg.com/amplify-headless-interface/-/amplify-headless-interface-1.17.1-beta.3.tgz#d6e5f582444c9e19b8d0f33aa60df2dcd349ba6a"
   integrity sha512-s5keF3owxIT/ywLCQ/F7x5b9FGuSc3s3eOhgcZmTgO5o0voTUWwbxIZ2tlpuZ+B2K8StvojMhYXdMbYu9okV2w==
 
-amplify-java-function-runtime-provider@2.3.10-beta.3:
-  version "2.3.10-beta.3"
-  resolved "https://registry.yarnpkg.com/amplify-java-function-runtime-provider/-/amplify-java-function-runtime-provider-2.3.10-beta.3.tgz#40a634138a464df687638b69e4466cb8667a68cd"
-  integrity sha512-cmCA2kvHG5MaZN6C9aJEE1P65OzTYpp3MnberDVAajC2bW5ovLk7ck8HzUmLKHvi847G4xw85+Mh8D49HQqo7Q==
+amplify-java-function-runtime-provider@2.3.13-zzz-beta.0:
+  version "2.3.13-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/amplify-java-function-runtime-provider/-/amplify-java-function-runtime-provider-2.3.13-zzz-beta.0.tgz#c79460c37b120c0d5f151aa6ffc48e9ece7cef54"
+  integrity sha512-k5hY7MyWmzjUPd7qYMk/T4Ui8mtxtJIh0Lq97v6IfD12uwKbFB9cFeWS5CKVR3XC0P9LJD9MHh6Ss683L8W5vw==
   dependencies:
-    amplify-cli-core "4.0.0-beta.8"
-    amplify-function-plugin-interface "1.9.6-beta.6"
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    amplify-function-plugin-interface "1.9.7"
     execa "^5.1.1"
     fs-extra "^8.1.0"
     glob "^7.2.0"
     semver "^7.3.5"
     which "^2.0.2"
 
-amplify-java-function-template-provider@1.5.15-beta.6:
-  version "1.5.15-beta.6"
-  resolved "https://registry.yarnpkg.com/amplify-java-function-template-provider/-/amplify-java-function-template-provider-1.5.15-beta.6.tgz#70188f49aeefd79ca45a7d9010ffc67b100dafda"
-  integrity sha512-LmwHVIfkiTXazKIaycSG9QVszhmzumNz3dbco35Ygu/BhbFL1giqjhECe7FxDCXtv6312NnSXZsR3nsemkKOmg==
+amplify-java-function-template-provider@1.5.16:
+  version "1.5.16"
+  resolved "https://registry.yarnpkg.com/amplify-java-function-template-provider/-/amplify-java-function-template-provider-1.5.16.tgz#029624446dcbb31eef43556d51231443ce86292a"
+  integrity sha512-ayBMN6qY7NgCRlziHdoCZkSZp7SgL+/6dT/aGa2nXBcOkmIuVoA5DG+zzZCwFoWW8JAot3LogyONKG5XJ7nQSg==
   dependencies:
-    amplify-function-plugin-interface "1.9.6-beta.6"
+    amplify-function-plugin-interface "1.9.7"
 
 amplify-nodejs-function-runtime-provider@2.3.10-beta.3:
   version "2.3.10-beta.3"
@@ -7879,6 +7909,18 @@ amplify-nodejs-function-runtime-provider@2.3.10-beta.3:
   dependencies:
     amplify-cli-core "4.0.0-beta.8"
     amplify-function-plugin-interface "1.9.6-beta.6"
+    execa "^5.1.1"
+    exit "^0.1.2"
+    fs-extra "^8.1.0"
+    glob "^7.2.0"
+
+amplify-nodejs-function-runtime-provider@2.3.13-zzz-beta.0:
+  version "2.3.13-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/amplify-nodejs-function-runtime-provider/-/amplify-nodejs-function-runtime-provider-2.3.13-zzz-beta.0.tgz#f287382823b612c8bbf0c317a6ed4db424fdda9d"
+  integrity sha512-875XQhpelDa1Sc6xk2SQvf3DBlEOlaPIDq+YevVtKCJ90srJyd/NLKn274pvW6SPXPDXHr3wqAtu2sA8Rx1C4g==
+  dependencies:
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    amplify-function-plugin-interface "1.9.7"
     execa "^5.1.1"
     exit "^0.1.2"
     fs-extra "^8.1.0"
@@ -7893,23 +7935,32 @@ amplify-prompts@2.6.4-beta.3:
     chalk "^4.1.1"
     enquirer "^2.3.6"
 
-amplify-python-function-runtime-provider@2.4.10-beta.3:
-  version "2.4.10-beta.3"
-  resolved "https://registry.yarnpkg.com/amplify-python-function-runtime-provider/-/amplify-python-function-runtime-provider-2.4.10-beta.3.tgz#23f03357b2adf9b98b75ffcadba56a506097d895"
-  integrity sha512-fq9ViACXP65LbVqC/GH2+USb47XGKdgFfGqbIGBDxx+p2xxDsctRcoH+XBeR6be6ySyJ4OxwPIkmzAfJuNQzTw==
+amplify-prompts@2.6.5-zzz-beta.0:
+  version "2.6.5-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/amplify-prompts/-/amplify-prompts-2.6.5-zzz-beta.0.tgz#0c7d07810baee77046cdb4cc69f30f9aa9d5edff"
+  integrity sha512-Ny2Q6G+GdxXxIfqGx6GD5qokJC22PnPJDS+3IarpXgLfVhwDsjgJf/IzwxD4xPRVXggLEm0Dv1sOjzQcrJklsQ==
   dependencies:
-    amplify-cli-core "4.0.0-beta.8"
-    amplify-function-plugin-interface "1.9.6-beta.6"
+    "@aws-amplify/amplify-cli-shared-interfaces" "1.2.0-zzz-beta.0"
+    chalk "^4.1.1"
+    enquirer "^2.3.6"
+
+amplify-python-function-runtime-provider@2.4.13-zzz-beta.0:
+  version "2.4.13-zzz-beta.0"
+  resolved "https://registry.yarnpkg.com/amplify-python-function-runtime-provider/-/amplify-python-function-runtime-provider-2.4.13-zzz-beta.0.tgz#de8a2119dfc2b2b12f9732854adc42550a05db55"
+  integrity sha512-C6KS4vM40yBf8SdHcVI2ZsdFfEc1/F+k1vhewmGEcVBLy1RS7RF8n+/WquffAMesDlwnjWs/uaILhSVIwmFj4A==
+  dependencies:
+    amplify-cli-core "4.0.0-zzz-beta.0"
+    amplify-function-plugin-interface "1.9.7"
     execa "^5.1.1"
     glob "^7.2.0"
     ini "^1.3.5"
     semver "^7.3.5"
     which "^2.0.2"
 
-amplify-storage-simulator@1.7.3-beta.3:
-  version "1.7.3-beta.3"
-  resolved "https://registry.yarnpkg.com/amplify-storage-simulator/-/amplify-storage-simulator-1.7.3-beta.3.tgz#ce4d7f029a23b03b5079fa0028680631c52c5b97"
-  integrity sha512-9d6BeGBFT8xTI61AkOekLKfzPGK/CWFdpuDST6dx1jtPhUax+c/zlyNy5q2l+HXAxGDNYb7YfH9j8srDus7W9w==
+amplify-storage-simulator@1.7.3:
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/amplify-storage-simulator/-/amplify-storage-simulator-1.7.3.tgz#cbf70ba3ece34b23eaeb290e3d74b184ec9d3e16"
+  integrity sha512-ZPGrkqVszENcMGM2iEz+ngE+R8p63KCe8BIIa6UM2bXzOdNbptvFBjh1egHTpuEqY3Tuwiflfoi36V9VfqlAbg==
   dependencies:
     body-parser "^1.19.2"
     cors "^2.8.5"
@@ -7942,6 +7993,14 @@ amplify-storage-simulator@^1.7.3-beta.3:
     xml "^1.0.1"
     xml-js "^1.6.11"
 
+amplify-util-headless-input@1.9.10:
+  version "1.9.10"
+  resolved "https://registry.yarnpkg.com/amplify-util-headless-input/-/amplify-util-headless-input-1.9.10.tgz#42e49b8e54513a005f8b138d6abce21721440a33"
+  integrity sha512-9Cj091zYhfPkU81AICVlM7IyUtkwkyg+BG+8oMadrhIr5A6sKg7e6Ji0XJCfEWo5rq76FZW09ToJSnGK6RbdKw==
+  dependencies:
+    ajv "^6.12.6"
+    amplify-headless-interface "1.17.1"
+
 amplify-util-headless-input@1.9.10-beta.3:
   version "1.9.10-beta.3"
   resolved "https://registry.yarnpkg.com/amplify-util-headless-input/-/amplify-util-headless-input-1.9.10-beta.3.tgz#b16052f08d8b40c80a6d16d0576b978493f22b6e"
@@ -7949,6 +8008,13 @@ amplify-util-headless-input@1.9.10-beta.3:
   dependencies:
     ajv "^6.12.6"
     amplify-headless-interface "1.17.1-beta.3"
+
+amplify-velocity-template@1.4.9:
+  version "1.4.9"
+  resolved "https://registry.yarnpkg.com/amplify-velocity-template/-/amplify-velocity-template-1.4.9.tgz#ad0bccb1a9eb2abbc50df6e2a0959665a9bc5eea"
+  integrity sha512-IxbMqFr8jxVrg76ezmTe4ndJEdMZjRVERXDrMCaJx+j8r3G9x51CiFxQ9CK2JaD+Xjnlh7aEZQrq6zFfaFIjog==
+  dependencies:
+    lodash "^4.17.21"
 
 amplify-velocity-template@1.4.9-beta.1:
   version "1.4.9-beta.1"
@@ -12761,17 +12827,6 @@ graceful-fs@4.2.10, graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2
   resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.10.tgz#147d3a006da4ca3ce14728c7aefc287c367d7a6c"
   integrity sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==
 
-graphql-auth-transformer@7.2.49-beta.2:
-  version "7.2.49-beta.2"
-  resolved "https://registry.yarnpkg.com/graphql-auth-transformer/-/graphql-auth-transformer-7.2.49-beta.2.tgz#7b2c7d713235794c63a04df560342438fe9b6a22"
-  integrity sha512-xLxh009nSD4kJFw2ArtXcieJ03RFu5z4Q3/nv9Od5KjptP7uN/za1DL5ZJ1Tuhg5hVQF/pKNf2MQVbU5FDTGkg==
-  dependencies:
-    graphql "^15.5.0"
-    graphql-connection-transformer "5.2.48-beta.2"
-    graphql-mapping-template "4.20.8-beta.2"
-    graphql-transformer-common "4.24.5-beta.2"
-    graphql-transformer-core "8.0.0-beta.6"
-
 graphql-config@^2.2.1:
   version "2.2.2"
   resolved "https://registry.npmjs.org/graphql-config/-/graphql-config-2.2.2.tgz#a4b577826bba9b83e7b0f6cd617be43ca67da045"
@@ -12782,66 +12837,6 @@ graphql-config@^2.2.1:
     js-yaml "^3.10.0"
     lodash "^4.17.4"
     minimatch "^3.0.4"
-
-graphql-connection-transformer@5.2.48-beta.2:
-  version "5.2.48-beta.2"
-  resolved "https://registry.yarnpkg.com/graphql-connection-transformer/-/graphql-connection-transformer-5.2.48-beta.2.tgz#502c843b5599f02ec77eb7675493a6a07335ad89"
-  integrity sha512-Kj7/ex9oZb0svkbMEdw9W5sAklbYMQBJEvdzONGxAgnyeGk5gb2bFMq1wfFSWTgZk+n8qTdRzo/QYkgy4n+Wbw==
-  dependencies:
-    cloudform-types "^4.2.0"
-    graphql "^15.5.0"
-    graphql-dynamodb-transformer "7.2.48-beta.2"
-    graphql-key-transformer "3.2.48-beta.2"
-    graphql-mapping-template "4.20.8-beta.2"
-    graphql-transformer-common "4.24.5-beta.2"
-    graphql-transformer-core "8.0.0-beta.6"
-
-graphql-dynamodb-transformer@7.2.48-beta.2:
-  version "7.2.48-beta.2"
-  resolved "https://registry.yarnpkg.com/graphql-dynamodb-transformer/-/graphql-dynamodb-transformer-7.2.48-beta.2.tgz#f1708dce230953e86fa2edc96c63ccb890e78bf0"
-  integrity sha512-izWs74nlmztYhzGHp462FH5kAg9gNa0rAm3SewB0sJPvYpiXWRqdzEiY0jl7vu0N4P9HtN7s5O2hYHNsKZzOug==
-  dependencies:
-    "@types/pluralize" "^0.0.29"
-    cloudform-types "^4.2.0"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8-beta.2"
-    graphql-transformer-common "4.24.5-beta.2"
-    graphql-transformer-core "8.0.0-beta.6"
-    md5 "^2.2.1"
-    pluralize "^8.0.0"
-
-graphql-elasticsearch-transformer@5.2.49-beta.2:
-  version "5.2.49-beta.2"
-  resolved "https://registry.yarnpkg.com/graphql-elasticsearch-transformer/-/graphql-elasticsearch-transformer-5.2.49-beta.2.tgz#97af79b10b0354679bef77a668b3030856cf0174"
-  integrity sha512-mbcmoM/L143wYCPCRviFAUI/CNE/PYgnKVcrnQQrTR21yQYIpN1qIdUw/U59k4FueCZe9rFj6nnRkZwSHsqm9g==
-  dependencies:
-    cloudform-types "^4.2.0"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8-beta.2"
-    graphql-transformer-common "4.24.5-beta.2"
-    graphql-transformer-core "8.0.0-beta.6"
-
-graphql-function-transformer@3.3.39-beta.2:
-  version "3.3.39-beta.2"
-  resolved "https://registry.yarnpkg.com/graphql-function-transformer/-/graphql-function-transformer-3.3.39-beta.2.tgz#6adc242c1d197c191141e289e12acd3e8cff96ca"
-  integrity sha512-iaoHEwWS4OS/vXnLUg8j4nzqQh+WhXSelSEXXjBrf1aOF9i13hI+wIp5xRMtMovergoFgkzpQ5CShSr/u5KXDg==
-  dependencies:
-    cloudform-types "^4.2.0"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8-beta.2"
-    graphql-transformer-common "4.24.5-beta.2"
-    graphql-transformer-core "8.0.0-beta.6"
-
-graphql-http-transformer@5.2.48-beta.2:
-  version "5.2.48-beta.2"
-  resolved "https://registry.yarnpkg.com/graphql-http-transformer/-/graphql-http-transformer-5.2.48-beta.2.tgz#aac1d264fb93d6e0d7f993d3ac2246c631b3b84f"
-  integrity sha512-O6W8p3QVmZJzp+rfj/SgxsaCjEV8UCbU6zu7mKt67TVJT5UdBf93em0BVJOuGkWzexATGHJyv3QtWSj1tF+flA==
-  dependencies:
-    cloudform-types "^4.2.0"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8-beta.2"
-    graphql-transformer-common "4.24.5-beta.2"
-    graphql-transformer-core "8.0.0-beta.6"
 
 graphql-import@^0.7.1:
   version "0.7.1"
@@ -12856,46 +12851,10 @@ graphql-iso-date@^3.6.1:
   resolved "https://registry.npmjs.org/graphql-iso-date/-/graphql-iso-date-3.6.1.tgz#bd2d0dc886e0f954cbbbc496bbf1d480b57ffa96"
   integrity sha512-AwFGIuYMJQXOEAgRlJlFL4H1ncFM8n8XmoVDTNypNOZyQ8LFDG2ppMFlsS862BSTCDcSUfHp8PD3/uJhv7t59Q==
 
-graphql-key-transformer@3.2.48-beta.2:
-  version "3.2.48-beta.2"
-  resolved "https://registry.yarnpkg.com/graphql-key-transformer/-/graphql-key-transformer-3.2.48-beta.2.tgz#f88ac7eaf423f359aa681571e3178ba09a4dba68"
-  integrity sha512-CTIpQ2NVqhgzR+ypi7Q6epUdvqr55LmEIBHL0dJ00m1ap2IZknun88ruKeAag4KPE4EW8Hg+HB+b2VGYh/Q1JA==
-  dependencies:
-    cloudform-types "^4.2.0"
-    graphql "^15.5.0"
-    graphql-dynamodb-transformer "7.2.48-beta.2"
-    graphql-mapping-template "4.20.8-beta.2"
-    graphql-transformer-common "4.24.5-beta.2"
-    graphql-transformer-core "8.0.0-beta.6"
-    lodash "^4.17.21"
-
 graphql-mapping-template@4.20.8-beta.2:
   version "4.20.8-beta.2"
   resolved "https://registry.yarnpkg.com/graphql-mapping-template/-/graphql-mapping-template-4.20.8-beta.2.tgz#1cb03e05178438cb724fa5084c02c0c58af2fd2b"
   integrity sha512-9Lje+k2JihzKkvH9pF4K5bOXYNA04H8Zo0v8kGcBM1V0sMfvR1dIR2XynaVSvzJKEEHrRYlhRNFzEiLfVCrfWQ==
-
-graphql-predictions-transformer@3.2.48-beta.2:
-  version "3.2.48-beta.2"
-  resolved "https://registry.yarnpkg.com/graphql-predictions-transformer/-/graphql-predictions-transformer-3.2.48-beta.2.tgz#b91844109788e57c3773bcb569909a03a5bed6e8"
-  integrity sha512-OeAvtFBwdwSmGi55UKb/WLdSHw77qfnsWWVrK32wCZCN2bjgeM+2in2AOZ9cNL58DQ1sPi4ePnfNAGVpbiKbfg==
-  dependencies:
-    cloudform-types "^4.2.0"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8-beta.2"
-    graphql-transformer-common "4.24.5-beta.2"
-    graphql-transformer-core "8.0.0-beta.6"
-
-graphql-relational-schema-transformer@2.21.16-beta.1:
-  version "2.21.16-beta.1"
-  resolved "https://registry.yarnpkg.com/graphql-relational-schema-transformer/-/graphql-relational-schema-transformer-2.21.16-beta.1.tgz#7bb1f952b9c8a09a8bb163c65bbb48da23f19a4b"
-  integrity sha512-DXEKNAM0k6xdaigNqSswX4jM3ci/HALRtuauhwg1x53tMViqy2tFUwe/6l5do2Ana9H2cahiM5427Cv1Tx6fuw==
-  dependencies:
-    cloudform "^4.2.0"
-    cloudform-types "^4.2.0"
-    fs-extra "^8.1.0"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8-beta.2"
-    graphql-transformer-common "4.24.5-beta.2"
 
 graphql-request@^1.5.0:
   version "1.8.2"
@@ -12941,16 +12900,6 @@ graphql-transformer-core@8.0.0-beta.6:
     graphql "^15.5.0"
     graphql-transformer-common "4.24.5-beta.2"
     lodash "^4.17.21"
-
-graphql-versioned-transformer@5.2.48-beta.2:
-  version "5.2.48-beta.2"
-  resolved "https://registry.yarnpkg.com/graphql-versioned-transformer/-/graphql-versioned-transformer-5.2.48-beta.2.tgz#153a573db0dc6d660e0147e428a13d6723013f80"
-  integrity sha512-buuh7ApdTmugWdDhM4rdddYwMmYsP36ZlM7QNIFSTl9bhdsQd2vM1artfxil45QL1esWAmWcm/ah/62d2R2TVQ==
-  dependencies:
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8-beta.2"
-    graphql-transformer-common "4.24.5-beta.2"
-    graphql-transformer-core "8.0.0-beta.6"
 
 graphql@15.8.0, graphql@^15.5.0:
   version "15.8.0"
