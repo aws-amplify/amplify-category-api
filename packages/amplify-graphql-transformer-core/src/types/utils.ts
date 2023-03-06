@@ -1,4 +1,5 @@
-import { CfnResource, Construct } from '@aws-cdk/core';
+import { CfnResource } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import _ from 'lodash';
 import {
   AmplifyApiGraphQlResourceStackTemplate,

@@ -2,7 +2,6 @@ import {
   Aws,
   CfnResource,
   CfnStack,
-  Construct,
   FileAssetPackaging,
   Fn,
   IResolveContext,
@@ -11,7 +10,8 @@ import {
   NestedStackProps,
   Stack,
   Token,
-} from '@aws-cdk/core';
+} from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import * as crypto from 'crypto';
 import { TransformerRootStack } from './root-stack';
 import { TransformerStackSythesizer } from './stack-synthesizer';

@@ -4,22 +4,21 @@ import {
   AuthorizationConfig,
   AuthorizationMode,
   AuthorizationType,
-  CfnApiKey,
-  CfnGraphQLApi,
-  CfnGraphQLSchema,
   GraphqlApiBase,
   LogConfig,
   OpenIdConnectConfig,
   UserPoolConfig,
   UserPoolDefaultAction,
-} from '@aws-cdk/aws-appsync';
+} from '@aws-cdk/aws-appsync-alpha';
+import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
 import {
   Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal,
-} from '@aws-cdk/aws-iam';
+} from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib';
 import {
-  CfnResource, Construct, Duration, Stack,
-} from '@aws-cdk/core';
-import * as cdk from '@aws-cdk/core';
+  ArnFormat, CfnResource, Duration, Stack,
+} from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { DefaultTransformHost } from './transform-host';
 
@@ -107,7 +106,7 @@ export class IamResource implements APIIAMResourceProvider {
     return this.arns.map(arn => Stack.of(api).formatArn({
       service: 'appsync',
       resource: `apis/${api.apiId}`,
-      sep: '/',
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
       resourceName: `${arn}`,
     }));
   }

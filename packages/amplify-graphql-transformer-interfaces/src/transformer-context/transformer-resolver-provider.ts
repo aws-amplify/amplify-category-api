@@ -1,4 +1,4 @@
-import { Stack } from '@aws-cdk/core';
+import { Stack } from 'aws-cdk-lib';
 import { GraphQLAPIProvider, MappingTemplateProvider } from '../graphql-api-provider';
 import { DataSourceProvider } from './transformer-datasource-provider';
 import { TransformerContextProvider } from './transformer-context-provider';

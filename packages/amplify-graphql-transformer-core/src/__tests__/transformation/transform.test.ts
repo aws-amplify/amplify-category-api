@@ -1,5 +1,5 @@
 import { AppSyncAuthConfiguration, TransformerPluginProvider, TransformerPluginType } from '@aws-amplify/graphql-transformer-interfaces';
-import { App } from '@aws-cdk/core';
+import { App } from 'aws-cdk-lib';
 import { GraphQLApi } from '../../graphql-api';
 import { GraphQLTransform } from '../../transformation/transform';
 import { TransformerOutput } from '../../transformer-context/output';

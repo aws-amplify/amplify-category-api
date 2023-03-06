@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import glob from 'glob';
 import { CloudFormation, Fn, Template } from 'cloudform-types';
-import { DeploymentResources } from '../DeploymentResources';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform, StackMapping } from '../GraphQLTransform';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { readFromPath, writeToPath, throwIfNotJSONExt, emptyDirectory, handleFile, FileHandler } from './fileUtils';

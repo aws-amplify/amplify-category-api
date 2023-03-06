@@ -1,4 +1,7 @@
-import Template from 'cloudform-types/types/template';
+import {
+  NestedStacks,
+  Template,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { Fn, CloudFormation, StringParameter } from 'cloudform-types';
 import { getTemplateReferences } from './getTemplateReferences';
 import getIn from './getIn';
@@ -9,16 +12,6 @@ import Output from 'cloudform-types/types/output';
 /**
  * Stack resources
  */
-export interface NestedStacks {
-  // The root stack template.
-  rootStack: Template;
-  // All the nested stack templates.
-  stacks: {
-    [name: string]: Template;
-  };
-  // The full stack mapping for the deployment.
-  stackMapping: { [resourceId: string]: string };
-}
 interface NestedStackInfo {
   stackDependencyMap: { [k: string]: string[] };
   stackParameterMap: { [k: string]: { [p: string]: any } };

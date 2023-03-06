@@ -1,7 +1,7 @@
 import { attributeTypeFromType } from '@aws-amplify/graphql-index-transformer';
 import { getKeySchema, getTable, MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import {
   and,

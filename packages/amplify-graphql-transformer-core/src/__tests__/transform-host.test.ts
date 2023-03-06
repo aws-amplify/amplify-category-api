@@ -1,6 +1,6 @@
+import { App } from 'aws-cdk-lib';
 import { DefaultTransformHost } from '../transform-host';
 import { GraphQLApi, TransformerAPIProps } from '../graphql-api';
-import { App } from '@aws-cdk/core';
 import { InlineTemplate } from '../cdk-compat/template-asset';
 import { TransformerRootStack } from '../cdk-compat/root-stack';
 
