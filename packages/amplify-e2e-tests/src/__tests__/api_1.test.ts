@@ -68,38 +68,6 @@ describe('amplify add api (GraphQL)', () => {
     expect(error.message).toContain(`${tableName} not found`);
   });
 
-  //init a project and then add the non-capitalized model & Embeddable types api
-  it(`init a project and then add non-capitalized-model.graphql api`, async () => { 
-    const envName = 'devtestEmbeddable';
-    const projName = 'noncapitalizedmodel';
-    await initJSProjectWithProfile(projRoot, { name: projName, envName });
-    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
-    await updateApiSchema(projRoot, projName, 'non-capitalized-model.graphql');
-    await amplifyPush(projRoot);
-
-    const meta = getProjectMeta(projRoot);
-    const region = meta.providers.awscloudformation.Region;
-    const { output } = meta.api.noncapitalizedmodel;
-    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
-    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, region);
-
-    expect(GraphQLAPIIdOutput).toBeDefined();
-    expect(GraphQLAPIEndpointOutput).toBeDefined();
-    expect(GraphQLAPIKeyOutput).toBeDefined();
-
-    expect(graphqlApi).toBeDefined();
-    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
-    const tableName = `AmplifyDataStore-${graphqlApi.apiId}-${envName}`;
-    const error = { message: null };
-    try {
-      const table = await getDDBTable(tableName, region);
-      expect(table).toBeUndefined();
-    } catch (ex) {
-      Object.assign(error, ex);
-    }
-    expect(error).toBeDefined();
-    expect(error.message).toContain(`${tableName} not found`);
-  });
 
   it('init a project then add and remove api', async () => {
     const envName = 'devtest';

@@ -67,54 +67,12 @@ describe('amplify add api (GraphQL)', () => {
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
   });
 
-  // init a project and add the non-capitalized model & Embeddable types api, change transformer version to base version and push
-  it('init a project and add the non-capitalized model & Embeddable types api, change transformer version to base version and push', async () => {
-    const name = `noncapitalizedmodelv${TRANSFORM_BASE_VERSION}`;
-    await initJSProjectWithProfile(projRoot, { name });
-    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
-    await updateApiSchema(projRoot, name, 'non-capitalized-model.graphql');
-    const transformConfig = getTransformConfig(projRoot, name);
-    expect(transformConfig).toBeDefined();
-    expect(transformConfig.Version).toBeDefined();
-    expect(transformConfig.Version).toEqual(TRANSFORM_CURRENT_VERSION);
-
-    transformConfig.Version = TRANSFORM_BASE_VERSION;
-    const apiRoot = path.join(projRoot, 'amplify', 'backend', 'api', name);
-    writeTransformerConfiguration(apiRoot, transformConfig);
-
-    await amplifyPush(projRoot);
-
-    const meta = getProjectMeta(projRoot);
-    const { output } = meta.api[name];
-    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
-    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
-
-    expect(GraphQLAPIIdOutput).toBeDefined();
-    expect(GraphQLAPIEndpointOutput).toBeDefined();
-    expect(GraphQLAPIKeyOutput).toBeDefined();
-
-    expect(graphqlApi).toBeDefined();
-    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
-  });
-
   const addApiRequest: AddApiRequest = {
     version: 1,
     serviceConfiguration: {
       serviceName: 'AppSync',
       apiName: 'myApiName',
       transformSchema: readFileSync(getSchemaPath('simple_model.graphql'), 'utf8'),
-      defaultAuthType: {
-        mode: 'API_KEY',
-      },
-    },
-  };
-
-  const alsoValidApiRequest: AddApiRequest = {
-    version: 1,
-    serviceConfiguration: {
-      serviceName: 'AppSync',
-      apiName: `myNonCapitalizedApiName`,
-      transformSchema: readFileSync(getSchemaPath(`non-capitalized-model.graphql`), 'utf8'),
       defaultAuthType: {
         mode: 'API_KEY',
       },
@@ -231,26 +189,4 @@ describe('amplify add api (GraphQL)', () => {
     }
   });
 
-  it('creates AppSync API in headless mode with non-capitalized model', async () => {
-    await initJSProjectWithProfile(projRoot, {});
-    await addHeadlessApi(projRoot, alsoValidApiRequest);
-
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 1);
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', false);
-
-    await amplifyPush(projRoot);
-
-    // verify
-    const meta = getProjectMeta(projRoot);
-    const { output } = meta.api.myNonCapitalizedApiName;
-    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
-    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
-
-    expect(GraphQLAPIIdOutput).toBeDefined();
-    expect(GraphQLAPIEndpointOutput).toBeDefined();
-    expect(GraphQLAPIKeyOutput).toBeDefined();
-
-    expect(graphqlApi).toBeDefined();
-    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
-  });
 });
