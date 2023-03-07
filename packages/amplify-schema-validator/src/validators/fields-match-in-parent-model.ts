@@ -6,16 +6,14 @@ import {
   StringValueNode,
 } from 'graphql';
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
-import { getObjectWithName } from '../helpers/get-object-with-name';
-import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
 
 /**
-   * Validates that fields match in the related model
-   *
-   * @param schema graphql schema
-   * @returns true if fields match in related model
-   */
-export const validateFieldsMatchInRelatedModel = (schema: DocumentNode): Error[] => {
+ * Validates that fields match in the parent model
+ *
+ * @param schema graphql schema
+ * @returns true if fields match in parent model
+ */
+export const validateFieldsMatchInParentModel = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,
@@ -26,9 +24,7 @@ export const validateFieldsMatchInRelatedModel = (schema: DocumentNode): Error[]
     ));
 
     directiveFields?.forEach((directiveField) => {
-      const typeName = resolveFieldTypeName(directiveField.type);
-      const objectOfType = getObjectWithName(schema, typeName);
-      const fields = objectOfType?.fields;
+      const fields = objectTypeDefinition?.fields;
       if (!fields) {
         /* istanbul ignore next */
         return;
@@ -49,7 +45,7 @@ export const validateFieldsMatchInRelatedModel = (schema: DocumentNode): Error[]
           const val = (fieldArgVal as StringValueNode).value;
           if (!fieldVals.includes(val)) {
             errors.push(new InvalidDirectiveError(
-              `${val} is not a field in ${objectOfType.name.value}`,
+              `${val} is not a field in ${objectTypeDefinition.name.value}`,
             ));
           }
         });
