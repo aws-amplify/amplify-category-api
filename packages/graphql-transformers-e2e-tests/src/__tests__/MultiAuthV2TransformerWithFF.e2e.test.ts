@@ -305,7 +305,7 @@ beforeAll(async () => {
         }
         return false;
       },
-     
+
 
       getNumber: jest.fn(),
       getObject: jest.fn(),

@@ -42,7 +42,7 @@
     "vm2": "^3.9.8"
   },
   "peerDependencies": {
-    "amplify-prompts": "^2.6.4-beta.3"
+    "amplify-prompts": "^2.6.5-zzz-beta.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",

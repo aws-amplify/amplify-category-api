@@ -45,7 +45,7 @@
     "generate-password": "~1.7.0"
   },
   "peerDependencies": {
-    "amplify-cli-core": "^4.0.0-beta.8"
+    "amplify-cli-core": "^4.0.0-zzz-beta.0"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.149",
