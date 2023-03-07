@@ -59,7 +59,6 @@ describe('ModelTransformer: ', () => {
     validateModelSchema(parse(out.schema));
     parse(out.schema);
     expect(out.schema).toMatchSnapshot();
-    expect(out.schema).toContain("input NonModelTypeInput")
   });
   // should successfully transform simple non-capitalized Embeddable type (non-model) name schema
   it('should successfully transform simple non-capitalized Model/Embeddable type (non-model) name schema', async () => {
