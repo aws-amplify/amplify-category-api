@@ -1,7 +1,9 @@
 import { getInvoker, category, isMockable, getBuilder } from '@aws-amplify/amplify-category-function';
 import * as path from 'path';
 import * as inquirer from 'inquirer';
-import { $TSContext, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, JSONUtilities, pathManager, stateManager,
+} from 'amplify-cli-core';
 import _ from 'lodash';
 import { BuildType } from 'amplify-function-plugin-interface';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
@@ -45,7 +47,7 @@ export async function start(context: $TSContext) {
   const invoker = await getInvoker(context, { resourceName, handler: lambdaConfig.handler, envVars: lambdaConfig.environment });
   context.print.blue('Starting execution...');
   try {
-    const result = await timeConstrainedInvoker(invoker({ event }), context.input.options);
+    const result = await timeConstrainedInvoker(invoker({ event }), context.input.options as $TSAny);
     const stringResult =
       typeof result === 'object' ? JSON.stringify(result, undefined, 2) : typeof result === 'undefined' ? 'undefined' : result;
     context.print.success('Result:');
