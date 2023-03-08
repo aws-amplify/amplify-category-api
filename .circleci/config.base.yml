@@ -493,29 +493,31 @@ workflows:
   build_test_deploy:
     jobs:
       - build:
-          matrix:
-            parameters:
-              os:
-                - l
-                - w
+          name: build_linux
+          parameters:
+            os: l
+      - build:
+          name: build_windows
+          parameters:
+            os: w
       - lint:
           requires:
-            - build
+            - build_linux
       - validate_cdk_version:
           requires:
-            - build
+            - build_linux
       - verify-api-extract:
           requires:
-            - build
+            - build_linux
       - verify-yarn-lock:
           requires:
-            - build
+            - build_linux
       - test:
           requires:
-            - build
+            - build_linux
       - mock_e2e_tests:
           requires:
-            - build
+            - build_linux
       - graphql_e2e_tests:
           context:
             - api-e2e-test-context
@@ -537,7 +539,7 @@ workflows:
                 - /tagged-release-without-e2e-tests\/.*/
                 - /run-e2e\/.*/
           requires:
-            - build
+            - build_linux
       - amplify_e2e_tests:
           context:
             - api-cleanup-resources
@@ -608,7 +610,7 @@ workflows:
             - api-cleanup-resources
             - api-e2e-test-context
           requires:
-            - build
+            - build_linux
           filters:
             branches:
               only:
