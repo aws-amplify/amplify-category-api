@@ -257,10 +257,12 @@ const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, 
   const engine = ImportedRDSType.MYSQL;
   const apiName = getAppSyncAPIName();
   const database = await readDatabaseNameFromMeta(apiName, engine);
-  const rdsSecretPaths = await getExistingConnectionSecretNames(context, apiName, database, stateManager.getCurrentEnvName());
-  rdsSecretPaths['database'] = database;
-  if (rdsSecretPaths) {
-    outputMap.set(MYSQL_DB_TYPE, rdsSecretPaths);
+  if (database) {
+    const rdsSecretPaths = await getExistingConnectionSecretNames(context, apiName, database, stateManager.getCurrentEnvName());
+    rdsSecretPaths['database'] = database;
+    if (rdsSecretPaths) {
+      outputMap.set(MYSQL_DB_TYPE, rdsSecretPaths);
+    }
   }
   return outputMap;
 };
