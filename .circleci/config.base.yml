@@ -494,12 +494,11 @@ workflows:
     jobs:
       - build:
           name: build_linux
-          parameters:
-            os: l
+          os: l
+            
       - build:
           name: build_windows
-          parameters:
-            os: w
+          os: w
       - lint:
           requires:
             - build_linux
