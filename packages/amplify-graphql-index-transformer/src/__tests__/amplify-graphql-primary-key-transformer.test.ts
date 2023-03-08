@@ -1,10 +1,12 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema, DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { $TSAny } from 'amplify-cli-core';
 
-import { expect as cdkExpect, haveResourceLike } from '@aws-cdk/assert';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import { Kind, parse } from 'graphql';
 import { PrimaryKeyTransformer } from '..';
+import _ from 'lodash';
 
 test('throws if multiple primary keys are defined on an object', () => {
   const schema = `
@@ -308,12 +310,11 @@ test('a primary key with no sort key is properly configured', () => {
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::DynamoDB::Table', {
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::DynamoDB::Table', {
       KeySchema: [{ AttributeName: 'email', KeyType: 'HASH' }],
       AttributeDefinitions: [{ AttributeName: 'email', AttributeType: 'S' }],
-    }),
-  );
+    });
 
   expect(out.resolvers).toMatchSnapshot();
 
@@ -361,8 +362,8 @@ test('a primary key with a single sort key field is properly configured', () => 
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::DynamoDB::Table', {
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::DynamoDB::Table', {
       KeySchema: [
         { AttributeName: 'email', KeyType: 'HASH' },
         { AttributeName: 'kind', KeyType: 'RANGE' },
@@ -371,8 +372,7 @@ test('a primary key with a single sort key field is properly configured', () => 
         { AttributeName: 'email', AttributeType: 'S' },
         { AttributeName: 'kind', AttributeType: 'N' },
       ],
-    }),
-  );
+    });
 
   expect(out.resolvers).toMatchSnapshot();
 
@@ -410,8 +410,8 @@ test('a primary key with a composite sort key is properly configured', () => {
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::DynamoDB::Table', {
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::DynamoDB::Table', {
       KeySchema: [
         { AttributeName: 'email', KeyType: 'HASH' },
         { AttributeName: 'kind#other', KeyType: 'RANGE' },
@@ -420,8 +420,7 @@ test('a primary key with a composite sort key is properly configured', () => {
         { AttributeName: 'email', AttributeType: 'S' },
         { AttributeName: 'kind#other', AttributeType: 'S' },
       ],
-    }),
-  );
+    });
 
   expect(out.resolvers).toMatchSnapshot();
 
@@ -495,8 +494,8 @@ test('enums are supported in keys', () => {
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::DynamoDB::Table', {
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::DynamoDB::Table', {
       KeySchema: [
         { AttributeName: 'status', KeyType: 'HASH' },
         { AttributeName: 'lastStatus', KeyType: 'RANGE' },
@@ -505,8 +504,7 @@ test('enums are supported in keys', () => {
         { AttributeName: 'status', AttributeType: 'S' },
         { AttributeName: 'lastStatus', AttributeType: 'S' },
       ],
-    }),
-  );
+    });
 
   expect(out.resolvers).toMatchSnapshot();
 
@@ -541,12 +539,11 @@ test('user provided id fields are not removed', () => {
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::DynamoDB::Table', {
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::DynamoDB::Table', {
       KeySchema: [{ AttributeName: 'email', KeyType: 'HASH' }],
       AttributeDefinitions: [{ AttributeName: 'email', AttributeType: 'S' }],
-    }),
-  );
+    });
 
   const createInput: any = schema.definitions.find((d: any) => {
     return d.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && d.name.value === 'CreateTestInput';
@@ -1008,18 +1005,7 @@ describe('RDS primary key transformer tests', () => {
     validateModelSchema(schema);
 
     // DDB resources are not created
-    cdkExpect(stack).notTo(
-      haveResourceLike('AWS::DynamoDB::Table', {
-        KeySchema: [
-          { AttributeName: 'email', KeyType: 'HASH' },
-          { AttributeName: 'kind', KeyType: 'RANGE' },
-        ],
-        AttributeDefinitions: [
-          { AttributeName: 'email', AttributeType: 'S' },
-          { AttributeName: 'kind', AttributeType: 'N' },
-        ],
-      }),
-    );
+    expect(getDDBTableResources(stack)?.length).toEqual(0);
 
     expect(out.resolvers).toMatchSnapshot();
 
@@ -1053,12 +1039,7 @@ describe('RDS primary key transformer tests', () => {
     const stack = out.stacks.Test;
 
     validateModelSchema(schema);
-    cdkExpect(stack).notTo(
-      haveResourceLike('AWS::DynamoDB::Table', {
-        KeySchema: [{ AttributeName: 'email', KeyType: 'HASH' }],
-        AttributeDefinitions: [{ AttributeName: 'email', AttributeType: 'S' }],
-      }),
-    );
+    expect(getDDBTableResources(stack)?.length).toEqual(0);
 
     expect(out.resolvers).toMatchSnapshot();
 
@@ -1109,18 +1090,7 @@ describe('RDS primary key transformer tests', () => {
     const stack = out.stacks.Test;
 
     validateModelSchema(schema);
-    cdkExpect(stack).notTo(
-      haveResourceLike('AWS::DynamoDB::Table', {
-        KeySchema: [
-          { AttributeName: 'email', KeyType: 'HASH' },
-          { AttributeName: 'kind#other', KeyType: 'RANGE' },
-        ],
-        AttributeDefinitions: [
-          { AttributeName: 'email', AttributeType: 'S' },
-          { AttributeName: 'kind#other', AttributeType: 'S' },
-        ],
-      }),
-    );
+    expect(getDDBTableResources(stack)?.length).toEqual(0);
 
     expect(out.resolvers).toMatchSnapshot();
 
@@ -1344,3 +1314,14 @@ describe('RDS primary key transformer tests', () => {
     expect(getQuery).toBeDefined();
   });
 });
+
+const getDDBTableResources = (stack: $TSAny): string[] => {
+  const ddbTables: string[] = [];
+  const allResources: [string: $TSAny] = stack?.Resources;
+  if (!allResources || Object.keys(allResources)?.length === 0) {
+    return ddbTables;
+  }
+  return Object.keys(_.pickBy(allResources, function(value, key) {
+    return value?.Type === "AWS::DynamoDB::Table";
+  }));
+} ;

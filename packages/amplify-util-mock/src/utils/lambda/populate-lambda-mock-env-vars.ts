@@ -4,7 +4,7 @@ import {
 import _ from 'lodash';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
-import { loadConfigurationForEnv, resolveAppId } from 'amplify-provider-awscloudformation';
+import { loadConfigurationForEnv, resolveAppId } from '@aws-amplify/amplify-provider-awscloudformation';
 import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';
 
 /**

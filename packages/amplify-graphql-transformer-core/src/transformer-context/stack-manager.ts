@@ -1,7 +1,7 @@
 import { StackManagerProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   Stack, App, CfnParameter, CfnParameterProps,
-} from '@aws-cdk/core';
+} from 'aws-cdk-lib';
 import { TransformerNestedStack, TransformerRootStack, TransformerStackSythesizer } from '../cdk-compat';
 
 export type ResourceToStackMap = Record<string, string>;

@@ -8,7 +8,7 @@ import {
 import { MapsToTransformer } from '../graphql-maps-to-transformer';
 import { attachInputMappingSlot, attachResponseMappingSlot, attachFilterAndConditionInputMappingSlot } from '../field-mapping-resolvers';
 import { createMappingLambda } from '../field-mapping-lambda';
-import { LambdaDataSource } from '@aws-cdk/aws-appsync';
+import { LambdaDataSource } from '@aws-cdk/aws-appsync-alpha';
 
 jest.mock('../field-mapping-resolvers');
 jest.mock('../field-mapping-lambda');
@@ -88,28 +88,30 @@ describe('@mapsTo directive', () => {
   it('requires a name to be specified', () => {
     const [stubDefinition, stubDirective, stubTransformerContext] = getTransformerInputsFromSchema(simpleSchema);
     stubDirective.arguments = [];
-    expect(() => mapsToTransformer.object(stubDefinition, stubDirective, stubTransformerContext)).toThrowErrorMatchingInlineSnapshot(
-      `"name is required in @mapsTo directive"`,
-    );
+    expect(() =>
+      mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext)
+    ).toThrowErrorMatchingInlineSnapshot(`"name is required in @mapsTo directive"`);
   });
 
   it('requires a string value for name', () => {
     const [stubDefinition, stubDirective, stubTransformerContext] = getTransformerInputsFromSchema(simpleSchema);
     stubDirective.arguments![0].value.kind = 'ListValue';
-    expect(() => mapsToTransformer.object(stubDefinition, stubDirective, stubTransformerContext)).toThrowErrorMatchingInlineSnapshot(
-      `"A single string must be provided for \\"name\\" in @mapsTo directive"`,
-    );
+    expect(() =>
+      mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext)
+    ).toThrowErrorMatchingInlineSnapshot(`"A single string must be provided for \\"name\\" in @mapsTo directive"`);
   });
 
   it('registers the rename mapping', () => {
-    mapsToTransformer.object(...getTransformerInputsFromSchema(simpleSchema));
+    const [stubDefinition, stubDirective, stubTransformerContext] = getTransformerInputsFromSchema(simpleSchema);
+    mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext)
     expect(setModelNameMapping_mock.mock.calls[0]).toEqual(['TestName', 'OriginalName']);
   });
 
   it('throws if a conflicting model name is present in the schema', () => {
-    expect(() => mapsToTransformer.object(...getTransformerInputsFromSchema(conflictingModelSchema))).toThrowErrorMatchingInlineSnapshot(
-      `"Type TestName cannot map to OriginalName because OriginalName is a model in the schema."`,
-    );
+    const [stubDefinition, stubDirective, stubTransformerContext] = getTransformerInputsFromSchema(conflictingModelSchema);
+    expect(() =>
+      mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext)
+    ).toThrowErrorMatchingInlineSnapshot(`"Type TestName cannot map to OriginalName because OriginalName is a model in the schema."`);
   });
 
   it('attaches input and response mapping templates for mutations', () => {

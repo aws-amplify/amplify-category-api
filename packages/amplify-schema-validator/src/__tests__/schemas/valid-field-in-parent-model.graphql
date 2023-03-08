@@ -1,0 +1,10 @@
+type Project @model {
+  id: ID!
+  team: Team @hasMany
+}
+
+type Team @model {
+  id: ID!
+  name: String!
+  project: Project @belongsTo(fields: ["id", "name"])
+}

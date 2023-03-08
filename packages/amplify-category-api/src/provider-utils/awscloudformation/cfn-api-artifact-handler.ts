@@ -97,6 +97,8 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     const authConfig = this.extractAuthConfig(appsyncCLIInputs.serviceConfiguration);
     const dependsOn = amendDependsOnForAuthConfig([], authConfig);
     const apiParameters = this.getCfnParameters(serviceConfig.apiName, authConfig, resourceDir);
+    this.ensureCfnParametersExist(resourceDir, apiParameters);
+    this.context.amplify.updateamplifyMetaAfterResourceAdd(category, serviceConfig.apiName, this.createAmplifyMeta(authConfig, dependsOn));
 
     if(serviceConfig?.transformSchema) {
       // write the template buffer to the project folder
@@ -109,8 +111,6 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
       });
     }
 
-    this.ensureCfnParametersExist(resourceDir, apiParameters);
-    this.context.amplify.updateamplifyMetaAfterResourceAdd(category, serviceConfig.apiName, this.createAmplifyMeta(authConfig, dependsOn));
     return serviceConfig.apiName;
   };
 

@@ -1,0 +1,11 @@
+type Test @model {
+  id: ID!
+  email: String
+  name: String
+}
+
+type Test @model {
+  id: ID!
+  email: String
+  name: String
+}

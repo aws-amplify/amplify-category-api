@@ -13,10 +13,15 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import * as appsync from '@aws-cdk/aws-appsync';
-import * as cdk from '@aws-cdk/core';
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
+import {
+  DataSourceOptions,
+  HttpDataSource,
+  LambdaDataSource,
+} from '@aws-cdk/aws-appsync-alpha';
+import * as cdk from 'aws-cdk-lib';
+import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { makeListType, makeNamedType, makeNonNullType, PredictionsResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import {
   DirectiveNode,
@@ -44,7 +49,7 @@ import {
   str,
   toJson,
 } from 'graphql-mapping-template';
-import { AuthorizationType } from '@aws-cdk/aws-appsync';
+import { AuthorizationType } from '@aws-cdk/aws-appsync-alpha';
 import { actionToDataSourceMap, actionToRoleAction, allowedActions } from './utils/action-maps';
 import {
   amzJsonContentType,
@@ -265,7 +270,7 @@ function createPredictionsDataSource(
   action: string,
   role: iam.Role,
   lambdaFn?: lambda.IFunction,
-): appsync.LambdaDataSource | appsync.HttpDataSource {
+): LambdaDataSource | HttpDataSource {
   let datasource;
 
   switch (action) {
@@ -280,7 +285,7 @@ function createPredictionsDataSource(
             signingRegion: cdk.Fn.sub('${AWS::Region}'),
             signingServiceName: 'rekognition',
           },
-        } as appsync.DataSourceOptions,
+        } as DataSourceOptions,
         stack,
       );
       break;
@@ -293,7 +298,7 @@ function createPredictionsDataSource(
             signingRegion: cdk.Fn.sub('${AWS::Region}'),
             signingServiceName: 'translate',
           },
-        } as appsync.DataSourceOptions,
+        } as DataSourceOptions,
         stack,
       );
       break;
@@ -320,7 +325,7 @@ function createResolver(
   config: PredictionsDirectiveConfiguration,
   resolvers: any[],
   bucketName: string,
-): appsync.CfnResolver {
+): CfnResolver {
   const substitutions: { [key: string]: string } = {
     hash: cdk.Fn.select(3, cdk.Fn.split('-', cdk.Fn.ref('AWS::StackName'))),
   };

@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.24.5](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.24.5-beta.0...graphql-transformer-common@4.24.5) (2023-03-01)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+## [4.24.5-beta.2](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.24.5-beta.0...graphql-transformer-common@4.24.5-beta.2) (2023-02-21)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+## [4.24.5-beta.1](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.24.5-beta.0...graphql-transformer-common@4.24.5-beta.1) (2023-02-15)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+## [4.24.5-beta.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.24.4...graphql-transformer-common@4.24.5-beta.0) (2023-02-03)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+## [4.24.4](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.24.3...graphql-transformer-common@4.24.4) (2023-01-26)
+
+**Note:** Version bump only for package graphql-transformer-common
+
 ## [4.24.3](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.24.2...graphql-transformer-common@4.24.3) (2023-01-12)
 
 **Note:** Version bump only for package graphql-transformer-common

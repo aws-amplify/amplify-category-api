@@ -30,7 +30,12 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   ITable,
-} from '@aws-cdk/aws-dynamodb';
+  StreamViewType,
+  Table,
+  TableEncryption,
+} from 'aws-cdk-lib/aws-dynamodb';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib';
 import {
   DirectiveNode,
   FieldDefinitionNode,
@@ -65,8 +70,6 @@ import {
   makeUpdateInputField,
   propagateApiKeyToNestedTypes,
 } from './graphql-types';
-import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
 import { API_KEY_DIRECTIVE } from './definitions';
 import { ModelDirectiveConfiguration, SubscriptionLevel } from './directive';
 import { ModelResourceGenerator } from './resources/model-resource-generator';

@@ -7,9 +7,7 @@ export {
   SyncUtils,
 } from './transformation';
 export {
-  DeploymentResources,
   OverrideConfig,
-  default as Template,
   UserDefinedSlot,
   UserDefinedResolver,
 } from './transformation/types';
@@ -43,7 +41,6 @@ export {
   IAM_AUTH_ROLE_PARAMETER,
   IAM_UNAUTH_ROLE_PARAMETER,
   readRDSGlobalAmplifyInput,
-  RDSDBConfig,
 } from './utils';
 export * from './utils/operation-names';
 export * from './errors';

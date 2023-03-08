@@ -305,7 +305,7 @@ beforeAll(async () => {
         }
         return false;
       },
-     
+
 
       getNumber: jest.fn(),
       getObject: jest.fn(),
@@ -854,7 +854,7 @@ describe(`Test IAM protected field operations`, () => {
         fetchPolicy: 'no-cache',
         variables: { id: postIdSecret },
       }),
-    ).rejects.toThrow('GraphQL error: Not Authorized to access secret on type String');
+    ).rejects.toThrow('GraphQL error: Not Authorized to access secret on type PostSecretFieldIAM');
   });
 });
 

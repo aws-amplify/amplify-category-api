@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformer-core",
-  "version": "7.6.9",
+  "version": "8.0.0",
   "description": "A framework to transform from GraphQL SDL to AWS cloudFormation.",
   "repository": {
     "type": "git",
@@ -24,16 +24,17 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
+    "@aws-amplify/graphql-transformer-interfaces": "2.1.0",
     "cloudform-types": "^4.2.0",
     "deep-diff": "^1.0.2",
     "fs-extra": "^8.1.0",
     "glob": "^7.2.0",
-    "graphql": "^14.5.8",
-    "graphql-transformer-common": "4.24.3",
+    "graphql": "^15.5.0",
+    "graphql-transformer-common": "4.24.5",
     "lodash": "^4.17.21"
   },
   "peerDependencies": {
-    "amplify-cli-core": "^3.0.0"
+    "amplify-cli-core": "^4.0.0-zzz-beta.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",

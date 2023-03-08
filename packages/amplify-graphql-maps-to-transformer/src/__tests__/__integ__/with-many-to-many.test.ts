@@ -1,11 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { DeploymentResources, GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { HasOneTransformer, ManyToManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DeploymentResources, FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
 import { expectedResolversForModelWithRenamedField } from './common';
 

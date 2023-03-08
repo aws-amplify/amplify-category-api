@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.16](https://github.com/aws-amplify/amplify-category-api/compare/graphql-relational-schema-transformer@2.21.15...graphql-relational-schema-transformer@2.21.16) (2023-03-01)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+## [2.21.16-beta.1](https://github.com/aws-amplify/amplify-category-api/compare/graphql-relational-schema-transformer@2.21.15...graphql-relational-schema-transformer@2.21.16-beta.1) (2023-02-21)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+## [2.21.16-beta.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-relational-schema-transformer@2.21.15...graphql-relational-schema-transformer@2.21.16-beta.0) (2023-02-15)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+## [2.21.15](https://github.com/aws-amplify/amplify-category-api/compare/graphql-relational-schema-transformer@2.21.14...graphql-relational-schema-transformer@2.21.15) (2023-02-10)
+
+### Bug Fixes
+
+- add util.toJson to values of variableMap ([052da87](https://github.com/aws-amplify/amplify-category-api/commit/052da87c5a35162f4bc32526064ca56413829abc))
+- convert the variableMap toJson only once ([ce8c555](https://github.com/aws-amplify/amplify-category-api/commit/ce8c55585a2483869b5a88da092f7dfed229588e))
+- use parameterized SQL statements and variableMap ([005cad7](https://github.com/aws-amplify/amplify-category-api/commit/005cad720cc130cb6b46c01b15f0abed976ac16b))
+
+## [2.21.14](https://github.com/aws-amplify/amplify-category-api/compare/graphql-relational-schema-transformer@2.21.13...graphql-relational-schema-transformer@2.21.14) (2023-01-26)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
 ## [2.21.13](https://github.com/aws-amplify/amplify-category-api/compare/graphql-relational-schema-transformer@2.21.12...graphql-relational-schema-transformer@2.21.13) (2023-01-12)
 
 **Note:** Version bump only for package graphql-relational-schema-transformer

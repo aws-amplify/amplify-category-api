@@ -1,14 +1,16 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as ecr from '@aws-cdk/aws-ecr';
-import * as ecs from '@aws-cdk/aws-ecs';
-import * as iam from '@aws-cdk/aws-iam';
-import { CfnFunction } from '@aws-cdk/aws-lambda';
-import * as logs from '@aws-cdk/aws-logs';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as ssm from '@aws-cdk/aws-secretsmanager';
-import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import * as cdk from '@aws-cdk/core';
-import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as ssm from 'aws-cdk-lib/aws-secretsmanager';
+import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
+import * as cdk from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { NETWORK_STACK_LOGICAL_ID } from '../../category-constants';
 import Container from './docker-compose/ecs-objects/container';
 import { GitHubSourceActionInfo, PipelineWithAwaiter } from './pipeline-with-awaiter';
@@ -74,8 +76,8 @@ export abstract class ContainersStack extends cdk.Stack {
   protected readonly deploymentBucketName: string;
   protected readonly awaiterS3Key: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: ContainersStackProps) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, private readonly props: ContainersStackProps) {
+    super(scope, id, { synthesizer: new cdk.LegacyStackSynthesizer() });
 
     const {
       parameters,
@@ -497,6 +499,23 @@ export abstract class ContainersStack extends cdk.Stack {
     const pipelineName = this.getPipelineName();
     return `https://${region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${pipelineName}/view`;
   }
+
+  /**
+   * This function renderers a full CFN template for this stack.
+   * It is inspired by
+   * https://github.com/aws/aws-cdk/blob/bd056d1d38a2d3f43efe4f857c4d38b30fb9b681/packages/%40aws-cdk/assertions/lib/template.ts#L298-L310.
+   * This replaces private prepareApp (from CDK v1) and this._toCloudFormation() (the latter does not function properly without the former).
+   */
+  private renderCfnTemplate(): any {
+    const root = this.node.root as cdk.Stage;
+    const assembly = root.synth();
+    if (this.nestedStackParent) {
+      // if this is a nested stack (it has a parent), then just read the template as a string
+      return JSON.parse(fs.readFileSync(path.join(assembly.directory, this.templateFile)).toString('utf-8'));
+    }
+    return assembly.getStackArtifact(this.artifactId).template;
+  }
+
   toCloudFormation() {
     this.node
       .findAll()
@@ -511,9 +530,7 @@ export abstract class ContainersStack extends cdk.Stack {
         }
       });
 
-    prepareApp(this);
-
-    const cfn = this._toCloudFormation();
+    const cfn = this.renderCfnTemplate();
 
     Object.keys(cfn.Parameters).forEach(k => {
       if (k.startsWith('AssetParameters')) {

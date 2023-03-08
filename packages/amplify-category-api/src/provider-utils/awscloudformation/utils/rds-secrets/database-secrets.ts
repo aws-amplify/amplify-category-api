@@ -2,7 +2,7 @@ import { $TSContext, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import { getParameterStoreSecretPath, RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { SSMClient } from './ssmClient';
-import { RDSDBConfig, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { MySQLDataSourceAdapter, Schema, Engine, DataSourceAdapter, MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
 import { printer } from 'amplify-prompts';
 import { category } from '../../../../category-constants';

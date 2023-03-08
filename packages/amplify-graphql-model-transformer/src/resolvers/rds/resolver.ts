@@ -21,7 +21,8 @@ import {
   list,
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import {
   Effect,
   IRole,
@@ -29,8 +30,8 @@ import {
   PolicyStatement,
   Role,
   ServicePrincipal,
-} from '@aws-cdk/aws-iam';
-import { IFunction, Runtime } from '@aws-cdk/aws-lambda';
+} from 'aws-cdk-lib/aws-iam';
+import { IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import path from 'path';
 import {RDSConnectionSecrets} from '@aws-amplify/graphql-transformer-core';

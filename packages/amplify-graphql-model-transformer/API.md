@@ -5,7 +5,7 @@
 ```ts
 
 import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql';
@@ -13,7 +13,7 @@ import { EnumTypeDefinitionNode } from 'graphql';
 import { Expression } from 'graphql-mapping-template';
 import { FieldDefinitionNode } from 'graphql';
 import { FieldWrapper } from '@aws-amplify/graphql-transformer-core';
-import * as iam from '@aws-cdk/aws-iam';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { InputObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
 import { InputObjectTypeDefinitionNode } from 'graphql';
 import { InputValueDefinitionNode } from 'graphql';

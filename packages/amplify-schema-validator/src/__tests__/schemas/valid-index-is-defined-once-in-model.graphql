@@ -1,0 +1,5 @@
+type Project @model {
+  id: ID!
+  name: String @index(name: "byTeam")
+  team: String
+}

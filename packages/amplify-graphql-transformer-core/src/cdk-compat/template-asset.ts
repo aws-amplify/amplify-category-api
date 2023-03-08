@@ -4,7 +4,7 @@ import {
   MappingTemplateType,
   S3MappingFunctionCodeProvider, S3MappingTemplateProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as crypto from 'crypto';
 import * as fs from 'fs-extra';
 import { FileAsset } from './file-asset';
@@ -20,7 +20,7 @@ export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
     this.filePath = filePath;
   }
 
-  bind(scope: cdk.Construct): FileAsset {
+  bind(scope: Construct): FileAsset {
     if (!this.asset) {
       this.asset = new FileAsset(scope, `Code${this.fileName}`, {
         fileContent: this.filePath,
@@ -50,7 +50,7 @@ export class S3MappingTemplate implements S3MappingTemplateProvider {
     this.name = name || `mapping-template-${assetHash}.vtl`;
   }
 
-  bind(scope: cdk.Construct): string {
+  bind(scope: Construct): string {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
       this.asset = new FileAsset(scope, `Template${this.name}`, {

@@ -3,20 +3,21 @@ import {
   MappingTemplateProvider, SearchableDataSourceOptions, TransformHostProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
-  BaseDataSource, CfnResolver,
+  BaseDataSource,
   DataSourceOptions,
   DynamoDbDataSource,
   HttpDataSource,
   HttpDataSourceOptions,
   LambdaDataSource,
   NoneDataSource,
-} from '@aws-cdk/aws-appsync';
-import { ITable } from '@aws-cdk/aws-dynamodb';
-import { IRole } from '@aws-cdk/aws-iam';
+} from '@aws-cdk/aws-appsync-alpha';
+import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
+import { ITable } from 'aws-cdk-lib/aws-dynamodb';
+import { IRole } from 'aws-cdk-lib/aws-iam';
 import {
   CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime,
-} from '@aws-cdk/aws-lambda';
-import { Duration, Stack, Token } from '@aws-cdk/core';
+} from 'aws-cdk-lib/aws-lambda';
+import { Duration, Stack, Token } from 'aws-cdk-lib';
 import { ResolverResourceIDs, resourceName, toCamelCase } from 'graphql-transformer-common';
 import hash from 'object-hash';
 import { AppSyncFunctionConfiguration } from './appsync-function';

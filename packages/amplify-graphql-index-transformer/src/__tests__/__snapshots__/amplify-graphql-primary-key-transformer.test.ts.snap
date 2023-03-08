@@ -6,8 +6,6 @@ Object {
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
-$util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
-$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
   \\"payload\\": {}
@@ -24,7 +22,7 @@ $util.toJson({})
 $util.qr($keys.add(\\"email\\"))
 $util.qr($keys.add(\\"kind\\"))
 $util.qr($keys.add(\\"other\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 {}",
   "Mutation.createTest.req.vtl": "## [Start] Invoke RDS Lambda data source. **
@@ -33,6 +31,9 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 #set( $lambdaInput.args = {} )
 #set( $lambdaInput.operation = \\"CREATE\\" )
 #set( $lambdaInput.operationName = \\"createTest\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 ## Set the default values to put request **
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -61,7 +62,7 @@ $util.toJson({})
 $util.qr($keys.add(\\"email\\"))
 $util.qr($keys.add(\\"kind\\"))
 $util.qr($keys.add(\\"other\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 {}",
   "Mutation.deleteTest.req.vtl": "## [Start] Invoke RDS Lambda data source. **
@@ -72,6 +73,7 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 #set( $lambdaInput.operationName = \\"deleteTest\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
@@ -87,8 +89,6 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 ## [End] ResponseTemplate. **",
   "Mutation.updateTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $updatedAt = $util.time.nowISO8601() )
-$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $updatedAt))
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
   \\"payload\\": {}
@@ -105,7 +105,7 @@ $util.toJson({})
 $util.qr($keys.add(\\"email\\"))
 $util.qr($keys.add(\\"kind\\"))
 $util.qr($keys.add(\\"other\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 {}",
   "Mutation.updateTest.req.vtl": "## [Start] Invoke RDS Lambda data source. **
@@ -116,6 +116,7 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 #set( $lambdaInput.operationName = \\"updateTest\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 ## Set the default values to put request **
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -144,34 +145,33 @@ $util.toJson({})
 $util.qr($keys.add(\\"email\\"))
 $util.qr($keys.add(\\"kind\\"))
 $util.qr($keys.add(\\"other\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 {}",
   "Query.getTest.req.vtl": "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
-#set( $lambdaInput.args = $context.arguments )
+#set( $lambdaInput.args = {} )
 #set( $lambdaInput.table = \\"Test\\" )
 #set( $lambdaInput.operation = \\"GET\\" )
 #set( $lambdaInput.operationName = \\"getTest\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
+#set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, {})))
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
   \\"payload\\":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **",
-  "Query.getTest.res.vtl": "## [Start] Get Response template. **
+  "Query.getTest.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
-#end
-#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-  $util.toJson($ctx.result.items[0])
 #else
-  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-$util.unauthorized()
-  #end
-  $util.toJson(null)
+  $util.toJson($ctx.result)
 #end
-## [End] Get Response template. **",
+## [End] ResponseTemplate. **",
   "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
@@ -183,7 +183,7 @@ $util.toJson({})
 $util.qr($keys.add(\\"email\\"))
 $util.qr($keys.add(\\"kind\\"))
 $util.qr($keys.add(\\"other\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 ## [Start] Validate the sort direction input. **
 #if( $util.isNull($ctx.args.email) && !$util.isNull($ctx.args.sortDirection) )
@@ -193,10 +193,15 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 {}",
   "Query.listTests.req.vtl": "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
-#set( $lambdaInput.args = $context.arguments )
+#set( $lambdaInput.args = {} )
 #set( $lambdaInput.table = \\"Test\\" )
 #set( $lambdaInput.operation = \\"LIST\\" )
 #set( $lambdaInput.operationName = \\"listTests\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
+#set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
@@ -273,8 +278,6 @@ Object {
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
-$util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
-$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
   \\"payload\\": {}
@@ -290,7 +293,7 @@ $util.toJson({})
 #set( $keys = [] )
 $util.qr($keys.add(\\"email\\"))
 $util.qr($keys.add(\\"kind\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 {}",
   "Mutation.createTest.req.vtl": "## [Start] Invoke RDS Lambda data source. **
@@ -299,6 +302,9 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 #set( $lambdaInput.args = {} )
 #set( $lambdaInput.operation = \\"CREATE\\" )
 #set( $lambdaInput.operationName = \\"createTest\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 ## Set the default values to put request **
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -326,7 +332,7 @@ $util.toJson({})
 #set( $keys = [] )
 $util.qr($keys.add(\\"email\\"))
 $util.qr($keys.add(\\"kind\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 {}",
   "Mutation.deleteTest.req.vtl": "## [Start] Invoke RDS Lambda data source. **
@@ -337,6 +343,7 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 #set( $lambdaInput.operationName = \\"deleteTest\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
@@ -352,8 +359,6 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 ## [End] ResponseTemplate. **",
   "Mutation.updateTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $updatedAt = $util.time.nowISO8601() )
-$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $updatedAt))
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
   \\"payload\\": {}
@@ -369,7 +374,7 @@ $util.toJson({})
 #set( $keys = [] )
 $util.qr($keys.add(\\"email\\"))
 $util.qr($keys.add(\\"kind\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 {}",
   "Mutation.updateTest.req.vtl": "## [Start] Invoke RDS Lambda data source. **
@@ -380,6 +385,7 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 #set( $lambdaInput.operationName = \\"updateTest\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 ## Set the default values to put request **
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -407,34 +413,33 @@ $util.toJson({})
 #set( $keys = [] )
 $util.qr($keys.add(\\"email\\"))
 $util.qr($keys.add(\\"kind\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 {}",
   "Query.getTest.req.vtl": "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
-#set( $lambdaInput.args = $context.arguments )
+#set( $lambdaInput.args = {} )
 #set( $lambdaInput.table = \\"Test\\" )
 #set( $lambdaInput.operation = \\"GET\\" )
 #set( $lambdaInput.operationName = \\"getTest\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
+#set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, {})))
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
   \\"payload\\":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **",
-  "Query.getTest.res.vtl": "## [Start] Get Response template. **
+  "Query.getTest.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
-#end
-#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-  $util.toJson($ctx.result.items[0])
 #else
-  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-$util.unauthorized()
-  #end
-  $util.toJson(null)
+  $util.toJson($ctx.result)
 #end
-## [End] Get Response template. **",
+## [End] ResponseTemplate. **",
   "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
@@ -445,7 +450,7 @@ $util.toJson({})
 #set( $keys = [] )
 $util.qr($keys.add(\\"email\\"))
 $util.qr($keys.add(\\"kind\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 ## [Start] Validate the sort direction input. **
 #if( $util.isNull($ctx.args.email) && !$util.isNull($ctx.args.sortDirection) )
@@ -455,10 +460,15 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 {}",
   "Query.listTests.req.vtl": "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
-#set( $lambdaInput.args = $context.arguments )
+#set( $lambdaInput.args = {} )
 #set( $lambdaInput.table = \\"Test\\" )
 #set( $lambdaInput.operation = \\"LIST\\" )
 #set( $lambdaInput.operationName = \\"listTests\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
+#set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
@@ -535,8 +545,6 @@ Object {
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
-$util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
-$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
   \\"payload\\": {}
@@ -551,7 +559,7 @@ $util.toJson({})
   "Mutation.createTest.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"email\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 {}",
   "Mutation.createTest.req.vtl": "## [Start] Invoke RDS Lambda data source. **
@@ -560,6 +568,9 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 #set( $lambdaInput.args = {} )
 #set( $lambdaInput.operation = \\"CREATE\\" )
 #set( $lambdaInput.operationName = \\"createTest\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 ## Set the default values to put request **
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -586,7 +597,7 @@ $util.toJson({})
   "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"email\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 {}",
   "Mutation.deleteTest.req.vtl": "## [Start] Invoke RDS Lambda data source. **
@@ -597,6 +608,7 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 #set( $lambdaInput.operationName = \\"deleteTest\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
@@ -612,8 +624,6 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 ## [End] ResponseTemplate. **",
   "Mutation.updateTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $updatedAt = $util.time.nowISO8601() )
-$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $updatedAt))
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
   \\"payload\\": {}
@@ -628,7 +638,7 @@ $util.toJson({})
   "Mutation.updateTest.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"email\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 {}",
   "Mutation.updateTest.req.vtl": "## [Start] Invoke RDS Lambda data source. **
@@ -639,6 +649,7 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 #set( $lambdaInput.operationName = \\"updateTest\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 ## Set the default values to put request **
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -665,34 +676,33 @@ $util.toJson({})
   "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"email\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 {}",
   "Query.getTest.req.vtl": "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
-#set( $lambdaInput.args = $context.arguments )
+#set( $lambdaInput.args = {} )
 #set( $lambdaInput.table = \\"Test\\" )
 #set( $lambdaInput.operation = \\"GET\\" )
 #set( $lambdaInput.operationName = \\"getTest\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
+#set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, {})))
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
   \\"payload\\":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **",
-  "Query.getTest.res.vtl": "## [Start] Get Response template. **
+  "Query.getTest.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
-#end
-#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-  $util.toJson($ctx.result.items[0])
 #else
-  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-$util.unauthorized()
-  #end
-  $util.toJson(null)
+  $util.toJson($ctx.result)
 #end
-## [End] Get Response template. **",
+## [End] ResponseTemplate. **",
   "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
@@ -702,7 +712,7 @@ $util.toJson({})
   "Query.listTests.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"email\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 ## [Start] Validate the sort direction input. **
 #if( !$util.isNull($ctx.args.sortDirection) )
@@ -712,10 +722,15 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 {}",
   "Query.listTests.req.vtl": "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
-#set( $lambdaInput.args = $context.arguments )
+#set( $lambdaInput.args = {} )
 #set( $lambdaInput.table = \\"Test\\" )
 #set( $lambdaInput.operation = \\"LIST\\" )
 #set( $lambdaInput.operationName = \\"listTests\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
+#set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
@@ -792,8 +807,6 @@ Object {
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
-$util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
-$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
   \\"payload\\": {}
@@ -809,7 +822,7 @@ $util.toJson({})
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
 $util.qr($keys.add(\\"email\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 {}",
   "Mutation.createTest.req.vtl": "## [Start] Invoke RDS Lambda data source. **
@@ -818,6 +831,9 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 #set( $lambdaInput.args = {} )
 #set( $lambdaInput.operation = \\"CREATE\\" )
 #set( $lambdaInput.operationName = \\"createTest\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 ## Set the default values to put request **
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -845,7 +861,7 @@ $util.toJson({})
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
 $util.qr($keys.add(\\"email\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 {}",
   "Mutation.deleteTest.req.vtl": "## [Start] Invoke RDS Lambda data source. **
@@ -856,6 +872,7 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 #set( $lambdaInput.operationName = \\"deleteTest\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
@@ -871,8 +888,6 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 ## [End] ResponseTemplate. **",
   "Mutation.updateTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $updatedAt = $util.time.nowISO8601() )
-$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $updatedAt))
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
   \\"payload\\": {}
@@ -888,7 +903,7 @@ $util.toJson({})
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
 $util.qr($keys.add(\\"email\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 {}",
   "Mutation.updateTest.req.vtl": "## [Start] Invoke RDS Lambda data source. **
@@ -899,6 +914,7 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 #set( $lambdaInput.operationName = \\"updateTest\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 ## Set the default values to put request **
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -926,34 +942,33 @@ $util.toJson({})
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
 $util.qr($keys.add(\\"email\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 {}",
   "Query.testGet.req.vtl": "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
-#set( $lambdaInput.args = $context.arguments )
+#set( $lambdaInput.args = {} )
 #set( $lambdaInput.table = \\"Test\\" )
 #set( $lambdaInput.operation = \\"GET\\" )
 #set( $lambdaInput.operationName = \\"testGet\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
+#set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, {})))
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
   \\"payload\\":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **",
-  "Query.testGet.res.vtl": "## [Start] Get Response template. **
+  "Query.testGet.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
-#end
-#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-  $util.toJson($ctx.result.items[0])
 #else
-  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-$util.unauthorized()
-  #end
-  $util.toJson(null)
+  $util.toJson($ctx.result)
 #end
-## [End] Get Response template. **",
+## [End] ResponseTemplate. **",
   "Subscription.onCreateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
@@ -1017,8 +1032,6 @@ Object {
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
-$util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
-$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
   \\"payload\\": {}
@@ -1034,7 +1047,7 @@ $util.toJson({})
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
 $util.qr($keys.add(\\"email\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 {}",
   "Mutation.testCreate.req.vtl": "## [Start] Invoke RDS Lambda data source. **
@@ -1043,6 +1056,9 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 #set( $lambdaInput.args = {} )
 #set( $lambdaInput.operation = \\"CREATE\\" )
 #set( $lambdaInput.operationName = \\"testCreate\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 ## Set the default values to put request **
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -1070,7 +1086,7 @@ $util.toJson({})
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
 $util.qr($keys.add(\\"email\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 {}",
   "Mutation.testDelete.req.vtl": "## [Start] Invoke RDS Lambda data source. **
@@ -1081,6 +1097,7 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 #set( $lambdaInput.operationName = \\"testDelete\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
@@ -1096,8 +1113,6 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 ## [End] ResponseTemplate. **",
   "Mutation.testUpdate.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $updatedAt = $util.time.nowISO8601() )
-$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $updatedAt))
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
   \\"payload\\": {}
@@ -1113,7 +1128,7 @@ $util.toJson({})
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
 $util.qr($keys.add(\\"email\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 {}",
   "Mutation.testUpdate.req.vtl": "## [Start] Invoke RDS Lambda data source. **
@@ -1124,6 +1139,7 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 #set( $lambdaInput.operationName = \\"testUpdate\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 ## Set the default values to put request **
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -1151,34 +1167,33 @@ $util.toJson({})
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
 $util.qr($keys.add(\\"email\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 {}",
   "Query.testGet.req.vtl": "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
-#set( $lambdaInput.args = $context.arguments )
+#set( $lambdaInput.args = {} )
 #set( $lambdaInput.table = \\"Test\\" )
 #set( $lambdaInput.operation = \\"GET\\" )
 #set( $lambdaInput.operationName = \\"testGet\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
+#set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, {})))
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
   \\"payload\\":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **",
-  "Query.testGet.res.vtl": "## [Start] Get Response template. **
+  "Query.testGet.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
-#end
-#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-  $util.toJson($ctx.result.items[0])
 #else
-  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-$util.unauthorized()
-  #end
-  $util.toJson(null)
+  $util.toJson($ctx.result)
 #end
-## [End] Get Response template. **",
+## [End] ResponseTemplate. **",
   "Query.testList.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
@@ -1189,7 +1204,7 @@ $util.toJson({})
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
 $util.qr($keys.add(\\"email\\"))
-$util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
 ## [End] Set the primary key information in metadata. **
 ## [Start] Validate the sort direction input. **
 #if( $util.isNull($ctx.args.id) && !$util.isNull($ctx.args.sortDirection) )
@@ -1199,10 +1214,15 @@ $util.qr($ctx.args.metadata.put(\\"keys\\", $keys))
 {}",
   "Query.testList.req.vtl": "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
-#set( $lambdaInput.args = $context.arguments )
+#set( $lambdaInput.args = {} )
 #set( $lambdaInput.table = \\"Test\\" )
 #set( $lambdaInput.operation = \\"LIST\\" )
 #set( $lambdaInput.operationName = \\"testList\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [] )
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
+#set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
