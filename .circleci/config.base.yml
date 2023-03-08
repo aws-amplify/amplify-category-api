@@ -636,6 +636,7 @@ workflows:
             - api-npm-publish
           requires:
             - test
+            - build_windows
             - mock_e2e_tests
             - graphql_e2e_tests
             - amplify_e2e_tests
