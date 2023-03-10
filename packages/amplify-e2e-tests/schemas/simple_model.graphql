@@ -1,4 +1,9 @@
 type Todo @model {
   id: ID!
   content: String
+  contentSupport: [contentSupport]
+}
+type contentSupport {
+  name: String!
+  description: String!
 }
