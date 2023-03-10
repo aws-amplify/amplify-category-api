@@ -14,7 +14,10 @@ import {
   ImportedDataSourceConfig,
 } from '@aws-amplify/graphql-transformer-core';
 import { PREVIEW_BANNER, category } from '../../../category-constants';
-import { storeConnectionSecrets, testDatabaseConnection } from '../utils/rds-secrets/database-secrets';
+import { storeConnectionSecrets, testDatabaseConnection, readDatabaseNameFromMeta } from '../utils/rds-secrets/database-secrets';
+import * as path from 'path';
+import { RDS_SCHEMA_FILE_NAME } from '@aws-amplify/graphql-transformer-core';
+import { getAPIResourceDir } from '../utils/amplify-meta-utils';
 
 const service = 'AppSync';
 
@@ -32,20 +35,32 @@ export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<
   }
 
   const engine = ImportedRDSType.MYSQL;
+  const database = await readDatabaseNameFromMeta(apiName, engine);
+  if(database) {
+    printer.error(`Imported Database "${database}" already exists. Use "amplify api generate-schema" to fetch the schema.`);
+    return {
+      apiName: apiName
+    }
+  }
+
   const databaseConfig: ImportedDataSourceConfig = await databaseConfigurationInputWalkthrough(engine);
 
-  await testDatabaseConnection(databaseConfig);
+  const apiResourceDir = getAPIResourceDir(apiName);
+  const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
+  await writeDefaultGraphQLSchema(context, pathToSchemaFile, databaseConfig);
   await storeConnectionSecrets(context, databaseConfig, apiName);
   await updateAPIArtifacts(context, apiName, engine, databaseConfig.database);
+  await testDatabaseConnection(databaseConfig);
   return {
     apiName: apiName,
     dataSourceConfig: databaseConfig,
   };
 };
 
-export const writeDefaultGraphQLSchema = async (context: $TSContext, pathToSchemaFile: string, dataSourceType: ImportedDataSourceType) => {
+export const writeDefaultGraphQLSchema = async (context: $TSContext, pathToSchemaFile: string, databaseConfig: ImportedDataSourceConfig) => {
+  const dataSourceType = databaseConfig?.engine;
   if(Object.values(ImportedRDSType).includes(dataSourceType)) {
-    const globalAmplifyInputTemplate = await constructDefaultGlobalAmplifyInput(context, dataSourceType);
+    const globalAmplifyInputTemplate = await constructDefaultGlobalAmplifyInput(context, databaseConfig.engine);
     writeSchemaFile(pathToSchemaFile, globalAmplifyInputTemplate);
   }
   else {

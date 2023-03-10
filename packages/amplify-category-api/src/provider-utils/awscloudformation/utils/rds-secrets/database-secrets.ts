@@ -109,7 +109,7 @@ export const testDatabaseConnection = async (config: RDSConnectionSecrets) => {
   try {
     await adapter.initialize();
   } catch(error) {
-    printer.error('Failed to connect to the specified RDS Data Source. Check the connection details in the schema and re-try. Use "amplify api update-secrets" to update the user credentials.');
+    printer.error('Failed to connect to the specified RDS Data Source. Check the connection details in the schema. Use "amplify api update-secrets" to update the user credentials and run "amplify api generate-schema" to import the schema.');
     console.log(error?.message);
     adapter.cleanup();
     throw(error);

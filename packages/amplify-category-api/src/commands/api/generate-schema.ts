@@ -34,7 +34,11 @@ export const run = async (context: $TSContext) => {
 
   const engine = ImportedRDSType.MYSQL;
   const database = await readDatabaseNameFromMeta(apiName, engine);
-
+  if (!database) {
+    printer.error(`Cannot find any imported databases to generate the schema. Use "amplify import api" to import the database.`);
+    return;
+  }
+  
   // read and validate the RDS connection secrets
   const { secrets, storeSecrets } = await getConnectionSecrets(context, apiName, database, engine);
   const databaseConfig: ImportedDataSourceConfig = {

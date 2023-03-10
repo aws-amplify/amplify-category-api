@@ -42,6 +42,14 @@ export interface AddApiOptions {
   transformerVersion: number;
 }
 
+export interface ImportApiOptions {
+  database: string;
+  host: string;
+  port: number;
+  username: string;
+  password: string;
+}
+
 export const defaultOptions: AddApiOptions = {
   apiName: '\r',
   testingWithLatestCodebase: false,
@@ -1046,3 +1054,40 @@ export const removeTransformConfigValue = (projRoot: string, apiName: string, ke
   delete transformConfig[key];
   setTransformConfig(projRoot, apiName, transformConfig);
 };
+
+export function importRDSAPI(cwd: string, opts: Partial<ImportApiOptions & { apiKeyExpirationDays: number }> = {}) {
+  const options = _.assign(defaultOptions, opts);
+  const database = options.database;
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(options.testingWithLatestCodebase), ['import', 'api'], { cwd, stripColors: true })
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendKeyUp(3)
+      .sendCarriageReturn()
+      .wait('Provide API name:')
+      .sendLine(options.apiName)
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendCarriageReturn()
+      .wait('Enter the name of the mysql database to import:')
+      .sendLine(database)
+      .wait(`Enter the host for ${database} database:`)
+      .sendLine(options.host)
+      .wait(`Enter the port for ${database} database:`)
+      .sendLine(JSON.stringify(options.port || 3306))
+      .wait(`Enter the username for ${database} database user:`)
+      .sendLine(options.username)
+      .wait(`Enter the password for ${database} database user:`)
+      .sendLine(options.password)
+      .wait(
+        '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
+      )
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+
+    setTransformerVersionFlag(cwd, options.transformerVersion);
+  });
+}
