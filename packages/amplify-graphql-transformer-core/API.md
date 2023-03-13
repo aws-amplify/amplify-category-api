@@ -613,8 +613,6 @@ export class TransformerResolver implements TransformerResolverProvider {
     // (undocumented)
     findSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider) => Slot | undefined;
     // (undocumented)
-    getStackName: () => string;
-    // (undocumented)
     mapToStack: (stack: Stack) => void;
     // (undocumented)
     slotExists: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider) => boolean;

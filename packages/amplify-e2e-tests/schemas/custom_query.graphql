@@ -11,11 +11,11 @@ type Comment @model {
   todo: Todo @hasOne
 }
 
-type CommentConnection {
+type commentConnection {
   items: [Comment]
   nextToken: String
 }
 
 type Query {
-  commentsForTodo(todoId: ID!, limit: Int, nextToken: String): CommentConnection
+  commentsForTodo(todoId: ID!, limit: Int, nextToken: String): commentConnection
 }

@@ -503,20 +503,9 @@ export class GraphQLTransform {
   }
 
   private collectResolvers(context: TransformerContext, api: GraphQLAPIProvider): void {
-    const resolverEntries = context.resolvers.collectResolvers() as Map<string, TransformerResolver>;
-    //Sort resolvers by stack name to group each resolver before synthesis to avoid circular dependency
-    const sortedResolverEntries = new Map([...resolverEntries].sort((a,b) => {
-      const left = a[1].getStackName();
-      const right = b[1].getStackName();
-      if (left > right) {
-        return 1;
-      }
-      if (left === right) {
-        return 0
-      }
-      return -1;
-    }));
-    for (const [resolverName, resolver] of sortedResolverEntries) {
+    const resolverEntries = context.resolvers.collectResolvers();
+
+    for (const [resolverName, resolver] of resolverEntries) {
       const userSlots = this.userDefinedSlots[resolverName] || [];
 
       userSlots.forEach(slot => {
