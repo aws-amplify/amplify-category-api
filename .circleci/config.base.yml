@@ -726,7 +726,6 @@ commands:
                 shell: bash.exe
                 command: |
                   source .circleci/local_publish_helpers.sh
-                  forceFromSourceRun
                   cd packages/amplify-e2e-tests
                   retry yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
                 no_output_timeout: 60m
@@ -741,7 +740,6 @@ commands:
                   source $BASH_ENV
                   source .circleci/local_publish_helpers.sh
                   amplify version
-                  forceFromSourceRun
                   retry runE2eTest
                 no_output_timeout: 90m
   scan_e2e_test_artifacts:
