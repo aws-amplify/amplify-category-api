@@ -417,7 +417,7 @@ Object {
               "Action": Array [
                 "ecr:GetAuthorizationToken",
                 "ecr:BatchGetImage",
-                "ecr:BatchGetDownloadUrlForLayer",
+                "ecr:GetDownloadUrlForLayer",
                 "ecr:InitiateLayerUpload",
                 "ecr:BatchCheckLayerAvailability",
                 "ecr:UploadLayerPart",
