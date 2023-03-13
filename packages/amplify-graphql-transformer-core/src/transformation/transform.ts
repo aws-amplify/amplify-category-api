@@ -59,6 +59,7 @@ import { DocumentNode } from 'graphql/language';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { AmplifyApiGraphQlResourceStackTemplate } from '../types/amplify-api-resource-stack-types';
 import { DatasourceType } from '../config/project-config';
+import { removeAmplifyInputDefinition } from '../utils/rds-input-utils';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
@@ -482,7 +483,8 @@ export class GraphQLTransform {
         functions[templateName.replace('functions/', '')] = template;
       }
     }
-    const schema = fileAssets.get('schema.graphql') || '';
+    const compiledSchema = fileAssets.get('schema.graphql') || '';
+    const schema = removeAmplifyInputDefinition(compiledSchema);
 
     const resolverEntries = context.resolvers.collectResolvers();
     const userOverriddenSlots: string[] = [];

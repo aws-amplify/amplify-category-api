@@ -113,3 +113,21 @@ export const isGlobalAuthRulePresent = (inputNode: InputObjectTypeDefinitionNode
   );
   return authRuleField ? true : false;
 };
+
+export const removeAmplifyInputDefinition = (schema: string): string => {
+  if (_.isEmpty(schema)) {
+    return schema;
+  }
+
+  const parsedSchema: $TSAny = parse(schema);
+
+  parsedSchema.definitions = parsedSchema?.definitions?.filter(
+    (definition: $TSAny) =>
+      !(definition?.kind === 'InputObjectTypeDefinition' &&
+      definition?.name &&
+      definition?.name?.value === 'Amplify')
+  );
+
+  const sanitizedSchema = print(parsedSchema);
+  return sanitizedSchema;
+};

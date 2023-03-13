@@ -75,7 +75,7 @@ export const updateAPIArtifacts = async (context: $TSContext, apiName: string, e
 };
 
 export const databaseConfigurationInputWalkthrough = async (engine: ImportedDataSourceType, database?: string): Promise<ImportedDataSourceConfig> => {
-  const databaseName = database || await prompter.input(`Enter the name of the ${engine} database to import:`);
+  const databaseName = database || await prompter.input(`Enter the name of the ${formatEngineName(engine)} database to import:`);
   const host = await prompter.input(`Enter the host for ${databaseName} database:`);
   const port = await prompter.input<'one', number>(`Enter the port for ${databaseName} database:`, {
     transform: input => Number.parseInt(input, 10),
@@ -94,4 +94,15 @@ export const databaseConfigurationInputWalkthrough = async (engine: ImportedData
     username: username,
     password: password
   };
+};
+
+export const formatEngineName = (engine: ImportedDataSourceType) => {
+  switch(engine) {
+    case ImportedRDSType.MYSQL:
+      return "MySQL";
+    case ImportedRDSType.POSTGRESQL:
+      return "PostgreSQL";
+    default:
+      throw new Error(`Unsupported database engine: ${engine}`);
+  }
 };
