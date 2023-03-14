@@ -236,7 +236,6 @@ export const readSchema = (graphqlSchemaFilePath: string): graphql.DocumentNode 
     currentGraphQLSchemaDoc = graphql.parse(graphqlSchemaRaw);
   } catch (err) {
     const relativePathToInput = path.relative(process.cwd(), graphqlSchemaRaw);
-    // can be changed to GraphQlError when the error type "GraphQlError"  gets updated in amplify-cli-core
     throw new AmplifyError('UserInputError', {
       message: `Could not parse graphql scehma \n${relativePathToInput}\n`,
       details: err.message,

@@ -337,12 +337,12 @@ export const transformCategoryStack = async (context: $TSContext, resource: $TSO
       } catch (error) {
         throw AmplifyGraphQLTransformerErrorConverter.convert(error);
       }
-    } else if (resource.service === AmplifySupportedService.APIGW) {
-      if (canResourceBeTransformed(resource.resourceName)) {
-        // Rebuild CFN
-        const apigwStack = new ApigwStackTransform(context, resource.resourceName);
-        apigwStack.transform();
-      }
+    }
+  } else if (resource.service === AmplifySupportedService.APIGW) {
+    if (canResourceBeTransformed(resource.resourceName)) {
+      // Rebuild CFN
+      const apigwStack = new ApigwStackTransform(context, resource.resourceName);
+      apigwStack.transform();
     }
   }
 };
