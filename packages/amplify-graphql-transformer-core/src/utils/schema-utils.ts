@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DynamoDbDataSource } from '@aws-cdk/aws-appsync-alpha';
+import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { ListValueNode, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { ModelResourceIDs } from 'graphql-transformer-common';
