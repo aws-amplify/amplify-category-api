@@ -3,6 +3,7 @@ import {
   pathManager,
   stateManager,
   FeatureFlags,
+  AmplifyError,
 } from 'amplify-cli-core';
 
 /**
@@ -26,7 +27,10 @@ export const getTransformerVersion = async (context): Promise<number> => {
 
   const transformerVersion = transformerVersionFF();
   if (transformerVersion !== 1 && transformerVersion !== 2) {
-    throw new Error(`Invalid value specified for transformerVersion: '${transformerVersion}'`);
+    throw new AmplifyError('UserInputError', {
+      message: `Invalid value specified for transformerVersion: '${transformerVersion}'`,
+      link: 'https://docs.amplify.aws/cli/reference/feature-flags/#transformerVersion',
+    });
   }
 
   return transformerVersion;

@@ -1,5 +1,5 @@
 import {
-  $TSAny, $TSContext, isResourceNameUnique, JSONUtilities, pathManager, stateManager,
+  $TSAny, $TSContext, AmplifyError, AmplifySupportedService, isResourceNameUnique, JSONUtilities, pathManager, stateManager,
 } from 'amplify-cli-core';
 import {
   AddApiRequest,
@@ -60,7 +60,10 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     const meta = stateManager.getMeta();
     const existingApiName = getAppSyncResourceName(meta);
     if (existingApiName) {
-      throw new Error(`GraphQL API ${existingApiName} already exists in the project. Use 'amplify update api' to make modifications.`);
+      throw new AmplifyError('ResourceAlreadyExistsError', {
+        message: `GraphQL API ${existingApiName} already exists in the project`,
+        resolution: 'Use amplify update api to make modifications',
+      });
     }
     const serviceConfig = request.serviceConfiguration;
 
@@ -117,7 +120,10 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     const updates = request.serviceModification;
     const apiName = getAppSyncResourceName(stateManager.getMeta());
     if (!apiName) {
-      throw new Error('No AppSync API configured in the project. Use \'amplify add api\' to create an API.');
+      throw new AmplifyError('NotImplementedError', {
+        message: `${AmplifySupportedService.APPSYNC} API does not exist`,
+        resolution: 'To add an api, use \'amplify add api\'',
+      });
     }
     const resourceDir = this.getResourceDir(apiName);
 
