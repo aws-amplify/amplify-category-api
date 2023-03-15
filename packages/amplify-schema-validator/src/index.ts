@@ -11,7 +11,7 @@ import { validateFieldIsDefinedOnce } from './validators/field-is-defined-once';
 import { validateAuthIsAnnotatedWithModel } from './validators/auth-must-be-annotated-with-model';
 import { validateSortKeyFieldsExistsInModel } from './validators/sort-key-field-exists';
 import { validateReservedTypeNames } from './validators/reserved-type-name';
-// import { validateCorrectTypeInManyToManyRelation } from './validators/correct-type-in-many-to-many-relation';
+import { validateCorrectTypeInManyToManyRelation } from './validators/correct-type-in-many-to-many-relation';
 import { validateReservedFieldNames } from './validators/reserved-field-name';
 import { validateRelationNameDoesNotConflictWithTypeName } from './validators/relationname-doesnot-conflict-with-typename';
 
@@ -24,7 +24,7 @@ const allValidators = [
   validateAuthIsAnnotatedWithModel,
   validateSortKeyFieldsExistsInModel,
   validateReservedTypeNames,
-  // validateCorrectTypeInManyToManyRelation,
+  validateCorrectTypeInManyToManyRelation,
   validateReservedFieldNames,
   validateRelationNameDoesNotConflictWithTypeName,
 ];

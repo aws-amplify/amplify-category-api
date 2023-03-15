@@ -4,7 +4,7 @@ import { readSchema } from './helpers/readSchema';
 describe('Validate Schema', () => {
   it('fails validation when schema has a field defined more than once', () => {
     const schema = readSchema('invalid-correct-type-in-many-to-many-relation.graphql');
-    const errorRegex = 'Schema validation failed. Field Test.email can only be defined once.';
+    const errorRegex = '@manyToMany relation AmplifyMoodEntryAmplifyActivity expects AmplifyMoodEntry but got AmplifyActivity';
     expect(() => validateSchema(schema)).toThrow(errorRegex);
   });
 
