@@ -8,7 +8,7 @@ import {
   TransformerPluginProvider,
   TransformHostProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync-alpha';
+import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import {
   App, Aws, CfnOutput, CfnResource, Fn,
 } from 'aws-cdk-lib';

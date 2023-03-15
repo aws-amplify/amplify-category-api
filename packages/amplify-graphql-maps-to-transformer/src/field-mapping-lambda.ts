@@ -1,5 +1,5 @@
 import { StackManagerProvider, TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { LambdaDataSource } from '@aws-cdk/aws-appsync-alpha';
+import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
