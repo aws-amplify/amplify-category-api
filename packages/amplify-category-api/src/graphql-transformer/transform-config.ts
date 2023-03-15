@@ -1,4 +1,5 @@
 import { TransformConfig } from '@aws-amplify/graphql-transformer-core';
+import { AmplifyError } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import { TRANSFORM_CONFIG_FILE_NAME } from 'graphql-transformer-core';
 import * as path from 'path';
@@ -46,10 +47,16 @@ export async function writeConfig(projectDir: string, config: TransformConfig): 
 export function throwIfNotJSONExt(stackFile: string): void {
   const extension = path.extname(stackFile);
   if (extension === '.yaml' || extension === '.yml') {
-    throw new Error(`Yaml is not yet supported. Please convert the CloudFormation stack ${stackFile} to json.`);
+    throw new AmplifyError('CloudFormationTemplateError' ,{
+      message: 'Yaml is not yet supported',
+      resolution: `Please convert the CloudFormation stack ${stackFile} to json.`,
+    });
   }
   if (extension !== '.json') {
-    throw new Error(`Invalid extension ${extension} for stack ${stackFile}`);
+    throw new AmplifyError('CloudFormationTemplateError' ,{
+      message: `Invalid extension ${extension} for stack ${stackFile}`,
+      resolution: `Convert the CloudFormation stack ${stackFile} to json.`,
+    });
   }
 }
 
@@ -70,7 +77,10 @@ export async function readSchema(projectDirectory: string): Promise<string> {
   } else if (schemaDirectoryExists) {
     schema = (await readSchemaDocuments(schemaDirectoryPath)).join('\n');
   } else {
-    throw new Error(`Could not find a schema at ${schemaFilePath}`);
+    throw new AmplifyError('ApiCategorySchemaNotFoundError', {
+      message: 'No schema found',
+      resolution: `GraphQL schema should be either in ${schemaFilePath} or at schema directory ${schemaDirectoryPath}`,
+    });
   }
   return schema;
 }

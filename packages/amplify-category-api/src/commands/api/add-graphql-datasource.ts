@@ -1,6 +1,6 @@
 import { mergeTypeDefs } from '@graphql-tools/merge';
 import {
-  $TSAny, $TSContext, exitOnNextTick, FeatureFlags, pathManager, ResourceDoesNotExistError, stateManager,
+  $TSAny, $TSContext, AmplifyError, exitOnNextTick, FeatureFlags, pathManager, ResourceDoesNotExistError, stateManager,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
@@ -119,7 +119,10 @@ export const run = async (context: $TSContext): Promise<void> => {
 
       fs.writeFileSync(rdsSchemaFilePath, graphql.print(rdsGraphQLSchemaDoc), 'utf8');
     } else {
-      throw new Error(`Could not find a schema in either ${graphqlSchemaFilePath} or schema directory at ${schemaDirectoryPath}`);
+      throw new AmplifyError('ApiCategorySchemaNotFoundError', {
+        message: 'No schema found',
+        resolution: `Your RDS schema should be in either ${graphqlSchemaFilePath} or schema directory ${schemaDirectoryPath}`,
+      });
     }
 
     const resolversDir = path.join(apiDirPath, 'resolvers');
@@ -233,12 +236,11 @@ export const readSchema = (graphqlSchemaFilePath: string): graphql.DocumentNode 
     currentGraphQLSchemaDoc = graphql.parse(graphqlSchemaRaw);
   } catch (err) {
     const relativePathToInput = path.relative(process.cwd(), graphqlSchemaRaw);
-
-    const error = new Error(`Could not parse graphql schema \n${relativePathToInput}\n${err.message}`);
-
-    error.stack = undefined;
-
-    throw error;
+    throw new AmplifyError('UserInputError', {
+      message: `Could not parse graphql scehma \n${relativePathToInput}\n`,
+      details: err.message,
+      link: 'https://docs.amplify.aws/cli-legacy/graphql-transformer/relational/',
+    });
   }
 
   return currentGraphQLSchemaDoc;

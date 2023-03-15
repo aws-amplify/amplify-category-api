@@ -9,7 +9,7 @@
     "!**/__tests__/**/*"
   ],
   "scripts": {
-    "build": "tsc && npm run size",
+    "build": "tsc && yarn size",
     "clean": "rm -rf build node_modules dist coverage",
     "prettier": "prettier --write '**/*.{js,ts,json,md}'",
     "test": "jest --coverage",
