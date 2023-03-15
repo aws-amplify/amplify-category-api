@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@1.1.0...@aws-amplify/graphql-model-transformer@1.1.1) (2023-03-15)
+
+### Bug Fixes
+
+- cascaded embeddable type input is respected by the GraphQL Model Transformer ([bd34a3f](https://github.com/aws-amplify/amplify-category-api/commit/bd34a3f629b0bf144655e6d79246f0166e485773))
+
 # [1.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@0.16.9...@aws-amplify/graphql-model-transformer@1.1.0) (2023-03-01)
 
 ### Bug Fixes

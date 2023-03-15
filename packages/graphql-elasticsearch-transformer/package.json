@@ -1,6 +1,6 @@
 {
   "name": "graphql-elasticsearch-transformer",
-  "version": "5.2.50",
+  "version": "5.2.51",
   "description": "An AppSync model transform that creates an ElasticSearch index with the queries to match.",
   "repository": {
     "type": "git",
@@ -28,12 +28,12 @@
     "graphql": "^15.5.0",
     "graphql-mapping-template": "4.20.8",
     "graphql-transformer-common": "4.24.5",
-    "graphql-transformer-core": "8.0.0"
+    "graphql-transformer-core": "8.0.1"
   },
   "devDependencies": {
     "@types/node": "^12.12.6",
     "bestzip": "^2.1.5",
-    "graphql-dynamodb-transformer": "7.2.49"
+    "graphql-dynamodb-transformer": "7.2.50"
   },
   "jest": {
     "transform": {
