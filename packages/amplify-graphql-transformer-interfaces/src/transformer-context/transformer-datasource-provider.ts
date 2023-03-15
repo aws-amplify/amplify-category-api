@@ -1,4 +1,4 @@
-import { BackedDataSource, HttpDataSource } from '@aws-cdk/aws-appsync-alpha';
+import { BackedDataSource, HttpDataSource } from 'aws-cdk-lib/aws-appsync';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';

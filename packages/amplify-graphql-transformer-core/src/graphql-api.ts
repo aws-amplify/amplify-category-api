@@ -9,7 +9,7 @@ import {
   OpenIdConnectConfig,
   UserPoolConfig,
   UserPoolDefaultAction,
-} from '@aws-cdk/aws-appsync-alpha';
+} from 'aws-cdk-lib/aws-appsync';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
 import {
   Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal,

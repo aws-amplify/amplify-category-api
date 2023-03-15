@@ -17,7 +17,7 @@ import {
   DataSourceOptions,
   HttpDataSource,
   LambdaDataSource,
-} from '@aws-cdk/aws-appsync-alpha';
+} from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
 import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -49,7 +49,7 @@ import {
   str,
   toJson,
 } from 'graphql-mapping-template';
-import { AuthorizationType } from '@aws-cdk/aws-appsync-alpha';
+import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { actionToDataSourceMap, actionToRoleAction, allowedActions } from './utils/action-maps';
 import {
   amzJsonContentType,

@@ -47,7 +47,7 @@
     "@aws-amplify/graphql-transformer-core": "1.1.0",
     "@aws-amplify/graphql-transformer-interfaces": "2.1.0",
     "@aws-amplify/graphql-transformer-migrator": "2.1.0",
-    "@aws-cdk/cloudformation-diff": "~2.53.0",
+    "@aws-cdk/cloudformation-diff": "~2.68.0",
     "fs-extra": "^8.1.0",
     "graphql-auth-transformer": "7.2.50",
     "graphql-connection-transformer": "5.2.49",
@@ -58,6 +58,6 @@
     "graphql-versioned-transformer": "5.2.49"
   },
   "peerDependencies": {
-    "amplify-prompts": "^2.6.4-beta.3"
+    "amplify-prompts": "^2.6.5"
   }
 }

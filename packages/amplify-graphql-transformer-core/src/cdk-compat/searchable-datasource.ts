@@ -1,4 +1,4 @@
-import { BackedDataSourceProps, BaseDataSource } from '@aws-cdk/aws-appsync-alpha';
+import { BackedDataSourceProps, BaseDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Construct } from 'constructs';
 
 /**

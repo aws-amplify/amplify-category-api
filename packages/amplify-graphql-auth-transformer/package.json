@@ -33,7 +33,7 @@
     "@aws-amplify/graphql-relational-transformer": "1.1.0",
     "@aws-amplify/graphql-transformer-core": "1.1.0",
     "@aws-amplify/graphql-transformer-interfaces": "2.1.0",
-    "aws-cdk-lib": "~2.53.0",
+    "aws-cdk-lib": "~2.68.0",
     "constructs": "^10.0.5",
     "graphql": "^15.5.0",
     "graphql-mapping-template": "4.20.8",
@@ -42,7 +42,7 @@
     "md5": "^2.3.0"
   },
   "peerDependencies": {
-    "amplify-prompts": "^2.6.4-beta.3"
+    "amplify-prompts": "^2.6.5"
   },
   "devDependencies": {
     "@aws-amplify/graphql-index-transformer": "1.1.0",
