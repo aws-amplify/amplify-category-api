@@ -14,6 +14,7 @@ import { validateReservedTypeNames } from './validators/reserved-type-name';
 import { validateCorrectTypeInManyToManyRelation } from './validators/correct-type-in-many-to-many-relation';
 import { validateReservedFieldNames } from './validators/reserved-field-name';
 import { validateRelationNameDoesNotConflictWithTypeName } from './validators/relationname-doesnot-conflict-with-typename';
+import { validateBelongsToFieldsMatchRelatedTypePrimaryKey } from './validators/belongs-to-fields-match-related-type-primary-key';
 
 const allValidators = [
   validateIndexScalarTypes,
@@ -27,6 +28,7 @@ const allValidators = [
   validateCorrectTypeInManyToManyRelation,
   validateReservedFieldNames,
   validateRelationNameDoesNotConflictWithTypeName,
+  validateBelongsToFieldsMatchRelatedTypePrimaryKey,
 ];
 
 /**
