@@ -175,7 +175,7 @@ export class EcsAlbStack extends ContainersStack {
       certificates: [{ certificateArn: wildcardCertificate.ref }],
     });
 
-    this.ecsService.addDependsOn(listener);
+    this.ecsService.addDependency(listener);
 
     let actionsOrderCounter = 1;
     const listenerRule = new elb2.CfnListenerRule(this, 'AlbListenerRule', {
@@ -216,7 +216,7 @@ export class EcsAlbStack extends ContainersStack {
       ],
     });
 
-    this.ecsService.addDependsOn(listenerRule);
+    this.ecsService.addDependency(listenerRule);
 
     const originId = `${loadBalancer.logicalId}-origin`;
 
