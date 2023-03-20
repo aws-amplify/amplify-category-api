@@ -139,11 +139,28 @@ function isDeploymentSecretForEnvExists(projRoot: string, envName: string): bool
   }
   return false;
 }
+export const parametersExists = (
+  projectRoot: string, category: string, resourceName: string,
+): boolean => fs.existsSync(getParameterPath(projectRoot, category, resourceName));
 
 function getParameters(projRoot: string, category: string, resourceName: string): any {
   const parametersPath = getParameterPath(projRoot, category, resourceName);
   return JSONUtilities.parse(fs.readFileSync(parametersPath, 'utf8'));
 }
+
+export const getCloudFormationTemplate = (projectRoot: string, category: string, resourceName: string): any => {
+  let templatePath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'build', `${resourceName}-cloudformation-template.json`);
+  if (!fs.existsSync(templatePath)) {
+    templatePath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'build', 'cloudformation-template.json');
+  }
+  if (!fs.existsSync(templatePath)) {
+    templatePath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, `${resourceName}-cloudformation-template.json`);
+  }
+  if (!fs.existsSync(templatePath)) {
+    throw new Error(`Unable to locate cloudformation template for ${category} ${resourceName}`);
+  }
+  return JSONUtilities.parse(fs.readFileSync(templatePath, 'utf8'));
+};
 
 function setParameters(projRoot: string, category: string, resourceName: string, parameters: unknown) {
   const parametersPath = getParameterPath(projRoot, category, resourceName);

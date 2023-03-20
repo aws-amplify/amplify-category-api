@@ -4,47 +4,47 @@
 
 ```ts
 
-import { BackedDataSource } from '@aws-cdk/aws-appsync';
-import { BaseDataSource } from '@aws-cdk/aws-appsync';
-import { CfnDomain } from '@aws-cdk/aws-elasticsearch';
-import { CfnParameter } from '@aws-cdk/core';
-import { CfnParameterProps } from '@aws-cdk/core';
-import { CfnResolver } from '@aws-cdk/aws-appsync';
-import { CfnResource } from '@aws-cdk/core';
-import { Construct } from '@aws-cdk/core';
+import { BackedDataSource } from 'aws-cdk-lib/aws-appsync';
+import { BaseDataSource } from 'aws-cdk-lib/aws-appsync';
+import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
+import { CfnParameter } from 'aws-cdk-lib';
+import { CfnParameterProps } from 'aws-cdk-lib';
+import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
+import { CfnResource } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql';
-import { Duration } from '@aws-cdk/core';
-import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
+import { Duration } from 'aws-cdk-lib';
+import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { EnumTypeDefinitionNode } from 'graphql';
 import { EnumTypeExtensionNode } from 'graphql';
 import { EnumValueDefinitionNode } from 'graphql';
 import { FieldDefinitionNode } from 'graphql';
 import { FieldNode } from 'graphql';
-import { Grant } from '@aws-cdk/aws-iam';
-import { GraphqlApiBase } from '@aws-cdk/aws-appsync';
-import { HttpDataSource } from '@aws-cdk/aws-appsync';
-import { IAsset } from '@aws-cdk/core';
-import { IConstruct } from '@aws-cdk/core';
-import { IFunction } from '@aws-cdk/aws-lambda';
-import { IGrantable } from '@aws-cdk/aws-iam';
-import { ILayerVersion } from '@aws-cdk/aws-lambda';
+import { Grant } from 'aws-cdk-lib/aws-iam';
+import { GraphqlApiBase } from 'aws-cdk-lib/aws-appsync';
+import { HttpDataSource } from 'aws-cdk-lib/aws-appsync';
+import { IAsset } from 'aws-cdk-lib';
+import { IConstruct } from 'constructs';
+import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { IGrantable } from 'aws-cdk-lib/aws-iam';
+import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { InputObjectTypeDefinitionNode } from 'graphql';
 import { InputObjectTypeExtensionNode } from 'graphql';
 import { InputValueDefinitionNode } from 'graphql';
 import { InterfaceTypeDefinitionNode } from 'graphql';
 import { InterfaceTypeExtensionNode } from 'graphql';
-import { IRole } from '@aws-cdk/aws-iam';
-import { ITable } from '@aws-cdk/aws-dynamodb';
-import { LambdaDataSource } from '@aws-cdk/aws-appsync';
-import { NoneDataSource } from '@aws-cdk/aws-appsync';
+import { IRole } from 'aws-cdk-lib/aws-iam';
+import { ITable } from 'aws-cdk-lib/aws-dynamodb';
+import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
+import { NoneDataSource } from 'aws-cdk-lib/aws-appsync';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeExtensionNode } from 'graphql';
-import { Runtime } from '@aws-cdk/aws-lambda';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { ScalarTypeDefinitionNode } from 'graphql';
 import { SchemaDefinitionNode } from 'graphql';
-import { Stack } from '@aws-cdk/core';
+import { Stack } from 'aws-cdk-lib';
 import { TypeDefinitionNode } from 'graphql';
 import { TypeSystemDefinitionNode } from 'graphql';
 import { UnionTypeDefinitionNode } from 'graphql';
@@ -145,6 +145,12 @@ export interface DataSourceProvider extends BackedDataSource {
 }
 
 // @public (undocumented)
+export interface DeploymentResources extends ResolversFunctionsAndSchema, NestedStacks {
+    // (undocumented)
+    stackMapping: StackMapping;
+}
+
+// @public (undocumented)
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
     // (undocumented)
     readonly serviceRole: IRole;
@@ -167,7 +173,7 @@ export type FieldMapEntry = {
 };
 
 // @public (undocumented)
-export interface GraphQLAPIProvider {
+export interface GraphQLAPIProvider extends IConstruct {
     // (undocumented)
     addSchemaDependency: (construct: CfnResource) => boolean;
     // (undocumented)
@@ -226,6 +232,16 @@ export enum MutationFieldType {
 }
 
 // @public (undocumented)
+export interface NestedStacks {
+    // (undocumented)
+    rootStack: Template;
+    // (undocumented)
+    stackMapping: Record<string, string>;
+    // (undocumented)
+    stacks: Record<string, Template>;
+}
+
+// @public (undocumented)
 export enum QueryFieldType {
     // (undocumented)
     GET = "GET",
@@ -245,6 +261,20 @@ export type ResolverReferenceEntry = {
     fieldName: string;
     isList: boolean;
 };
+
+// @public (undocumented)
+export interface ResolversFunctionsAndSchema {
+    // (undocumented)
+    functions: Record<string, string>;
+    // (undocumented)
+    pipelineFunctions: Record<string, string>;
+    // (undocumented)
+    resolvers: Record<string, string>;
+    // (undocumented)
+    schema: string;
+    // (undocumented)
+    userOverriddenSlots: string[];
+}
 
 // @public (undocumented)
 export interface S3MappingFunctionCodeProvider {
@@ -289,6 +319,12 @@ export interface StackManagerProvider {
 }
 
 // @public (undocumented)
+export interface StackMapping {
+    // (undocumented)
+    [resourceId: string]: string;
+}
+
+// @public (undocumented)
 export enum SubscriptionFieldType {
     // (undocumented)
     ON_CREATE = "ON_CREATE",
@@ -296,6 +332,32 @@ export enum SubscriptionFieldType {
     ON_DELETE = "ON_DELETE",
     // (undocumented)
     ON_UPDATE = "ON_UPDATE"
+}
+
+// @public (undocumented)
+export interface Template {
+    // (undocumented)
+    AWSTemplateFormatVersion?: string;
+    // (undocumented)
+    Conditions?: Record<string, any>;
+    // (undocumented)
+    Description?: string;
+    // (undocumented)
+    Mappings?: {
+        [key: string]: {
+            [key: string]: Record<string, string | number | string[]>;
+        };
+    };
+    // (undocumented)
+    Metadata?: Record<string, any>;
+    // (undocumented)
+    Outputs?: Record<string, any>;
+    // (undocumented)
+    Parameters?: Record<string, any>;
+    // (undocumented)
+    Resources?: Record<string, any>;
+    // (undocumented)
+    Transform?: any;
 }
 
 // @public (undocumented)
@@ -663,7 +725,7 @@ export interface UserPoolConfig {
 
 // Warnings were encountered during analysis:
 //
-// src/graphql-api-provider.ts:35:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
+// src/graphql-api-provider.ts:38:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

@@ -1,6 +1,8 @@
-import { AttributeType, BillingMode, StreamViewType, Table } from '@aws-cdk/aws-dynamodb';
-import * as cdk from '@aws-cdk/core';
-import * as iam from '@aws-cdk/aws-iam';
+import {
+  AttributeType, BillingMode, StreamViewType, Table,
+} from 'aws-cdk-lib/aws-dynamodb';
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
 import { TransformerContext } from '../transformer-context';
 import { ResolverConfig, SyncConfig, SyncConfigLambda } from '../config/transformer-config';

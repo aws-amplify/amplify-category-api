@@ -255,6 +255,6 @@ commands:
             source .circleci/local_publish_helpers.sh
             export CLI_REGION=us-west-2
             cd client-test-apps/js/api-model-relationship-app
-            npm install
-            retry npm run test:ci
+            yarn
+            retry yarn test:ci
           no_output_timeout: 60m

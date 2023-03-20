@@ -1,4 +1,4 @@
-import { $TSContext, pathManager } from 'amplify-cli-core';
+import { $TSContext, $TSObject, pathManager } from 'amplify-cli-core';
 import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
 import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
@@ -38,6 +38,7 @@ jest.mock('../../../provider-utils/awscloudformation/utils/amplify-meta-utils', 
 }));
 
 jest.mock('amplify-cli-core', () => ({
+  ...(jest.requireActual('amplify-cli-core') as $TSObject),
   pathManager: {
     getBackendDirPath: jest.fn().mockReturnValue('mockBackendDirPath'),
     findProjectRoot: jest.fn().mockReturnValue('mockProject'),
@@ -108,7 +109,7 @@ describe('create artifacts', () => {
   it('does not create a second API if one already exists', async () => {
     getAppSyncResourceNameMock.mockImplementationOnce(() => testApiName);
     return expect(cfnApiArtifactHandler.createArtifacts(addRequestStub)).rejects.toMatchInlineSnapshot(
-      "[Error: GraphQL API testApiName already exists in the project. Use 'amplify update api' to make modifications.]",
+      '[ResourceAlreadyExistsError: GraphQL API testApiName already exists in the project]',
     );
   });
 
@@ -238,7 +239,7 @@ describe('update artifacts', () => {
   it('throws error if no GQL API in project', () => {
     getAppSyncResourceNameMock.mockImplementationOnce(() => undefined);
     return expect(cfnApiArtifactHandler.updateArtifacts(updateRequestStub)).rejects.toMatchInlineSnapshot(
-      "[Error: No AppSync API configured in the project. Use 'amplify add api' to create an API.]",
+      '[NotImplementedError: Appsync API does not exist]',
     );
   });
 
@@ -351,14 +352,12 @@ describe('update artifacts', () => {
       {
         category: 'auth',
         resourceName: testAuthId,
-        attributes: [
-          'UserPoolId',
-        ],
+        attributes: ['UserPoolId'],
       },
     ]);
   });
 
-  it('correctly updates the cli-inputs on an update that sets a NEW lambda for conflict resolution', async () =>{
+  it('correctly updates the cli-inputs on an update that sets a NEW lambda for conflict resolution', async () => {
     jest.spyOn(AppsyncApiInputState.prototype, 'saveCLIInputPayload');
     jest.spyOn(AppsyncApiInputState.prototype, 'cliInputFileExists').mockReturnValueOnce(true);
 
@@ -375,18 +374,20 @@ describe('update artifacts', () => {
 
     const { objectContaining, stringContaining } = expect;
 
-    expect(AppsyncApiInputState.prototype.saveCLIInputPayload).toHaveBeenCalledWith(objectContaining({
-      serviceConfiguration: objectContaining({
-        conflictResolution: {
-          defaultResolutionStrategy: {
-            type: 'LAMBDA',
-            resolver: {
-              type: 'EXISTING',
-              name: stringContaining('syncConflictHandler'),
+    expect(AppsyncApiInputState.prototype.saveCLIInputPayload).toHaveBeenCalledWith(
+      objectContaining({
+        serviceConfiguration: objectContaining({
+          conflictResolution: {
+            defaultResolutionStrategy: {
+              type: 'LAMBDA',
+              resolver: {
+                type: 'EXISTING',
+                name: stringContaining('syncConflictHandler'),
+              },
             },
           },
-        },
+        }),
       }),
-    }));
+    );
   });
 });

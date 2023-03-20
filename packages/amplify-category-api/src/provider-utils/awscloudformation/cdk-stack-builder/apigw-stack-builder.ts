@@ -3,10 +3,11 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable no-underscore-dangle */
-import * as apigw from '@aws-cdk/aws-apigateway';
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
+import * as apigw from 'aws-cdk-lib/aws-apigateway';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as cdk from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { $TSObject, JSONUtilities } from 'amplify-cli-core';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
@@ -23,13 +24,13 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
   deploymentResource: apigw.CfnDeployment;
   paths: $TSObject;
   policies: { [pathName: string]: ApigwPathPolicy };
-  private _scope: cdk.Construct;
+  private _scope: Construct;
   private _props: ApigwInputs;
   private _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
   private _cfnParameterValues: $TSObject;
   private _seenLogicalIds: Set<string>;
 
-  constructor(scope: cdk.Construct, id: string, props: ApigwInputs) {
+  constructor(scope: Construct, id: string, props: ApigwInputs) {
     super(scope, id, undefined);
     this._scope = scope;
     this._props = props;
@@ -244,7 +245,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
       },
     });
 
-    // Append a random id to the logical id of the gateway response 
+    // Append a random id to the logical id of the gateway response
     // This is required to resolve issue with dropping gateway responses on updating api resource
     const [responseRandomId] = uuid().split('-');
     const default4xx = new apigw.CfnGatewayResponse(this, `${resourceName}Default4XXResponse${responseRandomId}`, {

@@ -35,11 +35,11 @@ import {
   StreamViewType,
   Table,
   TableEncryption,
-} from '@aws-cdk/aws-dynamodb';
-import * as iam from '@aws-cdk/aws-iam';
-import { CfnRole } from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
-import { CfnDataSource } from '@aws-cdk/aws-appsync';
+} from 'aws-cdk-lib/aws-dynamodb';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { CfnRole } from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib';
+import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import {
   DirectiveNode,
   FieldDefinitionNode,
@@ -63,6 +63,7 @@ import {
   SyncResourceIDs,
   toCamelCase,
   toPascalCase,
+  toUpper,
 } from 'graphql-transformer-common';
 import {
   addDirectivesToOperation,
@@ -1084,7 +1085,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
   private isModelField = (name: string): boolean => (!!this.typesWithModelDirective.has(name));
 
-  private getNonModelInputObjectName = (name: string): string => `${name}Input`;
+  private getNonModelInputObjectName = (name: string): string => `${toUpper(name)}Input`;
 
   /**
    * Model directive automatically adds id, created and updated time stamps to the filed, if they are configured
@@ -1237,6 +1238,10 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       ...(context.isProjectUsingDataStore() ? { timeToLiveAttribute: '_ttl' } : undefined),
     });
     const cfnTable = table.node.defaultChild as CfnTable;
+
+    // CDK started to append hash to logical id of dynamodb table.
+    // This line overrides that behavior to avoid deletion and re-creation of existing tables.
+    cfnTable.overrideLogicalId(tableLogicalName);
 
     cfnTable.provisionedThroughput = cdk.Fn.conditionIf(usePayPerRequestBilling.logicalId, cdk.Fn.ref('AWS::NoValue'), {
       ReadCapacityUnits: readIops,

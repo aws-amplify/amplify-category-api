@@ -1,14 +1,14 @@
-import * as codebuild from '@aws-cdk/aws-codebuild';
-import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import * as codepipelineactions from '@aws-cdk/aws-codepipeline-actions';
-import * as ecr from '@aws-cdk/aws-ecr';
-import * as ecs from '@aws-cdk/aws-ecs';
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/core';
-import * as custom from '@aws-cdk/custom-resources';
-import { RemovalPolicy } from '@aws-cdk/core';
+import * as codebuild from 'aws-cdk-lib/aws-codebuild';
+import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
+import * as codepipelineactions from 'aws-cdk-lib/aws-codepipeline-actions';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as cdk from 'aws-cdk-lib';
+import * as custom from 'aws-cdk-lib/custom-resources';
+import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { DEPLOYMENT_MECHANISM } from './base-api-stack';
@@ -31,8 +31,8 @@ const lambdaRuntimeNodeVersion = lambda.Runtime.NODEJS_12_X;
 
 const lambdasDir = path.resolve(__dirname, '../../../resources/awscloudformation/lambdas');
 
-class PipelineAwaiter extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: PipelineAwaiterProps) {
+class PipelineAwaiter extends Construct {
+  constructor(scope: Construct, id: string, props: PipelineAwaiterProps) {
     const { pipeline, artifactBucketName, artifactKey, deploymentMechanism } = props;
 
     const { pipelineArn, pipelineName } = pipeline;
@@ -91,10 +91,10 @@ class PipelineAwaiter extends cdk.Construct {
   }
 }
 
-export class PipelineWithAwaiter extends cdk.Construct {
+export class PipelineWithAwaiter extends Construct {
   pipelineName: string;
   constructor(
-    scope: cdk.Construct,
+    scope: Construct,
     id: string,
     {
       skipWait = false,
@@ -156,7 +156,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
         actions: [
           'ecr:GetAuthorizationToken',
           'ecr:BatchGetImage',
-          'ecr:BatchGetDownloadUrlForLayer',
+          'ecr:GetDownloadUrlForLayer',
           'ecr:InitiateLayerUpload',
           'ecr:BatchCheckLayerAvailability',
           'ecr:UploadLayerPart',
@@ -247,7 +247,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
         actions: [
           new codepipelineactions.EcsDeployAction({
             actionName: 'Deploy',
-            service: new (class extends cdk.Construct implements ecs.IBaseService {
+            service: new (class extends Construct implements ecs.IBaseService {
               cluster = {
                 clusterName: service.cluster,
                 env: {},
@@ -257,7 +257,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
               stack = cdk.Stack.of(this);
               env = {} as any;
               node = service.node;
-              public applyRemovalPolicy(policy: RemovalPolicy): void {
+              public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
                 // TODO: This is added for CDK upgrade. Modify the behavior if required.
               }
             })(this, 'tmpService'),
@@ -296,7 +296,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
 }
 
 function createPreBuildStages(
-  scope: cdk.Construct,
+  scope: Construct,
   {
     bucket,
     s3SourceActionKey,

@@ -1,6 +1,6 @@
 'use strict';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { anything, countResources, expect as cdkExpect, haveResource } from '@aws-cdk/assert';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { parse } from 'graphql';
 import { HttpTransformer } from '..';
 
@@ -50,8 +50,8 @@ test('it generates the expected resources', () => {
   expect(out.stacks).toBeDefined();
   parse(out.schema);
   const stack = out.stacks.HttpStack;
-  cdkExpect(stack).to(
-    haveResource('AWS::IAM::Role', {
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -64,108 +64,98 @@ test('it generates the expected resources', () => {
         ],
         Version: '2012-10-17',
       },
-    }),
-  );
-  cdkExpect(stack).to(countResources('AWS::AppSync::DataSource', 4));
-  cdkExpect(stack).to(
-    haveResource('AWS::AppSync::DataSource', {
-      ApiId: { Ref: anything() },
+    });
+  Template.fromJSON(stack).resourceCountIs('AWS::AppSync::DataSource', 4);
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::AppSync::DataSource', {
+      ApiId: { Ref: Match.anyValue() },
       Name: 'httpwwwapicomDataSource',
       Type: 'HTTP',
       HttpConfig: {
         Endpoint: 'http://www.api.com',
       },
       ServiceRoleArn: {
-        'Fn::GetAtt': [anything(), 'Arn'],
+        'Fn::GetAtt': [Match.anyValue(), 'Arn'],
       },
-    }),
-  );
-  cdkExpect(stack).to(
-    haveResource('AWS::AppSync::DataSource', {
-      ApiId: { Ref: anything() },
+    });
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::AppSync::DataSource', {
+      ApiId: { Ref: Match.anyValue() },
       Name: 'httpapicomDataSource',
       Type: 'HTTP',
       HttpConfig: {
         Endpoint: 'http://api.com',
       },
       ServiceRoleArn: {
-        'Fn::GetAtt': [anything(), 'Arn'],
+        'Fn::GetAtt': [Match.anyValue(), 'Arn'],
       },
-    }),
-  );
-  cdkExpect(stack).to(
-    haveResource('AWS::AppSync::DataSource', {
-      ApiId: { Ref: anything() },
+    });
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::AppSync::DataSource', {
+      ApiId: { Ref: Match.anyValue() },
       Name: 'httpwwwgooglecomDataSource',
       Type: 'HTTP',
       HttpConfig: {
         Endpoint: 'http://www.google.com',
       },
       ServiceRoleArn: {
-        'Fn::GetAtt': [anything(), 'Arn'],
+        'Fn::GetAtt': [Match.anyValue(), 'Arn'],
       },
-    }),
-  );
-  cdkExpect(stack).to(
-    haveResource('AWS::AppSync::DataSource', {
-      ApiId: { Ref: anything() },
+    });
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::AppSync::DataSource', {
+      ApiId: { Ref: Match.anyValue() },
       Name: 'httpswwwapicomDataSource',
       Type: 'HTTP',
       HttpConfig: {
         Endpoint: 'https://www.api.com',
       },
       ServiceRoleArn: {
-        'Fn::GetAtt': [anything(), 'Arn'],
+        'Fn::GetAtt': [Match.anyValue(), 'Arn'],
       },
-    }),
-  );
-  cdkExpect(stack).to(countResources('AWS::AppSync::Resolver', 5));
-  cdkExpect(stack).to(countResources('AWS::AppSync::FunctionConfiguration', 5));
+    });
+  Template.fromJSON(stack).resourceCountIs('AWS::AppSync::Resolver', 5);
+  Template.fromJSON(stack).resourceCountIs('AWS::AppSync::FunctionConfiguration', 5);
   expect(stack.Resources!.CommentcontentResolver).toBeTruthy();
-  cdkExpect(stack).to(
-    haveResource('AWS::AppSync::Resolver', {
-      ApiId: { Ref: anything() },
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::AppSync::Resolver', {
+      ApiId: { Ref: Match.anyValue() },
       FieldName: 'content',
       TypeName: 'Comment',
       Kind: 'PIPELINE',
-    }),
-  );
+    });
   expect(stack.Resources!.Commentcontent2Resolver).toBeTruthy();
-  cdkExpect(stack).to(
-    haveResource('AWS::AppSync::Resolver', {
-      ApiId: { Ref: anything() },
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::AppSync::Resolver', {
+      ApiId: { Ref: Match.anyValue() },
       FieldName: 'content2',
       TypeName: 'Comment',
       Kind: 'PIPELINE',
-    }),
-  );
+    });
   expect(stack.Resources!.CommentmoreResolver).toBeTruthy();
-  cdkExpect(stack).to(
-    haveResource('AWS::AppSync::Resolver', {
-      ApiId: { Ref: anything() },
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::AppSync::Resolver', {
+      ApiId: { Ref: Match.anyValue() },
       FieldName: 'more',
       TypeName: 'Comment',
       Kind: 'PIPELINE',
-    }),
-  );
+    });
   expect(stack.Resources!.CommentevenMoreResolver).toBeTruthy();
-  cdkExpect(stack).to(
-    haveResource('AWS::AppSync::Resolver', {
-      ApiId: { Ref: anything() },
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::AppSync::Resolver', {
+      ApiId: { Ref: Match.anyValue() },
       FieldName: 'evenMore',
       TypeName: 'Comment',
       Kind: 'PIPELINE',
-    }),
-  );
+    });
   expect(stack.Resources!.CommentstillMoreResolver).toBeTruthy();
-  cdkExpect(stack).to(
-    haveResource('AWS::AppSync::Resolver', {
-      ApiId: { Ref: anything() },
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::AppSync::Resolver', {
+      ApiId: { Ref: Match.anyValue() },
       FieldName: 'stillMore',
       TypeName: 'Comment',
       Kind: 'PIPELINE',
-    }),
-  );
+    });
 });
 
 test('URL params happy path', () => {
@@ -212,8 +202,8 @@ test('URL params happy path', () => {
   expect(out.stacks).toBeDefined();
   parse(out.schema);
   const stack = out.stacks.HttpStack;
-  cdkExpect(stack).to(countResources('AWS::AppSync::DataSource', 1));
-  cdkExpect(stack).to(countResources('AWS::AppSync::Resolver', 7));
+  Template.fromJSON(stack).resourceCountIs('AWS::AppSync::DataSource', 1);
+  Template.fromJSON(stack).resourceCountIs('AWS::AppSync::Resolver', 7);
   expect(stack.Resources!.CommentcomplexResolver).toBeTruthy();
   expect(stack.Resources!.CommentcomplexAgainResolver).toBeTruthy();
   expect(stack.Resources!.CommentcomplexPostResolver).toBeTruthy();
@@ -280,9 +270,9 @@ test('env on the hostname', () => {
   expect(out.stacks).toBeDefined();
   parse(out.schema);
   const stack = out.stacks.HttpStack;
-  cdkExpect(stack).to(countResources('AWS::AppSync::DataSource', 4));
-  cdkExpect(stack).to(
-    haveResource('AWS::AppSync::DataSource', {
+  Template.fromJSON(stack).resourceCountIs('AWS::AppSync::DataSource', 4);
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::AppSync::DataSource', {
       Name: 'httpenvwwwapicomDataSource',
       Type: 'HTTP',
       HttpConfig: {
@@ -291,16 +281,15 @@ test('env on the hostname', () => {
             'http://${env}www.api.com',
             {
               env: {
-                Ref: anything(),
+                Ref: Match.anyValue(),
               },
             },
           ],
         },
       },
-    }),
-  );
-  cdkExpect(stack).to(
-    haveResource('AWS::AppSync::DataSource', {
+    });
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::AppSync::DataSource', {
       Name: 'httpenvapicomDataSource',
       Type: 'HTTP',
       HttpConfig: {
@@ -309,16 +298,15 @@ test('env on the hostname', () => {
             'http://${env}api.com',
             {
               env: {
-                Ref: anything(),
+                Ref: Match.anyValue(),
               },
             },
           ],
         },
       },
-    }),
-  );
-  cdkExpect(stack).to(
-    haveResource('AWS::AppSync::DataSource', {
+    });
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::AppSync::DataSource', {
       Name: 'httpenvwwwgooglecomDataSource',
       Type: 'HTTP',
       HttpConfig: {
@@ -327,16 +315,15 @@ test('env on the hostname', () => {
             'http://${env}www.google.com',
             {
               env: {
-                Ref: anything(),
+                Ref: Match.anyValue(),
               },
             },
           ],
         },
       },
-    }),
-  );
-  cdkExpect(stack).to(
-    haveResource('AWS::AppSync::DataSource', {
+    });
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::AppSync::DataSource', {
       Name: 'httpsenvwwwapicomDataSource',
       Type: 'HTTP',
       HttpConfig: {
@@ -345,14 +332,13 @@ test('env on the hostname', () => {
             'https://${env}www.api.com',
             {
               env: {
-                Ref: anything(),
+                Ref: Match.anyValue(),
               },
             },
           ],
         },
       },
-    }),
-  );
+    });
 });
 
 test('aws_region on the URI path', () => {
@@ -396,9 +382,9 @@ test('aws_region on the hostname', () => {
   expect(out.stacks).toBeDefined();
   parse(out.schema);
   const stack = out.stacks.HttpStack;
-  cdkExpect(stack).to(countResources('AWS::AppSync::DataSource', 4));
-  cdkExpect(stack).to(
-    haveResource('AWS::AppSync::DataSource', {
+  Template.fromJSON(stack).resourceCountIs('AWS::AppSync::DataSource', 4);
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::AppSync::DataSource', {
       Name: 'httpaws_regionwwwapicomDataSource',
       Type: 'HTTP',
       HttpConfig: {
@@ -407,16 +393,15 @@ test('aws_region on the hostname', () => {
             'http://${aws_region}www.api.com',
             {
               aws_region: {
-                Ref: anything(),
+                Ref: Match.anyValue(),
               },
             },
           ],
         },
       },
-    }),
-  );
-  cdkExpect(stack).to(
-    haveResource('AWS::AppSync::DataSource', {
+    });
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::AppSync::DataSource', {
       Name: 'httpaws_regionapicomDataSource',
       Type: 'HTTP',
       HttpConfig: {
@@ -425,16 +410,15 @@ test('aws_region on the hostname', () => {
             'http://${aws_region}api.com',
             {
               aws_region: {
-                Ref: anything(),
+                Ref: Match.anyValue(),
               },
             },
           ],
         },
       },
-    }),
-  );
-  cdkExpect(stack).to(
-    haveResource('AWS::AppSync::DataSource', {
+    });
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::AppSync::DataSource', {
       Name: 'httpaws_regionwwwgooglecomDataSource',
       Type: 'HTTP',
       HttpConfig: {
@@ -443,16 +427,15 @@ test('aws_region on the hostname', () => {
             'http://${aws_region}www.google.com',
             {
               aws_region: {
-                Ref: anything(),
+                Ref: Match.anyValue(),
               },
             },
           ],
         },
       },
-    }),
-  );
-  cdkExpect(stack).to(
-    haveResource('AWS::AppSync::DataSource', {
+    });
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::AppSync::DataSource', {
       Name: 'httpsaws_regionwwwapicomDataSource',
       Type: 'HTTP',
       HttpConfig: {
@@ -461,12 +444,11 @@ test('aws_region on the hostname', () => {
             'https://${aws_region}www.api.com',
             {
               aws_region: {
-                Ref: anything(),
+                Ref: Match.anyValue(),
               },
             },
           ],
         },
       },
-    }),
-  );
+    });
 });

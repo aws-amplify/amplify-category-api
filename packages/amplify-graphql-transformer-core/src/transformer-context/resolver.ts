@@ -7,8 +7,9 @@ import {
   TransformerResolverProvider,
   TransformerResolversManagerProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationType, CfnFunctionConfiguration } from '@aws-cdk/aws-appsync';
-import { isResolvableObject, Stack, CfnParameter } from '@aws-cdk/core';
+import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
+import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
+import { isResolvableObject, Stack, CfnParameter } from 'aws-cdk-lib';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
 import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
@@ -124,7 +125,6 @@ export class TransformerResolver implements TransformerResolverProvider {
   private readonly slotMap: Map<string, Slot[]> = new Map();
   private readonly slotNames: Set<string>;
   private stack?: Stack;
-  private stackName?: string;
   constructor(
     private typeName: string,
     private fieldName: string,
@@ -155,11 +155,6 @@ export class TransformerResolver implements TransformerResolverProvider {
 
   mapToStack = (stack: Stack) => {
     this.stack = stack;
-    this.stackName = stack.stackName;
-  };
-
-  getStackName = () => {
-    return this.stackName ?? '';
   };
 
   addToSlot = (
@@ -278,7 +273,10 @@ export class TransformerResolver implements TransformerResolverProvider {
           }
 
           if (context.isProjectUsingDataStore()) {
-            const syncConfig = SyncUtils.getSyncConfig(context, this.typeName)!;
+            //Remove the suffix "Table" from the datasource name
+            //The stack name cannot be retrieved as during the runtime it is tokenized and value not being revealed
+            const modelName = this.datasource.name.slice(0, -5);
+            const syncConfig = SyncUtils.getSyncConfig(context, modelName)!;
             const funcConf = dataSourceProviderFn.node.children.find(
               (it: any) => it.cfnResourceType === 'AWS::AppSync::FunctionConfiguration',
             ) as CfnFunctionConfiguration;

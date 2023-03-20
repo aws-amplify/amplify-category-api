@@ -172,7 +172,7 @@ function runE2eTest {
 function emitCanarySuccessMetric {
     if [[ "$CIRCLE_BRANCH" = main ]]; then
         USE_PARENT_ACCOUNT=1
-        setAwsAccountCredentials 
+        setAwsAccountCredentials
         aws cloudwatch \
             put-metric-data \
             --metric-name CanarySuccessRate \
@@ -187,7 +187,7 @@ function emitCanarySuccessMetric {
 function emitCanaryFailureMetric {
     if [[ "$CIRCLE_BRANCH" = main ]]; then
         USE_PARENT_ACCOUNT=1
-        setAwsAccountCredentials 
+        setAwsAccountCredentials
         aws cloudwatch \
             put-metric-data \
             --metric-name CanarySuccessRate \

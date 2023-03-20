@@ -3,6 +3,151 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.1.0...@aws-amplify/amplify-category-api@5.1.1) (2023-03-15)
+
+### Bug Fixes
+
+- **api:** correct container code build policy ([517315a](https://github.com/aws-amplify/amplify-category-api/commit/517315a986bffb97c68299dfe585ac783fdd4a5a))
+- fixes apigw tests ([8e7a325](https://github.com/aws-amplify/amplify-category-api/commit/8e7a3253ad9696e94606abca962afe268beff7cb))
+
+# [5.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.9...@aws-amplify/amplify-category-api@5.1.0) (2023-03-01)
+
+### Bug Fixes
+
+- container api cfn generation ([#947](https://github.com/aws-amplify/amplify-category-api/issues/947)) ([0f675f2](https://github.com/aws-amplify/amplify-category-api/commit/0f675f222e24c07084b2907bc62024d7126f574e))
+- lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
+- migrate to cdkv2 - e2e tests fixes ([#910](https://github.com/aws-amplify/amplify-category-api/issues/910)) ([c7b2503](https://github.com/aws-amplify/amplify-category-api/commit/c7b250361bf0c82fc067e03675101b9dfb6a25de))
+- preserve logical id patterns for dynamodb tables and search domain ([#894](https://github.com/aws-amplify/amplify-category-api/issues/894)) ([7530fc2](https://github.com/aws-amplify/amplify-category-api/commit/7530fc2e9254b621dc3782271318dd3f5c97d2b8))
+- throw error if invalid override or invalid custom stack error ([#982](https://github.com/aws-amplify/amplify-category-api/issues/982)) ([6dfeeba](https://github.com/aws-amplify/amplify-category-api/commit/6dfeeba627cd84a41eb8b4248856fa487c741f87))
+
+### Features
+
+- migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
+
+# [5.1.0-beta.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.8...@aws-amplify/amplify-category-api@5.1.0-beta.6) (2023-02-21)
+
+### Bug Fixes
+
+- container api cfn generation ([#947](https://github.com/aws-amplify/amplify-category-api/issues/947)) ([0f675f2](https://github.com/aws-amplify/amplify-category-api/commit/0f675f222e24c07084b2907bc62024d7126f574e))
+- lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
+- migrate to cdkv2 - e2e tests fixes ([#910](https://github.com/aws-amplify/amplify-category-api/issues/910)) ([c7b2503](https://github.com/aws-amplify/amplify-category-api/commit/c7b250361bf0c82fc067e03675101b9dfb6a25de))
+- preserve logical id patterns for dynamodb tables and search domain ([#894](https://github.com/aws-amplify/amplify-category-api/issues/894)) ([7530fc2](https://github.com/aws-amplify/amplify-category-api/commit/7530fc2e9254b621dc3782271318dd3f5c97d2b8))
+- throw error if invalid override or invalid custom stack error ([#982](https://github.com/aws-amplify/amplify-category-api/issues/982)) ([6dfeeba](https://github.com/aws-amplify/amplify-category-api/commit/6dfeeba627cd84a41eb8b4248856fa487c741f87))
+
+### Features
+
+- migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
+
+# [5.1.0-beta.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.8...@aws-amplify/amplify-category-api@5.1.0-beta.5) (2023-02-15)
+
+### Bug Fixes
+
+- container api cfn generation ([#947](https://github.com/aws-amplify/amplify-category-api/issues/947)) ([0f675f2](https://github.com/aws-amplify/amplify-category-api/commit/0f675f222e24c07084b2907bc62024d7126f574e))
+- lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
+- migrate to cdkv2 - e2e tests fixes ([#910](https://github.com/aws-amplify/amplify-category-api/issues/910)) ([c7b2503](https://github.com/aws-amplify/amplify-category-api/commit/c7b250361bf0c82fc067e03675101b9dfb6a25de))
+- preserve logical id patterns for dynamodb tables and search domain ([#894](https://github.com/aws-amplify/amplify-category-api/issues/894)) ([7530fc2](https://github.com/aws-amplify/amplify-category-api/commit/7530fc2e9254b621dc3782271318dd3f5c97d2b8))
+- throw error if invalid override or invalid custom stack error ([#982](https://github.com/aws-amplify/amplify-category-api/issues/982)) ([6dfeeba](https://github.com/aws-amplify/amplify-category-api/commit/6dfeeba627cd84a41eb8b4248856fa487c741f87))
+
+### Features
+
+- migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
+
+# [5.1.0-beta.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.6...@aws-amplify/amplify-category-api@5.1.0-beta.4) (2023-02-03)
+
+### Bug Fixes
+
+- container api cfn generation ([#947](https://github.com/aws-amplify/amplify-category-api/issues/947)) ([0f675f2](https://github.com/aws-amplify/amplify-category-api/commit/0f675f222e24c07084b2907bc62024d7126f574e))
+- lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
+- migrate to cdkv2 - e2e tests fixes ([#910](https://github.com/aws-amplify/amplify-category-api/issues/910)) ([c7b2503](https://github.com/aws-amplify/amplify-category-api/commit/c7b250361bf0c82fc067e03675101b9dfb6a25de))
+- preserve logical id patterns for dynamodb tables and search domain ([#894](https://github.com/aws-amplify/amplify-category-api/issues/894)) ([7530fc2](https://github.com/aws-amplify/amplify-category-api/commit/7530fc2e9254b621dc3782271318dd3f5c97d2b8))
+- throw error if invalid override or invalid custom stack error ([#982](https://github.com/aws-amplify/amplify-category-api/issues/982)) ([6dfeeba](https://github.com/aws-amplify/amplify-category-api/commit/6dfeeba627cd84a41eb8b4248856fa487c741f87))
+
+### Features
+
+- migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
+
+# [5.1.0-beta.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.2...@aws-amplify/amplify-category-api@5.1.0-beta.3) (2022-12-27)
+
+### Bug Fixes
+
+- container api cfn generation ([#947](https://github.com/aws-amplify/amplify-category-api/issues/947)) ([0f675f2](https://github.com/aws-amplify/amplify-category-api/commit/0f675f222e24c07084b2907bc62024d7126f574e))
+- lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
+- migrate to cdkv2 - e2e tests fixes ([#910](https://github.com/aws-amplify/amplify-category-api/issues/910)) ([c7b2503](https://github.com/aws-amplify/amplify-category-api/commit/c7b250361bf0c82fc067e03675101b9dfb6a25de))
+- preserve logical id patterns for dynamodb tables and search domain ([#894](https://github.com/aws-amplify/amplify-category-api/issues/894)) ([7530fc2](https://github.com/aws-amplify/amplify-category-api/commit/7530fc2e9254b621dc3782271318dd3f5c97d2b8))
+- throw error if invalid override or invalid custom stack error ([#982](https://github.com/aws-amplify/amplify-category-api/issues/982)) ([6dfeeba](https://github.com/aws-amplify/amplify-category-api/commit/6dfeeba627cd84a41eb8b4248856fa487c741f87))
+
+### Features
+
+- migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
+
+# [5.1.0-beta.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.1.0-beta.0...@aws-amplify/amplify-category-api@5.1.0-beta.2) (2022-12-12)
+
+### Features
+
+- 🎸 Added bracket mismatch error detection ([40fdd88](https://github.com/aws-amplify/amplify-category-api/commit/40fdd885e5553ea4b087ff15b1305328a37fdecd)), closes [#107](https://github.com/aws-amplify/amplify-category-api/issues/107)
+
+# [5.1.0-beta.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.1.0-beta.0...@aws-amplify/amplify-category-api@5.1.0-beta.1) (2022-11-30)
+
+### Features
+
+- 🎸 Added bracket mismatch error detection ([40fdd88](https://github.com/aws-amplify/amplify-category-api/commit/40fdd885e5553ea4b087ff15b1305328a37fdecd)), closes [#107](https://github.com/aws-amplify/amplify-category-api/issues/107)
+
+# [5.1.0-beta.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.1.0-cdkv2.3...@aws-amplify/amplify-category-api@5.1.0-beta.0) (2022-11-18)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+# [5.1.0-cdkv2.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.9...@aws-amplify/amplify-category-api@5.1.0-cdkv2.3) (2022-11-15)
+
+### Bug Fixes
+
+- container api cfn generation ([#947](https://github.com/aws-amplify/amplify-category-api/issues/947)) ([0f675f2](https://github.com/aws-amplify/amplify-category-api/commit/0f675f222e24c07084b2907bc62024d7126f574e))
+- lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
+- migrate to cdkv2 - e2e tests fixes ([#910](https://github.com/aws-amplify/amplify-category-api/issues/910)) ([c7b2503](https://github.com/aws-amplify/amplify-category-api/commit/c7b250361bf0c82fc067e03675101b9dfb6a25de))
+- preserve logical id patterns for dynamodb tables and search domain ([#894](https://github.com/aws-amplify/amplify-category-api/issues/894)) ([7530fc2](https://github.com/aws-amplify/amplify-category-api/commit/7530fc2e9254b621dc3782271318dd3f5c97d2b8))
+- throw error if invalid override or invalid custom stack error ([#982](https://github.com/aws-amplify/amplify-category-api/issues/982)) ([6dfeeba](https://github.com/aws-amplify/amplify-category-api/commit/6dfeeba627cd84a41eb8b4248856fa487c741f87))
+
+### Features
+
+- migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
+
+# [5.1.0-cdkv2.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.1.0-cdkv2.1...@aws-amplify/amplify-category-api@5.1.0-cdkv2.2) (2022-11-03)
+
+### Bug Fixes
+
+- container api cfn generation ([#947](https://github.com/aws-amplify/amplify-category-api/issues/947)) ([0f675f2](https://github.com/aws-amplify/amplify-category-api/commit/0f675f222e24c07084b2907bc62024d7126f574e))
+
+# [5.1.0-cdkv2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.1.0-cdkv2.0...@aws-amplify/amplify-category-api@5.1.0-cdkv2.1) (2022-10-24)
+
+### Bug Fixes
+
+- lock CDK v2 version ([#923](https://github.com/aws-amplify/amplify-category-api/issues/923)) ([2afe40c](https://github.com/aws-amplify/amplify-category-api/commit/2afe40cf13e7d1ee7db37988b9b3297768c7bd0a))
+
+# [5.1.0-cdkv2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.0.5...@aws-amplify/amplify-category-api@5.1.0-cdkv2.0) (2022-10-24)
+
+### Bug Fixes
+
+- **graphql:** add rds datasource v1 fix ([#853](https://github.com/aws-amplify/amplify-category-api/issues/853)) ([9bf32c2](https://github.com/aws-amplify/amplify-category-api/commit/9bf32c21f8e7e7ea6e8d602846c1128f38fb9897))
+- migrate to cdkv2 - e2e tests fixes ([#910](https://github.com/aws-amplify/amplify-category-api/issues/910)) ([c7b2503](https://github.com/aws-amplify/amplify-category-api/commit/c7b250361bf0c82fc067e03675101b9dfb6a25de))
+- preserve logical id patterns for dynamodb tables and search domain ([#894](https://github.com/aws-amplify/amplify-category-api/issues/894)) ([7530fc2](https://github.com/aws-amplify/amplify-category-api/commit/7530fc2e9254b621dc3782271318dd3f5c97d2b8))
+
+### Features
+
+- migrate amplify-category-api to CDK v2 ([#883](https://github.com/aws-amplify/amplify-category-api/issues/883)) ([2183f0f](https://github.com/aws-amplify/amplify-category-api/commit/2183f0f7144369cbcf6e7de3c8a2af7f5dc5b6b4))
+
+## [4.1.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.8...@aws-amplify/amplify-category-api@4.1.9) (2023-02-27)
+
+### Bug Fixes
+
+- **test:** update cli dependencies to use the cli rc packages ([#1294](https://github.com/aws-amplify/amplify-category-api/issues/1294)) ([7b13884](https://github.com/aws-amplify/amplify-category-api/commit/7b138841bf2c26fa16465ef263af0de7ce5a4122))
+
+## [4.1.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.7...@aws-amplify/amplify-category-api@4.1.8) (2023-02-15)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+## [4.1.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.6...@aws-amplify/amplify-category-api@4.1.7) (2023-02-10)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
 ## [4.1.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.5...@aws-amplify/amplify-category-api@4.1.6) (2023-01-26)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

@@ -3,7 +3,7 @@ import { printer, prompter } from 'amplify-prompts';
 import chalk from 'chalk';
 import { DataApiParams } from 'graphql-relational-schema-transformer';
 import ora from 'ora';
-import { rootStackFileName } from 'amplify-provider-awscloudformation';
+import { rootStackFileName } from '@aws-amplify/amplify-provider-awscloudformation';
 import * as path from 'path';
 
 const spinner = ora('');

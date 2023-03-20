@@ -2,7 +2,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
-import { expect as cdkExpect, haveResourceLike } from '@aws-cdk/assert';
+import { Template } from 'aws-cdk-lib/assertions';
 import { Kind, parse } from 'graphql';
 import { PrimaryKeyTransformer } from '..';
 
@@ -308,12 +308,11 @@ test('a primary key with no sort key is properly configured', () => {
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::DynamoDB::Table', {
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::DynamoDB::Table', {
       KeySchema: [{ AttributeName: 'email', KeyType: 'HASH' }],
       AttributeDefinitions: [{ AttributeName: 'email', AttributeType: 'S' }],
-    }),
-  );
+    });
 
   expect(out.resolvers).toMatchSnapshot();
 
@@ -361,8 +360,8 @@ test('a primary key with a single sort key field is properly configured', () => 
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::DynamoDB::Table', {
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::DynamoDB::Table', {
       KeySchema: [
         { AttributeName: 'email', KeyType: 'HASH' },
         { AttributeName: 'kind', KeyType: 'RANGE' },
@@ -371,8 +370,7 @@ test('a primary key with a single sort key field is properly configured', () => 
         { AttributeName: 'email', AttributeType: 'S' },
         { AttributeName: 'kind', AttributeType: 'N' },
       ],
-    }),
-  );
+    });
 
   expect(out.resolvers).toMatchSnapshot();
 
@@ -410,8 +408,8 @@ test('a primary key with a composite sort key is properly configured', () => {
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::DynamoDB::Table', {
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::DynamoDB::Table', {
       KeySchema: [
         { AttributeName: 'email', KeyType: 'HASH' },
         { AttributeName: 'kind#other', KeyType: 'RANGE' },
@@ -420,8 +418,7 @@ test('a primary key with a composite sort key is properly configured', () => {
         { AttributeName: 'email', AttributeType: 'S' },
         { AttributeName: 'kind#other', AttributeType: 'S' },
       ],
-    }),
-  );
+    });
 
   expect(out.resolvers).toMatchSnapshot();
 
@@ -495,8 +492,8 @@ test('enums are supported in keys', () => {
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::DynamoDB::Table', {
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::DynamoDB::Table', {
       KeySchema: [
         { AttributeName: 'status', KeyType: 'HASH' },
         { AttributeName: 'lastStatus', KeyType: 'RANGE' },
@@ -505,8 +502,7 @@ test('enums are supported in keys', () => {
         { AttributeName: 'status', AttributeType: 'S' },
         { AttributeName: 'lastStatus', AttributeType: 'S' },
       ],
-    }),
-  );
+    });
 
   expect(out.resolvers).toMatchSnapshot();
 
@@ -541,12 +537,11 @@ test('user provided id fields are not removed', () => {
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  cdkExpect(stack).to(
-    haveResourceLike('AWS::DynamoDB::Table', {
+  Template.fromJSON(stack)
+    .hasResourceProperties('AWS::DynamoDB::Table', {
       KeySchema: [{ AttributeName: 'email', KeyType: 'HASH' }],
       AttributeDefinitions: [{ AttributeName: 'email', AttributeType: 'S' }],
-    }),
-  );
+    });
 
   const createInput: any = schema.definitions.find((d: any) => {
     return d.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && d.name.value === 'CreateTestInput';

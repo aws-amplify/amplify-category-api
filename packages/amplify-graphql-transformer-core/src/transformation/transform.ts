@@ -1,16 +1,17 @@
 /* eslint-disable no-new */
 import {
   AppSyncAuthConfiguration,
+  DeploymentResources,
   FeatureFlagProvider,
   GraphQLAPIProvider,
+  Template,
   TransformerPluginProvider,
   TransformHostProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
+import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import {
   App, Aws, CfnOutput, CfnResource, Fn,
-} from '@aws-cdk/core';
-import { printer } from 'amplify-prompts';
+} from 'aws-cdk-lib';
 import * as fs from 'fs-extra';
 import {
   EnumTypeDefinitionNode,
@@ -31,6 +32,7 @@ import _ from 'lodash';
 import os from 'os';
 import * as path from 'path';
 import * as vm from 'vm2';
+import { AmplifyError } from 'amplify-cli-core';
 import { ResolverConfig, TransformConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
@@ -43,7 +45,7 @@ import { adoptAuthModes, IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } fr
 import * as SyncUtils from './sync-utils';
 import { MappingTemplate } from '../cdk-compat';
 
-import Template, { DeploymentResources, UserDefinedSlot, OverrideConfig } from './types';
+import { UserDefinedSlot, OverrideConfig } from './types';
 import {
   makeSeenTransformationKey,
   matchArgumentDirective,
@@ -305,21 +307,30 @@ export class GraphQLTransform {
     return this.synthesize(context);
   }
 
-  public applyOverride = (stackManager: StackManager): AmplifyApiGraphQlResourceStackTemplate  => {
+  public applyOverride = (stackManager: StackManager): AmplifyApiGraphQlResourceStackTemplate => {
+    if (!this.overrideConfig?.overrideFlag) {
+      return {};
+    }
+
+    const overrideFilePath = path.join(this.overrideConfig!.overrideDir, 'build', 'override.js');
+    if (!fs.existsSync(overrideFilePath)) {
+      return {};
+    }
+
     const stacks: string[] = [];
     const amplifyApiObj: any = {};
-    stackManager.rootStack.node.findAll().forEach(node => {
+    stackManager.rootStack.node.findAll().forEach((node) => {
       const resource = node as CfnResource;
       if (resource.cfnResourceType === 'AWS::CloudFormation::Stack') {
         stacks.push(node.node.id.split('.')[0]);
       }
     });
 
-    stackManager.rootStack.node.findAll().forEach(node => {
+    stackManager.rootStack.node.findAll().forEach((node) => {
       const resource = node as CfnResource;
       let pathArr;
       if (node.node.id === 'Resource') {
-        pathArr = node.node.path.split('/').filter(key => key !== node.node.id);
+        pathArr = node.node.path.split('/').filter((key) => key !== node.node.id);
       } else {
         pathArr = node.node.path.split('/');
       }
@@ -347,26 +358,25 @@ export class GraphQLTransform {
     });
 
     const appsyncResourceObj = convertToAppsyncResourceObj(amplifyApiObj);
-    if (!_.isEmpty(this.overrideConfig) && this.overrideConfig!.overrideFlag) {
-      const overrideCode: string = fs.readFileSync(path.join(this.overrideConfig!.overrideDir, 'build', 'override.js'), 'utf-8');
-      const sandboxNode = new vm.NodeVM({
-        console: 'inherit',
-        timeout: 5000,
-        sandbox: {},
-        require: {
-          context: 'sandbox',
-          builtin: ['path'],
-          external: true,
-        },
-      });
-      try {
-        sandboxNode.run(overrideCode, path.join(this.overrideConfig!.overrideDir, 'build', 'override.js')).override(appsyncResourceObj);
-      } catch (err) {
-        const error = new Error(`Skipping override due to ${err}${os.EOL}`);
-        printer.error(`${error}`);
-        error.stack = undefined;
-        throw error;
-      }
+    const overrideCode: string = fs.readFileSync(overrideFilePath, 'utf-8');
+    const sandboxNode = new vm.NodeVM({
+      console: 'inherit',
+      timeout: 5000,
+      sandbox: {},
+      require: {
+        context: 'sandbox',
+        builtin: ['path'],
+        external: true,
+      },
+    });
+    try {
+      sandboxNode.run(overrideCode, overrideFilePath).override(appsyncResourceObj);
+    } catch (err) {
+      throw new AmplifyError('InvalidOverrideError', {
+        message: 'Executing overrides failed.',
+        details: err.message,
+        resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+      }, err);
     }
     return appsyncResourceObj;
   };
@@ -493,20 +503,9 @@ export class GraphQLTransform {
   }
 
   private collectResolvers(context: TransformerContext, api: GraphQLAPIProvider): void {
-    const resolverEntries = context.resolvers.collectResolvers() as Map<string, TransformerResolver>;
-    //Sort resolvers by stack name to group each resolver before synthesis to avoid circular dependency
-    const sortedResolverEntries = new Map([...resolverEntries].sort((a,b) => {
-      const left = a[1].getStackName();
-      const right = b[1].getStackName();
-      if (left > right) {
-        return 1;
-      }
-      if (left === right) {
-        return 0
-      }
-      return -1;
-    }));
-    for (const [resolverName, resolver] of sortedResolverEntries) {
+    const resolverEntries = context.resolvers.collectResolvers();
+
+    for (const [resolverName, resolver] of resolverEntries) {
       const userSlots = this.userDefinedSlots[resolverName] || [];
 
       userSlots.forEach(slot => {
