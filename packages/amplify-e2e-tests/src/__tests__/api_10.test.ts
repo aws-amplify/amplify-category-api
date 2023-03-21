@@ -99,7 +99,7 @@ describe('amplify add api (GraphQL)', () => {
       adminRoleNames: ['myAdminRoleName', 'myEnvFunction-${env}'],
     };
     setCustomRolesConfig(projRoot, name, customRolesConfig);
-    await apiGqlCompile(projRoot, true);
+    await apiGqlCompile(projRoot);
     const afterAdminConfig = readFileSync(createResolver).toString();
     expect(afterAdminConfig).toMatchSnapshot();
     expect(beforeAdminConfig).not.toEqual(afterAdminConfig);
@@ -130,7 +130,7 @@ describe('amplify add api (GraphQL)', () => {
       adminRoleNames: ['myAdminRoleName', 'myEnvFunction-${env}'],
     };
     setCustomRolesConfig(projRoot, name, customRolesConfig);
-    await apiGqlCompile(projRoot, true);
+    await apiGqlCompile(projRoot);
     const afterAdminConfig = readFileSync(createResolver).toString();
     expect(afterAdminConfig).toMatchSnapshot();
     expect(beforeAdminConfig).not.toEqual(afterAdminConfig);
