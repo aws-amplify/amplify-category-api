@@ -35,7 +35,7 @@ import { MappingParameters } from 'graphql-transformer-core';
  */
 export class ResourceFactory {
   /**
-   * makeParams
+   * Generate CFN Parameters section
    */
   public makeParams() {
     return {
@@ -263,6 +263,9 @@ export class ResourceFactory {
         },
         'eu-north-1': {
           layerRegion: 'arn:aws:lambda:eu-north-1:642425348156:layer:AWSLambda-Python-AWS-SDK:1',
+        },
+        'eu-south-1': {
+          layerRegion: 'arn:aws:lambda:eu-south-1:426215560912:layer:AWSLambda-Python-AWS-SDK:1',
         },
         'eu-west-2': {
           layerRegion: 'arn:aws:lambda:eu-west-2:142628438157:layer:AWSLambda-Python-AWS-SDK:1',

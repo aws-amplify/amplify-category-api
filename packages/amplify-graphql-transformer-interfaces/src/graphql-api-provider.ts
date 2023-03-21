@@ -1,10 +1,13 @@
 import {
-  CfnResource, Construct, IAsset, IConstruct,
-} from '@aws-cdk/core';
-import { Grant, IGrantable, IRole } from '@aws-cdk/aws-iam';
+  CfnResource, IAsset,
+} from 'aws-cdk-lib';
+import {
+  Construct, IConstruct,
+} from 'constructs';
+import { Grant, IGrantable, IRole } from 'aws-cdk-lib/aws-iam';
 import { TransformHostProvider } from './transform-host-provider';
 
-// Auth Config
+// Auth Config Modes
 export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AWS_LAMBDA';
 export type AppSyncAuthConfiguration = {
   defaultAuthentication: AppSyncAuthConfigurationEntry;
@@ -110,7 +113,7 @@ export interface S3MappingFunctionCodeProvider {
 
 export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingTemplateProvider;
 
-export interface GraphQLAPIProvider {
+export interface GraphQLAPIProvider extends IConstruct {
   readonly apiId: string;
   readonly host: TransformHostProvider;
 

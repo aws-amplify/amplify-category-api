@@ -1,27 +1,29 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
-import { CfnDomain, Domain, ElasticsearchVersion } from '@aws-cdk/aws-elasticsearch';
-import { IRole, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { EbsDeviceVolumeType } from 'aws-cdk-lib/aws-ec2';
+import { CfnDomain, Domain, ElasticsearchVersion } from 'aws-cdk-lib/aws-elasticsearch';
+import { IRole, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import {
   CfnParameter,
-  Construct,
   Fn,
   RemovalPolicy,
-} from '@aws-cdk/core';
+} from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { ResourceConstants } from 'graphql-transformer-common';
 
-export const createSearchableDomain = (stack: Construct, parameterMap: Map<string, CfnParameter>, apiId: string): Domain => {
+export const createSearchableDomain = (stack: Construct, parameterMap: Map<string, CfnParameter>, apiId: string, nodeToNodeEncryption: boolean): Domain => {
   const { OpenSearchEBSVolumeGB, OpenSearchInstanceType, OpenSearchInstanceCount } = ResourceConstants.PARAMETERS;
   const { OpenSearchDomainLogicalID } = ResourceConstants.RESOURCES;
   const { HasEnvironmentParameter } = ResourceConstants.CONDITIONS;
 
   const domain = new Domain(stack, OpenSearchDomainLogicalID, {
     version: { version: '7.10' } as ElasticsearchVersion,
+    enforceHttps:true,
     ebs: {
       enabled: true,
       volumeType: EbsDeviceVolumeType.GP2,
       volumeSize: parameterMap.get(OpenSearchEBSVolumeGB)?.valueAsNumber,
     },
+    nodeToNodeEncryption,
     zoneAwareness: {
       enabled: false,
     },
@@ -29,7 +31,13 @@ export const createSearchableDomain = (stack: Construct, parameterMap: Map<strin
     removalPolicy: RemovalPolicy.DESTROY,
   });
 
-  (domain.node.defaultChild as CfnDomain).elasticsearchClusterConfig = {
+  const cfnDomain = domain.node.defaultChild as CfnDomain;
+
+  // CDK started to append hash to logical id of search domain.
+  // This line overrides that behavior to avoid deletion and re-creation of existing domains.
+  cfnDomain.overrideLogicalId(OpenSearchDomainLogicalID);
+
+  cfnDomain.elasticsearchClusterConfig = {
     instanceCount: parameterMap.get(OpenSearchInstanceCount)?.valueAsNumber,
     instanceType: parameterMap.get(OpenSearchInstanceType)?.valueAsString,
   };

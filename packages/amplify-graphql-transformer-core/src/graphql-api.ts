@@ -4,22 +4,21 @@ import {
   AuthorizationConfig,
   AuthorizationMode,
   AuthorizationType,
-  CfnApiKey,
-  CfnGraphQLApi,
-  CfnGraphQLSchema,
   GraphqlApiBase,
   LogConfig,
   OpenIdConnectConfig,
   UserPoolConfig,
   UserPoolDefaultAction,
-} from '@aws-cdk/aws-appsync';
+} from 'aws-cdk-lib/aws-appsync';
+import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
 import {
   Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal,
-} from '@aws-cdk/aws-iam';
+} from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib';
 import {
-  CfnResource, Construct, Duration, Stack,
-} from '@aws-cdk/core';
-import * as cdk from '@aws-cdk/core';
+  ArnFormat, CfnResource, Duration, Stack,
+} from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { DefaultTransformHost } from './transform-host';
 
@@ -107,7 +106,7 @@ export class IamResource implements APIIAMResourceProvider {
     return this.arns.map(arn => Stack.of(api).formatArn({
       service: 'appsync',
       resource: `apis/${api.apiId}`,
-      sep: '/',
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
       resourceName: `${arn}`,
     }));
   }
@@ -219,7 +218,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     if (props.createApiKey && hasApiKey) {
       const config = modes.find((mode: AuthorizationMode) => mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig)?.apiKeyConfig;
       this.apiKeyResource = this.createAPIKey(config);
-      this.apiKeyResource.addDependsOn(this.schemaResource);
+      this.apiKeyResource.addDependency(this.schemaResource);
       this.apiKey = this.apiKeyResource.attrApiKey;
     }
 
@@ -309,7 +308,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   }
 
   public addSchemaDependency(construct: CfnResource): boolean {
-    construct.addDependsOn(this.schemaResource);
+    construct.addDependency(this.schemaResource);
     return true;
   }
 

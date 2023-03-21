@@ -5,7 +5,7 @@
 // as (TransformerPlatform.js | TransformerPlatform.ios). Similarly, if a schema is supported
 // on all platforms but Flutter with DataStore enabled, the flags can be set like this:
 // (TransformerPlatform.all & ~TransformerPlatform.flutterDataStore). Ideally, we should be
-// working toward a state where TransformerPlatform.all is the only value needed.
+// working toward a state where TransformerPlatform.all is the only value needed
 
 export const enum TransformerVersion {
   v1 = 1 << 0,

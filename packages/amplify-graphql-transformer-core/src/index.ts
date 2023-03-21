@@ -7,9 +7,7 @@ export {
   SyncUtils,
 } from './transformation';
 export {
-  DeploymentResources,
   OverrideConfig,
-  default as Template,
   UserDefinedSlot,
   UserDefinedResolver,
 } from './transformation/types';
@@ -47,7 +45,7 @@ export {
 } from './transformation/transformer-plugin-base';
 export { TransformerResolver, StackManager } from './transformer-context';
 /**
- * Returns the extra set of directives that are supported by AppSync service
+ * Returns the extra set of directives that are supported by AppSync service.
  */
 export const getAppSyncServiceExtraDirectives = (): string => {
   return print(EXTRA_DIRECTIVES_DOCUMENT);

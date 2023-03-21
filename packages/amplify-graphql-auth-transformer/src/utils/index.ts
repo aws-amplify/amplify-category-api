@@ -1,6 +1,6 @@
 import { DirectiveWrapper, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthMode, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { Stack } from '@aws-cdk/core';
+import { Stack } from 'aws-cdk-lib';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { MODEL_OPERATIONS, READ_MODEL_OPERATIONS } from './constants';
 import {
@@ -53,8 +53,14 @@ export const getAuthDirectiveRules = (authDir: DirectiveWrapper, options?: GetAu
   };
 
   const { rules } = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }, options);
-  rules.forEach(rule => {
+  rules.forEach((rule) => {
     const operations: (ModelOperation | 'read')[] = rule.operations ?? MODEL_OPERATIONS;
+
+    // In case a customer defines a single dynamic group as a string, put it to an array
+    if (rule.groups && typeof rule.groups === 'string') {
+      // eslint-disable-next-line no-param-reassign
+      rule.groups = [rule.groups];
+    }
 
     if (options?.isField && rule.operations && (rule.operations.some((operation: ModelOperation | 'read') => operation !== 'read' && READ_MODEL_OPERATIONS.includes(operation)))) {
       const offendingOperation = operations.filter(operation => operation !== 'read' && READ_MODEL_OPERATIONS.includes(operation));

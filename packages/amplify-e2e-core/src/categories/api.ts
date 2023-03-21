@@ -8,7 +8,9 @@ import {
   ExecutionContext,
   getCLIPath,
   getProjectMeta,
+  getTransformConfig,
   nspawn as spawn,
+  setTransformConfig,
   setTransformerVersionFlag,
   updateSchema,
 } from '..';
@@ -407,6 +409,42 @@ export function updateApiConflictHandlerType(
   });
 }
 
+export function updateApiConflictHandlerTypePerModel(
+  cwd: string,
+  opts?: Partial<AddApiOptions>
+) {
+  const options = _.assign(defaultOptions, opts);
+  return new Promise<void>((resolve, reject) => {
+    const chain = spawn(getCLIPath(options.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
+      .wait('Select from one of the below mentioned services:')
+      .sendCarriageReturn()
+      .wait(/.*Select a setting to edit*/)
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait(/.*Select the default resolution strategy.*/)
+      .sendCarriageReturn() // Select Automerge Handler for project
+      .wait(/.*Do you want to override default per model settings*/)
+      .sendConfirmYes()
+      .wait('Select the models from below:')
+      .send('a')
+      .sendCarriageReturn()
+      .wait('Select the resolution strategy for') //First model
+      .sendKeyDown(2).sendCarriageReturn() // Select Lambda Handler
+      .wait(/.*Select from the options below.*/)
+      .sendCarriageReturn() // Create a new Lambda
+      .wait('Select the resolution strategy for') //Second model
+      .sendCarriageReturn() // Select Automerge Handler
+      .wait(/.*Successfully updated resource*/)
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function apiEnableDataStore(cwd: string, settings: any) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
@@ -742,6 +780,26 @@ export function addApi(projectDir: string, settings?: any) {
   });
 }
 
+export function addV1RDSDataSource(projectDir: string) {
+  return new Promise<void>((resolve, reject) => {
+    // This test executes only partial workflow
+    // This helps to detect any regression with add graphql datasource command
+    // Make sure that the testing account doesn't contain a Aurora Serverless database.
+    spawn(getCLIPath(), ['add-graphql-datasource', 'api'], { cwd: projectDir, stripColors: true })
+      .wait('Provide the region in which your cluster is located')
+      .sendKeyDown(5) // This will select 6th item on the region list 'ap-southeast-1'
+      .sendCarriageReturn() // This will throw an error 'No properly configured Aurora Serverless clusters found'.
+      .wait('No properly configured Aurora Serverless clusters found')
+      .run((err: Error) => {
+        if (err && !/Killed the process as no output receive for/.test(err.message)) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+ });
+}
+
 function setupAuthType(authType: string, chain: any, settings?: any) {
   switch (authType) {
     case 'API key':
@@ -959,3 +1017,32 @@ export async function validateRestApiMeta(projRoot: string, meta?: any) {
   }
   expect(seenAtLeastOneFunc).toBe(true);
 }
+
+export function setStackMapping(projRoot: string, apiName: string, stackMapping: Record<string, string>) {
+  setTransformConfigValue(projRoot, apiName, 'StackMapping', stackMapping);
+}
+
+/**
+ * Set a specific key in the `transform.conf.json` file.
+ * @param projRoot root directory for the project
+ * @param apiName the name of the api to modify
+ * @param key the key in the transform.conf.json value
+ * @param value the value to set in the file
+ */
+export const setTransformConfigValue = (projRoot: string, apiName: string, key: string, value: any): void => {
+  const transformConfig = getTransformConfig(projRoot, apiName);
+  transformConfig[key] = value;
+  setTransformConfig(projRoot, apiName, transformConfig);
+};
+
+/**
+ * Remove a specified key from the `transform.conf.json` file.
+ * @param projRoot root directory for the project
+ * @param apiName the name of the api to modify
+ * @param key the key in the transform.conf.json value
+ */
+export const removeTransformConfigValue = (projRoot: string, apiName: string, key: string): void => {
+  const transformConfig = getTransformConfig(projRoot, apiName);
+  delete transformConfig[key];
+  setTransformConfig(projRoot, apiName, transformConfig);
+};

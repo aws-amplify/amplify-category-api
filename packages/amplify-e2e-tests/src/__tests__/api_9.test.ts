@@ -16,6 +16,7 @@ import {
   amplifyPushUpdateForDependentModel,
   amplifyPushForce,
   createRandomName,
+  addV1RDSDataSource,
 } from 'amplify-category-api-e2e-core';
 import path from 'path';
 import { existsSync } from 'fs';
@@ -79,6 +80,25 @@ describe('amplify add api (GraphQL)', () => {
 
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+  });
+
+  it('init a project and add v1 rds datasource', async () => {
+    const appName = createRandomName();
+    await initJSProjectWithProfile(projRoot, { name: appName });
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
+    await updateApiSchema(projRoot, appName, 'simple_model.graphql');
+    await updateApiWithMultiAuth(projRoot, {});
+    await amplifyPush(projRoot);
+    
+    const meta = getProjectMeta(projRoot);
+    const { output } = meta.api[appName];
+    const { GraphQLAPIIdOutput } = output;
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
+    
+    expect(graphqlApi).toBeDefined();
+    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+    
+    await expect(addV1RDSDataSource(projRoot)).resolves;
   });
 
   it('init a project and add the simple_model api, match transformer version to current version', async () => {

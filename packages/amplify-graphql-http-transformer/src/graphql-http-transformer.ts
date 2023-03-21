@@ -8,8 +8,8 @@ import {
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationType } from '@aws-cdk/aws-appsync';
-import * as cdk from '@aws-cdk/core';
+import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
+import * as cdk from 'aws-cdk-lib';
 import {
   DirectiveNode,
   FieldDefinitionNode,
@@ -130,12 +130,12 @@ export class HttpTransformer extends TransformerPluginBase {
     let params = args.path.match(/:\w+/g);
 
     if (params) {
-      params = params.map(p => p.replace(':', ''));
+      const paramsMap = params.map(p => p.replace(':', ''));
 
       // If there are URL parameters, remove them from the array used to
-      // create the query and body types.
+      // create the query and body types
       args.queryAndBodyArgs = args.queryAndBodyArgs.filter(arg => {
-        return isScalar(arg.type) && !(params as string[]).includes(arg.name.value);
+        return isScalar(arg.type) && !(paramsMap as string[]).includes(arg.name.value);
       });
 
       // Replace each URL parameter with $ctx.args.params.parameter_name for
@@ -144,7 +144,7 @@ export class HttpTransformer extends TransformerPluginBase {
         return `\$\{ctx.args.params.${str.replace(':', '')}\}`;
       });
 
-      const urlParamInputObject = makeUrlParamInputObject(args, params);
+      const urlParamInputObject = makeUrlParamInputObject(args, paramsMap);
       context.output.addInput(urlParamInputObject);
       newFieldArgsArray.push(makeHttpArgument('params', urlParamInputObject, true));
     }

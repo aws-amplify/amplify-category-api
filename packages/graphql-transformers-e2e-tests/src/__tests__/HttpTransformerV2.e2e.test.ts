@@ -10,10 +10,12 @@ import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
 import { default as S3 } from 'aws-sdk/clients/s3';
 import { deployJsonServer, destroyJsonServer } from '../cdkUtils';
+import { resolveTestRegion } from '../testSetup';
+
+const REGION = resolveTestRegion();
 
 jest.setTimeout(2000000);
 
-const REGION = 'us-west-2';
 const cf = new CloudFormationClient(REGION);
 const customS3Client = new S3Client(REGION);
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');

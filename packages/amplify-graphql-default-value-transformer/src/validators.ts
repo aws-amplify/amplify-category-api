@@ -15,7 +15,7 @@ const validateDate = (date: string): boolean => {
   }
 
   // Verify the correct number of days for
-  // the month contained in the date-string.
+  // the month contained in the date-string
   const year = Number(date.slice(0, 4));
   const month = Number(date.slice(5, 2));
   const day = Number(date.slice(8, 2));

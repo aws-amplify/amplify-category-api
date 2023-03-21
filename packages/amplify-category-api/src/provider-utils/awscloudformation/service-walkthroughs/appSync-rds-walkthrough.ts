@@ -3,7 +3,8 @@ import { printer, prompter } from 'amplify-prompts';
 import chalk from 'chalk';
 import { DataApiParams } from 'graphql-relational-schema-transformer';
 import ora from 'ora';
-import { cfnRootStackFileName } from 'amplify-provider-awscloudformation';
+import { rootStackFileName } from '@aws-amplify/amplify-provider-awscloudformation';
+import * as path from 'path';
 
 const spinner = ora('');
 const category = 'api';
@@ -44,7 +45,7 @@ export async function serviceWalkthrough(context: $TSContext, datasourceMetadata
   const { inputs, availableRegions } = datasourceMetadata;
 
   // FIXME: We should NOT be treating CloudFormation templates as inputs to prompts! This a temporary exception while we move team-provider-info to a service.
-  const cfnJson: $TSAny = JSONUtilities.readJson(`${pathManager.getCurrentCloudRootStackDirPath(pathManager.findProjectRoot())}/${cfnRootStackFileName}`);
+  const cfnJson: $TSAny = JSONUtilities.readJson(path.join(pathManager.getCurrentCloudRootStackDirPath(pathManager.findProjectRoot()), rootStackFileName));
   const cfnJsonParameters = cfnJson?.Resources[`api${appSyncApi}`]?.Properties?.Parameters || {};
   let selectedRegion = cfnJsonParameters?.rdsRegion;
   // Region Question

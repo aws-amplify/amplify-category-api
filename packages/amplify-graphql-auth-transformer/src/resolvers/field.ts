@@ -43,7 +43,7 @@ import {
   generateOwnerClaimExpression,
   generateOwnerClaimListExpression,
   generateOwnerMultiClaimExpression,
-  generateInvalidClaimsCondition
+  generateInvalidClaimsCondition,
 } from './helpers';
 
 // Field Read VTL Functions
@@ -83,7 +83,7 @@ const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields:
                         methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
                       ]),
                       set(ref(IS_AUTHORIZED_FLAG), bool(true)),
-                    )
+                    ),
                   ]),
               ]),
             ),
@@ -180,11 +180,11 @@ export const generateFieldAuthResponse = (operation: string, fieldName: string, 
     return printBlock('Checking for allowed operations which can return this field')(
       compoundExpression([
         set(ref('operation'), methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), nul())),
-        ifElse(equals(ref('operation'), str(operation)), toJson(nul()), toJson(ref(`context.source.${fieldName}`))),
+        ifElse(equals(ref('operation'), str(operation)), toJson(nul()), toJson(ref(`context.source["${fieldName}"]`))),
       ]),
     );
   }
-  return printBlock('Return Source Field')(toJson(ref(`context.source.${fieldName}`)));
+  return printBlock('Return Source Field')(toJson(ref(`context.source["${fieldName}"]`)));
 };
 
 /**
@@ -196,7 +196,7 @@ export const setDeniedFieldFlag = (operation: string, subscriptionsEnabled: bool
       compoundExpression([
         iff(
           equals(methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), nul()), str(operation)),
-          qref(methodCall(ref('ctx.result.put'), str('deniedField'), bool(true))),
+          qref(methodCall(ref('ctx.stash.put'), str('deniedField'), bool(true))),
         ),
       ]),
     );

@@ -1,4 +1,5 @@
-import { CfnMapping, Construct } from '@aws-cdk/core';
+import { CfnMapping } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 
 export const setMappings = (scope: Construct): CfnMapping => new CfnMapping(
   scope,

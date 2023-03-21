@@ -10,5 +10,5 @@ resolvers within your AWS AppSync API.
 #### Definition
 
 ```graphql
-directive @function(name: String!, region: String) on FIELD_DEFINITION
+directive @function(name: String!, region: String, accountId: String) on FIELD_DEFINITION
 ```

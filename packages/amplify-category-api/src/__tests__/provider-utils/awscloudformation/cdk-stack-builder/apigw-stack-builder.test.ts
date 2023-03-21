@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core';
-import { Template } from '@aws-cdk/assertions';
+import * as cdk from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
 import { AmplifyApigwResourceStack } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/apigw-stack-builder';
 import { PermissionSetting } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/types';
 

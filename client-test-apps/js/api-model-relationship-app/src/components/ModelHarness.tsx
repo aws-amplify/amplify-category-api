@@ -3,7 +3,6 @@ import { Flex, Heading } from '@aws-amplify/ui-react';
 import _ from 'lodash';
 import { createCRUDLControls, createCRUDLControlsProps, Subscriptions } from '../components';
 
-
 export type createModelHarnessProps<T> = createCRUDLControlsProps<T> & {
   onCreateSubscription: string;
   onUpdateSubscription: string;

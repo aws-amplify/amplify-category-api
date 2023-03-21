@@ -10,11 +10,10 @@ let apiKeyPresent = true;
 describe('sandbox mode helpers', () => {
   beforeEach(() => {
     const envName = 'dev';
+    const getEnvInfo = (): {envName: string} => ({ envName });
     ctx = {
       amplify: {
-        getEnvInfo() {
-          return { envName };
-        },
+        getEnvInfo,
         invokePluginMethod: jest.fn(),
       },
     } as unknown as $TSContext;

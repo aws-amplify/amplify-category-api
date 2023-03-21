@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import * as path from 'path';
-import { TransformerProjectConfig, DeploymentResources } from '@aws-amplify/graphql-transformer-core';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerProjectConfig } from '@aws-amplify/graphql-transformer-core';
 import rimraf from 'rimraf';
 import {
   $TSContext, AmplifyCategories, CloudformationProviderFacade, JSONUtilities, pathManager, stateManager,
@@ -209,7 +210,6 @@ export async function writeDeploymentToDisk(
   directory: string,
   rootStackFileName = 'rootStack.json',
   buildParameters: Object,
-  minify = false,
 ) {
   fs.ensureDirSync(directory);
   // Delete the last deployments resources except for tsconfig if present
@@ -255,7 +255,7 @@ export async function writeDeploymentToDisk(
       stackContent = JSON.parse(stackContent);
     }
     await CloudformationProviderFacade.prePushCfnTemplateModifier(context, stackContent);
-    fs.writeFileSync(fullStackPath, JSONUtilities.stringify(stackContent, { minify }));
+    fs.writeFileSync(fullStackPath, JSONUtilities.stringify(stackContent));
   }
 
   // Write any functions to disk
@@ -271,7 +271,7 @@ export async function writeDeploymentToDisk(
   }
   const { rootStack } = deployment;
   const rootStackPath = path.normalize(`${directory}/${rootStackFileName}`);
-  const rootStackString = minify ? JSON.stringify(rootStack) : JSON.stringify(rootStack, null, 4);
+  const rootStackString = JSON.stringify(rootStack, null, 4);
   fs.writeFileSync(rootStackPath, rootStackString);
 
   // Write params to disk

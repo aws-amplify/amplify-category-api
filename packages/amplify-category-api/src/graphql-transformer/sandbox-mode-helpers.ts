@@ -1,3 +1,5 @@
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable func-style */
 import chalk from 'chalk';
 import { $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
@@ -9,6 +11,7 @@ const AUTHORIZATION_RULE = 'AuthRule';
 const ALLOW = 'allow';
 const PUBLIC = 'public';
 
+// eslint-disable-next-line consistent-return
 export async function showSandboxModePrompts(context: $TSContext): Promise<any> {
   if (!(await hasApiKey(context))) {
     printer.info(
@@ -20,6 +23,7 @@ sandbox mode disabled, do not create an API Key.
 `,
       'yellow',
     );
+    // eslint-disable-next-line no-return-await
     return await context.amplify.invokePluginMethod(context, 'api', undefined, 'promptToAddApiKey', [context]);
   }
 }
@@ -40,7 +44,6 @@ function matchesGlobalAuth(field: any): boolean {
 export function schemaHasSandboxModeEnabled(schema: string, docLink: string): boolean {
   const { definitions } = parse(schema);
   const amplifyInputType: any = definitions.find((d: any) => d.kind === 'InputObjectTypeDefinition' && d.name.value === AMPLIFY);
-
   if (!amplifyInputType) {
     return false;
   }
@@ -61,9 +64,8 @@ export function schemaHasSandboxModeEnabled(schema: string, docLink: string): bo
 
   if (authScalarMatch && defaultValueNameMatch && defaultValueValueMatch) {
     return true;
-  } else {
-    throw Error(
-      `There was a problem with your auth configuration. Learn more about auth here: ${docLink}`,
-    );
   }
+  throw Error(
+    `There was a problem with your auth configuration. Learn more about auth here: ${docLink}`,
+  );
 }

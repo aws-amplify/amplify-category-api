@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformer-common",
-  "version": "4.24.0",
+  "version": "4.24.5",
   "description": "Common code and constants for AppSync Transformers",
   "repository": {
     "type": "git",
@@ -20,11 +20,12 @@
     "test": "jest",
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rimraf ./lib"
+    "clean": "rimraf ./lib",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "graphql": "^14.5.8",
-    "graphql-mapping-template": "4.20.5",
+    "graphql": "^15.5.0",
+    "graphql-mapping-template": "4.20.8",
     "md5": "^2.2.1",
     "pluralize": "8.0.0"
   },

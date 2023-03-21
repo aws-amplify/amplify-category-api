@@ -29,6 +29,9 @@ import 'isomorphic-fetch';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+import { resolveTestRegion } from '../testSetup';
+
+const AWS_REGION = resolveTestRegion();
 
 // To overcome of the way of how AmplifyJS picks up currentUserCredentials
 const anyAWS = AWS as any;
@@ -37,8 +40,6 @@ if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
 }
 
 jest.setTimeout(2000000);
-
-const AWS_REGION = 'us-west-2';
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {
@@ -304,7 +305,7 @@ beforeAll(async () => {
         }
         return defaultValue;
       },
-     
+
 
       getNumber: jest.fn(),
       getObject: jest.fn(),
@@ -853,7 +854,7 @@ describe(`Test IAM protected field operations`, () => {
         fetchPolicy: 'no-cache',
         variables: { id: postIdSecret },
       }),
-    ).rejects.toThrow('GraphQL error: Not Authorized to access secret on type String');
+    ).rejects.toThrow('GraphQL error: Not Authorized to access secret on type PostSecretFieldIAM');
   });
 });
 

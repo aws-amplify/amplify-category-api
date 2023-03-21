@@ -34,6 +34,30 @@ test('happy case with static groups', () => {
   );
 });
 
+test('Static groups with a single group provided as string does not error', () => {
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [],
+  };
+  const invalidSchema = `
+    type Post @model @auth(rules: [{allow: groups, groups: "Admin"}]) {
+      id: ID!
+      title: String!
+      group: String
+      createdAt: String
+      updatedAt: String
+    }`;
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
+  });
+  const out = transformer.transform(invalidSchema);
+  expect(out).toBeDefined();
+});
+
 test('happy case with dynamic groups', () => {
   const authConfig: AppSyncAuthConfiguration = {
     defaultAuthentication: {
@@ -266,4 +290,90 @@ test('dynamic group auth generates authorized fields list correctly', () => {
     $util.toJson({})
     ## [End] Authorization Steps. **"
   `);
+});
+
+describe('Dynamic group subscription auth tests', () => {
+  test('happy case with dynamic groups as array', () => {
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [],
+    };
+    const validSchema = `
+      type Post @model @auth(rules: [{allow: groups, groupsField: "groups"}]) {
+          id: ID!
+          title: String!
+          groups: [String]
+          createdAt: String
+          updatedAt: String
+      }
+      `;
+    const transformer = new GraphQLTransform({
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+  
+    expect(out).toBeDefined();
+    expect(out.rootStack!.Resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+      'AMAZON_COGNITO_USER_POOLS',
+    );
+    expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )');
+    expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.parseJson($groupClaim0) )');
+    expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
+    expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain('$util.qr($authGroupRuntimeFilter.add({ "groups": { "containsAny": $groupClaim0 } }))');
+
+    expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )');
+    expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.parseJson($groupClaim0) )');
+    expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
+    expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain('$util.qr($authGroupRuntimeFilter.add({ "groups": { "containsAny": $groupClaim0 } }))');
+
+    expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )');
+    expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.parseJson($groupClaim0) )');
+    expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
+    expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain('$util.qr($authGroupRuntimeFilter.add({ "groups": { "containsAny": $groupClaim0 } }))');  
+  });
+  test('happy case with dynamic single group as string', () => {
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [],
+    };
+    const validSchema = `
+      type Post @model @auth(rules: [{ allow: groups, groupsField: "group" }]) {
+        id: ID!
+        title: String
+        group: String
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+  
+    expect(out).toBeDefined();
+    expect(out.rootStack!.Resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+      'AMAZON_COGNITO_USER_POOLS',
+    );
+    expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )');
+    expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.parseJson($groupClaim0) )');
+    expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
+    expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain('$util.qr($authGroupRuntimeFilter.add({ "group": { "in": $groupClaim0 } }))');
+
+    expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )');
+    expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.parseJson($groupClaim0) )');
+    expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
+    expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain('$util.qr($authGroupRuntimeFilter.add({ "group": { "in": $groupClaim0 } }))');
+
+    expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )');
+    expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.parseJson($groupClaim0) )');
+    expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
+    expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain('$util.qr($authGroupRuntimeFilter.add({ "group": { "in": $groupClaim0 } }))');  
+
+  });
 });

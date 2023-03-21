@@ -3,6 +3,7 @@ import * as glob from 'glob';
 import { join } from 'path';
 import * as fs from 'fs-extra';
 import * as execa from 'execa';
+import { migrationFromV10Tests, migrationFromV5Tests, migrationFromV6Tests } from './split-e2e-test-filters';
 
 const CONCURRENCY = 25;
 // Some our e2e tests are known to fail when run on windows hosts
@@ -56,6 +57,7 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
 
 // Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated
 const AWS_REGIONS_TO_RUN_TESTS = [
+  'us-east-1',
   'us-east-2',
   'us-west-2',
   'eu-west-2',
@@ -75,6 +77,7 @@ const USE_PARENT_ACCOUNT = [
   'api-key-migration4',
   'api-key-migration5',
   'searchable-migration',
+  'FunctionTransformerTestsV2'
 ];
 
 // This array needs to be update periodically when new tests suites get added
@@ -89,7 +92,8 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/schema-predictions.test.ts',
   'src/__tests__/amplify-app.test.ts',
   'src/__tests__/schema-iterative-update-2.test.ts',
-  'src/__tests__/containers-api.test.ts',
+  'src/__tests__/containers-api-1.test.ts',
+  'src/__tests__/containers-api-2.test.ts',
   //<25m
   'src/__tests__/schema-auth-10.test.ts',
   'src/__tests__/schema-key.test.ts',
@@ -200,12 +204,15 @@ function splitTests(
   workflowName: string,
   jobRootDir: string,
   concurrency: number = CONCURRENCY,
-  isMigration: boolean = false,
+  pickTests: ((testSuites: string[]) => string[]) | undefined,
 ): CircleCIConfig {
   const output: CircleCIConfig = { ...config };
   const jobs = { ...config.jobs };
   const job = jobs[jobName];
-  const testSuites = getTestFiles(jobRootDir);
+  let testSuites = getTestFiles(jobRootDir);
+  if(pickTests && typeof pickTests === 'function'){
+    testSuites = pickTests(testSuites);
+  }
 
   const newJobs = testSuites.reduce((acc, suite, index) => {
     const newJobName = generateJobName(jobName, suite);
@@ -221,20 +228,6 @@ function splitTests(
         ...(USE_PARENT_ACCOUNT.some(job => newJobName.startsWith(job)) ? { USE_PARENT_ACCOUNT: 1 } : {}),
       },
     };
-    const isPkg = newJobName.endsWith('_pkg');
-    if (!isPkg) {
-      (newJob.environment as any) = {
-        ...newJob.environment,
-        ...(isMigration
-          ? {
-              AMPLIFY_PATH: '/home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify',
-            }
-          : {
-              AMPLIFY_DIR: '/home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin',
-              AMPLIFY_PATH: '/home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin/amplify',
-            }),
-      };
-    }
     return { ...acc, [newJobName]: newJob };
   }, {});
 
@@ -411,6 +404,7 @@ function main(): void {
     'build_test_deploy',
     join(repoRoot, 'packages', 'amplify-e2e-tests'),
     CONCURRENCY,
+    undefined
   );
   const splitGqlTests = splitTests(
     splitPkgTests,
@@ -418,6 +412,7 @@ function main(): void {
     'build_test_deploy',
     join(repoRoot, 'packages', 'graphql-transformers-e2e-tests'),
     CONCURRENCY,
+    undefined
   );
   const splitV5MigrationTests = splitTests(
     splitGqlTests,
@@ -425,7 +420,9 @@ function main(): void {
     'build_test_deploy',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
-    true,
+    (tests: string[]) => {
+      return tests.filter(testName => migrationFromV5Tests.find((t) => t === testName));
+    }
   );
   const splitV6MigrationTests = splitTests(
     splitV5MigrationTests,
@@ -433,9 +430,21 @@ function main(): void {
     'build_test_deploy',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
-    true,
+    (tests: string[]) => {
+      return tests.filter(testName => migrationFromV6Tests.find((t) => t === testName));
+    }
   );
-  saveConfig(splitV6MigrationTests);
+  const splitV10MigrationTests = splitTests(
+    splitV6MigrationTests,
+    'amplify_migration_tests_v10',
+    'build_test_deploy',
+    join(repoRoot, 'packages', 'amplify-migration-tests'),
+    CONCURRENCY,
+    (tests: string[]) => {
+      return tests.filter(testName => migrationFromV10Tests.find((t) => t === testName));
+    }
+  );
+  saveConfig(splitV10MigrationTests);
   verifyConfig();
 }
 main();

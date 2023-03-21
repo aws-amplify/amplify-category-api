@@ -13,6 +13,10 @@ import { S3Client } from '../S3Client';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { default as moment } from 'moment';
 import {
+  BelongsToTransformer,
+  HasManyTransformer,
+} from '@aws-amplify/graphql-relational-transformer';
+import {
   createUserPool,
   createUserPoolClient,
   createGroup,
@@ -35,6 +39,10 @@ import * as Observable from 'zen-observable';
 // to deal with subscriptions in node env
 (global as any).WebSocket = require('ws');
 
+import { resolveTestRegion } from '../testSetup';
+
+const AWS_REGION = resolveTestRegion();
+
 // To overcome of the way of how AmplifyJS picks up currentUserCredentials
 const anyAWS = AWS as any;
 if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
@@ -56,7 +64,6 @@ function outputValueSelector(key: string) {
   };
 }
 
-const AWS_REGION = 'us-west-2';
 const cf = new CloudFormationClient(AWS_REGION);
 const customS3Client = new S3Client(AWS_REGION);
 const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: AWS_REGION });
@@ -146,6 +153,19 @@ interface DeleteTypeInput {
   id: string;
 }
 
+interface CreateTaskInput {
+  id?: string;
+  name: string;
+  description?: string;
+}
+
+interface CreateNoteInput {
+  id?: string;
+  content: string;
+  secretNote?: string;
+  taskNotesId?: string;
+}
+
 beforeEach(async () => {
   try {
     await Auth.signOut();
@@ -217,6 +237,24 @@ beforeAll(async () => {
     description: String!
     owners: [String]
   }
+
+  type Task @model
+    @auth(rules: [{allow: private, provider: iam}])
+  {
+    id: ID!
+    name: String!
+    description: String
+    notes: [Note] @hasMany
+  }
+
+  type Note @model
+    @auth(rules: [{allow: private, provider: iam}, {allow: private, provider: userPools}])
+  {
+    id: ID!
+    content: String!
+    secretNote: String @auth(rules: [{allow: private, provider: iam}])
+    task: Task @belongsTo @auth(rules: [{allow: private, provider: iam}])
+  }
   `;
   const transformer = new GraphQLTransform({
     authConfig: {
@@ -236,7 +274,12 @@ beforeAll(async () => {
         },
       ],
     },
-    transformers: [new ModelTransformer(), new AuthTransformer()],
+    transformers: [
+      new ModelTransformer(),
+      new AuthTransformer(),
+      new HasManyTransformer(),
+      new BelongsToTransformer(),
+    ],
     featureFlags: {
       getBoolean: (value: string, defaultValue?: boolean) => {
         if (value === 'useSubUsernameForDefaultIdentityClaim') {
@@ -409,51 +452,6 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
   });
 
   return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateStudent Subscription timed out', () => {
-    subscription?.unsubscribe();
-  });
-});
-
-test('Test that an user not in the group is not allowed to view the subscription', async () => {
-  // subscribe to create students as user 3
-  // const observer = onCreateStudent(GRAPHQL_CLIENT_3)
-  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
-  await Auth.signIn(USERNAME3, REAL_PASSWORD);
-  const observer = API.graphql({
-    // @ts-ignore
-    query: gql`
-      subscription OnCreateStudent {
-        onCreateStudent {
-          id
-          name
-          email
-          ssn
-          owner
-        }
-      }
-    `,
-    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-  }) as unknown as Observable<any>;
-  let subscription: ZenObservable.Subscription;
-  const subscriptionPromise = new Promise((resolve, _) => {
-    subscription = observer.subscribe({
-      error: (err: any) => {
-        expect(err.error.errors[0].message).toEqual(
-          'Connection failed: {"errors":[{"errorType":"Unauthorized","message":"Not Authorized to access onCreateStudent on type Student"}]}',
-        );
-        resolve(undefined);
-      },
-    });
-  });
-
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
-
-  await createStudent(GRAPHQL_CLIENT_1, {
-    name: 'student2',
-    email: 'student2@domain.com',
-    ssn: 'BBB-00-SNSN',
-  });
-
-  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'Subscription timed out', () => {
     subscription?.unsubscribe();
   });
 });
@@ -761,14 +759,14 @@ test('Test subscription onCreatePost with ownerField', async () => {
   });
 });
 
-test('Test onCreatePost with optional argument', async () => {
+test('Test onCreatePost with incorrect owner argument should throw an error', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const failedObserver = API.graphql({
     // @ts-ignore
     query: gql`
       subscription OnCreatePost {
-        onCreatePost {
+        onCreatePost(postOwner: "${USERNAME2}") {
           id
           title
           postOwner
@@ -783,7 +781,7 @@ test('Test onCreatePost with optional argument', async () => {
       event => {},
       err => {
         expect(err.error.errors[0].message).toEqual(
-          'Connection failed: {"errors":[{"errorType":"Unauthorized","message":"Not Authorized to access onCreatePost on type Post"}]}',
+          'Connection failed: {"errors":[{"errorType":"Unauthorized","message":"Not Authorized to access onCreatePost on type Subscription"}]}',
         );
         resolve(undefined);
       },
@@ -1021,6 +1019,65 @@ test('Test onCreateOwnerInvalidClaim with invalid owner claims fails', async () 
   });
 });
 
+test("redact scalar and relational fields if fields auth is more restrictive than model auth rules", async () => {
+  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+  await Auth.signIn(USERNAME1, REAL_PASSWORD);
+  const observer = API.graphql({
+    // @ts-ignore
+    query: gql`
+      subscription OnCreateNote {
+        onCreateNote {
+          id
+          content
+          secretNote
+          taskNotesId
+          task {
+            id
+            name
+            description
+          }
+        }
+      }
+    `,
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  }) as unknown as Observable<any>;
+  let subscription: ZenObservable.Subscription;
+  const subscriptionPromise = new Promise((resolve, _) => {
+    subscription = observer.subscribe((event: any) => {
+      const note = event.value.data.onCreateNote;
+      subscription.unsubscribe();
+      expect(note.id).toEqual('N1');
+      expect(note.content).toEqual('Test note content');
+      // Important: 'secretNote' and 'task' should be redacted
+      expect(note.secretNote).toBeNull();
+      expect(note.task).toBeNull();
+      resolve(undefined);
+    });
+  });
+  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+
+  const task = await createTask(GRAPHQL_IAM_AUTH_CLIENT, {
+    id: 'A1',
+    name: 'test name',
+    description: 'test description',
+  });
+
+  const note = await createNote(GRAPHQL_IAM_AUTH_CLIENT, {
+    content: 'Test note content',
+    secretNote: 'test private content',
+    taskNotesId: 'A1',
+    id: 'N1'
+  });
+  expect(note.data.createNote.id).toEqual('N1');
+  expect(note.data.createNote.content).toEqual('Test note content');
+  expect(note.data.createNote.secretNote).toBeNull();
+  expect(note.data.createNote.taskNotesId).toEqual('A1');
+
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateNote Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
+});
+
 function reconfigureAmplifyAPI(appSyncAuthType: string, apiKey?: string) {
   if (appSyncAuthType === 'API_KEY') {
     API.configure({
@@ -1146,6 +1203,36 @@ async function createTodo(client: AWSAppSyncClient<any>, input: CreateTodoInput)
         id
         description
         name
+      }
+    }
+  `;
+  return await client.mutate<any>({ mutation: request, variables: { input } });
+}
+
+async function createTask(client: AWSAppSyncClient<any>, input: CreateTaskInput) {
+  const request = gql`
+    mutation CreateTask($input: CreateTaskInput!) {
+      createTask(input: $input) {
+        id
+        description
+        name
+      }
+    }
+  `;
+  return await client.mutate<any>({ mutation: request, variables: { input } });
+}
+
+async function createNote(client: AWSAppSyncClient<any>, input: CreateNoteInput) {
+  const request = gql`
+    mutation CreateNote($input: CreateNoteInput!) {
+      createNote(input: $input) {
+        id
+        content
+        secretNote
+        taskNotesId
+        task {
+          description
+        }
       }
     }
   `;

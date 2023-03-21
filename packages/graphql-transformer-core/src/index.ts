@@ -6,7 +6,7 @@ import { ITransformer } from './ITransformer';
 import { GraphQLTransform } from './GraphQLTransform';
 import { collectDirectiveNames, collectDirectivesByType, collectDirectivesByTypeNames } from './collectDirectives';
 import { stripDirectives } from './stripDirectives';
-import { DeploymentResources } from './DeploymentResources';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   buildProject as buildAPIProject,
   uploadDeployment as uploadAPIProject,
@@ -36,7 +36,7 @@ export * from './util';
 export { getTableNameForModel } from './tableNameMap';
 
 /**
- * Returns the extra set of directives that are supported by AppSync service
+ * Returns the set of directives that are supported by AppSync service
  */
 export function getAppSyncServiceExtraDirectives(): string {
   return print(EXTRA_DIRECTIVES_DOCUMENT);

@@ -25,6 +25,7 @@ packages/amplify-dynamodb-simulator/__test__/dynamodb-data
 .vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json
+.idea
 packages/graphql*/lib
 packages/amplify-graphql-transformer-*/lib
 packages/amplify-appsync-simulator/lib
@@ -36,6 +37,7 @@ packages/amplify-category-api/lib
 packages/amplify-e2e-tests/amplify-e2e-reports
 packages/amplify-migration-tests/amplify-migration-reports
 packages/amplify-migration-tests/lib
+packages/amplify-schema-validator/dist/
 packages/*/node_modules
 packages/*/package-lock.json
 **/.env

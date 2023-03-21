@@ -1,0 +1,11 @@
+type Project @model {
+  id: ID!
+  name: String
+  team: Team
+}
+
+type Team @model {
+  id: ID!
+  name: String!
+  project: Project @belongsTo
+}

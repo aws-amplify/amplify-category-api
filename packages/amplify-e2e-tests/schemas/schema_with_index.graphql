@@ -7,3 +7,9 @@ type Song @model {
     name: String!
     genre: String! @index(name : "byGenre", queryField: "songInfoByGenre")
 }
+
+type SongWithSortKey @model {
+    id: ID!
+    name: String! @index(name : "byNameAndGenre", sortKeyFields: ["genre"])
+    genre: String! 
+}

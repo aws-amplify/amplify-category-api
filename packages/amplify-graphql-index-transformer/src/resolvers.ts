@@ -1,9 +1,13 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import { MappingTemplate, GraphQLTransform, AmplifyApiGraphQlResourceStackTemplate, SyncUtils, StackManager } from '@aws-amplify/graphql-transformer-core';
-import { DataSourceProvider, StackManagerProvider, TransformerContextProvider, TransformerPluginProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
-import { Table } from '@aws-cdk/aws-dynamodb';
-import * as cdk from '@aws-cdk/core';
+import {
+  MappingTemplate, GraphQLTransform, AmplifyApiGraphQlResourceStackTemplate, SyncUtils, StackManager,
+} from '@aws-amplify/graphql-transformer-core';
+import {
+  DataSourceProvider, StackManagerProvider, TransformerContextProvider, TransformerPluginProvider, TransformerResolverProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
+import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
+import { Table } from 'aws-cdk-lib/aws-dynamodb';
+import * as cdk from 'aws-cdk-lib';
 import { Kind, ObjectTypeDefinitionNode, TypeNode } from 'graphql';
 import {
   and,
@@ -56,7 +60,7 @@ const API_KEY = 'API Key Authorization';
  * replaceDdbPrimaryKey
  */
 export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
-  // Replace the table's primary key with the value from @primaryKey.
+  // Replace the table's primary key with the value from @primaryKey
   const { field, object } = config;
   const table = getTable(ctx, object) as any;
   const cfnTable = table.table;
@@ -458,10 +462,11 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
     throw new Error(`Could not find datasource with name ${dataSourceName} in context.`);
   }
 
+  const resolverResourceId = ResolverResourceIDs.ResolverResourceID(queryTypeName, queryField);
   const resolver = ctx.resolvers.generateQueryResolver(
     queryTypeName,
     queryField,
-    ResolverResourceIDs.ResolverResourceID(queryTypeName, queryField),
+    resolverResourceId,
     dataSource as DataSourceProvider,
     MappingTemplate.s3MappingTemplateFromString(
       print(
@@ -504,6 +509,10 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
                 methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref('filter'))),
               ),
               iff(
+                isNullOrEmpty(ref('filterExpression')),
+                methodCall(ref('util.error'), str('Unable to process the filter expression'), str('Unrecognized Filter')),
+              ),
+              iff(
                 not(methodCall(ref('util.isNullOrBlank'), ref('filterExpression.expression'))),
                 compoundExpression([
                   iff(
@@ -537,7 +546,8 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
       `${queryTypeName}.${queryField}.{slotName}.{slotIndex}.res.vtl`,
     ),
   );
-  resolver.mapToStack(table.stack);
+
+  resolver.mapToStack(ctx.stackManager.getStackFor(resolverResourceId, table.stack.node.id));
   ctx.resolvers.addResolver(object.name.value, queryField, resolver);
 }
 
@@ -645,8 +655,8 @@ function setSyncQueryFilterSnippet(deltaSyncTableTtl: number) {
     compoundExpression([
       set(ref('filterArgsMap'), ref('ctx.args.filter.get("and")')),
       generateDeltaTableTTLCheck(
-        'isLastSyncInDeltaTTLWindow', 
-        deltaSyncTableTtl, 
+        'isLastSyncInDeltaTTLWindow',
+        deltaSyncTableTtl,
         'ctx.args.lastSync'
       ),
       ifElse(
@@ -685,8 +695,8 @@ function setSyncQueryFilterSnippet(deltaSyncTableTtl: number) {
 }
 
 const generateDeltaTableTTLCheck = (
-  deltaTTLCheckRefName: string, 
-  deltaTTLInMinutes: number, 
+  deltaTTLCheckRefName: string,
+  deltaTTLInMinutes: number,
   lastSyncRefName: string
 ): Expression => {
   const deltaTTLInMilliSeconds = deltaTTLInMinutes * 60 * 1000;
@@ -818,7 +828,7 @@ function makeSyncQueryResolver() {
             version: str(RESOLVER_VERSION_ID),
             operation: str('Sync'),
             limit: ref('limit'),
-            lastSync: ref('util.toJson($util.defaultIfNull($ctx.args.lastSync, null))'),
+            lastSync: ref('util.defaultIfNull($ctx.args.lastSync, null)'),
             query: ref(ResourceConstants.SNIPPETS.ModelQueryExpression),
           }),
         ),
@@ -887,9 +897,10 @@ export const getDeltaSyncTableTtl = (resourceOverrides: $TSAny, resource: Transf
 }
 
 export const getResourceOverrides = (transformers: TransformerPluginProvider[], stackManager?: StackManagerProvider | null): $TSAny => {
-  try {
+  if (stateManager.currentMetaFileExists(undefined)) {
     const meta = stateManager.getCurrentMeta(undefined, { throwIfNotExist: false });
-    const gqlApiName = _.entries(meta?.api).find(([, value]) => (value as { service: string }).service === 'AppSync')?.[0];
+    const gqlApiName = _.entries(meta?.api)
+      .find(([, value]) => (value as { service: string }).service === 'AppSync')?.[0];
     if (gqlApiName && stackManager) {
       const backendDir = pathManager.getBackendDirPath();
       const overrideDir = path.join(backendDir, 'api', gqlApiName);
@@ -903,9 +914,6 @@ export const getResourceOverrides = (transformers: TransformerPluginProvider[], 
       });
       return localGraphQLTransformObj.applyOverride(stackManager as StackManager);
     }
-  } catch (error) {
-    // do not throw but return empty overrides
-    return {};
   }
   return {};
 }

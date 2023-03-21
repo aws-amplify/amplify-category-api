@@ -3,11 +3,13 @@ import {
   $TSContext,
   $TSObject,
   AmplifyCategories,
+  AmplifyError,
   AmplifySupportedService,
   buildOverrideDir,
   pathManager,
   stateManager,
 } from 'amplify-cli-core';
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { printer } from 'amplify-prompts';
 import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
 import * as fs from 'fs-extra';
@@ -21,6 +23,7 @@ import { askAuthQuestions } from './provider-utils/awscloudformation/service-wal
 import { authConfigToAppSyncAuthType } from './provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { checkAppsyncApiResourceMigration } from './provider-utils/awscloudformation/utils/check-appsync-api-migration';
 import { getAppSyncApiResourceName } from './provider-utils/awscloudformation/utils/getAppSyncApiName';
+import { AmplifyGraphQLTransformerErrorConverter } from './errors/amplify-error-converter';
 
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
 export { addAdminQueriesApi, updateAdminQueriesApi } from './provider-utils/awscloudformation';
@@ -40,9 +43,9 @@ export { getAuthConfig } from './provider-utils/awscloudformation/utils/get-apps
 export { getResolverConfig } from './provider-utils/awscloudformation/utils/get-appsync-resolver-config';
 export { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/utils/github';
 export * from './graphql-transformer';
+export * from './force-updates';
 
 const category = AmplifyCategories.API;
-const categories = 'categories';
 
 /**
  * Open the AppSync/API Gateway AWS console
@@ -101,12 +104,6 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   const datasource = 'Aurora Serverless';
   const service = 'service';
   const rdsInit = 'rdsInit';
-  const rdsRegion = 'rdsRegion';
-  const rdsClusterIdentifier = 'rdsClusterIdentifier';
-  const rdsSecretStoreArn = 'rdsSecretStoreArn';
-  const rdsDatabaseName = 'rdsDatabaseName';
-
-  const { amplify } = context;
 
   /**
    * Check if we need to do the walkthrough, by looking to see if previous environments have
@@ -153,43 +150,28 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   }
 
   /**
-   * Check team provider info to ensure it hasn't already been created for current env
+   * Check environment parameter manager to ensure it hasn't already been created for current env
    */
-  const currentEnv = amplify.getEnvInfo().envName;
-  const teamProviderInfo = stateManager.getTeamProviderInfo();
+  const envParamManager = (await ensureEnvParamManager()).instance;
   if (
-    teamProviderInfo[currentEnv][categories]
-    && teamProviderInfo[currentEnv][categories][category]
-    && teamProviderInfo[currentEnv][categories][category][resourceName]
-    && teamProviderInfo[currentEnv][categories][category][resourceName]
-    && teamProviderInfo[currentEnv][categories][category][resourceName][rdsRegion]
+    envParamManager.hasResourceParamManager(category, resourceName)
+    && envParamManager.getResourceParamManager(category, resourceName).getParam('rdsRegion')
   ) {
     return;
   }
-
   // execute the walkthrough
   await providerController
     .addDatasource(context, category, datasource)
     .then(answers => {
       /**
-       * Write the new answers to the team provider info
+       * Update environment parameter manager with answers
        */
-      if (!teamProviderInfo[currentEnv][categories]) {
-        teamProviderInfo[currentEnv][categories] = {};
-      }
-      if (!teamProviderInfo[currentEnv][categories][category]) {
-        teamProviderInfo[currentEnv][categories][category] = {};
-      }
-      if (!teamProviderInfo[currentEnv][categories][category][resourceName]) {
-        teamProviderInfo[currentEnv][categories][category][resourceName] = {};
-      }
-
-      teamProviderInfo[currentEnv][categories][category][resourceName][rdsRegion] = answers.region;
-      teamProviderInfo[currentEnv][categories][category][resourceName][rdsClusterIdentifier] = answers.dbClusterArn;
-      teamProviderInfo[currentEnv][categories][category][resourceName][rdsSecretStoreArn] = answers.secretStoreArn;
-      teamProviderInfo[currentEnv][categories][category][resourceName][rdsDatabaseName] = answers.databaseName;
-
-      stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
+      envParamManager.getResourceParamManager(category, resourceName).setParams({
+        rdsRegion: answers.region,
+        rdsClusterIdentifier: answers.dbClusterArn,
+        rdsSecretStoreArn: answers.secretStoreArn,
+        rdsDatabaseName: answers.databaseName,
+      });
     })
     .then(() => {
       context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { forceCompile: true });
@@ -243,6 +225,11 @@ export const executeAmplifyCommand = async (context: $TSContext): Promise<void> 
   } else {
     commandPath = path.join(commandPath, category, context.input.command);
   }
+
+  // TODO: This is a temporary suppression for CDK deprecation warnings, which should be removed after the migration is complete
+  // Most of these warning messages are targetting searchable directive, which needs to migrate from elastic search to open search
+  // This is not diabled in debug mode
+  disableCDKDeprecationWarning();
 
   const commandModule = await import(commandPath);
   try {
@@ -330,20 +317,26 @@ export const transformCategoryStack = async (context: $TSContext, resource: $TSO
       const backendDir = pathManager.getBackendDirPath();
       const overrideDir = path.join(backendDir, resource.category, resource.resourceName);
       const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
-        printer.error(`Build error : ${error.message}`);
-        throw new Error(error);
+        throw new AmplifyError('InvalidOverrideError', {
+          message: error.message,
+          link: 'https://docs.amplify.aws/cli/graphql/override/',
+        });
       });
-      await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [
-        context,
-        {
-          forceCompile: true,
-          overrideConfig: {
-            overrideFlag: isBuild,
-            overrideDir,
-            resourceName: resource.resourceName,
+      try {
+        await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [
+          context,
+          {
+            forceCompile: true,
+            overrideConfig: {
+              overrideFlag: isBuild,
+              overrideDir,
+              resourceName: resource.resourceName,
+            },
           },
-        },
-      ]);
+        ]);
+      } catch (error) {
+        throw AmplifyGraphQLTransformerErrorConverter.convert(error);
+      }
     }
   } else if (resource.service === AmplifySupportedService.APIGW) {
     if (canResourceBeTransformed(resource.resourceName)) {
@@ -357,3 +350,13 @@ export const transformCategoryStack = async (context: $TSContext, resource: $TSO
 const canResourceBeTransformed = (
   resourceName: string,
 ): boolean => stateManager.resourceInputsJsonExists(undefined, AmplifyCategories.API, resourceName);
+
+/**
+ * Disable the CDK deprecation warning in production but not in CI/debug mode
+ */
+const disableCDKDeprecationWarning = () => {
+  const isDebug = process.argv.includes('--debug') || process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT === 'true';
+  if (!isDebug) {
+    process.env.JSII_DEPRECATED = 'quiet';
+  }
+};

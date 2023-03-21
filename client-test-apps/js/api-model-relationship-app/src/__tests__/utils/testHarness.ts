@@ -73,7 +73,7 @@ export const executeAmplifyTestHarness = (testName: string, projectRoot: string,
       if (getTestExecutionStages().has(TestExecutionStage.CYPRESS_EXECUTE) || getTestExecutionStages().has(TestExecutionStage.CYPRESS_WATCH)) {
         await setup({
           command: `yarn start`,
-          launchTimeout: 50000,
+          launchTimeout: 5 * 60 * 1000,
           port: 3000,
         })
       }
@@ -84,7 +84,7 @@ export const executeAmplifyTestHarness = (testName: string, projectRoot: string,
      */
     afterAll(async () => {
       if (getTestExecutionStages().has(TestExecutionStage.TEARDOWN)) {
-          try {
+        try {
           await cli.delete();
           cleanupJSGeneratedFiles(projectRoot);
         } catch (e) {}
