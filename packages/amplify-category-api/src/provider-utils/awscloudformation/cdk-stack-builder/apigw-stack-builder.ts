@@ -305,7 +305,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
       stageName: cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', cdk.Fn.ref('env')).toString(),
       restApiId: cdk.Fn.ref(apiName),
     });
-    dependencies.forEach((dep) => this.deploymentResource.addDependsOn(dep));
+    dependencies.forEach((dep) => this.deploymentResource.addDependency(dep));
   };
 }
 

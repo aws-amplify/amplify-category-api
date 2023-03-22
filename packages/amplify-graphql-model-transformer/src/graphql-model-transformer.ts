@@ -1295,7 +1295,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     );
 
     const cfnDataSource = dataSource.node.defaultChild as CfnDataSource;
-    cfnDataSource.addDependsOn(role.node.defaultChild as CfnRole);
+    cfnDataSource.addDependency(role.node.defaultChild as CfnRole);
 
     if (context.isProjectUsingDataStore()) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
