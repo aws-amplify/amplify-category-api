@@ -3,7 +3,7 @@
   "main": "./dist/index.js",
   "private": true,
   "types": "./dist/index.d.ts",
-  "version": "0.2.1",
+  "version": "1.22.0",
   "files": [
     "dist",
     "!**/__tests__/**/*"
@@ -27,7 +27,9 @@
     "ts-node": "^8.5.0"
   },
   "dependencies": {
-    "graphql": "^15.5.0"
+    "aws-sdk": "^2.1141.0",
+    "graphql": "^15.5.0",
+    "npm-check-updates": "^16.1.0"
   },
   "lint-staged": {
     "*.{js,ts,json,md,scss,html}": [
