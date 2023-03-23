@@ -8,7 +8,7 @@ machine:
 executors:
   w: &windows-e2e-executor
     machine:
-      image: "windows-server-2019-vs2019:stable"
+      image: "windows-server-2022-gui:current"
       resource_class: "windows.medium"
       shell: bash.exe
     working_directory: ~/repo
@@ -18,7 +18,7 @@ executors:
 
   l: &linux-e2e-executor
     docker:
-      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-node18-repo-public:latest
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -64,6 +64,9 @@ jobs:
     executor: << parameters.os >>
     steps:
       - checkout
+      - run:
+          name: Check node version
+          command: node -v
       - run: yarn run production-build
       - run:
           name: Build tests
