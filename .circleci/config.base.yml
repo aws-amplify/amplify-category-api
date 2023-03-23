@@ -64,6 +64,22 @@ jobs:
     executor: << parameters.os >>
     steps:
       - checkout
+      - when:
+          condition:
+            equal: [*windows-e2e-executor, << parameters.os >>]
+          steps:
+            - run:
+                name: Install Node 18
+                command: |
+                  nvm version
+                  nvm install 18.15.0
+                  nvm use 18.15.0
+                  nvm ls
+            - run:
+                name: Install Yarn
+                command: |
+                  npm install -g yarn
+                  yarn --version
       - run:
           name: Check node version
           command: node -v
