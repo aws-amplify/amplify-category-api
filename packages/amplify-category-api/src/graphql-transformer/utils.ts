@@ -3,8 +3,10 @@ import * as path from 'path';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerProjectConfig } from '@aws-amplify/graphql-transformer-core';
 import rimraf from 'rimraf';
-import { $TSContext, AmplifyCategories, CloudformationProviderFacade, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
-import { CloudFormation, Fn } from 'cloudform';
+import {
+  $TSContext, AmplifyCategories, CloudformationProviderFacade, JSONUtilities, pathManager, stateManager,
+} from 'amplify-cli-core';
+import { CloudFormation, Fn } from 'cloudform-types';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { pullAllBy, find } from 'lodash';
 import { printer } from 'amplify-prompts';

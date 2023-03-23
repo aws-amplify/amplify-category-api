@@ -1,7 +1,6 @@
 import { ResourceConstants } from './ResourceConstants';
 import DataSource from 'cloudform-types/types/appSync/dataSource';
 import IAM from 'cloudform-types/types/iam';
-import { default as cloudform } from 'cloudform';
 import { Fn, StringParameter } from 'cloudform-types';
 import { TemplateContext } from './RelationalDBSchemaTransformer';
 import { RelationalDBResolverGenerator } from './RelationalDBResolverGenerator';
@@ -60,7 +59,7 @@ export class RelationalDBTemplateGenerator {
    * @returns the json, string form of the template given.
    */
   public printCloudformationTemplate(template: Template): string {
-    return cloudform(template);
+    return JSON.stringify(template, undefined, 2);
   }
 
   /*

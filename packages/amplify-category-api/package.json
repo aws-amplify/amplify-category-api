@@ -47,7 +47,7 @@
     "@octokit/rest": "^18.0.9",
     "aws-cdk-lib": "~2.68.0",
     "chalk": "^4.1.1",
-    "cloudform": "^4.2.0",
+    "cloudform-types": "^4.2.0",
     "constructs": "^10.0.5",
     "fs-extra": "^8.1.0",
     "graphql": "^15.5.0",
