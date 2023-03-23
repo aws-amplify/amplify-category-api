@@ -6,7 +6,7 @@ import rimraf from 'rimraf';
 import {
   $TSContext, AmplifyCategories, CloudformationProviderFacade, JSONUtilities, pathManager, stateManager,
 } from '@aws-amplify/amplify-cli-core';
-import { CloudFormation, Fn } from 'cloudform';
+import { CloudFormation, Fn } from 'cloudform-types';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { pullAllBy, find } from 'lodash';
 import { printer } from '@aws-amplify/amplify-prompts';
