@@ -1,4 +1,5 @@
 import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
+import { $TSAny } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
@@ -1073,15 +1074,11 @@ export function importRDSDatabase(cwd: string, opts: ImportApiOptions & { apiExi
     
     importCommands
       .wait('Enter the name of the MySQL database to import:')
-      .sendLine(database)
-      .wait(`Enter the host for ${database} database:`)
-      .sendLine(options.host)
-      .wait(`Enter the port for ${database} database:`)
-      .sendLine(JSON.stringify(options.port || 3306))
-      .wait(`Enter the username for ${database} database user:`)
-      .sendLine(options.username)
-      .wait(`Enter the password for ${database} database user:`)
-      .sendLine(options.password)
+      .sendLine(database);
+
+    askDBInformation(importCommands, options);
+
+    importCommands
       .wait(/.*Successfully imported the database schema into.*/)
       .run((err: Error) => {
         if (!err) {
@@ -1095,18 +1092,47 @@ export function importRDSDatabase(cwd: string, opts: ImportApiOptions & { apiExi
 
 export function apiUpdateSecrets(cwd: string, opts: ImportApiOptions) {
   const options = _.assign(defaultOptions, opts);
-  const database = options.database;
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(options.testingWithLatestCodebase), ['import', 'api'], { cwd, stripColors: true })
-      .wait(`Enter the host for ${database} database:`)
-      .sendLine(options.host)
-      .wait(`Enter the port for ${database} database:`)
-      .sendLine(JSON.stringify(options.port || 3306))
-      .wait(`Enter the username for ${database} database user:`)
-      .sendLine(options.username)
-      .wait(`Enter the password for ${database} database user:`)
-      .sendLine(options.password)
-      .wait(`Successfully updated the secrets for ${database} database.`)
+    const updateSecretsCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['update-secrets', 'api'], { cwd, stripColors: true });
+    askDBInformation(updateSecretsCommands, options);
+    updateSecretsCommands.wait(`Successfully updated the secrets for ${options.database} database.`);
+    updateSecretsCommands.run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+};
+
+export function apiGenerateSchema(cwd: string, opts: ImportApiOptions & { validCredentials: boolean }) {
+  const options = _.assign(defaultOptions, opts);
+  return new Promise<void>((resolve, reject) => {
+    const generateSchemaCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['generate-schema', 'api'], { cwd, stripColors: true });
+    if (!options?.validCredentials) {
+      askDBInformation(generateSchemaCommands, options);
+    }
+    generateSchemaCommands.run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+    });
+  });
+};
+
+export function removeApi(cwd: string) {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(), ['remove', 'api'], { cwd, stripColors: true })
+      .wait('Choose the resource you would want to remove')
+      .sendCarriageReturn()
+      .wait('Are you sure you want to delete the resource?')
+      .send('y')
+      .sendCarriageReturn()
+      .wait('Successfully removed resource')
+      .sendEof()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -1117,26 +1143,16 @@ export function apiUpdateSecrets(cwd: string, opts: ImportApiOptions) {
   });
 };
 
-export function apiGenerateSchema(cwd: string, opts: ImportApiOptions) {
-  const options = _.assign(defaultOptions, opts);
+const askDBInformation = (executionContext: ExecutionContext, options: ImportApiOptions) => {
   const database = options.database;
-  return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(options.testingWithLatestCodebase), ['import', 'api'], { cwd, stripColors: true })
-      .wait(`Enter the host for ${database} database:`)
-      .sendLine(options.host)
-      .wait(`Enter the port for ${database} database:`)
-      .sendLine(JSON.stringify(options.port || 3306))
-      .wait(`Enter the username for ${database} database user:`)
-      .sendLine(options.username)
-      .wait(`Enter the password for ${database} database user:`)
-      .sendLine(options.password)
-      .wait(`Successfully updated the secrets for ${database} database.`)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
+  return executionContext
+    .wait(`Enter the host for ${database} database:`)
+    .sendLine(options.host)
+    .wait(`Enter the port for ${database} database:`)
+    .sendLine(JSON.stringify(options.port || 3306))
+    .wait(`Enter the username for ${database} database user:`)
+    .sendLine(options.username)
+    .wait(`Enter the password for ${database} database user:`)
+    .sendLine(options.password)
 };
+

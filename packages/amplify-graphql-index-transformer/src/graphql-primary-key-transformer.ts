@@ -31,7 +31,7 @@ import {
   getResourceOverrides,
   getDeltaSyncTableTtl,
   getVTLGenerator,
-} from './resolvers';
+} from './resolvers/resolvers';
 import {
   addKeyConditionInputs,
   removeAutoCreatedPrimaryKey,

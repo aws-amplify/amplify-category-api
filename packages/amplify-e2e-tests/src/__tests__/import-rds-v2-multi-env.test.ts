@@ -14,10 +14,10 @@ import {
   RDSTestDataProvider,
   removeRDSPortInboundRule,
   deleteDBInstance,
-  removeApi
 } from 'amplify-category-api-e2e-core';
 import _ from 'lodash';
 import { verifyAmplifyMeta, verifyCompiledSchema, setupRDSDatabase, verifyRDSSchema } from '../rds-v2-test-utils';
+import { addEnvironment } from '../environment/env';
 
 const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
 const db_name = `mysql_db_${db_identifier}`;
@@ -34,7 +34,7 @@ const sqlStatements = [
   "CREATE TABLE Employee (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))"
 ];
 
-describe("Import RDS V2 API Tests", () => {
+describe("Import RDS V2 multi-env API Tests", () => {
   let dbAdapter: RDSTestDataProvider;
   let projectRoot: string;
 
@@ -63,7 +63,7 @@ describe("Import RDS V2 API Tests", () => {
   });
 
   beforeEach(async () => {
-    projectRoot = await createNewProjectDir("import-rds-env-v2");
+    projectRoot = await createNewProjectDir("import-rds-v2");
   });
 
   afterEach(async () => {
@@ -71,47 +71,9 @@ describe("Import RDS V2 API Tests", () => {
     deleteProjectDir(projectRoot);
   });
 
-  it("adds a new api if one does not already exist", async () => {
-    const name = 'importnewapi';
-    await initJSProjectWithProfile(projectRoot, { disableAmplifyAppCreation: false, name: name });
-    await importRDSDatabase(projectRoot, {
-      database: db_name,
-      host: dbConnectionInfo.host,
-      port: dbConnectionInfo.port,
-      username: db_user,
-      password: db_password,
-      apiExists: false
-    });
-    await amplifyPush(projectRoot);
-
-    verifyAmplifyMeta(projectRoot, name, db_name);
-    verifyCompiledSchema(projectRoot, name, expectedCompiledSchema);
-    verifyRDSSchema(projectRoot, name, expectedSchema);
-  });
-
-  it("uses the existing api if one exists", async () => {
-    const name = 'importexistingapi';
-    await initJSProjectWithProfile(projectRoot, { disableAmplifyAppCreation: false, name: name });
-    await addApiWithBlankSchema(projectRoot);
-    await updateApiSchema(projectRoot, name, 'simple_model.graphql');
-    await importRDSDatabase(projectRoot, {
-      database: db_name,
-      host: dbConnectionInfo.host,
-      port: dbConnectionInfo.port,
-      username: db_user,
-      password: db_password,
-      apiExists: true
-    });
-    await amplifyPush(projectRoot);
-
-    verifyAmplifyMeta(projectRoot, name, db_name);
-    verifyCompiledSchema(projectRoot, name, expectedCompiledSchema);
-    verifyRDSSchema(projectRoot, name, expectedSchema);
-  });
-
-  it("allows re-generation of the imported schema", async () => {
-    const name = 'regenerateschema';
-    await initJSProjectWithProfile(projectRoot, { disableAmplifyAppCreation: false, name: name });
+  it("adding a new environment carries over the imported schema and DB secrets", async () => {
+    const name = 'addnewenv';
+    await initJSProjectWithProfile(projectRoot, { disableAmplifyAppCreation: false, name: name, envName: 'enva' });
     const dbInfo = {
       database: db_name,
       host: dbConnectionInfo.host,
@@ -124,6 +86,10 @@ describe("Import RDS V2 API Tests", () => {
       apiExists: false
     });
     await amplifyPush(projectRoot);
+
+    // checkout a new environment
+    await addEnvironment(projectRoot, { envName: 'envb' });
+    // verify that the secrets are carried over automatically
     await apiGenerateSchema(projectRoot, {
       ...dbInfo,
       validCredentials: true
@@ -134,96 +100,20 @@ describe("Import RDS V2 API Tests", () => {
     verifyCompiledSchema(projectRoot, name, expectedCompiledSchema);
     verifyRDSSchema(projectRoot, name, expectedSchema);
   });
+  /*
+  it("checking out an existing environment and re-generating the imported schema uses the secrets for that environment", async () => {
 
-  it("allows updating the DB information", async () => {
-    const name = 'updatedbinfo';
-    await initJSProjectWithProfile(projectRoot, { disableAmplifyAppCreation: false, name: name });
-    const dbInfo = {
-      database: db_name,
-      host: dbConnectionInfo.host,
-      port: dbConnectionInfo.port,
-      username: db_user,
-      password: db_password
-    };
-    await importRDSDatabase(projectRoot, {
-      ...dbInfo,
-      apiExists: false
-    });
-    await amplifyPush(projectRoot);
-    await apiUpdateSecrets(projectRoot, dbInfo);
-    await apiGenerateSchema(projectRoot, {
-      ...dbInfo,
-      validCredentials: true
-    });
-
-    verifyAmplifyMeta(projectRoot, name, db_name);
-    verifyCompiledSchema(projectRoot, name, expectedCompiledSchema);
-    verifyRDSSchema(projectRoot, name, expectedSchema);
   });
 
-  it("retains existing secrets if new ones are incorrect during update-secrets", async () => {
-    const name = "wrongsecrets";
-    await initJSProjectWithProfile(projectRoot, { disableAmplifyAppCreation: false, name: name });
-    const dbInfo = {
-      database: db_name,
-      host: dbConnectionInfo.host,
-      port: dbConnectionInfo.port,
-      username: db_user,
-      password: db_password
-    };
-    await importRDSDatabase(projectRoot, {
-      ...dbInfo,
-      apiExists: false
-    });
-    await amplifyPush(projectRoot);
+  it("removing an environment clears out DB details and user secrets", async() => {
 
-    // now try to update the DB secrets to invalid value
-    try {
-      await apiUpdateSecrets(projectRoot, {
-        ...dbInfo,
-        password: "invalidpassword"
-      });
-    } catch (err) {
-      console.log(err?.message);
-    }
-
-    // Successful schema regeneration means that existing secrets are not modified with incorrect values.
-    await apiGenerateSchema(projectRoot, {
-      ...dbInfo,
-      validCredentials: true
-    });
-
-    verifyAmplifyMeta(projectRoot, name, db_name);
-    verifyCompiledSchema(projectRoot, name, expectedCompiledSchema);
-    verifyRDSSchema(projectRoot, name, expectedSchema);
   });
-
-  it("removing the API clears out the imported schema file", async () => {
-    const name = "wrongsecrets";
-    await initJSProjectWithProfile(projectRoot, { disableAmplifyAppCreation: false, name: name });
-    const dbInfo = {
-      database: db_name,
-      host: dbConnectionInfo.host,
-      port: dbConnectionInfo.port,
-      username: db_user,
-      password: db_password
-    };
-    await importRDSDatabase(projectRoot, {
-      ...dbInfo,
-      apiExists: false
-    });
-
-    verifyRDSSchema(projectRoot, name);
-    
-    // remove the API
-    await removeApi(projectRoot);
-    verifyRDSSchema(projectRoot, name);
-  });
+  */
 });
 
 const expectedSchema: string = "type Account {}";
 
-const expectedCompiledSchema: string = `
+const expectedCompiledSchema = `
 "type Contacts {
   ID: Int!
   FirstName: String
