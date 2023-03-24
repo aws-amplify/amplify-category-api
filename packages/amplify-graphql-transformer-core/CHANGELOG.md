@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@1.1.0...@aws-amplify/graphql-transformer-core@1.1.1) (2023-03-15)
+
+### Bug Fixes
+
+- **graphql:** revert circular dependency mock fix ([e7c5688](https://github.com/aws-amplify/amplify-category-api/commit/e7c568876ea56e84a1511dfd720bc4faa4c76485))
+
 # [1.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@0.18.5...@aws-amplify/graphql-transformer-core@1.1.0) (2023-03-01)
 
 ### Bug Fixes

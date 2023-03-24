@@ -7,6 +7,7 @@ import {
 import {
   $TSAny,
   $TSContext,
+  AmplifyError,
   ApiCategoryFacade,
 } from 'amplify-cli-core';
 import { constructGraphQLTransformV2 } from '../graphql-transformer/transformer-factory';
@@ -42,7 +43,10 @@ export class SchemaReader {
     } else if (fs.pathExistsSync(schemaDirPath)) {
       this.schemaPath = schemaDirPath;
     } else {
-      throw new Error(`No schema found, your graphql schema should be in either ${schemaFilePath} or ${schemaDirPath}`);
+      throw new AmplifyError('ApiCategorySchemaNotFoundError', {
+        message: 'No schema found',
+        resolution: `Your graphql schema should be in either ${schemaFilePath} or ${schemaDirPath}`,
+      });
     }
     return this.schemaPath;
   };
@@ -74,7 +78,10 @@ export class SchemaReader {
       }
 
       if (!fileContentsList.length) {
-        throw new Error(`No GraphQL schema found in schema location ${schemaPath}`);
+        throw new AmplifyError('ApiCategorySchemaNotFoundError', {
+          message: 'No schema found',
+          resolution: `Your graphql schema should be in ${schemaPath}`,
+        });
       }
 
       const bufferList = await Promise.all(fileContentsList);

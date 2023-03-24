@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.1.0...@aws-amplify/amplify-category-api@5.1.1) (2023-03-15)
+
+### Bug Fixes
+
+- **api:** correct container code build policy ([517315a](https://github.com/aws-amplify/amplify-category-api/commit/517315a986bffb97c68299dfe585ac783fdd4a5a))
+- fixes apigw tests ([8e7a325](https://github.com/aws-amplify/amplify-category-api/commit/8e7a3253ad9696e94606abca962afe268beff7cb))
+
 # [5.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@4.1.9...@aws-amplify/amplify-category-api@5.1.0) (2023-03-01)
 
 ### Bug Fixes

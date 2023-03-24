@@ -4,8 +4,8 @@
 
 ```ts
 
-import { BackedDataSource } from '@aws-cdk/aws-appsync-alpha';
-import { BaseDataSource } from '@aws-cdk/aws-appsync-alpha';
+import { BackedDataSource } from 'aws-cdk-lib/aws-appsync';
+import { BaseDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
 import { CfnParameter } from 'aws-cdk-lib';
 import { CfnParameterProps } from 'aws-cdk-lib';
@@ -16,15 +16,15 @@ import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql';
 import { Duration } from 'aws-cdk-lib';
-import { DynamoDbDataSource } from '@aws-cdk/aws-appsync-alpha';
+import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { EnumTypeDefinitionNode } from 'graphql';
 import { EnumTypeExtensionNode } from 'graphql';
 import { EnumValueDefinitionNode } from 'graphql';
 import { FieldDefinitionNode } from 'graphql';
 import { FieldNode } from 'graphql';
 import { Grant } from 'aws-cdk-lib/aws-iam';
-import { GraphqlApiBase } from '@aws-cdk/aws-appsync-alpha';
-import { HttpDataSource } from '@aws-cdk/aws-appsync-alpha';
+import { GraphqlApiBase } from 'aws-cdk-lib/aws-appsync';
+import { HttpDataSource } from 'aws-cdk-lib/aws-appsync';
 import { IAsset } from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
@@ -37,8 +37,8 @@ import { InterfaceTypeDefinitionNode } from 'graphql';
 import { InterfaceTypeExtensionNode } from 'graphql';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
-import { LambdaDataSource } from '@aws-cdk/aws-appsync-alpha';
-import { NoneDataSource } from '@aws-cdk/aws-appsync-alpha';
+import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
+import { NoneDataSource } from 'aws-cdk-lib/aws-appsync';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeExtensionNode } from 'graphql';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';

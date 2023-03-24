@@ -8,7 +8,7 @@ import {
 import { MapsToTransformer } from '../graphql-maps-to-transformer';
 import { attachInputMappingSlot, attachResponseMappingSlot, attachFilterAndConditionInputMappingSlot } from '../field-mapping-resolvers';
 import { createMappingLambda } from '../field-mapping-lambda';
-import { LambdaDataSource } from '@aws-cdk/aws-appsync-alpha';
+import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
 
 jest.mock('../field-mapping-resolvers');
 jest.mock('../field-mapping-lambda');

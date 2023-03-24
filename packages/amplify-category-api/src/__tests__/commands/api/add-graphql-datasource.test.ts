@@ -1,5 +1,5 @@
-import { readSchema } from '../../../commands/api/add-graphql-datasource';
 import * as path from 'path';
+import { readSchema } from '../../../commands/api/add-graphql-datasource';
 
 describe('read schema', () => {
   it('Valid schema present in folder', async () => {
@@ -12,7 +12,17 @@ describe('read schema', () => {
       const graphqlSchemaPath = path.join(__dirname, 'mock-data', 'invalid_schema.graphql');
       readSchema(graphqlSchemaPath);
     }
-    expect(invalidSchema).toThrowError('Could not parse graphql schema');
+    expect(invalidSchema).toThrowErrorMatchingInlineSnapshot(`
+      "Could not parse graphql scehma 
+      typo Todo @model {
+        id: ID!
+        name: String!
+        description: String
+        createdAt: AWSDateTime!
+        updatedAt: AWSDateTime!
+      }
+      "
+    `);
   });
 
   it('Empty schema present in folder', async () => {

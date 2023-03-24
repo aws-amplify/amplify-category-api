@@ -3,12 +3,12 @@
   "private": true,
   "version": "1.0.0",
   "devDependencies": {
-    "aws-cdk": "~2.53.0",
+    "aws-cdk": "~2.68.0",
     "@types/node": "^12.12.6",
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "aws-cdk-lib": "~2.53.0",
+    "aws-cdk-lib": "~2.68.0",
     "constructs": "^10.0.5"
   }
 }

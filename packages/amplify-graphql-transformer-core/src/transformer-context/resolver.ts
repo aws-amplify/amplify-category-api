@@ -7,7 +7,7 @@ import {
   TransformerResolverProvider,
   TransformerResolversManagerProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationType } from '@aws-cdk/aws-appsync-alpha';
+import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { isResolvableObject, Stack, CfnParameter } from 'aws-cdk-lib';
 import { toPascalCase } from 'graphql-transformer-common';
@@ -125,7 +125,6 @@ export class TransformerResolver implements TransformerResolverProvider {
   private readonly slotMap: Map<string, Slot[]> = new Map();
   private readonly slotNames: Set<string>;
   private stack?: Stack;
-  private stackName?: string;
   constructor(
     private typeName: string,
     private fieldName: string,
@@ -156,11 +155,6 @@ export class TransformerResolver implements TransformerResolverProvider {
 
   mapToStack = (stack: Stack) => {
     this.stack = stack;
-    this.stackName = stack.stackName;
-  };
-
-  getStackName = () => {
-    return this.stackName ?? '';
   };
 
   addToSlot = (

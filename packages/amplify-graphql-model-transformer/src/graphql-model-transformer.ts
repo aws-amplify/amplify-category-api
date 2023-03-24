@@ -54,6 +54,7 @@ import {
   makeNonNullType,
   makeValueNode,
   toPascalCase,
+  toUpper,
 } from 'graphql-transformer-common';
 import {
   addDirectivesToOperation,
@@ -771,7 +772,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
   private isModelField = (name: string): boolean => (!!this.typesWithModelDirective.has(name));
 
-  private getNonModelInputObjectName = (name: string): string => `${name}Input`;
+  private getNonModelInputObjectName = (name: string): string => `${toUpper(name)}Input`;
 
   /**
    * Model directive automatically adds id, created and updated time stamps to the filed, if they are configured
