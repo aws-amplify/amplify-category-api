@@ -198,25 +198,3 @@ function emitCanaryFailureMetric {
             --region us-west-2
     fi
 }
-
-function forceFromSourceRun {
-    if [[ "$TEST_SUITE" == "src/__tests__/amplify-app.test.ts" ]]; then
-        echo "Not forcing run from source for $TEST_SUITE"
-        return
-    fi
-
-    if [[ "$TEST_SUITE" == "src/__tests__/datastore-modelgen.test.ts" ]]; then
-        echo "Not forcing run from source for $TEST_SUITE"
-        return
-    fi
-
-    yarn add-cli-no-save
-    if [[ "$OSTYPE" == "msys" ]]; then
-        # windows provided by circleci has this OSTYPE
-        yarn hoist-cli-win
-        export AMPLIFY_PATH=C:/home/circleci/repo/node_modules/amplify-cli-internal/bin/amplify
-    else
-        yarn hoist-cli
-        export AMPLIFY_PATH=/home/circleci/repo/node_modules/amplify-cli-internal/bin/amplify
-    fi
-}

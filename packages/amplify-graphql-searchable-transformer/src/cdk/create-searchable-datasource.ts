@@ -1,5 +1,5 @@
 import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { BaseDataSource } from '@aws-cdk/aws-appsync-alpha';
+import { BaseDataSource } from 'aws-cdk-lib/aws-appsync';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { Stack } from 'aws-cdk-lib';

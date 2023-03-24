@@ -8,6 +8,13 @@ import { validateManyToManyTwoLocations } from './validators/two-many-to-many-lo
 import { validateFieldsMatchInParentModel } from './validators/fields-match-in-parent-model';
 import { ValidationError } from './exceptions/validation-error';
 import { validateFieldIsDefinedOnce } from './validators/field-is-defined-once';
+import { validateAuthIsAnnotatedWithModel } from './validators/auth-must-be-annotated-with-model';
+import { verifyIndexSortKeyFieldsExistInModel } from './validators/sort-key-field-exists';
+import { validateReservedTypeNames } from './validators/reserved-type-name';
+import { validateCorrectTypeInManyToManyRelation } from './validators/correct-type-in-many-to-many-relation';
+import { validateReservedFieldNames } from './validators/reserved-field-name';
+import { validateRelationNameDoesNotConflictWithTypeName } from './validators/relationname-doesnot-conflict-with-typename';
+import { validateBelongsToFieldsMatchRelatedTypePrimaryKey } from './validators/belongs-to-fields-match-related-type-primary-key';
 import { validateTypeIsDefinedOnce } from './validators/type-is-defined-once';
 import { validateIndexIsDefinedOnce } from './validators/index-is-defined-once-in-model';
 import { validateIndexExistsInRelatedModel } from './validators/index-exists-in-related-model';
@@ -19,6 +26,13 @@ const allValidators = [
   validateRequireBelongsToRelation,
   validateManyToManyTwoLocations,
   validateFieldIsDefinedOnce,
+  validateAuthIsAnnotatedWithModel,
+  verifyIndexSortKeyFieldsExistInModel,
+  validateReservedTypeNames,
+  validateCorrectTypeInManyToManyRelation,
+  validateReservedFieldNames,
+  validateRelationNameDoesNotConflictWithTypeName,
+  validateBelongsToFieldsMatchRelatedTypePrimaryKey,
   validateTypeIsDefinedOnce,
   validateIndexIsDefinedOnce,
   validateFieldsMatchInParentModel,

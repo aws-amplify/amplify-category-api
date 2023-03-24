@@ -156,7 +156,7 @@ export class PipelineWithAwaiter extends Construct {
         actions: [
           'ecr:GetAuthorizationToken',
           'ecr:BatchGetImage',
-          'ecr:BatchGetDownloadUrlForLayer',
+          'ecr:GetDownloadUrlForLayer',
           'ecr:InitiateLayerUpload',
           'ecr:BatchCheckLayerAvailability',
           'ecr:UploadLayerPart',

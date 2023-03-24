@@ -28,10 +28,10 @@
     "knex": "~2.3.0",
     "mysql2": "~2.3.3",
     "graphql": "^15.5.0",
-    "@aws-amplify/graphql-transformer-core": "1.1.0"
+    "@aws-amplify/graphql-transformer-core": "1.1.1"
   },
   "peerDependencies": {
-    "amplify-prompts": "^2.6.4-beta.3"
+    "amplify-prompts": "^2.6.5"
   },
   "jest": {
     "transform": {
