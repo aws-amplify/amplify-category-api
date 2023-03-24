@@ -14,10 +14,11 @@ import {
   ImportedDataSourceConfig,
 } from '@aws-amplify/graphql-transformer-core';
 import { PREVIEW_BANNER, category } from '../../../category-constants';
-import { storeConnectionSecrets, testDatabaseConnection, readDatabaseNameFromMeta } from '../utils/rds-secrets/database-secrets';
+import { storeConnectionSecrets, testDatabaseConnection, getSecretsKey } from '../utils/rds-secrets/database-secrets';
 import * as path from 'path';
 import { RDS_SCHEMA_FILE_NAME } from '@aws-amplify/graphql-transformer-core';
 import { getAPIResourceDir } from '../utils/amplify-meta-utils';
+import * as fs from 'fs-extra';
 
 const service = 'AppSync';
 
@@ -35,9 +36,12 @@ export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<
   }
 
   const engine = ImportedRDSType.MYSQL;
-  const database = await readDatabaseNameFromMeta(apiName, engine);
-  if(database) {
-    printer.error(`Imported Database "${database}" already exists. Use "amplify api generate-schema" to fetch the schema.`);
+  const apiResourceDir = getAPIResourceDir(apiName);
+  const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
+  const secretsKey = await getSecretsKey();
+
+  if(fs.existsSync(pathToSchemaFile)) {
+    printer.error(`Imported Database schema already exists. Use "amplify api generate-schema" to fetch the latest updates to schema.`);
     return {
       apiName: apiName
     }
@@ -45,12 +49,10 @@ export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<
 
   const databaseConfig: ImportedDataSourceConfig = await databaseConfigurationInputWalkthrough(engine);
 
-  const apiResourceDir = getAPIResourceDir(apiName);
-  const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
   await writeDefaultGraphQLSchema(context, pathToSchemaFile, databaseConfig);
-  await storeConnectionSecrets(context, databaseConfig, apiName);
-  await updateAPIArtifacts(context, apiName, engine, databaseConfig.database);
+  await storeConnectionSecrets(context, databaseConfig, apiName, secretsKey);
   await testDatabaseConnection(databaseConfig);
+
   return {
     apiName: apiName,
     dataSourceConfig: databaseConfig,
@@ -66,12 +68,6 @@ export const writeDefaultGraphQLSchema = async (context: $TSContext, pathToSchem
   else {
     throw new Error(`Data source type ${dataSourceType} is not supported.`);
   }
-};
-
-export const updateAPIArtifacts = async (context: $TSContext, apiName: string, engine: ImportedDataSourceType, database: string) => {
-  const dataSourceConfig = {};
-  dataSourceConfig[engine] = database; // This will eventually be a list
-  context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'dataSourceConfig', dataSourceConfig);
 };
 
 export const databaseConfigurationInputWalkthrough = async (engine: ImportedDataSourceType, database?: string): Promise<ImportedDataSourceConfig> => {

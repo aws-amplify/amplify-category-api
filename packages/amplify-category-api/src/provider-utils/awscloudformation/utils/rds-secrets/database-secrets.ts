@@ -1,19 +1,18 @@
-import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { getParameterStoreSecretPath, RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { SSMClient } from './ssmClient';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { MySQLDataSourceAdapter, Schema, Engine, DataSourceAdapter, MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { category } from '../../../../category-constants';
 
-const secretNames = ['host', 'port', 'username', 'password'];
+const secretNames = ['database', 'host', 'port', 'username', 'password'];
 
-export const getExistingConnectionSecrets = async (context: $TSContext, database: string, apiName: string, envName?: string): Promise<RDSConnectionSecrets|undefined> => {
+export const getExistingConnectionSecrets = async (context: $TSContext, secretsKey: string, apiName: string, envName?: string): Promise<RDSConnectionSecrets|undefined> => {
   try {
     const ssmClient = await SSMClient.getInstance(context);
     const secrets = await ssmClient.getSecrets(
-      secretNames.map( secret => getParameterStoreSecretPath(secret, database, apiName, envName))
+      secretNames.map( secret => getParameterStoreSecretPath(secret, secretsKey, apiName, envName))
     );
 
     if(_.isEmpty(secrets)) {
@@ -21,7 +20,7 @@ export const getExistingConnectionSecrets = async (context: $TSContext, database
     }
 
     const existingSecrets = secretNames.map( secretName => {
-      const secretPath = getParameterStoreSecretPath(secretName, database, apiName, envName);
+      const secretPath = getParameterStoreSecretPath(secretName, secretsKey, apiName, envName);
       const matchingSecret = secrets?.find( secret => (secret?.secretName === secretPath) && !_.isEmpty(secret?.secretValue) );
       const result = {};
       if(matchingSecret) {
@@ -43,11 +42,11 @@ export const getExistingConnectionSecrets = async (context: $TSContext, database
   }
 };
 
-export const getExistingConnectionSecretNames = async (context: $TSContext, apiName: string, database: string, envName?: string): Promise<RDSConnectionSecrets|undefined> => {
+export const getExistingConnectionSecretNames = async (context: $TSContext, apiName: string, secretsKey: string, envName?: string): Promise<RDSConnectionSecrets|undefined> => {
   try {
     const ssmClient = await SSMClient.getInstance(context);
     const secrets = await ssmClient.getSecrets(
-      secretNames.map( secret => getParameterStoreSecretPath(secret, database, apiName, envName))
+      secretNames.map( secret => getParameterStoreSecretPath(secret, apiName, secretsKey, envName))
     );
 
     if(_.isEmpty(secrets)) {
@@ -55,7 +54,7 @@ export const getExistingConnectionSecretNames = async (context: $TSContext, apiN
     }
 
     const existingSecrets = secretNames.map((secretName) => {
-      const secretPath = getParameterStoreSecretPath(secretName, database, apiName, envName);
+      const secretPath = getParameterStoreSecretPath(secretName, apiName, secretsKey, envName);
       const matchingSecret = secrets?.find((secret) => (secret?.secretName === secretPath) && !_.isEmpty(secret?.secretValue));
       const result = {};
       if (matchingSecret) {
@@ -69,7 +68,6 @@ export const getExistingConnectionSecretNames = async (context: $TSContext, apiN
     }, {});
 
     if (existingSecrets && (Object.keys(existingSecrets)?.length === secretNames?.length)) {
-      existingSecrets.database = database;
       return existingSecrets;
     }
   } catch (error) {
@@ -77,18 +75,18 @@ export const getExistingConnectionSecretNames = async (context: $TSContext, apiN
   }
 };
 
-export const storeConnectionSecrets = async (context: $TSContext, secrets: RDSConnectionSecrets, apiName: string) => {
+export const storeConnectionSecrets = async (context: $TSContext, secrets: RDSConnectionSecrets, apiName: string, secretsKey: string) => {
   const ssmClient = await SSMClient.getInstance(context);
   secretNames.map( async (secret) => {
-    const parameterPath = getParameterStoreSecretPath(secret, secrets.database, apiName);
+    const parameterPath = getParameterStoreSecretPath(secret, secretsKey, apiName);
     await ssmClient.setSecret(parameterPath, secrets[secret]?.toString());
   });
 };
 
-export const deleteConnectionSecrets = async (context: $TSContext, database: string, apiName: string, envName?: string) => {
+export const deleteConnectionSecrets = async (context: $TSContext, secretsKey: string, apiName: string, envName?: string) => {
   const ssmClient = await SSMClient.getInstance(context);
   const secretParameterPaths = secretNames.map( secret => {
-    return getParameterStoreSecretPath(secret, database, apiName, envName);
+    return getParameterStoreSecretPath(secret, secretsKey, apiName, envName);
   });
   await ssmClient.deleteSecrets(secretParameterPaths);
 };
@@ -116,7 +114,21 @@ export const testDatabaseConnection = async (config: RDSConnectionSecrets) => {
   adapter.cleanup();
 };
 
-export const readDatabaseNameFromMeta = async (apiName: string, engine: ImportedRDSType): Promise<string|undefined> => {
-  const meta = stateManager.getMeta();
-  return(_.get(meta, [category, apiName,'dataSourceConfig', engine]));
+export const getSecretsKey = async (): Promise<string> => {
+  // this will be an extension point when we support multiple database imports.
+  return 'schema';
+};
+
+export const getDatabaseName = async (context: $TSContext, apiName: string, secretsKey: string): Promise<string|undefined> => {
+  const ssmClient = await SSMClient.getInstance(context);
+
+  const secrets = await ssmClient.getSecrets(
+    [getParameterStoreSecretPath('database', secretsKey, apiName)]
+  );
+
+  if(_.isEmpty(secrets)) {
+    return;
+  }
+
+  return secrets[0].secretValue;
 };

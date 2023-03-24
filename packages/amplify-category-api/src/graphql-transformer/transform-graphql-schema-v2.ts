@@ -38,7 +38,7 @@ import {
 } from './utils';
 import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerFactoryArgs, TransformerProjectOptions } from './transformer-options-types';
-import { getExistingConnectionSecretNames, readDatabaseNameFromMeta } from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
+import { getExistingConnectionSecretNames, getSecretsKey, getDatabaseName } from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 
 const PARAMETERS_FILENAME = 'parameters.json';
@@ -255,15 +255,11 @@ const _buildProject = async (context: $TSContext, opts: TransformerProjectOption
 
 const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, RDSConnectionSecrets>> => {
   const outputMap = new Map<string, RDSConnectionSecrets>();
-  const engine = ImportedRDSType.MYSQL;
   const apiName = getAppSyncAPIName();
-  const database = await readDatabaseNameFromMeta(apiName, engine);
-  if (database) {
-    const rdsSecretPaths = await getExistingConnectionSecretNames(context, apiName, database, stateManager.getCurrentEnvName());
-    rdsSecretPaths['database'] = database;
-    if (rdsSecretPaths) {
-      outputMap.set(MYSQL_DB_TYPE, rdsSecretPaths);
-    }
+  const secretsKey = await getSecretsKey();
+  const rdsSecretPaths = await getExistingConnectionSecretNames(context, apiName, secretsKey);
+  if (rdsSecretPaths) {
+    outputMap.set(MYSQL_DB_TYPE, rdsSecretPaths);
   }
   return outputMap;
 };

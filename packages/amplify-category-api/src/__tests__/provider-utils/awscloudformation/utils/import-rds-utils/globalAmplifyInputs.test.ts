@@ -4,8 +4,10 @@ import * as fs from 'fs-extra';
 
 jest.mock('fs-extra', () => ({
   readFileSync: jest.fn(),
+  existsSync: jest.fn()
 }));
 const readFileSync_mock = fs.readFileSync as jest.MockedFunction<typeof fs.readFileSync>;
+const existsSync_mock = fs.existsSync as jest.MockedFunction<typeof fs.existsSync>;
 
 jest.mock('@aws-amplify/amplify-cli-core', () => {
   const original = jest.requireActual('@aws-amplify/amplify-cli-core');
@@ -43,13 +45,11 @@ describe('Amplify Input read/write from schema', () => {
 
     const mockInputSchema = `input Amplify {
       engine: String = \"${mockValidInputs.engine}\"  
-      host: String = \"${mockValidInputs.host}\"  
-      port: Int = ${mockValidInputs.port} # ENTER PORT NUMBER HERE
-      database: String = \"${mockValidInputs.database}\" 
       globalAuthRule: AuthRule = { allow: public } # This "input" configures a global authorization rule to enable public access to all models in this schema. Learn more about authorization rules here:https://docs.amplify.aws/cli/graphql/authorization-rules 
     }`;
 
     readFileSync_mock.mockReturnValue(mockInputSchema);
+    existsSync_mock.mockReturnValue(true);
 
     const readInputNode = await readRDSGlobalAmplifyInput('mock/path');
     expect(readInputNode).toMatchSnapshot();
@@ -69,8 +69,7 @@ describe('Amplify Input read/write from schema', () => {
     }`;
 
     readFileSync_mock.mockReturnValue(mockInputSchema);
-
-    const readInputNode = await readRDSGlobalAmplifyInput('mock/path');
+    existsSync_mock.mockReturnValue(true);
 
     const userInputs = {
       host: 'mockdatabase.rds.amazonaws.com',

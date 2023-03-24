@@ -11,7 +11,7 @@ import {
   RDSConnectionSecrets,
 } from '@aws-amplify/graphql-transformer-core';
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { getExistingConnectionSecrets, storeConnectionSecrets, readDatabaseNameFromMeta } from '../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
+import { getExistingConnectionSecrets, storeConnectionSecrets, getSecretsKey, getDatabaseName } from '../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 import { writeSchemaFile, generateRDSSchema } from '../../provider-utils/awscloudformation/utils/graphql-schema-utils';
 import { PREVIEW_BANNER } from '../../category-constants';
 
@@ -33,24 +33,24 @@ export const run = async (context: $TSContext) => {
   }
 
   const engine = ImportedRDSType.MYSQL;
-  const database = await readDatabaseNameFromMeta(apiName, engine);
+  const secretsKey = await getSecretsKey();
+  const database = await getDatabaseName(context, apiName, secretsKey);
   if (!database) {
-    printer.error(`Cannot find any imported databases to generate the schema. Use "amplify import api" to import the database.`);
+    printer.error(`Cannot fetch the imported database name to generate the schema. Use "amplify api update-secrets" to update the database information.`);
     return;
   }
   
   // read and validate the RDS connection secrets
-  const { secrets, storeSecrets } = await getConnectionSecrets(context, apiName, database, engine);
+  const { secrets, storeSecrets } = await getConnectionSecrets(context, apiName, secretsKey, engine);
   const databaseConfig: ImportedDataSourceConfig = {
     ...secrets,
-    engine: engine,
-    database: database,
+    engine: engine
   };
 
   const schemaString = await generateRDSSchema(context, databaseConfig, pathToSchemaFile);
   // If connection is successful, store the secrets in parameter store
   if(storeSecrets) {
-    await storeConnectionSecrets(context, secrets, apiName);
+    await storeConnectionSecrets(context, secrets, apiName, secretsKey);
   }
   writeSchemaFile(pathToSchemaFile, schemaString);
 
@@ -60,8 +60,8 @@ export const run = async (context: $TSContext) => {
   printer.info(`Successfully imported the schema definition for ${databaseConfig.database} database into ${pathToSchemaFile}`);
 };
 
-const getConnectionSecrets = async (context: $TSContext, apiName: string, database: string, engine: ImportedRDSType): Promise<{ secrets: RDSConnectionSecrets, storeSecrets: boolean }> => {
-  const existingSecrets = await getExistingConnectionSecrets(context, database, apiName);
+const getConnectionSecrets = async (context: $TSContext, apiName: string, secretsKey: string, engine: ImportedRDSType): Promise<{ secrets: RDSConnectionSecrets, storeSecrets: boolean }> => {
+  const existingSecrets = await getExistingConnectionSecrets(context, secretsKey, apiName);
   if(existingSecrets) {
     return {
       secrets: existingSecrets,

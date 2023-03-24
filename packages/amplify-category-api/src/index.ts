@@ -26,7 +26,7 @@ import { checkAppsyncApiResourceMigration } from './provider-utils/awscloudforma
 import { getAppSyncApiResourceName } from './provider-utils/awscloudformation/utils/getAppSyncApiName';
 import { getAPIResourceDir } from './provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { configureMultiEnvDBSecrets } from './provider-utils/awscloudformation/utils/rds-secrets/multi-env-database-secrets';
-import { deleteConnectionSecrets, readDatabaseNameFromMeta } from './provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
+import { deleteConnectionSecrets, getSecretsKey, getDatabaseName } from './provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 import _ from 'lodash';
 import { AmplifyGraphQLTransformerErrorConverter } from './errors/amplify-error-converter';
 
@@ -150,8 +150,7 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
   if(fs.existsSync(pathToSchemaFile)) {
     // read and validate the RDS connection parameters
-    const engine = ImportedRDSType.MYSQL;
-    const database = await readDatabaseNameFromMeta(resourceName, engine);
+    const secretsKey = await getSecretsKey();
 
     const envInfo = {
       isNewEnv: context.exeInfo?.isNewEnv,
@@ -159,7 +158,7 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
       yesFlagSet: _.get(context, ['parameters', 'options', 'yes'], false),
       envName: envName
     }
-    await configureMultiEnvDBSecrets(context, database, resourceName, envInfo);
+    await configureMultiEnvDBSecrets(context, secretsKey, resourceName, envInfo);
   }
 
   // If an AppSync API has not been initialized with RDS, no need to prompt
