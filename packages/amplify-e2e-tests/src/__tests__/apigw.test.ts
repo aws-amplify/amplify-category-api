@@ -129,7 +129,6 @@ describe('API Gateway e2e tests', () => {
     // test happy path
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-api-rest.ts');
     replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideTsFilePath, 'integtest', projName);
-    fs.copyFileSync(srcOverrideFilePath, destOverrideTsFilePath);
 
     await buildOverrides(projRoot, {});
 
