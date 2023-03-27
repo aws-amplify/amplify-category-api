@@ -23,6 +23,6 @@ export function override(resources: any, amplifyProjectInfo: any) {
   }
 
   if (amplifyProjectInfo.projectName != '##EXPECTED_PROJECT_NAME') {
-    throw new Error(`Unexpected envName: ${amplifyProjectInfo.envName}`);
+    throw new Error(`Unexpected projectName: ${amplifyProjectInfo.projectName}`);
   }
 }
