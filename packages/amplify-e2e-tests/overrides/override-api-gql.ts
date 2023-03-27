@@ -6,10 +6,10 @@ export function override(resource: any, amplifyProjectInfo: any): any {
   }
 
   if (amplifyProjectInfo.envName != '##EXPECTED_ENV_NAME') {
-    throw new Error(`Unexpected envName: ${amplifyProjectInfo.envName}`);
+    throw new Error(`Received unexpected envName: ${amplifyProjectInfo.envName}. Expected ##EXPECTED_ENV_NAME. ${JSON.stringify(amplifyProjectInfo)}`);
   }
 
   if (amplifyProjectInfo.projectName != '##EXPECTED_PROJECT_NAME') {
-    throw new Error(`Unexpected projectName: ${amplifyProjectInfo.projectName}`);
+    throw new Error(`Received unexpected projectName: ${amplifyProjectInfo.projectName}. Expected ##EXPECTED_PROJECT_NAME. ${JSON.stringify(amplifyProjectInfo)}`);
   }
 }
