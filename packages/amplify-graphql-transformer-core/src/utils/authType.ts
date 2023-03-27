@@ -1,4 +1,4 @@
-import { AuthorizationConfig, AuthorizationType } from '@aws-cdk/aws-appsync-alpha';
+import { AuthorizationConfig, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { Duration, Expiration } from 'aws-cdk-lib';
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';

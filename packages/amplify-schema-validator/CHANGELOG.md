@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-validation@0.2.0...@aws-amplify/graphql-schema-validation@0.2.1) (2023-03-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-validation
+
 # [0.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-validation@0.1.1...@aws-amplify/graphql-schema-validation@0.2.0) (2023-02-27)
 
 ### Bug Fixes

@@ -11,7 +11,7 @@ import {
   HttpDataSourceOptions,
   LambdaDataSource,
   NoneDataSource,
-} from '@aws-cdk/aws-appsync-alpha';
+} from 'aws-cdk-lib/aws-appsync';
 import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole } from 'aws-cdk-lib/aws-iam';

@@ -1,5 +1,5 @@
 import { TransformerDataSourceManagerProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { BackedDataSource } from '@aws-cdk/aws-appsync-alpha';
+import { BackedDataSource } from 'aws-cdk-lib/aws-appsync';
 import { ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode } from 'graphql';
 
 export class TransformerDataSourceManager implements TransformerDataSourceManagerProvider {

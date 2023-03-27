@@ -5,13 +5,13 @@
 ```ts
 
 import { APIIAMResourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ApiKeyConfig } from '@aws-cdk/aws-appsync-alpha';
+import { ApiKeyConfig } from 'aws-cdk-lib/aws-appsync';
 import { App } from 'aws-cdk-lib';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import { AppSyncFunctionConfigurationProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationConfig } from '@aws-cdk/aws-appsync-alpha';
-import { AuthorizationType } from '@aws-cdk/aws-appsync-alpha';
+import { AuthorizationConfig } from 'aws-cdk-lib/aws-appsync';
+import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
@@ -44,7 +44,7 @@ import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces
 import { FieldDefinitionNode } from 'graphql';
 import { FieldNode } from 'graphql';
 import { Grant } from 'aws-cdk-lib/aws-iam';
-import { GraphqlApiBase } from '@aws-cdk/aws-appsync-alpha';
+import { GraphqlApiBase } from 'aws-cdk-lib/aws-appsync';
 import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLError } from 'graphql';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -58,7 +58,7 @@ import { InterfaceTypeExtensionNode } from 'graphql';
 import { IStackSynthesizer } from 'aws-cdk-lib';
 import { ISynthesisSession } from 'aws-cdk-lib';
 import { Location as Location_2 } from 'graphql';
-import { LogConfig } from '@aws-cdk/aws-appsync-alpha';
+import { LogConfig } from 'aws-cdk-lib/aws-appsync';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelFieldMap } from '@aws-amplify/graphql-transformer-interfaces';
 import { MutationFieldType } from '@aws-amplify/graphql-transformer-interfaces';

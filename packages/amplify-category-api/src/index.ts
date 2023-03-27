@@ -3,6 +3,7 @@ import {
   $TSContext,
   $TSObject,
   AmplifyCategories,
+  AmplifyError,
   AmplifySupportedService,
   buildOverrideDir,
   pathManager,
@@ -22,6 +23,7 @@ import { askAuthQuestions } from './provider-utils/awscloudformation/service-wal
 import { authConfigToAppSyncAuthType } from './provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { checkAppsyncApiResourceMigration } from './provider-utils/awscloudformation/utils/check-appsync-api-migration';
 import { getAppSyncApiResourceName } from './provider-utils/awscloudformation/utils/getAppSyncApiName';
+import { AmplifyGraphQLTransformerErrorConverter } from './errors/amplify-error-converter';
 
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
 export { addAdminQueriesApi, updateAdminQueriesApi } from './provider-utils/awscloudformation';
@@ -314,18 +316,27 @@ export const transformCategoryStack = async (context: $TSContext, resource: $TSO
     if (canResourceBeTransformed(resource.resourceName)) {
       const backendDir = pathManager.getBackendDirPath();
       const overrideDir = path.join(backendDir, resource.category, resource.resourceName);
-      const isBuild = await buildOverrideDir(backendDir, overrideDir);
-      await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [
-        context,
-        {
-          forceCompile: true,
-          overrideConfig: {
-            overrideFlag: isBuild,
-            overrideDir,
-            resourceName: resource.resourceName,
+      const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
+        throw new AmplifyError('InvalidOverrideError', {
+          message: error.message,
+          link: 'https://docs.amplify.aws/cli/graphql/override/',
+        });
+      });
+      try {
+        await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [
+          context,
+          {
+            forceCompile: true,
+            overrideConfig: {
+              overrideFlag: isBuild,
+              overrideDir,
+              resourceName: resource.resourceName,
+            },
           },
-        },
-      ]);
+        ]);
+      } catch (error) {
+        throw AmplifyGraphQLTransformerErrorConverter.convert(error);
+      }
     }
   } else if (resource.service === AmplifySupportedService.APIGW) {
     if (canResourceBeTransformed(resource.resourceName)) {
