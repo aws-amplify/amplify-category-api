@@ -29,14 +29,13 @@ import {
   UnionTypeDefinitionNode,
 } from 'graphql';
 import _ from 'lodash';
-import os from 'os';
 import * as path from 'path';
 import * as vm from 'vm2';
-import { AmplifyError } from 'amplify-cli-core';
+import { AmplifyError, stateManager } from 'amplify-cli-core';
 import { ResolverConfig, TransformConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
-import { TransformerContext, TransformerResolver } from '../transformer-context';
+import { TransformerContext } from '../transformer-context';
 import { TransformerOutput } from '../transformer-context/output';
 import { StackManager } from '../transformer-context/stack-manager';
 import { ConstructResourceMeta } from '../types/types';
@@ -369,8 +368,13 @@ export class GraphQLTransform {
         external: true,
       },
     });
+    const { envName } = stateManager.getLocalEnvInfo();
+    const { projectName } = stateManager.getProjectConfig();
+    const projectInfo = {
+      envName, projectName,
+    };
     try {
-      sandboxNode.run(overrideCode, overrideFilePath).override(appsyncResourceObj);
+      sandboxNode.run(overrideCode, overrideFilePath).override(appsyncResourceObj, projectInfo);
     } catch (err) {
       throw new AmplifyError('InvalidOverrideError', {
         message: 'Executing overrides failed.',

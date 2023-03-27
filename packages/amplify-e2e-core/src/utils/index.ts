@@ -13,6 +13,7 @@ export * from './envVars';
 export * from './getAppId';
 export * from './headless';
 export * from './nexpect';
+export * from './overrides';
 export * from './pinpoint';
 export * from './projectMeta';
 export * from './readJsonFile';
