@@ -1,7 +1,12 @@
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { stateManager } from 'amplify-cli-core';
 import { parse } from 'graphql';
 import * as path from 'path';
 import { FunctionTransformer } from '..';
+
+jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
+jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
+
 test('it ovderrides the expected resources', () => {
   const validSchema = `
     type Query {

@@ -1,4 +1,4 @@
-function override(resource) {
+function override(resource, amplifyProjectInfo) {
   resource.http.httpsDataSource['httpwwwapicom'].serviceRoleArn = 'mockArn';
   resource.http.httpsDataSource['httpwwwapicom'].httpConfig = {
     endpoint: 'mockEndpoint',
@@ -17,5 +17,13 @@ function override(resource) {
   };
   // override resolver
   resource.http.resolvers['commentContentResolver'].requestMappingTemplate = 'mockTemplate';
+
+  if (amplifyProjectInfo.envName != 'testEnvName') {
+    throw new Error(`Unexpected envName: ${amplifyProjectInfo.envName}`);
+  }
+
+  if (amplifyProjectInfo.projectName != 'testProjectName') {
+    throw new Error(`Unexpected envName: ${amplifyProjectInfo.envName}`);
+  }
 }
 exports.override = override;

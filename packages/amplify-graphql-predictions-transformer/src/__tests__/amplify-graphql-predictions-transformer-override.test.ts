@@ -1,6 +1,10 @@
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import * as path from 'path';
 import { PredictionsTransformer } from '..';
+import { stateManager } from 'amplify-cli-core';
+
+jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
+jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
 
 test('it generates resources with overrides', () => {
   const validSchema = /* GraphQL */ `
