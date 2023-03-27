@@ -10,6 +10,7 @@ import {
   getDDBTable,
   getProjectMeta,
   initJSProjectWithProfile,
+  replaceOverrideFileWithProjectInfo,
   updateApiSchema,
 } from 'amplify-category-api-e2e-core';
 import * as fs from 'fs-extra';
@@ -82,6 +83,7 @@ describe('amplify add api (GraphQL)', () => {
 
     // test happy path
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-api-gql.ts');
+    replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideFilePath, envName, projName);
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
     await amplifyPushOverride(projRoot);
     // check overidden config
