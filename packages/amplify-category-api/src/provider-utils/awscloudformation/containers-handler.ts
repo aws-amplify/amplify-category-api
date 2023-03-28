@@ -6,7 +6,9 @@ import { v4 as uuid } from 'uuid';
 import { NETWORK_STACK_LOGICAL_ID } from '../../category-constants';
 import { DEPLOYMENT_MECHANISM } from './base-api-stack';
 import { GitHubSourceActionInfo } from './pipeline-with-awaiter';
-import { API_TYPE, IMAGE_SOURCE_TYPE, ResourceDependency, ServiceConfiguration } from './service-walkthroughs/containers-walkthrough';
+import {
+  API_TYPE, IMAGE_SOURCE_TYPE, ResourceDependency, ServiceConfiguration,
+} from './service-walkthroughs/containers-walkthrough';
 import { ApiResource, generateContainersArtifacts } from './utils/containers-artifacts';
 
 export const addResource = async (
@@ -33,12 +35,14 @@ export const addResource = async (
   } = walkthroughOptions;
   const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, category, resourceName);
 
-  let [authName, updatedDependsOn] = await getResourceDependencies({ dependsOn, restrictAccess, category, resourceName, context });
+  const [authName, updatedDependsOn] = await getResourceDependencies({
+    dependsOn, restrictAccess, category, resourceName, context,
+  });
 
   let gitHubInfo: GitHubSourceActionInfo;
 
   if (deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
-    const { StackName } = context.amplify.getProjectDetails().amplifyMeta.providers['awscloudformation'];
+    const { StackName } = context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation;
 
     const secretName = `${StackName}-${category}-${resourceName}-github-token`;
     const { ARN: secretArn } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'newSecret', {
@@ -115,7 +119,7 @@ export const addResource = async (
   }
 
   printer.info(
-    `- Amplify CLI infers many configuration settings from the "docker-compose.yaml" file. Learn more: docs.amplify.aws/cli/usage/containers`,
+    '- Amplify CLI infers many configuration settings from the "docker-compose.yaml" file. Learn more: docs.amplify.aws/cli/usage/containers',
   );
   printer.info(`- To access AWS resources outside of this Amplify app, edit the ${customPoliciesPath}`);
   printer.info('- Run "amplify push" to build and deploy your image');
@@ -174,7 +178,7 @@ const getResourceDependencies = async ({
     }
 
     // get auth dependency if exists to avoid duplication
-    const authDependency = updatedDependsOn.find(dependency => dependency.category === 'auth');
+    const authDependency = updatedDependsOn.find((dependency) => dependency.category === 'auth');
 
     if (authDependency === undefined) {
       updatedDependsOn.push({
@@ -209,15 +213,17 @@ export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceC
     deploymentMechanism,
   } = options;
 
-  let [authResourceName, updatedDependsOn] = await getResourceDependencies({ dependsOn, restrictAccess, category, resourceName, context });
+  const [authResourceName, updatedDependsOn] = await getResourceDependencies({
+    dependsOn, restrictAccess, category, resourceName, context,
+  });
 
-  let newGithubInfo: GitHubSourceActionInfo = {
+  const newGithubInfo: GitHubSourceActionInfo = {
     path: gitHubPath,
     tokenSecretArn: gitHubInfo && gitHubInfo.tokenSecretArn,
   };
   if (gitHubToken) {
-    //#region Add token to secrets manager and get arn
-    const { StackName } = context.amplify.getProjectDetails().amplifyMeta.providers['awscloudformation'];
+    // #region Add token to secrets manager and get arn
+    const { StackName } = context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation;
 
     const secretName = `${StackName}-${category}-${resourceName}-github-token`;
     const { ARN: secretArn } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'updateSecret', {
@@ -228,7 +234,7 @@ export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceC
     });
 
     newGithubInfo.tokenSecretArn = secretArn;
-    //#endregion
+    // #endregion
   }
 
   if (deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {

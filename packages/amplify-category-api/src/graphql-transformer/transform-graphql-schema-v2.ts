@@ -66,8 +66,8 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
   // cloud formation push will fail even if there is no changes in the GraphQL API
   // https://github.com/aws-amplify/amplify-console/issues/10
   const resourceNeedCompile = allResources
-    .filter(r => !resources.includes(r))
-    .filter(r => {
+    .filter((r) => !resources.includes(r))
+    .filter((r) => {
       const buildDir = path.normalize(path.join(backEndDir, AmplifyCategories.API, r.resourceName, 'build'));
       return !fs.existsSync(buildDir);
     });
@@ -76,7 +76,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
   if (forceCompile) {
     resources = resources.concat(allResources);
   }
-  resources = resources.filter(resource => resource.service === 'AppSync');
+  resources = resources.filter((resource) => resource.service === 'AppSync');
 
   if (!resourceDir) {
     // There can only be one appsync resource

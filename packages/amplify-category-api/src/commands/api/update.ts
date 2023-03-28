@@ -12,7 +12,7 @@ export const run = async (context: $TSContext) => {
 
   return context.amplify
     .serviceSelectionPrompt(context, AmplifyCategories.API, servicesMetadata)
-    .then(async result => {
+    .then(async (result) => {
       const providerController = await import(path.join('..', '..', 'provider-utils', result.providerName, 'index'));
       if (!providerController) {
         printer.error('Provider not configured for this category');

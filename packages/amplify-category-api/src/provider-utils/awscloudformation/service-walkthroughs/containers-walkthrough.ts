@@ -1,4 +1,6 @@
-import { $TSAny, $TSContext, $TSObject, exitOnNextTick, ResourceDoesNotExistError } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, $TSObject, exitOnNextTick, ResourceDoesNotExistError,
+} from 'amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import inquirer from 'inquirer';
 import { category } from '../../../category-constants';
@@ -193,13 +195,11 @@ async function newContainer(context: $TSContext, resourceName: string, apiType: 
   }
 
   const meta = context.amplify.getProjectDetails().amplifyMeta;
-  const hasAccessableResources = ['storage', 'function'].some(categoryName => {
-    return Object.keys(meta[categoryName] ?? {}).length > 0;
-  });
+  const hasAccessableResources = ['storage', 'function'].some((categoryName) => Object.keys(meta[categoryName] ?? {}).length > 0);
   let rolePermissions: any = {};
   if (
-    hasAccessableResources &&
-    (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your api?'))
+    hasAccessableResources
+    && (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your api?'))
   ) {
     rolePermissions = await context.amplify.invokePluginMethod(context, 'function', undefined, 'askExecRolePermissionsQuestions', [
       context,
@@ -211,7 +211,9 @@ async function newContainer(context: $TSContext, resourceName: string, apiType: 
     ]);
   }
 
-  const { categoryPolicies, environmentMap, dependsOn, mutableParametersState } = rolePermissions;
+  const {
+    categoryPolicies, environmentMap, dependsOn, mutableParametersState,
+  } = rolePermissions;
 
   const restrictApiQuestion = await inquirer.prompt({
     name: 'rescrict_access',
@@ -238,10 +240,9 @@ export async function updateWalkthrough(context: $TSContext, apiType: API_TYPE) 
 
   const resources = allResources
     .filter(
-      resource =>
-        resource.category === category && resource.service === serviceName && !!resource.providerPlugin && resource.apiType === apiType,
+      (resource) => resource.category === category && resource.service === serviceName && !!resource.providerPlugin && resource.apiType === apiType,
     )
-    .map(resource => resource.resourceName);
+    .map((resource) => resource.resourceName);
 
   // There can only be one appsync resource
   if (resources.length === 0) {
@@ -264,11 +265,10 @@ export async function updateWalkthrough(context: $TSContext, apiType: API_TYPE) 
   const { resourceName } = await inquirer.prompt(question);
 
   const resourceSettings = allResources.find(
-    resource =>
-      resource.resourceName === resourceName &&
-      resource.category === category &&
-      resource.service === serviceName &&
-      !!resource.providerPlugin,
+    (resource) => resource.resourceName === resourceName
+      && resource.category === category
+      && resource.service === serviceName
+      && !!resource.providerPlugin,
   );
 
   let { gitHubInfo: { path = undefined } = {} } = resourceSettings;
@@ -298,13 +298,11 @@ export async function updateWalkthrough(context: $TSContext, apiType: API_TYPE) 
   const { environmentMap = {}, mutableParametersState = {} } = resourceSettings;
 
   const meta = context.amplify.getProjectDetails().amplifyMeta;
-  const hasAccessableResources = ['storage', 'function'].some(categoryName => {
-    return Object.keys(meta[categoryName] ?? {}).length > 0;
-  });
+  const hasAccessableResources = ['storage', 'function'].some((categoryName) => Object.keys(meta[categoryName] ?? {}).length > 0);
   let rolePermissions: $TSAny = {};
   if (
-    hasAccessableResources &&
-    (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your api?'))
+    hasAccessableResources
+    && (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your api?'))
   ) {
     rolePermissions = await context.amplify.invokePluginMethod(context, 'function', undefined, 'askExecRolePermissionsQuestions', [
       context,

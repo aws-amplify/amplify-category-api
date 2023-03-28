@@ -1,11 +1,12 @@
-const getParamMock = jest.fn(); // Mock must be declared before imports: https://jestjs.io/docs/manual-mocks#using-with-es-module-imports
+// Mock must be declared before imports: https://jestjs.io/docs/manual-mocks#using-with-es-module-imports
 
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { attemptV2TransformerMigration, revertV2Migration } from '../../schema-migrator';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
-import { FeatureFlags, pathManager } from 'amplify-cli-core';
+import { FeatureFlags, pathManager } from 'amplify-cli-core'; import { attemptV2TransformerMigration, revertV2Migration } from '../../schema-migrator';
+
+const getParamMock = jest.fn();
 
 jest.mock('amplify-prompts');
 const prompter_mock = prompter as jest.Mocked<typeof prompter>;

@@ -13,8 +13,8 @@ import {
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import * as path from 'path';
-import { supportedDataSources } from '../../provider-utils/supported-datasources';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
+import { supportedDataSources } from '../../provider-utils/supported-datasources';
 
 const subcommand = 'add-graphql-datasource';
 const category = 'api';
@@ -48,7 +48,7 @@ export const run = async (context: $TSContext): Promise<void> => {
      * the team-provider-info file
      */
     const currentEnv = context.amplify.getEnvInfo().envName;
-    
+
     getEnvParamManager(currentEnv).getResourceParamManager(category, resourceName).setParams({
       rdsRegion: answers.region,
       rdsClusterIdentifier: answers.dbClusterArn,
@@ -168,7 +168,7 @@ export const run = async (context: $TSContext): Promise<void> => {
 // eslint-disable-next-line @typescript-eslint/no-shadow
 const datasourceSelectionPrompt = async (context: $TSContext, supportedDataSources): Promise<unknown> => {
   const options = [];
-  Object.keys(supportedDataSources).forEach(datasource => {
+  Object.keys(supportedDataSources).forEach((datasource) => {
     const optionName = supportedDataSources[datasource].alias
       || `${supportedDataSources[datasource].providerName}:${supportedDataSources[datasource].service}`;
     options.push({
@@ -195,7 +195,7 @@ const datasourceSelectionPrompt = async (context: $TSContext, supportedDataSourc
     // No need to ask questions
     printer.info(`Using datasource: ${options[0].value.datasource}, provided by: ${options[0].value.providerName}`);
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       resolve(options[0].value);
     });
   }
@@ -209,7 +209,7 @@ const datasourceSelectionPrompt = async (context: $TSContext, supportedDataSourc
     },
   ];
 
-  return inquirer.prompt(question).then(answer => answer.datasource);
+  return inquirer.prompt(question).then((answer) => answer.datasource);
 };
 
 const getAwsClient = async (context: $TSContext, action: string): Promise<$TSAny> => {

@@ -1,5 +1,5 @@
-import { pathManager, JSONUtilities } from "amplify-cli-core";
-import { ResourceConstants } from "graphql-transformer-common";
+import { pathManager, JSONUtilities } from 'amplify-cli-core';
+import { ResourceConstants } from 'graphql-transformer-common';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { TransformConfig } from '@aws-amplify/graphql-transformer-core/lib';
@@ -18,7 +18,7 @@ import { printer } from '@aws-amplify/amplify-prompts';
 export const shouldEnableNodeToNodeEncryption = (apiName: string): boolean => {
   try {
     const nodeToNodeEncryptionParameter = getNodeToNodeEncryptionConfigValue(apiName);
-    const doesExistingBackendHaveNodeToNodeEncryption = getCurrentCloudBackendStackFiles(apiName).some(definition => hasNodeToNodeEncryptionOptions(definition));
+    const doesExistingBackendHaveNodeToNodeEncryption = getCurrentCloudBackendStackFiles(apiName).some((definition) => hasNodeToNodeEncryptionOptions(definition));
 
     warnOnExistingNodeToNodeEncryption(doesExistingBackendHaveNodeToNodeEncryption);
 
@@ -46,7 +46,7 @@ NodeToNodeEncryption is enabled for this Search Domain, disabling this flag or r
 const getCurrentCloudBackendStackFiles = (apiName: string): any[] => {
   const backendPath = path.join(pathManager.getCurrentCloudBackendDirPath(), 'api', apiName, 'build', 'stacks');
   try {
-    return fs.readdirSync(backendPath).map(stackFile => JSONUtilities.readJson<any>(path.join(backendPath, stackFile)));
+    return fs.readdirSync(backendPath).map((stackFile) => JSONUtilities.readJson<any>(path.join(backendPath, stackFile)));
   } catch (e) {
     return [];
   }
@@ -59,8 +59,8 @@ const getCurrentCloudBackendStackFiles = (apiName: string): any[] => {
  */
 export const hasNodeToNodeEncryptionOptions = (stackDefinition: any): boolean => {
   try {
-    const domain = stackDefinition['Resources'][ResourceConstants.RESOURCES.OpenSearchDomainLogicalID];
-    const nodeToNodeEncryptionOption = domain['Properties']['NodeToNodeEncryptionOptions']['Enabled'];
+    const domain = stackDefinition.Resources[ResourceConstants.RESOURCES.OpenSearchDomainLogicalID];
+    const nodeToNodeEncryptionOption = domain.Properties.NodeToNodeEncryptionOptions.Enabled;
     return nodeToNodeEncryptionOption === true;
   } catch (e) {}
   return false;

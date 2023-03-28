@@ -67,7 +67,8 @@ export const getTransformerFactory = async (
   context: $TSContext,
   resourceDir: string,
   authConfig?: $TSAny,
-): Promise<(options: $TSAny) => Promise<(TransformerPluginProviderV2 | ITransformer)[]>> => {
+): Promise<(options: $TSAny) => Promise<(TransformerPluginProviderV2 | ITransformer
+)[]>> => {
   const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
   return transformerVersion === 2
     ? getTransformerFactoryV2(resourceDir)
@@ -76,7 +77,8 @@ export const getTransformerFactory = async (
 
 const getTransformerFactoryV2 = (
   resourceDir: string,
-): (options: TransformerFactoryArgs) => Promise<TransformerPluginProviderV2[]> => async (options?: TransformerFactoryArgs) => {
+): (options: TransformerFactoryArgs
+) => Promise<TransformerPluginProviderV2[]> => async (options?: TransformerFactoryArgs) => {
   const modelTransformer = new ModelTransformerV2();
   const indexTransformer = new IndexTransformerV2();
   const hasOneTransformer = new HasOneTransformerV2();
@@ -111,7 +113,7 @@ const getTransformerFactoryV2 = (
   const customTransformerList = customTransformersConfig?.config?.transformers;
   const customTransformers = (Array.isArray(customTransformerList) ? customTransformerList : [])
     .map(importTransformerModule)
-    .map(imported => {
+    .map((imported) => {
       const CustomTransformer = imported.default;
 
       if (typeof CustomTransformer === 'function') {
@@ -124,7 +126,7 @@ const getTransformerFactoryV2 = (
 
       throw new Error("Custom Transformers' default export must be a function or an object");
     })
-    .filter(customTransformer => customTransformer);
+    .filter((customTransformer) => customTransformer);
 
   if (customTransformers.length > 0) {
     transformerList.push(...customTransformers);
@@ -155,18 +157,18 @@ function getTransformerFactoryV1(context: $TSContext, resourceDir: string, authC
       customTransformersConfig && customTransformersConfig.transformers ? customTransformersConfig.transformers : []
     )
       .map(importTransformerModule)
-      .map(imported => {
+      .map((imported) => {
         const CustomTransformer = imported.default;
 
         if (typeof CustomTransformer === 'function') {
           return new CustomTransformer();
-        } else if (typeof CustomTransformer === 'object') {
+        } if (typeof CustomTransformer === 'object') {
           return CustomTransformer;
         }
 
         throw new Error("Custom Transformers' default export must be a function or an object");
       })
-      .filter(customTransformer => customTransformer);
+      .filter((customTransformer) => customTransformer);
 
     if (customTransformers.length > 0) {
       transformerList.push(...customTransformers);
@@ -175,7 +177,7 @@ function getTransformerFactoryV1(context: $TSContext, resourceDir: string, authC
     // TODO: Build dependency mechanism into transformers. Auth runs last
     // so any resolvers that need to be protected will already be created.
 
-    let amplifyAdminEnabled: boolean = false;
+    let amplifyAdminEnabled = false;
 
     try {
       const amplifyMeta = stateManager.getMeta();

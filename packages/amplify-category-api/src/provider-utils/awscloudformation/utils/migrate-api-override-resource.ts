@@ -39,12 +39,11 @@ export const migrateResourceToSupportOverride = async (resourceName: string) => 
 
   try {
     let resolverConfig = {};
-    const transformConfig =
-      JSONUtilities.readJson<any>(path.join(apiresourceDirPath, 'transform.conf.json'), { throwIfNotExist: false }) ?? {};
+    const transformConfig = JSONUtilities.readJson<any>(path.join(apiresourceDirPath, 'transform.conf.json'), { throwIfNotExist: false }) ?? {};
     if (!_.isEmpty(transformConfig) && !_.isEmpty(transformConfig!.ResolverConfig)) {
       resolverConfig = transformConfig!.ResolverConfig;
     }
-    const authConfig = stateManager.getMeta()[AmplifyCategories.API][resourceName].output.authConfig;
+    const { authConfig } = stateManager.getMeta()[AmplifyCategories.API][resourceName].output;
     if (_.isEmpty(authConfig)) {
       throw new ResourceDoesNotExistError(
         `auth configuration not present for ${resourceName}. Try amplify pull to sync your folder structure`,
@@ -100,18 +99,16 @@ function cleanUp(authresourcePath: string | undefined) {
   if (!!authresourcePath && fs.existsSync(authresourcePath)) fs.removeSync(authresourcePath);
 }
 
-const generateCliInputs = (parameters: ApiMetaData): AppSyncCLIInputs => {
-  return {
-    version: 1,
-    serviceConfiguration: {
-      serviceName: 'AppSync',
-      defaultAuthType: authConfigToAppSyncAuthType(parameters.authConfig ? parameters.authConfig.defaultAuthentication : undefined),
-      additionalAuthTypes:
+const generateCliInputs = (parameters: ApiMetaData): AppSyncCLIInputs => ({
+  version: 1,
+  serviceConfiguration: {
+    serviceName: 'AppSync',
+    defaultAuthType: authConfigToAppSyncAuthType(parameters.authConfig ? parameters.authConfig.defaultAuthentication : undefined),
+    additionalAuthTypes:
         !_.isEmpty(parameters.authConfig) && !_.isEmpty(parameters.authConfig.additionalAuthenticationProviders)
           ? parameters.authConfig.additionalAuthenticationProviders.map(authConfigToAppSyncAuthType)
           : undefined,
-      conflictResolution: resolverConfigToConflictResolution(parameters.resolverConfig),
-      apiName: parameters.resourceName,
-    },
-  };
-};
+    conflictResolution: resolverConfigToConflictResolution(parameters.resolverConfig),
+    apiName: parameters.resourceName,
+  },
+});

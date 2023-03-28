@@ -20,7 +20,9 @@ import { ADMIN_QUERIES_NAME } from '../../../category-constants';
 import { ApigwInputState } from '../apigw-input-state';
 import { CrudOperation, PermissionSetting } from '../cdk-stack-builder';
 import { getAllDefaults } from '../default-values/apigw-defaults';
-import { ApigwAnswers, ApigwPath, ApigwWalkthroughReturnPromise, ApiRequirements } from '../service-walkthrough-types/apigw-types';
+import {
+  ApigwAnswers, ApigwPath, ApigwWalkthroughReturnPromise, ApiRequirements,
+} from '../service-walkthrough-types/apigw-types';
 import { checkForPathOverlap, formatCFNPathParamsForExpressJs, validatePathName } from '../utils/rest-api-path-utils';
 
 const category = AmplifyCategories.API;
@@ -40,8 +42,8 @@ export async function updateWalkthrough(context: $TSContext) {
   const { allResources } = await context.amplify.getResourceStatus();
   const allDefaultValues = getAllDefaults(context.amplify.getProjectDetails());
   const resources = allResources
-    .filter(resource => resource.service === serviceName && resource.mobileHubMigrated !== true)
-    .map(resource => resource.resourceName);
+    .filter((resource) => resource.service === serviceName && resource.mobileHubMigrated !== true)
+    .map((resource) => resource.resourceName);
 
   if (resources.length === 0) {
     const errMessage = 'No REST API resource to update. Use "amplify add api" command to create a new REST API';
@@ -69,7 +71,7 @@ export async function updateWalkthrough(context: $TSContext) {
   }
 
   if (selectedApiName === ADMIN_QUERIES_NAME) {
-    const errMessage = `The Admin Queries API is maintained through the Auth category and should be updated using 'amplify update auth' command`;
+    const errMessage = 'The Admin Queries API is maintained through the Auth category and should be updated using \'amplify update auth\' command';
     printer.warn(errMessage);
     await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
@@ -200,9 +202,9 @@ async function askPermissions(
         if (permissionSelected === 'Learn more') {
           printer.blankLine();
           printer.info(
-            'You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Group that users belong to' +
-              ' in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for ' +
-              '“Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.',
+            'You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Group that users belong to'
+              + ' in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for '
+              + '“Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.',
           );
           printer.blankLine();
         }
@@ -235,10 +237,10 @@ async function askPermissions(
 
       permissions.setting = permissionSetting;
 
-      let {
+      const {
         permissions: { auth: authPermissions },
       } = currentPath || { permissions: { auth: [] } };
-      let {
+      const {
         permissions: { guest: unauthPermissions },
       } = currentPath || { permissions: { guest: [] } };
 
@@ -282,7 +284,7 @@ async function askPermissions(
         pickAtLeast: 1,
       });
 
-      //if single user pool group is selected, convert to array
+      // if single user pool group is selected, convert to array
       if (selectedUserPoolGroupList && !Array.isArray(selectedUserPoolGroupList)) {
         selectedUserPoolGroupList = [selectedUserPoolGroupList];
       }
@@ -354,7 +356,7 @@ async function askCRUD(userType: string, permissions: CrudOperation[] = []) {
 async function askPaths(context: $TSContext, answers: $TSObject, currentPath?: ApigwPath): Promise<ApigwAnswers> {
   const existingFunctions = functionsExist();
 
-  let defaultFunctionType = 'newFunction';
+  const defaultFunctionType = 'newFunction';
   const defaultChoice = {
     name: 'Create a new Lambda function',
     value: defaultFunctionType,
@@ -368,7 +370,7 @@ async function askPaths(context: $TSContext, answers: $TSObject, currentPath?: A
     });
   }
 
-  const paths = answers.paths;
+  const { paths } = answers;
 
   let addAnotherPath: boolean;
   do {
@@ -387,12 +389,12 @@ async function askPaths(context: $TSContext, answers: $TSObject, currentPath?: A
       } else {
         // The path provided by the user overlaps with another endpoint that they've stood up with API Gateway.
         // Ask them if they're okay with this. If they are, then we'll consider their provided path to be valid.
-        const higherOrderPath = overlapCheckResult.higherOrderPath;
-        const lowerOrderPath = overlapCheckResult.lowerOrderPath;
+        const { higherOrderPath } = overlapCheckResult;
+        const { lowerOrderPath } = overlapCheckResult;
 
         isPathValid = await prompter.confirmContinue(
-          `The path ${lowerOrderPath} overlaps with ${higherOrderPath}. Users authorized to access ${higherOrderPath} will also have access` +
-            ` to ${lowerOrderPath}. Are you sure you want to continue?`,
+          `The path ${lowerOrderPath} overlaps with ${higherOrderPath}. Users authorized to access ${higherOrderPath} will also have access`
+            + ` to ${lowerOrderPath}. Are you sure you want to continue?`,
         );
       }
     } while (!isPathValid);
@@ -417,7 +419,9 @@ async function askPaths(context: $TSContext, answers: $TSObject, currentPath?: A
 
   const { dependsOn, functionArns } = await findDependsOn(paths);
 
-  return { paths, dependsOn, resourceName: answers.resourceName, functionArns };
+  return {
+    paths, dependsOn, resourceName: answers.resourceName, functionArns,
+  };
 }
 
 async function findDependsOn(paths: $TSObject[]) {
@@ -427,7 +431,7 @@ async function findDependsOn(paths: $TSObject[]) {
 
   for (const path of Object.values(paths)) {
     if (path.lambdaFunction && !path.lambdaArn) {
-      if (!dependsOn.find(func => func.resourceName === path.lambdaFunction)) {
+      if (!dependsOn.find((func) => func.resourceName === path.lambdaFunction)) {
         dependsOn.push({
           category: 'function',
           resourceName: path.lambdaFunction,
@@ -436,7 +440,7 @@ async function findDependsOn(paths: $TSObject[]) {
       }
     }
 
-    if (!functionArns.find(func => func.lambdaFunction === path.lambdaFunction)) {
+    if (!functionArns.find((func) => func.lambdaFunction === path.lambdaFunction)) {
       functionArns.push({
         lambdaFunction: path.lambdaFunction,
         lambdaArn: path.lambdaArn,
@@ -450,7 +454,7 @@ async function findDependsOn(paths: $TSObject[]) {
 
         const authResourceName = getAuthResourceName();
 
-        if (!dependsOn.find(resource => resource.resourceName === authResourceName)) {
+        if (!dependsOn.find((resource) => resource.resourceName === authResourceName)) {
           dependsOn.push({
             category: 'auth',
             resourceName: authResourceName,
@@ -458,8 +462,8 @@ async function findDependsOn(paths: $TSObject[]) {
           });
         }
 
-        userPoolGroups.forEach(group => {
-          if (!dependsOn.find(resource => resource.attributes[0] === `${group}GroupRole`)) {
+        userPoolGroups.forEach((group) => {
+          if (!dependsOn.find((resource) => resource.attributes[0] === `${group}GroupRole`)) {
             dependsOn.push({
               category: 'auth',
               resourceName: 'userPoolGroups',
@@ -494,7 +498,7 @@ function functionsExist() {
 
   const functionResources = meta.function;
   const lambdaFunctions = [];
-  Object.keys(functionResources).forEach(resourceName => {
+  Object.keys(functionResources).forEach((resourceName) => {
     if (functionResources[resourceName].service === AmplifySupportedService.LAMBDA) {
       lambdaFunctions.push(resourceName);
     }
@@ -521,7 +525,7 @@ async function askLambdaSource(context: $TSContext, functionType: string, path: 
 }
 
 async function newLambdaFunction(context: $TSContext, path: string) {
-  let params = {
+  const params = {
     functionTemplate: {
       parameters: {
         path,
@@ -545,7 +549,7 @@ async function newLambdaFunction(context: $TSContext, path: string) {
 async function askLambdaFromProject(currentPath?: ApigwPath) {
   const meta = stateManager.getMeta();
   const lambdaFunctions = [];
-  Object.keys(meta?.function || {}).forEach(resourceName => {
+  Object.keys(meta?.function || {}).forEach((resourceName) => {
     if (meta.function[resourceName].service === AmplifySupportedService.LAMBDA) {
       lambdaFunctions.push(resourceName);
     }
@@ -561,7 +565,7 @@ async function askLambdaFromProject(currentPath?: ApigwPath) {
 async function askLambdaArn(context: $TSContext, currentPath?: ApigwPath) {
   const lambdaFunctions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getLambdaFunctions');
 
-  const lambdaOptions = lambdaFunctions.map(lambdaFunction => ({
+  const lambdaOptions = lambdaFunctions.map((lambdaFunction) => ({
     value: lambdaFunction.FunctionArn,
     name: `${lambdaFunction.FunctionName} (${lambdaFunction.FunctionArn})`,
   }));
@@ -588,7 +592,7 @@ async function askLambdaArn(context: $TSContext, currentPath?: ApigwPath) {
     }
   }
 
-  const lambdaCloudOptionAnswer = lambdaFunctions.find(lambda => lambda.FunctionArn === lambdaOption.lambdaChoice);
+  const lambdaCloudOptionAnswer = lambdaFunctions.find((lambda) => lambda.FunctionArn === lambdaOption.lambdaChoice);
 
   return {
     lambdaArn: lambdaCloudOptionAnswer.FunctionArn,
@@ -607,7 +611,7 @@ export async function migrate(context: $TSContext, projectPath: string, resource
       throw new Error('Failed to migrate Admin Queries API. Could not find expected information in amplify-meta.json.');
     }
 
-    const functionName = adminQueriesDependsOn.filter(dependency => dependency.category === AmplifyCategories.FUNCTION)?.[0]?.resourceName;
+    const functionName = adminQueriesDependsOn.filter((dependency) => dependency.category === AmplifyCategories.FUNCTION)?.[0]?.resourceName;
 
     const adminQueriesProps = {
       apiName: resourceName,
@@ -626,7 +630,7 @@ export function getIAMPolicies(resourceName: string, crudOptions: string[]) {
   let policy = {};
   const actions = [];
 
-  crudOptions.forEach(crudOption => {
+  crudOptions.forEach((crudOption) => {
     switch (crudOption) {
       case CrudOperation.CREATE:
         actions.push('apigateway:POST', 'apigateway:PUT');
@@ -678,11 +682,11 @@ export const openConsole = async (context?: $TSContext) => {
   const categoryAmplifyMeta = amplifyMeta[category];
   const { Region } = amplifyMeta.providers.awscloudformation;
 
-  const restApis = Object.keys(categoryAmplifyMeta).filter(resourceName => {
+  const restApis = Object.keys(categoryAmplifyMeta).filter((resourceName) => {
     const resource = categoryAmplifyMeta[resourceName];
     return (
-      resource.output &&
-      (resource.service === serviceName || (resource.service === elasticContainerServiceName && resource.apiType === 'REST'))
+      resource.output
+      && (resource.service === serviceName || (resource.service === elasticContainerServiceName && resource.apiType === 'REST'))
     );
   });
 

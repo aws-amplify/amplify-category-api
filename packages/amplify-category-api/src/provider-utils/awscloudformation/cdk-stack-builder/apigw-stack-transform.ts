@@ -17,9 +17,12 @@ import { formatter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as vm from 'vm2';
-import { AmplifyApigwResourceStack, ApigwInputs, CrudOperation, Path } from '.';
+import {
+  AmplifyApigwResourceStack, ApigwInputs, CrudOperation, Path,
+} from '.';
 import { ApigwInputState } from '../apigw-input-state';
 import { ADMIN_QUERIES_NAME } from '../../../category-constants';
+
 export class ApigwStackTransform {
   cliInputs: ApigwInputs;
   resourceTemplateObj: AmplifyApigwResourceStack | undefined;
@@ -45,7 +48,7 @@ export class ApigwStackTransform {
     const pathsWithUserPoolGroups = Object.entries(this.cliInputs.paths).filter(([_, path]) => !!path?.permissions?.groups);
 
     if (this.resourceName === ADMIN_QUERIES_NAME || pathsWithUserPoolGroups.length > 0) {
-      [authResourceName] = getAmplifyResourceByCategories(AmplifyCategories.AUTH).filter(resourceName => resourceName !== 'userPoolGroups');
+      [authResourceName] = getAmplifyResourceByCategories(AmplifyCategories.AUTH).filter((resourceName) => resourceName !== 'userPoolGroups');
     }
 
     // Generate cloudformation stack from cli-inputs.json
@@ -90,7 +93,7 @@ export class ApigwStackTransform {
           );
         }
       }
-      Array.from(uniqueUserPoolGroupsList).forEach(userPoolGroupName => {
+      Array.from(uniqueUserPoolGroupsList).forEach((userPoolGroupName) => {
         this.resourceTemplateObj.addCfnParameter(
           {
             type: 'String',
@@ -256,5 +259,5 @@ function convertCrudOperationsToCfnPermissions(crudOps: CrudOperation[]) {
     [CrudOperation.UPDATE]: ['/PUT', '/PATCH'],
     [CrudOperation.DELETE]: ['/DELETE'],
   };
-  return crudOps.flatMap(op => opMap[op]);
+  return crudOps.flatMap((op) => opMap[op]);
 }

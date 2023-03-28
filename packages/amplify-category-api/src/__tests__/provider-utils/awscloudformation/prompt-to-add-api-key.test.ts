@@ -9,9 +9,7 @@ jest.mock('../../../provider-utils/awscloudformation/service-walkthroughs/appSyn
 }));
 
 jest.mock('../../../provider-utils/awscloudformation/cfn-api-artifact-handler', () => ({
-  getCfnApiArtifactHandler: jest.fn(() => {
-    return { updateArtifacts: jest.fn() };
-  }),
+  getCfnApiArtifactHandler: jest.fn(() => ({ updateArtifacts: jest.fn() })),
 }));
 
 jest.mock('amplify-prompts', () => ({

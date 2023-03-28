@@ -162,7 +162,7 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   // execute the walkthrough
   await providerController
     .addDatasource(context, category, datasource)
-    .then(answers => {
+    .then((answers) => {
       /**
        * Update environment parameter manager with answers
        */
@@ -190,7 +190,7 @@ export const getPermissionPolicies = async (
   const resourceAttributes = [];
 
   await Promise.all(
-    Object.keys(resourceOpsMapping).map(async resourceName => {
+    Object.keys(resourceOpsMapping).map(async (resourceName) => {
       try {
         const providerName = amplifyMeta[category][resourceName].providerPlugin;
         if (providerName) {
@@ -316,7 +316,7 @@ export const transformCategoryStack = async (context: $TSContext, resource: $TSO
     if (canResourceBeTransformed(resource.resourceName)) {
       const backendDir = pathManager.getBackendDirPath();
       const overrideDir = path.join(backendDir, resource.category, resource.resourceName);
-      const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
+      const isBuild = await buildOverrideDir(backendDir, overrideDir).catch((error) => {
         throw new AmplifyError('InvalidOverrideError', {
           message: error.message,
           link: 'https://docs.amplify.aws/cli/graphql/override/',

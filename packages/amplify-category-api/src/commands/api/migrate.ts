@@ -1,4 +1,6 @@
-import { $TSAny, $TSContext, AmplifyCategories, pathManager, stateManager } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, AmplifyCategories, pathManager, stateManager,
+} from 'amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { attemptV2TransformerMigration, revertV2Migration } from '@aws-amplify/graphql-transformer-migrator';
 import * as path from 'path';

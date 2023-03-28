@@ -1,8 +1,10 @@
-const getParamMock = jest.fn();
-
-import { $TSContext, stateManager, getGraphQLTransformerOpenSearchProductionDocLink, ApiCategoryFacade } from 'amplify-cli-core';
+import {
+  $TSContext, stateManager, getGraphQLTransformerOpenSearchProductionDocLink, ApiCategoryFacade,
+} from 'amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { searchablePushChecks } from '../../graphql-transformer/api-utils';
+
+const getParamMock = jest.fn();
 
 jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
@@ -27,7 +29,7 @@ const getGraphQLTransformerOpenSearchProductionDocLinkMock = getGraphQLTransform
 printerMock.warn.mockImplementation(jest.fn());
 getGraphQLTransformerOpenSearchProductionDocLinkMock.mockReturnValue('mockDocsLink');
 // use transformer v2 for tests
-getTransformerVersionMock.mockReturnValue(new Promise(resolve => resolve(2)));
+getTransformerVersionMock.mockReturnValue(new Promise((resolve) => resolve(2)));
 
 describe('graphql schema checks', () => {
   const contextMock = {

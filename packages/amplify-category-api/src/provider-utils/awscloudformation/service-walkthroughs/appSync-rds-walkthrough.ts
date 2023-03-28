@@ -1,4 +1,6 @@
-import { $TSContext, $TSObject, exitOnNextTick, ResourceCredentialsNotFoundError, ResourceDoesNotExistError, pathManager, JSONUtilities, $TSAny } from 'amplify-cli-core';
+import {
+  $TSContext, $TSObject, exitOnNextTick, ResourceCredentialsNotFoundError, ResourceDoesNotExistError, pathManager, JSONUtilities, $TSAny,
+} from 'amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import { DataApiParams } from 'graphql-relational-schema-transformer';
@@ -15,8 +17,7 @@ export async function serviceWalkthrough(context: $TSContext, datasourceMetadata
 
   // Verify that an API exists in the project before proceeding.
   if (amplifyMeta == null || amplifyMeta[category] == null || Object.keys(amplifyMeta[category]).length === 0) {
-    const errMessage =
-      'You must create an AppSync API in your project before adding a graphql datasource. Please use "amplify api add" to create the API.';
+    const errMessage = 'You must create an AppSync API in your project before adding a graphql datasource. Please use "amplify api add" to create the API.';
     printer.error(errMessage);
     await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
@@ -35,8 +36,7 @@ export async function serviceWalkthrough(context: $TSContext, datasourceMetadata
 
   // If an AppSync API does not exist, inform the user to create the AppSync API
   if (!appSyncApi) {
-    const errMessage =
-      'You must create an AppSync API in your project before adding a graphql datasource. Please use "amplify api add" to create the API.';
+    const errMessage = 'You must create an AppSync API in your project before adding a graphql datasource. Please use "amplify api add" to create the API.';
     printer.error(errMessage);
     await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
@@ -61,7 +61,7 @@ export async function serviceWalkthrough(context: $TSContext, datasourceMetadata
   });
 
   // RDS Cluster Question
-  let selectedClusterArn = cfnJsonParameters?.rdsClusterIdentifier
+  let selectedClusterArn = cfnJsonParameters?.rdsClusterIdentifier;
   let clusterResourceId = getRdsClusterResourceIdFromArn(selectedClusterArn, AWS);
   if (!selectedClusterArn || !clusterResourceId) {
     ({ selectedClusterArn, clusterResourceId } = await selectCluster(context, inputs, AWS));
@@ -97,7 +97,7 @@ async function getRdsClusterResourceIdFromArn(arn: string|undefined, AWS) {
   const RDS = new AWS.RDS();
   const describeDBClustersResult = await RDS.describeDBClusters().promise();
   const rawClusters = describeDBClustersResult.DBClusters;
-  const identifiedCluster = rawClusters.find(cluster => cluster.DBClusterArn === arn);
+  const identifiedCluster = rawClusters.find((cluster) => cluster.DBClusterArn === arn);
   return identifiedCluster.DBClusterIdentifier;
 }
 
@@ -112,7 +112,7 @@ async function selectCluster(context: $TSContext, inputs, AWS) {
   const rawClusters = describeDBClustersResult.DBClusters;
 
   const clusters = new Map();
-  const serverlessClusters = rawClusters.filter(cluster => cluster.EngineMode === 'serverless');
+  const serverlessClusters = rawClusters.filter((cluster) => cluster.EngineMode === 'serverless');
 
   if (serverlessClusters.length === 0) {
     const errMessage = 'No properly configured Aurora Serverless clusters found.';
@@ -174,7 +174,7 @@ async function getSecretStoreArn(context: $TSContext, inputs, clusterResourceId,
   }
 
   const secrets = new Map();
-  const secretsForCluster = rawSecrets.filter(secret => secret.Name.startsWith(`rds-db-credentials/${clusterResourceId}`));
+  const secretsForCluster = rawSecrets.filter((secret) => secret.Name.startsWith(`rds-db-credentials/${clusterResourceId}`));
 
   if (secretsForCluster.length === 0) {
     const errMessage = 'No RDS access credentials found in the AWS Secrect Manager.';
@@ -227,16 +227,15 @@ async function selectDatabase(context: $TSContext, inputs, clusterArn, secretArn
     const dataApiResult = await DataApi.executeStatement(params).promise();
     const excludedDatabases = ['information_schema', 'performance_schema', 'mysql', 'sys'];
 
-    databaseList.push(...dataApiResult.records.map(record => record[0].stringValue).filter(name => !excludedDatabases.includes(name)));
+    databaseList.push(...dataApiResult.records.map((record) => record[0].stringValue).filter((name) => !excludedDatabases.includes(name)));
 
     spinner.succeed('Fetched Aurora Serverless cluster.');
   } catch (err) {
     spinner.fail(err.message);
 
     if (err.code === 'BadRequestException' && /Access denied for user/.test(err.message)) {
-      const msg =
-        `Ensure that '${secretArn}' contains your database credentials. ` +
-        'Please note that Aurora Serverless does not support IAM database authentication.';
+      const msg = `Ensure that '${secretArn}' contains your database credentials. `
+        + 'Please note that Aurora Serverless does not support IAM database authentication.';
       printer.error(msg);
     }
   }
@@ -268,12 +267,12 @@ async function selectDatabase(context: $TSContext, inputs, clusterArn, secretArn
  */
 async function promptWalkthroughQuestion(inputs, questionNumber, choicesList) {
   const question = {
-      type: inputs[questionNumber].type,
-      name: inputs[questionNumber].key,
-      message: inputs[questionNumber].question,
-      choices: choicesList,
-    };
-  return await prompter.pick(question.message, choicesList)
+    type: inputs[questionNumber].type,
+    name: inputs[questionNumber].key,
+    message: inputs[questionNumber].question,
+    choices: choicesList,
+  };
+  return await prompter.pick(question.message, choicesList);
 }
 
 async function getAwsClient(context: $TSContext, action: string) {
