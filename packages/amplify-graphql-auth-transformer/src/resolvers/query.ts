@@ -144,7 +144,15 @@ const generateAuthOnModelQueryExpression = (
             compoundExpression([
               generateOwnerMultiClaimExpression(role.claim!, `${role.entity}Claim`),
               generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
-              qref(methodCall(ref(`ownerClaimsList${idx}.add`), ref(`${role.entity}Claim`))),
+              iff(
+                methodCall(ref('util.isString'), ref(`${role.entity}Claim`)),
+                ifElse(
+                  methodCall(ref('util.isList'), methodCall(ref('util.parseJson'), ref(`${role.entity}Claim`))),
+                  set(ref(`${role.entity}Claim`), methodCall(ref('util.parseJson'), ref(`${role.entity}Claim`))),
+                  set(ref(`${role.entity}Claim`), list([ref(`${role.entity}Claim`)])),
+                ),
+              ),
+              qref(methodCall(ref(`ownerClaimsList${idx}.addAll`), ref(`${role.entity}Claim`))),
               ifElse(
                 not(ref(`util.isNull($ctx.args.${role.entity})`)),
                 compoundExpression([
@@ -239,7 +247,15 @@ const generateAuthOnModelQueryExpression = (
             compoundExpression([
               generateOwnerMultiClaimExpression(role.claim!, `${role.entity}Claim`),
               generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
-              qref(methodCall(ref(`ownerClaimsList${idx}.add`), ref(`${role.entity}Claim`))),
+              iff(
+                methodCall(ref('util.isString'), ref(`${role.entity}Claim`)),
+                ifElse(
+                  methodCall(ref('util.isList'), methodCall(ref('util.parseJson'), ref(`${role.entity}Claim`))),
+                  set(ref(`${role.entity}Claim`), methodCall(ref('util.parseJson'), ref(`${role.entity}Claim`))),
+                  set(ref(`${role.entity}Claim`), list([ref(`${role.entity}Claim`)])),
+                ),
+              ),
+              qref(methodCall(ref(`ownerClaimsList${idx}.addAll`), ref(`${role.entity}Claim`))),
               ifElse(
                 not(ref(`util.isNull($ctx.args.${role.entity})`)),
                 compoundExpression([
