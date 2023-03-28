@@ -1,5 +1,5 @@
 import { $TSContext, getMigrateResourceMessageForOverride, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
-import { prompter } from 'amplify-prompts';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import { ApigwInputState } from '../../../provider-utils/awscloudformation/apigw-input-state';
 

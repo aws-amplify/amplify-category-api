@@ -77,7 +77,7 @@
     "@aws-amplify/amplify-provider-awscloudformation": "^8.0.0",
     "amplify-cli-core": "^4.0.0",
     "amplify-headless-interface": "^1.17.1",
-    "amplify-prompts": "^2.6.5",
+    "@aws-amplify/amplify-prompts": "^2.6.5",
     "amplify-util-headless-input": "^1.9.10"
   },
   "devDependencies": {

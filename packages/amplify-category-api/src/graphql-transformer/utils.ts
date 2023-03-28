@@ -9,7 +9,7 @@ import {
 import { CloudFormation, Fn } from 'cloudform';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { pullAllBy, find } from 'lodash';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 const PARAMETERS_FILE_NAME = 'parameters.json';
 const CUSTOM_ROLES_FILE_NAME = 'custom-roles.json';

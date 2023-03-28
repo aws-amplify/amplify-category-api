@@ -8,7 +8,7 @@ import {
   pathManager,
   stateManager,
 } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 import { ADMIN_QUERIES_NAME } from '../../category-constants';
 import { AdminQueriesProps, ApigwInputState } from '../../provider-utils/awscloudformation/apigw-input-state';

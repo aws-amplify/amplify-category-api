@@ -7,7 +7,7 @@ import {
   pathManager,
   stateManager,
 } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
 import {
   DirectiveNode,

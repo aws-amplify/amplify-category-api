@@ -14,7 +14,7 @@ import {
   ApiCategoryFacade,
 } from 'amplify-cli-core';
 import { UpdateApiRequest } from 'amplify-headless-interface';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import { collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';

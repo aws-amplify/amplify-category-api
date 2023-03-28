@@ -20,7 +20,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import _ from 'lodash';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { getAdminRoles, getIdentityPoolId } from './utils';
 import {
   schemaHasSandboxModeEnabled,

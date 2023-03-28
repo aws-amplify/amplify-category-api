@@ -1,5 +1,5 @@
 import { $TSObject, JSONUtilities } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { CrudOperation, PermissionSetting } from './cdk-stack-builder/types';
 
 export function convertDeperecatedRestApiPaths(

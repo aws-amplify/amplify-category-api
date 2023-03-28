@@ -2,7 +2,7 @@ import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-paramete
 import {
   $TSContext, $TSObject, AmplifyCategories, ApiCategoryFacade, getGraphQLTransformerOpenSearchProductionDocLink,
 } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { ResourceConstants } from 'graphql-transformer-common';
 
 export async function searchablePushChecks(context: $TSContext, map: $TSObject, apiName: string): Promise<void> {

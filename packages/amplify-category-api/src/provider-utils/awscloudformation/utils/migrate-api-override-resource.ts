@@ -6,7 +6,7 @@ import {
   ResourceDoesNotExistError,
   stateManager,
 } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import { ResolverConfig } from 'graphql-transformer-core';
 import _ from 'lodash';

@@ -1,5 +1,5 @@
 import { $TSContext, FeatureFlags, stateManager } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { mocked } from 'ts-jest/utils';
 import { run } from '../../../commands/api/rebuild';
 

@@ -4,7 +4,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { attemptV2TransformerMigration, revertV2Migration } from '../../schema-migrator';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { FeatureFlags, pathManager } from 'amplify-cli-core';
 
 jest.mock('amplify-prompts');
