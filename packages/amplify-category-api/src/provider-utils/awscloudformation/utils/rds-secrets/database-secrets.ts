@@ -46,7 +46,7 @@ export const getExistingConnectionSecretNames = async (context: $TSContext, apiN
   try {
     const ssmClient = await SSMClient.getInstance(context);
     const secrets = await ssmClient.getSecrets(
-      secretNames.map( secret => getParameterStoreSecretPath(secret, apiName, secretsKey, envName))
+      secretNames.map( secret => getParameterStoreSecretPath(secret, secretsKey, apiName, envName))
     );
 
     if(_.isEmpty(secrets)) {
@@ -54,7 +54,7 @@ export const getExistingConnectionSecretNames = async (context: $TSContext, apiN
     }
 
     const existingSecrets = secretNames.map((secretName) => {
-      const secretPath = getParameterStoreSecretPath(secretName, apiName, secretsKey, envName);
+      const secretPath = getParameterStoreSecretPath(secretName, secretsKey, apiName, envName);
       const matchingSecret = secrets?.find((secret) => (secret?.secretName === secretPath) && !_.isEmpty(secret?.secretValue));
       const result = {};
       if (matchingSecret) {

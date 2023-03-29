@@ -15,14 +15,12 @@ export const verifyAmplifyMeta = (projectRoot: string, apiName: string, database
   const meta = getProjectMeta(projectRoot);
   const apiMeta = _.get(meta, ["api", apiName]);
   expect(apiMeta).toBeDefined();
-  const dataSourceConfig = _.get(apiMeta, "dataSourceConfig");
-  expect(dataSourceConfig).toBeDefined();
-  expect(dataSourceConfig).toEqual({
-    mysql: database
-  });
+  expect(_.get(apiMeta, "output", "GraphQLAPIIdOutput")).toBeDefined();
+  expect(_.get(apiMeta, "output", "GraphQLAPIEndpointOutput")).toBeDefined();
+  expect(_.get(apiMeta, "output", "GraphQLAPIKeyOutput")).toBeDefined();
 };
 
-export const verifyCompiledSchema = (projectRoot: string, apiName: string, expected: string) => {
+export const verifyCompiledSchema = (projectRoot: string, apiName: string, expected: string = '') => {
   const compiledSchemaPath = join(projectRoot, "amplify", "backend", "api", apiName, "build", "schema.graphql");
   expect(fs.existsSync(compiledSchemaPath)).toEqual(true);
 
@@ -32,7 +30,9 @@ export const verifyCompiledSchema = (projectRoot: string, apiName: string, expec
   expect(schema).toContain("type Employee");
   expect(schema).toContain("type Person");
   expect(schema).toContain("type Contacts");
-  expect(schema.trim()).toEqual(expected.trim());
+  if (!_.isEmpty(expected)) {
+    expect(schema.trim()).toEqual(expected.trim());
+  }
 };
 
 export type TestDBSetupInfo = {

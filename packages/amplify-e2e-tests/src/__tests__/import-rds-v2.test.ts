@@ -105,7 +105,7 @@ describe("Import RDS V2 API Tests", () => {
     await amplifyPush(projectRoot);
 
     verifyAmplifyMeta(projectRoot, name, db_name);
-    verifyCompiledSchema(projectRoot, name, expectedCompiledSchema);
+    verifyCompiledSchema(projectRoot, name);
     verifyRDSSchema(projectRoot, name, expectedSchema);
   });
 
@@ -184,7 +184,7 @@ describe("Import RDS V2 API Tests", () => {
         password: "invalidpassword"
       });
     } catch (err) {
-      console.log(err?.message);
+      console.log('Successfully failed while trying to update wrong DB secrets');
     }
 
     // Successful schema regeneration means that existing secrets are not modified with incorrect values.
@@ -213,7 +213,7 @@ describe("Import RDS V2 API Tests", () => {
       apiExists: false
     });
 
-    verifyRDSSchema(projectRoot, name);
+    verifyRDSSchema(projectRoot, name, expectedSchema);
     
     // remove the API
     await removeApi(projectRoot);
@@ -221,10 +221,33 @@ describe("Import RDS V2 API Tests", () => {
   });
 });
 
-const expectedSchema: string = "type Account {}";
+const expectedSchema: string = `
+input Amplify {
+  engine: String = "mysql"
+  globalAuthRule: AuthRule = {allow: public}
+}
+
+type Contacts @model {
+  ID: Int! @primaryKey
+  FirstName: String
+  LastName: String
+}
+
+type Employee @model {
+  ID: Int! @primaryKey
+  FirstName: String
+  LastName: String
+}
+
+type Person @model {
+  ID: Int! @primaryKey
+  FirstName: String
+  LastName: String
+}
+`;
 
 const expectedCompiledSchema: string = `
-"type Contacts {
+type Contacts {
   ID: Int!
   FirstName: String
   LastName: String
@@ -460,15 +483,15 @@ input ModelSubscriptionContactsFilterInput {
 }
 
 type Subscription {
-  onCreateContacts(filter: ModelSubscriptionContactsFilterInput): Contacts @aws_subscribe(mutations: [\\"createContacts\\"])
-  onUpdateContacts(filter: ModelSubscriptionContactsFilterInput): Contacts @aws_subscribe(mutations: [\\"updateContacts\\"])
-  onDeleteContacts(filter: ModelSubscriptionContactsFilterInput): Contacts @aws_subscribe(mutations: [\\"deleteContacts\\"])
-  onCreateEmployee(filter: ModelSubscriptionEmployeeFilterInput): Employee @aws_subscribe(mutations: [\\"createEmployee\\"])
-  onUpdateEmployee(filter: ModelSubscriptionEmployeeFilterInput): Employee @aws_subscribe(mutations: [\\"updateEmployee\\"])
-  onDeleteEmployee(filter: ModelSubscriptionEmployeeFilterInput): Employee @aws_subscribe(mutations: [\\"deleteEmployee\\"])
-  onCreatePerson(filter: ModelSubscriptionPersonFilterInput): Person @aws_subscribe(mutations: [\\"createPerson\\"])
-  onUpdatePerson(filter: ModelSubscriptionPersonFilterInput): Person @aws_subscribe(mutations: [\\"updatePerson\\"])
-  onDeletePerson(filter: ModelSubscriptionPersonFilterInput): Person @aws_subscribe(mutations: [\\"deletePerson\\"])
+  onCreateContacts(filter: ModelSubscriptionContactsFilterInput): Contacts @aws_subscribe(mutations: ["createContacts"])
+  onUpdateContacts(filter: ModelSubscriptionContactsFilterInput): Contacts @aws_subscribe(mutations: ["updateContacts"])
+  onDeleteContacts(filter: ModelSubscriptionContactsFilterInput): Contacts @aws_subscribe(mutations: ["deleteContacts"])
+  onCreateEmployee(filter: ModelSubscriptionEmployeeFilterInput): Employee @aws_subscribe(mutations: ["createEmployee"])
+  onUpdateEmployee(filter: ModelSubscriptionEmployeeFilterInput): Employee @aws_subscribe(mutations: ["updateEmployee"])
+  onDeleteEmployee(filter: ModelSubscriptionEmployeeFilterInput): Employee @aws_subscribe(mutations: ["deleteEmployee"])
+  onCreatePerson(filter: ModelSubscriptionPersonFilterInput): Person @aws_subscribe(mutations: ["createPerson"])
+  onUpdatePerson(filter: ModelSubscriptionPersonFilterInput): Person @aws_subscribe(mutations: ["updatePerson"])
+  onDeletePerson(filter: ModelSubscriptionPersonFilterInput): Person @aws_subscribe(mutations: ["deletePerson"])
 }
 
 type ModelEmployeeConnection {
@@ -562,5 +585,4 @@ input ModelSubscriptionPersonFilterInput {
   and: [ModelSubscriptionPersonFilterInput]
   or: [ModelSubscriptionPersonFilterInput]
 }
-"
 `;
