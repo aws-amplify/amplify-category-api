@@ -31,7 +31,7 @@ import {
 import _ from 'lodash';
 import * as path from 'path';
 import * as vm from 'vm2';
-import { AmplifyError, stateManager } from 'amplify-cli-core';
+import { AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
 import { ResolverConfig, TransformConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';

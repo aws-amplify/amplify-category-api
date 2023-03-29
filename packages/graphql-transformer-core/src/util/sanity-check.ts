@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
 import { Template, ResourceBase } from 'cloudform-types';
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { diff as getDiffs, Diff as DeepDiff } from 'deep-diff';
 import { readFromPath } from './fileUtils';
 import { InvalidMigrationError, InvalidGSIMigrationError, DestructiveMigrationError } from '../errors';

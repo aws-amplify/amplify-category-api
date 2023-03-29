@@ -1,4 +1,4 @@
-import { $TSObject, AmplifySupportedService, stateManager } from 'amplify-cli-core';
+import { $TSObject, AmplifySupportedService, stateManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 

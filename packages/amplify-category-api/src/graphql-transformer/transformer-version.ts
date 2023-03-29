@@ -4,7 +4,7 @@ import {
   stateManager,
   FeatureFlags,
   AmplifyError,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 
 /**
  * Shorthand for Feature flag retrieval.

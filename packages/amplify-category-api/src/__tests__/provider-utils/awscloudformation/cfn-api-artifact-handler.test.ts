@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, pathManager } from 'amplify-cli-core';
+import { $TSContext, $TSObject, pathManager } from '@aws-amplify/amplify-cli-core';
 import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
 import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
@@ -37,8 +37,8 @@ jest.mock('../../../provider-utils/awscloudformation/utils/amplify-meta-utils', 
   getImportedAuthUserPoolId: jest.fn(() => undefined),
 }));
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as $TSObject),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as $TSObject),
   pathManager: {
     getBackendDirPath: jest.fn().mockReturnValue('mockBackendDirPath'),
     findProjectRoot: jest.fn().mockReturnValue('mockProject'),

@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import * as prompts from 'amplify-prompts';
 import { promptToAddApiKey } from '../../../provider-utils/awscloudformation/prompt-to-add-api-key';
 import * as walkthrough from '../../../provider-utils/awscloudformation/service-walkthroughs/appSync-walkthrough';

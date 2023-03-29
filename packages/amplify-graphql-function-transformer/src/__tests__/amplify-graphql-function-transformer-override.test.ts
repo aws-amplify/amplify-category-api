@@ -1,5 +1,5 @@
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { parse } from 'graphql';
 import * as path from 'path';
 import { FunctionTransformer } from '..';
