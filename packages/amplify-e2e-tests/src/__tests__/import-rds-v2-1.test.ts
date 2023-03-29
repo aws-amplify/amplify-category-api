@@ -34,7 +34,7 @@ const sqlStatements = [
   "CREATE TABLE Employee (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))"
 ];
 
-describe("Import RDS V2 API Tests", () => {
+describe("Import RDS V2 API Tests-1", () => {
   let dbAdapter: RDSTestDataProvider;
   let projectRoot: string;
 
@@ -106,95 +106,6 @@ describe("Import RDS V2 API Tests", () => {
 
     verifyAmplifyMeta(projectRoot, name, db_name);
     verifyCompiledSchema(projectRoot, name);
-    verifyRDSSchema(projectRoot, name, expectedSchema);
-  });
-
-  it("allows re-generation of the imported schema", async () => {
-    const name = 'regenerateschema';
-    await initJSProjectWithProfile(projectRoot, { disableAmplifyAppCreation: false, name: name });
-    const dbInfo = {
-      database: db_name,
-      host: dbConnectionInfo.host,
-      port: dbConnectionInfo.port,
-      username: db_user,
-      password: db_password
-    };
-    await importRDSDatabase(projectRoot, {
-      ...dbInfo,
-      apiExists: false
-    });
-    await amplifyPush(projectRoot);
-    await apiGenerateSchema(projectRoot, {
-      ...dbInfo,
-      validCredentials: true
-    });
-    await apiGqlCompile(projectRoot, true);
-
-    verifyAmplifyMeta(projectRoot, name, db_name);
-    verifyCompiledSchema(projectRoot, name, expectedCompiledSchema);
-    verifyRDSSchema(projectRoot, name, expectedSchema);
-  });
-
-  it("allows updating the DB information", async () => {
-    const name = 'updatedbinfo';
-    await initJSProjectWithProfile(projectRoot, { disableAmplifyAppCreation: false, name: name });
-    const dbInfo = {
-      database: db_name,
-      host: dbConnectionInfo.host,
-      port: dbConnectionInfo.port,
-      username: db_user,
-      password: db_password
-    };
-    await importRDSDatabase(projectRoot, {
-      ...dbInfo,
-      apiExists: false
-    });
-    await amplifyPush(projectRoot);
-    await apiUpdateSecrets(projectRoot, dbInfo);
-    await apiGenerateSchema(projectRoot, {
-      ...dbInfo,
-      validCredentials: true
-    });
-
-    verifyAmplifyMeta(projectRoot, name, db_name);
-    verifyCompiledSchema(projectRoot, name, expectedCompiledSchema);
-    verifyRDSSchema(projectRoot, name, expectedSchema);
-  });
-
-  it("retains existing secrets if new ones are incorrect during update-secrets", async () => {
-    const name = "wrongsecrets";
-    await initJSProjectWithProfile(projectRoot, { disableAmplifyAppCreation: false, name: name });
-    const dbInfo = {
-      database: db_name,
-      host: dbConnectionInfo.host,
-      port: dbConnectionInfo.port,
-      username: db_user,
-      password: db_password
-    };
-    await importRDSDatabase(projectRoot, {
-      ...dbInfo,
-      apiExists: false
-    });
-    await amplifyPush(projectRoot);
-
-    // now try to update the DB secrets to invalid value
-    try {
-      await apiUpdateSecrets(projectRoot, {
-        ...dbInfo,
-        password: "invalidpassword"
-      });
-    } catch (err) {
-      console.log('Successfully failed while trying to update wrong DB secrets');
-    }
-
-    // Successful schema regeneration means that existing secrets are not modified with incorrect values.
-    await apiGenerateSchema(projectRoot, {
-      ...dbInfo,
-      validCredentials: true
-    });
-
-    verifyAmplifyMeta(projectRoot, name, db_name);
-    verifyCompiledSchema(projectRoot, name, expectedCompiledSchema);
     verifyRDSSchema(projectRoot, name, expectedSchema);
   });
 

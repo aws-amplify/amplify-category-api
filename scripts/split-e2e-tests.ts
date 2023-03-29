@@ -173,7 +173,7 @@ const repoRoot = join(__dirname, '..');
 function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
   // Todo: add reverse to run longest tests first
   const matchedFiles = glob.sync(pattern, { cwd: dir });
-  return sortTestsBasedOnTime(['src/__tests__/import-rds-v2.test.ts']); // .reverse();
+  return sortTestsBasedOnTime(['src/__tests__/import-rds-v2-1.test.ts', 'src/__tests__/import-rds-v2-2.test.ts']); // .reverse();
 }
 
 function generateJobName(baseName: string, testSuitePath: string): string {
