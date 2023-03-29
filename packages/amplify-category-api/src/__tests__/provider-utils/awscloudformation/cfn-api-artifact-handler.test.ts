@@ -1,6 +1,6 @@
 import { $TSContext, $TSObject, pathManager } from '@aws-amplify/amplify-cli-core';
 import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import { writeTransformerConfiguration } from 'graphql-transformer-core';
 import _ from 'lodash';

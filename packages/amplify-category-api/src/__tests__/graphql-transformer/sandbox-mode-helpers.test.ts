@@ -1,6 +1,6 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import chalk from 'chalk';
-import * as prompts from 'amplify-prompts';
+import * as prompts from '@aws-amplify/amplify-prompts';
 import { showSandboxModePrompts, showGlobalSandboxModeWarning, schemaHasSandboxModeEnabled } from '../../graphql-transformer/sandbox-mode-helpers';
 import * as apiKeyHelpers from '../../graphql-transformer/api-key-helpers';
 

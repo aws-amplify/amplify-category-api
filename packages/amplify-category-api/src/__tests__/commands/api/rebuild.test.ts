@@ -1,10 +1,10 @@
 import { $TSContext, FeatureFlags, stateManager } from '@aws-amplify/amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { mocked } from 'ts-jest/utils';
 import { run } from '../../../commands/api/rebuild';
 
 jest.mock('@aws-amplify/amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 const FeatureFlags_mock = mocked(FeatureFlags);
 const stateManager_mock = mocked(stateManager);
