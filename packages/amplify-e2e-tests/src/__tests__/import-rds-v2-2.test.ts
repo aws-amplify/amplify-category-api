@@ -1,20 +1,17 @@
 import generator from 'generate-password';
 import {
-  addApiWithBlankSchema,
   importRDSDatabase,
   amplifyPush,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   initJSProjectWithProfile,
-  updateApiSchema,
   apiGenerateSchema,
   apiGqlCompile,
   apiUpdateSecrets,
   RDSTestDataProvider,
   removeRDSPortInboundRule,
   deleteDBInstance,
-  removeApi
 } from 'amplify-category-api-e2e-core';
 import _ from 'lodash';
 import { verifyAmplifyMeta, verifyCompiledSchema, setupRDSDatabase, verifyRDSSchema } from '../rds-v2-test-utils';
@@ -43,7 +40,7 @@ describe("Import RDS V2 API Tests-2", () => {
       username: db_user,
       password: db_password,
       database: db_name,
-      identifier: db_identifier,
+      identifier: identifier,
       region: region
     });
     dbConnectionInfo.port = dbInfo.port;
@@ -90,7 +87,7 @@ describe("Import RDS V2 API Tests-2", () => {
       ...dbInfo,
       validCredentials: true
     });
-    await apiGqlCompile(projectRoot, true);
+    await apiGqlCompile(projectRoot);
 
     verifyAmplifyMeta(projectRoot, name, db_name);
     verifyCompiledSchema(projectRoot, name, expectedCompiledSchema);

@@ -8,9 +8,6 @@ import {
   deleteProjectDir,
   initJSProjectWithProfile,
   updateApiSchema,
-  apiGenerateSchema,
-  apiGqlCompile,
-  apiUpdateSecrets,
   RDSTestDataProvider,
   removeRDSPortInboundRule,
   deleteDBInstance,
@@ -43,7 +40,7 @@ describe("Import RDS V2 API Tests-1", () => {
       username: db_user,
       password: db_password,
       database: db_name,
-      identifier: db_identifier,
+      identifier: identifier,
       region: region
     });
     dbConnectionInfo.port = dbInfo.port;
