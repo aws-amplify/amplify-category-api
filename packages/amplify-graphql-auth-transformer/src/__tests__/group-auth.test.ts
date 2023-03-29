@@ -6,7 +6,7 @@ import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-inter
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { featureFlags } from './test-helpers';
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 test('happy case with static groups', () => {
   const authConfig: AppSyncAuthConfiguration = {

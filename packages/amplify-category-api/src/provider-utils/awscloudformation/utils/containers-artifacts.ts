@@ -9,7 +9,7 @@ import Container from '../docker-compose/ecs-objects/container';
 import { EcsStack } from '../ecs-apigw-stack';
 import { API_TYPE, ResourceDependency } from '../../../provider-utils/awscloudformation/service-walkthroughs/containers-walkthrough';
 import { getGitHubOwnerRepoFromPath } from '../../../provider-utils/awscloudformation/utils/github';
-import { $TSAny, $TSContext, JSONUtilities, pathManager, readCFNTemplate } from 'amplify-cli-core';
+import { $TSAny, $TSContext, JSONUtilities, pathManager, readCFNTemplate } from '@aws-amplify/amplify-cli-core';
 import { DEPLOYMENT_MECHANISM } from '../base-api-stack';
 import { setExistingSecretArns } from './containers/set-existing-secret-arns';
 import { category } from '../../../category-constants';

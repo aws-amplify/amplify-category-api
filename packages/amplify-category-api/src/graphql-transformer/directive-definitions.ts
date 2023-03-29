@@ -3,7 +3,7 @@ import {
 } from '@aws-amplify/graphql-transformer-core';
 import {
   $TSContext,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { print } from 'graphql';
 import { getTransformerFactory } from './transformer-factory';
 import { getTransformerVersion } from './transformer-version';

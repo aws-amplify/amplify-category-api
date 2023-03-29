@@ -1,5 +1,5 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { AuthRule } from '.';
 import { AccessControlMatrix } from '../accesscontrol';
 

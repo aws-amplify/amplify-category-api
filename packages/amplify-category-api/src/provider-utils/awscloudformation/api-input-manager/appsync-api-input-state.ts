@@ -5,7 +5,7 @@ import {
   CLIInputSchemaValidator,
   JSONUtilities,
   pathManager,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { AppSyncCLIInputs } from '../service-walkthrough-types/appsync-user-input-types';

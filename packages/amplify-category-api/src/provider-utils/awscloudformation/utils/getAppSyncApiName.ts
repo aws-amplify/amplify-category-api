@@ -1,4 +1,4 @@
-import { $TSContext, AmplifySupportedService, AmplifyError } from 'amplify-cli-core';
+import { $TSContext, AmplifySupportedService, AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 export const getAppSyncApiResourceName = async (context: $TSContext): Promise<string> => {
   const { allResources } = await context.amplify.getResourceStatus();

@@ -3,10 +3,10 @@ import { TransformerProjectConfig } from '@aws-amplify/graphql-transformer-core'
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { $TSContext, CloudformationProviderFacade } from 'amplify-cli-core';
+import { $TSContext, CloudformationProviderFacade } from '@aws-amplify/amplify-cli-core';
 
 jest.mock('fs-extra');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const fs_mock = fs as jest.Mocked<typeof fs>;
 const prePushCfnTemplateModifier_mock = jest.fn();

@@ -1,4 +1,4 @@
-import { AmplifyError, AmplifyErrorType, AmplifyException } from 'amplify-cli-core';
+import { AmplifyError, AmplifyErrorType, AmplifyException } from '@aws-amplify/amplify-cli-core';
 import { AmplifyGraphQLTransformerErrorConverter } from '../../errors/amplify-error-converter';
 
 const errorType: AmplifyErrorType = 'DeploymentError';

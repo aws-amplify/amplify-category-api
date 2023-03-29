@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import { $TSAny, FeatureFlags, pathManager, stateManager, JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, FeatureFlags, pathManager, stateManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 export const backupLocation = (resourceDir: string) => path.join(resourceDir, '.migration-config-backup');
 

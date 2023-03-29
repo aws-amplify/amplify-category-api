@@ -1,5 +1,5 @@
-import { $TSAny, $TSContext, $TSObject, exitOnNextTick, ResourceDoesNotExistError } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSAny, $TSContext, $TSObject, exitOnNextTick, ResourceDoesNotExistError } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import inquirer from 'inquirer';
 import { category } from '../../../category-constants';
 import { DEPLOYMENT_MECHANISM } from '../base-api-stack';

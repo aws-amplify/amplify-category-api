@@ -1,6 +1,6 @@
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const JSONUtilities_mock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
 

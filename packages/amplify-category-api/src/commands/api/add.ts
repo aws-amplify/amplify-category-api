@@ -1,5 +1,5 @@
-import { $TSContext, $TSObject, AmplifyCategories, AmplifySupportedService } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { $TSContext, $TSObject, AmplifyCategories, AmplifySupportedService } from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 
 const subcommand = 'add';

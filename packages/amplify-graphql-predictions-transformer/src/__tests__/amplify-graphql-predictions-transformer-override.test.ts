@@ -1,7 +1,7 @@
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import * as path from 'path';
 import { PredictionsTransformer } from '..';
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 
 jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
 jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
