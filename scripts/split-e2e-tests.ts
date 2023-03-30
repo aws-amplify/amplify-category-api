@@ -172,8 +172,7 @@ const repoRoot = join(__dirname, '..');
 
 function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
   // Todo: add reverse to run longest tests first
-  const matchedFiles = glob.sync(pattern, { cwd: dir });
-  return sortTestsBasedOnTime(['src/__tests__/import-rds-v2-1.test.ts', 'src/__tests__/import-rds-v2-2.test.ts']); // .reverse();
+  return sortTestsBasedOnTime(glob.sync(pattern, { cwd: dir })); // .reverse();
 }
 
 function generateJobName(baseName: string, testSuitePath: string): string {
@@ -407,45 +406,45 @@ function main(): void {
     CONCURRENCY,
     undefined
   );
-  // const splitGqlTests = splitTests(
-  //   splitPkgTests,
-  //   'graphql_e2e_tests',
-  //   'build_test_deploy',
-  //   join(repoRoot, 'packages', 'graphql-transformers-e2e-tests'),
-  //   CONCURRENCY,
-  //   undefined
-  // );
-  // const splitV5MigrationTests = splitTests(
-  //   splitGqlTests,
-  //   'amplify_migration_tests_v5',
-  //   'build_test_deploy',
-  //   join(repoRoot, 'packages', 'amplify-migration-tests'),
-  //   CONCURRENCY,
-  //   (tests: string[]) => {
-  //     return tests.filter(testName => migrationFromV5Tests.find((t) => t === testName));
-  //   }
-  // );
-  // const splitV6MigrationTests = splitTests(
-  //   splitV5MigrationTests,
-  //   'amplify_migration_tests_v6',
-  //   'build_test_deploy',
-  //   join(repoRoot, 'packages', 'amplify-migration-tests'),
-  //   CONCURRENCY,
-  //   (tests: string[]) => {
-  //     return tests.filter(testName => migrationFromV6Tests.find((t) => t === testName));
-  //   }
-  // );
-  // const splitV10MigrationTests = splitTests(
-  //   splitV6MigrationTests,
-  //   'amplify_migration_tests_v10',
-  //   'build_test_deploy',
-  //   join(repoRoot, 'packages', 'amplify-migration-tests'),
-  //   CONCURRENCY,
-  //   (tests: string[]) => {
-  //     return tests.filter(testName => migrationFromV10Tests.find((t) => t === testName));
-  //   }
-  // );
-  saveConfig(splitPkgTests);
+  const splitGqlTests = splitTests(
+    splitPkgTests,
+    'graphql_e2e_tests',
+    'build_test_deploy',
+    join(repoRoot, 'packages', 'graphql-transformers-e2e-tests'),
+    CONCURRENCY,
+    undefined
+  );
+  const splitV5MigrationTests = splitTests(
+    splitGqlTests,
+    'amplify_migration_tests_v5',
+    'build_test_deploy',
+    join(repoRoot, 'packages', 'amplify-migration-tests'),
+    CONCURRENCY,
+    (tests: string[]) => {
+      return tests.filter(testName => migrationFromV5Tests.find((t) => t === testName));
+    }
+  );
+  const splitV6MigrationTests = splitTests(
+    splitV5MigrationTests,
+    'amplify_migration_tests_v6',
+    'build_test_deploy',
+    join(repoRoot, 'packages', 'amplify-migration-tests'),
+    CONCURRENCY,
+    (tests: string[]) => {
+      return tests.filter(testName => migrationFromV6Tests.find((t) => t === testName));
+    }
+  );
+  const splitV10MigrationTests = splitTests(
+    splitV6MigrationTests,
+    'amplify_migration_tests_v10',
+    'build_test_deploy',
+    join(repoRoot, 'packages', 'amplify-migration-tests'),
+    CONCURRENCY,
+    (tests: string[]) => {
+      return tests.filter(testName => migrationFromV10Tests.find((t) => t === testName));
+    }
+  );
+  saveConfig(splitV10MigrationTests);
   verifyConfig();
 }
 main();
