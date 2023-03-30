@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.11.1...amplify-category-api-e2e-tests@3.12.0) (2023-03-30)
+
+### Features
+
+- **api:** allow \${env} reference in custom-roles.json ([#804](https://github.com/aws-amplify/amplify-category-api/issues/804)) ([ba9d8c0](https://github.com/aws-amplify/amplify-category-api/commit/ba9d8c0f1dabf48675a555b027c16e4f8953f9dd))
+- inject project info into api overrides ([#1372](https://github.com/aws-amplify/amplify-category-api/issues/1372)) ([2b92351](https://github.com/aws-amplify/amplify-category-api/commit/2b92351c95a5c820e0e758e69226c08f4355d472))
+
 ## [3.11.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.11.0...amplify-category-api-e2e-tests@3.11.1) (2023-03-15)
 
 ### Bug Fixes
