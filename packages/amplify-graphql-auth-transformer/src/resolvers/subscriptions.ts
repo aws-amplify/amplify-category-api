@@ -100,7 +100,10 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
           ifElse(
             methodCall(ref('util.isList'), methodCall(ref('util.parseJson'), ref(`groupClaim${idx}`))),
             set(ref(`groupClaim${idx}`), methodCall(ref('util.parseJson'), ref(`groupClaim${idx}`))),
-            set(ref(`groupClaim${idx}`), list([ref(`groupClaim${idx}`)])),
+            iff(
+              not(methodCall(ref('util.isNullOrEmpty'), ref(`groupClaim${idx}`))),
+              set(ref(`groupClaim${idx}`), list([ref(`groupClaim${idx}`)])),
+            ),
           ),
         ),
         qref(methodCall(ref('authGroupRuntimeFilter.add'), raw(`{ "${role.entity}": { "${role.isEntityList ? 'containsAny' : 'in'}": $groupClaim${idx} } }`))),
