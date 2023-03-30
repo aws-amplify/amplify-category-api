@@ -1,6 +1,6 @@
-import { $TSAny, $TSContext, $TSObject, AmplifySupportedService, exitOnNextTick, NotImplementedError } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, AmplifySupportedService, exitOnNextTick, NotImplementedError } from '@aws-amplify/amplify-cli-core';
 import { UpdateApiRequest } from 'amplify-headless-interface';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import inquirer from 'inquirer';
 import * as path from 'path';
 import { category } from '../../category-constants';

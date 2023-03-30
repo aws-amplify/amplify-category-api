@@ -1,6 +1,6 @@
 import {
   $TSAny, AmplifyError, AmplifyErrorType,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 
 const amplifyGraphQLErrorCodes = new Set([
   'InvalidDirectiveError',

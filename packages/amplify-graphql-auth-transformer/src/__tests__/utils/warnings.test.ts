@@ -1,10 +1,10 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { AuthTransformer } from '../../graphql-auth-transformer';
 import { showDefaultIdentityClaimWarning } from '../../utils/warnings';
 
-jest.mock('amplify-prompts', () => ({
+jest.mock('@aws-amplify/amplify-prompts', () => ({
   printer: {
     warn: jest.fn(),
     debug: jest.fn(),

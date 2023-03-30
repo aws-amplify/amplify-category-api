@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, FeatureFlags, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import {
   askAdditionalAuthQuestions,
   getIAMPolicies,
@@ -9,7 +9,7 @@ jest.mock('../../../../provider-utils/awscloudformation/utils/amplify-meta-utils
   getAppSyncAuthConfig: jest.fn(),
   authConfigHasApiKey: jest.fn(),
 }));
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 stateManager_mock.getMeta = jest.fn();
 

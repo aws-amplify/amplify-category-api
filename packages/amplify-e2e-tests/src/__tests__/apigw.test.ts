@@ -10,9 +10,10 @@ import {
   get,
   getProjectMeta,
   initJSProjectWithProfile,
+  replaceOverrideFileWithProjectInfo,
   updateRestApi,
 } from 'amplify-category-api-e2e-core';
-import { JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { JSONUtilities, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
@@ -127,7 +128,7 @@ describe('API Gateway e2e tests', () => {
 
     // test happy path
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-api-rest.ts');
-    fs.copyFileSync(srcOverrideFilePath, destOverrideTsFilePath);
+    replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideTsFilePath, 'integtest', projName);
 
     await buildOverrides(projRoot, {});
 

@@ -218,7 +218,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     if (props.createApiKey && hasApiKey) {
       const config = modes.find((mode: AuthorizationMode) => mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig)?.apiKeyConfig;
       this.apiKeyResource = this.createAPIKey(config);
-      this.apiKeyResource.addDependsOn(this.schemaResource);
+      this.apiKeyResource.addDependency(this.schemaResource);
       this.apiKey = this.apiKeyResource.attrApiKey;
     }
 
@@ -308,7 +308,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   }
 
   public addSchemaDependency(construct: CfnResource): boolean {
-    construct.addDependsOn(this.schemaResource);
+    construct.addDependency(this.schemaResource);
     return true;
   }
 

@@ -41,7 +41,7 @@
     "vm2": "^3.9.8"
   },
   "peerDependencies": {
-    "amplify-prompts": "^2.6.5"
+    "@aws-amplify/amplify-prompts": "^2.6.6"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",

@@ -15,7 +15,7 @@ import {
   DiffRule,
   ProjectRule,
 } from 'graphql-transformer-core';
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Transformer Options used to create a GraphQL Transform and compile a GQL API

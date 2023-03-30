@@ -5,6 +5,10 @@ import {
 } from 'aws-cdk-lib/assertions';
 import * as path from 'path';
 import { SearchableModelTransformer } from '..';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
+
+jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
+jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
 
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name): boolean => {

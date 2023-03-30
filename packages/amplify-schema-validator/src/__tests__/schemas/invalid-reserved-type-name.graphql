@@ -1,0 +1,4 @@
+type Query @model {
+    id: ID!
+    str: String
+}

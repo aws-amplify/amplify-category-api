@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyCategories, stateManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories, stateManager } from '@aws-amplify/amplify-cli-core';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import _ from 'lodash';
 import { GRAPHQL_API_ENDPOINT_OUTPUT, GRAPHQL_API_KEY_OUTPUT, MOCK_API_KEY, MOCK_API_PORT } from '../../api/api';

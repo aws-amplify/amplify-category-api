@@ -1,4 +1,4 @@
-import { $TSAny, $TSMeta, $TSObject, AmplifyCategories, AmplifySupportedService, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSMeta, $TSObject, AmplifyCategories, AmplifySupportedService, stateManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 
 export const authConfigHasApiKey = (authConfig?: $TSAny) => {

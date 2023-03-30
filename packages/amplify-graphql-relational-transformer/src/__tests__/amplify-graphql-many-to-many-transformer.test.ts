@@ -8,7 +8,7 @@ import { DocumentNode, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { HasOneTransformer, ManyToManyTransformer } from '..';
 import { featureFlags, hasGeneratedDirective, hasGeneratedField } from './test-helpers';
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 test('fails if @manyToMany was used on an object that is not a model type', () => {
   const inputSchema = `

@@ -10,7 +10,7 @@ import {
 import { HasManyTransformer, BelongsToTransformer, HasOneTransformer } from '..';
 import { featureFlags } from './test-helpers';
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 const iamDefaultConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {

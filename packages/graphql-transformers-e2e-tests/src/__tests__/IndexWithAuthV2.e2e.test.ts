@@ -86,6 +86,11 @@ beforeAll(async () => {
       createdAt: AWSDateTime
       updatedAt: AWSDateTime
     }
+    type Application @model @auth(rules: [{allow: groups, groupsField: "projectId"}, {allow: private, operations: [create]}]) {
+      id: ID!
+      projectId: ID! @index(name: "byProjectId", queryField: "applicationsByProjectId")
+      applicationName: String!
+    }
   `;
 
   try {
@@ -244,6 +249,13 @@ test('Test query orders as non owner', async () => {
   expect(listResponse.data.ordersByOrderId.items).toHaveLength(0);
 });
 
+test('Test query on group auth field', async () => {
+  await createApplication(GRAPHQL_CLIENT_1, '1', ADMIN_GROUP_NAME, 'Test App');
+  const listResponse = await applicationsByProjectId(GRAPHQL_CLIENT_1, ADMIN_GROUP_NAME);
+  expect(listResponse.errors).toBeUndefined();
+  expect(listResponse.data.applicationsByProjectId.items).toHaveLength(1);
+});
+
 test('listX with primaryKey', async () => {
   await createFamilyMember(GRAPHQL_CLIENT_1, USERNAME1, USERNAME2);
   await createFamilyMember(GRAPHQL_CLIENT_1, USERNAME2, 'no_name_user@test.com');
@@ -347,6 +359,22 @@ async function createOrder(client: GraphQLClient, customerEmail: string, orderId
   return result;
 }
 
+async function createApplication(client: GraphQLClient, id: string, projectId: string, applicationName: string) {
+  const result = await client.query(
+    `mutation CreateApplication($input: CreateApplicationInput!) {
+      createApplication(input: $input) {
+        id
+        projectId
+        applicationName
+      }
+    }`,
+    {
+      input: { id, projectId, applicationName },
+    },
+  );
+  return result;
+}
+
 async function getOrder(client: GraphQLClient, customerEmail: string, orderId: string) {
   const result = await client.query(
     `query GetOrder($customerEmail: String!, $orderId: String!) {
@@ -391,6 +419,23 @@ async function ordersByOrderId(client: GraphQLClient, orderId: string) {
         }
     }`,
     { orderId },
+  );
+  return result;
+}
+
+async function applicationsByProjectId(client: GraphQLClient, projectId: string) {
+  const result = await client.query(
+    `query ApplicationsByProjectId($projectId: ID!) {
+      applicationsByProjectId(projectId: $projectId) {
+        items {
+          id
+          projectId
+          applicationName
+        }
+        nextToken
+      }
+    }`,
+    { projectId: projectId },
   );
   return result;
 }

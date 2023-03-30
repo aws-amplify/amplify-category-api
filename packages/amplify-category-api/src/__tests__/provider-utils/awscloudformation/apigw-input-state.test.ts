@@ -1,9 +1,9 @@
-import { $TSContext, getMigrateResourceMessageForOverride, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
-import { prompter } from 'amplify-prompts';
+import { $TSContext, getMigrateResourceMessageForOverride, JSONUtilities, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import { ApigwInputState } from '../../../provider-utils/awscloudformation/apigw-input-state';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('fs-extra');
 jest.mock('path');
 jest.mock('../../../provider-utils/awscloudformation/cdk-stack-builder');

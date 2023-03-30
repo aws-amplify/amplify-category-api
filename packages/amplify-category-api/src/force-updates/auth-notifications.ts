@@ -6,8 +6,8 @@ import {
   FeatureFlags,
   pathManager,
   stateManager,
-} from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
 import {
   DirectiveNode,

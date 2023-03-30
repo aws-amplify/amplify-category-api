@@ -8,7 +8,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { $TSObject, JSONUtilities } from 'amplify-cli-core';
+import { $TSObject, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { ADMIN_QUERIES_NAME } from '../../../category-constants';
@@ -305,7 +305,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
       stageName: cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', cdk.Fn.ref('env')).toString(),
       restApiId: cdk.Fn.ref(apiName),
     });
-    dependencies.forEach((dep) => this.deploymentResource.addDependsOn(dep));
+    dependencies.forEach((dep) => this.deploymentResource.addDependency(dep));
   };
 }
 
