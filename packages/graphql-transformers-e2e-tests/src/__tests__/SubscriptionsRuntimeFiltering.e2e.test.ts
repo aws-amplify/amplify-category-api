@@ -2200,7 +2200,7 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
   describe('Test requests from users with no group membership', () => {
     test('Should return unauthorized when attempting to subscribe with no groups', async () => {
       reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
-      await Auth.signIn(USERNAME1, REAL_PASSWORD);
+      await Auth.signIn(USERNAME3, REAL_PASSWORD);
       const observer = API.graphql({
         // @ts-ignore
         query: gql`
