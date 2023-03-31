@@ -15,7 +15,11 @@ import { getTypeDefinitionsOfKind } from '../helpers/get-type-definitions-of-kin
  * @param schema graphql schema
  * @returns true
  */
-export const validateIndexScalarTypes = (schema: DocumentNode): Error[] => {
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+export const validateIndexScalarTypes = (
+  schema: DocumentNode, _amplifyFeatureFlags?: string, _dataStoreEnabled?: boolean,
+): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,

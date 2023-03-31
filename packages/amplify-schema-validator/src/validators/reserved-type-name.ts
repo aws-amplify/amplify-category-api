@@ -6,12 +6,16 @@ import {
 import { ValidationError } from '../exceptions/validation-error';
 
 /**
-   * Reserved words are not used in type names
-   *
-   * @param schema graphql schema
-   * @returns true if reserved words are not used in type names
-   */
-export const validateReservedTypeNames = (schema: DocumentNode): Error[] => {
+ * Reserved words are not used in type names
+ *
+ * @param schema graphql schema
+ * @returns true if reserved words are not used in type names
+ */
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+export const validateReservedTypeNames = (
+  schema: DocumentNode, _amplifyFeatureFlags?: string, _dataStoreEnabled?: boolean,
+): Error[] => {
   const errors: Error[] = [];
   const reservedWords = ['Query', 'Mutation', 'Subscription'];
   const objectTypeDefinitions = schema.definitions.filter(

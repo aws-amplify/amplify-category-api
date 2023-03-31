@@ -9,12 +9,16 @@ import { getObjectWithName } from '../helpers/get-object-with-name';
 import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
 
 /**
-     * Validates that key exists in the related model
-     *
-     * @param schema graphql schema
-     * @returns true if key exists in the related model
-     */
-export const validateKeyExistsInRelatedModel = (schema: DocumentNode): Error[] => {
+   * Validates that key exists in the related model
+   *
+   * @param schema graphql schema
+   * @returns true if key exists in the related model
+   */
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+export const validateKeyExistsInRelatedModel = (
+  schema: DocumentNode, _amplifyFeatureFlags?: string, _dataStoreEnabled?: boolean,
+): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,

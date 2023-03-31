@@ -20,6 +20,9 @@ import { validateIndexIsDefinedOnce } from './validators/index-is-defined-once-i
 import { validateIndexExistsInRelatedModel } from './validators/index-exists-in-related-model';
 import { validateEnumIsDefinedOnce } from './validators/enum-is-defined-once';
 import { validateKeyExistsInRelatedModel } from './validators/key-exists-in-related-model';
+import { validateBelongsToIsUsedWhenDatastoreInUse } from './validators/use-belongsto-when-datastore-inuse';
+import { validateDirectivesFromOlderTransformerVersionAreNotUsed } from './validators/use-directives-from-older-transformer-version';
+import { validateDirectivesFromNewerTransformerVersionAreNotUsed } from './validators/use-directives-from-newer-transformer-version';
 
 const allValidators = [
   validateIndexScalarTypes,
@@ -39,6 +42,9 @@ const allValidators = [
   validateIndexExistsInRelatedModel,
   validateEnumIsDefinedOnce,
   validateKeyExistsInRelatedModel,
+  validateBelongsToIsUsedWhenDatastoreInUse,
+  validateDirectivesFromOlderTransformerVersionAreNotUsed,
+  validateDirectivesFromNewerTransformerVersionAreNotUsed,
 ];
 
 /**
@@ -48,9 +54,9 @@ const allValidators = [
  * @param schemaString the graphql schema
  * @returns void
  */
-export const validateSchema = (schemaString: string): void => {
+export const validateSchema = (schemaString: string, amplifyFeatureFlags?: string, dataStoreEnabled?: boolean): void => {
   const schema = parse(schemaString);
-  const validationErrors = allValidators.flatMap((validate) => validate(schema));
+  const validationErrors = allValidators.flatMap((validate) => validate(schema, amplifyFeatureFlags, dataStoreEnabled));
   if (validationErrors.length > 0) {
     const allErrorMessages = validationErrors.map((error: Error) => `${error.name} - ${error.message}`);
     throw new ValidationError(allErrorMessages.join('\n'));

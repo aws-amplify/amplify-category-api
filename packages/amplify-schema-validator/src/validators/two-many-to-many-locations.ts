@@ -13,7 +13,11 @@ import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
  * @param schema graphql schema
  * @returns true
  */
-export const validateManyToManyTwoLocations = (schema: DocumentNode): Error[] => {
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+export const validateManyToManyTwoLocations = (
+  schema: DocumentNode, _amplifyFeatureFlags?: string, _dataStoreEnabled?: boolean,
+): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,
