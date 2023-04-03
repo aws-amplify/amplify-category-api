@@ -211,12 +211,12 @@ type ExecutionContext = {
   sendKeyDown: (repeat?: number) => ExecutionContext;
   sendKeyUp: (repeat?: number) => ExecutionContext;
   /**
-   * @deprecated If using `amplify-prompts` sending a newline after 'y' is not required and could cause problems. Use `sendYes` instead.
+   * @deprecated If using `@aws-amplify/amplify-prompts` sending a newline after 'y' is not required and could cause problems. Use `sendYes` instead.
    */
   sendConfirmYes: () => ExecutionContext;
   sendYes: () => ExecutionContext;
   /**
-   * @deprecated If using `amplify-prompts` sending a newline after 'n' is not required and could cause problems. Use `sendNo` instead.
+   * @deprecated If using `@aws-amplify/amplify-prompts` sending a newline after 'n' is not required and could cause problems. Use `sendNo` instead.
    */
   sendConfirmNo: () => ExecutionContext;
   sendNo: () => ExecutionContext;

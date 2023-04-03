@@ -7,7 +7,7 @@ import {
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { featureFlags } from './test-helpers';
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 const userPoolsDefaultConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {

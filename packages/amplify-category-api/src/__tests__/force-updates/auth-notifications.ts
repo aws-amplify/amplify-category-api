@@ -5,7 +5,7 @@ import {
   FeatureFlags,
   pathManager,
   stateManager,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import {
   displayAuthNotification,
   hasFieldAuthDirectives,
@@ -14,7 +14,7 @@ import {
   notifySecurityEnhancement,
 } from '../../force-updates/auth-notifications';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const FeatureFlagsMock = FeatureFlags as jest.Mocked<typeof FeatureFlags>;
 FeatureFlagsMock.getNumber.mockReturnValue(2);

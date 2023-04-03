@@ -5,7 +5,7 @@ import { migrateAuth } from './migrators/auth';
 import { migrateConnection } from './migrators/connection';
 import { combineSchemas, getDefaultAuth, replaceFile, SchemaDocument } from './utils';
 import { DocumentNode } from 'graphql/language';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 import {
   authRuleUsesQueriesOrMutations,

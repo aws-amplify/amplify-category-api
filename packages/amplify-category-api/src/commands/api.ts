@@ -1,5 +1,5 @@
-import { $TSContext, AmplifyCategories } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext, AmplifyCategories } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 
 export const name = AmplifyCategories.API;

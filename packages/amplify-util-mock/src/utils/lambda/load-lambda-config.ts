@@ -1,6 +1,6 @@
 import {
   JSONUtilities, pathManager, $TSAny, $TSContext, $TSObject,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import detect from 'detect-port';
 import { lambdaFunctionHandler } from '../../CFNParser/resource-processors/lambda';

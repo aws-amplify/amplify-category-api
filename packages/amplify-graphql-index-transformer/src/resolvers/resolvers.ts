@@ -50,11 +50,11 @@ import {
 } from 'graphql-transformer-common';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../types';
 import { lookupResolverName } from '../utils';
-import { stateManager, pathManager, $TSAny } from 'amplify-cli-core';
+import { stateManager, pathManager, $TSAny } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import _ from 'lodash';
 import {
-  RDSIndexVTLGenerator, 
+  RDSIndexVTLGenerator,
   DynamoDBIndexVTLGenerator
 } from './generators';
 
@@ -490,7 +490,7 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
     const table = getTable(ctx, object);
     stackId = table.stack.node.id;
   }
-  
+
   if (!dataSource) {
     throw new Error(`Could not find datasource with name ${dataSourceName} in context.`);
   }

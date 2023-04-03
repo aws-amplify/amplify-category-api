@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { parametersFileName } from './aws-constants';

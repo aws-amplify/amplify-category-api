@@ -1,4 +1,4 @@
-import { AmplifyCategories } from 'amplify-cli-core';
+import { AmplifyCategories } from '@aws-amplify/amplify-cli-core';
 
 export const ADMIN_QUERIES_NAME = 'AdminQueries';
 export const NETWORK_STACK_LOGICAL_ID = 'NetworkStack';

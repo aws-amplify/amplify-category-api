@@ -1,8 +1,8 @@
 import { mergeTypeDefs } from '@graphql-tools/merge';
 import {
   $TSAny, $TSContext, AmplifyError, exitOnNextTick, FeatureFlags, pathManager, ResourceDoesNotExistError, stateManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as graphql from 'graphql';
 import {

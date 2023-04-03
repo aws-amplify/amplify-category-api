@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@1.1.1...@aws-amplify/graphql-searchable-transformer@1.2.0) (2023-03-30)
+
+### Features
+
+- inject project info into api overrides ([#1372](https://github.com/aws-amplify/amplify-category-api/issues/1372)) ([2b92351](https://github.com/aws-amplify/amplify-category-api/commit/2b92351c95a5c820e0e758e69226c08f4355d472))
+
 ## [1.1.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@1.1.0...@aws-amplify/graphql-searchable-transformer@1.1.1) (2023-03-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer

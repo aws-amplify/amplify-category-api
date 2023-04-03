@@ -18,9 +18,10 @@ import {
   AmplifyCategories,
   AmplifySupportedService,
   JSONUtilities,
-  pathManager, stateManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+  pathManager,
+  stateManager,
+} from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import {

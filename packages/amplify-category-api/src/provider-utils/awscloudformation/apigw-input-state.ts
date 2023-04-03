@@ -10,8 +10,8 @@ import {
   PathConstants,
   pathManager,
   stateManager,
-} from 'amplify-cli-core';
-import { prompter } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import { join } from 'path';
 import { ApigwInputs, ApigwStackTransform, CrudOperation, Path, PermissionSetting } from './cdk-stack-builder';

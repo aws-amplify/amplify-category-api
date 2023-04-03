@@ -3,7 +3,7 @@ import {
   $TSContext,
   AmplifyCategories,
   pathManager,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 
 import fs from 'fs-extra';
 import path from 'path';
