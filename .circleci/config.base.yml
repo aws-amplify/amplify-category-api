@@ -18,7 +18,7 @@ executors:
 
   l: &linux-e2e-executor
     docker:
-      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-node18-repo-public:latest
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:node18
     working_directory: ~/repo
     resource_class: large
     environment:
