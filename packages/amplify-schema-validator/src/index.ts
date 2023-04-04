@@ -42,10 +42,18 @@ const allValidators = [
   validateIndexExistsInRelatedModel,
   validateEnumIsDefinedOnce,
   validateKeyExistsInRelatedModel,
+];
+
+const allValidatorsWithContext = [
   validateBelongsToIsUsedWhenDatastoreInUse,
   validateDirectivesFromOlderTransformerVersionAreNotUsed,
   validateDirectivesFromNewerTransformerVersionAreNotUsed,
 ];
+
+export type ValidateSchemaProps = {
+  graphqlTransformerVersion: number;
+  isDataStoreEnabled: boolean;
+};
 
 /**
  * The primary export of this library
@@ -54,9 +62,25 @@ const allValidators = [
  * @param schemaString the graphql schema
  * @returns void
  */
-export const validateSchema = (schemaString: string, amplifyFeatureFlags?: string, dataStoreEnabled?: boolean): void => {
+export const validateSchema = (schemaString: string): void => {
   const schema = parse(schemaString);
-  const validationErrors = allValidators.flatMap((validate) => validate(schema, amplifyFeatureFlags, dataStoreEnabled));
+  const validationErrors = allValidators.flatMap((validate) => validate(schema));
+  if (validationErrors.length > 0) {
+    const allErrorMessages = validationErrors.map((error: Error) => `${error.name} - ${error.message}`);
+    throw new ValidationError(allErrorMessages.join('\n'));
+  }
+};
+
+/**
+ * The primary export of this library
+ * runs all validators and throws a ValidationException with all failure reasons
+ *
+ * @param schemaString the graphql schema
+ * @returns void
+ */
+export const validateSchemaWithContext = (schemaString: string, props: ValidateSchemaProps): void => {
+  const schema = parse(schemaString);
+  const validationErrors = allValidatorsWithContext.flatMap((validate) => validate(schema, props));
   if (validationErrors.length > 0) {
     const allErrorMessages = validationErrors.map((error: Error) => `${error.name} - ${error.message}`);
     throw new ValidationError(allErrorMessages.join('\n'));

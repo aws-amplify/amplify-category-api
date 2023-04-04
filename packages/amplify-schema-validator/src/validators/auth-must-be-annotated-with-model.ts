@@ -12,10 +12,7 @@ import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
    * @returns true if types annotated with @auth are also be annotated with @model.
    */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-export const validateAuthIsAnnotatedWithModel = (
-  schema: DocumentNode, _amplifyFeatureFlags?: string, _dataStoreEnabled?: boolean,
-): Error[] => {
+export const validateAuthIsAnnotatedWithModel = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,

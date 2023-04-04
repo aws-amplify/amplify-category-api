@@ -16,10 +16,7 @@ import { getObjectWithName } from '../helpers/get-object-with-name';
  * @returns true if @belongsTo fields match related type primary key
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-export const validateBelongsToFieldsMatchRelatedTypePrimaryKey = (
-  schema: DocumentNode, _amplifyFeatureFlags?: string, _dataStoreEnabled?: boolean,
-): Error[] => {
+export const validateBelongsToFieldsMatchRelatedTypePrimaryKey = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,

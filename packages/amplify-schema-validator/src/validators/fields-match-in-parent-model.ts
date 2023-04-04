@@ -14,10 +14,7 @@ import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
  * @returns true if fields match in parent model
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-export const validateFieldsMatchInParentModel = (
-  schema: DocumentNode, _amplifyFeatureFlags?: string, _dataStoreEnabled?: boolean,
-): Error[] => {
+export const validateFieldsMatchInParentModel = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,

@@ -12,10 +12,7 @@ import { ValidationError } from '../exceptions/validation-error';
  * @returns true if reserved words are not used in type names
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-export const validateReservedTypeNames = (
-  schema: DocumentNode, _amplifyFeatureFlags?: string, _dataStoreEnabled?: boolean,
-): Error[] => {
+export const validateReservedTypeNames = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const reservedWords = ['Query', 'Mutation', 'Subscription'];
   const objectTypeDefinitions = schema.definitions.filter(

@@ -15,10 +15,7 @@ import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
    * @returns true if key exists in the related model
    */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-export const validateKeyExistsInRelatedModel = (
-  schema: DocumentNode, _amplifyFeatureFlags?: string, _dataStoreEnabled?: boolean,
-): Error[] => {
+export const validateKeyExistsInRelatedModel = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,

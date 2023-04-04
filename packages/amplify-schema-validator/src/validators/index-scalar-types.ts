@@ -16,10 +16,7 @@ import { getTypeDefinitionsOfKind } from '../helpers/get-type-definitions-of-kin
  * @returns true
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-export const validateIndexScalarTypes = (
-  schema: DocumentNode, _amplifyFeatureFlags?: string, _dataStoreEnabled?: boolean,
-): Error[] => {
+export const validateIndexScalarTypes = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,

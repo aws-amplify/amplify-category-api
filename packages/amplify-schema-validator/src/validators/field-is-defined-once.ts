@@ -12,10 +12,7 @@ import { ValidationError } from '../exceptions/validation-error';
  * @returns true if a field is defined once in a model
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-export const validateFieldIsDefinedOnce = (
-  schema: DocumentNode, _amplifyFeatureFlags?: string, _dataStoreEnabled?: boolean,
-): Error[] => {
+export const validateFieldIsDefinedOnce = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,

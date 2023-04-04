@@ -13,10 +13,7 @@ import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
    * @returns true if an index with same name exists only once in a model
    */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-export const validateIndexIsDefinedOnce = (
-  schema: DocumentNode, _amplifyFeatureFlags?: string, _dataStoreEnabled?: boolean,
-): Error[] => {
+export const validateIndexIsDefinedOnce = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,

@@ -15,10 +15,7 @@ import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
  * @returns true if index exists in the related model
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-export const validateIndexExistsInRelatedModel = (
-  schema: DocumentNode, _amplifyFeatureFlags?: string, _dataStoreEnabled?: boolean,
-): Error[] => {
+export const validateIndexExistsInRelatedModel = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,

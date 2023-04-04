@@ -14,10 +14,7 @@ import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
  * @returns true if sort key fields exists in model
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-export const verifyIndexSortKeyFieldsExistInModel = (
-  schema: DocumentNode, _amplifyFeatureFlags?: string, _dataStoreEnabled?: boolean,
-): Error[] => {
+export const verifyIndexSortKeyFieldsExistInModel = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,

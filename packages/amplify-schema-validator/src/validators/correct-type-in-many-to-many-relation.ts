@@ -14,10 +14,7 @@ import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
  * @returns true if @manyToMany relation has correct type
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-export const validateCorrectTypeInManyToManyRelation = (
-  schema: DocumentNode, _amplifyFeatureFlags?: string, _dataStoreEnabled?: boolean,
-): Error[] => {
+export const validateCorrectTypeInManyToManyRelation = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,

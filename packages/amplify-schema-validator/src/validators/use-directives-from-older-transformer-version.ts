@@ -12,19 +12,18 @@ import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
  * @returns true if correct directives are used
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
+type ValidateSchemaProps = {
+  graphqlTransformerVersion: number;
+  isDataStoreEnabled: boolean;
+};
+
 export const validateDirectivesFromOlderTransformerVersionAreNotUsed = (
-  schema: DocumentNode, amplifyFeatureFlags?: string, _dataStoreEnabled?: boolean,
+  schema: DocumentNode, props: ValidateSchemaProps,
 ): Error[] => {
-  if (!amplifyFeatureFlags) {
+  if (props.graphqlTransformerVersion !== 2) {
     return [];
   }
-  const featureFlags = JSON.parse(amplifyFeatureFlags);
-  const transformerVersion = featureFlags.features.graphqltransformer.transformerversion;
-  console.log('transformerVersion -- ', transformerVersion);
-  if (transformerVersion !== 2) {
-    return [];
-  }
+
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,

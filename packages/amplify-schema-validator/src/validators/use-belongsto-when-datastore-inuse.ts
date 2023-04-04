@@ -14,11 +14,15 @@ import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
  * @returns true if models do not refer each other with @hasMany/@hasOne relation when dataStore is enabled
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
+type ValidateSchemaProps = {
+  graphqlTransformerVersion: number;
+  isDataStoreEnabled: boolean;
+};
+
 export const validateBelongsToIsUsedWhenDatastoreInUse = (
-  schema: DocumentNode, _amplifyFeatureFlags?: string, dataStoreEnabled?: boolean,
+  schema: DocumentNode, props: ValidateSchemaProps,
 ): Error[] => {
-  if (!dataStoreEnabled) {
+  if (!props.isDataStoreEnabled) {
     return [];
   }
 

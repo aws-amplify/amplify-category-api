@@ -12,10 +12,7 @@ import { ValidationError } from '../exceptions/validation-error';
  * @returns true if an enum is defined once
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-export const validateEnumIsDefinedOnce = (
-  schema: DocumentNode, _amplifyFeatureFlags?: string, _dataStoreEnabled?: boolean,
-): Error[] => {
+export const validateEnumIsDefinedOnce = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const enumTypeDefinitions = schema.definitions.filter(
     (defintion) => defintion.kind === Kind.ENUM_TYPE_DEFINITION,
