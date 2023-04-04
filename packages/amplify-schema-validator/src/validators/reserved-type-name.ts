@@ -19,7 +19,8 @@ export const validateReservedTypeNames = (schema: DocumentNode): Error[] => {
   ) as ObjectTypeDefinitionNode[];
   objectTypeDefinitions.forEach((objectTypeDefinition) => {
     const objectName = objectTypeDefinition.name.value;
-    if (reservedWords.includes(objectName)) {
+    const directives = objectTypeDefinition.directives?.map((directive) => directive.name.value);
+    if (directives && directives.includes('model') && reservedWords.includes(objectName)) {
       errors.push(new ValidationError(
         `${objectName} is a reserved type name and currently in use within the default schema element.`,
       ));
