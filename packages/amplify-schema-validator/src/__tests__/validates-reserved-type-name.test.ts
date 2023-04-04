@@ -7,4 +7,9 @@ describe('Validate Schema', () => {
     const errorRegex = 'Query is a reserved type name and currently in use within the default schema element.';
     expect(() => validateSchema(schema)).toThrow(errorRegex);
   });
+
+  it('passed validation when reserved words are not used in model names', () => {
+    const schema = readSchema('valid-reserved-type-name.graphql');
+    expect(() => validateSchema(schema)).not.toThrow();
+  });
 });
