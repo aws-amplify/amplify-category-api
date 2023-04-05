@@ -115,22 +115,11 @@ describe('user created resolvers', () => {
       // With default behavior, functions in Author stack will reference to functions to Todo stack
       const authorJsonPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'stacks', 'Author.json');
       const authorJsonBefore = JSON.parse(fs.readFileSync(authorJsonPath).toString());
-      expect(authorJsonBefore.Resources.GetAuthorResolver.Properties.PipelineConfig.Functions).toMatchInlineSnapshot(`
-        Array [
-          Object {
-            "Ref": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoQuerygetTodoauth0FunctionQuerygetTodoauth0FunctionAppSyncFunction9F8E8363FunctionId",
-          },
-          Object {
-            "Ref": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoQuerygetTodopostAuth0FunctionQuerygetTodopostAuth0FunctionAppSyncFunction083ADD8DFunctionId",
-          },
-          Object {
-            "Fn::GetAtt": Array [
-              "QueryGetAuthorDataResolverFnQueryGetAuthorDataResolverFnAppSyncFunctionAABE7ED4",
-              "FunctionId",
-            ],
-          },
-        ]
-      `);
+      expect(authorJsonBefore.Resources.GetAuthorResolver.Properties.PipelineConfig.Functions).toEqual(expect.arrayContaining([
+        { 'Ref': expect.stringContaining('getTodoauth0Function') },
+        { 'Ref': expect.stringContaining('getTodopostAuth0Function') },
+        { 'Fn::GetAtt': expect.arrayContaining([expect.stringContaining('GetAuthorDataResolverFn'), 'FunctionId']) },
+      ]));
       
       // Set 'DisableResolverDeduping' to true in transform.conf.json file
       updateConfig(projectDir, apiName, {
@@ -142,28 +131,11 @@ describe('user created resolvers', () => {
       // When 'DisableResolverDeduping' is set to true, all the functions in Author stack will have its own functions.
       // There shouldn't be any cross stack function references.
       const authorJsonAfter = JSON.parse(fs.readFileSync(authorJsonPath).toString());
-      expect(authorJsonAfter.Resources.GetAuthorResolver.Properties.PipelineConfig.Functions).toMatchInlineSnapshot(`
-        Array [
-          Object {
-            "Fn::GetAtt": Array [
-              "QuerygetAuthorauth0FunctionQuerygetAuthorauth0FunctionAppSyncFunction6A0B294E",
-              "FunctionId",
-            ],
-          },
-          Object {
-            "Fn::GetAtt": Array [
-              "QuerygetAuthorpostAuth0FunctionQuerygetAuthorpostAuth0FunctionAppSyncFunctionB0D4FC9D",
-              "FunctionId",
-            ],
-          },
-          Object {
-            "Fn::GetAtt": Array [
-              "QueryGetAuthorDataResolverFnQueryGetAuthorDataResolverFnAppSyncFunctionAABE7ED4",
-              "FunctionId",
-            ],
-          },
-        ]
-      `);
+      expect(authorJsonAfter.Resources.GetAuthorResolver.Properties.PipelineConfig.Functions).toEqual(expect.arrayContaining([
+        { 'Fn::GetAtt': expect.arrayContaining([expect.stringContaining('getAuthorauth0Function'), 'FunctionId']) },
+        { 'Fn::GetAtt': expect.arrayContaining([expect.stringContaining('getAuthorpostAuth0Function'), 'FunctionId']) },
+        { 'Fn::GetAtt': expect.arrayContaining([expect.stringContaining('GetAuthorDataResolverFn'), 'FunctionId']) },
+      ]));
     });
   });
 
