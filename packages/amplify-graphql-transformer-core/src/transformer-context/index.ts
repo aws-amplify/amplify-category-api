@@ -53,6 +53,7 @@ export class TransformerContext implements TransformerContextProvider {
   public _api?: GraphQLAPIProvider;
   public readonly authConfig: AppSyncAuthConfiguration;
   public readonly sandboxModeEnabled: boolean;
+  public readonly disableResolverDeduping: boolean;
   private resolverConfig: ResolverConfig | undefined;
   public readonly modelToDatasourceMap: Map<string, DatasourceType>;
   public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
@@ -68,6 +69,7 @@ export class TransformerContext implements TransformerContextProvider {
     featureFlags?: FeatureFlagProvider,
     resolverConfig?: ResolverConfig,
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
+    disableResolverDeduping?: boolean,
   ) {
     this.output = new TransformerOutput(inputDocument);
     this.resolvers = new ResolverManager();
@@ -77,6 +79,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.stackManager = stackManager;
     this.authConfig = authConfig;
     this.sandboxModeEnabled = sandboxModeEnabled ?? false;
+    this.disableResolverDeduping = disableResolverDeduping ?? false;
     this.resourceHelper = new TransformerResourceHelper(stackManager);
     this.featureFlags = featureFlags ?? new NoopFeatureFlagProvider();
     this.resolverConfig = resolverConfig;
