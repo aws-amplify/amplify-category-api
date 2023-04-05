@@ -249,6 +249,8 @@ export interface GraphQLTransformOptions {
     // (undocumented)
     readonly buildParameters?: Record<string, any>;
     // (undocumented)
+    readonly disableResolverDeduping?: boolean;
+    // (undocumented)
     readonly featureFlags?: FeatureFlagProvider;
     // (undocumented)
     readonly host?: TransformHostProvider;
@@ -469,6 +471,8 @@ export { SyncUtils }
 // @public (undocumented)
 export interface TransformConfig {
     // (undocumented)
+    DisableResolverDeduping?: boolean;
+    // (undocumented)
     NodeToNodeEncryption?: boolean;
     // (undocumented)
     StackMapping?: {
@@ -619,7 +623,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     // (undocumented)
     synthesize: (context: TransformerContextProvider, api: GraphQLAPIProvider) => void;
     // (undocumented)
-    synthesizeResolvers: (stack: Stack, api: GraphQLAPIProvider, slotsNames: string[]) => AppSyncFunctionConfigurationProvider[];
+    synthesizeResolvers: (stack: Stack, api: GraphQLAPIProvider, slotsNames: string[], disableResolverDeduping?: boolean) => AppSyncFunctionConfigurationProvider[];
     // (undocumented)
     updateSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider) => void;
 }

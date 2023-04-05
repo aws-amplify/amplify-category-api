@@ -132,7 +132,7 @@ describe('user created resolvers', () => {
         ]
       `);
       
-      // Set 'DisableResolverDeduping' to true in transform.config.json file
+      // Set 'DisableResolverDeduping' to true in transform.conf.json file
       updateConfig(projectDir, apiName, {
         'Version': 5,
         'DisableResolverDeduping': true,
