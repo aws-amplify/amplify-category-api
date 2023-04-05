@@ -397,8 +397,6 @@ export const TRANSFORM_CURRENT_VERSION = 5;
 // @public (undocumented)
 export interface TransformConfig {
     // (undocumented)
-    DisableResolverDeduping?: boolean;
-    // (undocumented)
     ElasticsearchWarning?: boolean;
     // (undocumented)
     Migration?: TransformMigrationConfig;
