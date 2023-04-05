@@ -717,5 +717,6 @@ function createActionFunction(context: TransformerContextProvider, stack: cdk.St
     MappingTemplate.inlineTemplateFromString(print(actionFunctionResolver.response)),
     datasourceName,
     stack,
+    context.disableResolverDeduping,
   );
 }

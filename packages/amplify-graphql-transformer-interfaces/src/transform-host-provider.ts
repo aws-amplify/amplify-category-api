@@ -46,6 +46,7 @@ export interface TransformHostProvider {
     responseMappingTemplate: MappingTemplateProvider,
     dataSourceName: string,
     stack?: Stack,
+    disableResolverDeduping?: boolean,
   ) => AppSyncFunctionConfigurationProvider;
 
   addResolver: (

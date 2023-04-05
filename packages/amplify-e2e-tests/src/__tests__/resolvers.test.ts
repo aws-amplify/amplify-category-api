@@ -12,6 +12,7 @@ import {
   amplifyPushGraphQlWithCognitoPrompt,
   generateModels,
   amplifyPushUpdate,
+  updateConfig,
 } from 'amplify-category-api-e2e-core';
 import { join } from 'path';
 import * as fs from 'fs-extra';
@@ -98,6 +99,66 @@ describe('user created resolvers', () => {
           Object {
             "Fn::GetAtt": Array [
               "QuerylistTodosauth0FunctionQuerylistTodosauth0FunctionAppSyncFunction7D761961",
+              "FunctionId",
+            ],
+          },
+        ]
+      `);
+    });
+
+    it('disable resolver deduping using transform.config.json file', async () => {
+      await addApiWithoutSchema(projectDir, { apiName });
+      updateApiSchema(projectDir, apiName, 'two_models_with_cognito_auth.graphql');
+      await amplifyPushGraphQlWithCognitoPrompt(projectDir);
+      await apiGqlCompile(projectDir);
+      
+      // With default behavior, functions in Author stack will reference to functions to Todo stack
+      const authorJsonPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'stacks', 'Author.json');
+      const authorJsonBefore = JSON.parse(fs.readFileSync(authorJsonPath).toString());
+      expect(authorJsonBefore.Resources.GetAuthorResolver.Properties.PipelineConfig.Functions).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "Ref": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoQuerygetTodoauth0FunctionQuerygetTodoauth0FunctionAppSyncFunction9F8E8363FunctionId",
+          },
+          Object {
+            "Ref": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoQuerygetTodopostAuth0FunctionQuerygetTodopostAuth0FunctionAppSyncFunction083ADD8DFunctionId",
+          },
+          Object {
+            "Fn::GetAtt": Array [
+              "QueryGetAuthorDataResolverFnQueryGetAuthorDataResolverFnAppSyncFunctionAABE7ED4",
+              "FunctionId",
+            ],
+          },
+        ]
+      `);
+      
+      // Set 'DisableResolverDeduping' to true in transform.config.json file
+      updateConfig(projectDir, apiName, {
+        'Version': 5,
+        'DisableResolverDeduping': true,
+      });
+      await apiGqlCompile(projectDir);
+
+      // When 'DisableResolverDeduping' is set to true, all the functions in Author stack will have its own functions.
+      // There shouldn't be any cross stack function references.
+      const authorJsonAfter = JSON.parse(fs.readFileSync(authorJsonPath).toString());
+      expect(authorJsonAfter.Resources.GetAuthorResolver.Properties.PipelineConfig.Functions).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "QuerygetAuthorauth0FunctionQuerygetAuthorauth0FunctionAppSyncFunction6A0B294E",
+              "FunctionId",
+            ],
+          },
+          Object {
+            "Fn::GetAtt": Array [
+              "QuerygetAuthorpostAuth0FunctionQuerygetAuthorpostAuth0FunctionAppSyncFunctionB0D4FC9D",
+              "FunctionId",
+            ],
+          },
+          Object {
+            "Fn::GetAtt": Array [
+              "QueryGetAuthorDataResolverFnQueryGetAuthorDataResolverFnAppSyncFunctionAABE7ED4",
               "FunctionId",
             ],
           },
