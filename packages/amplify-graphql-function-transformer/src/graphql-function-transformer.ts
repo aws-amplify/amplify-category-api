@@ -126,7 +126,6 @@ export class FunctionTransformer extends TransformerPluginBase {
             ),
             dataSourceId,
             funcStack,
-            context.disableResolverDeduping,
           );
 
           createdResources.set(functionId, func);

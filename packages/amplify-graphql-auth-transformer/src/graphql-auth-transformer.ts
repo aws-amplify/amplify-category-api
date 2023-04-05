@@ -808,7 +808,6 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
         NONE_DS,
         stack,
-        ctx.disableResolverDeduping,
       );
       (fieldResolver.pipelineConfig.functions as string[]).unshift(authFunction.functionId);
     } else {
