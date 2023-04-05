@@ -434,8 +434,6 @@ export interface TransformerContextProvider {
     dataSources: TransformerDataSourceManagerProvider;
     // (undocumented)
     datasourceSecretParameterLocations: Map<string, TransformerSecrets>;
-    disableResolverDeduping: boolean;
-    // (undocumented)
     featureFlags: FeatureFlagProvider;
     // (undocumented)
     getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
@@ -700,7 +698,7 @@ export type TransformerValidationStepContextProvider = Pick<TransformerContextPr
 // @public (undocumented)
 export interface TransformHostProvider {
     // (undocumented)
-    addAppSyncFunction: (name: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, dataSourceName: string, stack?: Stack, disableResolverDeduping?: boolean) => AppSyncFunctionConfigurationProvider;
+    addAppSyncFunction: (name: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, dataSourceName: string, stack?: Stack) => AppSyncFunctionConfigurationProvider;
     // (undocumented)
     addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource;
     // (undocumented)

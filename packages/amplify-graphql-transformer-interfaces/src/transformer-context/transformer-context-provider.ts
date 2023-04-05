@@ -32,7 +32,6 @@ export interface TransformerContextProvider {
   featureFlags: FeatureFlagProvider;
   authConfig: AppSyncAuthConfiguration;
   sandboxModeEnabled: boolean;
-  disableResolverDeduping: boolean;
 
   isProjectUsingDataStore(): boolean;
   getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;

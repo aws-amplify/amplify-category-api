@@ -332,7 +332,6 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
     ),
     dataSourceId,
     stack,
-    context.disableResolverDeduping,
   );
 
   return context.api.host.addResolver(

@@ -699,7 +699,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     // (undocumented)
     synthesize: (context: TransformerContextProvider, api: GraphQLAPIProvider) => void;
     // (undocumented)
-    synthesizeResolvers: (stack: Stack, api: GraphQLAPIProvider, slotsNames: string[], disableResolverDeduping?: boolean) => AppSyncFunctionConfigurationProvider[];
+    synthesizeResolvers: (stack: Stack, api: GraphQLAPIProvider, slotsNames: string[]) => AppSyncFunctionConfigurationProvider[];
     // (undocumented)
     updateSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider) => void;
 }

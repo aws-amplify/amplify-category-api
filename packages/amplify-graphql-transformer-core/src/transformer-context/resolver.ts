@@ -248,8 +248,8 @@ export class TransformerResolver implements TransformerResolverProvider {
   synthesize = (context: TransformerContextProvider, api: GraphQLAPIProvider): void => {
     const stack = this.stack || (context.stackManager as StackManager).rootStack;
     this.ensureNoneDataSource(api);
-    const requestFns = this.synthesizeResolvers(stack, api, this.requestSlots, context.disableResolverDeduping);
-    const responseFns = this.synthesizeResolvers(stack, api, this.responseSlots, context.disableResolverDeduping);
+    const requestFns = this.synthesizeResolvers(stack, api, this.requestSlots);
+    const responseFns = this.synthesizeResolvers(stack, api, this.responseSlots);
     // substitue template name values
     [this.requestMappingTemplate, this.requestMappingTemplate].map(template => this.substitueSlotInfo(template, 'main', 0));
 
@@ -259,7 +259,6 @@ export class TransformerResolver implements TransformerResolverProvider {
       this.responseMappingTemplate,
       this.datasource?.name || NONE_DATA_SOURCE_NAME,
       stack,
-      context.disableResolverDeduping,
     );
 
     let dataSourceType = 'NONE';
@@ -367,7 +366,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     );
   };
 
-  synthesizeResolvers = (stack: Stack, api: GraphQLAPIProvider, slotsNames: string[], disableResolverDeduping: boolean = false): AppSyncFunctionConfigurationProvider[] => {
+  synthesizeResolvers = (stack: Stack, api: GraphQLAPIProvider, slotsNames: string[]): AppSyncFunctionConfigurationProvider[] => {
     const appSyncFunctions: AppSyncFunctionConfigurationProvider[] = [];
 
     for (const slotName of slotsNames) {
@@ -388,7 +387,6 @@ export class TransformerResolver implements TransformerResolverProvider {
             responseMappingTemplate || MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
             dataSource?.name || NONE_DATA_SOURCE_NAME,
             stack,
-            disableResolverDeduping,
           );
           appSyncFunctions.push(fn);
         }
