@@ -336,6 +336,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     $util.qr($ctx.stash.put("metadata", {}))
     $util.qr($ctx.stash.metadata.put("dataSourceType", "${dataSourceType}"))
     $util.qr($ctx.stash.metadata.put("apiId", "${api.apiId}"))
+    $util.qr($ctx.stash.put("sharedVariables", {}))
     ${dataSource}
     `;
     const authModes = [context.authConfig.defaultAuthentication, ...(context.authConfig.additionalAuthenticationProviders || [])].map(

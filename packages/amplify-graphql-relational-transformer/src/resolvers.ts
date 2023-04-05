@@ -263,8 +263,16 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
       print(
         compoundExpression([
           iff(ref('ctx.stash.deniedField'), raw('#return($util.toJson(null))')),
+          set(
+            ref('partitionKeyValue'),
+            methodCall(
+              ref(`util.defaultIfNull`),
+              ref(`ctx.stash.sharedVariables.get("${connectionAttributes[0]}")`),
+              ref(`ctx.source.${connectionAttributes[0]}`)
+            )
+          ),
           ifElse(
-            raw(`$util.isNull($ctx.source.${connectionAttributes[0]})`),
+            raw(`$util.isNull($partitionKeyValue)`),
             compoundExpression([set(ref('result'), obj({ items: list([]) })), raw('#return($result)')]),
             compoundExpression([...setup, queryObj]),
           ),
@@ -306,7 +314,7 @@ function makeExpression(keySchema: any[], connectionAttributes: string[]): Objec
         '#sortKey': str(keySchema[1].attributeName),
       }),
       expressionValues: obj({
-        ':partitionKey': ref(`util.dynamodb.toDynamoDB($context.source.${connectionAttributes[0]})`),
+        ':partitionKey': ref(`util.dynamodb.toDynamoDB($partitionKeyValue)`),
         ':sortKey': ref(
           `util.dynamodb.toDynamoDB(${
             condensedSortKeyValue ? `"${condensedSortKeyValue}"` : `$context.source.${connectionAttributes[1]}`
@@ -322,7 +330,7 @@ function makeExpression(keySchema: any[], connectionAttributes: string[]): Objec
       '#partitionKey': str(keySchema[0].attributeName),
     }),
     expressionValues: obj({
-      ':partitionKey': ref(`util.dynamodb.toDynamoDB($context.source.${connectionAttributes[0]})`),
+      ':partitionKey': ref(`util.dynamodb.toDynamoDB($partitionKeyValue)`),
     }),
   });
 }
