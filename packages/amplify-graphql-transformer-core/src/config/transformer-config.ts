@@ -70,4 +70,11 @@ export interface TransformConfig {
    * Override NodeToNodeEncryption parameter on Search Domain
    */
   NodeToNodeEncryption?: boolean;
+
+  /**
+   * Determines whether to apply resolver deduping or not.
+   * - When set to 'true', Amplify will create its own AppSync functions in each Model stack.
+   * - When set to 'false', Amplify will reuse AppSync functions across Model stacks if the HASH match.
+   */
+  DisableResolverDeduping?: boolean;
 }

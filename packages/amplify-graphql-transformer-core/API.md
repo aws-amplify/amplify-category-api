@@ -249,6 +249,8 @@ export interface GraphQLTransformOptions {
     // (undocumented)
     readonly buildParameters?: Record<string, any>;
     // (undocumented)
+    readonly disableResolverDeduping?: boolean;
+    // (undocumented)
     readonly featureFlags?: FeatureFlagProvider;
     // (undocumented)
     readonly host?: TransformHostProvider;
@@ -468,6 +470,8 @@ export { SyncUtils }
 
 // @public (undocumented)
 export interface TransformConfig {
+    // (undocumented)
+    DisableResolverDeduping?: boolean;
     // (undocumented)
     NodeToNodeEncryption?: boolean;
     // (undocumented)
