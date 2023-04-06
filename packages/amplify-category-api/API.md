@@ -165,6 +165,9 @@ export function processDockerConfig(context: $TSContext, resource: ApiResource, 
 export function promptToAddApiKey(context: $TSContext): Promise<any>;
 
 // @public (undocumented)
+export const showApiAuthAcm: (context: $TSContext, modelName: string) => Promise<void>;
+
+// @public (undocumented)
 export const SLOT_NAMES: Set<string>;
 
 // @public (undocumented)
