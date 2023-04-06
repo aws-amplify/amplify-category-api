@@ -23,6 +23,7 @@ import { validateKeyExistsInRelatedModel } from './validators/key-exists-in-rela
 import { validateBelongsToIsUsedWhenDatastoreInUse } from './validators/use-belongsto-when-datastore-inuse';
 import { validateDirectivesFromOlderTransformerVersionAreNotUsed } from './validators/use-directives-from-older-transformer-version';
 import { validateDirectivesFromNewerTransformerVersionAreNotUsed } from './validators/use-directives-from-newer-transformer-version';
+import { ValidateSchemaProps } from './helpers/schema-validator-props';
 
 const allValidators = [
   validateIndexScalarTypes,
@@ -50,11 +51,6 @@ const allValidatorsWithContext = [
   validateDirectivesFromNewerTransformerVersionAreNotUsed,
 ];
 
-export type ValidateSchemaProps = {
-  graphqlTransformerVersion: number;
-  isDataStoreEnabled: boolean;
-};
-
 /**
  * The primary export of this library
  * runs all validators and throws a ValidationException with all failure reasons
@@ -73,9 +69,10 @@ export const validateSchema = (schemaString: string): void => {
 
 /**
  * The primary export of this library
- * runs all validators and throws a ValidationException with all failure reasons
+ * runs all validators which require context and throws a ValidationException with all failure reasons
  *
  * @param schemaString the graphql schema
+ * @param props feature flags that are required for validation
  * @returns void
  */
 export const validateSchemaWithContext = (schemaString: string, props: ValidateSchemaProps): void => {

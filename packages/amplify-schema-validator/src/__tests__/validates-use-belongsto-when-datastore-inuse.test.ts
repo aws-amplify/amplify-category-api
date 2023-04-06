@@ -1,5 +1,6 @@
-import { ValidateSchemaProps, validateSchemaWithContext } from '..';
+import { validateSchemaWithContext } from '..';
 import { readSchema } from './helpers/readSchema';
+import { ValidateSchemaProps } from '../helpers/schema-validator-props';
 
 describe('Validate Schema', () => {
   it('fails validation when hasOne and hasMany relation is used when datastore is enabled', () => {

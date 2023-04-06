@@ -6,6 +6,7 @@ import {
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
 import { getObjectWithName } from '../helpers/get-object-with-name';
 import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
+import { ValidateSchemaProps } from '../helpers/schema-validator-props';
 
 /**
  * Validates that models do not refer each other with @hasMany/@hasOne relation when dataStore is enabled
@@ -13,11 +14,6 @@ import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
  * @param schema graphql schema
  * @returns true if models do not refer each other with @hasMany/@hasOne relation when dataStore is enabled
  */
-
-type ValidateSchemaProps = {
-  graphqlTransformerVersion: number;
-  isDataStoreEnabled: boolean;
-};
 
 export const validateBelongsToIsUsedWhenDatastoreInUse = (
   schema: DocumentNode, props: ValidateSchemaProps,

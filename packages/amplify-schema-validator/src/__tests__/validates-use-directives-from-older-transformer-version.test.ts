@@ -1,4 +1,5 @@
-import { ValidateSchemaProps, validateSchemaWithContext } from '..';
+import { validateSchemaWithContext } from '..';
+import { ValidateSchemaProps } from '../helpers/schema-validator-props';
 import { readSchema } from './helpers/readSchema';
 
 const schemaProps: ValidateSchemaProps = {
