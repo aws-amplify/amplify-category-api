@@ -46,8 +46,9 @@ import { getConnectionAttributeName, getObjectPrimaryKey } from './utils';
 
 const CONNECTION_STACK = 'ConnectionStack';
 const authFilter = ref('ctx.stash.authFilter');
+const PARTITION_KEY_VALUE = 'partitionKeyValue';
 
-function buildKeyValueExpression(fieldName: string, object: ObjectTypeDefinitionNode) {
+function buildKeyValueExpression(fieldName: string, object: ObjectTypeDefinitionNode, isPartitionKey: boolean = false) {
   const field = object.fields?.find(it => it.name.value === fieldName);
 
   // can be auto-generated
@@ -56,7 +57,7 @@ function buildKeyValueExpression(fieldName: string, object: ObjectTypeDefinition
   return ref(
     `util.parseJson($util.dynamodb.toDynamoDBJson($util.${
       attributeType === 'S' ? 'defaultIfNullOrBlank' : 'defaultIfNull'
-    }($ctx.source.${fieldName}, "${NONE_VALUE}")))`,
+    }(${isPartitionKey ?  `$${PARTITION_KEY_VALUE}` : `$ctx.source.${fieldName}`}, "${NONE_VALUE}")))`,
   );
 }
 
@@ -83,7 +84,7 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
   };
 
   const totalExpressionValues: Record<string, Expression> = {
-    ':partitionValue': buildKeyValueExpression(localFields[0], ctx.output.getObject(object.name.value)!),
+    ':partitionValue': buildKeyValueExpression(localFields[0], ctx.output.getObject(object.name.value)!, true),
   };
 
   // Add a composite sort key or simple sort key if there is one.
@@ -114,8 +115,19 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
       print(
         compoundExpression([
           iff(ref('ctx.stash.deniedField'), raw('#return($util.toJson(null))')),
+          set(
+            ref(PARTITION_KEY_VALUE),
+            methodCall(
+              ref(`util.defaultIfNull`),
+              ref(`ctx.stash.connectionAttibutes.get("${localFields[0]}")`),
+              ref(`ctx.source.${localFields[0]}`)
+            )
+          ),
           ifElse(
-            or(localFields.map(f => raw(`$util.isNull($ctx.source.${f})`))),
+            or([
+              methodCall(ref('util.isNull'), ref(PARTITION_KEY_VALUE)),
+              ...localFields.slice(1).map(f => raw(`$util.isNull($ctx.source.${f})`))
+            ]),
             raw('#return'),
             compoundExpression([
               set(ref('GetRequest'), obj({ version: str('2018-05-29'), operation: str('Query') })),
@@ -264,15 +276,16 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
         compoundExpression([
           iff(ref('ctx.stash.deniedField'), raw('#return($util.toJson(null))')),
           set(
-            ref('partitionKeyValue'),
+            ref(PARTITION_KEY_VALUE),
             methodCall(
               ref(`util.defaultIfNull`),
-              ref(`ctx.stash.sharedVariables.get("${connectionAttributes[0]}")`),
+              ref(`ctx.stash.connectionAttributes.get("${connectionAttributes[0]}")`),
               ref(`ctx.source.${connectionAttributes[0]}`)
             )
           ),
           ifElse(
-            raw(`$util.isNull($partitionKeyValue)`),
+            // raw(`$util.isNull(${PARTITION_KEY_VALUE})`),
+            methodCall(ref('util.isNull'), ref(PARTITION_KEY_VALUE)),
             compoundExpression([set(ref('result'), obj({ items: list([]) })), raw('#return($result)')]),
             compoundExpression([...setup, queryObj]),
           ),
@@ -314,7 +327,7 @@ function makeExpression(keySchema: any[], connectionAttributes: string[]): Objec
         '#sortKey': str(keySchema[1].attributeName),
       }),
       expressionValues: obj({
-        ':partitionKey': ref(`util.dynamodb.toDynamoDB($partitionKeyValue)`),
+        ':partitionKey': ref(`util.dynamodb.toDynamoDB($${PARTITION_KEY_VALUE})`),
         ':sortKey': ref(
           `util.dynamodb.toDynamoDB(${
             condensedSortKeyValue ? `"${condensedSortKeyValue}"` : `$context.source.${connectionAttributes[1]}`
@@ -330,7 +343,7 @@ function makeExpression(keySchema: any[], connectionAttributes: string[]): Objec
       '#partitionKey': str(keySchema[0].attributeName),
     }),
     expressionValues: obj({
-      ':partitionKey': ref(`util.dynamodb.toDynamoDB($partitionKeyValue)`),
+      ':partitionKey': ref(`util.dynamodb.toDynamoDB($${PARTITION_KEY_VALUE})`),
     }),
   });
 }

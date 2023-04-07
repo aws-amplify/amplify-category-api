@@ -105,7 +105,13 @@ const generateAuthOnRelationalModelQueryExpression = (
               iff(
                 and([not(ref(IS_AUTHORIZED_FLAG)), methodCall(ref('util.isNull'), ref('ctx.stash.authFilter'))]),
                 compoundExpression([
-                  qref(methodCall(ref(`ctx.stash.sharedVariables.put`), str(field), ref(`primaryRole${idx}`))),
+                  qref(
+                    methodCall(claim === 'source' 
+                      ? ref(`ctx.stash.connectionAttributes.put`)
+                      : ref(`ctx.${claim}.put`), 
+                    str(field),
+                    ref(`primaryRole${idx}`)
+                    )),
                   set(ref(IS_AUTHORIZED_FLAG), bool(true)),
                 ]),
               ),
