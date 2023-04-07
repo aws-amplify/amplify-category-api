@@ -1,9 +1,9 @@
 import { legacyAddResource } from '../../../provider-utils/awscloudformation/legacy-add-resource';
 import { category } from '../../../category-constants';
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 
 jest.mock('fs-extra');
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   AmplifyCategories: { API: 'api' },
   isResourceNameUnique: jest.fn().mockReturnValue(true),
   JSONUtilities: {

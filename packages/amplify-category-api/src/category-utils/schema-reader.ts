@@ -9,7 +9,7 @@ import {
   $TSContext,
   AmplifyError,
   ApiCategoryFacade,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { constructGraphQLTransformV2 } from '../graphql-transformer/transformer-factory';
 import {
   SCHEMA_DIR_NAME,

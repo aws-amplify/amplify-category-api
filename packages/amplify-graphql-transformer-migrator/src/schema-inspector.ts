@@ -1,5 +1,5 @@
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { AmplifyCategories, FeatureFlags, pathManager } from 'amplify-cli-core';
+import { AmplifyCategories, FeatureFlags, pathManager } from '@aws-amplify/amplify-cli-core';
 import { DocumentNode } from 'graphql/language';
 import { visit } from 'graphql';
 import { collectDirectives, collectDirectivesByTypeNames } from '@aws-amplify/graphql-transformer-core';

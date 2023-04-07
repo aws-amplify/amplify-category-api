@@ -8,9 +8,9 @@ import {
   buildOverrideDir,
   pathManager,
   stateManager,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
 import * as fs from 'fs-extra';
 import * as path from 'path';

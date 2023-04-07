@@ -12,7 +12,7 @@ import {
   parse,
   Kind,
 } from 'graphql';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 export function collectDirectiveNames(sdl: string): string[] {
   const dirs = collectDirectives(sdl);
   return dirs.map(d => d.name.value);

@@ -1,6 +1,6 @@
 import {
   $TSContext, AmplifyCategories, pathManager, stateManager,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import * as path from 'path';
 import * as dotenv from 'dotenv';

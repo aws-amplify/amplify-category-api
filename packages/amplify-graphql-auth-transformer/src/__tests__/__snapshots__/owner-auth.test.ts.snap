@@ -306,7 +306,14 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #if( !$util.isNull($parentClaim) )
 
     #set( $ownerClaimsList0 = [] )
-    $util.qr($ownerClaimsList0.add($parentClaim))
+    #if( $util.isString($parentClaim) )
+      #if( $util.isList($util.parseJson($parentClaim)) )
+        #set( $parentClaim = $util.parseJson($parentClaim) )
+      #else
+        #set( $parentClaim = [$parentClaim] )
+      #end
+    #end
+    $util.qr($ownerClaimsList0.addAll($parentClaim))
     #if( !$util.isNull($ctx.args.parent) )
       #if( $util.isString($ctx.args.parent) )
         #set( $parentCondition = (($parentClaim == $ctx.args.parent) || $ownerClaimsList0.contains($ctx.args.parent)) )
@@ -336,7 +343,14 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #if( !$util.isNull($childClaim) )
 
     #set( $ownerClaimsList1 = [] )
-    $util.qr($ownerClaimsList1.add($childClaim))
+    #if( $util.isString($childClaim) )
+      #if( $util.isList($util.parseJson($childClaim)) )
+        #set( $childClaim = $util.parseJson($childClaim) )
+      #else
+        #set( $childClaim = [$childClaim] )
+      #end
+    #end
+    $util.qr($ownerClaimsList1.addAll($childClaim))
     #if( !$util.isNull($ctx.args.child) )
       #if( $util.isString($ctx.args.child) )
         #set( $childCondition = (($childClaim == $ctx.args.child) || $ownerClaimsList1.contains($ctx.args.child)) )
@@ -732,7 +746,14 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #if( !$util.isNull($parentClaim) )
 
     #set( $ownerClaimsList0 = [] )
-    $util.qr($ownerClaimsList0.add($parentClaim))
+    #if( $util.isString($parentClaim) )
+      #if( $util.isList($util.parseJson($parentClaim)) )
+        #set( $parentClaim = $util.parseJson($parentClaim) )
+      #else
+        #set( $parentClaim = [$parentClaim] )
+      #end
+    #end
+    $util.qr($ownerClaimsList0.addAll($parentClaim))
     #if( !$util.isNull($ctx.args.parent) )
       #if( $util.isString($ctx.args.parent) )
         #set( $parentCondition = (($parentClaim == $ctx.args.parent) || $ownerClaimsList0.contains($ctx.args.parent)) )
@@ -762,7 +783,14 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #if( !$util.isNull($childClaim) )
 
     #set( $ownerClaimsList1 = [] )
-    $util.qr($ownerClaimsList1.add($childClaim))
+    #if( $util.isString($childClaim) )
+      #if( $util.isList($util.parseJson($childClaim)) )
+        #set( $childClaim = $util.parseJson($childClaim) )
+      #else
+        #set( $childClaim = [$childClaim] )
+      #end
+    #end
+    $util.qr($ownerClaimsList1.addAll($childClaim))
     #if( !$util.isNull($ctx.args.child) )
       #if( $util.isString($ctx.args.child) )
         #set( $childCondition = (($childClaim == $ctx.args.child) || $ownerClaimsList1.contains($ctx.args.child)) )

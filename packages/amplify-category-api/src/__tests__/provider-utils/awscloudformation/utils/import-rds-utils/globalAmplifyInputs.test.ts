@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { constructDefaultGlobalAmplifyInput, readRDSGlobalAmplifyInput, ImportedRDSType, constructRDSGlobalAmplifyInput } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 
@@ -7,8 +7,8 @@ jest.mock('fs-extra', () => ({
 }));
 const readFileSync_mock = fs.readFileSync as jest.MockedFunction<typeof fs.readFileSync>;
 
-jest.mock('amplify-cli-core', () => {
-  const original = jest.requireActual('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core', () => {
+  const original = jest.requireActual('@aws-amplify/amplify-cli-core');
   return {
     ...original,
     ApiCategoryFacade: {

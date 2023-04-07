@@ -12,8 +12,8 @@ import {
   stateManager,
   Template,
   writeCFNTemplate,
-} from 'amplify-cli-core';
-import { formatter, printer } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
+import { formatter, printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as vm from 'vm2';
@@ -212,8 +212,14 @@ export class ApigwStackTransform {
             external: true,
           },
         });
+        const { envName } = stateManager.getLocalEnvInfo();
+        const { projectName } = stateManager.getProjectConfig();
+        const projectInfo = {
+          envName, projectName,
+        };
         try {
-          await sandboxNode.run(overrideCode, overrideJSFilePath).override(this.resourceTemplateObj as AmplifyApigwResourceStack);
+          await sandboxNode.run(overrideCode, overrideJSFilePath)
+            .override(this.resourceTemplateObj as AmplifyApigwResourceStack, projectInfo);
         } catch (err) {
           throw new AmplifyError('InvalidOverrideError', {
             message: 'Executing overrides failed.',

@@ -1,4 +1,4 @@
-import { FeatureFlags } from 'amplify-cli-core';
+import { FeatureFlags } from '@aws-amplify/amplify-cli-core';
 import { FeatureFlagProvider } from 'graphql-transformer-core';
 import { FeatureFlagProvider as NewTransformerFFProvider } from '@aws-amplify/graphql-transformer-interfaces'
 

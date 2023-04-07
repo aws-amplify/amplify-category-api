@@ -1,10 +1,10 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { getParameterStoreSecretPath, RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { SSMClient } from './ssmClient';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { MySQLDataSourceAdapter, Schema, Engine, DataSourceAdapter, MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { category } from '../../../../category-constants';
 
 const secretNames = ['host', 'port', 'username', 'password'];

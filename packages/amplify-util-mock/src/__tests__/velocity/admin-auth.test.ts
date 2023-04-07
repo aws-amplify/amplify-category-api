@@ -8,7 +8,7 @@ import {
 } from '../../velocity';
 import { featureFlags } from './test-helper';
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 describe('admin roles query checks', () => {
   const ADMIN_UI_ROLE = 'us-fake-1_uuid_Full-access/CognitoIdentityCredentials';

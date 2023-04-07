@@ -10,8 +10,8 @@ import {
   pathManager,
   ResourceDoesNotExistError,
   stateManager,
-} from 'amplify-cli-core';
-import { byValues, printer, prompter } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
+import { byValues, printer, prompter } from '@aws-amplify/amplify-prompts';
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import os from 'os';

@@ -1,4 +1,4 @@
-export function override(resources: any) {
+export function override(resources: any, amplifyProjectInfo: any) {
   const desc = {
     'Fn::Join': [' ', ['Description', 'override', 'successful']],
   };
@@ -13,4 +13,16 @@ export function override(resources: any) {
   );
 
   resources.restApi.description = { Ref: 'DESCRIPTION' };
+
+  if (!amplifyProjectInfo || !amplifyProjectInfo.envName || !amplifyProjectInfo.projectName) {
+    throw new Error(`Project info is missing in override: ${JSON.stringify(amplifyProjectInfo)}`);
+  }
+
+  if (amplifyProjectInfo.envName != '##EXPECTED_ENV_NAME') {
+    throw new Error(`Received unexpected envName: ${amplifyProjectInfo.envName}`);
+  }
+
+  if (amplifyProjectInfo.projectName != '##EXPECTED_PROJECT_NAME') {
+    throw new Error(`Received unexpected projectName: ${amplifyProjectInfo.projectName}`);
+  }
 }

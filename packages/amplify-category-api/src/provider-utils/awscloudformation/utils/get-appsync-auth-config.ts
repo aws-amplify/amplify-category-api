@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { AppsyncApiInputState } from '../api-input-manager/appsync-api-input-state';
 import { appSyncAuthTypeToAuthConfig } from './auth-config-to-app-sync-auth-type-bi-di-mapper';
 

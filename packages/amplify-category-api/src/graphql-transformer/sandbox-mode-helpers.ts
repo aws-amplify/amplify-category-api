@@ -1,8 +1,8 @@
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable func-style */
 import chalk from 'chalk';
-import { $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { parse } from 'graphql';
 import { hasApiKey } from './api-key-helpers';
 

@@ -1,12 +1,12 @@
 import {
   $TSContext, $TSObject,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { InvalidDirectiveError } from 'graphql-transformer-core';
 import { transformCategoryStack } from '../index';
 
 jest.mock('path');
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as $TSObject),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as $TSObject),
   pathManager: {
     getBackendDirPath: jest.fn().mockReturnValue('mockbackendDirPath'),
     findProjectRoot: jest.fn().mockReturnValue('mockProject'),

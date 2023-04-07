@@ -5,7 +5,7 @@ import {
   $TSContext,
   ApiCategoryFacade,
   getGraphQLTransformerAuthDocLink,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { ImportedRDSType, ImportedDataSourceConfig } from '../types/import-appsync-api-types';
 

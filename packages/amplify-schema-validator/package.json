@@ -3,14 +3,14 @@
   "main": "./dist/index.js",
   "private": true,
   "types": "./dist/index.d.ts",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "files": [
     "dist",
     "!**/__tests__/**/*"
   ],
   "scripts": {
     "build": "tsc && yarn size",
-    "clean": "rm -rf build node_modules dist coverage",
+    "clean": "rimraf -rf build node_modules dist coverage",
     "prettier": "prettier --write '**/*.{js,ts,json,md}'",
     "test": "jest --coverage",
     "size": "size-limit",
@@ -23,6 +23,7 @@
     "jest": "^29.0.0",
     "jest-environment-jsdom": "^29.3.1",
     "lint-staged": "^9.2.5",
+    "rimraf": "^3.0.0",
     "ts-jest": "^29.0.2",
     "ts-node": "^8.5.0"
   },

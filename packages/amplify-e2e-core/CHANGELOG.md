@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.1.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.19...amplify-category-api-e2e-core@4.1.0) (2023-03-30)
+
+### Features
+
+- inject project info into api overrides ([#1372](https://github.com/aws-amplify/amplify-category-api/issues/1372)) ([2b92351](https://github.com/aws-amplify/amplify-category-api/commit/2b92351c95a5c820e0e758e69226c08f4355d472))
+
 ## [4.0.19](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.0.18...amplify-category-api-e2e-core@4.0.19) (2023-03-15)
 
 **Note:** Version bump only for package amplify-category-api-e2e-core

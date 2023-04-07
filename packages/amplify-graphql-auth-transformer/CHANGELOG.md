@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@2.1.1...@aws-amplify/graphql-auth-transformer@2.1.2) (2023-03-30)
+
+### Bug Fixes
+
+- **graphql:** evaluate group claim - string vs array behavior ([e988708](https://github.com/aws-amplify/amplify-category-api/commit/e9887081a81097eb0b76a53b4d401d649e79a1d2))
+
 ## [2.1.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@2.1.0...@aws-amplify/graphql-auth-transformer@2.1.1) (2023-03-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

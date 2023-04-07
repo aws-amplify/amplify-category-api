@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { getParameterStoreSecretPath } from '@aws-amplify/graphql-transformer-core';
 import { getExistingConnectionSecrets } from '../../../../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 
@@ -14,8 +14,8 @@ jest.mock('../../../../../provider-utils/awscloudformation/utils/rds-secrets/ssm
   }
 }));
 
-jest.mock('amplify-cli-core', () => {
-  const original = jest.requireActual('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core', () => {
+  const original = jest.requireActual('@aws-amplify/amplify-cli-core');
   return {
     ...original,
     stateManager: {

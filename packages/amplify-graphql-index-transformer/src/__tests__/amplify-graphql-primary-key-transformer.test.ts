@@ -1,7 +1,7 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema, DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import { Kind, parse } from 'graphql';
