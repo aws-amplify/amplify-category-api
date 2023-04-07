@@ -113,12 +113,12 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #if( $util.isList($util.parseJson($groupClaim1)) )
       #set( $groupClaim1 = $util.parseJson($groupClaim1) )
     #else
-      #if( !$util.isNullOrEmpty($groupClaim1) )
-        #set( $groupClaim1 = [$groupClaim1] )
-      #end
+      #set( $groupClaim1 = [$groupClaim1] )
     #end
   #end
-  $util.qr($authGroupRuntimeFilter.add({ \\"group\\": { \\"in\\": $groupClaim1 } }))
+  #if( !$util.isNullOrEmpty($groupClaim1) )
+    $util.qr($authGroupRuntimeFilter.add({ \\"group\\": { \\"in\\": $groupClaim1 } }))
+  #end
   ## Apply dynamic roles auth if not previously authorized by static groups and owner argument **
   #if( $authOwnerRuntimeFilter.size() > 0 )
     $util.qr($authRuntimeFilter.addAll($authOwnerRuntimeFilter))
@@ -187,12 +187,12 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #if( $util.isList($util.parseJson($groupClaim1)) )
       #set( $groupClaim1 = $util.parseJson($groupClaim1) )
     #else
-      #if( !$util.isNullOrEmpty($groupClaim1) )
-        #set( $groupClaim1 = [$groupClaim1] )
-      #end
+      #set( $groupClaim1 = [$groupClaim1] )
     #end
   #end
-  $util.qr($authGroupRuntimeFilter.add({ \\"group\\": { \\"in\\": $groupClaim1 } }))
+  #if( !$util.isNullOrEmpty($groupClaim1) )
+    $util.qr($authGroupRuntimeFilter.add({ \\"group\\": { \\"in\\": $groupClaim1 } }))
+  #end
   ## Apply dynamic roles auth if not previously authorized by static groups and owner argument **
   #if( $authOwnerRuntimeFilter.size() > 0 )
     $util.qr($authRuntimeFilter.addAll($authOwnerRuntimeFilter))
@@ -276,12 +276,12 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #if( $util.isList($util.parseJson($groupClaim1)) )
       #set( $groupClaim1 = $util.parseJson($groupClaim1) )
     #else
-      #if( !$util.isNullOrEmpty($groupClaim1) )
-        #set( $groupClaim1 = [$groupClaim1] )
-      #end
+      #set( $groupClaim1 = [$groupClaim1] )
     #end
   #end
-  $util.qr($authGroupRuntimeFilter.add({ \\"group\\": { \\"in\\": $groupClaim1 } }))
+  #if( !$util.isNullOrEmpty($groupClaim1) )
+    $util.qr($authGroupRuntimeFilter.add({ \\"group\\": { \\"in\\": $groupClaim1 } }))
+  #end
   ## Apply dynamic roles auth if not previously authorized by static groups and owner argument **
   #if( $authOwnerRuntimeFilter.size() > 0 )
     $util.qr($authRuntimeFilter.addAll($authOwnerRuntimeFilter))
@@ -388,12 +388,12 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #if( $util.isList($util.parseJson($groupClaim1)) )
       #set( $groupClaim1 = $util.parseJson($groupClaim1) )
     #else
-      #if( !$util.isNullOrEmpty($groupClaim1) )
-        #set( $groupClaim1 = [$groupClaim1] )
-      #end
+      #set( $groupClaim1 = [$groupClaim1] )
     #end
   #end
-  $util.qr($authGroupRuntimeFilter.add({ \\"group\\": { \\"in\\": $groupClaim1 } }))
+  #if( !$util.isNullOrEmpty($groupClaim1) )
+    $util.qr($authGroupRuntimeFilter.add({ \\"group\\": { \\"in\\": $groupClaim1 } }))
+  #end
   ## Apply dynamic roles auth if not previously authorized by static groups and owner argument **
   #if( $authOwnerRuntimeFilter.size() > 0 )
     $util.qr($authRuntimeFilter.addAll($authOwnerRuntimeFilter))
