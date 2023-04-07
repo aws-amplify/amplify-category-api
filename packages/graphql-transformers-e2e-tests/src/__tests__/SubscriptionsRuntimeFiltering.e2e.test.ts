@@ -2231,7 +2231,7 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
           },
         );
       });
-      await expect(subscriptionPromise).rejects.toThrow();
+      await expect(subscriptionPromise).rejects.toBeCalled();
     });
   });
 });
