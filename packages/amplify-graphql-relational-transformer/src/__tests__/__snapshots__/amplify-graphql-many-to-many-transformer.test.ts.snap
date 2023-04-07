@@ -369,13 +369,15 @@ Object {
   "ModelA.models.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"sortId\\"), $ctx.source.sortId) )
   #set( $query = {
   \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
   \\"expressionNames\\": {
@@ -383,8 +385,8 @@ Object {
       \\"#sortKey\\": \\"modelAsortId\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id),
-      \\":sortKey\\": $util.dynamodb.toDynamoDB($context.source.sortId)
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue),
+      \\":sortKey\\": $util.dynamodb.toDynamoDB($sortKeyValue0)
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -447,7 +449,8 @@ $util.error($ctx.error.message, $ctx.error.type)
   "ModelAModelB.modelA.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.modelAID) || $util.isNull($ctx.source.modelAsortId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"modelAID\\"), $ctx.source.modelAID) )
+#if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.modelAsortId) )
   #return
 #else
   #set( $GetRequest = {
@@ -461,7 +464,7 @@ $util.error($ctx.error.message, $ctx.error.type)
       \\"#sortKeyName\\": \\"sortId\\"
   },
   \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.modelAID, \\"___xamznone____\\"))),
+      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
       \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.modelAsortId, \\"___xamznone____\\")))
   }
 }))
@@ -485,7 +488,8 @@ $util.unauthorized()
   "ModelAModelB.modelB.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.modelBID) || $util.isNull($ctx.source.modelBsortId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"modelBID\\"), $ctx.source.modelBID) )
+#if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.modelBsortId) )
   #return
 #else
   #set( $GetRequest = {
@@ -499,7 +503,7 @@ $util.unauthorized()
       \\"#sortKeyName\\": \\"sortId\\"
   },
   \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.modelBID, \\"___xamznone____\\"))),
+      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
       \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.modelBsortId, \\"___xamznone____\\")))
   }
 }))
@@ -523,13 +527,15 @@ $util.unauthorized()
   "ModelB.models.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"sortId\\"), $ctx.source.sortId) )
   #set( $query = {
   \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
   \\"expressionNames\\": {
@@ -537,8 +543,8 @@ $util.unauthorized()
       \\"#sortKey\\": \\"modelBsortId\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id),
-      \\":sortKey\\": $util.dynamodb.toDynamoDB($context.source.sortId)
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue),
+      \\":sortKey\\": $util.dynamodb.toDynamoDB($sortKeyValue0)
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -4370,7 +4376,8 @@ Object {
   "Bar.foos.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -4383,7 +4390,7 @@ Object {
       \\"#partitionKey\\": \\"barID\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id)
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -4446,7 +4453,8 @@ $util.error($ctx.error.message, $ctx.error.type)
   "Foo.bars.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -4459,7 +4467,7 @@ $util.error($ctx.error.message, $ctx.error.type)
       \\"#partitionKey\\": \\"fooID\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id)
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -4522,7 +4530,8 @@ $util.error($ctx.error.message, $ctx.error.type)
   "FooBar.bar.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.barID) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"barID\\"), $ctx.source.barID) )
+#if( $util.isNull($partitionKeyValue) )
   #return
 #else
   #set( $GetRequest = {
@@ -4535,7 +4544,7 @@ $util.error($ctx.error.message, $ctx.error.type)
       \\"#partitionKey\\": \\"id\\"
   },
   \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.barID, \\"___xamznone____\\")))
+      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
@@ -4558,7 +4567,8 @@ $util.unauthorized()
   "FooBar.foo.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.fooID) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"fooID\\"), $ctx.source.fooID) )
+#if( $util.isNull($partitionKeyValue) )
   #return
 #else
   #set( $GetRequest = {
@@ -4571,7 +4581,7 @@ $util.unauthorized()
       \\"#partitionKey\\": \\"id\\"
   },
   \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.fooID, \\"___xamznone____\\")))
+      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )

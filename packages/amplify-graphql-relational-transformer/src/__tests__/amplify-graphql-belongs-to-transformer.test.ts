@@ -376,7 +376,8 @@ test('support for belongs to with Int fields', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
-  expect(out.resolvers['ExamItem.owningBank.req.vtl']).toContain('$util.defaultIfNull($ctx.source.owningBankId, "___xamznone____"))');
+  expect(out.resolvers['ExamItem.owningBank.req.vtl']).toContain('#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("owningBankId"), $ctx.source.owningBankId) )')
+  expect(out.resolvers['ExamItem.owningBank.req.vtl']).toContain('$util.defaultIfNull($partitionKeyValue, "___xamznone____"))');
   expect(out.resolvers['ExamItem.owningBank.req.vtl']).not.toContain(
     '$util.defaultIfNullOrBlank($ctx.source.owningBankId, "___xamznone____"))',
   );
