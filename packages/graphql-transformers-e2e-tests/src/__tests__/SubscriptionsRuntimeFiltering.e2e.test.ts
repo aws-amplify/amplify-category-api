@@ -2197,6 +2197,7 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
 
   describe('Test requests from users with no group membership', () => {
     test('Should return unauthorized when attempting to subscribe with no groups', async () => {
+      expect.assertions(1);
       reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
       await Auth.signIn(USERNAME3, REAL_PASSWORD);
       const observer = API.graphql({
@@ -2231,7 +2232,10 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
           },
         );
       });
-      await expect(subscriptionPromise).rejects.toBeCalled();
+      await subscriptionPromise.catch((err) => {
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(err).toBeDefined();
+      });
     });
   });
 });
