@@ -348,9 +348,6 @@ beforeAll(async () => {
   await addUserToGroup(INSTRUCTOR_GROUP_NAME, USERNAME1, USER_POOL_ID);
   await addUserToGroup(INSTRUCTOR_GROUP_NAME, USERNAME2, USER_POOL_ID);
 
-  // authenticate user3 we'll use amplify api for subscription calls
-  await authenticateUser(USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
-
   const authResAfterGroup: any = await authenticateUser(USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
   const idToken = authResAfterGroup.getIdToken().getJwtToken();
   GRAPHQL_CLIENT_1 = new AWSAppSyncClient({
@@ -373,6 +370,7 @@ beforeAll(async () => {
       jwtToken: idToken2,
     },
   });
+
   const authRes3AfterGroup: any = await authenticateUser(USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
   const idToken3 = authRes3AfterGroup.getIdToken().getJwtToken();
   GRAPHQL_CLIENT_3 = new AWSAppSyncClient({
