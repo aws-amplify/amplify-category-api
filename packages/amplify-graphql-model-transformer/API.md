@@ -6,6 +6,7 @@
 
 import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
+import { CompoundExpressionNode } from 'graphql-mapping-template';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql';
@@ -45,34 +46,6 @@ export const addModelConditionInputs: (ctx: TransformerTransformSchemaStepContex
 export const createEnumModelFilters: (ctx: TransformerTransformSchemaStepContextProvider, type: ObjectTypeDefinitionNode) => InputObjectTypeDefinitionNode[];
 
 // @public (undocumented)
-export class DynamoDBModelVTLGenerator implements ModelVTLGenerator {
-    // (undocumented)
-    generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
-    // (undocumented)
-    generateCreateRequestTemplate(config: ModelCreateRequestConfig): string;
-    // (undocumented)
-    generateDefaultResponseMappingTemplate(config: ModelDefaultResponseConfig): string;
-    // (undocumented)
-    generateDeleteRequestTemplate(config: ModelUpdateRequestConfig): string;
-    // (undocumented)
-    generateGetRequestTemplate(config: ModelRequestConfig): string;
-    // (undocumented)
-    generateGetResponseTemplate(config: ModelUpdateRequestConfig): string;
-    // (undocumented)
-    generateListRequestTemplate(config: ModelRequestConfig): string;
-    // (undocumented)
-    generateSubscriptionRequestTemplate(): string;
-    // (undocumented)
-    generateSubscriptionResponseTemplate(): string;
-    // (undocumented)
-    generateSyncRequestTemplate(config: ModelRequestConfig): string;
-    // (undocumented)
-    generateUpdateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
-    // (undocumented)
-    generateUpdateRequestTemplate(config: ModelUpdateRequestConfig): string;
-}
-
-// @public (undocumented)
 export const extendTypeWithDirectives: (ctx: TransformerTransformSchemaStepContextProvider, typeName: string, directives: Array<DirectiveNode>) => void;
 
 // @public (undocumented)
@@ -82,10 +55,37 @@ export const generateApplyDefaultsToInputTemplate: (target: string) => Expressio
 export const generateAuthExpressionForSandboxMode: (enabled: boolean) => string;
 
 // @public (undocumented)
+export const generateConditionSlot: (inputConditionObjectName: string, conditionOutputVariableName: string) => CompoundExpressionNode;
+
+// @public (undocumented)
+export const generateCreateInitSlotTemplate: (modelConfig: ModelDirectiveConfiguration) => string;
+
+// @public (undocumented)
+export const generateCreateRequestTemplate: (modelName: string, modelIndexFields: string[]) => string;
+
+// @public (undocumented)
+export const generateDefaultResponseMappingTemplate: (isSyncEnabled: boolean, mutation?: boolean) => string;
+
+// @public (undocumented)
+export const generateDeleteRequestTemplate: (isSyncEnabled: boolean) => string;
+
+// @public (undocumented)
 export function generateModelScalarFilterInputName(typeName: string, includeFilter: boolean, isSubscriptionFilter?: boolean): string;
 
 // @public (undocumented)
 export const generateResolverKey: (typeName: string, fieldName: string) => string;
+
+// @public (undocumented)
+export const generateSubscriptionRequestTemplate: () => string;
+
+// @public (undocumented)
+export const generateSubscriptionResponseTemplate: () => string;
+
+// @public (undocumented)
+export const generateUpdateInitSlotTemplate: (modelConfig: ModelDirectiveConfiguration) => string;
+
+// @public (undocumented)
+export const generateUpdateRequestTemplate: (modelName: string, isSyncEnabled: boolean) => string;
 
 // @public (undocumented)
 export const getSubscriptionFilterInputName: (name: string) => string;
@@ -136,25 +136,6 @@ export const makeSubscriptionQueryFilterInput: (ctx: TransformerTransformSchemaS
 export const makeUpdateInputField: (obj: ObjectTypeDefinitionNode, modelDirectiveConfig: ModelDirectiveConfiguration, knownModelTypes: Set<string>, document: DocumentNode, isSyncEnabled: boolean) => InputObjectTypeDefinitionNode;
 
 // @public (undocumented)
-export type ModelCreateInitSlotConfig = {
-    modelConfig: ModelDirectiveConfiguration;
-};
-
-// @public (undocumented)
-export type ModelCreateRequestConfig = ModelRequestConfig & {
-    modelIndexFields: string[];
-};
-
-// @public (undocumented)
-export type ModelDefaultResponseConfig = ModelRequestConfig & {
-    isSyncEnabled: boolean;
-    mutation: boolean;
-};
-
-// @public (undocumented)
-export type ModelDeleteRequestConfig = ModelUpdateRequestConfig;
-
-// @public (undocumented)
 export type ModelDirectiveConfiguration = {
     queries?: Partial<{
         get: Partial<string>;
@@ -176,16 +157,6 @@ export type ModelDirectiveConfiguration = {
         createdAt: Partial<string>;
         updatedAt: Partial<string>;
     }>;
-};
-
-// @public (undocumented)
-export type ModelGetResponseConfig = ModelUpdateRequestConfig;
-
-// @public (undocumented)
-export type ModelRequestConfig = {
-    modelName: string;
-    operation: string;
-    operationName: string;
 };
 
 // @public (undocumented)
@@ -271,75 +242,10 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 }
 
 // @public (undocumented)
-export type ModelUpdateInitSlotConfig = ModelCreateInitSlotConfig;
-
-// @public (undocumented)
-export type ModelUpdateRequestConfig = ModelRequestConfig & {
-    modelIndexFields: string[];
-    isSyncEnabled: boolean;
-};
-
-// @public (undocumented)
-export interface ModelVTLGenerator {
-    // (undocumented)
-    generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
-    // (undocumented)
-    generateCreateRequestTemplate(config: ModelCreateRequestConfig): string;
-    // (undocumented)
-    generateDefaultResponseMappingTemplate(config: ModelDefaultResponseConfig): string;
-    // (undocumented)
-    generateDeleteRequestTemplate(config: ModelDeleteRequestConfig): string;
-    // (undocumented)
-    generateGetRequestTemplate(config: ModelRequestConfig): string;
-    // (undocumented)
-    generateGetResponseTemplate(config: ModelGetResponseConfig): string;
-    // (undocumented)
-    generateListRequestTemplate(config: ModelRequestConfig): string;
-    // (undocumented)
-    generateSubscriptionRequestTemplate(): string;
-    // (undocumented)
-    generateSubscriptionResponseTemplate(): string;
-    // (undocumented)
-    generateSyncRequestTemplate(config: ModelRequestConfig): string;
-    // (undocumented)
-    generateUpdateInitSlotTemplate(config: ModelUpdateInitSlotConfig): string;
-    // (undocumented)
-    generateUpdateRequestTemplate(config: ModelUpdateRequestConfig): string;
-}
-
-// @public (undocumented)
 export const OPERATION_KEY = "__operation";
 
 // @public (undocumented)
 export const propagateApiKeyToNestedTypes: (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode, seenNonModelTypes: Set<string>) => void;
-
-// @public (undocumented)
-export class RDSModelVTLGenerator implements ModelVTLGenerator {
-    // (undocumented)
-    generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
-    // (undocumented)
-    generateCreateRequestTemplate(config: ModelCreateRequestConfig): string;
-    // (undocumented)
-    generateDefaultResponseMappingTemplate(config: ModelDefaultResponseConfig): string;
-    // (undocumented)
-    generateDeleteRequestTemplate(config: ModelUpdateRequestConfig): string;
-    // (undocumented)
-    generateGetRequestTemplate(config: ModelRequestConfig): string;
-    // (undocumented)
-    generateGetResponseTemplate(config: ModelUpdateRequestConfig): string;
-    // (undocumented)
-    generateListRequestTemplate(config: ModelRequestConfig): string;
-    // (undocumented)
-    generateSubscriptionRequestTemplate(): string;
-    // (undocumented)
-    generateSubscriptionResponseTemplate(): string;
-    // (undocumented)
-    generateSyncRequestTemplate(config: ModelRequestConfig): string;
-    // (undocumented)
-    generateUpdateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
-    // (undocumented)
-    generateUpdateRequestTemplate(config: ModelUpdateRequestConfig): string;
-}
 
 // @public (undocumented)
 export const removeSubscriptionFilterInputAttribute: (ctx: TransformerTransformSchemaStepContextProvider, typeName: string, fieldName: string) => void;

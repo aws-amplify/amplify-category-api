@@ -107,17 +107,6 @@ export const enum ConflictHandlerType {
     OPTIMISTIC = "OPTIMISTIC_CONCURRENCY"
 }
 
-// @public (undocumented)
-export interface DatasourceType {
-    // (undocumented)
-    dbType: DBType;
-    // (undocumented)
-    provisionDB: boolean;
-}
-
-// @public (undocumented)
-export type DBType = 'MySQL' | 'DDB';
-
 export { DeploymentResources }
 
 // @public (undocumented)
@@ -285,10 +274,7 @@ export const PARAMETERS_FILE_NAME = "parameters.json";
 export type ProjectRule = (diffs: Diff[], currentBuild: DiffableProject, nextBuild: DiffableProject) => void;
 
 // @public (undocumented)
-function readSchema(projectDirectory: string): Promise<{
-    schema: string;
-    modelToDatasourceMap: Map<string, DatasourceType>;
-}>;
+function readSchema(projectDirectory: string): Promise<string>;
 export { readSchema as readProjectSchema }
 export { readSchema }
 
