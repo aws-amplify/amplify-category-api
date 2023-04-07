@@ -1,4 +1,4 @@
-import { $TSAny, $TSMeta, $TSObject, AmplifyCategories, AmplifySupportedService, stateManager, pathManager } from 'amplify-cli-core';
+import { $TSAny, $TSMeta, $TSObject, AmplifyCategories, AmplifySupportedService, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import * as path from 'path';
 

@@ -1,5 +1,5 @@
-import { $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 import fs from 'fs-extra';
 import _ from 'lodash';
@@ -34,7 +34,7 @@ export const run = async (context: $TSContext) => {
 
   const engine = ImportedRDSType.MYSQL;
   const database = await readDatabaseNameFromMeta(apiName, engine);
-  
+
   // read and validate the RDS connection secrets
   const { secrets, storeSecrets } = await getConnectionSecrets(context, apiName, database, engine);
   const databaseConfig: ImportedDataSourceConfig = {

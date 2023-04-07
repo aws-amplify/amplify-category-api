@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { SSMClient } from '../../../../../provider-utils/awscloudformation/utils/rds-secrets/ssmClient';
 import aws from 'aws-sdk';
 
@@ -43,7 +43,7 @@ describe('SSM client configuration', () => {
 
   test('able to set the secret value', async () => {
     const ssmClient = await SSMClient.getInstance(mockContext);
-    
+
     ssmClient.setSecret(secretName, secretValue);
     expect(mockPutParameter).toBeCalledWith({
       Name: secretName,

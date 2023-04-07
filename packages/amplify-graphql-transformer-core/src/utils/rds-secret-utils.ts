@@ -1,4 +1,4 @@
-import { AmplifyCategories, stateManager } from 'amplify-cli-core';
+import { AmplifyCategories, stateManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import path from 'path';
 

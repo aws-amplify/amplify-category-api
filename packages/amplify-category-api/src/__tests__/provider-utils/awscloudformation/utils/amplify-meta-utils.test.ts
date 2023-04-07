@@ -1,7 +1,7 @@
 import { authConfigHasApiKey, getAppSyncAPINames, getAppSyncAPIName, ensureNoAppSyncAPIExists } from '../../../../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 
 describe('auth config has api key', () => {

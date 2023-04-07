@@ -2,8 +2,8 @@ import { ImportedRDSType, ImportedDataSourceConfig, constructRDSGlobalAmplifyInp
 import * as fs from 'fs-extra';
 import { MySQLDataSourceAdapter, generateGraphQLSchema, Schema, Engine, DataSourceAdapter, MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
 import * as os from 'os';
-import { printer } from 'amplify-prompts';
-import { $TSContext } from 'amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 export const writeSchemaFile = (pathToSchemaFile: string, schemaString: string) => {
   fs.ensureFileSync(pathToSchemaFile);
@@ -11,8 +11,8 @@ export const writeSchemaFile = (pathToSchemaFile: string, schemaString: string) 
 };
 
 export const generateRDSSchema = async (
-  context: $TSContext, 
-  databaseConfig: 
+  context: $TSContext,
+  databaseConfig:
   ImportedDataSourceConfig, pathToSchemaFile: string
 ): Promise<string> => {
   // Establish the connection

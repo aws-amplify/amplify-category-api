@@ -1,5 +1,5 @@
-import { $TSContext } from 'amplify-cli-core';
-import { prompter, printer, integer } from 'amplify-prompts';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { prompter, printer, integer } from '@aws-amplify/amplify-prompts';
 import { getAppSyncAPINames } from '../utils/amplify-meta-utils';
 import { serviceApiInputWalkthrough } from './appSync-walkthrough';
 import { serviceMetadataFor } from '../utils/dynamic-imports';
@@ -62,7 +62,7 @@ export const updateAPIArtifacts = async (context: $TSContext, apiName: string, e
 export const databaseConfigurationInputWalkthrough = async (engine: ImportedDataSourceType, database?: string): Promise<ImportedDataSourceConfig> => {
   const databaseName = database || await prompter.input(`Enter the name of the ${engine} database to import:`);
   const host = await prompter.input(`Enter the host for ${databaseName} database:`);
-  const port = await prompter.input<'one', number>(`Enter the port for ${databaseName} database:`, { 
+  const port = await prompter.input<'one', number>(`Enter the port for ${databaseName} database:`, {
     transform: input => Number.parseInt(input, 10),
     validate: integer(),
     initial: 3306
@@ -70,7 +70,7 @@ export const databaseConfigurationInputWalkthrough = async (engine: ImportedData
   // Get the database user credentials
   const username = await prompter.input(`Enter the username for ${databaseName} database user:`);
   const password = await prompter.input(`Enter the password for ${databaseName} database user:`, { hidden: true });
-  
+
   return {
     engine: engine,
     database: databaseName,
