@@ -47,6 +47,7 @@ import { getConnectionAttributeName, getObjectPrimaryKey } from './utils';
 const CONNECTION_STACK = 'ConnectionStack';
 const authFilter = ref('ctx.stash.authFilter');
 const PARTITION_KEY_VALUE = 'partitionKeyValue';
+const SORT_KEY_VALUE = 'sortKeyValue';
 
 function buildKeyValueExpression(fieldName: string, object: ObjectTypeDefinitionNode, isPartitionKey: boolean = false) {
   const field = object.fields?.find(it => it.name.value === fieldName);
@@ -199,6 +200,11 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
   const keySchema = getKeySchema(table, indexName);
   const setup: Expression[] = [
     set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${limit})`)),
+    ...connectionAttributes.slice(1).map((ca, idx) => set(ref(`${SORT_KEY_VALUE}${idx}`), methodCall(
+      ref(`util.defaultIfNull`),
+      ref(`ctx.stash.connectionAttibutes.get("${ca}")`),
+      ref(`ctx.source.${ca}`)
+    ))),
     set(ref('query'), makeExpression(keySchema, connectionAttributes)),
   ];
 
@@ -284,7 +290,6 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
             )
           ),
           ifElse(
-            // raw(`$util.isNull(${PARTITION_KEY_VALUE})`),
             methodCall(ref('util.isNull'), ref(PARTITION_KEY_VALUE)),
             compoundExpression([set(ref('result'), obj({ items: list([]) })), raw('#return($result)')]),
             compoundExpression([...setup, queryObj]),
@@ -316,7 +321,7 @@ function makeExpression(keySchema: any[], connectionAttributes: string[]): Objec
       const rangeKeyFields = connectionAttributes.slice(1);
 
       condensedSortKeyValue = rangeKeyFields
-        .map(keyField => `\${context.source.${keyField}}`)
+        .map((keyField, idx) => `\${${SORT_KEY_VALUE}${idx}}`)
         .join(ModelResourceIDs.ModelCompositeKeySeparator());
     }
 
@@ -330,7 +335,7 @@ function makeExpression(keySchema: any[], connectionAttributes: string[]): Objec
         ':partitionKey': ref(`util.dynamodb.toDynamoDB($${PARTITION_KEY_VALUE})`),
         ':sortKey': ref(
           `util.dynamodb.toDynamoDB(${
-            condensedSortKeyValue ? `"${condensedSortKeyValue}"` : `$context.source.${connectionAttributes[1]}`
+            condensedSortKeyValue ? `"${condensedSortKeyValue}"` : `$${SORT_KEY_VALUE}0`
           })`,
         ),
       }),
