@@ -534,9 +534,12 @@ describe('custom primary key and relational directives', () => {
     const schema = parse(out.schema);
     validateModelSchema(schema);
 
-    expect(out.resolvers['Car.engine.req.vtl']).toContain('if( $util.isNull($ctx.source.carEngineVinNumber) || $util.isNull($ctx.source.carEngineManufacturerReference) )');
-    expect(out.resolvers['Comment.post.req.vtl']).toContain('if( $util.isNull($ctx.source.postCommentsPostReference) || $util.isNull($ctx.source.postCommentsTitle) )');
-    expect(out.resolvers['Engine.car.req.vtl']).toContain('if( $util.isNull($ctx.source.engineCarVinNumber) || $util.isNull($ctx.source.engineCarSerialNumber) )');
+    expect(out.resolvers['Car.engine.req.vtl']).toContain('#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("carEngineVinNumber"), $ctx.source.carEngineVinNumber) )')
+    expect(out.resolvers['Car.engine.req.vtl']).toContain('if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.carEngineManufacturerReference) )');
+    expect(out.resolvers['Comment.post.req.vtl']).toContain('#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("postCommentsPostReference"), $ctx.source.postCommentsPostReference)')
+    expect(out.resolvers['Comment.post.req.vtl']).toContain('if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.postCommentsTitle) )');
+    expect(out.resolvers['Engine.car.req.vtl']).toContain('#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("engineCarVinNumber"), $ctx.source.engineCarVinNumber) )')
+    expect(out.resolvers['Engine.car.req.vtl']).toContain('if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.engineCarSerialNumber) )');
 
     expect(out.resolvers['Car.engine.req.vtl']).toContain('"#sortKeyName": "manufacturerReference"');
     expect(out.resolvers['Car.engine.req.vtl']).toContain('":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.carEngineManufacturerReference, "___xamznone____")))');
