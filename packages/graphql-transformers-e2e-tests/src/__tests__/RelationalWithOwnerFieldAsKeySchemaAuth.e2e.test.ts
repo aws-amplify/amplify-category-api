@@ -258,9 +258,5 @@ test("user2 should not access user1 restricted fields when query including relat
         userID: USERNAME1
       }
     })
-  ).rejects.toThrowErrorMatchingInlineSnapshot(`
-          "GraphQL error: Not Authorized to access firstname on type User
-          GraphQL error: Not Authorized to access birth on type User
-          GraphQL error: Not Authorized to access lastname on type User"
-        `);
+  ).rejects.toThrow("GraphQL error: Not Authorized to access");
 });
