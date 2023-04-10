@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.1.3-5.2.0-ownerfield-pk-fix.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.1.2...amplify-category-api-util-mock@6.1.3-5.2.0-ownerfield-pk-fix.0) (2023-04-10)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
 ## [6.1.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.1.1...amplify-category-api-util-mock@6.1.2) (2023-03-30)
 
 **Note:** Version bump only for package amplify-category-api-util-mock

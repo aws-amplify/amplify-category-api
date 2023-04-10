@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.32-5.2.0-ownerfield-pk-fix.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-migration-tests@2.3.31...amplify-category-api-graphql-migration-tests@2.3.32-5.2.0-ownerfield-pk-fix.0) (2023-04-10)
+
+**Note:** Version bump only for package amplify-category-api-graphql-migration-tests
+
 ## [2.3.31](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-migration-tests@2.3.30...amplify-category-api-graphql-migration-tests@2.3.31) (2023-03-30)
 
 **Note:** Version bump only for package amplify-category-api-graphql-migration-tests
