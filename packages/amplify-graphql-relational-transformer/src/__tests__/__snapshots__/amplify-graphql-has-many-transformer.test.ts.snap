@@ -10453,7 +10453,8 @@ Object {
   "Child.parents.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -10466,7 +10467,7 @@ Object {
       \\"#partitionKey\\": \\"childID\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id)
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
   }
 } )
   ## [Start] Applying Key Condition **
@@ -10567,7 +10568,8 @@ $util.error($ctx.error.message, $ctx.error.type)
   "Friendship.friend.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.friendID) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"friendID\\"), $ctx.source.friendID) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -10580,7 +10582,7 @@ $util.error($ctx.error.message, $ctx.error.type)
       \\"#partitionKey\\": \\"id\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.friendID)
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
   }
 } )
   ## [Start] Applying Key Condition **
@@ -13439,7 +13441,8 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   "Parent.child.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.childID) || $util.isNull($ctx.source.childName) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"childID\\"), $ctx.source.childID) )
+#if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.childName) )
   #return
 #else
   #set( $GetRequest = {
@@ -13453,7 +13456,7 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
       \\"#sortKeyName\\": \\"name\\"
   },
   \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.childID, \\"___xamznone____\\"))),
+      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
       \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.childName, \\"___xamznone____\\")))
   }
 }))
@@ -13477,7 +13480,8 @@ $util.unauthorized()
   "Post.authors.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.authorID) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"authorID\\"), $ctx.source.authorID) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -13490,7 +13494,7 @@ $util.unauthorized()
       \\"#partitionKey\\": \\"id\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.authorID)
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
   }
 } )
   ## [Start] Applying Key Condition **
@@ -13613,7 +13617,8 @@ $util.error($ctx.error.message, $ctx.error.type)
   "PostAuthor.post.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.postID) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"postID\\"), $ctx.source.postID) )
+#if( $util.isNull($partitionKeyValue) )
   #return
 #else
   #set( $GetRequest = {
@@ -13626,7 +13631,7 @@ $util.error($ctx.error.message, $ctx.error.type)
       \\"#partitionKey\\": \\"id\\"
   },
   \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.postID, \\"___xamznone____\\")))
+      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
@@ -13649,13 +13654,16 @@ $util.unauthorized()
   "PostModel.authors.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.authorID) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"authorID\\"), $ctx.source.authorID) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"authorName\\"), $ctx.source.authorName) )
+  #set( $sortKeyValue1 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"authorSurname\\"), $ctx.source.authorSurname) )
   #set( $query = {
   \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
   \\"expressionNames\\": {
@@ -13663,8 +13671,8 @@ $util.unauthorized()
       \\"#sortKey\\": \\"name#surname\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.authorID),
-      \\":sortKey\\": $util.dynamodb.toDynamoDB(\\"\${context.source.authorName}#\${context.source.authorSurname}\\")
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue),
+      \\":sortKey\\": $util.dynamodb.toDynamoDB(\\"\${sortKeyValue0}#\${sortKeyValue1}\\")
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -13727,7 +13735,8 @@ $util.error($ctx.error.message, $ctx.error.type)
   "PostModel.singleAuthor.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.authorID) || $util.isNull($ctx.source.authorName) || $util.isNull($ctx.source.authorSurname) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"authorID\\"), $ctx.source.authorID) )
+#if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.authorName) || $util.isNull($ctx.source.authorSurname) )
   #return
 #else
   #set( $GetRequest = {
@@ -13741,7 +13750,7 @@ $util.error($ctx.error.message, $ctx.error.type)
       \\"#sortKeyName\\": \\"name#surname\\"
   },
   \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.authorID, \\"___xamznone____\\"))),
+      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
       \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.authorName}#\${ctx.source.authorSurname}\\", \\"___xamznone____\\")))
   }
 }))
@@ -15378,7 +15387,8 @@ $util.toJson(null)
   "User.friendships.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -15391,7 +15401,7 @@ $util.toJson(null)
       \\"#partitionKey\\": \\"userID\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id)
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
   }
 } )
   ## [Start] Applying Key Condition **
@@ -15492,7 +15502,8 @@ $util.error($ctx.error.message, $ctx.error.type)
   "UserModel.authorPosts.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -15505,7 +15516,7 @@ $util.error($ctx.error.message, $ctx.error.type)
       \\"#partitionKey\\": \\"authorID\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id)
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
   }
 } )
   ## [Start] Applying Key Condition **
