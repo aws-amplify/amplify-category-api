@@ -136,7 +136,7 @@
 
 "@aws-amplify/amplify-cli-core@4.0.1", "@aws-amplify/amplify-cli-core@^4.0.1":
   version "4.0.1"
-  resolved "https://registry.npmjs.org/@aws-amplify/amplify-cli-core/-/amplify-cli-core-4.0.1.tgz#e48c3ceb727fd8ec12c9b756abff0f1978842ccf"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-cli-core/-/amplify-cli-core-4.0.1.tgz#e48c3ceb727fd8ec12c9b756abff0f1978842ccf"
   integrity sha512-MqTdJCGN/ZtHk2eM8gXLQfuOREVfUwvfDmbKIHWkworfVSxAuHznfItu+GtYJbjZBsR/iu8n56wev/LRzWQicg==
   dependencies:
     amplify-cli-core "4.0.1"
@@ -8131,9 +8131,9 @@ aws-sdk-mock@^5.6.2:
     traverse "^0.6.6"
 
 aws-sdk@2.518.0, aws-sdk@^2.1113.0, aws-sdk@^2.1141.0, aws-sdk@^2.1231.0, aws-sdk@^2.1233.0:
-  version "2.1352.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1352.0.tgz#4d947c53cc520ace2ffa340f8a7862a50c6cdcbb"
-  integrity sha512-8btLGkv1ynfpmODRP5rk/dli+3SWpE9wfKkDYlbEGMja1+bREbVmePR7JBjC4ls3UMgOziHflNjngu0/RHSFDQ==
+  version "2.1353.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1353.0.tgz#0fdbef8532c7ca152ad5a74632c680b6e79205a6"
+  integrity sha512-IEzWRxeecNYwUEvHVvYlE9Q85VF1uytzL0SeZp67xl9BQHAhwPVMZyTqqxUq3z4A/8iDUteZe/o0DIJhttoeTg==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -19371,9 +19371,9 @@ vm2@^3.9.11:
     acorn-walk "^8.2.0"
 
 vm2@^3.9.8:
-  version "3.9.14"
-  resolved "https://registry.npmjs.org/vm2/-/vm2-3.9.14.tgz#964042b474cf1e6e4f475a39144773cdb9deb734"
-  integrity sha512-HgvPHYHeQy8+QhzlFryvSteA4uQLBCOub02mgqdR+0bN/akRZ48TGB1v0aCv7ksyc0HXx16AZtMHKS38alc6TA==
+  version "3.9.15"
+  resolved "https://registry.yarnpkg.com/vm2/-/vm2-3.9.15.tgz#c544e6a9bc31e4e40d2e5f532342cf799ea56a6e"
+  integrity sha512-XqNqknHGw2avJo13gbIwLNZUumvrSHc9mLqoadFZTpo3KaNEJoe1I0lqTFhRXmXD7WkLyG01aaraXdXT0pa4ag==
   dependencies:
     acorn "^8.7.0"
     acorn-walk "^8.2.0"
