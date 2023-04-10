@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.3-ownerfield-pk-fix.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@1.1.2...@aws-amplify/graphql-index-transformer@1.1.3-ownerfield-pk-fix.0) (2023-04-10)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
 ## [1.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@1.1.1...@aws-amplify/graphql-index-transformer@1.1.2) (2023-03-30)
 
 **Note:** Version bump only for package @aws-amplify/graphql-index-transformer

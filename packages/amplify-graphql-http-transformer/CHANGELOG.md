@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.1-ownerfield-pk-fix.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-http-transformer@1.2.0...@aws-amplify/graphql-http-transformer@1.2.1-ownerfield-pk-fix.0) (2023-04-10)
+
+**Note:** Version bump only for package @aws-amplify/graphql-http-transformer
+
 # [1.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-http-transformer@1.1.1...@aws-amplify/graphql-http-transformer@1.2.0) (2023-03-30)
 
 ### Features

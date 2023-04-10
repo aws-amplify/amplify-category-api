@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.3-ownerfield-pk-fix.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@1.1.2...@aws-amplify/graphql-relational-transformer@1.1.3-ownerfield-pk-fix.0) (2023-04-10)
+
+### Bug Fixes
+
+- **auth:** ownerfield as pk in relational models ([#1389](https://github.com/aws-amplify/amplify-category-api/issues/1389)) ([34d7958](https://github.com/aws-amplify/amplify-category-api/commit/34d79580433548d615302274f89896764d587a6b))
+
 ## [1.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@1.1.1...@aws-amplify/graphql-relational-transformer@1.1.2) (2023-03-30)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
