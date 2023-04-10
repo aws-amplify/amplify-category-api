@@ -4,13 +4,15 @@ exports[`Resolvers for custom primary key and relational directives should gener
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.postId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"postId\\"), $ctx.source.postId) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"title\\"), $ctx.source.title) )
   #set( $query = {
   \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
   \\"expressionNames\\": {
@@ -18,8 +20,8 @@ exports[`Resolvers for custom primary key and relational directives should gener
       \\"#sortKey\\": \\"post1CommentsTitle\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.postId),
-      \\":sortKey\\": $util.dynamodb.toDynamoDB($context.source.title)
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue),
+      \\":sortKey\\": $util.dynamodb.toDynamoDB($sortKeyValue0)
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -77,13 +79,15 @@ exports[`Resolvers for custom primary key and relational directives should gener
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.postId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"postId\\"), $ctx.source.postId) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"title\\"), $ctx.source.title) )
   #set( $query = {
   \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
   \\"expressionNames\\": {
@@ -91,8 +95,8 @@ exports[`Resolvers for custom primary key and relational directives should gener
       \\"#sortKey\\": \\"post2CommentsTitle\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.postId),
-      \\":sortKey\\": $util.dynamodb.toDynamoDB($context.source.title)
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue),
+      \\":sortKey\\": $util.dynamodb.toDynamoDB($sortKeyValue0)
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -150,13 +154,15 @@ exports[`Resolvers for custom primary key and relational directives should gener
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.postId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"postId\\"), $ctx.source.postId) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"title\\"), $ctx.source.title) )
   #set( $query = {
   \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
   \\"expressionNames\\": {
@@ -164,8 +170,8 @@ exports[`Resolvers for custom primary key and relational directives should gener
       \\"#sortKey\\": \\"postTitle\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.postId),
-      \\":sortKey\\": $util.dynamodb.toDynamoDB($context.source.title)
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue),
+      \\":sortKey\\": $util.dynamodb.toDynamoDB($sortKeyValue0)
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -223,13 +229,15 @@ exports[`Resolvers for custom primary key and relational directives should gener
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.postId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"postId\\"), $ctx.source.postId) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"title\\"), $ctx.source.title) )
   #set( $query = {
   \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
   \\"expressionNames\\": {
@@ -237,8 +245,8 @@ exports[`Resolvers for custom primary key and relational directives should gener
       \\"#sortKey\\": \\"postTitle\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.postId),
-      \\":sortKey\\": $util.dynamodb.toDynamoDB($context.source.title)
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue),
+      \\":sortKey\\": $util.dynamodb.toDynamoDB($sortKeyValue0)
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -296,13 +304,16 @@ exports[`Resolvers for custom primary key and relational directives should gener
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.postId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"postId\\"), $ctx.source.postId) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"title\\"), $ctx.source.title) )
+  #set( $sortKeyValue1 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"likes\\"), $ctx.source.likes) )
   #set( $query = {
   \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
   \\"expressionNames\\": {
@@ -310,8 +321,8 @@ exports[`Resolvers for custom primary key and relational directives should gener
       \\"#sortKey\\": \\"post5CommentsTitle#post5CommentsLikes\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.postId),
-      \\":sortKey\\": $util.dynamodb.toDynamoDB(\\"\${context.source.title}#\${context.source.likes}\\")
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue),
+      \\":sortKey\\": $util.dynamodb.toDynamoDB(\\"\${sortKeyValue0}#\${sortKeyValue1}\\")
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -369,13 +380,16 @@ exports[`Resolvers for custom primary key and relational directives should gener
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.postId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"postId\\"), $ctx.source.postId) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"title\\"), $ctx.source.title) )
+  #set( $sortKeyValue1 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"likes\\"), $ctx.source.likes) )
   #set( $query = {
   \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
   \\"expressionNames\\": {
@@ -383,8 +397,8 @@ exports[`Resolvers for custom primary key and relational directives should gener
       \\"#sortKey\\": \\"post6CommentsTitle#post6CommentsLikes\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.postId),
-      \\":sortKey\\": $util.dynamodb.toDynamoDB(\\"\${context.source.title}#\${context.source.likes}\\")
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue),
+      \\":sortKey\\": $util.dynamodb.toDynamoDB(\\"\${sortKeyValue0}#\${sortKeyValue1}\\")
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -442,13 +456,15 @@ exports[`Resolvers for custom primary key and relational directives should gener
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.customPostId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"customPostId\\"), $ctx.source.customPostId) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"title\\"), $ctx.source.title) )
   #set( $query = {
   \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
   \\"expressionNames\\": {
@@ -456,8 +472,8 @@ exports[`Resolvers for custom primary key and relational directives should gener
       \\"#sortKey\\": \\"posttitle\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.customPostId),
-      \\":sortKey\\": $util.dynamodb.toDynamoDB($context.source.title)
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue),
+      \\":sortKey\\": $util.dynamodb.toDynamoDB($sortKeyValue0)
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -515,13 +531,15 @@ exports[`Resolvers for custom primary key and relational directives should gener
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.customTagId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"customTagId\\"), $ctx.source.customTagId) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"label\\"), $ctx.source.label) )
   #set( $query = {
   \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
   \\"expressionNames\\": {
@@ -529,8 +547,8 @@ exports[`Resolvers for custom primary key and relational directives should gener
       \\"#sortKey\\": \\"taglabel\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.customTagId),
-      \\":sortKey\\": $util.dynamodb.toDynamoDB($context.source.label)
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue),
+      \\":sortKey\\": $util.dynamodb.toDynamoDB($sortKeyValue0)
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -588,20 +606,22 @@ exports[`Resolvers for custom primary key and relational directives should not g
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.postId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"postId\\"), $ctx.source.postId) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"title\\"), $ctx.source.title) )
   #set( $query = {
   \\"expression\\": \\"#partitionKey = :partitionKey\\",
   \\"expressionNames\\": {
       \\"#partitionKey\\": \\"post1CommentsId\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.postId)
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -659,20 +679,22 @@ exports[`Resolvers for custom primary key and relational directives should not g
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.postId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"postId\\"), $ctx.source.postId) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"title\\"), $ctx.source.title) )
   #set( $query = {
   \\"expression\\": \\"#partitionKey = :partitionKey\\",
   \\"expressionNames\\": {
       \\"#partitionKey\\": \\"post2CommentsId\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.postId)
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -730,20 +752,23 @@ exports[`Resolvers for custom primary key and relational directives should not g
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.postId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"postId\\"), $ctx.source.postId) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"title\\"), $ctx.source.title) )
+  #set( $sortKeyValue1 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"likes\\"), $ctx.source.likes) )
   #set( $query = {
   \\"expression\\": \\"#partitionKey = :partitionKey\\",
   \\"expressionNames\\": {
       \\"#partitionKey\\": \\"post5CommentsId\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.postId)
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -801,20 +826,23 @@ exports[`Resolvers for custom primary key and relational directives should not g
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#if( $util.isNull($ctx.source.postId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"postId\\"), $ctx.source.postId) )
+#if( $util.isNull($partitionKeyValue) )
   #set( $result = {
   \\"items\\":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"title\\"), $ctx.source.title) )
+  #set( $sortKeyValue1 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"likes\\"), $ctx.source.likes) )
   #set( $query = {
   \\"expression\\": \\"#partitionKey = :partitionKey\\",
   \\"expressionNames\\": {
       \\"#partitionKey\\": \\"post6CommentsId\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.postId)
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )

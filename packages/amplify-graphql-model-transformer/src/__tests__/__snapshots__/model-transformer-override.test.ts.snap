@@ -235,6 +235,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -286,6 +287,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -412,6 +414,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -463,6 +466,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -1089,6 +1093,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
 $util.toJson({})",
             ],
@@ -1136,6 +1141,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
 $util.toJson({})",
             ],
@@ -1183,6 +1189,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
 $util.toJson({})",
             ],
@@ -1236,6 +1243,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -1645,6 +1653,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
@@ -1693,6 +1702,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
@@ -1816,6 +1826,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
@@ -1864,6 +1875,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
@@ -2164,6 +2176,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
 $util.toJson({})",
             ],
@@ -2205,6 +2218,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
 $util.toJson({})",
             ],
@@ -2246,6 +2260,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
 $util.toJson({})",
             ],
@@ -2293,6 +2308,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
@@ -2546,6 +2562,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -2597,6 +2614,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -2723,6 +2741,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -2774,6 +2793,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -3392,6 +3412,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
 $util.toJson({})",
             ],
@@ -3439,6 +3460,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
 $util.toJson({})",
             ],
@@ -3521,6 +3543,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -3922,6 +3945,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
@@ -3970,6 +3994,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
@@ -4093,6 +4118,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
@@ -4141,6 +4167,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
@@ -4441,6 +4468,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
 $util.toJson({})",
             ],
@@ -4482,6 +4510,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
 $util.toJson({})",
             ],
@@ -4523,6 +4552,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
 $util.toJson({})",
             ],
@@ -4570,6 +4600,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
