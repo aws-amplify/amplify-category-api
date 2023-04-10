@@ -386,6 +386,10 @@ export class ResourceConstants {
         OpenSearchStreamingLambdaIAMRoleLogicalID: string;
         OpenSearchStreamingLambdaFunctionLogicalID: string;
         OpenSearchDataSourceLogicalID: string;
+        RDSLambdaIAMRoleLogicalID: string;
+        RDSLambdaLogicalID: string;
+        RDSLambdaDataSourceLogicalID: string;
+        RDSLambdaDataSourceLogicalName: string;
         NoneDataSource: string;
         AuthCognitoUserPoolLogicalID: string;
         AuthCognitoUserPoolNativeClientLogicalID: string;

@@ -8,16 +8,16 @@ import {
   initJSProjectWithProfile,
   deleteProject,
   deleteProjectDir,
-  addApiWithBlankSchemaAndConflictDetection, amplifyPush, getProjectMeta, importApiAndGenerateSchema,
+  addApiWithBlankSchema, amplifyPush, getProjectMeta, importApiAndGenerateSchema,
 } from 'amplify-category-api-e2e-core';
 import axios from 'axios';
 import generator from 'generate-password';
-import AWSAppSyncClient, {AUTH_TYPE} from 'aws-appsync';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
 
 describe('RDS Tests', () => {
   let publicIpCidr = '0.0.0.0/0';
-  const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
+  const [dbUser, dbPassword, dbIdentifier] = generator.generateMultiple(3);
 
   let identifier: string;
   let region: string;
@@ -36,10 +36,10 @@ describe('RDS Tests', () => {
     // 1. Create a RDS Instance
     // 2. Add the external IP address of the current machine to security group inbound rule to allow public access
     // 3. Connect to the database and execute DDL
-    const username = db_user;
-    const password = db_password;
+    const username = dbUser;
+    const password = dbPassword;
     region = 'us-east-1';
-    identifier = `integtest${db_identifier}`;
+    identifier = `integtest${dbIdentifier}`;
     db = await createRDSInstance({
       identifier,
       engine: 'mysql',
@@ -87,7 +87,7 @@ describe('RDS Tests', () => {
     const name = 'rdstest';
     projectDir = await createNewProjectDir('rdstest');
     await initJSProjectWithProfile(projectDir, {});
-    await addApiWithBlankSchemaAndConflictDetection(projectDir, { transformerVersion: 2 });
+    await addApiWithBlankSchema(projectDir, { transformerVersion: 2 });
     await importApiAndGenerateSchema(projectDir, {}, rdsConfig);
     await amplifyPush(projectDir);
 
