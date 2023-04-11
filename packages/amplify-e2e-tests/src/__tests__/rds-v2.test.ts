@@ -88,6 +88,7 @@ describe('RDS Tests', () => {
     projectDir = await createNewProjectDir('rdstest');
     await initJSProjectWithProfile(projectDir, {});
     await addApiWithBlankSchema(projectDir, { transformerVersion: 2 });
+    await amplifyPush(projectDir);
     await importApiAndGenerateSchema(projectDir, {}, rdsConfig);
     await amplifyPush(projectDir);
 
