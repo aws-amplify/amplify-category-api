@@ -1,5 +1,4 @@
 import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
-import { $TSAny } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
