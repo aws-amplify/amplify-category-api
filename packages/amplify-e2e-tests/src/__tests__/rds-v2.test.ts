@@ -8,7 +8,10 @@ import {
   initJSProjectWithProfile,
   deleteProject,
   deleteProjectDir,
-  addApiWithBlankSchema, amplifyPush, getProjectMeta, importApiAndGenerateSchema,
+  amplifyPush,
+  getProjectMeta,
+  importApiAndGenerateSchema,
+  addApiWithOneModel,
 } from 'amplify-category-api-e2e-core';
 import axios from 'axios';
 import generator from 'generate-password';
@@ -87,7 +90,7 @@ describe('RDS Tests', () => {
     const name = 'rdstest';
     projectDir = await createNewProjectDir('rdstest');
     await initJSProjectWithProfile(projectDir, {});
-    await addApiWithBlankSchema(projectDir, { transformerVersion: 2 });
+    await addApiWithOneModel(projectDir, { transformerVersion: 2 });
     await amplifyPush(projectDir);
     await importApiAndGenerateSchema(projectDir, {}, rdsConfig);
     await amplifyPush(projectDir);
