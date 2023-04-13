@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.11.2-ownerfield-pk-fix.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.11.1...amplify-category-api-e2e-tests@3.11.2-ownerfield-pk-fix.0) (2023-04-13)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
 ## [3.11.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.11.0...amplify-category-api-e2e-tests@3.11.1) (2023-03-15)
 
 ### Bug Fixes
