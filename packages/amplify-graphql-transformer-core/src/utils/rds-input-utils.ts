@@ -1,4 +1,4 @@
-import { parse, print, DefinitionNode } from 'graphql';
+import { parse, print, InputObjectTypeDefinitionNode } from 'graphql';
 import * as fs from 'fs-extra';
 import {
   $TSAny,
@@ -41,28 +41,35 @@ const getGlobalAmplifyInputEntries = async (
   return inputs;
 };
 
-export const constructDefaultGlobalAmplifyInput = async (context: $TSContext, dataSourceType: ImportedRDSType) => {
-  const inputs = await getGlobalAmplifyInputEntries(context, dataSourceType);
+export const constructDefaultGlobalAmplifyInput = async (context: $TSContext, dataSourceType: ImportedRDSType, includeAuthRule: boolean = true) => {
+  const inputs = await getGlobalAmplifyInputEntries(context, dataSourceType, includeAuthRule);
   const inputsString = inputs.reduce((acc: string, input): string =>
     acc + ` ${input.name}: ${input.type} = ${input.type === 'String' ? '"'+ input.default + '"' : input.default} ${input.comment ? '# ' + input.comment: ''} \n`
   , '');
   return `input Amplify {\n${inputsString}}\n`;
 };
 
-export const readRDSGlobalAmplifyInput = async (pathToSchemaFile: string): Promise<DefinitionNode | undefined> => {
+export const readRDSGlobalAmplifyInput = async (pathToSchemaFile: string): Promise<InputObjectTypeDefinitionNode | undefined> => {
+  if (!fs.existsSync(pathToSchemaFile)) {
+    return;
+  }
   const schemaContent = fs.readFileSync(pathToSchemaFile, 'utf-8');
   if (_.isEmpty(schemaContent?.replace(/[\r\n]/gm, ''))) {
-    throw new Error('The schema file is empty');
+    return;
   }
 
   const parsedSchema = parse(schemaContent);
 
-  return parsedSchema.definitions.find(
+  const inputNode = parsedSchema.definitions.find(
     (definition) =>
       definition.kind === 'InputObjectTypeDefinition' &&
       definition.name &&
       definition.name.value === 'Amplify'
   );
+
+  if (inputNode) {
+    return (inputNode as InputObjectTypeDefinitionNode);
+  }
 };
 
 export const getRDSDBConfigFromAmplifyInput = async (context:$TSContext, inputNode: $TSAny): Promise<Partial<ImportedDataSourceConfig>> => {
@@ -81,17 +88,46 @@ export const getRDSDBConfigFromAmplifyInput = async (context:$TSContext, inputNo
 };
 
 export const constructRDSGlobalAmplifyInput = async (context: $TSContext, config: $TSAny, pathToSchemaFile: string): Promise<string> => {
-  const inputNode: $TSAny = await readRDSGlobalAmplifyInput(pathToSchemaFile);
-  const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL, false)).map(item => item.name);
-  expectedInputs.forEach((input) => {
-    const inputNodeField = inputNode?.fields?.find(
-      (field: $TSAny) => field?.name?.value === input,
-    );
-    if (inputNodeField && config[input]) {
-      inputNodeField.defaultValue.value = config[input];
-    }
-  });
+  const existingInputNode:$TSAny = await readRDSGlobalAmplifyInput(pathToSchemaFile) || {};
+  if ( existingInputNode?.fields && existingInputNode?.fields?.length > 0 ) {
+    const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL)).map(item => item.name);
+    expectedInputs.forEach((input) => {
+      const inputNodeField = existingInputNode?.fields?.find(
+        (field: $TSAny) => field?.name?.value === input,
+      );
+      if (inputNodeField && config[input]) {
+        inputNodeField['defaultValue']['value'] = config[input];
+      }
+    });
+    return print(existingInputNode);
+  }
+  else {
+    const engine = config['engine'] || ImportedRDSType.MYSQL;
+    return constructDefaultGlobalAmplifyInput(context, engine, false);
+  }
+};
 
-  const result = print(inputNode);
-  return result;
+export const isGlobalAuthRulePresent = (inputNode: InputObjectTypeDefinitionNode) => {
+  const authRuleField = inputNode?.fields?.find(
+    (field: $TSAny) => field?.name?.value === "globalAuthRule",
+  );
+  return authRuleField ? true : false;
+};
+
+export const removeAmplifyInputDefinition = (schema: string): string => {
+  if (_.isEmpty(schema)) {
+    return schema;
+  }
+
+  const parsedSchema: $TSAny = parse(schema);
+
+  parsedSchema.definitions = parsedSchema?.definitions?.filter(
+    (definition: $TSAny) =>
+      !(definition?.kind === 'InputObjectTypeDefinition' &&
+      definition?.name &&
+      definition?.name?.value === 'Amplify')
+  );
+
+  const sanitizedSchema = print(parsedSchema);
+  return sanitizedSchema;
 };

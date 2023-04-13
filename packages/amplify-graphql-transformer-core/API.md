@@ -35,7 +35,6 @@ import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DefinitionNode } from 'graphql';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
@@ -152,7 +151,7 @@ export const enum ConflictHandlerType {
 }
 
 // @public (undocumented)
-export const constructDefaultGlobalAmplifyInput: (context: $TSContext, dataSourceType: ImportedRDSType) => Promise<string>;
+export const constructDefaultGlobalAmplifyInput: (context: $TSContext, dataSourceType: ImportedRDSType, includeAuthRule?: boolean) => Promise<string>;
 
 // @public (undocumented)
 export const constructRDSGlobalAmplifyInput: (context: $TSContext, config: $TSAny, pathToSchemaFile: string) => Promise<string>;
@@ -242,7 +241,7 @@ export const getFieldNameFor: (op: Operation, typeName: string) => string;
 export const getKeySchema: (table: any, indexName?: string) => any;
 
 // @public (undocumented)
-export const getParameterStoreSecretPath: (secret: string, database: string, apiName: string, envName?: string) => string;
+export const getParameterStoreSecretPath: (secret: string, secretsKey: string, apiName: string, envName?: string) => string;
 
 // @public (undocumented)
 export const getRDSDBConfigFromAmplifyInput: (context: $TSContext, inputNode: $TSAny) => Promise<Partial<ImportedDataSourceConfig>>;
@@ -313,7 +312,7 @@ export const IAM_UNAUTH_ROLE_PARAMETER = "unauthRoleName";
 // @public (undocumented)
 export type ImportAppSyncAPIInputs = {
     apiName: string;
-    dataSourceConfig: ImportedDataSourceConfig;
+    dataSourceConfig?: ImportedDataSourceConfig;
 };
 
 // @public (undocumented)
@@ -463,7 +462,7 @@ export type RDSDataSourceConfig = RDSConnectionSecrets & {
 };
 
 // @public (undocumented)
-export const readRDSGlobalAmplifyInput: (pathToSchemaFile: string) => Promise<DefinitionNode | undefined>;
+export const readRDSGlobalAmplifyInput: (pathToSchemaFile: string) => Promise<InputObjectTypeDefinitionNode | undefined>;
 
 // @public (undocumented)
 export type ResolverConfig = {

@@ -1,8 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`both models with sort key 1`] = `
-"
-type ModelA {
+"type ModelA {
   id: ID!
   sortId: ID!
   models(filter: ModelModelAModelBFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelModelAModelBConnection
@@ -360,7 +359,6 @@ input ModelIDKeyConditionInput {
   between: [ID]
   beginsWith: ID
 }
-
 "
 `;
 
@@ -3278,8 +3276,7 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 `;
 
 exports[`models with multiple sort keys 1`] = `
-"
-type ModelA {
+"type ModelA {
   id: ID!
   sortId: ID!
   secondSortId: ID!
@@ -3679,13 +3676,11 @@ input ModelModelAModelBByModelACompositeKeyInput {
   modelAsortId: ID
   modelAsecondSortId: ID
 }
-
 "
 `;
 
 exports[`one of the models with sort key 1`] = `
-"
-type ModelA {
+"type ModelA {
   id: ID!
   sortId: ID!
   models(filter: ModelModelAModelBFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelModelAModelBConnection
@@ -4031,13 +4026,11 @@ input ModelIDKeyConditionInput {
   between: [ID]
   beginsWith: ID
 }
-
 "
 `;
 
 exports[`valid schema 1`] = `
-"
-type Foo {
+"type Foo {
   id: ID!
   bars(filter: ModelFooBarFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelFooBarConnection
   createdAt: AWSDateTime!
@@ -4361,7 +4354,6 @@ input ModelSubscriptionFooBarFilterInput {
   and: [ModelSubscriptionFooBarFilterInput]
   or: [ModelSubscriptionFooBarFilterInput]
 }
-
 "
 `;
 

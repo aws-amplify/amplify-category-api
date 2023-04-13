@@ -55,148 +55,26 @@ Object {
     },
     Object {
       "defaultValue": Object {
-        "block": false,
-        "kind": "StringValue",
-        "loc": Object {
-          "end": 102,
-          "start": 70,
-        },
-        "value": "mockdatabase.rds.amazonaws.com",
-      },
-      "description": undefined,
-      "directives": Array [],
-      "kind": "InputValueDefinition",
-      "loc": Object {
-        "end": 102,
-        "start": 55,
-      },
-      "name": Object {
-        "kind": "Name",
-        "loc": Object {
-          "end": 59,
-          "start": 55,
-        },
-        "value": "host",
-      },
-      "type": Object {
-        "kind": "NamedType",
-        "loc": Object {
-          "end": 67,
-          "start": 61,
-        },
-        "name": Object {
-          "kind": "Name",
-          "loc": Object {
-            "end": 67,
-            "start": 61,
-          },
-          "value": "String",
-        },
-      },
-    },
-    Object {
-      "defaultValue": Object {
-        "kind": "IntValue",
-        "loc": Object {
-          "end": 127,
-          "start": 123,
-        },
-        "value": "1010",
-      },
-      "description": undefined,
-      "directives": Array [],
-      "kind": "InputValueDefinition",
-      "loc": Object {
-        "end": 127,
-        "start": 111,
-      },
-      "name": Object {
-        "kind": "Name",
-        "loc": Object {
-          "end": 115,
-          "start": 111,
-        },
-        "value": "port",
-      },
-      "type": Object {
-        "kind": "NamedType",
-        "loc": Object {
-          "end": 120,
-          "start": 117,
-        },
-        "name": Object {
-          "kind": "Name",
-          "loc": Object {
-            "end": 120,
-            "start": 117,
-          },
-          "value": "Int",
-        },
-      },
-    },
-    Object {
-      "defaultValue": Object {
-        "block": false,
-        "kind": "StringValue",
-        "loc": Object {
-          "end": 192,
-          "start": 178,
-        },
-        "value": "mockdatabase",
-      },
-      "description": undefined,
-      "directives": Array [],
-      "kind": "InputValueDefinition",
-      "loc": Object {
-        "end": 192,
-        "start": 159,
-      },
-      "name": Object {
-        "kind": "Name",
-        "loc": Object {
-          "end": 167,
-          "start": 159,
-        },
-        "value": "database",
-      },
-      "type": Object {
-        "kind": "NamedType",
-        "loc": Object {
-          "end": 175,
-          "start": 169,
-        },
-        "name": Object {
-          "kind": "Name",
-          "loc": Object {
-            "end": 175,
-            "start": 169,
-          },
-          "value": "String",
-        },
-      },
-    },
-    Object {
-      "defaultValue": Object {
         "fields": Array [
           Object {
             "kind": "ObjectField",
             "loc": Object {
-              "end": 242,
-              "start": 229,
+              "end": 97,
+              "start": 84,
             },
             "name": Object {
               "kind": "Name",
               "loc": Object {
-                "end": 234,
-                "start": 229,
+                "end": 89,
+                "start": 84,
               },
               "value": "allow",
             },
             "value": Object {
               "kind": "EnumValue",
               "loc": Object {
-                "end": 242,
-                "start": 236,
+                "end": 97,
+                "start": 91,
               },
               "value": "public",
             },
@@ -204,36 +82,36 @@ Object {
         ],
         "kind": "ObjectValue",
         "loc": Object {
-          "end": 244,
-          "start": 227,
+          "end": 99,
+          "start": 82,
         },
       },
       "description": undefined,
       "directives": Array [],
       "kind": "InputValueDefinition",
       "loc": Object {
-        "end": 244,
-        "start": 200,
+        "end": 99,
+        "start": 55,
       },
       "name": Object {
         "kind": "Name",
         "loc": Object {
-          "end": 214,
-          "start": 200,
+          "end": 69,
+          "start": 55,
         },
         "value": "globalAuthRule",
       },
       "type": Object {
         "kind": "NamedType",
         "loc": Object {
-          "end": 224,
-          "start": 216,
+          "end": 79,
+          "start": 71,
         },
         "name": Object {
           "kind": "Name",
           "loc": Object {
-            "end": 224,
-            "start": 216,
+            "end": 79,
+            "start": 71,
           },
           "value": "AuthRule",
         },
@@ -242,7 +120,7 @@ Object {
   ],
   "kind": "InputObjectTypeDefinition",
   "loc": Object {
-    "end": 458,
+    "end": 313,
     "start": 0,
   },
   "name": Object {
