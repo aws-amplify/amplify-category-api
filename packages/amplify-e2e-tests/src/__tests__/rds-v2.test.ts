@@ -9,8 +9,8 @@ import {
   deleteProject,
   deleteProjectDir,
   amplifyPush,
-  importApiAndGenerateSchema,
-  addApiWithOneModel,
+  importRDSDatabase,
+  addApiWithOneModel, importRDSDatabase,
 } from 'amplify-category-api-e2e-core';
 import axios from 'axios';
 import generator from 'generate-password';
@@ -96,7 +96,7 @@ describe('RDS Tests', () => {
     await initJSProjectWithProfile(projectDir, {});
     await addApiWithOneModel(projectDir, { transformerVersion: 2 });
     await amplifyPush(projectDir);
-    await importApiAndGenerateSchema(projectDir, {}, rdsConfig);
+    await importRDSDatabase(projectDir, rdsConfig);
     await amplifyPush(projectDir);
 
     const awsconfig = configureAmplify(projectDir);
