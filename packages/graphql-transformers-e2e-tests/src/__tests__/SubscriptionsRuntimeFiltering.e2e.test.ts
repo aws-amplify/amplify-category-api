@@ -83,6 +83,11 @@ let GRAPHQL_CLIENT_1: AWSAppSyncClient<any> = undefined;
 let GRAPHQL_CLIENT_2: AWSAppSyncClient<any> = undefined;
 
 /**
+ * Client 3 is logged in and is a member no groups.
+ */
+let GRAPHQL_CLIENT_3: AWSAppSyncClient<any> = undefined;
+
+/**
  * Auth IAM Client
  */
 let GRAPHQL_IAM_AUTH_CLIENT: AWSAppSyncClient<any> = undefined;
@@ -343,9 +348,6 @@ beforeAll(async () => {
   await addUserToGroup(INSTRUCTOR_GROUP_NAME, USERNAME1, USER_POOL_ID);
   await addUserToGroup(INSTRUCTOR_GROUP_NAME, USERNAME2, USER_POOL_ID);
 
-  // authenticate user3 we'll use amplify api for subscription calls
-  await authenticateUser(USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
-
   const authResAfterGroup: any = await authenticateUser(USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
   const idToken = authResAfterGroup.getIdToken().getJwtToken();
   GRAPHQL_CLIENT_1 = new AWSAppSyncClient({
@@ -366,6 +368,18 @@ beforeAll(async () => {
     auth: {
       type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
       jwtToken: idToken2,
+    },
+  });
+
+  const authRes3AfterGroup: any = await authenticateUser(USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
+  const idToken3 = authRes3AfterGroup.getIdToken().getJwtToken();
+  GRAPHQL_CLIENT_3 = new AWSAppSyncClient({
+    url: GRAPHQL_ENDPOINT,
+    region: AWS_REGION,
+    disableOffline: true,
+    auth: {
+      type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
+      jwtToken: idToken3,
     },
   });
 
@@ -2178,6 +2192,50 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
       expect(result.description).toEqual('taskGroupDesc4');
       expect(result.priority).toEqual(3);
       expect(result.severity).toEqual(10);
+    });
+  });
+
+  describe('Test requests from users with no group membership', () => {
+    test('Should return unauthorized when attempting to subscribe with no groups', async () => {
+      expect.assertions(1);
+      reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+      await Auth.signIn(USERNAME3, REAL_PASSWORD);
+      const observer = API.graphql({
+        // @ts-ignore
+        query: gql`
+          subscription OnDeleteTaskGroup(
+            $filter: ModelSubscriptionTaskGroupFilterInput
+          ) {
+            onDeleteTaskGroup(filter: $filter) {
+              id
+              title
+              description
+              priority
+              severity
+            }
+          }
+        `,
+        authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+        variables:{},
+      }) as unknown as Observable<any>;
+      let subscription: ZenObservable.Subscription;
+      const subscriptionPromise = new Promise((resolve, reject) => {
+        subscription = observer.subscribe(
+          (event) => {
+            // will unsubscribe on the first available subscription data
+            const task = event.value.data.onDeleteTaskGroup;
+            subscription.unsubscribe();
+            resolve(task);
+          },
+          (err) => {
+            reject(err);
+          },
+        );
+      });
+      await subscriptionPromise.catch((err) => {
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(err).toBeDefined();
+      });
     });
   });
 });
