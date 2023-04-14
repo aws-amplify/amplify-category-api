@@ -10,7 +10,7 @@ import {
   deleteProjectDir,
   amplifyPush,
   importRDSDatabase,
-  addApiWithOneModel, importRDSDatabase,
+  addApiWithOneModel,
 } from 'amplify-category-api-e2e-core';
 import axios from 'axios';
 import generator from 'generate-password';
