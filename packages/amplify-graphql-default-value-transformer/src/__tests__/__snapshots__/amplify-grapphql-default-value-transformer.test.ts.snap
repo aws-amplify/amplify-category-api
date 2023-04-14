@@ -1,8 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`DefaultValueModelTransformer: should be supported on a required field. 1`] = `
-"
-type Test {
+"type Test {
   id: ID!
   stringValue: String!
   createdAt: AWSDateTime!
@@ -216,7 +215,6 @@ type Subscription {
   onUpdateTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"updateTest\\"])
   onDeleteTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"deleteTest\\"])
 }
-
 "
 `;
 
@@ -228,8 +226,7 @@ $util.qr($context.args.input.put(\\"stringValue\\", $util.defaultIfNull($ctx.arg
 `;
 
 exports[`DefaultValueModelTransformer: should successfully transform simple valid schema 1`] = `
-"
-type Post {
+"type Post {
   id: ID!
   stringValue: String
   intVal: Int
@@ -537,6 +534,5 @@ type Subscription {
   onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
   onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
-
 "
 `;

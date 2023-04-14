@@ -10,7 +10,7 @@ import {
   ImportedDataSourceConfig
 } from '@aws-amplify/graphql-transformer-core';
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { storeConnectionSecrets, readDatabaseNameFromMeta, testDatabaseConnection } from '../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
+import { storeConnectionSecrets, testDatabaseConnection, getSecretsKey, getDatabaseName } from '../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 import { PREVIEW_BANNER } from '../../category-constants';
 
 const subcommand = 'update-secrets';
@@ -30,13 +30,14 @@ export const run = async (context: $TSContext) => {
   }
 
   const engine = ImportedRDSType.MYSQL;
-  const database = await readDatabaseNameFromMeta(apiName, engine);
+  const secretsKey = await getSecretsKey();
+  const database = await getDatabaseName(context, apiName, secretsKey);
 
   // read and validate the RDS connection parameters
   const databaseConfig: ImportedDataSourceConfig = await databaseConfigurationInputWalkthrough(engine, database);
 
   await testDatabaseConnection(databaseConfig);
-  await storeConnectionSecrets(context, databaseConfig, apiName);
+  await storeConnectionSecrets(context, databaseConfig, apiName, secretsKey);
 
   printer.info(`Successfully updated the secrets for ${database} database.`);
 };

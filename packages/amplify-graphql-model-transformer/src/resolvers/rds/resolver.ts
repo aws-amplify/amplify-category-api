@@ -68,22 +68,25 @@ export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEn
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
     roleName,
   });
+  const policyStatements = [
+    new PolicyStatement({
+      actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+      effect: Effect.ALLOW,
+      resources: ['arn:aws:logs:*:*:*'],
+    })
+  ];
+  if (secretEntry) {
+    policyStatements.push(
+      new PolicyStatement({
+        actions: ['ssm:GetParameter', 'ssm:GetParameters'],
+        effect: Effect.ALLOW,
+        resources: [`arn:aws:ssm:*:*:parameter${secretEntry.username}`, `arn:aws:ssm:*:*:parameter${secretEntry.password}`],
+      })
+    )
+  }
   role.attachInlinePolicy(
     new Policy(stack, 'CloudwatchLogsAccess', {
-      statements: [
-        new PolicyStatement({
-          actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
-          effect: Effect.ALLOW,
-          resources: ['arn:aws:logs:*:*:*'],
-        }),
-        new PolicyStatement({
-          actions: ['ssm:GetParameter', 'ssm:GetParameters'],
-          effect: Effect.ALLOW,
-          resources: secretEntry
-            ? [`arn:aws:ssm:*:*:parameter${secretEntry.username}`, `arn:aws:ssm:*:*:parameter${secretEntry.password}`]
-            : [],
-        }),
-      ],
+      statements: policyStatements,
     }),
   );
 

@@ -31,7 +31,6 @@ export const generateRDSSchema = async (
     await adapter.initialize();
   } catch(error) {
     printer.error('Failed to connect to the specified RDS Data Source. Check the connection details in the schema and re-try. Use "amplify api update-secrets" to update the user credentials.');
-    console.log(error?.message);
     throw(error);
   };
 

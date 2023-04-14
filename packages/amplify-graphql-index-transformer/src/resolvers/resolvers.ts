@@ -906,7 +906,7 @@ export function getDBType(ctx: TransformerContextProvider, modelName: string) {
   return dbType;
 }
 
-export function getVTLGenerator(dbInfo: DatasourceType | undefined) {
+export const getVTLGenerator = (dbInfo: DatasourceType|undefined): RDSIndexVTLGenerator|DynamoDBIndexVTLGenerator => {
   const dbType = dbInfo ? dbInfo.dbType : 'DDB';
   if (dbType === 'MySQL') {
     return new RDSIndexVTLGenerator();

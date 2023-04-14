@@ -14,7 +14,7 @@ export type RDSDataSourceConfig = RDSConnectionSecrets & {
 
 export type ImportAppSyncAPIInputs = {
   apiName: string,
-  dataSourceConfig: ImportedDataSourceConfig
+  dataSourceConfig?: ImportedDataSourceConfig
 };
 
 export const RDS_SCHEMA_FILE_NAME = 'schema.rds.graphql';
