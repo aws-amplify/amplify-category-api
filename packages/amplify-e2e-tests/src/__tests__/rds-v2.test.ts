@@ -9,14 +9,18 @@ import {
   deleteProject,
   deleteProjectDir,
   amplifyPush,
-  getProjectMeta,
   importApiAndGenerateSchema,
   addApiWithOneModel,
 } from 'amplify-category-api-e2e-core';
 import axios from 'axios';
 import generator from 'generate-password';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import AWSAppSyncClient from 'aws-appsync';
 import gql from 'graphql-tag';
+import {
+  configureAmplify,
+  getApiKey,
+  getConfiguredAppsyncClientAPIKeyAuth,
+} from '../schema-api-directives';
 
 describe('RDS Tests', () => {
   let publicIpCidr = '0.0.0.0/0';
@@ -88,27 +92,16 @@ describe('RDS Tests', () => {
 
   beforeEach(async () => {
     const name = 'rdstest';
-    projectDir = await createNewProjectDir('rdstest');
+    projectDir = await createNewProjectDir(name);
     await initJSProjectWithProfile(projectDir, {});
     await addApiWithOneModel(projectDir, { transformerVersion: 2 });
     await amplifyPush(projectDir);
     await importApiAndGenerateSchema(projectDir, {}, rdsConfig);
     await amplifyPush(projectDir);
 
-    const meta = getProjectMeta(projectDir);
-    const { output } = meta.api[name];
-    const url = output.GraphQLAPIEndpointOutput as string;
-    const apiKey = output.GraphQLAPIKeyOutput as string;
-
-    appSyncClient = new AWSAppSyncClient({
-      url,
-      region,
-      disableOffline: true,
-      auth: {
-        type: AUTH_TYPE.API_KEY,
-        apiKey,
-      },
-    });
+    const awsconfig = configureAmplify(projectDir);
+    const apiKey = getApiKey(projectDir);
+    appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, apiKey);
   });
 
   afterEach(async () => {
