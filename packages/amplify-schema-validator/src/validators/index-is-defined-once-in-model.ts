@@ -12,6 +12,7 @@ import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
    * @param schema graphql schema
    * @returns true if an index with same name exists only once in a model
    */
+
 export const validateIndexIsDefinedOnce = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(

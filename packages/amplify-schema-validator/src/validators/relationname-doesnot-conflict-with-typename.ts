@@ -8,11 +8,12 @@ import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
 import { getGraphqlName, toUpper } from '../helpers/util';
 
 /**
-   * Validates that relation name does not conflict with an existing type name
-   *
-   * @param schema graphql schema
-   * @returns true if relation name does not conflict with an existing type name
-   */
+ * Validates that relation name does not conflict with an existing type name
+ *
+ * @param schema graphql schema
+ * @returns true if relation name does not conflict with an existing type name
+ */
+
 export const validateRelationNameDoesNotConflictWithTypeName = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(
