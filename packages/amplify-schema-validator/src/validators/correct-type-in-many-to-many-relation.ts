@@ -13,6 +13,7 @@ import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
  * @param schema graphql schema
  * @returns true if @manyToMany relation has correct type
  */
+
 export const validateCorrectTypeInManyToManyRelation = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(

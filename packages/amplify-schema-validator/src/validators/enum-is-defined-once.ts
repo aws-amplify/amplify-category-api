@@ -11,6 +11,7 @@ import { ValidationError } from '../exceptions/validation-error';
  * @param schema graphql schema
  * @returns true if an enum is defined once
  */
+
 export const validateEnumIsDefinedOnce = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const enumTypeDefinitions = schema.definitions.filter(

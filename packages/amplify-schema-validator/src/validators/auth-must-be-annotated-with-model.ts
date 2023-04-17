@@ -11,6 +11,7 @@ import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
    * @param schema graphql schema
    * @returns true if types annotated with @auth are also be annotated with @model.
    */
+
 export const validateAuthIsAnnotatedWithModel = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(

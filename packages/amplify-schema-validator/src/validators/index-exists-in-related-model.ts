@@ -14,6 +14,7 @@ import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
  * @param schema graphql schema
  * @returns true if index exists in the related model
  */
+
 export const validateIndexExistsInRelatedModel = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(
