@@ -1,4 +1,4 @@
-import { ConflictHandlerType, RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
