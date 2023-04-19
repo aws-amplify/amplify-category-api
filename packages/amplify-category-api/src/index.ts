@@ -50,6 +50,7 @@ export { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/u
 export * from './graphql-transformer';
 export * from './force-updates';
 export { showApiAuthAcm } from './category-utils/show-auth-acm';
+export { isDataStoreEnabled } from './category-utils/is-datastore-enabled';
 
 const category = AmplifyCategories.API;
 

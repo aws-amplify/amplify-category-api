@@ -140,6 +140,9 @@ export const handleAmplifyEvent: (context: $TSContext, args: $TSAny) => Promise<
 export const initEnv: (context: $TSContext) => Promise<void>;
 
 // @public (undocumented)
+export const isDataStoreEnabled: (context: $TSContext) => Promise<boolean>;
+
+// @public (undocumented)
 export const migrate: (context: $TSContext, serviceName?: string) => Promise<void>;
 
 // @public (undocumented)
