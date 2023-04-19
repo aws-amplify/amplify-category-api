@@ -48,7 +48,8 @@
     "constructs": "^3.3.125",
     "graphql": "^14.5.8",
     "graphql-mapping-template": "4.20.7",
-    "graphql-transformer-common": "4.24.3"
+    "graphql-transformer-common": "4.24.3",
+    "@aws-amplify/graphql-query-processor": "0.0.1"
   },
   "devDependencies": {
     "@aws-cdk/assert": "~1.172.0",

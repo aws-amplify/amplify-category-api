@@ -7,8 +7,8 @@
     "target": "es6",
     "outDir": "lib",
     "moduleResolution": "node",
-    "module": "CommonJS",
-    "lib": ["ES2017"],
+    "module": "ES2015",
+    "lib": ["ES2015"],
     "rootDir": "./"
   }
 }
