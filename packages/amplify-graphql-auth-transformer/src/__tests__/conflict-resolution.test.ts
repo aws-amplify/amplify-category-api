@@ -3,8 +3,6 @@ import { GraphQLTransform, ConflictHandlerType } from '@aws-amplify/graphql-tran
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { featureFlags } from './test-helpers';
 
-jest.mock('@aws-amplify/amplify-prompts');
-
 test('single auth model is enabled with conflict resolution', () => {
   const validSchema = `
     type Post @model @auth(rules: [{ allow: owner}]) {
