@@ -56,8 +56,5 @@
     "graphql-key-transformer": "3.2.52",
     "graphql-transformer-core": "8.0.3",
     "graphql-versioned-transformer": "5.2.52"
-  },
-  "peerDependencies": {
-    "@aws-amplify/amplify-prompts": "^2.6.6"
   }
 }
