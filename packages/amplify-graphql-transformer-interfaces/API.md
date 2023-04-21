@@ -434,6 +434,7 @@ export interface TransformerContextProvider {
     dataSources: TransformerDataSourceManagerProvider;
     // (undocumented)
     datasourceSecretParameterLocations: Map<string, TransformerSecrets>;
+    // (undocumented)
     featureFlags: FeatureFlagProvider;
     // (undocumented)
     getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;

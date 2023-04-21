@@ -459,13 +459,8 @@ export type RDSConnectionSecrets = TransformerSecrets & {
 };
 
 // @public (undocumented)
-export type RDSDBConfig = {
-    engine: string;
-    host: string;
-    port: number;
-    database: string;
-    username: string;
-    password: string;
+export type RDSDataSourceConfig = RDSConnectionSecrets & {
+    engine: ImportedRDSType;
 };
 
 // @public (undocumented)
