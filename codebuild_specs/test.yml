@@ -6,4 +6,4 @@ env:
 phases:
   build:
     commands:
-      - source 'Running test job'
+      - echo 'Running test job'
