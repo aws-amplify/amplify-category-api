@@ -515,6 +515,13 @@
   dependencies:
     "@aws-amplify/core" "4.7.15"
 
+"@aws-cdk/assert@~2.68.0":
+  version "2.68.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/assert/-/assert-2.68.0.tgz#d83b44ba278d3e3a32c13f372c697f26c6061b64"
+  integrity sha512-bEztvoYdVp17I/ClYRGZa4wlEP/qNNq4Q+Z7EKwRL0cLDmvq4EI1m1N8LhUPAH7B6YXp5d1164gC6Nr0lV8bbA==
+  dependencies:
+    "@aws-cdk/cloudformation-diff" "2.68.0"
+
 "@aws-cdk/asset-awscli-v1@^2.2.97":
   version "2.2.130"
   resolved "https://registry.yarnpkg.com/@aws-cdk/asset-awscli-v1/-/asset-awscli-v1-2.2.130.tgz#97e4d47f3447afa8593a03f7299c2cf4e3b118b6"
@@ -543,7 +550,7 @@
     fs-extra "^9.1.0"
     md5 "^2.3.0"
 
-"@aws-cdk/cloudformation-diff@~2.68.0":
+"@aws-cdk/cloudformation-diff@2.68.0", "@aws-cdk/cloudformation-diff@~2.68.0":
   version "2.68.0"
   resolved "https://registry.npmjs.org/@aws-cdk/cloudformation-diff/-/cloudformation-diff-2.68.0.tgz#e5c69c9419472e3dd56bde418b3fabbca85d4005"
   integrity sha512-JnX0sygxNHWU3aKdzSus25B1TuKYWDwnNL2tw3svZvfHcw3Nwz857JTOn/yNOJxT7cZbCbOqNPrOT6Xv+LrxTQ==
