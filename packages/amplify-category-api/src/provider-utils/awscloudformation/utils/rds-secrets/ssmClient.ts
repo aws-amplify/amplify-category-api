@@ -83,17 +83,14 @@ export class SSMClient {
    * Deletes secretName. If it already doesn't exist, this is treated as success. All other errors will throw.
    */
   deleteSecret = async (secretName: string): Promise<void> => {
-    await this.ssmClient
-      .deleteParameter({
-        Name: secretName,
-      })
-      .promise()
-      .catch(err => {
-        if (err?.code !== 'ParameterNotFound') {
-          // if the value didn't exist in the first place, consider it deleted
-          throw err;
-        }
-      });
+    try {
+      await this.ssmClient.deleteParameter({ Name: secretName }).promise();
+    } catch (err) {
+      if (err?.code !== 'ParameterNotFound') {
+        // if the value didn't exist in the first place, consider it deleted
+        throw err;
+      }
+    }
   };
 
   /**

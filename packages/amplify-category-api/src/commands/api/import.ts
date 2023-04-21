@@ -12,6 +12,10 @@ const subcommand = 'import';
 export const name = subcommand;
 
 export const run = async (context: $TSContext) => {
+
+  // Disable the command for now
+  throw new Error("This command has been disabled.");
+  
   const importAppSyncAPIWalkInputs = await importAppSyncAPIWalkthrough(context);
 
   if (importAppSyncAPIWalkInputs?.dataSourceConfig) {
