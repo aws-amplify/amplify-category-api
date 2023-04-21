@@ -42,6 +42,6 @@
     "knex": "~2.3.0"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "^4.0.1"
+    "@aws-amplify/amplify-cli-core": "4.0.1"
   }
 }
