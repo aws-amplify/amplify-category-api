@@ -5,3 +5,6 @@ phases:
   build:
     commands:
       - echo "Running build job"
+artifacts:
+  files:
+    - 'shared-scripts.sh'
