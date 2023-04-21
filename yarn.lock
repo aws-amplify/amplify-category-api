@@ -134,12 +134,20 @@
     promise-sequential "^1.1.1"
     uuid "^8.3.2"
 
-"@aws-amplify/amplify-cli-core@4.0.1", "@aws-amplify/amplify-cli-core@^4.0.0":
-  version "4.0.3"
-  resolved "https://registry.npmjs.org/@aws-amplify/amplify-cli-core/-/amplify-cli-core-4.0.3.tgz#424b0508dab42d5b563527bc159c01b5184ba830"
-  integrity sha512-586DbF1lL341JQnciljpP8tGlM9r76IuFeHykHoWbAbD1IBsGqmpqw8cR3/c/k7MDBQ8Y4fYS0XG9xMKOfqy6w==
+"@aws-amplify/amplify-cli-core@4.0.1":
+  version "4.0.1"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-cli-core/-/amplify-cli-core-4.0.1.tgz#e48c3ceb727fd8ec12c9b756abff0f1978842ccf"
+  integrity sha512-MqTdJCGN/ZtHk2eM8gXLQfuOREVfUwvfDmbKIHWkworfVSxAuHznfItu+GtYJbjZBsR/iu8n56wev/LRzWQicg==
   dependencies:
-    amplify-cli-core "4.0.3"
+    amplify-cli-core "4.0.1"
+
+"@aws-amplify/amplify-cli-logger@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-cli-logger/-/amplify-cli-logger-1.3.0.tgz#7bc68710837a5ecb2f990a38f8103555150f9213"
+  integrity sha512-ijfo6YY4mgn38HD7KId/MgGJla7oCod4n0/gTVPVHfr9zlpUC8B2L/QuydFjpLBR8LrBYO4xfrQa8UhelyPzGA==
+  dependencies:
+    winston "^3.3.3"
+    winston-daily-rotate-file "^4.5.0"
 
 "@aws-amplify/amplify-cli-logger@1.3.2":
   version "1.3.2"
@@ -148,6 +156,11 @@
   dependencies:
     winston "^3.3.3"
     winston-daily-rotate-file "^4.5.0"
+
+"@aws-amplify/amplify-cli-shared-interfaces@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-cli-shared-interfaces/-/amplify-cli-shared-interfaces-1.2.0.tgz#0a52e3e401a0e802cc3804a23f0dca350aac55ca"
+  integrity sha512-0nBFF+rFdQCM1zJUZ8z6+vfqAACjcuzl1noMFBjMfRW1FFGfsVKqRuxJYOYv57GKA7FRrHQfrh6pa6qUAh/odA==
 
 "@aws-amplify/amplify-cli-shared-interfaces@1.2.2":
   version "1.2.2"
@@ -211,6 +224,13 @@
   version "1.10.2"
   resolved "https://registry.npmjs.org/@aws-amplify/amplify-function-plugin-interface/-/amplify-function-plugin-interface-1.10.2.tgz#b1858a2ab1e91eeceedff875c55e53c8cf0b024d"
   integrity sha512-DpICFvYznkLR0+2O3yq2ZK3ntTUM6tp57CGi3HTWwmFs78cKMfUC0VFoKLBCzcRfZ3PsaHdL5cdHaEWwgxH4cQ==
+
+"@aws-amplify/amplify-prompts@2.6.6":
+  version "2.6.6"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-prompts/-/amplify-prompts-2.6.6.tgz#ca14b5c5cbfe3f6d78cc9caa409c2459203b4b13"
+  integrity sha512-JvIgSGu+7ubO16Y52dGVTIZAKhgjd1iF7qX4vDkdak+exg+mJY96jx9EwVbNelkgPwauk6CzM3ZiGU52v1g2nw==
+  dependencies:
+    amplify-prompts "2.6.6"
 
 "@aws-amplify/amplify-prompts@2.6.8":
   version "2.6.8"
@@ -7469,13 +7489,13 @@ amazon-cognito-identity-js@5.2.14:
     isomorphic-unfetch "^3.0.0"
     js-cookie "^2.2.1"
 
-amplify-cli-core@4.0.3:
-  version "4.0.3"
-  resolved "https://registry.npmjs.org/amplify-cli-core/-/amplify-cli-core-4.0.3.tgz#c035d251781b9d985229eeaf0bf582d51566c14e"
-  integrity sha512-PiIB24x1EHGedLNooOjYooevRe5YYpFGclgiUfl2re6xWoWng9v1Ucwy4MVEduE8DvGrlYE2aIgrqBG/154PgQ==
+amplify-cli-core@4.0.1, amplify-cli-core@4.0.3:
+  version "4.0.1"
+  resolved "https://registry.npmjs.org/amplify-cli-core/-/amplify-cli-core-4.0.1.tgz#86167d3c54264448110c95ce872d6c338b911975"
+  integrity sha512-NkpAW74flRrXDIF+kXL7kd39gkqphTEJuqj8mLgbv/AfCl3lpC55QsYA4aMOmeRYoxd8f7RDcbAA3VoU3ldOdQ==
   dependencies:
-    "@aws-amplify/amplify-cli-logger" "1.3.2"
-    "@aws-amplify/amplify-prompts" "2.6.8"
+    "@aws-amplify/amplify-cli-logger" "1.3.0"
+    "@aws-amplify/amplify-prompts" "2.6.6"
     "@aws-amplify/graphql-transformer-interfaces" "^2.1.1"
     "@yarnpkg/lockfile" "^1.1.0"
     ajv "^6.12.6"
@@ -7545,6 +7565,15 @@ amplify-nodejs-function-runtime-provider@^2.3.14:
     exit "^0.1.2"
     fs-extra "^8.1.0"
     glob "^7.2.0"
+
+amplify-prompts@2.6.6:
+  version "2.6.6"
+  resolved "https://registry.npmjs.org/amplify-prompts/-/amplify-prompts-2.6.6.tgz#c2d7fc84ba44a188869f7640d6123641fb25dc0c"
+  integrity sha512-I12JHBks7VqUX1Lg2XVtFnDph8o22d5JR0NO+YwoKJBI6qyy5R10Vb/SLFIOnwIX6EC27yb1ZKKgDTJCS6V/jQ==
+  dependencies:
+    "@aws-amplify/amplify-cli-shared-interfaces" "1.2.0"
+    chalk "^4.1.1"
+    enquirer "^2.3.6"
 
 amplify-prompts@2.6.8:
   version "2.6.8"
