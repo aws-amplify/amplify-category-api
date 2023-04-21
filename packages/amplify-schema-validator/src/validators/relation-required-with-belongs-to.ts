@@ -13,6 +13,7 @@ import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
  * @param schema graphql schema
  * @returns true
  */
+
 export const validateRequireBelongsToRelation = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(

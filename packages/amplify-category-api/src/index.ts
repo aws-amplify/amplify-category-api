@@ -49,6 +49,8 @@ export { getResolverConfig } from './provider-utils/awscloudformation/utils/get-
 export { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/utils/github';
 export * from './graphql-transformer';
 export * from './force-updates';
+export { showApiAuthAcm } from './category-utils/show-auth-acm';
+export { isDataStoreEnabled } from './category-utils/is-datastore-enabled';
 
 const category = AmplifyCategories.API;
 

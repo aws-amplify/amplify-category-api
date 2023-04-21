@@ -32,13 +32,14 @@
     "@aws-amplify/graphql-transformer-core": "1.2.0",
     "@aws-amplify/graphql-transformer-interfaces": "2.1.1",
     "aws-cdk-lib": "~2.68.0",
+    "@aws-cdk/assert": "~2.68.0",
     "constructs": "^10.0.5",
     "graphql": "^15.5.0",
     "graphql-mapping-template": "4.20.8",
     "graphql-transformer-common": "4.24.5"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "^4.0.1"
+    "@aws-amplify/amplify-cli-core": "4.0.1"
   },
   "jest": {
     "transform": {

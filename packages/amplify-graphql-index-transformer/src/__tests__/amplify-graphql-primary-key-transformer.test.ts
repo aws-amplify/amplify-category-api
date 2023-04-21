@@ -3,7 +3,8 @@ import { GraphQLTransform, validateModelSchema, DatasourceType } from '@aws-ampl
 import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { $TSAny } from '@aws-amplify/amplify-cli-core';
 
-import { Template, Match } from 'aws-cdk-lib/assertions';
+import { Template } from 'aws-cdk-lib/assertions';
+import { expect as cdkExpect, haveResourceLike } from '@aws-cdk/assert';
 import { Kind, parse } from 'graphql';
 import { PrimaryKeyTransformer } from '..';
 import _ from 'lodash';

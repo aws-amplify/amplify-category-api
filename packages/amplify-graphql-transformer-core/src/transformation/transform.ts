@@ -88,6 +88,7 @@ export interface GraphQLTransformOptions {
   readonly featureFlags?: FeatureFlagProvider;
   readonly host?: TransformHostProvider;
   readonly sandboxModeEnabled?: boolean;
+  readonly disableResolverDeduping?: boolean;
   readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   readonly resolverConfig?: ResolverConfig;
   readonly overrideConfig?: OverrideConfig;
@@ -189,7 +190,7 @@ export class GraphQLTransform {
       this.options.featureFlags,
       this.resolverConfig,
       datasourceConfig?.datasourceSecretParameterLocations,
-    );
+   );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
       {
@@ -409,6 +410,7 @@ export class GraphQLTransform {
       host: this.options.host,
       sandboxModeEnabled: this.options.sandboxModeEnabled,
       environmentName: envName.valueAsString,
+      disableResolverDeduping: this.transformConfig.DisableResolverDeduping,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
       mode => mode?.authorizationType,

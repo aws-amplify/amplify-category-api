@@ -117,6 +117,7 @@ export type TransformerAPIProps = GraphqlApiProps & {
   readonly host?: TransformHostProvider;
   readonly sandboxModeEnabled?: boolean;
   readonly environmentName?: string;
+  readonly disableResolverDeduping?: boolean;
 };
 export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   /**
@@ -171,6 +172,11 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   public readonly sandboxModeEnabled?: boolean;
 
   /**
+   * Disable reusing AppSync functions with same HASH
+   */
+  public readonly disableResolverDeduping?: boolean;
+
+  /**
    * the amplify environment name
    */
   public readonly environmentName?: string;
@@ -223,6 +229,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     }
 
     if (hasApiKey && props.sandboxModeEnabled) this.sandboxModeEnabled = true;
+    if (props.disableResolverDeduping) this.disableResolverDeduping = true;
 
     if (props.host) {
       this.host = props.host;

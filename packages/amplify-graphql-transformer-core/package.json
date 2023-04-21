@@ -41,6 +41,7 @@
     "vm2": "^3.9.8"
   },
   "peerDependencies": {
+    "@aws-amplify/amplify-cli-core": "4.0.1",
     "@aws-amplify/amplify-prompts": "^2.6.6"
   },
   "devDependencies": {
