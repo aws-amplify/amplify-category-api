@@ -1,6 +1,6 @@
 import { AppSyncExecutionStrategy, DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { App, Stack } from '@aws-cdk/core';
-import { InlineTemplate, S3MappingTemplate, TransformerRootStack } from '../../cdk-compat';
+import { App, Stack } from 'aws-cdk-lib';
+import { InlineTemplate, TransformerRootStack } from '../../cdk-compat';
 import { GraphQLApi } from '../../graphql-api';
 import { DefaultTransformHost } from '../../transform-host';
 import { ResolverManager, TransformerResolver } from '../../transformer-context/resolver';
