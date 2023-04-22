@@ -56,6 +56,13 @@ async function uploadImageFile(projectDir: string) {
 
   const bucketName = amplifyMeta.storage[storageResourceName].output.BucketName;
 
+  s3Client.putBucketOwnershipControls({
+    Bucket: bucketName,
+    OwnershipControls: {
+      Rules: [{ ObjectOwnership: 'ObjectWriter' }],
+    },
+  });
+
   const fileStream = fs.createReadStream(imageFilePath);
   const uploadParams = {
     Bucket: bucketName,
