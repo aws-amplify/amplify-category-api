@@ -635,8 +635,6 @@ export class TransformerResolver implements TransformerResolverProvider {
         strategy: AppSyncExecutionStrategy;
     }) => TransformerResolver;
     // (undocumented)
-    getStackName: () => string;
-    // (undocumented)
     mapToStack: (stack: Stack) => void;
     // (undocumented)
     slotExists: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider) => boolean;
