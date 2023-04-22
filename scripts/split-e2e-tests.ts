@@ -67,9 +67,13 @@ const AWS_REGIONS_TO_RUN_TESTS = [
   'ap-southeast-2',
 ];
 
-// Some services (eg. amazon lex) are not available in all regions
-// Tests added to this list will always run in us-west-2
-const FORCE_US_WEST_2 = ['interactions'];
+// Some services (eg. amazon lex, containers) are not available in all regions
+// Tests added to this list will always run in the specified region
+const FORCE_REGION = {
+  'interactions': 'us-west-2',
+  'containers': 'us-east-1',
+}
+type FORCE_TESTS = 'interactions' | 'containers';
 
 const USE_PARENT_ACCOUNT = [
   'api-key-migration2',
@@ -216,8 +220,9 @@ function splitTests(
 
   const newJobs = testSuites.reduce((acc, suite, index) => {
     const newJobName = generateJobName(jobName, suite);
-    const testRegion = FORCE_US_WEST_2.some(job => newJobName.startsWith(job))
-      ? 'us-west-2'
+    const forceRegion = Object.keys(FORCE_REGION).find(key => newJobName.startsWith(key));
+    const testRegion = forceRegion
+      ? FORCE_REGION[forceRegion as FORCE_TESTS]
       : AWS_REGIONS_TO_RUN_TESTS[index % AWS_REGIONS_TO_RUN_TESTS.length];
     const newJob = {
       ...job,
