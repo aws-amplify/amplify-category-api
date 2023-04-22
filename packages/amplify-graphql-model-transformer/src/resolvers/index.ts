@@ -1,3 +1,5 @@
+export * from './generators';
 export * from './common';
-export * from './mutation';
-export * from './subscriptions';
+export {
+  generateApplyDefaultsToInputTemplate
+} from './dynamodb';

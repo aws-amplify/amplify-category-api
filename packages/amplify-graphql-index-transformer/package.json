@@ -24,7 +24,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf ./lib",
-    "test": "jest",
+    "test": "jest --updateSnapshot",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
@@ -32,6 +32,7 @@
     "@aws-amplify/graphql-transformer-core": "1.2.0",
     "@aws-amplify/graphql-transformer-interfaces": "2.1.1",
     "aws-cdk-lib": "~2.68.0",
+    "@aws-cdk/assert": "~2.68.0",
     "constructs": "^10.0.5",
     "graphql": "^15.5.0",
     "graphql-mapping-template": "4.20.8",

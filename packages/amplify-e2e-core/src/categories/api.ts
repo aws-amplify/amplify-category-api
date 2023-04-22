@@ -42,6 +42,14 @@ export interface AddApiOptions {
   transformerVersion: number;
 }
 
+export interface ImportApiOptions {
+  database: string;
+  host: string;
+  port: number;
+  username: string;
+  password: string;
+}
+
 export const defaultOptions: AddApiOptions = {
   apiName: '\r',
   testingWithLatestCodebase: false,
@@ -1046,3 +1054,104 @@ export const removeTransformConfigValue = (projRoot: string, apiName: string, ke
   delete transformConfig[key];
   setTransformConfig(projRoot, apiName, transformConfig);
 };
+
+export function importRDSDatabase(cwd: string, opts: ImportApiOptions & { apiExists: boolean }) {
+  const options = _.assign(defaultOptions, opts);
+  const database = options.database;
+  return new Promise<void>((resolve, reject) => {
+    const importCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['import', 'api'], { cwd, stripColors: true });
+    if (!options.apiExists) {
+      importCommands
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendKeyUp(3)
+      .sendCarriageReturn()
+      .wait('Provide API name:')
+      .sendLine(options.apiName)
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendCarriageReturn()
+    }
+    
+    importCommands
+      .wait('Enter the name of the MySQL database to import:')
+      .sendLine(database);
+
+    askDBInformation(importCommands, options);
+
+    importCommands
+      .wait(/.*Successfully imported the database schema into.*/)
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+};
+
+export function apiUpdateSecrets(cwd: string, opts: ImportApiOptions) {
+  const options = _.assign(defaultOptions, opts);
+  return new Promise<void>((resolve, reject) => {
+    const updateSecretsCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['update-secrets', 'api'], { cwd, stripColors: true });
+    askDBInformation(updateSecretsCommands, options);
+    updateSecretsCommands.wait(`Successfully updated the secrets for ${options.database} database.`);
+    updateSecretsCommands.run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+};
+
+export function apiGenerateSchema(cwd: string, opts: ImportApiOptions & { validCredentials: boolean }) {
+  const options = _.assign(defaultOptions, opts);
+  return new Promise<void>((resolve, reject) => {
+    const generateSchemaCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['generate-schema', 'api'], { cwd, stripColors: true });
+    if (!options?.validCredentials) {
+      askDBInformation(generateSchemaCommands, options);
+    }
+    generateSchemaCommands.run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+    });
+  });
+};
+
+export function removeApi(cwd: string) {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(), ['remove', 'api'], { cwd, stripColors: true })
+      .wait('Choose the resource you would want to remove')
+      .sendCarriageReturn()
+      .wait('Are you sure you want to delete the resource?')
+      .send('y')
+      .sendCarriageReturn()
+      .wait('Successfully removed resource')
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+};
+
+const askDBInformation = (executionContext: ExecutionContext, options: ImportApiOptions) => {
+  const database = options.database;
+  return executionContext
+    .wait(`Enter the host for ${database} database:`)
+    .sendLine(options.host)
+    .wait(`Enter the port for ${database} database:`)
+    .sendLine(JSON.stringify(options.port || 3306))
+    .wait(`Enter the username for ${database} database user:`)
+    .sendLine(options.username)
+    .wait(`Enter the password for ${database} database user:`)
+    .sendLine(options.password)
+};
+

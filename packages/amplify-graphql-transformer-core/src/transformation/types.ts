@@ -1,3 +1,6 @@
+import { DatasourceType } from '../config';
+import { RDSConnectionSecrets } from '../types';
+
 export type UserDefinedSlot = {
   resolverTypeName: string;
   resolverFieldName: string;
@@ -16,3 +19,8 @@ export type OverrideConfig = {
   overrideDir: string;
   resourceName: string;
 };
+
+export type DatasourceTransormationConfig = {
+  modelToDatasourceMap?: Map<string, DatasourceType>;
+  datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
+}

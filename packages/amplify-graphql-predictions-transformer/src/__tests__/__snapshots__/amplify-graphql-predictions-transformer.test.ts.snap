@@ -1,8 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`can use actions individually and in supported sequences 1`] = `
-"
-type Query {
+"type Query {
   identifyText(input: IdentifyTextInput!): String
   identifyLabels(input: IdentifyLabelsInput!): [String]
   convertTextToSpeech(input: ConvertTextToSpeechInput!): String
@@ -99,7 +98,6 @@ input SpeakTranslatedTextInput {
   translateText: SpeakTranslatedTextTranslateTextInput!
   convertTextToSpeech: SpeakTranslatedTextConvertTextToSpeechInput!
 }
-
 "
 `;
 
@@ -1443,8 +1441,7 @@ $util.error($ctx.result.body)
 `;
 
 exports[`lambda function is added to pipeline when lambda dependent action is added 1`] = `
-"
-type Query {
+"type Query {
   speakTranslatedText(input: SpeakTranslatedTextInput!): String
 }
 
@@ -1462,13 +1459,11 @@ input SpeakTranslatedTextInput {
   translateText: SpeakTranslatedTextTranslateTextInput!
   convertTextToSpeech: SpeakTranslatedTextConvertTextToSpeechInput!
 }
-
 "
 `;
 
 exports[`return type is a list based on the action 1`] = `
-"
-type Query {
+"type Query {
   translateLabels(input: TranslateLabelsInput!): [String]
 }
 
@@ -1485,6 +1480,5 @@ input TranslateLabelsInput {
   identifyLabels: TranslateLabelsIdentifyLabelsInput!
   translateText: TranslateLabelsTranslateTextInput!
 }
-
 "
 `;
