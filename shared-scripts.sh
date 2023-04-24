@@ -85,3 +85,8 @@ function _mockE2ETests {
   cd packages/amplify-util-mock/
   yarn e2e
 }
+function _lint {
+  echo "Lint"
+  loadCacheFromBuildJob
+  chmod +x codebuild_specs/scripts/lint_pr.sh && ./codebuild_specs/scripts/lint_pr.sh
+}
