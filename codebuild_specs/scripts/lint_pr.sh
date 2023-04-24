@@ -1,6 +1,6 @@
 set -xeo pipefail
 # extract the PR number from the PR link
-PR_NUM=${CODEBUILD_SOURCE_VERSION##*/}
+PR_NUM=${CODEBUILD_WEBHOOK_TRIGGER##*/}
 
 if [ -z "$PR_NUM" ]; then
   echo "Could not determine PR number. Cannot determine fork point for linting. Skipping linting."
