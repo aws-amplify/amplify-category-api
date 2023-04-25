@@ -33,6 +33,7 @@ import {
 import { exitOnNextTick } from '@aws-amplify/amplify-cli-core';
 import { searchablePushChecks } from './api-utils';
 import { getTransformerFactory } from './transformer-factory';
+import { AmplifyGraphQLTransformerErrorConverter } from '../errors/amplify-error-converter';
 
 const apiCategory = 'api';
 const parametersFileName = 'parameters.json';
@@ -352,39 +353,44 @@ export async function transformGraphQLSchemaV1(context, options) {
 
   // Transformer compiler code
   // const schemaText = await readProjectSchema(resourceDir);
-  const project = await readProjectConfiguration(resourceDir);
+  let transformerOutput;
+  try {
+    const project = await readProjectConfiguration(resourceDir);
 
-  // Check for common errors
-  const directiveMap = collectDirectivesByTypeNames(project.schema);
-  await warnOnAuth(context, directiveMap.types);
-  await searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
+    // Check for common errors
+    const directiveMap = collectDirectivesByTypeNames(project.schema);
+    await warnOnAuth(context, directiveMap.types);
+    await searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
 
-  await transformerVersionCheck(context, resourceDir, previouslyDeployedBackendDir, resourcesToBeUpdated, directiveMap.directives);
+    await transformerVersionCheck(context, resourceDir, previouslyDeployedBackendDir, resourcesToBeUpdated, directiveMap.directives);
 
-  const transformerListFactory = await getTransformerFactory(context, resourceDir, authConfig);
+    const transformerListFactory = await getTransformerFactory(context, resourceDir, authConfig);
 
-  let searchableTransformerFlag = false;
+    let searchableTransformerFlag = false;
 
-  if (directiveMap.directives.includes('searchable')) {
-    searchableTransformerFlag = true;
+    if (directiveMap.directives.includes('searchable')) {
+      searchableTransformerFlag = true;
+    }
+
+    const ff = new AmplifyCLIFeatureFlagAdapter();
+    const allowDestructiveUpdates = context?.input?.options?.[DESTRUCTIVE_UPDATES_FLAG] || context?.input?.options?.force;
+    const sanityCheckRulesList = getSanityCheckRules(isNewAppSyncAPI, ff, allowDestructiveUpdates);
+
+    const buildConfig = {
+      ...options,
+      buildParameters,
+      projectDirectory: resourceDir,
+      transformersFactory: transformerListFactory,
+      transformersFactoryArgs: [searchableTransformerFlag, storageConfig],
+      rootStackFileName: 'cloudformation-template.json',
+      currentCloudBackendDirectory: previouslyDeployedBackendDir,
+      featureFlags: ff,
+      sanityCheckRules: sanityCheckRulesList,
+    };
+    transformerOutput = await buildAPIProject(buildConfig);
+  } catch (err) {
+    throw AmplifyGraphQLTransformerErrorConverter.convert(err);
   }
-
-  const ff = new AmplifyCLIFeatureFlagAdapter();
-  const allowDestructiveUpdates = context?.input?.options?.[DESTRUCTIVE_UPDATES_FLAG] || context?.input?.options?.force;
-  const sanityCheckRulesList = getSanityCheckRules(isNewAppSyncAPI, ff, allowDestructiveUpdates);
-
-  const buildConfig = {
-    ...options,
-    buildParameters,
-    projectDirectory: resourceDir,
-    transformersFactory: transformerListFactory,
-    transformersFactoryArgs: [searchableTransformerFlag, storageConfig],
-    rootStackFileName: 'cloudformation-template.json',
-    currentCloudBackendDirectory: previouslyDeployedBackendDir,
-    featureFlags: ff,
-    sanityCheckRules: sanityCheckRulesList,
-  };
-  const transformerOutput = await buildAPIProject(buildConfig);
 
   context.print.success(`GraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
