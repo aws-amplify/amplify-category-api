@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@2.1.2...@aws-amplify/graphql-auth-transformer@2.1.3) (2023-04-25)
+
+### Bug Fixes
+
+- **auth:** ownerfield as pk in relational models ([#1389](https://github.com/aws-amplify/amplify-category-api/issues/1389)) ([9b636f7](https://github.com/aws-amplify/amplify-category-api/commit/9b636f71ebef453ea008d828aa8f53ffaff48f8e))
+- don't filter group auth if user has no groups ([091590f](https://github.com/aws-amplify/amplify-category-api/commit/091590f07f6bd8108e8b064f5ff5938200ab7e25))
+
 ## [2.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@2.1.1...@aws-amplify/graphql-auth-transformer@2.1.2) (2023-03-30)
 
 ### Bug Fixes
