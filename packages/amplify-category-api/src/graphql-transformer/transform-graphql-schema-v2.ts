@@ -37,7 +37,6 @@ import {
 import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerFactoryArgs, TransformerProjectOptions } from './transformer-options-types';
 import { ProjectOptions } from './transform-config';
-import { AmplifyGraphQLTransformerErrorConverter } from '../errors/amplify-error-converter';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
@@ -160,17 +159,13 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
   if (!options.dryRun) {
     fs.ensureDirSync(buildDir);
   }
-  let transformerOutput;
 
-  try {
-    const buildConfig: TransformerProjectOptions<TransformerFactoryArgs> = await generateTransformerOptions(context, options);
-    if (!buildConfig) {
-      return undefined;
-    }
-    transformerOutput = await buildAPIProject(context, buildConfig);
-  } catch (err) {
-    throw AmplifyGraphQLTransformerErrorConverter.convert(err);
+  const buildConfig: TransformerProjectOptions<TransformerFactoryArgs> = await generateTransformerOptions(context, options);
+  if (!buildConfig) {
+    return undefined;
   }
+
+  const transformerOutput = await buildAPIProject(context, buildConfig);
 
   printer.success(`GraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
