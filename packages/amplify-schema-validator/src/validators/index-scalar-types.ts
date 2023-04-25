@@ -15,6 +15,7 @@ import { getTypeDefinitionsOfKind } from '../helpers/get-type-definitions-of-kin
  * @param schema graphql schema
  * @returns true
  */
+
 export const validateIndexScalarTypes = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(

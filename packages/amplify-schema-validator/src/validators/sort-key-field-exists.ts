@@ -8,11 +8,12 @@ import {
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
 
 /**
-   * Validates that sort key fields exists in model
-   *
-   * @param schema graphql schema
-   * @returns true if sort key fields exists in model
-   */
+ * Validates that sort key fields exists in model
+ *
+ * @param schema graphql schema
+ * @returns true if sort key fields exists in model
+ */
+
 export const verifyIndexSortKeyFieldsExistInModel = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(

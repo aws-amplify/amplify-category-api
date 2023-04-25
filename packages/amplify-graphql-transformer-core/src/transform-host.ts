@@ -142,7 +142,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     };
 
     const slotHash = hash(obj);
-    if (this.appsyncFunctions.has(slotHash)) {
+    if (!this.api.disableResolverDeduping && this.appsyncFunctions.has(slotHash)) {
       const appsyncFunction = this.appsyncFunctions.get(slotHash)!;
       // generating duplicate appsync functions vtl files to help in custom overrides
       requestMappingTemplate.bind(appsyncFunction);

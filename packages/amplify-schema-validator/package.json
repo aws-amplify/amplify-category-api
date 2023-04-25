@@ -17,7 +17,8 @@
     "lint-staged": "lint-staged"
   },
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^2.2.4",
+    "@size-limit/preset-small-lib": "6.0.4",
+    "size-limit": "6.0.4",
     "@types/jest": "^24.0.18",
     "fs-extra": "^11.1.0",
     "jest": "^29.0.0",

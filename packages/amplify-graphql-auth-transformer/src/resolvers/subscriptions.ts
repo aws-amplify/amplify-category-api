@@ -103,7 +103,10 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
             set(ref(`groupClaim${idx}`), list([ref(`groupClaim${idx}`)])),
           ),
         ),
-        qref(methodCall(ref('authGroupRuntimeFilter.add'), raw(`{ "${role.entity}": { "${role.isEntityList ? 'containsAny' : 'in'}": $groupClaim${idx} } }`))),
+        iff(
+          not(methodCall(ref('util.isNullOrEmpty'), ref(`groupClaim${idx}`))),
+          qref(methodCall(ref('authGroupRuntimeFilter.add'), raw(`{ "${role.entity}": { "${role.isEntityList ? 'containsAny' : 'in'}": $groupClaim${idx} } }`))),
+        ),
       );
     }
   });
