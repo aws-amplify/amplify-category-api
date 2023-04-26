@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { Template } from 'cloudform-types';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { throwIfNotJSONExt } from './fileUtils';
 import { ProjectOptions } from './amplifyUtils';
 const fs = require('fs-extra');
@@ -265,7 +266,10 @@ export async function readSchema(projectDirectory: string): Promise<string> {
   } else if (schemaDirectoryExists) {
     schema = (await readSchemaDocuments(schemaDirectoryPath)).join('\n');
   } else {
-    throw new Error(`Could not find a schema at ${schemaFilePath}`);
+    throw new AmplifyError('ApiCategorySchemaNotFoundError', {
+      message: `Could not find a schema at ${schemaFilePath}`,
+      link: 'https://docs.amplify.aws/cli/graphql/overview/#update-schema',
+    });
   }
   return schema;
 }

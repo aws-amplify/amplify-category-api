@@ -39,6 +39,8 @@ module.exports = {
     },
   },
   rules: {
+    '@typescript-eslint/no-floating-promises': 'error',
+    '@typescript-eslint/no-misused-promises': 'error',
     // NOTE: This config should only specify rules as "errors" or "off". Over time "warnings" invariably become the same as "off".
 
     // Disables double quote error when using single quotes within string for readability
