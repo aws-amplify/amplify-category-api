@@ -21,6 +21,7 @@ import {
   makeNamedType,
   makeValueNode,
   ModelResourceIDs,
+  STANDARD_SCALARS,
   toPascalCase,
 } from 'graphql-transformer-common';
 import {
@@ -62,31 +63,13 @@ export const makeConditionFilterInput = (
   name: string,
   object: ObjectTypeDefinitionNode,
 ): InputObjectDefinitionWrapper => {
-  const supportsConditions = true;
   const input = InputObjectDefinitionWrapper.create(name);
-  const wrappedObject = new ObjectDefinitionWrapper(object);
-  for (const field of wrappedObject.fields) {
-    const fieldType = ctx.output.getType(field.getTypeName());
-    const isEnumType = fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION;
-    if (field.isScalar() || isEnumType) {
-      const conditionTypeName = isEnumType && field.isList()
-        ? ModelResourceIDs.ModelFilterListInputTypeName(field.getTypeName(), !supportsConditions)
-        : ModelResourceIDs.ModelFilterScalarInputTypeName(field.getTypeName(), !supportsConditions);
-      const inputField = InputFieldWrapper.create(field.name, conditionTypeName, true);
-      input.addField(inputField);
-    }
-  }
+  
+  addSimpleFieldsConditionsForListing(input, object, ctx)
+  addListTypeConditions(input, name);
+  addNonListTypeConditions(input, name)
+  addDatastoreConditions(input, ctx)
 
-  // additional conditions of list type
-  for (const additionalField of ['and', 'or']) {
-    const inputField = InputFieldWrapper.create(additionalField, name, true, true);
-    input.addField(inputField);
-  }
-  // additional conditions of non-list type
-  for (const additionalField of ['not']) {
-    const inputField = InputFieldWrapper.create(additionalField, name, true, false);
-    input.addField(inputField);
-  }
   return input;
 };
 
@@ -108,21 +91,92 @@ export const makeSubscriptionFilterInput = (
       const conditionTypeName = ModelResourceIDs.ModelFilterScalarInputTypeName(
         isEnumType ? 'String' : field.getTypeName(),
         !supportsConditions,
-        true,
+        true
       );
       const inputField = InputFieldWrapper.create(field.name, conditionTypeName, true);
       input.addField(inputField);
     }
   }
 
-  // additional conditions of list type
+  addListTypeConditions(input, name);
+  addDatastoreConditions(input, ctx)
+
+  return input;
+};
+
+/**
+ * Make conditions for simple fields in list/sync  query
+ * @param input output object
+ * @param object ModelObjectDefinition
+ * @param ctx TransformerContext
+ */
+const addSimpleFieldsConditionsForListing = (
+  input: InputObjectDefinitionWrapper,
+  object: ObjectTypeDefinitionNode,
+  ctx: TransformerTransformSchemaStepContextProvider
+) => {
+  const supportsConditions = true;
+  const wrappedObject = new ObjectDefinitionWrapper(object);
+
+  for (const field of wrappedObject.fields) {
+    const fieldType = ctx.output.getType(field.getTypeName());
+    const isEnumType = fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION;
+    
+    if (field.isScalar() || isEnumType) {
+      const conditionTypeName = isEnumType && field.isList()
+        ? ModelResourceIDs.ModelFilterListInputTypeName(field.getTypeName(), !supportsConditions)
+        : ModelResourceIDs.ModelFilterScalarInputTypeName(field.getTypeName(), !supportsConditions);
+      const inputField = InputFieldWrapper.create(field.name, conditionTypeName, true);
+      input.addField(inputField);
+    }
+  }
+}
+
+/**
+ * Make additional conditions of non-list type
+ * @param input output object
+ * @param name model name
+ */
+const addNonListTypeConditions = (input: InputObjectDefinitionWrapper, name: string) => {
+  for (const additionalField of ['not']) {
+    const inputField = InputFieldWrapper.create(additionalField, name, true, false);	
+    input.addField(inputField);	
+  }
+}
+
+/**
+ * Make additional conditions of list type
+ * @param input output object
+ * @param name model name
+ */
+const addListTypeConditions = (input: InputObjectDefinitionWrapper, name: string) => {
   for (const additionalField of ['and', 'or']) {
     const inputField = InputFieldWrapper.create(additionalField, name, true, true);
     input.addField(inputField);
   }
+}
 
-  return input;
-};
+/**
+ * Make additional conditions for datastore-enabled apps
+ * @param input output object
+ * @param ctx TransformerContext
+ */
+const addDatastoreConditions = (
+  input: InputObjectDefinitionWrapper,
+  ctx: TransformerTransformSchemaStepContextProvider
+) => {
+  if (ctx.isProjectUsingDataStore()) {
+    const datastoreFields = [
+      {fieldName: '_deleted', typeName: STANDARD_SCALARS.Boolean}
+    ]
+
+    for (const {fieldName, typeName} of datastoreFields) {
+      const type = ModelResourceIDs.ModelScalarFilterInputTypeName(typeName, false)
+      const inputField = InputFieldWrapper.create(fieldName, type, true, false);
+      input.addField(inputField);
+    }
+  }
+}
 
 /**
  * Generates the Subscription filter input type name
