@@ -292,7 +292,7 @@ export class InputFieldWrapper extends GenericFieldWrapper {
     // (undocumented)
     protected field: InputValueDefinitionNode;
     // (undocumented)
-    static fromField: (name: string, field: FieldDefinitionNode, document: DocumentNode_2) => InputFieldWrapper;
+    static fromField: (name: string, field: FieldDefinitionNode, parent: ObjectTypeDefinitionNode, document: DocumentNode_2) => InputFieldWrapper;
     // (undocumented)
     readonly loc?: Location_2;
     // (undocumented)
