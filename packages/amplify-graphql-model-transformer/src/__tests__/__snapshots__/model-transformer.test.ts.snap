@@ -4219,7 +4219,7 @@ enum ModelSortDirection {
 }
 
 input NonModelTypeInput {
-  id: ID
+  id: ID!
   title: String!
 }
 
