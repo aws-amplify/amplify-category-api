@@ -148,7 +148,8 @@ export class InputFieldWrapper extends GenericFieldWrapper {
     };
   };
 
-  static fromField = (name: string, field: FieldDefinitionNode, document: DocumentNode): InputFieldWrapper => {
+  static fromField = (name: string, field: FieldDefinitionNode, parent: ObjectTypeDefinitionNode,
+    document: DocumentNode): InputFieldWrapper => {
     const autoGeneratableFieldsWithType: Record<string, string[]> = {
       id: ['ID'],
       createdAt: ['AWSDateTime', 'String'],
@@ -158,17 +159,17 @@ export class InputFieldWrapper extends GenericFieldWrapper {
     let type: TypeNode;
 
     if (
-      Object.keys(autoGeneratableFieldsWithType).indexOf(name) !== -1 &&
-      autoGeneratableFieldsWithType[name].indexOf(unwrapNonNull(field.type).name.value) !== -1
+      parent.directives?.some((directive) => directive.name.value === 'model')
+      && Object.keys(autoGeneratableFieldsWithType).indexOf(name) !== -1
+      && autoGeneratableFieldsWithType[name].indexOf(unwrapNonNull(field.type).name.value) !== -1
     ) {
-      // ids are always optional. when provided the value is used.
-      // when not provided the value is not used.
+      // For @model types ids are always optional as they will be auto-filled (this isn't true for nested types with 'id' fields).
+      // When provided the value is used; when not provided the value is not used.
       type = unwrapNonNull(field.type);
     } else {
-      type =
-        isScalar(field.type) || isEnum(field.type, document)
-          ? field.type
-          : withNamedNodeNamed(field.type, ModelResourceIDs.NonModelInputObjectName(getBaseType(field.type)));
+      type = isScalar(field.type) || isEnum(field.type, document)
+        ? field.type
+        : withNamedNodeNamed(field.type, ModelResourceIDs.NonModelInputObjectName(getBaseType(field.type)));
     }
 
     return new InputFieldWrapper({
@@ -392,7 +393,7 @@ export class InputObjectDefinitionWrapper {
 
     const wrappedInput = new InputObjectDefinitionWrapper(inputObj);
     for (let f of def.fields || []) {
-      const wrappedField = InputFieldWrapper.fromField(f.name.value, f, document);
+      const wrappedField = InputFieldWrapper.fromField(f.name.value, f, def, document);
       wrappedInput.fields.push(wrappedField);
     }
     return wrappedInput;
