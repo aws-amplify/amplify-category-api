@@ -56,6 +56,14 @@ export const run = async (context: $TSContext) => {
       name: 'override',
       description: 'Generates overrides file to apply custom modifications to CloudFormation',
     },
+    {
+      name: 'snapshot-stack-mappings',
+      description: 'Snapshots the stack mappings for the current project',
+    },
+    {
+      name: 'assign-stack-mappings',
+      description: 'Assign stack mappings for the newly built resources',
+    },
   ];
 
   context.amplify.showHelp(header, commands);

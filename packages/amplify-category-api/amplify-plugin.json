@@ -12,7 +12,9 @@
     "rebuild",
     "remove",
     "update",
-    "help"
+    "help",
+    "snapshot-stack-mappings",
+    "assign-stack-mappings"
   ],
   "commandAliases": {
     "configure": "update"
