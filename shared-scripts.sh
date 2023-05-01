@@ -122,13 +122,10 @@ function _lint {
 function _publishToLocalRegistry {
     echo "Publish To Local Registry"
     loadCacheFromBuildJob
-    echo $CODEBUILD_WEBHOOK_TRIGGER
-    echo $CODEBUILD_WEBHOOK_HEAD_REF
-    echo $CODEBUILD_WEBHOOK_EVENT
-    echo $CODEBUILD_SOURCE_VERSION
-    echo $CODEBUILD_WEBHOOK_ACTOR_ACCOUNT_ID
-    echo $CODEBUILD_WEBHOOK_BASE_REF
-    echo $CODEBUILD_WEBHOOK_EVENT
+    export CODEBUILD_BRANCH="${CODEBUILD_WEBHOOK_TRIGGER#branch/*}"
+    echo $CODEBUILD_BRANCH
+    git branch -v
+    git checkout $CODEBUILD_BRANCH
     source ./.circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     git config user.email not@used.com

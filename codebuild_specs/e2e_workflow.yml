@@ -22,7 +22,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - build_linux
-    - identifier: validate_cdk_version
+    - identifier: verify_cdk_version
       buildspec: codebuild_specs/validate_cdk_version.yml
       depend-on:
         - build_linux
