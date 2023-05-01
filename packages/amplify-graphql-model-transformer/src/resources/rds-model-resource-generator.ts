@@ -3,7 +3,7 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import { MYSQL_DB_TYPE, RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { ModelResourceGenerator } from './model-resource-generator';
 import { ModelVTLGenerator, RDSModelVTLGenerator } from '../resolvers';
-import { createRdsLambda, createRdsLambdaRole } from '../resolvers/rds';
+import { createRdsLambda, createRdsLambdaRole, setRDSLayerMappings } from '../resolvers/rds';
 
 export const RDS_STACK_NAME = 'RdsApiStack';
 
@@ -24,6 +24,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       } = ResourceConstants.RESOURCES;
       const lambdaRoleStack = context.stackManager.getStackFor(RDSLambdaIAMRoleLogicalID, RDS_STACK_NAME);
       const lambdaStack = context.stackManager.getStackFor(RDSLambdaLogicalID, RDS_STACK_NAME);
+      setRDSLayerMappings(lambdaStack);
       const role = createRdsLambdaRole(
         context.resourceHelper.generateIAMRoleName(RDSLambdaIAMRoleLogicalID),
         lambdaRoleStack,

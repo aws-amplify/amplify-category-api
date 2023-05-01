@@ -17,7 +17,7 @@ import { ModelDirectiveConfiguration } from '../../directive';
  * Generate mapping template that sets default values for create mutation
  * @param modelConfig directive configuration
  */
-export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfiguration): string => {
+export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfiguration, initializeIdField: boolean): string => {
   const statements: Expression[] = [
     // initialize defaultValues
     qref(
@@ -31,7 +31,9 @@ export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
 
   if (modelConfig?.timestamps) {
     statements.push(set(ref('createdAt'), methodCall(ref('util.time.nowISO8601'))));
-    statements.push(qref(methodCall(ref('ctx.stash.defaultValues.put'), str('id'), methodCall(ref('util.autoId')))));
+    if (initializeIdField) {
+      statements.push(qref(methodCall(ref('ctx.stash.defaultValues.put'), str('id'), methodCall(ref('util.autoId')))));
+    }
     if (modelConfig.timestamps.createdAt) {
       statements.push(qref(methodCall(ref('ctx.stash.defaultValues.put'), str(modelConfig.timestamps.createdAt), ref('createdAt'))));
     }

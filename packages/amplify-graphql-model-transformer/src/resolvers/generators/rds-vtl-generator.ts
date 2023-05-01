@@ -30,8 +30,8 @@ export class RDSModelVTLGenerator implements ModelVTLGenerator {
   generateCreateRequestTemplate(config: ModelCreateRequestConfig): string {
     return generateLambdaCreateRequestTemplate(config.modelName, config.operationName);
   }
-  generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig): string {
-    return generateCreateInitSlotTemplate(config.modelConfig);
+  generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig, initializeIdField: boolean): string {
+    return generateCreateInitSlotTemplate(config.modelConfig, initializeIdField);
   }
   generateDeleteRequestTemplate(config: ModelUpdateRequestConfig): string {
     return generateLambdaDeleteRequestTemplate(config.modelName, config.operationName, config.modelIndexFields ?? ['id']);

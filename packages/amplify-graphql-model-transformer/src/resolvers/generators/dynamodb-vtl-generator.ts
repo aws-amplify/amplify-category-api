@@ -28,8 +28,8 @@ export class DynamoDBModelVTLGenerator implements ModelVTLGenerator {
   generateCreateRequestTemplate(config: ModelCreateRequestConfig): string {
     return generateCreateRequestTemplate(config.modelName, config.modelIndexFields);
   }
-  generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig): string {
-    return generateCreateInitSlotTemplate(config.modelConfig);
+  generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig, initializeIdField: boolean): string {
+    return generateCreateInitSlotTemplate(config.modelConfig, initializeIdField);
   }
   generateDeleteRequestTemplate(config: ModelUpdateRequestConfig): string {
     return generateDeleteRequestTemplate(config.modelName, config.isSyncEnabled);

@@ -1,28 +1,22 @@
-// TODO: Split this file into seperated query, mutations and subscriptions files.
-
+import { CfnMapping, Fn, Stack } from 'aws-cdk-lib';
 import {
-  str,
   Expression,
-  ref,
+  compoundExpression,
+  ifElse,
+  list,
   methodCall,
   obj,
-  qref,
-  ifElse,
-  compoundExpression,
-  iff,
-  toJson,
   printBlock,
-  and,
-  not,
-  equals,
-  int,
-  nul,
+  qref,
+  ref,
   set,
-  list,
+  str,
+  toJson
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { Stack } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+
+import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   Effect,
   IRole,
@@ -31,14 +25,92 @@ import {
   Role,
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
-import { IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { IFunction, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Construct } from 'constructs';
 import path from 'path';
-import {RDSConnectionSecrets} from '@aws-amplify/graphql-transformer-core';
 
 export type OPERATIONS = 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'SYNC';
 
 const OPERATION_KEY = '__operation';
+
+const RDSLayerMappingID = 'RDSLayerResourceMapping';
+export const setRDSLayerMappings = (scope: Construct): CfnMapping => new CfnMapping(
+  scope,
+  RDSLayerMappingID,
+  {
+    mapping: {
+      'ap-northeast-1': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'us-east-1': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'ap-southeast-1': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'eu-west-1': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'us-west-1': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'ap-east-1': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'ap-northeast-2': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'ap-northeast-3': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'ap-south-1': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'ap-southeast-2': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'ca-central-1': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'eu-central-1': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'eu-north-1': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'eu-west-2': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'eu-west-3': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'sa-east-1': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'us-east-2': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'us-west-2': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'cn-north-1': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'cn-northwest-1': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'us-gov-west-1': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'us-gov-east-1': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+      'me-south-1': {
+        layerRegion: 'arn:aws:lambda:us-east-1:956468067974:layer:AmplifyRDSLayerBeta:7',
+      },
+    },
+  },
+);
 
 export const createRdsLambda = (
   stack: Stack,
@@ -54,7 +126,13 @@ export const createRdsLambda = (
     'handler.run',
     path.resolve(__dirname, '..', '..', '..', 'lib', 'rds-lambda.zip'),
     Runtime.NODEJS_16_X,
-    [],
+    [
+      LayerVersion.fromLayerVersionArn(
+        stack,
+        'SQLLambdaLayerVersion',
+        Fn.findInMap(RDSLayerMappingID, Fn.ref('AWS::Region'), 'layerRegion'),
+      ),
+    ],
     lambdaRole,
     environment,
     undefined,
@@ -80,7 +158,13 @@ export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEn
       new PolicyStatement({
         actions: ['ssm:GetParameter', 'ssm:GetParameters'],
         effect: Effect.ALLOW,
-        resources: [`arn:aws:ssm:*:*:parameter${secretEntry.username}`, `arn:aws:ssm:*:*:parameter${secretEntry.password}`],
+        resources: [
+          `arn:aws:ssm:*:*:parameter${secretEntry.username}`,
+          `arn:aws:ssm:*:*:parameter${secretEntry.password}`,
+          `arn:aws:ssm:*:*:parameter${secretEntry.host}`,
+          `arn:aws:ssm:*:*:parameter${secretEntry.database}`,
+          `arn:aws:ssm:*:*:parameter${secretEntry.port}`,
+        ],
       })
     )
   }

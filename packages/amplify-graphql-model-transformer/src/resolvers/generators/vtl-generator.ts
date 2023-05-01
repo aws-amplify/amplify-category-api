@@ -33,7 +33,7 @@ export type ModelDefaultResponseConfig = ModelRequestConfig & {
 export interface ModelVTLGenerator {
   generateUpdateRequestTemplate(config: ModelUpdateRequestConfig): string;
   generateCreateRequestTemplate(config: ModelCreateRequestConfig): string;
-  generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
+  generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig, initializeIdField: boolean): string;
   generateDeleteRequestTemplate(config: ModelDeleteRequestConfig): string;
   generateUpdateInitSlotTemplate(config: ModelUpdateInitSlotConfig): string;
   generateGetRequestTemplate(config: ModelRequestConfig): string;
