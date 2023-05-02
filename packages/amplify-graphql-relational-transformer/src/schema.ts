@@ -27,6 +27,7 @@ import {
   makeNonNullType,
   makeScalarKeyConditionForType,
   ModelResourceIDs,
+  STANDARD_SCALARS,
   toCamelCase,
   toPascalCase,
   toUpper,
@@ -453,34 +454,16 @@ const makeModelXFilterInputObject = (
     });
 
   fields.push(
-    {
-      kind: Kind.INPUT_VALUE_DEFINITION,
-      name: {
-        kind: 'Name',
-        value: 'and',
-      },
-      type: makeListType(makeNamedType(name)) as unknown as NamedTypeNode,
-      directives: [],
-    },
-    {
-      kind: Kind.INPUT_VALUE_DEFINITION,
-      name: {
-        kind: 'Name',
-        value: 'or',
-      },
-      type: makeListType(makeNamedType(name)) as unknown as NamedTypeNode,
-      directives: [],
-    },
-    {
-      kind: Kind.INPUT_VALUE_DEFINITION,
-      name: {
-        kind: 'Name',
-        value: 'not',
-      },
-      type: makeNamedType(name),
-      directives: [],
-    },
+    makeAdditionalFilterInputField('and', makeListType(makeNamedType(name)) as unknown as NamedTypeNode),
+    makeAdditionalFilterInputField('or', makeListType(makeNamedType(name)) as unknown as NamedTypeNode),
+    makeAdditionalFilterInputField('not', makeNamedType(name))
   );
+
+  if (ctx.isProjectUsingDataStore()) {
+    fields.push(
+      makeAdditionalFilterInputField('_deleted', makeNamedType(ModelResourceIDs.ModelScalarFilterInputTypeName(STANDARD_SCALARS.Boolean, false)))
+    )
+  }
 
   return {
     kind: 'InputObjectTypeDefinition',
@@ -492,6 +475,16 @@ const makeModelXFilterInputObject = (
     directives: [],
   };
 };
+
+const makeAdditionalFilterInputField = (name: string, type: NamedTypeNode) => ({
+  kind: Kind.INPUT_VALUE_DEFINITION,
+  name: {
+    kind: 'Name' as const,
+    value: name,
+  },
+  type,
+  directives: [],
+})
 
 /**
  * getPartitionKeyField
