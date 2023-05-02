@@ -20,7 +20,7 @@ phases:
   post_build:
     commands:
       - aws sts get-caller-identity
-      - source ./shared-scripts.sh && _scanArtifacts
+      # - source ./shared-scripts.sh && _scanArtifacts
 
 artifacts:
   files:

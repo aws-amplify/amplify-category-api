@@ -126,7 +126,8 @@ function _publishToLocalRegistry {
     echo $CODEBUILD_BRANCH
     git branch -v
     git checkout $CODEBUILD_BRANCH
-    source ./.circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source .circleci/local_publish_helpers.sh
+    startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     git config user.email not@used.com
     git config user.name "Doesnt Matter"
@@ -157,7 +158,7 @@ function _publishToLocalRegistry {
 function _install_cli_from_local_registry {
     echo "Start verdaccio, install CLI"
     source .circleci/local_publish_helpers.sh
-    startLocalRegistry "$$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     npm install -g @aws-amplify/cli-internal@11.0.3
