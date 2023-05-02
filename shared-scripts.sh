@@ -123,8 +123,6 @@ function _publishToLocalRegistry {
     echo "Publish To Local Registry"
     loadCacheFromBuildJob
     export CODEBUILD_BRANCH="${CODEBUILD_WEBHOOK_TRIGGER#branch/*}"
-    echo $CODEBUILD_BRANCH
-    git branch -v
     git checkout $CODEBUILD_BRANCH
     source .circleci/local_publish_helpers.sh
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -176,13 +174,12 @@ function _loadTestAccountCredentials {
 function _runE2ETestsLinux {
     echo "RUN E2E Tests Linux"
     
-    loadCache repo $CODEBUILD_SRC_DIR
-    loadCache .cache $HOME/.cache
+    loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
 
     _install_cli_from_local_registry  
-    export PATH=$AMPLIFY_DIR:$PATH
+    export PATH="$AMPLIFY_DIR:$PATH"
     source .circleci/local_publish_helpers.sh
     amplify version
     echo "Run Amplify E2E tests"
