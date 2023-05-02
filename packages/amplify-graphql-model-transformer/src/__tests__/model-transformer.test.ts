@@ -75,6 +75,12 @@ describe('ModelTransformer: ', () => {
       `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
+      resolverConfig: {
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE
+        }
+      },
       featureFlags,
     });
     const out = transformer.transform(alsoValidSchema);
@@ -737,6 +743,12 @@ describe('ModelTransformer: ', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
+      resolverConfig: {
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE
+        }
+      },
       featureFlags,
     });
     const result = transformer.transform(validSchema);
@@ -761,6 +773,12 @@ describe('ModelTransformer: ', () => {
   `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
+      resolverConfig: {
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE
+        }
+      },
       featureFlags,
     });
     const result = transformer.transform(validSchema);
@@ -785,6 +803,12 @@ describe('ModelTransformer: ', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
+      resolverConfig: {
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE
+        }
+      },
       featureFlags,
     });
 
@@ -808,6 +832,12 @@ describe('ModelTransformer: ', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
+      resolverConfig: {
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE
+        }
+      },
       featureFlags,
     });
     const result = transformer.transform(validSchema);
@@ -834,6 +864,12 @@ describe('ModelTransformer: ', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
+      resolverConfig: {
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE
+        }
+      },
       featureFlags,
     });
 
@@ -899,6 +935,12 @@ describe('ModelTransformer: ', () => {
 
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
+      resolverConfig: {
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE
+        }
+      },
       featureFlags,
     });
     const result = transformer.transform(validSchema);
