@@ -44,7 +44,7 @@ import { adoptAuthModes, IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } fr
 import * as SyncUtils from './sync-utils';
 import { MappingTemplate } from '../cdk-compat';
 
-import { UserDefinedSlot, OverrideConfig, DatasourceTransormationConfig  } from './types';
+import { UserDefinedSlot, OverrideConfig, DatasourceTransformationConfig  } from './types';
 import {
   makeSeenTransformationKey,
   matchArgumentDirective,
@@ -176,7 +176,7 @@ export class GraphQLTransform {
    * @param schema The model schema.
    * @param datasourceConfig Additional supporting configuration when additional datasources are added
    */
-  public transform(schema: string, datasourceConfig?: DatasourceTransormationConfig): DeploymentResources {
+  public transform(schema: string, datasourceConfig?: DatasourceTransformationConfig): DeploymentResources {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
     this.app = new App();
