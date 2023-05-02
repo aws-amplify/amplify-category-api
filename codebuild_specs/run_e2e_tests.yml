@@ -7,6 +7,8 @@ env:
     CI: true
     CIRCLECI: true
     NODE_OPTIONS: --max-old-space-size=8096
+    TEST_SUITE: custom-transformers.test.ts
+    CLI_REGION: us-west-2
     # mock values to test artifact scanning
     ENV_VAR_WITH_SECRETS: 'MOCK_ENV_VAR_FOR_SCANNING_SECRETS'
     MOCK_ENV_VAR_FOR_SCANNING_SECRETS: 'abc123xyz'
@@ -14,8 +16,6 @@ phases:
   build:
     commands:
       # you can provide a codebuild source version to use old cache and skip all other jobs :)
-      - echo $AMPLIFY_DIR
-      - echo $AMPLIFY_PATH
       - source ./shared-scripts.sh && _runE2ETestsLinux
   post_build:
     commands:
