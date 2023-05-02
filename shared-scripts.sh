@@ -143,12 +143,6 @@ function _publishToLocalRegistry {
     git reset --hard HEAD
     yarn update-versions
     yarn ts-node scripts/unified-changelog.ts
-    
-    echo "LS HOME"
-    ls $CODEBUILD_SRC_DIR/..
-
-    echo "LS REPO"
-    ls $CODEBUILD_SRC_DIR
 
     # copy [verdaccio-cache, changelog to s3]
     storeCache $CODEBUILD_SRC_DIR/../verdaccio-cache verdaccio-cache
@@ -188,9 +182,7 @@ function _runE2ETestsLinux {
     loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
 
     _install_cli_from_local_registry  
-    cd packages/amplify-e2e-tests
-    echo "export PATH=$AMPLIFY_DIR:$PATH" >> $BASH_ENV
-    source $BASH_ENV
+    export PATH=$AMPLIFY_DIR:$PATH
     source .circleci/local_publish_helpers.sh
     amplify version
     echo "Run Amplify E2E tests"
