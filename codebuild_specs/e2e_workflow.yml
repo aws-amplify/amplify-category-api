@@ -23,7 +23,7 @@ batch:
       depend-on:
         - build_linux
     - identifier: verify_cdk_version
-      buildspec: codebuild_specs/validate_cdk_version.yml
+      buildspec: codebuild_specs/verify_cdk_version.yml
       depend-on:
         - build_linux
     - identifier: verify_api_extract
