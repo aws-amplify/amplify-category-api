@@ -267,10 +267,10 @@ export class GraphQLTransform {
     protected generateGraphQlApi(stackManager: StackManager, output: TransformerOutput): GraphQLApi;
     // (undocumented)
     preProcessSchema(schema: DocumentNode): DocumentNode;
-    // Warning: (ae-forgotten-export) The symbol "DatasourceTransormationConfig" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "DatasourceTransformationConfig" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    transform(schema: string, datasourceConfig?: DatasourceTransormationConfig): DeploymentResources;
+    transform(schema: string, datasourceConfig?: DatasourceTransformationConfig): DeploymentResources;
 }
 
 // @public (undocumented)
