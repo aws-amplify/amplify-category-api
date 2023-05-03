@@ -188,8 +188,6 @@ function _runE2ETestsLinux {
     _loadTestAccountCredentials
     retry runE2eTest
 }
-
-
 function _scanArtifacts {
     if ! yarn ts-node codebuild_specs/scripts/scan_artifacts.ts; then
         echo "Cleaning the repository"

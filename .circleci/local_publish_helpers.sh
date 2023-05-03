@@ -1,5 +1,5 @@
 #!/bin/bash
-set +o posix
+
 custom_registry_url=http://localhost:4873
 default_verdaccio_package=verdaccio@5.1.2
 
@@ -9,9 +9,6 @@ function startLocalRegistry {
     echo "Registry output file: $tmp_registry_log"
     (cd && nohup npx ${VERDACCIO_PACKAGE:-$default_verdaccio_package} -c $1 &>$tmp_registry_log &)
     # Wait for Verdaccio to boot
-    #tail -f $tmp_registry_log > temp_file &
-    
-    #grep -q 'http address' temp_file
     grep -q 'http address' <(tail -f $tmp_registry_log)
 }
 
@@ -86,11 +83,8 @@ function useChildAccountCredentials {
             echo "Unable to assume child account role. Falling back to parent AWS account"
             return
         fi
-        # export ORGANIZATION_SIZE=$(aws organizations list-accounts | jq '.Accounts | length')
-        # export CREDS=$(aws sts assume-role --role-arn arn:aws:iam::$(aws organizations list-accounts | jq -c -r ".Accounts [$(($RANDOM % $ORGANIZATION_SIZE))].Id"):role/OrganizationAccountAccessRole --role-session-name testSession$((1 + $RANDOM % 10000)) --duration-seconds 3600)
-        # if [ -z $(echo $CREDS | jq -c -r '.AssumedRoleUser.Arn') ]; then
-        #     echo "Unable to assume child account role. Falling back to parent AWS account"
-        # else
+        export ORGANIZATION_SIZE=$org_size
+        export CREDS=$creds
         echo "Using account credentials for $(echo $creds | jq -c -r '.AssumedRoleUser.Arn')"
         export AWS_ACCESS_KEY_ID=$(echo $creds | jq -c -r ".Credentials.AccessKeyId")
         export AWS_SECRET_ACCESS_KEY=$(echo $creds | jq -c -r ".Credentials.SecretAccessKey")
