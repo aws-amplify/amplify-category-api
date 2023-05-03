@@ -20,6 +20,7 @@ import {
   list,
   forEach,
   nul,
+  raw,
 } from 'graphql-mapping-template';
 import { ResourceConstants, setArgs } from 'graphql-transformer-common';
 const authFilter = ref('ctx.stash.authFilter');
@@ -165,6 +166,7 @@ export const generateListRequestTemplate = (): string => {
 };
 
 export const generateSyncRequestTemplate = (): string => {
+  const requestVariable = 'ctx.stash.QueryRequest';
   return printBlock('Sync Request template')(
     compoundExpression([
       setArgs,
@@ -195,14 +197,21 @@ export const generateSyncRequestTemplate = (): string => {
           ),
         ]),
       ),
-      obj({
-        version: str('2018-05-29'),
-        operation: str('Sync'),
-        filter: ifElse(ref('filter'), ref('util.toJson($filter)'), nul()),
-        limit: ref(`util.defaultIfNull($args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
-        lastSync: ref('util.toJson($util.defaultIfNull($args.lastSync, null))'),
-        nextToken: ref('util.toJson($util.defaultIfNull($args.nextToken, null))'),
-      }),
+      ifElse(
+        ref(requestVariable),
+        compoundExpression([
+          iff(ref('filter'), set(ref(`${requestVariable}.filter`), ref('filter'))),
+          raw(`$util.toJson($${requestVariable})`),
+        ]),
+        obj({
+          version: str('2018-05-29'),
+          operation: str('Sync'),
+          filter: ifElse(ref('filter'), ref('util.toJson($filter)'), nul()),
+          limit: ref(`util.defaultIfNull($args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
+          lastSync: ref('util.toJson($util.defaultIfNull($args.lastSync, null))'),
+          nextToken: ref('util.toJson($util.defaultIfNull($args.nextToken, null))'),
+        }),
+      ),
     ]),
   );
 };

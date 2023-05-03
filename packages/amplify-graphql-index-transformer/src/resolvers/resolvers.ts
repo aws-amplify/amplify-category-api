@@ -791,10 +791,10 @@ function setSyncKeyExpressionForRangeKey(queryExprReference: string) {
 }
 
 function makeSyncQueryResolver() {
-  const requestVariable = 'QueryRequest';
+  const requestVariable = 'ctx.stash.QueryRequest';
   const expressions: Expression[] = [];
   expressions.push(
-    ifElse(
+    iff(
       raw('!$scan'),
       compoundExpression([
         set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT})`)),
@@ -820,25 +820,16 @@ function makeSyncQueryResolver() {
           set(ref(`${requestVariable}.filter`), ref('util.parseJson($util.transform.toDynamoDBFilterExpression($filterMap))')),
         ),
         iff(raw('$index != "dbTable"'), set(ref(`${requestVariable}.index`), ref('index'))),
-        raw(`$util.toJson($${requestVariable})`),
       ]),
-      DynamoDBMappingTemplate.syncItem({
-        filter: ifElse(
-          raw('!$util.isNullOrEmpty($ctx.args.filter)'),
-          ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'),
-          nul(),
-        ),
-        limit: ref(`util.defaultIfNull($ctx.args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
-        lastSync: ref('util.toJson($util.defaultIfNull($ctx.args.lastSync, null))'),
-        nextToken: ref('util.toJson($util.defaultIfNull($ctx.args.nextToken, null))'),
-      }),
     ),
+    raw(`$util.toJson({})`),
   );
   return block(' Set query expression for @key', expressions);
 }
 
 function generateSyncResolverInit() {
   const expressions: Expression[] = [];
+  const requestVariable = 'ctx.stash.QueryRequest';
   expressions.push(
     set(ref('index'), str('')),
     set(ref('scan'), bool(true)),
@@ -846,6 +837,10 @@ function generateSyncResolverInit() {
     set(ref('QueryMap'), obj({})),
     set(ref('PkMap'), obj({})),
     set(ref('filterArgsMap'), obj({})),
+    iff(
+      ref(requestVariable),
+      raw('#return'),
+    ),
   );
   return block('Set map initialization for @key', expressions);
 }
