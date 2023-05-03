@@ -136,18 +136,18 @@ function _publishToLocalRegistry {
       yarn lerna publish --exact --dist-tag=latest --preid=$NPM_TAG --conventional-commits --conventional-prerelease --no-verify-access --yes --no-commit-hooks --no-push --no-git-tag-version
     fi
     unsetNpmRegistryUrl
-
-    # echo "Generate Change Log"
-    # git reset --hard HEAD
-    # yarn update-versions
-    # yarn ts-node scripts/unified-changelog.ts
-
-    # copy [verdaccio-cache, changelog to s3]
+    # copy [verdaccio-cache] to s3
     storeCache $CODEBUILD_SRC_DIR/../verdaccio-cache verdaccio-cache
-
-    # storeCacheFile $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md UNIFIED_CHANGELOG.md
 }
-function _install_cli_from_local_registry {
+function _generateChangeLog {
+    echo "Generate Change Log"
+    git reset --hard HEAD
+    yarn update-versions
+    yarn ts-node scripts/unified-changelog.ts
+    # copy [changelog] to s3
+    storeCacheFile $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md UNIFIED_CHANGELOG.md
+}
+function _installCLIFromLocalRegistry {
     echo "Start verdaccio, install CLI"
     source .circleci/local_publish_helpers.sh
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -178,7 +178,7 @@ function _runE2ETestsLinux {
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     # loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
 
-    _install_cli_from_local_registry  
+    _installCLIFromLocalRegistry  
     export PATH="$AMPLIFY_DIR:$PATH"
     source .circleci/local_publish_helpers.sh
     amplify version
@@ -190,7 +190,7 @@ function _runE2ETestsLinux {
 
 
 function _scanArtifacts {
-    if ! yarn ts-node .circleci/scan_artifacts_codebuild.ts; then
+    if ! yarn ts-node codebuild_specs/scripts/scan_artifacts.ts; then
         echo "Cleaning the repository"
         git clean -fdx
         exit 1
