@@ -5,9 +5,6 @@ phases:
   build:
     commands:
       - source ./shared-scripts.sh && _publishToLocalRegistry
-  post_build:
-    commands:
-      - source ./shared-scripts.sh && _generateChangeLog
 
 artifacts:
   files:

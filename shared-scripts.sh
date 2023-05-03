@@ -138,6 +138,8 @@ function _publishToLocalRegistry {
     unsetNpmRegistryUrl
     # copy [verdaccio-cache] to s3
     storeCache $CODEBUILD_SRC_DIR/../verdaccio-cache verdaccio-cache
+
+    _generateChangeLog
 }
 function _generateChangeLog {
     echo "Generate Change Log"
@@ -176,7 +178,6 @@ function _runE2ETestsLinux {
     
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-    # loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
 
     _installCLIFromLocalRegistry  
     export PATH="$AMPLIFY_DIR:$PATH"
