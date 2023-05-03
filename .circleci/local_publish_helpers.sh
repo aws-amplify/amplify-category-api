@@ -89,7 +89,6 @@ function useChildAccountCredentials {
         export AWS_ACCESS_KEY_ID=$(echo $creds | jq -c -r ".Credentials.AccessKeyId")
         export AWS_SECRET_ACCESS_KEY=$(echo $creds | jq -c -r ".Credentials.SecretAccessKey")
         export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")
-        # fi
     else
         echo "Using parent account credentials."
     fi
