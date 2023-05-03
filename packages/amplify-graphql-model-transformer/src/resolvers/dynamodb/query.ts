@@ -170,10 +170,35 @@ export const generateSyncRequestTemplate = (): string => {
   return printBlock('Sync Request template')(
     compoundExpression([
       setArgs,
+      set(ref('queryFilterContainsAuthField'), bool(false)),
+      set(ref('useScan'), bool(true)),
       ifElse(
         not(isNullOrEmpty(authFilter)),
         compoundExpression([
           set(ref('filter'), authFilter),
+          iff(
+            ref('ctx.stash.QueryRequestVariables.partitionKey'),
+            compoundExpression([
+              forEach(ref('filterItem'), ref('ctx.stash.authFilter.or'), [
+                iff(
+                  raw('$filterItem.get($ctx.stash.QueryRequestVariables.partitionKey)'),
+                  set(ref('queryFilterContainsAuthField'), bool(true)),
+                ),
+              ]),
+              ifElse(
+                not(ref('queryFilterContainsAuthField')), 
+                set(ref('useScan'), bool(false)),
+                compoundExpression([
+                  forEach(ref('filterItem'), ref('ctx.stash.authFilter.or'), [
+                    iff(
+                      raw('$util.toJson($filterItem) == $util.toJson($ctx.stash.QueryRequestVariables.partitionKeyFilter)'),
+                      set(ref('useScan'), bool(false)),
+                    ),
+                  ]),
+                ]),
+              ),
+            ]),
+          ),
           iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), obj({ and: list([ref('filter'), ref('args.filter')]) }))),
         ]),
         iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), ref('args.filter'))),
@@ -198,11 +223,8 @@ export const generateSyncRequestTemplate = (): string => {
         ]),
       ),
       ifElse(
-        ref(requestVariable),
-        compoundExpression([
-          iff(ref('filter'), set(ref(`${requestVariable}.filter`), ref('filter'))),
-          raw(`$util.toJson($${requestVariable})`),
-        ]),
+        not(ref('useScan')),
+        raw(`$util.toJson($${requestVariable})`),
         obj({
           version: str('2018-05-29'),
           operation: str('Sync'),

@@ -572,8 +572,6 @@ export function addIndexToResolverSlot(resolver: TransformerResolverProvider, li
       `${lines.join('\n')}\n${!isSync ? '{}' : ''}`,
       `${res.typeName}.${res.fieldName}.{slotName}.{slotIndex}.req.vtl`,
     ),
-    undefined,
-    isSync ? res.datasource : null,
   );
 }
 
@@ -647,6 +645,9 @@ function setSyncQueryFilterSnippet(deltaSyncTableTtl: number) {
                 compoundExpression([
                   set(ref('pk'), ref('entry.key')),
                   set(ref('scan'), bool(false)),
+                  set(ref('queryRequestVariables.partitionKey'), ref('pk')),
+                  set(ref('queryRequestVariables.partitionKeyFilter'), obj({})),
+                  raw(`$util.qr($queryRequestVariables.partitionKeyFilter.put($pk, {'eq': $entry.value.eq}))`),
                   raw('$util.qr($ctx.args.put($pk,$entry.value.eq))'),
                   set(ref('index'), ref('PkMap.get($pk)')),
                 ]),
@@ -792,12 +793,14 @@ function setSyncKeyExpressionForRangeKey(queryExprReference: string) {
 
 function makeSyncQueryResolver() {
   const requestVariable = 'ctx.stash.QueryRequest';
+  const queryRequestVariables = 'ctx.stash.QueryRequestVariables';
   const expressions: Expression[] = [];
   expressions.push(
     iff(
       raw('!$scan'),
       compoundExpression([
         set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT})`)),
+        set(ref(queryRequestVariables), ref('queryRequestVariables')),
         set(
           ref(requestVariable),
           obj({
@@ -841,6 +844,7 @@ function generateSyncResolverInit() {
       ref(requestVariable),
       raw('#return'),
     ),
+    set(ref('queryRequestVariables'), obj({})),
   );
   return block('Set map initialization for @key', expressions);
 }
