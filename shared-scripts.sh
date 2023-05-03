@@ -137,15 +137,15 @@ function _publishToLocalRegistry {
     fi
     unsetNpmRegistryUrl
 
-    echo "Generate Change Log"
-    git reset --hard HEAD
-    yarn update-versions
-    yarn ts-node scripts/unified-changelog.ts
+    # echo "Generate Change Log"
+    # git reset --hard HEAD
+    # yarn update-versions
+    # yarn ts-node scripts/unified-changelog.ts
 
     # copy [verdaccio-cache, changelog to s3]
     storeCache $CODEBUILD_SRC_DIR/../verdaccio-cache verdaccio-cache
 
-    storeCacheFile $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md UNIFIED_CHANGELOG.md
+    # storeCacheFile $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md UNIFIED_CHANGELOG.md
 }
 function _install_cli_from_local_registry {
     echo "Start verdaccio, install CLI"
@@ -176,7 +176,7 @@ function _runE2ETestsLinux {
     
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-    loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
+    # loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
 
     _install_cli_from_local_registry  
     export PATH="$AMPLIFY_DIR:$PATH"
