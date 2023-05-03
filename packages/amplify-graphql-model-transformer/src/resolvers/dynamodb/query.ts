@@ -172,6 +172,13 @@ export const generateSyncRequestTemplate = (): string => {
       setArgs,
       set(ref('queryFilterContainsAuthField'), bool(false)),
       set(ref('useScan'), bool(true)),
+      iff(
+        and([
+          isNullOrEmpty(authFilter),
+          ref('ctx.stash.QueryRequest'),
+        ]),
+        set(ref('useScan'), bool(false)),
+      ),
       ifElse(
         not(isNullOrEmpty(authFilter)),
         compoundExpression([
