@@ -97,20 +97,23 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
       path.join(resourceDir, stacksDirName, defaultStackName),
     );
 
-    // write the template buffer to the project folder
-    this.writeSchema(path.join(resourceDir, gqlSchemaFilename), serviceConfig.transformSchema);
-
     const authConfig = this.extractAuthConfig(appsyncCLIInputs.serviceConfiguration);
-
-    await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
-      resourceDir,
-      parameters: this.getCfnParameters(serviceConfig.apiName, authConfig, resourceDir),
-      authConfig,
-    });
-
     const dependsOn = amendDependsOnForAuthConfig([], authConfig);
-
+    const apiParameters = this.getCfnParameters(serviceConfig.apiName, authConfig, resourceDir);
+    this.ensureCfnParametersExist(resourceDir, apiParameters);
     this.context.amplify.updateamplifyMetaAfterResourceAdd(category, serviceConfig.apiName, this.createAmplifyMeta(authConfig, dependsOn));
+
+    if(serviceConfig?.transformSchema) {
+      // write the template buffer to the project folder
+      this.writeSchema(path.join(resourceDir, gqlSchemaFilename), serviceConfig.transformSchema);
+
+      await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
+        resourceDir,
+        parameters: apiParameters,
+        authConfig,
+      });
+    }
+
     return serviceConfig.apiName;
   };
 
@@ -351,6 +354,13 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     }
     await cliState.saveCLIInputPayload(appsyncInputs);
     return gqlSchemaPath;
+  };
+
+  private ensureCfnParametersExist = (resourceDir: string, parameters: Record<string, unknown>) => {
+    const parametersFilePath = path.join(resourceDir, cfnParametersFilename);
+    if(!fs.existsSync(parametersFilePath)) {
+      JSONUtilities.writeJson(parametersFilePath, parameters);
+    }
   };
 }
 

@@ -7,7 +7,7 @@ import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionConte
 import { VelocityTemplateSimulator, AppSyncVTLContext, getJWTToken } from "../../velocity";
 import { featureFlags } from "./test-helper";
 
-jest.mock("amplify-prompts");
+jest.mock('@aws-amplify/amplify-prompts');
 
 const USER_POOL_ID = "us-fake-1ID";
 
@@ -758,7 +758,7 @@ describe("@model @primaryIndex @index auth", () => {
         }),
         getNumber: jest.fn(),
         getObject: jest.fn(),
-       
+
 
       },
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()]
@@ -1541,7 +1541,7 @@ describe("with identity claim feature flag disabled", () => {
           }),
           getNumber: jest.fn(),
           getObject: jest.fn(),
-         
+
 
         },
         transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()]

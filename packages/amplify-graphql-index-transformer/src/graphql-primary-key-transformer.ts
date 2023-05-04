@@ -3,6 +3,7 @@ import {
   generateGetArgumentsInput,
   InvalidDirectiveError,
   TransformerPluginBase,
+  DatasourceType
 } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -18,26 +19,34 @@ import {
   Kind,
   ObjectTypeDefinitionNode,
 } from 'graphql';
-import { isListType, isNonNullType, isScalarOrEnum } from 'graphql-transformer-common';
+import { 
+  isListType, 
+  isNonNullType, 
+  isScalarOrEnum,
+  makeInputValueDefinition,
+  makeNamedType
+} from 'graphql-transformer-common';
 import {
   constructSyncVTL,
-  replaceDdbPrimaryKey,
-  updateResolvers,
   getResourceOverrides,
-  getDeltaSyncTableTtl
-} from './resolvers';
+  getDeltaSyncTableTtl,
+  getVTLGenerator,
+} from './resolvers/resolvers';
 import {
   addKeyConditionInputs,
   removeAutoCreatedPrimaryKey,
   updateGetField,
   updateInputObjects,
-  updateListField,
   updateMutationConditionInput,
+  createHashField,
+  ensureModelSortDirectionEnum,
+  tryAndCreateSortField
 } from './schema';
 import { PrimaryKeyDirectiveConfiguration } from './types';
 import {
   validateNotSelfReferencing,
   validateNotOwnerAuth,
+  lookupResolverName
 } from './utils';
 
 const directiveName = 'primaryKey';
@@ -106,8 +115,9 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
 
   generateResolvers = (ctx: TransformerContextProvider): void => {
     for (const config of this.directiveList) {
-      replaceDdbPrimaryKey(config, ctx);
-      updateResolvers(config, ctx, this.resolverMap);
+      const dbInfo = ctx.modelToDatasourceMap.get(config.object.name.value);
+      const vtlGenerator = getVTLGenerator(dbInfo);
+      vtlGenerator.generatePrimaryKeyVTL(config, ctx, this.resolverMap);
     }
   };
 }
@@ -179,5 +189,43 @@ function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
     }
 
     config.sortKey.push(sortField);
+  }
+}
+
+export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
+  const resolverName = lookupResolverName(config, ctx, 'list');
+  let query = ctx.output.getQuery();
+
+  if (!(resolverName && query)) {
+    return;
+  }
+
+  let listField = query.fields!.find((field: FieldDefinitionNode) => field.name.value === resolverName) as FieldDefinitionNode;
+  if (listField) {
+    const args = [createHashField(config)];
+
+    const dbInfo = ctx.modelToDatasourceMap.get(config.object.name.value);
+    if (dbInfo?.dbType !== 'MySQL') {
+      const sortField = tryAndCreateSortField(config, ctx);
+      if (sortField) {
+        args.push(sortField);
+      }
+    }
+
+    if (Array.isArray(listField.arguments)) {
+      args.push(...listField.arguments);
+    }
+
+    args.push(makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')));
+    ensureModelSortDirectionEnum(ctx);
+
+    listField = { ...listField, arguments: args };
+    query = {
+      ...query,
+      fields: query.fields!.map((field: FieldDefinitionNode) => {
+        return field.name.value === listField.name.value ? listField : field;
+      }),
+    };
+    ctx.output.updateObject(query);
   }
 }

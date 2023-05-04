@@ -59,7 +59,7 @@ export const showApiAuthAcm = async (context: $TSContext, modelName: string): Pr
 
   const apiName = apiNames[0];
   const apiResourceDir = path.join(pathManager.getBackendDirPath(), 'api', apiName);
-  const schema = await readProjectSchema(apiResourceDir);
+  const { schema } = await readProjectSchema(apiResourceDir);
 
   printACM(schema, modelName);
 };
