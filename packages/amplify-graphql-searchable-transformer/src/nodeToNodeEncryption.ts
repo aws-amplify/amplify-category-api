@@ -4,7 +4,6 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { TransformConfig } from '@aws-amplify/graphql-transformer-core/lib';
 import { TRANSFORM_CONFIG_FILE_NAME } from 'graphql-transformer-core';
-import { printer } from '@aws-amplify/amplify-prompts';
 
 /**
  * Return whether or not NodeToNodeEncryption should be enabled for the API.
@@ -15,32 +14,32 @@ import { printer } from '@aws-amplify/amplify-prompts';
  * @param apiName the name of the api to attempt and pull the flag from.
  * @returns whether or not NodeToNodeEncryption should be enabled on a searchable instance.
  */
-export const shouldEnableNodeToNodeEncryption = (apiName: string): boolean => {
+export const shouldEnableNodeToNodeEncryption = (apiName: string): { enabled: boolean, log: string | undefined } => {
   try {
     const nodeToNodeEncryptionParameter = getNodeToNodeEncryptionConfigValue(apiName);
     const doesExistingBackendHaveNodeToNodeEncryption = getCurrentCloudBackendStackFiles(apiName).some(definition => hasNodeToNodeEncryptionOptions(definition));
 
-    warnOnExistingNodeToNodeEncryption(doesExistingBackendHaveNodeToNodeEncryption);
+    const log = warnOnExistingNodeToNodeEncryption(doesExistingBackendHaveNodeToNodeEncryption);
 
     if (nodeToNodeEncryptionParameter !== undefined) {
-      return nodeToNodeEncryptionParameter;
+      return { enabled: nodeToNodeEncryptionParameter, log };
     }
 
-    return doesExistingBackendHaveNodeToNodeEncryption;
+    return { enabled: doesExistingBackendHaveNodeToNodeEncryption, log };
   } catch (e) {
     // Fail open, and don't set the flag for the purposes of this workaround phase.
-    return false;
+    return { enabled: false, log: undefined };
   }
 };
 
-const warnOnExistingNodeToNodeEncryption = (doesExistingBackendHaveNodeToNodeEncryption: boolean): void => {
+const warnOnExistingNodeToNodeEncryption = (doesExistingBackendHaveNodeToNodeEncryption: boolean): string | undefined => {
   if (!doesExistingBackendHaveNodeToNodeEncryption) {
     return;
   }
 
-  printer.warn(`
+  return `
 NodeToNodeEncryption is enabled for this Search Domain, disabling this flag or reverting to Amplify CLI <= 10.5.2 will result in this being disabled, triggering a rebuild of the Search Index. To backfill your search domain see https://docs.amplify.aws/cli/graphql/troubleshooting/#backfill-opensearch-index-from-dynamodb-table.
-`);
+`;
 };
 
 const getCurrentCloudBackendStackFiles = (apiName: string): any[] => {

@@ -12,6 +12,8 @@ import {
   TransformerPluginProvider,
   TransformerModelEnhancementProvider,
   TransformerAuthProvider,
+  TransformerLog,
+  TransformerLogLevel,
 } from '@aws-amplify/graphql-transformer-interfaces';
 
 import {
@@ -34,6 +36,7 @@ export abstract class TransformerPluginBase implements TransformerPluginProvider
   public readonly directive: DirectiveDefinitionNode;
 
   public readonly typeDefinitions: TypeDefinitionNode[];
+  private logs: TransformerLog[];
   constructor(
     name: string,
     document: DocumentNode | string,
@@ -51,6 +54,19 @@ export abstract class TransformerPluginBase implements TransformerPluginProvider
     // Transformers can define extra shapes that can be used by the directive
     // and validated. TODO: Validation.
     this.typeDefinitions = extraDefinitions;
+    this.logs = [];
+  }
+
+  protected log(level: TransformerLogLevel, message: string) {
+    this.logs.push({ level, message });
+  }
+
+  public getLogs(): TransformerLog[] {
+    return this.logs;
+  }
+
+  public flushLogs(): void {
+    this.logs = [];
   }
 }
 /**

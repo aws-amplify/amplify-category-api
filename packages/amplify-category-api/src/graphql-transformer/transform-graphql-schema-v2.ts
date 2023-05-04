@@ -9,6 +9,7 @@ import {
   DeploymentResources,
   Template,
   TransformerPluginProvider,
+  TransformerLogLevel,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   $TSContext,
@@ -242,6 +243,25 @@ const _buildProject = async (opts: TransformerProjectOptions<TransformerFactoryA
 
   const schema = userProjectConfig.schema.toString();
   const transformOutput = transform.transform(schema);
+
+  transform.getLogs().forEach((log) => {
+    switch (log.level) {
+      case TransformerLogLevel.ERROR:
+        printer.error(log.message);
+        break;
+      case TransformerLogLevel.WARN:
+        printer.warn(log.message);
+        break;
+      case TransformerLogLevel.INFO:
+        printer.info(log.message);
+        break;
+      case TransformerLogLevel.DEBUG:
+        printer.debug(log.message);
+        break;
+      default:
+        printer.error(log.message);
+    }
+  });
 
   return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput, opts);
 };
