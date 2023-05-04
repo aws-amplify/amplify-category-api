@@ -54,7 +54,7 @@ export const readRDSGlobalAmplifyInput = async (pathToSchemaFile: string): Promi
     return;
   }
   const schemaContent = fs.readFileSync(pathToSchemaFile, 'utf-8');
-  if (_.isEmpty(schemaContent?.replace(/[\r\n]/gm, ''))) {
+  if (_.isEmpty(schemaContent)) {
     return;
   }
 

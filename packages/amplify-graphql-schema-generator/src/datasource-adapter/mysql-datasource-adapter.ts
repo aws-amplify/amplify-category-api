@@ -127,7 +127,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
         sequence: item["ORDINAL_POSITION"],
         datatype: item["DATA_TYPE"],
         columnType: item["COLUMN_TYPE"],
-        nullable: item["IS_NULLABLE"] === 'YES' ? true : false,
+        nullable: item["IS_NULLABLE"] === 'YES',
         length: item["CHARACTER_MAXIMUM_LENGTH"],
       };
     });
