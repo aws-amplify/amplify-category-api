@@ -140,8 +140,7 @@
     "parse-url": "^8.1.0",
     "moment-timezone": "^0.5.35",
     "**/aws-cdk-lib": "~2.68.0",
-    "**/@aws-amplify/amplify-cli-core": "4.0.1",
-    "**/amplify-cli-core": "4.0.1",
+    "**/@aws-amplify/amplify-cli-core": "4.0.4",
     "ejs": "^3.1.7",
     "json5": "^2.2.3"
   }
