@@ -81,6 +81,8 @@ import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transfo
 import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerDataSourceManagerProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerLogLevel } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerModelEnhancementProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerModelProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -260,11 +262,15 @@ export class GraphQLTransform {
     constructor(options: GraphQLTransformOptions);
     // (undocumented)
     applyOverride: (stackManager: StackManager) => AmplifyApiGraphQlResourceStackTemplate;
+    // (undocumented)
+    flushLogs(): void;
     // Warning: (ae-forgotten-export) The symbol "TransformerOutput" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "GraphQLApi" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     protected generateGraphQlApi(stackManager: StackManager, output: TransformerOutput): GraphQLApi;
+    // (undocumented)
+    getLogs(): TransformerLog[];
     // (undocumented)
     preProcessSchema(schema: DocumentNode): DocumentNode;
     // Warning: (ae-forgotten-export) The symbol "DatasourceTransformationConfig" needs to be exported by the entry point index.d.ts
@@ -655,6 +661,12 @@ export abstract class TransformerPluginBase implements TransformerPluginProvider
     constructor(name: string, document: DocumentNode_2 | string, pluginType?: TransformerPluginType);
     // (undocumented)
     readonly directive: DirectiveDefinitionNode;
+    // (undocumented)
+    flushLogs(): void;
+    // (undocumented)
+    getLogs(): TransformerLog[];
+    // (undocumented)
+    protected log(level: TransformerLogLevel, message: string): void;
     // (undocumented)
     readonly name: string;
     // (undocumented)
