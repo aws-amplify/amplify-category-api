@@ -1,0 +1,52 @@
+{
+  "name": "@aws-amplify/graphql-schema-generator",
+  "version": "0.0.1",
+  "description": "Amplify GraphQL schema generator",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-category-api.git",
+    "directory": "packages/amplify-graphql-schema-generator"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "keywords": [
+    "graphql",
+    "schema",
+    "aws",
+    "amplify",
+    "generator"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf ./lib",
+    "test": "jest"
+  },
+  "dependencies": {
+    "knex": "~2.3.0",
+    "mysql2": "~2.3.3",
+    "graphql": "^15.5.0",
+    "@aws-amplify/graphql-transformer-core": "1.2.0"
+  },
+  "peerDependencies": {
+    "@aws-amplify/amplify-prompts": "^2.6.6"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testURL": "http://localhost",
+    "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true
+  }
+}

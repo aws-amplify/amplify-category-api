@@ -14,6 +14,7 @@ import { printer } from '@aws-amplify/amplify-prompts';
 import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { RDS_SCHEMA_FILE_NAME, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { run } from './commands/api/console';
 import { getAppSyncAuthConfig, getAppSyncResourceName } from './provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { provider } from './provider-utils/awscloudformation/aws-constants';
@@ -23,6 +24,10 @@ import { askAuthQuestions } from './provider-utils/awscloudformation/service-wal
 import { authConfigToAppSyncAuthType } from './provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { checkAppsyncApiResourceMigration } from './provider-utils/awscloudformation/utils/check-appsync-api-migration';
 import { getAppSyncApiResourceName } from './provider-utils/awscloudformation/utils/getAppSyncApiName';
+import { getAPIResourceDir } from './provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { configureMultiEnvDBSecrets } from './provider-utils/awscloudformation/utils/rds-secrets/multi-env-database-secrets';
+import { deleteConnectionSecrets, getSecretsKey, getDatabaseName } from './provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
+import _ from 'lodash';
 import { AmplifyGraphQLTransformerErrorConverter } from './errors/amplify-error-converter';
 
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
@@ -107,6 +112,9 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   const service = 'service';
   const rdsInit = 'rdsInit';
 
+  const { amplify } = context;
+  const { envName } = amplify.getEnvInfo();
+
   /**
    * Check if we need to do the walkthrough, by looking to see if previous environments have
    * configured an RDS datasource
@@ -137,6 +145,22 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   // If an AppSync API does not exist, no need to prompt for rds datasource
   if (!resourceName) {
     return;
+  }
+
+  // proceed if there are any existing imported Relational Data Sources
+  const apiResourceDir = getAPIResourceDir(resourceName);
+  const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
+  if(fs.existsSync(pathToSchemaFile)) {
+    // read and validate the RDS connection parameters
+    const secretsKey = await getSecretsKey();
+
+    const envInfo = {
+      isNewEnv: context.exeInfo?.isNewEnv,
+      sourceEnv: context.exeInfo?.sourceEnvName,
+      yesFlagSet: _.get(context, ['parameters', 'options', 'yes'], false),
+      envName: envName
+    }
+    await configureMultiEnvDBSecrets(context, secretsKey, resourceName, envInfo);
   }
 
   // If an AppSync API has not been initialized with RDS, no need to prompt
@@ -269,11 +293,21 @@ export const executeAmplifyHeadlessCommand = async (context: $TSContext, headles
 };
 
 /**
- * Not yet implemented
+ * Handle state changes in Amplify app.
  */
-export const handleAmplifyEvent = async (_: $TSContext, args): Promise<void> => {
-  printer.info(`${category} handleAmplifyEvent to be implemented`);
-  printer.info(`Received event args ${args}`);
+export const handleAmplifyEvent = async (context: $TSContext, args: $TSAny): Promise<void> => {
+  switch (args.event) {
+    case 'InternalOnlyPostEnvRemove':
+      const meta = stateManager.getMeta();
+      const apiName = getAppSyncResourceName(meta);
+      if (!apiName) {
+        return;
+      }
+      await deleteConnectionSecrets(context, apiName, args?.data?.envName);
+      break;
+    default:
+      // other event handlers not implemented
+  }
 };
 
 /**

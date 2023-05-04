@@ -27,6 +27,12 @@ export class ResourceConstants {
     OpenSearchStreamingLambdaFunctionLogicalID: 'OpenSearchStreamingLambdaFunction',
     OpenSearchDataSourceLogicalID: 'OpenSearchDataSource',
 
+    // RDS
+    RDSLambdaIAMRoleLogicalID: 'RDSLambdaIAMRole',
+    RDSLambdaLogicalID: 'RDSLambdaLogicalID',
+    RDSLambdaDataSourceLogicalID: 'RDSLambdaDataSource',
+    RDSLambdaDataSourceLogicalName: 'RDSLambdaDatabase',
+
     // Local. Try not to collide with model data sources.
     NoneDataSource: 'NoneDataSource',
 
