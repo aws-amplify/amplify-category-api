@@ -40,9 +40,6 @@
   "devDependencies": {
     "@types/node": "^12.12.6"
   },
-  "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.4"
-  },
   "jest": {
     "transform": {
       "^.+\\.tsx?$": "ts-jest"

@@ -40,8 +40,5 @@
     "@aws-sdk/client-ec2": "^3.226.0",
     "@aws-sdk/client-rds": "^3.226.0",
     "knex": "~2.4.0"
-  },
-  "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.4"
   }
 }

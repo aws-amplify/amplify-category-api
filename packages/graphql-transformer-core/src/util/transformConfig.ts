@@ -1,6 +1,5 @@
 import * as path from 'path';
 import { Template } from 'cloudform-types';
-import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { throwIfNotJSONExt } from './fileUtils';
 import { ProjectOptions } from './amplifyUtils';
 const fs = require('fs-extra');
