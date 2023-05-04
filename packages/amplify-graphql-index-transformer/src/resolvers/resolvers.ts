@@ -603,6 +603,7 @@ function setSyncQueryMapSnippet(name: string, config: PrimaryKeyDirectiveConfigu
   expressions.push(
     raw(`$util.qr($QueryMap.put('${keys.join('+')}' , '${name}'))`),
     raw(`$util.qr($PkMap.put('${field.name.value}' , '${name}'))`),
+    qref(methodCall(ref('SkMap.put'), str(name), list(sortKeyFields.map(str)))),
   );
   return block('Set query expression for @key', expressions);
 }
@@ -646,6 +647,7 @@ function setSyncQueryFilterSnippet(deltaSyncTableTtl: number) {
                   set(ref('pk'), ref('entry.key')),
                   set(ref('scan'), bool(false)),
                   set(ref('queryRequestVariables.partitionKey'), ref('pk')),
+                  set(ref('queryRequestVariables.sortKeys'), ref('SkMap.get($PkMap.get($pk))')),
                   set(ref('queryRequestVariables.partitionKeyFilter'), obj({})),
                   raw(`$util.qr($queryRequestVariables.partitionKeyFilter.put($pk, {'eq': $entry.value.eq}))`),
                   raw('$util.qr($ctx.args.put($pk,$entry.value.eq))'),
@@ -819,8 +821,11 @@ function makeSyncQueryResolver() {
         ),
         iff(ref('context.args.nextToken'), set(ref(`${requestVariable}.nextToken`), ref('context.args.nextToken')), true),
         iff(
-          raw('!$util.isNullOrEmpty($filterMap)'),
-          set(ref(`${requestVariable}.filter`), ref('util.parseJson($util.transform.toDynamoDBFilterExpression($filterMap))')),
+          and([
+            raw('!$util.isNullOrEmpty($filterMap)'),
+            notEquals(toJson(ref('filterMap')), toJson(obj({}))),
+          ]),
+          set(ref(`${requestVariable}.filter`), ref('filterMap')),
         ),
         iff(raw('$index != "dbTable"'), set(ref(`${requestVariable}.index`), ref('index'))),
       ]),
@@ -839,6 +844,7 @@ function generateSyncResolverInit() {
     set(ref('filterMap'), obj({})),
     set(ref('QueryMap'), obj({})),
     set(ref('PkMap'), obj({})),
+    set(ref('SkMap'), obj({})),
     set(ref('filterArgsMap'), obj({})),
     iff(
       ref(requestVariable),

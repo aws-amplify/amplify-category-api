@@ -171,6 +171,7 @@ export const generateSyncRequestTemplate = (): string => {
     compoundExpression([
       setArgs,
       set(ref('queryFilterContainsAuthField'), bool(false)),
+      set(ref('authFilterContainsSortKey'), bool(false)),
       set(ref('useScan'), bool(true)),
       iff(
         and([
@@ -193,8 +194,28 @@ export const generateSyncRequestTemplate = (): string => {
                 ),
               ]),
               ifElse(
-                not(ref('queryFilterContainsAuthField')), 
-                set(ref('useScan'), bool(false)),
+                not(ref('queryFilterContainsAuthField')),
+                compoundExpression([
+                  forEach(ref('filterItem'), ref('ctx.stash.authFilter.or'), [
+                    forEach(ref('sortKey'), ref('ctx.stash.QueryRequestVariables.sortKeys'), [
+                      iff(
+                        raw('$filterItem.get($sortKey)'),
+                        set(ref('authFilterContainsSortKey'), bool(true)),
+                      ),
+                    ]),
+                  ]),
+                  iff(
+                    not(ref('authFilterContainsSortKey')),
+                    compoundExpression([
+                      ifElse(
+                        not(isNullOrEmpty(ref(`${requestVariable}.filter`))),
+                        set(ref(`${requestVariable}.filter`), obj({ and: list([ref(`${requestVariable}.filter`), authFilter]) })),
+                        set(ref(`${requestVariable}.filter`), authFilter),
+                      ),
+                      set(ref('useScan'), bool(false)),
+                    ]),
+                  ),
+                ]),
                 compoundExpression([
                   forEach(ref('filterItem'), ref('ctx.stash.authFilter.or'), [
                     iff(
@@ -231,7 +252,16 @@ export const generateSyncRequestTemplate = (): string => {
       ),
       ifElse(
         not(ref('useScan')),
-        raw(`$util.toJson($${requestVariable})`),
+        compoundExpression([
+          iff(
+            ref(`${requestVariable}.filter`),
+            set(
+              ref(`${requestVariable}.filter`),
+              methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref(`${requestVariable}.filter`))),
+            ),
+          ),
+          raw(`$util.toJson($${requestVariable})`),
+        ]),
         obj({
           version: str('2018-05-29'),
           operation: str('Sync'),
