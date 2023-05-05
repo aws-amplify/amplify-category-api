@@ -34,6 +34,7 @@
     "fs-extra": "^8.1.0",
     "graphql": "^15.5.0",
     "graphql-transformer-common": "4.24.5",
+    "hjson": "^3.2.2",
     "lodash": "^4.17.21",
     "md5": "^2.3.0",
     "object-hash": "^3.0.0",
@@ -42,6 +43,7 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
+    "@types/hjson": "^2.4.3",
     "@types/md5": "^2.3.1",
     "@types/node": "^12.12.6",
     "@types/object-hash": "^2.2.1"
