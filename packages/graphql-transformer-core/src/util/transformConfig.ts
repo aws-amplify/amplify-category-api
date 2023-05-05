@@ -287,10 +287,7 @@ export async function readSchema(projectDirectory: string): Promise<{schema: str
     modelToDatasourceMap = new Map([...modelToDatasourceMap.entries(), ...constructDataSourceMap(schemaInDirectory, datasourceType).entries()]);
     schema += schemaInDirectory;
   } else {
-    throw new AmplifyError('ApiCategorySchemaNotFoundError', {
-      message: `Could not find a schema at ${schemaFilePaths[0]}`,
-      link: 'https://docs.amplify.aws/cli/graphql/overview/#update-schema',
-    });
+    throw new Error(`Could not find a schema at ${schemaFilePaths[0]}. https://docs.amplify.aws/cli/graphql/overview/#update-schema`);
   }
   return {
     schema,
