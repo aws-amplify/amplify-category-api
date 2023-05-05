@@ -28,6 +28,7 @@ module.exports = {
       modules: true,
       module: true,
     },
+    project: ['tsconfig.base.json'],
   },
   plugins: ['@typescript-eslint', 'spellcheck', 'import', 'jsdoc', 'prefer-arrow'],
   settings: {
