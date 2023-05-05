@@ -296,18 +296,22 @@ export const executeAmplifyHeadlessCommand = async (context: $TSContext, headles
  * Handle state changes in Amplify app.
  */
 export const handleAmplifyEvent = async (context: $TSContext, args: $TSAny): Promise<void> => {
-  switch (args.event) {
-    case 'InternalOnlyPostEnvRemove':
-      const meta = stateManager.getMeta();
-      const apiName = getAppSyncResourceName(meta);
-      if (!apiName) {
-        return;
-      }
-      await deleteConnectionSecrets(context, apiName, args?.data?.envName);
-      break;
-    default:
-      // other event handlers not implemented
-  }
+  // Temporaily commenting out to test latest with CLI 12.0.0 RC version.
+  // switch (args.event) {
+  //   case 'InternalOnlyPostEnvRemove':
+  //     const meta = stateManager.getMeta();
+  //     const apiName = getAppSyncResourceName(meta);
+  //     if (!apiName) {
+  //       return;
+  //     }
+  //     await deleteConnectionSecrets(context, apiName, args?.data?.envName);
+  //     break;
+  //   default:
+  //     // other event handlers not implemented
+  // }
+
+  printer.info(`${category} handleAmplifyEvent to be implemented`);
+  printer.info(`Received event args ${args}`);
 };
 
 /**
