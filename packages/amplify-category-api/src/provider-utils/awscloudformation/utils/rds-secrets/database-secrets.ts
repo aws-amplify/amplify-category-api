@@ -1,4 +1,4 @@
-import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { getParameterStoreSecretPath, RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { SSMClient } from './ssmClient';
@@ -84,6 +84,11 @@ export const storeConnectionSecrets = async (context: $TSContext, secrets: RDSCo
 };
 
 export const deleteConnectionSecrets = async (context: $TSContext, secretsKey: string, apiName: string, envName?: string) => {
+  const appId = stateManager.getAppID();
+  if (!appId) {
+    // Exit early if appId is not defined
+    return;
+  }
   const ssmClient = await SSMClient.getInstance(context);
   const secretParameterPaths = secretNames.map( secret => {
     return getParameterStoreSecretPath(secret, secretsKey, apiName, envName);
