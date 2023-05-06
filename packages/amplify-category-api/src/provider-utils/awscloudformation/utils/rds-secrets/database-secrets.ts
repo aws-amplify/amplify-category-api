@@ -84,9 +84,11 @@ export const storeConnectionSecrets = async (context: $TSContext, secrets: RDSCo
 };
 
 export const deleteConnectionSecrets = async (context: $TSContext, secretsKey: string, apiName: string, envName?: string) => {
-  const appId = stateManager.getAppID();
-  if (!appId) {
-    // Exit early if appId is not defined
+  try {
+    const appId = stateManager.getAppID();
+  }
+  catch (error) {
+    printer.debug(`No AppId found when deleting parameters for environment ${envName}`);
     return;
   }
   const ssmClient = await SSMClient.getInstance(context);
