@@ -26,8 +26,7 @@ export type GitHubSourceActionInfo = {
   tokenSecretArn: string;
 };
 
-// TODO update when CDK is updated to newer version that supports NODEJS_14_X
-const lambdaRuntimeNodeVersion = lambda.Runtime.NODEJS_12_X;
+const lambdaRuntimeNodeVersion = lambda.Runtime.NODEJS_16_X;
 
 const lambdasDir = path.resolve(__dirname, '../../../resources/awscloudformation/lambdas');
 
