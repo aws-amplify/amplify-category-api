@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-migration-tests",
-  "version": "5.0.21",
+  "version": "5.0.22-sync-fix.0",
   "description": "Test suites for migration scenarios",
   "repository": {
     "type": "git",
@@ -25,11 +25,11 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-cli-core": "4.0.4",
-    "aws-cdk-lib": "~2.68.0",
     "@aws-cdk/cloudformation-diff": "~2.68.0",
-    "amplify-category-api-e2e-core": "4.1.1",
+    "amplify-category-api-e2e-core": "4.1.2-sync-fix.0",
+    "aws-cdk-lib": "~2.68.0",
     "fs-extra": "^8.1.0",
-    "graphql-transformer-core": "8.0.3",
+    "graphql-transformer-core": "8.1.0-sync-fix.0",
     "lodash": "^4.17.21",
     "semver": "^7.3.5",
     "strip-ansi": "^6.0.0",

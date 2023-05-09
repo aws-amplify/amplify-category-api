@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.1.0-sync-fix.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.0.3...graphql-transformer-core@8.1.0-sync-fix.0) (2023-05-09)
+
+### Features
+
+- **graphql:** read datasource type from schema file ([d7f50e5](https://github.com/aws-amplify/amplify-category-api/commit/d7f50e5ca026a3bbf378437cf6a165cc5b438bb5))
+- re-use the common flows b/w add and import api ([463bffc](https://github.com/aws-amplify/amplify-category-api/commit/463bffcf6d0b30d9e25027ca5a93d8dce15de0cf))
+
 ## [8.0.3](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.0.2...graphql-transformer-core@8.0.3) (2023-04-25)
 
 **Note:** Version bump only for package graphql-transformer-core
