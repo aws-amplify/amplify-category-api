@@ -92,6 +92,7 @@ function useChildAccountCredentials {
     else
         echo "Using parent account credentials."
     fi
+    echo "Region is set to use $CLI_REGION"
 }
 
 function retry {

@@ -10,6 +10,7 @@ import {
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { App } from 'aws-cdk-lib';
 import { DocumentNode } from 'graphql';
+import { DatasourceType } from '../config/project-config';
 import { ResolverConfig } from '../config/transformer-config';
 import { TransformerDataSourceManager } from './datasource';
 import { NoopFeatureFlagProvider } from './noop-feature-flag';
@@ -18,6 +19,7 @@ import { TransformerContextProviderRegistry } from './provider-registry';
 import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
+import {RDSConnectionSecrets} from '../types';
 
 export { TransformerResolver } from './resolver';
 export { StackManager } from './stack-manager';
@@ -52,16 +54,20 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly authConfig: AppSyncAuthConfiguration;
   public readonly sandboxModeEnabled: boolean;
   private resolverConfig: ResolverConfig | undefined;
+  public readonly modelToDatasourceMap: Map<string, DatasourceType>;
+  public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
 
   public metadata: TransformerContextMetadata;
   constructor(
     app: App,
     public readonly inputDocument: DocumentNode,
+    modelToDatasourceMap: Map<string, DatasourceType>,
     stackMapping: Record<string, string>,
     authConfig: AppSyncAuthConfiguration,
     sandboxModeEnabled?: boolean,
     featureFlags?: FeatureFlagProvider,
     resolverConfig?: ResolverConfig,
+    datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
   ) {
     this.output = new TransformerOutput(inputDocument);
     this.resolvers = new ResolverManager();
@@ -75,6 +81,8 @@ export class TransformerContext implements TransformerContextProvider {
     this.featureFlags = featureFlags ?? new NoopFeatureFlagProvider();
     this.resolverConfig = resolverConfig;
     this.metadata = new TransformerContextMetadata();
+    this.modelToDatasourceMap = modelToDatasourceMap;
+    this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
   }
 
   /**

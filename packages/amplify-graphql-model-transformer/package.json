@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-model-transformer",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Amplify graphql @model transformer",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cd rds-lambda && mkdir -p node_modules && rm -rf node_modules && npm install && tsc && cp -r node_modules lib && cd lib && bestzip --force node ../../lib/rds-lambda.zip ./*",
     "watch": "tsc -w",
     "clean": "rimraf ./lib",
     "test": "jest",
@@ -29,7 +29,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "1.2.0",
+    "@aws-amplify/graphql-transformer-core": "1.2.1",
     "@aws-amplify/graphql-transformer-interfaces": "2.1.1",
     "aws-cdk-lib": "~2.68.0",
     "constructs": "^10.0.5",

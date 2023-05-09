@@ -1,10 +1,13 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform, validateModelSchema, DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 
 import { Template } from 'aws-cdk-lib/assertions';
+import { expect as cdkExpect, haveResourceLike } from '@aws-cdk/assert';
 import { Kind, parse } from 'graphql';
 import { PrimaryKeyTransformer } from '..';
+import _ from 'lodash';
 
 test('throws if multiple primary keys are defined on an object', () => {
   const schema = `
@@ -969,3 +972,357 @@ test('lowercase model names generate the correct get/list query arguments', () =
   expect(listQuery.arguments[4].name.value).toEqual('nextToken');
   expect(listQuery.arguments[5].name.value).toEqual('sortDirection');
 });
+
+describe('RDS primary key transformer tests', () => {
+  const modelToDatasourceMap = new Map<string, DatasourceType>();
+  modelToDatasourceMap.set('Test', {
+    dbType: 'MySQL',
+    provisionDB: false
+  });
+
+  it('a primary key with a single sort key field is properly configured', () => {
+    const inputSchema = `
+      type Test @model {
+        email: String! @primaryKey(sortKeyFields: "kind")
+        kind: Int!
+      }`;
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      featureFlags: ({
+        getBoolean: (featureName: string, defaultValue: boolean) => {
+          if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
+            return true;
+          }
+
+          return defaultValue;
+        },
+      } as FeatureFlagProvider),
+    });
+    const out = transformer.transform(inputSchema, { modelToDatasourceMap });
+    const schema = parse(out.schema);
+    const stack = out.stacks.Test;
+
+    validateModelSchema(schema);
+
+    // DDB resources are not created
+    expect(getDDBTableResources(stack)?.length).toEqual(0);
+
+    expect(out.resolvers).toMatchSnapshot();
+
+    const queryType: any = schema.definitions.find((def: any) => def.name && def.name.value === 'Query');
+    const getTestField: any = queryType.fields.find((f: any) => f.name && f.name.value === 'getTest');
+    expect(getTestField.arguments).toHaveLength(2);
+    expect(getTestField.arguments[0].name.value).toEqual('email');
+    expect(getTestField.arguments[1].name.value).toEqual('kind');
+  });
+
+  it('a primary key with no sort key is properly configured', () => {
+    const inputSchema = `
+      type Test @model {
+        email: String! @primaryKey
+      }`;
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      featureFlags: ({
+        getBoolean: (featureName: string, defaultValue: boolean) => {
+          if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
+            return true;
+          }
+
+          return defaultValue;
+        },
+      } as FeatureFlagProvider),
+    });
+    const out = transformer.transform(inputSchema, { modelToDatasourceMap });
+    const schema = parse(out.schema);
+    const stack = out.stacks.Test;
+
+    validateModelSchema(schema);
+    expect(getDDBTableResources(stack)?.length).toEqual(0);
+
+    expect(out.resolvers).toMatchSnapshot();
+
+    const queryType: any = schema.definitions.find((def: any) => def.name && def.name.value === 'Query');
+    const getTestField: any = queryType.fields.find((f: any) => f.name && f.name.value === 'getTest');
+    expect(getTestField.arguments).toHaveLength(1);
+    expect(getTestField.arguments[0].name.value).toEqual('email');
+
+    // The auto-generated 'id' primary key should have been removed.
+    const createInput: any = schema.definitions.find((d: any) => {
+      return d.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && d.name.value === 'CreateTestInput';
+    });
+    expect(createInput).toBeDefined();
+    const defaultIdField = createInput.fields.find((f: any) => f.name.value === 'id');
+    expect(defaultIdField).toBeUndefined();
+
+    // This field should be created if it does not exist already.
+    const sortDirectionEnum: any = schema.definitions.find((d: any) => {
+      return d.kind === Kind.ENUM_TYPE_DEFINITION && d.name.value === 'ModelSortDirection';
+    });
+    expect(sortDirectionEnum).toBeDefined();
+  });
+
+  it('a primary key with a composite sort key is properly configured', () => {
+    const inputSchema = `
+      type Test @model {
+        email: String! @primaryKey(sortKeyFields: ["kind", "other"])
+        kind: Int!
+        other: AWSDateTime!
+        yetAnother: String
+        andAnother: String!
+      }`;
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      featureFlags: ({
+        getBoolean: (featureName: string, defaultValue: boolean) => {
+          if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
+            return true;
+          }
+
+          return defaultValue;
+        },
+      } as FeatureFlagProvider),
+    });
+    const out = transformer.transform(inputSchema, { modelToDatasourceMap });
+    const schema = parse(out.schema);
+    const stack = out.stacks.Test;
+
+    validateModelSchema(schema);
+    expect(getDDBTableResources(stack)?.length).toEqual(0);
+
+    expect(out.resolvers).toMatchSnapshot();
+
+    const queryType: any = schema.definitions.find((def: any) => def.name && def.name.value === 'Query');
+    const getTestField: any = queryType.fields.find((f: any) => f.name && f.name.value === 'getTest');
+
+    expect(getTestField.arguments).toHaveLength(3);
+    expect(getTestField.arguments[0].name.value).toEqual('email');
+    expect(getTestField.arguments[1].name.value).toEqual('kind');
+    expect(getTestField.arguments[2].name.value).toEqual('other');
+
+    const listTestField: any = queryType.fields.find((f: any) => f.name && f.name.value === 'listTests');
+    expect(listTestField.arguments).toHaveLength(5);
+    expect(listTestField.arguments[0].name.value).toEqual('email');
+    expect(listTestField.arguments[1].name.value).toEqual('filter');
+    expect(listTestField.arguments[2].name.value).toEqual('limit');
+    expect(listTestField.arguments[3].name.value).toEqual('nextToken');
+    expect(listTestField.arguments[4].name.value).toEqual('sortDirection');
+
+    // No composite sort key is additionally added to the list inputs
+    expect(listTestField.arguments['kindOther']).toBeUndefined();
+
+    const createInput: any = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTestInput');
+    const updateInput: any = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTestInput');
+    const deleteInput: any = schema.definitions.find((def: any) => def.name && def.name.value === 'DeleteTestInput');
+
+    expect(createInput).toBeDefined();
+    expect(createInput.fields.find((f: any) => f.name.value === 'email' && f.type.kind === Kind.NON_NULL_TYPE)).toBeDefined();
+    expect(createInput.fields.find((f: any) => f.name.value === 'kind' && f.type.kind === Kind.NON_NULL_TYPE)).toBeDefined();
+    expect(createInput.fields.find((f: any) => f.name.value === 'other' && f.type.kind === Kind.NON_NULL_TYPE)).toBeDefined();
+    expect(createInput.fields.find((f: any) => f.name.value === 'yetAnother' && f.type.kind === Kind.NAMED_TYPE)).toBeDefined();
+    expect(createInput.fields.find((f: any) => f.name.value === 'andAnother' && f.type.kind === Kind.NON_NULL_TYPE)).toBeDefined();
+    expect(createInput.fields.find((f: any) => f.name.value === 'id')).toBeUndefined();
+    expect(updateInput).toBeDefined();
+    expect(updateInput.fields.find((f: any) => f.name.value === 'email' && f.type.kind === Kind.NON_NULL_TYPE)).toBeDefined();
+    expect(updateInput.fields.find((f: any) => f.name.value === 'kind' && f.type.kind === Kind.NON_NULL_TYPE)).toBeDefined();
+    expect(updateInput.fields.find((f: any) => f.name.value === 'other' && f.type.kind === Kind.NON_NULL_TYPE)).toBeDefined();
+    expect(updateInput.fields.find((f: any) => f.name.value === 'yetAnother' && f.type.kind === Kind.NAMED_TYPE)).toBeDefined();
+    expect(updateInput.fields.find((f: any) => f.name.value === 'andAnother' && f.type.kind === Kind.NAMED_TYPE)).toBeDefined();
+    expect(updateInput.fields.find((f: any) => f.name.value === 'id')).toBeUndefined();
+    expect(deleteInput).toBeDefined();
+    expect(deleteInput.fields.find((f: any) => f.name.value === 'email' && f.type.kind === Kind.NON_NULL_TYPE)).toBeDefined();
+    expect(deleteInput.fields.find((f: any) => f.name.value === 'kind' && f.type.kind === Kind.NON_NULL_TYPE)).toBeDefined();
+    expect(deleteInput.fields.find((f: any) => f.name.value === 'other' && f.type.kind === Kind.NON_NULL_TYPE)).toBeDefined();
+    expect(deleteInput.fields.find((f: any) => f.name.value === 'yetAnother')).toBeUndefined();
+    expect(deleteInput.fields.find((f: any) => f.name.value === 'andAnother')).toBeUndefined();
+    expect(deleteInput.fields.find((f: any) => f.name.value === 'id')).toBeUndefined();
+  });
+
+  it('null resolvers on @model are supported', () => {
+    const inputSchema = `
+      type Test @model(queries: null, mutations: null, subscriptions: null) {
+        id: ID! @primaryKey
+      }`;
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      featureFlags: ({
+        getBoolean: (featureName: string, defaultValue: boolean) => {
+          if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
+            return true;
+          }
+
+          return defaultValue;
+        },
+      } as FeatureFlagProvider),
+    });
+    const out = transformer.transform(inputSchema, { modelToDatasourceMap });
+    const schema = parse(out.schema);
+
+    validateModelSchema(schema);
+
+    const stack = out.stacks.Test;
+    const definitions = schema.definitions.filter((d: any) => {
+      return (
+        (d.kind === Kind.OBJECT_TYPE_DEFINITION && ['Query', 'Mutation', 'Subscription'].includes(d.name.value)) ||
+        (d.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && ['CreateTestInput', 'UpdateTestInput', 'DeleteTestInput'].includes(d.name.value))
+      );
+    });
+
+    expect(definitions).toEqual([]);
+  });
+
+  it('@model null resolvers can be overridden', () => {
+    const inputSchema = `
+      type Test @model(queries: null, mutations: null) {
+        id: ID! @primaryKey
+      }
+  
+      type Mutation {
+        createTest(input: CreateTestInput!): Test
+        deleteTest(input: DeleteTestInput!): Test
+      }
+  
+      input CreateTestInput {
+        id: ID!
+      }
+  
+      input DeleteTestInput {
+        id: ID!
+      }`;
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      featureFlags: ({
+        getBoolean: (featureName: string, defaultValue: boolean) => {
+          if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
+            return true;
+          }
+
+          return defaultValue;
+        },
+      } as FeatureFlagProvider),
+    });
+    const out = transformer.transform(inputSchema, { modelToDatasourceMap });
+    const schema = parse(out.schema);
+
+    validateModelSchema(schema);
+
+    const stack = out.stacks.Test;
+    const definitions = schema.definitions
+      .filter((d: any) => {
+        return (
+          (d.kind === Kind.OBJECT_TYPE_DEFINITION && ['Query', 'Mutation'].includes(d.name.value)) ||
+          (d.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && ['CreateTestInput', 'UpdateTestInput', 'DeleteTestInput'].includes(d.name.value))
+        );
+      })
+      .map((d: any) => d.name.value);
+
+    expect(definitions).toEqual(['Mutation', 'CreateTestInput', 'DeleteTestInput']);
+  });
+
+  it('resolvers can be renamed by @model', () => {
+    const inputSchema = `
+      type Test
+      @model(
+        queries: { get: "testGet", list: "testList" },
+        mutations: { create: "testCreate", delete: "testDelete", update: "testUpdate" }
+      ) {
+        id: ID! @primaryKey(sortKeyFields: ["email"])
+        email: String!
+      }`;
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      featureFlags: ({
+        getBoolean: (featureName: string, defaultValue: boolean) => {
+          if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
+            return true;
+          }
+
+          return defaultValue;
+        },
+      } as FeatureFlagProvider),
+    });
+    const out = transformer.transform(inputSchema, { modelToDatasourceMap });
+    const schema = parse(out.schema);
+
+    validateModelSchema(schema);
+
+    const stack = out.stacks.Test;
+    const query: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Query');
+    const mutation: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Mutation');
+
+    expect(out.resolvers).toMatchSnapshot();
+
+    expect(query).toBeDefined();
+    expect(query.fields.length).toEqual(2);
+    expect(mutation).toBeDefined();
+    expect(mutation.fields.length).toEqual(3);
+
+    const getQuery = query.fields.find((f: any) => f.name.value === 'testGet');
+    const listQuery = query.fields.find((f: any) => f.name.value === 'testList');
+    const createMutation = mutation.fields.find((f: any) => f.name.value === 'testCreate');
+    const updateMutation = mutation.fields.find((f: any) => f.name.value === 'testUpdate');
+    const deleteMutation = mutation.fields.find((f: any) => f.name.value === 'testDelete');
+
+    expect(getQuery).toBeDefined();
+    expect(getQuery.arguments.length).toEqual(2);
+    getQuery.arguments.forEach((arg: any) => expect(arg.type.kind).toEqual(Kind.NON_NULL_TYPE));
+
+    expect(listQuery).toBeDefined();
+    expect(listQuery.arguments.map((arg: any) => arg.name.value)).toEqual(['id', 'filter', 'limit', 'nextToken', 'sortDirection']);
+
+    expect(createMutation).toBeDefined();
+    expect(updateMutation).toBeDefined();
+    expect(deleteMutation).toBeDefined();
+  });
+
+  it('individual resolvers can be made null by @model', () => {
+    const inputSchema = `
+      type Test @model(queries: { get: "testGet", list: null }) {
+        id: ID! @primaryKey(sortKeyFields: ["email"])
+        email: String!
+      }`;
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      featureFlags: ({
+        getBoolean: (featureName: string, defaultValue: boolean) => {
+          if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
+            return true;
+          }
+
+          return defaultValue;
+        },
+      } as FeatureFlagProvider),
+    });
+    const out = transformer.transform(inputSchema, { modelToDatasourceMap });
+    const schema = parse(out.schema);
+
+    validateModelSchema(schema);
+
+    const stack = out.stacks.Test;
+    const query: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Query');
+
+    expect(out.resolvers).toMatchSnapshot();
+    expect(query).toBeDefined();
+    expect(query.fields.length).toEqual(1);
+    const getQuery = query.fields.find((f: any) => f.name.value === 'testGet');
+    expect(getQuery).toBeDefined();
+  });
+});
+
+const getDDBTableResources = (stack: $TSAny): string[] => {
+  const ddbTables: string[] = [];
+  const allResources: [string: $TSAny] = stack?.Resources;
+  if (!allResources || Object.keys(allResources)?.length === 0) {
+    return ddbTables;
+  }
+  return Object.keys(_.pickBy(allResources, function(value, key) {
+    return value?.Type === "AWS::DynamoDB::Table";
+  }));
+} ;

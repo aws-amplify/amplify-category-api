@@ -3,7 +3,7 @@
   "main": "./dist/index.js",
   "private": true,
   "types": "./dist/index.d.ts",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "files": [
     "dist",
     "!**/__tests__/**/*"
@@ -18,13 +18,13 @@
   },
   "devDependencies": {
     "@size-limit/preset-small-lib": "6.0.4",
-    "size-limit": "6.0.4",
     "@types/jest": "^24.0.18",
     "fs-extra": "^11.1.0",
     "jest": "^29.0.0",
     "jest-environment-jsdom": "^29.3.1",
     "lint-staged": "^9.2.5",
     "rimraf": "^3.0.0",
+    "size-limit": "6.0.4",
     "ts-jest": "^29.0.2",
     "ts-node": "^8.5.0"
   },

@@ -1,18 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ModelTransformer:  should filter known input types from create and update input fields 1`] = `
-"
-type Test {
+"type Test {
   id: ID!
   email: Email
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
+  _version: Int!
+  _deleted: Boolean
+  _lastChangedAt: AWSTimestamp!
 }
 
 type Email {
   id: ID!
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
+  _version: Int!
+  _deleted: Boolean
+  _lastChangedAt: AWSTimestamp!
 }
 
 input ModelStringInput {
@@ -168,6 +173,7 @@ enum ModelSortDirection {
 type ModelTestConnection {
   items: [Test]!
   nextToken: String
+  startedAt: AWSTimestamp
 }
 
 input ModelTestFilterInput {
@@ -175,31 +181,38 @@ input ModelTestFilterInput {
   and: [ModelTestFilterInput]
   or: [ModelTestFilterInput]
   not: ModelTestFilterInput
+  _deleted: ModelBooleanInput
 }
 
 type Query {
   getTest(id: ID!): Test
   listTests(filter: ModelTestFilterInput, limit: Int, nextToken: String): ModelTestConnection
+  syncTests(filter: ModelTestFilterInput, limit: Int, nextToken: String, lastSync: AWSTimestamp): ModelTestConnection
   getEmail(id: ID!): Email
   listEmails(filter: ModelEmailFilterInput, limit: Int, nextToken: String): ModelEmailConnection
+  syncEmails(filter: ModelEmailFilterInput, limit: Int, nextToken: String, lastSync: AWSTimestamp): ModelEmailConnection
 }
 
 input ModelTestConditionInput {
   and: [ModelTestConditionInput]
   or: [ModelTestConditionInput]
   not: ModelTestConditionInput
+  _deleted: ModelBooleanInput
 }
 
 input CreateTestInput {
   id: ID
+  _version: Int
 }
 
 input UpdateTestInput {
   id: ID!
+  _version: Int
 }
 
 input DeleteTestInput {
   id: ID!
+  _version: Int
 }
 
 type Mutation {
@@ -215,6 +228,7 @@ input ModelSubscriptionTestFilterInput {
   id: ModelSubscriptionIDInput
   and: [ModelSubscriptionTestFilterInput]
   or: [ModelSubscriptionTestFilterInput]
+  _deleted: ModelBooleanInput
 }
 
 type Subscription {
@@ -229,6 +243,7 @@ type Subscription {
 type ModelEmailConnection {
   items: [Email]!
   nextToken: String
+  startedAt: AWSTimestamp
 }
 
 input ModelEmailFilterInput {
@@ -236,38 +251,42 @@ input ModelEmailFilterInput {
   and: [ModelEmailFilterInput]
   or: [ModelEmailFilterInput]
   not: ModelEmailFilterInput
+  _deleted: ModelBooleanInput
 }
 
 input ModelEmailConditionInput {
   and: [ModelEmailConditionInput]
   or: [ModelEmailConditionInput]
   not: ModelEmailConditionInput
+  _deleted: ModelBooleanInput
 }
 
 input CreateEmailInput {
   id: ID
+  _version: Int
 }
 
 input UpdateEmailInput {
   id: ID!
+  _version: Int
 }
 
 input DeleteEmailInput {
   id: ID!
+  _version: Int
 }
 
 input ModelSubscriptionEmailFilterInput {
   id: ModelSubscriptionIDInput
   and: [ModelSubscriptionEmailFilterInput]
   or: [ModelSubscriptionEmailFilterInput]
+  _deleted: ModelBooleanInput
 }
-
 "
 `;
 
 exports[`ModelTransformer:  should generate enum input objects 1`] = `
-"
-type Post {
+"type Post {
   id: ID!
   title: String!
   createdAt: AWSDateTime
@@ -276,6 +295,9 @@ type Post {
   entityMetadata: EntityMetadata
   appearsIn: [Episode!]
   episode: Episode
+  _version: Int!
+  _deleted: Boolean
+  _lastChangedAt: AWSTimestamp!
 }
 
 type Author {
@@ -285,6 +307,9 @@ type Author {
   entityMetadata: EntityMetadata
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
+  _version: Int!
+  _deleted: Boolean
+  _lastChangedAt: AWSTimestamp!
 }
 
 type EntityMetadata {
@@ -312,6 +337,9 @@ type Require {
   notRequiredField: String
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
+  _version: Int!
+  _deleted: Boolean
+  _lastChangedAt: AWSTimestamp!
 }
 
 type Comment {
@@ -320,6 +348,9 @@ type Comment {
   content: String
   updatedOn: Int
   createdOn: AWSDateTime!
+  _version: Int!
+  _deleted: Boolean
+  _lastChangedAt: AWSTimestamp!
 }
 
 input ModelStringInput {
@@ -488,6 +519,7 @@ input EntityMetadataInput {
 type ModelPostConnection {
   items: [Post]!
   nextToken: String
+  startedAt: AWSTimestamp
 }
 
 input ModelEpisodeListInput {
@@ -512,17 +544,22 @@ input ModelPostFilterInput {
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
+  _deleted: ModelBooleanInput
 }
 
 type Query {
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+  syncPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String, lastSync: AWSTimestamp): ModelPostConnection
   getAuthor(id: ID!): Author
   listAuthors(filter: ModelAuthorFilterInput, limit: Int, nextToken: String): ModelAuthorConnection
+  syncAuthors(filter: ModelAuthorFilterInput, limit: Int, nextToken: String, lastSync: AWSTimestamp): ModelAuthorConnection
   getRequire(id: ID!): Require
   listRequires(filter: ModelRequireFilterInput, limit: Int, nextToken: String): ModelRequireConnection
+  syncRequires(filter: ModelRequireFilterInput, limit: Int, nextToken: String, lastSync: AWSTimestamp): ModelRequireConnection
   getComment(id: ID!): Comment
   listComments(filter: ModelCommentFilterInput, limit: Int, nextToken: String): ModelCommentConnection
+  syncComments(filter: ModelCommentFilterInput, limit: Int, nextToken: String, lastSync: AWSTimestamp): ModelCommentConnection
 }
 
 input ModelPostConditionInput {
@@ -534,6 +571,7 @@ input ModelPostConditionInput {
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
+  _deleted: ModelBooleanInput
 }
 
 input CreatePostInput {
@@ -545,6 +583,7 @@ input CreatePostInput {
   entityMetadata: EntityMetadataInput
   appearsIn: [Episode!]
   episode: Episode
+  _version: Int
 }
 
 input UpdatePostInput {
@@ -556,10 +595,12 @@ input UpdatePostInput {
   entityMetadata: EntityMetadataInput
   appearsIn: [Episode!]
   episode: Episode
+  _version: Int
 }
 
 input DeletePostInput {
   id: ID!
+  _version: Int
 }
 
 type Mutation {
@@ -586,6 +627,7 @@ input ModelSubscriptionPostFilterInput {
   episode: ModelSubscriptionStringInput
   and: [ModelSubscriptionPostFilterInput]
   or: [ModelSubscriptionPostFilterInput]
+  _deleted: ModelBooleanInput
 }
 
 type Subscription {
@@ -606,6 +648,7 @@ type Subscription {
 type ModelAuthorConnection {
   items: [Author]!
   nextToken: String
+  startedAt: AWSTimestamp
 }
 
 input ModelAuthorFilterInput {
@@ -614,6 +657,7 @@ input ModelAuthorFilterInput {
   and: [ModelAuthorFilterInput]
   or: [ModelAuthorFilterInput]
   not: ModelAuthorFilterInput
+  _deleted: ModelBooleanInput
 }
 
 input ModelAuthorConditionInput {
@@ -621,6 +665,7 @@ input ModelAuthorConditionInput {
   and: [ModelAuthorConditionInput]
   or: [ModelAuthorConditionInput]
   not: ModelAuthorConditionInput
+  _deleted: ModelBooleanInput
 }
 
 input CreateAuthorInput {
@@ -628,6 +673,7 @@ input CreateAuthorInput {
   name: String!
   postMetadata: PostMetadataInput
   entityMetadata: EntityMetadataInput
+  _version: Int
 }
 
 input UpdateAuthorInput {
@@ -635,10 +681,12 @@ input UpdateAuthorInput {
   name: String
   postMetadata: PostMetadataInput
   entityMetadata: EntityMetadataInput
+  _version: Int
 }
 
 input DeleteAuthorInput {
   id: ID!
+  _version: Int
 }
 
 input ModelSubscriptionAuthorFilterInput {
@@ -646,11 +694,13 @@ input ModelSubscriptionAuthorFilterInput {
   name: ModelSubscriptionStringInput
   and: [ModelSubscriptionAuthorFilterInput]
   or: [ModelSubscriptionAuthorFilterInput]
+  _deleted: ModelBooleanInput
 }
 
 type ModelRequireConnection {
   items: [Require]!
   nextToken: String
+  startedAt: AWSTimestamp
 }
 
 input ModelRequireFilterInput {
@@ -660,6 +710,7 @@ input ModelRequireFilterInput {
   and: [ModelRequireFilterInput]
   or: [ModelRequireFilterInput]
   not: ModelRequireFilterInput
+  _deleted: ModelBooleanInput
 }
 
 input ModelRequireConditionInput {
@@ -668,22 +719,26 @@ input ModelRequireConditionInput {
   and: [ModelRequireConditionInput]
   or: [ModelRequireConditionInput]
   not: ModelRequireConditionInput
+  _deleted: ModelBooleanInput
 }
 
 input CreateRequireInput {
   id: ID
   requiredField: String!
   notRequiredField: String
+  _version: Int
 }
 
 input UpdateRequireInput {
   id: ID!
   requiredField: String
   notRequiredField: String
+  _version: Int
 }
 
 input DeleteRequireInput {
   id: ID!
+  _version: Int
 }
 
 input ModelSubscriptionRequireFilterInput {
@@ -692,11 +747,13 @@ input ModelSubscriptionRequireFilterInput {
   notRequiredField: ModelSubscriptionStringInput
   and: [ModelSubscriptionRequireFilterInput]
   or: [ModelSubscriptionRequireFilterInput]
+  _deleted: ModelBooleanInput
 }
 
 type ModelCommentConnection {
   items: [Comment]!
   nextToken: String
+  startedAt: AWSTimestamp
 }
 
 input ModelCommentFilterInput {
@@ -707,6 +764,7 @@ input ModelCommentFilterInput {
   and: [ModelCommentFilterInput]
   or: [ModelCommentFilterInput]
   not: ModelCommentFilterInput
+  _deleted: ModelBooleanInput
 }
 
 input ModelCommentConditionInput {
@@ -716,6 +774,7 @@ input ModelCommentConditionInput {
   and: [ModelCommentConditionInput]
   or: [ModelCommentConditionInput]
   not: ModelCommentConditionInput
+  _deleted: ModelBooleanInput
 }
 
 input CreateCommentInput {
@@ -723,6 +782,7 @@ input CreateCommentInput {
   title: String!
   content: String
   updatedOn: Int
+  _version: Int
 }
 
 input UpdateCommentInput {
@@ -730,10 +790,12 @@ input UpdateCommentInput {
   title: String
   content: String
   updatedOn: Int
+  _version: Int
 }
 
 input DeleteCommentInput {
   id: ID!
+  _version: Int
 }
 
 input ModelSubscriptionCommentFilterInput {
@@ -743,8 +805,8 @@ input ModelSubscriptionCommentFilterInput {
   updatedOn: ModelSubscriptionIntInput
   and: [ModelSubscriptionCommentFilterInput]
   or: [ModelSubscriptionCommentFilterInput]
+  _deleted: ModelBooleanInput
 }
-
 "
 `;
 
@@ -2375,12 +2437,14 @@ $util.toJson(null)
 `;
 
 exports[`ModelTransformer:  should have timestamps as nullable fields when the type makes it non-nullable 1`] = `
-"
-type Post {
+"type Post {
   id: ID!
   str: String
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
+  _version: Int!
+  _deleted: Boolean
+  _lastChangedAt: AWSTimestamp!
 }
 
 input ModelStringInput {
@@ -2536,6 +2600,7 @@ enum ModelSortDirection {
 type ModelPostConnection {
   items: [Post]!
   nextToken: String
+  startedAt: AWSTimestamp
 }
 
 input ModelPostFilterInput {
@@ -2546,11 +2611,13 @@ input ModelPostFilterInput {
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
+  _deleted: ModelBooleanInput
 }
 
 type Query {
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+  syncPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String, lastSync: AWSTimestamp): ModelPostConnection
 }
 
 input ModelPostConditionInput {
@@ -2560,6 +2627,7 @@ input ModelPostConditionInput {
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
+  _deleted: ModelBooleanInput
 }
 
 input CreatePostInput {
@@ -2567,6 +2635,7 @@ input CreatePostInput {
   str: String
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
+  _version: Int
 }
 
 input UpdatePostInput {
@@ -2574,10 +2643,12 @@ input UpdatePostInput {
   str: String
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
+  _version: Int
 }
 
 input DeletePostInput {
   id: ID!
+  _version: Int
 }
 
 type Mutation {
@@ -2593,6 +2664,7 @@ input ModelSubscriptionPostFilterInput {
   updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionPostFilterInput]
   or: [ModelSubscriptionPostFilterInput]
+  _deleted: ModelBooleanInput
 }
 
 type Subscription {
@@ -2600,7 +2672,6 @@ type Subscription {
   onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
   onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
-
 "
 `;
 
@@ -2696,12 +2767,12 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 #end
 ## Model key **
 #if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyFields = [] )
+  #set( $keyFields = [\\"_version\\", \\"_deleted\\", \\"_lastChangedAt\\"] )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
     $util.qr($keyFields.add(\\"$entry.key\\"))
   #end
 #else
-  #set( $keyFields = [\\"id\\"] )
+  #set( $keyFields = [\\"id\\", \\"_version\\", \\"_deleted\\", \\"_lastChangedAt\\"] )
 #end
 #foreach( $entry in $util.map.copyAndRemoveAllKeys($mergedValues, $keyFields).entrySet() )
   #if( !$util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) && $ctx.stash.metadata.dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
@@ -2794,7 +2865,8 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"UpdateItem\\",
   \\"key\\": $Key,
-  \\"update\\": $update
+  \\"update\\": $update,
+  \\"_version\\": $util.defaultIfNull($args.input[\\"_version\\"], 0)
 } )
 #if( $Conditions )
   #if( $keyConditionExprNames )
@@ -2876,8 +2948,7 @@ $util.toJson($PutObject)
 `;
 
 exports[`ModelTransformer:  should not generate superfluous input and filter types 1`] = `
-"
-type Entity {
+"type Entity {
   id: ID!
   str: String
   createdAt: AWSDateTime!
@@ -3037,17 +3108,18 @@ enum ModelSortDirection {
 type Query {
   getEntity(id: ID!): Entity
 }
-
 "
 `;
 
 exports[`ModelTransformer:  should not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime 1`] = `
-"
-type Post {
+"type Post {
   id: ID!
   str: String
   createdAt: AWSTimestamp
   updatedAt: AWSTimestamp
+  _version: Int!
+  _deleted: Boolean
+  _lastChangedAt: AWSTimestamp!
 }
 
 input ModelStringInput {
@@ -3203,6 +3275,7 @@ enum ModelSortDirection {
 type ModelPostConnection {
   items: [Post]!
   nextToken: String
+  startedAt: AWSTimestamp
 }
 
 input ModelPostFilterInput {
@@ -3213,11 +3286,13 @@ input ModelPostFilterInput {
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
+  _deleted: ModelBooleanInput
 }
 
 type Query {
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+  syncPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String, lastSync: AWSTimestamp): ModelPostConnection
 }
 
 input ModelPostConditionInput {
@@ -3227,6 +3302,7 @@ input ModelPostConditionInput {
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
+  _deleted: ModelBooleanInput
 }
 
 input CreatePostInput {
@@ -3234,6 +3310,7 @@ input CreatePostInput {
   str: String
   createdAt: AWSTimestamp
   updatedAt: AWSTimestamp
+  _version: Int
 }
 
 input UpdatePostInput {
@@ -3241,10 +3318,12 @@ input UpdatePostInput {
   str: String
   createdAt: AWSTimestamp
   updatedAt: AWSTimestamp
+  _version: Int
 }
 
 input DeletePostInput {
   id: ID!
+  _version: Int
 }
 
 type Mutation {
@@ -3260,6 +3339,7 @@ input ModelSubscriptionPostFilterInput {
   updatedAt: ModelSubscriptionIntInput
   and: [ModelSubscriptionPostFilterInput]
   or: [ModelSubscriptionPostFilterInput]
+  _deleted: ModelBooleanInput
 }
 
 type Subscription {
@@ -3267,7 +3347,6 @@ type Subscription {
   onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
   onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
-
 "
 `;
 
@@ -3363,12 +3442,12 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 #end
 ## Model key **
 #if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyFields = [] )
+  #set( $keyFields = [\\"_version\\", \\"_deleted\\", \\"_lastChangedAt\\"] )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
     $util.qr($keyFields.add(\\"$entry.key\\"))
   #end
 #else
-  #set( $keyFields = [\\"id\\"] )
+  #set( $keyFields = [\\"id\\", \\"_version\\", \\"_deleted\\", \\"_lastChangedAt\\"] )
 #end
 #foreach( $entry in $util.map.copyAndRemoveAllKeys($mergedValues, $keyFields).entrySet() )
   #if( !$util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) && $ctx.stash.metadata.dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
@@ -3461,7 +3540,8 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"UpdateItem\\",
   \\"key\\": $Key,
-  \\"update\\": $update
+  \\"update\\": $update,
+  \\"_version\\": $util.defaultIfNull($args.input[\\"_version\\"], 0)
 } )
 #if( $Conditions )
   #if( $keyConditionExprNames )
@@ -3474,10 +3554,12 @@ $util.toJson($UpdateItem)
 `;
 
 exports[`ModelTransformer:  should not to include createdAt and updatedAt field when timestamps is set to null 1`] = `
-"
-type Post {
+"type Post {
   id: ID!
   str: String
+  _version: Int!
+  _deleted: Boolean
+  _lastChangedAt: AWSTimestamp!
 }
 
 input ModelStringInput {
@@ -3633,6 +3715,7 @@ enum ModelSortDirection {
 type ModelPostConnection {
   items: [Post]!
   nextToken: String
+  startedAt: AWSTimestamp
 }
 
 input ModelPostFilterInput {
@@ -3641,11 +3724,13 @@ input ModelPostFilterInput {
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
+  _deleted: ModelBooleanInput
 }
 
 type Query {
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+  syncPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String, lastSync: AWSTimestamp): ModelPostConnection
 }
 
 input ModelPostConditionInput {
@@ -3653,20 +3738,24 @@ input ModelPostConditionInput {
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
+  _deleted: ModelBooleanInput
 }
 
 input CreatePostInput {
   id: ID
   str: String
+  _version: Int
 }
 
 input UpdatePostInput {
   id: ID!
   str: String
+  _version: Int
 }
 
 input DeletePostInput {
   id: ID!
+  _version: Int
 }
 
 type Mutation {
@@ -3680,6 +3769,7 @@ input ModelSubscriptionPostFilterInput {
   str: ModelSubscriptionStringInput
   and: [ModelSubscriptionPostFilterInput]
   or: [ModelSubscriptionPostFilterInput]
+  _deleted: ModelBooleanInput
 }
 
 type Subscription {
@@ -3687,7 +3777,6 @@ type Subscription {
   onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
   onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
-
 "
 `;
 
@@ -3783,12 +3872,12 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 #end
 ## Model key **
 #if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyFields = [] )
+  #set( $keyFields = [\\"_version\\", \\"_deleted\\", \\"_lastChangedAt\\"] )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
     $util.qr($keyFields.add(\\"$entry.key\\"))
   #end
 #else
-  #set( $keyFields = [\\"id\\"] )
+  #set( $keyFields = [\\"id\\", \\"_version\\", \\"_deleted\\", \\"_lastChangedAt\\"] )
 #end
 #foreach( $entry in $util.map.copyAndRemoveAllKeys($mergedValues, $keyFields).entrySet() )
   #if( !$util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) && $ctx.stash.metadata.dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
@@ -3881,7 +3970,8 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"UpdateItem\\",
   \\"key\\": $Key,
-  \\"update\\": $update
+  \\"update\\": $update,
+  \\"_version\\": $util.defaultIfNull($args.input[\\"_version\\"], 0)
 } )
 #if( $Conditions )
   #if( $keyConditionExprNames )
@@ -3894,8 +3984,7 @@ $util.toJson($UpdateItem)
 `;
 
 exports[`ModelTransformer:  should successfully transform simple Embeddable type (non-model) schema 1`] = `
-"
-type NonModelType {
+"type NonModelType {
   id: ID!
   title: String!
 }
@@ -4049,18 +4138,19 @@ enum ModelSortDirection {
   ASC
   DESC
 }
-
 "
 `;
 
 exports[`ModelTransformer:  should successfully transform simple non-capitalized Model/Embeddable type (non-model) name schema 1`] = `
-"
-type modelType {
+"type modelType {
   id: ID!
   title: String!
   nonModelTypeValue: nonModelType
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
+  _version: Int!
+  _deleted: Boolean
+  _lastChangedAt: AWSTimestamp!
 }
 
 type nonModelType {
@@ -4219,13 +4309,14 @@ enum ModelSortDirection {
 }
 
 input NonModelTypeInput {
-  id: ID
+  id: ID!
   title: String!
 }
 
 type ModelModelTypeConnection {
   items: [modelType]!
   nextToken: String
+  startedAt: AWSTimestamp
 }
 
 input ModelModelTypeFilterInput {
@@ -4234,11 +4325,13 @@ input ModelModelTypeFilterInput {
   and: [ModelModelTypeFilterInput]
   or: [ModelModelTypeFilterInput]
   not: ModelModelTypeFilterInput
+  _deleted: ModelBooleanInput
 }
 
 type Query {
   getModelType(id: ID!): modelType
   listModelTypes(filter: ModelModelTypeFilterInput, limit: Int, nextToken: String): ModelModelTypeConnection
+  syncModelTypes(filter: ModelModelTypeFilterInput, limit: Int, nextToken: String, lastSync: AWSTimestamp): ModelModelTypeConnection
 }
 
 input ModelModelTypeConditionInput {
@@ -4246,22 +4339,26 @@ input ModelModelTypeConditionInput {
   and: [ModelModelTypeConditionInput]
   or: [ModelModelTypeConditionInput]
   not: ModelModelTypeConditionInput
+  _deleted: ModelBooleanInput
 }
 
 input CreateModelTypeInput {
   id: ID
   title: String!
   nonModelTypeValue: NonModelTypeInput
+  _version: Int
 }
 
 input UpdateModelTypeInput {
   id: ID!
   title: String
   nonModelTypeValue: NonModelTypeInput
+  _version: Int
 }
 
 input DeleteModelTypeInput {
   id: ID!
+  _version: Int
 }
 
 type Mutation {
@@ -4275,6 +4372,7 @@ input ModelSubscriptionModelTypeFilterInput {
   title: ModelSubscriptionStringInput
   and: [ModelSubscriptionModelTypeFilterInput]
   or: [ModelSubscriptionModelTypeFilterInput]
+  _deleted: ModelBooleanInput
 }
 
 type Subscription {
@@ -4282,17 +4380,18 @@ type Subscription {
   onUpdateModelType(filter: ModelSubscriptionModelTypeFilterInput): modelType @aws_subscribe(mutations: [\\"updateModelType\\"])
   onDeleteModelType(filter: ModelSubscriptionModelTypeFilterInput): modelType @aws_subscribe(mutations: [\\"deleteModelType\\"])
 }
-
 "
 `;
 
 exports[`ModelTransformer:  should support timestamp parameters when generating resolvers and output schema 1`] = `
-"
-type Post {
+"type Post {
   id: ID!
   str: String
   createdOn: AWSDateTime!
   updatedOn: AWSDateTime!
+  _version: Int!
+  _deleted: Boolean
+  _lastChangedAt: AWSTimestamp!
 }
 
 input ModelStringInput {
@@ -4448,6 +4547,7 @@ enum ModelSortDirection {
 type ModelPostConnection {
   items: [Post]!
   nextToken: String
+  startedAt: AWSTimestamp
 }
 
 input ModelPostFilterInput {
@@ -4456,11 +4556,13 @@ input ModelPostFilterInput {
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
+  _deleted: ModelBooleanInput
 }
 
 type Query {
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+  syncPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String, lastSync: AWSTimestamp): ModelPostConnection
 }
 
 input ModelPostConditionInput {
@@ -4468,20 +4570,24 @@ input ModelPostConditionInput {
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
+  _deleted: ModelBooleanInput
 }
 
 input CreatePostInput {
   id: ID
   str: String
+  _version: Int
 }
 
 input UpdatePostInput {
   id: ID!
   str: String
+  _version: Int
 }
 
 input DeletePostInput {
   id: ID!
+  _version: Int
 }
 
 type Mutation {
@@ -4495,6 +4601,7 @@ input ModelSubscriptionPostFilterInput {
   str: ModelSubscriptionStringInput
   and: [ModelSubscriptionPostFilterInput]
   or: [ModelSubscriptionPostFilterInput]
+  _deleted: ModelBooleanInput
 }
 
 type Subscription {
@@ -4502,7 +4609,6 @@ type Subscription {
   onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
   onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
-
 "
 `;
 
@@ -4598,12 +4704,12 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 #end
 ## Model key **
 #if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyFields = [] )
+  #set( $keyFields = [\\"_version\\", \\"_deleted\\", \\"_lastChangedAt\\"] )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
     $util.qr($keyFields.add(\\"$entry.key\\"))
   #end
 #else
-  #set( $keyFields = [\\"id\\"] )
+  #set( $keyFields = [\\"id\\", \\"_version\\", \\"_deleted\\", \\"_lastChangedAt\\"] )
 #end
 #foreach( $entry in $util.map.copyAndRemoveAllKeys($mergedValues, $keyFields).entrySet() )
   #if( !$util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) && $ctx.stash.metadata.dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
@@ -4696,7 +4802,8 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"UpdateItem\\",
   \\"key\\": $Key,
-  \\"update\\": $update
+  \\"update\\": $update,
+  \\"_version\\": $util.defaultIfNull($args.input[\\"_version\\"], 0)
 } )
 #if( $Conditions )
   #if( $keyConditionExprNames )
