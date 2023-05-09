@@ -187,6 +187,8 @@ export const generateSyncRequestTemplate = (): string => {
           iff(
             ref('ctx.stash.QueryRequestVariables.partitionKey'),
             compoundExpression([
+              // Check if the auth filter contains the QueryRequest's partition key.
+              // If yes, then the filter on auth field must match one of the Auth filter to perform a query.
               forEach(ref('filterItem'), ref('ctx.stash.authFilter.or'), [
                 iff(
                   raw('$filterItem.get($ctx.stash.QueryRequestVariables.partitionKey)'),
@@ -195,6 +197,8 @@ export const generateSyncRequestTemplate = (): string => {
               ]),
               ifElse(
                 not(ref('queryFilterContainsAuthField')),
+                // If the auth filter is not on an auth field, check if the QueryRequest's sort keys contain an auth field.
+                // If yes, perform a scan. Otherwise, query the GSI/table.
                 compoundExpression([
                   forEach(ref('filterItem'), ref('ctx.stash.authFilter.or'), [
                     forEach(ref('sortKey'), ref('ctx.stash.QueryRequestVariables.sortKeys'), [

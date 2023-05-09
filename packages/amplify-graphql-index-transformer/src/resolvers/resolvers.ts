@@ -624,6 +624,11 @@ export function constructSyncVTL(syncVTLContent: string, resolver: TransformerRe
   addIndexToResolverSlot(resolver, checks, true);
 }
 
+/**
+ * This function generates the VTL snippet to check whether a GSI/table can be queried to apply the sync filter.
+ * The filter must enclosed in an 'and' condition.
+ * { filter: { and: [ { genre: { eq: testSong.genre } } ] } }
+ */
 function setSyncQueryFilterSnippet(deltaSyncTableTtl: number) {
   const expressions: Expression[] = [];
   expressions.push(
