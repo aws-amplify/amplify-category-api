@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-testapi-dev-94732-authRole",
+      "UnauthRoleArn": "arn:aws:iam::252995727734:role/amplify-testapi-dev-94732-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::252995727734:role/amplify-testapi-dev-94732-authRole",
+      "Region": "us-west-2",
+      "DeploymentBucketName": "amplify-testapi-dev-94732-deployment",
+      "UnauthRoleName": "amplify-testapi-dev-94732-unauthRole",
+      "StackName": "amplify-testapi-dev-94732",
+      "StackId": "arn:aws:cloudformation:us-west-2:252995727734:stack/amplify-testapi-dev-94732/faaff500-ef49-11ed-a902-0af921041e39",
+      "AmplifyAppId": "d247mx5andxma8"
+    },
+    "categories": {
+      "auth": {
+        "testapi84e38938": {}
+      }
+    }
+  }
+}
