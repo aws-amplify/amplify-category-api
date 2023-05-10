@@ -39,7 +39,7 @@
     "update-versions": "lerna version --yes --no-commit-hooks --no-push --exact --conventional-commits --no-git-tag-version",
     "commit": "git-cz",
     "coverage": "codecov || exit 0",
-    "add-cli-no-save": "yarn add @aws-amplify/cli-internal@12.0.0-rc.0d6bca41ff.0 -W  && git checkout -- package.json",
+    "add-cli-no-save": "yarn add @aws-amplify/cli-internal@12.0.0-rc.0d6bca41ff.0 -W --pure-lockfile && git checkout -- package.json",
     "hoist-cli": "rm -rf node_modules/amplify-cli-internal && mkdir node_modules/amplify-cli-internal && cp -r node_modules/@aws-amplify/cli-internal/* node_modules/amplify-cli-internal",
     "hoist-cli-win": "rimraf node_modules/amplify-cli-internal && mkdir node_modules\\amplify-cli-internal && xcopy /e /q node_modules\\@aws-amplify\\cli-internal node_modules\\amplify-cli-internal\\",
     "publish:main": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --no-verify-access --yes",
@@ -69,8 +69,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "lerna": "^5.1.6",
-    "strip-ansi": "^6.0.0",
-    "npm-check-updates": "^16.1.0"
+    "npm-check-updates": "^16.1.0",
+    "strip-ansi": "^6.0.0"
   },
   "workspaces": {
     "packages": [
@@ -95,14 +95,14 @@
     "@types/glob": "^7.1.1",
     "@types/jest": "^26.0.20",
     "@types/js-yaml": "^4.0.0",
-    "@typescript-eslint/eslint-plugin": "^4.14.2",
-    "@typescript-eslint/parser": "^4.14.2",
+    "@typescript-eslint/eslint-plugin": "^5.59.2",
+    "@typescript-eslint/parser": "^5.59.2",
     "@zkochan/cmd-shim": "^5.1.0",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
     "codecov": "^3.7.0",
     "copyfiles": "^2.2.0",
-    "eslint": "^7.19.0",
+    "eslint": "^8.40.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-import-resolver-typescript": "^2.0.0",
     "eslint-plugin-import": "^2.22.1",
