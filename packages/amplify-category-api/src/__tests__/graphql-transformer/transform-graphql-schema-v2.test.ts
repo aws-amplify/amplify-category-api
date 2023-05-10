@@ -1,46 +1,27 @@
 import { $TSContext, pathManager } from "@aws-amplify/amplify-cli-core";
 import { printer } from "@aws-amplify/amplify-prompts";
-import { ApiCategoryFacade, FeatureFlags } from "@aws-amplify/amplify-cli-core";
-import * as fs from "fs-extra";
-import * as path from "path";
-import * as os from "os";
+import { ApiCategoryFacade } from "@aws-amplify/amplify-cli-core";
 import { transformGraphQLSchemaV2 } from "../../graphql-transformer/transform-graphql-schema-v2";
 import { generateTransformerOptions } from "../../graphql-transformer/transformer-options-v2";
-import { parseUserDefinedSlots } from "../../graphql-transformer/user-defined-slots";
 import { getTransformerFactory } from "../../graphql-transformer/transformer-factory";
 import { getAppSyncAPIName } from "../../provider-utils/awscloudformation/utils/amplify-meta-utils";
 
 jest.mock("@aws-amplify/amplify-cli-core");
 jest.mock("@aws-amplify/amplify-prompts");
+jest.mock("graphql-transformer-core");
 jest.mock("../../graphql-transformer/transformer-options-v2");
 jest.mock("../../graphql-transformer/user-defined-slots");
 jest.mock("../../provider-utils/awscloudformation/utils/amplify-meta-utils");
 
 describe("transformGraphQLSchemaV2", () => {
-  let tempProjectDir: string;
-  const envName = "testtest";
-  const apiName = "testapi";
-  const testProjectPath = path.resolve(__dirname, "mock-projects", "project");
   const printerMock = printer as jest.Mocked<typeof printer>;
   const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
-  const generateTransformerOptionsMock = generateTransformerOptions as jest.Mock;
-  const parseUserDefinedSlotsMock = parseUserDefinedSlots as jest.Mock;
-  const getAppSyncAPINameMock = getAppSyncAPIName as jest.Mock;
   const ApiCategoryFacadeMock = ApiCategoryFacade as jest.Mocked<typeof ApiCategoryFacade>;
-  const resourceDir = (projectDir: string) => path.join(projectDir, "amplify", "backend", "api", apiName);
+  const generateTransformerOptionsMock = generateTransformerOptions as jest.Mock;
+  const getAppSyncAPINameMock = getAppSyncAPIName as jest.Mock;
 
   beforeEach(async () => {
     jest.clearAllMocks();
-    const randomSuffix = (Math.random() * 10000).toString().split(".")[0];
-    tempProjectDir = path.join(os.tmpdir(), `printer-test-${randomSuffix}`);
-
-    await fs.copy(testProjectPath, tempProjectDir);
-    jest.spyOn(pathManager, "findProjectRoot").mockReturnValue(tempProjectDir);
-    FeatureFlags.initialize({ getCurrentEnvName: () => envName });
-  });
-
-  afterEach(async () => {
-    await fs.remove(tempProjectDir);
   });
 
   test("tranformer logs are passed up", async () => {
@@ -63,7 +44,7 @@ describe("transformGraphQLSchemaV2", () => {
         })),
       },
       parameters: {
-        options: { resourcesDir: resourceDir(tempProjectDir), projectDirectory: tempProjectDir },
+        options: { resourcesDir: "resourceDir", projectDirectory: __dirname },
       },
       mergeResources: jest.fn(),
     } as unknown as $TSContext;
@@ -80,10 +61,10 @@ describe("transformGraphQLSchemaV2", () => {
         `,
         config: { StackMapping: {} },
       },
-      transformersFactory: await getTransformerFactory(contextMock, resourceDir(tempProjectDir)),
+      transformersFactory: await getTransformerFactory(contextMock, "resourceDir"),
       transformersFactoryArgs: {},
       dryRun: true,
-      projectDirectory: tempProjectDir,
+      projectDirectory: __dirname,
       authConfig: {
         additionalAuthenticationProviders: [],
         defaultAuthentication: {
@@ -91,7 +72,7 @@ describe("transformGraphQLSchemaV2", () => {
         },
       },
     });
-    getAppSyncAPINameMock.mockReturnValue([apiName]);
+    getAppSyncAPINameMock.mockReturnValue(["testapi"]);
 
     await transformGraphQLSchemaV2(contextMock, {});
     expect(printerMock.warn).toBeCalledWith(
