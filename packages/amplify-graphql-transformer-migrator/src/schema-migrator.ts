@@ -14,7 +14,6 @@ import {
   detectOverriddenResolvers,
   detectPassthroughDirectives,
   graphQLUsingSQL,
-  isTransformerV2Enabled,
 } from './schema-inspector';
 import { validateModelSchema, SchemaValidationError } from '@aws-amplify/graphql-transformer-core';
 import { backupCliJson, revertTransformerVersion, updateTransformerVersion } from './state-migrator';
@@ -35,13 +34,14 @@ const MIGRATION_DOCS_URL = 'https://docs.amplify.aws/cli/migration/transformer-m
 export async function attemptV2TransformerMigration(
   resourceDir: string,
   apiName: string,
+  featureFlags: { transformerVersion: number, improvePluralization: boolean },
   envName?: string,
-  improvedPluralizationEnabled?: boolean,
 ): Promise<void> {
   const schemaDocs = await getSchemaDocs(resourceDir);
   const fullSchema = combineSchemas(schemaDocs);
-  const autoMigrationDetectionResult = await canAutoMigrate(fullSchema, apiName, resourceDir);
-  const postMigrationStatusMessage = await getPostMigrationStatusMessage(fullSchema, apiName, improvedPluralizationEnabled);
+  const { transformerVersion, improvePluralization } = featureFlags;
+  const autoMigrationDetectionResult = await canAutoMigrate(fullSchema, apiName, resourceDir, transformerVersion);
+  const postMigrationStatusMessage = await getPostMigrationStatusMessage(fullSchema, apiName, improvePluralization);
 
   if (typeof autoMigrationDetectionResult === 'string') {
     printer.info(autoMigrationDetectionResult);
@@ -173,11 +173,11 @@ function schemaHasComments(fullSchema: string): boolean {
 }
 
 // returns true if the project can be auto-migrated to v2, or a message explaining why the project cannot be auto-migrated
-async function canAutoMigrate(fullSchema: string, apiName: string, resourceDir: string): Promise<true | string> {
+async function canAutoMigrate(fullSchema: string, apiName: string, resourceDir: string, transformerVersion: number): Promise<true | string> {
   if (graphQLUsingSQL(apiName)) {
     return 'GraphQL APIs using Aurora RDS cannot be migrated.';
   }
-  if (isTransformerV2Enabled()) {
+  if (transformerVersion === 2) {
     return 'GraphQL Transformer version 2 is already enabled. No migration is necessary.';
   }
   if (detectDeprecatedConnectionUsage(fullSchema)) {
@@ -192,11 +192,11 @@ async function canAutoMigrate(fullSchema: string, apiName: string, resourceDir: 
   return true;
 }
 
-async function getPostMigrationStatusMessage(fullSchema: string, apiName: string, improvedPluralizationEnabled?: boolean): Promise<string> {
+async function getPostMigrationStatusMessage(fullSchema: string, apiName: string, improvePluralization: boolean): Promise<string> {
   const usingCustomRootTypes = detectCustomRootTypes(parse(fullSchema));
   const usingOverriddenResolvers = detectOverriddenResolvers(apiName);
   const passthroughDirectives: Array<string> = await detectPassthroughDirectives(fullSchema);
-  if (!usingCustomRootTypes && !usingOverriddenResolvers && passthroughDirectives.length === 0 && improvedPluralizationEnabled) {
+  if (!usingCustomRootTypes && !usingOverriddenResolvers && passthroughDirectives.length === 0 && improvePluralization) {
     return '';
   }
   const messageLines = [
@@ -213,7 +213,7 @@ async function getPostMigrationStatusMessage(fullSchema: string, apiName: string
       `- You are using the following directives which are not handled by the transformer:${os.EOL}\t${passthroughDirectives.join(', ')}`,
     );
   }
-  if (!improvedPluralizationEnabled) {
+  if (!improvePluralization) {
     messageLines.push('- You do not have the "improvePluralization" Feature Flag enabled');
   }
   return messageLines.join(os.EOL);

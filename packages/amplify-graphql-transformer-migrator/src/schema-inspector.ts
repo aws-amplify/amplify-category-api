@@ -1,5 +1,5 @@
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { AmplifyCategories, FeatureFlags, pathManager } from '@aws-amplify/amplify-cli-core';
+import { AmplifyCategories, pathManager } from '@aws-amplify/amplify-cli-core';
 import { DocumentNode } from 'graphql/language';
 import { visit } from 'graphql';
 import { collectDirectives, collectDirectivesByTypeNames } from '@aws-amplify/graphql-transformer-core';
@@ -58,10 +58,6 @@ export function detectDeprecatedConnectionUsage(schema: string): boolean {
     }
   }
   return false;
-}
-
-export function isTransformerV2Enabled() {
-  return FeatureFlags.getNumber('graphqltransformer.transformerversion') === 2;
 }
 
 export function authRuleUsesQueriesOrMutations(schema: string): boolean {

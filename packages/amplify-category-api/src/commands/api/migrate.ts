@@ -36,6 +36,12 @@ export const run = async (context: $TSContext) => {
     await revertV2Migration(apiResourceDir, stateManager.getCurrentEnvName());
     return;
   }
-  const improvedPluralizationEnabled = FeatureFlags.getBoolean('graphqltransformer.improvepluralization')
-  await attemptV2TransformerMigration(apiResourceDir, apiName, stateManager.getCurrentEnvName(), improvedPluralizationEnabled);
+  const transformerVersion = FeatureFlags.getNumber('graphqltransformer.transformerversion');
+  const improvePluralization = FeatureFlags.getBoolean('graphqltransformer.improvepluralization')
+  await attemptV2TransformerMigration(
+    apiResourceDir,
+    apiName,
+    { transformerVersion, improvePluralization },
+    stateManager.getCurrentEnvName(),
+  );
 };
