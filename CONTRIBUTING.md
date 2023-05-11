@@ -289,3 +289,7 @@ If you discover a potential security issue in this project we ask that you notif
 AWS Amplify Category API is [Apache 2.0](LICENSE)-licensed. Contributions you submit will be released under that license.
 
 We may ask you to sign a [Contributor License Agreement (CLA)](http://en.wikipedia.org/wiki/Contributor_License_Agreement) for larger changes.
+
+## Common Tasks
+
+* [How to write a transformer](https://docs.amplify.aws/cli/plugins/authoring/#authoring-custom-graphql-transformers--directives)
