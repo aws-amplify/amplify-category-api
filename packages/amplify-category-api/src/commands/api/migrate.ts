@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, AmplifyCategories, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyCategories, pathManager, stateManager, FeatureFlags } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { attemptV2TransformerMigration, revertV2Migration } from '@aws-amplify/graphql-transformer-migrator';
 import * as path from 'path';
@@ -36,5 +36,6 @@ export const run = async (context: $TSContext) => {
     await revertV2Migration(apiResourceDir, stateManager.getCurrentEnvName());
     return;
   }
-  await attemptV2TransformerMigration(apiResourceDir, apiName, stateManager.getCurrentEnvName());
+  const improvedPluralizationEnabled = FeatureFlags.getBoolean('graphqltransformer.improvepluralization')
+  await attemptV2TransformerMigration(apiResourceDir, apiName, stateManager.getCurrentEnvName(), improvedPluralizationEnabled);
 };

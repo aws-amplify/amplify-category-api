@@ -14,7 +14,6 @@ import {
   detectOverriddenResolvers,
   detectPassthroughDirectives,
   graphQLUsingSQL,
-  isImprovedPluralizationEnabled,
   isTransformerV2Enabled,
 } from './schema-inspector';
 import { validateModelSchema, SchemaValidationError } from '@aws-amplify/graphql-transformer-core';
@@ -33,11 +32,16 @@ const cliToMigratorAuthMap: Map<string, string> = new Map<string, string>([
 
 const MIGRATION_DOCS_URL = 'https://docs.amplify.aws/cli/migration/transformer-migration/';
 
-export async function attemptV2TransformerMigration(resourceDir: string, apiName: string, envName?: string): Promise<void> {
+export async function attemptV2TransformerMigration(
+  resourceDir: string,
+  apiName: string,
+  envName?: string,
+  improvedPluralizationEnabled?: boolean,
+): Promise<void> {
   const schemaDocs = await getSchemaDocs(resourceDir);
   const fullSchema = combineSchemas(schemaDocs);
   const autoMigrationDetectionResult = await canAutoMigrate(fullSchema, apiName, resourceDir);
-  const postMigrationStatusMessage = await getPostMigrationStatusMessage(fullSchema, apiName);
+  const postMigrationStatusMessage = await getPostMigrationStatusMessage(fullSchema, apiName, improvedPluralizationEnabled);
 
   if (typeof autoMigrationDetectionResult === 'string') {
     printer.info(autoMigrationDetectionResult);
@@ -188,10 +192,9 @@ async function canAutoMigrate(fullSchema: string, apiName: string, resourceDir: 
   return true;
 }
 
-async function getPostMigrationStatusMessage(fullSchema: string, apiName: string): Promise<string> {
+async function getPostMigrationStatusMessage(fullSchema: string, apiName: string, improvedPluralizationEnabled?: boolean): Promise<string> {
   const usingCustomRootTypes = detectCustomRootTypes(parse(fullSchema));
   const usingOverriddenResolvers = detectOverriddenResolvers(apiName);
-  const improvedPluralizationEnabled = isImprovedPluralizationEnabled();
   const passthroughDirectives: Array<string> = await detectPassthroughDirectives(fullSchema);
   if (!usingCustomRootTypes && !usingOverriddenResolvers && passthroughDirectives.length === 0 && improvedPluralizationEnabled) {
     return '';

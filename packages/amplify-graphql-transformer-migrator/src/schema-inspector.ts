@@ -60,10 +60,6 @@ export function detectDeprecatedConnectionUsage(schema: string): boolean {
   return false;
 }
 
-export function isImprovedPluralizationEnabled() {
-  return FeatureFlags.getBoolean('graphqltransformer.improvepluralization');
-}
-
 export function isTransformerV2Enabled() {
   return FeatureFlags.getNumber('graphqltransformer.transformerversion') === 2;
 }

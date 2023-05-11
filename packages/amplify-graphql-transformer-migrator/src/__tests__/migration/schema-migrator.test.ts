@@ -42,7 +42,8 @@ describe('attemptV2TransformerMigration', () => {
 
   it('migrates schemas and sets FF', async () => {
     const apiResourceDir = resourceDir(tempProjectDir);
-    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
+    const improvedPluralizationEnabled = true;
+    await attemptV2TransformerMigration(apiResourceDir, apiName, envName, improvedPluralizationEnabled);
     expect(await fs.readFile(path.join(apiResourceDir, 'schema', 'Mud.graphql'), 'utf8')).toMatchInlineSnapshot(`
       "type Mud @model @auth(rules: [{allow: public}]) {
         id: ID!
@@ -67,7 +68,8 @@ describe('attemptV2TransformerMigration', () => {
 
   it('leaves project unchanged when migrating and rolling back', async () => {
     const apiResourceDir = resourceDir(tempProjectDir);
-    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
+    const improvedPluralizationEnabled = true;
+    await attemptV2TransformerMigration(apiResourceDir, apiName, envName, improvedPluralizationEnabled);
     await revertV2Migration(apiResourceDir, envName);
     const projectSchema1 = await fs.readFile(path.join(apiResourceDir, 'schema', 'Mud.graphql'), 'utf8');
     const projectSchema2 = await fs.readFile(path.join(apiResourceDir, 'schema', 'nested', 'Obligation.graphql'), 'utf8');
@@ -90,7 +92,8 @@ describe('attemptV2TransformerMigration', () => {
 
     fs.mkdirSync(resolversDir);
     fs.writeFileSync(overwrittenPath, '{}');
-    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
+    const improvedPluralizationEnabled = true;
+    await attemptV2TransformerMigration(apiResourceDir, apiName, envName, improvedPluralizationEnabled);
     expect(printer.info).toHaveBeenCalledWith(expect.stringMatching('You have overridden an Amplify generated resolver'));
 
     const cliJsonFile = await fs.readJSON(cliJsonPath(tempProjectDir), { encoding: 'utf8' });
@@ -105,7 +108,8 @@ describe('attemptV2TransformerMigration', () => {
     const schemaPath = path.join(apiResourceDir, 'schema', 'schema.graphql');
 
     fs.writeFileSync(schemaPath, 'type Query { listFoos: String }');
-    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
+    const improvedPluralizationEnabled = true;
+    await attemptV2TransformerMigration(apiResourceDir, apiName, envName, improvedPluralizationEnabled);
     expect(printer.info).toHaveBeenCalledWith(
       expect.stringMatching('You have defined custom Queries, Mutations, and/or Subscriptions in your GraphQL schema'),
     );
@@ -121,10 +125,10 @@ describe('attemptV2TransformerMigration', () => {
     const apiResourceDir = resourceDir(tempProjectDir);
     let cliJsonFile = await fs.readJSON(cliJsonPath(tempProjectDir), { encoding: 'utf8' });
 
-    cliJsonFile.features.graphqltransformer.improvepluralization = false;
     await fs.writeJSON(cliJsonPath(tempProjectDir), cliJsonFile);
     await FeatureFlags.reloadValues();
-    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
+    const improvedPluralizationEnabled = false;
+    await attemptV2TransformerMigration(apiResourceDir, apiName, envName, improvedPluralizationEnabled);
     expect(printer.info).toHaveBeenCalledWith(expect.stringMatching('You do not have the "improvePluralization" Feature Flag enabled'));
 
     cliJsonFile = await fs.readJSON(cliJsonPath(tempProjectDir), { encoding: 'utf8' });
@@ -137,7 +141,8 @@ describe('attemptV2TransformerMigration', () => {
   it('fails if GQL API is configured to use SQL', async () => {
     getParamMock.mockReturnValueOnce('mockRdsParam');
     const apiResourceDir = resourceDir(tempProjectDir);
-    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
+    const improvedPluralizationEnabled = true;
+    await attemptV2TransformerMigration(apiResourceDir, apiName, envName, improvedPluralizationEnabled);
     expect(printer.info).toHaveBeenCalledWith(expect.stringMatching('GraphQL APIs using Aurora RDS cannot be migrated.'));
 
     const cliJsonFile = await fs.readJSON(cliJsonPath(tempProjectDir), { encoding: 'utf8' });
@@ -161,7 +166,8 @@ describe('attemptV2TransformerMigration', () => {
       }
     `,
     );
-    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
+    const improvedPluralizationEnabled = true;
+    await attemptV2TransformerMigration(apiResourceDir, apiName, envName, improvedPluralizationEnabled);
     expect(printer.info).toHaveBeenCalledWith(expect.stringMatching('You are using queries or mutations in at least one @auth rule.'));
 
     const cliJsonFile = await fs.readJSON(cliJsonPath(tempProjectDir), { encoding: 'utf8' });
@@ -185,7 +191,8 @@ describe('attemptV2TransformerMigration', () => {
       }
     `,
     );
-    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
+    const improvedPluralizationEnabled = true;
+    await attemptV2TransformerMigration(apiResourceDir, apiName, envName, improvedPluralizationEnabled);
     expect(printer.info).toHaveBeenCalledWith(expect.stringMatching('You are using queries or mutations in at least one @auth rule.'));
 
     const cliJsonFile = await fs.readJSON(cliJsonPath(tempProjectDir), { encoding: 'utf8' });

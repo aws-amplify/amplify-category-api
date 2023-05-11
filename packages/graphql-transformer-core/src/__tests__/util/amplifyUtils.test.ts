@@ -1,5 +1,4 @@
 import { getSanityCheckRules, SanityCheckRules } from '../../util/amplifyUtils';
-import { FeatureFlags } from '@aws-amplify/amplify-cli-core';
 
 jest.mock('@aws-amplify/amplify-cli-core');
 
