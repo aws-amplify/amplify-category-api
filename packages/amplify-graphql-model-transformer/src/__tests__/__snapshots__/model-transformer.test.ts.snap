@@ -1254,8 +1254,46 @@ $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Query.syncPosts.req.vtl": "## [Start] Sync Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+#set( $queryFilterContainsAuthField = false )
+#set( $authFilterContainsSortKey = false )
+#set( $useScan = true )
+#if( $util.isNullOrEmpty($ctx.stash.authFilter) && $ctx.stash.QueryRequest )
+  #set( $useScan = false )
+#end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
+  #if( $ctx.stash.QueryRequestVariables.partitionKey )
+    #foreach( $filterItem in $ctx.stash.authFilter.or )
+      #if( $filterItem.get($ctx.stash.QueryRequestVariables.partitionKey) )
+        #set( $queryFilterContainsAuthField = true )
+      #end
+    #end
+    #if( !$queryFilterContainsAuthField )
+      #foreach( $filterItem in $ctx.stash.authFilter.or )
+        #foreach( $sortKey in $ctx.stash.QueryRequestVariables.sortKeys )
+          #if( $filterItem.get($sortKey) )
+            #set( $authFilterContainsSortKey = true )
+          #end
+        #end
+      #end
+      #if( !$authFilterContainsSortKey )
+        #if( !$util.isNullOrEmpty($ctx.stash.QueryRequest.filter) )
+          #set( $ctx.stash.QueryRequest.filter = {
+  \\"and\\":   [$ctx.stash.QueryRequest.filter, $ctx.stash.authFilter]
+} )
+        #else
+          #set( $ctx.stash.QueryRequest.filter = $ctx.stash.authFilter )
+        #end
+        #set( $useScan = false )
+      #end
+    #else
+      #foreach( $filterItem in $ctx.stash.authFilter.or )
+        #if( $util.toJson($filterItem) == $util.toJson($ctx.stash.QueryRequestVariables.partitionKeyFilter) )
+          #set( $useScan = false )
+        #end
+      #end
+    #end
+  #end
   #if( !$util.isNullOrEmpty($args.filter) )
     #set( $filter = {
   \\"and\\":   [$filter, $args.filter]
@@ -1275,18 +1313,25 @@ $util.toJson({})
     #set( $filter = $filterExpression )
   #end
 #end
+#if( !$useScan )
+  #if( $ctx.stash.QueryRequest.filter )
+    #set( $ctx.stash.QueryRequest.filter = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.QueryRequest.filter)) )
+  #end
+  $util.toJson($ctx.stash.QueryRequest)
+#else
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Sync\\",
-  \\"filter\\":   #if( $filter )
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"Sync\\",
+      \\"filter\\":     #if( $filter )
 $util.toJson($filter)
-  #else
+    #else
 null
-  #end,
-  \\"limit\\": $util.defaultIfNull($args.limit, 100),
-  \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
-  \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null))
-}
+    #end,
+      \\"limit\\": $util.defaultIfNull($args.limit, 100),
+      \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
+      \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null))
+  }
+#end
 ## [End] Sync Request template. **",
   "Query.syncPosts.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
@@ -1796,8 +1841,46 @@ $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Query.syncPosts.req.vtl": "## [Start] Sync Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+#set( $queryFilterContainsAuthField = false )
+#set( $authFilterContainsSortKey = false )
+#set( $useScan = true )
+#if( $util.isNullOrEmpty($ctx.stash.authFilter) && $ctx.stash.QueryRequest )
+  #set( $useScan = false )
+#end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
+  #if( $ctx.stash.QueryRequestVariables.partitionKey )
+    #foreach( $filterItem in $ctx.stash.authFilter.or )
+      #if( $filterItem.get($ctx.stash.QueryRequestVariables.partitionKey) )
+        #set( $queryFilterContainsAuthField = true )
+      #end
+    #end
+    #if( !$queryFilterContainsAuthField )
+      #foreach( $filterItem in $ctx.stash.authFilter.or )
+        #foreach( $sortKey in $ctx.stash.QueryRequestVariables.sortKeys )
+          #if( $filterItem.get($sortKey) )
+            #set( $authFilterContainsSortKey = true )
+          #end
+        #end
+      #end
+      #if( !$authFilterContainsSortKey )
+        #if( !$util.isNullOrEmpty($ctx.stash.QueryRequest.filter) )
+          #set( $ctx.stash.QueryRequest.filter = {
+  \\"and\\":   [$ctx.stash.QueryRequest.filter, $ctx.stash.authFilter]
+} )
+        #else
+          #set( $ctx.stash.QueryRequest.filter = $ctx.stash.authFilter )
+        #end
+        #set( $useScan = false )
+      #end
+    #else
+      #foreach( $filterItem in $ctx.stash.authFilter.or )
+        #if( $util.toJson($filterItem) == $util.toJson($ctx.stash.QueryRequestVariables.partitionKeyFilter) )
+          #set( $useScan = false )
+        #end
+      #end
+    #end
+  #end
   #if( !$util.isNullOrEmpty($args.filter) )
     #set( $filter = {
   \\"and\\":   [$filter, $args.filter]
@@ -1817,18 +1900,25 @@ $util.toJson({})
     #set( $filter = $filterExpression )
   #end
 #end
+#if( !$useScan )
+  #if( $ctx.stash.QueryRequest.filter )
+    #set( $ctx.stash.QueryRequest.filter = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.QueryRequest.filter)) )
+  #end
+  $util.toJson($ctx.stash.QueryRequest)
+#else
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Sync\\",
-  \\"filter\\":   #if( $filter )
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"Sync\\",
+      \\"filter\\":     #if( $filter )
 $util.toJson($filter)
-  #else
+    #else
 null
-  #end,
-  \\"limit\\": $util.defaultIfNull($args.limit, 100),
-  \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
-  \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null))
-}
+    #end,
+      \\"limit\\": $util.defaultIfNull($args.limit, 100),
+      \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
+      \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null))
+  }
+#end
 ## [End] Sync Request template. **",
   "Query.syncPosts.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
@@ -2338,8 +2428,46 @@ $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Query.syncPosts.req.vtl": "## [Start] Sync Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+#set( $queryFilterContainsAuthField = false )
+#set( $authFilterContainsSortKey = false )
+#set( $useScan = true )
+#if( $util.isNullOrEmpty($ctx.stash.authFilter) && $ctx.stash.QueryRequest )
+  #set( $useScan = false )
+#end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
+  #if( $ctx.stash.QueryRequestVariables.partitionKey )
+    #foreach( $filterItem in $ctx.stash.authFilter.or )
+      #if( $filterItem.get($ctx.stash.QueryRequestVariables.partitionKey) )
+        #set( $queryFilterContainsAuthField = true )
+      #end
+    #end
+    #if( !$queryFilterContainsAuthField )
+      #foreach( $filterItem in $ctx.stash.authFilter.or )
+        #foreach( $sortKey in $ctx.stash.QueryRequestVariables.sortKeys )
+          #if( $filterItem.get($sortKey) )
+            #set( $authFilterContainsSortKey = true )
+          #end
+        #end
+      #end
+      #if( !$authFilterContainsSortKey )
+        #if( !$util.isNullOrEmpty($ctx.stash.QueryRequest.filter) )
+          #set( $ctx.stash.QueryRequest.filter = {
+  \\"and\\":   [$ctx.stash.QueryRequest.filter, $ctx.stash.authFilter]
+} )
+        #else
+          #set( $ctx.stash.QueryRequest.filter = $ctx.stash.authFilter )
+        #end
+        #set( $useScan = false )
+      #end
+    #else
+      #foreach( $filterItem in $ctx.stash.authFilter.or )
+        #if( $util.toJson($filterItem) == $util.toJson($ctx.stash.QueryRequestVariables.partitionKeyFilter) )
+          #set( $useScan = false )
+        #end
+      #end
+    #end
+  #end
   #if( !$util.isNullOrEmpty($args.filter) )
     #set( $filter = {
   \\"and\\":   [$filter, $args.filter]
@@ -2359,18 +2487,25 @@ $util.toJson({})
     #set( $filter = $filterExpression )
   #end
 #end
+#if( !$useScan )
+  #if( $ctx.stash.QueryRequest.filter )
+    #set( $ctx.stash.QueryRequest.filter = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.QueryRequest.filter)) )
+  #end
+  $util.toJson($ctx.stash.QueryRequest)
+#else
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Sync\\",
-  \\"filter\\":   #if( $filter )
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"Sync\\",
+      \\"filter\\":     #if( $filter )
 $util.toJson($filter)
-  #else
+    #else
 null
-  #end,
-  \\"limit\\": $util.defaultIfNull($args.limit, 100),
-  \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
-  \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null))
-}
+    #end,
+      \\"limit\\": $util.defaultIfNull($args.limit, 100),
+      \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
+      \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null))
+  }
+#end
 ## [End] Sync Request template. **",
   "Query.syncPosts.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
@@ -4818,8 +4953,46 @@ $util.toJson($UpdateItem)
 exports[`ModelTransformer:  the datastore table should be configured 1`] = `
 "## [Start] Sync Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+#set( $queryFilterContainsAuthField = false )
+#set( $authFilterContainsSortKey = false )
+#set( $useScan = true )
+#if( $util.isNullOrEmpty($ctx.stash.authFilter) && $ctx.stash.QueryRequest )
+  #set( $useScan = false )
+#end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
+  #if( $ctx.stash.QueryRequestVariables.partitionKey )
+    #foreach( $filterItem in $ctx.stash.authFilter.or )
+      #if( $filterItem.get($ctx.stash.QueryRequestVariables.partitionKey) )
+        #set( $queryFilterContainsAuthField = true )
+      #end
+    #end
+    #if( !$queryFilterContainsAuthField )
+      #foreach( $filterItem in $ctx.stash.authFilter.or )
+        #foreach( $sortKey in $ctx.stash.QueryRequestVariables.sortKeys )
+          #if( $filterItem.get($sortKey) )
+            #set( $authFilterContainsSortKey = true )
+          #end
+        #end
+      #end
+      #if( !$authFilterContainsSortKey )
+        #if( !$util.isNullOrEmpty($ctx.stash.QueryRequest.filter) )
+          #set( $ctx.stash.QueryRequest.filter = {
+  \\"and\\":   [$ctx.stash.QueryRequest.filter, $ctx.stash.authFilter]
+} )
+        #else
+          #set( $ctx.stash.QueryRequest.filter = $ctx.stash.authFilter )
+        #end
+        #set( $useScan = false )
+      #end
+    #else
+      #foreach( $filterItem in $ctx.stash.authFilter.or )
+        #if( $util.toJson($filterItem) == $util.toJson($ctx.stash.QueryRequestVariables.partitionKeyFilter) )
+          #set( $useScan = false )
+        #end
+      #end
+    #end
+  #end
   #if( !$util.isNullOrEmpty($args.filter) )
     #set( $filter = {
   \\"and\\":   [$filter, $args.filter]
@@ -4839,18 +5012,25 @@ exports[`ModelTransformer:  the datastore table should be configured 1`] = `
     #set( $filter = $filterExpression )
   #end
 #end
+#if( !$useScan )
+  #if( $ctx.stash.QueryRequest.filter )
+    #set( $ctx.stash.QueryRequest.filter = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.QueryRequest.filter)) )
+  #end
+  $util.toJson($ctx.stash.QueryRequest)
+#else
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Sync\\",
-  \\"filter\\":   #if( $filter )
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"Sync\\",
+      \\"filter\\":     #if( $filter )
 $util.toJson($filter)
-  #else
+    #else
 null
-  #end,
-  \\"limit\\": $util.defaultIfNull($args.limit, 100),
-  \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
-  \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null))
-}
+    #end,
+      \\"limit\\": $util.defaultIfNull($args.limit, 100),
+      \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
+      \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null))
+  }
+#end
 ## [End] Sync Request template. **"
 `;
 
