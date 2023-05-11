@@ -13,7 +13,8 @@ import {
   replaceOverrideFileWithProjectInfo,
   updateRestApi,
 } from 'amplify-category-api-e2e-core';
-import { JSONUtilities, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/graphql-transformer-core';
+import { pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
