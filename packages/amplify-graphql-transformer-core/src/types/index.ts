@@ -9,3 +9,4 @@ export {
   ImportedDataSourceConfig,
   RDSDataSourceConfig,
 } from './import-appsync-api-types';
+export { $TSAny } from './types';

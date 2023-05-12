@@ -1,6 +1,6 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
 import {
-  MappingTemplate, GraphQLTransform, AmplifyApiGraphQlResourceStackTemplate, SyncUtils, StackManager, DatasourceType, MYSQL_DB_TYPE, DDB_DB_TYPE, DBType
+  MappingTemplate, GraphQLTransform, AmplifyApiGraphQlResourceStackTemplate, SyncUtils, StackManager, DatasourceType, MYSQL_DB_TYPE, DDB_DB_TYPE, DBType, $TSAny,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider, StackManagerProvider, TransformerContextProvider, TransformerPluginProvider, TransformerResolverProvider,
@@ -50,7 +50,7 @@ import {
 } from 'graphql-transformer-common';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../types';
 import { lookupResolverName } from '../utils';
-import { stateManager, pathManager, $TSAny } from '@aws-amplify/amplify-cli-core';
+import { stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import _ from 'lodash';
 import {

@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import { JSONUtilities } from '@aws-amplify/graphql-transformer-core';
-import { $TSAny, FeatureFlags, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { JSONUtilities, $TSAny } from '@aws-amplify/graphql-transformer-core';
+import { FeatureFlags, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 
 export const backupLocation = (resourceDir: string) => path.join(resourceDir, '.migration-config-backup');
 

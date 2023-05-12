@@ -1,13 +1,13 @@
 import { parse, print, InputObjectTypeDefinitionNode } from 'graphql';
 import * as fs from 'fs-extra';
 import {
-  $TSAny,
   $TSContext,
   ApiCategoryFacade,
   getGraphQLTransformerAuthDocLink,
 } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { ImportedRDSType, ImportedDataSourceConfig } from '../types/import-appsync-api-types';
+import { $TSAny } from '../types';
 
 type AmplifyInputEntry = {
   name: string,

@@ -1,5 +1,4 @@
-import { JSONUtilities } from '@aws-amplify/graphql-transformer-core';
-import { $TSAny } from '@aws-amplify/amplify-cli-core';
+import { JSONUtilities, $TSAny } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { ExecutionContext, getCLIPath, nspawn as spawn } from '..';
