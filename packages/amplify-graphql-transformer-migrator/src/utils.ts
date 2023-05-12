@@ -1,4 +1,5 @@
-import { $TSObject, AmplifySupportedService, stateManager } from '@aws-amplify/amplify-cli-core';
+import { AmplifySupportedService, stateManager } from '@aws-amplify/amplify-cli-core';
+import { $TSObject } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 
