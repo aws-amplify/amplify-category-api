@@ -1,7 +1,5 @@
 import { getSanityCheckRules, SanityCheckRules } from '../../util/amplifyUtils';
 
-jest.mock('@aws-amplify/amplify-cli-core');
-
 const buildMockedFeatureFlags = (flagValue: boolean) => {
   return {
     getBoolean: jest.fn(() => flagValue),

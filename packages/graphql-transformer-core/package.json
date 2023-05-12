@@ -24,6 +24,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
+    "@aws-amplify/graphql-transformer-core": "^1.2.1",
     "@aws-amplify/graphql-transformer-interfaces": "2.1.1",
     "cloudform-types": "^4.2.0",
     "deep-diff": "^1.0.2",
