@@ -8101,7 +8101,7 @@ astral-regex@^2.0.0:
 
 async@^2.6.4:
   version "2.6.4"
-  resolved "https://registry.yarnpkg.com/async/-/async-2.6.4.tgz#706b7ff6084664cd7eae713f6f965433b5504221"
+  resolved "https://registry.npmjs.org/async/-/async-2.6.4.tgz#706b7ff6084664cd7eae713f6f965433b5504221"
   integrity sha512-mzo5dfJYwAn29PeiJ0zvwTo04zj8HDJj0Mn8TD7sno7q12prdbnasKJHhkm2c1LgrhlJ0teaea8860oxi51mGA==
   dependencies:
     lodash "^4.17.14"
@@ -8233,9 +8233,9 @@ aws-sdk-mock@^5.6.2:
     traverse "^0.6.6"
 
 aws-sdk@2.518.0, aws-sdk@^2.1113.0, aws-sdk@^2.1141.0, aws-sdk@^2.1231.0, aws-sdk@^2.1350.0:
-  version "2.1379.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1379.0.tgz#2d5609a37287d25edda4395fbb89306939f98890"
-  integrity sha512-kziOtAtJxdgYJwhzY+uhNi/AGPrDEMHd0dEz46YR1AB5bVqjS9/SjOZHemB88QfpW11IVB/FoiIusXlGEvgq9Q==
+  version "2.1377.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1377.0.tgz#85f3590c8a8c0a600268e921aea8a289f7804e87"
+  integrity sha512-59T3v/o40fk2I2zpgh2E0Z/BBK5awBQUva7VLjLHo9rsMvTM58mgya667hYTua00rHC1A3GJSCNORUhXvhomYQ==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -9728,7 +9728,7 @@ create-require@^1.1.0:
 
 cross-fetch@2.2.2, cross-fetch@^2.2.6, cross-fetch@^3.1.5:
   version "2.2.6"
-  resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-2.2.6.tgz#2ef0bb39a24ac034787965c457368a28730e220a"
+  resolved "https://registry.npmjs.org/cross-fetch/-/cross-fetch-2.2.6.tgz#2ef0bb39a24ac034787965c457368a28730e220a"
   integrity sha512-9JZz+vXCmfKUZ68zAptS7k4Nu8e2qcibe7WVZYps7sAgk5R8GYTc+T1WR0v1rlP9HxgARmOX1UTIJZFytajpNA==
   dependencies:
     node-fetch "^2.6.7"
@@ -15170,12 +15170,12 @@ moment-jdateformatparser@^1.2.1:
 
 moment-timezone@0.5.35, moment-timezone@^0.5.35:
   version "0.5.43"
-  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.43.tgz#3dd7f3d0c67f78c23cd1906b9b2137a09b3c4790"
+  resolved "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.43.tgz#3dd7f3d0c67f78c23cd1906b9b2137a09b3c4790"
   integrity sha512-72j3aNyuIsDxdF1i7CEgV2FfxM1r6aaqJyLB2vwb33mXYyoyLly+F1zbWqhA3/bVIoJ4szlUoMbUnVdid32NUQ==
   dependencies:
     moment "^2.29.4"
 
-"moment@>= 2.9.0", moment@^2.24.0, moment@^2.29.1, moment@^2.29.3:
+moment@^2.24.0, moment@^2.29.1, moment@^2.29.3, moment@^2.29.4:
   version "2.29.4"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
   integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
@@ -15352,7 +15352,7 @@ node-emoji@^1.10.0:
   dependencies:
     lodash "^4.17.21"
 
-node-fetch@2.1.2, node-fetch@^2.6.1, node-fetch@^2.6.6, node-fetch@^2.6.7:
+node-fetch@^2.6.1, node-fetch@^2.6.6, node-fetch@^2.6.7:
   version "2.6.11"
   resolved "https://registry.npmjs.org/node-fetch/-/node-fetch-2.6.11.tgz#cde7fc71deef3131ef80a738919f999e6edfff25"
   integrity sha512-4I6pdBY1EthSqDmJkiNk3JIT8cswwR9nfeW/cPdUagJYEQG7R95WRH74wpz7ma8Gh/9dI9FP+OU+0E4FvtA55w==
@@ -16295,7 +16295,7 @@ parse-json@^5.0.0, parse-json@^5.2.0:
 
 parse-path@^5.0.0, parse-path@^7.0.0:
   version "5.0.0"
-  resolved "https://registry.yarnpkg.com/parse-path/-/parse-path-5.0.0.tgz#f933152f3c6d34f4cf36cfc3d07b138ac113649d"
+  resolved "https://registry.npmjs.org/parse-path/-/parse-path-5.0.0.tgz#f933152f3c6d34f4cf36cfc3d07b138ac113649d"
   integrity sha512-qOpH55/+ZJ4jUu/oLO+ifUKjFPNZGfnPJtzvGzKN/4oLMil5m9OH4VpOj6++9/ytJcfks4kzH2hhi87GL/OU9A==
   dependencies:
     protocols "^2.0.0"
@@ -19627,7 +19627,7 @@ whatwg-encoding@^2.0.0:
   dependencies:
     iconv-lite "0.6.3"
 
-whatwg-fetch@2.0.4:
+whatwg-fetch@^2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-2.0.4.tgz#dde6a5df315f9d39991aa17621853d720b85566f"
   integrity sha512-dcQ1GWpOD/eEQ97k66aiEVpNnapVj90/+R+SXTPYGHpYBBypfKJEQjLrvMZ7YXbKm21gXd4NcuxUTjiv1YtLng==
