@@ -4,7 +4,6 @@
 
 ```ts
 
-import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { APIIAMResourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ApiKeyConfig } from 'aws-cdk-lib/aws-appsync';
@@ -101,6 +100,12 @@ import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
 
 // @public (undocumented)
+export type $TSAny = any;
+
+// @public (undocumented)
+export type $TSObject = Record<string, $TSAny>;
+
+// @public (undocumented)
 export interface AmplifyApiGraphQlResourceStackTemplate {
     // Warning: (ae-forgotten-export) The symbol "AppsyncApiStack" needs to be exported by the entry point index.d.ts
     //
@@ -128,6 +133,9 @@ export interface AmplifyApiGraphQlResourceStackTemplate {
     // (undocumented)
     predictions?: Partial<PredictionsDirectiveStack & AppsyncStackCommon>;
 }
+
+// @public (undocumented)
+export const APICategory = "api";
 
 // @public (undocumented)
 export function collectDirectives(sdl: string): DirectiveNode[];
@@ -403,6 +411,31 @@ export class InvalidTransformerError extends Error {
 
 // @public (undocumented)
 function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda;
+
+// @public (undocumented)
+export class JSONUtilities {
+    // (undocumented)
+    static parse: <T>(jsonString: string, options?: {
+        preserveComments?: boolean;
+    }) => T;
+    // (undocumented)
+    static readJson: <T>(fileName: string, options?: {
+        throwIfNotExist?: boolean;
+        preserveComments?: boolean;
+    }) => T | undefined;
+    // (undocumented)
+    static stringify: (data: unknown, options?: {
+        minify?: boolean;
+        orderedKeys?: boolean;
+    }) => string;
+    // (undocumented)
+    static writeJson: (fileName: string, data: unknown, options?: {
+        mode?: number;
+        minify?: boolean;
+        secureFile?: boolean;
+        orderedKeys?: boolean;
+    }) => void;
+}
 
 // @public (undocumented)
 export class MappingTemplate {
