@@ -41,6 +41,9 @@
     "ts-dedent": "^2.0.0",
     "vm2": "^3.9.8"
   },
+  "peerDependencies": {
+    "@aws-amplify/amplify-cli-core": "4.0.4"
+  },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
     "@types/hjson": "^2.4.3",
