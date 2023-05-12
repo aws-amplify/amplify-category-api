@@ -1142,6 +1142,141 @@ describe('owner based @auth', () => {
         "The primary key's sort key type 'myOwnerField' cannot be used as an owner @auth field too. Please use another field for the sort key.",
       );
     });
+
+    describe.only('sortKeyFields of global secondary index', () => {
+      test('handles ownerfield as part of sortKeyFields of GSI with default identity claim ', () => {
+        const schema = `
+          type Note @model @auth(rules: [{ allow: owner }]) 
+          {  
+            noteId: String! @primaryKey
+            noteType: String! @index(name: "byNoteType", queryField: "notesByNoteTypeAndOwner", sortKeyFields:["owner"])  
+            content: String
+            owner: String
+          }
+        `;
+
+        const transformer = new GraphQLTransform({
+          authConfig,
+          transformers: [
+            new ModelTransformer(),
+            new PrimaryKeyTransformer(),
+            new AuthTransformer(),
+            new IndexTransformer(),
+          ],
+          featureFlags: ({
+            getBoolean: (featureName: string, defaultValue: boolean) => {
+              if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
+                return true;
+              }
+
+              return defaultValue;
+            },
+          } as FeatureFlagProvider),
+        });
+
+        const out = transformer.transform(schema);
+        expect(out.resolvers['Note.notesByNoteTypeAndOwner.auth.1.req.vtl']).toMatchSnapshot();
+      });
+      test('handles ownerfield as part of sortKeyFields of GSI with username identity claim ', () => {
+        const schema = `
+          type Note @model @auth(rules: [{ allow: owner, identityClaim: "username" }]) 
+          {  
+            noteId: String! @primaryKey
+            noteType: String! @index(name: "byNoteType", queryField: "notesByNoteTypeAndOwner", sortKeyFields:["owner"])  
+            content: String
+            owner: String
+          }
+        `;
+
+        const transformer = new GraphQLTransform({
+          authConfig,
+          transformers: [
+            new ModelTransformer(),
+            new PrimaryKeyTransformer(),
+            new AuthTransformer(),
+            new IndexTransformer(),
+          ],
+          featureFlags: ({
+            getBoolean: (featureName: string, defaultValue: boolean) => {
+              if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
+                return true;
+              }
+
+              return defaultValue;
+            },
+          } as FeatureFlagProvider),
+        });
+
+        const out = transformer.transform(schema);
+        expect(out.resolvers['Note.notesByNoteTypeAndOwner.auth.1.req.vtl']).toMatchSnapshot();
+      });
+      test('handles ownerfield as GSI field with default identity claim ', () => {
+        const schema = `
+          type Note @model @auth(rules: [{ allow: owner }]) 
+          {  
+            noteId: String! @primaryKey
+            noteType: String!
+            content: String
+            owner: String! @index(name: "byOwner", queryField: "notesByOwner") 
+          }
+        `;
+
+        const transformer = new GraphQLTransform({
+          authConfig,
+          transformers: [
+            new ModelTransformer(),
+            new PrimaryKeyTransformer(),
+            new AuthTransformer(),
+            new IndexTransformer(),
+          ],
+          featureFlags: ({
+            getBoolean: (featureName: string, defaultValue: boolean) => {
+              if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
+                return true;
+              }
+
+              return defaultValue;
+            },
+          } as FeatureFlagProvider),
+        });
+
+        const out = transformer.transform(schema);
+        expect(out.resolvers['Note.notesByOwner.auth.1.req.vtl']).toMatchSnapshot();
+      });
+      test('handles ownerfield as GSI field with username identity claim ', () => {
+        const schema = `
+          type Note @model @auth(rules: [{ allow: owner, identityClaim: "username" }]) 
+          {  
+            noteId: String! @primaryKey
+            noteType: String!
+            content: String
+            owner: String! @index(name: "byOwner", queryField: "notesByOwner") 
+          }
+        `;
+
+        const transformer = new GraphQLTransform({
+          authConfig,
+          transformers: [
+            new ModelTransformer(),
+            new PrimaryKeyTransformer(),
+            new AuthTransformer(),
+            new IndexTransformer(),
+          ],
+          featureFlags: ({
+            getBoolean: (featureName: string, defaultValue: boolean) => {
+              if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
+                return true;
+              }
+
+              return defaultValue;
+            },
+          } as FeatureFlagProvider),
+        });
+
+        const out = transformer.transform(schema);
+        expect(out.resolvers['Note.notesByOwner.auth.1.req.vtl']).toMatchSnapshot();
+      });
+    })
   });
 
   describe('with populateOwnerFieldForStaticGroupAuth feature flag disabled', () => {

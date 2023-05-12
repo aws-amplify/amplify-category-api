@@ -47,6 +47,7 @@ import {
   RelationalPrimaryMapConfig,
   IDENTITY_CLAIM_DELIMITER,
 } from '../utils';
+import { aws_dynamodb as dynamodb } from 'aws-cdk-lib';
 
 const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
   const staticRoleExpression: Array<Expression> = [];
@@ -135,6 +136,7 @@ const generateAuthOnModelQueryExpression = (
   primaryFields: Array<string>,
   isIndexQuery = false,
   primaryKey: string | undefined = undefined,
+  sortKeyFields: Array<string>,
 ): Array<Expression> => {
   const modelQueryExpression: Expression[] = new Array<Expression>();
   const primaryRoles = roles.filter(r => primaryFields.includes(r.entity));
@@ -234,11 +236,28 @@ const generateAuthOnModelQueryExpression = (
             methodCall(ref('util.isNull'), ref('ctx.stash.authFilter')),
             not(ref('primaryFieldMap.isEmpty()')),
           ]),
-          compoundExpression([
+          sortKeyFields.length > 0
+          ? compoundExpression([
+            set(ref('sortKeyFields'), list(sortKeyFields.map(sk => str(sk)))),
+            forEach(ref('entry'), ref('primaryFieldMap.entrySet()'), [
+              ifElse(
+                methodCall(ref('sortKeyFields.contains'), ref('entry.key')),
+                compoundExpression([
+                  set(ref('entryVal'), ref('entry.value')),
+                  set(ref('lastIdx'), ref('entryVal.size() - 1')),
+                  set(ref('lastItem'), ref('entryVal.get($lastIdx)')),
+                  qref(methodCall(ref('ctx.args.put'),  ref('entry.key'), obj({ eq: ref('lastItem') }))),
+                ]),
+                qref(methodCall(ref('ctx.args.put'), ref('entry.key'), ref('entry.value'))),
+              ),
+              set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+            ]),
+          ])
+          : compoundExpression([
             forEach(ref('entry'), ref('primaryFieldMap.entrySet()'), [
               qref(methodCall(ref('ctx.args.put'), ref('entry.key'), ref('entry.value'))),
               set(ref(IS_AUTHORIZED_FLAG), bool(true)),
-            ]),
+            ])
           ]),
         ),
       );
@@ -509,13 +528,15 @@ export const generateAuthExpressionForQueries = (
   providers: ConfiguredAuthProviders,
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
-  primaryFields: Array<string>,
+  keySchema: dynamodb.CfnTable.KeySchemaProperty[],
   isIndexQuery = false,
   primaryKey: string | undefined = undefined,
 ): string => {
   const {
     cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles,
   } = splitRoles(roles);
+  const primaryFields = keySchema.map((att) => att.attributeName);
+  const sortKeyFields = keySchema.filter((att) => att.keyType === 'RANGE').map((att) => att.attributeName);
   const getNonPrimaryFieldRoles = (
     rolesToFilter: RoleDefinition[],
   ): RoleDefinition[] => rolesToFilter.filter(role => !primaryFields.includes(role.entity));
@@ -540,7 +561,7 @@ export const generateAuthExpressionForQueries = (
         compoundExpression([
           ...generateStaticRoleExpression(cognitoStaticRoles),
           ...generateAuthFilter(getNonPrimaryFieldRoles(cognitoDynamicRoles), fields),
-          ...generateAuthOnModelQueryExpression(cognitoDynamicRoles, primaryFields, isIndexQuery, primaryKey),
+          ...generateAuthOnModelQueryExpression(cognitoDynamicRoles, primaryFields, isIndexQuery, primaryKey, sortKeyFields),
         ]),
       ),
     );
@@ -552,7 +573,7 @@ export const generateAuthExpressionForQueries = (
         compoundExpression([
           ...generateStaticRoleExpression(oidcStaticRoles),
           ...generateAuthFilter(getNonPrimaryFieldRoles(oidcDynamicRoles), fields),
-          ...generateAuthOnModelQueryExpression(oidcDynamicRoles, primaryFields, isIndexQuery, primaryKey),
+          ...generateAuthOnModelQueryExpression(oidcDynamicRoles, primaryFields, isIndexQuery, primaryKey, sortKeyFields),
         ]),
       ),
     );
