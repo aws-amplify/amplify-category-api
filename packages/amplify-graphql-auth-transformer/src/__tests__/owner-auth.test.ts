@@ -1143,7 +1143,7 @@ describe('owner based @auth', () => {
       );
     });
 
-    describe.only('sortKeyFields of global secondary index', () => {
+    describe('owner field as part of global secondary index', () => {
       test('handles ownerfield as part of sortKeyFields of GSI with default identity claim ', () => {
         const schema = `
           type Note @model @auth(rules: [{ allow: owner }]) 

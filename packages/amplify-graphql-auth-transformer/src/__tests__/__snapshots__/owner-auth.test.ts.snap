@@ -600,7 +600,7 @@ exports[`owner based @auth owner where field is "::" delimited with only mutatio
 ## [End] Parse owner field auth for Get. **"
 `;
 
-exports[`owner based @auth sort key fields on @auth owner field sortKeyFields of global secondary index handles ownerfield as GSI field with default identity claim  1`] = `
+exports[`owner based @auth sort key fields on @auth owner field owner field as part of global secondary index handles ownerfield as GSI field with default identity claim  1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
@@ -660,7 +660,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
 `;
 
-exports[`owner based @auth sort key fields on @auth owner field sortKeyFields of global secondary index handles ownerfield as GSI field with username identity claim  1`] = `
+exports[`owner based @auth sort key fields on @auth owner field owner field as part of global secondary index handles ownerfield as GSI field with username identity claim  1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
@@ -717,7 +717,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
 `;
 
-exports[`owner based @auth sort key fields on @auth owner field sortKeyFields of global secondary index handles ownerfield as part of sortKeyFields of GSI with default identity claim  1`] = `
+exports[`owner based @auth sort key fields on @auth owner field owner field as part of global secondary index handles ownerfield as part of sortKeyFields of GSI with default identity claim  1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
@@ -787,7 +787,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
 `;
 
-exports[`owner based @auth sort key fields on @auth owner field sortKeyFields of global secondary index handles ownerfield as part of sortKeyFields of GSI with username identity claim  1`] = `
+exports[`owner based @auth sort key fields on @auth owner field owner field as part of global secondary index handles ownerfield as part of sortKeyFields of GSI with username identity claim  1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
