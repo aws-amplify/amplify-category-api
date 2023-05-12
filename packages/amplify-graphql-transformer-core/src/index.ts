@@ -42,6 +42,7 @@ export {
   IAM_UNAUTH_ROLE_PARAMETER,
   readRDSGlobalAmplifyInput,
   JSONUtilities,
+  APICategory,
 } from './utils';
 export * from './utils/operation-names';
 export * from './errors';
