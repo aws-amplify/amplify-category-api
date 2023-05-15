@@ -11,7 +11,6 @@ import {
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
-  TransformerLogLevel,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
@@ -302,7 +301,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     const nodeToNodeEncryption = this.apiName ? shouldEnableNodeToNodeEncryption(this.apiName) : { enabled: false, log: undefined };
     if (nodeToNodeEncryption.log) {
-      this.log(TransformerLogLevel.WARN, nodeToNodeEncryption.log);
+      this.warn(nodeToNodeEncryption.log);
     }
 
     const domain = createSearchableDomain(stack, parameterMap, context.api.apiId, nodeToNodeEncryption.enabled);

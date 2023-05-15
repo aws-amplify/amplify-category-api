@@ -22,7 +22,6 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerAuthProvider,
   TransformerBeforeStepContextProvider,
-  TransformerLogLevel,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DirectiveNode,
@@ -227,11 +226,11 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   after = (context: TransformerContextProvider): void => {
     const claimWarning = defaultIdentityClaimWarning(context, this.rules);
     if (claimWarning) {
-      this.log(TransformerLogLevel.WARN, claimWarning);
+      this.warn(claimWarning);
     }
     const reassignWarning = ownerCanReassignWarning(this.authModelConfig);
     if (reassignWarning) {
-      this.log(reassignWarning.level, reassignWarning.message);
+      this.warn(reassignWarning.message);
     }
   };
 
@@ -1082,7 +1081,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     ownerFieldsToAdd.forEach((ownerField) => {
       const warningField = existingFields.find((field) => field.toLowerCase() === ownerField.toLowerCase());
       if (warningField) {
-        this.log(TransformerLogLevel.WARN, ownerFieldCaseWarning(ownerField, warningField, modelName));
+        this.warn(ownerFieldCaseWarning(ownerField, warningField, modelName));
       }
       (modelObject as any).fields.push(makeField(ownerField, [], makeNamedType('String')));
     });

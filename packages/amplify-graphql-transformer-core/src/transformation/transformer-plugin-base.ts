@@ -57,8 +57,24 @@ export abstract class TransformerPluginBase implements TransformerPluginProvider
     this.logs = [];
   }
 
-  protected log(level: TransformerLogLevel, message: string) {
+  private log(level: TransformerLogLevel, message: string) {
     this.logs.push({ level, message });
+  }
+
+  protected error(message: string) {
+    this.log(TransformerLogLevel.ERROR, message);
+  }
+
+  protected warn(message: string) {
+    this.log(TransformerLogLevel.WARN, message);
+  }
+
+  protected info(message: string) {
+    this.log(TransformerLogLevel.INFO, message);
+  }
+
+  protected debug(message: string) {
+    this.log(TransformerLogLevel.DEBUG, message);
   }
 
   public getLogs(): TransformerLog[] {
