@@ -313,9 +313,6 @@ export class GraphQLTransform {
       if (isFunction(transformer.getLogs)) {
         const logs = transformer.getLogs();
         this.logs.push(...logs);
-        if (isFunction(transformer.flushLogs)) {
-          transformer.flushLogs()
-        }
       }
     }
     this.collectResolvers(context, context.api);
@@ -850,9 +847,5 @@ export class GraphQLTransform {
 
   public getLogs(): TransformerLog[] {
     return this.logs;
-  }
-
-  public flushLogs(): void {
-    this.logs = [];
   }
 }

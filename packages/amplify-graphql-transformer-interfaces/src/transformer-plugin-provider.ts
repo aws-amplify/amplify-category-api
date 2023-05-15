@@ -160,9 +160,4 @@ export interface TransformerPluginProvider {
    * Get the current buffer of logs from the transformer
    */
   getLogs?: () => TransformerLog[];
-
-  /**
-   * Flush the logs for the transformer
-   */
-  flushLogs?: () => void;
 }

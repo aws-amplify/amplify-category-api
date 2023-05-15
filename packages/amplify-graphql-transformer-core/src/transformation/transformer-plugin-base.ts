@@ -80,10 +80,6 @@ export abstract class TransformerPluginBase implements TransformerPluginProvider
   public getLogs(): TransformerLog[] {
     return this.logs;
   }
-
-  public flushLogs(): void {
-    this.logs = [];
-  }
 }
 /**
  * TransformerModelBase
