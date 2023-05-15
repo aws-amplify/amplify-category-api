@@ -308,7 +308,6 @@ export class GraphQLTransform {
       }
       reverseThroughTransformers -= 1;
     }
-    // is this the right place?
     for (const transformer of this.transformers) {
       if (isFunction(transformer.getLogs)) {
         const logs = transformer.getLogs();
