@@ -647,8 +647,18 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #end
   #end
   #if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) && !$primaryFieldMap.isEmpty() )
+    #set( $sortKeyFields = [] )
     #foreach( $entry in $primaryFieldMap.entrySet() )
-      $util.qr($ctx.args.put($entry.key, $entry.value))
+      #if( $sortKeyFields.contains($entry.key) )
+        #set( $entryVal = $entry.value )
+        #set( $lastIdx = $entryVal.size() - 1 )
+        #set( $lastItem = $entryVal.get($lastIdx) )
+        $util.qr($ctx.args.put($entry.key, {
+  \\"eq\\": $lastItem
+}))
+      #else
+        $util.qr($ctx.args.put($entry.key, $entry.value))
+      #end
       #set( $isAuthorized = true )
     #end
   #end
@@ -704,8 +714,18 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #end
   #end
   #if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) && !$primaryFieldMap.isEmpty() )
+    #set( $sortKeyFields = [] )
     #foreach( $entry in $primaryFieldMap.entrySet() )
-      $util.qr($ctx.args.put($entry.key, $entry.value))
+      #if( $sortKeyFields.contains($entry.key) )
+        #set( $entryVal = $entry.value )
+        #set( $lastIdx = $entryVal.size() - 1 )
+        #set( $lastItem = $entryVal.get($lastIdx) )
+        $util.qr($ctx.args.put($entry.key, {
+  \\"eq\\": $lastItem
+}))
+      #else
+        $util.qr($ctx.args.put($entry.key, $entry.value))
+      #end
       #set( $isAuthorized = true )
     #end
   #end

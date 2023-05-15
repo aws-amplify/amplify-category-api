@@ -236,8 +236,13 @@ const generateAuthOnModelQueryExpression = (
             methodCall(ref('util.isNull'), ref('ctx.stash.authFilter')),
             not(ref('primaryFieldMap.isEmpty()')),
           ]),
-          sortKeyFields.length > 0
-          ? compoundExpression([
+          /**
+           * The following code block is to handle the cases of dynamic claim field(owner/group)
+           * being part of the index sort key field and is missing from the query input arguments.
+           * If detected, the last item of the claim list will be added by default to the query condition with "eq".
+           * This restricts the records of other users returned from the query in such scenario
+           */
+          compoundExpression([
             set(ref('sortKeyFields'), list(sortKeyFields.map(sk => str(sk)))),
             forEach(ref('entry'), ref('primaryFieldMap.entrySet()'), [
               ifElse(
@@ -253,12 +258,6 @@ const generateAuthOnModelQueryExpression = (
               set(ref(IS_AUTHORIZED_FLAG), bool(true)),
             ]),
           ])
-          : compoundExpression([
-            forEach(ref('entry'), ref('primaryFieldMap.entrySet()'), [
-              qref(methodCall(ref('ctx.args.put'), ref('entry.key'), ref('entry.value'))),
-              set(ref(IS_AUTHORIZED_FLAG), bool(true)),
-            ])
-          ]),
         ),
       );
     } else {
