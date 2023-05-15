@@ -82,7 +82,6 @@ import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transform
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerDataSourceManagerProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces';
-import { TransformerLogLevel } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerModelEnhancementProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerModelProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -660,19 +659,25 @@ export class TransformerNestedStack extends TransformerRootStack {
 export abstract class TransformerPluginBase implements TransformerPluginProvider {
     constructor(name: string, document: DocumentNode_2 | string, pluginType?: TransformerPluginType);
     // (undocumented)
+    protected debug(message: string): void;
+    // (undocumented)
     readonly directive: DirectiveDefinitionNode;
+    // (undocumented)
+    protected error(message: string): void;
     // (undocumented)
     flushLogs(): void;
     // (undocumented)
     getLogs(): TransformerLog[];
     // (undocumented)
-    protected log(level: TransformerLogLevel, message: string): void;
+    protected info(message: string): void;
     // (undocumented)
     readonly name: string;
     // (undocumented)
     readonly pluginType: TransformerPluginType;
     // (undocumented)
     readonly typeDefinitions: TypeDefinitionNode[];
+    // (undocumented)
+    protected warn(message: string): void;
 }
 
 // @public (undocumented)
