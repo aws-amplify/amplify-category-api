@@ -246,11 +246,30 @@ const _buildProject = async (context: $TSContext, opts: TransformerProjectOption
 
   const { schema, modelToDatasourceMap } = userProjectConfig;
   const datasourceSecretMap = await getDatasourceSecretMap(context);
-  const transformOutput = transform.transform(schema.toString(), {
-    modelToDatasourceMap,
-    datasourceSecretParameterLocations: datasourceSecretMap,
-  });
+  try {
+    const transformOutput = transform.transform(schema.toString(), {
+      modelToDatasourceMap,
+      datasourceSecretParameterLocations: datasourceSecretMap,
+    });
 
+    return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput, opts);
+  } finally {
+    printTransformLogs(transform);
+  }
+};
+
+const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, RDSConnectionSecrets>> => {
+  const outputMap = new Map<string, RDSConnectionSecrets>();
+  const apiName = getAppSyncAPIName();
+  const secretsKey = await getSecretsKey();
+  const rdsSecretPaths = await getExistingConnectionSecretNames(context, apiName, secretsKey);
+  if (rdsSecretPaths) {
+    outputMap.set(MYSQL_DB_TYPE, rdsSecretPaths);
+  }
+  return outputMap;
+};
+
+const printTransformLogs = (transform: GraphQLTransform) => {
   transform.getLogs().forEach((log) => {
     switch (log.level) {
       case TransformerLogLevel.ERROR:
@@ -269,17 +288,4 @@ const _buildProject = async (context: $TSContext, opts: TransformerProjectOption
         printer.error(log.message);
     }
   });
-
-  return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput, opts);
-};
-
-const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, RDSConnectionSecrets>> => {
-  const outputMap = new Map<string, RDSConnectionSecrets>();
-  const apiName = getAppSyncAPIName();
-  const secretsKey = await getSecretsKey();
-  const rdsSecretPaths = await getExistingConnectionSecretNames(context, apiName, secretsKey);
-  if (rdsSecretPaths) {
-    outputMap.set(MYSQL_DB_TYPE, rdsSecretPaths);
-  }
-  return outputMap;
-};
+}
