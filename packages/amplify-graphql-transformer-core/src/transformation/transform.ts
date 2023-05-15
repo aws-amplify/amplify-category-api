@@ -312,11 +312,9 @@ export class GraphQLTransform {
     for (const transformer of this.transformers) {
       if (isFunction(transformer.getLogs)) {
         const logs = transformer.getLogs();
-        if (logs.length) {
-          this.logs.push(...logs);
-          if (isFunction(transformer.flushLogs)) {
-            transformer.flushLogs()
-          }
+        this.logs.push(...logs);
+        if (isFunction(transformer.flushLogs)) {
+          transformer.flushLogs()
         }
       }
     }
