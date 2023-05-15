@@ -20,6 +20,7 @@ import {
   list,
   forEach,
   nul,
+  raw,
 } from 'graphql-mapping-template';
 import { ResourceConstants, setArgs } from 'graphql-transformer-common';
 const authFilter = ref('ctx.stash.authFilter');
@@ -165,13 +166,71 @@ export const generateListRequestTemplate = (): string => {
 };
 
 export const generateSyncRequestTemplate = (): string => {
+  const requestVariable = 'ctx.stash.QueryRequest';
   return printBlock('Sync Request template')(
     compoundExpression([
       setArgs,
+      set(ref('queryFilterContainsAuthField'), bool(false)),
+      set(ref('authFilterContainsSortKey'), bool(false)),
+      set(ref('useScan'), bool(true)),
+      iff(
+        and([
+          isNullOrEmpty(authFilter),
+          ref('ctx.stash.QueryRequest'),
+        ]),
+        set(ref('useScan'), bool(false)),
+      ),
       ifElse(
         not(isNullOrEmpty(authFilter)),
         compoundExpression([
           set(ref('filter'), authFilter),
+          iff(
+            ref('ctx.stash.QueryRequestVariables.partitionKey'),
+            compoundExpression([
+              // Check if the auth filter contains the QueryRequest's partition key.
+              // If yes, then the filter on auth field must match one of the Auth filter to perform a query.
+              forEach(ref('filterItem'), ref('ctx.stash.authFilter.or'), [
+                iff(
+                  raw('$filterItem.get($ctx.stash.QueryRequestVariables.partitionKey)'),
+                  set(ref('queryFilterContainsAuthField'), bool(true)),
+                ),
+              ]),
+              ifElse(
+                not(ref('queryFilterContainsAuthField')),
+                // If the auth filter is not on an auth field, check if the QueryRequest's sort keys contain an auth field.
+                // If yes, perform a scan. Otherwise, query the GSI/table.
+                compoundExpression([
+                  forEach(ref('filterItem'), ref('ctx.stash.authFilter.or'), [
+                    forEach(ref('sortKey'), ref('ctx.stash.QueryRequestVariables.sortKeys'), [
+                      iff(
+                        raw('$filterItem.get($sortKey)'),
+                        set(ref('authFilterContainsSortKey'), bool(true)),
+                      ),
+                    ]),
+                  ]),
+                  iff(
+                    not(ref('authFilterContainsSortKey')),
+                    compoundExpression([
+                      ifElse(
+                        not(isNullOrEmpty(ref(`${requestVariable}.filter`))),
+                        set(ref(`${requestVariable}.filter`), obj({ and: list([ref(`${requestVariable}.filter`), authFilter]) })),
+                        set(ref(`${requestVariable}.filter`), authFilter),
+                      ),
+                      set(ref('useScan'), bool(false)),
+                    ]),
+                  ),
+                ]),
+                compoundExpression([
+                  forEach(ref('filterItem'), ref('ctx.stash.authFilter.or'), [
+                    iff(
+                      raw('$util.toJson($filterItem) == $util.toJson($ctx.stash.QueryRequestVariables.partitionKeyFilter)'),
+                      set(ref('useScan'), bool(false)),
+                    ),
+                  ]),
+                ]),
+              ),
+            ]),
+          ),
           iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), obj({ and: list([ref('filter'), ref('args.filter')]) }))),
         ]),
         iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), ref('args.filter'))),
@@ -195,14 +254,27 @@ export const generateSyncRequestTemplate = (): string => {
           ),
         ]),
       ),
-      obj({
-        version: str('2018-05-29'),
-        operation: str('Sync'),
-        filter: ifElse(ref('filter'), ref('util.toJson($filter)'), nul()),
-        limit: ref(`util.defaultIfNull($args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
-        lastSync: ref('util.toJson($util.defaultIfNull($args.lastSync, null))'),
-        nextToken: ref('util.toJson($util.defaultIfNull($args.nextToken, null))'),
-      }),
+      ifElse(
+        not(ref('useScan')),
+        compoundExpression([
+          iff(
+            ref(`${requestVariable}.filter`),
+            set(
+              ref(`${requestVariable}.filter`),
+              methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref(`${requestVariable}.filter`))),
+            ),
+          ),
+          raw(`$util.toJson($${requestVariable})`),
+        ]),
+        obj({
+          version: str('2018-05-29'),
+          operation: str('Sync'),
+          filter: ifElse(ref('filter'), ref('util.toJson($filter)'), nul()),
+          limit: ref(`util.defaultIfNull($args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
+          lastSync: ref('util.toJson($util.defaultIfNull($args.lastSync, null))'),
+          nextToken: ref('util.toJson($util.defaultIfNull($args.nextToken, null))'),
+        }),
+      ),
     ]),
   );
 };
