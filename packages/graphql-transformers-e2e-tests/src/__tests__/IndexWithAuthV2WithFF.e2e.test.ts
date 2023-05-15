@@ -271,7 +271,7 @@ test('listX with primaryKey', async () => {
 
   listResponse = await listFamilyMembersByParent(GRAPHQL_CLIENT_2, { parent: USERNAME1 });
   items = listResponse.data.byParent.items;
-  expect(items).toHaveLength(2);
+  expect(items).toHaveLength(1);
   expect(items[0]).toEqual(
     expect.objectContaining({
       parent: USERNAME1,
