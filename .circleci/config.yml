@@ -10,13 +10,13 @@ orbs:
 parameters:
   e2e_resource_cleanup:
     type: boolean
-    default: false
+    default: true
   setup:
     type: boolean
     default: true
   canary:
     type: boolean
-    default: false
+    default: true
 
 executors:
   linux: &linux-e2e-executor
