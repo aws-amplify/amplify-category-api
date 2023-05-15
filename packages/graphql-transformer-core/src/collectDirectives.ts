@@ -65,7 +65,14 @@ export function collectDirectivesByType(sdl: string): Object {
     return {};
   }
   let doc;
-  doc = parse(sdl);
+  try {
+    doc = parse(sdl);
+  } catch (e) {
+    if (e.message?.includes('Syntax Error')) {
+      throw new Error(`Your GraphQL schema is invalid. Update the schema to use proper syntax and try again: ${e.message}`);
+    }
+    throw e;
+  }
   // defined types with directives list
   let types = {};
   for (const def of doc.definitions) {
