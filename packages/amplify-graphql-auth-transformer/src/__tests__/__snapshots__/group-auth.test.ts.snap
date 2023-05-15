@@ -1,0 +1,125 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Group field as part of secondary index group field as GSI field 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $groupClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), null) )
+  #if( !$util.isNull($groupClaim) )
+
+    #set( $ownerClaimsList0 = [] )
+    #if( $util.isString($groupClaim) )
+      #if( $util.isList($util.parseJson($groupClaim)) )
+        #set( $groupClaim = $util.parseJson($groupClaim) )
+      #else
+        #set( $groupClaim = [$groupClaim] )
+      #end
+    #end
+    $util.qr($ownerClaimsList0.addAll($groupClaim))
+    #if( !$util.isNull($ctx.args.group) )
+      #if( $util.isString($ctx.args.group) )
+        #set( $groupCondition = (($groupClaim == $ctx.args.group) || $ownerClaimsList0.contains($ctx.args.group)) )
+      #else
+        #set( $groupCondition = ($groupClaim == $util.defaultIfNull($ctx.args.group.get(\\"eq\\"), null) || $ownerClaimsList0.contains($util.defaultIfNull($ctx.args.group.get(\\"eq\\"), null))) )
+        #if( !$groupCondition )
+          #set( $entityValues = 0 )
+          #foreach( $argEntity in $ctx.args.group.get(\\"eq\\") )
+            #if( $ownerClaimsList0.contains($argEntity) )
+              #set( $entityValues = $entityValues + 1 )
+            #end
+          #end
+          #if( $entityValues == $ctx.args.group.get(\\"eq\\").size() )
+            #set( $groupCondition = true )
+          #end
+        #end
+      #end
+      #if( $groupCondition )
+        #set( $isAuthorized = true )
+        $util.qr($ctx.stash.put(\\"authFilter\\", null))
+      #end
+    #else
+      $util.qr($primaryFieldMap.put(\\"group\\", $groupClaim))
+    #end
+  #end
+  #if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) && !$primaryFieldMap.isEmpty() )
+    #foreach( $entry in $primaryFieldMap.entrySet() )
+      $util.qr($ctx.args.put($entry.key, $entry.value))
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`Group field as part of secondary index group field as sort key field of GSI 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $groupClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), null) )
+  #if( !$util.isNull($groupClaim) )
+
+    #set( $ownerClaimsList0 = [] )
+    #if( $util.isString($groupClaim) )
+      #if( $util.isList($util.parseJson($groupClaim)) )
+        #set( $groupClaim = $util.parseJson($groupClaim) )
+      #else
+        #set( $groupClaim = [$groupClaim] )
+      #end
+    #end
+    $util.qr($ownerClaimsList0.addAll($groupClaim))
+    #if( !$util.isNull($ctx.args.group) )
+      #if( $util.isString($ctx.args.group) )
+        #set( $groupCondition = (($groupClaim == $ctx.args.group) || $ownerClaimsList0.contains($ctx.args.group)) )
+      #else
+        #set( $groupCondition = ($groupClaim == $util.defaultIfNull($ctx.args.group.get(\\"eq\\"), null) || $ownerClaimsList0.contains($util.defaultIfNull($ctx.args.group.get(\\"eq\\"), null))) )
+        #if( !$groupCondition )
+          #set( $entityValues = 0 )
+          #foreach( $argEntity in $ctx.args.group.get(\\"eq\\") )
+            #if( $ownerClaimsList0.contains($argEntity) )
+              #set( $entityValues = $entityValues + 1 )
+            #end
+          #end
+          #if( $entityValues == $ctx.args.group.get(\\"eq\\").size() )
+            #set( $groupCondition = true )
+          #end
+        #end
+      #end
+      #if( $groupCondition )
+        #set( $isAuthorized = true )
+        $util.qr($ctx.stash.put(\\"authFilter\\", null))
+      #end
+    #else
+      $util.qr($primaryFieldMap.put(\\"group\\", $groupClaim))
+    #end
+  #end
+  #if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) && !$primaryFieldMap.isEmpty() )
+    #set( $sortKeyFields = [\\"group\\"] )
+    #foreach( $entry in $primaryFieldMap.entrySet() )
+      #if( $sortKeyFields.contains($entry.key) )
+        #set( $entryVal = $entry.value )
+        #set( $lastIdx = $entryVal.size() - 1 )
+        #set( $lastItem = $entryVal.get($lastIdx) )
+        $util.qr($ctx.args.put($entry.key, {
+  \\"eq\\": $lastItem
+}))
+      #else
+        $util.qr($ctx.args.put($entry.key, $entry.value))
+      #end
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;

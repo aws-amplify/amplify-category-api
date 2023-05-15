@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
+import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
@@ -375,5 +375,70 @@ describe('Dynamic group subscription auth tests', () => {
     expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
     expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain('$util.qr($authGroupRuntimeFilter.add({ "group": { "in": $groupClaim0 } }))');  
 
+  });
+});
+
+describe('Group field as part of secondary index', () => {
+  test('group field as sort key field of GSI', () => {
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [],
+    };
+    const validSchema = `
+      type Note @model
+      @auth(rules: [{allow: groups, groupsField: "group"}])
+      {
+          noteId: ID! @primaryKey
+          noteType: String! @index(name: "notesByNoteType", queryField: "notesByNoteTypeAndGroup", sortKeyFields:["group"])
+          group: String
+      }
+      `;
+    const transformer = new GraphQLTransform({
+      authConfig,
+      transformers: [
+        new ModelTransformer(),
+        new AuthTransformer(),
+        new PrimaryKeyTransformer(),
+        new IndexTransformer(),
+      ],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+
+    expect(out).toBeDefined();
+    expect(out.resolvers['Note.notesByNoteTypeAndGroup.auth.1.req.vtl']).toMatchSnapshot();
+  });
+  test('group field as GSI field', () => {
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [],
+    };
+    const validSchema = `
+      type Note @model
+      @auth(rules: [{allow: groups, groupsField: "group"}])
+      {
+          noteId: ID! @primaryKey
+          noteType: String!
+          group: String! @index(name: "notesByGroup", queryField: "notesByGroup")
+      }
+      `;
+    const transformer = new GraphQLTransform({
+      authConfig,
+      transformers: [
+        new ModelTransformer(),
+        new AuthTransformer(),
+        new PrimaryKeyTransformer(),
+        new IndexTransformer(),
+      ],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+
+    expect(out).toBeDefined();
+    expect(out.resolvers['Note.notesByGroup.auth.1.req.vtl']).toMatchSnapshot();
   });
 });
