@@ -568,8 +568,6 @@ export interface TransformerPluginProvider {
     // (undocumented)
     field?: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, acc: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
-    flushLogs?: () => void;
-    // (undocumented)
     generateResolvers?: (context: TransformerContextProvider) => void;
     // (undocumented)
     getLogs?: () => TransformerLog[];

@@ -261,8 +261,6 @@ export class GraphQLTransform {
     constructor(options: GraphQLTransformOptions);
     // (undocumented)
     applyOverride: (stackManager: StackManager) => AmplifyApiGraphQlResourceStackTemplate;
-    // (undocumented)
-    flushLogs(): void;
     // Warning: (ae-forgotten-export) The symbol "TransformerOutput" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "GraphQLApi" needs to be exported by the entry point index.d.ts
     //
@@ -664,8 +662,6 @@ export abstract class TransformerPluginBase implements TransformerPluginProvider
     readonly directive: DirectiveDefinitionNode;
     // (undocumented)
     protected error(message: string): void;
-    // (undocumented)
-    flushLogs(): void;
     // (undocumented)
     getLogs(): TransformerLog[];
     // (undocumented)
