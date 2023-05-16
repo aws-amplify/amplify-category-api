@@ -105,7 +105,7 @@ import {
   getAuthDirectiveRules,
   READ_MODEL_OPERATIONS,
 } from './utils';
-import { showDefaultIdentityClaimWarning, showOwnerCanReassignWarning, showOwnerFieldCaseWarning } from './utils/warnings';
+import { defaultIdentityClaimWarning, ownerCanReassignWarning, ownerFieldCaseWarning } from './utils/warnings';
 
 /**
  * util to get allowed roles for field
@@ -224,8 +224,14 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   };
 
   after = (context: TransformerContextProvider): void => {
-    showDefaultIdentityClaimWarning(context, this.rules);
-    showOwnerCanReassignWarning(this.authModelConfig);
+    const claimWarning = defaultIdentityClaimWarning(context, this.rules);
+    if (claimWarning) {
+      this.warn(claimWarning);
+    }
+    const reassignWarning = ownerCanReassignWarning(this.authModelConfig);
+    if (reassignWarning) {
+      this.warn(reassignWarning.message);
+    }
   };
 
   field = (
@@ -1074,7 +1080,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const ownerFieldsToAdd = ownerFields.filter((field) => !existingFields.includes(field));
     ownerFieldsToAdd.forEach((ownerField) => {
       const warningField = existingFields.find((field) => field.toLowerCase() === ownerField.toLowerCase());
-      if (warningField) showOwnerFieldCaseWarning(ownerField, warningField, modelName);
+      if (warningField) {
+        this.warn(ownerFieldCaseWarning(ownerField, warningField, modelName));
+      }
       (modelObject as any).fields.push(makeField(ownerField, [], makeNamedType('String')));
     });
     ctx.output.putType(modelObject);

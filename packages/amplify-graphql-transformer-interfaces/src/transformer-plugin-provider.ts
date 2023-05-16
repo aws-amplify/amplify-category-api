@@ -21,6 +21,7 @@ import {
   TransformerTransformSchemaStepContextProvider,
 } from './transformer-context/transformer-context-provider';
 import { TransformerPreProcessContextProvider } from './transformer-context';
+import { TransformerLog } from './transformer-log';
 
 export enum TransformerPluginType {
   DATA_SOURCE_PROVIDER = 'DATA_SOURCE_PROVIDER',
@@ -28,6 +29,7 @@ export enum TransformerPluginType {
   GENERIC = 'GENERIC',
   AUTH = 'AUTH',
 }
+
 export interface TransformerPluginProvider {
   pluginType: TransformerPluginType;
 
@@ -153,4 +155,9 @@ export interface TransformerPluginProvider {
    * Finalizers are called in reverse order as they are declared.
    */
   after?: (context: TransformerContextProvider) => void;
+
+  /**
+   * Get the current buffer of logs from the transformer
+   */
+  getLogs?: () => TransformerLog[];
 }

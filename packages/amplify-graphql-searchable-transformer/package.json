@@ -41,8 +41,7 @@
     "@types/node": "^12.12.6"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.4",
-    "@aws-amplify/amplify-prompts": "^2.6.8"
+    "@aws-amplify/amplify-cli-core": "4.0.4"
   },
   "jest": {
     "transform": {

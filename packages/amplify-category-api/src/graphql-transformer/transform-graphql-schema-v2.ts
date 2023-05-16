@@ -12,6 +12,7 @@ import {
   DeploymentResources,
   Template,
   TransformerPluginProvider,
+  TransformerLogLevel,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   $TSContext,
@@ -245,12 +246,16 @@ const _buildProject = async (context: $TSContext, opts: TransformerProjectOption
 
   const { schema, modelToDatasourceMap } = userProjectConfig;
   const datasourceSecretMap = await getDatasourceSecretMap(context);
-  const transformOutput = transform.transform(schema.toString(), {
-    modelToDatasourceMap,
-    datasourceSecretParameterLocations: datasourceSecretMap,
-  });
+  try {
+    const transformOutput = transform.transform(schema.toString(), {
+      modelToDatasourceMap,
+      datasourceSecretParameterLocations: datasourceSecretMap,
+    });
 
-  return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput, opts);
+    return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput, opts);
+  } finally {
+    printTransformLogs(transform);
+  }
 };
 
 const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, RDSConnectionSecrets>> => {
@@ -263,3 +268,24 @@ const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, 
   }
   return outputMap;
 };
+
+const printTransformLogs = (transform: GraphQLTransform) => {
+  transform.getLogs().forEach((log) => {
+    switch (log.level) {
+      case TransformerLogLevel.ERROR:
+        printer.error(log.message);
+        break;
+      case TransformerLogLevel.WARN:
+        printer.warn(log.message);
+        break;
+      case TransformerLogLevel.INFO:
+        printer.info(log.message);
+        break;
+      case TransformerLogLevel.DEBUG:
+        printer.debug(log.message);
+        break;
+      default:
+        printer.error(log.message);
+    }
+  });
+}

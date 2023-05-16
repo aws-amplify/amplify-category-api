@@ -7,6 +7,8 @@ import {
   Template,
   TransformerPluginProvider,
   TransformHostProvider,
+  TransformerLog,
+  TransformerLogLevel,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import {
@@ -110,6 +112,8 @@ export class GraphQLTransform {
   // Only run a transformer function once per pair. This is refreshed each call to transform().
   private seenTransformations: { [k: string]: boolean } = {};
 
+  private logs: TransformerLog[];
+
   constructor(private readonly options: GraphQLTransformOptions) {
     if (!options.transformers || options.transformers.length === 0) {
       throw new Error('Must provide at least one transformer.');
@@ -136,6 +140,7 @@ export class GraphQLTransform {
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
     this.resolverConfig = options.resolverConfig || {};
     this.overrideConfig = options.overrideConfig;
+    this.logs = [];
   }
 
   /**
@@ -302,6 +307,12 @@ export class GraphQLTransform {
         transformer.after(context);
       }
       reverseThroughTransformers -= 1;
+    }
+    for (const transformer of this.transformers) {
+      if (isFunction(transformer.getLogs)) {
+        const logs = transformer.getLogs();
+        this.logs.push(...logs);
+      }
     }
     this.collectResolvers(context, context.api);
     if (this.overrideConfig?.overrideFlag) {
@@ -831,5 +842,9 @@ export class GraphQLTransform {
       }
       index++;
     }
+  }
+
+  public getLogs(): TransformerLog[] {
+    return this.logs;
   }
 }

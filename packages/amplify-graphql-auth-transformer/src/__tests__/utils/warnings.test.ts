@@ -1,20 +1,12 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { printer } from '@aws-amplify/amplify-prompts';
 import { AuthTransformer } from '../../graphql-auth-transformer';
-import { showDefaultIdentityClaimWarning } from '../../utils/warnings';
+import { defaultIdentityClaimWarning } from '../../utils/warnings';
 
-jest.mock('@aws-amplify/amplify-prompts', () => ({
-  printer: {
-    warn: jest.fn(),
-    debug: jest.fn(),
-  },
-}));
-
-describe('showDefaultIdentityClaimWarning', () => {
+describe('defaultIdentityClaimWarning', () => {
   describe('owner based @auth', () => {
     describe('feature flag enabled w/o custom identity claim', () => {
-      test('does not show message', () => {
+      test('does not return message', () => {
         const context: any = {
           featureFlags: {
             getBoolean: () => true,
@@ -23,15 +15,13 @@ describe('showDefaultIdentityClaimWarning', () => {
           },
         };
 
-        showDefaultIdentityClaimWarning(context, [{ allow: 'owner' }]);
-
-        expect(printer.warn).not.toBeCalled();
+        expect(defaultIdentityClaimWarning(context, [{ allow: 'owner' }])).toBeUndefined();
       });
     });
 
     describe('feature flag enabled w/ custom identity claim', () => {
       describe('with default cognito identity claim', () => {
-        test('does not show message', () => {
+        test('does not return message', () => {
           const context: any = {
             featureFlags: {
               getBoolean: () => true,
@@ -39,14 +29,12 @@ describe('showDefaultIdentityClaimWarning', () => {
               getObject: jest.fn(),
             },
           };
-          showDefaultIdentityClaimWarning(context, [{ allow: 'owner', identityClaim: 'cognito:username' }]);
-
-          expect(printer.warn).not.toBeCalled();
+          expect(defaultIdentityClaimWarning(context, [{ allow: 'owner', identityClaim: 'cognito:username' }])).toBeUndefined();
         });
       });
 
       describe('with default identity claim', () => {
-        test('does not show message', () => {
+        test('does not return message', () => {
           const context: any = {
             featureFlags: {
               getBoolean: () => true,
@@ -54,16 +42,14 @@ describe('showDefaultIdentityClaimWarning', () => {
               getObject: jest.fn(),
             },
           };
-          showDefaultIdentityClaimWarning(context, [{ allow: 'owner', identityClaim: 'username' }]);
-
-          expect(printer.warn).not.toBeCalled();
+          expect(defaultIdentityClaimWarning(context, [{ allow: 'owner', identityClaim: 'username' }])).toBeUndefined();
         });
       });
     });
 
     describe('feature flag disabled w/ custom identity claim', () => {
       describe('with default cognito identity claim', () => {
-        test('does not show message', () => {
+        test('does not return message', () => {
           const context: any = {
             featureFlags: {
               getBoolean: () => false,
@@ -71,14 +57,12 @@ describe('showDefaultIdentityClaimWarning', () => {
               getObject: jest.fn(),
             },
           };
-          showDefaultIdentityClaimWarning(context, [{ allow: 'owner', identityClaim: 'cognito:username' }]);
-
-          expect(printer.warn).not.toBeCalled();
+          expect(defaultIdentityClaimWarning(context, [{ allow: 'owner', identityClaim: 'cognito:username' }])).toBeUndefined();
         });
       });
 
       describe('with default identity claim', () => {
-        test('does not show message', () => {
+        test('does not return message', () => {
           const context: any = {
             featureFlags: {
               getBoolean: () => false,
@@ -86,15 +70,13 @@ describe('showDefaultIdentityClaimWarning', () => {
               getObject: jest.fn(),
             },
           };
-          showDefaultIdentityClaimWarning(context, [{ allow: 'owner', identityClaim: 'username' }]);
-
-          expect(printer.warn).not.toBeCalled();
+          expect(defaultIdentityClaimWarning(context, [{ allow: 'owner', identityClaim: 'username' }])).toBeUndefined();
         });
       });
     });
 
     describe('feature flag disabled w/o custom identity claim', () => {
-      test('does show message', () => {
+      test('does return message', () => {
         const context: any = {
           featureFlags: {
             getBoolean: () => false,
@@ -102,10 +84,7 @@ describe('showDefaultIdentityClaimWarning', () => {
             getObject: jest.fn(),
           },
         };
-        showDefaultIdentityClaimWarning(context, [{ allow: 'owner' }]);
-
-        expect(printer.warn).toBeCalledTimes(1);
-        expect(printer.warn).toBeCalledWith(
+        expect(defaultIdentityClaimWarning(context, [{ allow: 'owner' }])).toEqual(
           ' WARNING: Amplify CLI will change the default identity claim from \'username\' '
             + 'to use \'sub::username\'. To continue using only usernames, set \'identityClaim: "username"\' on your '
             + '\'owner\' rules on your schema. The default will be officially switched with v9.0.0. To read '
@@ -116,11 +95,11 @@ describe('showDefaultIdentityClaimWarning', () => {
   });
 });
 
-describe('showOwnerCanReassignWarning', () => {
-  const OWNER_MAY_REASSIGN_MESSAGE = expect.stringContaining('owners may reassign ownership');
+describe('ownerCanReassignWarning', () => {
+  const OWNER_MAY_REASSIGN_MESSAGE = 'owners may reassign ownership';
   const OWNER_ENABLED_PROVIDERS = ['userPools', 'oidc'];
-  const transformTestSchema = (schema: string): void => {
-    const transformer = new GraphQLTransform({
+  const transformTestSchema = (schema: string): GraphQLTransform => {
+    const transform = new GraphQLTransform({
       authConfig: {
         defaultAuthentication: { authenticationType: 'API_KEY' },
         additionalAuthenticationProviders: [
@@ -143,7 +122,8 @@ describe('showOwnerCanReassignWarning', () => {
       },
     });
 
-    transformer.transform(schema);
+    transform.transform(schema);
+    return transform;
   };
 
   beforeEach(() => {
@@ -153,7 +133,7 @@ describe('showOwnerCanReassignWarning', () => {
   OWNER_ENABLED_PROVIDERS.forEach((provider: string) => {
     describe(`${provider} provider`, () => {
       test('warns on owner auth rule without field-level auth', () => {
-        transformTestSchema(`
+        const transform = transformTestSchema(`
           type Blog @model @auth(rules: [{ allow: owner, provider: ${provider} }]) {
             id: ID!
             owner: String
@@ -161,16 +141,11 @@ describe('showOwnerCanReassignWarning', () => {
           }
         `);
 
-        expect(printer.warn).toHaveBeenCalledWith(OWNER_MAY_REASSIGN_MESSAGE);
-        expect(printer.warn).toHaveBeenCalledWith(
-          'WARNING: owners may reassign ownership for the following model(s) and role(s): Blog: [owner]. '
-          + 'If this is not intentional, you may want to apply field-level authorization rules to these fields. '
-          + 'To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.',
-        );
+        expect(transform.getLogs()).toMatchSnapshot();;
       });
 
       test('does not warn on owner auth rule with field-level auth', () => {
-        transformTestSchema(`
+        const transform = transformTestSchema(`
           type Blog @model @auth(rules: [{ allow: owner, provider: ${provider} }]) {
             id: ID!
             owner: String @auth(rules: [{ allow: owner, provider: ${provider}, operations: [read, delete] }])
@@ -178,11 +153,11 @@ describe('showOwnerCanReassignWarning', () => {
           }
         `);
 
-        expect(printer.warn).not.toHaveBeenCalledWith(OWNER_MAY_REASSIGN_MESSAGE);
+        expect(transform.getLogs()).toMatchSnapshot();;
       });
 
       test('warns on multiple schemas with multiple reassignable owners each', () => {
-        transformTestSchema(`
+        const transform = transformTestSchema(`
           type Todo @model @auth(rules: [
             { allow: owner, provider: ${provider} }
             { allow: owner, provider: ${provider}, ownerField: "writer" }
@@ -202,16 +177,11 @@ describe('showOwnerCanReassignWarning', () => {
           }
         `);
 
-        expect(printer.warn).toHaveBeenCalledWith(OWNER_MAY_REASSIGN_MESSAGE);
-        expect(printer.warn).toHaveBeenCalledWith(
-          'WARNING: owners may reassign ownership for the following model(s) and role(s): Todo: [writer, editors], Blog: [owner]. '
-          + 'If this is not intentional, you may want to apply field-level authorization rules to these fields. '
-          + 'To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.',
-        );
+        expect(transform.getLogs()).toMatchSnapshot();;
       });
 
       test('does not warn on custom owner fields with field-level overrides', () => {
-        transformTestSchema(`
+        const transform = transformTestSchema(`
           type Todo @model @auth(rules: [
             { allow: owner, provider: ${provider} }
             { allow: owner, provider: ${provider} ownerField: "writer" }
@@ -225,11 +195,11 @@ describe('showOwnerCanReassignWarning', () => {
           }
         `);
 
-        expect(printer.warn).not.toHaveBeenCalledWith(OWNER_MAY_REASSIGN_MESSAGE);
+        expect(transform.getLogs()).toMatchSnapshot();;
       });
 
       test('does not warn on single custom owner fields with field-level override', () => {
-        transformTestSchema(`
+        const transform = transformTestSchema(`
           type Todo @model @auth(rules: [
             { allow: owner, provider: ${provider} ownerField: "writer" }
           ]) {
@@ -239,11 +209,11 @@ describe('showOwnerCanReassignWarning', () => {
           }
         `);
 
-        expect(printer.warn).not.toHaveBeenCalledWith(OWNER_MAY_REASSIGN_MESSAGE);
+        expect(transform.getLogs()).toMatchSnapshot();;
       });
 
       test('malformed field-level auth will continue to warn', () => {
-        transformTestSchema(`
+        const transform = transformTestSchema(`
           type Todo @model(subscriptions: null) @auth(rules: [
             { allow: owner, provider: ${provider} ownerField: "writer" }
           ]) {
@@ -253,31 +223,26 @@ describe('showOwnerCanReassignWarning', () => {
           }
         `);
 
-        expect(printer.warn).toHaveBeenCalledWith(OWNER_MAY_REASSIGN_MESSAGE);
+        expect(transform.getLogs()).toMatchSnapshot();;
       });
 
       test('should warn on implicit owner field', () => {
-        transformTestSchema(`
+        const transform = transformTestSchema(`
           type Blog @model @auth(rules: [{ allow: owner, provider: ${provider} }]) {
             id: ID!
             description: String
           }
         `);
 
-        expect(printer.warn).toHaveBeenCalledWith(OWNER_MAY_REASSIGN_MESSAGE);
-        expect(printer.warn).toHaveBeenCalledWith(
-          'WARNING: owners may reassign ownership for the following model(s) and role(s): Blog: [owner]. '
-          + 'If this is not intentional, you may want to apply field-level authorization rules to these fields. '
-          + 'To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.',
-        );
+        expect(transform.getLogs()).toMatchSnapshot();;
       });
     });
   });
 });
 
-describe('showOwnerFieldCaseWarning', () => {
+describe('ownerFieldCaseWarning', () => {
   const OWNER_FIELD_CASE_MESSAGE = expect.stringContaining('are getting added to your schema but could be referencing the same owner field. ');
-  const transformTestSchema = (schema: string): void => {
+  const transformTestSchema = (schema: string): GraphQLTransform => {
     const transformer = new GraphQLTransform({
       authConfig: {
         defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' },
@@ -291,6 +256,7 @@ describe('showOwnerFieldCaseWarning', () => {
       },
     });
     transformer.transform(schema);
+    return transformer;
   };
   test('does not show message with case matching fields', () => {
     const validSchema = `
@@ -309,8 +275,8 @@ type Invoice
   customerId: ID!
 }
 `;
-    transformTestSchema(validSchema);
-    expect(printer.warn).not.toBeCalledWith(OWNER_FIELD_CASE_MESSAGE);
+    const transform = transformTestSchema(validSchema);
+    expect(transform.getLogs()).toMatchSnapshot();;
   });
 
   test('does not show message with no auth rules', () => {
@@ -323,8 +289,8 @@ type Invoice
   customerId: ID!
 }
 `;
-    transformTestSchema(validSchema);
-    expect(printer.warn).not.toBeCalledWith(OWNER_FIELD_CASE_MESSAGE);
+    const transform = transformTestSchema(validSchema);
+    expect(transform.getLogs()).toMatchSnapshot();;
   });
   test('shows message once with one case mismatch in fields', () => {
     const oneCaseMismatchSchema = `
@@ -343,8 +309,8 @@ type Invoice
   customerId: ID!
 }
 `;
-    transformTestSchema(oneCaseMismatchSchema);
-    expect(printer.warn).toBeCalledWith('WARNING: Schema field "storeId" and ownerField "storeID" in type Invoice are getting added to your schema but could be referencing the same owner field. If this is not intentional, you may want to change one of the fields to the correct name.\n');
+    const transform = transformTestSchema(oneCaseMismatchSchema);
+    expect(transform.getLogs()).toMatchSnapshot();;
   });
 
   test('shows message twice with two case mismatch in fields', () => {
@@ -364,9 +330,8 @@ type Invoice
   customerId: ID!
 }
 `;
-    transformTestSchema(twoCaseMismatchSchema);
-    expect(printer.warn).toBeCalledWith('WARNING: Schema field "storeId" and ownerField "storeID" in type Invoice are getting added to your schema but could be referencing the same owner field. If this is not intentional, you may want to change one of the fields to the correct name.\n');
-    expect(printer.warn).toBeCalledWith('WARNING: Schema field "customerId" and ownerField "customerID" in type Invoice are getting added to your schema but could be referencing the same owner field. If this is not intentional, you may want to change one of the fields to the correct name.\n');
+    const transform = transformTestSchema(twoCaseMismatchSchema);
+    expect(transform.getLogs()).toMatchSnapshot();;
   });
   test('shows message with implicit owner field', () => {
     const twoCaseMismatchSchema = `
@@ -386,7 +351,7 @@ type Invoice
   Owner: String
 }
 `;
-    transformTestSchema(twoCaseMismatchSchema);
-    expect(printer.warn).toBeCalledWith('WARNING: Schema field "Owner" and ownerField "owner" in type Invoice are getting added to your schema but could be referencing the same owner field. If this is not intentional, you may want to change one of the fields to the correct name.\n');
+    const transform = transformTestSchema(twoCaseMismatchSchema);
+    expect(transform.getLogs()).toMatchSnapshot();;
   });
 });

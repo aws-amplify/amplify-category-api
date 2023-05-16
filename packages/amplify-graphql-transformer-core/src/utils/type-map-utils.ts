@@ -11,6 +11,7 @@ import {
   EnumTypeDefinitionNode,
   parse,
   Kind,
+  DocumentNode,
 } from 'graphql';
 
 
@@ -18,7 +19,7 @@ export function collectDirectives(sdl: string): DirectiveNode[] {
   if (sdl.trim() === '') {
     return [];
   }
-  const doc = parse(sdl);
+  const doc = parseWithErrorHint(sdl);
   let directives: DirectiveNode[] = [];
   for (const def of doc.definitions) {
     switch (def.kind) {
@@ -67,7 +68,7 @@ export function collectDirectivesByType(sdl: string): Record<string, DirectiveNo
   if (sdl.trim() === '') {
     return {};
   }
-  const doc = parse(sdl);
+  const doc = parseWithErrorHint(sdl);
   // defined types with directives list
   let types: Record<string, DirectiveNode[]> = {};
   for (const def of doc.definitions) {
@@ -156,4 +157,18 @@ export function collectEnumDirectives(node: EnumTypeDefinitionNode): DirectiveNo
 
 export function collectEnumValueDirectives(node: EnumValueDefinitionNode): DirectiveNode[] {
   return [...(node.directives || [])];
+}
+
+function parseWithErrorHint(sdl: string): DocumentNode {
+  let doc;
+  try {
+    doc = parse(sdl);
+  } catch (e) {
+    if (e.message?.includes('Syntax Error')) {
+      throw new Error(`Your GraphQL schema is invalid. Update the schema to use proper syntax and try again: ${e.message}`);
+    }
+    throw e;
+  }
+
+  return doc;
 }
