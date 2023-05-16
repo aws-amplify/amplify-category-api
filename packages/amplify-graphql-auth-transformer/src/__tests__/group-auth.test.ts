@@ -119,7 +119,7 @@ test('\'groups\' @auth with dynamic groups and custom claim on index query', () 
     `;
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [new ModelTransformer(), new AuthTransformer(), new IndexTransformer()],
+    transformers: [new ModelTransformer(), new AuthTransformer(), new IndexTransformer('')],
     featureFlags,
   });
   const out = transformer.transform(validSchema);
@@ -398,8 +398,8 @@ describe('Group field as part of secondary index', () => {
       transformers: [
         new ModelTransformer(),
         new AuthTransformer(),
-        new PrimaryKeyTransformer(),
-        new IndexTransformer(),
+        new PrimaryKeyTransformer(''),
+        new IndexTransformer(''),
       ],
       featureFlags,
     });
@@ -429,8 +429,8 @@ describe('Group field as part of secondary index', () => {
       transformers: [
         new ModelTransformer(),
         new AuthTransformer(),
-        new PrimaryKeyTransformer(),
-        new IndexTransformer(),
+        new PrimaryKeyTransformer(''),
+        new IndexTransformer(''),
       ],
       featureFlags,
     });

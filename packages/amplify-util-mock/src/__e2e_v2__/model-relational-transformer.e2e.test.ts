@@ -6,6 +6,7 @@ import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces
 import { deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient } from '../__e2e__/utils';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
+import { pathManager } from "@aws-amplify/amplify-cli-core";
 
 let GRAPHQL_CLIENT: GraphQLClient;
 let GRAPHQL_ENDPOINT: string;
@@ -46,8 +47,8 @@ describe('@model with relational transformer', () => {
       const transformer = new GraphQLTransform({
         transformers: [
           new ModelTransformer(),
-          new IndexTransformer(),
-          new PrimaryKeyTransformer(),
+          new IndexTransformer(pathManager.getBackendDirPath()),
+          new PrimaryKeyTransformer(pathManager.getBackendDirPath()),
           new HasOneTransformer(),
           new HasManyTransformer(),
           new BelongsToTransformer(),

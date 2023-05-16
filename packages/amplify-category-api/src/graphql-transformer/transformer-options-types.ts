@@ -55,4 +55,7 @@ export type TransformerFactoryArgs = {
   storageConfig?: any;
   adminRoles?: Array<string>;
   identityPoolId?: string;
+  projectRoot: string,
+  currentCloudBackendDir: string,
+  backendDir: string,
 };

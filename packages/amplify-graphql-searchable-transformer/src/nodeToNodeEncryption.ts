@@ -1,5 +1,4 @@
 import { JSONUtilities } from '@aws-amplify/graphql-transformer-core';
-import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import * as path from 'path';
 import * as fs from 'fs-extra';
@@ -15,10 +14,10 @@ import { TRANSFORM_CONFIG_FILE_NAME } from 'graphql-transformer-core';
  * @param apiName the name of the api to attempt and pull the flag from.
  * @returns whether or not NodeToNodeEncryption should be enabled on a searchable instance as well as any warning message.
  */
-export const shouldEnableNodeToNodeEncryption = (apiName: string): { enabled: boolean, log: string | undefined } => {
+export const shouldEnableNodeToNodeEncryption = (apiName: string, projectRoot: string, currentCloudBackendDir: string): { enabled: boolean, log: string | undefined } => {
   try {
-    const nodeToNodeEncryptionParameter = getNodeToNodeEncryptionConfigValue(apiName);
-    const doesExistingBackendHaveNodeToNodeEncryption = getCurrentCloudBackendStackFiles(apiName).some(definition => hasNodeToNodeEncryptionOptions(definition));
+    const nodeToNodeEncryptionParameter = getNodeToNodeEncryptionConfigValue(projectRoot, apiName);
+    const doesExistingBackendHaveNodeToNodeEncryption = getCurrentCloudBackendStackFiles(currentCloudBackendDir, apiName).some(definition => hasNodeToNodeEncryptionOptions(definition));
 
     const log = warnOnExistingNodeToNodeEncryption(doesExistingBackendHaveNodeToNodeEncryption);
 
@@ -43,8 +42,8 @@ NodeToNodeEncryption is enabled for this Search Domain, disabling this flag or r
 `;
 };
 
-const getCurrentCloudBackendStackFiles = (apiName: string): any[] => {
-  const backendPath = path.join(pathManager.getCurrentCloudBackendDirPath(), 'api', apiName, 'build', 'stacks');
+const getCurrentCloudBackendStackFiles = (currentCloudBackendDir: string, apiName: string): any[] => {
+  const backendPath = path.join(currentCloudBackendDir, 'api', apiName, 'build', 'stacks');
   try {
     return fs.readdirSync(backendPath).map(stackFile => JSONUtilities.readJson<any>(path.join(backendPath, stackFile)));
   } catch (e) {
@@ -66,8 +65,7 @@ export const hasNodeToNodeEncryptionOptions = (stackDefinition: any): boolean =>
   return false;
 };
 
-const getNodeToNodeEncryptionConfigValue = (apiName: string): boolean | undefined => {
-  const projectRoot = pathManager.findProjectRoot();
+const getNodeToNodeEncryptionConfigValue = (projectRoot: string, apiName: string): boolean | undefined => {
   const configPath = projectRoot ? path.join(projectRoot, 'amplify', 'backend', 'api', apiName, TRANSFORM_CONFIG_FILE_NAME) : undefined;
   if (configPath && fs.existsSync(configPath)) {
     const config = JSON.parse(fs.readFileSync(configPath, 'utf-8')) as TransformConfig;

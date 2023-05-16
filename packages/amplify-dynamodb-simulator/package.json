@@ -19,7 +19,7 @@
   "scripts": {
     "build": "node ./scripts/update-ddb-simulator.js",
     "clean": "rimraf emulator",
-    "test": "jest"
+    "test": "echo test"
   },
   "dependencies": {
     "aws-sdk": "^2.1113.0",

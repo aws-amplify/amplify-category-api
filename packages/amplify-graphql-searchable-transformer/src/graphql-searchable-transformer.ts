@@ -262,7 +262,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
   searchableObjectTypeDefinitions: { node: ObjectTypeDefinitionNode; fieldName: string }[];
   searchableObjectNames: string[];
 
-  constructor(private apiName?: string) {
+  constructor(private projectRoot: string, private currentCloudBackendDir: string, private apiName?: string) {
     super(
       'amplify-searchable-transformer',
       /* GraphQL */ `
@@ -299,7 +299,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     const parameterMap = createParametersInStack(context.stackManager.rootStack);
 
-    const nodeToNodeEncryption = this.apiName ? shouldEnableNodeToNodeEncryption(this.apiName) : { enabled: false, log: undefined };
+    const nodeToNodeEncryption = this.apiName ? shouldEnableNodeToNodeEncryption(this.apiName, this.projectRoot, this.currentCloudBackendDir) : { enabled: false, log: undefined };
     if (nodeToNodeEncryption.log) {
       this.warn(nodeToNodeEncryption.log);
     }

@@ -5,6 +5,7 @@ import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces
 import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 
 jest.setTimeout(2000000);
 
@@ -62,7 +63,12 @@ describe('@index transformer', () => {
       }`;
 
     const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
+      transformers: [
+        new ModelTransformer(),
+        new PrimaryKeyTransformer(pathManager.getBackendDirPath()),
+        new IndexTransformer(pathManager.getBackendDirPath()),
+        new AuthTransformer(),
+      ],
       featureFlags: {
         getBoolean: name => (name === 'improvePluralization' ? true : false),
       } as FeatureFlagProvider,
