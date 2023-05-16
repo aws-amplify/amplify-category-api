@@ -12,7 +12,7 @@ import { TRANSFORM_CONFIG_FILE_NAME } from 'graphql-transformer-core';
  * Else leave it disabled.
  * @param projectDir the root directory for the project.
  * @param apiName the name of the api to attempt and pull the flag from.
- * @returns whether or not NodeToNodeEncryption should be enabled on a searchable instance.
+ * @returns whether or not NodeToNodeEncryption should be enabled on a searchable instance as well as any warning message.
  */
 export const shouldEnableNodeToNodeEncryption = (apiName: string): { enabled: boolean, log: string | undefined } => {
   try {
