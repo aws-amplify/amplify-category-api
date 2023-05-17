@@ -124,6 +124,13 @@ function _publishToLocalRegistry {
     loadCacheFromBuildJob
     export CODEBUILD_BRANCH="${CODEBUILD_WEBHOOK_TRIGGER#branch/*}"
     git checkout $CODEBUILD_BRANCH
+  
+    # Fetching git tags from upstream
+    # For forked repo only
+    # Can be removed when using team account
+    echo "fetching tags"
+    git fetch --tags https://github.com/aws-amplify/amplify-category-api
+
     source .circleci/local_publish_helpers.sh
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
