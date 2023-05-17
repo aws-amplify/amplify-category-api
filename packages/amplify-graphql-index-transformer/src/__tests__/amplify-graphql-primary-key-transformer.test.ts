@@ -1,6 +1,6 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, validateModelSchema, DatasourceType, $TSAny } from '@aws-amplify/graphql-transformer-core';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { GraphQLTransform, validateModelSchema, DatasourceType } from '@aws-amplify/graphql-transformer-core';
+import { FeatureFlagProvider, $TSAny } from '@aws-amplify/graphql-transformer-interfaces';
 
 import { Template } from 'aws-cdk-lib/assertions';
 import { expect as cdkExpect, haveResourceLike } from '@aws-cdk/assert';
