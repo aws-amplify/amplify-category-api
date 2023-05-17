@@ -600,6 +600,280 @@ exports[`owner based @auth owner where field is "::" delimited with only mutatio
 ## [End] Parse owner field auth for Get. **"
 `;
 
+exports[`owner based @auth sort key fields on @auth owner field owner field as part of global secondary index handles ownerfield as GSI field with default identity claim  1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $ownerClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim = \\"$ownerClaim::$currentClaim1\\" )
+    #set( $ownerClaimsList0 = [] )
+    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+    #if( $util.isString($ownerClaim) )
+      #if( $util.isList($util.parseJson($ownerClaim)) )
+        #set( $ownerClaim = $util.parseJson($ownerClaim) )
+      #else
+        #set( $ownerClaim = [$ownerClaim] )
+      #end
+    #end
+    $util.qr($ownerClaimsList0.addAll($ownerClaim))
+    #if( !$util.isNull($ctx.args.owner) )
+      #if( $util.isString($ctx.args.owner) )
+        #set( $ownerCondition = (($ownerClaim == $ctx.args.owner) || $ownerClaimsList0.contains($ctx.args.owner)) )
+      #else
+        #set( $ownerCondition = ($ownerClaim == $util.defaultIfNull($ctx.args.owner.get(\\"eq\\"), null) || $ownerClaimsList0.contains($util.defaultIfNull($ctx.args.owner.get(\\"eq\\"), null))) )
+        #if( !$ownerCondition )
+          #set( $entityValues = 0 )
+          #foreach( $argEntity in $ctx.args.owner.get(\\"eq\\") )
+            #if( $ownerClaimsList0.contains($argEntity) )
+              #set( $entityValues = $entityValues + 1 )
+            #end
+          #end
+          #if( $entityValues == $ctx.args.owner.get(\\"eq\\").size() )
+            #set( $ownerCondition = true )
+          #end
+        #end
+      #end
+      #if( $ownerCondition )
+        #set( $isAuthorized = true )
+        $util.qr($ctx.stash.put(\\"authFilter\\", null))
+      #end
+    #else
+      $util.qr($primaryFieldMap.put(\\"owner\\", $ownerClaimsList0))
+    #end
+  #end
+  #if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) && !$primaryFieldMap.isEmpty() )
+    #set( $sortKeyFields = [] )
+    #foreach( $entry in $primaryFieldMap.entrySet() )
+      #if( $sortKeyFields.contains($entry.key) )
+        #set( $entryVal = $entry.value )
+        #set( $lastIdx = $entryVal.size() - 1 )
+        #set( $lastItem = $entryVal.get($lastIdx) )
+        $util.qr($ctx.args.put($entry.key, {
+  \\"eq\\": $lastItem
+}))
+      #else
+        $util.qr($ctx.args.put($entry.key, $entry.value))
+      #end
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth sort key fields on @auth owner field owner field as part of global secondary index handles ownerfield as GSI field with username identity claim  1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $ownerClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim) )
+
+    #set( $ownerClaimsList0 = [] )
+    #if( $util.isString($ownerClaim) )
+      #if( $util.isList($util.parseJson($ownerClaim)) )
+        #set( $ownerClaim = $util.parseJson($ownerClaim) )
+      #else
+        #set( $ownerClaim = [$ownerClaim] )
+      #end
+    #end
+    $util.qr($ownerClaimsList0.addAll($ownerClaim))
+    #if( !$util.isNull($ctx.args.owner) )
+      #if( $util.isString($ctx.args.owner) )
+        #set( $ownerCondition = (($ownerClaim == $ctx.args.owner) || $ownerClaimsList0.contains($ctx.args.owner)) )
+      #else
+        #set( $ownerCondition = ($ownerClaim == $util.defaultIfNull($ctx.args.owner.get(\\"eq\\"), null) || $ownerClaimsList0.contains($util.defaultIfNull($ctx.args.owner.get(\\"eq\\"), null))) )
+        #if( !$ownerCondition )
+          #set( $entityValues = 0 )
+          #foreach( $argEntity in $ctx.args.owner.get(\\"eq\\") )
+            #if( $ownerClaimsList0.contains($argEntity) )
+              #set( $entityValues = $entityValues + 1 )
+            #end
+          #end
+          #if( $entityValues == $ctx.args.owner.get(\\"eq\\").size() )
+            #set( $ownerCondition = true )
+          #end
+        #end
+      #end
+      #if( $ownerCondition )
+        #set( $isAuthorized = true )
+        $util.qr($ctx.stash.put(\\"authFilter\\", null))
+      #end
+    #else
+      $util.qr($primaryFieldMap.put(\\"owner\\", $ownerClaim))
+    #end
+  #end
+  #if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) && !$primaryFieldMap.isEmpty() )
+    #set( $sortKeyFields = [] )
+    #foreach( $entry in $primaryFieldMap.entrySet() )
+      #if( $sortKeyFields.contains($entry.key) )
+        #set( $entryVal = $entry.value )
+        #set( $lastIdx = $entryVal.size() - 1 )
+        #set( $lastItem = $entryVal.get($lastIdx) )
+        $util.qr($ctx.args.put($entry.key, {
+  \\"eq\\": $lastItem
+}))
+      #else
+        $util.qr($ctx.args.put($entry.key, $entry.value))
+      #end
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth sort key fields on @auth owner field owner field as part of global secondary index handles ownerfield as part of sortKeyFields of GSI with default identity claim  1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $ownerClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim = \\"$ownerClaim::$currentClaim1\\" )
+    #set( $ownerClaimsList0 = [] )
+    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+    #if( $util.isString($ownerClaim) )
+      #if( $util.isList($util.parseJson($ownerClaim)) )
+        #set( $ownerClaim = $util.parseJson($ownerClaim) )
+      #else
+        #set( $ownerClaim = [$ownerClaim] )
+      #end
+    #end
+    $util.qr($ownerClaimsList0.addAll($ownerClaim))
+    #if( !$util.isNull($ctx.args.owner) )
+      #if( $util.isString($ctx.args.owner) )
+        #set( $ownerCondition = (($ownerClaim == $ctx.args.owner) || $ownerClaimsList0.contains($ctx.args.owner)) )
+      #else
+        #set( $ownerCondition = ($ownerClaim == $util.defaultIfNull($ctx.args.owner.get(\\"eq\\"), null) || $ownerClaimsList0.contains($util.defaultIfNull($ctx.args.owner.get(\\"eq\\"), null))) )
+        #if( !$ownerCondition )
+          #set( $entityValues = 0 )
+          #foreach( $argEntity in $ctx.args.owner.get(\\"eq\\") )
+            #if( $ownerClaimsList0.contains($argEntity) )
+              #set( $entityValues = $entityValues + 1 )
+            #end
+          #end
+          #if( $entityValues == $ctx.args.owner.get(\\"eq\\").size() )
+            #set( $ownerCondition = true )
+          #end
+        #end
+      #end
+      #if( $ownerCondition )
+        #set( $isAuthorized = true )
+        $util.qr($ctx.stash.put(\\"authFilter\\", null))
+      #end
+    #else
+      $util.qr($primaryFieldMap.put(\\"owner\\", $ownerClaimsList0))
+    #end
+  #end
+  #if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) && !$primaryFieldMap.isEmpty() )
+    #set( $sortKeyFields = [\\"owner\\"] )
+    #foreach( $entry in $primaryFieldMap.entrySet() )
+      #if( $sortKeyFields.contains($entry.key) )
+        #set( $entryVal = $entry.value )
+        #set( $lastIdx = $entryVal.size() - 1 )
+        #set( $lastItem = $entryVal.get($lastIdx) )
+        $util.qr($ctx.args.put($entry.key, {
+  \\"eq\\": $lastItem
+}))
+      #else
+        $util.qr($ctx.args.put($entry.key, $entry.value))
+      #end
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth sort key fields on @auth owner field owner field as part of global secondary index handles ownerfield as part of sortKeyFields of GSI with username identity claim  1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $ownerClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim) )
+
+    #set( $ownerClaimsList0 = [] )
+    #if( $util.isString($ownerClaim) )
+      #if( $util.isList($util.parseJson($ownerClaim)) )
+        #set( $ownerClaim = $util.parseJson($ownerClaim) )
+      #else
+        #set( $ownerClaim = [$ownerClaim] )
+      #end
+    #end
+    $util.qr($ownerClaimsList0.addAll($ownerClaim))
+    #if( !$util.isNull($ctx.args.owner) )
+      #if( $util.isString($ctx.args.owner) )
+        #set( $ownerCondition = (($ownerClaim == $ctx.args.owner) || $ownerClaimsList0.contains($ctx.args.owner)) )
+      #else
+        #set( $ownerCondition = ($ownerClaim == $util.defaultIfNull($ctx.args.owner.get(\\"eq\\"), null) || $ownerClaimsList0.contains($util.defaultIfNull($ctx.args.owner.get(\\"eq\\"), null))) )
+        #if( !$ownerCondition )
+          #set( $entityValues = 0 )
+          #foreach( $argEntity in $ctx.args.owner.get(\\"eq\\") )
+            #if( $ownerClaimsList0.contains($argEntity) )
+              #set( $entityValues = $entityValues + 1 )
+            #end
+          #end
+          #if( $entityValues == $ctx.args.owner.get(\\"eq\\").size() )
+            #set( $ownerCondition = true )
+          #end
+        #end
+      #end
+      #if( $ownerCondition )
+        #set( $isAuthorized = true )
+        $util.qr($ctx.stash.put(\\"authFilter\\", null))
+      #end
+    #else
+      $util.qr($primaryFieldMap.put(\\"owner\\", $ownerClaim))
+    #end
+  #end
+  #if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) && !$primaryFieldMap.isEmpty() )
+    #set( $sortKeyFields = [\\"owner\\"] )
+    #foreach( $entry in $primaryFieldMap.entrySet() )
+      #if( $sortKeyFields.contains($entry.key) )
+        #set( $entryVal = $entry.value )
+        #set( $lastIdx = $entryVal.size() - 1 )
+        #set( $lastItem = $entryVal.get($lastIdx) )
+        $util.qr($ctx.args.put($entry.key, {
+  \\"eq\\": $lastItem
+}))
+      #else
+        $util.qr($ctx.args.put($entry.key, $entry.value))
+      #end
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
 exports[`owner based @auth with identity claim feature flag disabled owner field where the field is a list 1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))

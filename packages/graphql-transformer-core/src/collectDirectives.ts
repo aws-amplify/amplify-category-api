@@ -12,7 +12,6 @@ import {
   parse,
   Kind,
 } from 'graphql';
-import { printer } from '@aws-amplify/amplify-prompts';
 export function collectDirectiveNames(sdl: string): string[] {
   const dirs = collectDirectives(sdl);
   return dirs.map(d => d.name.value);
@@ -70,7 +69,7 @@ export function collectDirectivesByType(sdl: string): Object {
     doc = parse(sdl);
   } catch (e) {
     if (e.message?.includes('Syntax Error')) {
-      printer.error('Your GraphQL schema is invalid. Update the schema to use proper syntax and try again.');
+      throw new Error(`Your GraphQL schema is invalid. Update the schema to use proper syntax and try again: ${e.message}`);
     }
     throw e;
   }

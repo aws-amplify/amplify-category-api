@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@2.1.1...@aws-amplify/graphql-transformer-interfaces@2.2.0) (2023-05-17)
+
+### Bug Fixes
+
+- remove DB info from schema global input ([d28a5cf](https://github.com/aws-amplify/amplify-category-api/commit/d28a5cfde7dbba31fe5540ef724b564c9c2eeef5))
+
+### Features
+
+- **graphql:** read datasource type from schema file ([d7f50e5](https://github.com/aws-amplify/amplify-category-api/commit/d7f50e5ca026a3bbf378437cf6a165cc5b438bb5))
+
 ## [2.1.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@2.1.0...@aws-amplify/graphql-transformer-interfaces@2.1.1) (2023-03-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces

@@ -475,6 +475,24 @@ export interface TransformerDataSourceManagerProvider {
 }
 
 // @public (undocumented)
+export type TransformerLog = {
+    message: string;
+    level: TransformerLogLevel;
+};
+
+// @public (undocumented)
+export enum TransformerLogLevel {
+    // (undocumented)
+    DEBUG = "DEBUG",
+    // (undocumented)
+    ERROR = "ERROR",
+    // (undocumented)
+    INFO = "INFO",
+    // (undocumented)
+    WARN = "WARN"
+}
+
+// @public (undocumented)
 export type TransformerModelEnhancementProvider = Partial<TransformerModelProvider>;
 
 // @public (undocumented)
@@ -551,6 +569,8 @@ export interface TransformerPluginProvider {
     field?: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, acc: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
     generateResolvers?: (context: TransformerContextProvider) => void;
+    // (undocumented)
+    getLogs?: () => TransformerLog[];
     // (undocumented)
     input?: (definition: InputObjectTypeDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)

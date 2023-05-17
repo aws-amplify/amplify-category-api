@@ -572,8 +572,6 @@ export function addIndexToResolverSlot(resolver: TransformerResolverProvider, li
       `${lines.join('\n')}\n${!isSync ? '{}' : ''}`,
       `${res.typeName}.${res.fieldName}.{slotName}.{slotIndex}.req.vtl`,
     ),
-    undefined,
-    isSync ? res.datasource : null,
   );
 }
 
@@ -605,6 +603,7 @@ function setSyncQueryMapSnippet(name: string, config: PrimaryKeyDirectiveConfigu
   expressions.push(
     raw(`$util.qr($QueryMap.put('${keys.join('+')}' , '${name}'))`),
     raw(`$util.qr($PkMap.put('${field.name.value}' , '${name}'))`),
+    qref(methodCall(ref('SkMap.put'), str(name), list(sortKeyFields.map(str)))),
   );
   return block('Set query expression for @key', expressions);
 }
@@ -625,6 +624,11 @@ export function constructSyncVTL(syncVTLContent: string, resolver: TransformerRe
   addIndexToResolverSlot(resolver, checks, true);
 }
 
+/**
+ * This function generates the VTL snippet to check whether a GSI/table can be queried to apply the sync filter.
+ * The filter must enclosed in an 'and' condition.
+ * { filter: { and: [ { genre: { eq: testSong.genre } } ] } }
+ */
 function setSyncQueryFilterSnippet(deltaSyncTableTtl: number) {
   const expressions: Expression[] = [];
   expressions.push(
@@ -647,6 +651,10 @@ function setSyncQueryFilterSnippet(deltaSyncTableTtl: number) {
                 compoundExpression([
                   set(ref('pk'), ref('entry.key')),
                   set(ref('scan'), bool(false)),
+                  set(ref('queryRequestVariables.partitionKey'), ref('pk')),
+                  set(ref('queryRequestVariables.sortKeys'), ref('SkMap.get($PkMap.get($pk))')),
+                  set(ref('queryRequestVariables.partitionKeyFilter'), obj({})),
+                  raw(`$util.qr($queryRequestVariables.partitionKeyFilter.put($pk, {'eq': $entry.value.eq}))`),
                   raw('$util.qr($ctx.args.put($pk,$entry.value.eq))'),
                   set(ref('index'), ref('PkMap.get($pk)')),
                 ]),
@@ -791,13 +799,15 @@ function setSyncKeyExpressionForRangeKey(queryExprReference: string) {
 }
 
 function makeSyncQueryResolver() {
-  const requestVariable = 'QueryRequest';
+  const requestVariable = 'ctx.stash.QueryRequest';
+  const queryRequestVariables = 'ctx.stash.QueryRequestVariables';
   const expressions: Expression[] = [];
   expressions.push(
-    ifElse(
+    iff(
       raw('!$scan'),
       compoundExpression([
         set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT})`)),
+        set(ref(queryRequestVariables), ref('queryRequestVariables')),
         set(
           ref(requestVariable),
           obj({
@@ -816,36 +826,36 @@ function makeSyncQueryResolver() {
         ),
         iff(ref('context.args.nextToken'), set(ref(`${requestVariable}.nextToken`), ref('context.args.nextToken')), true),
         iff(
-          raw('!$util.isNullOrEmpty($filterMap)'),
-          set(ref(`${requestVariable}.filter`), ref('util.parseJson($util.transform.toDynamoDBFilterExpression($filterMap))')),
+          and([
+            raw('!$util.isNullOrEmpty($filterMap)'),
+            notEquals(toJson(ref('filterMap')), toJson(obj({}))),
+          ]),
+          set(ref(`${requestVariable}.filter`), ref('filterMap')),
         ),
         iff(raw('$index != "dbTable"'), set(ref(`${requestVariable}.index`), ref('index'))),
-        raw(`$util.toJson($${requestVariable})`),
       ]),
-      DynamoDBMappingTemplate.syncItem({
-        filter: ifElse(
-          raw('!$util.isNullOrEmpty($ctx.args.filter)'),
-          ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'),
-          nul(),
-        ),
-        limit: ref(`util.defaultIfNull($ctx.args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
-        lastSync: ref('util.toJson($util.defaultIfNull($ctx.args.lastSync, null))'),
-        nextToken: ref('util.toJson($util.defaultIfNull($ctx.args.nextToken, null))'),
-      }),
     ),
+    raw(`$util.toJson({})`),
   );
   return block(' Set query expression for @key', expressions);
 }
 
 function generateSyncResolverInit() {
   const expressions: Expression[] = [];
+  const requestVariable = 'ctx.stash.QueryRequest';
   expressions.push(
     set(ref('index'), str('')),
     set(ref('scan'), bool(true)),
     set(ref('filterMap'), obj({})),
     set(ref('QueryMap'), obj({})),
     set(ref('PkMap'), obj({})),
+    set(ref('SkMap'), obj({})),
     set(ref('filterArgsMap'), obj({})),
+    iff(
+      ref(requestVariable),
+      raw('#return'),
+    ),
+    set(ref('queryRequestVariables'), obj({})),
   );
   return block('Set map initialization for @key', expressions);
 }
