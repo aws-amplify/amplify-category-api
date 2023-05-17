@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@1.2.1...@aws-amplify/graphql-transformer-core@1.3.0) (2023-05-17)
+
+### Bug Fixes
+
+- **auth:** ownerfield as pk in relational models ([#1389](https://github.com/aws-amplify/amplify-category-api/issues/1389)) ([20a38bd](https://github.com/aws-amplify/amplify-category-api/commit/20a38bd20d315a67280482a7dea5418dd9b0e4af))
+- build jobs ([33c1495](https://github.com/aws-amplify/amplify-category-api/commit/33c1495347a0365c1eafab48840ada2c2667d8cd))
+- error flow when secrets do not work ([6d04354](https://github.com/aws-amplify/amplify-category-api/commit/6d04354c67fd7c153469a19f5293e0c2e5f22a43))
+- global Amplify input type removed from compiled schema ([f75af60](https://github.com/aws-amplify/amplify-category-api/commit/f75af6001c6ff50433437fad2a0697e00baf5b88))
+- **graphql:** add option to disable resolver deduping ([30b32e9](https://github.com/aws-amplify/amplify-category-api/commit/30b32e90cd88758a67c738a247120d83379e99aa))
+- **graphql:** import rds errors due to primary key and index ([dbb8efe](https://github.com/aws-amplify/amplify-category-api/commit/dbb8efe89a9dbc60c4f3b975117a0481ad9475de))
+- **graphql:** make ids on nested non-model types required ([#1429](https://github.com/aws-amplify/amplify-category-api/issues/1429)) ([219884d](https://github.com/aws-amplify/amplify-category-api/commit/219884d691accfdf4b8676ae8adc4cb55c310df3))
+- PR feedback, windows build fix ([5a3f9cc](https://github.com/aws-amplify/amplify-category-api/commit/5a3f9cc09b6f63cd3520e5fd200d26ea3e4b7503))
+- remove DB info from schema global input ([d28a5cf](https://github.com/aws-amplify/amplify-category-api/commit/d28a5cfde7dbba31fe5540ef724b564c9c2eeef5))
+- remove dependency of v2 transformer core on schema generator ([aabbe46](https://github.com/aws-amplify/amplify-category-api/commit/aabbe466862e6f31e545a476d94644fd83295f45))
+- store database also in parameter store ([41cd7f3](https://github.com/aws-amplify/amplify-category-api/commit/41cd7f3855c8019c18b3e998b7f702bcb21471f1))
+
+### Features
+
+- **graphql:** read datasource type from schema file ([d7f50e5](https://github.com/aws-amplify/amplify-category-api/commit/d7f50e5ca026a3bbf378437cf6a165cc5b438bb5))
+
 ## [1.2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@1.2.0...@aws-amplify/graphql-transformer-core@1.2.1) (2023-04-25)
 
 ### Bug Fixes

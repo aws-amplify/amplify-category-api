@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.1.1...amplify-category-api-e2e-core@4.1.2) (2023-05-17)
+
+### Bug Fixes
+
+- error flow when secrets do not work ([6d04354](https://github.com/aws-amplify/amplify-category-api/commit/6d04354c67fd7c153469a19f5293e0c2e5f22a43))
+- global Amplify input type removed from compiled schema ([f75af60](https://github.com/aws-amplify/amplify-category-api/commit/f75af6001c6ff50433437fad2a0697e00baf5b88))
+- import correct cli core ([b94d6a4](https://github.com/aws-amplify/amplify-category-api/commit/b94d6a4952f6a4992ba81d924690de6ffe9ed2e9))
+
 ## [4.1.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.1.0...amplify-category-api-e2e-core@4.1.1) (2023-04-25)
 
 **Note:** Version bump only for package amplify-category-api-e2e-core

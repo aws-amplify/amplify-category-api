@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@2.1.3...@aws-amplify/graphql-auth-transformer@2.1.4) (2023-05-17)
+
+### Bug Fixes
+
+- **auth:** ownerfield as pk in relational models ([#1389](https://github.com/aws-amplify/amplify-category-api/issues/1389)) ([20a38bd](https://github.com/aws-amplify/amplify-category-api/commit/20a38bd20d315a67280482a7dea5418dd9b0e4af))
+- **auth:** ownerfield as sort key field of GSI ([10b25c4](https://github.com/aws-amplify/amplify-category-api/commit/10b25c43fb13888ba6d06e59c3dfa26fa7c54005))
+- don't filter group auth if user has no groups ([42729d5](https://github.com/aws-amplify/amplify-category-api/commit/42729d52cd41eea4a998088b37b208859d590d91))
+- **graphql:** add option to disable resolver deduping ([30b32e9](https://github.com/aws-amplify/amplify-category-api/commit/30b32e90cd88758a67c738a247120d83379e99aa))
+
 ## [2.1.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@2.1.2...@aws-amplify/graphql-auth-transformer@2.1.3) (2023-04-25)
 
 ### Bug Fixes
