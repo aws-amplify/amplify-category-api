@@ -4,6 +4,7 @@
 
 ```ts
 
+import { $TSAny } from '@aws-amplify/graphql-transformer-interfaces';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { APIIAMResourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ApiKeyConfig } from 'aws-cdk-lib/aws-appsync';
@@ -98,12 +99,6 @@ import { TypeNode } from 'graphql';
 import { TypeSystemDefinitionNode } from 'graphql';
 import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
-
-// @public (undocumented)
-export type $TSAny = any;
-
-// @public (undocumented)
-export type $TSObject = Record<string, $TSAny>;
 
 // @public (undocumented)
 export interface AmplifyApiGraphQlResourceStackTemplate {

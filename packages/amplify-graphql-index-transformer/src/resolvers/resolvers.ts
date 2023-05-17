@@ -1,9 +1,9 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
 import {
-  MappingTemplate, GraphQLTransform, AmplifyApiGraphQlResourceStackTemplate, SyncUtils, StackManager, DatasourceType, MYSQL_DB_TYPE, DDB_DB_TYPE, DBType, $TSAny,
+  MappingTemplate, GraphQLTransform, AmplifyApiGraphQlResourceStackTemplate, SyncUtils, StackManager, DatasourceType, MYSQL_DB_TYPE, DDB_DB_TYPE, DBType,
 } from '@aws-amplify/graphql-transformer-core';
 import {
-  DataSourceProvider, StackManagerProvider, TransformerContextProvider, TransformerPluginProvider, TransformerResolverProvider,
+  DataSourceProvider, StackManagerProvider, TransformerContextProvider, TransformerPluginProvider, TransformerResolverProvider, $TSAny,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';

@@ -1,4 +1,5 @@
-import { JSONUtilities, $TSObject } from '@aws-amplify/graphql-transformer-core';
+import { JSONUtilities } from '@aws-amplify/graphql-transformer-core';
+import { $TSObject } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   addAuthIdentityPoolAndUserPoolWithOAuth,
   addAuthUserPoolOnlyWithOAuth,

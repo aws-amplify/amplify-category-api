@@ -43,3 +43,4 @@ export {
 } from './deployment-resources';
 
 export { TransformerLog, TransformerLogLevel } from './transformer-log';
+export { $TSAny, $TSObject } from './types';
