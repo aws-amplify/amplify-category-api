@@ -43,8 +43,18 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
-          TEST_SUITE: custom-transformers.test.ts
+          TEST_SUITE: custom-transformers.test.ts|mock-api.test.ts|amplify-app.test.ts
           CLI_REGION: us-west-2
+      debug-session: true
+      depend-on:
+        - publish_to_local_registry
+    - identifier: run_e2e_tests2
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          TEST_SUITE: schema-versioned.test.ts|schema-predictions.test.ts
+          CLI_REGION: us-east-2
       debug-session: true
       depend-on:
         - publish_to_local_registry
