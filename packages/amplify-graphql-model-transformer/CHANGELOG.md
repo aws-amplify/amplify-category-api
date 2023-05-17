@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@1.2.1...@aws-amplify/graphql-model-transformer@1.3.0) (2023-05-17)
+
+### Bug Fixes
+
+- **auth:** ownerfield as pk in relational models ([#1389](https://github.com/aws-amplify/amplify-category-api/issues/1389)) ([20a38bd](https://github.com/aws-amplify/amplify-category-api/commit/20a38bd20d315a67280482a7dea5418dd9b0e4af))
+- **graphql:** import rds errors due to primary key and index ([dbb8efe](https://github.com/aws-amplify/amplify-category-api/commit/dbb8efe89a9dbc60c4f3b975117a0481ad9475de))
+- **graphql:** index rds query ([73389da](https://github.com/aws-amplify/amplify-category-api/commit/73389da088e794f89b5c649342ee680cbbb441c9))
+- **graphql:** make ids on nested non-model types required ([#1429](https://github.com/aws-amplify/amplify-category-api/issues/1429)) ([219884d](https://github.com/aws-amplify/amplify-category-api/commit/219884d691accfdf4b8676ae8adc4cb55c310df3))
+- PR feedback, windows build fix ([5a3f9cc](https://github.com/aws-amplify/amplify-category-api/commit/5a3f9cc09b6f63cd3520e5fd200d26ea3e4b7503))
+- rds v2 e2e tests ([f0f344d](https://github.com/aws-amplify/amplify-category-api/commit/f0f344d7034ab1fa4cdeb4a97429b2705d622848))
+- update lambda to get db details from ssm ([4e3d10b](https://github.com/aws-amplify/amplify-category-api/commit/4e3d10bce43d17e2f489df4c40a09d9e5b7e315b))
+
+### Features
+
+- add RDS primary key transformer ([b6cd813](https://github.com/aws-amplify/amplify-category-api/commit/b6cd813dcc36843c0a5686133e8af1600cd1badb))
+- **datastore-filters:** add filters for DataStore \_deleted property ([9812083](https://github.com/aws-amplify/amplify-category-api/commit/9812083cf6dd39b21d95241b2b637e62ea11083d))
+
 ## [1.2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@1.2.0...@aws-amplify/graphql-model-transformer@1.2.1) (2023-04-25)
 
 ### Bug Fixes

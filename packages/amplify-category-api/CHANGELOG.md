@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.2.1...@aws-amplify/amplify-category-api@5.3.0) (2023-05-17)
+
+### Bug Fixes
+
+- added await ([9aa13a2](https://github.com/aws-amplify/amplify-category-api/commit/9aa13a2bd39d9697069633de59e5f4410589764e))
+- auto generate schema from import api ([1c55fcc](https://github.com/aws-amplify/amplify-category-api/commit/1c55fccf76e0f3ea838be904dfa2209db883c8df))
+- build jobs ([33c1495](https://github.com/aws-amplify/amplify-category-api/commit/33c1495347a0365c1eafab48840ada2c2667d8cd))
+- error flow when secrets do not work ([6d04354](https://github.com/aws-amplify/amplify-category-api/commit/6d04354c67fd7c153469a19f5293e0c2e5f22a43))
+- global Amplify input type removed from compiled schema ([f75af60](https://github.com/aws-amplify/amplify-category-api/commit/f75af6001c6ff50433437fad2a0697e00baf5b88))
+- handle edge cases in the user experience ([ebd1ba9](https://github.com/aws-amplify/amplify-category-api/commit/ebd1ba9e828c58856e072e5fc51064c9d5c0ed69))
+- populate database secrets map only if imported database exists ([446d456](https://github.com/aws-amplify/amplify-category-api/commit/446d456d8b10f827c7f5f26892c1b47e9ef729f1))
+- rds v2 e2e tests ([f0f344d](https://github.com/aws-amplify/amplify-category-api/commit/f0f344d7034ab1fa4cdeb4a97429b2705d622848))
+- remove DB info from schema global input ([d28a5cf](https://github.com/aws-amplify/amplify-category-api/commit/d28a5cfde7dbba31fe5540ef724b564c9c2eeef5))
+- remove dependency of v2 transformer core on schema generator ([aabbe46](https://github.com/aws-amplify/amplify-category-api/commit/aabbe466862e6f31e545a476d94644fd83295f45))
+- retain user Amplify input in the schema ([df3dbec](https://github.com/aws-amplify/amplify-category-api/commit/df3dbecba54183262c544499424c8dbbcc78b421))
+- store database also in parameter store ([41cd7f3](https://github.com/aws-amplify/amplify-category-api/commit/41cd7f3855c8019c18b3e998b7f702bcb21471f1))
+- update lambda to get db details from ssm ([4e3d10b](https://github.com/aws-amplify/amplify-category-api/commit/4e3d10bce43d17e2f489df4c40a09d9e5b7e315b))
+- update tests ([3981bfa](https://github.com/aws-amplify/amplify-category-api/commit/3981bfa12dedafebb636c10ea24b0c64414c2408))
+
+### Features
+
+- add api import, generate-schema workflows ([a92c223](https://github.com/aws-amplify/amplify-category-api/commit/a92c223ee6b27d089991bbb1b1b4b7cd8592f910))
+- add multi-env secret management ([6c70600](https://github.com/aws-amplify/amplify-category-api/commit/6c70600bbb0fba5d6a33ac3a37739b5a65eef7a6))
+- add update RDS secrets workflow ([6966161](https://github.com/aws-amplify/amplify-category-api/commit/6966161eedf6fc7bac3266746fd8c5a39648bb0c))
+- add utils for param store calls ([bc26e71](https://github.com/aws-amplify/amplify-category-api/commit/bc26e71a99e279dc2fe2e7d2507ee50ee0d5c5fb))
+- **api:** generate graphql schema from internal schema representation ([5362983](https://github.com/aws-amplify/amplify-category-api/commit/5362983e7fa46f164f63f72c44c805dceb5f3f94))
+- **graphql:** read datasource type from schema file ([d7f50e5](https://github.com/aws-amplify/amplify-category-api/commit/d7f50e5ca026a3bbf378437cf6a165cc5b438bb5))
+- RDS generate schema handles default values ([e866dfa](https://github.com/aws-amplify/amplify-category-api/commit/e866dfa7cb113a736f52f4749dfc160350476970))
+- re-use the common flows b/w add and import api ([463bffc](https://github.com/aws-amplify/amplify-category-api/commit/463bffcf6d0b30d9e25027ca5a93d8dce15de0cf))
+
 ## [5.2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.2.0...@aws-amplify/amplify-category-api@5.2.1) (2023-04-25)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

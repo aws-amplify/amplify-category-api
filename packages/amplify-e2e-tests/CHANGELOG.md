@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.12.1...amplify-category-api-e2e-tests@3.12.2) (2023-05-17)
+
+### Bug Fixes
+
+- global Amplify input type removed from compiled schema ([f75af60](https://github.com/aws-amplify/amplify-category-api/commit/f75af6001c6ff50433437fad2a0697e00baf5b88))
+- **graphql:** add option to disable resolver deduping ([30b32e9](https://github.com/aws-amplify/amplify-category-api/commit/30b32e90cd88758a67c738a247120d83379e99aa))
+- rds v2 e2e tests ([f0f344d](https://github.com/aws-amplify/amplify-category-api/commit/f0f344d7034ab1fa4cdeb4a97429b2705d622848))
+
 ## [3.12.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.12.0...amplify-category-api-e2e-tests@3.12.1) (2023-04-25)
 
 ### Bug Fixes

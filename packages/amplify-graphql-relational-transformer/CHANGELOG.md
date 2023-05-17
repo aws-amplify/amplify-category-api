@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@1.1.3...@aws-amplify/graphql-relational-transformer@1.2.0) (2023-05-17)
+
+### Bug Fixes
+
+- **auth:** ownerfield as pk in relational models ([#1389](https://github.com/aws-amplify/amplify-category-api/issues/1389)) ([20a38bd](https://github.com/aws-amplify/amplify-category-api/commit/20a38bd20d315a67280482a7dea5418dd9b0e4af))
+
+### Features
+
+- **datastore-filters:** add filters for DataStore \_deleted property ([9812083](https://github.com/aws-amplify/amplify-category-api/commit/9812083cf6dd39b21d95241b2b637e62ea11083d))
+
 ## [1.1.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@1.1.2...@aws-amplify/graphql-relational-transformer@1.1.3) (2023-04-25)
 
 ### Bug Fixes
