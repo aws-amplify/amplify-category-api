@@ -12,7 +12,7 @@ import {
 import { Template as AssertionTemplate } from 'aws-cdk-lib/assertions';
 import { DocumentNode, parse } from 'graphql';
 import { IndexTransformer, PrimaryKeyTransformer } from '..';
-import * as resolverUtils from '../resolvers';
+import * as resolverUtils from '../resolvers/resolvers';
 
 const generateFeatureFlagWithBooleanOverrides = (overrides: Record<string, boolean>): FeatureFlagProvider => ({
   getBoolean: (name: string, defaultValue?: boolean): boolean => {

@@ -1,5 +1,8 @@
 import {
   GraphQLTransform,
+  RDSConnectionSecrets,
+  ImportedRDSType,
+  MYSQL_DB_TYPE,
   OverrideConfig,
   ResolverConfig,
   TransformerProjectConfig,
@@ -9,6 +12,7 @@ import {
   DeploymentResources,
   Template,
   TransformerPluginProvider,
+  TransformerLogLevel,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   $TSContext,
@@ -16,6 +20,7 @@ import {
   AmplifySupportedService,
   JSONUtilities,
   pathManager,
+  stateManager,
 } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
@@ -26,17 +31,16 @@ import {
 import _ from 'lodash';
 import path from 'path';
 /* eslint-disable-next-line import/no-cycle */
-import { searchablePushChecks } from './api-utils';
 import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import { isAuthModeUpdated } from './auth-mode-compare';
-import { showSandboxModePrompts } from './sandbox-mode-helpers';
 import { parseUserDefinedSlots } from './user-defined-slots';
 import {
   mergeUserConfigWithTransformOutput, writeDeploymentToDisk,
 } from './utils';
 import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerFactoryArgs, TransformerProjectOptions } from './transformer-options-types';
-import { ProjectOptions } from './transform-config';
+import { getExistingConnectionSecretNames, getSecretsKey, getDatabaseName } from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
+import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
@@ -193,7 +197,7 @@ const buildAPIProject = async (
     return undefined;
   }
 
-  const builtProject = await _buildProject(opts);
+  const builtProject = await _buildProject(context, opts);
 
   const buildLocation = path.join(opts.projectDirectory, 'build');
   const currentCloudLocation = opts.currentCloudBackendDirectory ? path.join(opts.currentCloudBackendDirectory, 'build') : undefined;
@@ -215,7 +219,7 @@ const buildAPIProject = async (
   return builtProject;
 };
 
-const _buildProject = async (opts: TransformerProjectOptions<TransformerFactoryArgs>): Promise<DeploymentResources> => {
+const _buildProject = async (context: $TSContext, opts: TransformerProjectOptions<TransformerFactoryArgs>): Promise<DeploymentResources> => {
   const userProjectConfig = opts.projectConfig;
   const stackMapping = userProjectConfig.config.StackMapping;
   const userDefinedSlots = {
@@ -240,8 +244,48 @@ const _buildProject = async (opts: TransformerProjectOptions<TransformerFactoryA
     overrideConfig: opts.overrideConfig,
   });
 
-  const schema = userProjectConfig.schema.toString();
-  const transformOutput = transform.transform(schema);
+  const { schema, modelToDatasourceMap } = userProjectConfig;
+  const datasourceSecretMap = await getDatasourceSecretMap(context);
+  try {
+    const transformOutput = transform.transform(schema.toString(), {
+      modelToDatasourceMap,
+      datasourceSecretParameterLocations: datasourceSecretMap,
+    });
 
-  return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput, opts);
+    return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput, opts);
+  } finally {
+    printTransformLogs(transform);
+  }
 };
+
+const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, RDSConnectionSecrets>> => {
+  const outputMap = new Map<string, RDSConnectionSecrets>();
+  const apiName = getAppSyncAPIName();
+  const secretsKey = await getSecretsKey();
+  const rdsSecretPaths = await getExistingConnectionSecretNames(context, apiName, secretsKey);
+  if (rdsSecretPaths) {
+    outputMap.set(MYSQL_DB_TYPE, rdsSecretPaths);
+  }
+  return outputMap;
+};
+
+const printTransformLogs = (transform: GraphQLTransform) => {
+  transform.getLogs().forEach((log) => {
+    switch (log.level) {
+      case TransformerLogLevel.ERROR:
+        printer.error(log.message);
+        break;
+      case TransformerLogLevel.WARN:
+        printer.warn(log.message);
+        break;
+      case TransformerLogLevel.INFO:
+        printer.info(log.message);
+        break;
+      case TransformerLogLevel.DEBUG:
+        printer.debug(log.message);
+        break;
+      default:
+        printer.error(log.message);
+    }
+  });
+}

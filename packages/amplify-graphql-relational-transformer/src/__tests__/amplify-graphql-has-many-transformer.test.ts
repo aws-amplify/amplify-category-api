@@ -413,8 +413,8 @@ test('many to many query', () => {
       id: ID!
       postID: ID! @index(name: "byPost", sortKeyFields: ["editorID"])
       editorID: ID! @index(name: "byEditor", sortKeyFields: ["postID"])
-      post: Post! @hasOne(fields: ["postID"])
-      editor: User! @hasOne(fields: ["editorID"])
+      post: Post! @belongsTo(fields: ["postID"])
+      editor: User! @belongsTo(fields: ["editorID"])
     }
 
     type User @model {
@@ -425,7 +425,13 @@ test('many to many query', () => {
 
   const transformer = new GraphQLTransform({
     featureFlags,
-    transformers: [new ModelTransformer(), new IndexTransformer(), new HasOneTransformer(), new HasManyTransformer()],
+    resolverConfig: {
+      project: {
+        ConflictDetection: 'VERSION',
+        ConflictHandler: ConflictHandlerType.AUTOMERGE,
+      },
+    },
+    transformers: [new ModelTransformer(), new IndexTransformer(), new HasOneTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
   });
 
   const out = transformer.transform(inputSchema);

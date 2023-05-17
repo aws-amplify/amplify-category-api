@@ -105,7 +105,7 @@ import {
   getAuthDirectiveRules,
   READ_MODEL_OPERATIONS,
 } from './utils';
-import { showDefaultIdentityClaimWarning, showOwnerCanReassignWarning, showOwnerFieldCaseWarning } from './utils/warnings';
+import { defaultIdentityClaimWarning, ownerCanReassignWarning, ownerFieldCaseWarning } from './utils/warnings';
 
 /**
  * util to get allowed roles for field
@@ -224,8 +224,14 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   };
 
   after = (context: TransformerContextProvider): void => {
-    showDefaultIdentityClaimWarning(context, this.rules);
-    showOwnerCanReassignWarning(this.authModelConfig);
+    const claimWarning = defaultIdentityClaimWarning(context, this.rules);
+    if (claimWarning) {
+      this.warn(claimWarning);
+    }
+    const reassignWarning = ownerCanReassignWarning(this.authModelConfig);
+    if (reassignWarning) {
+      this.warn(reassignWarning.message);
+    }
   };
 
   field = (
@@ -586,13 +592,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const roleDefinitions = acm.getRolesPerOperation('get').map((r) => this.roleMap.get(r)!);
     const tableKeySchema = getTable(ctx, def).keySchema;
-    const primaryFields = tableKeySchema.map((att) => att.attributeName);
     const primaryKey = getPartitionKey(tableKeySchema);
     const authExpression = generateAuthExpressionForQueries(
       this.configuredAuthProviders,
       roleDefinitions,
       def.fields ?? [],
-      primaryFields,
+      tableKeySchema,
       false,
       primaryKey,
     );
@@ -612,17 +617,18 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   ): void => {
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const roleDefinitions = acm.getRolesPerOperation('list').map((r) => this.roleMap.get(r)!);
-    let primaryFields: Array<string>;
+    // let primaryFields: Array<string>;
+    let keySchema: any;
     let partitionKey: string;
     const table = getTable(ctx, def);
     try {
       if (indexName) {
         /* eslint-disable @typescript-eslint/no-explicit-any */
-        primaryFields = getKeySchema(table, indexName).map((att: any) => att.attributeName);
+        keySchema = getKeySchema(table,indexName);
         /* eslint-enable */
       } else {
         /* eslint-disable @typescript-eslint/no-explicit-any */
-        primaryFields = table.keySchema.map((att: any) => att.attributeName);
+        keySchema = table.keySchema;
         partitionKey = getPartitionKey(table.keySchema);
         /* eslint-enable */
       }
@@ -633,7 +639,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       this.configuredAuthProviders,
       roleDefinitions,
       def.fields ?? [],
-      primaryFields,
+      keySchema,
       !!indexName,
       partitionKey,
     );
@@ -712,12 +718,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     if (ctx.isProjectUsingDataStore()) {
       const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
       const roleDefinitions = acm.getRolesPerOperation('sync').map((r) => this.roleMap.get(r)!);
-      const primaryFields = getTable(ctx, def).keySchema.map((att) => att.attributeName);
+      const keySchema = getTable(ctx, def).keySchema;
       const authExpression = generateAuthExpressionForQueries(
         this.configuredAuthProviders,
         roleDefinitions,
         def.fields ?? [],
-        primaryFields,
+        keySchema,
       );
       resolver.addToSlot(
         'auth',
@@ -1074,7 +1080,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const ownerFieldsToAdd = ownerFields.filter((field) => !existingFields.includes(field));
     ownerFieldsToAdd.forEach((ownerField) => {
       const warningField = existingFields.find((field) => field.toLowerCase() === ownerField.toLowerCase());
-      if (warningField) showOwnerFieldCaseWarning(ownerField, warningField, modelName);
+      if (warningField) {
+        this.warn(ownerFieldCaseWarning(ownerField, warningField, modelName));
+      }
       (modelObject as any).fields.push(makeField(ownerField, [], makeNamedType('String')));
     });
     ctx.output.putType(modelObject);

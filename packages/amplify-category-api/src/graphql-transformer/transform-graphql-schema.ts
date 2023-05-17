@@ -15,8 +15,8 @@ export const transformGraphQLSchema = async (
   try {
     const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
     return transformerVersion === 2
-      ? transformGraphQLSchemaV2(context, options)
-      : transformGraphQLSchemaV1(context, options);
+      ? await transformGraphQLSchemaV2(context, options)
+      : await transformGraphQLSchemaV1(context, options);
   } catch (error) {
     throw AmplifyGraphQLTransformerErrorConverter.convert(error);
   }

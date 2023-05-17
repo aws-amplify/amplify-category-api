@@ -364,7 +364,7 @@ export interface Template {
 export type TransformerAuthProvider = TransformerPluginProvider;
 
 // @public (undocumented)
-export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'sandboxModeEnabled'>;
+export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'sandboxModeEnabled'>;
 
 // @public (undocumented)
 export interface TransformerContextOutputProvider {
@@ -433,6 +433,8 @@ export interface TransformerContextProvider {
     // (undocumented)
     dataSources: TransformerDataSourceManagerProvider;
     // (undocumented)
+    datasourceSecretParameterLocations: Map<string, TransformerSecrets>;
+    // (undocumented)
     featureFlags: FeatureFlagProvider;
     // (undocumented)
     getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
@@ -444,6 +446,10 @@ export interface TransformerContextProvider {
     //
     // (undocumented)
     metadata: TransformerContextMetadataProvider;
+    // Warning: (ae-forgotten-export) The symbol "DatasourceType" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    modelToDatasourceMap: Map<string, DatasourceType>;
     // (undocumented)
     output: TransformerContextOutputProvider;
     // (undocumented)
@@ -466,6 +472,24 @@ export interface TransformerDataSourceManagerProvider {
     get(type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): DataSourceInstance;
     // (undocumented)
     has(name: string): boolean;
+}
+
+// @public (undocumented)
+export type TransformerLog = {
+    message: string;
+    level: TransformerLogLevel;
+};
+
+// @public (undocumented)
+export enum TransformerLogLevel {
+    // (undocumented)
+    DEBUG = "DEBUG",
+    // (undocumented)
+    ERROR = "ERROR",
+    // (undocumented)
+    INFO = "INFO",
+    // (undocumented)
+    WARN = "WARN"
 }
 
 // @public (undocumented)
@@ -545,6 +569,8 @@ export interface TransformerPluginProvider {
     field?: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, acc: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
     generateResolvers?: (context: TransformerContextProvider) => void;
+    // (undocumented)
+    getLogs?: () => TransformerLog[];
     // (undocumented)
     input?: (definition: InputObjectTypeDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
@@ -677,13 +703,18 @@ export interface TransformerSchemaHelperProvider {
 }
 
 // @public (undocumented)
-export type TransformerSchemaVisitStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'output' | 'providerRegistry' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'sandboxModeEnabled'>;
+export type TransformerSchemaVisitStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'sandboxModeEnabled'>;
+
+// @public (undocumented)
+export type TransformerSecrets = {
+    [key: string]: any;
+};
 
 // @public (undocumented)
 export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;
 
 // @public (undocumented)
-export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'output' | 'providerRegistry' | 'dataSources' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'sandboxModeEnabled' | 'resourceHelper' | 'resolvers' | 'stackManager'>;
+export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'dataSources' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'sandboxModeEnabled' | 'resourceHelper' | 'resolvers' | 'stackManager'>;
 
 // @public (undocumented)
 export interface TransformHostProvider {

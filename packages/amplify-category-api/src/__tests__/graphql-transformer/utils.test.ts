@@ -1,5 +1,5 @@
 import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from '../../graphql-transformer/utils';
-import { TransformerProjectConfig } from '@aws-amplify/graphql-transformer-core';
+import { TransformerProjectConfig, DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -73,6 +73,7 @@ describe('graphql transformer utils', () => {
           pipelineFunctions: {},
           resolvers: {},
           stacks: {},
+          modelToDatasourceMap: new Map<string, DatasourceType>(),
           config: { Version: 5, ElasticsearchWarning: true },
         } as TransformerProjectConfig;
       });
@@ -94,6 +95,7 @@ describe('graphql transformer utils', () => {
             'Query.listTodos.req.vtl': '$util.unauthorized\n',
           },
           stacks: {},
+          modelToDatasourceMap: new Map<string, DatasourceType>(),
           config: { Version: 5, ElasticsearchWarning: true },
         } as TransformerProjectConfig;
       });
@@ -115,6 +117,7 @@ describe('graphql transformer utils', () => {
           },
           resolvers: {},
           stacks: {},
+          modelToDatasourceMap: new Map<string, DatasourceType>(),
           config: { Version: 5, ElasticsearchWarning: true },
         } as TransformerProjectConfig;
       });
@@ -200,6 +203,7 @@ describe('graphql transformer utils', () => {
               },
             },
           },
+          modelToDatasourceMap: new Map<string, DatasourceType>(),
           config: { Version: 5, ElasticsearchWarning: true },
         } as unknown as TransformerProjectConfig;
       });

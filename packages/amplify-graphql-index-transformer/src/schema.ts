@@ -32,9 +32,9 @@ import {
   withNamedNodeNamed,
   wrapNonNull,
 } from 'graphql-transformer-common';
+import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
 import { lookupResolverName } from './utils';
-import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 
 export function addKeyConditionInputs(
   config: PrimaryKeyDirectiveConfiguration | IndexDirectiveConfiguration,
@@ -115,41 +115,6 @@ export function updateGetField(config: PrimaryKeyDirectiveConfiguration, ctx: Tr
       ...query,
       fields: query.fields!.map((field: FieldDefinitionNode) => {
         return field.name.value === resolverField.name.value ? resolverField : field;
-      }),
-    };
-    ctx.output.updateObject(query);
-  }
-}
-
-export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
-  const resolverName = lookupResolverName(config, ctx, 'list');
-  let query = ctx.output.getQuery();
-
-  if (!(resolverName && query)) {
-    return;
-  }
-
-  let listField = query.fields!.find((field: FieldDefinitionNode) => field.name.value === resolverName) as FieldDefinitionNode;
-  if (listField) {
-    const args = [createHashField(config)];
-
-    const sortField = tryAndCreateSortField(config, ctx);
-    if (sortField) {
-      args.push(sortField);
-    }
-
-    if (Array.isArray(listField.arguments)) {
-      args.push(...listField.arguments);
-    }
-
-    args.push(makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')));
-    ensureModelSortDirectionEnum(ctx);
-
-    listField = { ...listField, arguments: args };
-    query = {
-      ...query,
-      fields: query.fields!.map((field: FieldDefinitionNode) => {
-        return field.name.value === listField.name.value ? listField : field;
       }),
     };
     ctx.output.updateObject(query);
@@ -237,7 +202,7 @@ export function updateMutationConditionInput(
   ctx.output.putType(updatedInput);
 }
 
-function createHashField(config: PrimaryKeyDirectiveConfiguration | IndexDirectiveConfiguration): InputValueDefinitionNode {
+export function createHashField(config: PrimaryKeyDirectiveConfiguration | IndexDirectiveConfiguration): InputValueDefinitionNode {
   const { field } = config;
   const type = "queryField" in config ? makeNonNullType(makeNamedType(getBaseType(field.type))) : makeNamedType(getBaseType(field.type));
   return makeInputValueDefinition(field.name.value, type);
@@ -399,7 +364,7 @@ function generateModelXConnectionType(config: IndexDirectiveConfiguration, ctx: 
   ctx.output.addObjectExtension(connectionTypeExtension);
 }
 
-function ensureModelSortDirectionEnum(ctx: TransformerContextProvider): void {
+export function ensureModelSortDirectionEnum(ctx: TransformerContextProvider): void {
   if (!ctx.output.hasType('ModelSortDirection')) {
     const modelSortDirection = makeModelSortDirectionEnumObject();
 

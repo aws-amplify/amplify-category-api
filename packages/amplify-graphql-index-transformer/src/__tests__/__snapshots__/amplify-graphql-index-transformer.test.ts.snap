@@ -514,7 +514,7 @@ $util.toJson({})
   \\"index\\": \\"CategoryGSI\\"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == \\"DESC\\" )
+                  && $ctx.args.sortDirection == \\"DESC\\" )
   #set( $QueryRequest.scanIndexForward = false )
 #else
   #set( $QueryRequest.scanIndexForward = true )
@@ -1164,7 +1164,7 @@ $util.toJson({})
   \\"index\\": \\"GSI\\"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == \\"DESC\\" )
+                  && $ctx.args.sortDirection == \\"DESC\\" )
   #set( $QueryRequest.scanIndexForward = false )
 #else
   #set( $QueryRequest.scanIndexForward = true )
@@ -1793,7 +1793,7 @@ $util.toJson({})
   \\"index\\": \\"GSI_Email\\"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == \\"DESC\\" )
+                  && $ctx.args.sortDirection == \\"DESC\\" )
   #set( $QueryRequest.scanIndexForward = false )
 #else
   #set( $QueryRequest.scanIndexForward = true )
@@ -2713,7 +2713,7 @@ $util.toJson({})
   \\"index\\": \\"CategoryGSI\\"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == \\"DESC\\" )
+                  && $ctx.args.sortDirection == \\"DESC\\" )
   #set( $QueryRequest.scanIndexForward = false )
 #else
   #set( $QueryRequest.scanIndexForward = true )
@@ -3310,7 +3310,7 @@ $util.toJson({})
   \\"index\\": \\"ByCreatedAt\\"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == \\"DESC\\" )
+                  && $ctx.args.sortDirection == \\"DESC\\" )
   #set( $QueryRequest.scanIndexForward = false )
 #else
   #set( $QueryRequest.scanIndexForward = true )
@@ -3417,7 +3417,7 @@ $util.toJson({})
   \\"index\\": \\"ByStatus\\"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == \\"DESC\\" )
+                  && $ctx.args.sortDirection == \\"DESC\\" )
   #set( $QueryRequest.scanIndexForward = false )
 #else
   #set( $QueryRequest.scanIndexForward = true )
@@ -3635,15 +3635,22 @@ $util.toJson({})
 #set( $filterMap = {} )
 #set( $QueryMap = {} )
 #set( $PkMap = {} )
+#set( $SkMap = {} )
 #set( $filterArgsMap = {} )
+#if( $ctx.stash.QueryRequest )
+  #return
+#end
+#set( $queryRequestVariables = {} )
 ## [End] Set map initialization for @key **
 ## [Start] Set query expression for @key **
 $util.qr($QueryMap.put('status+createdAt' , 'ByStatus'))
 $util.qr($PkMap.put('status' , 'ByStatus'))
+$util.qr($SkMap.put(\\"ByStatus\\", [\\"createdAt\\"]))
 ## [End] Set query expression for @key **
 ## [Start] Set query expression for @key **
 $util.qr($QueryMap.put('createdAt+status' , 'ByCreatedAt'))
 $util.qr($PkMap.put('createdAt' , 'ByCreatedAt'))
+$util.qr($SkMap.put(\\"ByCreatedAt\\", [\\"status\\"]))
 ## [End] Set query expression for @key **
 ## [Start] Set query expression for @key **
 #set( $filterArgsMap = $ctx.args.filter.get(\\"and\\") )
@@ -3660,6 +3667,10 @@ $util.qr($PkMap.put('createdAt' , 'ByCreatedAt'))
       #if( $ind == 0 && !$util.isNullOrEmpty($entry.value.eq) && !$util.isNullOrEmpty($PkMap.get($entry.key)) )
         #set( $pk = $entry.key )
         #set( $scan = false )
+        #set( $queryRequestVariables.partitionKey = $pk )
+        #set( $queryRequestVariables.sortKeys = $SkMap.get($PkMap.get($pk)) )
+        #set( $queryRequestVariables.partitionKeyFilter = {} )
+        $util.qr($queryRequestVariables.partitionKeyFilter.put($pk, {'eq': $entry.value.eq}))
         $util.qr($ctx.args.put($pk,$entry.value.eq))
         #set( $index = $PkMap.get($pk) )
       #end
@@ -3731,7 +3742,8 @@ $util.qr($PkMap.put('createdAt' , 'ByCreatedAt'))
 ## [Start]  Set query expression for @key **
 #if( !$scan )
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
-  #set( $QueryRequest = {
+  #set( $ctx.stash.QueryRequestVariables = $queryRequestVariables )
+  #set( $ctx.stash.QueryRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Sync\\",
   \\"limit\\": $limit,
@@ -3740,32 +3752,19 @@ $util.qr($PkMap.put('createdAt' , 'ByCreatedAt'))
 } )
   #if( !$util.isNull($ctx.args.sortDirection)
                     && $ctx.args.sortDirection == \\"DESC\\" )
-    #set( $QueryRequest.scanIndexForward = false )
+    #set( $ctx.stash.QueryRequest.scanIndexForward = false )
   #else
-    #set( $QueryRequest.scanIndexForward = true )
+    #set( $ctx.stash.QueryRequest.scanIndexForward = true )
   #end
-#if( $context.args.nextToken ) #set( $QueryRequest.nextToken = $context.args.nextToken ) #end
-  #if( !$util.isNullOrEmpty($filterMap) )
-    #set( $QueryRequest.filter = $util.parseJson($util.transform.toDynamoDBFilterExpression($filterMap)) )
+#if( $context.args.nextToken ) #set( $ctx.stash.QueryRequest.nextToken = $context.args.nextToken ) #end
+  #if( !$util.isNullOrEmpty($filterMap) && $util.toJson($filterMap) != $util.toJson({}) )
+    #set( $ctx.stash.QueryRequest.filter = $filterMap )
   #end
   #if( $index != \\"dbTable\\" )
-    #set( $QueryRequest.index = $index )
+    #set( $ctx.stash.QueryRequest.index = $index )
   #end
-  $util.toJson($QueryRequest)
-#else
-{
-      \\"version\\": \\"2018-05-29\\",
-      \\"operation\\": \\"Sync\\",
-      \\"limit\\": $util.defaultIfNull($ctx.args.limit, 100),
-      \\"nextToken\\": $util.toJson($util.defaultIfNull($ctx.args.nextToken, null)),
-      \\"lastSync\\": $util.toJson($util.defaultIfNull($ctx.args.lastSync, null)),
-      \\"filter\\":     #if( !$util.isNullOrEmpty($ctx.args.filter) )
-$util.transform.toDynamoDBFilterExpression($ctx.args.filter)
-    #else
-null
-    #end
-  }
 #end
+$util.toJson({})
 ## [End]  Set query expression for @key **
 ",
   "Query.syncItems.preAuth.2.req.vtl": "## [Start] Set map initialization for @key **
@@ -3774,11 +3773,17 @@ null
 #set( $filterMap = {} )
 #set( $QueryMap = {} )
 #set( $PkMap = {} )
+#set( $SkMap = {} )
 #set( $filterArgsMap = {} )
+#if( $ctx.stash.QueryRequest )
+  #return
+#end
+#set( $queryRequestVariables = {} )
 ## [End] Set map initialization for @key **
 ## [Start] Set query expression for @key **
 $util.qr($QueryMap.put('orderId+status+createdAt' , 'dbTable'))
 $util.qr($PkMap.put('orderId' , 'dbTable'))
+$util.qr($SkMap.put(\\"dbTable\\", [\\"status\\", \\"createdAt\\"]))
 ## [End] Set query expression for @key **
 ## [Start] Set query expression for @key **
 #set( $filterArgsMap = $ctx.args.filter.get(\\"and\\") )
@@ -3795,6 +3800,10 @@ $util.qr($PkMap.put('orderId' , 'dbTable'))
       #if( $ind == 0 && !$util.isNullOrEmpty($entry.value.eq) && !$util.isNullOrEmpty($PkMap.get($entry.key)) )
         #set( $pk = $entry.key )
         #set( $scan = false )
+        #set( $queryRequestVariables.partitionKey = $pk )
+        #set( $queryRequestVariables.sortKeys = $SkMap.get($PkMap.get($pk)) )
+        #set( $queryRequestVariables.partitionKeyFilter = {} )
+        $util.qr($queryRequestVariables.partitionKeyFilter.put($pk, {'eq': $entry.value.eq}))
         $util.qr($ctx.args.put($pk,$entry.value.eq))
         #set( $index = $PkMap.get($pk) )
       #end
@@ -3866,7 +3875,8 @@ $util.qr($PkMap.put('orderId' , 'dbTable'))
 ## [Start]  Set query expression for @key **
 #if( !$scan )
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
-  #set( $QueryRequest = {
+  #set( $ctx.stash.QueryRequestVariables = $queryRequestVariables )
+  #set( $ctx.stash.QueryRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Sync\\",
   \\"limit\\": $limit,
@@ -3875,38 +3885,63 @@ $util.qr($PkMap.put('orderId' , 'dbTable'))
 } )
   #if( !$util.isNull($ctx.args.sortDirection)
                     && $ctx.args.sortDirection == \\"DESC\\" )
-    #set( $QueryRequest.scanIndexForward = false )
+    #set( $ctx.stash.QueryRequest.scanIndexForward = false )
   #else
-    #set( $QueryRequest.scanIndexForward = true )
+    #set( $ctx.stash.QueryRequest.scanIndexForward = true )
   #end
-#if( $context.args.nextToken ) #set( $QueryRequest.nextToken = $context.args.nextToken ) #end
-  #if( !$util.isNullOrEmpty($filterMap) )
-    #set( $QueryRequest.filter = $util.parseJson($util.transform.toDynamoDBFilterExpression($filterMap)) )
+#if( $context.args.nextToken ) #set( $ctx.stash.QueryRequest.nextToken = $context.args.nextToken ) #end
+  #if( !$util.isNullOrEmpty($filterMap) && $util.toJson($filterMap) != $util.toJson({}) )
+    #set( $ctx.stash.QueryRequest.filter = $filterMap )
   #end
   #if( $index != \\"dbTable\\" )
-    #set( $QueryRequest.index = $index )
+    #set( $ctx.stash.QueryRequest.index = $index )
   #end
-  $util.toJson($QueryRequest)
-#else
-{
-      \\"version\\": \\"2018-05-29\\",
-      \\"operation\\": \\"Sync\\",
-      \\"limit\\": $util.defaultIfNull($ctx.args.limit, 100),
-      \\"nextToken\\": $util.toJson($util.defaultIfNull($ctx.args.nextToken, null)),
-      \\"lastSync\\": $util.toJson($util.defaultIfNull($ctx.args.lastSync, null)),
-      \\"filter\\":     #if( !$util.isNullOrEmpty($ctx.args.filter) )
-$util.transform.toDynamoDBFilterExpression($ctx.args.filter)
-    #else
-null
-    #end
-  }
 #end
+$util.toJson({})
 ## [End]  Set query expression for @key **
 ",
   "Query.syncItems.req.vtl": "## [Start] Sync Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+#set( $queryFilterContainsAuthField = false )
+#set( $authFilterContainsSortKey = false )
+#set( $useScan = true )
+#if( $util.isNullOrEmpty($ctx.stash.authFilter) && $ctx.stash.QueryRequest )
+  #set( $useScan = false )
+#end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
+  #if( $ctx.stash.QueryRequestVariables.partitionKey )
+    #foreach( $filterItem in $ctx.stash.authFilter.or )
+      #if( $filterItem.get($ctx.stash.QueryRequestVariables.partitionKey) )
+        #set( $queryFilterContainsAuthField = true )
+      #end
+    #end
+    #if( !$queryFilterContainsAuthField )
+      #foreach( $filterItem in $ctx.stash.authFilter.or )
+        #foreach( $sortKey in $ctx.stash.QueryRequestVariables.sortKeys )
+          #if( $filterItem.get($sortKey) )
+            #set( $authFilterContainsSortKey = true )
+          #end
+        #end
+      #end
+      #if( !$authFilterContainsSortKey )
+        #if( !$util.isNullOrEmpty($ctx.stash.QueryRequest.filter) )
+          #set( $ctx.stash.QueryRequest.filter = {
+  \\"and\\":   [$ctx.stash.QueryRequest.filter, $ctx.stash.authFilter]
+} )
+        #else
+          #set( $ctx.stash.QueryRequest.filter = $ctx.stash.authFilter )
+        #end
+        #set( $useScan = false )
+      #end
+    #else
+      #foreach( $filterItem in $ctx.stash.authFilter.or )
+        #if( $util.toJson($filterItem) == $util.toJson($ctx.stash.QueryRequestVariables.partitionKeyFilter) )
+          #set( $useScan = false )
+        #end
+      #end
+    #end
+  #end
   #if( !$util.isNullOrEmpty($args.filter) )
     #set( $filter = {
   \\"and\\":   [$filter, $args.filter]
@@ -3926,18 +3961,25 @@ null
     #set( $filter = $filterExpression )
   #end
 #end
+#if( !$useScan )
+  #if( $ctx.stash.QueryRequest.filter )
+    #set( $ctx.stash.QueryRequest.filter = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.QueryRequest.filter)) )
+  #end
+  $util.toJson($ctx.stash.QueryRequest)
+#else
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Sync\\",
-  \\"filter\\":   #if( $filter )
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"Sync\\",
+      \\"filter\\":     #if( $filter )
 $util.toJson($filter)
-  #else
+    #else
 null
-  #end,
-  \\"limit\\": $util.defaultIfNull($args.limit, 100),
-  \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
-  \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null))
-}
+    #end,
+      \\"limit\\": $util.defaultIfNull($args.limit, 100),
+      \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
+      \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null))
+  }
+#end
 ## [End] Sync Request template. **",
   "Query.syncItems.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
@@ -4479,7 +4521,7 @@ $util.toJson({})
   \\"index\\": \\"byGenre\\"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == \\"DESC\\" )
+                  && $ctx.args.sortDirection == \\"DESC\\" )
   #set( $QueryRequest.scanIndexForward = false )
 #else
   #set( $QueryRequest.scanIndexForward = true )
@@ -4526,11 +4568,17 @@ $util.toJson({})
 #set( $filterMap = {} )
 #set( $QueryMap = {} )
 #set( $PkMap = {} )
+#set( $SkMap = {} )
 #set( $filterArgsMap = {} )
+#if( $ctx.stash.QueryRequest )
+  #return
+#end
+#set( $queryRequestVariables = {} )
 ## [End] Set map initialization for @key **
 ## [Start] Set query expression for @key **
 $util.qr($QueryMap.put('genre' , 'byGenre'))
 $util.qr($PkMap.put('genre' , 'byGenre'))
+$util.qr($SkMap.put(\\"byGenre\\", []))
 ## [End] Set query expression for @key **
 ## [Start] Set query expression for @key **
 #set( $filterArgsMap = $ctx.args.filter.get(\\"and\\") )
@@ -4547,6 +4595,10 @@ $util.qr($PkMap.put('genre' , 'byGenre'))
       #if( $ind == 0 && !$util.isNullOrEmpty($entry.value.eq) && !$util.isNullOrEmpty($PkMap.get($entry.key)) )
         #set( $pk = $entry.key )
         #set( $scan = false )
+        #set( $queryRequestVariables.partitionKey = $pk )
+        #set( $queryRequestVariables.sortKeys = $SkMap.get($PkMap.get($pk)) )
+        #set( $queryRequestVariables.partitionKeyFilter = {} )
+        $util.qr($queryRequestVariables.partitionKeyFilter.put($pk, {'eq': $entry.value.eq}))
         $util.qr($ctx.args.put($pk,$entry.value.eq))
         #set( $index = $PkMap.get($pk) )
       #end
@@ -4618,7 +4670,8 @@ $util.qr($PkMap.put('genre' , 'byGenre'))
 ## [Start]  Set query expression for @key **
 #if( !$scan )
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
-  #set( $QueryRequest = {
+  #set( $ctx.stash.QueryRequestVariables = $queryRequestVariables )
+  #set( $ctx.stash.QueryRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Sync\\",
   \\"limit\\": $limit,
@@ -4627,38 +4680,63 @@ $util.qr($PkMap.put('genre' , 'byGenre'))
 } )
   #if( !$util.isNull($ctx.args.sortDirection)
                     && $ctx.args.sortDirection == \\"DESC\\" )
-    #set( $QueryRequest.scanIndexForward = false )
+    #set( $ctx.stash.QueryRequest.scanIndexForward = false )
   #else
-    #set( $QueryRequest.scanIndexForward = true )
+    #set( $ctx.stash.QueryRequest.scanIndexForward = true )
   #end
-#if( $context.args.nextToken ) #set( $QueryRequest.nextToken = $context.args.nextToken ) #end
-  #if( !$util.isNullOrEmpty($filterMap) )
-    #set( $QueryRequest.filter = $util.parseJson($util.transform.toDynamoDBFilterExpression($filterMap)) )
+#if( $context.args.nextToken ) #set( $ctx.stash.QueryRequest.nextToken = $context.args.nextToken ) #end
+  #if( !$util.isNullOrEmpty($filterMap) && $util.toJson($filterMap) != $util.toJson({}) )
+    #set( $ctx.stash.QueryRequest.filter = $filterMap )
   #end
   #if( $index != \\"dbTable\\" )
-    #set( $QueryRequest.index = $index )
+    #set( $ctx.stash.QueryRequest.index = $index )
   #end
-  $util.toJson($QueryRequest)
-#else
-{
-      \\"version\\": \\"2018-05-29\\",
-      \\"operation\\": \\"Sync\\",
-      \\"limit\\": $util.defaultIfNull($ctx.args.limit, 100),
-      \\"nextToken\\": $util.toJson($util.defaultIfNull($ctx.args.nextToken, null)),
-      \\"lastSync\\": $util.toJson($util.defaultIfNull($ctx.args.lastSync, null)),
-      \\"filter\\":     #if( !$util.isNullOrEmpty($ctx.args.filter) )
-$util.transform.toDynamoDBFilterExpression($ctx.args.filter)
-    #else
-null
-    #end
-  }
 #end
+$util.toJson({})
 ## [End]  Set query expression for @key **
 ",
   "Query.syncSongs.req.vtl": "## [Start] Sync Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+#set( $queryFilterContainsAuthField = false )
+#set( $authFilterContainsSortKey = false )
+#set( $useScan = true )
+#if( $util.isNullOrEmpty($ctx.stash.authFilter) && $ctx.stash.QueryRequest )
+  #set( $useScan = false )
+#end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
+  #if( $ctx.stash.QueryRequestVariables.partitionKey )
+    #foreach( $filterItem in $ctx.stash.authFilter.or )
+      #if( $filterItem.get($ctx.stash.QueryRequestVariables.partitionKey) )
+        #set( $queryFilterContainsAuthField = true )
+      #end
+    #end
+    #if( !$queryFilterContainsAuthField )
+      #foreach( $filterItem in $ctx.stash.authFilter.or )
+        #foreach( $sortKey in $ctx.stash.QueryRequestVariables.sortKeys )
+          #if( $filterItem.get($sortKey) )
+            #set( $authFilterContainsSortKey = true )
+          #end
+        #end
+      #end
+      #if( !$authFilterContainsSortKey )
+        #if( !$util.isNullOrEmpty($ctx.stash.QueryRequest.filter) )
+          #set( $ctx.stash.QueryRequest.filter = {
+  \\"and\\":   [$ctx.stash.QueryRequest.filter, $ctx.stash.authFilter]
+} )
+        #else
+          #set( $ctx.stash.QueryRequest.filter = $ctx.stash.authFilter )
+        #end
+        #set( $useScan = false )
+      #end
+    #else
+      #foreach( $filterItem in $ctx.stash.authFilter.or )
+        #if( $util.toJson($filterItem) == $util.toJson($ctx.stash.QueryRequestVariables.partitionKeyFilter) )
+          #set( $useScan = false )
+        #end
+      #end
+    #end
+  #end
   #if( !$util.isNullOrEmpty($args.filter) )
     #set( $filter = {
   \\"and\\":   [$filter, $args.filter]
@@ -4678,18 +4756,25 @@ null
     #set( $filter = $filterExpression )
   #end
 #end
+#if( !$useScan )
+  #if( $ctx.stash.QueryRequest.filter )
+    #set( $ctx.stash.QueryRequest.filter = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.QueryRequest.filter)) )
+  #end
+  $util.toJson($ctx.stash.QueryRequest)
+#else
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Sync\\",
-  \\"filter\\":   #if( $filter )
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"Sync\\",
+      \\"filter\\":     #if( $filter )
 $util.toJson($filter)
-  #else
+    #else
 null
-  #end,
-  \\"limit\\": $util.defaultIfNull($args.limit, 100),
-  \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
-  \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null))
-}
+    #end,
+      \\"limit\\": $util.defaultIfNull($args.limit, 100),
+      \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
+      \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null))
+  }
+#end
 ## [End] Sync Request template. **",
   "Query.syncSongs.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
@@ -5231,7 +5316,7 @@ $util.toJson({})
   \\"index\\": \\"byGenre\\"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == \\"DESC\\" )
+                  && $ctx.args.sortDirection == \\"DESC\\" )
   #set( $QueryRequest.scanIndexForward = false )
 #else
   #set( $QueryRequest.scanIndexForward = true )
@@ -5278,11 +5363,17 @@ $util.toJson({})
 #set( $filterMap = {} )
 #set( $QueryMap = {} )
 #set( $PkMap = {} )
+#set( $SkMap = {} )
 #set( $filterArgsMap = {} )
+#if( $ctx.stash.QueryRequest )
+  #return
+#end
+#set( $queryRequestVariables = {} )
 ## [End] Set map initialization for @key **
 ## [Start] Set query expression for @key **
 $util.qr($QueryMap.put('genre' , 'byGenre'))
 $util.qr($PkMap.put('genre' , 'byGenre'))
+$util.qr($SkMap.put(\\"byGenre\\", []))
 ## [End] Set query expression for @key **
 ## [Start] Set query expression for @key **
 #set( $filterArgsMap = $ctx.args.filter.get(\\"and\\") )
@@ -5299,6 +5390,10 @@ $util.qr($PkMap.put('genre' , 'byGenre'))
       #if( $ind == 0 && !$util.isNullOrEmpty($entry.value.eq) && !$util.isNullOrEmpty($PkMap.get($entry.key)) )
         #set( $pk = $entry.key )
         #set( $scan = false )
+        #set( $queryRequestVariables.partitionKey = $pk )
+        #set( $queryRequestVariables.sortKeys = $SkMap.get($PkMap.get($pk)) )
+        #set( $queryRequestVariables.partitionKeyFilter = {} )
+        $util.qr($queryRequestVariables.partitionKeyFilter.put($pk, {'eq': $entry.value.eq}))
         $util.qr($ctx.args.put($pk,$entry.value.eq))
         #set( $index = $PkMap.get($pk) )
       #end
@@ -5370,7 +5465,8 @@ $util.qr($PkMap.put('genre' , 'byGenre'))
 ## [Start]  Set query expression for @key **
 #if( !$scan )
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
-  #set( $QueryRequest = {
+  #set( $ctx.stash.QueryRequestVariables = $queryRequestVariables )
+  #set( $ctx.stash.QueryRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Sync\\",
   \\"limit\\": $limit,
@@ -5379,38 +5475,63 @@ $util.qr($PkMap.put('genre' , 'byGenre'))
 } )
   #if( !$util.isNull($ctx.args.sortDirection)
                     && $ctx.args.sortDirection == \\"DESC\\" )
-    #set( $QueryRequest.scanIndexForward = false )
+    #set( $ctx.stash.QueryRequest.scanIndexForward = false )
   #else
-    #set( $QueryRequest.scanIndexForward = true )
+    #set( $ctx.stash.QueryRequest.scanIndexForward = true )
   #end
-#if( $context.args.nextToken ) #set( $QueryRequest.nextToken = $context.args.nextToken ) #end
-  #if( !$util.isNullOrEmpty($filterMap) )
-    #set( $QueryRequest.filter = $util.parseJson($util.transform.toDynamoDBFilterExpression($filterMap)) )
+#if( $context.args.nextToken ) #set( $ctx.stash.QueryRequest.nextToken = $context.args.nextToken ) #end
+  #if( !$util.isNullOrEmpty($filterMap) && $util.toJson($filterMap) != $util.toJson({}) )
+    #set( $ctx.stash.QueryRequest.filter = $filterMap )
   #end
   #if( $index != \\"dbTable\\" )
-    #set( $QueryRequest.index = $index )
+    #set( $ctx.stash.QueryRequest.index = $index )
   #end
-  $util.toJson($QueryRequest)
-#else
-{
-      \\"version\\": \\"2018-05-29\\",
-      \\"operation\\": \\"Sync\\",
-      \\"limit\\": $util.defaultIfNull($ctx.args.limit, 100),
-      \\"nextToken\\": $util.toJson($util.defaultIfNull($ctx.args.nextToken, null)),
-      \\"lastSync\\": $util.toJson($util.defaultIfNull($ctx.args.lastSync, null)),
-      \\"filter\\":     #if( !$util.isNullOrEmpty($ctx.args.filter) )
-$util.transform.toDynamoDBFilterExpression($ctx.args.filter)
-    #else
-null
-    #end
-  }
 #end
+$util.toJson({})
 ## [End]  Set query expression for @key **
 ",
   "Query.syncSongs.req.vtl": "## [Start] Sync Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+#set( $queryFilterContainsAuthField = false )
+#set( $authFilterContainsSortKey = false )
+#set( $useScan = true )
+#if( $util.isNullOrEmpty($ctx.stash.authFilter) && $ctx.stash.QueryRequest )
+  #set( $useScan = false )
+#end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
+  #if( $ctx.stash.QueryRequestVariables.partitionKey )
+    #foreach( $filterItem in $ctx.stash.authFilter.or )
+      #if( $filterItem.get($ctx.stash.QueryRequestVariables.partitionKey) )
+        #set( $queryFilterContainsAuthField = true )
+      #end
+    #end
+    #if( !$queryFilterContainsAuthField )
+      #foreach( $filterItem in $ctx.stash.authFilter.or )
+        #foreach( $sortKey in $ctx.stash.QueryRequestVariables.sortKeys )
+          #if( $filterItem.get($sortKey) )
+            #set( $authFilterContainsSortKey = true )
+          #end
+        #end
+      #end
+      #if( !$authFilterContainsSortKey )
+        #if( !$util.isNullOrEmpty($ctx.stash.QueryRequest.filter) )
+          #set( $ctx.stash.QueryRequest.filter = {
+  \\"and\\":   [$ctx.stash.QueryRequest.filter, $ctx.stash.authFilter]
+} )
+        #else
+          #set( $ctx.stash.QueryRequest.filter = $ctx.stash.authFilter )
+        #end
+        #set( $useScan = false )
+      #end
+    #else
+      #foreach( $filterItem in $ctx.stash.authFilter.or )
+        #if( $util.toJson($filterItem) == $util.toJson($ctx.stash.QueryRequestVariables.partitionKeyFilter) )
+          #set( $useScan = false )
+        #end
+      #end
+    #end
+  #end
   #if( !$util.isNullOrEmpty($args.filter) )
     #set( $filter = {
   \\"and\\":   [$filter, $args.filter]
@@ -5430,18 +5551,25 @@ null
     #set( $filter = $filterExpression )
   #end
 #end
+#if( !$useScan )
+  #if( $ctx.stash.QueryRequest.filter )
+    #set( $ctx.stash.QueryRequest.filter = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.QueryRequest.filter)) )
+  #end
+  $util.toJson($ctx.stash.QueryRequest)
+#else
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Sync\\",
-  \\"filter\\":   #if( $filter )
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"Sync\\",
+      \\"filter\\":     #if( $filter )
 $util.toJson($filter)
-  #else
+    #else
 null
-  #end,
-  \\"limit\\": $util.defaultIfNull($args.limit, 100),
-  \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
-  \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null))
-}
+    #end,
+      \\"limit\\": $util.defaultIfNull($args.limit, 100),
+      \\"lastSync\\": $util.toJson($util.defaultIfNull($args.lastSync, null)),
+      \\"nextToken\\": $util.toJson($util.defaultIfNull($args.nextToken, null))
+  }
+#end
 ## [End] Sync Request template. **",
   "Query.syncSongs.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
@@ -6010,7 +6138,7 @@ $util.toJson({})
   \\"index\\": \\"ByCreatedAt\\"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == \\"DESC\\" )
+                  && $ctx.args.sortDirection == \\"DESC\\" )
   #set( $QueryRequest.scanIndexForward = false )
 #else
   #set( $QueryRequest.scanIndexForward = true )
@@ -6117,7 +6245,7 @@ $util.toJson({})
   \\"index\\": \\"ByStatus\\"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
-                      && $ctx.args.sortDirection == \\"DESC\\" )
+                  && $ctx.args.sortDirection == \\"DESC\\" )
   #set( $QueryRequest.scanIndexForward = false )
 #else
   #set( $QueryRequest.scanIndexForward = true )

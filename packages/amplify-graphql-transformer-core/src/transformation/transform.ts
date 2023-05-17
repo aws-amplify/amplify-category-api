@@ -7,6 +7,8 @@ import {
   Template,
   TransformerPluginProvider,
   TransformHostProvider,
+  TransformerLog,
+  TransformerLogLevel,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import {
@@ -44,7 +46,7 @@ import { adoptAuthModes, IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } fr
 import * as SyncUtils from './sync-utils';
 import { MappingTemplate } from '../cdk-compat';
 
-import { UserDefinedSlot, OverrideConfig } from './types';
+import { UserDefinedSlot, OverrideConfig, DatasourceTransformationConfig  } from './types';
 import {
   makeSeenTransformationKey,
   matchArgumentDirective,
@@ -58,6 +60,8 @@ import { validateAuthModes, validateModelSchema } from './validation';
 import { DocumentNode } from 'graphql/language';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { AmplifyApiGraphQlResourceStackTemplate } from '../types/amplify-api-resource-stack-types';
+import { DatasourceType } from '../config/project-config';
+import { removeAmplifyInputDefinition } from '../utils/rds-input-utils';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
@@ -108,6 +112,8 @@ export class GraphQLTransform {
   // Only run a transformer function once per pair. This is refreshed each call to transform().
   private seenTransformations: { [k: string]: boolean } = {};
 
+  private logs: TransformerLog[];
+
   constructor(private readonly options: GraphQLTransformOptions) {
     if (!options.transformers || options.transformers.length === 0) {
       throw new Error('Must provide at least one transformer.');
@@ -134,6 +140,7 @@ export class GraphQLTransform {
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
     this.resolverConfig = options.resolverConfig || {};
     this.overrideConfig = options.overrideConfig;
+    this.logs = [];
   }
 
   /**
@@ -162,7 +169,7 @@ export class GraphQLTransform {
         return {
           ...mutateContext,
           inputDocument: updatedSchema,
-        }
+        };
       }, context).inputDocument;
   }
 
@@ -172,21 +179,23 @@ export class GraphQLTransform {
    * on to the next transformer. At the end of the transformation a
    * cloudformation template is returned.
    * @param schema The model schema.
-   * @param references Any cloudformation references.
+   * @param datasourceConfig Additional supporting configuration when additional datasources are added
    */
-  public transform(schema: string): DeploymentResources {
+  public transform(schema: string, datasourceConfig?: DatasourceTransformationConfig): DeploymentResources {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
     this.app = new App();
     const context = new TransformerContext(
       this.app,
       parsedDocument,
+      datasourceConfig?.modelToDatasourceMap ?? new Map<string, DatasourceType>(),
       this.stackMappingOverrides,
       this.authConfig,
       this.options.sandboxModeEnabled,
       this.options.featureFlags,
       this.resolverConfig,
-    );
+      datasourceConfig?.datasourceSecretParameterLocations,
+   );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
       {
@@ -298,6 +307,12 @@ export class GraphQLTransform {
         transformer.after(context);
       }
       reverseThroughTransformers -= 1;
+    }
+    for (const transformer of this.transformers) {
+      if (isFunction(transformer.getLogs)) {
+        const logs = transformer.getLogs();
+        this.logs.push(...logs);
+      }
     }
     this.collectResolvers(context, context.api);
     if (this.overrideConfig?.overrideFlag) {
@@ -481,7 +496,8 @@ export class GraphQLTransform {
         functions[templateName.replace('functions/', '')] = template;
       }
     }
-    const schema = fileAssets.get('schema.graphql') || '';
+    const compiledSchema = fileAssets.get('schema.graphql') || '';
+    const schema = removeAmplifyInputDefinition(compiledSchema);
 
     const resolverEntries = context.resolvers.collectResolvers();
     const userOverriddenSlots: string[] = [];
@@ -826,5 +842,9 @@ export class GraphQLTransform {
       }
       index++;
     }
+  }
+
+  public getLogs(): TransformerLog[] {
+    return this.logs;
   }
 }

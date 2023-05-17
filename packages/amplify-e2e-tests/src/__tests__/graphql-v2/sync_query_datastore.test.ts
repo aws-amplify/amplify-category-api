@@ -110,7 +110,14 @@ describe('Sync query V2 resolver tests', () => {
         testSong.lastChangedAt = createResult.data.createSong._lastChangedAt;
 
         // able to sync songs without lastSync specified. This will do a query on base table.
-        const syncResult = await syncSongs(null, { genre: { eq: testSong.genre } });
+        // GSI is queried only if the filter is enclosed in an "and" condition.
+        const syncResult = await syncSongs(null,
+            {
+                and: [
+                    { genre: { eq: testSong.genre } },
+                ]
+            },
+        );
         verifySyncQueryResult(syncResult, testSong, 'syncSongs');
     });
 
@@ -128,7 +135,14 @@ describe('Sync query V2 resolver tests', () => {
         testSong.lastChangedAt = createResult.data.createSongWithSortKey._lastChangedAt;
 
         // able to sync songs without lastSync specified. This will do a query on base table.
-        const syncResult = await syncSongWithSortKeys(null, { name: { eq: testSong.name } });
+        // GSI is queried only if the filter is enclosed in an "and" condition.
+        const syncResult = await syncSongWithSortKeys(null,
+            {
+                and: [
+                    { name: { eq: testSong.name } },
+                ]
+            },
+        );
         verifySyncQueryResult(syncResult, testSong, 'syncSongWithSortKeys');
     });
 
@@ -146,7 +160,14 @@ describe('Sync query V2 resolver tests', () => {
         testSong.lastChangedAt = createResult.data.createSongWithSortKey._lastChangedAt;
 
         // able to sync songs without lastSync specified. This will do a query on base table.
-        const syncResult = await syncSongWithSortKeys(null, { and: { name: { eq: testSong.name }, genre: { eq: testSong.genre } } });
+        const syncResult = await syncSongWithSortKeys(null,
+            {
+                and: [
+                    { name: { eq: testSong.name } }, 
+                    { genre: { eq: testSong.genre } },
+                ],
+            },
+        );
         verifySyncQueryResult(syncResult, testSong, 'syncSongWithSortKeys');
     });
   

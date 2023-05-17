@@ -41,3 +41,5 @@ export {
   StackMapping,
   Template,
 } from './deployment-resources';
+
+export { TransformerLog, TransformerLogLevel } from './transformer-log';

@@ -207,15 +207,15 @@ const dynamicRoleExpression = (ctx: TransformerContextProvider, roles: Array<Rol
                       addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
                     ),
                   ]),
-                  generatePopulateOwnerField(
-                  `ownerClaim${idx}`, 
-                  role.entity!, 
-                  `ownerEntity${idx}`, 
-                  entityIsList, 
+                generatePopulateOwnerField(
+                  `ownerClaim${idx}`,
+                  role.entity!,
+                  `ownerEntity${idx}`,
+                  entityIsList,
                   false,
                   `ownerAllowedFields${idx}`,
-                  `isAuthorizedOnAllFields${idx}`
-                )
+                  `isAuthorizedOnAllFields${idx}`,
+                ),
               ]),
             ),
           ]),

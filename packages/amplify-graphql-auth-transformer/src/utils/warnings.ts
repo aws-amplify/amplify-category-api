@@ -1,5 +1,4 @@
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { printer } from '@aws-amplify/amplify-prompts';
+import { TransformerContextProvider, TransformerLog, TransformerLogLevel } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthRule } from '.';
 import { AccessControlMatrix } from '../accesscontrol';
 
@@ -7,7 +6,7 @@ import { AccessControlMatrix } from '../accesscontrol';
  * Displays a warning when a default owner field is used and the feature flag is
  * disabled.
  */
-export const showDefaultIdentityClaimWarning = (context: TransformerContextProvider, optionRules?: AuthRule[]): void => {
+export const defaultIdentityClaimWarning = (context: TransformerContextProvider, optionRules?: AuthRule[]): string | undefined => {
   const rules = optionRules || [];
   const usesDefaultIdentityClaim = rules.some((rule) => rule.allow === 'owner' && rule.identityClaim === undefined);
 
@@ -16,12 +15,10 @@ export const showDefaultIdentityClaimWarning = (context: TransformerContextProvi
 
     if (hasFeatureFlagEnabled) return;
 
-    printer.warn(
-      ' WARNING: Amplify CLI will change the default identity claim from \'username\' '
+    return ' WARNING: Amplify CLI will change the default identity claim from \'username\' '
         + 'to use \'sub::username\'. To continue using only usernames, set \'identityClaim: "username"\' on your '
         + '\'owner\' rules on your schema. The default will be officially switched with v9.0.0. To read '
-        + 'more: https://docs.amplify.aws/cli/migration/identity-claim-changes/',
-    );
+        + 'more: https://docs.amplify.aws/cli/migration/identity-claim-changes/';
   }
 };
 
@@ -29,9 +26,9 @@ export const showDefaultIdentityClaimWarning = (context: TransformerContextProvi
  * Display a warning when an 'owner' has access to update their own owner field.
  * @param authModelConfig The model to ACM map we generate for the given ruleset.
  */
-export const showOwnerCanReassignWarning = (
+export const ownerCanReassignWarning = (
   authModelConfig: Map<string, AccessControlMatrix>,
-): void => {
+): TransformerLog | undefined => {
   try {
     const ownerFieldRegExp = /(oidc|userPools):owner:(.*?):/;
     const modelsWithOwnersWhoCanEditOwnFields: Record<string, string[]> = Object.fromEntries([...authModelConfig.entries()]
@@ -56,20 +53,22 @@ export const showOwnerCanReassignWarning = (
       .map(([model, roles]) => `${model}: [${roles.join(', ')}]`)
       .join(', ');
 
-    printer.warn(
-      `WARNING: owners may reassign ownership for the following model(s) and role(s): ${perModelWarning}. `
+    return {
+      level: TransformerLogLevel.WARN,
+      message: `WARNING: owners may reassign ownership for the following model(s) and role(s): ${perModelWarning}. `
         + 'If this is not intentional, you may want to apply field-level authorization rules to these fields. '
         + 'To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.',
-    );
+    };
   } catch (e) {
     // Error messaging should be best effort, and not impede actual functionality.
-    printer.debug(`Error caught while checking whether owners have reassign permissions: ${JSON.stringify(e)}`);
+    return {
+      level: TransformerLogLevel.DEBUG,
+      message: `Error caught while checking whether owners have reassign permissions: ${JSON.stringify(e)}`,
+    };
   }
 };
 
-export const showOwnerFieldCaseWarning = (ownerField: string, warningField: string, modelName: string): void => {
-  printer.warn(
-    `WARNING: Schema field "${warningField}" and ownerField "${ownerField}" in type ${modelName} are getting added to your schema but could be referencing the same owner field. `
-    + 'If this is not intentional, you may want to change one of the fields to the correct name.\n',
-  );
+export const ownerFieldCaseWarning = (ownerField: string, warningField: string, modelName: string): string => {
+  return `WARNING: Schema field "${warningField}" and ownerField "${ownerField}" in type ${modelName} are getting added to your schema but could be referencing the same owner field. `
+    + 'If this is not intentional, you may want to change one of the fields to the correct name.\n';
 };
