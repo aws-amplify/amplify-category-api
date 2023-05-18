@@ -1,5 +1,4 @@
 import {
-  $TSAny,
   $TSContext,
   $TSObject,
   AmplifyCategories,
@@ -210,7 +209,7 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
 export const getPermissionPolicies = async (
   context: $TSContext,
   resourceOpsMapping: $TSObject,
-): Promise<{ permissionPolicies: $TSAny[]; resourceAttributes: $TSAny[]; }> => {
+): Promise<{ permissionPolicies: any[]; resourceAttributes: any[]; }> => {
   const amplifyMeta = stateManager.getMeta();
   const permissionPolicies = [];
   const resourceAttributes = [];
@@ -295,7 +294,7 @@ export const executeAmplifyHeadlessCommand = async (context: $TSContext, headles
 /**
  * Handle state changes in Amplify app.
  */
-export const handleAmplifyEvent = async (context: $TSContext, args: $TSAny): Promise<void> => {
+export const handleAmplifyEvent = async (context: $TSContext, args: any): Promise<void> => {
   switch (args.event) {
     case 'InternalOnlyPostEnvRemove':
       const meta = stateManager.getMeta();

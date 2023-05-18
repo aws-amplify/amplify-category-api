@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSObject, exitOnNextTick, ResourceDoesNotExistError } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, $TSObject, exitOnNextTick, ResourceDoesNotExistError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import inquirer from 'inquirer';
 import { category } from '../../../category-constants';
@@ -301,7 +301,7 @@ export async function updateWalkthrough(context: $TSContext, apiType: API_TYPE) 
   const hasAccessableResources = ['storage', 'function'].some(categoryName => {
     return Object.keys(meta[categoryName] ?? {}).length > 0;
   });
-  let rolePermissions: $TSAny = {};
+  let rolePermissions: any = {};
   if (
     hasAccessableResources &&
     (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your api?'))

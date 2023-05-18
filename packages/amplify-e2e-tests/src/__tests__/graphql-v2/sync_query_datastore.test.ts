@@ -7,7 +7,6 @@ import { addApiWithBlankSchemaAndConflictDetection, updateApiSchema, getProjectM
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { $TSAny } from '@aws-amplify/graphql-transformer-interfaces';
 (global as any).fetch = require('node-fetch');
 
 const projectName = 'syncquerytest';
@@ -189,7 +188,7 @@ describe('Sync query V2 resolver tests', () => {
       });
     };
 
-    const verifySyncQueryResult = (syncResult: $TSAny, testSong: $TSAny, queryName: string) => {
+    const verifySyncQueryResult = (syncResult: any, testSong: any, queryName: string) => {
         expect(syncResult.data).not.toBeNull();
         expect(syncResult.errors).toBeUndefined();
         expect(syncResult.data[queryName]).not.toBeNull();
@@ -204,7 +203,7 @@ describe('Sync query V2 resolver tests', () => {
         expect(syncResult.data[queryName].startedAt).toBeGreaterThan(testSong.lastChangedAt);
     };
 
-    const verifyCreateSongResult = (createResult: $TSAny, testSong: $TSAny, mutationName: string) => {
+    const verifyCreateSongResult = (createResult: any, testSong: any, mutationName: string) => {
         expect(createResult.data).not.toBeNull();
         expect(createResult.errors).toBeUndefined();
         expect(createResult.data[mutationName]).not.toBeNull();
@@ -311,7 +310,7 @@ describe('Sync query V2 resolver tests', () => {
         return result;
     };
 
-    const syncSongs = async (lastSync?: number, filter?: $TSAny): Promise<any> => {
+    const syncSongs = async (lastSync?: number, filter?: any): Promise<any> => {
         const syncQuery = /* GraphQL */ `
             query SyncSongs($limit: Int, $lastSync: AWSTimestamp, $filter: ModelSongFilterInput) {
                 syncSongs(limit: $limit, lastSync: $lastSync, filter: $filter) {
@@ -343,7 +342,7 @@ describe('Sync query V2 resolver tests', () => {
         return result;
     };
 
-    const syncSongWithSortKeys = async (lastSync?: number, filter?: $TSAny): Promise<any> => {
+    const syncSongWithSortKeys = async (lastSync?: number, filter?: any): Promise<any> => {
         const syncQuery = /* GraphQL */ `
             query syncSongWithSortKeys($limit: Int, $lastSync: AWSTimestamp, $filter: ModelSongWithSortKeyFilterInput) {
                 syncSongWithSortKeys(limit: $limit, lastSync: $lastSync, filter: $filter) {

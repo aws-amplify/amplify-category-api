@@ -1,8 +1,8 @@
-import { $TSAny, $TSMeta, $TSObject, AmplifyCategories, AmplifySupportedService, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
+import { $TSMeta, $TSObject, AmplifyCategories, AmplifySupportedService, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import * as path from 'path';
 
-export const authConfigHasApiKey = (authConfig?: $TSAny) => {
+export const authConfigHasApiKey = (authConfig?: any) => {
   if (!authConfig) {
     return false;
   }
@@ -35,7 +35,7 @@ export const checkIfAuthExists = () => {
 
 export const getAppSyncAPINames = () => {
   return Object.entries(stateManager.getMeta()?.api || {})
-    .filter(([_, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
+    .filter(([_, apiResource]) => (apiResource as any).service === 'AppSync')
     .map(([name]) => name);
 };
 
@@ -65,7 +65,7 @@ export const getAPIResourceDir = (apiName: string) => {
 export const getAppSyncAuthConfig = (projectMeta: $TSMeta) => {
   const entry = getAppSyncAmplifyMetaEntry(projectMeta);
   if (entry) {
-    const value = entry[1] as $TSAny;
+    const value = entry[1] as any;
     return value && value.output ? value.output.authConfig : {};
   }
 };

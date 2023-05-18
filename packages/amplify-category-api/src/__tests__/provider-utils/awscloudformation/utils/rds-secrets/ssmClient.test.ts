@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { SSMClient } from '../../../../../provider-utils/awscloudformation/utils/rds-secrets/ssmClient';
 import aws from 'aws-sdk';
 
@@ -32,7 +32,7 @@ describe('SSM client configuration', () => {
     amplify: {
       invokePluginMethod: jest.fn().mockResolvedValue({ client: new aws.SSM()})
     }
-  } as $TSAny as $TSContext;
+  } as any as $TSContext;
 
   test('able to get the configured SSM instance via provider plugin', async () => {
     const ssmClient = await SSMClient.getInstance(mockContext);

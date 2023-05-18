@@ -27,7 +27,6 @@ import { HttpTransformer as HttpTransformerV1 } from 'graphql-http-transformer';
 import { PredictionsTransformer as PredictionsTransformerV1 } from 'graphql-predictions-transformer';
 import { KeyTransformer as KeyTransformerV1 } from 'graphql-key-transformer';
 import {
-  $TSAny,
   $TSContext,
   pathManager,
   stateManager,
@@ -54,8 +53,8 @@ const PROVIDER_NAME = 'awscloudformation';
 
 type TransformerFactoryArgs = {
     addSearchableTransformer: boolean;
-    authConfig: $TSAny;
-    storageConfig?: $TSAny;
+    authConfig: any;
+    storageConfig?: any;
     adminRoles?: Array<string>;
     identityPoolId?: string;
   };
@@ -66,8 +65,8 @@ type TransformerFactoryArgs = {
 export const getTransformerFactory = async (
   context: $TSContext,
   resourceDir: string,
-  authConfig?: $TSAny,
-): Promise<(options: $TSAny) => Promise<(TransformerPluginProviderV2 | ITransformer)[]>> => {
+  authConfig?: any,
+): Promise<(options: any) => Promise<(TransformerPluginProviderV2 | ITransformer)[]>> => {
   const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
   return transformerVersion === 2
     ? getTransformerFactoryV2(resourceDir)
@@ -133,8 +132,8 @@ const getTransformerFactoryV2 = (
   return transformerList;
 };
 
-function getTransformerFactoryV1(context: $TSContext, resourceDir: string, authConfig?: $TSAny) {
-  return async (addSearchableTransformer: boolean, storageConfig?: $TSAny) => {
+function getTransformerFactoryV1(context: $TSContext, resourceDir: string, authConfig?: any) {
+  return async (addSearchableTransformer: boolean, storageConfig?: any) => {
     const transformerList: ITransformer[] = [
       // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
       new DynamoDBModelTransformerV1(),

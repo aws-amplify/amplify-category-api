@@ -1,5 +1,5 @@
 import {
-  JSONUtilities, pathManager, $TSAny, $TSContext, $TSObject,
+  JSONUtilities, pathManager, $TSContext, $TSObject,
 } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import detect from 'detect-port';
@@ -30,7 +30,7 @@ export const loadLambdaConfig = async (
   const { Resources: cfnResources } = JSONUtilities.readJson<{ Resources: $TSObject }>(
     path.join(resourcePath, `${resourceName}-cloudformation-template.json`),
   );
-  const lambdaDef = Object.entries(cfnResources).find(([_, resourceDef]: [string, $TSAny]) => resourceDef.Type === 'AWS::Lambda::Function');
+  const lambdaDef = Object.entries(cfnResources).find(([_, resourceDef]: [string, any]) => resourceDef.Type === 'AWS::Lambda::Function');
   if (!lambdaDef) {
     return;
   }

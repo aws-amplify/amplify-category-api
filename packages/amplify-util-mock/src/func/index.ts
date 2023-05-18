@@ -2,7 +2,7 @@ import { getInvoker, category, isMockable, getBuilder } from '@aws-amplify/ampli
 import * as path from 'path';
 import * as inquirer from 'inquirer';
 import {
-  $TSAny, $TSContext, JSONUtilities, pathManager, stateManager,
+  $TSContext, JSONUtilities, pathManager, stateManager,
 } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { BuildType } from 'amplify-function-plugin-interface';
@@ -47,7 +47,7 @@ export async function start(context: $TSContext) {
   const invoker = await getInvoker(context, { resourceName, handler: lambdaConfig.handler, envVars: lambdaConfig.environment });
   context.print.blue('Starting execution...');
   try {
-    const result = await timeConstrainedInvoker(invoker({ event }), context.input.options as $TSAny);
+    const result = await timeConstrainedInvoker(invoker({ event }), context.input.options as any);
     const stringResult =
       typeof result === 'object' ? JSON.stringify(result, undefined, 2) : typeof result === 'undefined' ? 'undefined' : result;
     context.print.success('Result:');

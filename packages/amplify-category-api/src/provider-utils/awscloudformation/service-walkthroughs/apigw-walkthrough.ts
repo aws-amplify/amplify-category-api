@@ -1,5 +1,4 @@
 import {
-  $TSAny,
   $TSContext,
   $TSObject,
   AmplifyCategories,
@@ -51,7 +50,7 @@ export async function updateWalkthrough(context: $TSContext) {
     return;
   }
 
-  let answers: $TSAny = {
+  let answers: any = {
     paths: [],
   };
 
@@ -307,7 +306,7 @@ async function askPermissions(
 }
 
 async function ensureAuth(context: $TSContext, apiRequirements: ApiRequirements, resourceName: string) {
-  const checkResult: $TSAny = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+  const checkResult: any = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
     apiRequirements,
     context,
     'api',
@@ -514,7 +513,7 @@ async function askLambdaSource(context: $TSContext, functionType: string, path: 
     case 'projectFunction':
       return askLambdaFromProject(currentPath);
     case 'newFunction':
-      return newLambdaFunction(context as $TSAny, path);
+      return newLambdaFunction(context as any, path);
     default:
       throw new Error('Type not supported');
   }
