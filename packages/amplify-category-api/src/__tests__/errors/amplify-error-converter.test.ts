@@ -1,6 +1,6 @@
 import { AmplifyError, AmplifyErrorType, AmplifyException } from '@aws-amplify/amplify-cli-core';
 import { AmplifyGraphQLTransformerErrorConverter } from '../../errors/amplify-error-converter';
-import { InvalidOverrideError } from '@aws-amplify/graphql-transformer-core';
+import { InvalidOverrideError, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 
 const errorType: AmplifyErrorType = 'DeploymentError';
 // converted error to amplifyException
@@ -38,4 +38,11 @@ test('returns all properties if the error is present in list', async () => {
   expect(amplifyError.name).toEqual('InvalidOverrideError');
   expect(amplifyError.details).toEqual(originalError.message);
   expect(amplifyError.resolution).toEqual('There may be runtime errors in your overrides file. If so, fix the errors and try again.');
+});
+
+test('message is included if not overridden', () => {
+  const message = 'invalid directive message';
+  // Invalid directive error does not override the message
+  const invalidDirectiveError = new InvalidDirectiveError(message);
+  expect(AmplifyGraphQLTransformerErrorConverter.convert(invalidDirectiveError).message).toEqual(message);
 });

@@ -30,6 +30,7 @@ export abstract class AmplifyGraphQLTransformerErrorConverter {
       return new AmplifyError(
         amplifyErrorType,
         {
+          message: error.message, // message is not enumerable
           ...error,
         },
         error,
