@@ -50,7 +50,6 @@ import {
 } from 'graphql-transformer-common';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../types';
 import { lookupResolverName } from '../utils';
-import { stateManager } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import _ from 'lodash';
 import {
@@ -882,25 +881,23 @@ export const getDeltaSyncTableTtl = (resourceOverrides: any, resource: Transform
   return deltaSyncTtlOverride || SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
 }
 
-export const getResourceOverrides = (transformers: TransformerPluginProvider[], backendDir: string, stackManager?: StackManagerProvider | null): any => {
-  if (stateManager.currentMetaFileExists(undefined)) {
-    const meta = stateManager.getCurrentMeta(undefined, { throwIfNotExist: false });
-    const gqlApiName = _.entries(meta?.api)
-      .find(([, value]) => (value as { service: string }).service === 'AppSync')?.[0];
-    if (gqlApiName && stackManager) {
-      const overrideDir = path.join(backendDir, 'api', gqlApiName);
+export const getResourceOverrides = (transformers: TransformerPluginProvider[], apiName: string, backendDir: string, stackManager?: StackManagerProvider | null): any => {
+  try {
+    if (stackManager) {
+      const overrideDir = path.join(backendDir, 'api', apiName);
       const localGraphQLTransformObj = new GraphQLTransform({
         transformers: transformers,
         overrideConfig: {
           overrideFlag: true,
           overrideDir: overrideDir,
-          resourceName: gqlApiName
+          resourceName: apiName
         }
       });
       return localGraphQLTransformObj.applyOverride(stackManager as StackManager);
     }
+  } catch (e) {
+    return {};
   }
-  return {};
 }
 
 export function getDBInfo(ctx: TransformerContextProvider, modelName: string) {

@@ -1,4 +1,3 @@
-import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { APICategory } from '.';
 import _ from 'lodash';
 import path from 'path';
@@ -11,12 +10,10 @@ const getParameterNameForDBSecret = (secret: string, secretsKey: string): string
   /amplify/<appId>/<envName>/AMPLIFY_${categoryName}${resourceName}${paramName}
   where paramName is secretsKey_<secretName>
 */
-export const getParameterStoreSecretPath = (secret: string, secretsKey:string, apiName: string, envName?: string): string => {
-  const appId = stateManager.getAppID();
+export const getParameterStoreSecretPath = (secret: string, secretsKey:string, apiName: string, environmentName: string, appId: string): string => {
   if(_.isEmpty(appId)) {
     throw new Error('Unable to read the App ID');
   }
-  const environmentName = envName || stateManager.getCurrentEnvName();
   const categoryName = APICategory;
   const paramName = getParameterNameForDBSecret(secret, secretsKey);
 
