@@ -400,6 +400,15 @@ export class InvalidMigrationError extends Error {
 }
 
 // @public (undocumented)
+export class InvalidOverrideError extends Error {
+    constructor(error: Error);
+    // (undocumented)
+    details: string;
+    // (undocumented)
+    resolution: string;
+}
+
+// @public (undocumented)
 export class InvalidTransformerError extends Error {
     constructor(message: string);
 }
