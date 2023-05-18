@@ -202,3 +202,9 @@ function _scanArtifacts {
         exit 1
     fi
 }
+function _cleanupE2EResources {
+  echo "Cleanup E2E resources"
+  loadCacheFromBuildJob
+  cd packages/amplify-e2e-tests
+  echo "Running clean up script"
+}
