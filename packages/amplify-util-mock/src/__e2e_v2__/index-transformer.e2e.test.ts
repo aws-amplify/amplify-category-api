@@ -65,8 +65,8 @@ describe('@index transformer', () => {
     const transformer = new GraphQLTransform({
       transformers: [
         new ModelTransformer(),
-        new PrimaryKeyTransformer(pathManager.getBackendDirPath()),
-        new IndexTransformer(pathManager.getBackendDirPath()),
+        new PrimaryKeyTransformer('fake-backend-path'),
+        new IndexTransformer('fake-backend-path'),
         new AuthTransformer(),
       ],
       featureFlags: {

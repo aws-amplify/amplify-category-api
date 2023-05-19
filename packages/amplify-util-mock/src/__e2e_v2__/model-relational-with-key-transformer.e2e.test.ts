@@ -69,8 +69,8 @@ describe("@model with relational transformers", () => {
       const transformer = new GraphQLTransform({
         transformers: [
           new ModelTransformer(),
-          new IndexTransformer(pathManager.getBackendDirPath()),
-          new PrimaryKeyTransformer(pathManager.getBackendDirPath()),
+          new IndexTransformer('fake-backend-path'),
+          new PrimaryKeyTransformer('fake-backend-path'),
           new HasOneTransformer(),
           new HasManyTransformer(),
           new BelongsToTransformer(),
