@@ -1255,6 +1255,26 @@ describe('ModelTransformer: ', () => {
         },
       });
   });
+
+  it('the datastore table TTL spec should not be removed but disabled when datastore is disabled', () => {
+    const validSchema = `
+    type Todo @model {
+      name: String
+    }`;
+
+    const transformer = new GraphQLTransform({
+      transformConfig: {},
+      transformers: [new ModelTransformer()],
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    expect(out.stacks?.Todo?.Resources?.TodoTable.Properties.TimeToLiveSpecification).toEqual({
+      AttributeName: '_ttl',
+      Enabled: false
+    });
+  });
+
   it("the conflict detection of per model rule should be respected", () => {
     const validSchema = `
       type Todo @model {

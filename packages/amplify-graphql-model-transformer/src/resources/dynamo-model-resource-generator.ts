@@ -143,6 +143,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     });
 
     const removalPolicy = this.options.EnableDeletionProtection ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY;
+    const ttlAttributeName = '_ttl';
 
     // Expose a way in context to allow proper resource naming
     const table = new Table(stack, tableLogicalName, {
@@ -153,8 +154,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
       },
       stream: StreamViewType.NEW_AND_OLD_IMAGES,
       encryption: TableEncryption.DEFAULT,
-      removalPolicy,
-      ...(context.isProjectUsingDataStore() ? { timeToLiveAttribute: '_ttl' } : undefined),
+      removalPolicy
     });
     const cfnTable = table.node.defaultChild as CfnTable;
 
@@ -170,6 +170,10 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     cfnTable.billingMode = cdk.Fn.conditionIf(usePayPerRequestBilling.logicalId, 'PAY_PER_REQUEST', cdk.Fn.ref('AWS::NoValue')).toString();
     cfnTable.sseSpecification = {
       sseEnabled: cdk.Fn.conditionIf(useSSE.logicalId, true, false),
+    };
+    cfnTable.timeToLiveSpecification = {
+      attributeName: ttlAttributeName,
+      enabled: context.isProjectUsingDataStore()
     };
 
     const streamArnOutputId = `GetAtt${ModelResourceIDs.ModelTableStreamArn(def!.name.value)}`;
