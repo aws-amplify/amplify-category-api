@@ -15,7 +15,14 @@ export const getNestedStackDiffRules = (): NestedStackDiffRule[] => [
 const onlyUpdatesTableNameProperty = (stackName: string, diff: TemplateDiff) => {
   const propertyUpdates = diff.resources.changes[`${stackName}Table`].propertyUpdates;
   try {
-    expect(Object.keys(propertyUpdates)).toEqual(['TableName']); // The table name should resolve to the same value but the way it's defined is different so it shows up here as a diff
+    expect(Object.keys(propertyUpdates)).toEqual(['TableName', 'TimeToLiveSpecification']); // The table name should resolve to the same value but the way it's defined is different so it shows up here as a diff
+    // The TimeToLiveSpecification will be added as a new property but will be enabled only if conflict detection is ON.
+    // This is to comply with DDB changes that require us to set the "attributeName" even for disabling the TTL
+    expect(propertyUpdates?.TimeToLiveSpecification?.isAddition).toEqual(true);
+    expect(propertyUpdates?.TimeToLiveSpecification?.newValue).toEqual({
+      AttributeName: '_ttl',
+      Enabled: false
+    });
   } catch (err) {
     console.error(`Expected only TableName update for table ${stackName}Table. Instead got updates:`);
     console.log(JSON.stringify(propertyUpdates, undefined, 2));

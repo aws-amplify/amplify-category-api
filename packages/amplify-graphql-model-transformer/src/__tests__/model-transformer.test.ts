@@ -1275,6 +1275,31 @@ describe('ModelTransformer: ', () => {
     });
   });
 
+  it('the datastore table TTL spec should not be enabled when datastore is enabled', () => {
+    const validSchema = `
+    type Todo @model {
+      name: String
+    }`;
+
+    const transformer = new GraphQLTransform({
+      transformConfig: {},
+      transformers: [new ModelTransformer()],
+      resolverConfig: {
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        },
+      },
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    expect(out.stacks?.Todo?.Resources?.TodoTable.Properties.TimeToLiveSpecification).toEqual({
+      AttributeName: '_ttl',
+      Enabled: true
+    });
+  });
+
   it("the conflict detection of per model rule should be respected", () => {
     const validSchema = `
       type Todo @model {
