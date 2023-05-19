@@ -255,6 +255,7 @@ function main(): void {
     },
   );
   let allBuilds = [...splitE2ETests, ...splitMigrationV5Tests, ...splitMigrationV6Tests, ...splitMigrationV10Tests];
+  console.log(`Total number of splitted jobs: ${allBuilds.length}`)
   let currentBatch = [...baseBuildGraph, ...allBuilds];
   configBase.batch['build-graph'] = currentBatch;
   saveConfig(configBase);

@@ -182,18 +182,49 @@ function _loadTestAccountCredentials {
 }
 function _runE2ETestsLinux {
     echo "RUN E2E Tests Linux"
-    
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-
     _installCLIFromLocalRegistry  
-    export PATH="$AMPLIFY_DIR:$PATH"
+    # export PATH="$AMPLIFY_DIR:$PATH"
+    echo $PATH
     source .circleci/local_publish_helpers.sh
     amplify version
     echo "Run Amplify E2E tests"
     echo $TEST_SUITE
     _loadTestAccountCredentials
     retry runE2eTest
+}
+function _runMigrationV5Test {
+    echo RUN Migration V5 Test
+    loadCacheFromBuildJob
+    yarn setup-dev
+    source .circleci/local_publish_helpers.sh
+    changeNpmGlobalPath
+    cd packages/amplify-migration-tests
+    _loadTestAccountCredentials
+    retry yarn run migration_v5.2.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+}
+function _runMigrationV6Test {
+    echo RUN Migration V6 Test
+    loadCacheFromBuildJob
+    yarn setup-dev
+    source .circleci/local_publish_helpers.sh
+    changeNpmGlobalPath
+    cd packages/amplify-migration-tests
+    _loadTestAccountCredentials
+    retry yarn run migration_v6.1.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+}
+function _runMigrationV10Test {
+    echo RUN Migration V10 Test
+    loadCacheFromBuildJob
+    yarn setup-dev
+    source .circleci/local_publish_helpers.sh
+    changeNpmGlobalPath
+    cd packages/amplify-migration-tests
+    unset IS_AMPLIFY_CI
+    echo $IS_AMPLIFY_CI
+    _loadTestAccountCredentials
+    retry yarn run migration_v10.5.1 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
 }
 function _scanArtifacts {
     if ! yarn ts-node codebuild_specs/scripts/scan_artifacts.ts; then
