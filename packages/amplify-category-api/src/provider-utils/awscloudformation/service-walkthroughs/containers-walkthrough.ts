@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, exitOnNextTick, ResourceDoesNotExistError } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, exitOnNextTick, ResourceDoesNotExistError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import inquirer from 'inquirer';
 import { category } from '../../../category-constants';
@@ -56,7 +56,7 @@ export async function serviceWalkthrough(context: $TSContext, apiType: API_TYPE)
   return { resourceName, ...containerInfo };
 }
 
-async function askResourceName(context: $TSContext, allDefaultValues: $TSObject) {
+async function askResourceName(context: $TSContext, allDefaultValues: Record<string, any>) {
   const { amplify } = context;
 
   const { resourceName } = await inquirer.prompt([

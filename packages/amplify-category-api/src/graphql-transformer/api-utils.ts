@@ -1,11 +1,11 @@
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
-  $TSContext, $TSObject, AmplifyCategories, ApiCategoryFacade, getGraphQLTransformerOpenSearchProductionDocLink,
+  $TSContext, AmplifyCategories, ApiCategoryFacade, getGraphQLTransformerOpenSearchProductionDocLink,
 } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { ResourceConstants } from 'graphql-transformer-common';
 
-export async function searchablePushChecks(context: $TSContext, map: $TSObject, apiName: string): Promise<void> {
+export async function searchablePushChecks(context: $TSContext, map: Record<string, any>, apiName: string): Promise<void> {
   const searchableModelTypes = Object.keys(map).filter((type) => map[type].includes('searchable') && map[type].includes('model'));
   if (searchableModelTypes.length) {
     const apiParameterManager = (await ensureEnvParamManager()).instance.getResourceParamManager(AmplifyCategories.API, apiName);

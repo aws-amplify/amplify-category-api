@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, exitOnNextTick, ResourceCredentialsNotFoundError, ResourceDoesNotExistError, pathManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, exitOnNextTick, ResourceCredentialsNotFoundError, ResourceDoesNotExistError, pathManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import { DataApiParams } from 'graphql-relational-schema-transformer';
@@ -10,7 +10,7 @@ const spinner = ora('');
 const category = 'api';
 const providerName = 'awscloudformation';
 
-export async function serviceWalkthrough(context: $TSContext, datasourceMetadata: $TSObject) {
+export async function serviceWalkthrough(context: $TSContext, datasourceMetadata: Record<string, any>) {
   const amplifyMeta = context.amplify.getProjectMeta();
 
   // Verify that an API exists in the project before proceeding.

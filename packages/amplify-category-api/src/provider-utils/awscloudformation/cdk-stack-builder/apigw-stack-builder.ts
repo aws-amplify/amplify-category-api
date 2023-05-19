@@ -8,7 +8,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { $TSObject, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { ADMIN_QUERIES_NAME } from '../../../category-constants';
@@ -22,12 +22,12 @@ const ROOT_CFN_DESCRIPTION = 'API Gateway Resource for AWS Amplify CLI';
 export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigwResourceTemplate {
   restApi: apigw.CfnRestApi;
   deploymentResource: apigw.CfnDeployment;
-  paths: $TSObject;
+  paths: Record<string, any>;
   policies: { [pathName: string]: ApigwPathPolicy };
   private _scope: Construct;
   private _props: ApigwInputs;
   private _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
-  private _cfnParameterValues: $TSObject;
+  private _cfnParameterValues: Record<string, any>;
   private _seenLogicalIds: Set<string>;
 
   constructor(scope: Construct, id: string, props: ApigwInputs) {
@@ -73,7 +73,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    * @param logicalId
    * @param value optional value which will be stored in parameters.json
    */
-  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string, value?: string | $TSObject): void {
+  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string, value?: string | Record<string, any>): void {
     this.validateLogicalId(logicalId);
     this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
     if (value !== undefined) {
@@ -394,7 +394,7 @@ const getAdminQueriesPathObject = (lambdaFunctionName: string) => ({
 });
 
 const createPathObject = (path: Path) => {
-  const defaultPathObject: $TSObject = {
+  const defaultPathObject: Record<string, any> = {
     options: {
       consumes: ['application/json'],
       produces: ['application/json'],

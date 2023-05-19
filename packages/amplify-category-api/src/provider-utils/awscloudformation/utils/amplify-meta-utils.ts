@@ -1,4 +1,4 @@
-import { $TSMeta, $TSObject, AmplifyCategories, AmplifySupportedService, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
+import { $TSMeta, AmplifyCategories, AmplifySupportedService, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import * as path from 'path';
 
@@ -81,6 +81,6 @@ export const getAppSyncResourceName = (projectMeta: $TSMeta): string | undefined
 // typically retreived using context.amplify.getProjectMeta()
 const getAppSyncAmplifyMetaEntry = (projectMeta: $TSMeta) => {
   return Object.entries(projectMeta[AmplifyCategories.API] || {}).find(
-    ([, value]) => (value as $TSObject).service === AmplifySupportedService.APPSYNC,
+    ([, value]) => (value as Record<string, any>).service === AmplifySupportedService.APPSYNC,
   );
 };

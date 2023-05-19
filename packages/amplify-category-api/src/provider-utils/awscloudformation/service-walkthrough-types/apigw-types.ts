@@ -1,4 +1,3 @@
-import { $TSObject } from '@aws-amplify/amplify-cli-core';
 import { CrudOperation, PermissionSetting } from '../cdk-stack-builder';
 
 export type ApigwPath = {
@@ -24,5 +23,5 @@ export type ApigwAnswers = {
   paths: { [pathName: string]: ApigwPath };
   resourceName: string;
   functionArns?: string[];
-  dependsOn?: $TSObject[];
+  dependsOn?: Record<string, any>[];
 };
