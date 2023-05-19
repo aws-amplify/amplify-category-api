@@ -19,7 +19,7 @@ export function attributeTypeFromType(type: TypeNode, ctx: TransformerContextPro
 
 // @public (undocumented)
 export class IndexTransformer extends TransformerPluginBase {
-    constructor();
+    constructor(backendDir: string);
     // (undocumented)
     after: (ctx: TransformerContextProvider) => void;
     // (undocumented)
@@ -32,7 +32,7 @@ export class IndexTransformer extends TransformerPluginBase {
 
 // @public (undocumented)
 export class PrimaryKeyTransformer extends TransformerPluginBase {
-    constructor();
+    constructor(backendDir: string);
     // (undocumented)
     after: (ctx: TransformerContextProvider) => void;
     // (undocumented)

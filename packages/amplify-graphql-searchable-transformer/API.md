@@ -14,7 +14,7 @@ import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/grap
 
 // @public (undocumented)
 export class SearchableModelTransformer extends TransformerPluginBase {
-    constructor(apiName?: string | undefined);
+    constructor(projectRoot: string, currentCloudBackendDir: string, apiName?: string | undefined);
     // (undocumented)
     generateResolvers: (context: TransformerContextProvider) => void;
     // (undocumented)
