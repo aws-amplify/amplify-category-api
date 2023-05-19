@@ -1,8 +1,8 @@
+# auto generated file. DO NOT EDIT manually
 version: 0.2
 env:
   shell: bash
   compute-type: BUILD_GENERAL1_MEDIUM
-
 batch:
   fast-fail: false
   build-graph:
@@ -10,62 +10,283 @@ batch:
       buildspec: codebuild_specs/build_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
-    # - identifier: test
-    #   buildspec: codebuild_specs/test.yml
-    #   env:
-    #     compute-type: BUILD_GENERAL1_LARGE
-    #   depend-on:
-    #     - build_linux
-    # - identifier: mock_e2e_tests
-    #   buildspec: codebuild_specs/mock_e2e_tests.yml
-    #   env:
-    #     compute-type: BUILD_GENERAL1_MEDIUM
-    #   depend-on:
-    #     - build_linux
-    # - identifier: verify_cdk_version
-    #   buildspec: codebuild_specs/verify_cdk_version.yml
-    #   env:
-    #     compute-type: BUILD_GENERAL1_MEDIUM
-    #   depend-on:
-    #     - build_linux
-    # - identifier: verify_api_extract
-    #   buildspec: codebuild_specs/verify_api_extract.yml
-    #   env:
-    #     compute-type: BUILD_GENERAL1_MEDIUM
-    #   depend-on:
-    #     - build_linux
-    # - identifier: verify_yarn_lock
-    #   buildspec: codebuild_specs/verify_yarn_lock.yml
-    #   env:
-    #     compute-type: BUILD_GENERAL1_MEDIUM
-    #   depend-on:
-    #     - build_linux
+    - identifier: test
+      buildspec: codebuild_specs/test.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - build_linux
+    - identifier: mock_e2e_tests
+      buildspec: codebuild_specs/mock_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+      depend-on:
+        - build_linux
+    - identifier: verify_cdk_version
+      buildspec: codebuild_specs/verify_cdk_version.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+      depend-on:
+        - build_linux
+    - identifier: verify_api_extract
+      buildspec: codebuild_specs/verify_api_extract.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+      depend-on:
+        - build_linux
+    - identifier: verify_yarn_lock
+      buildspec: codebuild_specs/verify_yarn_lock.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+      depend-on:
+        - build_linux
     - identifier: publish_to_local_registry
       buildspec: codebuild_specs/publish_to_local_registry.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
       depend-on:
         - build_linux
-    - identifier: run_e2e_tests
+    - identifier: l_auth_2_datastore_modelgen_amplify_app_custom_transformers
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          TEST_SUITE: custom-transformers.test.ts|mock-api.test.ts|amplify-app.test.ts
-          CLI_REGION: us-west-2
-      debug-session: true
+          TEST_SUITE: >-
+            src/__tests__/auth_2.test.ts|src/__tests__/datastore-modelgen.test.ts|src/__tests__/amplify-app.test.ts|src/__tests__/graphql-v2/custom-transformers.test.ts
+          CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
-    # - identifier: run_e2e_tests2
-    #   buildspec: codebuild_specs/run_e2e_tests.yml
-    #   env:
-    #     compute-type: BUILD_GENERAL1_MEDIUM
-    #     variables:
-    #       TEST_SUITE: schema-versioned.test.ts|schema-predictions.test.ts|schema-data-access-patterns.test.ts
-    #       CLI_REGION: us-east-2
-    #   debug-session: true
-    #   depend-on:
-    #     - publish_to_local_registry
+    - identifier: >-
+        l_mock_api_invalid_input_arguments_schema_versioned_schema_data_access_patterns
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/mock-api.test.ts|src/__tests__/graphql-v2/invalid-input-arguments.test.ts|src/__tests__/schema-versioned.test.ts|src/__tests__/schema-data-access-patterns.test.ts
+          CLI_REGION: ap-southeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_predictions_migration_api_10_function_10_rds_v2
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/transformer-migrations/predictions-migration.test.ts|src/__tests__/api_10.test.ts|src/__tests__/function_10.test.ts|src/__tests__/rds-v2.test.ts
+          CLI_REGION: ap-northeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_schema_predictions_api_7_function_migration_api_key_migration3
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/schema-predictions.test.ts|src/__tests__/api_7.test.ts|src/__tests__/transformer-migrations/function-migration.test.ts|src/__tests__/migration/api.key.migration3.test.ts
+          CLI_REGION: ap-southeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_http_migration_global_sandbox_api_key_migration5_schema_function_2
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/transformer-migrations/http-migration.test.ts|src/__tests__/global_sandbox.test.ts|src/__tests__/migration/api.key.migration5.test.ts|src/__tests__/schema-function-2.test.ts
+          CLI_REGION: ap-northeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: >-
+        l_schema_iterative_update_5_api_connection_migration_model_migration_api_8
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/schema-iterative-update-5.test.ts|src/__tests__/migration/api.connection.migration.test.ts|src/__tests__/transformer-migrations/model-migration.test.ts|src/__tests__/api_8.test.ts
+          CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_schema_iterative_update_3_schema_auth_10_schema_auth_2_auth_migration
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/schema-iterative-update-3.test.ts|src/__tests__/schema-auth-10.test.ts|src/__tests__/schema-auth-2.test.ts|src/__tests__/transformer-migrations/auth-migration.test.ts
+          CLI_REGION: ap-southeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: >-
+        l_schema_auth_1_lambda_conflict_handler_schema_iterative_update_1_schema_iterative_update_locking
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/schema-auth-1.test.ts|src/__tests__/graphql-v2/lambda-conflict-handler.test.ts|src/__tests__/schema-iterative-update-1.test.ts|src/__tests__/schema-iterative-update-locking.test.ts
+          CLI_REGION: eu-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_schema_auth_12_schema_auth_13_index_with_stack_mappings_schema_auth_3
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/schema-auth-12.test.ts|src/__tests__/schema-auth-13.test.ts|src/__tests__/graphql-v2/index-with-stack-mappings.test.ts|src/__tests__/schema-auth-3.test.ts
+          CLI_REGION: eu-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: >-
+        l_api_4_custom_policies_container_api_key_migration4_schema_iterative_rollback_1
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/api_4.test.ts|src/__tests__/custom_policies_container.test.ts|src/__tests__/migration/api.key.migration4.test.ts|src/__tests__/schema-iterative-rollback-1.test.ts
+          CLI_REGION: ap-southeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: >-
+        l_schema_iterative_update_2_api_connection_migration2_schema_iterative_rollback_2_schema_key
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/schema-iterative-update-2.test.ts|src/__tests__/migration/api.connection.migration2.test.ts|src/__tests__/schema-iterative-rollback-2.test.ts|src/__tests__/schema-key.test.ts
+          CLI_REGION: eu-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_api_5_containers_api_secrets_schema_auth_4_schema_auth_8
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/api_5.test.ts|src/__tests__/containers-api-secrets.test.ts|src/__tests__/schema-auth-4.test.ts|src/__tests__/schema-auth-8.test.ts
+          CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_api_key_migration2_schema_function_1_api_3_api_key_migration1
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/migration/api.key.migration2.test.ts|src/__tests__/schema-function-1.test.ts|src/__tests__/api_3.test.ts|src/__tests__/migration/api.key.migration1.test.ts
+          CLI_REGION: eu-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_schema_model_apigw_schema_auth_14_schema_auth_7
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/schema-model.test.ts|src/__tests__/apigw.test.ts|src/__tests__/schema-auth-14.test.ts|src/__tests__/schema-auth-7.test.ts
+          CLI_REGION: eu-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_schema_auth_9_api_1_resolvers_sync_query_datastore
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/schema-auth-9.test.ts|src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts
+          CLI_REGION: us-east-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: >-
+        l_schema_auth_5_searchable_datastore_schema_iterative_update_4_schema_searchable
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/schema-auth-5.test.ts|src/__tests__/graphql-v2/searchable-datastore.test.ts|src/__tests__/schema-iterative-update-4.test.ts|src/__tests__/schema-searchable.test.ts
+          CLI_REGION: ap-southeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: >-
+        l_api_6_schema_auth_6_searchable_previous_deployment_had_node_to_node_searchable_previous_deployment_no_node_to_node
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/api_6.test.ts|src/__tests__/schema-auth-6.test.ts|src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-had-node-to-node.test.ts|src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts
+          CLI_REGION: eu-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_api_lambda_auth_api_9_api_2
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/graphql-v2/api_lambda_auth.test.ts|src/__tests__/api_9.test.ts|src/__tests__/api_2.test.ts
+          CLI_REGION: us-east-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_schema_auth_15
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: src/__tests__/schema-auth-15.test.ts
+          CLI_REGION: ap-southeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_containers_api_1
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: src/__tests__/containers-api-1.test.ts
+          CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_schema_auth_11
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: src/__tests__/schema-auth-11.test.ts
+          CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_containers_api_2
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: src/__tests__/containers-api-2.test.ts
+          CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_schema_connection
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: src/__tests__/schema-connection.test.ts
+          CLI_REGION: ap-southeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_searchable_migration
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: src/__tests__/transformer-migrations/searchable-migration.test.ts
+          CLI_REGION: eu-west-2
+      depend-on:
+        - publish_to_local_registry
     - identifier: l_api_key_migration_v5
       buildspec: codebuild_specs/migration_tests_v5.yml
       env:
@@ -73,7 +294,17 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/migration_tests/transformer_migration/api.key.migration.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: eu-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_api_key_migration_2_v5
+      buildspec: codebuild_specs/migration_tests_v5.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/migration_tests/transformer_migration/api.key.migration-2.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: l_api_key_migration_v6
@@ -83,7 +314,17 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/migration_tests/transformer_migration/api.key.migration.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: ap-northeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_api_key_migration_2_v6
+      buildspec: codebuild_specs/migration_tests_v6.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/migration_tests/transformer_migration/api.key.migration-2.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: l_scaffold_v10
@@ -92,10 +333,43 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/migration_tests_v10/scaffold.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
-    - identifier: cleanup_e2e_resources
-      buildspec: codebuild_specs/cleanup_e2e_resources.yml
+    - identifier: l_api_rest_serverless_migration_v10
+      buildspec: codebuild_specs/migration_tests_v10.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/migration_tests_v10/api-rest-serverless.migration.test.ts
+          CLI_REGION: us-east-1
       depend-on:
-        - run_e2e_tests
+        - publish_to_local_registry
+    - identifier: l_api_rest_basic_migration_v10
+      buildspec: codebuild_specs/migration_tests_v10.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/migration_tests_v10/api-rest-basic.migration.test.ts
+          CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_api_graphql_v2_migration_v10
+      buildspec: codebuild_specs/migration_tests_v10.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/migration_tests_v10/api-graphql-v2.migration.test.ts
+          CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_api_rest_lambda_migration_v10
+      buildspec: codebuild_specs/migration_tests_v10.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/migration_tests_v10/api-rest-lambda.migration.test.ts
+          CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry

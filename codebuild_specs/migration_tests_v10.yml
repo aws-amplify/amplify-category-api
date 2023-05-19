@@ -13,11 +13,6 @@ env:
 phases:
   build:
     commands:
-      # - export NODE_OPTIONS=--max-old-space-size=8096
-      # - export AMPLIFY_DIR=$HOME/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin
-      # - export AMPLIFY_PATH=$HOME/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
-      - echo $AMPLIFY_DIR
-      - echo $AMPLIFY_PATH
       - source ./shared-scripts.sh && _runMigrationV10Test
   post_build:
     commands:
