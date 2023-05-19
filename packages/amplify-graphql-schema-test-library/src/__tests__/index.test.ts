@@ -101,7 +101,7 @@ function createV2Transformer(options: Partial<Writeable<GraphQLTransformOptions>
 
 function getV2DefaultTransformerList(): TransformerPluginProvider[] {
   const modelTransformer = new ModelTransformer();
-  const indexTransformer = new IndexTransformer();
+  const indexTransformer = new IndexTransformer('');
   const hasOneTransformer = new HasOneTransformer();
   const authTransformer = new AuthTransformer({
     adminRoles: ['testAdminRoleName'],
@@ -113,7 +113,7 @@ function getV2DefaultTransformerList(): TransformerPluginProvider[] {
     new FunctionTransformer(),
     new HttpTransformer(),
     new PredictionsTransformer({ bucketName: 'testBucketName' }),
-    new PrimaryKeyTransformer(),
+    new PrimaryKeyTransformer(''),
     indexTransformer,
     new BelongsToTransformer(),
     new HasManyTransformer(),
@@ -121,7 +121,7 @@ function getV2DefaultTransformerList(): TransformerPluginProvider[] {
     new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
     new DefaultValueTransformer(),
     authTransformer,
-    new SearchableModelTransformer(),
+    new SearchableModelTransformer('', ''),
   ];
 }
 

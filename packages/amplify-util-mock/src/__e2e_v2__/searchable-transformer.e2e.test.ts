@@ -24,7 +24,7 @@ describe('@searchable transformer', () => {
       const transformer = new GraphQLTransform({
         transformers: [
           new ModelTransformer(),
-          new SearchableModelTransformer(pathManager.findProjectRoot(), pathManager.getCurrentCloudBackendDirPath()),
+          new SearchableModelTransformer('', ''),
         ],
         sandboxModeEnabled: true,
       });

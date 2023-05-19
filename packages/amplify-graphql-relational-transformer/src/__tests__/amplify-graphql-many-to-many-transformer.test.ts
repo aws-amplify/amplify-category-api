@@ -655,9 +655,9 @@ function createTransformer(authConfig?: AppSyncAuthConfiguration) {
   };
   const authTransformer = new AuthTransformer();
   const modelTransformer = new ModelTransformer();
-  const indexTransformer = new IndexTransformer();
+  const indexTransformer = new IndexTransformer('');
   const hasOneTransformer = new HasOneTransformer();
-  const primaryKeyTransformer = new PrimaryKeyTransformer();
+  const primaryKeyTransformer = new PrimaryKeyTransformer('');
   const transformer = new GraphQLTransform({
     authConfig: transformerAuthConfig,
     transformers: [

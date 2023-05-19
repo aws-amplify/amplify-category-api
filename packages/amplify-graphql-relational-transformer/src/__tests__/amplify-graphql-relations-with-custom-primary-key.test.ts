@@ -38,7 +38,7 @@ describe('custom primary key and relational directives', () => {
       featureFlags: mockFeatureFlags(true),
       transformers: [
         new ModelTransformer(),
-        new PrimaryKeyTransformer(),
+        new PrimaryKeyTransformer(''),
         new HasOneTransformer(),
         new BelongsToTransformer(),
       ],
@@ -79,7 +79,7 @@ describe('custom primary key and relational directives', () => {
       featureFlags: mockFeatureFlags(true),
       transformers: [
         new ModelTransformer(),
-        new PrimaryKeyTransformer(),
+        new PrimaryKeyTransformer(''),
         new HasOneTransformer(),
         new BelongsToTransformer(),
       ],
@@ -127,7 +127,7 @@ describe('custom primary key and relational directives', () => {
       featureFlags: mockFeatureFlags(true),
       transformers: [
         new ModelTransformer(),
-        new PrimaryKeyTransformer(),
+        new PrimaryKeyTransformer(''),
         new HasManyTransformer(),
         new BelongsToTransformer(),
       ],
@@ -168,7 +168,7 @@ describe('custom primary key and relational directives', () => {
       featureFlags: mockFeatureFlags(true),
       transformers: [
         new ModelTransformer(),
-        new PrimaryKeyTransformer(),
+        new PrimaryKeyTransformer(''),
         new HasManyTransformer(),
         new BelongsToTransformer(),
       ],
@@ -208,7 +208,7 @@ describe('custom primary key and relational directives', () => {
       featureFlags: mockFeatureFlags(true),
       transformers: [
         new ModelTransformer(),
-        new PrimaryKeyTransformer(),
+        new PrimaryKeyTransformer(''),
         new HasOneTransformer(),
         new BelongsToTransformer(),
       ],
@@ -282,7 +282,7 @@ describe('custom primary key and relational directives', () => {
       featureFlags: mockFeatureFlags(true),
       transformers: [
         new ModelTransformer(),
-        new PrimaryKeyTransformer(),
+        new PrimaryKeyTransformer(''),
         new HasOneTransformer(),
         new BelongsToTransformer(),
       ],
@@ -359,7 +359,7 @@ describe('custom primary key and relational directives', () => {
       featureFlags: mockFeatureFlags(true),
       transformers: [
         new ModelTransformer(),
-        new PrimaryKeyTransformer(),
+        new PrimaryKeyTransformer(''),
         new HasManyTransformer(),
         new BelongsToTransformer(),
       ],
@@ -435,7 +435,7 @@ describe('custom primary key and relational directives', () => {
       featureFlags: mockFeatureFlags(false),
       transformers: [
         new ModelTransformer(),
-        new PrimaryKeyTransformer(),
+        new PrimaryKeyTransformer(''),
         new HasOneTransformer(),
         new BelongsToTransformer(),
       ],
@@ -471,7 +471,7 @@ describe('custom primary key and relational directives', () => {
       featureFlags: mockFeatureFlags(false),
       transformers: [
         new ModelTransformer(),
-        new PrimaryKeyTransformer(),
+        new PrimaryKeyTransformer(''),
         new HasManyTransformer(),
         new BelongsToTransformer(),
       ],
@@ -522,7 +522,7 @@ describe('custom primary key and relational directives', () => {
       featureFlags: mockFeatureFlags(true),
       transformers: [
         new ModelTransformer(),
-        new PrimaryKeyTransformer(),
+        new PrimaryKeyTransformer(''),
         new HasOneTransformer(),
         new HasManyTransformer(),
         new BelongsToTransformer(),
@@ -590,7 +590,7 @@ describe('custom primary key and relational directives', () => {
       featureFlags: mockFeatureFlags(true),
       transformers: [
         new ModelTransformer(),
-        new PrimaryKeyTransformer(),
+        new PrimaryKeyTransformer(''),
         new HasOneTransformer(),
         new HasManyTransformer(),
         new BelongsToTransformer(),
@@ -626,9 +626,9 @@ describe('custom primary key and relational directives', () => {
 
       const authTransformer = new AuthTransformer();
       const modelTransformer = new ModelTransformer();
-      const indexTransformer = new IndexTransformer();
+      const indexTransformer = new IndexTransformer('');
       const hasOneTransformer = new HasOneTransformer();
-      const primaryKeyTransformer = new PrimaryKeyTransformer();
+      const primaryKeyTransformer = new PrimaryKeyTransformer('');
       const transformer = new GraphQLTransform({
         authConfig: {
           defaultAuthentication: {
@@ -749,13 +749,13 @@ describe('Resolvers for custom primary key and relational directives', () => {
   `;
   const setupTransformers = () => {
     const modelTransformer = new ModelTransformer();
-    const indexTransformer = new IndexTransformer();
+    const indexTransformer = new IndexTransformer('');
     const hasOneTransformer = new HasOneTransformer();
     const authTransformer = new AuthTransformer();
     return [
       modelTransformer,
       indexTransformer,
-      new PrimaryKeyTransformer(),
+      new PrimaryKeyTransformer(''),
       new HasManyTransformer(),
       new BelongsToTransformer(),
       new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),

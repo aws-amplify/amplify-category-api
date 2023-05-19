@@ -295,8 +295,8 @@ describe('@model with @auth', () => {
       authConfig,
       transformers: [
         new ModelTransformer(),
-        new PrimaryKeyTransformer(),
-        new IndexTransformer(),
+        new PrimaryKeyTransformer(''),
+        new IndexTransformer(''),
         new HasOneTransformer(),
         new AuthTransformer(),
       ],

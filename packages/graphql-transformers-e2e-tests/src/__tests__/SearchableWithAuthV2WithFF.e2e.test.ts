@@ -170,7 +170,7 @@ beforeAll(async () => {
         },
       ],
     },
-    transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
+    transformers: [new ModelTransformer(), new SearchableModelTransformer('', ''), new AuthTransformer()],
     featureFlags: {
       getBoolean(value: string) {
         if (value === 'useSubUsernameForDefaultIdentityClaim') {

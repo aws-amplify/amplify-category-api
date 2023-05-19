@@ -246,7 +246,7 @@ const testResolverLogic = (
     authConfig,
     transformers: [
       new ModelTransformer(),
-      new PrimaryKeyTransformer(),
+      new PrimaryKeyTransformer(''),
       new AuthTransformer(),
     ],
     featureFlags,

@@ -292,8 +292,8 @@ beforeAll(async () => {
     },
     transformers: [
       new ModelTransformer(),
-      new IndexTransformer(),
-      new PrimaryKeyTransformer(),
+      new IndexTransformer(''),
+      new PrimaryKeyTransformer(''),
       new HasOneTransformer(),
       new HasManyTransformer(),
       new AuthTransformer({ identityPoolId: IDENTITY_POOL_ID }),

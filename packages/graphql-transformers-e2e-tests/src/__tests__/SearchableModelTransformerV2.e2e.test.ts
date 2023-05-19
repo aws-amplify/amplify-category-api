@@ -96,7 +96,7 @@ beforeAll(async () => {
     `;
   const transformer = new GraphQLTransform({
     featureFlags,
-    transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    transformers: [new ModelTransformer(), new SearchableModelTransformer('', '')],
     sandboxModeEnabled: true,
   });
   try {

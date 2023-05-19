@@ -28,7 +28,7 @@ test('SearchableModelTransformer validation happy case', () => {
     }
     `;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    transformers: [new ModelTransformer(), new SearchableModelTransformer('', '')],
     featureFlags,
   });
   const out = transformer.transform(validSchema);
@@ -47,7 +47,7 @@ test('SearchableModelTransformer vtl', () => {
     }
     `;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    transformers: [new ModelTransformer(), new SearchableModelTransformer('', '')],
     featureFlags,
   });
 
@@ -68,7 +68,7 @@ test('SearchableModelTransformer with datastore enabled vtl', () => {
     }
     `;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    transformers: [new ModelTransformer(), new SearchableModelTransformer('', '')],
     featureFlags,
     resolverConfig: {
       project: {
@@ -96,7 +96,7 @@ test('SearchableModelTransformer with query overrides', () => {
     }
     `;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    transformers: [new ModelTransformer(), new SearchableModelTransformer('', '')],
     featureFlags,
   });
   const out = transformer.transform(validSchema);
@@ -114,7 +114,7 @@ test('SearchableModelTransformer with only create mutations', () => {
     }
     `;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    transformers: [new ModelTransformer(), new SearchableModelTransformer('', '')],
     featureFlags,
   });
   const out = transformer.transform(validSchema);
@@ -138,7 +138,7 @@ test('SearchableModelTransformer with multiple model searchable directives', () 
     }
     `;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    transformers: [new ModelTransformer(), new SearchableModelTransformer('', '')],
     featureFlags,
   });
   const out = transformer.transform(validSchema);
@@ -157,7 +157,7 @@ test('SearchableModelTransformer with sort fields', () => {
     }
     `;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    transformers: [new ModelTransformer(), new SearchableModelTransformer('', '')],
     featureFlags,
   });
   const out = transformer.transform(validSchema);
@@ -187,7 +187,7 @@ test('it generates expected resources', () => {
     }
  `;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    transformers: [new ModelTransformer(), new SearchableModelTransformer('', '')],
     featureFlags,
   });
   const out = transformer.transform(validSchema);
@@ -369,7 +369,7 @@ test('SearchableModelTransformer enum type generates StringFilterInput', () => {
     }
     `;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    transformers: [new ModelTransformer(), new SearchableModelTransformer('', '')],
     featureFlags,
   });
   const out = transformer.transform(validSchema);
@@ -387,7 +387,7 @@ describe('SearchableModelTransformer with datastore enabled and sort field defin
       }
     `;
     const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+      transformers: [new ModelTransformer(), new SearchableModelTransformer('', '')],
       featureFlags,
       resolverConfig: {
         project: {

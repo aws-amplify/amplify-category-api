@@ -52,8 +52,8 @@ describe('relational tests', () => {
       transformers: [
         new ModelTransformer(),
         new AuthTransformer(),
-        new PrimaryKeyTransformer(),
-        new IndexTransformer(),
+        new PrimaryKeyTransformer(''),
+        new IndexTransformer(''),
         new HasManyTransformer(),
         new HasOneTransformer(),
         new BelongsToTransformer(),
@@ -376,8 +376,8 @@ describe('with identity claim feature flag disabled', () => {
         transformers: [
           new ModelTransformer(),
           new AuthTransformer(),
-          new PrimaryKeyTransformer(),
-          new IndexTransformer(),
+          new PrimaryKeyTransformer(''),
+          new IndexTransformer(''),
           new HasManyTransformer(),
           new HasOneTransformer(),
           new BelongsToTransformer(),

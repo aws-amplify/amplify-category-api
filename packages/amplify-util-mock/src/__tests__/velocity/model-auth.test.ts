@@ -761,7 +761,7 @@ describe("@model @primaryIndex @index auth", () => {
 
 
       },
-      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()]
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new IndexTransformer(''), new AuthTransformer()]
     });
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });
@@ -1544,7 +1544,7 @@ describe("with identity claim feature flag disabled", () => {
 
 
         },
-        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()]
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new IndexTransformer(''), new AuthTransformer()]
       });
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });
     });

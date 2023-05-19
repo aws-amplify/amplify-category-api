@@ -30,7 +30,7 @@ const manyToManyMapped = /* GraphQL */ `
 `;
 
 const transformSchema = (schema: string): DeploymentResources => {
-  const indexTransformer = new IndexTransformer();
+  const indexTransformer = new IndexTransformer('');
   const modelTransformer = new ModelTransformer();
   const hasOneTransformer = new HasOneTransformer();
   const authTransformer = new AuthTransformer();

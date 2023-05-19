@@ -491,7 +491,7 @@ export const deploySchema = async (
     },
     transformers: [
       new ModelTransformer(),
-      new PrimaryKeyTransformer(),
+      new PrimaryKeyTransformer(''),
       new AuthTransformer({ identityPoolId }),
     ],
   });

@@ -35,7 +35,7 @@ test('it overrides expected resources', () => {
     }
  `;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    transformers: [new ModelTransformer(), new SearchableModelTransformer('', '')],
     featureFlags,
     overrideConfig: {
       overrideDir: path.join(__dirname, 'overrides'),

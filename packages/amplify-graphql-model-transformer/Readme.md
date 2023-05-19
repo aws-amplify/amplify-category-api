@@ -351,7 +351,7 @@ import AppSyncAuthTransformer from 'graphql-auth-transformer';
 const transformer = new GraphQLTransform({
   transformers: [
     new AppSyncDynamoDBTransformer(),
-    new SearchableModelTransformer(),
+    new SearchableModelTransformer('', ''),
     new AppSyncAuthTransformer(),
     new AppSyncConnectionTransformer(),
   ],
