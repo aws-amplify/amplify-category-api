@@ -1,0 +1,3777 @@
+{
+  "next_page_token": null,
+  "items": [
+    {
+      "name": "amplify-app-l",
+      "metrics": {
+        "total_runs": 25,
+        "failed_runs": 18,
+        "successful_runs": 7,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 201,
+          "mean": 255,
+          "median": 245,
+          "p95": 329,
+          "max": 339,
+          "standard_deviation": 38,
+          "total_duration": 0
+        },
+        "success_rate": 0.28,
+        "total_credits_used": 2111,
+        "throughput": 0.8333333333
+      },
+      "window_start": "2023-04-19T19:49:49.977Z",
+      "window_end": "2023-05-17T16:09:47.069Z"
+    },
+    {
+      "name": "api_10-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 3,
+        "successful_runs": 19,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 548,
+          "mean": 1346,
+          "median": 642,
+          "p95": 7881,
+          "max": 8414,
+          "standard_deviation": 2262,
+          "total_duration": 0
+        },
+        "success_rate": 0.8636363636,
+        "total_credits_used": 9848,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:51.381Z",
+      "window_end": "2023-05-17T16:16:30.680Z"
+    },
+    {
+      "name": "api_1-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1833,
+          "mean": 2769,
+          "median": 2138,
+          "p95": 7467,
+          "max": 8594,
+          "standard_deviation": 1783,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 20290,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:48.657Z",
+      "window_end": "2023-05-17T16:35:07.411Z"
+    },
+    {
+      "name": "api_2-l",
+      "metrics": {
+        "total_runs": 23,
+        "failed_runs": 3,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 3374,
+          "mean": 4341,
+          "median": 3535,
+          "p95": 7344,
+          "max": 12775,
+          "standard_deviation": 2074,
+          "total_duration": 0
+        },
+        "success_rate": 0.8695652174,
+        "total_credits_used": 33269,
+        "throughput": 0.7666666667
+      },
+      "window_start": "2023-04-19T19:49:53.940Z",
+      "window_end": "2023-05-17T17:01:52.723Z"
+    },
+    {
+      "name": "api_3-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1508,
+          "mean": 2567,
+          "median": 1701,
+          "p95": 9868,
+          "max": 10260,
+          "standard_deviation": 2507,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 18814,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:49:50.768Z",
+      "window_end": "2023-05-17T16:46:10.315Z"
+    },
+    {
+      "name": "api_4-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1256,
+          "mean": 2135,
+          "median": 1413,
+          "p95": 8854,
+          "max": 9264,
+          "standard_deviation": 2304,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 15638,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:49:53.318Z",
+      "window_end": "2023-05-17T16:27:17.988Z"
+    },
+    {
+      "name": "api_5-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 1,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1441,
+          "mean": 1584,
+          "median": 1518,
+          "p95": 1943,
+          "max": 2244,
+          "standard_deviation": 184,
+          "total_duration": 0
+        },
+        "success_rate": 0.9523809524,
+        "total_credits_used": 11072,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:49:49.079Z",
+      "window_end": "2023-05-17T16:28:37.543Z"
+    },
+    {
+      "name": "api_6-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 2158,
+          "mean": 3086,
+          "median": 2563,
+          "p95": 7772,
+          "max": 8002,
+          "standard_deviation": 1631,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 22617,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:49.340Z",
+      "window_end": "2023-05-17T16:42:43.291Z"
+    },
+    {
+      "name": "api_7-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 3,
+        "successful_runs": 19,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 648,
+          "mean": 1010,
+          "median": 735,
+          "p95": 2011,
+          "max": 3747,
+          "standard_deviation": 699,
+          "total_duration": 0
+        },
+        "success_rate": 0.8636363636,
+        "total_credits_used": 7398,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:49.584Z",
+      "window_end": "2023-05-17T16:17:06.374Z"
+    },
+    {
+      "name": "api_8-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 881,
+          "mean": 1290,
+          "median": 1038,
+          "p95": 3717,
+          "max": 3848,
+          "standard_deviation": 838,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 9439,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:49:49.339Z",
+      "window_end": "2023-05-17T16:22:11.560Z"
+    },
+    {
+      "name": "api_9-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 2643,
+          "mean": 3773,
+          "median": 2952,
+          "p95": 7354,
+          "max": 12602,
+          "standard_deviation": 2239,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 27655,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:50.714Z",
+      "window_end": "2023-05-17T16:54:16.816Z"
+    },
+    {
+      "name": "api-connection-migration2-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1275,
+          "mean": 1957,
+          "median": 1443,
+          "p95": 5820,
+          "max": 7578,
+          "standard_deviation": 1593,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 14341,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:52.148Z",
+      "window_end": "2023-05-17T16:26:53.335Z"
+    },
+    {
+      "name": "api-connection-migration-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 820,
+          "mean": 1323,
+          "median": 922,
+          "p95": 3614,
+          "max": 6669,
+          "standard_deviation": 1338,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 9688,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:51.330Z",
+      "window_end": "2023-05-17T16:19:44.608Z"
+    },
+    {
+      "name": "api-graphql-v2-migration_v10-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 748,
+          "mean": 903,
+          "median": 854,
+          "p95": 1232,
+          "max": 1291,
+          "standard_deviation": 147,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 6306,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:51.049Z",
+      "window_end": "2023-05-17T16:18:39.405Z"
+    },
+    {
+      "name": "apigw-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1751,
+          "mean": 2313,
+          "median": 1876,
+          "p95": 2835,
+          "max": 10601,
+          "standard_deviation": 1864,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 13416,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:49:50.166Z",
+      "window_end": "2023-05-17T16:36:21.479Z"
+    },
+    {
+      "name": "api-key-migration1-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1587,
+          "mean": 2410,
+          "median": 1728,
+          "p95": 8289,
+          "max": 8647,
+          "standard_deviation": 2025,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 17655,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:51.445Z",
+      "window_end": "2023-05-17T16:33:20.060Z"
+    },
+    {
+      "name": "api-key-migration2-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1274,
+          "mean": 1944,
+          "median": 1667,
+          "p95": 4397,
+          "max": 4488,
+          "standard_deviation": 911,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 14242,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:51.607Z",
+      "window_end": "2023-05-17T16:53:35.826Z"
+    },
+    {
+      "name": "api-key-migration-2_v5-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 699,
+          "mean": 1016,
+          "median": 743,
+          "p95": 3607,
+          "max": 3797,
+          "standard_deviation": 893,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 7432,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:49.950Z",
+      "window_end": "2023-05-17T16:17:45.677Z"
+    },
+    {
+      "name": "api-key-migration-2_v6-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 648,
+          "mean": 1003,
+          "median": 742,
+          "p95": 3536,
+          "max": 3681,
+          "standard_deviation": 867,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 7346,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:49:52.990Z",
+      "window_end": "2023-05-17T16:17:54.319Z"
+    },
+    {
+      "name": "api-key-migration3-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 705,
+          "mean": 1294,
+          "median": 787,
+          "p95": 5982,
+          "max": 6293,
+          "standard_deviation": 1611,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 9477,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:52.156Z",
+      "window_end": "2023-05-17T16:17:24.633Z"
+    },
+    {
+      "name": "api-key-migration4-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1278,
+          "mean": 1932,
+          "median": 1419,
+          "p95": 5949,
+          "max": 7710,
+          "standard_deviation": 1641,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 14155,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:53.006Z",
+      "window_end": "2023-05-17T16:31:32.425Z"
+    },
+    {
+      "name": "api-key-migration5-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 708,
+          "mean": 1553,
+          "median": 891,
+          "p95": 5896,
+          "max": 6585,
+          "standard_deviation": 1624,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 11370,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:49:51.610Z",
+      "window_end": "2023-05-17T16:20:28.695Z"
+    },
+    {
+      "name": "api-key-migration_v5-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 3,
+        "successful_runs": 19,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 564,
+          "mean": 865,
+          "median": 622,
+          "p95": 2158,
+          "max": 3460,
+          "standard_deviation": 692,
+          "total_duration": 0
+        },
+        "success_rate": 0.8636363636,
+        "total_credits_used": 6331,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:49.092Z",
+      "window_end": "2023-05-17T16:17:17.562Z"
+    },
+    {
+      "name": "api-key-migration_v6-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 3,
+        "successful_runs": 19,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 551,
+          "mean": 868,
+          "median": 628,
+          "p95": 2109,
+          "max": 3496,
+          "standard_deviation": 695,
+          "total_duration": 0
+        },
+        "success_rate": 0.8636363636,
+        "total_credits_used": 6353,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:49.707Z",
+      "window_end": "2023-05-17T16:15:17.696Z"
+    },
+    {
+      "name": "api_lambda_auth-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 2544,
+          "mean": 3393,
+          "median": 2939,
+          "p95": 7962,
+          "max": 8140,
+          "standard_deviation": 1611,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 24869,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:49:52.288Z",
+      "window_end": "2023-05-17T16:48:17.426Z"
+    },
+    {
+      "name": "api-rest-basic-migration_v10-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 510,
+          "mean": 563,
+          "median": 566,
+          "p95": 605,
+          "max": 656,
+          "standard_deviation": 32,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 3933,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:49.483Z",
+      "window_end": "2023-05-17T16:13:52.753Z"
+    },
+    {
+      "name": "api-rest-lambda-migration_v10-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 1,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 822,
+          "mean": 1003,
+          "median": 913,
+          "p95": 1651,
+          "max": 1702,
+          "standard_deviation": 245,
+          "total_duration": 0
+        },
+        "success_rate": 0.9523809524,
+        "total_credits_used": 7008,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:50.735Z",
+      "window_end": "2023-05-17T16:32:58.137Z"
+    },
+    {
+      "name": "api-rest-serverless-migration_v10-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 471,
+          "mean": 523,
+          "median": 524,
+          "p95": 579,
+          "max": 608,
+          "standard_deviation": 33,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 3640,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:48.676Z",
+      "window_end": "2023-05-17T16:13:21.889Z"
+    },
+    {
+      "name": "auth_2-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 147,
+          "mean": 172,
+          "median": 171,
+          "p95": 194,
+          "max": 208,
+          "standard_deviation": 15,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 1186,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:52.184Z",
+      "window_end": "2023-05-17T16:07:34.017Z"
+    },
+    {
+      "name": "auth-migration-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1009,
+          "mean": 1556,
+          "median": 1139,
+          "p95": 4161,
+          "max": 4301,
+          "standard_deviation": 949,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 11401,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:52.830Z",
+      "window_end": "2023-05-17T16:35:40.038Z"
+    },
+    {
+      "name": "AuthV2ExhaustiveT1A-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 879,
+          "mean": 1049,
+          "median": 979,
+          "p95": 1363,
+          "max": 2010,
+          "standard_deviation": 240,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 7335,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:52.544Z",
+      "window_end": "2023-05-17T16:20:25.103Z"
+    },
+    {
+      "name": "AuthV2ExhaustiveT1B-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 925,
+          "mean": 1032,
+          "median": 1004,
+          "p95": 1187,
+          "max": 1510,
+          "standard_deviation": 123,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 7213,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:52.176Z",
+      "window_end": "2023-05-17T16:20:01.366Z"
+    },
+    {
+      "name": "AuthV2ExhaustiveT1C-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 1,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 661,
+          "mean": 1296,
+          "median": 1192,
+          "p95": 1758,
+          "max": 1775,
+          "standard_deviation": 278,
+          "total_duration": 0
+        },
+        "success_rate": 0.9523809524,
+        "total_credits_used": 9061,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:52.931Z",
+      "window_end": "2023-05-17T16:24:52.586Z"
+    },
+    {
+      "name": "AuthV2ExhaustiveT1D-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1223,
+          "mean": 1295,
+          "median": 1266,
+          "p95": 1568,
+          "max": 1638,
+          "standard_deviation": 105,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 9056,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:53.095Z",
+      "window_end": "2023-05-17T16:25:49.851Z"
+    },
+    {
+      "name": "AuthV2ExhaustiveT2A-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1084,
+          "mean": 1208,
+          "median": 1171,
+          "p95": 1424,
+          "max": 1460,
+          "standard_deviation": 110,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 8438,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:49:49.692Z",
+      "window_end": "2023-05-17T16:24:16.767Z"
+    },
+    {
+      "name": "AuthV2ExhaustiveT2B-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1361,
+          "mean": 1537,
+          "median": 1413,
+          "p95": 1856,
+          "max": 3279,
+          "standard_deviation": 415,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 10744,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:48.639Z",
+      "window_end": "2023-05-17T16:27:52.531Z"
+    },
+    {
+      "name": "AuthV2ExhaustiveT2C-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1512,
+          "mean": 1617,
+          "median": 1574,
+          "p95": 1803,
+          "max": 2097,
+          "standard_deviation": 130,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 11304,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:50.676Z",
+      "window_end": "2023-05-17T16:30:10.703Z"
+    },
+    {
+      "name": "AuthV2ExhaustiveT2D-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 1,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1506,
+          "mean": 1609,
+          "median": 1535,
+          "p95": 1572,
+          "max": 3054,
+          "standard_deviation": 331,
+          "total_duration": 0
+        },
+        "success_rate": 0.9523809524,
+        "total_credits_used": 11245,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:50.865Z",
+      "window_end": "2023-05-17T16:30:42.470Z"
+    },
+    {
+      "name": "AuthV2Transformer-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 870,
+          "mean": 1004,
+          "median": 959,
+          "p95": 1336,
+          "max": 1599,
+          "standard_deviation": 166,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 7018,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:49:54.520Z",
+      "window_end": "2023-05-17T16:19:37.080Z"
+    },
+    {
+      "name": "AuthV2TransformerWithFF-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 1,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1019,
+          "mean": 1154,
+          "median": 1053,
+          "p95": 1313,
+          "max": 2366,
+          "standard_deviation": 291,
+          "total_duration": 0
+        },
+        "success_rate": 0.9523809524,
+        "total_credits_used": 8068,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:49:51.403Z",
+      "window_end": "2023-05-17T16:22:02.895Z"
+    },
+    {
+      "name": "BelongsToTransformerV2-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 451,
+          "mean": 522,
+          "median": 523,
+          "p95": 587,
+          "max": 678,
+          "standard_deviation": 48,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 3643,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:53.532Z",
+      "window_end": "2023-05-17T16:13:23.790Z"
+    },
+    {
+      "name": "build_linux",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 217,
+          "mean": 278,
+          "median": 279,
+          "p95": 317,
+          "max": 339,
+          "standard_deviation": 28,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 1925,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:42:31.117Z",
+      "window_end": "2023-05-17T16:02:36.845Z"
+    },
+    {
+      "name": "build_windows",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 656,
+          "mean": 839,
+          "median": 779,
+          "p95": 1096,
+          "max": 1193,
+          "standard_deviation": 154,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 11508,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:42:30.793Z",
+      "window_end": "2023-05-17T16:12:26.245Z"
+    },
+    {
+      "name": "cleanup_resources_after_e2e_runs",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 4,
+        "successful_runs": 18,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 82,
+          "mean": 348,
+          "median": 188,
+          "p95": 556,
+          "max": 3749,
+          "standard_deviation": 766,
+          "total_duration": 0
+        },
+        "success_rate": 0.8181818182,
+        "total_credits_used": 2536,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T21:01:29.064Z",
+      "window_end": "2023-05-17T17:24:36.679Z"
+    },
+    {
+      "name": "client_e2e_tests",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 4,
+        "successful_runs": 18,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 158,
+          "mean": 1629,
+          "median": 1661,
+          "p95": 2173,
+          "max": 2847,
+          "standard_deviation": 481,
+          "total_duration": 0
+        },
+        "success_rate": 0.8181818182,
+        "total_credits_used": 11927,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:49:50.748Z",
+      "window_end": "2023-05-17T16:32:34.417Z"
+    },
+    {
+      "name": "ConnectionsWithAuthTests-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 326,
+          "mean": 413,
+          "median": 411,
+          "p95": 435,
+          "max": 565,
+          "standard_deviation": 41,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 2874,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:51.646Z",
+      "window_end": "2023-05-17T16:11:53.186Z"
+    },
+    {
+      "name": "containers-api-1-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1434,
+          "mean": 1689,
+          "median": 1605,
+          "p95": 2133,
+          "max": 2218,
+          "standard_deviation": 236,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 11812,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:50.969Z",
+      "window_end": "2023-05-17T16:30:00.915Z"
+    },
+    {
+      "name": "containers-api-2-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1697,
+          "mean": 2094,
+          "median": 1961,
+          "p95": 2671,
+          "max": 3639,
+          "standard_deviation": 443,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 14643,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:53.383Z",
+      "window_end": "2023-05-17T16:35:37.657Z"
+    },
+    {
+      "name": "containers-api-secrets-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 147,
+          "mean": 1518,
+          "median": 1548,
+          "p95": 1863,
+          "max": 2500,
+          "standard_deviation": 469,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 11115,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:48.622Z",
+      "window_end": "2023-05-17T17:56:00.215Z"
+    },
+    {
+      "name": "custom_policies_container-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 1,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1263,
+          "mean": 1528,
+          "median": 1429,
+          "p95": 1936,
+          "max": 2172,
+          "standard_deviation": 246,
+          "total_duration": 0
+        },
+        "success_rate": 0.9523809524,
+        "total_credits_used": 10686,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:53.853Z",
+      "window_end": "2023-05-17T16:35:49.412Z"
+    },
+    {
+      "name": "custom_policies_function-l",
+      "metrics": {
+        "total_runs": 16,
+        "failed_runs": 10,
+        "successful_runs": 6,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 366,
+          "mean": 569,
+          "median": 641,
+          "p95": 686,
+          "max": 704,
+          "standard_deviation": 126,
+          "total_duration": 0
+        },
+        "success_rate": 0.375,
+        "total_credits_used": 3025,
+        "throughput": 0.5333333333
+      },
+      "window_start": "2023-04-19T19:48:51.941Z",
+      "window_end": "2023-05-16T02:34:13.258Z"
+    },
+    {
+      "name": "CustomRoots-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 86,
+          "mean": 98,
+          "median": 98,
+          "p95": 106,
+          "max": 124,
+          "standard_deviation": 8,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 668,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:49:50.327Z",
+      "window_end": "2023-05-17T16:06:21.543Z"
+    },
+    {
+      "name": "custom-transformers-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 249,
+          "mean": 353,
+          "median": 293,
+          "p95": 421,
+          "max": 1514,
+          "standard_deviation": 268,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 2454,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:49:49.790Z",
+      "window_end": "2023-05-17T16:09:35.673Z"
+    },
+    {
+      "name": "datastore-modelgen-l",
+      "metrics": {
+        "total_runs": 25,
+        "failed_runs": 18,
+        "successful_runs": 7,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 183,
+          "mean": 235,
+          "median": 237,
+          "p95": 264,
+          "max": 275,
+          "standard_deviation": 19,
+          "total_duration": 0
+        },
+        "success_rate": 0.28,
+        "total_credits_used": 1942,
+        "throughput": 0.8333333333
+      },
+      "window_start": "2023-04-19T19:49:48.695Z",
+      "window_end": "2023-05-17T16:08:27.073Z"
+    },
+    {
+      "name": "DefaultValueTransformer-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 297,
+          "mean": 380,
+          "median": 391,
+          "p95": 414,
+          "max": 478,
+          "standard_deviation": 39,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 2652,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:50.861Z",
+      "window_end": "2023-05-17T16:11:06.941Z"
+    },
+    {
+      "name": "deploy",
+      "metrics": {
+        "total_runs": 1,
+        "failed_runs": 0,
+        "successful_runs": 1,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 69,
+          "mean": 69,
+          "median": 69,
+          "p95": 69,
+          "max": 69,
+          "standard_deviation": 0,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 20,
+        "throughput": 0.03333333333
+      },
+      "window_start": "2023-05-17T17:56:00.670Z",
+      "window_end": "2023-05-17T17:57:09.994Z"
+    },
+    {
+      "name": "DynamoDBModelTransformer-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 335,
+          "mean": 407,
+          "median": 407,
+          "p95": 530,
+          "max": 541,
+          "standard_deviation": 50,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 2840,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:54.000Z",
+      "window_end": "2023-05-17T16:11:36.679Z"
+    },
+    {
+      "name": "function_10-l",
+      "metrics": {
+        "total_runs": 23,
+        "failed_runs": 3,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 507,
+          "mean": 1042,
+          "median": 601,
+          "p95": 3407,
+          "max": 5421,
+          "standard_deviation": 1246,
+          "total_duration": 0
+        },
+        "success_rate": 0.8695652174,
+        "total_credits_used": 7974,
+        "throughput": 0.7666666667
+      },
+      "window_start": "2023-04-19T19:48:48.586Z",
+      "window_end": "2023-05-17T16:14:16.813Z"
+    },
+    {
+      "name": "function-migration-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 3,
+        "successful_runs": 19,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 596,
+          "mean": 1048,
+          "median": 728,
+          "p95": 3478,
+          "max": 3819,
+          "standard_deviation": 882,
+          "total_duration": 0
+        },
+        "success_rate": 0.8636363636,
+        "total_credits_used": 7672,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:49:53.121Z",
+      "window_end": "2023-05-17T16:16:24.947Z"
+    },
+    {
+      "name": "FunctionTransformerTests-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 286,
+          "mean": 350,
+          "median": 352,
+          "p95": 385,
+          "max": 389,
+          "standard_deviation": 24,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 2432,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:53.598Z",
+      "window_end": "2023-05-17T16:10:20.960Z"
+    },
+    {
+      "name": "FunctionTransformerTestsV2-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 293,
+          "mean": 359,
+          "median": 355,
+          "p95": 473,
+          "max": 554,
+          "standard_deviation": 59,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 2497,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:51.259Z",
+      "window_end": "2023-05-17T16:09:33.457Z"
+    },
+    {
+      "name": "global_sandbox-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 775,
+          "mean": 1268,
+          "median": 876,
+          "p95": 3548,
+          "max": 6338,
+          "standard_deviation": 1280,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 9287,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:52.283Z",
+      "window_end": "2023-05-17T16:20:24.817Z"
+    },
+    {
+      "name": "http-migration-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 3,
+        "successful_runs": 19,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 137,
+          "mean": 1134,
+          "median": 827,
+          "p95": 3791,
+          "max": 3904,
+          "standard_deviation": 934,
+          "total_duration": 0
+        },
+        "success_rate": 0.8636363636,
+        "total_credits_used": 8304,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:49:52.159Z",
+      "window_end": "2023-05-17T16:18:37.186Z"
+    },
+    {
+      "name": "HttpTransformer-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 396,
+          "mean": 434,
+          "median": 425,
+          "p95": 471,
+          "max": 489,
+          "standard_deviation": 26,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 3020,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:53.080Z",
+      "window_end": "2023-05-17T16:11:35.988Z"
+    },
+    {
+      "name": "HttpTransformerV2-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 3,
+        "successful_runs": 18,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 177,
+          "mean": 429,
+          "median": 449,
+          "p95": 488,
+          "max": 764,
+          "standard_deviation": 123,
+          "total_duration": 0
+        },
+        "success_rate": 0.8571428571,
+        "total_credits_used": 2989,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:49:52.087Z",
+      "window_end": "2023-05-17T16:12:13.743Z"
+    },
+    {
+      "name": "IndexTransformer-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 731,
+          "mean": 791,
+          "median": 792,
+          "p95": 839,
+          "max": 846,
+          "standard_deviation": 28,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 5526,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:49.263Z",
+      "window_end": "2023-05-17T16:18:42.764Z"
+    },
+    {
+      "name": "IndexWithAuthV2-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 493,
+          "mean": 578,
+          "median": 541,
+          "p95": 843,
+          "max": 928,
+          "standard_deviation": 106,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 4033,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:49:52.527Z",
+      "window_end": "2023-05-17T16:13:24.519Z"
+    },
+    {
+      "name": "IndexWithAuthV2WithFF-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 541,
+          "mean": 612,
+          "median": 606,
+          "p95": 665,
+          "max": 790,
+          "standard_deviation": 52,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 4274,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:49:48.682Z",
+      "window_end": "2023-05-17T16:15:38.606Z"
+    },
+    {
+      "name": "IndexWithAutoQueryField-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 990,
+          "mean": 1108,
+          "median": 1050,
+          "p95": 1299,
+          "max": 1637,
+          "standard_deviation": 151,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 7740,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:50.235Z",
+      "window_end": "2023-05-17T16:22:04.409Z"
+    },
+    {
+      "name": "IndexWithClaimFieldAsSortKeyAuth-l",
+      "metrics": {
+        "total_runs": 8,
+        "failed_runs": 0,
+        "successful_runs": 8,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 677,
+          "mean": 703,
+          "median": 704,
+          "p95": 724,
+          "max": 733,
+          "standard_deviation": 15,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 1868,
+        "throughput": 0.2666666667
+      },
+      "window_start": "2023-05-15T23:21:18.143Z",
+      "window_end": "2023-05-17T16:16:23.837Z"
+    },
+    {
+      "name": "index-with-stack-mappings-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 3,
+        "successful_runs": 19,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 119,
+          "mean": 1846,
+          "median": 1329,
+          "p95": 6933,
+          "max": 7741,
+          "standard_deviation": 1845,
+          "total_duration": 0
+        },
+        "success_rate": 0.8636363636,
+        "total_credits_used": 13520,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:51.575Z",
+      "window_end": "2023-05-17T16:27:15.217Z"
+    },
+    {
+      "name": "invalid-input-arguments-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 402,
+          "mean": 809,
+          "median": 512,
+          "p95": 3135,
+          "max": 3880,
+          "standard_deviation": 901,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 5921,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:49.623Z",
+      "window_end": "2023-05-17T16:15:52.278Z"
+    },
+    {
+      "name": "KeyTransformer-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 285,
+          "mean": 458,
+          "median": 482,
+          "p95": 502,
+          "max": 891,
+          "standard_deviation": 119,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 3197,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:49:52.819Z",
+      "window_end": "2023-05-17T16:10:39.040Z"
+    },
+    {
+      "name": "KeyTransformerLocal-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 81,
+          "mean": 100,
+          "median": 101,
+          "p95": 113,
+          "max": 118,
+          "standard_deviation": 10,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 686,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:48.614Z",
+      "window_end": "2023-05-17T16:06:08.346Z"
+    },
+    {
+      "name": "KeyWithAuth-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 249,
+          "mean": 309,
+          "median": 304,
+          "p95": 346,
+          "max": 352,
+          "standard_deviation": 24,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 2151,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:48.678Z",
+      "window_end": "2023-05-17T16:09:56.553Z"
+    },
+    {
+      "name": "lambda-conflict-handler-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1053,
+          "mean": 2159,
+          "median": 1236,
+          "p95": 8826,
+          "max": 9536,
+          "standard_deviation": 2374,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 15819,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:53.424Z",
+      "window_end": "2023-05-17T16:22:37.558Z"
+    },
+    {
+      "name": "lint",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 39,
+          "mean": 65,
+          "median": 66,
+          "p95": 78,
+          "max": 97,
+          "standard_deviation": 12,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 441,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:47:01.274Z",
+      "window_end": "2023-05-17T16:03:42.307Z"
+    },
+    {
+      "name": "MapsToTransformer-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 1,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 357,
+          "mean": 755,
+          "median": 768,
+          "p95": 850,
+          "max": 1002,
+          "standard_deviation": 116,
+          "total_duration": 0
+        },
+        "success_rate": 0.9523809524,
+        "total_credits_used": 5274,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:49.070Z",
+      "window_end": "2023-05-17T16:17:22.567Z"
+    },
+    {
+      "name": "mock-api-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 221,
+          "mean": 490,
+          "median": 258,
+          "p95": 2652,
+          "max": 2784,
+          "standard_deviation": 740,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 3581,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:49.145Z",
+      "window_end": "2023-05-17T16:08:59.330Z"
+    },
+    {
+      "name": "mock_e2e_tests",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 256,
+          "mean": 282,
+          "median": 279,
+          "p95": 317,
+          "max": 339,
+          "standard_deviation": 21,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 1954,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:47:01.973Z",
+      "window_end": "2023-05-17T16:07:05.853Z"
+    },
+    {
+      "name": "ModelAuthTransformer-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 466,
+          "mean": 541,
+          "median": 513,
+          "p95": 741,
+          "max": 869,
+          "standard_deviation": 95,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 3775,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:50.410Z",
+      "window_end": "2023-05-17T16:13:07.128Z"
+    },
+    {
+      "name": "ModelConnectionTransformer-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 390,
+          "mean": 434,
+          "median": 423,
+          "p95": 479,
+          "max": 551,
+          "standard_deviation": 38,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 3030,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:49.230Z",
+      "window_end": "2023-05-17T16:12:37.343Z"
+    },
+    {
+      "name": "ModelConnectionWithKeyTransformer-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 492,
+          "mean": 584,
+          "median": 552,
+          "p95": 772,
+          "max": 893,
+          "standard_deviation": 91,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 4072,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:51.702Z",
+      "window_end": "2023-05-17T16:14:12.596Z"
+    },
+    {
+      "name": "model-migration-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 751,
+          "mean": 1189,
+          "median": 944,
+          "p95": 2091,
+          "max": 4908,
+          "standard_deviation": 880,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 8706,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:49:53.740Z",
+      "window_end": "2023-05-17T16:21:01.393Z"
+    },
+    {
+      "name": "ModelTransformer-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 629,
+          "mean": 675,
+          "median": 661,
+          "p95": 720,
+          "max": 894,
+          "standard_deviation": 55,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 4715,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:50.019Z",
+      "window_end": "2023-05-17T16:15:59.019Z"
+    },
+    {
+      "name": "MultiAuthModelAuthTransformer-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 408,
+          "mean": 587,
+          "median": 646,
+          "p95": 669,
+          "max": 776,
+          "standard_deviation": 113,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 4093,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:49:54.058Z",
+      "window_end": "2023-05-17T16:12:08.006Z"
+    },
+    {
+      "name": "MultiAuthV2Transformer-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 652,
+          "mean": 759,
+          "median": 719,
+          "p95": 841,
+          "max": 1560,
+          "standard_deviation": 188,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 5297,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:52.809Z",
+      "window_end": "2023-05-17T16:16:57.447Z"
+    },
+    {
+      "name": "MultiAuthV2TransformerWithFF-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 685,
+          "mean": 793,
+          "median": 785,
+          "p95": 965,
+          "max": 1339,
+          "standard_deviation": 146,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 5545,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:49:48.665Z",
+      "window_end": "2023-05-17T16:18:29.244Z"
+    },
+    {
+      "name": "MutationCondition-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 246,
+          "mean": 333,
+          "median": 335,
+          "p95": 357,
+          "max": 440,
+          "standard_deviation": 33,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 2321,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:50.281Z",
+      "window_end": "2023-05-17T16:10:08.324Z"
+    },
+    {
+      "name": "NestedStacksTest-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 70,
+          "mean": 93,
+          "median": 97,
+          "p95": 109,
+          "max": 115,
+          "standard_deviation": 12,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 640,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:53.529Z",
+      "window_end": "2023-05-17T16:06:25.326Z"
+    },
+    {
+      "name": "NewConnectionTransformer-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 385,
+          "mean": 487,
+          "median": 455,
+          "p95": 704,
+          "max": 736,
+          "standard_deviation": 91,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 3400,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:52.036Z",
+      "window_end": "2023-05-17T16:11:57.907Z"
+    },
+    {
+      "name": "NewConnectionWithAuth-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 384,
+          "mean": 492,
+          "median": 463,
+          "p95": 624,
+          "max": 776,
+          "standard_deviation": 86,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 3426,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:51.786Z",
+      "window_end": "2023-05-17T16:13:19.322Z"
+    },
+    {
+      "name": "node-function-l",
+      "metrics": {
+        "total_runs": 16,
+        "failed_runs": 10,
+        "successful_runs": 6,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 420,
+          "mean": 635,
+          "median": 737,
+          "p95": 762,
+          "max": 767,
+          "standard_deviation": 148,
+          "total_duration": 0
+        },
+        "success_rate": 0.375,
+        "total_credits_used": 3374,
+        "throughput": 0.5333333333
+      },
+      "window_start": "2023-04-19T19:49:52.515Z",
+      "window_end": "2023-05-16T02:35:27.742Z"
+    },
+    {
+      "name": "NoneEnvFunctionTransformer-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 240,
+          "mean": 312,
+          "median": 313,
+          "p95": 338,
+          "max": 347,
+          "standard_deviation": 20,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 2174,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:52.585Z",
+      "window_end": "2023-05-17T16:09:49.652Z"
+    },
+    {
+      "name": "NonModelAuthFunction-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 231,
+          "mean": 313,
+          "median": 316,
+          "p95": 369,
+          "max": 423,
+          "standard_deviation": 41,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 2181,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:53.582Z",
+      "window_end": "2023-05-17T16:09:48.492Z"
+    },
+    {
+      "name": "NonModelAuthV2Function-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 242,
+          "mean": 299,
+          "median": 298,
+          "p95": 337,
+          "max": 339,
+          "standard_deviation": 27,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 2082,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:54.252Z",
+      "window_end": "2023-05-17T16:09:29.466Z"
+    },
+    {
+      "name": "PerFieldAuthTests-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 281,
+          "mean": 341,
+          "median": 340,
+          "p95": 382,
+          "max": 383,
+          "standard_deviation": 28,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 2377,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:48.561Z",
+      "window_end": "2023-05-17T16:10:52.580Z"
+    },
+    {
+      "name": "PerFieldAuthV2Transformer-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 412,
+          "mean": 523,
+          "median": 519,
+          "p95": 650,
+          "max": 718,
+          "standard_deviation": 65,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 3651,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:51.078Z",
+      "window_end": "2023-05-17T16:13:39.022Z"
+    },
+    {
+      "name": "PerFieldAuthV2TransformerWithFF-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 478,
+          "mean": 541,
+          "median": 526,
+          "p95": 647,
+          "max": 758,
+          "standard_deviation": 63,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 3777,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:52.144Z",
+      "window_end": "2023-05-17T16:13:13.863Z"
+    },
+    {
+      "name": "predictions-migration-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 1,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 488,
+          "mean": 774,
+          "median": 585,
+          "p95": 1983,
+          "max": 3384,
+          "standard_deviation": 665,
+          "total_duration": 0
+        },
+        "success_rate": 0.9545454545,
+        "total_credits_used": 5661,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:49:52.914Z",
+      "window_end": "2023-05-17T16:16:25.604Z"
+    },
+    {
+      "name": "PredictionsTransformerTests-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 331,
+          "mean": 354,
+          "median": 352,
+          "p95": 382,
+          "max": 391,
+          "standard_deviation": 17,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 2454,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:48.573Z",
+      "window_end": "2023-05-17T16:10:50.572Z"
+    },
+    {
+      "name": "PredictionsTransformerV2Tests-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 330,
+          "mean": 354,
+          "median": 352,
+          "p95": 372,
+          "max": 376,
+          "standard_deviation": 11,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 2460,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:49:48.642Z",
+      "window_end": "2023-05-17T16:10:31.714Z"
+    },
+    {
+      "name": "publish_to_local_registry",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 83,
+          "mean": 110,
+          "median": 114,
+          "p95": 124,
+          "max": 125,
+          "standard_deviation": 11,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 761,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:47:02.264Z",
+      "window_end": "2023-05-17T16:04:33.122Z"
+    },
+    {
+      "name": "rds-v2-l",
+      "metrics": {
+        "total_runs": 16,
+        "failed_runs": 0,
+        "successful_runs": 16,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 533,
+          "mean": 633,
+          "median": 630,
+          "p95": 726,
+          "max": 751,
+          "standard_deviation": 63,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 3363,
+        "throughput": 0.5333333333
+      },
+      "window_start": "2023-05-04T18:44:43.270Z",
+      "window_end": "2023-05-17T16:14:23.520Z"
+    },
+    {
+      "name": "RelationalTransformers-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1122,
+          "mean": 1197,
+          "median": 1188,
+          "p95": 1286,
+          "max": 1389,
+          "standard_deviation": 62,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 8362,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:49:53.555Z",
+      "window_end": "2023-05-17T16:23:34.165Z"
+    },
+    {
+      "name": "RelationalWithAuthV2-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 537,
+          "mean": 795,
+          "median": 742,
+          "p95": 1197,
+          "max": 1975,
+          "standard_deviation": 312,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 5556,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:52.805Z",
+      "window_end": "2023-05-17T16:13:33.882Z"
+    },
+    {
+      "name": "RelationalWithAuthV2WithFF-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 499,
+          "mean": 583,
+          "median": 562,
+          "p95": 639,
+          "max": 1024,
+          "standard_deviation": 107,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 4070,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:54.022Z",
+      "window_end": "2023-05-17T16:13:28.119Z"
+    },
+    {
+      "name": "RelationalWithOwnerFieldAsKeySchemaAuth-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 378,
+          "mean": 481,
+          "median": 476,
+          "p95": 529,
+          "max": 563,
+          "standard_deviation": 38,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 3354,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:49.652Z",
+      "window_end": "2023-05-17T16:13:08.313Z"
+    },
+    {
+      "name": "resolvers-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 3,
+        "successful_runs": 19,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1983,
+          "mean": 2970,
+          "median": 2130,
+          "p95": 8359,
+          "max": 12139,
+          "standard_deviation": 2479,
+          "total_duration": 0
+        },
+        "success_rate": 0.8636363636,
+        "total_credits_used": 21767,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:49.674Z",
+      "window_end": "2023-05-17T16:39:48.306Z"
+    },
+    {
+      "name": "scaffold_v10-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 252,
+          "mean": 305,
+          "median": 309,
+          "p95": 331,
+          "max": 334,
+          "standard_deviation": 21,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 2119,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:49:49.155Z",
+      "window_end": "2023-05-17T16:09:53.778Z"
+    },
+    {
+      "name": "schema-auth-10-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 999,
+          "mean": 1699,
+          "median": 1122,
+          "p95": 5466,
+          "max": 6890,
+          "standard_deviation": 1525,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 12444,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:52.224Z",
+      "window_end": "2023-05-17T16:22:37.406Z"
+    },
+    {
+      "name": "schema-auth-11-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 3,
+        "successful_runs": 19,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1376,
+          "mean": 2391,
+          "median": 1633,
+          "p95": 7450,
+          "max": 8665,
+          "standard_deviation": 1976,
+          "total_duration": 0
+        },
+        "success_rate": 0.8636363636,
+        "total_credits_used": 17516,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:49:53.510Z",
+      "window_end": "2023-05-17T16:36:38.347Z"
+    },
+    {
+      "name": "schema-auth-12-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1057,
+          "mean": 1723,
+          "median": 1276,
+          "p95": 5471,
+          "max": 7030,
+          "standard_deviation": 1520,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 12623,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:51.994Z",
+      "window_end": "2023-05-17T16:28:54.288Z"
+    },
+    {
+      "name": "schema-auth-13-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1101,
+          "mean": 1753,
+          "median": 1297,
+          "p95": 5479,
+          "max": 7366,
+          "standard_deviation": 1570,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 12840,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:51.655Z",
+      "window_end": "2023-05-17T16:25:07.129Z"
+    },
+    {
+      "name": "schema-auth-14-l",
+      "metrics": {
+        "total_runs": 25,
+        "failed_runs": 17,
+        "successful_runs": 8,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1837,
+          "mean": 2529,
+          "median": 1977,
+          "p95": 6169,
+          "max": 7963,
+          "standard_deviation": 1559,
+          "total_duration": 0
+        },
+        "success_rate": 0.32,
+        "total_credits_used": 21065,
+        "throughput": 0.8333333333
+      },
+      "window_start": "2023-04-19T19:48:49.987Z",
+      "window_end": "2023-05-17T16:36:45.136Z"
+    },
+    {
+      "name": "schema-auth-15-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 981,
+          "mean": 1576,
+          "median": 1335,
+          "p95": 4252,
+          "max": 4386,
+          "standard_deviation": 937,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 11537,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:49.052Z",
+      "window_end": "2023-05-17T16:27:19.547Z"
+    },
+    {
+      "name": "schema-auth-1-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 913,
+          "mean": 1719,
+          "median": 1174,
+          "p95": 5462,
+          "max": 7040,
+          "standard_deviation": 1544,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 12592,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:49.126Z",
+      "window_end": "2023-05-17T16:23:24.257Z"
+    },
+    {
+      "name": "schema-auth-2-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 3,
+        "successful_runs": 19,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1026,
+          "mean": 1711,
+          "median": 1093,
+          "p95": 5425,
+          "max": 6955,
+          "standard_deviation": 1525,
+          "total_duration": 0
+        },
+        "success_rate": 0.8636363636,
+        "total_credits_used": 12535,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:51.617Z",
+      "window_end": "2023-05-17T16:21:51.926Z"
+    },
+    {
+      "name": "schema-auth-3-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1046,
+          "mean": 1764,
+          "median": 1326,
+          "p95": 5480,
+          "max": 7291,
+          "standard_deviation": 1554,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 12922,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:50.088Z",
+      "window_end": "2023-05-17T16:25:09.662Z"
+    },
+    {
+      "name": "schema-auth-4-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 3,
+        "successful_runs": 19,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1401,
+          "mean": 2475,
+          "median": 1573,
+          "p95": 9241,
+          "max": 11083,
+          "standard_deviation": 2575,
+          "total_duration": 0
+        },
+        "success_rate": 0.8636363636,
+        "total_credits_used": 18140,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:50.874Z",
+      "window_end": "2023-05-17T16:28:54.695Z"
+    },
+    {
+      "name": "schema-auth-5-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1953,
+          "mean": 2890,
+          "median": 2164,
+          "p95": 7298,
+          "max": 10641,
+          "standard_deviation": 2105,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 21180,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:49.347Z",
+      "window_end": "2023-05-17T16:39:01.345Z"
+    },
+    {
+      "name": "schema-auth-6-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 3,
+        "successful_runs": 19,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 149,
+          "mean": 2759,
+          "median": 2545,
+          "p95": 7241,
+          "max": 7546,
+          "standard_deviation": 1633,
+          "total_duration": 0
+        },
+        "success_rate": 0.8636363636,
+        "total_credits_used": 20215,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:53.247Z",
+      "window_end": "2023-05-17T16:47:44.962Z"
+    },
+    {
+      "name": "schema-auth-7-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1492,
+          "mean": 2366,
+          "median": 1921,
+          "p95": 7221,
+          "max": 7944,
+          "standard_deviation": 1749,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 17334,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:52.612Z",
+      "window_end": "2023-05-17T16:37:07.967Z"
+    },
+    {
+      "name": "schema-auth-8-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 3,
+        "successful_runs": 19,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 152,
+          "mean": 2240,
+          "median": 1603,
+          "p95": 6969,
+          "max": 7462,
+          "standard_deviation": 1772,
+          "total_duration": 0
+        },
+        "success_rate": 0.8636363636,
+        "total_credits_used": 16409,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:50.527Z",
+      "window_end": "2023-05-17T16:36:47.957Z"
+    },
+    {
+      "name": "schema-auth-9-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1467,
+          "mean": 2385,
+          "median": 1929,
+          "p95": 7248,
+          "max": 7542,
+          "standard_deviation": 1689,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 17481,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:49.243Z",
+      "window_end": "2023-05-17T16:36:47.123Z"
+    },
+    {
+      "name": "schema-connection-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 2349,
+          "mean": 3401,
+          "median": 2574,
+          "p95": 8501,
+          "max": 9853,
+          "standard_deviation": 2054,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 24931,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:49:51.289Z",
+      "window_end": "2023-05-17T16:43:49.093Z"
+    },
+    {
+      "name": "schema-data-access-patterns-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 1,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 459,
+          "mean": 758,
+          "median": 542,
+          "p95": 2069,
+          "max": 3330,
+          "standard_deviation": 669,
+          "total_duration": 0
+        },
+        "success_rate": 0.9545454545,
+        "total_credits_used": 5545,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:50.742Z",
+      "window_end": "2023-05-17T16:13:27.883Z"
+    },
+    {
+      "name": "schema-function-1-l",
+      "metrics": {
+        "total_runs": 25,
+        "failed_runs": 18,
+        "successful_runs": 7,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1070,
+          "mean": 2397,
+          "median": 1635,
+          "p95": 8282,
+          "max": 9434,
+          "standard_deviation": 2194,
+          "total_duration": 0
+        },
+        "success_rate": 0.28,
+        "total_credits_used": 19955,
+        "throughput": 0.8333333333
+      },
+      "window_start": "2023-04-19T19:48:52.851Z",
+      "window_end": "2023-05-17T16:28:07.713Z"
+    },
+    {
+      "name": "schema-function-2-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 797,
+          "mean": 1382,
+          "median": 876,
+          "p95": 6089,
+          "max": 6357,
+          "standard_deviation": 1610,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 10126,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:49:49.149Z",
+      "window_end": "2023-05-17T16:19:23.749Z"
+    },
+    {
+      "name": "schema-iterative-rollback-1-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1320,
+          "mean": 1723,
+          "median": 1410,
+          "p95": 4644,
+          "max": 4856,
+          "standard_deviation": 1007,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 12614,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:49:49.822Z",
+      "window_end": "2023-05-17T16:26:34.134Z"
+    },
+    {
+      "name": "schema-iterative-rollback-2-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1330,
+          "mean": 1780,
+          "median": 1460,
+          "p95": 4862,
+          "max": 5208,
+          "standard_deviation": 1084,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 13045,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:52.489Z",
+      "window_end": "2023-05-17T16:26:45.172Z"
+    },
+    {
+      "name": "schema-iterative-update-1-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1021,
+          "mean": 1493,
+          "median": 1206,
+          "p95": 4290,
+          "max": 4737,
+          "standard_deviation": 1012,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 10931,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:49:51.884Z",
+      "window_end": "2023-05-17T16:21:55.606Z"
+    },
+    {
+      "name": "schema-iterative-update-2-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1145,
+          "mean": 1666,
+          "median": 1385,
+          "p95": 2374,
+          "max": 5410,
+          "standard_deviation": 881,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 12203,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:49.726Z",
+      "window_end": "2023-05-17T16:24:48.009Z"
+    },
+    {
+      "name": "schema-iterative-update-3-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 867,
+          "mean": 1321,
+          "median": 1022,
+          "p95": 3407,
+          "max": 4197,
+          "standard_deviation": 864,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 9675,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:50.445Z",
+      "window_end": "2023-05-17T16:22:00.097Z"
+    },
+    {
+      "name": "schema-iterative-update-4-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 2154,
+          "mean": 2837,
+          "median": 2367,
+          "p95": 5545,
+          "max": 7079,
+          "standard_deviation": 1265,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 20791,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:53.582Z",
+      "window_end": "2023-05-17T16:41:49.494Z"
+    },
+    {
+      "name": "schema-iterative-update-5-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 1,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 708,
+          "mean": 1016,
+          "median": 854,
+          "p95": 2000,
+          "max": 3189,
+          "standard_deviation": 552,
+          "total_duration": 0
+        },
+        "success_rate": 0.9545454545,
+        "total_credits_used": 7436,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:48.644Z",
+      "window_end": "2023-05-17T16:18:46.680Z"
+    },
+    {
+      "name": "schema-iterative-update-locking-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1030,
+          "mean": 1203,
+          "median": 1202,
+          "p95": 1331,
+          "max": 1529,
+          "standard_deviation": 110,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 8404,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:53.268Z",
+      "window_end": "2023-05-17T16:22:54.073Z"
+    },
+    {
+      "name": "schema-key-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 3,
+        "successful_runs": 19,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1320,
+          "mean": 2221,
+          "median": 1465,
+          "p95": 8833,
+          "max": 9420,
+          "standard_deviation": 2302,
+          "total_duration": 0
+        },
+        "success_rate": 0.8636363636,
+        "total_credits_used": 16274,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:53.041Z",
+      "window_end": "2023-05-17T16:27:35.540Z"
+    },
+    {
+      "name": "schema-model-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1560,
+          "mean": 2621,
+          "median": 1837,
+          "p95": 9045,
+          "max": 9331,
+          "standard_deviation": 2227,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 19207,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:48.608Z",
+      "window_end": "2023-05-17T16:33:41.533Z"
+    },
+    {
+      "name": "schema-predictions-l",
+      "metrics": {
+        "total_runs": 25,
+        "failed_runs": 9,
+        "successful_runs": 16,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 490,
+          "mean": 877,
+          "median": 645,
+          "p95": 1983,
+          "max": 3477,
+          "standard_deviation": 643,
+          "total_duration": 0
+        },
+        "success_rate": 0.64,
+        "total_credits_used": 7287,
+        "throughput": 0.8333333333
+      },
+      "window_start": "2023-04-19T19:49:50.459Z",
+      "window_end": "2023-05-17T16:13:37.539Z"
+    },
+    {
+      "name": "schema-searchable-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 587,
+          "mean": 2433,
+          "median": 2372,
+          "p95": 2716,
+          "max": 5148,
+          "standard_deviation": 733,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 17825,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:49:50.632Z",
+      "window_end": "2023-05-17T16:48:02.067Z"
+    },
+    {
+      "name": "schema-versioned-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 412,
+          "mean": 747,
+          "median": 492,
+          "p95": 3045,
+          "max": 3289,
+          "standard_deviation": 805,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 5465,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:50.274Z",
+      "window_end": "2023-05-17T16:12:41.684Z"
+    },
+    {
+      "name": "searchable-datastore-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 1,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 2104,
+          "mean": 2640,
+          "median": 2360,
+          "p95": 3652,
+          "max": 6926,
+          "standard_deviation": 1007,
+          "total_duration": 0
+        },
+        "success_rate": 0.9545454545,
+        "total_credits_used": 19346,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:50.306Z",
+      "window_end": "2023-05-17T16:46:50.766Z"
+    },
+    {
+      "name": "searchable-migration-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 4104,
+          "mean": 4983,
+          "median": 4398,
+          "p95": 8204,
+          "max": 10769,
+          "standard_deviation": 1642,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 36524,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:50.681Z",
+      "window_end": "2023-05-17T17:20:35.855Z"
+    },
+    {
+      "name": "SearchableModelTransformer-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 4,
+        "successful_runs": 17,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 2223,
+          "mean": 3074,
+          "median": 2484,
+          "p95": 4816,
+          "max": 5285,
+          "standard_deviation": 1104,
+          "total_duration": 0
+        },
+        "success_rate": 0.8095238095,
+        "total_credits_used": 21506,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:51.336Z",
+      "window_end": "2023-05-17T16:43:41.532Z"
+    },
+    {
+      "name": "SearchableModelTransformerV2-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 2228,
+          "mean": 2559,
+          "median": 2396,
+          "p95": 2683,
+          "max": 5011,
+          "standard_deviation": 580,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 17893,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:52.656Z",
+      "window_end": "2023-05-17T16:48:33.938Z"
+    },
+    {
+      "name": "searchable-previous-deployment-had-node-to-node-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 1,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 2587,
+          "mean": 3121,
+          "median": 2783,
+          "p95": 4951,
+          "max": 7907,
+          "standard_deviation": 1179,
+          "total_duration": 0
+        },
+        "success_rate": 0.9545454545,
+        "total_credits_used": 22876,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:49:51.420Z",
+      "window_end": "2023-05-17T16:53:15.375Z"
+    },
+    {
+      "name": "searchable-previous-deployment-no-node-to-node-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 118,
+          "mean": 3526,
+          "median": 2827,
+          "p95": 6001,
+          "max": 7614,
+          "standard_deviation": 1706,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 25842,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:51.492Z",
+      "window_end": "2023-05-17T16:51:33.244Z"
+    },
+    {
+      "name": "SearchableWithAuthTests-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 2173,
+          "mean": 2527,
+          "median": 2411,
+          "p95": 2687,
+          "max": 4985,
+          "standard_deviation": 574,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 17674,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:53.209Z",
+      "window_end": "2023-05-17T16:46:21.688Z"
+    },
+    {
+      "name": "SearchableWithAuthV2-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 2653,
+          "mean": 3007,
+          "median": 2885,
+          "p95": 3146,
+          "max": 5463,
+          "standard_deviation": 577,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 21041,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:49:51.162Z",
+      "window_end": "2023-05-17T16:57:02.311Z"
+    },
+    {
+      "name": "SearchableWithAuthV2WithFF-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 2783,
+          "mean": 3057,
+          "median": 2911,
+          "p95": 3105,
+          "max": 5514,
+          "standard_deviation": 571,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 21383,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:52.900Z",
+      "window_end": "2023-05-17T16:56:19.428Z"
+    },
+    {
+      "name": "SubscriptionsRuntimeFiltering-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 795,
+          "mean": 1076,
+          "median": 1185,
+          "p95": 1215,
+          "max": 1220,
+          "standard_deviation": 162,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 7521,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:51.309Z",
+      "window_end": "2023-05-17T16:18:22.755Z"
+    },
+    {
+      "name": "SubscriptionsWithAuthTest-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 432,
+          "mean": 500,
+          "median": 492,
+          "p95": 536,
+          "max": 722,
+          "standard_deviation": 56,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 3481,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:49.137Z",
+      "window_end": "2023-05-17T16:12:47.781Z"
+    },
+    {
+      "name": "SubscriptionsWithAuthV2-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 662,
+          "mean": 807,
+          "median": 749,
+          "p95": 1070,
+          "max": 1407,
+          "standard_deviation": 171,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 5639,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:50.325Z",
+      "window_end": "2023-05-17T16:21:59.180Z"
+    },
+    {
+      "name": "SubscriptionsWithAuthV2WithFF-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 1,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 447,
+          "mean": 690,
+          "median": 693,
+          "p95": 795,
+          "max": 876,
+          "standard_deviation": 77,
+          "total_duration": 0
+        },
+        "success_rate": 0.9523809524,
+        "total_credits_used": 4819,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:53.515Z",
+      "window_end": "2023-05-17T16:16:44.564Z"
+    },
+    {
+      "name": "sync_query_datastore-l",
+      "metrics": {
+        "total_runs": 22,
+        "failed_runs": 2,
+        "successful_runs": 20,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 1892,
+          "mean": 2783,
+          "median": 2181,
+          "p95": 7217,
+          "max": 8600,
+          "standard_deviation": 1725,
+          "total_duration": 0
+        },
+        "success_rate": 0.9090909091,
+        "total_credits_used": 20384,
+        "throughput": 0.7333333333
+      },
+      "window_start": "2023-04-19T19:48:50.118Z",
+      "window_end": "2023-05-17T16:40:57.223Z"
+    },
+    {
+      "name": "test",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 775,
+          "mean": 840,
+          "median": 839,
+          "p95": 901,
+          "max": 941,
+          "standard_deviation": 41,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 5865,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:46:59.598Z",
+      "window_end": "2023-05-17T16:16:30.206Z"
+    },
+    {
+      "name": "TestComplexStackMappingsLocal-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 74,
+          "mean": 93,
+          "median": 97,
+          "p95": 112,
+          "max": 117,
+          "standard_deviation": 13,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 635,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:51.075Z",
+      "window_end": "2023-05-17T16:06:01.521Z"
+    },
+    {
+      "name": "TransformerOptionsV2-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 279,
+          "mean": 351,
+          "median": 352,
+          "p95": 384,
+          "max": 393,
+          "standard_deviation": 26,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 2444,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:49.844Z",
+      "window_end": "2023-05-17T16:10:56.401Z"
+    },
+    {
+      "name": "validate_cdk_version",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 47,
+          "mean": 70,
+          "median": 68,
+          "p95": 78,
+          "max": 136,
+          "standard_deviation": 16,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 483,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:47:01.557Z",
+      "window_end": "2023-05-17T16:03:45.491Z"
+    },
+    {
+      "name": "verify-api-extract",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 115,
+          "mean": 137,
+          "median": 135,
+          "p95": 159,
+          "max": 163,
+          "standard_deviation": 12,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 952,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:47:00.130Z",
+      "window_end": "2023-05-17T16:05:08.862Z"
+    },
+    {
+      "name": "verify-yarn-lock",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 71,
+          "mean": 93,
+          "median": 94,
+          "p95": 124,
+          "max": 140,
+          "standard_deviation": 17,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 621,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:47:00.483Z",
+      "window_end": "2023-05-17T16:04:09.321Z"
+    },
+    {
+      "name": "VersionedModelTransformer-l",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 237,
+          "mean": 318,
+          "median": 319,
+          "p95": 342,
+          "max": 408,
+          "standard_deviation": 31,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 2213,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:48:52.300Z",
+      "window_end": "2023-05-17T16:10:10.286Z"
+    },
+    {
+      "name": "wait_for_all",
+      "metrics": {
+        "total_runs": 21,
+        "failed_runs": 0,
+        "successful_runs": 21,
+        "median_credits_used": 0,
+        "duration_metrics": {
+          "min": 25,
+          "mean": 4254,
+          "median": 4690,
+          "p95": 7379,
+          "max": 12733,
+          "standard_deviation": 3015,
+          "total_duration": 0
+        },
+        "success_rate": 1,
+        "total_credits_used": 29760,
+        "throughput": 0.7
+      },
+      "window_start": "2023-04-19T19:47:00.792Z",
+      "window_end": "2023-05-17T17:20:48.487Z"
+    }
+  ]
+}
