@@ -18,7 +18,7 @@ phases:
       # - export AMPLIFY_PATH=$HOME/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
       - echo $AMPLIFY_DIR
       - echo $AMPLIFY_PATH
-      - source ./shared-scripts.sh && _runMigrationV5Test
+      - source ./shared-scripts.sh && _runMigrationV6Test
   post_build:
     commands:
       - aws sts get-caller-identity

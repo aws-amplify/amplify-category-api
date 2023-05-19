@@ -76,6 +76,25 @@ batch:
           CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
+    - identifier: l_api_key_migration_v6
+      buildspec: codebuild_specs/migration_tests_v6.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/migration_tests/transformer_migration/api.key.migration.test.ts
+          CLI_REGION: us-east-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_scaffold_v10
+      buildspec: codebuild_specs/migration_tests_v10.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/migration_tests_v10/scaffold.test.ts
+          CLI_REGION: us-west-2
+      depend-on:
+        - publish_to_local_registry
     - identifier: cleanup_e2e_resources
       buildspec: codebuild_specs/cleanup_e2e_resources.yml
       depend-on:

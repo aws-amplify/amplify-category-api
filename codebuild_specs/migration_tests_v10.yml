@@ -3,7 +3,7 @@ env:
   shell: bash
   variables:
     AMPLIFY_DIR: /root/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin
-    AMPLIFY_PATH: /root/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
+    AMPLIFY_PATH: /root/.amplify/bin/amplify
     NODE_OPTIONS: --max-old-space-size=8096
     CI: true
     CIRCLECI: true
@@ -18,7 +18,7 @@ phases:
       # - export AMPLIFY_PATH=$HOME/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
       - echo $AMPLIFY_DIR
       - echo $AMPLIFY_PATH
-      - source ./shared-scripts.sh && _runMigrationV5Test
+      - source ./shared-scripts.sh && _runMigrationV10Test
   post_build:
     commands:
       - aws sts get-caller-identity
