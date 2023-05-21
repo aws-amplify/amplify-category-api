@@ -68,7 +68,7 @@ async function askResourceName(context: $TSContext, allDefaultValues: $TSObject)
       validate: amplify.inputValidation({
         validation: {
           operator: 'regex',
-          value: '^(?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*$',
+          value: '^[a-z0-9]+$',
           onErrorMsg: 'Resource name should be alphanumeric with no uppercase letters',
         },
         required: true,
