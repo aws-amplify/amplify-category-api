@@ -3,7 +3,7 @@ import {
   MappingTemplate, GraphQLTransform, AmplifyApiGraphQlResourceStackTemplate, SyncUtils, StackManager, DatasourceType, MYSQL_DB_TYPE, DDB_DB_TYPE, DBType,
 } from '@aws-amplify/graphql-transformer-core';
 import {
-  DataSourceProvider, StackManagerProvider, TransformerContextProvider, TransformerPluginProvider, TransformerResolverProvider, $TSAny,
+  DataSourceProvider, StackManagerProvider, TransformerContextProvider, TransformerPluginProvider, TransformerResolverProvider, 
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
@@ -873,7 +873,7 @@ export const generateAuthExpressionForSandboxMode = (enabled: boolean): string =
   );
 };
 
-export const getDeltaSyncTableTtl = (resourceOverrides: $TSAny, resource: TransformerResolverProvider) => {
+export const getDeltaSyncTableTtl = (resourceOverrides: any, resource: TransformerResolverProvider) => {
   if (_.get(resource, 'typeName') !== 'Query') {
     return SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
   }
@@ -882,7 +882,7 @@ export const getDeltaSyncTableTtl = (resourceOverrides: $TSAny, resource: Transf
   return deltaSyncTtlOverride || SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
 }
 
-export const getResourceOverrides = (transformers: TransformerPluginProvider[], stackManager?: StackManagerProvider | null): $TSAny => {
+export const getResourceOverrides = (transformers: TransformerPluginProvider[], stackManager?: StackManagerProvider | null): any => {
   if (stateManager.currentMetaFileExists(undefined)) {
     const meta = stateManager.getCurrentMeta(undefined, { throwIfNotExist: false });
     const gqlApiName = _.entries(meta?.api)

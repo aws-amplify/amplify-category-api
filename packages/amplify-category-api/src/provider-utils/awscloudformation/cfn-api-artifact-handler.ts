@@ -1,5 +1,5 @@
 import {
-  $TSAny, $TSContext, AmplifyError, AmplifySupportedService, isResourceNameUnique, JSONUtilities, pathManager, stateManager,
+  $TSContext, AmplifyError, AmplifySupportedService, isResourceNameUnique, JSONUtilities, pathManager, stateManager,
 } from '@aws-amplify/amplify-cli-core';
 import {
   AddApiRequest,
@@ -225,7 +225,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
   private getCfnParameters = (apiName: string, authConfig, resourceDir: string): Record<string, unknown> => {
     const cfnPath = path.join(resourceDir, cfnParametersFilename);
-    const params = JSONUtilities.readJson<$TSAny>(cfnPath, { throwIfNotExist: false }) || defaultCfnParameters(apiName);
+    const params = JSONUtilities.readJson<any>(cfnPath, { throwIfNotExist: false }) || defaultCfnParameters(apiName);
     const cognitoPool = this.getCognitoUserPool(authConfig);
     if (cognitoPool) {
       params.AuthCognitoUserPoolId = cognitoPool;

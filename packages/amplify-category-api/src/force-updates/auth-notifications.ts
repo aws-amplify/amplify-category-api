@@ -1,6 +1,5 @@
 /* eslint-disable array-callback-return, consistent-return, no-await-in-loop */
 import {
-  $TSAny,
   $TSContext,
   exitOnNextTick,
   FeatureFlags,
@@ -63,7 +62,7 @@ const containsGraphQLApi = async (): Promise<boolean> => {
   const meta = stateManager.getMeta(projectPath);
 
   const apiNames = Object.entries(meta?.api || {})
-    .filter(([_, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
+    .filter(([_, apiResource]) => (apiResource as any).service === 'AppSync')
     .map(([name]) => name);
 
   const doesNotHaveGqlApi = apiNames.length < 1;
@@ -92,7 +91,7 @@ const getApiResourceDir = async (): Promise<string | undefined> => {
   const meta = stateManager.getMeta(projectPath);
 
   const apiNames = Object.entries(meta?.api || {})
-    .filter(([_, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
+    .filter(([_, apiResource]) => (apiResource as any).service === 'AppSync')
     .map(([name]) => name);
 
   const apiName = apiNames[0];
@@ -144,13 +143,13 @@ const modifyGraphQLSchema = async (apiResourceDir: string): Promise<void> => {
 /**
  * checks if we should display auth notification
  */
-export const displayAuthNotification = (directiveMap: $TSAny, fieldDirectives: Set<string>): boolean => {
+export const displayAuthNotification = (directiveMap: any, fieldDirectives: Set<string>): boolean => {
   const usesTransformerV2 = FeatureFlags.getNumber('graphqltransformer.transformerVersion') === 2;
   const schemaHasValues = Object.keys(directiveMap).some((typeName: string) => {
     const typeObj = directiveMap[typeName];
     const modelDirective = typeObj.find((dir: DirectiveNode) => dir.name.value === 'model');
 
-    const subscriptionOff: boolean = (modelDirective?.arguments || []).some((arg: $TSAny) => {
+    const subscriptionOff: boolean = (modelDirective?.arguments || []).some((arg: any) => {
       if (arg.name.value === 'subscriptions') {
         const subscriptionNull = arg.value.kind === 'NullValue';
         const levelFieldOffOrNull = arg.value?.fields?.some(({ name, value }) => name.value === 'level' && (value.value === 'off' || value.kind === 'NullValue'));
@@ -171,7 +170,7 @@ export const displayAuthNotification = (directiveMap: $TSAny, fieldDirectives: S
 export const hasFieldAuthDirectives = (doc: DocumentNode): Set<string> => {
   const haveFieldAuthDir: Set<string> = new Set();
 
-  doc.definitions?.forEach((def: $TSAny) => {
+  doc.definitions?.forEach((def: any) => {
     const withAuth: FieldNode[] = (def.fields || []).filter((field: FieldDefinitionNode) => {
       const nonNullable = field.type.kind === 'NonNullType';
       const hasAuth = field.directives?.some((dir) => dir.name.value === 'auth');
@@ -234,7 +233,7 @@ const hasV2AuthDirectives = (doc: DocumentNode): boolean => {
   let containsAuthDir = false;
   const usesTransformerV2 = FeatureFlags.getNumber('graphqltransformer.transformerVersion') === 2;
 
-  doc.definitions?.forEach((def: $TSAny) => {
+  doc.definitions?.forEach((def: any) => {
     if (def.directives?.some((dir) => dir.name.value === 'auth')) {
       containsAuthDir = true;
     }
@@ -295,7 +294,7 @@ export const notifySecurityEnhancement = async (context: $TSContext): Promise<vo
     const meta = stateManager.getMeta();
 
     const apiNames = Object.entries(meta?.api || {})
-      .filter(([_, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
+      .filter(([_, apiResource]) => (apiResource as any).service === 'AppSync')
       .map(([name]) => name);
 
     if (apiNames.length !== 1) {

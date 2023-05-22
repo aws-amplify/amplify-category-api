@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSObject, AmplifySupportedService, exitOnNextTick, NotImplementedError } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, $TSObject, AmplifySupportedService, exitOnNextTick, NotImplementedError } from '@aws-amplify/amplify-cli-core';
 import { UpdateApiRequest } from 'amplify-headless-interface';
 import { printer } from '@aws-amplify/amplify-prompts';
 import inquirer from 'inquirer';
@@ -58,7 +58,7 @@ async function addContainerResource(context: $TSContext, service: string, option
   const serviceWalkthroughFilename = 'containers-walkthrough.js';
 
   const serviceWalkthrough = await getServiceWalkthrough(serviceWalkthroughFilename);
-  const serviceWalkthroughPromise: Promise<$TSAny> = serviceWalkthrough(context, apiType);
+  const serviceWalkthroughPromise: Promise<any> = serviceWalkthrough(context, apiType);
 
   return await addContainer(serviceWalkthroughPromise, context, category, service, options, apiType);
 }
@@ -68,7 +68,7 @@ async function addNonContainerResource(context: $TSContext, service: string, opt
   const { serviceWalkthroughFilename, defaultValuesFilename } = serviceMetadata;
   const serviceWalkthrough = await getServiceWalkthrough(serviceWalkthroughFilename);
 
-  const serviceWalkthroughPromise: Promise<$TSAny> = serviceWalkthrough(context, serviceMetadata);
+  const serviceWalkthroughPromise: Promise<any> = serviceWalkthrough(context, serviceMetadata);
   switch (service) {
     case AmplifySupportedService.APPSYNC:
       const walkthroughResult = await serviceWalkthroughPromise;

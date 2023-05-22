@@ -1,6 +1,6 @@
 import { mergeTypeDefs } from '@graphql-tools/merge';
 import {
-  $TSAny, $TSContext, AmplifyError, exitOnNextTick, FeatureFlags, pathManager, ResourceDoesNotExistError, stateManager,
+  $TSContext, AmplifyError, exitOnNextTick, FeatureFlags, pathManager, ResourceDoesNotExistError, stateManager,
 } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
@@ -29,7 +29,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   try {
     const AWS = await getAwsClient(context, 'list');
 
-    const result: $TSAny = await datasourceSelectionPrompt(context, supportedDataSources);
+    const result: any = await datasourceSelectionPrompt(context, supportedDataSources);
 
     const providerController = await import(path.join('..', '..', 'provider-utils', result.providerName, 'index'));
 
@@ -212,7 +212,7 @@ const datasourceSelectionPrompt = async (context: $TSContext, supportedDataSourc
   return inquirer.prompt(question).then(answer => answer.datasource);
 };
 
-const getAwsClient = async (context: $TSContext, action: string): Promise<$TSAny> => {
+const getAwsClient = async (context: $TSContext, action: string): Promise<any> => {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   // eslint-disable-next-line
   const provider = require(providerPlugins[providerName]);

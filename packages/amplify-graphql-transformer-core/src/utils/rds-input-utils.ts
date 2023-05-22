@@ -1,6 +1,5 @@
 import { parse, print, InputObjectTypeDefinitionNode } from 'graphql';
 import * as fs from 'fs-extra';
-import { $TSAny } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   $TSContext,
   ApiCategoryFacade,
@@ -72,12 +71,12 @@ export const readRDSGlobalAmplifyInput = async (pathToSchemaFile: string): Promi
   }
 };
 
-export const getRDSDBConfigFromAmplifyInput = async (context:$TSContext, inputNode: $TSAny): Promise<Partial<ImportedDataSourceConfig>> => {
+export const getRDSDBConfigFromAmplifyInput = async (context:$TSContext, inputNode: any): Promise<Partial<ImportedDataSourceConfig>> => {
   const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL, false)).map(item => item.name);
-  const inputs: $TSAny = {};
+  const inputs: any = {};
   expectedInputs.map((input) => {
     const value = inputNode?.fields?.find(
-      (field: $TSAny) => field?.name?.value === input,
+      (field: any) => field?.name?.value === input,
     )?.defaultValue?.value;
     if (_.isEmpty(value)) {
       throw new Error(`Invalid value for ${input} input in the GraphQL schema. Correct and re-try.`);
@@ -87,13 +86,13 @@ export const getRDSDBConfigFromAmplifyInput = async (context:$TSContext, inputNo
   return inputs;
 };
 
-export const constructRDSGlobalAmplifyInput = async (context: $TSContext, config: $TSAny, pathToSchemaFile: string): Promise<string> => {
-  const existingInputNode:$TSAny = await readRDSGlobalAmplifyInput(pathToSchemaFile) || {};
+export const constructRDSGlobalAmplifyInput = async (context: $TSContext, config: any, pathToSchemaFile: string): Promise<string> => {
+  const existingInputNode:any = await readRDSGlobalAmplifyInput(pathToSchemaFile) || {};
   if ( existingInputNode?.fields && existingInputNode?.fields?.length > 0 ) {
     const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL)).map(item => item.name);
     expectedInputs.forEach((input) => {
       const inputNodeField = existingInputNode?.fields?.find(
-        (field: $TSAny) => field?.name?.value === input,
+        (field: any) => field?.name?.value === input,
       );
       if (inputNodeField && config[input]) {
         inputNodeField['defaultValue']['value'] = config[input];
@@ -109,7 +108,7 @@ export const constructRDSGlobalAmplifyInput = async (context: $TSContext, config
 
 export const isGlobalAuthRulePresent = (inputNode: InputObjectTypeDefinitionNode) => {
   const authRuleField = inputNode?.fields?.find(
-    (field: $TSAny) => field?.name?.value === "globalAuthRule",
+    (field: any) => field?.name?.value === "globalAuthRule",
   );
   return authRuleField ? true : false;
 };
@@ -119,10 +118,10 @@ export const removeAmplifyInputDefinition = (schema: string): string => {
     return schema;
   }
 
-  const parsedSchema: $TSAny = parse(schema);
+  const parsedSchema: any = parse(schema);
 
   parsedSchema.definitions = parsedSchema?.definitions?.filter(
-    (definition: $TSAny) =>
+    (definition: any) =>
       !(definition?.kind === 'InputObjectTypeDefinition' &&
       definition?.name &&
       definition?.name?.value === 'Amplify')

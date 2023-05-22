@@ -1,4 +1,3 @@
-import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { start } from '../../func';
 import { getInvoker, getBuilder } from '@aws-amplify/amplify-category-function';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
@@ -40,7 +39,7 @@ describe('function start', () => {
     jest.clearAllMocks();
   });
 
-  const context_stub: $TSAny = {
+  const context_stub: any = {
     input: {
       subCommands: [funcName],
       options: {

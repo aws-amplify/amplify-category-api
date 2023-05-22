@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSObject, isResourceNameUnique, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, $TSObject, isResourceNameUnique, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { cfnParametersFilename, parametersFileName, rootAssetDir } from './aws-constants';
@@ -7,7 +7,7 @@ import { serviceMetadataFor } from './utils/dynamic-imports';
 // this is the old logic for generating resources in the project directory
 // it is still used for adding REST APIs
 export const legacyAddResource = async (
-  serviceWalkthroughPromise: Promise<$TSAny>,
+  serviceWalkthroughPromise: Promise<any>,
   context: $TSContext,
   category: string,
   service: string,

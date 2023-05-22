@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import aws from 'aws-sdk';
 
 export type Secret = {
@@ -112,6 +112,6 @@ export class SSMClient {
 const getSSMClient = async (context: $TSContext): Promise<aws.SSM> => {
   const { client } = await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getConfiguredSSMClient', [
     context,
-  ]) as $TSAny;
+  ]) as any;
   return client as aws.SSM;
 };

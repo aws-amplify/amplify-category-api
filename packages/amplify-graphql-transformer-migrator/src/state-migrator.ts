@@ -1,14 +1,13 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import { $TSAny } from '@aws-amplify/graphql-transformer-interfaces';
 import { JSONUtilities } from '@aws-amplify/graphql-transformer-core';
 import { FeatureFlags, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 
 export const backupLocation = (resourceDir: string) => path.join(resourceDir, '.migration-config-backup');
 
 export const updateTransformerVersion = async (env?: string): Promise<void> => {
-  const mutation = (cliJSON: $TSAny) => {
+  const mutation = (cliJSON: any) => {
     _.set(cliJSON, ['features', 'graphqltransformer', 'useexperimentalpipelinedtransformer'], true);
     _.set(cliJSON, ['features', 'graphqltransformer', 'transformerversion'], 2);
     _.set(cliJSON, ['features', 'graphqltransformer', 'suppressschemamigrationprompt'], true);
@@ -25,15 +24,15 @@ export const backupCliJson = async (resourceDir: string, env? :string): Promise<
 
 export const revertTransformerVersion = async (resourceDir: string, env?: string): Promise<void> => {
   const backupPath = path.join(backupLocation(resourceDir), 'cli.json');
-  const backupJson: $TSAny = JSONUtilities.readJson(backupPath);
-  const mutation = (cliJson: $TSAny) => {
+  const backupJson: any = JSONUtilities.readJson(backupPath);
+  const mutation = (cliJson: any) => {
     _.set(cliJson, ['features'], backupJson['features']);
   }
   await mutateCliJsonFile(mutation, env);
   fs.removeSync(backupLocation(resourceDir));
 };
 
-const mutateCliJsonFile = async (mutation: (cliObj: $TSAny) => void, env?: string): Promise<void> => {
+const mutateCliJsonFile = async (mutation: (cliObj: any) => void, env?: string): Promise<void> => {
   const projectPath = pathManager.findProjectRoot() ?? process.cwd();
   let envCLI = true;
   let cliJSON;
@@ -49,7 +48,7 @@ const mutateCliJsonFile = async (mutation: (cliObj: $TSAny) => void, env?: strin
   await FeatureFlags.reloadValues();
 };
 
-const getCliJsonFile = (env?: string): Promise<$TSAny> => {
+const getCliJsonFile = (env?: string): Promise<any> => {
   const projectPath = pathManager.findProjectRoot() ?? process.cwd();
   let cliJSON;
   if (env) {

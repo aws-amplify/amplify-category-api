@@ -5,7 +5,6 @@ import {
   parse,
 } from 'graphql';
 import {
-  $TSAny,
   $TSContext,
   AmplifyError,
   ApiCategoryFacade,
@@ -59,7 +58,7 @@ export class SchemaReader {
 
   readSchema = async (
     context: $TSContext,
-    options: $TSAny,
+    options: any,
     usePreProcessing = true,
   ): Promise<DocumentNode> => {
     const preProcessSchema = usePreProcessing && (await ApiCategoryFacade.getTransformerVersion(context) === 2);

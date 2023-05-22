@@ -1,6 +1,6 @@
 import { DeploymentResources as DeploymentResourcesV2 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DeploymentResources as DeploymentResourcesV1 } from 'graphql-transformer-core';
-import { $TSAny, $TSContext, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
 import { AmplifyGraphQLTransformerErrorConverter } from '../errors/amplify-error-converter';
 import { transformGraphQLSchemaV1 } from './transform-graphql-schema-v1';
 import { transformGraphQLSchemaV2 } from './transform-graphql-schema-v2';
@@ -10,7 +10,7 @@ import { transformGraphQLSchemaV2 } from './transform-graphql-schema-v2';
  */
 export const transformGraphQLSchema = async (
   context: $TSContext,
-  options: $TSAny,
+  options: any,
 ): Promise<DeploymentResourcesV2 | DeploymentResourcesV1 | undefined> => {
   try {
     const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);

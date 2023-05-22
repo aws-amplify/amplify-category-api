@@ -1,5 +1,5 @@
 import { keys } from 'lodash';
-import { $TSAny, $TSContext, stateManager, getGraphQLTransformerFunctionDocLink, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, stateManager, getGraphQLTransformerFunctionDocLink, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
 import _ = require('lodash');
 import { ServiceName } from '@aws-amplify/amplify-category-function';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
@@ -8,7 +8,7 @@ import { ProcessedLambdaFunction } from '../CFNParser/stack/types';
 /**
  * Attempts to match an arn object against the array of lambdas configured in the project
  */
-export const lambdaArnToConfig = async (context: $TSContext, arn: $TSAny): Promise<ProcessedLambdaFunction> => {
+export const lambdaArnToConfig = async (context: $TSContext, arn: any): Promise<ProcessedLambdaFunction> => {
   const version = await ApiCategoryFacade.getTransformerVersion(context);
   const doclink = getGraphQLTransformerFunctionDocLink(version);
   const errorSuffix = `\nSee ${doclink} for information on how to configure Lambda resolvers.`;

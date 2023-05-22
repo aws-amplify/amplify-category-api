@@ -1,5 +1,4 @@
 import {
-  $TSAny,
   $TSContext, $TSMeta, $TSObject,
   AmplifyCategories,
   AmplifySupportedService, ApiCategoryFacade,
@@ -61,11 +60,11 @@ const warnOnAuth = (map: $TSObject, docLink: string): void => {
  * Use current context to generate the Transformer options for generating
  * a GraphQL Transformer V2 object
  * @param context The $TSContext from the Amplify CLI
- * @param options The $TSAny options config coming from the Amplify CLI
+ * @param options The any options config coming from the Amplify CLI
  */
 export const generateTransformerOptions = async (
   context: $TSContext,
-  options: $TSAny,
+  options: any,
 ): Promise<TransformerProjectOptions<TransformerFactoryArgs>> => {
   let resourceName: string;
   const backEndDir = pathManager.getBackendDirPath();

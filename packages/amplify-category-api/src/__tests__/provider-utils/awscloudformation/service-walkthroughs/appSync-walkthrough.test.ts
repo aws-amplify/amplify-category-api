@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, FeatureFlags, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, FeatureFlags, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import {
   askAdditionalAuthQuestions,
   getIAMPolicies,
@@ -34,7 +34,7 @@ const context_stub = (prompt: jest.Mock) =>
 
 type IAMArtifact = {
   attributes: string[];
-  policy: $TSAny;
+  policy: any;
 };
 
 describe('get IAM policies', () => {

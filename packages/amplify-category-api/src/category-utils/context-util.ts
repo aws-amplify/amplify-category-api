@@ -1,5 +1,4 @@
 import {
-  $TSAny,
   $TSContext,
   AmplifyCategories,
   pathManager,
@@ -27,7 +26,7 @@ export class ContextUtil {
    */
   getResourceDir = async (
     context: $TSContext,
-    options: $TSAny,
+    options: any,
   ): Promise<string> => {
     if (this.resourceDir) {
       return this.resourceDir;

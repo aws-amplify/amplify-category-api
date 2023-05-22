@@ -4,7 +4,6 @@
 
 ```ts
 
-import { $TSAny } from '@aws-amplify/graphql-transformer-interfaces';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { APIIAMResourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ApiKeyConfig } from 'aws-cdk-lib/aws-appsync';
@@ -158,7 +157,7 @@ export const enum ConflictHandlerType {
 export const constructDefaultGlobalAmplifyInput: (context: $TSContext, dataSourceType: ImportedRDSType, includeAuthRule?: boolean) => Promise<string>;
 
 // @public (undocumented)
-export const constructRDSGlobalAmplifyInput: (context: $TSContext, config: $TSAny, pathToSchemaFile: string) => Promise<string>;
+export const constructRDSGlobalAmplifyInput: (context: $TSContext, config: any, pathToSchemaFile: string) => Promise<string>;
 
 // @public (undocumented)
 function createSyncLambdaIAMPolicy(context: TransformerContextProvider, stack: cdk.Stack, name: string, region?: string): iam.Policy;
@@ -248,7 +247,7 @@ export const getKeySchema: (table: any, indexName?: string) => any;
 export const getParameterStoreSecretPath: (secret: string, secretsKey: string, apiName: string, envName?: string) => string;
 
 // @public (undocumented)
-export const getRDSDBConfigFromAmplifyInput: (context: $TSContext, inputNode: $TSAny) => Promise<Partial<ImportedDataSourceConfig>>;
+export const getRDSDBConfigFromAmplifyInput: (context: $TSContext, inputNode: any) => Promise<Partial<ImportedDataSourceConfig>>;
 
 // @public (undocumented)
 export const getSortKeyFieldNames: (type: ObjectTypeDefinitionNode) => string[];
