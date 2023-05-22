@@ -133,3 +133,15 @@ export class UnknownDirectiveError extends Error {
     }
   }
 }
+
+export class ApiCategorySchemaNotFoundError extends Error {
+  link: string;
+  constructor(schemaFilePath: string) {
+    super(`Could not find a schema at ${schemaFilePath}`);
+    this.name = 'ApiCategorySchemaNotFoundError';
+    this.link = 'https://docs.amplify.aws/cli/graphql/overview/#update-schema';
+    if ((Error as any).captureStackTrace) {
+      (Error as any).captureStackTrace(this, ApiCategorySchemaNotFoundError);
+    }
+  }
+}

@@ -51,6 +51,12 @@ import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
 
 // @public (undocumented)
+export type $TSAny = any;
+
+// @public (undocumented)
+export type $TSObject = Record<string, $TSAny>;
+
+// @public (undocumented)
 export interface APIIAMResourceProvider {
     // (undocumented)
     resourceArns: (api: GraphQLAPIProvider) => string[];

@@ -4,7 +4,7 @@
 
 ```ts
 
-import { $TSAny } from '@aws-amplify/amplify-cli-core';
+import { $TSAny } from '@aws-amplify/graphql-transformer-interfaces';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { APIIAMResourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ApiKeyConfig } from 'aws-cdk-lib/aws-appsync';
@@ -128,6 +128,9 @@ export interface AmplifyApiGraphQlResourceStackTemplate {
     // (undocumented)
     predictions?: Partial<PredictionsDirectiveStack & AppsyncStackCommon>;
 }
+
+// @public (undocumented)
+export const APICategory = "api";
 
 // @public (undocumented)
 export function collectDirectives(sdl: string): DirectiveNode[];
@@ -397,12 +400,46 @@ export class InvalidMigrationError extends Error {
 }
 
 // @public (undocumented)
+export class InvalidOverrideError extends Error {
+    constructor(error: Error);
+    // (undocumented)
+    details: string;
+    // (undocumented)
+    resolution: string;
+}
+
+// @public (undocumented)
 export class InvalidTransformerError extends Error {
     constructor(message: string);
 }
 
 // @public (undocumented)
 function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda;
+
+// @public (undocumented)
+export class JSONUtilities {
+    // (undocumented)
+    static parse: <T>(jsonString: string, options?: {
+        preserveComments?: boolean;
+    }) => T;
+    // (undocumented)
+    static readJson: <T>(fileName: string, options?: {
+        throwIfNotExist?: boolean;
+        preserveComments?: boolean;
+    }) => T | undefined;
+    // (undocumented)
+    static stringify: (data: unknown, options?: {
+        minify?: boolean;
+        orderedKeys?: boolean;
+    }) => string;
+    // (undocumented)
+    static writeJson: (fileName: string, data: unknown, options?: {
+        mode?: number;
+        minify?: boolean;
+        secureFile?: boolean;
+        orderedKeys?: boolean;
+    }) => void;
+}
 
 // @public (undocumented)
 export class MappingTemplate {

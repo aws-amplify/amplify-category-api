@@ -1,4 +1,5 @@
-import { $TSObject, AmplifySupportedService, stateManager } from '@aws-amplify/amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
+import { $TSObject } from '@aws-amplify/graphql-transformer-interfaces';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 
@@ -29,7 +30,7 @@ export async function getDefaultAuth(): Promise<string> {
   const backendConfig = stateManager.getBackendConfig();
 
   // Only support one GraphQL API, so grab the ID
-  const [gqlAPI] = _.filter(backendConfig.api, (api: $TSObject) => api.service === AmplifySupportedService.APPSYNC);
+  const [gqlAPI] = _.filter(backendConfig.api, (api: $TSObject) => api.service === 'AppSync');
 
   if (!gqlAPI) {
     return 'AMAZON_COGNITO_USER_POOLS';

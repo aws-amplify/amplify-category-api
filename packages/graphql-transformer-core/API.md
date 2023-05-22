@@ -43,6 +43,13 @@ import { TypeSystemDefinitionNode } from 'graphql';
 import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql/language/ast';
 
+// @public (undocumented)
+export class ApiCategorySchemaNotFoundError extends Error {
+    constructor(schemaFilePath: string);
+    // (undocumented)
+    link: string;
+}
+
 // Warning: (ae-forgotten-export) The symbol "ProjectOptions" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)

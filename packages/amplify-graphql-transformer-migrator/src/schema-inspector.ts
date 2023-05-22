@@ -1,14 +1,14 @@
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { AmplifyCategories, FeatureFlags, pathManager } from '@aws-amplify/amplify-cli-core';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { DocumentNode } from 'graphql/language';
 import { visit } from 'graphql';
-import { collectDirectives, collectDirectivesByTypeNames } from '@aws-amplify/graphql-transformer-core';
+import { collectDirectives, collectDirectivesByTypeNames, APICategory } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { listContainsOnlySetString } from './utils';
 
 export function graphQLUsingSQL(apiName: string): boolean {
-  const apiParameterManager = getEnvParamManager().getResourceParamManager(AmplifyCategories.API, apiName);
+  const apiParameterManager = getEnvParamManager().getResourceParamManager(APICategory, apiName);
   return !!apiParameterManager.getParam('rdsClusterIdentifier');
 }
 
@@ -58,14 +58,6 @@ export function detectDeprecatedConnectionUsage(schema: string): boolean {
     }
   }
   return false;
-}
-
-export function isImprovedPluralizationEnabled() {
-  return FeatureFlags.getBoolean('graphqltransformer.improvepluralization');
-}
-
-export function isTransformerV2Enabled() {
-  return FeatureFlags.getNumber('graphqltransformer.transformerversion') === 2;
 }
 
 export function authRuleUsesQueriesOrMutations(schema: string): boolean {

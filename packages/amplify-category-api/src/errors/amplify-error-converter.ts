@@ -12,6 +12,8 @@ const amplifyGraphQLErrorCodes = new Set([
   'InvalidGSIMigrationError',
   'UnknownDirectiveError',
   'GraphQLError',
+  'ApiCategorySchemaNotFoundError',
+  'InvalidOverrideError',
 ]);
 
 /**
@@ -28,7 +30,8 @@ export abstract class AmplifyGraphQLTransformerErrorConverter {
       return new AmplifyError(
         amplifyErrorType,
         {
-          message: error.message,
+          message: error.message, // message is not enumerable
+          ...error,
         },
         error,
       );

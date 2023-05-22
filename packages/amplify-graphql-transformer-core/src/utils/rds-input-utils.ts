@@ -1,7 +1,7 @@
 import { parse, print, InputObjectTypeDefinitionNode } from 'graphql';
 import * as fs from 'fs-extra';
+import { $TSAny } from '@aws-amplify/graphql-transformer-interfaces';
 import {
-  $TSAny,
   $TSContext,
   ApiCategoryFacade,
   getGraphQLTransformerAuthDocLink,

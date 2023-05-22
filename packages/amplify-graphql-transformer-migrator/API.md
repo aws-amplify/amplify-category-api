@@ -5,7 +5,10 @@
 ```ts
 
 // @public (undocumented)
-export function attemptV2TransformerMigration(resourceDir: string, apiName: string, envName?: string): Promise<void>;
+export function attemptV2TransformerMigration(resourceDir: string, apiName: string, featureFlags: {
+    transformerVersion: number;
+    improvePluralization: boolean;
+}, envName?: string): Promise<void>;
 
 // @public (undocumented)
 export function revertV2Migration(resourceDir: string, envName: string): Promise<void>;
