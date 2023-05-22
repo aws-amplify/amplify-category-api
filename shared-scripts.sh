@@ -164,13 +164,14 @@ function _installCLIFromLocalRegistry {
     changeNpmGlobalPath
     npm install -g @aws-amplify/cli-internal
     echo "using Amplify CLI version: "$(amplify --version)
-    npm list -g --depth=1
+    npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'
     unsetNpmRegistryUrl
 }
 function _loadTestAccountCredentials {
     echo ASSUMING PARENT TEST ACCOUNT credentials
     session_id=$((1 + $RANDOM % 10000))
-    creds=$(aws sts assume-role --role-arn $TEST_ACCOUNT_ROLE --role-session-name testSession${session_id} --duration-seconds 3600)
+    # Use longer time for parent account role
+    creds=$(aws sts assume-role --role-arn $TEST_ACCOUNT_ROLE --role-session-name testSession${session_id} --duration-seconds 7200)
     if [ -z $(echo $creds | jq -c -r '.AssumedRoleUser.Arn') ]; then
         echo "Unable to assume parent e2e account role."
         return
@@ -185,8 +186,6 @@ function _runE2ETestsLinux {
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     _installCLIFromLocalRegistry  
-    # export PATH="$AMPLIFY_DIR:$PATH"
-    echo $PATH
     source .circleci/local_publish_helpers.sh
     amplify version
     echo "Run Amplify E2E tests"
