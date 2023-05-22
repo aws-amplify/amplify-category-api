@@ -5,7 +5,6 @@
 ```ts
 
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { $TSObject } from '@aws-amplify/amplify-cli-core';
 import * as cdk from 'aws-cdk-lib';
 import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
 import { Construct } from 'constructs';
@@ -22,11 +21,11 @@ export function addAdminQueriesApi(context: $TSContext, apiProps: {
     apiName: string;
     functionName: string;
     authResourceName: string;
-    dependsOn: $TSObject[];
+    dependsOn: Record<string, any>[];
 }): Promise<void>;
 
 // @public (undocumented)
-export const addGraphQLAuthorizationMode: (context: $TSContext, args: $TSObject) => Promise<{
+export const addGraphQLAuthorizationMode: (context: $TSContext, args: Record<string, any>) => Promise<{
     authenticationType: string;
 }>;
 
@@ -121,7 +120,7 @@ export function getGitHubOwnerRepoFromPath(path: string): {
 };
 
 // @public (undocumented)
-export const getPermissionPolicies: (context: $TSContext, resourceOpsMapping: $TSObject) => Promise<{
+export const getPermissionPolicies: (context: $TSContext, resourceOpsMapping: Record<string, any>) => Promise<{
     permissionPolicies: any[];
     resourceAttributes: any[];
 }>;
@@ -173,7 +172,7 @@ export const showApiAuthAcm: (context: $TSContext, modelName: string) => Promise
 export const SLOT_NAMES: Set<string>;
 
 // @public (undocumented)
-export const transformCategoryStack: (context: $TSContext, resource: $TSObject) => Promise<void>;
+export const transformCategoryStack: (context: $TSContext, resource: Record<string, any>) => Promise<void>;
 
 // @public (undocumented)
 export const transformGraphQLSchema: (context: $TSContext, options: any) => Promise<DeploymentResources | DeploymentResources_2 | undefined>;
@@ -183,7 +182,7 @@ export function updateAdminQueriesApi(context: $TSContext, apiProps: {
     apiName: string;
     functionName: string;
     authResourceName: string;
-    dependsOn: $TSObject[];
+    dependsOn: Record<string, any>[];
 }): Promise<void>;
 
 // Warnings were encountered during analysis:

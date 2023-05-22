@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, isResourceNameUnique, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, isResourceNameUnique, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { cfnParametersFilename, parametersFileName, rootAssetDir } from './aws-constants';
@@ -11,7 +11,7 @@ export const legacyAddResource = async (
   context: $TSContext,
   category: string,
   service: string,
-  options: $TSObject,
+  options: Record<string, any>,
 ) => {
   let answers;
   let { cfnFilename } = await serviceMetadataFor(service);

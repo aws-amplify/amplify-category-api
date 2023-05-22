@@ -1,6 +1,5 @@
 import {
   $TSContext,
-  $TSObject,
   AmplifyCategories,
   AmplifySupportedService,
   CLIInputSchemaValidator,
@@ -75,7 +74,7 @@ export class ApigwInputState {
     );
   };
 
-  public addApigwResource = async (serviceWalkthroughPromise: ApigwWalkthroughReturnPromise, options: $TSObject) => {
+  public addApigwResource = async (serviceWalkthroughPromise: ApigwWalkthroughReturnPromise, options: Record<string, any>) => {
     const { answers } = await serviceWalkthroughPromise;
 
     this.resourceName = answers.resourceName;
@@ -90,7 +89,7 @@ export class ApigwInputState {
     return this.resourceName;
   };
 
-  public updateApigwResource = async (updateWalkthroughPromise: Promise<$TSObject>) => {
+  public updateApigwResource = async (updateWalkthroughPromise: Promise<Record<string, any>>) => {
     const { answers } = await updateWalkthroughPromise;
 
     this.resourceName = answers.resourceName;
@@ -174,5 +173,5 @@ export type AdminQueriesProps = {
   apiName: string;
   functionName: string;
   authResourceName: string;
-  dependsOn: $TSObject[];
+  dependsOn: Record<string, any>[];
 };

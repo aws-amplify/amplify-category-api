@@ -1,4 +1,4 @@
-import { $TSObject, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { CrudOperation, PermissionSetting } from './cdk-stack-builder/types';
 
@@ -7,9 +7,9 @@ export function convertDeperecatedRestApiPaths(
   deprecatedParametersFilePath: string,
   resourceName: string,
 ) {
-  let deprecatedParameters: $TSObject;
+  let deprecatedParameters: Record<string, any>;
   try {
-    deprecatedParameters = JSONUtilities.readJson<$TSObject>(deprecatedParametersFilePath);
+    deprecatedParameters = JSONUtilities.readJson<Record<string, any>>(deprecatedParametersFilePath);
   } catch (e) {
     printer.error(`Error reading ${deprecatedParametersFileName} file for ${resourceName} resource`);
     throw e;
@@ -21,7 +21,7 @@ export function convertDeperecatedRestApiPaths(
     throw new Error(`Expected paths to be defined in "${deprecatedParametersFilePath}", but none found.`);
   }
 
-  deprecatedParameters.paths.forEach((path: $TSObject) => {
+  deprecatedParameters.paths.forEach((path: Record<string, any>) => {
     let pathPermissionSetting =
       path.privacy?.open === true
         ? PermissionSetting.OPEN

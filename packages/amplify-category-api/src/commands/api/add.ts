@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, AmplifyCategories, AmplifySupportedService } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyCategories, AmplifySupportedService } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 
@@ -51,7 +51,7 @@ async function shouldUpdateExistingRestApi(context: $TSContext, selectedService:
 
   const { allResources } = await context.amplify.getResourceStatus();
   const hasRestApis = allResources.some(
-    (resource: $TSObject) => resource.service === AmplifySupportedService.APIGW && resource.mobileHubMigrated !== true,
+    (resource: Record<string, any>) => resource.service === AmplifySupportedService.APIGW && resource.mobileHubMigrated !== true,
   );
 
   if (!hasRestApis) {

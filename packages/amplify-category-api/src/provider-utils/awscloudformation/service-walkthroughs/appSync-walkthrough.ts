@@ -1,7 +1,6 @@
 import { Duration, Expiration } from 'aws-cdk-lib';
 import {
   $TSContext,
-  $TSObject,
   exitOnNextTick,
   FeatureFlags,
   open,
@@ -340,7 +339,7 @@ export const serviceApiInputWalkthrough = async (context: $TSContext, serviceMet
   };
 };
 
-const updateApiInputWalkthrough = async (context: $TSContext, project: $TSObject, resolverConfig, modelTypes) => {
+const updateApiInputWalkthrough = async (context: $TSContext, project: Record<string, any>, resolverConfig, modelTypes) => {
   let authConfig;
   let defaultAuthType;
   const updateChoices = [
@@ -392,7 +391,7 @@ const updateApiInputWalkthrough = async (context: $TSContext, project: $TSObject
   };
 };
 
-export const serviceWalkthrough = async (context: $TSContext, serviceMetadata: $TSObject) => {
+export const serviceWalkthrough = async (context: $TSContext, serviceMetadata: Record<string, any>) => {
   const resourceName = resourceAlreadyExists();
   const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
   await addLambdaAuthorizerChoice(context);
@@ -499,7 +498,7 @@ export const updateWalkthrough = async (context: $TSContext): Promise<UpdateApiR
   };
 };
 
-async function displayApiInformation(context: $TSContext, resource: $TSObject, project: $TSObject) {
+async function displayApiInformation(context: $TSContext, resource: Record<string, any>, project: Record<string, any>) {
   let authModes: string[] = [];
   authModes.push(
     `- Default: ${await displayAuthMode(context, resource, resource.output.authConfig.defaultAuthentication.authenticationType)}`,
@@ -535,7 +534,7 @@ async function displayApiInformation(context: $TSContext, resource: $TSObject, p
   printer.info('');
 }
 
-async function displayAuthMode(context: $TSContext, resource: $TSObject, authMode: string) {
+async function displayAuthMode(context: $TSContext, resource: Record<string, any>, authMode: string) {
   if (authMode === 'API_KEY' && resource.output.GraphQLAPIKeyOutput) {
     let { apiKeys } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getGraphQLApiKeys', {
       apiId: resource.output.GraphQLAPIIdOutput,
@@ -558,7 +557,7 @@ async function askAdditionalQuestions(context: $TSContext, authConfig, defaultAu
 }
 
 async function askResolverConflictQuestion(context: $TSContext, resolverConfig, modelTypes?) {
-  let resolverConfigResponse: $TSObject = {};
+  let resolverConfigResponse: Record<string, any> = {};
 
   if (await context.prompt.confirm('Enable conflict detection?', !resolverConfig?.project)) {
     resolverConfigResponse = await askResolverConflictHandlerQuestion(context, modelTypes);
@@ -568,7 +567,7 @@ async function askResolverConflictQuestion(context: $TSContext, resolverConfig, 
 }
 
 async function askResolverConflictHandlerQuestion(context: $TSContext, modelTypes?) {
-  let resolverConfig: $TSObject = {};
+  let resolverConfig: Record<string, any> = {};
   const askConflictResolutionStrategy = async msg => {
     let conflictResolutionStrategy;
 
@@ -586,7 +585,7 @@ async function askResolverConflictHandlerQuestion(context: $TSContext, modelType
       ({ conflictResolutionStrategy } = await inquirer.prompt([conflictResolutionQuestion]));
     } while (conflictResolutionStrategy === 'Learn More');
 
-    let syncConfig: $TSObject = {
+    let syncConfig: Record<string, any> = {
       ConflictHandler: conflictResolutionStrategy,
       ConflictDetection: 'VERSION',
     };
@@ -701,7 +700,7 @@ async function askDefaultAuthQuestion(context: $TSContext) {
   };
 }
 
-export async function askAdditionalAuthQuestions(context: $TSContext, authConfig: $TSObject, defaultAuthType) {
+export async function askAdditionalAuthQuestions(context: $TSContext, authConfig: Record<string, any>, defaultAuthType) {
   const currentAuthConfig = getAppSyncAuthConfig(stateManager.getMeta());
   authConfig.additionalAuthenticationProviders = [];
   if (await context.prompt.confirm('Configure additional auth types?')) {
@@ -813,7 +812,7 @@ async function askUserPoolQuestions(context: $TSContext) {
   };
 }
 
-export async function askApiKeyQuestions(authSettings: $TSObject = undefined) {
+export async function askApiKeyQuestions(authSettings: Record<string, any> = undefined) {
   let defaultValues = {
     apiKeyExpirationDays: 7,
     description: '',
@@ -844,7 +843,7 @@ export async function askApiKeyQuestions(authSettings: $TSObject = undefined) {
     },
   ];
 
-  const apiKeyConfig: $TSObject = {};
+  const apiKeyConfig: Record<string, any> = {};
   for (const apiKeyQuestion of apiKeyQuestions) {
     apiKeyConfig[apiKeyQuestion.name] = await prompter.input(apiKeyQuestion.message, { initial: apiKeyQuestion.default as string })
   }
@@ -858,7 +857,7 @@ export async function askApiKeyQuestions(authSettings: $TSObject = undefined) {
   };
 }
 
-async function askOpenIDConnectQuestions(authSettings: $TSObject) {
+async function askOpenIDConnectQuestions(authSettings: Record<string, any>) {
   let defaultValues = {
     authTTL: undefined,
     clientId: undefined,
@@ -970,7 +969,7 @@ export const migrate = async (context: $TSContext) => {
 };
 
 export const getIAMPolicies = (resourceName: string, operations: string[]) => {
-  let policy: $TSObject = {};
+  let policy: Record<string, any> = {};
   const resources = [];
   const actions = [];
   if (!FeatureFlags.getBoolean('appSync.generateGraphQLPermissions')) {
