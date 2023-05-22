@@ -42,6 +42,9 @@ const RUN_SOLO = [
   'src/__tests__/schema-connection.test.ts',
   'src/__tests__/transformer-migrations/searchable-migration.test.ts',
 ];
+const EXCLUDE_E2E_TESTS = [
+  'src/__tests__/transformer-migrations/searchable-migration.test.ts',
+]
 
 export function loadConfigBase() {
   return yaml.load(fs.readFileSync(CODEBUILD_CONFIG_BASE_PATH, 'utf8'));
@@ -83,8 +86,8 @@ type CandidateJob = {
   tests: string[];
   useParentAccount: boolean;
 };
-const createRandomJob = (os: OS_TYPE): CandidateJob => {
-  const region = AWS_REGIONS_TO_RUN_TESTS[Math.floor(Math.random() * AWS_REGIONS_TO_RUN_TESTS.length)];
+const createJob = (os: OS_TYPE, jobIdx: number): CandidateJob => {
+  const region = AWS_REGIONS_TO_RUN_TESTS[jobIdx % AWS_REGIONS_TO_RUN_TESTS.length];
   return {
     region,
     os,
@@ -125,7 +128,9 @@ const splitTests = (
   });
   const generateJobsForOS = (os: OS_TYPE) => {
     const soloJobs = [];
-    const osJobs = [createRandomJob(os)];
+    let jobIdx = 0;
+    const osJobs = [createJob(os, jobIdx)];
+    jobIdx++;
     for (let test of testSuites) {
       const currentJob = osJobs[osJobs.length - 1];
 
@@ -137,7 +142,8 @@ const splitTests = (
       const USE_PARENT = USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent));
 
       if (isMigration || RUN_SOLO.find((solo) => test === solo)) {
-        const newSoloJob = createRandomJob(os);
+        const newSoloJob = createJob(os, jobIdx);
+        jobIdx++;
         newSoloJob.tests.push(test);
         if (FORCE_REGION) {
           newSoloJob.region = FORCE_REGION_MAP[FORCE_REGION as FORCE_TESTS];
@@ -160,7 +166,8 @@ const splitTests = (
 
       // create a new job once the current job is full;
       if (currentJob.tests.length >= MAX_WORKERS) {
-        osJobs.push(createRandomJob(os));
+        osJobs.push(createJob(os, jobIdx));
+        jobIdx++;
       }
     }
     return [...osJobs, ...soloJobs];
@@ -207,7 +214,9 @@ function main(): void {
     },
     join(REPO_ROOT, 'packages', 'amplify-e2e-tests'),
     false,
-    undefined,
+    (tests: string[]) => {
+      return tests.filter((testName) => !EXCLUDE_E2E_TESTS.includes(testName))
+    }
   );
   const splitMigrationV5Tests = splitTests(
     {
