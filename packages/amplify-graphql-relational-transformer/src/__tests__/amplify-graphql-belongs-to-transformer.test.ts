@@ -100,7 +100,7 @@ test('fails if any of the fields passed in are not in the parent model', () => {
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new BelongsToTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new BelongsToTransformer()],
     featureFlags,
   });
 
@@ -145,7 +145,7 @@ test('fails if sort key type does not match related type sort key', () => {
     }`;
   const transformer = new GraphQLTransform({
     featureFlags,
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new HasOneTransformer(), new BelongsToTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasOneTransformer(), new BelongsToTransformer()],
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('email field is not of type ID');
@@ -167,7 +167,7 @@ test('fails if partial sort key is provided', () => {
     }`;
   const transformer = new GraphQLTransform({
     featureFlags,
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new HasOneTransformer(), new BelongsToTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasOneTransformer(), new BelongsToTransformer()],
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError(
@@ -193,7 +193,7 @@ test('accepts @belongsTo without a sort key', () => {
 
   const transformer = new GraphQLTransform({
     featureFlags,
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new HasOneTransformer(), new BelongsToTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasOneTransformer(), new BelongsToTransformer()],
   });
 
   expect(() => transformer.transform(inputSchema)).not.toThrowError();
@@ -213,7 +213,7 @@ test('fails if used on a list field', () => {
       test: Test @hasOne
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new HasOneTransformer(), new BelongsToTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasOneTransformer(), new BelongsToTransformer()],
     featureFlags,
   });
 
@@ -233,7 +233,7 @@ test('fails if object type fields are provided', () => {
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new BelongsToTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new BelongsToTransformer()],
     featureFlags,
   });
 
@@ -365,8 +365,8 @@ test('support for belongs to with Int fields', () => {
     featureFlags,
     transformers: [
       new ModelTransformer(),
-      new PrimaryKeyTransformer(''),
-      new IndexTransformer(''),
+      new PrimaryKeyTransformer('fake-backend-path'),
+      new IndexTransformer('fake-backend-path'),
       new HasManyTransformer(),
       new BelongsToTransformer(),
     ],
@@ -466,8 +466,8 @@ test('Should not resolve to secondary index of connected model if the index is d
     featureFlags,
     transformers: [
       new ModelTransformer(),
-      new PrimaryKeyTransformer(''),
-      new IndexTransformer(''),
+      new PrimaryKeyTransformer('fake-backend-path'),
+      new IndexTransformer('fake-backend-path'),
       new HasManyTransformer(),
       new BelongsToTransformer(),
     ],
@@ -506,7 +506,7 @@ describe('@belongsTo connection field nullability tests', () => {
       `;
       const transformer = new GraphQLTransform({
         featureFlags,
-        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new HasOneTransformer(), new BelongsToTransformer()],
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasOneTransformer(), new BelongsToTransformer()],
       });
     
       const out = transformer.transform(inputSchema);
@@ -570,7 +570,7 @@ describe('@belongsTo connection field nullability tests', () => {
       `;
       const transformer = new GraphQLTransform({
         featureFlags,
-        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new HasOneTransformer(), new BelongsToTransformer()],
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasOneTransformer(), new BelongsToTransformer()],
       });
     
       const out = transformer.transform(inputSchema);
@@ -636,7 +636,7 @@ describe('@belongsTo connection field nullability tests', () => {
       `;
       const transformer = new GraphQLTransform({
         featureFlags,
-        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new HasManyTransformer(), new BelongsToTransformer()],
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasManyTransformer(), new BelongsToTransformer()],
       });
     
       const out = transformer.transform(inputSchema);
@@ -700,7 +700,7 @@ describe('@belongsTo connection field nullability tests', () => {
       `;
       const transformer = new GraphQLTransform({
         featureFlags,
-        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new HasManyTransformer(), new BelongsToTransformer()],
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasManyTransformer(), new BelongsToTransformer()],
       });
     
       const out = transformer.transform(inputSchema);

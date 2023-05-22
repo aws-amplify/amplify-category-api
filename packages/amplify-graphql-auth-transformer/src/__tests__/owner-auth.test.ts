@@ -338,7 +338,7 @@ describe('owner based @auth', () => {
         getNumber: jest.fn(),
         getObject: jest.fn(),
       },
-      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new IndexTransformer(''), new AuthTransformer()],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new IndexTransformer('fake-backend-path'), new AuthTransformer()],
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -411,8 +411,8 @@ describe('owner based @auth', () => {
       transformers: [
         new ModelTransformer(),
         new HasManyTransformer(),
-        new IndexTransformer(''),
-        new PrimaryKeyTransformer(''),
+        new IndexTransformer('fake-backend-path'),
+        new PrimaryKeyTransformer('fake-backend-path'),
         new AuthTransformer(),
       ],
     });
@@ -458,8 +458,8 @@ describe('owner based @auth', () => {
       transformers: [
         new ModelTransformer(),
         new HasManyTransformer(),
-        new IndexTransformer(''),
-        new PrimaryKeyTransformer(''),
+        new IndexTransformer('fake-backend-path'),
+        new PrimaryKeyTransformer('fake-backend-path'),
         new AuthTransformer(),
       ],
     });
@@ -845,7 +845,7 @@ describe('owner based @auth', () => {
           getNumber: jest.fn(),
           getObject: jest.fn(),
         },
-        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new IndexTransformer(''), new AuthTransformer()],
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new IndexTransformer('fake-backend-path'), new AuthTransformer()],
       });
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
@@ -918,8 +918,8 @@ describe('owner based @auth', () => {
         transformers: [
           new ModelTransformer(),
           new HasManyTransformer(),
-          new IndexTransformer(''),
-          new PrimaryKeyTransformer(''),
+          new IndexTransformer('fake-backend-path'),
+          new PrimaryKeyTransformer('fake-backend-path'),
           new AuthTransformer(),
         ],
       });
@@ -965,8 +965,8 @@ describe('owner based @auth', () => {
         transformers: [
           new ModelTransformer(),
           new HasManyTransformer(),
-          new IndexTransformer(''),
-          new PrimaryKeyTransformer(''),
+          new IndexTransformer('fake-backend-path'),
+          new PrimaryKeyTransformer('fake-backend-path'),
           new AuthTransformer(),
         ],
       });
@@ -1001,7 +1001,7 @@ describe('owner based @auth', () => {
         authConfig,
         transformers: [
           new ModelTransformer(),
-          new PrimaryKeyTransformer(''),
+          new PrimaryKeyTransformer('fake-backend-path'),
           new AuthTransformer(),
         ],
         featureFlags: ({
@@ -1033,7 +1033,7 @@ describe('owner based @auth', () => {
         authConfig,
         transformers: [
           new ModelTransformer(),
-          new PrimaryKeyTransformer(''),
+          new PrimaryKeyTransformer('fake-backend-path'),
           new AuthTransformer(),
         ],
         featureFlags: ({
@@ -1062,7 +1062,7 @@ describe('owner based @auth', () => {
         authConfig,
         transformers: [
           new ModelTransformer(),
-          new PrimaryKeyTransformer(''),
+          new PrimaryKeyTransformer('fake-backend-path'),
           new AuthTransformer(),
         ],
         featureFlags: ({
@@ -1091,7 +1091,7 @@ describe('owner based @auth', () => {
         authConfig,
         transformers: [
           new ModelTransformer(),
-          new PrimaryKeyTransformer(''),
+          new PrimaryKeyTransformer('fake-backend-path'),
           new AuthTransformer(),
         ],
         featureFlags: ({
@@ -1120,7 +1120,7 @@ describe('owner based @auth', () => {
         authConfig,
         transformers: [
           new ModelTransformer(),
-          new PrimaryKeyTransformer(''),
+          new PrimaryKeyTransformer('fake-backend-path'),
           new AuthTransformer(),
         ],
         featureFlags: ({
@@ -1157,9 +1157,9 @@ describe('owner based @auth', () => {
           authConfig,
           transformers: [
             new ModelTransformer(),
-            new PrimaryKeyTransformer(''),
+            new PrimaryKeyTransformer('fake-backend-path'),
             new AuthTransformer(),
-            new IndexTransformer(''),
+            new IndexTransformer('fake-backend-path'),
           ],
           featureFlags: ({
             getBoolean: (featureName: string, defaultValue: boolean) => {
@@ -1190,9 +1190,9 @@ describe('owner based @auth', () => {
           authConfig,
           transformers: [
             new ModelTransformer(),
-            new PrimaryKeyTransformer(''),
+            new PrimaryKeyTransformer('fake-backend-path'),
             new AuthTransformer(),
-            new IndexTransformer(''),
+            new IndexTransformer('fake-backend-path'),
           ],
           featureFlags: ({
             getBoolean: (featureName: string, defaultValue: boolean) => {
@@ -1223,9 +1223,9 @@ describe('owner based @auth', () => {
           authConfig,
           transformers: [
             new ModelTransformer(),
-            new PrimaryKeyTransformer(''),
+            new PrimaryKeyTransformer('fake-backend-path'),
             new AuthTransformer(),
-            new IndexTransformer(''),
+            new IndexTransformer('fake-backend-path'),
           ],
           featureFlags: ({
             getBoolean: (featureName: string, defaultValue: boolean) => {
@@ -1256,9 +1256,9 @@ describe('owner based @auth', () => {
           authConfig,
           transformers: [
             new ModelTransformer(),
-            new PrimaryKeyTransformer(''),
+            new PrimaryKeyTransformer('fake-backend-path'),
             new AuthTransformer(),
-            new IndexTransformer(''),
+            new IndexTransformer('fake-backend-path'),
           ],
           featureFlags: ({
             getBoolean: (featureName: string, defaultValue: boolean) => {

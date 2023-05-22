@@ -117,7 +117,7 @@ beforeAll(async () => {
 
   const transformer = new GraphQLTransform({
     featureFlags,
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new IndexTransformer('fake-backend-path')],
     sandboxModeEnabled: true,
   });
   const out = transformer.transform(validSchema);

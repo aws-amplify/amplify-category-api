@@ -117,7 +117,7 @@ beforeAll(async () => {
   let out;
   try {
     const modelTransformer = new ModelTransformer();
-    const indexTransformer = new IndexTransformer('');
+    const indexTransformer = new IndexTransformer('fake-backend-path');
     const hasOneTransformer = new HasOneTransformer();
     const authTransformer = new AuthTransformer();
     const transformer = new GraphQLTransform({
@@ -129,7 +129,7 @@ beforeAll(async () => {
       },
       transformers: [
         modelTransformer,
-        new PrimaryKeyTransformer(''),
+        new PrimaryKeyTransformer('fake-backend-path'),
         indexTransformer,
         hasOneTransformer,
         new HasManyTransformer(),

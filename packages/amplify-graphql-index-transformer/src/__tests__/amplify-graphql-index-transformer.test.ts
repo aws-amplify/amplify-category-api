@@ -30,7 +30,7 @@ test('throws if @index is used in a non-@model type', () => {
     }`;
 
   const transformer = new GraphQLTransform({
-    transformers: [new IndexTransformer('')],
+    transformers: [new IndexTransformer('fake-backend-path')],
     featureFlags: ({
       getBoolean: (featureName: string, defaultValue: boolean) => {
         if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
@@ -55,7 +55,7 @@ test('throws if the same index name is defined multiple times on an object', () 
     }`;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path')],
     featureFlags: ({
       getBoolean: (featureName: string, defaultValue: boolean) => {
         if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
@@ -85,7 +85,7 @@ test('throws if an invalid LSI is created', () => {
   }`;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer(''), new PrimaryKeyTransformer('')],
+    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path'), new PrimaryKeyTransformer('fake-backend-path')],
     featureFlags: ({
       getBoolean: (featureName: string, defaultValue: boolean) => {
         if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
@@ -132,7 +132,7 @@ test('throws if an LSI is missing sort fields', () => {
     }`;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new IndexTransformer('fake-backend-path')],
     featureFlags: generateFeatureFlagWithBooleanOverrides({ secondaryKeyAsGSI: false, useSubUsernameForDefaultIdentityClaim: true }),
   });
 
@@ -169,7 +169,7 @@ test('throws if @index is used on a non-scalar field', () => {
     }`;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path')],
     featureFlags: ({
       getBoolean: (featureName: string, defaultValue: boolean) => {
         if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
@@ -194,7 +194,7 @@ test('throws if @index uses a sort key field that does not exist', () => {
     }`;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path')],
     featureFlags: ({
       getBoolean: (featureName: string, defaultValue: boolean) => {
         if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
@@ -223,7 +223,7 @@ test('throws if @index uses a sort key field that is a non-scalar', () => {
     }`;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path')],
     featureFlags: ({
       getBoolean: (featureName: string, defaultValue: boolean) => {
         if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
@@ -248,7 +248,7 @@ test('throws if @index refers to itself', () => {
     }`;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path')],
     featureFlags: ({
       getBoolean: (featureName: string, defaultValue: boolean) => {
         if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
@@ -273,7 +273,7 @@ test('throws if @index is specified on a list', () => {
     }`;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path')],
     featureFlags: ({
       getBoolean: (featureName: string, defaultValue: boolean) => {
         if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
@@ -299,7 +299,7 @@ test('throws if @index sort key fields are a list', () => {
     }`;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path')],
     featureFlags: ({
       getBoolean: (featureName: string, defaultValue: boolean) => {
         if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
@@ -324,7 +324,7 @@ test('@index with multiple sort keys adds a query field and GSI correctly', () =
       date: AWSDateTime!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path')],
     featureFlags: ({
       getBoolean: (featureName: string, defaultValue: boolean) => {
         if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
@@ -419,7 +419,7 @@ test('@index with a single sort key adds a query field and GSI correctly', () =>
       description: String
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path')],
     featureFlags: ({
       getBoolean: (featureName: string, defaultValue: boolean) => {
         if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
@@ -493,7 +493,7 @@ test('@index with no sort key field adds a query field and GSI correctly', () =>
       email: String! @index(name: "GSI_Email", queryField: "testsByEmail")
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path')],
     featureFlags: ({
       getBoolean: (featureName: string, defaultValue: boolean) => {
         if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
@@ -562,7 +562,7 @@ test('@index with no queryField does not generate a query field', () => {
       email: String! @index(name: "GSI_Email")
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path')],
     featureFlags: ({
       getBoolean: (featureName: string, defaultValue: boolean) => {
         if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
@@ -594,7 +594,7 @@ test('creates a primary key and a secondary index', () => {
       description: String
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new IndexTransformer('fake-backend-path')],
     featureFlags: {
       getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
         if (name === 'useSubUsernameForDefaultIdentityClaim') {
@@ -680,7 +680,7 @@ test('connection type is generated for custom query when queries is set to null'
       language: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path')],
     featureFlags: ({
       getBoolean: (featureName: string, defaultValue: boolean) => {
         if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
@@ -712,7 +712,7 @@ test('does not remove default primary key when primary key is not overidden', ()
     }
   `;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path')],
     featureFlags: ({
       getBoolean: (featureName: string, defaultValue: boolean) => {
         if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
@@ -744,7 +744,7 @@ test('sort direction and filter input are generated if default list query does n
       createdAt: AWSDateTime @index(name: "byCreatedAt", queryField: "byCreatedAt")
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path')],
     featureFlags: ({
       getBoolean: (featureName: string, defaultValue: boolean) => {
         if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
@@ -774,7 +774,7 @@ test('@index adds an LSI with secondaryKeyAsGSI FF set to false', () => {
       updatedAt: AWSDateTime!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new IndexTransformer('fake-backend-path')],
     featureFlags: generateFeatureFlagWithBooleanOverrides({ secondaryKeyAsGSI: false, useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
@@ -820,7 +820,7 @@ test('@index adds a GSI with secondaryKeyAsGSI FF set to true', () => {
       updatedAt: AWSDateTime!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new IndexTransformer('fake-backend-path')],
     featureFlags: generateFeatureFlagWithBooleanOverrides({ secondaryKeyAsGSI: true, useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
@@ -870,7 +870,7 @@ test('validate resolver code', () => {
       DELIVERED IN_TRANSIT PENDING UNKNOWN
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new IndexTransformer('fake-backend-path')],
     featureFlags: generateFeatureFlagWithBooleanOverrides({ secondaryKeyAsGSI: true, useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
@@ -899,7 +899,7 @@ it('@model mutation with user defined null args', () => {
       receiverId: ID!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new IndexTransformer('fake-backend-path')],
     featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
@@ -933,7 +933,7 @@ it('@model mutation with user defined create args', () => {
       receiverId: ID!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new IndexTransformer('fake-backend-path')],
     featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
@@ -967,7 +967,7 @@ it('@model mutation with default', () => {
       receiverId: ID!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new IndexTransformer('fake-backend-path')],
     featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
@@ -1009,7 +1009,7 @@ it('@model mutation with queries', () => {
       receiverId: ID!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new IndexTransformer('fake-backend-path')],
     featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
@@ -1051,7 +1051,7 @@ it('id field should be optional in updateInputObjects when it is not a primary k
     }
   `;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new IndexTransformer('fake-backend-path')],
     featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
@@ -1082,7 +1082,7 @@ test('GSI composite sort keys are wrapped in conditional to check presence in mu
     }
   `;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new IndexTransformer('fake-backend-path')],
     featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
@@ -1113,7 +1113,7 @@ it('should support index/primary key with sync resolvers', () => {
   };
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new IndexTransformer('fake-backend-path')],
     resolverConfig: {
       project: config,
     },
@@ -1145,7 +1145,7 @@ it('sync query resolver renders without overrides', () => {
   };
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(''), new IndexTransformer('')],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new IndexTransformer('fake-backend-path')],
     resolverConfig: {
       project: config,
     },
@@ -1179,7 +1179,7 @@ it('sync query resolver renders with deltaSyncTableTTL override', () => {
   };
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer(''), new PrimaryKeyTransformer('')],
+    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path'), new PrimaryKeyTransformer('fake-backend-path')],
     resolverConfig: {
       project: config,
     },
@@ -1222,7 +1222,7 @@ test('LSI creation regression test', () => {
     }`;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer(''), new PrimaryKeyTransformer('')],
+    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path'), new PrimaryKeyTransformer('fake-backend-path')],
     featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
 
@@ -1240,7 +1240,7 @@ test('it throws an understandable error on boolean sort keys', () => {
   }`;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer(''), new PrimaryKeyTransformer('')],
+    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path'), new PrimaryKeyTransformer('fake-backend-path')],
     featureFlags: generateFeatureFlagWithBooleanOverrides({ enableAutoIndexQueryNames: true }),
   });
 
@@ -1256,7 +1256,7 @@ describe('automatic name generation', () => {
     inputSchema: string,
   ): { schema: DocumentNode, stack: Template } => {
     const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new IndexTransformer('')],
+      transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path')],
       featureFlags: generateFeatureFlagWithBooleanOverrides({ enableAutoIndexQueryNames }),
     });
     const transformerOutput = transformer.transform(inputSchema);
