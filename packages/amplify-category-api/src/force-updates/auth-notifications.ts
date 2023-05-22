@@ -1,4 +1,3 @@
-/* eslint-disable array-callback-return, consistent-return, no-await-in-loop */
 import {
   $TSContext,
   exitOnNextTick,
@@ -7,7 +6,6 @@ import {
   stateManager,
 } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
-import fs from 'fs-extra';
 import {
   DirectiveNode,
   DocumentNode,
@@ -21,6 +19,9 @@ import {
   readProjectConfiguration,
 } from 'graphql-transformer-core';
 import path from 'path';
+import fs from 'fs-extra';
+import { getApiResourceDir } from './api-resource-paths';
+import { forceRefreshSchema } from './force-refresh-schema';
 
 const setNotificationFlag = async (projectPath: string, flagName: string, value: boolean): Promise<void> => {
   await FeatureFlags.ensureFeatureFlag('graphqltransformer', flagName);
@@ -55,89 +56,6 @@ const loadResolvers = async (apiResourceDirectory: string): Promise<Record<strin
   }
 
   return resolvers;
-};
-
-const containsGraphQLApi = async (): Promise<boolean> => {
-  const projectPath = pathManager.findProjectRoot() ?? process.cwd();
-  const meta = stateManager.getMeta(projectPath);
-
-  const apiNames = Object.entries(meta?.api || {})
-    .filter(([_, apiResource]) => (apiResource as any).service === 'AppSync')
-    .map(([name]) => name);
-
-  const doesNotHaveGqlApi = apiNames.length < 1;
-
-  if (doesNotHaveGqlApi) {
-    return false;
-  }
-
-  const apiName = apiNames[0];
-  const apiResourceDir = pathManager.getResourceDirectoryPath(projectPath, 'api', apiName);
-
-  if (!fs.existsSync(apiResourceDir)) {
-    return false;
-  }
-
-  return true;
-};
-
-const getApiResourceDir = async (): Promise<string | undefined> => {
-  const hasGraphQLApi = await containsGraphQLApi();
-  if (!hasGraphQLApi) {
-    return undefined;
-  }
-
-  const projectPath = pathManager.findProjectRoot() ?? process.cwd();
-  const meta = stateManager.getMeta(projectPath);
-
-  const apiNames = Object.entries(meta?.api || {})
-    .filter(([_, apiResource]) => (apiResource as any).service === 'AppSync')
-    .map(([name]) => name);
-
-  const apiName = apiNames[0];
-  const apiResourceDir = pathManager.getResourceDirectoryPath(projectPath, 'api', apiName);
-
-  return apiResourceDir;
-};
-
-const modifyGraphQLSchemaDirectory = async (schemaDirectoryPath: string): Promise<boolean> => {
-  const files = await fs.readdir(schemaDirectoryPath);
-
-  for (const fileName of files) {
-    const isHiddenFile = fileName.indexOf('.') === 0;
-
-    if (isHiddenFile) {
-      // eslint-disable-next-line no-continue
-      continue;
-    }
-
-    const fullPath = path.join(schemaDirectoryPath, fileName);
-    const stats = await fs.lstat(fullPath);
-
-    if (stats.isDirectory() && (await modifyGraphQLSchemaDirectory(fullPath))) {
-      return true;
-    }
-
-    if (stats.isFile()) {
-      fs.appendFile(fullPath, ' ');
-      return true;
-    }
-  }
-
-  return false;
-};
-
-const modifyGraphQLSchema = async (apiResourceDir: string): Promise<void> => {
-  const schemaFilePath = path.join(apiResourceDir, 'schema.graphql');
-  const schemaDirectoryPath = path.join(apiResourceDir, 'schema');
-  const schemaFileExists = fs.existsSync(schemaFilePath);
-  const schemaDirectoryExists = fs.existsSync(schemaDirectoryPath);
-
-  if (schemaFileExists) {
-    fs.appendFile(schemaFilePath, ' ');
-  } else if (schemaDirectoryExists) {
-    await modifyGraphQLSchemaDirectory(schemaDirectoryPath);
-  }
 };
 
 /**
@@ -218,7 +136,7 @@ export const notifyFieldAuthSecurityChange = async (context: $TSContext): Promis
       await context.usageData.emitSuccess();
       exitOnNextTick(0);
     }
-    modifyGraphQLSchema(apiResourceDir);
+    forceRefreshSchema();
     schemaModified = true;
   }
 
@@ -278,7 +196,7 @@ export const notifyListQuerySecurityChange = async (context: $TSContext): Promis
       exitOnNextTick(0);
     }
 
-    modifyGraphQLSchema(apiResourceDir);
+    forceRefreshSchema();
     schemaModified = true;
   }
 
@@ -329,7 +247,7 @@ export const notifySecurityEnhancement = async (context: $TSContext): Promise<vo
         exitOnNextTick(0);
       }
 
-      await modifyGraphQLSchema(apiResourceDir);
+      forceRefreshSchema();
 
       await setNotificationFlag(projectPath, 'securityEnhancementNotification', false);
     } else {
