@@ -47,9 +47,17 @@ import path from 'path';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { parseUserDefinedSlots } from './user-defined-slots';
 import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
-import { TransformerFactoryArgs, TransformerProjectOptions } from './transformer-options-types';
+import { TransformerProjectOptions } from './transformer-options-types';
 
 const PROVIDER_NAME = 'awscloudformation';
+
+type TransformerFactoryArgs = {
+    addSearchableTransformer: boolean;
+    authConfig: any;
+    storageConfig?: any;
+    adminRoles?: Array<string>;
+    identityPoolId?: string;
+  };
 
 /**
  * Return the graphql transformer factory based on the projects current transformer version.
@@ -68,8 +76,10 @@ export const getTransformerFactory = async (
 const getTransformerFactoryV2 = (
   resourceDir: string,
 ): (options: TransformerFactoryArgs) => Promise<TransformerPluginProviderV2[]> => async (options?: TransformerFactoryArgs) => {
+  console.log(options);
+  const backendDir = pathManager.getBackendDirPath()
   const modelTransformer = new ModelTransformerV2();
-  const indexTransformer = new IndexTransformerV2(options.backendDir);
+  const indexTransformer = new IndexTransformerV2(backendDir);
   const hasOneTransformer = new HasOneTransformerV2();
   const authTransformer = new AuthTransformerV2({
     adminRoles: options.adminRoles ?? [],
@@ -80,7 +90,7 @@ const getTransformerFactoryV2 = (
     new FunctionTransformerV2(),
     new HttpTransformerV2(),
     new PredictionsTransformerV2(options?.storageConfig),
-    new PrimaryKeyTransformerV2(options.backendDir),
+    new PrimaryKeyTransformerV2(backendDir),
     indexTransformer,
     new HasManyTransformerV2(),
     hasOneTransformer,
@@ -95,7 +105,7 @@ const getTransformerFactoryV2 = (
   if (options?.addSearchableTransformer) {
     const resourceDirParts = resourceDir.split(path.sep);
     const apiName = resourceDirParts[resourceDirParts.length - 1];
-    transformerList.push(new SearchableModelTransformerV2(options.projectRoot, options.currentCloudBackendDir, apiName));
+    transformerList.push(new SearchableModelTransformerV2(pathManager.findProjectRoot(), pathManager.getCurrentCloudBackendDirPath(), apiName));
   }
 
   const customTransformersConfig = await loadProject(resourceDir);

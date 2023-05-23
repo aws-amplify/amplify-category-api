@@ -68,8 +68,7 @@ export const generateTransformerOptions = async (
   options: any,
 ): Promise<TransformerProjectOptions<TransformerFactoryArgs>> => {
   let resourceName: string;
-  const backendDir = pathManager.getBackendDirPath();
-
+  const backEndDir = pathManager.getBackendDirPath();
   const flags = context.parameters.options;
   if (flags['no-gql-override']) {
     return undefined;
@@ -89,7 +88,7 @@ export const generateTransformerOptions = async (
   const resourceNeedCompile = allResources
     .filter((r) => !resources.includes(r))
     .filter((r) => {
-      const buildDir = path.normalize(path.join(backendDir, AmplifyCategories.API, r.resourceName, 'build'));
+      const buildDir = path.normalize(path.join(backEndDir, AmplifyCategories.API, r.resourceName, 'build'));
       return !fs.existsSync(buildDir);
     });
   resources = resources.concat(resourceNeedCompile);
@@ -262,9 +261,6 @@ export const generateTransformerOptions = async (
     sandboxModeEnabled,
     sanityCheckRules,
     resolverConfig,
-    backendDir,
-    projectRoot: pathManager.findProjectRoot(),
-    currentCloudBackendDir: pathManager.getCurrentCloudBackendDirPath(),
   };
 
   return buildConfig;
