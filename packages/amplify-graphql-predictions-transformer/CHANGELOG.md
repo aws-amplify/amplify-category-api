@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@1.2.2...@aws-amplify/graphql-predictions-transformer@1.2.3) (2023-05-23)
+
+### Bug Fixes
+
+- update version nodejs16.x from nodejs12.x since nodejs12.x is deprecated ([50da1df](https://github.com/aws-amplify/amplify-category-api/commit/50da1df786b043109374cad0472e32b086e3b678))
+
 ## [1.2.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@1.2.1...@aws-amplify/graphql-predictions-transformer@1.2.2) (2023-05-17)
 
 **Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer
