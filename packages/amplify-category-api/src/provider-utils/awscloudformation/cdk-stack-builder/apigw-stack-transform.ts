@@ -1,7 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import {
   $TSContext,
-  $TSObject,
   AmplifyCategories,
   AmplifyError,
   buildOverrideDir,
@@ -25,7 +24,7 @@ export class ApigwStackTransform {
   resourceTemplateObj: AmplifyApigwResourceStack | undefined;
   cliInputsState: ApigwInputState;
   cfn: Template;
-  cfnInputParams: $TSObject;
+  cfnInputParams: Record<string, any>;
   resourceName: string;
   private _app: cdk.App;
 

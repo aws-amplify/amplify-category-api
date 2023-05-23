@@ -1,6 +1,6 @@
 import { legacyAddResource } from '../../../provider-utils/awscloudformation/legacy-add-resource';
 import { category } from '../../../category-constants';
-import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 jest.mock('fs-extra');
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
@@ -24,7 +24,7 @@ describe('legacy add resource', () => {
   };
 
   it('sets policy resource name in paths object before copying template', async () => {
-    const stubWalkthroughPromise: Promise<$TSAny> = Promise.resolve({
+    const stubWalkthroughPromise: Promise<any> = Promise.resolve({
       answers: {
         resourceName: 'mockResourceName',
         paths: [

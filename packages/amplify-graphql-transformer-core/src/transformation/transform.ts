@@ -33,9 +33,9 @@ import {
 import _ from 'lodash';
 import * as path from 'path';
 import * as vm from 'vm2';
-import { AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { ResolverConfig, TransformConfig } from '../config/transformer-config';
-import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
+import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError, InvalidOverrideError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
 import { TransformerContext } from '../transformer-context';
 import { TransformerOutput } from '../transformer-context/output';
@@ -392,11 +392,7 @@ export class GraphQLTransform {
     try {
       sandboxNode.run(overrideCode, overrideFilePath).override(appsyncResourceObj, projectInfo);
     } catch (err) {
-      throw new AmplifyError('InvalidOverrideError', {
-        message: 'Executing overrides failed.',
-        details: err.message,
-        resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-      }, err);
+      throw new InvalidOverrideError(err);
     }
     return appsyncResourceObj;
   };

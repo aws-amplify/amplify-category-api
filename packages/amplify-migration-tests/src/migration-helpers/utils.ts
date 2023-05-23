@@ -14,7 +14,6 @@ import {
 } from 'amplify-category-api-e2e-core';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import { Writable } from 'stream';
-import { AmplifyCategories } from '@aws-amplify/amplify-cli-core';
 import stripAnsi = require('strip-ansi');
 
 /**
@@ -57,25 +56,23 @@ export const assertNoParameterChangesBetweenProjects = (
   expect(backendConfig2).toMatchObject(backendConfig1);
   for (const categoryKey of Object.keys(backendConfig1)) {
     const category = backendConfig1[categoryKey];
-    if (Object.values(AmplifyCategories).includes(categoryKey)) {
-      for (const resourceKey of Object.keys(category)) {
-        if (cliInputsExists(projectRoot1, categoryKey, resourceKey)) {
-          const cliInputs1 = getCLIInputs(projectRoot1, categoryKey, resourceKey);
-          const cliInputs2 = getCLIInputs(projectRoot2, categoryKey, resourceKey);
-          expect(cliInputs1)
-            .toEqual(cliInputs2);
+    for (const resourceKey of Object.keys(category)) {
+      if (cliInputsExists(projectRoot1, categoryKey, resourceKey)) {
+        const cliInputs1 = getCLIInputs(projectRoot1, categoryKey, resourceKey);
+        const cliInputs2 = getCLIInputs(projectRoot2, categoryKey, resourceKey);
+        expect(cliInputs1)
+          .toEqual(cliInputs2);
+      }
+      if (parametersExists(projectRoot1, categoryKey, resourceKey)) {
+        let parameters1 = getParameters(projectRoot1, categoryKey, resourceKey);
+        let parameters2 = getParameters(projectRoot2, categoryKey, resourceKey);
+        if (options && options.excludeFromParameterDiff) {
+          const afterExclusions = options.excludeFromParameterDiff(categoryKey, resourceKey, { project1: parameters1, project2: parameters2 });
+          parameters1 = afterExclusions.project1;
+          parameters2 = afterExclusions.project2;
         }
-        if (parametersExists(projectRoot1, categoryKey, resourceKey)) {
-          let parameters1 = getParameters(projectRoot1, categoryKey, resourceKey);
-          let parameters2 = getParameters(projectRoot2, categoryKey, resourceKey);
-          if (options && options.excludeFromParameterDiff) {
-            const afterExclusions = options.excludeFromParameterDiff(categoryKey, resourceKey, { project1: parameters1, project2: parameters2 });
-            parameters1 = afterExclusions.project1;
-            parameters2 = afterExclusions.project2;
-          }
-          expect(parameters1)
-            .toEqual(parameters2);
-        }
+        expect(parameters1)
+          .toEqual(parameters2);
       }
     }
   }

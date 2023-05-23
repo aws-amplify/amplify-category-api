@@ -1,6 +1,4 @@
-import {
-  JSONUtilities, pathManager, $TSAny, $TSContext, $TSObject,
-} from '@aws-amplify/amplify-cli-core';
+import { JSONUtilities, pathManager, $TSContext } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import detect from 'detect-port';
 import { lambdaFunctionHandler } from '../../CFNParser/resource-processors/lambda';
@@ -27,10 +25,10 @@ export const loadLambdaConfig = async (
 ): Promise<ProcessedLambdaFunction> => {
   overrideApiToLocal = overrideApiToLocal || (await isApiRunning());
   const resourcePath = path.join(pathManager.getBackendDirPath(), 'function', resourceName);
-  const { Resources: cfnResources } = JSONUtilities.readJson<{ Resources: $TSObject }>(
+  const { Resources: cfnResources } = JSONUtilities.readJson<{ Resources: Record<string, any> }>(
     path.join(resourcePath, `${resourceName}-cloudformation-template.json`),
   );
-  const lambdaDef = Object.entries(cfnResources).find(([_, resourceDef]: [string, $TSAny]) => resourceDef.Type === 'AWS::Lambda::Function');
+  const lambdaDef = Object.entries(cfnResources).find(([_, resourceDef]: [string, any]) => resourceDef.Type === 'AWS::Lambda::Function');
   if (!lambdaDef) {
     return;
   }

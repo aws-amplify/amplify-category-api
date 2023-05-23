@@ -1,15 +1,15 @@
-import { $TSAny, $TSContext, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { parametersFileName } from './aws-constants';
 import { addPolicyResourceNameToPaths, copyCfnTemplate } from './legacy-add-resource';
 import { serviceMetadataFor } from './utils/dynamic-imports';
 
-export const legacyUpdateResource = async (updateWalkthroughPromise: Promise<$TSAny>, context: $TSContext, category: string, service) => {
+export const legacyUpdateResource = async (updateWalkthroughPromise: Promise<any>, context: $TSContext, category: string, service) => {
   let answers;
   let { cfnFilename } = await serviceMetadataFor(service);
   const result = await updateWalkthroughPromise;
-  const options: $TSAny = {};
+  const options: any = {};
   if (result) {
     if (result.answers) {
       ({ answers } = result);

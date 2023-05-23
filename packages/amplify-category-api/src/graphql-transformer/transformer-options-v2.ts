@@ -1,6 +1,6 @@
 import {
-  $TSAny,
-  $TSContext, $TSMeta, $TSObject,
+  $TSContext,
+  $TSMeta, 
   AmplifyCategories,
   AmplifySupportedService, ApiCategoryFacade,
   CloudformationProviderFacade, getGraphQLTransformerAuthDocLink,
@@ -44,7 +44,7 @@ import {searchablePushChecks} from "./api-utils";
 
 export const APPSYNC_RESOURCE_SERVICE = 'AppSync';
 
-const warnOnAuth = (map: $TSObject, docLink: string): void => {
+const warnOnAuth = (map: Record<string, any>, docLink: string): void => {
   const unAuthModelTypes = Object.keys(map).filter((type) => !map[type].includes('auth') && map[type].includes('model'));
   if (unAuthModelTypes.length) {
     printer.info(
@@ -61,11 +61,11 @@ const warnOnAuth = (map: $TSObject, docLink: string): void => {
  * Use current context to generate the Transformer options for generating
  * a GraphQL Transformer V2 object
  * @param context The $TSContext from the Amplify CLI
- * @param options The $TSAny options config coming from the Amplify CLI
+ * @param options The any options config coming from the Amplify CLI
  */
 export const generateTransformerOptions = async (
   context: $TSContext,
-  options: $TSAny,
+  options: any,
 ): Promise<TransformerProjectOptions<TransformerFactoryArgs>> => {
   let resourceName: string;
   const backEndDir = pathManager.getBackendDirPath();
@@ -271,7 +271,7 @@ const getBucketName = (s3ResourceName: string): { bucketName: string } => {
   const stackName = amplifyMeta.providers.awscloudformation.StackName;
   const s3ResourcePath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.STORAGE, s3ResourceName);
   const cliInputsPath = path.join(s3ResourcePath, 'cli-inputs.json');
-  let bucketParameters: $TSObject;
+  let bucketParameters: Record<string, any>;
   // get bucketParameters 1st from cli-inputs , if not present, then parameters.json
   if (fs.existsSync(cliInputsPath)) {
     bucketParameters = JSONUtilities.readJson(cliInputsPath);

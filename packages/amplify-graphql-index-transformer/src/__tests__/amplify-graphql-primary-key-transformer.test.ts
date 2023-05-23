@@ -1,7 +1,6 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema, DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { $TSAny } from '@aws-amplify/amplify-cli-core';
 
 import { Template } from 'aws-cdk-lib/assertions';
 import { expect as cdkExpect, haveResourceLike } from '@aws-cdk/assert';
@@ -1316,9 +1315,9 @@ describe('RDS primary key transformer tests', () => {
   });
 });
 
-const getDDBTableResources = (stack: $TSAny): string[] => {
+const getDDBTableResources = (stack: any): string[] => {
   const ddbTables: string[] = [];
-  const allResources: [string: $TSAny] = stack?.Resources;
+  const allResources: [string: any] = stack?.Resources;
   if (!allResources || Object.keys(allResources)?.length === 0) {
     return ddbTables;
   }

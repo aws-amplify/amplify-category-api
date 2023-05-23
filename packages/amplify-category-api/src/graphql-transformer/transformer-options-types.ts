@@ -15,7 +15,6 @@ import {
   DiffRule,
   ProjectRule,
 } from 'graphql-transformer-core';
-import { $TSAny } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Transformer Options used to create a GraphQL Transform and compile a GQL API
@@ -52,8 +51,8 @@ type SanityCheckRules = {
  */
 export type TransformerFactoryArgs = {
   addSearchableTransformer: boolean;
-  authConfig: $TSAny;
-  storageConfig?: $TSAny;
+  authConfig: any;
+  storageConfig?: any;
   adminRoles?: Array<string>;
   identityPoolId?: string;
 };

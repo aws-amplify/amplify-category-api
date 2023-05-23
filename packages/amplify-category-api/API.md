@@ -4,9 +4,7 @@
 
 ```ts
 
-import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { $TSObject } from '@aws-amplify/amplify-cli-core';
 import * as cdk from 'aws-cdk-lib';
 import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
 import { Construct } from 'constructs';
@@ -23,11 +21,11 @@ export function addAdminQueriesApi(context: $TSContext, apiProps: {
     apiName: string;
     functionName: string;
     authResourceName: string;
-    dependsOn: $TSObject[];
+    dependsOn: Record<string, any>[];
 }): Promise<void>;
 
 // @public (undocumented)
-export const addGraphQLAuthorizationMode: (context: $TSContext, args: $TSObject) => Promise<{
+export const addGraphQLAuthorizationMode: (context: $TSContext, args: Record<string, any>) => Promise<{
     authenticationType: string;
 }>;
 
@@ -44,9 +42,9 @@ export type ApiResource = {
     restrictAccess: boolean;
     dependsOn: ResourceDependency[];
     environmentMap: Record<string, string>;
-    categoryPolicies: $TSAny[];
-    mutableParametersState: $TSAny;
-    output?: Record<string, $TSAny>;
+    categoryPolicies: any[];
+    mutableParametersState: any;
+    output?: Record<string, any>;
     apiType?: API_TYPE;
     exposedContainer?: {
         name: string;
@@ -122,9 +120,9 @@ export function getGitHubOwnerRepoFromPath(path: string): {
 };
 
 // @public (undocumented)
-export const getPermissionPolicies: (context: $TSContext, resourceOpsMapping: $TSObject) => Promise<{
-    permissionPolicies: $TSAny[];
-    resourceAttributes: $TSAny[];
+export const getPermissionPolicies: (context: $TSContext, resourceOpsMapping: Record<string, any>) => Promise<{
+    permissionPolicies: any[];
+    resourceAttributes: any[];
 }>;
 
 // @public (undocumented)
@@ -134,7 +132,7 @@ export const getResolverConfig: (context: $TSContext, resourceName: string) => P
 export const getTransformerVersion: (context: any) => Promise<number>;
 
 // @public (undocumented)
-export const handleAmplifyEvent: (context: $TSContext, args: $TSAny) => Promise<void>;
+export const handleAmplifyEvent: (context: $TSContext, args: any) => Promise<void>;
 
 // @public (undocumented)
 export const initEnv: (context: $TSContext) => Promise<void>;
@@ -174,17 +172,17 @@ export const showApiAuthAcm: (context: $TSContext, modelName: string) => Promise
 export const SLOT_NAMES: Set<string>;
 
 // @public (undocumented)
-export const transformCategoryStack: (context: $TSContext, resource: $TSObject) => Promise<void>;
+export const transformCategoryStack: (context: $TSContext, resource: Record<string, any>) => Promise<void>;
 
 // @public (undocumented)
-export const transformGraphQLSchema: (context: $TSContext, options: $TSAny) => Promise<DeploymentResources | DeploymentResources_2 | undefined>;
+export const transformGraphQLSchema: (context: $TSContext, options: any) => Promise<DeploymentResources | DeploymentResources_2 | undefined>;
 
 // @public (undocumented)
 export function updateAdminQueriesApi(context: $TSContext, apiProps: {
     apiName: string;
     functionName: string;
     authResourceName: string;
-    dependsOn: $TSObject[];
+    dependsOn: Record<string, any>[];
 }): Promise<void>;
 
 // Warnings were encountered during analysis:

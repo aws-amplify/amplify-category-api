@@ -1,4 +1,3 @@
-import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { lambdaEventSourceHandler, lambdaFunctionHandler } from './lambda';
 import { CloudFormationResource, ProcessedLambdaFunction } from '../stack/types';
 import { CloudFormationParseContext } from '../types';
@@ -18,7 +17,7 @@ export type CloudFormationResourceProcessorFn = (
   resourceName: string,
   resource: CloudFormationResource,
   cfnContext: CloudFormationParseContext,
-) => ProcessedLambdaFunction | $TSAny; // TODO should type the rest of the handler responses
+) => ProcessedLambdaFunction | any; // TODO should type the rest of the handler responses
 
 const resourceProcessorMapping: Record<string, CloudFormationResourceProcessorFn> = {};
 export function getResourceProcessorFor(resourceType: string): CloudFormationResourceProcessorFn {

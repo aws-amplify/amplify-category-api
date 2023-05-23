@@ -1,4 +1,4 @@
-import { $TSObject, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/graphql-transformer-core';
 import {
   addAuthIdentityPoolAndUserPoolWithOAuth,
   addAuthUserPoolOnlyWithOAuth,
@@ -124,7 +124,7 @@ export const getOGAuthProjectDetails = (projectRoot: string): AuthProjectDetails
   };
 };
 
-export const readResourceParametersJson = (projectRoot: string, category: string, resourceName: string): $TSObject => {
+export const readResourceParametersJson = (projectRoot: string, category: string, resourceName: string): Record<string, any> => {
   const parametersFilePath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'parameters.json');
   const parametersFileBuildPath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'build', 'parameters.json');
 
@@ -137,7 +137,7 @@ export const readResourceParametersJson = (projectRoot: string, category: string
   }
 };
 
-export const readRootStack = (projectRoot: string): $TSObject => {
+export const readRootStack = (projectRoot: string): Record<string, any> => {
   const rootStackFilePath = path.join(projectRoot, 'amplify', 'backend', 'awscloudformation', 'build', 'root-cloudformation-stack.json');
   const rootStack = JSONUtilities.readJson(rootStackFilePath);
 
