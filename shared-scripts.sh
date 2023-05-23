@@ -201,7 +201,7 @@ function _runMigrationV5Test {
     changeNpmGlobalPath
     cd packages/amplify-migration-tests
     _loadTestAccountCredentials
-    retry yarn run migration_v5.2.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+    retry yarn run migration_v5.2.0 --no-cache --runInBand --forceExit $TEST_SUITE
 }
 function _runMigrationV6Test {
     echo RUN Migration V6 Test
@@ -211,7 +211,7 @@ function _runMigrationV6Test {
     changeNpmGlobalPath
     cd packages/amplify-migration-tests
     _loadTestAccountCredentials
-    retry yarn run migration_v6.1.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+    retry yarn run migration_v6.1.0 --no-cache --runInBand --forceExit $TEST_SUITE
 }
 function _runMigrationV10Test {
     echo RUN Migration V10 Test
@@ -223,7 +223,7 @@ function _runMigrationV10Test {
     unset IS_AMPLIFY_CI
     echo $IS_AMPLIFY_CI
     _loadTestAccountCredentials
-    retry yarn run migration_v10.5.1 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+    retry yarn run migration_v10.5.1 --no-cache --runInBand --forceExit $TEST_SUITE
 }
 function _scanArtifacts {
     if ! yarn ts-node codebuild_specs/scripts/scan_artifacts.ts; then
