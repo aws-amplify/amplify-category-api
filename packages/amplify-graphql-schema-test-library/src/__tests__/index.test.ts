@@ -121,7 +121,7 @@ function getV2DefaultTransformerList(): TransformerPluginProvider[] {
     new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
     new DefaultValueTransformer(),
     authTransformer,
-    new SearchableModelTransformer('', ''),
+    new SearchableModelTransformer('.', 'amplify/backend'),
   ];
 }
 

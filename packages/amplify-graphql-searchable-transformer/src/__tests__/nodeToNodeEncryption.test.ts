@@ -1,4 +1,4 @@
-import { hasNodeToNodeEncryptionOptions } from '../nodeToNodeEncryption';
+import { hasNodeToNodeEncryptionOptions, shouldEnableNodeToNodeEncryption } from '../nodeToNodeEncryption';
 
 describe('hasNodeToNodeEncryptionOptions', () => {
   test('returns true if the search domain has NodeToNodeEncryptionOptions with value true', () => {
@@ -67,5 +67,14 @@ describe('hasNodeToNodeEncryptionOptions', () => {
     };
 
     expect(hasNodeToNodeEncryptionOptions(definition)).toEqual(false);
+  });
+});
+
+describe('shouldEnableNodeToNodeEncryption', () => {
+  test.only('foo', () => {
+    const apiName = '';
+    const projectRoot = '.';
+    const currentCloudBackendDir = '';
+    expect(shouldEnableNodeToNodeEncryption(apiName, projectRoot, currentCloudBackendDir)).toEqual({ enabled: true, log: undefined });
   });
 });
