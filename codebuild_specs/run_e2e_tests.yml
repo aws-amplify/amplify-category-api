@@ -5,7 +5,7 @@ env:
     AMPLIFY_DIR: /root/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin
     AMPLIFY_PATH: /root/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin/amplify
     CI: true
-    CIRCLECI: true
+    CODEBUILD: true
     NODE_OPTIONS: --max-old-space-size=8096
     # mock values to test artifact scanning
     ENV_VAR_WITH_SECRETS: 'MOCK_ENV_VAR_FOR_SCANNING_SECRETS'
