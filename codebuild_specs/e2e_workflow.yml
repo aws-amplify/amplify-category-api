@@ -46,7 +46,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
       depend-on:
         - build_linux
-    - identifier: l_auth_2_datastore_modelgen_amplify_app_custom_transformers
+    - identifier: auth_2_datastore_modelgen_amplify_app_custom_transformers
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -57,7 +57,7 @@ batch:
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        l_mock_api_invalid_input_arguments_schema_versioned_schema_data_access_patterns
+        mock_api_invalid_input_arguments_schema_versioned_schema_data_access_patterns
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -67,7 +67,7 @@ batch:
           CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
-    - identifier: l_predictions_migration_api_10_function_10_rds_v2
+    - identifier: predictions_migration_api_10_function_10_rds_v2
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -77,7 +77,7 @@ batch:
           CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
-    - identifier: l_schema_predictions_api_7_function_migration_api_key_migration3
+    - identifier: schema_predictions_api_7_function_migration_api_key_migration3
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -87,7 +87,7 @@ batch:
           CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
-    - identifier: l_http_migration_global_sandbox_api_key_migration5_schema_function_2
+    - identifier: http_migration_global_sandbox_api_key_migration5_schema_function_2
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -97,8 +97,7 @@ batch:
           CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
-    - identifier: >-
-        l_schema_iterative_update_5_api_connection_migration_model_migration_api_8
+    - identifier: schema_iterative_update_5_api_connection_migration_model_migration_api_8
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -108,7 +107,7 @@ batch:
           CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
-    - identifier: l_schema_iterative_update_3_schema_auth_10_schema_auth_2_auth_migration
+    - identifier: schema_iterative_update_3_schema_auth_10_schema_auth_2_auth_migration
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -119,7 +118,7 @@ batch:
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        l_schema_auth_1_lambda_conflict_handler_schema_iterative_update_1_schema_iterative_update_locking
+        schema_auth_1_lambda_conflict_handler_schema_iterative_update_1_schema_iterative_update_locking
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -129,7 +128,7 @@ batch:
           CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
-    - identifier: l_schema_auth_12_schema_auth_13_index_with_stack_mappings_schema_auth_3
+    - identifier: schema_auth_12_schema_auth_13_index_with_stack_mappings_schema_auth_3
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -140,7 +139,7 @@ batch:
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        l_api_4_custom_policies_container_api_key_migration4_schema_iterative_rollback_1
+        api_4_custom_policies_container_api_key_migration4_schema_iterative_rollback_1
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -151,7 +150,7 @@ batch:
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        l_schema_iterative_update_2_api_connection_migration2_schema_iterative_rollback_2_schema_key
+        schema_iterative_update_2_api_connection_migration2_schema_iterative_rollback_2_schema_key
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -161,7 +160,7 @@ batch:
           CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
-    - identifier: l_api_5_containers_api_secrets_schema_auth_4_schema_auth_8
+    - identifier: api_5_containers_api_secrets_schema_auth_4_schema_auth_8
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -171,7 +170,7 @@ batch:
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: l_api_key_migration2_schema_function_1_api_3_api_key_migration1
+    - identifier: api_key_migration2_schema_function_1_api_3_api_key_migration1
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -181,7 +180,7 @@ batch:
           CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
-    - identifier: l_schema_model_apigw_schema_auth_14_schema_auth_7
+    - identifier: schema_model_apigw_schema_auth_14_schema_auth_7
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -191,7 +190,7 @@ batch:
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: l_schema_auth_9_api_1_resolvers_sync_query_datastore
+    - identifier: schema_auth_9_api_1_resolvers_sync_query_datastore
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -202,7 +201,7 @@ batch:
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        l_schema_auth_5_searchable_datastore_schema_iterative_update_4_schema_searchable
+        schema_auth_5_searchable_datastore_schema_iterative_update_4_schema_searchable
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -213,7 +212,7 @@ batch:
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        l_api_6_schema_auth_6_searchable_previous_deployment_had_node_to_node_searchable_previous_deployment_no_node_to_node
+        api_6_schema_auth_6_searchable_previous_deployment_had_node_to_node_searchable_previous_deployment_no_node_to_node
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -223,7 +222,7 @@ batch:
           CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
-    - identifier: l_api_lambda_auth_api_9_api_2
+    - identifier: api_lambda_auth_api_9_api_2
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -233,7 +232,7 @@ batch:
           CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
-    - identifier: l_schema_auth_15
+    - identifier: schema_auth_15
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -242,7 +241,7 @@ batch:
           CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
-    - identifier: l_containers_api_1
+    - identifier: containers_api_1
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -251,7 +250,7 @@ batch:
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: l_schema_auth_11
+    - identifier: schema_auth_11
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -260,7 +259,7 @@ batch:
           CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
-    - identifier: l_containers_api_2
+    - identifier: containers_api_2
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -269,7 +268,7 @@ batch:
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: l_schema_connection
+    - identifier: schema_connection
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
@@ -278,7 +277,7 @@ batch:
           CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
-    - identifier: l_api_key_migration_v5
+    - identifier: api_key_migration_v5
       buildspec: codebuild_specs/migration_tests_v5.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
@@ -288,7 +287,7 @@ batch:
           CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
-    - identifier: l_api_key_migration_2_v5
+    - identifier: api_key_migration_2_v5
       buildspec: codebuild_specs/migration_tests_v5.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
@@ -298,7 +297,7 @@ batch:
           CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
-    - identifier: l_api_key_migration_v6
+    - identifier: api_key_migration_v6
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
@@ -308,7 +307,7 @@ batch:
           CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
-    - identifier: l_api_key_migration_2_v6
+    - identifier: api_key_migration_2_v6
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
@@ -318,7 +317,7 @@ batch:
           CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
-    - identifier: l_scaffold_v10
+    - identifier: scaffold_v10
       buildspec: codebuild_specs/migration_tests_v10.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
@@ -327,7 +326,7 @@ batch:
           CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
-    - identifier: l_api_rest_serverless_migration_v10
+    - identifier: api_rest_serverless_migration_v10
       buildspec: codebuild_specs/migration_tests_v10.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
@@ -337,7 +336,7 @@ batch:
           CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
-    - identifier: l_api_rest_basic_migration_v10
+    - identifier: api_rest_basic_migration_v10
       buildspec: codebuild_specs/migration_tests_v10.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
@@ -346,7 +345,7 @@ batch:
           CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
-    - identifier: l_api_graphql_v2_migration_v10
+    - identifier: api_graphql_v2_migration_v10
       buildspec: codebuild_specs/migration_tests_v10.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
@@ -355,7 +354,7 @@ batch:
           CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
-    - identifier: l_api_rest_lambda_migration_v10
+    - identifier: api_rest_lambda_migration_v10
       buildspec: codebuild_specs/migration_tests_v10.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL

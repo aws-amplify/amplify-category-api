@@ -174,7 +174,7 @@ const splitTests = (
   };
   const linuxJobs = generateJobsForOS('l');
   const getIdentifier = (os: string, names: string) => {
-    let jobName = `${os}_${names.replace(/-/g, '_')}`.substring(0, 127);
+    let jobName = `${names.replace(/-/g, '_')}`.substring(0, 127);
     if (isMigration) {
       const startIndex = baseJobLinux.identifier.lastIndexOf('_');
       jobName = jobName + baseJobLinux.identifier.substring(startIndex);
