@@ -6,8 +6,6 @@ import {
   SupportedIdentityProvidersListType,
 } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 
-import { $TSObject } from '@aws-amplify/amplify-cli-core';
-
 export type AuthProjectDetails = {
   authResourceName?: string;
   parameters?: {
@@ -22,7 +20,7 @@ export type AuthProjectDetails = {
     AppClientSecret?: string;
     AppClientIDWeb?: string;
     HostedUIDomain?: string;
-    OAuthMetadata?: $TSObject;
+    OAuthMetadata?: Record<string, any>;
     IdentityPoolId?: string;
     IdentityPoolName?: string;
     AmazonWebClient?: string;
@@ -34,7 +32,7 @@ export type AuthProjectDetails = {
     userPoolName?: string;
     webClientId?: string;
     nativeClientId?: string;
-    hostedUIProviderCreds?: $TSObject;
+    hostedUIProviderCreds?: Record<string, any>;
     identityPoolId?: string;
     identityPoolName?: string;
     allowUnauthenticatedIdentities?: string;

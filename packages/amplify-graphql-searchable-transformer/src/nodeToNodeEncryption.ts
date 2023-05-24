@@ -1,4 +1,5 @@
-import { pathManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/graphql-transformer-core';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import * as path from 'path';
 import * as fs from 'fs-extra';

@@ -1,4 +1,4 @@
-import { $TSAny, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { ExecutionContext, getCLIPath, nspawn as spawn } from '..';
@@ -339,17 +339,17 @@ export function getLayerVersionArnFromCfn(projRoot: string, layerProjName: Layer
 
 function getLayerCfn(projRoot: string, layerDirectoryName: string) {
   const cfnFilePath = path.join(projRoot, 'amplify', layerDirectoryName, `${layerDirectoryName}-awscloudformation-template.json`);
-  const cfn = JSONUtilities.readJson(cfnFilePath) as $TSAny;
+  const cfn = JSONUtilities.readJson(cfnFilePath) as any;
   return cfn;
 }
 
-function getLayerConfig(projroot: string, layerName: string): $TSAny {
+function getLayerConfig(projroot: string, layerName: string): any {
   const layerConfigPath = path.join(projroot, 'amplify', 'backend', 'function', layerName, 'layer-configuration.json');
   const layerConfig = JSONUtilities.readJson(layerConfigPath);
   return layerConfig;
 }
 
-function getLayerRuntimes(projRoot: string, layerName: string): $TSAny {
+function getLayerRuntimes(projRoot: string, layerName: string): any {
   const runtimesFilePath = path.join(projRoot, 'amplify', 'backend', 'function', layerName, PARAMETERS_FILE_NAME);
   return JSONUtilities.readJson(runtimesFilePath);
 }
@@ -371,7 +371,7 @@ function getLayerRuntimeInfo(runtime: LayerRuntime) {
 
 function waitForLayerSuccessPrintout(
   chain: ExecutionContext,
-  settings: { layerName?: string; projName?: string; runtimes?: LayerRuntime[] } | $TSAny,
+  settings: { layerName?: string; projName?: string; runtimes?: LayerRuntime[] } | any,
   action: string,
 ) {
   chain.wait(`✅ Lambda layer folders & files ${action}:`);

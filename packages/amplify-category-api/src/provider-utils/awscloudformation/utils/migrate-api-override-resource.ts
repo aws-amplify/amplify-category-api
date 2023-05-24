@@ -1,5 +1,4 @@
 import {
-  $TSAny,
   AmplifyCategories,
   JSONUtilities,
   pathManager,
@@ -18,7 +17,7 @@ import { resolverConfigToConflictResolution } from './resolver-config-to-conflic
 
 type ApiMetaData = {
   resourceName: string;
-  authConfig: $TSAny;
+  authConfig: any;
   resolverConfig: ResolverConfig;
 };
 export const migrateResourceToSupportOverride = async (resourceName: string) => {

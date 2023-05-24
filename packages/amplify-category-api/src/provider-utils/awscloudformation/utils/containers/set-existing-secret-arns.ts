@@ -1,4 +1,3 @@
-import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import * as cdk from 'aws-cdk-lib';
 
@@ -24,13 +23,13 @@ import * as cdk from 'aws-cdk-lib';
       }
     }
   */
-export const setExistingSecretArns = (secretsMap: Map<string, string>, cfnObj: $TSAny) => {
+export const setExistingSecretArns = (secretsMap: Map<string, string>, cfnObj: any) => {
   if (_.isEmpty(cfnObj)) {
     return;
   }
   const taskDef = Object.values(cfnObj?.Resources) // get all the resources
-    .find((value: $TSAny) => value?.Type === 'AWS::ECS::TaskDefinition') as $TSAny; // find the task definition
-  const containerDefs = taskDef?.Properties?.ContainerDefinitions as $TSAny[]; // pull out just the container definitions
+    .find((value: any) => value?.Type === 'AWS::ECS::TaskDefinition') as any; // find the task definition
+  const containerDefs = taskDef?.Properties?.ContainerDefinitions as any[]; // pull out just the container definitions
   if (!Array.isArray(containerDefs)) {
     return;
   }

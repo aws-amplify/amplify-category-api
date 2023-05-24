@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, exitOnNextTick, ResourceCredentialsNotFoundError, ResourceDoesNotExistError, pathManager, JSONUtilities, $TSAny } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, exitOnNextTick, ResourceCredentialsNotFoundError, ResourceDoesNotExistError, pathManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import { DataApiParams } from 'graphql-relational-schema-transformer';
@@ -10,7 +10,7 @@ const spinner = ora('');
 const category = 'api';
 const providerName = 'awscloudformation';
 
-export async function serviceWalkthrough(context: $TSContext, datasourceMetadata: $TSObject) {
+export async function serviceWalkthrough(context: $TSContext, datasourceMetadata: Record<string, any>) {
   const amplifyMeta = context.amplify.getProjectMeta();
 
   // Verify that an API exists in the project before proceeding.
@@ -45,7 +45,7 @@ export async function serviceWalkthrough(context: $TSContext, datasourceMetadata
   const { inputs, availableRegions } = datasourceMetadata;
 
   // FIXME: We should NOT be treating CloudFormation templates as inputs to prompts! This a temporary exception while we move team-provider-info to a service.
-  const cfnJson: $TSAny = JSONUtilities.readJson(path.join(pathManager.getCurrentCloudRootStackDirPath(pathManager.findProjectRoot()), rootStackFileName));
+  const cfnJson: any = JSONUtilities.readJson(path.join(pathManager.getCurrentCloudRootStackDirPath(pathManager.findProjectRoot()), rootStackFileName));
   const cfnJsonParameters = cfnJson?.Resources[`api${appSyncApi}`]?.Properties?.Parameters || {};
   let selectedRegion = cfnJsonParameters?.rdsRegion;
   // Region Question

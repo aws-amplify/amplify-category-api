@@ -11,3 +11,5 @@ export {
   getRDSDBConfigFromAmplifyInput,
   readRDSGlobalAmplifyInput,
 } from './rds-input-utils';
+export { JSONUtilities } from './jsonUtilities';
+export const APICategory = 'api';

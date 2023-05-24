@@ -1,6 +1,5 @@
 import {
   $TSContext,
-  $TSObject,
   AmplifyCategories,
   AmplifySupportedService,
   ApiCategoryFacade,
@@ -72,12 +71,12 @@ export const run = async (context: $TSContext) => {
     const apigwInputState = new ApigwInputState(context, selectedResourceName);
     if (!apigwInputState.cliInputsFileExists()) {
       if (selectedResourceName === ADMIN_QUERIES_NAME) {
-        const { dependsOn }: { dependsOn: $TSObject[] } = amplifyMeta[AmplifyCategories.API][selectedResourceName];
+        const { dependsOn }: { dependsOn: Record<string, any>[] } = amplifyMeta[AmplifyCategories.API][selectedResourceName];
         if (!Array.isArray(dependsOn) || dependsOn.length === 0) {
           throw new Error(`Invalid dependsOn entry found in amplify-meta.json for "${ADMIN_QUERIES_NAME}"`);
         }
 
-        const getResourceNameFromDependsOn = (categoryName: string, dependsOn: $TSObject[]) =>
+        const getResourceNameFromDependsOn = (categoryName: string, dependsOn: Record<string, any>[]) =>
           dependsOn.filter(entry => entry.category === categoryName)[0].resourceName;
 
         const props: AdminQueriesProps = {

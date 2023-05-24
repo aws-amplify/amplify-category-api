@@ -414,14 +414,12 @@ function createPredictionsLambda(context: TransformerContextProvider, stack: cdk
     },
   });
 
-  // Update the runtime to Node 14 once the following issue is resolved:
-  // https://github.com/aws-cloudformation/cloudformation-coverage-roadmap/issues/80#issuecomment-831796699
   return context.api.host.addLambdaFunction(
     PredictionsResourceIDs.lambdaName,
     `functions/${functionId}.zip`,
     PredictionsResourceIDs.lambdaHandlerName,
     path.join(__dirname, '..', 'lib', 'predictionsLambdaFunction.zip'),
-    lambda.Runtime.NODEJS_12_X,
+    lambda.Runtime.NODEJS_16_X,
     [],
     role,
     {},

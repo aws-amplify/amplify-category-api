@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSObject, exitOnNextTick, ResourceDoesNotExistError } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, exitOnNextTick, ResourceDoesNotExistError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import inquirer from 'inquirer';
 import { category } from '../../../category-constants';
@@ -56,7 +56,7 @@ export async function serviceWalkthrough(context: $TSContext, apiType: API_TYPE)
   return { resourceName, ...containerInfo };
 }
 
-async function askResourceName(context: $TSContext, allDefaultValues: $TSObject) {
+async function askResourceName(context: $TSContext, allDefaultValues: Record<string, any>) {
   const { amplify } = context;
 
   const { resourceName } = await inquirer.prompt([
@@ -68,7 +68,7 @@ async function askResourceName(context: $TSContext, allDefaultValues: $TSObject)
       validate: amplify.inputValidation({
         validation: {
           operator: 'regex',
-          value: '^(?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*$',
+          value: '^[a-z0-9]+$',
           onErrorMsg: 'Resource name should be alphanumeric with no uppercase letters',
         },
         required: true,
@@ -301,7 +301,7 @@ export async function updateWalkthrough(context: $TSContext, apiType: API_TYPE) 
   const hasAccessableResources = ['storage', 'function'].some(categoryName => {
     return Object.keys(meta[categoryName] ?? {}).length > 0;
   });
-  let rolePermissions: $TSAny = {};
+  let rolePermissions: any = {};
   if (
     hasAccessableResources &&
     (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your api?'))

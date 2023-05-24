@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { getParameterStoreSecretPath } from '@aws-amplify/graphql-transformer-core';
 import { getExistingConnectionSecrets } from '../../../../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 
@@ -26,7 +26,7 @@ jest.mock('@aws-amplify/amplify-cli-core', () => {
 });
 
 describe('Test database secrets management', () => {
-  const mockContext = {} as $TSAny as $TSContext;
+  const mockContext = {} as any as $TSContext;
 
   beforeEach(() => {
     jest.clearAllMocks();

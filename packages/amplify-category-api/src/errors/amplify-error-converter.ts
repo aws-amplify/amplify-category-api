@@ -1,5 +1,5 @@
 import {
-  $TSAny, AmplifyError, AmplifyErrorType,
+  AmplifyError, AmplifyErrorType,
 } from '@aws-amplify/amplify-cli-core';
 
 const amplifyGraphQLErrorCodes = new Set([
@@ -12,6 +12,8 @@ const amplifyGraphQLErrorCodes = new Set([
   'InvalidGSIMigrationError',
   'UnknownDirectiveError',
   'GraphQLError',
+  'ApiCategorySchemaNotFoundError',
+  'InvalidOverrideError',
 ]);
 
 /**
@@ -22,13 +24,14 @@ export abstract class AmplifyGraphQLTransformerErrorConverter {
    * create
   * @param error : default error to be thrown if not present in list : amplifyErrorList
    */
-  static convert = (error: $TSAny): $TSAny => {
+  static convert = (error: any): any => {
     if (error instanceof Error && error?.name && amplifyGraphQLErrorCodes.has(error.name)) {
       const amplifyErrorType = `${error.name}` as AmplifyErrorType;
       return new AmplifyError(
         amplifyErrorType,
         {
-          message: error.message,
+          message: error.message, // message is not enumerable
+          ...error,
         },
         error,
       );

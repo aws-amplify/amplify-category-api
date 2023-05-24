@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, AmplifyCategories, FeatureFlags, stateManager } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyCategories, FeatureFlags, stateManager } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter, exact } from '@aws-amplify/amplify-prompts';
 
 const subcommand = 'rebuild';
@@ -13,7 +13,7 @@ export const run = async (context: $TSContext) => {
     return;
   }
   const apiNames = Object.entries(stateManager.getMeta()?.api || {})
-    .filter(([_, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
+    .filter(([_, apiResource]) => (apiResource as any).service === 'AppSync')
     .map(([name]) => name);
   if (apiNames.length === 0) {
     printer.info('No GraphQL API configured in the project. Only GraphQL APIs can be rebuilt. To add a GraphQL API run `amplify add api`.');

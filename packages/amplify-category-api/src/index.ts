@@ -1,7 +1,5 @@
 import {
-  $TSAny,
   $TSContext,
-  $TSObject,
   AmplifyCategories,
   AmplifyError,
   AmplifySupportedService,
@@ -209,8 +207,8 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
  */
 export const getPermissionPolicies = async (
   context: $TSContext,
-  resourceOpsMapping: $TSObject,
-): Promise<{ permissionPolicies: $TSAny[]; resourceAttributes: $TSAny[]; }> => {
+  resourceOpsMapping: Record<string, any>,
+): Promise<{ permissionPolicies: any[]; resourceAttributes: any[]; }> => {
   const amplifyMeta = stateManager.getMeta();
   const permissionPolicies = [];
   const resourceAttributes = [];
@@ -295,7 +293,7 @@ export const executeAmplifyHeadlessCommand = async (context: $TSContext, headles
 /**
  * Handle state changes in Amplify app.
  */
-export const handleAmplifyEvent = async (context: $TSContext, args: $TSAny): Promise<void> => {
+export const handleAmplifyEvent = async (context: $TSContext, args: any): Promise<void> => {
   switch (args.event) {
     case 'InternalOnlyPostEnvRemove':
       const meta = stateManager.getMeta();
@@ -314,7 +312,7 @@ export const handleAmplifyEvent = async (context: $TSContext, args: $TSAny): Pro
  * Add a new auth mode to the API
  */
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const addGraphQLAuthorizationMode = async (context: $TSContext, args: $TSObject) => {
+export const addGraphQLAuthorizationMode = async (context: $TSContext, args: Record<string, any>) => {
   const { authType, printLeadText, authSettings } = args;
   const meta = stateManager.getMeta();
   const apiName = getAppSyncResourceName(meta);
@@ -347,7 +345,7 @@ export const addGraphQLAuthorizationMode = async (context: $TSContext, args: $TS
 /**
  * Synthesize the CFN template for the API
  */
-export const transformCategoryStack = async (context: $TSContext, resource: $TSObject): Promise<void> => {
+export const transformCategoryStack = async (context: $TSContext, resource: Record<string, any>): Promise<void> => {
   if (resource.service === AmplifySupportedService.APPSYNC) {
     if (canResourceBeTransformed(resource.resourceName)) {
       const backendDir = pathManager.getBackendDirPath();

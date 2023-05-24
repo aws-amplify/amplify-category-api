@@ -1,11 +1,11 @@
 import * as path from 'path';
 import { Template } from 'cloudform-types';
-import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { throwIfNotJSONExt } from './fileUtils';
 import { ProjectOptions } from './amplifyUtils';
 const fs = require('fs-extra');
 import _ from 'lodash';
 import { parse, Kind, ObjectTypeDefinitionNode } from 'graphql';
+import { ApiCategorySchemaNotFoundError } from '../errors';
 
 export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 export const TRANSFORM_BASE_VERSION = 4;
@@ -288,10 +288,7 @@ export async function readSchema(projectDirectory: string): Promise<{schema: str
     modelToDatasourceMap = new Map([...modelToDatasourceMap.entries(), ...constructDataSourceMap(schemaInDirectory, datasourceType).entries()]);
     schema += schemaInDirectory;
   } else {
-    throw new AmplifyError('ApiCategorySchemaNotFoundError', {
-      message: `Could not find a schema at ${schemaFilePaths[0]}`,
-      link: 'https://docs.amplify.aws/cli/graphql/overview/#update-schema',
-    });
+    throw new ApiCategorySchemaNotFoundError(schemaFilePaths[0]);
   }
   return {
     schema,

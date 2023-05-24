@@ -5,7 +5,7 @@ import { getAmplifyMeta, getMockDataDirectory } from '../utils';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { getInvoker } from '@aws-amplify/amplify-category-function';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
-import { $TSAny, $TSContext, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 const port = 20005; // port for S3
 
@@ -88,7 +88,7 @@ export class StorageTest {
       let backendPath = context.amplify.pathManager.getBackendDirPath();
       const resourceName = Object.keys(existingStorage)[0];
       const CFNFilePath = path.join(backendPath, 'storage', resourceName, 'build', 'cloudformation-template.json');
-      const storageParams = JSONUtilities.readJson<$TSAny>(CFNFilePath);
+      const storageParams = JSONUtilities.readJson<any>(CFNFilePath);
       const lambdaConfig =
         storageParams.Resources.S3Bucket.Properties.NotificationConfiguration &&
         storageParams.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations;

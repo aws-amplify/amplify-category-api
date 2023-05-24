@@ -1,7 +1,5 @@
 import {
-  $TSAny,
   $TSContext,
-  $TSObject,
   AmplifyCategories,
   AmplifySupportedService,
   exitOnNextTick,
@@ -51,7 +49,7 @@ export async function updateWalkthrough(context: $TSContext) {
     return;
   }
 
-  let answers: $TSAny = {
+  let answers: any = {
     paths: [],
   };
 
@@ -180,9 +178,9 @@ async function askApiName(context: $TSContext, defaultResourceName: string) {
 
 async function askPermissions(
   context: $TSContext,
-  answers: $TSObject,
+  answers: Record<string, any>,
   currentPath?: ApigwPath,
-): Promise<{ setting?: PermissionSetting; auth?: CrudOperation[]; open?: boolean; userPoolGroups?: $TSObject; guest?: CrudOperation[] }> {
+): Promise<{ setting?: PermissionSetting; auth?: CrudOperation[]; open?: boolean; userPoolGroups?: Record<string, any>; guest?: CrudOperation[] }> {
   while (true) {
     const apiAccess = await prompter.yesOrNo('Restrict API access?', currentPath?.permissions?.setting !== PermissionSetting.OPEN);
 
@@ -193,7 +191,7 @@ async function askPermissions(
     const userPoolGroupList = context.amplify.getUserPoolGroupList();
 
     let permissionSelected = 'Auth/Guest Users';
-    const permissions: $TSObject = {};
+    const permissions: Record<string, any> = {};
 
     if (userPoolGroupList.length > 0) {
       do {
@@ -307,7 +305,7 @@ async function askPermissions(
 }
 
 async function ensureAuth(context: $TSContext, apiRequirements: ApiRequirements, resourceName: string) {
-  const checkResult: $TSAny = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+  const checkResult: any = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
     apiRequirements,
     context,
     'api',
@@ -351,7 +349,7 @@ async function askCRUD(userType: string, permissions: CrudOperation[] = []) {
   return crudAnswers;
 }
 
-async function askPaths(context: $TSContext, answers: $TSObject, currentPath?: ApigwPath): Promise<ApigwAnswers> {
+async function askPaths(context: $TSContext, answers: Record<string, any>, currentPath?: ApigwPath): Promise<ApigwAnswers> {
   const existingFunctions = functionsExist();
 
   let defaultFunctionType = 'newFunction';
@@ -420,7 +418,7 @@ async function askPaths(context: $TSContext, answers: $TSObject, currentPath?: A
   return { paths, dependsOn, resourceName: answers.resourceName, functionArns };
 }
 
-async function findDependsOn(paths: $TSObject[]) {
+async function findDependsOn(paths: Record<string, any>[]) {
   // go thru all paths and add lambdaFunctions to dependsOn and functionArns uniquely
   const dependsOn = [];
   const functionArns = [];
@@ -476,7 +474,7 @@ async function findDependsOn(paths: $TSObject[]) {
 function getAuthResourceName(): string {
   const meta = stateManager.getMeta();
   const authResources = (Object.entries(meta?.auth) || []).filter(
-    ([_, resource]: [key: string, resource: $TSObject]) => resource.service === AmplifySupportedService.COGNITO,
+    ([_, resource]: [key: string, resource: Record<string, any>]) => resource.service === AmplifySupportedService.COGNITO,
   );
   if (authResources.length === 0) {
     throw new Error('No auth resource found. Add it using amplify add auth');
@@ -514,7 +512,7 @@ async function askLambdaSource(context: $TSContext, functionType: string, path: 
     case 'projectFunction':
       return askLambdaFromProject(currentPath);
     case 'newFunction':
-      return newLambdaFunction(context as $TSAny, path);
+      return newLambdaFunction(context as any, path);
     default:
       throw new Error('Type not supported');
   }

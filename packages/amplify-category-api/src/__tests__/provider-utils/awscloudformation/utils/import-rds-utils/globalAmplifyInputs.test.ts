@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { constructDefaultGlobalAmplifyInput, readRDSGlobalAmplifyInput, ImportedRDSType, constructRDSGlobalAmplifyInput } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 
@@ -20,7 +20,7 @@ jest.mock('@aws-amplify/amplify-cli-core', () => {
 });
 
 describe('Amplify Input read/write from schema', () => {
-  const mockContext = {} as $TSAny as $TSContext;
+  const mockContext = {} as any as $TSContext;
 
   afterAll(() => {
     jest.resetAllMocks();
