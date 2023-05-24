@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.3.0...@aws-amplify/amplify-category-api@5.4.0) (2023-05-23)
+
+### Bug Fixes
+
+- container resource name input validation pattern ([9a16282](https://github.com/aws-amplify/amplify-category-api/commit/9a16282392764890cdca71d1fc9598af8b42cb77))
+- update version nodejs16.x from nodejs12.x since nodejs12.x is deprecated ([50da1df](https://github.com/aws-amplify/amplify-category-api/commit/50da1df786b043109374cad0472e32b086e3b678))
+
+### Features
+
+- add force-api-refresh option to the api push command in order to support refreshing an API (for example, on resolver code changes) ([2eba122](https://github.com/aws-amplify/amplify-category-api/commit/2eba122232ca6bb5f4c704e75c505a828fb56d12))
+
 # [5.3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.2.1...@aws-amplify/amplify-category-api@5.3.0) (2023-05-17)
 
 ### Bug Fixes
