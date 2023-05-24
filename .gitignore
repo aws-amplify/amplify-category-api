@@ -49,3 +49,4 @@ test.out.log
 *.tsbuildinfo
 packages/amplify-graphiql-explorer/.eslintcache
 !packages/amplify-graphql-model-transformer/src/__tests__/overrides/build/override.js
+scripts/cci/job.data.json

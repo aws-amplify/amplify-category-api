@@ -124,7 +124,14 @@ function _publishToLocalRegistry {
     loadCacheFromBuildJob
     export CODEBUILD_BRANCH="${CODEBUILD_WEBHOOK_TRIGGER#branch/*}"
     git checkout $CODEBUILD_BRANCH
-    source .circleci/local_publish_helpers.sh
+  
+    # Fetching git tags from upstream
+    # For forked repo only
+    # Can be removed when using team account
+    echo "fetching tags"
+    git fetch --tags https://github.com/aws-amplify/amplify-category-api
+
+    source codebuild_specs/scripts/local_publish_helpers.sh
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     git config user.email not@used.com
@@ -151,18 +158,19 @@ function _generateChangeLog {
 }
 function _installCLIFromLocalRegistry {
     echo "Start verdaccio, install CLI"
-    source .circleci/local_publish_helpers.sh
+    source codebuild_specs/scripts/local_publish_helpers.sh
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
-    npm install -g @aws-amplify/cli-internal@11.0.3
+    npm install -g @aws-amplify/cli-internal
     echo "using Amplify CLI version: "$(amplify --version)
-    npm list -g --depth=1
+    npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'
     unsetNpmRegistryUrl
 }
 function _loadTestAccountCredentials {
     echo ASSUMING PARENT TEST ACCOUNT credentials
     session_id=$((1 + $RANDOM % 10000))
+    # Use longer time for parent account role
     creds=$(aws sts assume-role --role-arn $TEST_ACCOUNT_ROLE --role-session-name testSession${session_id} --duration-seconds 3600)
     if [ -z $(echo $creds | jq -c -r '.AssumedRoleUser.Arn') ]; then
         echo "Unable to assume parent e2e account role."
@@ -175,23 +183,203 @@ function _loadTestAccountCredentials {
 }
 function _runE2ETestsLinux {
     echo "RUN E2E Tests Linux"
-    
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-
     _installCLIFromLocalRegistry  
-    export PATH="$AMPLIFY_DIR:$PATH"
-    source .circleci/local_publish_helpers.sh
     amplify version
     echo "Run Amplify E2E tests"
     echo $TEST_SUITE
     _loadTestAccountCredentials
     retry runE2eTest
 }
+function _runMigrationV5Test {
+    echo RUN Migration V5 Test
+    loadCacheFromBuildJob
+    yarn setup-dev
+    source codebuild_specs/scripts/local_publish_helpers.sh
+    changeNpmGlobalPath
+    cd packages/amplify-migration-tests
+    _loadTestAccountCredentials
+    retry yarn run migration_v5.2.0 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
+}
+function _runMigrationV6Test {
+    echo RUN Migration V6 Test
+    loadCacheFromBuildJob
+    yarn setup-dev
+    source codebuild_specs/scripts/local_publish_helpers.sh
+    changeNpmGlobalPath
+    cd packages/amplify-migration-tests
+    _loadTestAccountCredentials
+    retry yarn run migration_v6.1.0 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
+}
+function _runMigrationV10Test {
+    echo RUN Migration V10 Test
+    loadCacheFromBuildJob
+    yarn setup-dev
+    source codebuild_specs/scripts/local_publish_helpers.sh
+    changeNpmGlobalPath
+    cd packages/amplify-migration-tests
+    unset IS_AMPLIFY_CI
+    echo $IS_AMPLIFY_CI
+    _loadTestAccountCredentials
+    retry yarn run migration_v10.5.1 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
+}
 function _scanArtifacts {
     if ! yarn ts-node codebuild_specs/scripts/scan_artifacts.ts; then
         echo "Cleaning the repository"
         git clean -fdx
         exit 1
+    fi
+}
+function _cleanupE2EResources {
+  echo "Cleanup E2E resources"
+  loadCacheFromBuildJob
+  cd packages/amplify-e2e-tests
+  echo "Running clean up script"
+}
+
+# The following functions are forked from circleci local publish helper
+# The e2e helper functions are moved for codebuild usage
+function useChildAccountCredentials {
+    if [ -z "$USE_PARENT_ACCOUNT" ]; then
+        export AWS_PAGER=""
+        parent_acct=$(aws sts get-caller-identity | jq -cr '.Account')
+        child_accts=$(aws organizations list-accounts | jq -c "[.Accounts[].Id | select(. != \"$parent_acct\")]")
+        org_size=$(echo $child_accts | jq 'length')
+        pick_acct=$(echo $child_accts | jq -cr ".[$RANDOM % $org_size]")
+        session_id=$((1 + $RANDOM % 10000))
+        if [[ -z "$pick_acct" || -z "$session_id" ]]; then
+          echo "Unable to find a child account. Falling back to parent AWS account"
+          return
+        fi
+        creds=$(aws sts assume-role --role-arn arn:aws:iam::${pick_acct}:role/OrganizationAccountAccessRole --role-session-name testSession${session_id} --duration-seconds 3600)
+        if [ -z $(echo $creds | jq -c -r '.AssumedRoleUser.Arn') ]; then
+            echo "Unable to assume child account role. Falling back to parent AWS account"
+            return
+        fi
+        export ORGANIZATION_SIZE=$org_size
+        export CREDS=$creds
+        echo "Using account credentials for $(echo $creds | jq -c -r '.AssumedRoleUser.Arn')"
+        export AWS_ACCESS_KEY_ID=$(echo $creds | jq -c -r ".Credentials.AccessKeyId")
+        export AWS_SECRET_ACCESS_KEY=$(echo $creds | jq -c -r ".Credentials.SecretAccessKey")
+        export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")
+    else
+        echo "Using parent account credentials."
+    fi
+    echo "Region is set to use $CLI_REGION"
+}
+
+function retry {
+    MAX_ATTEMPTS=2
+    SLEEP_DURATION=5
+    FIRST_RUN=true
+    n=0
+    FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
+    if [ -f  $FAILED_TEST_REGEX_FILE ]; then
+        rm -f $FAILED_TEST_REGEX_FILE
+    fi
+    until [ $n -ge $MAX_ATTEMPTS ]
+    do
+        echo "Attempting $@ with max retries $MAX_ATTEMPTS"
+        setAwsAccountCredentials
+        "$@" && break
+        n=$[$n+1]
+        FIRST_RUN=false
+        echo "Attempt $n completed."
+        sleep $SLEEP_DURATION
+    done
+    if [ $n -ge $MAX_ATTEMPTS ]; then
+        echo "failed: ${@}" >&2
+        exit 1
+    fi
+
+    resetAwsAccountCredentials
+    TEST_SUITE=${TEST_SUITE:-"TestSuiteNotSet"}
+    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-category-api-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE
+    echo "Attempt $n succeeded."
+    exit 0 # don't fail the step if putting the metric fails
+}
+
+function resetAwsAccountCredentials {
+    if [ -z "$AWS_ACCESS_KEY_ID_ORIG" ]; then
+        echo "AWS Access Key environment variable is already set"
+    else
+        export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_ORIG
+    fi
+    if [ -z "$AWS_SECRET_ACCESS_KEY_ORIG" ]; then
+        echo "AWS Secret Access Key environment variable is already set"
+    else
+        export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_ORIG
+    fi
+    if [ -z "$AWS_SESSION_TOKEN_ORIG" ]; then
+        echo "AWS Session Token environment variable is already set"
+    else
+        export AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN_ORIG
+    fi
+}
+
+function setAwsAccountCredentials {
+    resetAwsAccountCredentials
+    export AWS_ACCESS_KEY_ID_ORIG=$AWS_ACCESS_KEY_ID
+    export AWS_SECRET_ACCESS_KEY_ORIG=$AWS_SECRET_ACCESS_KEY
+    export AWS_SESSION_TOKEN_ORIG=$AWS_SESSION_TOKEN
+    if [[ "$OSTYPE" == "msys" ]]; then
+        # windows provided by circleci has this OSTYPE
+        useChildAccountCredentials
+    else
+        echo "OSTYPE is $OSTYPE"
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip -o awscliv2.zip >/dev/null
+        export PATH=$PATH:$(pwd)/aws/dist
+        useChildAccountCredentials
+    fi
+}
+
+function runE2eTest {
+    FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
+
+    if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
+        echo "using Amplify CLI version: "$(amplify --version)
+        cd $(pwd)/packages/amplify-e2e-tests
+    fi
+
+    if [ -f  $FAILED_TEST_REGEX_FILE ]; then
+        # read the content of failed tests
+        failedTests=$(<$FAILED_TEST_REGEX_FILE)
+        yarn run e2e --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+    else
+        yarn run e2e --maxWorkers=4 $TEST_SUITE
+    fi
+}
+
+# Accepts the value as an input parameter, i.e. 1 for success, 0 for failure.
+# Only executes if IS_CANARY env variable is set
+function emitCanarySuccessMetric {
+    if [[ "$CIRCLE_BRANCH" = main ]]; then
+        USE_PARENT_ACCOUNT=1
+        setAwsAccountCredentials
+        aws cloudwatch \
+            put-metric-data \
+            --metric-name CanarySuccessRate \
+            --namespace amplify-category-api-e2e-tests \
+            --unit Count \
+            --value 1 \
+            --dimensions branch=main \
+            --region us-west-2
+    fi
+}
+
+function emitCanaryFailureMetric {
+    if [[ "$CIRCLE_BRANCH" = main ]]; then
+        USE_PARENT_ACCOUNT=1
+        setAwsAccountCredentials
+        aws cloudwatch \
+            put-metric-data \
+            --metric-name CanarySuccessRate \
+            --namespace amplify-category-api-e2e-tests \
+            --unit Count \
+            --value 0 \
+            --dimensions branch=main \
+            --region us-west-2
     fi
 }
