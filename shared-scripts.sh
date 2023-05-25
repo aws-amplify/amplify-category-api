@@ -243,6 +243,10 @@ function _runMigrationV10Test {
     npm list -g
     amplify -v
     which amplify
+    ls -al $AMPLIFY_PATH
+    ls -al /root/.amplify
+    ls -al /root/.amplify/bin
+    /root/.amplify/bin/amplify -v
 }
 function _scanArtifacts {
     if ! yarn ts-node codebuild_specs/scripts/scan_artifacts.ts; then
