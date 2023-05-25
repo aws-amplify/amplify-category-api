@@ -217,7 +217,7 @@ function _runMigrationV10Test {
     loadCacheFromBuildJob
     yarn setup-dev
     # source codebuild_specs/scripts/local_publish_helpers.sh
-    source .circleci/local_publish_helper.sh
+    source .circleci/local_publish_helpers.sh
     changeNpmGlobalPath
     cd packages/amplify-migration-tests
     unset IS_AMPLIFY_CI
