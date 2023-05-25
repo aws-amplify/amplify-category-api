@@ -100,7 +100,7 @@ test('fails if any of the fields passed in are not in the parent model', () => {
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasOneTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     featureFlags,
   });
 
@@ -142,7 +142,7 @@ test('fails if sort key type does not match related type sort key', () => {
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasOneTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     featureFlags,
   });
 
@@ -163,7 +163,7 @@ test('fails if partial sort key is provided', () => {
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasOneTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     featureFlags,
   });
 
@@ -188,7 +188,7 @@ test('accepts @hasOne without a sort key', () => {
     `;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasOneTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     featureFlags,
   });
 
@@ -209,7 +209,7 @@ test('fails if used as a has many relation', () => {
     }`;
   const transformer = new GraphQLTransform({
     featureFlags,
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasOneTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('@hasOne cannot be used with lists. Use @hasMany instead.');
@@ -229,7 +229,7 @@ test('fails if object type fields are provided', () => {
     }`;
   const transformer = new GraphQLTransform({
     featureFlags,
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasOneTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('All fields provided to @hasOne must be scalar or enum fields.');
@@ -250,7 +250,7 @@ test('creates has one relationship with explicit fields', () => {
     }`;
   const transformer = new GraphQLTransform({
     featureFlags,
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasOneTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -292,7 +292,7 @@ test('creates has one relationship with implicit fields', () => {
     }`;
   const transformer = new GraphQLTransform({
     featureFlags,
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasOneTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -339,7 +339,7 @@ test('creates has one relationship with composite sort key.', () => {
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasOneTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     featureFlags,
   });
 
@@ -643,7 +643,7 @@ describe('@hasOne connection field nullability tests', () => {
     `;
     const transformer = new GraphQLTransform({
       featureFlags,
-      transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasOneTransformer()],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     });
   
     const out = transformer.transform(inputSchema);
@@ -706,7 +706,7 @@ describe('@hasOne connection field nullability tests', () => {
     `;
     const transformer = new GraphQLTransform({
       featureFlags,
-      transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasOneTransformer()],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     });
   
     const out = transformer.transform(inputSchema);

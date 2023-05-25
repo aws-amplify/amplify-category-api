@@ -238,6 +238,11 @@ const _buildProject = async (context: $TSContext, opts: TransformerProjectOption
     buildParameters: opts.buildParameters,
     stacks: opts.projectConfig.stacks || {},
     featureFlags: new AmplifyCLIFeatureFlagAdapter(),
+    filepaths: {
+      getBackendDirPath: () => pathManager.getBackendDirPath(),
+      findProjectRoot: () => pathManager.findProjectRoot(),
+      getCurrentCloudBackendDirPath: () => pathManager.getCurrentCloudBackendDirPath(),
+    },
     sandboxModeEnabled: opts.sandboxModeEnabled,
     userDefinedSlots,
     resolverConfig: opts.resolverConfig,

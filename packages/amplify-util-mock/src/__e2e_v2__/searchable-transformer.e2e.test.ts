@@ -24,7 +24,7 @@ describe('@searchable transformer', () => {
       const transformer = new GraphQLTransform({
         transformers: [
           new ModelTransformer(),
-          new SearchableModelTransformer('.', 'amplify/backend'),
+          new SearchableModelTransformer(),
         ],
         sandboxModeEnabled: true,
       });

@@ -56,7 +56,7 @@ test('auth logic is enabled on owner/static rules in os request', () => {
   };
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [new ModelTransformer(), new SearchableModelTransformer('.', 'amplify/backend'), new AuthTransformer()],
+    transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
     featureFlags,
   });
   const out = transformer.transform(validSchema);
@@ -107,7 +107,7 @@ test('auth logic is enabled for iam/apiKey auth rules', () => {
   };
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [new ModelTransformer(), new SearchableModelTransformer('.', 'amplify/backend'), new AuthTransformer()],
+    transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
     featureFlags,
   });
   const out = transformer.transform(validSchema);
@@ -150,7 +150,7 @@ test('aggregate items are added to stash for iam public auth rule', () => {
   };
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [new ModelTransformer(), new SearchableModelTransformer('.', 'amplify/backend'), new AuthTransformer()],
+    transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
     featureFlags,
   });
   const out = transformer.transform(validSchema);
@@ -184,7 +184,7 @@ describe('identity flag feature flag disabled', () => {
     };
     const transformer = new GraphQLTransform({
       authConfig,
-      transformers: [new ModelTransformer(), new SearchableModelTransformer('.', 'amplify/backend'), new AuthTransformer()],
+      transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
       featureFlags: {
         ...featureFlags,
         ...{ getBoolean: () => false },

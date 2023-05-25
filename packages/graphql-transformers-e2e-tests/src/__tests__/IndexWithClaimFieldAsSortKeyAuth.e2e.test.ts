@@ -82,9 +82,9 @@ beforeAll(async () => {
   let out;
   try {
     const modelTransformer = new ModelTransformer();
-    const indexTransformer = new IndexTransformer('fake-backend-path');
+    const indexTransformer = new IndexTransformer();
     const authTransformer = new AuthTransformer();
-    const primaryKeyTransformer = new PrimaryKeyTransformer('fake-backend-path');
+    const primaryKeyTransformer = new PrimaryKeyTransformer();
     const transformer = new GraphQLTransform({
       authConfig: {
         defaultAuthentication: {

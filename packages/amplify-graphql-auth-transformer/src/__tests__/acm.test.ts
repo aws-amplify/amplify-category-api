@@ -9,7 +9,7 @@ const testSchemaACM = (test: AcmTest): void => {
   const authTransformer = new AuthTransformer();
   const transformer = new GraphQLTransform({
     authConfig: test.authConfig,
-    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path'), new PrimaryKeyTransformer('fake-backend-path'), authTransformer],
+    transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer(), authTransformer],
     featureFlags,
   });
 

@@ -154,14 +154,14 @@ type ModelB @model {
     };
     const authTransformer = new AuthTransformer();
     const modelTransformer = new ModelTransformer();
-    const indexTransformer = new IndexTransformer('fake-backend-path');
+    const indexTransformer = new IndexTransformer();
     const hasOneTransformer = new HasOneTransformer();
     const transformer = new GraphQLTransform({
       authConfig,
       featureFlags,
       transformers: [
         modelTransformer,
-        new PrimaryKeyTransformer('fake-backend-path'),
+        new PrimaryKeyTransformer(),
         indexTransformer,
         hasOneTransformer,
         new HasManyTransformer(),

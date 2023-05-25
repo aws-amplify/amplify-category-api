@@ -122,7 +122,7 @@ beforeAll(async () => {
       },
       additionalAuthenticationProviders: [],
     },
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new IndexTransformer('fake-backend-path'), new AuthTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   const finishedStack = await deploy(

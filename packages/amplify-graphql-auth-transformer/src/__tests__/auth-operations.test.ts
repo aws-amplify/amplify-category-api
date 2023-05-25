@@ -199,7 +199,7 @@ test('read get list auth operations', () => {
 
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [new ModelTransformer(), new SearchableModelTransformer('.', 'amplify/backend'), new AuthTransformer()],
+    transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
     resolverConfig: {
       project: config,
     },

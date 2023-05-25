@@ -78,7 +78,7 @@ const getTransformerFactoryV2 = (
 ): (options: TransformerFactoryArgs) => Promise<TransformerPluginProviderV2[]> => async (options?: TransformerFactoryArgs) => {
   const backendDir = pathManager.getBackendDirPath()
   const modelTransformer = new ModelTransformerV2();
-  const indexTransformer = new IndexTransformerV2(backendDir);
+  const indexTransformer = new IndexTransformerV2();
   const hasOneTransformer = new HasOneTransformerV2();
   const authTransformer = new AuthTransformerV2({
     adminRoles: options.adminRoles ?? [],
@@ -89,7 +89,7 @@ const getTransformerFactoryV2 = (
     new FunctionTransformerV2(),
     new HttpTransformerV2(),
     new PredictionsTransformerV2(options?.storageConfig),
-    new PrimaryKeyTransformerV2(backendDir),
+    new PrimaryKeyTransformerV2(),
     indexTransformer,
     new HasManyTransformerV2(),
     hasOneTransformer,
@@ -104,7 +104,7 @@ const getTransformerFactoryV2 = (
   if (options?.addSearchableTransformer) {
     const resourceDirParts = resourceDir.split(path.sep);
     const apiName = resourceDirParts[resourceDirParts.length - 1];
-    transformerList.push(new SearchableModelTransformerV2(pathManager.findProjectRoot(), pathManager.getCurrentCloudBackendDirPath(), apiName));
+    transformerList.push(new SearchableModelTransformerV2(apiName));
   }
 
   const customTransformersConfig = await loadProject(resourceDir);

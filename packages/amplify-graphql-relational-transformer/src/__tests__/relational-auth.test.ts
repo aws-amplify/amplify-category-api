@@ -135,7 +135,7 @@ const getTransformer = (authConfig: AppSyncAuthConfiguration) => new GraphQLTran
   authConfig,
   transformers: [
     new ModelTransformer(),
-    new IndexTransformer('fake-backend-path'),
+    new IndexTransformer(),
     new HasManyTransformer(),
     new BelongsToTransformer(),
     new AuthTransformer(),
@@ -260,7 +260,7 @@ test('auth with hasOne relation mismatch fields count - missing sort key must th
     authConfig,
     transformers: [
       new ModelTransformer(),
-      new PrimaryKeyTransformer('fake-backend-path'),
+      new PrimaryKeyTransformer(),
       new HasOneTransformer(),
       new HasManyTransformer(),
       new BelongsToTransformer(),
@@ -308,7 +308,7 @@ test('auth with hasOne relation match fields count - single sort key do not thro
     authConfig,
     transformers: [
       new ModelTransformer(),
-      new PrimaryKeyTransformer('fake-backend-path'),
+      new PrimaryKeyTransformer(),
       new HasOneTransformer(),
       new HasManyTransformer(),
       new BelongsToTransformer(),
@@ -357,7 +357,7 @@ test('auth with hasOne relation mismatch fields count - partial missing sort key
     authConfig,
     transformers: [
       new ModelTransformer(),
-      new PrimaryKeyTransformer('fake-backend-path'),
+      new PrimaryKeyTransformer(),
       new HasOneTransformer(),
       new HasManyTransformer(),
       new BelongsToTransformer(),
@@ -407,7 +407,7 @@ test('auth with hasOne relation match fields count - multiple sort keys do not t
     authConfig,
     transformers: [
       new ModelTransformer(),
-      new PrimaryKeyTransformer('fake-backend-path'),
+      new PrimaryKeyTransformer(),
       new HasOneTransformer(),
       new HasManyTransformer(),
       new BelongsToTransformer(),

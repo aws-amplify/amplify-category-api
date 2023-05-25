@@ -58,7 +58,7 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
   private directiveList: PrimaryKeyDirectiveConfiguration[] = [];
   private resolverMap: Map<TransformerResolverProvider, string> = new Map();
 
-  constructor(private backendDir: string) {
+  constructor() {
     super('amplify-primary-key-transformer', directiveDefinition);
   }
 
@@ -90,7 +90,7 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
   public after = (ctx: TransformerContextProvider): void => {
     if (!ctx.isProjectUsingDataStore()) return;
 
-    const overriddenResources = getResourceOverrides([this], this.backendDir, ctx?.stackManager);
+    const overriddenResources = getResourceOverrides([this], ctx.filepaths.getBackendDirPath(), ctx?.stackManager);
     // construct sync VTL code
     this.resolverMap.forEach((syncVTLContent, resource) => {
       if (syncVTLContent) {

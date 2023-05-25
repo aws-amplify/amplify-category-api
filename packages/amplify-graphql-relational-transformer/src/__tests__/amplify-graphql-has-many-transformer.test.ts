@@ -19,7 +19,7 @@ test('fails if used as a has one relation', () => {
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasManyTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     featureFlags,
   });
 
@@ -40,7 +40,7 @@ test('fails if the provided indexName does not exist.', () => {
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasManyTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     featureFlags,
   });
 
@@ -61,7 +61,7 @@ test('fails if a partial sort key is provided', () => {
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path'), new HasManyTransformer()],
+    transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer()],
     featureFlags,
   });
 
@@ -84,7 +84,7 @@ test('accepts @hasMany without a sort key', () => {
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path'), new HasManyTransformer()],
+    transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer()],
     featureFlags,
   });
 
@@ -105,7 +105,7 @@ test('fails if provided sort key type does not match custom index sort key type'
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path'), new HasManyTransformer()],
+    transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer()],
     featureFlags,
   });
 
@@ -127,7 +127,7 @@ test('fails if partition key type passed in does not match custom index partitio
     }`;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path'), new HasManyTransformer()],
+    transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer()],
     featureFlags,
   });
 
@@ -228,7 +228,7 @@ test('fails if any of the fields passed in are not in the parent model', () => {
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasManyTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     featureFlags,
   });
 
@@ -250,7 +250,7 @@ test('has many query case', () => {
     }`;
   const transformer = new GraphQLTransform({
     featureFlags,
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasManyTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -287,7 +287,7 @@ test('bidirectional has many query case', () => {
     }`;
   const transformer = new GraphQLTransform({
     featureFlags,
-    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path'), new BelongsToTransformer(), new HasManyTransformer()],
+    transformers: [new ModelTransformer(), new IndexTransformer(), new BelongsToTransformer(), new HasManyTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -337,7 +337,7 @@ test('has many query with a composite sort key', () => {
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasManyTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     featureFlags,
   });
 
@@ -378,7 +378,7 @@ test('has many query with a composite sort key passed in as an argument', () => 
     }`;
   const transformer = new GraphQLTransform({
     featureFlags,
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasManyTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -431,7 +431,7 @@ test('many to many query', () => {
         ConflictHandler: ConflictHandlerType.AUTOMERGE,
       },
     },
-    transformers: [new ModelTransformer(), new IndexTransformer('fake-backend-path'), new HasOneTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+    transformers: [new ModelTransformer(), new IndexTransformer(), new HasOneTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -503,7 +503,7 @@ test('has many with implicit index and fields and a user-defined primary key', (
     }`;
   const transformer = new GraphQLTransform({
     featureFlags,
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasManyTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -663,8 +663,8 @@ test('validates VTL of a complex schema', () => {
     featureFlags,
     transformers: [
       new ModelTransformer(),
-      new PrimaryKeyTransformer('fake-backend-path'),
-      new IndexTransformer('fake-backend-path'),
+      new PrimaryKeyTransformer(),
+      new IndexTransformer(),
       new HasOneTransformer(),
       new HasManyTransformer(),
       new BelongsToTransformer(),
@@ -761,7 +761,7 @@ test('has many with queries null generate correct filter input objects for scala
     }`;
   const transformer = new GraphQLTransform({
     featureFlags,
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasManyTransformer()],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
   });
 
   const out = transformer.transform(inputSchema);
@@ -886,7 +886,7 @@ describe('@hasMany connection field nullability tests', () => {
     `;
     const transformer = new GraphQLTransform({
       featureFlags,
-      transformers: [new ModelTransformer(), new PrimaryKeyTransformer('fake-backend-path'), new HasManyTransformer()],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     });
   
     const out = transformer.transform(inputSchema);

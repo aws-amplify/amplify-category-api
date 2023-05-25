@@ -6,6 +6,7 @@ import {
   TransformerContextProvider,
   TransformerDataSourceManagerProvider,
   AppSyncAuthConfiguration,
+  TransformerFilepathsProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { App } from 'aws-cdk-lib';
@@ -52,6 +53,7 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly featureFlags: FeatureFlagProvider;
   public _api?: GraphQLAPIProvider;
   public readonly authConfig: AppSyncAuthConfiguration;
+  public readonly filepaths: TransformerFilepathsProvider;
   public readonly sandboxModeEnabled: boolean;
   private resolverConfig: ResolverConfig | undefined;
   public readonly modelToDatasourceMap: Map<string, DatasourceType>;
@@ -64,6 +66,7 @@ export class TransformerContext implements TransformerContextProvider {
     modelToDatasourceMap: Map<string, DatasourceType>,
     stackMapping: Record<string, string>,
     authConfig: AppSyncAuthConfiguration,
+    filepaths: TransformerFilepathsProvider,
     sandboxModeEnabled?: boolean,
     featureFlags?: FeatureFlagProvider,
     resolverConfig?: ResolverConfig,
@@ -76,6 +79,7 @@ export class TransformerContext implements TransformerContextProvider {
     const stackManager = new StackManager(app, stackMapping);
     this.stackManager = stackManager;
     this.authConfig = authConfig;
+    this.filepaths = filepaths;
     this.sandboxModeEnabled = sandboxModeEnabled ?? false;
     this.resourceHelper = new TransformerResourceHelper(stackManager);
     this.featureFlags = featureFlags ?? new NoopFeatureFlagProvider();

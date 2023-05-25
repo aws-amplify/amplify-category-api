@@ -28,7 +28,7 @@ export const v2transformerProvider = (config: Partial<V2TransformerTestConfig> =
 
 const getDefaultTransformers = () => {
   const modelTransformer = new ModelTransformer();
-  const indexTransformer = new IndexTransformer('fake-backend-path');
+  const indexTransformer = new IndexTransformer();
   const hasOneTransformer = new HasOneTransformer();
 
   const authTransformer = new AuthTransformer();
@@ -36,7 +36,7 @@ const getDefaultTransformers = () => {
     modelTransformer,
     new FunctionTransformer(),
     new HttpTransformer(),
-    new PrimaryKeyTransformer('fake-backend-path'),
+    new PrimaryKeyTransformer(),
     indexTransformer,
     new BelongsToTransformer(),
     new HasManyTransformer(),

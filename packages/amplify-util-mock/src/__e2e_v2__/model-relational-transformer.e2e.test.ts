@@ -47,8 +47,8 @@ describe('@model with relational transformer', () => {
       const transformer = new GraphQLTransform({
         transformers: [
           new ModelTransformer(),
-          new IndexTransformer('fake-backend-path'),
-          new PrimaryKeyTransformer('fake-backend-path'),
+          new IndexTransformer(),
+          new PrimaryKeyTransformer(),
           new HasOneTransformer(),
           new HasManyTransformer(),
           new BelongsToTransformer(),

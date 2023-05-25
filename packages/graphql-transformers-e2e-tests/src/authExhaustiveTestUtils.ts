@@ -491,7 +491,7 @@ export const deploySchema = async (
     },
     transformers: [
       new ModelTransformer(),
-      new PrimaryKeyTransformer('fake-backend-path'),
+      new PrimaryKeyTransformer(),
       new AuthTransformer({ identityPoolId }),
     ],
   });

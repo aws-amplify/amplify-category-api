@@ -48,7 +48,7 @@ describe('@auth with custom primary keys', () => {
       authConfig,
       transformers: [
         new ModelTransformer(),
-        new PrimaryKeyTransformer('fake-backend-path'),
+        new PrimaryKeyTransformer(),
         new HasOneTransformer(),
         new HasManyTransformer(),
         new BelongsToTransformer(),
