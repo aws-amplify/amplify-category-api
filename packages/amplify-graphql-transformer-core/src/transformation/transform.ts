@@ -34,6 +34,7 @@ import {
 import _ from 'lodash';
 import * as path from 'path';
 import * as vm from 'vm2';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { ResolverConfig, TransformConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError, InvalidOverrideError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
@@ -392,12 +393,11 @@ export class GraphQLTransform {
         external: true,
       },
     });
-    const envName = stackManager.getParameter('env');
-    if (!envName) {
-      throw new Error('Parameter `env` not configured properly.');
-    }
+    // Remove these when moving override up to amplify-category-api level
+    const { envName } = stateManager.getLocalEnvInfo();
+    const { projectName } = stateManager.getProjectConfig();
     const projectInfo = {
-      envName, projectName: 'projectName',
+      envName, projectName,
     };
     try {
       sandboxNode.run(overrideCode, overrideFilePath).override(appsyncResourceObj, projectInfo);
