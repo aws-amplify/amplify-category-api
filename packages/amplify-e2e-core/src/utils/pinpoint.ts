@@ -1,5 +1,5 @@
 import { Pinpoint } from 'aws-sdk';
-import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from '..';
+import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCITags, KEY_DOWN_ARROW } from '..';
 import _ from 'lodash';
 import { EOL } from 'os';
 
@@ -76,7 +76,7 @@ export async function pinpointAppExist(pinpointProjectId: string): Promise<boole
 }
 
 export function initProjectForPinpoint(cwd: string): Promise<void> {
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['init'], {

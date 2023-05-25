@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
+import { nspawn as spawn, getCLIPath, singleSelect, addCITags } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
 import { EOL } from 'os';
@@ -34,7 +34,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
     };
   }
 
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   const cliArgs = ['init'];
   const providerConfigSpecified = !!s.providerConfig && typeof s.providerConfig === 'object';
@@ -97,7 +97,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
 export function initAndroidProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
@@ -128,7 +128,7 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object): Pr
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
-          addCircleCITags(cwd);
+          addCITags(cwd);
 
           resolve();
         } else {
@@ -147,7 +147,7 @@ export function createRandomName() {
 export function initIosProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
@@ -177,7 +177,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Object): Promis
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
-          addCircleCITags(cwd);
+          addCITags(cwd);
 
           resolve();
         } else {
@@ -190,7 +190,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Object): Promis
 export function initFlutterProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
@@ -233,7 +233,7 @@ export function initProjectWithAccessKey(
 ): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['init'], {
@@ -291,7 +291,7 @@ export function initProjectWithAccessKey(
 }
 
 export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; accessKeyId: string; secretAccessKey: string }): Promise<void> {
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['init'], {
@@ -330,7 +330,7 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
 }
 
 export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
@@ -361,7 +361,7 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Prom
 }
 
 export function updatedInitNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
@@ -400,7 +400,7 @@ export function amplifyInitSandbox(cwd: string, settings: {}): Promise<void> {
     };
   }
 
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], { cwd, stripColors: true, env })
