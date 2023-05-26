@@ -222,6 +222,10 @@ function _runMigrationV10Test {
     unset IS_AMPLIFY_CI
     echo $IS_AMPLIFY_CI
     _loadTestAccountCredentials
+    echo $AMPLIFY_PATH
+    npm i -g @aws-amplify/cli@10.5.1
+    ls -al /root/.amplify
+    ls -al /root/.amplify/bin
     retry yarn run migration_v10.5.1 --maxWorkers=3 $TEST_SUITE
     # retry yarn run migration_v10.5.1 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
 }
