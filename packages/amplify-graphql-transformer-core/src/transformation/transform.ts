@@ -30,6 +30,7 @@ import {
   TypeDefinitionNode,
   TypeExtensionNode,
   UnionTypeDefinitionNode,
+  print
 } from 'graphql';
 import _ from 'lodash';
 import * as path from 'path';
@@ -62,7 +63,6 @@ import { DocumentNode } from 'graphql/language';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { AmplifyApiGraphQlResourceStackTemplate } from '../types/amplify-api-resource-stack-types';
 import { DatasourceType } from '../config/project-config';
-import { removeAmplifyInputDefinition } from '../utils/rds-input-utils';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
@@ -854,3 +854,21 @@ export class GraphQLTransform {
     return this.logs;
   }
 }
+
+const removeAmplifyInputDefinition = (schema: string): string => {
+  if (_.isEmpty(schema)) {
+    return schema;
+  }
+
+  const parsedSchema: any = parse(schema);
+
+  parsedSchema.definitions = parsedSchema?.definitions?.filter(
+    (definition: any) =>
+      !(definition?.kind === 'InputObjectTypeDefinition' &&
+      definition?.name &&
+      definition?.name?.value === 'Amplify')
+  );
+
+  const sanitizedSchema = print(parsedSchema);
+  return sanitizedSchema;
+};

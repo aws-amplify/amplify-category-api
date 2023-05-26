@@ -6,7 +6,7 @@ import {
   getGraphQLTransformerAuthDocLink,
 } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
-import { ImportedRDSType, ImportedDataSourceConfig } from '../types/import-appsync-api-types';
+import { ImportedRDSType, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
 
 type AmplifyInputEntry = {
   name: string,
