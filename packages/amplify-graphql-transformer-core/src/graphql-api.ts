@@ -1,4 +1,4 @@
-import { APIIAMResourceProvider, GraphQLAPIProvider, TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { APIIAMResourceProvider, GraphQLAPIProvider, TransformHostProvider } from "@aws-amplify/graphql-transformer-interfaces";
 import {
   ApiKeyConfig,
   AuthorizationConfig,
@@ -9,19 +9,20 @@ import {
   OpenIdConnectConfig,
   UserPoolConfig,
   UserPoolDefaultAction,
-} from 'aws-cdk-lib/aws-appsync';
-import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
-import {
-  Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal,
-} from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib';
-import {
-  ArnFormat, CfnResource, Duration, Stack,
-} from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-import { TransformerSchema } from './cdk-compat/schema-asset';
-import { DefaultTransformHost } from './transform-host';
+  CfnApiKey,
+  CfnGraphQLApi,
+  CfnGraphQLSchema
+} from "aws-cdk-lib/aws-appsync";
+import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import * as cdk from "aws-cdk-lib";
+import { ArnFormat, CfnResource, Duration, Stack } from "aws-cdk-lib";
+import { Construct } from "constructs";
+import { TransformerSchema } from "./cdk-compat/schema-asset";
+import { DefaultTransformHost } from "./transform-host";
 
+/**
+ *
+ */
 export interface GraphqlApiProps {
   /**
    *  the name of the GraphQL API.
@@ -56,6 +57,9 @@ export interface GraphqlApiProps {
   readonly xrayEnabled?: boolean;
 }
 
+/**
+ *
+ */
 export class IamResource implements APIIAMResourceProvider {
   /**
    * Generate the resource names given custom arns
@@ -66,7 +70,7 @@ export class IamResource implements APIIAMResourceProvider {
    */
   public static custom(...arns: string[]): IamResource {
     if (arns.length === 0) {
-      throw new Error('At least 1 custom ARN must be provided.');
+      throw new Error("At least 1 custom ARN must be provided.");
     }
     return new IamResource(arns);
   }
@@ -88,7 +92,7 @@ export class IamResource implements APIIAMResourceProvider {
    * Generate the resource names that accepts all types: `*`
    */
   public static all(): IamResource {
-    return new IamResource(['*']);
+    return new IamResource(["*"]);
   }
 
   private arns: string[];
@@ -103,15 +107,20 @@ export class IamResource implements APIIAMResourceProvider {
    * @param api The GraphQL API to give permissions
    */
   public resourceArns(api: GraphQLAPIProvider): string[] {
-    return this.arns.map(arn => Stack.of(api).formatArn({
-      service: 'appsync',
-      resource: `apis/${api.apiId}`,
-      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-      resourceName: `${arn}`,
-    }));
+    return this.arns.map(arn =>
+      Stack.of(api).formatArn({
+        service: "appsync",
+        resource: `apis/${api.apiId}`,
+        arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+        resourceName: `${arn}`
+      })
+    );
   }
 }
 
+/**
+ *
+ */
 export type TransformerAPIProps = GraphqlApiProps & {
   readonly createApiKey?: boolean;
   readonly host?: TransformHostProvider;
@@ -119,6 +128,9 @@ export type TransformerAPIProps = GraphqlApiProps & {
   readonly environmentName?: string;
   readonly disableResolverDeduping?: boolean;
 };
+/**
+ *
+ */
 export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   /**
    * an unique AWS AppSync GraphQL API identifier
@@ -191,7 +203,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     this.authorizationConfig = {
       defaultAuthorization: { authorizationType: AuthorizationType.API_KEY },
       additionalAuthorizationModes: [],
-      ...props.authorizationConfig,
+      ...props.authorizationConfig
     };
     const defaultMode = this.authorizationConfig.defaultAuthorization;
     const additionalModes = this.authorizationConfig.additionalAuthorizationModes;
@@ -201,7 +213,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     this.environmentName = props.environmentName;
     this.validateAuthorizationProps(modes);
 
-    this.api = new CfnGraphQLApi(this, 'Resource', {
+    this.api = new CfnGraphQLApi(this, "Resource", {
       name: props.name,
       authenticationType: defaultMode.authorizationType,
       logConfig: this.setupLogConfig(props.logConfig),
@@ -209,7 +221,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       userPoolConfig: this.setupUserPoolConfig(defaultMode.userPoolConfig),
       lambdaAuthorizerConfig: this.setupLambdaConfig(defaultMode.lambdaAuthorizerConfig),
       additionalAuthenticationProviders: this.setupAdditionalAuthorizationModes(additionalModes),
-      xrayEnabled: props.xrayEnabled,
+      xrayEnabled: props.xrayEnabled
     });
 
     this.apiId = this.api.attrApiId;
@@ -222,7 +234,8 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     const hasApiKey = modes.some(mode => mode.authorizationType === AuthorizationType.API_KEY);
 
     if (props.createApiKey && hasApiKey) {
-      const config = modes.find((mode: AuthorizationMode) => mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig)?.apiKeyConfig;
+      const config = modes.find((mode: AuthorizationMode) => mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig)
+        ?.apiKeyConfig;
       this.apiKeyResource = this.createAPIKey(config);
       this.apiKeyResource.addDependency(this.schemaResource);
       this.apiKey = this.apiKeyResource.attrApiKey;
@@ -236,7 +249,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       this.host.setAPI(this);
     } else {
       this.host = new DefaultTransformHost({
-        api: this,
+        api: this
       });
     }
   }
@@ -254,16 +267,26 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       grantee,
       actions,
       resourceArns: resources.resourceArns(this),
-      scope: this,
+      scope: this
     });
   }
 
+  /**
+   *
+   * @param grantee
+   * @param {...any} fields
+   */
   public grantQuery(grantee: IGrantable, ...fields: string[]): Grant {
-    return this.grant(grantee, IamResource.ofType('Query', ...fields), 'appsync:GraphQL');
+    return this.grant(grantee, IamResource.ofType("Query", ...fields), "appsync:GraphQL");
   }
 
+  /**
+   *
+   * @param grantee
+   * @param {...any} fields
+   */
   public grantMutation(grantee: IGrantable, ...fields: string[]): Grant {
-    return this.grant(grantee, IamResource.ofType('Mutation', ...fields), 'appsync:GraphQL');
+    return this.grant(grantee, IamResource.ofType("Mutation", ...fields), "appsync:GraphQL");
   }
 
   /**
@@ -274,25 +297,36 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    * @param fields The fields to grant access to that are Subscriptions (leave blank for all)
    */
   public grantSubscription(grantee: IGrantable, ...fields: string[]): Grant {
-    return this.grant(grantee, IamResource.ofType('Subscription', ...fields), 'appsync:GraphQL');
+    return this.grant(grantee, IamResource.ofType("Subscription", ...fields), "appsync:GraphQL");
   }
 
+  /**
+   *
+   * @param config
+   */
   public createAPIKey(config?: ApiKeyConfig) {
     if (config?.expires?.isBefore(Duration.days(1)) || config?.expires?.isAfter(Duration.days(365))) {
-      throw Error('API key expiration must be between 1 and 365 days.');
+      throw Error("API key expiration must be between 1 and 365 days.");
     }
     const expires = config?.expires ? config?.expires.toEpoch() : undefined;
-    return new CfnApiKey(this, `${config?.name || 'Default'}ApiKey`, {
+    return new CfnApiKey(this, `${config?.name || "Default"}ApiKey`, {
       expires,
       description: config?.description || undefined,
-      apiId: this.apiId,
+      apiId: this.apiId
     });
   }
 
+  /**
+   *
+   * @param content
+   */
   public addToSchema(content: string): void {
-    this.schema.addToSchema(content, '\n');
+    this.schema.addToSchema(content, "\n");
   }
 
+  /**
+   *
+   */
   public getDefaultAuthorization() {
     return this.authorizationConfig?.defaultAuthorization;
   }
@@ -300,10 +334,10 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   private validateAuthorizationProps(modes: AuthorizationMode[]) {
     modes.forEach(mode => {
       if (mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig) {
-        throw new Error('Missing default OIDC Configuration');
+        throw new Error("Missing default OIDC Configuration");
       }
       if (mode.authorizationType === AuthorizationType.USER_POOL && !mode.userPoolConfig) {
-        throw new Error('Missing default OIDC Configuration');
+        throw new Error("Missing default OIDC Configuration");
       }
     });
     if (modes.filter(mode => mode.authorizationType === AuthorizationType.API_KEY).length > 1) {
@@ -314,6 +348,10 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     }
   }
 
+  /**
+   *
+   * @param construct
+   */
   public addSchemaDependency(construct: CfnResource): boolean {
     construct.addDependency(this.schemaResource);
     return true;
@@ -323,14 +361,14 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     if (!config) {
       return undefined;
     }
-    const role = new Role(this, 'ApiLogsRole', {
-      assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
-      managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs')],
+    const role = new Role(this, "ApiLogsRole", {
+      assumedBy: new ServicePrincipal("appsync.amazonaws.com"),
+      managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSAppSyncPushToCloudWatchLogs")]
     });
     return {
       cloudWatchLogsRoleArn: role.roleArn,
       excludeVerboseContent: config.excludeVerboseContent,
-      fieldLogLevel: config.fieldLogLevel,
+      fieldLogLevel: config.fieldLogLevel
     };
   }
 
@@ -342,7 +380,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       authTtl: config.tokenExpiryFromAuth,
       clientId: config.clientId,
       iatTtl: config.tokenExpiryFromIssue,
-      issuer: config.oidcProvider,
+      issuer: config.oidcProvider
     };
   }
 
@@ -354,7 +392,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       userPoolId: config.userPool.userPoolId,
       awsRegion: config.userPool.stack.region,
       appIdClientRegex: config.appIdClientRegex,
-      defaultAction: config.defaultAction || UserPoolDefaultAction.ALLOW,
+      defaultAction: config.defaultAction || UserPoolDefaultAction.ALLOW
     };
   }
 
@@ -365,7 +403,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     return {
       authorizerUri: this.lambdaArnKey(config.lambdaFunction),
       authorizerResultTtlInSeconds: config.ttlSeconds,
-      identityValidationExpression: '',
+      identityValidationExpression: ""
     };
   }
 
@@ -382,10 +420,10 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
           authenticationType: mode.authorizationType,
           userPoolConfig: this.setupUserPoolConfig(mode.userPoolConfig),
           openIdConnectConfig: this.setupOpenIdConnectConfig(mode.openIdConnectConfig),
-          lambdaAuthorizerConfig: this.setupLambdaConfig(mode.lambdaAuthorizerConfig),
-        },
+          lambdaAuthorizerConfig: this.setupLambdaConfig(mode.lambdaAuthorizerConfig)
+        }
       ],
-      [],
+      []
     );
   }
 }

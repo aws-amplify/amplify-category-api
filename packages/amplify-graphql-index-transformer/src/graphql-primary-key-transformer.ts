@@ -4,34 +4,23 @@ import {
   InvalidDirectiveError,
   TransformerPluginBase,
   DatasourceType
-} from '@aws-amplify/graphql-transformer-core';
+} from "@aws-amplify/graphql-transformer-core";
 import {
   TransformerContextProvider,
   TransformerResolverProvider,
   TransformerSchemaVisitStepContextProvider,
-  TransformerTransformSchemaStepContextProvider,
-} from '@aws-amplify/graphql-transformer-interfaces';
+  TransformerTransformSchemaStepContextProvider
+} from "@aws-amplify/graphql-transformer-interfaces";
 import {
   DirectiveNode,
   EnumTypeDefinitionNode,
   FieldDefinitionNode,
   InterfaceTypeDefinitionNode,
   Kind,
-  ObjectTypeDefinitionNode,
-} from 'graphql';
-import { 
-  isListType, 
-  isNonNullType, 
-  isScalarOrEnum,
-  makeInputValueDefinition,
-  makeNamedType
-} from 'graphql-transformer-common';
-import {
-  constructSyncVTL,
-  getResourceOverrides,
-  getDeltaSyncTableTtl,
-  getVTLGenerator,
-} from './resolvers/resolvers';
+  ObjectTypeDefinitionNode
+} from "graphql";
+import { isListType, isNonNullType, isScalarOrEnum, makeInputValueDefinition, makeNamedType } from "graphql-transformer-common";
+import { constructSyncVTL, getResourceOverrides, getDeltaSyncTableTtl, getVTLGenerator } from "./resolvers/resolvers";
 import {
   addKeyConditionInputs,
   removeAutoCreatedPrimaryKey,
@@ -41,39 +30,41 @@ import {
   createHashField,
   ensureModelSortDirectionEnum,
   tryAndCreateSortField
-} from './schema';
-import { PrimaryKeyDirectiveConfiguration } from './types';
-import {
-  validateNotSelfReferencing,
-  validateNotOwnerAuth,
-  lookupResolverName
-} from './utils';
+} from "./schema";
+import { PrimaryKeyDirectiveConfiguration } from "./types";
+import { validateNotSelfReferencing, validateNotOwnerAuth, lookupResolverName } from "./utils";
 
-const directiveName = 'primaryKey';
+const directiveName = "primaryKey";
 const directiveDefinition = `
   directive @${directiveName}(sortKeyFields: [String]) on FIELD_DEFINITION
 `;
 
+/**
+ *
+ */
 export class PrimaryKeyTransformer extends TransformerPluginBase {
   private directiveList: PrimaryKeyDirectiveConfiguration[] = [];
   private resolverMap: Map<TransformerResolverProvider, string> = new Map();
 
   constructor() {
-    super('amplify-primary-key-transformer', directiveDefinition);
+    super("amplify-primary-key-transformer", directiveDefinition);
   }
 
   field = (
     parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
     definition: FieldDefinitionNode,
     directive: DirectiveNode,
-    context: TransformerSchemaVisitStepContextProvider,
+    context: TransformerSchemaVisitStepContextProvider
   ): void => {
     const directiveWrapped = new DirectiveWrapper(directive);
-    const args = directiveWrapped.getArguments({
-      object: parent as ObjectTypeDefinitionNode,
-      field: definition,
-      directive,
-    } as PrimaryKeyDirectiveConfiguration, generateGetArgumentsInput(context.featureFlags));
+    const args = directiveWrapped.getArguments(
+      {
+        object: parent as ObjectTypeDefinitionNode,
+        field: definition,
+        directive
+      } as PrimaryKeyDirectiveConfiguration,
+      generateGetArgumentsInput(context.featureFlags)
+    );
 
     if (!args.sortKeyFields) {
       args.sortKeyFields = [];
@@ -90,7 +81,7 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
   public after = (ctx: TransformerContextProvider): void => {
     if (!ctx.isProjectUsingDataStore()) return;
 
-    const overriddenResources = getResourceOverrides([this], ctx.filepaths.getBackendDirPath(), ctx.stackManager);
+    const overriddenResources = getResourceOverrides([this], ctx.filepaths.getBackendDirPath(), ctx.api.name, ctx.stackManager);
     // construct sync VTL code
     this.resolverMap.forEach((syncVTLContent, resource) => {
       if (syncVTLContent) {
@@ -127,9 +118,7 @@ function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
 
   validateNotSelfReferencing(config);
 
-  const modelDirective = object.directives!.find(directive => {
-    return directive.name.value === 'model';
-  });
+  const modelDirective = object.directives!.find(directive => directive.name.value === "model");
 
   if (!modelDirective) {
     throw new InvalidDirectiveError(`The @${directiveName} directive may only be added to object definitions annotated with @model.`);
@@ -168,13 +157,13 @@ function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
 
     if (!sortField) {
       throw new InvalidDirectiveError(
-        `Can't find field '${sortKeyFieldName}' in ${object.name.value}, but it was specified in the primary key.`,
+        `Can't find field '${sortKeyFieldName}' in ${object.name.value}, but it was specified in the primary key.`
       );
     }
 
     if (!isScalarOrEnum(sortField.type, enums) || isListType(sortField.type)) {
       throw new InvalidDirectiveError(
-        `The primary key's sort key on type '${object.name.value}.${sortField.name.value}' cannot be a non-scalar.`,
+        `The primary key's sort key on type '${object.name.value}.${sortField.name.value}' cannot be a non-scalar.`
       );
     }
 
@@ -192,8 +181,13 @@ function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
   }
 }
 
+/**
+ *
+ * @param config
+ * @param ctx
+ */
 export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
-  const resolverName = lookupResolverName(config, ctx, 'list');
+  const resolverName = lookupResolverName(config, ctx, "list");
   let query = ctx.output.getQuery();
 
   if (!(resolverName && query)) {
@@ -205,7 +199,7 @@ export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: T
     const args = [createHashField(config)];
 
     const dbInfo = ctx.modelToDatasourceMap.get(config.object.name.value);
-    if (dbInfo?.dbType !== 'MySQL') {
+    if (dbInfo?.dbType !== "MySQL") {
       const sortField = tryAndCreateSortField(config, ctx);
       if (sortField) {
         args.push(sortField);
@@ -216,15 +210,13 @@ export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: T
       args.push(...listField.arguments);
     }
 
-    args.push(makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')));
+    args.push(makeInputValueDefinition("sortDirection", makeNamedType("ModelSortDirection")));
     ensureModelSortDirectionEnum(ctx);
 
     listField = { ...listField, arguments: args };
     query = {
       ...query,
-      fields: query.fields!.map((field: FieldDefinitionNode) => {
-        return field.name.value === listField.name.value ? listField : field;
-      }),
+      fields: query.fields!.map((field: FieldDefinitionNode) => (field.name.value === listField.name.value ? listField : field))
     };
     ctx.output.updateObject(query);
   }
