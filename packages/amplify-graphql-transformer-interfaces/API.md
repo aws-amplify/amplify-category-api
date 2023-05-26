@@ -74,7 +74,7 @@ export type AppSyncAuthConfiguration = {
 
 // @public (undocumented)
 export type AppSyncAuthConfigurationAPIKeyEntry = {
-    authenticationType: "API_KEY";
+    authenticationType: 'API_KEY';
     apiKeyConfig?: ApiKeyConfig;
 };
 
@@ -85,23 +85,23 @@ export type AppSyncAuthConfigurationEntry = AppSyncAuthConfigurationUserPoolEntr
 
 // @public (undocumented)
 export type AppSyncAuthConfigurationIAMEntry = {
-    authenticationType: "AWS_IAM";
+    authenticationType: 'AWS_IAM';
 };
 
 // @public (undocumented)
 export type AppSyncAuthConfigurationOIDCEntry = {
-    authenticationType: "OPENID_CONNECT";
+    authenticationType: 'OPENID_CONNECT';
     openIDConnectConfig?: OpenIDConnectConfig;
 };
 
 // @public (undocumented)
 export type AppSyncAuthConfigurationUserPoolEntry = {
-    authenticationType: "AMAZON_COGNITO_USER_POOLS";
+    authenticationType: 'AMAZON_COGNITO_USER_POOLS';
     userPoolConfig?: UserPoolConfig;
 };
 
 // @public (undocumented)
-export type AppSyncAuthMode = "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT" | "AWS_LAMBDA";
+export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AWS_LAMBDA';
 
 // @public (undocumented)
 export enum AppSyncDataSourceType {
@@ -770,7 +770,7 @@ export interface UserPoolConfig {
 
 // Warnings were encountered during analysis:
 //
-// src/graphql-api-provider.ts:55:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
+// src/graphql-api-provider.ts:38:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
