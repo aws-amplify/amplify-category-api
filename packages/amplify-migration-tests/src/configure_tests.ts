@@ -9,8 +9,12 @@ import semver from 'semver';
  */
 
 async function setupAmplify(version: string = 'latest') {
-  // install CLI to be used for migration test initial project.
-  await installAmplifyCLI(version);
+  // Fix the issue of installed CLI of 10.5.1 not being found if using spawn method in Node in CodeBuild
+  const isCodeBuilCI = process.env.CI && process.env.CODEBUILD;
+  if (!(isCodeBuilCI && version === '10.5.1')) {
+    // install CLI to be used for migration test initial project.
+    await installAmplifyCLI(version);
+  }
 
   console.log("INSTALLED CLI:", version);
   if (isCI()) {
@@ -48,9 +52,6 @@ process.nextTick(async () => {
     // check if cli version was passed to setup-profile
     if (process.argv.length > 2) {
       const cliVersion = process.argv[2];
-      console.log('start')
-      console.log(process.env.AMPLIFY_PATH)
-      console.log(existsSync(process.env.AMPLIFY_PATH))
       await setupAmplify(cliVersion);
     } else {
       await setupAmplify();

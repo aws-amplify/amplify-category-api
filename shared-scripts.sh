@@ -224,36 +224,9 @@ function _runMigrationV10Test {
     _loadTestAccountCredentials
     echo $AMPLIFY_PATH
     npm i -g @aws-amplify/cli@10.5.1
-    ls -al /root/.amplify
-    ls -al /root/.amplify/bin
     /root/.amplify/bin/amplify -v
-    retry yarn run migration_v10.5.1 --maxWorkers=3 $TEST_SUITE
-    codebuild-breakpoint
-    # retry yarn run migration_v10.5.1 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
+    retry yarn run migration_v10.5.1 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
 }
-# function _runMigrationV10Test {
-#     echo RUN Migration V10 Test
-#     loadCacheFromBuildJob
-#     yarn setup-dev
-#     source codebuild_specs/scripts/local_publish_helpers.sh
-#     changeNpmGlobalPath
-#     cd packages/amplify-migration-tests
-#     unset IS_AMPLIFY_CI
-#     echo $IS_AMPLIFY_CI
-#     # _loadTestAccountCredentials
-#     # retry yarn run migration_v10.5.1 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
-#     echo $AMPLIFY_PATH
-#     echo $PATH
-#     export PATH="$PATH:$AMPLIFY_PATH"
-#     npm i -g @aws-amplify/cli@10.5.1
-#     npm list -g
-#     amplify -v
-#     which amplify
-#     ls -al $AMPLIFY_PATH
-#     ls -al /root/.amplify
-#     ls -al /root/.amplify/bin
-#     /root/.amplify/bin/amplify -v
-# }
 function _scanArtifacts {
     if ! yarn ts-node codebuild_specs/scripts/scan_artifacts.ts; then
         echo "Cleaning the repository"
