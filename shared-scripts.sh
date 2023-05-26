@@ -227,6 +227,7 @@ function _runMigrationV10Test {
     ls -al /root/.amplify
     ls -al /root/.amplify/bin
     retry yarn run migration_v10.5.1 --maxWorkers=3 $TEST_SUITE
+    codebuild-breakpoint
     # retry yarn run migration_v10.5.1 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
 }
 # function _runMigrationV10Test {
