@@ -343,7 +343,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/migration_tests_v10/api-rest-basic.migration.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     # - identifier: api_graphql_v2_migration_v10
