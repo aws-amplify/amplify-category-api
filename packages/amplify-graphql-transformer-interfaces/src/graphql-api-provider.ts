@@ -1,24 +1,19 @@
-import { CfnResource, IAsset } from "aws-cdk-lib";
-import { Construct, IConstruct } from "constructs";
-import { Grant, IGrantable, IRole } from "aws-cdk-lib/aws-iam";
-import { TransformHostProvider } from "./transform-host-provider";
+import {
+  CfnResource, IAsset,
+} from 'aws-cdk-lib';
+import {
+  Construct, IConstruct,
+} from 'constructs';
+import { Grant, IGrantable, IRole } from 'aws-cdk-lib/aws-iam';
+import { TransformHostProvider } from './transform-host-provider';
 
 // Auth Config Modes
-/**
- *
- */
-export type AppSyncAuthMode = "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT" | "AWS_LAMBDA";
-/**
- *
- */
+export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AWS_LAMBDA';
 export type AppSyncAuthConfiguration = {
   defaultAuthentication: AppSyncAuthConfigurationEntry;
   additionalAuthenticationProviders: Array<AppSyncAuthConfigurationEntry>;
 };
 
-/**
- *
- */
 export type AppSyncAuthConfigurationEntry =
   | AppSyncAuthConfigurationUserPoolEntry
   | AppSyncAuthConfigurationAPIKeyEntry
@@ -26,60 +21,36 @@ export type AppSyncAuthConfigurationEntry =
   | AppSyncAuthConfigurationOIDCEntry
   | AppSyncAuthConfigurationLambdaEntry;
 
-/**
- *
- */
 export type AppSyncAuthConfigurationAPIKeyEntry = {
-  authenticationType: "API_KEY";
+  authenticationType: 'API_KEY';
   apiKeyConfig?: ApiKeyConfig;
 };
-/**
- *
- */
 export type AppSyncAuthConfigurationUserPoolEntry = {
-  authenticationType: "AMAZON_COGNITO_USER_POOLS";
+  authenticationType: 'AMAZON_COGNITO_USER_POOLS';
   userPoolConfig?: UserPoolConfig;
 };
-/**
- *
- */
 export type AppSyncAuthConfigurationIAMEntry = {
-  authenticationType: "AWS_IAM";
+  authenticationType: 'AWS_IAM';
 };
 
-/**
- *
- */
 export type AppSyncAuthConfigurationOIDCEntry = {
-  authenticationType: "OPENID_CONNECT";
+  authenticationType: 'OPENID_CONNECT';
   openIDConnectConfig?: OpenIDConnectConfig;
 };
 
-/**
- *
- */
 export type AppSyncAuthConfigurationLambdaEntry = {
-  authenticationType: "AWS_LAMBDA";
+  authenticationType: 'AWS_LAMBDA';
   lambdaAuthorizerConfig?: LambdaConfig;
 };
 
-/**
- *
- */
 export interface ApiKeyConfig {
   description?: string;
   apiKeyExpirationDays: number;
   apiKeyExpirationDate?: Date;
 }
-/**
- *
- */
 export interface UserPoolConfig {
   userPoolId: string;
 }
-/**
- *
- */
 export interface OpenIDConnectConfig {
   name: string;
   issuerUrl: string;
@@ -88,24 +59,15 @@ export interface OpenIDConnectConfig {
   authTTL?: number;
 }
 
-/**
- *
- */
 export interface LambdaConfig {
   lambdaFunction: string;
   ttlSeconds?: number;
 }
 
-/**
- *
- */
 export interface AppSyncFunctionConfigurationProvider extends IConstruct {
   readonly arn: string;
   readonly functionId: string;
 }
-/**
- *
- */
 export interface DataSourceOptions {
   /**
    * The name of the data source, overrides the id given by cdk
@@ -121,9 +83,6 @@ export interface DataSourceOptions {
   readonly description?: string;
 }
 
-/**
- *
- */
 export interface SearchableDataSourceOptions extends DataSourceOptions {
   /**
    * ServiceRole for the Amazon OpenSearch
@@ -131,47 +90,29 @@ export interface SearchableDataSourceOptions extends DataSourceOptions {
   readonly serviceRole: IRole;
 }
 
-/**
- *
- */
 export enum TemplateType {
-  INLINE = "INLINE",
-  S3_LOCATION = "S3_LOCATION"
+  INLINE = 'INLINE',
+  S3_LOCATION = 'S3_LOCATION',
 }
-/**
- *
- */
 export interface InlineMappingTemplateProvider {
   type: TemplateType.INLINE;
   bind: (scope: Construct) => string;
   getTemplateHash: () => string;
 }
 
-/**
- *
- */
 export interface S3MappingTemplateProvider {
   type: TemplateType.S3_LOCATION;
   bind: (scope: Construct) => string;
   getTemplateHash: () => string;
 }
 
-/**
- *
- */
 export interface S3MappingFunctionCodeProvider {
   type: TemplateType.S3_LOCATION;
   bind: (scope: Construct) => IAsset;
 }
 
-/**
- *
- */
 export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingTemplateProvider;
 
-/**
- *
- */
 export interface GraphQLAPIProvider extends IConstruct {
   readonly apiId: string;
   readonly host: TransformHostProvider;
@@ -206,9 +147,6 @@ export interface GraphQLAPIProvider extends IConstruct {
   grantSubscription: (grantee: IGrantable, ...fields: string[]) => Grant;
 }
 
-/**
- *
- */
 export interface APIIAMResourceProvider {
   /**
    * Return the Resource ARN
