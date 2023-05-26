@@ -1,4 +1,5 @@
 import { amplifyConfigureBeforeOrAtV10_7, amplifyConfigure as configure, isCI, installAmplifyCLI, injectSessionToken } from 'amplify-category-api-e2e-core';
+import { existsSync } from 'fs-extra';
 import semver from 'semver';
 
 /*
@@ -9,7 +10,7 @@ import semver from 'semver';
 
 async function setupAmplify(version: string = 'latest') {
   // install CLI to be used for migration test initial project.
-  await installAmplifyCLI(version);
+  // await installAmplifyCLI(version);
 
   console.log("INSTALLED CLI:", version);
   if (isCI()) {
@@ -47,6 +48,9 @@ process.nextTick(async () => {
     // check if cli version was passed to setup-profile
     if (process.argv.length > 2) {
       const cliVersion = process.argv[2];
+      console.log('start')
+      console.log(process.env.AMPLIFY_PATH)
+      console.log(existsSync(process.env.AMPLIFY_PATH))
       await setupAmplify(cliVersion);
     } else {
       await setupAmplify();
