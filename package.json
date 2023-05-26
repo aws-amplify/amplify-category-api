@@ -4,7 +4,7 @@
   "description": "amplify-category-api",
   "scripts": {
     "test-changed": "lerna run test --since main",
-    "test": "lerna run test",
+    "test": "lerna run test -- -u",
     "test-v2-transformers": "lerna run --scope '@aws-amplify/graphql-*-transformer' test",
     "test-ci": "lerna run test --concurrency 1 -- --ci -i",
     "e2e": "lerna run e2e",

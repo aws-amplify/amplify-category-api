@@ -53,7 +53,7 @@ export const createRdsLambda = (
     `functions/${RDSLambdaLogicalID}.zip`,
     'handler.run',
     path.resolve(__dirname, '..', '..', '..', 'lib', 'rds-lambda.zip'),
-    Runtime.NODEJS_16_X,
+    Runtime.NODEJS_18_X,
     [],
     lambdaRole,
     environment,
