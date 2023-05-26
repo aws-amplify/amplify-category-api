@@ -245,7 +245,7 @@ export const getFieldNameFor: (op: Operation, typeName: string) => string;
 export const getKeySchema: (table: any, indexName?: string) => any;
 
 // @public (undocumented)
-export const getParameterStoreSecretPath: (secret: string, secretsKey: string, apiName: string, envName?: string) => string;
+export const getParameterStoreSecretPath: (secret: string, secretsKey: string, apiName: string, environmentName: string, appId: string) => string;
 
 // @public (undocumented)
 export const getRDSDBConfigFromAmplifyInput: (context: $TSContext, inputNode: any) => Promise<Partial<ImportedDataSourceConfig>>;
