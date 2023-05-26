@@ -31,7 +31,7 @@ export function getCLIPath(testingWithLatestCodebase = false) {
   if (!testingWithLatestCodebase) {
     console.log(process.env.AMPLIFY_PATH);
     console.log(fs.existsSync(process.env.AMPLIFY_PATH))
-    if (process.env.AMPLIFY_PATH && fs.existsSync(process.env.AMPLIFY_PATH)) {
+    if (process.env.AMPLIFY_PATH) {
       console.log("Resolving CLI path to AMPLIFY_PATH:", process.env.AMPLIFY_PATH);
       return process.env.AMPLIFY_PATH;
     }
