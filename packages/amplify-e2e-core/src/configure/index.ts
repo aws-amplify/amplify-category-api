@@ -72,12 +72,14 @@ export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> 
 }
 
 export const amplifyConfigureBeforeOrAtV10_7 = (settings: AmplifyConfiguration): Promise<void> => {
+  const cliPath = getCLIPath();
+  console.log(cliPath);
   const s = { ...defaultSettings, ...settings };
   const missingParam = MANDATORY_PARAMS.filter((p) => !Object.keys(s).includes(p));
   if (missingParam.length) {
     throw new Error(`mandatory params ${missingParam.join(' ')} are missing`);
   }
-  const chain = spawn(getCLIPath(), ['configure'], { stripColors: true })
+  const chain = spawn(cliPath, ['configure'], { stripColors: true })
     .wait('Sign in to your AWS administrator account:')
     .wait('Press Enter to continue')
     .sendCarriageReturn()
