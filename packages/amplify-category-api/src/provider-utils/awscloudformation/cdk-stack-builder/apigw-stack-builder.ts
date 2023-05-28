@@ -94,7 +94,8 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
 
   // eslint-disable-next-line class-methods-use-this
   private _craftPolicyDocument(apiResourceName: string, pathName: string, supportedOperations: string[]) {
-    const paths = [pathName, appendToUrlPath(pathName, '*')];
+    const iamPathName = pathName.replace(/{[a-zA-Z0-9-]+}/g, '*');
+    const paths = [iamPathName, appendToUrlPath(iamPathName, '*')];
     const resources = paths.flatMap((path) => supportedOperations.map((op) => cdk.Fn.join('', [
       'arn:aws:execute-api:',
       cdk.Fn.ref('AWS::Region'),
