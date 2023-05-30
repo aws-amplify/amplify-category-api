@@ -1,1 +1,5 @@
+# Data team has general approval permissions
 * @aws-amplify/amplify-data
+
+# API approval - public surface and dependencies.
+**/API.md @aws-amplify/amplify-data-admins
