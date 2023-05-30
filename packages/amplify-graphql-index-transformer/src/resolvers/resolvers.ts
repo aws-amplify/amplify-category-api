@@ -50,7 +50,7 @@ import {
 } from 'graphql-transformer-common';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../types';
 import { lookupResolverName } from '../utils';
-import { stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import _ from 'lodash';
 import {
@@ -882,13 +882,12 @@ export const getDeltaSyncTableTtl = (resourceOverrides: any, resource: Transform
   return deltaSyncTtlOverride || SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
 }
 
-export const getResourceOverrides = (transformers: TransformerPluginProvider[], stackManager?: StackManagerProvider | null): any => {
+export const getResourceOverrides = (transformers: TransformerPluginProvider[], backendDir: string, stackManager?: StackManagerProvider | null): any => {
   if (stateManager.currentMetaFileExists(undefined)) {
     const meta = stateManager.getCurrentMeta(undefined, { throwIfNotExist: false });
     const gqlApiName = _.entries(meta?.api)
       .find(([, value]) => (value as { service: string }).service === 'AppSync')?.[0];
     if (gqlApiName && stackManager) {
-      const backendDir = pathManager.getBackendDirPath();
       const overrideDir = path.join(backendDir, 'api', gqlApiName);
       const localGraphQLTransformObj = new GraphQLTransform({
         transformers: transformers,

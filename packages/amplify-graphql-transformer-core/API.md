@@ -80,6 +80,7 @@ import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transfo
 import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerDataSourceManagerProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerFilepathsProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerModelEnhancementProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerModelProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -288,6 +289,8 @@ export interface GraphQLTransformOptions {
     readonly disableResolverDeduping?: boolean;
     // (undocumented)
     readonly featureFlags?: FeatureFlagProvider;
+    // (undocumented)
+    readonly filepaths?: TransformerFilepathsProvider;
     // (undocumented)
     readonly host?: TransformHostProvider;
     // (undocumented)
