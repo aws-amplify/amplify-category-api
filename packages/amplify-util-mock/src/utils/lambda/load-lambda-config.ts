@@ -24,7 +24,7 @@ export const loadLambdaConfig = async (
   overrideApiToLocal = false,
 ): Promise<ProcessedLambdaFunction> => {
   overrideApiToLocal = overrideApiToLocal || (await isApiRunning());
-  const resourcePath = path.join('fake-backend-path', 'function', resourceName);
+  const resourcePath = path.join(pathManager.getBackendDirPath(), 'function', resourceName);
   const { Resources: cfnResources } = JSONUtilities.readJson<{ Resources: Record<string, any> }>(
     path.join(resourcePath, `${resourceName}-cloudformation-template.json`),
   );

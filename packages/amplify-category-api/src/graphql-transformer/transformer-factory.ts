@@ -76,7 +76,6 @@ export const getTransformerFactory = async (
 const getTransformerFactoryV2 = (
   resourceDir: string,
 ): (options: TransformerFactoryArgs) => Promise<TransformerPluginProviderV2[]> => async (options?: TransformerFactoryArgs) => {
-  const backendDir = pathManager.getBackendDirPath()
   const modelTransformer = new ModelTransformerV2();
   const indexTransformer = new IndexTransformerV2();
   const hasOneTransformer = new HasOneTransformerV2();

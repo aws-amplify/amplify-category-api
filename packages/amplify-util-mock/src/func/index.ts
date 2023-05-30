@@ -89,7 +89,7 @@ const getCancellableTimer = ({ timeout }: InvokerOptions = {}) => {
 
 const resolveEvent = async (context: $TSContext, resourceName: string): Promise<unknown> => {
   const { amplify } = context;
-  const resourcePath = path.join('fake-backend-path', category, resourceName);
+  const resourcePath = path.join(pathManager.getBackendDirPath(), category, resourceName);
   const eventNameValidator = amplify.inputValidation({
     operator: 'regex',
     value: '^[a-zA-Z0-9/._-]+?\\.json$',

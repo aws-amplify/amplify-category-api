@@ -5,7 +5,6 @@ import { GraphQLTransform } from "@aws-amplify/graphql-transformer-core";
 import { FeatureFlagProvider } from "@aws-amplify/graphql-transformer-interfaces";
 import { AuthTransformer } from "@aws-amplify/graphql-auth-transformer";
 import { AmplifyAppSyncSimulator } from "@aws-amplify/amplify-appsync-simulator";
-import { pathManager } from "@aws-amplify/amplify-cli-core";
 import { deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient } from "../__e2e__/utils";
 
 let GRAPHQL_CLIENT: GraphQLClient;
