@@ -54,9 +54,10 @@ type IamRoleInfo = {
 
 type ReportEntry = {
   jobId?: string;
-  workflowId?: string;
-  lifecycle?: string;
+  buildBatchArn?: string;
+  buildComplete?: boolean;
   cbJobDetails?: CodeBuild.Build;
+  buildStatus?: string;
   amplifyApps: Record<string, AmplifyAppInfo>;
   stacks: Record<string, StackInfo>;
   buckets: Record<string, S3BucketInfo>;
@@ -65,12 +66,12 @@ type ReportEntry = {
 
 type JobFilterPredicate = (job: ReportEntry) => boolean;
 
-type CCIJobInfo = {
-  workflowId: string;
-  workflowName: string;
-  lifecycle: string;
-  cciJobDetails: string;
-  status: string;
+type CBJobInfo = {
+  buildBatchArn: string;
+  projectName: string;
+  buildComplete: boolean;
+  cbJobDetails: CodeBuild.Build;
+  buildStatus: string;
 };
 
 type AWSAccountInfo = {
@@ -84,6 +85,7 @@ const BUCKET_TEST_REGEX = /test/;
 const IAM_TEST_REGEX = /!RotateE2eAwsToken-e2eTestContextRole|-integtest$|^amplify-|^eu-|^us-|^ap-/;
 const STALE_DURATION_MS = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
 
+const isCI = (): boolean => process.env.CI && process.env.CODEBUILD ? true : false;
 /*
  * Exit on expired token as all future requests will fail.
  */
@@ -253,7 +255,16 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
 };
 
 const getCodeBuildClient = (): CodeBuild => {
-  return new CodeBuild({ apiVersion: '2016-10-06' });
+  return new CodeBuild({ 
+    apiVersion: '2016-10-06',
+    region: 'us-east-1',
+    credentials: isCI() ? undefined :
+    {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      sessionToken: process.env.AWS_SESSION_TOKEN,
+    }
+  });
 };
 
 const getJobCodeBuildDetails = async (jobId: string): Promise<CodeBuild.Build> => {
@@ -295,18 +306,18 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
 /**
  * extract and moves CircleCI job details
  */
-const extractCCIJobInfo = (record: S3BucketInfo | StackInfo | AmplifyAppInfo): CCIJobInfo => ({
-  workflowId: _.get(record, ['0', 'cciInfo', 'workflows', 'workflow_id']),
-  workflowName: _.get(record, ['0', 'cciInfo', 'workflows', 'workflow_name']),
-  lifecycle: _.get(record, ['0', 'cciInfo', 'lifecycle']),
-  cciJobDetails: _.get(record, ['0', 'cciInfo']),
-  status: _.get(record, ['0', 'cciInfo', 'status']),
+const extractCCIJobInfo = (record: S3BucketInfo | StackInfo | AmplifyAppInfo): CBJobInfo => ({
+  buildBatchArn: _.get(record, ['0', 'cbInfo', 'buildBatchArn']),
+  projectName: _.get(record, ['0', 'cbInfo', 'projectName']),
+  buildComplete: _.get(record, ['0', 'cbInfo', 'buildComplete']),
+  cbJobDetails: _.get(record, ['0', 'cbInfo']),
+  buildStatus: _.get(record, ['0', 'cbInfo', 'buildStatus']),
 });
 
 /**
- * Merges stale resources and returns a list grouped by the CircleCI jobId. Amplify Apps that don't have
- * any backend environment are grouped as Orphan apps and apps that have Backend created by different CircleCI jobs are
- * grouped as MULTI_JOB_APP. Any resource that do not have a CircleCI job is grouped under UNKNOWN
+ * Merges stale resources and returns a list grouped by the CodeBuild jobId. Amplify Apps that don't have
+ * any backend environment are grouped as Orphan apps and apps that have Backend created by different CodeBuild jobs are
+ * grouped as MULTI_JOB_APP. Any resource that do not have a CodeBuild job is grouped under UNKNOWN
  */
 const mergeResourcesByCCIJob = (
   amplifyApp: AmplifyAppInfo[],
@@ -566,20 +577,17 @@ const deleteResources = async (
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getFilterPredicate = (args: any): JobFilterPredicate => {
   const filterByJobId = (jobId: string) => (job: ReportEntry) => job.jobId === jobId;
-  const filterByWorkflowId = (workflowId: string) => (job: ReportEntry) => job.workflowId === workflowId;
-  const filterAllStaleResources = () => (job: ReportEntry) => job.lifecycle === 'finished' || job.jobId === ORPHAN;
+  const filterByBuildBatchArn = (buildBatchArn: string) => (job: ReportEntry) => job.buildBatchArn === buildBatchArn;
+  const filterAllStaleResources = () => (job: ReportEntry) => job.buildComplete || job.jobId === ORPHAN;
 
   if (args._.length === 0) {
     return filterAllStaleResources();
   }
   if (args._[0] === 'workflow') {
-    return filterByWorkflowId(args.workflowId as string);
+    return filterByBuildBatchArn(args.buildBatchArn as string);
   }
   if (args._[0] === 'job') {
-    if (Number.isNaN(args.jobId)) {
-      throw new Error('job-id should be integer');
-    }
-    return filterByJobId((args.jobId as number).toString());
+    return filterByJobId(args.jobId as string);
   }
   throw Error('Invalid args config');
 };
@@ -589,17 +597,38 @@ const getFilterPredicate = (args: any): JobFilterPredicate => {
  * to get all accounts within the root account organization.
  */
 const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
-  const stsRes = new aws.STS({
-    apiVersion: '2011-06-15',
+  const testAccountCred = {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     sessionToken: process.env.AWS_SESSION_TOKEN,
+  }
+  const stsClient = new aws.STS({
+    apiVersion: '2011-06-15',
+    credentials: isCI() ? undefined : testAccountCred
   });
-  const parentAccountIdentity = await stsRes.getCallerIdentity().promise();
+  const assumeRoleResForE2EParent = await stsClient
+  .assumeRole({
+    RoleArn: process.env.testAccountRole,
+    RoleSessionName: `testSession${Math.floor(Math.random() * 100000)}`,
+    // One hour
+    DurationSeconds: 1 * 60 * 60,
+  })
+  .promise();
+  const e2eParentAccountCred = {
+    accessKeyId: assumeRoleResForE2EParent.Credentials.AccessKeyId,
+    secretAccessKey: assumeRoleResForE2EParent.Credentials.SecretAccessKey,
+    sessionToken: assumeRoleResForE2EParent.Credentials.SessionToken
+  }
+  const stsClientForE2E = new aws.STS({
+    apiVersion: '2011-06-15',
+    credentials: e2eParentAccountCred
+  });
+  const parentAccountIdentity = await stsClientForE2E.getCallerIdentity().promise()
   const orgApi = new aws.Organizations({
     apiVersion: '2016-11-28',
     // the region where the organization exists
     region: 'us-east-1',
+    credentials: e2eParentAccountCred
   });
   try {
     const orgAccounts = await orgApi.listAccounts().promise();
@@ -607,14 +636,11 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
       if (account.Id === parentAccountIdentity.Account) {
         return {
           accountId: account.Id,
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-          sessionToken: process.env.AWS_SESSION_TOKEN,
+          ...e2eParentAccountCred
         };
       }
-
       const randomNumber = Math.floor(Math.random() * 100000);
-      const assumeRoleRes = await stsRes
+      const assumeRoleRes = await stsClientForE2E
         .assumeRole({
           RoleArn: `arn:aws:iam::${account.Id}:role/OrganizationAccountAccessRole`,
           RoleSessionName: `testSession${randomNumber}`,
@@ -679,9 +705,9 @@ const generateAccountInfo = (account: AWSAccountInfo, accountIndex: number): str
 const cleanup = async (): Promise<void> => {
   const args = yargs
     .command('*', 'clean up all the stale resources')
-    .command('workflow <workflow-id>', 'clean all the resources created by workflow', _yargs => {
-      _yargs.positional('workflowId', {
-        describe: 'Workflow Id of the workflow',
+    .command('buildBatchArn <build-batch-arn>', 'clean all the resources created by batch build', _yargs => {
+      _yargs.positional('buildBatchArn', {
+        describe: 'ARN of batch build',
         type: 'string',
         demandOption: '',
       });
@@ -689,7 +715,7 @@ const cleanup = async (): Promise<void> => {
     .command('job <jobId>', 'clean all the resource created by a job', _yargs => {
       _yargs.positional('jobId', {
         describe: 'job id of the job',
-        type: 'number',
+        type: 'string',
       });
     })
     .help().argv;
@@ -697,7 +723,9 @@ const cleanup = async (): Promise<void> => {
 
   const filterPredicate = getFilterPredicate(args);
   const accounts = await getAccountsToCleanup();
-
+  accounts.map((account, i) => {
+    console.log(`${generateAccountInfo(account, i)} is under cleanup`);
+  });
   await Promise.all(accounts.map((account, i) => cleanupAccount(account, i, filterPredicate)));
   console.log('Done cleaning all accounts!');
 };

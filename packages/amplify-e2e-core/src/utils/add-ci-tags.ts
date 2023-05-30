@@ -37,8 +37,9 @@ export const addCodeBuildCITags = (projectPath: string): void => {
   };
 
   addTagIfNotExist('codebuild', sanitizeTagValue(process.env['CODEBUILD'] || 'N/A'));
-  addTagIfNotExist('codebuild:batch_build_id', sanitizeTagValue(process.env['CODEBUILD_BATCH_BUILD_IDENTIFIER'] || 'N/A'));
+  addTagIfNotExist('codebuild:batch_build_identifier', sanitizeTagValue(process.env['CODEBUILD_BATCH_BUILD_IDENTIFIER'] || 'N/A'));
   addTagIfNotExist('codebuild:build_id', sanitizeTagValue(process.env['CODEBUILD_BUILD_ID'] || 'N/A'));
+  addTagIfNotExist('codebuild:initiator', sanitizeTagValue(process.env['CODEBUILD_INITIATOR'] || 'N/A'));
   // exposed by custom CLI test environment
   if (global.getTestName) {
     addTagIfNotExist('jest:test_name', sanitizeTagValue(global.getTestName().substr(0, 255) || 'N/A'));
