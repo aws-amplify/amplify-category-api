@@ -211,12 +211,6 @@ export const generateTransformerOptions = async (
     warnOnAuth(directiveMap.types, docLink);
   }
 
-  let searchableTransformerFlag = false;
-
-  if (directiveMap.directives.includes('searchable')) {
-    searchableTransformerFlag = true;
-  }
-
   // construct sanityCheckRules
   const ff = new AmplifyCLIFeatureFlagAdapter();
   const isNewAppSyncAPI: boolean = resourcesToBeCreated.some(resource => resource.service === 'AppSync');
@@ -247,7 +241,6 @@ export const generateTransformerOptions = async (
     projectDirectory: resourceDir,
     transformersFactory: transformerListFactory,
     transformersFactoryArgs: {
-      addSearchableTransformer: searchableTransformerFlag,
       storageConfig,
       authConfig,
       adminRoles,

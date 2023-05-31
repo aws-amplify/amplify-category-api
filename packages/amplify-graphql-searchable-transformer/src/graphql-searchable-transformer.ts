@@ -279,7 +279,18 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     this.searchableObjectNames = [];
   }
 
+  /**
+   * Returns whether or not there are any searchable objects configured in the schema.
+   */
+  private isSearchableConfigured(): boolean {
+    return this.searchableObjectNames.length !== 0;
+  }
+
   generateResolvers = (context: TransformerContextProvider): void => {
+    if (!this.isSearchableConfigured()) {
+      return;
+    }
+
     const { Env } = ResourceConstants.PARAMETERS;
 
     const { HasEnvironmentParameter } = ResourceConstants.CONDITIONS;
@@ -462,7 +473,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       generateSearchableInputs(ctx, searchObject);
     }
     // add api key to aggregate types if sandbox mode is enabled
-    if (ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+    if (this.isSearchableConfigured() && ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
       for (const aggType of AGGREGATE_TYPES) {
         const aggObject = ctx.output.getObject(aggType)!;
         const hasApiKey = aggObject.directives?.some((dir) => dir.name.value === 'aws_api_key') ?? false;
