@@ -393,6 +393,7 @@ export class GraphQLTransform {
         external: true,
       },
     });
+    // Remove these when moving override up to amplify-category-api level
     const { envName } = stateManager.getLocalEnvInfo();
     const { projectName } = stateManager.getProjectConfig();
     const projectInfo = {

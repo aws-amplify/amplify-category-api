@@ -190,6 +190,8 @@ export interface GraphQLAPIProvider extends IConstruct {
     grantSubscription: (grantee: IGrantable, ...fields: string[]) => Grant;
     // (undocumented)
     readonly host: TransformHostProvider;
+    // (undocumented)
+    readonly name: string;
 }
 
 // @public (undocumented)
