@@ -4,7 +4,6 @@
 
 ```ts
 
-import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { APIIAMResourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ApiKeyConfig } from 'aws-cdk-lib/aws-appsync';
 import { App } from 'aws-cdk-lib';
@@ -155,12 +154,6 @@ export const enum ConflictHandlerType {
 }
 
 // @public (undocumented)
-export const constructDefaultGlobalAmplifyInput: (context: $TSContext, dataSourceType: ImportedRDSType, includeAuthRule?: boolean) => Promise<string>;
-
-// @public (undocumented)
-export const constructRDSGlobalAmplifyInput: (context: $TSContext, config: any, pathToSchemaFile: string) => Promise<string>;
-
-// @public (undocumented)
 function createSyncLambdaIAMPolicy(context: TransformerContextProvider, stack: cdk.Stack, name: string, region?: string): iam.Policy;
 
 // Warning: (ae-forgotten-export) The symbol "TransformerContext" needs to be exported by the entry point index.d.ts
@@ -246,9 +239,6 @@ export const getKeySchema: (table: any, indexName?: string) => any;
 
 // @public (undocumented)
 export const getParameterStoreSecretPath: (secret: string, secretsKey: string, apiName: string, environmentName: string, appId: string) => string;
-
-// @public (undocumented)
-export const getRDSDBConfigFromAmplifyInput: (context: $TSContext, inputNode: any) => Promise<Partial<ImportedDataSourceConfig>>;
 
 // @public (undocumented)
 export const getSortKeyFieldNames: (type: ObjectTypeDefinitionNode) => string[];
@@ -504,9 +494,6 @@ export type RDSConnectionSecrets = TransformerSecrets & {
 export type RDSDataSourceConfig = RDSConnectionSecrets & {
     engine: ImportedRDSType;
 };
-
-// @public (undocumented)
-export const readRDSGlobalAmplifyInput: (pathToSchemaFile: string) => Promise<InputObjectTypeDefinitionNode | undefined>;
 
 // @public (undocumented)
 export type ResolverConfig = {

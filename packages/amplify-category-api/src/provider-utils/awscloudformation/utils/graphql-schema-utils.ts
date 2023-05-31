@@ -1,9 +1,10 @@
-import { ImportedRDSType, ImportedDataSourceConfig, constructRDSGlobalAmplifyInput } from '@aws-amplify/graphql-transformer-core';
+import { ImportedRDSType, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 import { MySQLDataSourceAdapter, generateGraphQLSchema, Schema, Engine, DataSourceAdapter, MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
 import * as os from 'os';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { constructRDSGlobalAmplifyInput } from './rds-input-utils';
 
 export const writeSchemaFile = (pathToSchemaFile: string, schemaString: string) => {
   fs.ensureFileSync(pathToSchemaFile);

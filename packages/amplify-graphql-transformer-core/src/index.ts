@@ -26,21 +26,17 @@ export {
   DBType,
 } from './config/index';
 export {
-  constructDefaultGlobalAmplifyInput,
-  constructRDSGlobalAmplifyInput,
   GetArgumentsOptions,
   generateGetArgumentsInput,
   getTable,
   getKeySchema,
   getSortKeyFieldNames,
   getParameterStoreSecretPath,
-  getRDSDBConfigFromAmplifyInput,
   collectDirectives,
   collectDirectivesByTypeNames,
   DirectiveWrapper,
   IAM_AUTH_ROLE_PARAMETER,
   IAM_UNAUTH_ROLE_PARAMETER,
-  readRDSGlobalAmplifyInput,
   JSONUtilities,
   APICategory,
 } from './utils';
