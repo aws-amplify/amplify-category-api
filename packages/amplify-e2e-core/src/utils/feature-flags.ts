@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { JSONUtilities } from '@aws-amplify/graphql-transformer-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { pathManager, FeatureFlagsEntry } from '@aws-amplify/amplify-cli-core';
 
 type FeatureFlagData = { features: FeatureFlagsEntry };

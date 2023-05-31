@@ -1,4 +1,4 @@
-import { hasNodeToNodeEncryptionOptions } from '../nodeToNodeEncryption';
+import { hasNodeToNodeEncryptionOptions } from '../../../../provider-utils/awscloudformation/current-backend-state/searchable-node-to-node-encryption';
 
 describe('hasNodeToNodeEncryptionOptions', () => {
   test('returns true if the search domain has NodeToNodeEncryptionOptions with value true', () => {
