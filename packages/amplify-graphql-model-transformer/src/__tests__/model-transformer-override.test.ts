@@ -1,7 +1,8 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform, StackManager } from '@aws-amplify/graphql-transformer-core';
 import path from 'path';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
+import { applyOverride } from '@aws-amplify/amplify-category-api';
 
 jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
 jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
@@ -27,9 +28,10 @@ describe('ModelTransformer: ', () => {
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
       overrideConfig: {
-        overrideDir: path.join(__dirname, 'overrides'),
+        applyOverride: (stackManager: StackManager) => {
+          return applyOverride(stackManager, path.join(__dirname, 'overrides'))
+        },
         overrideFlag: true,
-        resourceName: 'myResource',
       },
       featureFlags,
     });
@@ -56,9 +58,10 @@ describe('ModelTransformer: ', () => {
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
       overrideConfig: {
-        overrideDir: path.join(__dirname, 'non-existing-override-directory'),
+        applyOverride: (stackManager: StackManager) => {
+          return applyOverride(stackManager, path.join(__dirname, 'non-existing-override-directory'))
+        },
         overrideFlag: true,
-        resourceName: 'myResource',
       },
       featureFlags,
     });

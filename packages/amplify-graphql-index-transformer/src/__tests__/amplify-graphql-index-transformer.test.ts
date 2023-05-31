@@ -13,7 +13,6 @@ import {
 import { Template as AssertionTemplate } from 'aws-cdk-lib/assertions';
 import { DocumentNode, parse } from 'graphql';
 import { IndexTransformer, PrimaryKeyTransformer } from '..';
-import * as resolverUtils from '../resolvers/resolvers';
 
 const generateFeatureFlagWithBooleanOverrides = (overrides: Record<string, boolean>): FeatureFlagProvider => ({
   getBoolean: (name: string, defaultValue?: boolean): boolean => {
@@ -1336,22 +1335,6 @@ it('sync query resolver renders with deltaSyncTableTTL override', () => {
       getCurrentCloudBackendDirPath: () => 'amplify/backend',
     } as TransformerFilepathsProvider,
   });
-
-  const mockResourceOverrides = {
-    models: {
-      Song: {
-        modelDatasource: {
-          dynamoDbConfig: {
-            deltaSyncConfig: {
-              deltaSyncTableTtl: 15
-            }
-          }
-        }
-      }
-    }
-  };
-
-  jest.spyOn(resolverUtils, 'getResourceOverrides').mockReturnValue(mockResourceOverrides);
 
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();

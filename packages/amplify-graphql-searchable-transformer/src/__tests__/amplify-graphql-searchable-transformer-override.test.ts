@@ -1,11 +1,12 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform, StackManager } from '@aws-amplify/graphql-transformer-core';
 import {
   Match, Template,
 } from 'aws-cdk-lib/assertions';
 import * as path from 'path';
 import { SearchableModelTransformer } from '..';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
+import { applyOverride } from '@aws-amplify/amplify-category-api';
 
 jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
 jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
@@ -38,9 +39,10 @@ test('it overrides expected resources', () => {
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
     featureFlags,
     overrideConfig: {
-      overrideDir: path.join(__dirname, 'overrides'),
+      applyOverride: (stackManager: StackManager) => {
+        return applyOverride(stackManager, path.join(__dirname, 'overrides'))
+      },
       overrideFlag: true,
-      resourceName: 'myResource',
     },
   });
   const out = transformer.transform(validSchema);

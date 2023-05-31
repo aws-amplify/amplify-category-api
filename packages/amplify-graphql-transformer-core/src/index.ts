@@ -74,5 +74,3 @@ export {
   InputObjectDefinitionWrapper,
   ObjectDefinitionWrapper,
 } from './wrappers/object-definition-wrapper';
-
-export { AmplifyApiGraphQlResourceStackTemplate } from './types/amplify-api-resource-stack-types';

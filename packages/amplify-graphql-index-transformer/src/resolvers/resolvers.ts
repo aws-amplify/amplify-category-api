@@ -1,9 +1,21 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
 import {
-  MappingTemplate, GraphQLTransform, AmplifyApiGraphQlResourceStackTemplate, SyncUtils, StackManager, DatasourceType, MYSQL_DB_TYPE, DDB_DB_TYPE, DBType,
+  MappingTemplate,
+  GraphQLTransform,
+  SyncUtils,
+  StackManager,
+  DatasourceType,
+  MYSQL_DB_TYPE,
+  DDB_DB_TYPE,
+  DBType,
 } from '@aws-amplify/graphql-transformer-core';
 import {
-  DataSourceProvider, StackManagerProvider, TransformerContextProvider, TransformerPluginProvider, TransformerResolverProvider, 
+  DataSourceProvider,
+  StackManagerProvider,
+  TransformerContextProvider,
+  TransformerPluginProvider,
+  TransformerResolverProvider,
+  AmplifyApiGraphQlResourceStackTemplate,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
@@ -879,22 +891,6 @@ export const getDeltaSyncTableTtl = (resourceOverrides: any, resource: Transform
   const modelName = _.get(resource, ['datasource', 'name'])?.replace(new RegExp('Table$'), '');
   const deltaSyncTtlOverride = _.get(resourceOverrides, ['models', modelName, 'modelDatasource', 'dynamoDbConfig', 'deltaSyncConfig', 'deltaSyncTableTtl']);
   return deltaSyncTtlOverride || SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
-}
-
-export const getResourceOverrides = (transformers: TransformerPluginProvider[], backendDir: string, apiName: string, stackManager?: StackManagerProvider | null): any => {
-  if (stackManager) {
-    const overrideDir = path.join(backendDir, 'api', apiName);
-    const localGraphQLTransformObj = new GraphQLTransform({
-      transformers: transformers,
-      overrideConfig: {
-        overrideFlag: true,
-        overrideDir: overrideDir,
-        resourceName: apiName
-      }
-    });
-    return localGraphQLTransformObj.applyOverride(stackManager as StackManager);
-  }
-  return {};
 }
 
 export function getDBInfo(ctx: TransformerContextProvider, modelName: string) {

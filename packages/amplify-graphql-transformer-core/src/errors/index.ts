@@ -111,16 +111,3 @@ export class UnknownDirectiveError extends Error {
   }
 }
 
-export class InvalidOverrideError extends Error {
-  details: string;
-  resolution: string;
-  constructor(error: Error) {
-    super('Executing overrides failed.');
-    this.name = 'InvalidOverrideError';
-    this.details = error.message;
-    this.resolution = 'There may be runtime errors in your overrides file. If so, fix the errors and try again.';
-    if ((Error as any).captureStackTrace) {
-      (Error as any).captureStackTrace(this, InvalidOverrideError);
-    }
-  }
-}

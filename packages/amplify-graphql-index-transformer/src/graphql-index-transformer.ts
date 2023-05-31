@@ -19,7 +19,7 @@ import {
   ObjectTypeDefinitionNode,
 } from 'graphql';
 import { isListType, isScalarOrEnum } from 'graphql-transformer-common';
-import { appendSecondaryIndex, constructSyncVTL, updateResolversForIndex, getResourceOverrides, getDeltaSyncTableTtl } from './resolvers';
+import { appendSecondaryIndex, constructSyncVTL, updateResolversForIndex, getDeltaSyncTableTtl } from './resolvers';
 import { addKeyConditionInputs, ensureQueryField, updateMutationConditionInput } from './schema';
 import { IndexDirectiveConfiguration } from './types';
 import { generateKeyAndQueryNameForConfig, validateNotSelfReferencing } from './utils';
@@ -69,7 +69,7 @@ export class IndexTransformer extends TransformerPluginBase {
   public after = (ctx: TransformerContextProvider): void => {
     if (!ctx.isProjectUsingDataStore()) return;
 
-    const overriddenResources = getResourceOverrides([this], ctx.filepaths.getBackendDirPath(), ctx.api.name, ctx.stackManager);
+    const overriddenResources = ctx.overrides();
     // construct sync VTL code
     this.resolverMap.forEach((syncVTLContent, resource) => {
       if (syncVTLContent) {
