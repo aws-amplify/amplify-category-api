@@ -37,7 +37,6 @@ export {
   DirectiveWrapper,
   IAM_AUTH_ROLE_PARAMETER,
   IAM_UNAUTH_ROLE_PARAMETER,
-  JSONUtilities,
   APICategory,
 } from './utils';
 export * from './utils/operation-names';

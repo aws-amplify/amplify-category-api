@@ -48,6 +48,7 @@ import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { parseUserDefinedSlots } from './user-defined-slots';
 import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import { TransformerProjectOptions } from './transformer-options-types';
+import { shouldEnableNodeToNodeEncryption } from '../provider-utils/awscloudformation/current-backend-state/searchable-node-to-node-encryption';
 
 const PROVIDER_NAME = 'awscloudformation';
 
@@ -103,7 +104,16 @@ const getTransformerFactoryV2 = (
   if (options?.addSearchableTransformer) {
     const resourceDirParts = resourceDir.split(path.sep);
     const apiName = resourceDirParts[resourceDirParts.length - 1];
-    transformerList.push(new SearchableModelTransformerV2(apiName));
+
+    const nodeToNodeEncryption = shouldEnableNodeToNodeEncryption(
+      apiName,
+      pathManager.findProjectRoot(),
+      pathManager.getCurrentCloudBackendDirPath(),
+    );
+
+    transformerList.push(new SearchableModelTransformerV2({
+      enableNodeToNodeEncryption: nodeToNodeEncryption,
+    }));
   }
 
   const customTransformersConfig = await loadProject(resourceDir);

@@ -409,31 +409,6 @@ export class InvalidTransformerError extends Error {
 function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda;
 
 // @public (undocumented)
-export class JSONUtilities {
-    // (undocumented)
-    static parse: <T>(jsonString: string, options?: {
-        preserveComments?: boolean;
-    }) => T;
-    // (undocumented)
-    static readJson: <T>(fileName: string, options?: {
-        throwIfNotExist?: boolean;
-        preserveComments?: boolean;
-    }) => T | undefined;
-    // (undocumented)
-    static stringify: (data: unknown, options?: {
-        minify?: boolean;
-        orderedKeys?: boolean;
-    }) => string;
-    // (undocumented)
-    static writeJson: (fileName: string, data: unknown, options?: {
-        mode?: number;
-        minify?: boolean;
-        secureFile?: boolean;
-        orderedKeys?: boolean;
-    }) => void;
-}
-
-// @public (undocumented)
 export class MappingTemplate {
     // Warning: (ae-forgotten-export) The symbol "InlineTemplate" needs to be exported by the entry point index.d.ts
     //

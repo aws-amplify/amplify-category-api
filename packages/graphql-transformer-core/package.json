@@ -36,7 +36,8 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "@types/node": "^12.12.6"
+    "@types/node": "^12.12.6",
+    "@aws-amplify/amplify-cli-core": "4.0.4"
   },
   "jest": {
     "transform": {

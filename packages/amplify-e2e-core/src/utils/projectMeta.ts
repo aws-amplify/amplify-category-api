@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import { JSONUtilities } from '@aws-amplify/graphql-transformer-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 function getAWSConfigAndroidPath(projRoot: string): string {
   return path.join(projRoot, 'app', 'src', 'main', 'res', 'raw', 'awsconfiguration.json');
