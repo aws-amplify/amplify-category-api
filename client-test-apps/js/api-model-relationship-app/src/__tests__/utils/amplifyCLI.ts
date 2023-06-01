@@ -159,7 +159,7 @@ const amplifyConfigure = (settings: AmplifyConfiguration): Promise<void> => {
     .runAsync();
 };
 
-const isCI = () => process.env.CI && process.env.CIRCLECI;
+const isCI = () => process.env.CI && (process.env.CIRCLECI || process.env.CODEBUILD);
 
  async function setupAmplify() {
   if (isCI()) {

@@ -264,8 +264,16 @@ function main(): void {
     },
   );
   let allBuilds = [...splitE2ETests, ...splitMigrationV5Tests, ...splitMigrationV6Tests, ...splitMigrationV10Tests];
+  const cleanupResources = {
+    identifier: 'cleanup_e2e_resources',
+    buildspec: 'codebuild_specs/cleanup_e2e_resources.yml',
+    env: {
+      'compute-type': 'BUILD_GENERAL1_SMALL'
+    },
+    'depend-on': [allBuilds[0].identifier]
+  }
   console.log(`Total number of splitted jobs: ${allBuilds.length}`)
-  let currentBatch = [...baseBuildGraph, ...allBuilds];
+  let currentBatch = [...baseBuildGraph, ...allBuilds, cleanupResources];
   configBase.batch['build-graph'] = currentBatch;
   saveConfig(configBase);
 }

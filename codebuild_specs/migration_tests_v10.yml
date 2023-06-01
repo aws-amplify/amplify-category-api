@@ -6,7 +6,7 @@ env:
     AMPLIFY_PATH: /root/.amplify/bin/amplify
     NODE_OPTIONS: --max-old-space-size=8096
     CI: true
-    CIRCLECI: true
+    CODEBUILD: true
     # mock values to test artifact scanning
     ENV_VAR_WITH_SECRETS: 'MOCK_ENV_VAR_FOR_SCANNING_SECRETS'
     MOCK_ENV_VAR_FOR_SCANNING_SECRETS: 'abc123xyz'

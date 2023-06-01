@@ -222,6 +222,8 @@ function _runMigrationV10Test {
     unset IS_AMPLIFY_CI
     echo $IS_AMPLIFY_CI
     _loadTestAccountCredentials
+    npm i -g @aws-amplify/cli@10.5.1
+    /root/.amplify/bin/amplify -v
     retry yarn run migration_v10.5.1 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
 }
 function _scanArtifacts {
@@ -236,6 +238,7 @@ function _cleanupE2EResources {
   loadCacheFromBuildJob
   cd packages/amplify-e2e-tests
   echo "Running clean up script"
+  yarn clean-cb-e2e-resources --buildBatchArn $CODEBUILD_INITIATOR
 }
 
 # The following functions are forked from circleci local publish helper

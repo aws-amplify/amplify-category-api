@@ -363,3 +363,9 @@ batch:
           CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
+    - identifier: cleanup_e2e_resources
+      buildspec: codebuild_specs/cleanup_e2e_resources.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+      depend-on:
+        - auth_2_datastore_modelgen_amplify_app_custom_transformers
