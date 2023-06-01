@@ -84,7 +84,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     const SHOW_TABLES_QUERY = `SHOW TABLES`;
     let result;
     if (this.useVPC) {
-      result = eval(await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda!, this.config, SHOW_TABLES_QUERY));
+      result = eval(await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda!, this.config, SHOW_TABLES_QUERY, this.vpcLambdaRegion));
     }
     else {
       result = (await this.dbBuilder.raw(SHOW_TABLES_QUERY))[0];

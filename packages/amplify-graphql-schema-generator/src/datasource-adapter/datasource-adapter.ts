@@ -10,6 +10,7 @@ export abstract class DataSourceAdapter {
   public abstract cleanup(): void;
   public useVPC: boolean = false;
   public vpcSchemaInspectorLambda: string | undefined = undefined;
+  public vpcLambdaRegion: string | undefined = undefined;
 
   public async getModels(): Promise<Model[]> {
     const tableNames = await this.getTablesList();
@@ -34,8 +35,9 @@ export abstract class DataSourceAdapter {
     return model;
   } 
 
-  public useVpc(vpcSchemaInspectorLambda: string): void {
+  public useVpc(vpcSchemaInspectorLambda: string, region: string): void {
     this.useVPC = true;
     this.vpcSchemaInspectorLambda = vpcSchemaInspectorLambda;
+    this.vpcLambdaRegion = region;
   }
 }

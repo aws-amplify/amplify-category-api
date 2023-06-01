@@ -54,9 +54,9 @@ export const generateRDSSchema = async (
 };
 
 const retryWithVpcLambda = async (context, databaseConfig, adapter): Promise<boolean> => {
-  const vpc = await getHostVpc(databaseConfig.host);
   const meta = stateManager.getMeta();
   const { AmplifyAppId, Region } = meta.providers.awscloudformation;
+  const vpc = await getHostVpc(databaseConfig.host, Region);
   const { amplify } = context;
   const { envName } = amplify.getEnvInfo();
 
@@ -66,7 +66,7 @@ const retryWithVpcLambda = async (context, databaseConfig, adapter): Promise<boo
     if (shouldTryVpc) {
       const schemaInspectorLambda = `${AmplifyAppId}-rds-schema-inspector-${envName}`;
       await provisionSchemaInspectorLambda(schemaInspectorLambda, vpc, Region);
-      adapter.useVpc(schemaInspectorLambda);
+      adapter.useVpc(schemaInspectorLambda, Region);
       await adapter.initialize();
       return true;
     }

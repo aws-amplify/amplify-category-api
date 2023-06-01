@@ -41,8 +41,8 @@ export type VpcConfig = {
   securityGroupIds: string[];
 };
 
-const checkHostInDBInstances = async (hostname: string): Promise<VpcConfig | undefined> => {
-  const client = new RDSClient({});
+const checkHostInDBInstances = async (hostname: string, region: string): Promise<VpcConfig | undefined> => {
+  const client = new RDSClient({ region });
   const params: DescribeDBInstancesCommandInput = {
     Filters: [
       {
@@ -71,8 +71,8 @@ const checkHostInDBInstances = async (hostname: string): Promise<VpcConfig | und
   };
 };
 
-const checkHostInDBClusters = async (hostname: string): Promise<VpcConfig | undefined> => {
-  const client = new RDSClient({});
+const checkHostInDBClusters = async (hostname: string, region: string): Promise<VpcConfig | undefined> => {
+  const client = new RDSClient({ region });
   const params: DescribeDBClustersCommandInput = {
     Filters: [
       {
@@ -97,13 +97,13 @@ const checkHostInDBClusters = async (hostname: string): Promise<VpcConfig | unde
   // TODO: Clusters do not return subnet and security group information, need to investigate how it can be fetched.
   return {
     vpcId: cluster.DBSubnetGroup,
-    subnetIds: await getSubnetIds(cluster.DBSubnetGroup),
+    subnetIds: await getSubnetIds(cluster.DBSubnetGroup, region),
     securityGroupIds: cluster.VpcSecurityGroups.map((securityGroup) => securityGroup.VpcSecurityGroupId),
   };
 };
 
-const getSubnetIds = async (subnetGroupName: string): Promise<string[]> => {
-  const client = new RDSClient({});
+const getSubnetIds = async (subnetGroupName: string, region: string): Promise<string[]> => {
+  const client = new RDSClient({ region });
   const command = new DescribeDBSubnetGroupsCommand({
     DBSubnetGroupName: subnetGroupName, 
   });
@@ -112,14 +112,14 @@ const getSubnetIds = async (subnetGroupName: string): Promise<string[]> => {
   return subnetGroup.Subnets?.map((subnet) => subnet.SubnetIdentifier) ?? [];
 };
 
-export const getHostVpc = async (hostname: string): Promise<VpcConfig | undefined> => {
-  return (await checkHostInDBInstances(hostname)) ?? (await checkHostInDBClusters(hostname));
+export const getHostVpc = async (hostname: string, region: string): Promise<VpcConfig | undefined> => {
+  return (await checkHostInDBInstances(hostname, region)) ?? (await checkHostInDBClusters(hostname, region));
 };
 
 export const provisionSchemaInspectorLambda = async (lambdaName: string, vpc: VpcConfig, region: string): Promise<void> => {
   const roleName = `${lambdaName}-execution-role`;
   const iamRole = await createRoleIfNotExists(roleName);
-  if (await getSchemaInspectorLambda(lambdaName)) {
+  if (await getSchemaInspectorLambda(lambdaName, region)) {
     await updateSchemaInspectorLambda(lambdaName, region);
   }
   else {
@@ -127,8 +127,8 @@ export const provisionSchemaInspectorLambda = async (lambdaName: string, vpc: Vp
   } 
 };
 
-const getSchemaInspectorLambda = async (lambdaName: string): Promise<boolean> => {
-  const lambdaClient = new LambdaClient({});
+const getSchemaInspectorLambda = async (lambdaName: string, region: string): Promise<boolean> => {
+  const lambdaClient = new LambdaClient({ region });
   const params = {
     FunctionName: lambdaName,
   };
@@ -254,8 +254,8 @@ const getRole = async (roleName): Promise<Role | undefined> => {
   }
 };
 
-export const invokeSchemaInspectorLambda = async (funcName, dbConfig, query) => {
-  const client = new LambdaClient({});
+export const invokeSchemaInspectorLambda = async (funcName, dbConfig, query, region) => {
+  const client = new LambdaClient({ region });
   const command = new InvokeCommand({
     FunctionName: funcName,
     Payload: JSON.stringify({
