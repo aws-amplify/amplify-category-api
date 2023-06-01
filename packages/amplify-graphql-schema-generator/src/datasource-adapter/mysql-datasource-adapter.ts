@@ -129,7 +129,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     this.fields = [];
     let columnResult;
     if (this.useVPC) {
-      columnResult = eval(await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda!, this.config, LOAD_FIELDS_QUERY));
+      columnResult = eval(await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda!, this.config, LOAD_FIELDS_QUERY, this.vpcLambdaRegion));
     }
     else {
       columnResult = (await this.dbBuilder.raw(LOAD_FIELDS_QUERY))[0];
@@ -158,7 +158,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     this.indexes = [];
     let indexResult;
     if (this.useVPC) {
-      indexResult = eval(await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda!, this.config, LOAD_INDEXES_QUERY));
+      indexResult = eval(await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda!, this.config, LOAD_INDEXES_QUERY, this.vpcLambdaRegion));
     }
     else {
       indexResult = (await this.dbBuilder.raw(LOAD_INDEXES_QUERY))[0];
