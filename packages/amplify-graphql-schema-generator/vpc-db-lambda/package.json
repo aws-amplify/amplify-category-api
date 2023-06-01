@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-lambda": "^3.296.0",
+    "@aws-sdk/client-lambda": "3.338.0",
     "knex": "~2.4.0",
     "mysql2": "~2.3.3"
   }

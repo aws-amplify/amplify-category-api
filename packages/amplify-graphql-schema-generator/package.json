@@ -21,7 +21,7 @@
   "scripts": {
     "build": "tsc && cd vpc-db-lambda && bestzip --force node ../rds-schema-inspector.zip .",
     "watch": "tsc -w",
-    "clean": "rimraf ./lib",
+    "clean": "rimraf ./lib && rm -f ./rds-schema-inspector.zip",
     "test": "jest"
   },
   "dependencies": {
