@@ -1058,9 +1058,14 @@ export const removeTransformConfigValue = (projRoot: string, apiName: string, ke
 
 export function importRDSDatabase(cwd: string, opts: ImportApiOptions & { apiExists?: boolean }) {
   const options = _.assign(defaultOptions, opts);
+  const vpcLambdaDeploymentDelayMS = 1000 * 60 * 12; // 12 minutes;
   const database = options.database;
   return new Promise<void>((resolve, reject) => {
-    const importCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['import', 'api', '--debug'], { cwd, stripColors: true });
+    const importCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['import', 'api', '--debug'], { 
+      cwd, 
+      stripColors: true, 
+      noOutputTimeout: vpcLambdaDeploymentDelayMS,
+    });
     if (!options.apiExists) {
       importCommands
       .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)

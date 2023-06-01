@@ -19,6 +19,8 @@ import {
   Policy,
   CreatePolicyCommandOutput,
   AttachRolePolicyCommand,
+  waitUntilPolicyExists,
+  waitUntilRoleExists,
 } from "@aws-sdk/client-iam";
 import { 
   LambdaClient, 
@@ -147,7 +149,7 @@ const createSchemaInspectorLambda = async (lambdaName: string, iamRole: Role, vp
   
   const params: CreateFunctionCommandInput = {
     Code: {
-      ZipFile: await fs.readFile(`${__dirname}/../../rds-schema-inspector.zip`),
+      ZipFile: await fs.readFile(`${__dirname}/../rds-schema-inspector.zip`),
     },
     PackageType: "Zip",
     FunctionName: lambdaName,
@@ -170,7 +172,7 @@ const updateSchemaInspectorLambda = async (lambdaName: string, region: string): 
   
   const params: UpdateFunctionCodeCommandInput = {
     FunctionName: lambdaName,
-    ZipFile: await fs.readFile(`${__dirname}/../../rds-schema-inspector.zip`),
+    ZipFile: await fs.readFile(`${__dirname}/../rds-schema-inspector.zip`),
   };
 
   await lambdaClient.send(new UpdateFunctionCodeCommand(params));
@@ -178,11 +180,17 @@ const updateSchemaInspectorLambda = async (lambdaName: string, region: string): 
 
 const createRoleIfNotExists = async (roleName): Promise<Role> => {
   let role = await getRole(roleName);
+  // Wait for role created with SDK to propagate.
+  // Otherwise it will throw error "The role defined for the function cannot be assumed by Lambda" while creating the lambda. 
+  const ROLE_PROPAGATION_DELAY = 10000;
   if (!role) {
     role = await createRole(roleName);
+    await sleep(ROLE_PROPAGATION_DELAY);
   }
   return role;
 };
+
+export const sleep = async (milliseconds: number): Promise<void> => new Promise(resolve => setTimeout(resolve, milliseconds));
 
 const createPolicy = async (policyName: string): Promise<Policy | undefined> => {
   const client = new IAMClient({});
@@ -204,6 +212,7 @@ const createPolicy = async (policyName: string): Promise<Policy | undefined> => 
     }),
   });
   const result: CreatePolicyCommandOutput = await client.send(command);
+  await waitUntilPolicyExists({ client, maxWaitTime: 30 }, { PolicyArn: result.Policy.Arn });
   return result.Policy;
 };
 
@@ -232,7 +241,7 @@ const createRole = async (roleName): Promise<Role | undefined> => {
     RoleName: roleName,
   });
   await client.send(attachPolicyCommand);
-
+  await waitUntilRoleExists({ client, maxWaitTime: 30 }, { RoleName: roleName });
   return result.Role;
 };
 
