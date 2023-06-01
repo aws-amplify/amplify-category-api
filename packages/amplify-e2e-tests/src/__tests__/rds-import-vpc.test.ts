@@ -1,7 +1,5 @@
 import {
-  RDSTestDataProvider, 
   addApiWithoutSchema, 
-  addRDSPortInboundRule, 
   amplifyPush, 
   createNewProjectDir, 
   createRDSInstance, 
@@ -10,7 +8,6 @@ import {
   deleteProjectDir, 
   importRDSDatabase, 
   initJSProjectWithProfile, 
-  removeRDSPortInboundRule, 
 } from 'amplify-category-api-e2e-core';
 import axios from 'axios';
 import { existsSync, readFileSync } from 'fs-extra';
@@ -58,11 +55,6 @@ describe("RDS Tests", () => {
   });
 
   const setupDatabase = async () => {
-    // This test performs the below
-    // 1. Create a RDS Instance
-    // 2. Add the external IP address of the current machine to security group inbound rule to allow public access
-    // 3. Connect to the database and execute DDL
-
     const db = await createRDSInstance({
       identifier,
       engine: 'mysql',
@@ -70,43 +62,18 @@ describe("RDS Tests", () => {
       username,
       password,
       region,
+      publiclyAccessible: false,
     });
     port = db.port;
     host = db.endpoint;
-    await addRDSPortInboundRule({
-      region,
-      port: db.port,
-      cidrIp: publicIpCidr,
-    });
-
-    const dbAdapter = new RDSTestDataProvider({
-      host: db.endpoint,
-      port: db.port,
-      username,
-      password,
-      database: db.dbName,
-    });
-    await dbAdapter.runQuery([
-      "CREATE TABLE Contacts (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))",
-      "CREATE TABLE Person (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))",
-      "CREATE TABLE Employee (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))",
-    ]);
-    dbAdapter.cleanup();
   };
 
   const cleanupDatabase = async () => {
-    // 1. Remove the IP address from the security group
-    // 2. Delete the RDS instance
-    await removeRDSPortInboundRule({
-      region,
-      port: port,
-      cidrIp: publicIpCidr,
-    });
     await deleteDBInstance(identifier, region);
   };
 
   it("import workflow of mysql relational database with public access", async () => {
-    const apiName = 'rdsapi';
+    const apiName = 'rdsapivpc';
     await initJSProjectWithProfile(projRoot, {
       disableAmplifyAppCreation: false,
     });
@@ -116,37 +83,22 @@ describe("RDS Tests", () => {
     await amplifyPush(projRoot);
 
     await importRDSDatabase(projRoot, {
-      database,
+      database: 'mysql', // Import the default 'mysql' database
       host,
       port,
       username,
       password,
-      useVpc: false,
+      useVpc: true,
       apiExists: true,
     });
 
     const schemaContent = readFileSync(rdsSchemaFilePath, 'utf8');
     const schema = parse(schemaContent);
 
-    // Generated schema should contains the types and fields from the database
-    const contactsObjectType = schema.definitions.find(d => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Contacts') as ObjectTypeDefinitionNode;
-    const personObjectType = schema.definitions.find(d => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Person');
-    const employeeObjectType = schema.definitions.find(d => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Employee');
-
-    expect(contactsObjectType).toBeDefined();
-    expect(personObjectType).toBeDefined();
-    expect(employeeObjectType).toBeDefined();
-
-    // Verify the fields in the generated schema on type 'Contacts'
-    const contactsIdFieldType = contactsObjectType.fields.find(f => f.name.value === 'ID');
-    const contactsFirstNameFieldType = contactsObjectType.fields.find(f => f.name.value === 'FirstName');
-    const contactsLastNameFieldType = contactsObjectType.fields.find(f => f.name.value === 'LastName');
-
-    expect(contactsIdFieldType).toBeDefined();
-    expect(contactsFirstNameFieldType).toBeDefined();
-    expect(contactsLastNameFieldType).toBeDefined();
-
-    // PrimaryKey directive must be defined on Id field.
-    expect(contactsIdFieldType.directives.find(d => d.name.value === 'primaryKey')).toBeDefined();
+    // Generated schema should contain the types with model directive
+    // db is one of the default table in mysql database
+    const dbObjectType = schema.definitions.find(d => d.kind === 'ObjectTypeDefinition' && d.name.value === 'db') as ObjectTypeDefinitionNode;
+    expect(dbObjectType).toBeDefined();
+    expect(dbObjectType.directives.find(d => d.name.value === 'model')).toBeDefined();
   });
 }); 

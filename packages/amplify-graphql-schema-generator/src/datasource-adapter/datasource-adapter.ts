@@ -8,6 +8,8 @@ export abstract class DataSourceAdapter {
   public abstract mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName:string, columnType: string): FieldType;
   public abstract initialize(): Promise<void>;
   public abstract cleanup(): void;
+  public useVPC: boolean = false;
+  public vpcSchemaInspectorLambda: string | undefined = undefined;
 
   public async getModels(): Promise<Model[]> {
     const tableNames = await this.getTablesList();
@@ -31,4 +33,9 @@ export abstract class DataSourceAdapter {
     indexes.forEach(index => model.addIndex(index.name, index.getFields()));
     return model;
   } 
+
+  public useVpc(vpcSchemaInspectorLambda: string): void {
+    this.useVPC = true;
+    this.vpcSchemaInspectorLambda = vpcSchemaInspectorLambda;
+  }
 }

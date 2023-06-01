@@ -2,6 +2,7 @@ import { EnumType, Field, FieldDataType, FieldType, Index } from "../schema-repr
 import { DataSourceAdapter } from "./datasource-adapter";
 import { knex } from 'knex';
 import { printer } from '@aws-amplify/amplify-prompts';
+import { invokeSchemaInspectorLambda } from "../utils/vpc-helper";
 
 export interface MySQLDataSourceConfig {
   host: string;
@@ -80,7 +81,14 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
   }
 
   public async getTablesList(): Promise<string[]> {
-    const result = (await this.dbBuilder.raw("SHOW TABLES"))[0];
+    const SHOW_TABLES_QUERY = `SHOW TABLES`;
+    let result;
+    if (this.useVPC) {
+      result = eval(await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda!, this.config, SHOW_TABLES_QUERY));
+    }
+    else {
+      result = (await this.dbBuilder.raw(SHOW_TABLES_QUERY))[0];
+    }
 
     const tables: string[] = result.map((row: any) => {
       const [firstKey] = Object.keys(row);
@@ -116,10 +124,21 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
   }
 
   private async loadAllFields(): Promise<void> {
-    this.fields = [];
     // Query INFORMATION_SCHEMA.COLUMNS table and load fields of all the tables from the database
-    const columnResult = (await this.dbBuilder.raw(`SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '${this.config.database}'`))[0];
-    this.fields = columnResult.map((item: any) => {
+    const LOAD_FIELDS_QUERY = `SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '${this.config.database}'`;
+    this.fields = [];
+    let columnResult;
+    if (this.useVPC) {
+      columnResult = eval(await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda!, this.config, LOAD_FIELDS_QUERY));
+    }
+    else {
+      columnResult = (await this.dbBuilder.raw(LOAD_FIELDS_QUERY))[0];
+    }
+    this.setFields(columnResult);
+  }
+
+  private setFields(fields: any): void {
+    this.fields = fields.map((item: any) => {
       return {
         tableName: item["TABLE_NAME"],
         columnName: item["COLUMN_NAME"],
@@ -134,10 +153,22 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
   }
 
   private async loadAllIndexes(): Promise<void> {
-    this.indexes = [];
     // Query INFORMATION_SCHEMA.STATISTICS table and load indexes of all the tables from the database
-    const indexResult = (await this.dbBuilder.raw(`SELECT * FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = '${this.config.database}'`))[0];
-    this.indexes = indexResult.map((item: any) => {
+    const LOAD_INDEXES_QUERY = `SELECT * FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = '${this.config.database}'`;
+    this.indexes = [];
+    let indexResult;
+    if (this.useVPC) {
+      indexResult = eval(await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda!, this.config, LOAD_INDEXES_QUERY));
+    }
+    else {
+      indexResult = (await this.dbBuilder.raw(LOAD_INDEXES_QUERY))[0];
+    }
+    
+    this.setIndexes(indexResult);
+  }
+
+  private setIndexes(indexes: any): void {
+    this.indexes = indexes.map((item: any) => {
       return {
         tableName: item["TABLE_NAME"],
         indexName: item["INDEX_NAME"],
@@ -147,7 +178,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
         nullable: item["NULLABLE"] === 'YES' ? true : false,
       };
     });
-  }
+  } 
 
   public async getPrimaryKey(tableName: string): Promise<Index | null> {
     const key = this.indexes

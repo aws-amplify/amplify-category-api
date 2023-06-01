@@ -48,6 +48,7 @@ export interface ImportApiOptions {
   port: number;
   username: string;
   password: string;
+  useVpc?: boolean;
 }
 
 export const defaultOptions: AddApiOptions = {
@@ -1055,11 +1056,11 @@ export const removeTransformConfigValue = (projRoot: string, apiName: string, ke
   setTransformConfig(projRoot, apiName, transformConfig);
 };
 
-export function importRDSDatabase(cwd: string, opts: ImportApiOptions & { apiExists: boolean }) {
+export function importRDSDatabase(cwd: string, opts: ImportApiOptions & { apiExists?: boolean }) {
   const options = _.assign(defaultOptions, opts);
   const database = options.database;
   return new Promise<void>((resolve, reject) => {
-    const importCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['import', 'api'], { cwd, stripColors: true });
+    const importCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['import', 'api', '--debug'], { cwd, stripColors: true });
     if (!options.apiExists) {
       importCommands
       .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
@@ -1075,7 +1076,13 @@ export function importRDSDatabase(cwd: string, opts: ImportApiOptions & { apiExi
       .wait('Enter the name of the MySQL database to import:')
       .sendLine(database);
 
-    askDBInformation(importCommands, options);
+    promptDBInformation(importCommands, options);
+
+    if (options.useVpc) {
+      importCommands
+        .wait(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/)
+        .sendConfirmYes();
+    }
 
     importCommands
       .wait(/.*Successfully imported the database schema into.*/)
@@ -1093,7 +1100,7 @@ export function apiUpdateSecrets(cwd: string, opts: ImportApiOptions) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
     const updateSecretsCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['update-secrets', 'api'], { cwd, stripColors: true });
-    askDBInformation(updateSecretsCommands, options);
+    promptDBInformation(updateSecretsCommands, options);
     updateSecretsCommands.wait(`Successfully updated the secrets for ${options.database} database.`);
     updateSecretsCommands.run((err: Error) => {
         if (!err) {
@@ -1110,7 +1117,7 @@ export function apiGenerateSchema(cwd: string, opts: ImportApiOptions & { validC
   return new Promise<void>((resolve, reject) => {
     const generateSchemaCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['generate-schema', 'api'], { cwd, stripColors: true });
     if (!options?.validCredentials) {
-      askDBInformation(generateSchemaCommands, options);
+      promptDBInformation(generateSchemaCommands, options);
     }
     generateSchemaCommands.run((err: Error) => {
         if (!err) {
@@ -1142,7 +1149,7 @@ export function removeApi(cwd: string) {
   });
 };
 
-const askDBInformation = (executionContext: ExecutionContext, options: ImportApiOptions) => {
+const promptDBInformation = (executionContext: ExecutionContext, options: ImportApiOptions) => {
   const database = options.database;
   return executionContext
     .wait(`Enter the host for ${database} database:`)

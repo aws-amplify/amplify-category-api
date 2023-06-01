@@ -3,7 +3,7 @@ import {
   CreateDBInstanceCommand,
   waitUntilDBInstanceAvailable,
   DeleteDBInstanceCommand,
-  waitUntilDBInstanceDeleted 
+  CreateDBInstanceCommandInput
 } from "@aws-sdk/client-rds";
 import { EC2Client, AuthorizeSecurityGroupIngressCommand, RevokeSecurityGroupIngressCommand } from '@aws-sdk/client-ec2';
 import { knex } from 'knex';
@@ -26,9 +26,10 @@ export const createRDSInstance = async (config: {
   region: string,
   instanceClass?: string,
   storage?: number,
+  publiclyAccessible?: boolean,
 }): Promise<{endpoint: string, port: number, dbName: string}> => {
   const client = new RDSClient({ region: config.region });
-  const params = {
+  const params: CreateDBInstanceCommandInput = {
     /** input parameters */
     "DBInstanceClass": config.instanceClass ?? DEFAULT_DB_INSTANCE_TYPE,
     "DBInstanceIdentifier": config.identifier,
@@ -37,6 +38,7 @@ export const createRDSInstance = async (config: {
     "DBName": config.dbname,
     "MasterUsername": config.username,
     "MasterUserPassword": config.password,
+    "PubliclyAccessible": config.publiclyAccessible ?? true,
   };
   const command = new CreateDBInstanceCommand(params);
   

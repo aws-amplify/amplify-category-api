@@ -1,5 +1,5 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { SSMClient } from '../../../../../provider-utils/awscloudformation/utils/rds-secrets/ssmClient';
+import { SSMClient } from '../../../../../provider-utils/awscloudformation/utils/rds-resources/ssmClient';
 import aws from 'aws-sdk';
 
 const secretName = 'mock-test-secret-name';

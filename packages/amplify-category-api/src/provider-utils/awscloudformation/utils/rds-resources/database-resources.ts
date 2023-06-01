@@ -5,6 +5,8 @@ import { SSMClient } from './ssmClient';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { MySQLDataSourceAdapter, Schema, Engine, DataSourceAdapter, MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
 import { printer } from '@aws-amplify/amplify-prompts';
+import { DeleteFunctionCommand, LambdaClient } from '@aws-sdk/client-lambda';
+import { DeletePolicyCommand, DeleteRoleCommand, IAMClient } from '@aws-sdk/client-iam';
 
 const secretNames = ['database', 'host', 'port', 'username', 'password'];
 
@@ -92,22 +94,21 @@ export const storeConnectionSecrets = async (context: $TSContext, secrets: RDSCo
 };
 
 export const deleteConnectionSecrets = async (context: $TSContext, secretsKey: string, apiName: string, envName?: string) => {
-  let appId;
   const environmentName = stateManager.getCurrentEnvName();
-  try {
-    appId = stateManager.getAppID();
-  }
-  catch (error) {
+  const meta = stateManager.getMeta();
+  const { AmplifyAppId } = meta.providers.awscloudformation;
+  if (!AmplifyAppId) {
     printer.debug(`No AppId found when deleting parameters for environment ${envName}`);
     return;
   }
   const ssmClient = await SSMClient.getInstance(context);
   const secretParameterPaths = secretNames.map( secret => {
-    return getParameterStoreSecretPath(secret, secretsKey, apiName, environmentName, appId);
+    return getParameterStoreSecretPath(secret, secretsKey, apiName, environmentName, AmplifyAppId);
   });
   await ssmClient.deleteSecrets(secretParameterPaths);
 };
 
+// TODO: This is not used. Leaving it here for now. Generate schema step already checks for connection. 
 export const testDatabaseConnection = async (config: RDSConnectionSecrets) => {
   // Establish the connection
   let adapter: DataSourceAdapter;
@@ -121,14 +122,15 @@ export const testDatabaseConnection = async (config: RDSConnectionSecrets) => {
       printer.error('Only MySQL Data Source is supported.');
   }
 
-  try {
-    await adapter.initialize();
-  } catch(error) {
-    printer.error('Failed to connect to the specified RDS Data Source. Check the connection details and retry.');
-    adapter.cleanup();
-    throw(error);
-  }
-  adapter.cleanup();
+  // TODO: Is this really required? This slows down connecting from VPC.
+  // try {
+  //   await adapter.initialize();
+  // } catch(error) {
+  //   printer.error('Failed to connect to the specified RDS Data Source. Check the connection details and retry.');
+  //   adapter.cleanup();
+  //   throw(error);
+  // }
+  // adapter.cleanup();
 };
 
 export const getSecretsKey = async (): Promise<string> => {
@@ -150,4 +152,34 @@ export const getDatabaseName = async (context: $TSContext, apiName: string, secr
   }
 
   return secrets[0].secretValue;
+};
+
+export const removeVpcSchemaInspectorLambda = async (context) => {
+  
+  try {
+    // Delete the lambda function
+    const meta = stateManager.getMeta();
+    const { AmplifyAppId, Region } = meta.providers.awscloudformation;
+    const { amplify } = context;
+    const { envName } = amplify.getEnvInfo();
+    const lambdaName = `${AmplifyAppId}-rds-schema-inspector-${envName}`;
+
+    const client = new LambdaClient({ region: Region });
+    const command = new DeleteFunctionCommand({ FunctionName: lambdaName });
+    await client.send(command);
+
+    // Delete the role and policy
+    await deleteSchemaInspectorLambdaRole(lambdaName);
+  }
+  catch (error) {
+    // 1. Ignore if the AppId is not found error.
+    // 2. Schema introspection will exist only on databases imported from VPC. Ignore the error on environment deletion.
+  }
+};
+
+export const deleteSchemaInspectorLambdaRole = async (lambdaName: string) => {
+  const roleName = `${lambdaName}-execution-role`;
+  const client = new IAMClient({});
+  const command = new DeleteRoleCommand({ RoleName: roleName });
+  await client.send(command);
 };
