@@ -6,6 +6,7 @@ import {
   DescribeDBInstancesCommand,
   DescribeDBInstancesCommandOutput,
   DescribeDBInstancesCommandInput,
+  DescribeDBSubnetGroupsCommand,
 } from "@aws-sdk/client-rds";
 import { 
   IAMClient, 
@@ -96,9 +97,19 @@ const checkHostInDBClusters = async (hostname: string): Promise<VpcConfig | unde
   // TODO: Clusters do not return subnet and security group information, need to investigate how it can be fetched.
   return {
     vpcId: cluster.DBSubnetGroup,
-    subnetIds: [],
-    securityGroupIds: [],
+    subnetIds: await getSubnetIds(cluster.DBSubnetGroup),
+    securityGroupIds: cluster.VpcSecurityGroups.map((securityGroup) => securityGroup.VpcSecurityGroupId),
   };
+};
+
+const getSubnetIds = async (subnetGroupName: string): Promise<string[]> => {
+  const client = new RDSClient({});
+  const command = new DescribeDBSubnetGroupsCommand({
+    DBSubnetGroupName: subnetGroupName, 
+  });
+  const response = await client.send(command);
+  const subnetGroup = response.DBSubnetGroups?.find((subnetGroup) => subnetGroup?.DBSubnetGroupName == subnetGroupName);
+  return subnetGroup.Subnets?.map((subnet) => subnet.SubnetIdentifier) ?? [];
 };
 
 export const getHostVpc = async (hostname: string): Promise<VpcConfig | undefined> => {
