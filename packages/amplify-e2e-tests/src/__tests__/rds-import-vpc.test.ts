@@ -6,24 +6,23 @@ import {
   deleteDBInstance, 
   deleteProject, 
   deleteProjectDir, 
+  getProjectMeta, 
   importRDSDatabase, 
   initJSProjectWithProfile, 
 } from 'amplify-category-api-e2e-core';
-import axios from 'axios';
 import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
 import path from 'path';
 
 describe("RDS Tests", () => {
-  let publicIpCidr = "0.0.0.0/0";
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
   
   // Generate settings for RDS instance
   const username = db_user;
   const password = db_password;
-  const region = 'us-east-1';
   let port = 3306;
+  let region = 'us-east-1';
   const database = 'default_db';
   let host = 'localhost';
   const identifier = `integtest${db_identifier}`;
@@ -31,11 +30,6 @@ describe("RDS Tests", () => {
   let projRoot;
 
   beforeAll(async () => {
-    // Get the public IP of the machine running the test
-    const url = "http://api.ipify.org/";
-    const response = await axios(url);
-    publicIpCidr = `${response.data.trim()}/32`;
-    await setupDatabase();
   });
 
   afterAll(async () => {
@@ -77,6 +71,10 @@ describe("RDS Tests", () => {
     await initJSProjectWithProfile(projRoot, {
       disableAmplifyAppCreation: false,
     });
+    const meta = getProjectMeta(projRoot);
+    region = meta.providers.awscloudformation.Region;
+    await setupDatabase();
+
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
 
     await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
