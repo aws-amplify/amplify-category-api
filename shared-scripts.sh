@@ -238,7 +238,9 @@ function _cleanupE2EResources {
   loadCacheFromBuildJob
   cd packages/amplify-e2e-tests
   echo "Running clean up script"
-  yarn clean-cb-e2e-resources --buildBatchArn $CODEBUILD_INITIATOR
+  build_batch_arn=$(aws codebuild batch-get-builds --ids $CODEBUILD_BUILD_ID | jq -r -c '.builds[0].buildBatchArn')
+  echo "Cleanup resources for batch build $build_batch_arn"
+  yarn clean-cb-e2e-resources --buildBatchArn $build_batch_arn
 }
 
 # The following functions are forked from circleci local publish helper
