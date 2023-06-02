@@ -276,5 +276,9 @@ export const invokeSchemaInspectorLambda = async (funcName, dbConfig, query, reg
 
   const { Payload } = await client.send(command);
   const result = Buffer.from(Payload).toString();
-  return result;
+  const resultJson = JSON.parse(result);
+  if (resultJson.errorMessage) {
+    throw new Error(`Error occurred while fetching the database metadata: ${resultJson.errorMessage}`);
+  }
+  return resultJson;
 };

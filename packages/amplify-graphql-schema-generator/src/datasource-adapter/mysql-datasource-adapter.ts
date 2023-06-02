@@ -84,7 +84,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     const SHOW_TABLES_QUERY = `SHOW TABLES`;
     let result;
     if (this.useVPC) {
-      result = eval(await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda!, this.config, SHOW_TABLES_QUERY, this.vpcLambdaRegion));
+      result = await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda!, this.config, SHOW_TABLES_QUERY, this.vpcLambdaRegion);
     }
     else {
       result = (await this.dbBuilder.raw(SHOW_TABLES_QUERY))[0];
@@ -129,7 +129,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     this.fields = [];
     let columnResult;
     if (this.useVPC) {
-      columnResult = eval(await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda!, this.config, LOAD_FIELDS_QUERY, this.vpcLambdaRegion));
+      columnResult = await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda!, this.config, LOAD_FIELDS_QUERY, this.vpcLambdaRegion);
     }
     else {
       columnResult = (await this.dbBuilder.raw(LOAD_FIELDS_QUERY))[0];
@@ -158,7 +158,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     this.indexes = [];
     let indexResult;
     if (this.useVPC) {
-      indexResult = eval(await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda!, this.config, LOAD_INDEXES_QUERY, this.vpcLambdaRegion));
+      indexResult = await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda!, this.config, LOAD_INDEXES_QUERY, this.vpcLambdaRegion);
     }
     else {
       indexResult = (await this.dbBuilder.raw(LOAD_INDEXES_QUERY))[0];

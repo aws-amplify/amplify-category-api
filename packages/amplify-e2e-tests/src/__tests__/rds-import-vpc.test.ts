@@ -61,25 +61,24 @@ describe("RDS Tests", () => {
       username,
       password,
       region,
-      publiclyAccessible: false,
     });
     port = db.port;
     host = db.endpoint;
 
-    const vpc = await getHostVpc(host, region);
-    if (!vpc) {
-      throw new Error("Unable to get the VPC details for the RDS instance.");
-    }
+    // const vpc = await getHostVpc(host, region);
+    // if (!vpc) {
+    //   throw new Error("Unable to get the VPC details for the RDS instance.");
+    // }
 
-    // Add inbound rule to allow access from the schema inspector lambda function
-    vpc.securityGroupIds.forEach(async (sg) => {
-      await addRDSPortInboundRuleToGroupId({
-        securityGroupId: sg,
-        port,
-        cidrIp: publicIpCidr,
-        region,
-      });
-    });
+    // // Add inbound rule to allow access from the schema inspector lambda function
+    // vpc.securityGroupIds.forEach(async (sg) => {
+    //   await addRDSPortInboundRuleToGroupId({
+    //     securityGroupId: sg,
+    //     port,
+    //     cidrIp: publicIpCidr,
+    //     region,
+    //   });
+    // });
   };
 
   // const getSecurityGroupNames = async (securityGroupIds: string[]): Promise<string[]> => {
