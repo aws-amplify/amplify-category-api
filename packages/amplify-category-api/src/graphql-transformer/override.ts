@@ -6,7 +6,8 @@ import _ from "lodash";
 import { stateManager } from "@aws-amplify/amplify-cli-core";
 import { StackManager } from "@aws-amplify/graphql-transformer-core";
 import { AmplifyApiGraphQlResourceStackTemplate } from "@aws-amplify/graphql-transformer-interfaces";
-import { convertToAppsyncResourceObj, getStackMeta, ConstructResourceMeta } from "./types";
+import { ConstructResourceMeta } from "./types/types";
+import { convertToAppsyncResourceObj, getStackMeta } from "./types/utils";
 
 /**
  *
