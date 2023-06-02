@@ -2,33 +2,37 @@ import { CfnResource } from "aws-cdk-lib";
 import * as fs from "fs-extra";
 import * as vm from "vm2";
 import * as path from "path";
-import _ from 'lodash';
+import _ from "lodash";
 import { stateManager } from "@aws-amplify/amplify-cli-core";
 import { StackManager } from "@aws-amplify/graphql-transformer-core";
 import { AmplifyApiGraphQlResourceStackTemplate } from "@aws-amplify/graphql-transformer-interfaces";
-import { convertToAppsyncResourceObj, getStackMeta } from "./utils";
-import { ConstructResourceMeta } from "./types";
+import { convertToAppsyncResourceObj, getStackMeta, ConstructResourceMeta } from "./types";
 
+/**
+ *
+ * @param stackManager
+ * @param overrideDir
+ */
 export function applyOverride(stackManager: StackManager, overrideDir: string): AmplifyApiGraphQlResourceStackTemplate {
-  const overrideFilePath = path.join(overrideDir, 'build', 'override.js');
+  const overrideFilePath = path.join(overrideDir, "build", "override.js");
   if (!fs.existsSync(overrideFilePath)) {
     return {};
   }
 
   const stacks: string[] = [];
   const amplifyApiObj: any = {};
-  stackManager.rootStack.node.findAll().forEach((node) => {
+  stackManager.rootStack.node.findAll().forEach(node => {
     const resource = node as CfnResource;
     if (resource.cfnResourceType === "AWS::CloudFormation::Stack") {
       stacks.push(node.node.id.split(".")[0]);
     }
   });
 
-  stackManager.rootStack.node.findAll().forEach((node) => {
+  stackManager.rootStack.node.findAll().forEach(node => {
     const resource = node as CfnResource;
     let pathArr;
     if (node.node.id === "Resource") {
-      pathArr = node.node.path.split("/").filter((key) => key !== node.node.id);
+      pathArr = node.node.path.split("/").filter(key => key !== node.node.id);
     } else {
       pathArr = node.node.path.split("/");
     }
@@ -64,15 +68,15 @@ export function applyOverride(stackManager: StackManager, overrideDir: string): 
     require: {
       context: "sandbox",
       builtin: ["path"],
-      external: true,
-    },
+      external: true
+    }
   });
   // Remove these when moving override up to amplify-category-api level
   const { envName } = stateManager.getLocalEnvInfo();
   const { projectName } = stateManager.getProjectConfig();
   const projectInfo = {
     envName,
-    projectName,
+    projectName
   };
   try {
     sandboxNode.run(overrideCode, overrideFilePath).override(appsyncResourceObj, projectInfo);
@@ -82,14 +86,17 @@ export function applyOverride(stackManager: StackManager, overrideDir: string): 
   return appsyncResourceObj;
 }
 
+/**
+ *
+ */
 export class InvalidOverrideError extends Error {
   details: string;
   resolution: string;
   constructor(error: Error) {
-    super('Executing overrides failed.');
-    this.name = 'InvalidOverrideError';
+    super("Executing overrides failed.");
+    this.name = "InvalidOverrideError";
     this.details = error.message;
-    this.resolution = 'There may be runtime errors in your overrides file. If so, fix the errors and try again.';
+    this.resolution = "There may be runtime errors in your overrides file. If so, fix the errors and try again.";
     if ((Error as any).captureStackTrace) {
       (Error as any).captureStackTrace(this, InvalidOverrideError);
     }
