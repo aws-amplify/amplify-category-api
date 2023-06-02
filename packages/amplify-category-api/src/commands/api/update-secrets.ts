@@ -11,18 +11,12 @@ import {
 } from '@aws-amplify/graphql-transformer-core';
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { storeConnectionSecrets, testDatabaseConnection, getSecretsKey, getDatabaseName } from '../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
-import { PREVIEW_BANNER } from '../../category-constants';
 
 const subcommand = 'update-secrets';
 
 export const name = subcommand;
 
 export const run = async (context: $TSContext) => {
-  printer.warn(PREVIEW_BANNER);
-
-  // Disable the command for now
-  throw new Error("This command has been disabled.");
-  
   const apiName = getAppSyncAPIName();
   const apiResourceDir = getAPIResourceDir(apiName);
 
