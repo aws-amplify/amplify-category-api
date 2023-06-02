@@ -1,5 +1,7 @@
+import { getHostVpc } from '@aws-amplify/graphql-schema-generator';
 import {
   addApiWithoutSchema, 
+  addRDSPortInboundRule, 
   amplifyPush, 
   createNewProjectDir, 
   createRDSInstance, 
@@ -19,6 +21,7 @@ describe("RDS Tests", () => {
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
   
   // Generate settings for RDS instance
+  const publicIpCidr = "0.0.0.0/0";
   const username = db_user;
   const password = db_password;
   let port = 3306;
@@ -60,6 +63,21 @@ describe("RDS Tests", () => {
     });
     port = db.port;
     host = db.endpoint;
+
+    const vpc = await getHostVpc(host, region);
+    if (!vpc) {
+      throw new Error("Unable to get the VPC details for the RDS instance.");
+    }
+
+    const securityGroups = vpc.securityGroupIds;
+    securityGroups.forEach(async (sg) => {
+      await addRDSPortInboundRule({
+        securityGroup: sg,
+        port,
+        cidrIp: publicIpCidr,
+        region,
+      });
+    });
   };
 
   const cleanupDatabase = async () => {
@@ -74,7 +92,7 @@ describe("RDS Tests", () => {
     const meta = getProjectMeta(projRoot);
     region = meta.providers.awscloudformation.Region;
     await setupDatabase();
-
+  
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
 
     await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
