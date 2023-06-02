@@ -6,11 +6,22 @@
 
 import { BackedDataSource } from 'aws-cdk-lib/aws-appsync';
 import { BaseDataSource } from 'aws-cdk-lib/aws-appsync';
+import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
+import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
+import { CfnEventSourceMapping } from 'aws-cdk-lib/aws-lambda';
+import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
+import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
+import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
+import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
 import { CfnParameter } from 'aws-cdk-lib';
 import { CfnParameterProps } from 'aws-cdk-lib';
+import { CfnPolicy } from 'aws-cdk-lib/aws-iam';
 import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { CfnResource } from 'aws-cdk-lib';
+import { CfnRole } from 'aws-cdk-lib/aws-iam';
+import { CfnStack } from 'aws-cdk-lib';
+import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
@@ -49,6 +60,26 @@ import { TypeDefinitionNode } from 'graphql';
 import { TypeSystemDefinitionNode } from 'graphql';
 import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
+
+// @public (undocumented)
+export interface AmplifyApiGraphQlResourceStackTemplate {
+    // Warning: (ae-forgotten-export) The symbol "AppsyncApiStack" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    api?: Partial<AppsyncApiStack>;
+    // (undocumented)
+    function?: Partial<FunctionDirectiveStack & AppsyncStackCommon>;
+    // (undocumented)
+    http?: Partial<HttpsDirectiveStack & AppsyncStackCommon>;
+    // (undocumented)
+    models?: Partial<Record<string, ModelDirectiveStack>>;
+    // (undocumented)
+    opensearch?: Partial<OpenSearchDirectiveStack & AppsyncStackCommon>;
+    // Warning: (ae-forgotten-export) The symbol "PredictionsDirectiveStack" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    predictions?: Partial<PredictionsDirectiveStack & AppsyncStackCommon>;
+}
 
 // @public (undocumented)
 export interface APIIAMResourceProvider {
@@ -127,6 +158,12 @@ export interface AppSyncFunctionConfigurationProvider extends IConstruct {
     readonly functionId: string;
 }
 
+// @public (undocumented)
+export type AppsyncStackCommon = {
+    resolvers?: Record<string, CfnResolver>;
+    appsyncFunctions?: Record<string, CfnFunctionConfiguration>;
+};
+
 // Warning: (ae-forgotten-export) The symbol "NoneDataSourceProvider" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -173,6 +210,16 @@ export type FieldMapEntry = {
 };
 
 // @public (undocumented)
+export interface FunctionDirectiveStack {
+    // (undocumented)
+    lambdaDataSource: Record<string, CfnDataSource>;
+    // (undocumented)
+    lambdaDataSourceRole: Record<string, CfnRole>;
+    // (undocumented)
+    lambdaDataSourceServiceRoleDefaultPolicy: Record<string, CfnPolicy>;
+}
+
+// @public (undocumented)
 export interface GraphQLAPIProvider extends IConstruct {
     // (undocumented)
     addSchemaDependency: (construct: CfnResource) => boolean;
@@ -195,6 +242,16 @@ export interface GraphQLAPIProvider extends IConstruct {
 }
 
 // @public (undocumented)
+export interface HttpsDirectiveStack {
+    // (undocumented)
+    httpDataSourceServiceRole?: Record<string, CfnRole>;
+    // (undocumented)
+    httpDataSourceServiceRoleDefaultPolicy?: Record<string, CfnPolicy>;
+    // (undocumented)
+    httpsDataSource?: Record<string, CfnDataSource>;
+}
+
+// @public (undocumented)
 export interface InlineMappingTemplateProvider {
     // (undocumented)
     bind: (scope: Construct) => string;
@@ -214,6 +271,11 @@ export enum MappingTemplateType {
     // (undocumented)
     S3_LOCATION = "S3_LOCATION"
 }
+
+// Warning: (ae-forgotten-export) The symbol "DDBModelDirectiveStack" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type ModelDirectiveStack = AppsyncStackCommon & DDBModelDirectiveStack;
 
 // @public (undocumented)
 export type ModelFieldMap = {
@@ -241,6 +303,34 @@ export interface NestedStacks {
     stackMapping: Record<string, string>;
     // (undocumented)
     stacks: Record<string, Template>;
+}
+
+// @public (undocumented)
+export interface OpenSearchDirectiveStack {
+    // (undocumented)
+    CloudwatchLogsAccess?: CfnPolicy;
+    // (undocumented)
+    OpenSearchAccessIAMRole?: CfnRole;
+    // (undocumented)
+    OpenSearchAccessIAMRoleDefaultPolicy?: CfnPolicy;
+    // (undocumented)
+    OpenSearchDataSource?: CfnDataSource;
+    // (undocumented)
+    OpenSearchDomain?: CfnDomain;
+    // (undocumented)
+    OpenSearchModelLambdaMapping?: Record<string, CfnEventSourceMapping>;
+    // (undocumented)
+    OpenSearchStreamingLambdaFunction?: CfnFunction;
+    // (undocumented)
+    OpenSearchStreamingLambdaIAMRole?: CfnRole;
+    // (undocumented)
+    OpenSearchStreamingLambdaIAMRoleDefaultPolicy?: CfnPolicy;
+}
+
+// @public (undocumented)
+export interface OverridesProvider {
+    // (undocumented)
+    (): AmplifyApiGraphQlResourceStackTemplate;
 }
 
 // @public (undocumented)
@@ -456,6 +546,8 @@ export interface TransformerContextProvider {
     modelToDatasourceMap: Map<string, DatasourceType>;
     // (undocumented)
     output: TransformerContextOutputProvider;
+    // (undocumented)
+    overrides: OverridesProvider;
     // (undocumented)
     providerRegistry: TransformerProviderRegistry;
     // (undocumented)

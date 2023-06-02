@@ -4,6 +4,7 @@
 
 ```ts
 
+import { AmplifyApiGraphQlResourceStackTemplate } from '@aws-amplify/graphql-transformer-interfaces';
 import { APIIAMResourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ApiKeyConfig } from 'aws-cdk-lib/aws-appsync';
 import { App } from 'aws-cdk-lib';
@@ -14,22 +15,11 @@ import { AuthorizationConfig } from 'aws-cdk-lib/aws-appsync';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
-import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
-import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
 import { CfnElement } from 'aws-cdk-lib';
-import { CfnEventSourceMapping } from 'aws-cdk-lib/aws-lambda';
-import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
-import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
-import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
 import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
 import { CfnParameter } from 'aws-cdk-lib';
 import { CfnParameterProps } from 'aws-cdk-lib';
-import { CfnPolicy } from 'aws-cdk-lib/aws-iam';
-import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { CfnResource } from 'aws-cdk-lib';
-import { CfnRole } from 'aws-cdk-lib/aws-iam';
-import { CfnStack } from 'aws-cdk-lib';
-import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -66,6 +56,7 @@ import { NamedTypeNode } from 'graphql';
 import { NestedStackProps } from 'aws-cdk-lib';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeExtensionNode } from 'graphql';
+import { OverridesProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { S3MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { SchemaDefinitionNode } from 'graphql';
@@ -98,35 +89,6 @@ import { TypeNode } from 'graphql';
 import { TypeSystemDefinitionNode } from 'graphql';
 import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
-
-// @public (undocumented)
-export interface AmplifyApiGraphQlResourceStackTemplate {
-    // Warning: (ae-forgotten-export) The symbol "AppsyncApiStack" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    api?: Partial<AppsyncApiStack>;
-    // Warning: (ae-forgotten-export) The symbol "FunctionDirectiveStack" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    function?: Partial<FunctionDirectiveStack & AppsyncStackCommon>;
-    // Warning: (ae-forgotten-export) The symbol "HttpsDirectiveStack" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "AppsyncStackCommon" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    http?: Partial<HttpsDirectiveStack & AppsyncStackCommon>;
-    // Warning: (ae-forgotten-export) The symbol "ModelDirectiveStack" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    models?: Partial<Record<string, ModelDirectiveStack>>;
-    // Warning: (ae-forgotten-export) The symbol "OpenSearchDirectiveStack" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    opensearch?: Partial<OpenSearchDirectiveStack & AppsyncStackCommon>;
-    // Warning: (ae-forgotten-export) The symbol "PredictionsDirectiveStack" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    predictions?: Partial<PredictionsDirectiveStack & AppsyncStackCommon>;
-}
 
 // @public (undocumented)
 export const APICategory = "api";
@@ -252,8 +214,6 @@ export const getTable: (ctx: TransformerContextProvider, object: ObjectTypeDefin
 // @public (undocumented)
 export class GraphQLTransform {
     constructor(options: GraphQLTransformOptions);
-    // (undocumented)
-    applyOverride: (stackManager: StackManager) => AmplifyApiGraphQlResourceStackTemplate;
     // Warning: (ae-forgotten-export) The symbol "TransformerOutput" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "GraphQLApi" needs to be exported by the entry point index.d.ts
     //
@@ -392,15 +352,6 @@ export class InvalidMigrationError extends Error {
 }
 
 // @public (undocumented)
-export class InvalidOverrideError extends Error {
-    constructor(error: Error);
-    // (undocumented)
-    details: string;
-    // (undocumented)
-    resolution: string;
-}
-
-// @public (undocumented)
 export class InvalidTransformerError extends Error {
     constructor(message: string);
 }
@@ -449,8 +400,7 @@ export class ObjectDefinitionWrapper {
 // @public (undocumented)
 export type OverrideConfig = {
     overrideFlag: boolean;
-    overrideDir: string;
-    resourceName: string;
+    applyOverride: (stackManager: StackManager) => AmplifyApiGraphQlResourceStackTemplate;
 };
 
 // @public (undocumented)
