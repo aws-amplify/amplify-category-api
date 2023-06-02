@@ -192,6 +192,16 @@ function _runE2ETestsLinux {
     _loadTestAccountCredentials
     retry runE2eTest
 }
+function _runGqlE2ETests {
+    echo "RUN GraphQL E2E tests"
+    loadCacheFromBuildJob
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    _installCLIFromLocalRegistry  
+    amplify version
+    cd packages/graphql-transformers-e2e-tests/
+    _loadTestAccountCredentials
+    retry yarn run e2e --maxWorkers=4 $TEST_SUITE
+}
 function _runMigrationV5Test {
     echo RUN Migration V5 Test
     loadCacheFromBuildJob
@@ -300,7 +310,7 @@ function retry {
 
     resetAwsAccountCredentials
     TEST_SUITE=${TEST_SUITE:-"TestSuiteNotSet"}
-    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-category-api-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE
+    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-category-api-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE || true
     echo "Attempt $n succeeded."
     exit 0 # don't fail the step if putting the metric fails
 }

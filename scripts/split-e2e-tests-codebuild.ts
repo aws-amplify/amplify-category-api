@@ -37,10 +37,20 @@ const CODEBUILD_GENERATE_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_w
 const RUN_SOLO = [
   'src/__tests__/containers-api-1.test.ts',
   'src/__tests__/containers-api-2.test.ts',
+  'src/__tests__/graphql-v2/searchable-datastore.test.ts',
+  'src/__tests__/schema-searchable.test.ts',
+  'src/__tests__/schema-auth-1.test.ts',
+  'src/__tests__/schema-auth-5.test.ts',
   'src/__tests__/schema-auth-11.test.ts',
   'src/__tests__/schema-auth-15.test.ts',
+  'src/__tests__/schema-iterative-update-4.test.ts',
+  'src/__tests__/schema-iterative-update-5.test.ts',
+  'src/__tests__/schema-key.test.ts',
   'src/__tests__/schema-connection.test.ts',
   'src/__tests__/transformer-migrations/searchable-migration.test.ts',
+  "src/__tests__/transformer-migrations/model-migration.test.ts",
+
+  'src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts'
 ];
 const EXCLUDE_E2E_TESTS = [
   'src/__tests__/transformer-migrations/searchable-migration.test.ts',
@@ -218,6 +228,21 @@ function main(): void {
       return tests.filter((testName) => !EXCLUDE_E2E_TESTS.includes(testName))
     }
   );
+  const splitGqlTests = splitTests(
+    {
+      identifier: 'gql_e2e_tests',
+      buildspec: 'codebuild_specs/graphql_e2e_tests.yml',
+      env: {
+        'compute-type': 'BUILD_GENERAL1_MEDIUM',
+      },
+      'depend-on': ['publish_to_local_registry'],
+    },
+    join(REPO_ROOT, 'packages', 'graphql-transformers-e2e-tests'),
+    false,
+    (tests: string[]) => {
+      return tests.filter((testName) => !EXCLUDE_E2E_TESTS.includes(testName))
+    }
+  );
   const splitMigrationV5Tests = splitTests(
     {
       identifier: 'migration_tests_v5',
@@ -263,7 +288,7 @@ function main(): void {
       return tests.filter((testName) => migrationFromV10Tests.find((t) => t === testName));
     },
   );
-  let allBuilds = [...splitE2ETests, ...splitMigrationV5Tests, ...splitMigrationV6Tests, ...splitMigrationV10Tests];
+  let allBuilds = [...splitE2ETests,...splitGqlTests, ...splitMigrationV5Tests, ...splitMigrationV6Tests, ...splitMigrationV10Tests];
   const cleanupResources = {
     identifier: 'cleanup_e2e_resources',
     buildspec: 'codebuild_specs/cleanup_e2e_resources.yml',
