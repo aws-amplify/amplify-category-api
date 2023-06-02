@@ -143,6 +143,34 @@ export const addRDSPortInboundRule = async (config: {
   } 
 };
 
+export const addRDSPortInboundRuleToGroupId = async (config: {
+  region: string,
+  port: number,
+  securityGroupId: string,
+  cidrIp: string,
+}): Promise<void> => {
+  const ec2_client = new EC2Client({
+    region: config.region,
+  });
+  
+  const command = new AuthorizeSecurityGroupIngressCommand({
+    GroupId: config.securityGroupId,
+    FromPort: config.port,
+    ToPort: config.port,
+    IpProtocol: "TCP",
+    CidrIp: config.cidrIp,
+  });
+  
+  try {
+    await ec2_client.send(command);
+  } catch (error) {
+    console.log(error);
+    // Ignore this error
+    // It usually throws error if the security group rule is a duplicate
+    // If the rule is not added, we will get an error while establishing connection to the database
+  } 
+};
+
 /**
  * Removes the given Inbound rule to the security group
  * @param config Inbound rule configuration
