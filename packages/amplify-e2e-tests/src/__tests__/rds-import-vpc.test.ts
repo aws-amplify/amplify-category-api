@@ -1,4 +1,5 @@
 import { getHostVpc } from '@aws-amplify/graphql-schema-generator';
+import { DescribeSecurityGroupsCommand, EC2Client } from '@aws-sdk/client-ec2';
 import {
   addApiWithoutSchema, 
   addRDSPortInboundRule, 
@@ -69,7 +70,8 @@ describe("RDS Tests", () => {
       throw new Error("Unable to get the VPC details for the RDS instance.");
     }
 
-    const securityGroups = vpc.securityGroupIds;
+    // Add inbound rule to allow access from the schema inspector lambda function
+    const securityGroups = await getSecurityGroupNames(vpc.securityGroupIds);
     securityGroups.forEach(async (sg) => {
       await addRDSPortInboundRule({
         securityGroup: sg,
@@ -78,6 +80,14 @@ describe("RDS Tests", () => {
         region,
       });
     });
+  };
+
+  const getSecurityGroupNames = async (securityGroupIds: string[]): Promise<string[]> => {
+    const ec2Client = new EC2Client({ region });
+    const securityGroups = await ec2Client.send(new DescribeSecurityGroupsCommand({
+      GroupIds: securityGroupIds,
+    }));
+    return securityGroups.SecurityGroups.map(sg => sg.GroupName);
   };
 
   const cleanupDatabase = async () => {
