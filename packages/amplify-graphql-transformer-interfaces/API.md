@@ -533,6 +533,8 @@ export interface TransformerContextProvider {
     // (undocumented)
     getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
     // (undocumented)
+    getResourceOverrides: OverridesProvider;
+    // (undocumented)
     inputDocument: DocumentNode;
     // (undocumented)
     isProjectUsingDataStore(): boolean;
@@ -546,8 +548,6 @@ export interface TransformerContextProvider {
     modelToDatasourceMap: Map<string, DatasourceType>;
     // (undocumented)
     output: TransformerContextOutputProvider;
-    // (undocumented)
-    overrides: OverridesProvider;
     // (undocumented)
     providerRegistry: TransformerProviderRegistry;
     // (undocumented)

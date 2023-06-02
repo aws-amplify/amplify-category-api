@@ -38,7 +38,7 @@ export interface TransformerContextProvider {
 
   isProjectUsingDataStore(): boolean;
   getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
-  overrides: OverridesProvider;
+  getResourceOverrides: OverridesProvider;
 }
 
 export type TransformerBeforeStepContextProvider = Pick<

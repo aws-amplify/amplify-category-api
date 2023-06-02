@@ -41,7 +41,7 @@ import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerFactoryArgs, TransformerProjectOptions } from './transformer-options-types';
 import { getExistingConnectionSecretNames, getSecretsKey, getDatabaseName } from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { getResourceOverrides } from './override';
+import { applyOverride } from './override';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
@@ -249,7 +249,7 @@ const _buildProject = async (context: $TSContext, opts: TransformerProjectOption
     resolverConfig: opts.resolverConfig,
     overrideConfig: {
       applyOverride: (stackManager: StackManager) => {
-        return getResourceOverrides(stackManager, pathManager.getBackendDirPath(), 'apiname')
+        return applyOverride(stackManager, path.join(pathManager.getBackendDirPath(), 'api', getAppSyncAPIName()));
       },
       ...opts.overrideConfig
     },

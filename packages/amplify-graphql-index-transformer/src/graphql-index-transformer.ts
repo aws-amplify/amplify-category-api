@@ -69,7 +69,7 @@ export class IndexTransformer extends TransformerPluginBase {
   public after = (ctx: TransformerContextProvider): void => {
     if (!ctx.isProjectUsingDataStore()) return;
 
-    const overriddenResources = ctx.overrides();
+    const overriddenResources = ctx.getResourceOverrides();
     // construct sync VTL code
     this.resolverMap.forEach((syncVTLContent, resource) => {
       if (syncVTLContent) {

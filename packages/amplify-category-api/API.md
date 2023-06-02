@@ -134,9 +134,6 @@ export const getPermissionPolicies: (context: $TSContext, resourceOpsMapping: Re
 export const getResolverConfig: (context: $TSContext, resourceName: string) => Promise<ResolverConfig>;
 
 // @public (undocumented)
-export function getResourceOverrides(stackManager: StackManager, backendDir: string, apiName: string): AmplifyApiGraphQlResourceStackTemplate;
-
-// @public (undocumented)
 export const getTransformerVersion: (context: any) => Promise<number>;
 
 // @public (undocumented)

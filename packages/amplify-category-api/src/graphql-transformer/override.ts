@@ -95,7 +95,3 @@ export class InvalidOverrideError extends Error {
     }
   }
 }
-
-export function getResourceOverrides(stackManager: StackManager, backendDir: string, apiName: string): AmplifyApiGraphQlResourceStackTemplate {
-  return applyOverride(stackManager, path.join(backendDir, 'api', apiName));
-}

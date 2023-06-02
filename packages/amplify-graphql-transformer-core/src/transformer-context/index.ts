@@ -60,7 +60,7 @@ export class TransformerContext implements TransformerContextProvider {
   private resolverConfig: ResolverConfig | undefined;
   public readonly modelToDatasourceMap: Map<string, DatasourceType>;
   public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
-  public readonly overrides: OverridesProvider;
+  public readonly getResourceOverrides: OverridesProvider;
 
   public metadata: TransformerContextMetadata;
   constructor(
@@ -74,7 +74,7 @@ export class TransformerContext implements TransformerContextProvider {
     featureFlags?: FeatureFlagProvider,
     resolverConfig?: ResolverConfig,
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
-    overrides?: (stackManager: StackManager) => AmplifyApiGraphQlResourceStackTemplate,
+    getResourceOverrides?: (stackManager: StackManager) => AmplifyApiGraphQlResourceStackTemplate,
   ) {
     this.output = new TransformerOutput(inputDocument);
     this.resolvers = new ResolverManager();
@@ -91,7 +91,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.metadata = new TransformerContextMetadata();
     this.modelToDatasourceMap = modelToDatasourceMap;
     this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
-    this.overrides = () => overrides ? overrides(this.stackManager as StackManager) : {};
+    this.getResourceOverrides = () => getResourceOverrides ? getResourceOverrides(this.stackManager as StackManager) : {};
   }
 
   /**
