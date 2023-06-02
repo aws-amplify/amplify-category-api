@@ -215,7 +215,8 @@ describe('ownerCanReassignWarning', () => {
       test('malformed field-level auth will continue to warn', () => {
         const transform = transformTestSchema(`
           type Todo @model(subscriptions: null) @auth(rules: [
-            { allow: owner, provider: ${provider} ownerField: "writer" }
+            { allow: owner, provider: ${provider}, ownerField: "writer" }
+            { allow: owner, provider: ${provider}, operations: [read] }
           ]) {
             id: ID!
             description: String
