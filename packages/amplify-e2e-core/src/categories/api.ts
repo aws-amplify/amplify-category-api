@@ -1086,17 +1086,7 @@ export function importRDSDatabase(cwd: string, opts: ImportApiOptions & { apiExi
     if (options.useVpc) {
       importCommands
         .wait(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/)
-        .sendConfirmYes()
-        // Connecting to the databases in VPC doesn't work in CI as the subnets need very specific configuration and inbound rules.
-        .wait(/.*Error occurred while fetching the database metadata.*/)
-        .run((err: Error) => {
-          if (!err) {
-            resolve();
-          } else {
-            reject(err);
-          }
-        });
-      return;
+        .sendConfirmYes();
     }
 
     importCommands

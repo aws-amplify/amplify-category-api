@@ -1,8 +1,5 @@
-import { getHostVpc } from '@aws-amplify/graphql-schema-generator';
-import { DescribeSecurityGroupsCommand, EC2Client } from '@aws-sdk/client-ec2';
 import {
   addApiWithoutSchema, 
-  amplifyPush, 
   createNewProjectDir, 
   createRDSInstance, 
   deleteDBInstance, 
@@ -14,13 +11,13 @@ import {
 } from 'amplify-category-api-e2e-core';
 import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
+import { ObjectTypeDefinitionNode, parse } from 'graphql';
 import path from 'path';
 
 describe("RDS Tests", () => {
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
   
   // Generate settings for RDS instance
-  const publicIpCidr = "0.0.0.0/0";
   const username = db_user;
   const password = db_password;
   let port = 3306;
@@ -80,8 +77,7 @@ describe("RDS Tests", () => {
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
 
     await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
-    await amplifyPush(projRoot);
-
+    
     // This only verifies the prompt for VPC access. Does not verify the actual import.
     await importRDSDatabase(projRoot, {
       database: 'mysql', // Import the default 'mysql' database
@@ -93,14 +89,13 @@ describe("RDS Tests", () => {
       apiExists: true,
     });
 
-    // TODO: Enable the below when we resolve the issue with connecting to RDS in VPC from CI
-    // const schemaContent = readFileSync(rdsSchemaFilePath, 'utf8');
-    // const schema = parse(schemaContent);
+    const schemaContent = readFileSync(rdsSchemaFilePath, 'utf8');
+    const schema = parse(schemaContent);
 
-    // // Generated schema should contain the types with model directive
-    // // db is one of the default table in mysql database
-    // const dbObjectType = schema.definitions.find(d => d.kind === 'ObjectTypeDefinition' && d.name.value === 'db') as ObjectTypeDefinitionNode;
-    // expect(dbObjectType).toBeDefined();
-    // expect(dbObjectType.directives.find(d => d.name.value === 'model')).toBeDefined();
+    // Generated schema should contain the types with model directive
+    // db is one of the default table in mysql database
+    const dbObjectType = schema.definitions.find(d => d.kind === 'ObjectTypeDefinition' && d.name.value === 'db') as ObjectTypeDefinitionNode;
+    expect(dbObjectType).toBeDefined();
+    expect(dbObjectType.directives.find(d => d.name.value === 'model')).toBeDefined();
   });
 }); 

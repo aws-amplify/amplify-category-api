@@ -2,7 +2,6 @@ import {
   RDSTestDataProvider, 
   addApiWithoutSchema, 
   addRDSPortInboundRule, 
-  amplifyPush, 
   createNewProjectDir, 
   createRDSInstance, 
   deleteDBInstance, 
@@ -113,8 +112,7 @@ describe("RDS Tests", () => {
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
 
     await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
-    await amplifyPush(projRoot);
-
+    
     await importRDSDatabase(projRoot, {
       database,
       host,
