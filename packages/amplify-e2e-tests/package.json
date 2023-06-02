@@ -43,9 +43,7 @@
     "uuid": "^8.3.2",
     "ws": "^7.5.7",
     "yargs": "^15.1.0",
-    "graphql": "^15.5.0",
-    "@aws-amplify/graphql-schema-generator": "0.1.1",
-    "@aws-sdk/client-ec2": "3.338.0"
+    "graphql": "^15.5.0"
   },
   "peerDependencies": {
     "@aws-amplify/amplify-cli-core": "4.0.4"
