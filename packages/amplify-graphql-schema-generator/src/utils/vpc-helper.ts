@@ -31,7 +31,10 @@ import {
   UpdateFunctionCodeCommand, 
   UpdateFunctionCodeCommandInput, 
   GetFunctionCommand,
+  GetFunctionCommandOutput,
   waitUntilFunctionActive,
+  FunctionConfiguration,
+  DeleteFunctionCommand,
 } from "@aws-sdk/client-lambda"; 
 import * as fs from 'fs-extra';
 
@@ -120,28 +123,51 @@ export const getHostVpc = async (hostname: string, region: string): Promise<VpcC
 
 export const provisionSchemaInspectorLambda = async (lambdaName: string, vpc: VpcConfig, region: string): Promise<void> => {
   const roleName = `${lambdaName}-execution-role`;
+  let createLambda = true;
   const iamRole = await createRoleIfNotExists(roleName);
-  if (await getSchemaInspectorLambda(lambdaName, region)) {
-    await updateSchemaInspectorLambda(lambdaName, region);
+  const existingLambda = await getSchemaInspectorLambda(lambdaName, region);
+  if (existingLambda) {
+    const vpcConfigMismatch = existingLambda.VpcConfig?.SecurityGroupIds?.sort().join() != vpc.securityGroupIds.sort().join() ||
+      existingLambda.VpcConfig?.SubnetIds?.sort().join() != vpc.subnetIds.sort().join();
+    if (vpcConfigMismatch) {
+      await deleteSchemaInspectorLambdaRole(lambdaName, region);
+      createLambda = true;
+    }
+    else {
+      await updateSchemaInspectorLambda(lambdaName, region);
+      createLambda = false;
+    }
   }
-  else {
+  if (createLambda) {
     await createSchemaInspectorLambda(lambdaName, iamRole, vpc, region);
   } 
 };
 
-const getSchemaInspectorLambda = async (lambdaName: string, region: string): Promise<boolean> => {
+const getSchemaInspectorLambda = async (lambdaName: string, region: string): Promise<FunctionConfiguration | undefined> => {
   const lambdaClient = new LambdaClient({ region });
   const params = {
     FunctionName: lambdaName,
   };
 
   try {
-    const response = await lambdaClient.send(new GetFunctionCommand(params));
-    return true;
+    const response: GetFunctionCommandOutput = await lambdaClient.send(new GetFunctionCommand(params));
+    return response.Configuration;
   }
   catch (err) {
-    return false;
+    return undefined;
   }
+};
+
+const deleteSchemaInspectorLambdaRole = async (lambdaName: string, region: string): Promise<void> => {
+  const lambdaClient = new LambdaClient({ region });
+  const params = {
+    FunctionName: lambdaName,
+  };
+  const FUNCTION_DELETE_DELAY = 10000;
+
+  await lambdaClient.send(new DeleteFunctionCommand(params));
+  // Wait for the lambda to be deleted. This is required when the lambda is deleted and recreated with the same name when there is a VPC change.
+  await sleep(FUNCTION_DELETE_DELAY);
 };
 
 const createSchemaInspectorLambda = async (lambdaName: string, iamRole: Role, vpc: VpcConfig, region: string): Promise<void> => {
