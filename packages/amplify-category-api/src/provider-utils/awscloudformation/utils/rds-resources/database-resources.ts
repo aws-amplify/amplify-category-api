@@ -122,15 +122,14 @@ export const testDatabaseConnection = async (config: RDSConnectionSecrets) => {
       printer.error('Only MySQL Data Source is supported.');
   }
 
-  // TODO: Is this really required? This slows down connecting from VPC.
-  // try {
-  //   await adapter.initialize();
-  // } catch(error) {
-  //   printer.error('Failed to connect to the specified RDS Data Source. Check the connection details and retry.');
-  //   adapter.cleanup();
-  //   throw(error);
-  // }
-  // adapter.cleanup();
+  try {
+    await adapter.initialize();
+  } catch(error) {
+    printer.error('Failed to connect to the specified RDS Data Source. Check the connection details and retry.');
+    adapter.cleanup();
+    throw(error);
+  }
+  adapter.cleanup();
 };
 
 export const getSecretsKey = async (): Promise<string> => {
@@ -172,6 +171,7 @@ export const removeVpcSchemaInspectorLambda = async (context) => {
     await deleteSchemaInspectorLambdaRole(lambdaName);
   }
   catch (error) {
+    printer.debug(`Error deleting the schema inspector lambda: ${error}`);
     // 1. Ignore if the AppId is not found error.
     // 2. Schema introspection will exist only on databases imported from VPC. Ignore the error on environment deletion.
   }

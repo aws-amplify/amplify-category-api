@@ -3,7 +3,7 @@ import {
   CreateDBInstanceCommand,
   waitUntilDBInstanceAvailable,
   DeleteDBInstanceCommand,
-  CreateDBInstanceCommandInput
+  CreateDBInstanceCommandInput,
 } from "@aws-sdk/client-rds";
 import { EC2Client, AuthorizeSecurityGroupIngressCommand, RevokeSecurityGroupIngressCommand } from '@aws-sdk/client-ec2';
 import { knex } from 'knex';
