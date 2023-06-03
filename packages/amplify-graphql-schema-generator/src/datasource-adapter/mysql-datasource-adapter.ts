@@ -3,7 +3,9 @@ import { DataSourceAdapter } from "./datasource-adapter";
 import { knex } from 'knex';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { invokeSchemaInspectorLambda } from "../utils/vpc-helper";
+import ora from 'ora';
 
+const spinner = ora();
 export interface MySQLDataSourceConfig {
   host: string;
   port: number;
@@ -44,9 +46,17 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
   }
 
   public async initialize(): Promise<void> {
-    await this.establishDBConnection();
-    await this.loadAllFields();
-    await this.loadAllIndexes();
+    spinner.start('Fetching the database schema...');
+    try {
+      await this.establishDBConnection();
+      await this.loadAllFields();
+      await this.loadAllIndexes();
+    }
+    catch(error) {
+      spinner.fail('Failed to fetch the database schema.');
+      throw error;
+    }
+    spinner.succeed('Successfully fetched the database schema.');
   }
 
   private establishDBConnection() {

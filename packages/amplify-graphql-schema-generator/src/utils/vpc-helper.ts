@@ -37,8 +37,11 @@ import {
   DeleteFunctionCommand,
 } from "@aws-sdk/client-lambda"; 
 import * as fs from 'fs-extra';
+import ora from 'ora';
+import { printer } from "@aws-amplify/amplify-prompts";
 
 const DB_ENGINES = ["aurora-mysql", "mysql"];
+const spinner = ora('');
 
 export type VpcConfig = {
   vpcId: string;
@@ -126,21 +129,30 @@ export const provisionSchemaInspectorLambda = async (lambdaName: string, vpc: Vp
   let createLambda = true;
   const iamRole = await createRoleIfNotExists(roleName);
   const existingLambda = await getSchemaInspectorLambda(lambdaName, region);
-  if (existingLambda) {
-    const vpcConfigMismatch = existingLambda.VpcConfig?.SecurityGroupIds?.sort().join() != vpc.securityGroupIds.sort().join() ||
-      existingLambda.VpcConfig?.SubnetIds?.sort().join() != vpc.subnetIds.sort().join();
-    if (vpcConfigMismatch) {
-      await deleteSchemaInspectorLambdaRole(lambdaName, region);
-      createLambda = true;
+  spinner.start(`Provisioning a function to introspect the database schema...`);
+  try {
+    if (existingLambda) {
+      const vpcConfigMismatch = existingLambda.VpcConfig?.SecurityGroupIds?.sort().join() != vpc.securityGroupIds.sort().join() ||
+        existingLambda.VpcConfig?.SubnetIds?.sort().join() != vpc.subnetIds.sort().join();
+      if (vpcConfigMismatch) {
+        await deleteSchemaInspectorLambdaRole(lambdaName, region);
+        createLambda = true;
+      }
+      else {
+        await updateSchemaInspectorLambda(lambdaName, region);
+        createLambda = false;
+      }
     }
-    else {
-      await updateSchemaInspectorLambda(lambdaName, region);
-      createLambda = false;
+    if (createLambda) {
+      await createSchemaInspectorLambda(lambdaName, iamRole, vpc, region);
     }
   }
-  if (createLambda) {
-    await createSchemaInspectorLambda(lambdaName, iamRole, vpc, region);
-  } 
+  catch (err) {
+    spinner.fail(`Failed to provision a function to introspect the database schema.`);
+    printer.debug(`Error provisioning a function to introspect the database schema: ${err}`);
+    throw err;
+  }
+  spinner.succeed(`Successfully provisioned a function to introspect the database schema.`);
 };
 
 const getSchemaInspectorLambda = async (lambdaName: string, region: string): Promise<FunctionConfiguration | undefined> => {
