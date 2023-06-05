@@ -1,10 +1,20 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import { FeatureFlags, JSONUtilities, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import {
+  FeatureFlags, JSONUtilities, pathManager, stateManager,
+} from '@aws-amplify/amplify-cli-core';
 
+/**
+ *
+ * @param resourceDir
+ */
 export const backupLocation = (resourceDir: string) => path.join(resourceDir, '.migration-config-backup');
 
+/**
+ *
+ * @param env
+ */
 export const updateTransformerVersion = async (env?: string): Promise<void> => {
   const mutation = (cliJSON: any) => {
     _.set(cliJSON, ['features', 'graphqltransformer', 'useexperimentalpipelinedtransformer'], true);
@@ -15,18 +25,28 @@ export const updateTransformerVersion = async (env?: string): Promise<void> => {
   await mutateCliJsonFile(mutation, env);
 };
 
+/**
+ *
+ * @param resourceDir
+ * @param env
+ */
 export const backupCliJson = async (resourceDir: string, env? :string): Promise<void> => {
   const cliJson = getCliJsonFile(env);
   const backupPath = path.join(backupLocation(resourceDir), 'cli.json');
   JSONUtilities.writeJson(backupPath, cliJson);
 };
 
+/**
+ *
+ * @param resourceDir
+ * @param env
+ */
 export const revertTransformerVersion = async (resourceDir: string, env?: string): Promise<void> => {
   const backupPath = path.join(backupLocation(resourceDir), 'cli.json');
   const backupJson: any = JSONUtilities.readJson(backupPath);
   const mutation = (cliJson: any) => {
-    _.set(cliJson, ['features'], backupJson['features']);
-  }
+    _.set(cliJson, ['features'], backupJson.features);
+  };
   await mutateCliJsonFile(mutation, env);
   fs.removeSync(backupLocation(resourceDir));
 };
@@ -54,4 +74,4 @@ const getCliJsonFile = (env?: string): Promise<any> => {
     cliJSON = stateManager.getCLIJSON(projectPath, env, { throwIfNotExist: false });
   }
   return cliJSON ?? stateManager.getCLIJSON(projectPath);
-}
+};

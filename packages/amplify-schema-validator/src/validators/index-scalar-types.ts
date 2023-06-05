@@ -16,6 +16,10 @@ import { getTypeDefinitionsOfKind } from '../helpers/get-type-definitions-of-kin
  * @returns true
  */
 
+/**
+ *
+ * @param schema
+ */
 export const validateIndexScalarTypes = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(

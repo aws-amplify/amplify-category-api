@@ -1,4 +1,6 @@
-import { addAuthWithDefault, amplifyPushWithoutCodegen, addApi, updateAuthAddUserGroups, amplifyPush } from 'amplify-category-api-e2e-core';
+import {
+  addAuthWithDefault, amplifyPushWithoutCodegen, addApi, updateAuthAddUserGroups, amplifyPush,
+} from 'amplify-category-api-e2e-core';
 
 import {
   getAppClientIDWeb,
@@ -17,8 +19,13 @@ const GROUPNAME = 'Admin';
 const USERNAME = 'user1';
 const PASSWORD = 'user1Password';
 
+/**
+ *
+ * @param projectDir
+ * @param testModule
+ */
 export async function runTest(projectDir: string, testModule: any) {
-  await addAuthWithDefault(projectDir); //will use the cognito user pool as oidc provider
+  await addAuthWithDefault(projectDir); // will use the cognito user pool as oidc provider
   await updateAuthAddUserGroups(projectDir, [GROUPNAME]);
   await amplifyPushWithoutCodegen(projectDir);
 
@@ -45,14 +52,14 @@ export async function runTest(projectDir: string, testModule: any) {
   const user = await signInUser(USERNAME, PASSWORD);
   const appSyncClientOIDC = getConfiguredAppsyncClientOIDCAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, user);
 
-  //test create post mutation with private iam provider
+  // test create post mutation with private iam provider
   await testMutation(appSyncClientIAM, createPostMutation, undefined, expected_result_createPostMutation);
 
-  //test create profile mutation with oidc provider
+  // test create profile mutation with oidc provider
   await testMutation(appSyncClientOIDC, createProfileMutation, undefined, expected_result_createProfileMutation);
 }
 
-//schema
+// schema
 export const schema = `
 # private authorization with provider override
 #error: InvalidDirectiveError: @auth directive with 'private' strategy only supports 'userPools' (default) and 'iam' providers,

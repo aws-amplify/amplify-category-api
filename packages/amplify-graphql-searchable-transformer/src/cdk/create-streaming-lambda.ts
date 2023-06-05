@@ -12,6 +12,16 @@ import { Construct } from 'constructs';
 import { ResourceConstants, SearchableResourceIDs } from 'graphql-transformer-common';
 import * as path from 'path';
 
+/**
+ *
+ * @param stack
+ * @param apiGraphql
+ * @param parameterMap
+ * @param lambdaRole
+ * @param endpoint
+ * @param isProjectUsingDataStore
+ * @param region
+ */
 export const createLambda = (
   stack: Stack,
   apiGraphql: GraphQLAPIProvider,
@@ -50,6 +60,12 @@ export const createLambda = (
   );
 };
 
+/**
+ *
+ * @param context
+ * @param stack
+ * @param parameterMap
+ */
 export const createLambdaRole = (context: TransformerContextProvider, stack: Construct, parameterMap: Map<string, CfnParameter>): IRole => {
   const { OpenSearchStreamingLambdaIAMRoleLogicalID } = ResourceConstants.RESOURCES;
   const { OpenSearchStreamingIAMRoleName } = ResourceConstants.PARAMETERS;
@@ -72,6 +88,14 @@ export const createLambdaRole = (context: TransformerContextProvider, stack: Con
   return role;
 };
 
+/**
+ *
+ * @param stack
+ * @param type
+ * @param target
+ * @param parameterMap
+ * @param tableStreamArn
+ */
 export const createEventSourceMapping = (
   stack: Construct,
   type: string,

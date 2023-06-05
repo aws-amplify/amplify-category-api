@@ -7,12 +7,18 @@ import Resource from 'cloudform-types/types/resource';
 const RESOLVERS_DIRECTORY_NAME = 'resolvers';
 const STACKS_DIRECTORY_NAME = 'stacks';
 
+/**
+ *
+ */
 export class SchemaResourceUtil {
+  /**
+   *
+   */
   public makeResolverS3RootParams(): Template {
     return {
       Parameters: {
         [ResourceConstants.PARAMETERS.Env]: new StringParameter({
-          Description: `The environment name. e.g. Dev, Test, or Production`,
+          Description: 'The environment name. e.g. Dev, Test, or Production',
           Default: ResourceConstants.NONE,
         }),
         [ResourceConstants.PARAMETERS.S3DeploymentBucket]: new StringParameter({
@@ -25,14 +31,21 @@ export class SchemaResourceUtil {
     };
   }
 
+  /**
+   *
+   */
   public makeEnvironmentConditions() {
     return {
       [ResourceConstants.CONDITIONS.HasEnvironmentParameter]: Fn.Not(
-        Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.Env), ResourceConstants.NONE)
+        Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.Env), ResourceConstants.NONE),
       ),
     };
   }
 
+  /**
+   *
+   * @param resource
+   */
   public updateResolverResource(resource: Resource) {
     resource.Properties.RequestMappingTemplateS3Location = Fn.Sub(
       's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}',
@@ -40,7 +53,7 @@ export class SchemaResourceUtil {
         S3DeploymentBucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
         S3DeploymentRootKey: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
         ResolverFileName: Fn.Join('.', [resource.Properties.TypeName, resource.Properties.FieldName, 'req', 'vtl']),
-      }
+      },
     );
     resource.Properties.ResponseMappingTemplateS3Location = Fn.Sub(
       's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}',
@@ -48,13 +61,17 @@ export class SchemaResourceUtil {
         S3DeploymentBucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
         S3DeploymentRootKey: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
         ResolverFileName: Fn.Join('.', [resource.Properties.TypeName, resource.Properties.FieldName, 'res', 'vtl']),
-      }
+      },
     );
     delete resource.Properties.RequestMappingTemplate;
     delete resource.Properties.ResponseMappingTemplate;
     return resource;
   }
 
+  /**
+   *
+   * @param resource
+   */
   public updateFunctionConfigurationResource(resource: Resource) {
     resource.Properties.RequestMappingTemplateS3Location = Fn.Sub(
       's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/pipelineFunctions/${ResolverFileName}',
@@ -62,7 +79,7 @@ export class SchemaResourceUtil {
         S3DeploymentBucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
         S3DeploymentRootKey: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
         ResolverFileName: Fn.Join('.', [resource.Properties.Name, 'req', 'vtl']),
-      }
+      },
     );
     resource.Properties.ResponseMappingTemplateS3Location = Fn.Sub(
       's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/pipelineFunctions/${ResolverFileName}',
@@ -70,13 +87,17 @@ export class SchemaResourceUtil {
         S3DeploymentBucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
         S3DeploymentRootKey: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
         ResolverFileName: Fn.Join('.', [resource.Properties.Name, 'res', 'vtl']),
-      }
+      },
     );
     delete resource.Properties.RequestMappingTemplate;
     delete resource.Properties.ResponseMappingTemplate;
     return resource;
   }
 
+  /**
+   *
+   * @param schema
+   */
   public makeAppSyncSchema(schema?: string) {
     if (schema) {
       return new AppSync.GraphQLSchema({

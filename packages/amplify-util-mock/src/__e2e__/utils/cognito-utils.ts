@@ -1,6 +1,14 @@
 import { sign, verify } from 'jsonwebtoken';
 import { v4 } from 'uuid';
 
+/**
+ *
+ * @param userPool
+ * @param username
+ * @param email
+ * @param groups
+ * @param tokenType
+ */
 export function signUpAddToGroupAndGetJwtToken(
   userPool: string,
   username: string,
@@ -33,7 +41,7 @@ function generateToken(decodedToken: string | object): string {
     verify(token, 'open-secrete');
     return token;
   } catch (e) {
-    const err = new Error('Error when generating OIDC token: ' + e.message);
+    const err = new Error(`Error when generating OIDC token: ${e.message}`);
     throw err;
   }
 }

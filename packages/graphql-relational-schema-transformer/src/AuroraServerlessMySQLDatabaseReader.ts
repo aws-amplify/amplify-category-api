@@ -1,3 +1,4 @@
+import { toUpper } from 'graphql-transformer-common';
 import { TemplateContext, TableContext } from './RelationalDBSchemaTransformer';
 import {
   getNamedType,
@@ -10,7 +11,6 @@ import {
 } from './RelationalDBSchemaTransformerUtils';
 import { AuroraDataAPIClient } from './AuroraDataAPIClient';
 import { IRelationalDBReader } from './IRelationalDBReader';
-import { toUpper } from 'graphql-transformer-common';
 
 /**
  * A class to manage interactions with a Aurora Serverless MySQL Relational Databse
@@ -23,6 +23,10 @@ export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader 
   dbClusterOrInstanceArn: string;
   database: string;
 
+  /**
+   *
+   * @param auroraClient
+   */
   setAuroraClient(auroraClient: AuroraDataAPIClient) {
     this.auroraClient = auroraClient;
   }
@@ -92,19 +96,19 @@ export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader 
   describeTable = async (tableName: string): Promise<TableContext> => {
     const columnDescriptions = await this.auroraClient.describeTable(tableName);
     // Fields in the general type (e.g. Post). Both the identifying field and any others the db dictates will be required.
-    const fields = new Array();
+    const fields = [];
     // Fields in the update input type (e.g. UpdatePostInput). Only the identifying field will be required, any others will be optional.
-    const updateFields = new Array();
+    const updateFields = [];
     // Field in the create input type (e.g. CreatePostInput).
-    const createFields = new Array();
+    const createFields = [];
 
     // The primary key, used to help generate queries and mutations
     let primaryKey = '';
     let primaryKeyType = '';
 
     // Field Lists needed as context for auto-generating the Query Resolvers
-    const intFieldList = new Array();
-    const stringFieldList = new Array();
+    const intFieldList = [];
+    const stringFieldList = [];
 
     const formattedTableName = toUpper(tableName);
 
@@ -168,7 +172,7 @@ export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader 
       primaryKey,
       primaryKeyType,
       stringFieldList,
-      intFieldList
+      intFieldList,
     );
   };
 }

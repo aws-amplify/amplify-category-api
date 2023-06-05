@@ -106,6 +106,7 @@ const handleExpiredTokenException = (): void => {
 
 /**
  * We define a resource as viable for deletion if it matches TEST_REGEX in the name, and if it is > STALE_DURATION_MS old.
+ * @param resource
  */
 const testBucketStalenessFilter = (resource: aws.S3.Bucket): boolean => {
   const isTestResource = resource.Name.match(BUCKET_TEST_REGEX);
@@ -121,28 +122,35 @@ const testRoleStalenessFilter = (resource: aws.IAM.Role): boolean => {
 
 /**
  * Get all S3 buckets in the account, and filter down to the ones we consider stale.
+ * @param account
  */
 const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
   const s3Client = new aws.S3(getAWSConfig(account));
   const listBucketResponse = await s3Client.listBuckets().promise();
   const staleBuckets = listBucketResponse.Buckets.filter(testBucketStalenessFilter);
-  return staleBuckets.map(it => ({ name: it.Name }));
+  return staleBuckets.map((it) => ({ name: it.Name }));
 };
 
 /**
  * Get all iam roles in the account, and filter down to the ones we consider stale.
+ * @param account
  */
 const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleInfo[]> => {
   const iamClient = new aws.IAM(getAWSConfig(account));
   const listRoleResponse = await iamClient.listRoles({ MaxItems: 1000 }).promise();
   const staleRoles = listRoleResponse.Roles.filter(testRoleStalenessFilter);
-  return staleRoles.map(it => ({ name: it.RoleName }));
+  return staleRoles.map((it) => ({ name: it.RoleName }));
 };
 
 /**
  * Get the relevant AWS config object for a given account and region.
+ * @param root0
+ * @param root0.accessKeyId
+ * @param root0.secretAccessKey
+ * @param root0.sessionToken
+ * @param region
  */
- const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccountInfo, region?: string): unknown => ({
+const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccountInfo, region?: string): unknown => ({
   credentials: {
     accessKeyId,
     secretAccessKey,
@@ -192,7 +200,7 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
  * @returns build number or undefined
  */
 const getJobId = (tags: aws.CloudFormation.Tags = []): number | undefined => {
-  const jobId = tags.find(tag => tag.Key === 'circleci:build_id')?.Value;
+  const jobId = tags.find((tag) => tag.Key === 'circleci:build_id')?.Value;
   return jobId && Number.parseInt(jobId, 10);
 };
 
@@ -215,8 +223,8 @@ const getStackDetails = async (stackName: string, account: AWSAccountInfo, regio
   if (stackStatus === 'DELETE_FAILED') {
     // TODO: We need to investigate if we should go ahead and remove the resources to prevent account getting cluttered
     const resources = await cfnClient.listStackResources({ StackName: stackName }).promise();
-    resourcesFailedToDelete = resources.StackResourceSummaries.filter(r => r.ResourceStatus === 'DELETE_FAILED').map(
-      r => r.LogicalResourceId,
+    resourcesFailedToDelete = resources.StackResourceSummaries.filter((r) => r.ResourceStatus === 'DELETE_FAILED').map(
+      (r) => r.LogicalResourceId,
     );
   }
   const jobId = getJobId(tags);
@@ -249,7 +257,7 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
     .promise();
 
   // We are interested in only the root stacks that are deployed by amplify-cli
-  const rootStacks = stacks.StackSummaries.filter(stack => !stack.RootId);
+  const rootStacks = stacks.StackSummaries.filter((stack) => !stack.RootId);
   const results: StackInfo[] = [];
   for (const stack of rootStacks) {
     try {
@@ -323,6 +331,7 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
 
 /**
  * extract and moves CircleCI job details
+ * @param record
  */
 const extractCCIJobInfo = (record: S3BucketInfo | StackInfo | AmplifyAppInfo): CCIJobInfo => ({
   workflowId: _.get(record, ['0', 'cciInfo', 'workflows', 'workflow_id']),
@@ -336,6 +345,11 @@ const extractCCIJobInfo = (record: S3BucketInfo | StackInfo | AmplifyAppInfo): C
  * Merges stale resources and returns a list grouped by the CircleCI jobId. Amplify Apps that don't have
  * any backend environment are grouped as Orphan apps and apps that have Backend created by different CircleCI jobs are
  * grouped as MULTI_JOB_APP. Any resource that do not have a CircleCI job is grouped under UNKNOWN
+ * @param amplifyApp
+ * @param cfnStacks
+ * @param s3Buckets
+ * @param orphanS3Buckets
+ * @param orphanIamRoles
  */
 const mergeResourcesByCCIJob = (
   amplifyApp: AmplifyAppInfo[],
@@ -355,7 +369,7 @@ const mergeResourcesByCCIJob = (
       return ORPHAN;
     }
 
-    const buildIds = _.groupBy(appInfo.backends, backendInfo => _.get(backendInfo, ['cciInfo', 'build_num'], UNKNOWN));
+    const buildIds = _.groupBy(appInfo.backends, (backendInfo) => _.get(backendInfo, ['cciInfo', 'build_num'], UNKNOWN));
     if (Object.keys(buildIds).length === 1) {
       return Object.keys(buildIds)[0];
     }
@@ -392,7 +406,7 @@ const mergeResourcesByCCIJob = (
     jobId: key,
     buckets: src,
   }));
-  
+
   const orphanBuckets = {
     [ORPHAN]: orphanS3Buckets,
   };
@@ -417,7 +431,7 @@ const mergeResourcesByCCIJob = (
 };
 
 const deleteAmplifyApps = async (account: AWSAccountInfo, accountIndex: number, apps: AmplifyAppInfo[]): Promise<void> => {
-  await Promise.all(apps.map(app => deleteAmplifyApp(account, accountIndex, app)));
+  await Promise.all(apps.map((app) => deleteAmplifyApp(account, accountIndex, app)));
 };
 
 const deleteAmplifyApp = async (account: AWSAccountInfo, accountIndex: number, app: AmplifyAppInfo): Promise<void> => {
@@ -438,9 +452,9 @@ const deleteIamRoles = async (account: AWSAccountInfo, accountIndex: number, rol
   // Sending consecutive delete role requests is throwing Rate limit exceeded exception.
   // We introduce a brief delay between batches
   const batchSize = 20;
-  for (var i = 0; i < roles.length; i += batchSize) {
+  for (let i = 0; i < roles.length; i += batchSize) {
     const rolesToDelete = roles.slice(i, i + batchSize);
-    await Promise.all(rolesToDelete.map(role => deleteIamRole(account, accountIndex, role)));
+    await Promise.all(rolesToDelete.map((role) => deleteIamRole(account, accountIndex, role)));
     await sleep(5000);
   }
 };
@@ -468,7 +482,7 @@ const deleteAttachedRolePolicies = async (
 ): Promise<void> => {
   const iamClient = new aws.IAM(getAWSConfig(account));
   const rolePolicies = await iamClient.listAttachedRolePolicies({ RoleName: roleName }).promise();
-  await Promise.all(rolePolicies.AttachedPolicies.map(policy => detachIamAttachedRolePolicy(account, accountIndex, roleName, policy)));
+  await Promise.all(rolePolicies.AttachedPolicies.map((policy) => detachIamAttachedRolePolicy(account, accountIndex, roleName, policy)));
 };
 
 const detachIamAttachedRolePolicy = async (
@@ -496,7 +510,7 @@ const deleteRolePolicies = async (
 ): Promise<void> => {
   const iamClient = new aws.IAM(getAWSConfig(account));
   const rolePolicies = await iamClient.listRolePolicies({ RoleName: roleName }).promise();
-  await Promise.all(rolePolicies.PolicyNames.map(policy => deleteIamRolePolicy(account, accountIndex, roleName, policy)));
+  await Promise.all(rolePolicies.PolicyNames.map((policy) => deleteIamRolePolicy(account, accountIndex, roleName, policy)));
 };
 
 const deleteIamRolePolicy = async (
@@ -518,7 +532,7 @@ const deleteIamRolePolicy = async (
 };
 
 const deleteBuckets = async (account: AWSAccountInfo, accountIndex: number, buckets: S3BucketInfo[]): Promise<void> => {
-  await Promise.all(buckets.map(bucket => deleteBucket(account, accountIndex, bucket)));
+  await Promise.all(buckets.map((bucket) => deleteBucket(account, accountIndex, bucket)));
 };
 
 const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucket: S3BucketInfo): Promise<void> => {
@@ -536,7 +550,7 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
 };
 
 const deleteCfnStacks = async (account: AWSAccountInfo, accountIndex: number, stacks: StackInfo[]): Promise<void> => {
-  await Promise.all(stacks.map(stack => deleteCfnStack(account, accountIndex, stack)));
+  await Promise.all(stacks.map((stack) => deleteCfnStack(account, accountIndex, stack)));
 };
 
 const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, stack: StackInfo): Promise<void> => {
@@ -563,6 +577,9 @@ const generateReport = (jobs: _.Dictionary<ReportEntry>): void => {
 /**
  * While we basically fan-out deletes elsewhere in this script, leaving the app->cfn->bucket delete process
  * serial within a given account, it's not immediately clear if this is necessary, but seems possibly valuable.
+ * @param account
+ * @param accountIndex
+ * @param staleResources
  */
 const deleteResources = async (
   account: AWSAccountInfo,
@@ -591,6 +608,7 @@ const deleteResources = async (
 
 /**
  * Grab the right CircleCI filter based on args passed in.
+ * @param args
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getFilterPredicate = (args: any): JobFilterPredicate => {
@@ -632,7 +650,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
   });
   try {
     const orgAccounts = await orgApi.listAccounts().promise();
-    const accountCredentialPromises = orgAccounts.Accounts.map(async account => {
+    const accountCredentialPromises = orgAccounts.Accounts.map(async (account) => {
       if (account.Id === parentAccountIdentity.Account) {
         return {
           accountId: account.Id,
@@ -674,8 +692,8 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
 };
 
 const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, filterPredicate: JobFilterPredicate): Promise<void> => {
-  const appPromises = AWS_REGIONS_TO_RUN_TESTS.map(region => getAmplifyApps(account, region));
-  const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map(region => getStacks(account, region));
+  const appPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getAmplifyApps(account, region));
+  const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getStacks(account, region));
   const bucketPromise = getS3Buckets(account);
   const orphanBucketPromise = getOrphanS3TestBuckets(account);
   const orphanIamRolesPromise = getOrphanTestIamRoles(account);
@@ -694,9 +712,7 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   console.log(`${generateAccountInfo(account, accountIndex)} Cleanup done!`);
 };
 
-const generateAccountInfo = (account: AWSAccountInfo, accountIndex: number): string => {
-  return (`[ACCOUNT ${accountIndex}][${account.accountId}]`);
-};
+const generateAccountInfo = (account: AWSAccountInfo, accountIndex: number): string => (`[ACCOUNT ${accountIndex}][${account.accountId}]`);
 
 /**
  * Execute the cleanup script.
@@ -708,14 +724,14 @@ const generateAccountInfo = (account: AWSAccountInfo, accountIndex: number): str
 const cleanup = async (): Promise<void> => {
   const args = yargs
     .command('*', 'clean up all the stale resources')
-    .command('workflow <workflow-id>', 'clean all the resources created by workflow', _yargs => {
+    .command('workflow <workflow-id>', 'clean all the resources created by workflow', (_yargs) => {
       _yargs.positional('workflowId', {
         describe: 'Workflow Id of the workflow',
         type: 'string',
         demandOption: '',
       });
     })
-    .command('job <jobId>', 'clean all the resource created by a job', _yargs => {
+    .command('job <jobId>', 'clean all the resource created by a job', (_yargs) => {
       _yargs.positional('jobId', {
         describe: 'job id of the job',
         type: 'number',

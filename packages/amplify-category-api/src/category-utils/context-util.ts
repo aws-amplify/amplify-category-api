@@ -71,7 +71,7 @@ export class ContextUtil {
     }
     this.resourceDir = resourceDir;
     return resourceDir;
-  }
+  };
 }
 
 export const contextUtil = new ContextUtil();

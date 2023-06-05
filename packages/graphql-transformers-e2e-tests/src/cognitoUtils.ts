@@ -29,21 +29,33 @@ interface E2Econfiguration {
   USER_POOL_ID?: string;
 }
 
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: region });
+const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region });
 
+/**
+ *
+ * @param userPoolId
+ * @param userPoolClientId
+ * @param identityPoolId
+ */
 export function configureAmplify(userPoolId: string, userPoolClientId: string, identityPoolId?: string) {
   Amplify.configure({
     Auth: {
       // REQUIRED - Amazon Cognito Region
-      region: region,
-      userPoolId: userPoolId,
+      region,
+      userPoolId,
       userPoolWebClientId: userPoolClientId,
       storage: new TestStorage(),
-      identityPoolId: identityPoolId,
+      identityPoolId,
     },
   });
 }
 
+/**
+ *
+ * @param userPoolId
+ * @param name
+ * @param pw
+ */
 export async function signupUser(userPoolId: string, name: string, pw: string) {
   return new Promise((res, rej) => {
     const createUser = cognitoClient.adminCreateUser.bind(cognitoClient) as any;
@@ -61,6 +73,12 @@ export async function signupUser(userPoolId: string, name: string, pw: string) {
   });
 }
 
+/**
+ *
+ * @param username
+ * @param tempPassword
+ * @param password
+ */
 export async function authenticateUser(username: string, tempPassword: string, password: string) {
   let signinResult = await Auth.signIn(username, tempPassword);
 
@@ -73,6 +91,10 @@ export async function authenticateUser(username: string, tempPassword: string, p
   return signinResult.getSignInUserSession();
 }
 
+/**
+ *
+ * @param accessToken
+ */
 export async function deleteUser(accessToken: string): Promise<{}> {
   return new Promise((res, rej) => {
     const params: DeleteUserRequest = {
@@ -82,6 +104,12 @@ export async function deleteUser(accessToken: string): Promise<{}> {
   });
 }
 
+/**
+ *
+ * @param userPoolId
+ * @param name
+ * @param roleArn
+ */
 export async function createGroup(userPoolId: string, name: string, roleArn?: string): Promise<CreateGroupResponse> {
   return new Promise((res, rej) => {
     const params: CreateGroupRequest = {
@@ -93,6 +121,12 @@ export async function createGroup(userPoolId: string, name: string, roleArn?: st
   });
 }
 
+/**
+ *
+ * @param groupName
+ * @param username
+ * @param userPoolId
+ */
 export async function addUserToGroup(groupName: string, username: string, userPoolId: string) {
   return new Promise((res, rej) => {
     const params: AdminAddUserToGroupRequest = {
@@ -104,6 +138,17 @@ export async function addUserToGroup(groupName: string, username: string, userPo
   });
 }
 
+/**
+ *
+ * @param client
+ * @param identityPoolName
+ * @param params
+ * @param params.authRoleArn
+ * @param params.unauthRoleArn
+ * @param params.providerName
+ * @param params.clientId
+ * @param params.useTokenAuth
+ */
 export async function createIdentityPool(
   client: CognitoIdentity,
   identityPoolName: string,
@@ -132,13 +177,13 @@ export async function createIdentityPool(
       },
       ...(useTokenAuth
         ? {
-            RoleMappings: {
-              [`${params.providerName}:${params.clientId}`]: {
-                Type: 'Token',
-                AmbiguousRoleResolution: 'AuthenticatedRole',
-              },
+          RoleMappings: {
+            [`${params.providerName}:${params.clientId}`]: {
+              Type: 'Token',
+              AmbiguousRoleResolution: 'AuthenticatedRole',
             },
-          }
+          },
+        }
         : {}),
     })
     .promise();
@@ -146,6 +191,11 @@ export async function createIdentityPool(
   return idPool.IdentityPoolId;
 }
 
+/**
+ *
+ * @param client
+ * @param userPoolName
+ */
 export async function createUserPool(client: CognitoClient, userPoolName: string): Promise<CreateUserPoolResponse> {
   return new Promise((res, rej) => {
     const params: CreateUserPoolRequest = {
@@ -172,6 +222,11 @@ export async function createUserPool(client: CognitoClient, userPoolName: string
   });
 }
 
+/**
+ *
+ * @param client
+ * @param userPoolId
+ */
 export async function deleteUserPool(client: CognitoClient, userPoolId: string): Promise<{}> {
   return new Promise((res, rej) => {
     const params: DeleteUserPoolRequest = {
@@ -181,6 +236,11 @@ export async function deleteUserPool(client: CognitoClient, userPoolId: string):
   });
 }
 
+/**
+ *
+ * @param client
+ * @param identityPoolId
+ */
 export async function deleteIdentityPool(client: CognitoIdentity, identityPoolId: string) {
   await client
     .deleteIdentityPool({
@@ -189,6 +249,12 @@ export async function deleteIdentityPool(client: CognitoIdentity, identityPoolId
     .promise();
 }
 
+/**
+ *
+ * @param client
+ * @param userPoolId
+ * @param clientName
+ */
 export async function createUserPoolClient(
   client: CognitoClient,
   userPoolId: string,
@@ -205,8 +271,15 @@ export async function createUserPoolClient(
   });
 }
 
+/**
+ *
+ * @param out
+ * @param e2eConfig
+ */
 export function addIAMRolesToCFNStack(out: DeploymentResources, e2eConfig: E2Econfiguration) {
-  const { AUTH_ROLE_NAME, UNAUTH_ROLE_NAME, IDENTITY_POOL_NAME, USER_POOL_CLIENTWEB_NAME, USER_POOL_CLIENT_NAME, USER_POOL_ID } = e2eConfig;
+  const {
+    AUTH_ROLE_NAME, UNAUTH_ROLE_NAME, IDENTITY_POOL_NAME, USER_POOL_CLIENTWEB_NAME, USER_POOL_CLIENT_NAME, USER_POOL_ID,
+  } = e2eConfig;
 
   // logic to add IAM roles to cfn
   const authRole = new cfnIAM.Role({
@@ -379,17 +452,17 @@ export function addIAMRolesToCFNStack(out: DeploymentResources, e2eConfig: E2Eco
 
   for (const key of Object.keys(out.rootStack.Resources)) {
     if (
-      out.rootStack.Resources[key].Properties &&
-      out.rootStack.Resources[key].Properties.Parameters &&
-      out.rootStack.Resources[key].Properties.Parameters.unauthRoleName
+      out.rootStack.Resources[key].Properties
+      && out.rootStack.Resources[key].Properties.Parameters
+      && out.rootStack.Resources[key].Properties.Parameters.unauthRoleName
     ) {
       delete out.rootStack.Resources[key].Properties.Parameters.unauthRoleName;
     }
 
     if (
-      out.rootStack.Resources[key].Properties &&
-      out.rootStack.Resources[key].Properties.Parameters &&
-      out.rootStack.Resources[key].Properties.Parameters.authRoleName
+      out.rootStack.Resources[key].Properties
+      && out.rootStack.Resources[key].Properties.Parameters
+      && out.rootStack.Resources[key].Properties.Parameters.authRoleName
     ) {
       delete out.rootStack.Resources[key].Properties.Parameters.authRoleName;
     }
@@ -406,16 +479,16 @@ export function addIAMRolesToCFNStack(out: DeploymentResources, e2eConfig: E2Eco
         delete stack.Parameters.authRoleName;
       }
       if (
-        stack.Resources[key].Properties &&
-        stack.Resources[key].Properties.Parameters &&
-        stack.Resources[key].Properties.Parameters.unauthRoleName
+        stack.Resources[key].Properties
+        && stack.Resources[key].Properties.Parameters
+        && stack.Resources[key].Properties.Parameters.unauthRoleName
       ) {
         delete stack.Resources[key].Properties.Parameters.unauthRoleName;
       }
       if (
-        stack.Resources[key].Properties &&
-        stack.Resources[key].Properties.Parameters &&
-        stack.Resources[key].Properties.Parameters.authRoleName
+        stack.Resources[key].Properties
+        && stack.Resources[key].Properties.Parameters
+        && stack.Resources[key].Properties.Parameters.authRoleName
       ) {
         delete stack.Resources[key].Properties.Parameters.authRoleName;
       }

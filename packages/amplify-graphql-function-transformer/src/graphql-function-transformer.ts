@@ -10,9 +10,13 @@ import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider }
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
-import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff, Expression } from 'graphql-mapping-template';
+import {
+  obj, str, ref, printBlock, compoundExpression, qref, raw, iff, Expression,
+} from 'graphql-mapping-template';
 import { FunctionResourceIDs, ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
-import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
+import {
+  DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode,
+} from 'graphql';
 
 type FunctionDirectiveConfiguration = {
   name: string;
@@ -27,6 +31,9 @@ const directiveDefinition = /* GraphQL */ `
   directive @function(name: String!, region: String, accountId: String) repeatable on FIELD_DEFINITION
 `;
 
+/**
+ *
+ */
 export class FunctionTransformer extends TransformerPluginBase {
   private resolverGroups: Map<FieldDefinitionNode, FunctionDirectiveConfiguration[]> = new Map();
 
@@ -72,7 +79,7 @@ export class FunctionTransformer extends TransformerPluginBase {
     });
 
     this.resolverGroups.forEach((resolverFns, fieldDefinition) => {
-      resolverFns.forEach(config => {
+      resolverFns.forEach((config) => {
         // Create data sources that register Lambdas and IAM roles.
         const dataSourceId = FunctionResourceIDs.FunctionDataSourceID(config.name, config.region, config.accountId);
 
@@ -140,7 +147,7 @@ export class FunctionTransformer extends TransformerPluginBase {
           qref(`$ctx.stash.put("fieldName", "${config.resolverFieldName}")`),
         ];
         const authModes = [context.authConfig.defaultAuthentication, ...(context.authConfig.additionalAuthenticationProviders || [])].map(
-          mode => mode?.authenticationType,
+          (mode) => mode?.authenticationType,
         );
         if (authModes.includes(AuthorizationType.IAM)) {
           const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
@@ -198,5 +205,5 @@ function lambdaArnResource(env: cdk.CfnParameter, name: string, region?: string,
 }
 
 function lambdaArnKey(name: string, region?: string, accountId?: string): string {
-  return `arn:aws:lambda:${region ? region : '${AWS::Region}'}:${accountId ? accountId : '${AWS::AccountId}'}:function:${name}`;
+  return `arn:aws:lambda:${region || '${AWS::Region}'}:${accountId || '${AWS::AccountId}'}:function:${name}`;
 }

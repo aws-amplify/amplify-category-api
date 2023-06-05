@@ -3,6 +3,10 @@ import { start } from '../../api';
 
 export const name = 'api';
 
+/**
+ *
+ * @param context
+ */
 export const run = async (context: $TSContext) => {
   if (context.parameters.options.help) {
     const header = `amplify mock ${name} \nDescription:

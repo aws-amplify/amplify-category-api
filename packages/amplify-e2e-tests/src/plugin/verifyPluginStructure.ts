@@ -2,6 +2,10 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { readJsonFile } from 'amplify-category-api-e2e-core';
 
+/**
+ *
+ * @param pluginDirPath
+ */
 export function verifyPlugin(pluginDirPath: string): boolean {
   if (fs.existsSync(pluginDirPath) && fs.statSync(pluginDirPath).isDirectory()) {
     return verifyNodePackage(pluginDirPath);
@@ -17,7 +21,7 @@ function verifyNodePackage(pluginDirPath: string): boolean {
   }
 
   try {
-    fs.readFileSync(pluginPackageJsonFilePath); //package.json needs to be valid json file
+    fs.readFileSync(pluginPackageJsonFilePath); // package.json needs to be valid json file
     const pluginModule = require(pluginDirPath);
     return verifyAmplifyManifest(pluginDirPath, pluginModule);
   } catch (err) {
@@ -43,7 +47,7 @@ function verifyEventHandlers(manifest: any, pluginModule: any): boolean {
   let isVerified = true;
 
   if (manifest.eventHandlers && manifest.eventHandlers.length > 0) {
-    isVerified = pluginModule.hasOwnProperty('handleAmplifyEvent') && typeof pluginModule['handleAmplifyEvent'] === 'function';
+    isVerified = pluginModule.hasOwnProperty('handleAmplifyEvent') && typeof pluginModule.handleAmplifyEvent === 'function';
   }
   return isVerified;
 }

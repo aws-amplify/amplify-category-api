@@ -1,5 +1,3 @@
-import { TransformerContext } from './TransformerContext';
-import { ITransformer } from './ITransformer';
 import {
   DirectiveDefinitionNode,
   parse,
@@ -17,6 +15,8 @@ import {
   TypeDefinitionNode,
   DocumentNode,
 } from 'graphql';
+import { TransformerContext } from './TransformerContext';
+import { ITransformer } from './ITransformer';
 import { InvalidTransformerError } from './errors';
 
 /**
@@ -36,12 +36,14 @@ export class Transformer implements ITransformer {
    * Each transformer has a name.
    *
    * Each transformer defines a set of directives that it knows how to translate.
+   * @param name
+   * @param document
    */
   constructor(name: string, document: DocumentNode | string) {
     const doc = typeof document === 'string' ? parse(document) : document;
     this.name = name;
-    const directives = doc.definitions.filter(d => d.kind === Kind.DIRECTIVE_DEFINITION) as DirectiveDefinitionNode[];
-    const extraDefs = doc.definitions.filter(d => d.kind !== Kind.DIRECTIVE_DEFINITION) as TypeDefinitionNode[];
+    const directives = doc.definitions.filter((d) => d.kind === Kind.DIRECTIVE_DEFINITION) as DirectiveDefinitionNode[];
+    const extraDefs = doc.definitions.filter((d) => d.kind !== Kind.DIRECTIVE_DEFINITION) as TypeDefinitionNode[];
     if (directives.length !== 1) {
       throw new InvalidTransformerError('Transformers must specify exactly one directive definition.');
     }

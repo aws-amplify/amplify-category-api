@@ -6,6 +6,9 @@ import {
   SupportedIdentityProvidersListType,
 } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 
+/**
+ *
+ */
 export type AuthProjectDetails = {
   authResourceName?: string;
   parameters?: {
@@ -46,6 +49,9 @@ export type AuthProjectDetails = {
   };
 };
 
+/**
+ *
+ */
 export type StorageProjectDetails = {
   storageResourceName?: string;
   parameters?: {
@@ -62,6 +68,9 @@ export type StorageProjectDetails = {
   };
 };
 
+/**
+ *
+ */
 export type DynamoDBProjectDetails = {
   storageResourceName?: string;
   parameters?: {
@@ -89,6 +98,9 @@ export type DynamoDBProjectDetails = {
   };
 };
 
+/**
+ *
+ */
 export type AppClientSettings = {
   allowedOAuthFlows?: OAuthFlowsType;
   callbackURLs?: CallbackURLsListType;

@@ -1,4 +1,6 @@
-import Table, { GlobalSecondaryIndex, KeySchema, Projection, AttributeDefinition } from 'cloudform-types/types/dynamoDb/table';
+import Table, {
+  GlobalSecondaryIndex, KeySchema, Projection, AttributeDefinition,
+} from 'cloudform-types/types/dynamoDb/table';
 import Resolver from 'cloudform-types/types/appSync/resolver';
 import Template from 'cloudform-types/types/template';
 import { Fn, Refs } from 'cloudform-types';
@@ -35,7 +37,13 @@ import {
 } from 'graphql-transformer-common';
 import { InvalidDirectiveError } from 'graphql-transformer-core';
 
+/**
+ *
+ */
 export class ResourceFactory {
+  /**
+   *
+   */
   public makeParams() {
     return {};
   }
@@ -54,6 +62,11 @@ export class ResourceFactory {
   /**
    * Add a GSI for the connection if one does not already exist.
    * @param table The table to add the GSI to.
+   * @param connectionName
+   * @param connectionAttributeName
+   * @param sortField
+   * @param sortField.name
+   * @param sortField.type
    */
   public updateTableForConnection(
     table: Table,
@@ -70,7 +83,7 @@ export class ResourceFactory {
     const connectionGSIName = `gsi-${connectionName}`;
 
     // If the GSI does not exist yet then add it.
-    const existingGSI = gsis.find(gsi => gsi.IndexName === connectionGSIName);
+    const existingGSI = gsis.find((gsi) => gsi.IndexName === connectionGSIName);
     if (!existingGSI) {
       const keySchema = [new KeySchema({ AttributeName: connectionAttributeName, KeyType: 'HASH' })];
       if (sortField) {
@@ -93,7 +106,7 @@ export class ResourceFactory {
 
     // If the attribute definition does not exist yet, add it.
     const attributeDefinitions = table.Properties.AttributeDefinitions as AttributeDefinition[];
-    const existingAttribute = attributeDefinitions.find(attr => attr.AttributeName === connectionAttributeName);
+    const existingAttribute = attributeDefinitions.find((attr) => attr.AttributeName === connectionAttributeName);
     if (!existingAttribute) {
       attributeDefinitions.push(
         new AttributeDefinition({
@@ -105,7 +118,7 @@ export class ResourceFactory {
 
     // If the attribute definition does not exist yet, add it.
     if (sortField) {
-      const existingSortAttribute = attributeDefinitions.find(attr => attr.AttributeName === sortField.name);
+      const existingSortAttribute = attributeDefinitions.find((attr) => attr.AttributeName === sortField.name);
       if (!existingSortAttribute) {
         const scalarType = DEFAULT_SCALARS[sortField.type];
         const attributeType = scalarType === 'String' ? 'S' : 'N';
@@ -126,6 +139,9 @@ export class ResourceFactory {
    * @param connectionAttribute The name of the underlying attribute containing the id.
    * @param idFieldName The name of the field within the type that serve as the id.
    * @param sortFieldInfo The info about the sort field if specified.
+   * @param sortFieldInfo.primarySortFieldName
+   * @param sortFieldInfo.sortFieldName
+   * @param sortFieldInfo.sortFieldIsStringLike
    */
   public makeGetItemConnectionResolver(
     type: string,
@@ -135,7 +151,7 @@ export class ResourceFactory {
     idFieldName: string,
     sortFieldInfo?: { primarySortFieldName: string; sortFieldName: string; sortFieldIsStringLike: boolean },
   ): Resolver {
-    let keyObj: ObjectNode = obj({
+    const keyObj: ObjectNode = obj({
       [`${idFieldName}`]: ref(
         `util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttribute}, "${NONE_VALUE}"))`,
       ),
@@ -180,6 +196,15 @@ export class ResourceFactory {
   /**
    * Create a resolver that queries an item in DynamoDB.
    * @param type
+   * @param field
+   * @param relatedType
+   * @param connectionAttribute
+   * @param connectionName
+   * @param idFieldName
+   * @param sortKeyInfo
+   * @param sortKeyInfo.fieldName
+   * @param sortKeyInfo.attributeType
+   * @param limit
    */
   public makeQueryConnectionResolver(
     type: string,
@@ -266,7 +291,7 @@ export class ResourceFactory {
   ): Resolver {
     const partitionKeyName = keySchema[0].AttributeName as string;
 
-    let keyObj: ObjectNode = obj({
+    const keyObj: ObjectNode = obj({
       [partitionKeyName]: ref(
         `util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttributes[0]}, "${NONE_VALUE}"))`,
       ),
@@ -276,7 +301,7 @@ export class ResourceFactory {
     if (connectionAttributes.length > 2) {
       const rangeKeyFields = connectionAttributes.slice(1);
       const sortKeyName = keySchema[1].AttributeName as string;
-      const condensedSortKeyValue = this.condenseRangeKey(rangeKeyFields.map(keyField => `\${ctx.source.${keyField}}`));
+      const condensedSortKeyValue = this.condenseRangeKey(rangeKeyFields.map((keyField) => `\${ctx.source.${keyField}}`));
 
       keyObj.attributes.push([
         sortKeyName,
@@ -297,7 +322,7 @@ export class ResourceFactory {
       TypeName: type,
       RequestMappingTemplate: print(
         ifElse(
-          or(connectionAttributes.map(ca => raw(`$util.isNull($ctx.source.${ca})`))),
+          or(connectionAttributes.map((ca) => raw(`$util.isNull($ctx.source.${ca})`))),
           raw('#return'),
           compoundExpression([
             DynamoDBMappingTemplate.getItem({
@@ -318,6 +343,7 @@ export class ResourceFactory {
    * @param connectionAttributes The names of the underlying attributes containing the fields to query by.
    * @param keySchema The keySchema for the table or index being queried.
    * @param indexName The index to run the query on.
+   * @param limit
    */
   public makeQueryConnectionWithKeyResolver(
     type: string,
@@ -337,7 +363,7 @@ export class ResourceFactory {
     // If the key schema has a sort key but one is not provided for the query, let a sort key be
     // passed in via $ctx.args.
     if (keySchema[1] && !connectionAttributes[1]) {
-      const sortKeyField = relatedType.fields.find(f => f.name.value === keySchema[1].AttributeName);
+      const sortKeyField = relatedType.fields.find((f) => f.name.value === keySchema[1].AttributeName);
 
       if (sortKeyField) {
         setup.push(applyKeyConditionExpression(String(keySchema[1].AttributeName), attributeTypeFromScalar(sortKeyField.type), 'query'));
@@ -353,7 +379,7 @@ export class ResourceFactory {
       }
     }
 
-    let queryArguments = {
+    const queryArguments = {
       query: raw('$util.toJson($query)'),
       scanIndexForward: ifElse(
         ref('context.args.sortDirection'),
@@ -402,10 +428,10 @@ export class ResourceFactory {
    */
   public makeExpression(keySchema: KeySchema[], connectionAttributes: string[]): ObjectNode {
     if (keySchema[1] && connectionAttributes[1]) {
-      let condensedSortKeyValue: string = undefined;
+      let condensedSortKeyValue: string;
       if (connectionAttributes.length > 2) {
         const rangeKeyFields = connectionAttributes.slice(1);
-        condensedSortKeyValue = this.condenseRangeKey(rangeKeyFields.map(keyField => `\${context.source.${keyField}}`));
+        condensedSortKeyValue = this.condenseRangeKey(rangeKeyFields.map((keyField) => `\${context.source.${keyField}}`));
       }
 
       return obj({
@@ -442,6 +468,10 @@ export class ResourceFactory {
     return fields.join(ModelResourceIDs.ModelCompositeKeySeparator());
   }
 
+  /**
+   *
+   * @param sortKeyName
+   */
   public makeCompositeSortKeyName(sortKeyName: string) {
     const attributeNames = sortKeyName.split(ModelResourceIDs.ModelCompositeKeySeparator());
     return toCamelCase(attributeNames);

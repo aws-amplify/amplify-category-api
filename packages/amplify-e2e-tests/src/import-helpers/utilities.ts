@@ -12,21 +12,30 @@ import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
-import { AuthProjectDetails, createIDPAndUserPoolWithOAuthSettings, createUserPoolOnlyWithOAuthSettings, StorageProjectDetails } from '.';
+import {
+  AuthProjectDetails, createIDPAndUserPoolWithOAuthSettings, createUserPoolOnlyWithOAuthSettings, StorageProjectDetails,
+} from '.';
 import { AppClientSettings, DynamoDBProjectDetails } from './types';
 
+/**
+ *
+ */
 export const getShortId = (): string => {
   const [shortId] = uuid().split('-');
 
   return shortId;
 };
 
+/**
+ *
+ * @param projectRoot
+ */
 export const getAuthProjectDetails = (projectRoot: string): AuthProjectDetails => {
   const meta = getBackendAmplifyMeta(projectRoot);
   const team = getTeamProviderInfo(projectRoot);
   const authMetaKey = Object.keys(meta.auth)
-    .filter(key => meta.auth[key].service === 'Cognito')
-    .map(key => key)[0];
+    .filter((key) => meta.auth[key].service === 'Cognito')
+    .map((key) => key)[0];
 
   const authMeta = meta.auth[authMetaKey];
   const authTeam = _.get(team, ['integtest', 'categories', 'auth', authMetaKey]);
@@ -85,13 +94,17 @@ export const getAuthProjectDetails = (projectRoot: string): AuthProjectDetails =
   return result;
 };
 
+/**
+ *
+ * @param projectRoot
+ */
 export const getOGAuthProjectDetails = (projectRoot: string): AuthProjectDetails => {
   const meta = getBackendAmplifyMeta(projectRoot);
   const team = getTeamProviderInfo(projectRoot);
 
   const authMetaKey = Object.keys(meta.auth)
-    .filter(key => meta.auth[key].service === 'Cognito')
-    .map(key => key)[0];
+    .filter((key) => meta.auth[key].service === 'Cognito')
+    .map((key) => key)[0];
 
   const authMeta = meta.auth[authMetaKey];
   const authTeam = _.get(team, ['integtest', 'categories', 'auth', authMetaKey]);
@@ -124,19 +137,28 @@ export const getOGAuthProjectDetails = (projectRoot: string): AuthProjectDetails
   };
 };
 
+/**
+ *
+ * @param projectRoot
+ * @param category
+ * @param resourceName
+ */
 export const readResourceParametersJson = (projectRoot: string, category: string, resourceName: string): Record<string, any> => {
   const parametersFilePath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'parameters.json');
   const parametersFileBuildPath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'build', 'parameters.json');
 
   if (fs.existsSync(parametersFilePath)) {
     return JSONUtilities.readJson(parametersFilePath);
-  } else if (fs.existsSync(parametersFileBuildPath)) {
+  } if (fs.existsSync(parametersFileBuildPath)) {
     return JSONUtilities.readJson(parametersFileBuildPath);
-  } else {
-    throw new Error(`parameters.json doesn't exist`);
   }
+  throw new Error('parameters.json doesn\'t exist');
 };
 
+/**
+ *
+ * @param projectRoot
+ */
 export const readRootStack = (projectRoot: string): Record<string, any> => {
   const rootStackFilePath = path.join(projectRoot, 'amplify', 'backend', 'awscloudformation', 'build', 'root-cloudformation-stack.json');
   const rootStack = JSONUtilities.readJson(rootStackFilePath);
@@ -144,12 +166,16 @@ export const readRootStack = (projectRoot: string): Record<string, any> => {
   return rootStack;
 };
 
+/**
+ *
+ * @param projectRoot
+ */
 export const getOGStorageProjectDetails = (projectRoot: string): StorageProjectDetails => {
   const meta = getBackendAmplifyMeta(projectRoot);
 
   const storageMetaKey = Object.keys(meta.storage)
-    .filter(key => meta.storage[key].service === 'S3')
-    .map(key => key)[0];
+    .filter((key) => meta.storage[key].service === 'S3')
+    .map((key) => key)[0];
 
   const storageMeta = meta.storage[storageMetaKey];
   const parameters = readResourceParametersJson(projectRoot, 'storage', storageMetaKey);
@@ -166,13 +192,17 @@ export const getOGStorageProjectDetails = (projectRoot: string): StorageProjectD
   };
 };
 
+/**
+ *
+ * @param projectRoot
+ */
 export const getStorageProjectDetails = (projectRoot: string): StorageProjectDetails => {
   const meta = getBackendAmplifyMeta(projectRoot);
   const team = getTeamProviderInfo(projectRoot);
 
   const storageMetaKey = Object.keys(meta.storage)
-    .filter(key => meta.storage[key].service === 'S3')
-    .map(key => key)[0];
+    .filter((key) => meta.storage[key].service === 'S3')
+    .map((key) => key)[0];
 
   const stoargeMeta = meta.storage[storageMetaKey];
   const storageTeam = _.get(team, ['integtest', 'categories', 'storage', storageMetaKey]);
@@ -196,20 +226,26 @@ export const getStorageProjectDetails = (projectRoot: string): StorageProjectDet
   return result;
 };
 
+/**
+ *
+ * @param projectRoot
+ */
 export const getS3ResourceName = (projectRoot: string): string => {
   const amplifyMeta = getBackendAmplifyMeta(projectRoot);
-  const s3ResourceName = Object.keys(amplifyMeta.storage).find((key: any) => {
-    return amplifyMeta.storage[key].service === 'S3';
-  }) as any;
+  const s3ResourceName = Object.keys(amplifyMeta.storage).find((key: any) => amplifyMeta.storage[key].service === 'S3') as any;
   return s3ResourceName;
 };
 
+/**
+ *
+ * @param projectRoot
+ */
 export const getOGDynamoDBProjectDetails = (projectRoot: string): DynamoDBProjectDetails => {
   const meta = getBackendAmplifyMeta(projectRoot);
 
   const storageMetaKey = Object.keys(meta.storage)
-    .filter(key => meta.storage[key].service === 'DynamoDB')
-    .map(key => key)[0];
+    .filter((key) => meta.storage[key].service === 'DynamoDB')
+    .map((key) => key)[0];
 
   const storageMeta = meta.storage[storageMetaKey];
   const parameters = readResourceParametersJson(projectRoot, 'storage', storageMetaKey);
@@ -232,13 +268,17 @@ export const getOGDynamoDBProjectDetails = (projectRoot: string): DynamoDBProjec
   };
 };
 
+/**
+ *
+ * @param projectRoot
+ */
 export const getDynamoDBProjectDetails = (projectRoot: string): DynamoDBProjectDetails => {
   const meta = getBackendAmplifyMeta(projectRoot);
   const team = getTeamProviderInfo(projectRoot);
 
   const storageMetaKey = Object.keys(meta.storage)
-    .filter(key => meta.storage[key].service === 'DynamoDB')
-    .map(key => key)[0];
+    .filter((key) => meta.storage[key].service === 'DynamoDB')
+    .map((key) => key)[0];
 
   const dynamodbMeta = meta.storage[storageMetaKey];
   const storageTeam = _.get(team, ['integtest', 'categories', 'storage', storageMetaKey]);
@@ -272,11 +312,13 @@ export const getDynamoDBProjectDetails = (projectRoot: string): DynamoDBProjectD
   };
 };
 
+/**
+ *
+ * @param projectRoot
+ */
 export const getDynamoDBResourceName = (projectRoot: string): string => {
   const amplifyMeta = getBackendAmplifyMeta(projectRoot);
-  const dynamoDBResourceName = Object.keys(amplifyMeta.storage).find((key: any) => {
-    return amplifyMeta.storage[key].service === 'DynamoDB';
-  }) as any;
+  const dynamoDBResourceName = Object.keys(amplifyMeta.storage).find((key: any) => amplifyMeta.storage[key].service === 'DynamoDB') as any;
   return dynamoDBResourceName;
 };
 
@@ -309,19 +351,35 @@ const addAppClient = async (
   return { appClientId: response.UserPoolClient.ClientId, appclientSecret: response.UserPoolClient.ClientSecret };
 };
 
-export const addAppClientWithSecret = async (profileName: string, projectRoot: string, clientName: string, settings: AppClientSettings) => {
-  return addAppClient(profileName, projectRoot, clientName, true, settings);
-};
+/**
+ *
+ * @param profileName
+ * @param projectRoot
+ * @param clientName
+ * @param settings
+ */
+export const addAppClientWithSecret = async (profileName: string, projectRoot: string, clientName: string, settings: AppClientSettings) => addAppClient(profileName, projectRoot, clientName, true, settings);
 
+/**
+ *
+ * @param profileName
+ * @param projectRoot
+ * @param clientName
+ * @param settings
+ */
 export const addAppClientWithoutSecret = async (
   profileName: string,
   projectRoot: string,
   clientName: string,
   settings: AppClientSettings,
-) => {
-  return addAppClient(profileName, projectRoot, clientName, false, settings);
-};
+) => addAppClient(profileName, projectRoot, clientName, false, settings);
 
+/**
+ *
+ * @param profileName
+ * @param projectRoot
+ * @param clientId
+ */
 export const deleteAppClient = async (profileName: string, projectRoot: string, clientId: string) => {
   const authDetails = getAuthProjectDetails(projectRoot);
   const projectDetails = getProjectMeta(projectRoot);
@@ -334,6 +392,10 @@ export const deleteAppClient = async (profileName: string, projectRoot: string, 
 
 /**
  * sets up a project with auth (UserPool only or UserPool & IdentityPool)
+ * @param ogProjectRoot
+ * @param ogProjectSettings
+ * @param ogProjectSettings.name
+ * @param withIdentityPool
  */
 export const setupOgProjectWithAuth = async (
   ogProjectRoot: string,

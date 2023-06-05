@@ -12,7 +12,7 @@ function getPrivateAuthRule(rules: any, provider: any) {
 
     if (provider === 'userPools' && (foundProvider === undefined || foundProvider === 'userPools')) {
       return true;
-    } else if (provider === 'iam' && foundProvider === 'iam') {
+    } if (provider === 'iam' && foundProvider === 'iam') {
       return true;
     }
     return false;
@@ -29,6 +29,11 @@ function getGroupAuthRules(rules: any) {
 
 const ops = ['create', 'read', 'update', 'delete'];
 
+/**
+ *
+ * @param node
+ * @param defaultAuthMode
+ */
 export function migrateOwnerAuth(node: any, defaultAuthMode: any) {
   const authRules = getAuthRules(node);
 
@@ -41,7 +46,7 @@ export function migrateOwnerAuth(node: any, defaultAuthMode: any) {
     const operationsFieldIndex = rule.fields.findIndex((f: any) => f.name.value === 'operations');
 
     if (operationsFieldIndex === -1) {
-      ops.forEach(op => deniedOperations.add(op));
+      ops.forEach((op) => deniedOperations.add(op));
     } else {
       // remember denied operations
       rule.fields[operationsFieldIndex].value.values.forEach((op: any) => deniedOperations.add(op.value));
@@ -55,7 +60,7 @@ export function migrateOwnerAuth(node: any, defaultAuthMode: any) {
 
   if (hasAllImplicitOperations || privateRule) return;
 
-  const explicitOperations = ops.filter(x => !deniedOperations.has(x));
+  const explicitOperations = ops.filter((x) => !deniedOperations.has(x));
 
   authRules.push(createAuthRule('private', defaultAuthMode, explicitOperations));
 }

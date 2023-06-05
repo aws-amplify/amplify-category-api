@@ -103,7 +103,6 @@ export abstract class ModelResourceGenerator {
 
   protected generateResolvers(context: TransformerContextProvider): void {
     this.models.forEach((def) => {
-
       const queryFields = this.getQueryFieldNames(def);
       queryFields.forEach((query) => {
         let resolver;

@@ -1,5 +1,11 @@
 import { nspawn as spawn, getCLIPath } from '..';
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ * @param settings.exportPath
+ */
 export function exportBackend(cwd: string, settings: { exportPath: string }): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['export', '--out', settings.exportPath], { cwd, stripColors: true })
@@ -15,6 +21,14 @@ export function exportBackend(cwd: string, settings: { exportPath: string }): Pr
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ * @param settings.exportPath
+ * @param settings.frontend
+ * @param settings.rootStackName
+ */
 export function exportPullBackend(cwd: string, settings: { exportPath: string; frontend: string; rootStackName: string }): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(

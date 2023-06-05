@@ -21,6 +21,9 @@ type PipelineAwaiterProps = {
   deploymentMechanism: DEPLOYMENT_MECHANISM;
 };
 
+/**
+ *
+ */
 export type GitHubSourceActionInfo = {
   path: string;
   tokenSecretArn: string;
@@ -32,7 +35,9 @@ const lambdasDir = path.resolve(__dirname, '../../../resources/awscloudformation
 
 class PipelineAwaiter extends Construct {
   constructor(scope: Construct, id: string, props: PipelineAwaiterProps) {
-    const { pipeline, artifactBucketName, artifactKey, deploymentMechanism } = props;
+    const {
+      pipeline, artifactBucketName, artifactKey, deploymentMechanism,
+    } = props;
 
     const { pipelineArn, pipelineName } = pipeline;
 
@@ -90,6 +95,9 @@ class PipelineAwaiter extends Construct {
   }
 }
 
+/**
+ *
+ */
 export class PipelineWithAwaiter extends Construct {
   pipelineName: string;
   constructor(
@@ -251,6 +259,7 @@ export class PipelineWithAwaiter extends Construct {
                 clusterName: service.cluster,
                 env: {},
               } as ecs.ICluster;
+
               serviceArn = cdk.Fn.ref(service.attrServiceArn);
               serviceName = service.serviceName;
               stack = cdk.Stack.of(this);
@@ -289,6 +298,9 @@ export class PipelineWithAwaiter extends Construct {
     new cdk.CfnOutput(scope, 'PipelineName', { value: this.pipelineName });
   }
 
+  /**
+   *
+   */
   getPipelineName(): string {
     return this.pipelineName;
   }
@@ -366,6 +378,9 @@ function createPreBuildStages(
   return stages;
 }
 
+/**
+ *
+ */
 export type ContainerStackProps = {
   deploymentBucket: string;
   containerPort: number;

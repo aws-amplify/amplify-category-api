@@ -1,4 +1,6 @@
-import { Kind, DocumentNode, parse, SchemaDefinitionNode } from 'graphql/language';
+import {
+  Kind, DocumentNode, parse, SchemaDefinitionNode,
+} from 'graphql/language';
 import { validate, ValidationRule } from 'graphql/validation';
 import { buildASTSchema } from 'graphql/utilities/buildASTSchema';
 
@@ -126,18 +128,21 @@ type Query {
 }
 `);
 
+/**
+ *
+ * @param doc
+ */
 export const validateModelSchema = (doc: DocumentNode) => {
   const fullDocument = {
     kind: Kind.DOCUMENT,
     definitions: [...EXTRA_DIRECTIVES_DOCUMENT.definitions, ...doc.definitions, ...EXTRA_SCALARS_DOCUMENT.definitions],
   };
 
-  const schemaDef = doc.definitions.find(d => d.kind === Kind.SCHEMA_DEFINITION) as SchemaDefinitionNode;
-  const queryOperation = schemaDef ? schemaDef.operationTypes.find(o => o.operation === 'query') : undefined;
+  const schemaDef = doc.definitions.find((d) => d.kind === Kind.SCHEMA_DEFINITION) as SchemaDefinitionNode;
+  const queryOperation = schemaDef ? schemaDef.operationTypes.find((o) => o.operation === 'query') : undefined;
   const queryName = queryOperation ? queryOperation.type.name.value : 'Query';
   const existingQueryType = doc.definitions.find(
-    d =>
-      d.kind !== Kind.DIRECTIVE_DEFINITION && d.kind !== Kind.SCHEMA_DEFINITION && (d as any).name && (d as any).name.value === queryName,
+    (d) => d.kind !== Kind.DIRECTIVE_DEFINITION && d.kind !== Kind.SCHEMA_DEFINITION && (d as any).name && (d as any).name.value === queryName,
   );
 
   if (!existingQueryType) {
@@ -152,11 +157,15 @@ export const validateModelSchema = (doc: DocumentNode) => {
   return validate(schema, fullDocument, specifiedRules);
 };
 
+/**
+ *
+ * @param authConfig
+ */
 export const validateAuthModes = (authConfig: AppSyncAuthConfiguration) => {
   let additionalAuthModes: AppSyncAuthMode[] = [];
 
   if (authConfig.additionalAuthenticationProviders) {
-    additionalAuthModes = authConfig.additionalAuthenticationProviders.map(p => p.authenticationType).filter(t => !!t);
+    additionalAuthModes = authConfig.additionalAuthenticationProviders.map((p) => p.authenticationType).filter((t) => !!t);
   }
 
   const authModes: AppSyncAuthMode[] = [...additionalAuthModes, authConfig.defaultAuthentication.authenticationType];
@@ -165,11 +174,11 @@ export const validateAuthModes = (authConfig: AppSyncAuthConfiguration) => {
     const mode = authModes[i];
 
     if (
-      mode !== 'API_KEY' &&
-      mode !== 'AMAZON_COGNITO_USER_POOLS' &&
-      mode !== 'AWS_IAM' &&
-      mode !== 'OPENID_CONNECT' &&
-      mode !== 'AWS_LAMBDA'
+      mode !== 'API_KEY'
+      && mode !== 'AMAZON_COGNITO_USER_POOLS'
+      && mode !== 'AWS_IAM'
+      && mode !== 'OPENID_CONNECT'
+      && mode !== 'AWS_LAMBDA'
     ) {
       throw new Error(`Invalid auth mode ${mode}`);
     }

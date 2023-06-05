@@ -3,6 +3,12 @@ import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { AppsyncApiInputState } from '../api-input-manager/appsync-api-input-state';
 import { migrateResourceToSupportOverride } from './migrate-api-override-resource';
 
+/**
+ *
+ * @param context
+ * @param apiName
+ * @param isUpdate
+ */
 export const checkAppsyncApiResourceMigration = async (context: $TSContext, apiName: string, isUpdate: boolean): Promise<boolean> => {
   const cliState = new AppsyncApiInputState(context, apiName);
   if (!cliState.cliInputFileExists()) {

@@ -5,6 +5,8 @@ import { AccessControlMatrix } from '../accesscontrol';
 /**
  * Displays a warning when a default owner field is used and the feature flag is
  * disabled.
+ * @param context
+ * @param optionRules
  */
 export const defaultIdentityClaimWarning = (context: TransformerContextProvider, optionRules?: AuthRule[]): string | undefined => {
   const rules = optionRules || [];
@@ -68,7 +70,11 @@ export const ownerCanReassignWarning = (
   }
 };
 
-export const ownerFieldCaseWarning = (ownerField: string, warningField: string, modelName: string): string => {
-  return `WARNING: Schema field "${warningField}" and ownerField "${ownerField}" in type ${modelName} are getting added to your schema but could be referencing the same owner field. `
+/**
+ *
+ * @param ownerField
+ * @param warningField
+ * @param modelName
+ */
+export const ownerFieldCaseWarning = (ownerField: string, warningField: string, modelName: string): string => `WARNING: Schema field "${warningField}" and ownerField "${ownerField}" in type ${modelName} are getting added to your schema but could be referencing the same owner field. `
     + 'If this is not intentional, you may want to change one of the fields to the correct name.\n';
-};

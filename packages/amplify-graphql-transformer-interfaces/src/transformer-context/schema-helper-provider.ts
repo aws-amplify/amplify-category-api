@@ -1,3 +1,6 @@
+/**
+ *
+ */
 export interface TransformerSchemaHelperProvider {
   /**
    * Used for @mapsTo, this method is used to define a type mapping where the

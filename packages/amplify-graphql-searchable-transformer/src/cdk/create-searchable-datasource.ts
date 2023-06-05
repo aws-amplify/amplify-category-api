@@ -4,6 +4,14 @@ import { IRole } from 'aws-cdk-lib/aws-iam';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { Stack } from 'aws-cdk-lib';
 
+/**
+ *
+ * @param stack
+ * @param graphqlApiProvider
+ * @param domainEndpoint
+ * @param role
+ * @param region
+ */
 export const createSearchableDataSource = (
   stack: Stack,
   graphqlApiProvider: GraphQLAPIProvider,

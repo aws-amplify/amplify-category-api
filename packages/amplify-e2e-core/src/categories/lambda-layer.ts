@@ -6,8 +6,14 @@ import { getBackendAmplifyMeta } from '../utils';
 import { getLayerVersion, listVersions } from '../utils/sdk-calls';
 import { multiSelect } from '../utils/selectors';
 
+/**
+ *
+ */
 export type LayerRuntime = 'nodejs' | 'python';
 type LayerRuntimeDisplayName = 'NodeJS' | 'Python';
+/**
+ *
+ */
 export type LayerPermissionChoice = 'Specific AWS accounts' | 'Specific AWS organization' | 'Public (Anyone on AWS can use this layer)';
 
 export const layerRuntimeChoices: LayerRuntimeDisplayName[] = ['NodeJS', 'Python'];
@@ -19,16 +25,25 @@ export const permissionChoices: LayerPermissionChoice[] = [
 
 const PARAMETERS_FILE_NAME = 'parameters.json';
 
+/**
+ *
+ */
 export type LayerDirectoryType = {
   layerName: string;
   projName: string;
 };
 
+/**
+ *
+ * @param projRoot
+ * @param layerProjName
+ * @param runtimes
+ */
 export function validateLayerDir(projRoot: string, layerProjName: LayerDirectoryType, runtimes: LayerRuntime[]): boolean {
-  let layerDir = path.join(projRoot, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjName));
-  let validDir = fs.pathExistsSync(path.join(layerDir, 'opt'));
+  const layerDir = path.join(projRoot, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjName));
+  const validDir = fs.pathExistsSync(path.join(layerDir, 'opt'));
   if (runtimes && runtimes.length) {
-    for (let runtime of runtimes) {
+    for (const runtime of runtimes) {
       if (!fs.pathExistsSync(path.join(layerDir, getLayerRuntimeInfo(runtime).path))) {
         return false;
       }
@@ -37,16 +52,36 @@ export function validateLayerDir(projRoot: string, layerProjName: LayerDirectory
   return validDir;
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.layerName
+ * @param root0.projName
+ */
 export function getLayerDirectoryName({ layerName, projName }: { layerName: string; projName: string }): string {
   return `${projName}${layerName}`;
 }
 
+/**
+ *
+ * @param projRoot
+ * @param layerProjName
+ * @param permissions
+ */
 export function validatePushedVersion(projRoot: string, layerProjName: LayerDirectoryType, permissions: LayerPermission[]) {
   const layerData = getLayerConfig(projRoot, getLayerDirectoryName(layerProjName));
   const storedPermissions: LayerPermission[] = layerData.permissions;
-  permissions.forEach(perm => expect(storedPermissions).toContainEqual(perm));
+  permissions.forEach((perm) => expect(storedPermissions).toContainEqual(perm));
 }
 
+/**
+ *
+ * @param projRoot
+ * @param layerProjName
+ * @param envName
+ * @param version
+ * @param permissions
+ */
 export function expectEphemeralPermissions(
   projRoot: string,
   layerProjName: LayerDirectoryType,
@@ -56,9 +91,14 @@ export function expectEphemeralPermissions(
 ) {
   const layerData = getLayerConfig(projRoot, getLayerDirectoryName(layerProjName));
   const storedPermissions: LayerPermission[] = layerData?.ephemeral?.layerVersionPermissionsToUpdate?.[envName]?.[version];
-  permissions.forEach(perm => expect(storedPermissions).toContainEqual(perm));
+  permissions.forEach((perm) => expect(storedPermissions).toContainEqual(perm));
 }
 
+/**
+ *
+ * @param projRoot
+ * @param layerProjName
+ */
 export function expectEphemeralDataIsUndefined(projRoot: string, layerProjName: LayerDirectoryType) {
   const layerData = getLayerConfig(projRoot, getLayerDirectoryName(layerProjName));
   const ephemeralData = layerData?.ephemeral;
@@ -66,6 +106,14 @@ export function expectEphemeralDataIsUndefined(projRoot: string, layerProjName: 
   expect(ephemeralData).toBeUndefined();
 }
 
+/**
+ *
+ * @param projRoot
+ * @param layerProjName
+ * @param meta
+ * @param envName
+ * @param layerDescription
+ */
 export async function expectDeployedLayerDescription(
   projRoot: string,
   layerProjName: LayerDirectoryType,
@@ -87,6 +135,14 @@ export async function expectDeployedLayerDescription(
   expect(Versions[0].Description).toEqual(layerDescription);
 }
 
+/**
+ *
+ * @param projRoot
+ * @param layerProjName
+ * @param meta
+ * @param envName
+ * @param arns
+ */
 export async function validateLayerMetadata(
   projRoot: string,
   layerProjName: LayerDirectoryType,
@@ -102,18 +158,35 @@ export async function validateLayerMetadata(
   expect(arn).toBeDefined();
   const cloudData = await getLayerVersion(arn, region);
   const { LayerVersions: Versions } = await listVersions(`${getLayerDirectoryName(layerProjName)}-${envName}`, region);
-  const cloudVersions = Versions.map(version => version.LayerVersionArn);
+  const cloudVersions = Versions.map((version) => version.LayerVersionArn);
   expect(cloudVersions.map(String).sort()).toEqual(arns.sort());
   expect(cloudData.LayerVersionArn).toEqual(arn);
   expect(cloudData.CompatibleRuntimes).toEqual(runtimeValues);
 }
 
+/**
+ *
+ * @param projroot
+ * @param layerProjName
+ */
 export function getCurrentLayerArnFromMeta(projroot: string, layerProjName: LayerDirectoryType): string {
   const meta = getBackendAmplifyMeta(projroot);
   const layerName = getLayerDirectoryName(layerProjName);
   return meta.function[layerName].output.Arn;
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ * @param settings.layerName
+ * @param settings.permissions
+ * @param settings.accountId
+ * @param settings.orgId
+ * @param settings.projName
+ * @param settings.runtimes
+ * @param testingWithLatestCodebase
+ */
 export function addLayer(
   cwd: string,
   settings: {
@@ -124,7 +197,7 @@ export function addLayer(
     projName: string;
     runtimes: LayerRuntime[];
   },
-  testingWithLatestCodebase: boolean = false,
+  testingWithLatestCodebase = false,
 ): Promise<void> {
   const defaultSettings = {
     permissions: [],
@@ -168,6 +241,12 @@ export function addLayer(
 }
 
 // Assumes first item in list is a layer and removes it
+/**
+ *
+ * @param cwd
+ * @param versionsToRemove
+ * @param allVersions
+ */
 export function removeLayer(cwd: string, versionsToRemove: number[], allVersions: number[]): Promise<void> {
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['remove', 'function'], { cwd, stripColors: true })
@@ -194,6 +273,16 @@ export function removeLayer(cwd: string, versionsToRemove: number[], allVersions
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ * @param settings.removeLegacyOnly
+ * @param settings.removeNoLayerVersions
+ * @param versionsToRemove
+ * @param allVersions
+ * @param testingWithLatestCodebase
+ */
 export function removeLayerVersion(
   cwd: string,
   settings: { removeLegacyOnly?: boolean; removeNoLayerVersions?: boolean },
@@ -233,6 +322,22 @@ export function removeLayerVersion(
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ * @param settings.layerName
+ * @param settings.projName
+ * @param settings.runtimes
+ * @param settings.numLayers
+ * @param settings.versions
+ * @param settings.permissions
+ * @param settings.dontChangePermissions
+ * @param settings.changePermissionOnFutureVersion
+ * @param settings.changePermissionOnLatestVersion
+ * @param settings.migrateLegacyLayer
+ * @param testingWithLatestCodebase
+ */
 export function updateLayer(
   cwd: string,
   settings?: {
@@ -247,10 +352,10 @@ export function updateLayer(
     changePermissionOnLatestVersion?: boolean;
     migrateLegacyLayer?: boolean;
   },
-  testingWithLatestCodebase: boolean = false,
+  testingWithLatestCodebase = false,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    const chain: ExecutionContext = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'function'], { cwd, stripColors: true })
+    const chain: ExecutionContext = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'function'], { cwd, stripColors: true });
     if (settings.numLayers > 1) {
       chain.wait('Select the Lambda layer to update:').sendCarriageReturn();
     }
@@ -301,6 +406,12 @@ export function updateLayer(
   });
 }
 
+/**
+ *
+ * @param projRoot
+ * @param layerProjName
+ * @param data
+ */
 export function updateOptData(projRoot: string, layerProjName: LayerDirectoryType, data: string) {
   fs.appendFileSync(
     path.join(projRoot, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjName), 'opt', 'data.txt'),
@@ -309,7 +420,13 @@ export function updateOptData(projRoot: string, layerProjName: LayerDirectoryTyp
   );
 }
 
-export function addOptData(projRoot: string, layerProjName: LayerDirectoryType, data: string = 'data'): void {
+/**
+ *
+ * @param projRoot
+ * @param layerProjName
+ * @param data
+ */
+export function addOptData(projRoot: string, layerProjName: LayerDirectoryType, data = 'data'): void {
   fs.writeFileSync(
     path.join(projRoot, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjName), 'opt', 'data.txt'),
     data,
@@ -317,6 +434,9 @@ export function addOptData(projRoot: string, layerProjName: LayerDirectoryType, 
   );
 }
 
+/**
+ *
+ */
 export enum LayerPermissionName {
   awsAccounts = 'awsAccounts',
   awsOrg = 'awsOrg',
@@ -324,16 +444,24 @@ export enum LayerPermissionName {
   public = 'Public',
 }
 
+/**
+ *
+ */
 export interface LayerPermission {
   type: LayerPermissionName;
   accounts?: string[];
   orgs?: string[];
 }
 
+/**
+ *
+ * @param projRoot
+ * @param layerProjName
+ */
 export function getLayerVersionArnFromCfn(projRoot: string, layerProjName: LayerDirectoryType): string[] {
   const directoryName = getLayerDirectoryName(layerProjName);
   const cfn = getLayerCfn(projRoot, directoryName);
-  const versionLogicalNames = Object.keys(cfn.Resources).filter(key => cfn.Resources[key].Type === 'AWS::Lambda::LayerVersion');
+  const versionLogicalNames = Object.keys(cfn.Resources).filter((key) => cfn.Resources[key].Type === 'AWS::Lambda::LayerVersion');
   return versionLogicalNames;
 }
 
@@ -354,8 +482,12 @@ function getLayerRuntimes(projRoot: string, layerName: string): any {
   return JSONUtilities.readJson(runtimesFilePath);
 }
 
+/**
+ *
+ * @param runtimes
+ */
 export function getRuntimeDisplayNames(runtimes: LayerRuntime[]) {
-  return runtimes.map(runtime => getLayerRuntimeInfo(runtime).displayName);
+  return runtimes.map((runtime) => getLayerRuntimeInfo(runtime).displayName);
 }
 
 function getLayerRuntimeInfo(runtime: LayerRuntime) {

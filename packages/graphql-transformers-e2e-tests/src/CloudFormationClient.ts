@@ -16,6 +16,9 @@ async function promisify<I, O>(fun: (arg: I, cb: (e: Error, d: O) => void) => vo
   });
 }
 
+/**
+ *
+ */
 export class CloudFormationClient {
   client: CloudFormation;
 
@@ -23,10 +26,25 @@ export class CloudFormationClient {
     this.client = new CloudFormation({ apiVersion: '2010-05-15', region: this.region });
   }
 
+  /**
+   *
+   * @param template
+   * @param name
+   * @param defParams
+   * @param addAppSyncApiName
+   */
   async updateStack(template: any, name: string, defParams: any = {}, addAppSyncApiName = true) {
     return this.createStack(template, name, defParams, addAppSyncApiName, true);
   }
 
+  /**
+   *
+   * @param template
+   * @param name
+   * @param defParams
+   * @param addAppSyncApiName
+   * @param isUpdate
+   */
   async createStack(template: any, name: string, defParams: any = {}, addAppSyncApiName = true, isUpdate = false) {
     const params = [];
 
@@ -58,10 +76,18 @@ export class CloudFormationClient {
     );
   }
 
+  /**
+   *
+   * @param name
+   */
   async deleteStack(name: string) {
     return await promisify<CloudFormation.Types.DeleteStackInput, {}>(this.client.deleteStack, { StackName: name }, this.client);
   }
 
+  /**
+   *
+   * @param name
+   */
   async describeStack(name: string): Promise<CloudFormation.Stack> {
     return await new Promise<CloudFormation.Stack>((resolve, reject) => {
       this.client.describeStacks(
@@ -90,6 +116,12 @@ export class CloudFormationClient {
    * @param poll: The status' that indicate to keep polling.
    * @param maxPolls: The max number of times to poll.
    * @param pollInterval: The frequency of polling.
+   * @param name
+   * @param success
+   * @param failure
+   * @param poll
+   * @param maxPolls
+   * @param pollInterval
    */
   async waitForStack(
     name: string,
@@ -140,7 +172,7 @@ export class CloudFormationClient {
    * @param args The arguments to pass to the function after the wait.
    */
   public async wait<T>(secs: number, fun: (...args: any[]) => Promise<T>, ...args: any[]): Promise<T> {
-    return new Promise<T>(resolve => {
+    return new Promise<T>((resolve) => {
       setTimeout(() => {
         resolve(fun.apply(this, args));
       }, 1000 * secs);

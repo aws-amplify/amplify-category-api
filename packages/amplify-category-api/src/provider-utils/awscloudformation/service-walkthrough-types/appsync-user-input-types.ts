@@ -84,6 +84,9 @@ export interface LambdaResolutionStrategy {
   resolver: LambdaConflictResolver;
 }
 
+/**
+ *
+ */
 export type LambdaConflictResolver = NewLambdaConflictResolver | ExistingLambdaConflictResolver;
 
 /**
@@ -112,8 +115,14 @@ export interface ExistingLambdaConflictResolver {
   arn?: string;
 }
 
+/**
+ *
+ */
 export type ResolutionStrategy = PredefinedResolutionStrategy | LambdaResolutionStrategy;
 
+/**
+ *
+ */
 export type AppSyncAuthType =
   | AppSyncAPIKeyAuthType
   | AppSyncAWSIAMAuthType

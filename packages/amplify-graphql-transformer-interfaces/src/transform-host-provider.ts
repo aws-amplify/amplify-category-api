@@ -6,8 +6,8 @@ import {
   HttpDataSource,
   LambdaDataSource,
   NoneDataSource,
+  CfnResolver,
 } from 'aws-cdk-lib/aws-appsync';
-import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IFunction, ILayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { IRole } from 'aws-cdk-lib/aws-iam';
@@ -18,6 +18,9 @@ import {
   MappingTemplateProvider,
 } from './graphql-api-provider';
 
+/**
+ *
+ */
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
   /**
    * ServiceRole for the Amazon DynamoDb
@@ -25,20 +28,23 @@ export interface DynamoDbDataSourceOptions extends DataSourceOptions {
   readonly serviceRole: IRole;
 }
 
+/**
+ *
+ */
 export interface TransformHostProvider {
-  setAPI(api: GraphqlApiBase): void;
+  setAPI: (api: GraphqlApiBase) => void;
 
-  addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, stack?: Stack): HttpDataSource;
-  addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource;
-  addNoneDataSource(name: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource;
-  addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource;
-  addSearchableDataSource(
+  addHttpDataSource: (name: string, endpoint: string, options?: DataSourceOptions, stack?: Stack) => HttpDataSource;
+  addDynamoDbDataSource: (name: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack) => DynamoDbDataSource;
+  addNoneDataSource: (name: string, options?: DataSourceOptions, stack?: Stack) => NoneDataSource;
+  addLambdaDataSource: (name: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack) => LambdaDataSource;
+  addSearchableDataSource: (
     name: string,
     endpoint: string,
     region: string,
     options?: SearchableDataSourceOptions,
     stack?: Stack,
-  ): BaseDataSource;
+  ) => BaseDataSource;
 
   addAppSyncFunction: (
     name: string,

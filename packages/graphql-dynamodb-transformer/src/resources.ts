@@ -1,4 +1,6 @@
-import { DynamoDB, AppSync, IAM, Fn, StringParameter, NumberParameter, Refs, IntrinsicFunction, DeletionPolicy } from 'cloudform-types';
+import {
+  DynamoDB, AppSync, IAM, Fn, StringParameter, NumberParameter, Refs, IntrinsicFunction, DeletionPolicy,
+} from 'cloudform-types';
 import Output from 'cloudform-types/types/output';
 import {
   DynamoDBMappingTemplate,
@@ -53,7 +55,13 @@ type MutationUpdateResolverInput = MutationResolverInput & {
   optionalNonNullableFields: string[];
 };
 
+/**
+ *
+ */
 export class ResourceFactory {
+  /**
+   *
+   */
   public makeParams() {
     return {
       [ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS]: new NumberParameter({
@@ -127,6 +135,10 @@ export class ResourceFactory {
     });
   }
 
+  /**
+   *
+   * @param schema
+   */
   public makeAppSyncSchema(schema: string) {
     return new AppSync.GraphQLSchema({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -147,6 +159,9 @@ export class ResourceFactory {
     };
   }
 
+  /**
+   *
+   */
   public makeAPIEndpointOutput(): Output {
     return {
       Description: 'Your GraphQL API endpoint.',
@@ -157,6 +172,10 @@ export class ResourceFactory {
     };
   }
 
+  /**
+   *
+   * @param resourceId
+   */
   public makeTableStreamArnOutput(resourceId: string): Output {
     return {
       Description: 'Your DynamoDB table StreamArn.',
@@ -167,6 +186,10 @@ export class ResourceFactory {
     };
   }
 
+  /**
+   *
+   * @param resourceId
+   */
   public makeDataSourceOutput(resourceId: string): Output {
     return {
       Description: 'Your model DataSource name.',
@@ -177,6 +200,10 @@ export class ResourceFactory {
     };
   }
 
+  /**
+   *
+   * @param resourceId
+   */
   public makeTableNameOutput(resourceId: string): Output {
     return {
       Description: 'Your DynamoDB table name.',
@@ -189,40 +216,43 @@ export class ResourceFactory {
 
   /**
    * Create a DynamoDB table for a specific type.
+   * @param typeName
+   * @param hashKey
+   * @param rangeKey
+   * @param deletionPolicy
+   * @param isSyncEnabled
    */
   public makeModelTable(
     typeName: string,
-    hashKey: string = 'id',
+    hashKey = 'id',
     rangeKey?: string,
     deletionPolicy: DeletionPolicy = DeletionPolicy.Delete,
-    isSyncEnabled: boolean = false,
+    isSyncEnabled = false,
   ) {
-    const keySchema =
-      hashKey && rangeKey
-        ? [
-            {
-              AttributeName: hashKey,
-              KeyType: 'HASH',
-            },
-            {
-              AttributeName: rangeKey,
-              KeyType: 'RANGE',
-            },
-          ]
-        : [{ AttributeName: hashKey, KeyType: 'HASH' }];
-    const attributeDefinitions =
-      hashKey && rangeKey
-        ? [
-            {
-              AttributeName: hashKey,
-              AttributeType: 'S',
-            },
-            {
-              AttributeName: rangeKey,
-              AttributeType: 'S',
-            },
-          ]
-        : [{ AttributeName: hashKey, AttributeType: 'S' }];
+    const keySchema = hashKey && rangeKey
+      ? [
+        {
+          AttributeName: hashKey,
+          KeyType: 'HASH',
+        },
+        {
+          AttributeName: rangeKey,
+          KeyType: 'RANGE',
+        },
+      ]
+      : [{ AttributeName: hashKey, KeyType: 'HASH' }];
+    const attributeDefinitions = hashKey && rangeKey
+      ? [
+        {
+          AttributeName: hashKey,
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: rangeKey,
+          AttributeType: 'S',
+        },
+      ]
+      : [{ AttributeName: hashKey, AttributeType: 'S' }];
     return new DynamoDB.Table({
       TableName: this.dynamoDBTableName(typeName),
       KeySchema: keySchema,
@@ -267,6 +297,8 @@ export class ResourceFactory {
    * Create a single role that has access to all the resources created by the
    * transform.
    * @param name  The name of the IAM role to create.
+   * @param typeName
+   * @param syncConfig
    */
   public makeIAMRole(typeName: string, syncConfig?: SyncConfig) {
     return new IAM.Role({
@@ -323,35 +355,35 @@ export class ResourceFactory {
                   }),
                   ...(syncConfig
                     ? [
-                        Fn.Sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
-                          tablename: Fn.If(
-                            ResourceConstants.CONDITIONS.HasEnvironmentParameter,
-                            Fn.Join('-', [
-                              SyncResourceIDs.syncTableName,
-                              Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-                              Fn.Ref(ResourceConstants.PARAMETERS.Env),
-                            ]),
-                            Fn.Join('-', [
-                              SyncResourceIDs.syncTableName,
-                              Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-                            ]),
-                          ),
-                        }),
-                        Fn.Sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
-                          tablename: Fn.If(
-                            ResourceConstants.CONDITIONS.HasEnvironmentParameter,
-                            Fn.Join('-', [
-                              SyncResourceIDs.syncTableName,
-                              Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-                              Fn.Ref(ResourceConstants.PARAMETERS.Env),
-                            ]),
-                            Fn.Join('-', [
-                              SyncResourceIDs.syncTableName,
-                              Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-                            ]),
-                          ),
-                        }),
-                      ]
+                      Fn.Sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
+                        tablename: Fn.If(
+                          ResourceConstants.CONDITIONS.HasEnvironmentParameter,
+                          Fn.Join('-', [
+                            SyncResourceIDs.syncTableName,
+                            Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+                            Fn.Ref(ResourceConstants.PARAMETERS.Env),
+                          ]),
+                          Fn.Join('-', [
+                            SyncResourceIDs.syncTableName,
+                            Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+                          ]),
+                        ),
+                      }),
+                      Fn.Sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
+                        tablename: Fn.If(
+                          ResourceConstants.CONDITIONS.HasEnvironmentParameter,
+                          Fn.Join('-', [
+                            SyncResourceIDs.syncTableName,
+                            Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+                            Fn.Ref(ResourceConstants.PARAMETERS.Env),
+                          ]),
+                          Fn.Join('-', [
+                            SyncResourceIDs.syncTableName,
+                            Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+                          ]),
+                        ),
+                      }),
+                    ]
                     : []),
                 ],
               },
@@ -368,8 +400,12 @@ export class ResourceFactory {
   /**
    * Given the name of a data source and optional logical id return a CF
    * spec for a data source pointing to the dynamodb table.
+   * @param tableId
+   * @param iamRoleLogicalID
+   * @param typeName
+   * @param isSyncEnabled
    */
-  public makeDynamoDBDataSource(tableId: string, iamRoleLogicalID: string, typeName: string, isSyncEnabled: boolean = false) {
+  public makeDynamoDBDataSource(tableId: string, iamRoleLogicalID: string, typeName: string, isSyncEnabled = false) {
     return new AppSync.DataSource({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       Name: tableId,
@@ -388,11 +424,17 @@ export class ResourceFactory {
 
   /**
    * Create a resolver that creates an item in DynamoDB.
+   * @param type.type
    * @param type
+   * @param type.nameOverride
+   * @param type.syncConfig
+   * @param type.mutationTypeName
    */
-  public makeCreateResolver({ type, nameOverride, syncConfig, mutationTypeName = 'Mutation' }: MutationResolverInput) {
-    const fieldName = nameOverride ? nameOverride : graphqlName('create' + toUpper(type));
-    const isSyncEnabled = syncConfig ? true : false;
+  public makeCreateResolver({
+    type, nameOverride, syncConfig, mutationTypeName = 'Mutation',
+  }: MutationResolverInput) {
+    const fieldName = nameOverride || graphqlName(`create${toUpper(type)}`);
+    const isSyncEnabled = !!syncConfig;
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
@@ -411,9 +453,9 @@ export class ResourceFactory {
                 raw('$util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition))'),
               ),
               // tslint:disable-next-line
-              qref(`$condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression")`),
-              qref(`$condition.expressionNames.putAll($conditionFilterExpressions.expressionNames)`),
-              qref(`$condition.expressionValues.putAll($conditionFilterExpressions.expressionValues)`),
+              qref('$condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression")'),
+              qref('$condition.expressionNames.putAll($conditionFilterExpressions.expressionNames)'),
+              qref('$condition.expressionValues.putAll($conditionFilterExpressions.expressionValues)'),
             ]),
           ),
           iff(
@@ -431,7 +473,7 @@ export class ResourceFactory {
               ref(ResourceConstants.SNIPPETS.ModelObjectKey),
               raw(`$util.toJson(\$${ResourceConstants.SNIPPETS.ModelObjectKey})`),
               obj({
-                id: raw(`$util.dynamodb.toDynamoDBJson($ctx.args.input.id)`),
+                id: raw('$util.dynamodb.toDynamoDBJson($ctx.args.input.id)'),
               }),
               true,
             ),
@@ -445,34 +487,49 @@ export class ResourceFactory {
     });
   }
 
+  /**
+   *
+   * @param input
+   * @param timestamps
+   */
   public initalizeDefaultInputForCreateMutation(input: InputObjectTypeDefinitionNode, timestamps): string {
-    const hasDefaultIdField = input.fields?.find(field => field.name.value === 'id' && ['ID', 'String'].includes(getBaseType(field.type)));
+    const hasDefaultIdField = input.fields?.find((field) => field.name.value === 'id' && ['ID', 'String'].includes(getBaseType(field.type)));
     return printBlock('Set default values')(
       compoundExpression([
-        ...(hasDefaultIdField ? [qref(`$context.args.input.put("id", $util.defaultIfNull($ctx.args.input.id, $util.autoId()))`)] : []),
+        ...(hasDefaultIdField ? [qref('$context.args.input.put("id", $util.defaultIfNull($ctx.args.input.id, $util.autoId()))')] : []),
         ...(timestamps && (timestamps.createdAtField || timestamps.updatedAtField)
           ? [set(ref('createdAt'), ref('util.time.nowISO8601()'))]
           : []),
         ...(timestamps && timestamps.createdAtField
           ? [
-              comment(`Automatically set the createdAt timestamp.`),
-              qref(
-                `$context.args.input.put("${timestamps.createdAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.createdAtField}, $createdAt))`,
-              ),
-            ]
+            comment('Automatically set the createdAt timestamp.'),
+            qref(
+              `$context.args.input.put("${timestamps.createdAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.createdAtField}, $createdAt))`,
+            ),
+          ]
           : []),
         ...(timestamps && timestamps.updatedAtField
           ? [
-              comment(`Automatically set the updatedAt timestamp.`),
-              qref(
-                `$context.args.input.put("${timestamps.updatedAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.updatedAtField}, $createdAt))`,
-              ),
-            ]
+            comment('Automatically set the updatedAt timestamp.'),
+            qref(
+              `$context.args.input.put("${timestamps.updatedAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.updatedAtField}, $createdAt))`,
+            ),
+          ]
           : []),
       ]),
     );
   }
 
+  /**
+   *
+   * @param root0
+   * @param root0.type
+   * @param root0.nameOverride
+   * @param root0.syncConfig
+   * @param root0.mutationTypeName
+   * @param root0.timestamps
+   * @param root0.optionalNonNullableFields
+   */
   public makeUpdateResolver({
     type,
     nameOverride,
@@ -481,8 +538,8 @@ export class ResourceFactory {
     timestamps,
     optionalNonNullableFields,
   }: MutationUpdateResolverInput) {
-    const fieldName = nameOverride ? nameOverride : graphqlName(`update` + toUpper(type));
-    const isSyncEnabled = syncConfig ? true : false;
+    const fieldName = nameOverride || graphqlName(`update${toUpper(type)}`);
+    const isSyncEnabled = !!syncConfig;
     const optionalNonNullableExpression: Expression[] = optionalNonNullableFields.map(str);
 
     return new AppSync.Resolver({
@@ -520,11 +577,11 @@ export class ResourceFactory {
           ),
           ...(timestamps && timestamps.updatedAtField
             ? [
-                comment(`Automatically set the updatedAt timestamp.`),
-                qref(
-                  `$context.args.input.put("${timestamps.updatedAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.updatedAtField}, $util.time.nowISO8601()))`,
-                ),
-              ]
+              comment('Automatically set the updatedAt timestamp.'),
+              qref(
+                `$context.args.input.put("${timestamps.updatedAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.updatedAtField}, $util.time.nowISO8601()))`,
+              ),
+            ]
             : []),
           qref(`$context.args.input.put("__typename", "${type}")`),
           comment('Update condition if type is @versioned'),
@@ -547,9 +604,9 @@ export class ResourceFactory {
                 raw('$util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition))'),
               ),
               // tslint:disable-next-line
-              qref(`$condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression")`),
-              qref(`$condition.expressionNames.putAll($conditionFilterExpressions.expressionNames)`),
-              qref(`$condition.expressionValues.putAll($conditionFilterExpressions.expressionValues)`),
+              qref('$condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression")'),
+              qref('$condition.expressionNames.putAll($conditionFilterExpressions.expressionNames)'),
+              qref('$condition.expressionValues.putAll($conditionFilterExpressions.expressionValues)'),
             ]),
           ),
           iff(
@@ -586,9 +643,12 @@ export class ResourceFactory {
   /**
    * Create a resolver that creates an item in DynamoDB.
    * @param type
+   * @param nameOverride
+   * @param isSyncEnabled
+   * @param queryTypeName
    */
-  public makeGetResolver(type: string, nameOverride?: string, isSyncEnabled: boolean = false, queryTypeName: string = 'Query') {
-    const fieldName = nameOverride ? nameOverride : graphqlName('get' + toUpper(type));
+  public makeGetResolver(type: string, nameOverride?: string, isSyncEnabled = false, queryTypeName = 'Query') {
+    const fieldName = nameOverride || graphqlName(`get${toUpper(type)}`);
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
@@ -614,9 +674,10 @@ export class ResourceFactory {
   /**
    * Create a resolver that syncs local storage with cloud storage
    * @param type
+   * @param queryTypeName
    */
-  public makeSyncResolver(type: string, queryTypeName: string = 'Query') {
-    const fieldName = graphqlName('sync' + toUpper(plural(type)));
+  public makeSyncResolver(type: string, queryTypeName = 'Query') {
+    const fieldName = graphqlName(`sync${toUpper(plural(type))}`);
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
@@ -637,9 +698,12 @@ export class ResourceFactory {
   /**
    * Create a resolver that queries an item in DynamoDB.
    * @param type
+   * @param nameOverride
+   * @param isSyncEnabled
+   * @param queryTypeName
    */
-  public makeQueryResolver(type: string, nameOverride?: string, isSyncEnabled: boolean = false, queryTypeName: string = 'Query') {
-    const fieldName = nameOverride ? nameOverride : graphqlName(`query${toUpper(type)}`);
+  public makeQueryResolver(type: string, nameOverride?: string, isSyncEnabled = false, queryTypeName = 'Query') {
+    const fieldName = nameOverride || graphqlName(`query${toUpper(type)}`);
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
@@ -684,15 +748,19 @@ export class ResourceFactory {
    * Create a resolver that lists items in DynamoDB.
    * TODO: actually fill out the right filter expression. This is a placeholder only.
    * @param type
+   * @param improvePluralization
+   * @param nameOverride
+   * @param isSyncEnabled
+   * @param queryTypeName
    */
   public makeListResolver(
     type: string,
     improvePluralization: boolean,
     nameOverride?: string,
-    isSyncEnabled: boolean = false,
-    queryTypeName: string = 'Query',
+    isSyncEnabled = false,
+    queryTypeName = 'Query',
   ) {
-    const fieldName = nameOverride ? nameOverride : graphqlName('list' + plurality(toUpper(type), improvePluralization));
+    const fieldName = nameOverride || graphqlName(`list${plurality(toUpper(type), improvePluralization)}`);
     const requestVariable = 'ListRequest';
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -721,7 +789,7 @@ export class ResourceFactory {
               qref(`$${requestVariable}.put("operation", "Query")`),
               qref(`$${requestVariable}.put("query", $${ResourceConstants.SNIPPETS.ModelQueryExpression})`),
               ifElse(
-                raw(`!$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == "DESC"`),
+                raw('!$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == "DESC"'),
                 set(ref(`${requestVariable}.scanIndexForward`), bool(false)),
                 set(ref(`${requestVariable}.scanIndexForward`), bool(true)),
               ),
@@ -737,12 +805,18 @@ export class ResourceFactory {
 
   /**
    * Create a resolver that deletes an item from DynamoDB.
+   * @param type.type
    * @param type The name of the type to delete an item of.
    * @param nameOverride A user provided override for the field name.
+   * @param type.nameOverride
+   * @param type.syncConfig
+   * @param type.mutationTypeName
    */
-  public makeDeleteResolver({ type, nameOverride, syncConfig, mutationTypeName = 'Mutation' }: MutationResolverInput) {
-    const fieldName = nameOverride ? nameOverride : graphqlName('delete' + toUpper(type));
-    const isSyncEnabled = syncConfig ? true : false;
+  public makeDeleteResolver({
+    type, nameOverride, syncConfig, mutationTypeName = 'Mutation',
+  }: MutationResolverInput) {
+    const fieldName = nameOverride || graphqlName(`delete${toUpper(type)}`);
+    const isSyncEnabled = !!syncConfig;
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
@@ -789,12 +863,12 @@ export class ResourceFactory {
                 raw('$util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition))'),
               ),
               // tslint:disable-next-line
-              qref(`$condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression")`),
-              qref(`$condition.expressionNames.putAll($conditionFilterExpressions.expressionNames)`),
+              qref('$condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression")'),
+              qref('$condition.expressionNames.putAll($conditionFilterExpressions.expressionNames)'),
               set(ref('conditionExpressionValues'), raw('$util.defaultIfNull($condition.expressionValues, {})')),
-              qref(`$conditionExpressionValues.putAll($conditionFilterExpressions.expressionValues)`),
+              qref('$conditionExpressionValues.putAll($conditionFilterExpressions.expressionValues)'),
               set(ref('condition.expressionValues'), ref('conditionExpressionValues')),
-              qref(`$condition.expressionValues.putAll($conditionFilterExpressions.expressionValues)`),
+              qref('$condition.expressionValues.putAll($conditionFilterExpressions.expressionValues)'),
             ]),
           ),
           iff(

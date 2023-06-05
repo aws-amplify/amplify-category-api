@@ -1,4 +1,6 @@
-import { $TSContext, AmplifyCategories, pathManager, stateManager, FeatureFlags } from '@aws-amplify/amplify-cli-core';
+import {
+  $TSContext, AmplifyCategories, pathManager, stateManager, FeatureFlags,
+} from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { attemptV2TransformerMigration, revertV2Migration } from '@aws-amplify/graphql-transformer-migrator';
 import * as path from 'path';
@@ -8,6 +10,10 @@ const subcommand = 'migrate';
 
 export const name = subcommand;
 
+/**
+ *
+ * @param context
+ */
 export const run = async (context: $TSContext) => {
   const apiNames = Object.entries(stateManager.getMeta()?.api || {})
     .filter(([_, apiResource]) => (apiResource as any).service === 'AppSync')
@@ -37,7 +43,7 @@ export const run = async (context: $TSContext) => {
     return;
   }
   const transformerVersion = FeatureFlags.getNumber('graphqltransformer.transformerversion');
-  const improvePluralization = FeatureFlags.getBoolean('graphqltransformer.improvepluralization')
+  const improvePluralization = FeatureFlags.getBoolean('graphqltransformer.improvepluralization');
   await attemptV2TransformerMigration(
     apiResourceDir,
     apiName,

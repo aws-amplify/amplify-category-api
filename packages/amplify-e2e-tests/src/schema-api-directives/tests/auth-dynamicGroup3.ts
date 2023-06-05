@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Draft @model
   @auth(rules: [
@@ -24,7 +24,7 @@ type Draft @model
 }
 
 ##dynamicGroup3`;
-//mutations
+// mutations
 export const mutation1 = `
 #change: add id: "1" so result can be verified
 mutation CreateDraft {

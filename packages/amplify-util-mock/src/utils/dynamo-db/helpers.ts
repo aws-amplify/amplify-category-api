@@ -1,6 +1,12 @@
 import { DynamoDB } from 'aws-sdk';
 
 const MILLI_SECONDS = 1000;
+/**
+ *
+ * @param dynamoDBClient
+ * @param tableName
+ * @param maximumWait
+ */
 export async function waitTillTableStateIsActive(
   dynamoDBClient: DynamoDB,
   tableName: string,

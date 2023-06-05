@@ -4,6 +4,9 @@ import fs from 'fs-extra';
 import { TRANSFORM_CONFIG_FILE_NAME } from 'graphql-transformer-core';
 import * as path from 'path';
 
+/**
+ *
+ */
 export interface ProjectOptions {
   projectDirectory?: string;
   transformersFactory: Function;
@@ -22,6 +25,10 @@ export interface ProjectOptions {
  * if it does not exist then we return a blank object
  *  */
 
+/**
+ *
+ * @param projectDir
+ */
 export async function loadConfig(projectDir: string): Promise<TransformConfig> {
   // Initialize the config always with the latest version, other members are optional for now.
   let config: TransformConfig = {};
@@ -38,22 +45,31 @@ export async function loadConfig(projectDir: string): Promise<TransformConfig> {
   }
 }
 
+/**
+ *
+ * @param projectDir
+ * @param config
+ */
 export async function writeConfig(projectDir: string, config: TransformConfig): Promise<TransformConfig> {
   const configFilePath = path.join(projectDir, TRANSFORM_CONFIG_FILE_NAME);
   await fs.writeFile(configFilePath, JSON.stringify(config, null, 4));
   return config;
 }
 
+/**
+ *
+ * @param stackFile
+ */
 export function throwIfNotJSONExt(stackFile: string): void {
   const extension = path.extname(stackFile);
   if (extension === '.yaml' || extension === '.yml') {
-    throw new AmplifyError('CloudFormationTemplateError' ,{
+    throw new AmplifyError('CloudFormationTemplateError', {
       message: 'Yaml is not yet supported',
       resolution: `Please convert the CloudFormation stack ${stackFile} to json.`,
     });
   }
   if (extension !== '.json') {
-    throw new AmplifyError('CloudFormationTemplateError' ,{
+    throw new AmplifyError('CloudFormationTemplateError', {
       message: `Invalid extension ${extension} for stack ${stackFile}`,
       resolution: `Convert the CloudFormation stack ${stackFile} to json.`,
     });

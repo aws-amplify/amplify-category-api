@@ -19,6 +19,11 @@ import {
 import * as path from 'path';
 import _ from 'lodash';
 
+/**
+ *
+ * @param tableName
+ * @param region
+ */
 export const getDDBTable = async (tableName: string, region: string) => {
   const service = new DynamoDB({ region });
   if (tableName) {
@@ -26,11 +31,20 @@ export const getDDBTable = async (tableName: string, region: string) => {
   }
 };
 
+/**
+ *
+ * @param bucketName
+ * @param region
+ */
 export const checkIfBucketExists = async (bucketName: string, region: string) => {
   const service = new S3({ region });
   return await service.headBucket({ Bucket: bucketName }).promise();
 };
 
+/**
+ *
+ * @param bucket
+ */
 export const bucketNotExists = async (bucket: string) => {
   const s3 = new S3();
   const params = {
@@ -48,6 +62,10 @@ export const bucketNotExists = async (bucket: string) => {
   }
 };
 
+/**
+ *
+ * @param bucket
+ */
 export const getBucketEncryption = async (bucket: string) => {
   const s3 = new S3();
   const params = {
@@ -61,21 +79,29 @@ export const getBucketEncryption = async (bucket: string) => {
   }
 };
 
+/**
+ *
+ * @param params
+ */
 export const getBucketKeys = async (params: S3.ListObjectsRequest) => {
   const s3 = new S3();
 
   try {
     const result = await s3.listObjects(params).promise();
-    return result.Contents.map(contentObj => contentObj.Key);
+    return result.Contents.map((contentObj) => contentObj.Key);
   } catch (err) {
     throw new Error(`Error fetching keys for bucket ${params.Bucket}. Underlying error was [${err.message}]`);
   }
 };
 
-
+/**
+ *
+ * @param bucket
+ * @param providedS3Client
+ */
 export const deleteS3Bucket = async (bucket: string, providedS3Client: S3 | undefined = undefined) => {
-  const s3 = providedS3Client ? providedS3Client : new S3();
-  let continuationToken: Required<Pick<S3.ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'>> = undefined;
+  const s3 = providedS3Client || new S3();
+  let continuationToken: Required<Pick<S3.ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'>>;
   const objectKeyAndVersion = <S3.ObjectIdentifier[]>[];
   let truncated = false;
   do {
@@ -99,16 +125,14 @@ export const deleteS3Bucket = async (bucket: string, providedS3Client: S3 | unde
   } while (truncated);
   const chunkedResult = _.chunk(objectKeyAndVersion, 1000);
   const deleteReq = chunkedResult
-    .map(r => {
-      return {
-        Bucket: bucket,
-        Delete: {
-          Objects: r,
-          Quiet: true,
-        },
-      };
-    })
-    .map(delParams => s3.deleteObjects(delParams).promise());
+    .map((r) => ({
+      Bucket: bucket,
+      Delete: {
+        Objects: r,
+        Quiet: true,
+      },
+    }))
+    .map((delParams) => s3.deleteObjects(delParams).promise());
   await Promise.all(deleteReq);
   await s3
     .deleteBucket({
@@ -118,6 +142,11 @@ export const deleteS3Bucket = async (bucket: string, providedS3Client: S3 | unde
   await bucketNotExists(bucket);
 };
 
+/**
+ *
+ * @param userpoolId
+ * @param region
+ */
 export const getUserPool = async (userpoolId, region) => {
   config.update({ region });
   let res;
@@ -129,6 +158,11 @@ export const getUserPool = async (userpoolId, region) => {
   return res;
 };
 
+/**
+ *
+ * @param userPoolId
+ * @param region
+ */
 export const getMFAConfiguration = async (
   userPoolId: string,
   region: string,
@@ -137,6 +171,11 @@ export const getMFAConfiguration = async (
   return await new CognitoIdentityServiceProvider().getUserPoolMfaConfig({ UserPoolId: userPoolId }).promise();
 };
 
+/**
+ *
+ * @param functionName
+ * @param region
+ */
 export const getLambdaFunction = async (functionName: string, region: string) => {
   const lambda = new Lambda({ region });
   try {
@@ -146,6 +185,12 @@ export const getLambdaFunction = async (functionName: string, region: string) =>
   }
 };
 
+/**
+ *
+ * @param userPoolId
+ * @param clientIds
+ * @param region
+ */
 export const getUserPoolClients = async (userPoolId: string, clientIds: string[], region: string) => {
   const provider = new CognitoIdentityServiceProvider({ region });
   const res = [];
@@ -165,71 +210,144 @@ export const getUserPoolClients = async (userPoolId: string, clientIds: string[]
   return res;
 };
 
+/**
+ *
+ * @param botName
+ * @param region
+ */
 export const getBot = async (botName: string, region: string) => {
   const service = new LexModelBuildingService({ region });
   return await service.getBot({ name: botName, versionOrAlias: '$LATEST' }).promise();
 };
 
+/**
+ *
+ * @param functionName
+ * @param region
+ */
 export const getFunction = async (functionName: string, region: string) => {
   const service = new Lambda({ region });
   return await service.getFunction({ FunctionName: functionName }).promise();
 };
 
+/**
+ *
+ * @param functionArn
+ * @param region
+ */
 export const getLayerVersion = async (functionArn: string, region: string) => {
   const service = new Lambda({ region });
   return await service.getLayerVersionByArn({ Arn: functionArn }).promise();
 };
 
+/**
+ *
+ * @param layerName
+ * @param region
+ */
 export const listVersions = async (layerName: string, region: string) => {
   const service = new Lambda({ region });
   return await service.listLayerVersions({ LayerName: layerName }).promise();
 };
 
+/**
+ *
+ * @param functionName
+ * @param payload
+ * @param region
+ */
 export const invokeFunction = async (functionName: string, payload: string, region: string) => {
   const service = new Lambda({ region });
   return await service.invoke({ FunctionName: functionName, Payload: payload }).promise();
 };
 
+/**
+ *
+ * @param collectionId
+ * @param region
+ */
 export const getCollection = async (collectionId: string, region: string) => {
   const service = new Rekognition({ region });
   return await service.describeCollection({ CollectionId: collectionId }).promise();
 };
 
+/**
+ *
+ * @param tableName
+ * @param region
+ */
 export const getTable = async (tableName: string, region: string) => {
   const service = new DynamoDB({ region });
   return await service.describeTable({ TableName: tableName }).promise();
 };
 
+/**
+ *
+ * @param functionName
+ * @param region
+ */
 export const getEventSourceMappings = async (functionName: string, region: string) => {
   const service = new Lambda({ region });
   return (await service.listEventSourceMappings({ FunctionName: functionName }).promise()).EventSourceMappings;
 };
 
+/**
+ *
+ * @param tableName
+ * @param region
+ */
 export const deleteTable = async (tableName: string, region: string) => {
   const service = new DynamoDB({ region });
   return await service.deleteTable({ TableName: tableName }).promise();
 };
 
+/**
+ *
+ * @param tableName
+ * @param region
+ * @param item
+ */
 export const putItemInTable = async (tableName: string, region: string, item: unknown) => {
   const ddb = new DynamoDB.DocumentClient({ region });
   return await ddb.put({ TableName: tableName, Item: item }).promise();
 };
 
+/**
+ *
+ * @param tableName
+ * @param region
+ */
 export const scanTable = async (tableName: string, region: string) => {
   const ddb = new DynamoDB.DocumentClient({ region });
   return await ddb.scan({ TableName: tableName }).promise();
 };
 
+/**
+ *
+ * @param appSyncApiId
+ * @param region
+ */
 export const getAppSyncApi = async (appSyncApiId: string, region: string) => {
   const service = new AppSync({ region });
   return await service.getGraphqlApi({ apiId: appSyncApiId }).promise();
 };
 
+/**
+ *
+ * @param appSyncApiId
+ * @param region
+ */
 export const listAppSyncFunctions = async (appSyncApiId: string, region: string) => {
   const service = new AppSync({ region });
   return await service.listFunctions({ apiId: appSyncApiId }).promise();
-}
+};
 
+/**
+ *
+ * @param region
+ * @param logGroupName
+ * @param logStreamName
+ */
 export const getCloudWatchLogs = async (region: string, logGroupName: string, logStreamName: string | undefined = undefined) => {
   const cloudwatchlogs = new CloudWatchLogs({ region, retryDelayOptions: { base: 500 } });
 
@@ -249,13 +367,25 @@ export const getCloudWatchLogs = async (region: string, logGroupName: string, lo
   return logsResp.events || [];
 };
 
+/**
+ *
+ * @param stackName
+ * @param region
+ * @param profileConfig
+ */
 export const describeCloudFormationStack = async (stackName: string, region: string, profileConfig?: any) => {
   const service = profileConfig ? new CloudFormation(profileConfig) : new CloudFormation({ region });
   return (await service.describeStacks({ StackName: stackName }).promise()).Stacks.find(
-    stack => stack.StackName === stackName || stack.StackId === stackName,
+    (stack) => stack.StackName === stackName || stack.StackId === stackName,
   );
 };
 
+/**
+ *
+ * @param stackName
+ * @param region
+ * @param logicalId
+ */
 export const getNestedStackID = async (stackName: string, region: string, logicalId: string): Promise<string> => {
   const cfnClient = new CloudFormation({ region });
   const resource = await cfnClient.describeStackResources({ StackName: stackName, LogicalResourceId: logicalId }).promise();
@@ -270,6 +400,12 @@ export const getNestedStackID = async (stackName: string, region: string, logica
  * @returns
  */
 
+/**
+ *
+ * @param region
+ * @param table
+ * @param StackId
+ */
 export const getTableResourceId = async (region: string, table: string, StackId: string): Promise<string | null> => {
   const cfnClient = new CloudFormation({ region });
   const apiResources = await cfnClient
@@ -277,17 +413,24 @@ export const getTableResourceId = async (region: string, table: string, StackId:
       StackName: StackId,
     })
     .promise();
-  const resource = apiResources.StackResources.find(stackResource => table === stackResource.LogicalResourceId);
+  const resource = apiResources.StackResources.find((stackResource) => table === stackResource.LogicalResourceId);
   if (resource) {
     const tableStack = await cfnClient.describeStacks({ StackName: resource.PhysicalResourceId }).promise();
     if (tableStack?.Stacks?.length > 0) {
-      const tableName = tableStack.Stacks[0].Outputs.find(out => out.OutputKey === `GetAtt${resource.LogicalResourceId}TableName`);
+      const tableName = tableStack.Stacks[0].Outputs.find((out) => out.OutputKey === `GetAtt${resource.LogicalResourceId}TableName`);
       return tableName.OutputValue;
     }
   }
   return null;
 };
 
+/**
+ *
+ * @param data
+ * @param partitionKey
+ * @param streamName
+ * @param region
+ */
 export const putKinesisRecords = async (data: string, partitionKey: string, streamName: string, region: string) => {
   const kinesis = new Kinesis({ region });
 
@@ -304,10 +447,15 @@ export const putKinesisRecords = async (data: string, partitionKey: string, stre
     .promise();
 };
 
+/**
+ *
+ * @param targetName
+ * @param region
+ */
 export const getCloudWatchEventRule = async (targetName: string, region: string) => {
   config.update({ region });
   const service = new CloudWatchEvents();
-  var params = {
+  const params = {
     TargetArn: targetName /* required */,
   };
   let ruleName;
@@ -319,12 +467,24 @@ export const getCloudWatchEventRule = async (targetName: string, region: string)
   return ruleName;
 };
 
+/**
+ *
+ * @param appId
+ * @param region
+ */
 export const setupAmplifyAdminUI = async (appId: string, region: string) => {
   const amplifyBackend = new AmplifyBackend({ region });
 
   return await amplifyBackend.createBackendConfig({ AppId: appId }).promise();
 };
 
+/**
+ *
+ * @param jobId
+ * @param appId
+ * @param envName
+ * @param region
+ */
 export const getAmplifyBackendJobStatus = async (jobId: string, appId: string, envName: string, region: string) => {
   const amplifyBackend = new AmplifyBackend({ region });
 
@@ -337,21 +497,44 @@ export const getAmplifyBackendJobStatus = async (jobId: string, appId: string, e
     .promise();
 };
 
+/**
+ *
+ * @param roleName
+ * @param region
+ */
 export const listRolePolicies = async (roleName: string, region: string) => {
   const service = new IAM({ region });
   return (await service.listRolePolicies({ RoleName: roleName }).promise()).PolicyNames;
 };
 
+/**
+ *
+ * @param roleName
+ * @param region
+ */
 export const listAttachedRolePolicies = async (roleName: string, region: string) => {
   const service = new IAM({ region });
   return (await service.listAttachedRolePolicies({ RoleName: roleName }).promise()).AttachedPolicies;
 };
 
+/**
+ *
+ * @param roleName
+ * @param region
+ */
 export const getPermissionsBoundary = async (roleName: string, region) => {
   const iamClient = new IAM({ region });
   return (await iamClient.getRole({ RoleName: roleName }).promise())?.Role?.PermissionsBoundary?.PermissionsBoundaryArn;
 };
 
+/**
+ *
+ * @param region
+ * @param appId
+ * @param envName
+ * @param funcName
+ * @param parameterNames
+ */
 export const getSSMParameters = async (region: string, appId: string, envName: string, funcName: string, parameterNames: string[]) => {
   const ssmClient = new SSM({ region });
   if (!parameterNames || parameterNames.length === 0) {
@@ -359,33 +542,54 @@ export const getSSMParameters = async (region: string, appId: string, envName: s
   }
   return await ssmClient
     .getParameters({
-      Names: parameterNames.map(name => path.posix.join('/amplify', appId, envName, `AMPLIFY_${funcName}_${name}`)),
+      Names: parameterNames.map((name) => path.posix.join('/amplify', appId, envName, `AMPLIFY_${funcName}_${name}`)),
       WithDecryption: true,
     })
     .promise();
 };
-//Amazon location service calls
+// Amazon location service calls
+/**
+ *
+ * @param mapName
+ * @param region
+ */
 export const getMap = async (mapName: string, region: string) => {
-  const service = new Location({region});
+  const service = new Location({ region });
   return await service.describeMap({
-    MapName: mapName
-  }).promise()
-}
+    MapName: mapName,
+  }).promise();
+};
 
+/**
+ *
+ * @param placeIndexName
+ * @param region
+ */
 export const getPlaceIndex = async (placeIndexName: string, region: string) => {
-  const service = new Location({region});
+  const service = new Location({ region });
   return await service.describePlaceIndex({
-    IndexName: placeIndexName
-  }).promise()
-}
+    IndexName: placeIndexName,
+  }).promise();
+};
 
+/**
+ *
+ * @param geofenceCollectionName
+ * @param region
+ */
 export const getGeofenceCollection = async (geofenceCollectionName: string, region: string) => {
-  const service = new Location({region});
+  const service = new Location({ region });
   return await service.describeGeofenceCollection({
-    CollectionName: geofenceCollectionName
-  }).promise()
-}
+    CollectionName: geofenceCollectionName,
+  }).promise();
+};
 
+/**
+ *
+ * @param geofenceCollectionName
+ * @param geofenceId
+ * @param region
+ */
 export const getGeofence = async (geofenceCollectionName: string, geofenceId: string, region: string) => {
   const service = new Location({ region });
   return (await service.getGeofence({
@@ -394,6 +598,12 @@ export const getGeofence = async (geofenceCollectionName: string, geofenceId: st
   })).promise();
 };
 
+/**
+ *
+ * @param geofenceCollectionName
+ * @param region
+ * @param nextToken
+ */
 export const listGeofences = async (geofenceCollectionName: string, region: string, nextToken: string = null) => {
   const service = new Location({ region });
   return (await service.listGeofences({

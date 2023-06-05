@@ -26,6 +26,7 @@ import { OPERATION_KEY } from '../../definitions';
  * expression
  * @param inputConditionObjectName : Variable in stash that holds condition object
  * @param conditionOutputVariableName: Variable to store generated DDB expression
+ * @param conditionOutputVariableName
  */
 export const generateConditionSlot = (inputConditionObjectName: string, conditionOutputVariableName: string): CompoundExpressionNode => {
   const statements: Expression[] = [
@@ -62,6 +63,8 @@ export const generateConditionSlot = (inputConditionObjectName: string, conditio
 /**
  * Generate common response template used by most of the resolvers.
  * Append operation if response is coming from a mutation, this is to protect field resolver for subscriptions
+ * @param isSyncEnabled
+ * @param mutation
  */
 export const generateDefaultResponseMappingTemplate = (isSyncEnabled: boolean, mutation = false): string => {
   const statements: Expression[] = [];

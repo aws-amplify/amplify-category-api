@@ -8,6 +8,11 @@ const defaultAuthModeMap: Map<string, string> = new Map<string, string>([
   ['oidc', 'private'],
 ]);
 
+/**
+ *
+ * @param node
+ * @param defaultAuthMode
+ */
 export function migrateDefaultAuthMode(node: any, defaultAuthMode: any) {
   if (defaultAuthMode === 'iam') {
     return;

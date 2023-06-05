@@ -7,7 +7,9 @@ import {
   amplifyPush,
 } from 'amplify-category-api-e2e-core';
 
-import { getUserPoolId, configureAmplify, setupUser, signInUser, getConfiguredAppsyncClientCognitoAuth } from '../authHelper';
+import {
+  getUserPoolId, configureAmplify, setupUser, signInUser, getConfiguredAppsyncClientCognitoAuth,
+} from '../authHelper';
 
 import { updateSchemaInTestProject, testMutation } from '../common';
 
@@ -15,6 +17,11 @@ const GROUPNAME = 'Moderator';
 const USERNAME = 'user1';
 const PASSWORD = 'user1Password';
 
+/**
+ *
+ * @param projectDir
+ * @param testModule
+ */
 export async function runTest(projectDir: string, testModule: any) {
   await addAuthWithPreTokenGenerationTrigger(projectDir);
   updateTriggerHandler(projectDir);
@@ -33,6 +40,10 @@ export async function runTest(projectDir: string, testModule: any) {
   await testMutation(appSyncClient, createPostMutation, undefined, expected_result_createPostMutation);
 }
 
+/**
+ *
+ * @param projectDir
+ */
 export function updateTriggerHandler(projectDir: string) {
   const backendFunctionDirPath = path.join(projectDir, 'amplify', 'backend', 'function');
   const functionName = fs.readdirSync(backendFunctionDirPath)[0];
@@ -40,7 +51,7 @@ export function updateTriggerHandler(projectDir: string) {
   fs.writeFileSync(triggerHandlerFilePath, func);
 }
 
-//schema
+// schema
 export const schema = `
 #error: two @model on type Post
 #change: removed on @model

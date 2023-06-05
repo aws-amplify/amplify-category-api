@@ -1,6 +1,6 @@
 import {
   $TSContext,
-  $TSMeta, 
+  $TSMeta,
   AmplifyCategories,
   AmplifySupportedService, ApiCategoryFacade,
   CloudformationProviderFacade, getGraphQLTransformerAuthDocLink,
@@ -40,7 +40,7 @@ import {
   TransformerProjectOptions,
 } from './transformer-options-types';
 import { contextUtil } from '../category-utils/context-util';
-import {searchablePushChecks} from "./api-utils";
+import { searchablePushChecks } from './api-utils';
 
 export const APPSYNC_RESOURCE_SERVICE = 'AppSync';
 
@@ -193,7 +193,7 @@ export const generateTransformerOptions = async (
   const sandboxModeEnabled = schemaHasSandboxModeEnabled(project.schema, docLink);
   const directiveMap = collectDirectivesByTypeNames(project.schema);
   const hasApiKey = authConfig.defaultAuthentication.authenticationType === 'API_KEY'
-    || authConfig.additionalAuthenticationProviders.some(a => a.authenticationType === 'API_KEY');
+    || authConfig.additionalAuthenticationProviders.some((a) => a.authenticationType === 'API_KEY');
   const showSandboxModeMessage = sandboxModeEnabled && hasApiKey;
 
   const transformerListFactory = await getTransformerFactory(context, resourceDir);
@@ -213,7 +213,7 @@ export const generateTransformerOptions = async (
 
   // construct sanityCheckRules
   const ff = new AmplifyCLIFeatureFlagAdapter();
-  const isNewAppSyncAPI: boolean = resourcesToBeCreated.some(resource => resource.service === 'AppSync');
+  const isNewAppSyncAPI: boolean = resourcesToBeCreated.some((resource) => resource.service === 'AppSync');
   const allowDestructiveUpdates = context?.input?.options?.[DESTRUCTIVE_UPDATES_FLAG] || context?.input?.options?.force;
   const sanityCheckRules = getSanityCheckRules(isNewAppSyncAPI, ff, allowDestructiveUpdates);
   let resolverConfig = {};
@@ -308,7 +308,7 @@ const s3ResourceAlreadyExists = (): string | undefined => {
     const amplifyMeta: $TSMeta = stateManager.getMeta(undefined, { throwIfNotExist: false });
     if (amplifyMeta?.[AmplifyCategories.STORAGE]) {
       const categoryResources = amplifyMeta[AmplifyCategories.STORAGE];
-      Object.keys(categoryResources).forEach(resource => {
+      Object.keys(categoryResources).forEach((resource) => {
         if (categoryResources[resource].service === AmplifySupportedService.S3) {
           resourceName = resource;
         }

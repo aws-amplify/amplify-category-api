@@ -34,6 +34,7 @@ const FunctionServiceNameLambdaFunction = 'Lambda';
 
 /**
  * Factory function that returns an ApiArtifactHandler instance
+ * @param context
  */
 export const getCfnApiArtifactHandler = (context: $TSContext): ApiArtifactHandler => new CfnApiArtifactHandler(context);
 
@@ -103,7 +104,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     this.ensureCfnParametersExist(resourceDir, apiParameters);
     this.context.amplify.updateamplifyMetaAfterResourceAdd(category, serviceConfig.apiName, this.createAmplifyMeta(authConfig, dependsOn));
 
-    if(serviceConfig?.transformSchema) {
+    if (serviceConfig?.transformSchema) {
       // write the template buffer to the project folder
       this.writeSchema(path.join(resourceDir, gqlSchemaFilename), serviceConfig.transformSchema);
 
@@ -217,7 +218,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     await generateLambdaIfNew(newConflictResolution.defaultResolutionStrategy);
     await Promise.all(
       (newConflictResolution.perModelResolutionStrategy || [])
-        .map(perModelStrategy => perModelStrategy.resolutionStrategy)
+        .map((perModelStrategy) => perModelStrategy.resolutionStrategy)
         .map(generateLambdaIfNew),
     );
     return newConflictResolution;
@@ -237,7 +238,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
   private getCognitoUserPool = (authConfig: AuthConfig): Record<string, unknown> | undefined => {
     const additionalUserPoolProvider = (authConfig.additionalAuthenticationProviders || []).find(
-      aap => aap.authenticationType === 'AMAZON_COGNITO_USER_POOLS',
+      (aap) => aap.authenticationType === 'AMAZON_COGNITO_USER_POOLS',
     );
     const defaultAuth = authConfig.defaultAuthentication;
     if (!(defaultAuth?.authenticationType === 'AMAZON_COGNITO_USER_POOLS') && !additionalUserPoolProvider) {
@@ -358,7 +359,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
   private ensureCfnParametersExist = (resourceDir: string, parameters: Record<string, unknown>) => {
     const parametersFilePath = path.join(resourceDir, cfnParametersFilename);
-    if(!fs.existsSync(parametersFilePath)) {
+    if (!fs.existsSync(parametersFilePath)) {
       JSONUtilities.writeJson(parametersFilePath, parameters);
     }
   };
@@ -369,6 +370,8 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
  * Long-term, the class above should be extended to also include REST API generation
  *
  * write to the transformer conf if the resolverConfig is valid
+ * @param conflictResolution
+ * @param resourceDir
  */
 export const writeResolverConfig = async (conflictResolution: ConflictResolution, resourceDir: string): Promise<void> => {
   const localTransformerConfig = await readTransformerConfiguration(resourceDir);
@@ -385,7 +388,7 @@ const amendDependsOnForAuthConfig = (currentDependsOn: DependsOnEntry[], authCon
 
 const hasCognitoAuthMode = (authConfig: AuthConfig): boolean => (
   authConfig?.defaultAuthentication?.authenticationType === 'AMAZON_COGNITO_USER_POOLS'
-    || authConfig?.additionalAuthenticationProviders?.find(aap => aap.authenticationType === 'AMAZON_COGNITO_USER_POOLS') !== undefined
+    || authConfig?.additionalAuthenticationProviders?.find((aap) => aap.authenticationType === 'AMAZON_COGNITO_USER_POOLS') !== undefined
 );
 
 // returns a new dependsOn array that has a single depends on auth block
@@ -395,7 +398,7 @@ const ensureDependsOnAuth = (currentDependsOn: DependsOnEntry[]): DependsOnEntry
     return [];
   }
   // if dependency already exists, don't add it again
-  if (currentDependsOn.find(dep => dep.category === 'auth' && dep.resourceName === authResourceName)) {
+  if (currentDependsOn.find((dep) => dep.category === 'auth' && dep.resourceName === authResourceName)) {
     return currentDependsOn;
   }
   return currentDependsOn.concat({
@@ -411,7 +414,7 @@ const ensureNoDependsOnAuth = (currentDependsOn: DependsOnEntry[]): DependsOnEnt
   if (!authResourceName) {
     return currentDependsOn;
   }
-  const authIdx = currentDependsOn.findIndex(dep => dep.category === 'auth' && dep.resourceName === authResourceName);
+  const authIdx = currentDependsOn.findIndex((dep) => dep.category === 'auth' && dep.resourceName === authResourceName);
   if (authIdx < 0) {
     return currentDependsOn;
   }

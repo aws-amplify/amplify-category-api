@@ -1,7 +1,12 @@
 import * as https from 'https';
 import * as url from 'url';
+
 const uri = 'https://e7auv6no3g.execute-api.us-east-1.amazonaws.com/wave3Prod/AppState';
 
+/**
+ *
+ * @param body
+ */
 export async function getAdminApp(body: any): Promise<string> {
   const adminUiUrl = url.parse(uri);
   return new Promise<string>((resolve, reject) => {
@@ -13,8 +18,8 @@ export async function getAdminApp(body: any): Promise<string> {
         path: adminUiUrl.path,
         method: 'POST',
       },
-      res => {
-        res.on('data', chunk => {
+      (res) => {
+        res.on('data', (chunk) => {
           str += chunk;
         });
         res.on('end', () => {
@@ -22,7 +27,7 @@ export async function getAdminApp(body: any): Promise<string> {
         });
       },
     );
-    req.on('error', err => {
+    req.on('error', (err) => {
       reject(err);
     });
     req.write(JSON.stringify(body));

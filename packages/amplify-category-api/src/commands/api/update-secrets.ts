@@ -3,32 +3,38 @@ import { printer } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 import fs from 'fs-extra';
 import _ from 'lodash';
-import { databaseConfigurationInputWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/import-appsync-api-walkthrough';
 import {
   ImportedRDSType,
   RDS_SCHEMA_FILE_NAME,
-  ImportedDataSourceConfig
+  ImportedDataSourceConfig,
 } from '@aws-amplify/graphql-transformer-core';
+import { databaseConfigurationInputWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/import-appsync-api-walkthrough';
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { storeConnectionSecrets, testDatabaseConnection, getSecretsKey, getDatabaseName } from '../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
+import {
+  storeConnectionSecrets, testDatabaseConnection, getSecretsKey, getDatabaseName,
+} from '../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 import { PREVIEW_BANNER } from '../../category-constants';
 
 const subcommand = 'update-secrets';
 
 export const name = subcommand;
 
+/**
+ *
+ * @param context
+ */
 export const run = async (context: $TSContext) => {
   printer.warn(PREVIEW_BANNER);
 
   // Disable the command for now
-  throw new Error("This command has been disabled.");
-  
+  throw new Error('This command has been disabled.');
+
   const apiName = getAppSyncAPIName();
   const apiResourceDir = getAPIResourceDir(apiName);
 
   // proceed if there are any existing imported Relational Data Sources
   const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
-  if(!fs.existsSync(pathToSchemaFile)) {
+  if (!fs.existsSync(pathToSchemaFile)) {
     printer.info('No imported Data Sources to update the secrets.');
     return;
   }

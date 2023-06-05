@@ -2,6 +2,10 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 export const name = 'help';
 
+/**
+ *
+ * @param context
+ */
 export const run = (context: $TSContext) => {
   const header = `amplify ${name} [subcommand]\nDescription:\nMock resources locally`;
 
@@ -20,5 +24,4 @@ export const run = (context: $TSContext) => {
     },
   ];
   context.amplify.showHelp(header, commands);
-  return;
 };

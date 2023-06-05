@@ -34,51 +34,51 @@ import {
 
 const TAB = '  ';
 
-function printIf(node: IfNode, indent: string = '') {
+function printIf(node: IfNode, indent = '') {
   if (node.inline) {
     return `#if( ${printExpr(node.predicate, '')} ) ${printExpr(node.expr, '')} #end`;
   }
   return `${indent}#if( ${printExpr(node.predicate, '')} )\n${printExpr(node.expr, indent + TAB)}\n${indent}#end`;
 }
 
-function printIfElse(node: IfElseNode, indent: string = '') {
+function printIfElse(node: IfElseNode, indent = '') {
   if (node.inline) {
-    return `#if( ${printExpr(node.predicate)} ) ` + `${printExpr(node.ifExpr)} ` + `#else ` + `${printExpr(node.elseExpr)} ` + `#end`;
+    return `#if( ${printExpr(node.predicate)} ) ` + `${printExpr(node.ifExpr)} ` + '#else ' + `${printExpr(node.elseExpr)} ` + '#end';
   }
   return (
-    `${indent}#if( ${printExpr(node.predicate)} )\n` +
-    `${printExpr(node.ifExpr, indent + TAB)}\n` +
-    `${indent}#else\n` +
-    `${printExpr(node.elseExpr, indent + TAB)}\n` +
-    `${indent}#end`
+    `${indent}#if( ${printExpr(node.predicate)} )\n`
+    + `${printExpr(node.ifExpr, indent + TAB)}\n`
+    + `${indent}#else\n`
+    + `${printExpr(node.elseExpr, indent + TAB)}\n`
+    + `${indent}#end`
   );
 }
 
-function printAnd(node: AndNode, indent: string = ''): string {
+function printAnd(node: AndNode, indent = ''): string {
   return indent + node.expressions.map((e: Expression) => printExpr(e)).join(' && ');
 }
 
-function printOr(node: OrNode, indent: string = ''): string {
+function printOr(node: OrNode, indent = ''): string {
   return indent + node.expressions.map((e: Expression) => printExpr(e)).join(' || ');
 }
 
-function printParens(node: ParensNode, indent: string = ''): string {
+function printParens(node: ParensNode, indent = ''): string {
   return `${indent}(${printExpr(node.expr)})`;
 }
 
-function printEquals(node: EqualsNode, indent: string = ''): string {
+function printEquals(node: EqualsNode, indent = ''): string {
   return `${indent}${printExpr(node.leftExpr)} == ${printExpr(node.rightExpr)}`;
 }
 
-function printNotEquals(node: NotEqualsNode, indent: string = ''): string {
+function printNotEquals(node: NotEqualsNode, indent = ''): string {
   return `${indent}${printExpr(node.leftExpr)} != ${printExpr(node.rightExpr)}`;
 }
 
-function printForEach(node: ForEachNode, indent: string = ''): string {
+function printForEach(node: ForEachNode, indent = ''): string {
   return (
-    `${indent}#foreach( ${printExpr(node.key)} in ${printExpr(node.collection)} )\n` +
-    node.expressions.map((e: Expression) => printExpr(e, indent + TAB)).join('\n') +
-    `\n${indent}#end`
+    `${indent}#foreach( ${printExpr(node.key)} in ${printExpr(node.collection)} )\n${
+      node.expressions.map((e: Expression) => printExpr(e, indent + TAB)).join('\n')
+    }\n${indent}#end`
   );
 }
 
@@ -90,7 +90,7 @@ function printBool(node: BooleanNode): string {
   return `${node.value}`;
 }
 
-function printRaw(node: RawNode, indent: string = ''): string {
+function printRaw(node: RawNode, indent = ''): string {
   return `${indent}${node.value}`;
 }
 
@@ -114,48 +114,51 @@ function printReference(node: ReferenceNode): string {
   return `\$${node.value}`;
 }
 
-function printQuietReference(node: QuietReferenceNode, indent: string = ''): string {
+function printQuietReference(node: QuietReferenceNode, indent = ''): string {
   const val = typeof node.value === 'string' ? node.value : printExpr(node.value);
   return `${indent}$util.qr(${val})`;
 }
 
-export function printObject(node: ObjectNode, indent: string = ''): string {
-  const attributes = node.attributes.map((attr: [string, Expression], i: number) => {
-    return `${indent}${TAB}"${attr[0]}": ${printExpr(attr[1], indent + TAB)}${i < node.attributes.length - 1 ? ',' : ''}`;
-  });
+/**
+ *
+ * @param node
+ * @param indent
+ */
+export function printObject(node: ObjectNode, indent = ''): string {
+  const attributes = node.attributes.map((attr: [string, Expression], i: number) => `${indent}${TAB}"${attr[0]}": ${printExpr(attr[1], indent + TAB)}${i < node.attributes.length - 1 ? ',' : ''}`);
   const divider = attributes.length > 0 ? `\n${indent}` : '';
   return `{${divider}${attributes.join(divider)}${divider}}`;
 }
 
-function printList(node: ListNode, indent: string = ''): string {
+function printList(node: ListNode, indent = ''): string {
   const values = node.expressions.map((e: Expression) => printExpr(e, '')).join(', ');
   return `${indent}[${values}]`;
 }
 
-function printSet(node: SetNode, indent: string = ''): string {
+function printSet(node: SetNode, indent = ''): string {
   return `${indent}#set( ${printReference(node.key)} = ${printExpr(node.value, '')} )`;
 }
 
-function printComment(node: CommentNode, indent: string = ''): string {
+function printComment(node: CommentNode, indent = ''): string {
   return `${indent}## ${node.text} **`;
 }
 
-function printCompoundExpression(node: CompoundExpressionNode, indent: string = ''): string {
+function printCompoundExpression(node: CompoundExpressionNode, indent = ''): string {
   if (node.recurseIndent) {
     return node.expressions.map((node: Expression) => printExpr(node, indent)).join(node.joiner);
   }
   return indent + node.expressions.map((node: Expression) => printExpr(node)).join(node.joiner);
 }
 
-function printToJson(node: ToJsonNode, indent: string = ''): string {
+function printToJson(node: ToJsonNode, indent = ''): string {
   return `${indent}$util.toJson(${printExpr(node.expr, '')})`;
 }
 
-function printIsNullOrEmpty(node: IsNullOrEmptyNode, indent: string = ''): string {
+function printIsNullOrEmpty(node: IsNullOrEmptyNode, indent = ''): string {
   return `${indent}$util.isNullOrEmpty(${printExpr(node.expr, '')})`;
 }
 
-function printNot(node: NotNode, indent: string = ''): string {
+function printNot(node: NotNode, indent = ''): string {
   return `${indent}!${printExpr(node.expr, '')}`;
 }
 
@@ -163,15 +166,15 @@ function printNewLine(node: NewLineNode): string {
   return '\n';
 }
 
-function printReturn(node: ReturnNode, indent: string = ''): string {
-  var suffix: string = '';
+function printReturn(node: ReturnNode, indent = ''): string {
+  let suffix = '';
   if (node.value !== undefined) {
     suffix = printParens(parens(node.value));
   }
-  return `${indent}#return` + suffix;
+  return `${indent}#return${suffix}`;
 }
 
-function printExpr(expr: Expression, indent: string = ''): string {
+function printExpr(expr: Expression, indent = ''): string {
   if (!expr) {
     return '';
   }
@@ -235,10 +238,18 @@ function printExpr(expr: Expression, indent: string = ''): string {
   }
 }
 
+/**
+ *
+ * @param expr
+ */
 export function print(expr: Expression): string {
   return printExpr(expr);
 }
 
+/**
+ *
+ * @param name
+ */
 export function printBlock(name: string) {
   return (expr: Expression): string => {
     const wrappedExpr = compoundExpression([comment(`[Start] ${name}.`), expr, comment(`[End] ${name}.`)]);

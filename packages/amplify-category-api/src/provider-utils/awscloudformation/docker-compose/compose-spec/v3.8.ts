@@ -5,7 +5,13 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
+/**
+ *
+ */
 export type DefinitionsDeployment2 = DefinitionsDeployment | DefinitionsDeployment1;
+/**
+ *
+ */
 export type ListOrDict =
   | {
       /**
@@ -15,6 +21,9 @@ export type ListOrDict =
       [k: string]: string | number | null;
     }
   | string[];
+/**
+ *
+ */
 export type DefinitionsGenericResources = {
   discrete_resource_spec?: {
     kind?: string;
@@ -31,20 +40,35 @@ export type DefinitionsGenericResources = {
    */
   [k: string]: unknown;
 }[];
+/**
+ *
+ */
 export type DefinitionsDeployment1 = null;
+/**
+ *
+ */
 export type ListOfStrings = string[];
+/**
+ *
+ */
 export type StringOrList = string | ListOfStrings;
 /**
  * This interface was referenced by `PropertiesNetworks`'s JSON-Schema definition
  * via the `patternProperty` "^[a-zA-Z0-9._-]+$".
  */
 export type DefinitionsNetwork2 = DefinitionsNetwork | DefinitionsNetwork1;
+/**
+ *
+ */
 export type DefinitionsNetwork1 = null;
 /**
  * This interface was referenced by `PropertiesVolumes`'s JSON-Schema definition
  * via the `patternProperty` "^[a-zA-Z0-9._-]+$".
  */
 export type DefinitionsVolume2 = DefinitionsVolume | DefinitionsVolume1;
+/**
+ *
+ */
 export type DefinitionsVolume1 = null;
 
 /**
@@ -66,6 +90,9 @@ export interface ComposeSpecification {
    */
   [k: string]: unknown;
 }
+/**
+ *
+ */
 export interface PropertiesServices {
   [k: string]: DefinitionsService;
 }
@@ -335,6 +362,9 @@ export interface DefinitionsService {
    */
   [k: string]: unknown;
 }
+/**
+ *
+ */
 export interface DefinitionsDeployment {
   mode?: string;
   endpoint_mode?: string;
@@ -426,14 +456,23 @@ export interface DefinitionsDeployment {
    */
   [k: string]: unknown;
 }
+/**
+ *
+ */
 export interface BlkioLimit {
   path?: string;
   rate?: number | string;
 }
+/**
+ *
+ */
 export interface BlkioWeight {
   path?: string;
   weight?: number;
 }
+/**
+ *
+ */
 export interface DefinitionsHealthcheck {
   disable?: boolean;
   interval?: string;
@@ -447,9 +486,15 @@ export interface DefinitionsHealthcheck {
    */
   [k: string]: unknown;
 }
+/**
+ *
+ */
 export interface PropertiesNetworks {
   [k: string]: DefinitionsNetwork2;
 }
+/**
+ *
+ */
 export interface DefinitionsNetwork {
   name?: string;
   driver?: string;
@@ -508,9 +553,15 @@ export interface DefinitionsNetwork {
    */
   [k: string]: unknown;
 }
+/**
+ *
+ */
 export interface PropertiesVolumes {
   [k: string]: DefinitionsVolume2;
 }
+/**
+ *
+ */
 export interface DefinitionsVolume {
   name?: string;
   driver?: string;
@@ -538,6 +589,9 @@ export interface DefinitionsVolume {
    */
   [k: string]: unknown;
 }
+/**
+ *
+ */
 export interface PropertiesSecrets {
   [k: string]: DefinitionsSecret;
 }
@@ -570,6 +624,9 @@ export interface DefinitionsSecret {
    */
   [k: string]: unknown;
 }
+/**
+ *
+ */
 export interface PropertiesConfigs {
   [k: string]: DefinitionsConfig;
 }

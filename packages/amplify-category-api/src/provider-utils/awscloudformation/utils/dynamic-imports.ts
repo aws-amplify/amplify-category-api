@@ -1,10 +1,19 @@
 import * as path from 'path';
 
-export const serviceMetadataFor = async (service: string) =>
-  (await import(path.join('..', '..', 'supported-services'))).supportedServices[service];
+/**
+ *
+ * @param service
+ */
+export const serviceMetadataFor = async (service: string) => (await import(path.join('..', '..', 'supported-services'))).supportedServices[service];
 
-export const datasourceMetadataFor = async (datasource: string) =>
-  (await import(path.join('..', '..', 'supported-datasources'))).supportedDataSources[datasource];
+/**
+ *
+ * @param datasource
+ */
+export const datasourceMetadataFor = async (datasource: string) => (await import(path.join('..', '..', 'supported-datasources'))).supportedDataSources[datasource];
 
-export const getServiceWalkthrough = async (walkthroughFilename: string) =>
-  (await import(path.join('..', 'service-walkthroughs', walkthroughFilename))).serviceWalkthrough;
+/**
+ *
+ * @param walkthroughFilename
+ */
+export const getServiceWalkthrough = async (walkthroughFilename: string) => (await import(path.join('..', 'service-walkthroughs', walkthroughFilename))).serviceWalkthrough;

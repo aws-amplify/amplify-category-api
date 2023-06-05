@@ -1,10 +1,10 @@
-import { ResourceConstants } from './ResourceConstants';
 import DataSource from 'cloudform-types/types/appSync/dataSource';
 import IAM from 'cloudform-types/types/iam';
 import { Fn, StringParameter } from 'cloudform-types';
+import Template from 'cloudform-types/types/template';
 import { TemplateContext } from './RelationalDBSchemaTransformer';
 import { RelationalDBResolverGenerator } from './RelationalDBResolverGenerator';
-import Template from 'cloudform-types/types/template';
+import { ResourceConstants } from './ResourceConstants';
 
 /**
  * This is the Class responsible for generating and managing the CloudForm template
@@ -24,6 +24,7 @@ export class RelationalDBTemplateGenerator {
    * Creates and returns the basic Cloudform template needed for setting
    * up an AppSync API pointing at the RDS DataSource.
    *
+   * @param context
    * @returns the created CloudFormation template.
    */
   public createTemplate(context: any): Template {
@@ -44,10 +45,12 @@ export class RelationalDBTemplateGenerator {
    * Template.
    *
    * @param template - the Cloudform template
+   * @param resolverFilePath
+   * @param improvePluralization
    * @returns the given template, updated with new resolvers.
    */
   public addRelationalResolvers(template: Template, resolverFilePath: string, improvePluralization: boolean): Template {
-    let resolverGenerator = new RelationalDBResolverGenerator(this.context);
+    const resolverGenerator = new RelationalDBResolverGenerator(this.context);
     template.Resources = { ...template.Resources, ...resolverGenerator.createRelationalResolvers(resolverFilePath, improvePluralization) };
     return template;
   }
@@ -76,7 +79,7 @@ export class RelationalDBTemplateGenerator {
     return {
       [ResourceConstants.PARAMETERS.AppSyncApiName]: new StringParameter({
         Description: `The name of the AppSync API generated from database ${databaseName}`,
-        Default: `AppSyncSimpleTransform`,
+        Default: 'AppSyncSimpleTransform',
       }),
       [ResourceConstants.PARAMETERS.Env]: new StringParameter({
         Description: 'The environment name. e.g. Dev, Test, or Production',

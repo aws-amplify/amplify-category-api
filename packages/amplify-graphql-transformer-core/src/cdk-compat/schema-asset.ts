@@ -3,6 +3,9 @@ import { Lazy } from 'aws-cdk-lib';
 import { GraphQLApi } from '../graphql-api';
 import { FileAsset } from './file-asset';
 
+/**
+ *
+ */
 export class TransformerSchema {
   private asset?: FileAsset;
   private api?: GraphQLApi;
@@ -35,6 +38,7 @@ export class TransformerSchema {
     }
     return this.asset;
   };
+
   addToSchema = (addition: string, delimiter: string): void => {
     const sep = delimiter ?? '';
     this.definition = `${this.definition}${sep}${addition}\n`;

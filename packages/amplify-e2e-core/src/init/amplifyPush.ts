@@ -31,6 +31,8 @@ export type LayerPushSettings = {
 
 /**
  * Function to test amplify push with verbose status
+ * @param cwd
+ * @param testingWithLatestCodebase
  */
 export function amplifyPush(cwd: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -61,6 +63,8 @@ export function amplifyPush(cwd: string, testingWithLatestCodebase = false): Pro
 
 /**
  * Function to test amplify push with codegen for graphql API
+ * @param cwd
+ * @param testingWithLatestCodebase
  */
 export function amplifyPushGraphQlWithCognitoPrompt(cwd: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -97,6 +101,8 @@ export function amplifyPushGraphQlWithCognitoPrompt(cwd: string, testingWithLate
 
 /**
  * Function to test amplify push with force push flag --force
+ * @param cwd
+ * @param testingWithLatestCodebase
  */
 export function amplifyPushForce(cwd: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -116,6 +122,8 @@ export function amplifyPushForce(cwd: string, testingWithLatestCodebase = false)
 
 /**
  * Function to test amplify push with --force and --yes flag
+ * @param cwd
+ * @param testingWithLatestCodebase
  */
 export function amplifyPushForceWithYesFlag(cwd: string, testingWithLatestCodebase = false): Promise<void> {
   return spawn(getCLIPath(testingWithLatestCodebase), ['push', '--force', '--yes'], {
@@ -128,6 +136,11 @@ export function amplifyPushForceWithYesFlag(cwd: string, testingWithLatestCodeba
 /**
  * * Used to stop an iterative deployment
  * * Waits on the table stack to be complete and for the next stack to update in order to cancel the push
+ * @param cwd
+ * @param idx
+ * @param idx.current
+ * @param idx.max
+ * @param testingWithLatestCodebase
  */
 export function cancelIterativeAmplifyPush(
   cwd: string,
@@ -153,6 +166,9 @@ export function cancelIterativeAmplifyPush(
 
 /**
  * Function to test amplify push without codegen prompt
+ * @param cwd
+ * @param testingWithLatestCodebase
+ * @param allowDestructiveUpdates
  */
 export function amplifyPushWithoutCodegen(
   cwd: string,
@@ -179,6 +195,8 @@ export function amplifyPushWithoutCodegen(
 
 /**
  * Function to test amplify push with function secrets without codegen prompt
+ * @param cwd
+ * @param testingWithLatestCodebase
  */
 export function amplifyPushSecretsWithoutCodegen(
   cwd: string,
@@ -203,6 +221,10 @@ export function amplifyPushSecretsWithoutCodegen(
 
 /**
  * Function to test amplify push with allowDestructiveUpdates flag option
+ * @param cwd
+ * @param waitForText
+ * @param testingWithLatestCodebase
+ * @param allowDestructiveUpdates
  */
 export function amplifyPushUpdate(
   cwd: string,
@@ -231,6 +253,8 @@ export function amplifyPushUpdate(
 
 /**
  * Function to test amplify push
+ * @param cwd
+ * @param testingWithLatestCodebase
  */
 export function amplifyPushAuth(cwd: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -263,6 +287,9 @@ export const amplifyPushFunction = async (cwd: string, testingWithLatestCode = f
 
 /**
  * Function to test amplify push with allowDestructiveUpdates flag and when dependent function is removed from schema.graphql
+ * @param cwd
+ * @param testingWithLatestCodebase
+ * @param allowDestructiveUpdates
  */
 export function amplifyPushUpdateForDependentModel(
   cwd: string,
@@ -294,6 +321,9 @@ export function amplifyPushUpdateForDependentModel(
 /**
  * Function to test amplify push when deploying a layer
  * * this function expects a single layer's content to be modified
+ * @param cwd
+ * @param settings
+ * @param testingWithLatestCodebase
  */
 export function amplifyPushLayer(cwd: string, settings: LayerPushSettings, testingWithLatestCodebase = false): Promise<void> {
   const defaultSettings: LayerPushSettings = {
@@ -357,6 +387,8 @@ export function amplifyPushLayer(cwd: string, settings: LayerPushSettings, testi
 
 /**
  * Function to test amplify push with iterativeRollback flag option
+ * @param cwd
+ * @param testingWithLatestCodebase
  */
 export function amplifyPushIterativeRollback(cwd: string, testingWithLatestCodebase = false) {
   return new Promise((resolve, reject) => {
@@ -375,6 +407,8 @@ export function amplifyPushIterativeRollback(cwd: string, testingWithLatestCodeb
 
 /**
  * Function to test amplify push with missing environment variable
+ * @param cwd
+ * @param newEnvVarValue
  */
 export function amplifyPushMissingEnvVar(cwd: string, newEnvVarValue: string) {
   return new Promise<void>((resolve, reject) => {
@@ -383,12 +417,14 @@ export function amplifyPushMissingEnvVar(cwd: string, newEnvVarValue: string) {
       .sendLine(newEnvVarValue)
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
-      .run(err => (err ? reject(err) : resolve()));
+      .run((err) => (err ? reject(err) : resolve()));
   });
 }
 
 /**
  * Function to test amplify push with missing function secrets
+ * @param cwd
+ * @param newSecretValue
  */
 export function amplifyPushMissingFuncSecret(cwd: string, newSecretValue: string) {
   return new Promise<void>((resolve, reject) => {
@@ -397,12 +433,14 @@ export function amplifyPushMissingFuncSecret(cwd: string, newSecretValue: string
       .sendLine(newSecretValue)
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
-      .run(err => (err ? reject(err) : resolve()));
+      .run((err) => (err ? reject(err) : resolve()));
   });
 }
 
 /**
  * Function to test amplify push with no changes in the resources
+ * @param cwd
+ * @param testingWithLatestCodebase
  */
 export function amplifyPushWithNoChanges(cwd: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -414,6 +452,8 @@ export function amplifyPushWithNoChanges(cwd: string, testingWithLatestCodebase 
 
 /**
  * Function to test amplify push with destructive updates on the API models
+ * @param cwd
+ * @param includeForce
  */
 export function amplifyPushDestructiveApiUpdate(cwd: string, includeForce: boolean) {
   return new Promise<void>((resolve, reject) => {
@@ -423,15 +463,17 @@ export function amplifyPushDestructiveApiUpdate(cwd: string, includeForce: boole
     }
     const chain = spawn(getCLIPath(), args, { cwd, stripColors: true });
     if (includeForce) {
-      chain.run(err => (err ? reject(err) : resolve()));
+      chain.run((err) => (err ? reject(err) : resolve()));
     } else {
-      chain.wait('If this is intended, rerun the command with').run(err => (err ? resolve(err) : reject())); // in this case, we expect the CLI to error out
+      chain.wait('If this is intended, rerun the command with').run((err) => (err ? resolve(err) : reject())); // in this case, we expect the CLI to error out
     }
   });
 }
 
 /**
  * Function to test amplify push with overrides functionality
+ * @param cwd
+ * @param testingWithLatestCodebase
  */
 export function amplifyPushOverride(cwd: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {

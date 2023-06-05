@@ -14,6 +14,10 @@ import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
  * @returns true if sort key fields exists in model
  */
 
+/**
+ *
+ * @param schema
+ */
 export const verifyIndexSortKeyFieldsExistInModel = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(

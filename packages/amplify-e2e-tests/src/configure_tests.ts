@@ -2,8 +2,8 @@ import { amplifyConfigure as configure, injectSessionToken, isCI } from 'amplify
 
 async function setupAmplify() {
   if (isCI()) {
-    const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
-    const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
+    const { AWS_ACCESS_KEY_ID } = process.env;
+    const { AWS_SECRET_ACCESS_KEY } = process.env;
     const REGION = process.env.CLI_REGION;
     if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY || !REGION) {
       throw new Error('Please set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and CLI_REGION in .env');

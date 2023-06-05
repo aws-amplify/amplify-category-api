@@ -21,6 +21,10 @@ interface CustomRolesConfig {
   adminRoleNames?: Array<string>;
 }
 
+/**
+ *
+ * @param ctx
+ */
 export const getIdentityPoolId = async (ctx: $TSContext): Promise<string | undefined> => {
   const { allResources, resourcesToBeDeleted } = await ctx.amplify.getResourceStatus('auth');
   const authResources = pullAllBy(allResources, resourcesToBeDeleted, 'resourceName');
@@ -28,6 +32,11 @@ export const getIdentityPoolId = async (ctx: $TSContext): Promise<string | undef
   return authResource?.output?.IdentityPoolId;
 };
 
+/**
+ *
+ * @param ctx
+ * @param apiResourceName
+ */
 export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string | undefined): Promise<Array<string>> => {
   let currentEnv;
   const adminRoles = new Array<string>();
@@ -78,6 +87,12 @@ export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string | u
   return adminRoles;
 };
 
+/**
+ *
+ * @param userConfig
+ * @param transformOutput
+ * @param opts
+ */
 export function mergeUserConfigWithTransformOutput(
   userConfig: TransformerProjectConfig,
   transformOutput: DeploymentResources,
@@ -203,6 +218,11 @@ function overrideUserDefinedStacks(userConfig: TransformerProjectConfig, transfo
 
 /**
  * Writes a deployment to disk at a path.
+ * @param context
+ * @param deployment
+ * @param directory
+ * @param rootStackFileName
+ * @param buildParameters
  */
 export async function writeDeploymentToDisk(
   context: $TSContext,

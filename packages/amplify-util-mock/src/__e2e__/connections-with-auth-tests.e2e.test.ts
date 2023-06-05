@@ -4,29 +4,31 @@ import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import { GraphQLClient } from './utils/graphql-client';
-import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
+import {
+  deploy, launchDDBLocal, logDebug, terminateDDB,
+} from './utils/index';
 import 'isomorphic-fetch';
 
 jest.setTimeout(2000000);
 
-let GRAPHQL_ENDPOINT = undefined;
+let GRAPHQL_ENDPOINT;
 
 /**
  * Client 1 is logged in and is a member of the Admin group.
  */
-let GRAPHQL_CLIENT_1 = undefined;
+let GRAPHQL_CLIENT_1;
 
 /**
  * Client 2 is logged in and is a member of the Devs group.
  */
-let GRAPHQL_CLIENT_2 = undefined;
+let GRAPHQL_CLIENT_2;
 
 /**
  * Client 3 is logged in and has no group memberships.
  */
-let GRAPHQL_CLIENT_3 = undefined;
+let GRAPHQL_CLIENT_3;
 
-let USER_POOL_ID = 'y9CqgkEJe';
+const USER_POOL_ID = 'y9CqgkEJe';
 
 const USERNAME1 = 'user1@test.com';
 const USERNAME2 = 'user2@test.com';
@@ -112,7 +114,7 @@ type Stage @model @auth(rules: [{ allow: groups, groups: ["Admin"]}]) {
       }),
     ],
     featureFlags: {
-      getBoolean: name => (name === 'improvePluralization' ? true : false),
+      getBoolean: (name) => (name === 'improvePluralization'),
     } as FeatureFlagProvider,
   });
 
@@ -125,10 +127,10 @@ type Stage @model @auth(rules: [{ allow: groups, groups: ["Admin"]}]) {
     const result = await deploy(out, ddbClient);
     server = result.simulator;
 
-    GRAPHQL_ENDPOINT = server.url + '/graphql';
+    GRAPHQL_ENDPOINT = `${server.url}/graphql`;
     logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
-    const apiKey = result.config.appSync.apiKey;
+    const { apiKey } = result.config.appSync;
 
     // Verify we have all the details
     expect(GRAPHQL_ENDPOINT).toBeTruthy();
@@ -154,7 +156,7 @@ type Stage @model @auth(rules: [{ allow: groups, groups: ["Admin"]}]) {
 
     // Wait for any propagation to avoid random
     // "The security token included in the request is invalid" errors
-    await new Promise<void>(res => setTimeout(() => res(), 5000));
+    await new Promise<void>((res) => setTimeout(() => res(), 5000));
   } catch (e) {
     console.error(e);
     throw e;
@@ -177,7 +179,7 @@ afterAll(async () => {
 /**
  * Tests
  */
-test('Test creating a post and immediately view it via the User.posts connection.', async () => {
+test('creating a post and immediately view it via the User.posts connection.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
       createUser(input: { id: "user1@test.com" }) {
@@ -274,7 +276,7 @@ test('Testing reading an owner protected field as a non owner', async () => {
   expect(response3.data.getFieldProtected.ownerOnly).toEqual('owner-protected');
 });
 
-test('Test that @connection resolvers respect @model read operations.', async () => {
+test('that @connection resolvers respect @model read operations.', async () => {
   const response1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
       createOpenTopLevel(input: { id: "1", owner: "${USERNAME1}", name: "open" }) {
@@ -345,7 +347,7 @@ test('Test that @connection resolvers respect @model read operations.', async ()
 });
 
 // Per field auth in mutations
-test('Test that owners cannot set the field of a FieldProtected object unless authorized.', async () => {
+test('that owners cannot set the field of a FieldProtected object unless authorized.', async () => {
   const response1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
       createFieldProtected(input: { id: "2", owner: "${USERNAME1}", ownerOnly: "owner-protected" }) {
@@ -396,7 +398,7 @@ test('Test that owners cannot set the field of a FieldProtected object unless au
   expect(response3.errors).toHaveLength(1);
 });
 
-test('Test authorized user can get Performance with no created stage', async () => {
+test('authorized user can get Performance with no created stage', async () => {
   const createPerf = `mutation {
     create: createPerformance(input: {
       id: "P3"
@@ -470,7 +472,7 @@ test('Test authorized user can get Performance with no created stage', async () 
   expect(response2.data.g1.description).toEqual('desc');
   expect(response2.data.g1.stage).toBeNull();
 
-  //create stage and then add it to perf should show stage in perf
+  // create stage and then add it to perf should show stage in perf
   await GRAPHQL_CLIENT_1.query(createStage, {});
   const response3 = await GRAPHQL_CLIENT_1.query(updatePerf, {});
   expect(response3).toBeDefined();
@@ -482,7 +484,7 @@ test('Test authorized user can get Performance with no created stage', async () 
   });
 });
 
-test('Test that owners cannot update the field of a FieldProtected object unless authorized.', async () => {
+test('that owners cannot update the field of a FieldProtected object unless authorized.', async () => {
   const response1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
       createFieldProtected(input: { owner: "${USERNAME1}", ownerOnly: "owner-protected" }) {

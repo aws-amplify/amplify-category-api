@@ -18,6 +18,12 @@ const defaultSettings = {
   disableAmplifyAppCreation: true,
 };
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ * @param testingWithLatestCodebase
+ */
 export function initJSProjectWithProfileOldDX(cwd: string, settings: Object, testingWithLatestCodebase = false): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
@@ -66,6 +72,12 @@ export function initJSProjectWithProfileOldDX(cwd: string, settings: Object, tes
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ * @param testingWithLatestCodebase
+ */
 export function initJSProjectWithProfile(cwd: string, settings: Object, testingWithLatestCodebase = false): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;

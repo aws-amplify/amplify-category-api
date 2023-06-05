@@ -1,16 +1,7 @@
 import {
-  replaceDdbPrimaryKey,
-  updateResolvers,
-  setQuerySnippet,
-} from '../resolvers';
-import {
   TransformerContextProvider,
-  TransformerResolverProvider
+  TransformerResolverProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../../types';
-import {
-  IndexVTLGenerator,
-} from "./vtl-generator";
 import {
   bool,
   compoundExpression,
@@ -29,11 +20,30 @@ import {
   ref,
   RESOLVER_VERSION_ID,
   set,
-  str
+  str,
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
+import {
+  replaceDdbPrimaryKey,
+  updateResolvers,
+  setQuerySnippet,
+} from '../resolvers';
+import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../../types';
+import {
+  IndexVTLGenerator,
+} from './vtl-generator';
 
+/**
+ *
+ */
 export class DynamoDBIndexVTLGenerator implements IndexVTLGenerator {
+  /**
+   *
+   * @param config
+   * @param ctx
+   * @param tableName
+   * @param operationName
+   */
   generateIndexQueryRequestTemplate(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider, tableName: string, operationName: string): string {
     const { name, object, queryField } = config;
     if (!(name && queryField)) {
@@ -100,9 +110,9 @@ export class DynamoDBIndexVTLGenerator implements IndexVTLGenerator {
       ]),
     );
   }
-  
+
   generatePrimaryKeyVTL = (config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, resolverMap: Map<TransformerResolverProvider, string>): void => {
     replaceDdbPrimaryKey(config, ctx);
     updateResolvers(config, ctx, resolverMap);
   };
-};
+}

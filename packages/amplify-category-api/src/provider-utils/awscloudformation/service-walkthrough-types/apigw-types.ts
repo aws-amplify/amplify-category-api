@@ -1,5 +1,8 @@
 import { CrudOperation, PermissionSetting } from '../cdk-stack-builder';
 
+/**
+ *
+ */
 export type ApigwPath = {
   name: string;
   permissions: {
@@ -13,12 +16,21 @@ export type ApigwPath = {
   lambdaFunction: string;
 };
 
+/**
+ *
+ */
 export type ApiRequirements = { authSelections: 'identityPoolAndUserPool'; allowUnauthenticatedIdentities?: boolean };
 
+/**
+ *
+ */
 export type ApigwWalkthroughReturnPromise = Promise<{
   answers: ApigwAnswers;
 }>;
 
+/**
+ *
+ */
 export type ApigwAnswers = {
   paths: { [pathName: string]: ApigwPath };
   resourceName: string;

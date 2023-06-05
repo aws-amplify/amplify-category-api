@@ -10,6 +10,8 @@ import { ModelDirectiveConfiguration } from '../directive';
  * @param obj type with model directive
  * @param modelDirectiveConfig directive configuration
  * @param knownModelTypes list of all the known models
+ * @param document
+ * @param isSyncEnabled
  */
 export const makeUpdateInputField = (
   obj: ObjectTypeDefinitionNode,
@@ -24,36 +26,36 @@ export const makeUpdateInputField = (
   const name = toPascalCase(['Update', typeName, 'Input']);
   const hasIdField = objectWrapped.hasField('id');
   const fieldsToRemove = objectWrapped
-    .fields!.filter(field => {
+    .fields!.filter((field) => {
       if (knownModelTypes.has(field.getTypeName())) {
         return true;
       }
       return false;
     })
-    .map(field => field.name);
+    .map((field) => field.name);
 
   const objectTypeDefinition: ObjectTypeDefinitionNode = {
     ...obj,
-    fields: obj.fields?.filter(f => !fieldsToRemove.includes(f.name.value)),
+    fields: obj.fields?.filter((f) => !fieldsToRemove.includes(f.name.value)),
   };
 
   const input = InputObjectDefinitionWrapper.fromObject(name, objectTypeDefinition, document);
 
   // make all the fields optional
-  input.fields.forEach(f => f.makeNullable());
+  input.fields.forEach((f) => f.makeNullable());
 
   if (!hasIdField) {
     // Add id field and make it optional
     input.addField(InputFieldWrapper.create('id', 'ID', false));
   } else {
-    const idField = input.fields.find(f => f.name === 'id');
+    const idField = input.fields.find((f) => f.name === 'id');
     if (idField) {
       idField.makeNonNullable();
     }
   }
 
   // Make createdAt and updatedAt field Optionals if present
-  Object.values(modelDirectiveConfig?.timestamps || {}).forEach(timeStampFieldName => {
+  Object.values(modelDirectiveConfig?.timestamps || {}).forEach((timeStampFieldName) => {
     if (input.hasField(timeStampFieldName!)) {
       const timestampField = input.getField(timeStampFieldName!);
       if (['String', 'AWSDateTime'].includes(timestampField.getTypeName())) {
@@ -72,6 +74,7 @@ export const makeUpdateInputField = (
 /**
  * Generate input used for delete mutation
  * @param type GraphQL type with model directive
+ * @param isSyncEnabled
  */
 export const makeDeleteInputField = (type: ObjectTypeDefinitionNode, isSyncEnabled: boolean): InputObjectTypeDefinitionNode => {
   const name = toPascalCase(['Delete', type.name.value, 'input']);
@@ -91,6 +94,8 @@ export const makeDeleteInputField = (type: ObjectTypeDefinitionNode, isSyncEnabl
  * @param obj type with model directive
  * @param modelDirectiveConfig model directive configuration
  * @param knownModelTypes List of all the types with model directive
+ * @param document
+ * @param isSyncEnabled
  */
 export const makeCreateInputField = (
   obj: ObjectTypeDefinitionNode,
@@ -106,17 +111,17 @@ export const makeCreateInputField = (
 
   const hasIdField = objectWrapped.hasField('id');
   const fieldsToRemove = objectWrapped
-    .fields!.filter(field => {
+    .fields!.filter((field) => {
       if (knownModelTypes.has(field.getTypeName())) {
         return true;
       }
       return false;
     })
-    .map(field => field.name);
+    .map((field) => field.name);
 
   const objectTypeDefinition: ObjectTypeDefinitionNode = {
     ...obj,
-    fields: obj.fields?.filter(f => !fieldsToRemove.includes(f.name.value)),
+    fields: obj.fields?.filter((f) => !fieldsToRemove.includes(f.name.value)),
   };
 
   const input = InputObjectDefinitionWrapper.fromObject(name, objectTypeDefinition, document);
@@ -125,13 +130,13 @@ export const makeCreateInputField = (
   if (!hasIdField) {
     input.addField(InputFieldWrapper.create('id', 'ID', true));
   } else {
-    const idField = input.fields.find(f => f.name === 'id');
+    const idField = input.fields.find((f) => f.name === 'id');
     if (idField) {
       idField.makeNullable();
     }
   }
   // Make createdAt and updatedAt field Optionals if present
-  Object.values(modelDirectiveConfig?.timestamps || {}).forEach(timeStampFieldName => {
+  Object.values(modelDirectiveConfig?.timestamps || {}).forEach((timeStampFieldName) => {
     if (input.hasField(timeStampFieldName!)) {
       const timestampField = input.getField(timeStampFieldName!);
       if (['String', 'AWSDateTime'].includes(timestampField.getTypeName())) {
@@ -149,6 +154,9 @@ export const makeCreateInputField = (
 
 /**
  * makeMutationConditionInput
+ * @param ctx
+ * @param name
+ * @param object
  */
 export const makeMutationConditionInput = (
   ctx: TransformerTransformSchemaStepContextProvider,
@@ -156,7 +164,7 @@ export const makeMutationConditionInput = (
   object: ObjectTypeDefinitionNode,
 ): InputObjectTypeDefinitionNode => {
   const input = makeConditionFilterInput(ctx, name, object);
-  const idField = input.fields.find(f => f.name === 'id' && f.getTypeName() === 'ModelIDInput');
+  const idField = input.fields.find((f) => f.name === 'id' && f.getTypeName() === 'ModelIDInput');
   if (idField) {
     input.removeField(idField);
   }

@@ -1,4 +1,6 @@
-import { AppSync, Fn, IntrinsicFunction, Value } from 'cloudform-types';
+import {
+  AppSync, Fn, IntrinsicFunction, Value,
+} from 'cloudform-types';
 import {
   and,
   comment,
@@ -16,9 +18,16 @@ import {
   set,
 } from 'graphql-mapping-template';
 import { HttpResourceIDs, ResourceConstants } from 'graphql-transformer-common';
-import { HttpHeader } from './HttpTransformer';
 import Template from 'cloudform-types/types/template';
+import { HttpHeader } from './HttpTransformer';
+
+/**
+ *
+ */
 export class ResourceFactory {
+  /**
+   *
+   */
   public makeParams() {
     return {};
   }
@@ -34,6 +43,10 @@ export class ResourceFactory {
     };
   }
 
+  /**
+   *
+   * @param baseURL
+   */
   public makeHttpDataSource(baseURL: string) {
     return new AppSync.DataSource({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -74,9 +87,9 @@ export class ResourceFactory {
   }
 
   private makeVtlStringArray(inputArray: string[]) {
-    let returnArray = `[`;
+    let returnArray = '[';
     inputArray.forEach((e: string) => (returnArray += `\'${e}\', `));
-    return returnArray.slice(0, -2) + `]`;
+    return `${returnArray.slice(0, -2)}]`;
   }
 
   private makeNonNullChecks(nonNullArgs: string[]) {
@@ -94,10 +107,14 @@ export class ResourceFactory {
    * Create a resolver that makes a GET request. It assumes the endpoint expects query parameters in the exact
    * shape of the input arguments to the http directive. Returns the result in JSON format, or an error if the status code
    * is not 200
+   * @param baseURL
+   * @param path
    * @param type
+   * @param field
+   * @param headers
    */
   public makeGetResolver(baseURL: string, path: string, type: string, field: string, headers: HttpHeader[]) {
-    const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}")`));
+    const parsedHeaders = headers.map((header) => qref(`$headers.put("${header.key}", "${header.value}")`));
 
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -139,10 +156,15 @@ export class ResourceFactory {
    * parameters or in the body of the request.
    * request. Returns the result in JSON format, or an error if the status code is not 200.
    * Forwards the headers from the request, adding that the content type is JSON.
+   * @param baseURL
+   * @param path
    * @param type
+   * @param field
+   * @param nonNullArgs
+   * @param headers
    */
   public makePostResolver(baseURL: string, path: string, type: string, field: string, nonNullArgs: string[], headers: HttpHeader[]) {
-    const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}")`));
+    const parsedHeaders = headers.map((header) => qref(`$headers.put("${header.key}", "${header.value}")`));
 
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -188,10 +210,15 @@ export class ResourceFactory {
    * parameters or in the body of the request.
    * Returns the result in JSON format, or an error if the status code is not 200.
    * Forwards the headers from the request, adding that the content type is JSON.
+   * @param baseURL
+   * @param path
    * @param type
+   * @param field
+   * @param nonNullArgs
+   * @param headers
    */
   public makePutResolver(baseURL: string, path: string, type: string, field: string, nonNullArgs: string[], headers: HttpHeader[]) {
-    const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}")`));
+    const parsedHeaders = headers.map((header) => qref(`$headers.put("${header.key}", "${header.value}")`));
 
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -233,10 +260,14 @@ export class ResourceFactory {
 
   /**
    * Create a resolver that makes a DELETE request.
+   * @param baseURL
+   * @param path
    * @param type
+   * @param field
+   * @param headers
    */
   public makeDeleteResolver(baseURL: string, path: string, type: string, field: string, headers: HttpHeader[]) {
-    const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}")`));
+    const parsedHeaders = headers.map((header) => qref(`$headers.put("${header.key}", "${header.value}")`));
 
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -277,10 +308,15 @@ export class ResourceFactory {
    * parameters or in the body of the request.
    * Returns the result in JSON format, or an error if the status code is not 200.
    * Forwards the headers from the request, adding that the content type is JSON.
+   * @param baseURL
+   * @param path
    * @param type
+   * @param field
+   * @param nonNullArgs
+   * @param headers
    */
   public makePatchResolver(baseURL: string, path: string, type: string, field: string, nonNullArgs: string[], headers: HttpHeader[]) {
-    const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}")`));
+    const parsedHeaders = headers.map((header) => qref(`$headers.put("${header.key}", "${header.value}")`));
 
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),

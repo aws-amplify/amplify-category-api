@@ -10,8 +10,8 @@ import {
   HttpDataSourceOptions,
   LambdaDataSource,
   NoneDataSource,
+  CfnResolver,
 } from 'aws-cdk-lib/aws-appsync';
-import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import {
@@ -31,10 +31,16 @@ type Slot = {
   dataSource?: string;
 };
 
+/**
+ *
+ */
 export interface DefaultTransformHostOptions {
   readonly api: GraphQLApi;
 }
 
+/**
+ *
+ */
 export class DefaultTransformHost implements TransformHostProvider {
   private dataSources: Map<string, BaseDataSource> = new Map();
   private resolvers: Map<string, CfnResolver> = new Map();
@@ -45,10 +51,18 @@ export class DefaultTransformHost implements TransformHostProvider {
     this.api = options.api;
   }
 
+  /**
+   *
+   * @param api
+   */
   public setAPI(api: GraphQLApi): void {
     this.api = api;
   }
 
+  /**
+   *
+   * @param name
+   */
   public hasDataSource(name: string): boolean {
     return this.dataSources.has(name);
   }
@@ -67,6 +81,14 @@ export class DefaultTransformHost implements TransformHostProvider {
     }
   };
 
+  /**
+   *
+   * @param name
+   * @param awsRegion
+   * @param endpoint
+   * @param options
+   * @param stack
+   */
   addSearchableDataSource(
     name: string,
     awsRegion: string,
@@ -89,7 +111,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     const dataSource = this.doAddHttpDataSource(name, endpoint, options, stack);
     this.dataSources.set(name, dataSource);
     return dataSource;
-  }
+  };
 
   public addDynamoDbDataSource = (name: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource => {
     if (this.dataSources.has(name)) {
@@ -98,7 +120,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     const dataSource = this.doAddDynamoDbDataSource(name, table, options, stack);
     this.dataSources.set(options?.name || name, dataSource);
     return dataSource;
-  }
+  };
 
   public addNoneDataSource = (name: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource => {
     if (this.dataSources.has(name)) {
@@ -107,7 +129,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     const dataSource = this.doAddNoneDataSource(name, options, stack);
     this.dataSources.set(name, dataSource);
     return dataSource;
-  }
+  };
 
   public addLambdaDataSource = (name: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource => {
     if (!Token.isUnresolved(name) && this.dataSources.has(name)) {
@@ -116,7 +138,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     const dataSource = this.doAddLambdaDataSource(name, lambdaFunction, options, stack);
     this.dataSources.set(name, dataSource);
     return dataSource;
-  }
+  };
 
   public addAppSyncFunction = (
     name: string,
@@ -157,7 +179,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     });
     this.appsyncFunctions.set(slotHash, fn);
     return fn;
-  }
+  };
 
   public addResolver = (
     typeName: string,
@@ -218,7 +240,7 @@ export class DefaultTransformHost implements TransformHostProvider {
       return resolver;
     }
     throw new Error('Resolver needs either dataSourceName or pipelineConfig to be passed');
-  }
+  };
 
   addLambdaFunction = (
     functionName: string,
@@ -249,7 +271,7 @@ export class DefaultTransformHost implements TransformHostProvider {
       s3Bucket: functionCode.s3BucketName,
     };
     return fn;
-  }
+  };
 
   /**
    *
@@ -340,6 +362,7 @@ export class DefaultTransformHost implements TransformHostProvider {
    * @param id The data source's id
    * @param lambdaFunction The Lambda function to call to interact with this data source
    * @param options The optional configuration for this data source
+   * @param stack
    */
   protected doAddLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource {
     const ds = new LambdaDataSource(stack || this.api, id, {

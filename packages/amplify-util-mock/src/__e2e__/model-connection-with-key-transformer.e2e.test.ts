@@ -5,10 +5,12 @@ import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 
 import { GraphQLClient } from './utils/graphql-client';
-import { deploy, launchDDBLocal, terminateDDB, logDebug } from './utils/index';
+import {
+  deploy, launchDDBLocal, terminateDDB, logDebug,
+} from './utils/index';
 
-let GRAPHQL_CLIENT = undefined;
-let GRAPHQL_ENDPOINT = undefined;
+let GRAPHQL_CLIENT;
+let GRAPHQL_ENDPOINT;
 let ddbEmulator = null;
 let dbPath = null;
 let server;
@@ -114,7 +116,7 @@ beforeAll(async () => {
         }),
       ],
       featureFlags: {
-        getBoolean: name => (name === 'improvePluralization' ? true : false),
+        getBoolean: (name) => (name === 'improvePluralization'),
       } as FeatureFlagProvider,
     });
     const out = transformer.transform(validSchema);
@@ -124,10 +126,10 @@ beforeAll(async () => {
     const result = await deploy(out, ddbClient);
     server = result.simulator;
 
-    GRAPHQL_ENDPOINT = server.url + '/graphql';
+    GRAPHQL_ENDPOINT = `${server.url}/graphql`;
     logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
-    const apiKey = result.config.appSync.apiKey;
+    const { apiKey } = result.config.appSync;
     logDebug(apiKey);
     GRAPHQL_CLIENT = new GraphQLClient(GRAPHQL_ENDPOINT, {
       'x-api-key': apiKey,
@@ -197,7 +199,7 @@ test('Unnamed connection 1 way navigation, with primary @key directive 1:1', asy
     {},
   );
   expect(queryResponse.data.listAProjects).toBeDefined();
-  const items = queryResponse.data.listAProjects.items;
+  const { items } = queryResponse.data.listAProjects;
   expect(items.length).toEqual(1);
   expect(items[0].projectId).toEqual('P1');
   expect(items[0].team).toBeDefined();
@@ -261,7 +263,7 @@ test('Unnamed connection 1 way navigation, with primary @key directive 1:M', asy
     {},
   );
   expect(queryResponse.data.listBProjects).toBeDefined();
-  const items = queryResponse.data.listBProjects.items;
+  const { items } = queryResponse.data.listBProjects;
   expect(items.length).toEqual(1);
   expect(items[0].projectId).toEqual('P1');
   expect(items[0].teams).toBeDefined();
@@ -318,7 +320,7 @@ test('Named connection 2 way navigation, with with custom @key fields 1:1', asyn
     {},
   );
   expect(queryResponse.data.listCProjects).toBeDefined();
-  const items = queryResponse.data.listCProjects.items;
+  const { items } = queryResponse.data.listCProjects;
   expect(items.length).toEqual(1);
   expect(items[0].projectId).toEqual('P1');
   expect(items[0].team).toBeDefined();
@@ -388,7 +390,7 @@ test('Named connection 2 way navigation, with with custom @key fields 1:M', asyn
     {},
   );
   expect(queryResponse.data.listDProjects).toBeDefined();
-  const items = queryResponse.data.listDProjects.items;
+  const { items } = queryResponse.data.listDProjects;
   expect(items.length).toEqual(1);
   expect(items[0].projectId).toEqual('P1');
   expect(items[0].teams).toBeDefined();

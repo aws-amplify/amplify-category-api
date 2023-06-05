@@ -1,5 +1,9 @@
 import { S3 } from 'aws-sdk';
 
+/**
+ *
+ * @param bucketName
+ */
 export const toBeAS3Bucket = async (bucketName: string) => {
   const s3 = new S3();
   let pass: boolean;

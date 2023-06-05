@@ -1,7 +1,9 @@
-import { InputValueDefinitionNode, InputObjectTypeDefinitionNode, Kind, FieldDefinitionNode } from 'graphql';
+import {
+  InputValueDefinitionNode, InputObjectTypeDefinitionNode, Kind, FieldDefinitionNode,
+} from 'graphql';
 import { makeNamedType, makeNonNullType, makeListType } from 'graphql-transformer-common';
 
-function inputValueDefinition(inputValue: string, namedType: string, isNonNull: boolean = false): InputValueDefinitionNode {
+function inputValueDefinition(inputValue: string, namedType: string, isNonNull = false): InputValueDefinitionNode {
   return {
     kind: Kind.INPUT_VALUE_DEFINITION,
     name: { kind: 'Name' as const, value: inputValue },
@@ -10,14 +12,28 @@ function inputValueDefinition(inputValue: string, namedType: string, isNonNull: 
   };
 }
 
+/**
+ *
+ * @param str
+ */
 export function capitalizeFirstLetter(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+/**
+ *
+ * @param action
+ * @param fieldName
+ */
 export function getActionInputName(action: string, fieldName: string) {
   return `${capitalizeFirstLetter(fieldName)}${capitalizeFirstLetter(action)}Input`;
 }
 
+/**
+ *
+ * @param fieldName
+ * @param fields
+ */
 export function makeActionInputObject(fieldName: string, fields: InputValueDefinitionNode[]): InputObjectTypeDefinitionNode {
   return {
     kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
@@ -27,7 +43,13 @@ export function makeActionInputObject(fieldName: string, fields: InputValueDefin
   };
 }
 
-export function getActionInputType(action: string, fieldName: string, isFirst: boolean = false): InputObjectTypeDefinitionNode {
+/**
+ *
+ * @param action
+ * @param fieldName
+ * @param isFirst
+ */
+export function getActionInputType(action: string, fieldName: string, isFirst = false): InputObjectTypeDefinitionNode {
   const actionInputFields: { [action: string]: InputValueDefinitionNode[] } = {
     identifyText: [inputValueDefinition('key', 'String', true)],
     identifyLabels: [inputValueDefinition('key', 'String', true)],
@@ -49,6 +71,12 @@ export function getActionInputType(action: string, fieldName: string, isFirst: b
   };
 }
 
+/**
+ *
+ * @param field
+ * @param fieldName
+ * @param isList
+ */
 export function addInputArgument(field: FieldDefinitionNode, fieldName: string, isList: boolean): FieldDefinitionNode {
   return {
     ...field,
@@ -64,6 +92,11 @@ export function addInputArgument(field: FieldDefinitionNode, fieldName: string, 
   };
 }
 
+/**
+ *
+ * @param action
+ * @param fieldName
+ */
 export function createInputValueAction(action: string, fieldName: string): InputValueDefinitionNode {
   return {
     kind: Kind.INPUT_VALUE_DEFINITION,

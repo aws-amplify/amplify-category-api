@@ -1,6 +1,10 @@
 import { CfnMapping } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
+/**
+ *
+ * @param scope
+ */
 export const setMappings = (scope: Construct): CfnMapping => new CfnMapping(
   scope,
   'LayerResourceMapping',

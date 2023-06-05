@@ -10,6 +10,13 @@ import {
 import { Construct } from 'constructs';
 import { ResourceConstants } from 'graphql-transformer-common';
 
+/**
+ *
+ * @param stack
+ * @param parameterMap
+ * @param apiId
+ * @param nodeToNodeEncryption
+ */
 export const createSearchableDomain = (stack: Construct, parameterMap: Map<string, CfnParameter>, apiId: string, nodeToNodeEncryption: boolean): Domain => {
   const { OpenSearchEBSVolumeGB, OpenSearchInstanceType, OpenSearchInstanceCount } = ResourceConstants.PARAMETERS;
   const { OpenSearchDomainLogicalID } = ResourceConstants.RESOURCES;
@@ -17,7 +24,7 @@ export const createSearchableDomain = (stack: Construct, parameterMap: Map<strin
 
   const domain = new Domain(stack, OpenSearchDomainLogicalID, {
     version: { version: '7.10' } as ElasticsearchVersion,
-    enforceHttps:true,
+    enforceHttps: true,
     ebs: {
       enabled: true,
       volumeType: EbsDeviceVolumeType.GP2,
@@ -45,6 +52,12 @@ export const createSearchableDomain = (stack: Construct, parameterMap: Map<strin
   return domain;
 };
 
+/**
+ *
+ * @param context
+ * @param stack
+ * @param parameterMap
+ */
 export const createSearchableDomainRole = (
   context: TransformerContextProvider,
   stack: Construct,

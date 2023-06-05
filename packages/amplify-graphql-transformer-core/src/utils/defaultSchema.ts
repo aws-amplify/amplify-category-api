@@ -1,4 +1,5 @@
 import { SchemaDefinitionNode, Kind } from 'graphql';
+
 export const DEFAULT_SCHEMA_DEFINITION: SchemaDefinitionNode = {
   kind: Kind.SCHEMA_DEFINITION,
   directives: [],
@@ -38,4 +39,3 @@ export const DEFAULT_SCHEMA_DEFINITION: SchemaDefinitionNode = {
     },
   ],
 };
-

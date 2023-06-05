@@ -102,6 +102,9 @@ interface Indexable {
   [key: string]: any;
 }
 
+/**
+ *
+ */
 export class TypeValidators implements Indexable {
   [key: string]: any;
   ID = validateString;

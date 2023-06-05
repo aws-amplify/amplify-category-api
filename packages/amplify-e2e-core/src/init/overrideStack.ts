@@ -1,5 +1,11 @@
 import { nspawn as spawn, getCLIPath } from '..';
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ * @param settings.testingWithLatestCodebase
+ */
 export function amplifyOverrideRoot(cwd: string, settings: { testingWithLatestCodebase?: boolean }) {
   return new Promise((resolve, reject) => {
     const args = ['override', 'project'];
@@ -18,6 +24,10 @@ export function amplifyOverrideRoot(cwd: string, settings: { testingWithLatestCo
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function amplifyOverrideAuth(cwd: string, settings: {}) {
   return new Promise((resolve, reject) => {
     const args = ['override', 'auth'];
@@ -36,6 +46,11 @@ export function amplifyOverrideAuth(cwd: string, settings: {}) {
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function amplifyOverrideApi(cwd: string, settings: any) {
   const args = ['override', 'api'];
   const chain = spawn(getCLIPath(), args, { cwd, stripColors: true });
@@ -43,6 +58,11 @@ export function amplifyOverrideApi(cwd: string, settings: any) {
   return chain.runAsync();
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function buildOverrides(cwd: string, settings: any) {
   const args = ['build'];
   const chain = spawn(getCLIPath(), args, { cwd, stripColors: true });

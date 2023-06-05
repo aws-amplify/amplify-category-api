@@ -1,4 +1,6 @@
-import { Transformer, TransformerContext, TransformerContractError, gql } from 'graphql-transformer-core';
+import {
+  Transformer, TransformerContext, TransformerContractError, gql,
+} from 'graphql-transformer-core';
 import {
   DirectiveNode,
   ObjectTypeDefinitionNode,
@@ -8,23 +10,29 @@ import {
   InputValueDefinitionNode,
   print,
 } from 'graphql';
+import {
+  getDirectiveArgument, isScalar, ResolverResourceIDs, HttpResourceIDs,
+} from 'graphql-transformer-common';
 import { ResourceFactory } from './resources';
-import { getDirectiveArgument, isScalar } from 'graphql-transformer-common';
-import { ResolverResourceIDs, HttpResourceIDs } from 'graphql-transformer-common';
-import { makeUrlParamInputObject, makeHttpArgument, makeHttpQueryInputObject, makeHttpBodyInputObject } from './definitions';
+import {
+  makeUrlParamInputObject, makeHttpArgument, makeHttpQueryInputObject, makeHttpBodyInputObject,
+} from './definitions';
 
 const HTTP_STACK_NAME = 'HttpStack';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
+/**
+ *
+ */
 export interface HttpHeader {
-  key: String;
-  value: String;
+  key: string;
+  value: string;
 }
 
 interface HttpDirectiveArgs {
   method?: HttpMethod;
-  url: String;
+  url: string;
   headers: HttpHeader[];
 }
 
@@ -55,19 +63,19 @@ export class HttpTransformer extends Transformer {
           key: String
           value: String
         }
-      `
+      `,
     );
     this.resources = new ResourceFactory();
   }
 
   public before = (ctx: TransformerContext): void => {
-    let directiveList: DirectiveNode[] = [];
+    const directiveList: DirectiveNode[] = [];
 
     // gather all the http directives
     for (const def of ctx.inputDocument.definitions) {
       if (def.kind === Kind.OBJECT_TYPE_DEFINITION) {
         for (const field of def.fields) {
-          const httpDirective = field.directives.find(dir => dir.name.value === 'http');
+          const httpDirective = field.directives.find((dir) => dir.name.value === 'http');
           if (httpDirective) {
             directiveList.push(httpDirective);
           }
@@ -82,7 +90,7 @@ export class HttpTransformer extends Transformer {
       const protocolMatcher = /^http(s)?:\/\//;
       if (!protocolMatcher.test(url)) {
         throw new TransformerContractError(
-          `@http directive at location ${value.loc.start} ` + `requires a url parameter that begins with http:// or https://.`
+          `@http directive at location ${value.loc.start} ` + 'requires a url parameter that begins with http:// or https://.',
         );
       }
       // extract just the base url with protocol
@@ -98,12 +106,16 @@ export class HttpTransformer extends Transformer {
 
   /**
    * Create and configure the HTTP resolver for this field
+   * @param parent
+   * @param field
+   * @param directive
+   * @param ctx
    */
   public field = (
     parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
     field: FieldDefinitionNode,
     directive: DirectiveNode,
-    ctx: TransformerContext
+    ctx: TransformerContext,
   ): void => {
     ctx.mapResourceToStack(HTTP_STACK_NAME, ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value));
     const url: string = getDirectiveArgument(directive, 'url');
@@ -114,19 +126,17 @@ export class HttpTransformer extends Transformer {
     // extract any URL parameters from the path
     let urlParams: string[] = path.match(/:\w+/g);
     let queryBodyArgsArray: InputValueDefinitionNode[] = field.arguments as InputValueDefinitionNode[];
-    let newFieldArgsArray: InputValueDefinitionNode[] = [];
+    const newFieldArgsArray: InputValueDefinitionNode[] = [];
 
     if (urlParams) {
-      urlParams = urlParams.map(p => p.replace(':', ''));
+      urlParams = urlParams.map((p) => p.replace(':', ''));
 
       // if there are URL parameters, remove them from the array we'll use
       // to create the query and body types
-      queryBodyArgsArray = field.arguments.filter(e => isScalar(e.type) && !urlParams.includes(e.name.value));
+      queryBodyArgsArray = field.arguments.filter((e) => isScalar(e.type) && !urlParams.includes(e.name.value));
 
       // replace each URL parameter with $ctx.args.params.parameter_name for use in resolver template
-      path = path.replace(/:\w+/g, (str: string) => {
-        return `\$\{ctx.args.params.${str.replace(':', '')}\}`;
-      });
+      path = path.replace(/:\w+/g, (str: string) => `\$\{ctx.args.params.${str.replace(':', '')}\}`);
 
       const urlParamInputObject = makeUrlParamInputObject(parent, field, urlParams);
       ctx.addInput(urlParamInputObject);
@@ -148,12 +158,12 @@ export class HttpTransformer extends Transformer {
     if (queryBodyArgsArray.length > 0) {
       // for GET requests, leave the nullability of the query parameters unchanged -
       // but for PUT, POST and PATCH, unwrap any non-nulls
-      const queryInputObject = makeHttpQueryInputObject(parent, field, queryBodyArgsArray, method === 'GET' ? false : true);
+      const queryInputObject = makeHttpQueryInputObject(parent, field, queryBodyArgsArray, method !== 'GET');
       const bodyInputObject = makeHttpBodyInputObject(parent, field, queryBodyArgsArray, true);
 
       // if any of the arguments for the query are non-null,
       // make the newly generated type wrapper non-null too (only really applies for GET requests)
-      const makeNonNull = queryInputObject.fields.filter(a => a.type.kind === Kind.NON_NULL_TYPE).length > 0 ? true : false;
+      const makeNonNull = queryInputObject.fields.filter((a) => a.type.kind === Kind.NON_NULL_TYPE).length > 0;
 
       ctx.addInput(queryInputObject);
       newFieldArgsArray.push(makeHttpArgument('query', queryInputObject, makeNonNull));
@@ -181,8 +191,8 @@ export class HttpTransformer extends Transformer {
             path,
             parent.name.value,
             field.name.value,
-            queryBodyArgsArray.filter(a => a.type.kind === Kind.NON_NULL_TYPE).map(a => a.name.value),
-            headers
+            queryBodyArgsArray.filter((a) => a.type.kind === Kind.NON_NULL_TYPE).map((a) => a.name.value),
+            headers,
           );
           ctx.setResource(postResourceID, postResolver);
         }
@@ -195,8 +205,8 @@ export class HttpTransformer extends Transformer {
             path,
             parent.name.value,
             field.name.value,
-            queryBodyArgsArray.filter(a => a.type.kind === Kind.NON_NULL_TYPE).map(a => a.name.value),
-            headers
+            queryBodyArgsArray.filter((a) => a.type.kind === Kind.NON_NULL_TYPE).map((a) => a.name.value),
+            headers,
           );
           ctx.setResource(putResourceID, putResolver);
         }
@@ -216,8 +226,8 @@ export class HttpTransformer extends Transformer {
             path,
             parent.name.value,
             field.name.value,
-            queryBodyArgsArray.filter(a => a.type.kind === Kind.NON_NULL_TYPE).map(a => a.name.value),
-            headers
+            queryBodyArgsArray.filter((a) => a.type.kind === Kind.NON_NULL_TYPE).map((a) => a.name.value),
+            headers,
           );
           ctx.setResource(patchResourceID, patchResolver);
         }
@@ -234,7 +244,7 @@ export class HttpTransformer extends Transformer {
       };
 
       const mostRecentParent = ctx.getType(parent.name.value) as ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode;
-      let updatedFieldsInParent = mostRecentParent.fields.filter(f => f.name.value !== field.name.value);
+      const updatedFieldsInParent = mostRecentParent.fields.filter((f) => f.name.value !== field.name.value);
       updatedFieldsInParent.push(updatedField);
 
       const updatedParentType = {

@@ -1,6 +1,9 @@
 import { GraphQLError, printError } from 'graphql';
 
 const GRAPHQL_TRANSFORMER_V1_DIRECTIVES = ['connection', 'key', 'versioned'];
+/**
+ *
+ */
 export class InvalidTransformerError extends Error {
   constructor(message: string) {
     super(message);
@@ -12,14 +15,17 @@ export class InvalidTransformerError extends Error {
   }
 }
 
+/**
+ *
+ */
 export class SchemaValidationError extends Error {
   constructor(errors: Readonly<GraphQLError[]>) {
     const v1DirectivesInUse = new Set<string>();
-    const newErrors = errors.filter(error => {
+    const newErrors = errors.filter((error) => {
       if (!error.message.startsWith('Unknown directive')) {
         return true;
       }
-      const dir = GRAPHQL_TRANSFORMER_V1_DIRECTIVES.find(d => error.message.endsWith(`"@${d}".`));
+      const dir = GRAPHQL_TRANSFORMER_V1_DIRECTIVES.find((d) => error.message.endsWith(`"@${d}".`));
       if (!dir) {
         return true;
       }
@@ -28,7 +34,7 @@ export class SchemaValidationError extends Error {
     });
     if (v1DirectivesInUse.size > 0) {
       const baseErrorMessage = `Your GraphQL Schema is using ${Array.from(v1DirectivesInUse.values())
-        .map(d => `"@${d}"`)
+        .map((d) => `"@${d}"`)
         .join(', ')} ${
         v1DirectivesInUse.size > 1 ? 'directives' : 'directive'
       } from an older version of the GraphQL Transformer. Visit https://docs.amplify.aws/cli/migration/transformer-migration/ to learn how to migrate your GraphQL schema.`;
@@ -37,12 +43,12 @@ export class SchemaValidationError extends Error {
         super(baseErrorMessage);
       } else {
         super(
-          baseErrorMessage +
-            ` There are additional validation errors listed below \n\n ${newErrors.map(error => printError(error)).join('\n\n')}`,
+          `${baseErrorMessage
+          } There are additional validation errors listed below \n\n ${newErrors.map((error) => printError(error)).join('\n\n')}`,
         );
       }
     } else {
-      super(`Schema validation failed.\n\n${newErrors.map(error => printError(error)).join('\n\n')} `);
+      super(`Schema validation failed.\n\n${newErrors.map((error) => printError(error)).join('\n\n')} `);
     }
     Object.setPrototypeOf(this, SchemaValidationError.prototype);
     this.name = 'SchemaValidationError';
@@ -89,6 +95,9 @@ InvalidMigrationError.prototype.toString = function () {
   return `${this.message}\nCause: ${this.causedBy}\nHow to fix: ${this.fix}`;
 };
 
+/**
+ *
+ */
 export class InvalidDirectiveError extends Error {
   constructor(message: string) {
     super(message);
@@ -100,6 +109,9 @@ export class InvalidDirectiveError extends Error {
   }
 }
 
+/**
+ *
+ */
 export class UnknownDirectiveError extends Error {
   constructor(message: string) {
     super(message);
@@ -110,4 +122,3 @@ export class UnknownDirectiveError extends Error {
     }
   }
 }
-

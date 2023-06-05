@@ -1,14 +1,15 @@
-import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
-
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { GraphQLClient } from './utils/graphql-client';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import { KeyTransformer } from 'graphql-key-transformer';
+import { GraphQLClient } from './utils/graphql-client';
+import {
+  deploy, launchDDBLocal, logDebug, terminateDDB,
+} from './utils/index';
 
 jest.setTimeout(2000000);
 
-let GRAPHQL_ENDPOINT: string = undefined;
-let GRAPHQL_CLIENT: GraphQLClient = undefined;
+let GRAPHQL_ENDPOINT: string;
+let GRAPHQL_CLIENT: GraphQLClient;
 let ddbEmulator = null;
 let dbPath = null;
 let server;
@@ -63,7 +64,7 @@ beforeAll(async () => {
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
     featureFlags: {
-      getBoolean: name => (name === 'improvePluralization' ? true : false),
+      getBoolean: (name) => (name === 'improvePluralization'),
     } as FeatureFlagProvider,
   });
   const out = transformer.transform(validSchema);
@@ -72,10 +73,10 @@ beforeAll(async () => {
   const result = await deploy(out, ddbClient);
   server = result.simulator;
 
-  GRAPHQL_ENDPOINT = server.url + '/graphql';
+  GRAPHQL_ENDPOINT = `${server.url}/graphql`;
   logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
-  const apiKey = result.config.appSync.apiKey;
+  const { apiKey } = result.config.appSync;
   logDebug(apiKey);
   GRAPHQL_CLIENT = new GraphQLClient(GRAPHQL_ENDPOINT, { 'x-api-key': apiKey });
 });
@@ -90,7 +91,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('Test next token with key', async () => {
+test('next token with key', async () => {
   const status = 'PENDING';
   const createdAt = '2019-06-06T00:01:01.000Z';
   // createItems
@@ -129,13 +130,13 @@ test('Test next token with key', async () => {
   await deleteItem('order3', status, createdAt);
   await deleteItem('order4', status, createdAt);
 });
-test('Test getX with a two part primary key.', async () => {
+test('getX with a two part primary key.', async () => {
   const order1 = await createOrder('test@gmail.com', '1');
   const getOrder1 = await getOrder('test@gmail.com', order1.data.createOrder.createdAt);
   expect(getOrder1.data.getOrder.orderId).toEqual('1');
 });
 
-test('Test updateX with a two part primary key.', async () => {
+test('updateX with a two part primary key.', async () => {
   const order2 = await createOrder('test3@gmail.com', '2');
   let getOrder2 = await getOrder('test3@gmail.com', order2.data.createOrder.createdAt);
   expect(getOrder2.data.getOrder.orderId).toEqual('2');
@@ -145,7 +146,7 @@ test('Test updateX with a two part primary key.', async () => {
   expect(getOrder2.data.getOrder.orderId).toEqual('3');
 });
 
-test('Test deleteX with a two part primary key.', async () => {
+test('deleteX with a two part primary key.', async () => {
   const order2 = await createOrder('test2@gmail.com', '2');
   let getOrder2 = await getOrder('test2@gmail.com', order2.data.createOrder.createdAt);
   expect(getOrder2.data.getOrder.orderId).toEqual('2');
@@ -155,14 +156,14 @@ test('Test deleteX with a two part primary key.', async () => {
   expect(getOrder2.data.getOrder).toBeNull();
 });
 
-test('Test getX with a three part primary key', async () => {
+test('getX with a three part primary key', async () => {
   const item1 = await createItem('1', 'PENDING', 'item1');
   const getItem1 = await getItem('1', 'PENDING', item1.data.createItem.createdAt);
   expect(getItem1.data.getItem.orderId).toEqual('1');
   expect(getItem1.data.getItem.status).toEqual('PENDING');
 });
 
-test('Test updateX with a three part primary key.', async () => {
+test('updateX with a three part primary key.', async () => {
   const item2 = await createItem('2', 'PENDING', 'item2');
   let getItem2 = await getItem('2', 'PENDING', item2.data.createItem.createdAt);
   expect(getItem2.data.getItem.orderId).toEqual('2');
@@ -172,7 +173,7 @@ test('Test updateX with a three part primary key.', async () => {
   expect(getItem2.data.getItem.name).toEqual('item2.1');
 });
 
-test('Test deleteX with a three part primary key.', async () => {
+test('deleteX with a three part primary key.', async () => {
   const item3 = await createItem('3', 'IN_TRANSIT', 'item3');
   let getItem3 = await getItem('3', 'IN_TRANSIT', item3.data.createItem.createdAt);
   expect(getItem3.data.getItem.name).toEqual('item3');
@@ -182,7 +183,7 @@ test('Test deleteX with a three part primary key.', async () => {
   expect(getItem3.data.getItem).toBeNull();
 });
 
-test('Test listX with three part primary key.', async () => {
+test('listX with three part primary key.', async () => {
   const hashKey = 'TEST_LIST_ID';
   await createItem(hashKey, 'IN_TRANSIT', 'list1', '2018-01-01T00:01:01.000Z');
   await createItem(hashKey, 'PENDING', 'list2', '2018-06-01T00:01:01.000Z');
@@ -231,7 +232,7 @@ test('Test listX with three part primary key.', async () => {
   await deleteItem(hashKey, 'PENDING', '2018-09-01T00:01:01.000Z');
 });
 
-test('Test query with three part secondary key.', async () => {
+test('query with three part secondary key.', async () => {
   const hashKey = 'UNKNOWN';
   await createItem('order1', 'UNKNOWN', 'list1', '2018-01-01T00:01:01.000Z');
   await createItem('order2', 'UNKNOWN', 'list2', '2018-06-01T00:01:01.000Z');
@@ -265,7 +266,7 @@ test('Test query with three part secondary key.', async () => {
   await deleteItem('order3', hashKey, '2018-09-01T00:01:01.000Z');
 });
 
-test('Test query with three part secondary key, where sort key is an enum.', async () => {
+test('query with three part secondary key, where sort key is an enum.', async () => {
   const hashKey = '2018-06-01T00:01:01.000Z';
   const sortKey = 'UNKNOWN';
   await createItem('order1', sortKey, 'list1', '2018-01-01T00:01:01.000Z');
@@ -298,7 +299,7 @@ test('Test query with three part secondary key, where sort key is an enum.', asy
   await deleteItem('order3', sortKey, '2018-09-01T00:01:01.000Z');
 });
 
-test('Test update mutation validation with three part secondary key.', async () => {
+test('update mutation validation with three part secondary key.', async () => {
   const createResponseMissingLastSortKey = await createShippingUpdate({ orderId: '1sttry', itemId: 'item1', name: '42' });
   expect(createResponseMissingLastSortKey.data.createShippingUpdate).toBeNull();
   expect(createResponseMissingLastSortKey.errors).toHaveLength(1);
@@ -307,7 +308,9 @@ test('Test update mutation validation with three part secondary key.', async () 
   expect(createResponseMissingFirstSortKey.data.createShippingUpdate).toBeNull();
   expect(createResponseMissingFirstSortKey.errors).toHaveLength(1);
 
-  await createShippingUpdate({ orderId: 'order1', itemId: 'item1', status: 'PENDING', name: 'name1' });
+  await createShippingUpdate({
+    orderId: 'order1', itemId: 'item1', status: 'PENDING', name: 'name1',
+  });
   const items = await getShippingUpdates('order1');
   expect(items.data.shippingUpdates.items).toHaveLength(1);
   const item = items.data.shippingUpdates.items[0];
@@ -353,13 +356,13 @@ test('Test update mutation validation with three part secondary key.', async () 
   expect(updateResponseMissingNoKeys.data.updateShippingUpdate.name).toEqual('testing2');
 });
 
-test('Test Customer Create with list member and secondary key', async () => {
+test('Customer Create with list member and secondary key', async () => {
   await createCustomer('customer1@email.com', ['thing1', 'thing2'], 'customerusr1');
   const getCustomer1 = await getCustomer('customer1@email.com');
   expect(getCustomer1.data.getCustomer.addresslist).toEqual(['thing1', 'thing2']);
 });
 
-test('Test cannot overwrite customer record with custom primary key', async () => {
+test('cannot overwrite customer record with custom primary key', async () => {
   await createCustomer('customer42@email.com', ['thing1', 'thing2'], 'customerusr42');
   const response = await createCustomer('customer42@email.com', ['thing2'], 'customerusr43');
   expect(response.errors).toBeDefined();
@@ -371,7 +374,7 @@ test('Test cannot overwrite customer record with custom primary key', async () =
   );
 });
 
-test('Test Customer Mutation with list member', async () => {
+test('Customer Mutation with list member', async () => {
   await updateCustomer('customer1@email.com', ['thing3', 'thing4'], 'new_customerusr1');
   const getCustomer1 = await getCustomer('customer1@email.com');
   expect(getCustomer1.data.getCustomer.addresslist).toEqual(['thing3', 'thing4']);
@@ -495,7 +498,9 @@ async function getOrder(customerEmail: string, createdAt: string) {
 }
 
 async function createItem(orderId: string, status: string, name: string, createdAt: string = new Date().toISOString()) {
-  const input = { status, orderId, name, createdAt };
+  const input = {
+    status, orderId, name, createdAt,
+  };
   const result = await GRAPHQL_CLIENT.query(
     `mutation CreateItem($input: CreateItemInput!) {
         createItem(input: $input) {
@@ -515,7 +520,9 @@ async function createItem(orderId: string, status: string, name: string, created
 }
 
 async function updateItem(orderId: string, status: string, createdAt: string, name: string) {
-  const input = { status, orderId, createdAt, name };
+  const input = {
+    status, orderId, createdAt, name,
+  };
   const result = await GRAPHQL_CLIENT.query(
     `mutation UpdateItem($input: UpdateItemInput!) {
         updateItem(input: $input) {
@@ -606,7 +613,9 @@ async function listItem(orderId?: string, statusCreatedAt?: ItemCompositeKeyCond
             nextToken
         }
     }`,
-    { orderId, statusCreatedAt, limit, nextToken },
+    {
+      orderId, statusCreatedAt, limit, nextToken,
+    },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -625,7 +634,9 @@ async function itemsByStatus(status: string, createdAt?: StringKeyConditionInput
             nextToken
         }
     }`,
-    { status, createdAt, limit, nextToken },
+    {
+      status, createdAt, limit, nextToken,
+    },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -644,7 +655,9 @@ async function itemsByCreatedAt(createdAt: string, status?: StringKeyConditionIn
             nextToken
         }
     }`,
-    { createdAt, status, limit, nextToken },
+    {
+      createdAt, status, limit, nextToken,
+    },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;

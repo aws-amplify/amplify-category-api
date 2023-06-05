@@ -10,31 +10,46 @@ import {
   addRDSPortInboundRule,
 } from 'amplify-category-api-e2e-core';
 
+/**
+ *
+ * @param projectRoot
+ * @param apiName
+ * @param database
+ */
 export const verifyAmplifyMeta = (projectRoot: string, apiName: string, database: string) => {
   // Database info is updated in meta file
   const meta = getProjectMeta(projectRoot);
-  const apiMeta = _.get(meta, ["api", apiName]);
+  const apiMeta = _.get(meta, ['api', apiName]);
   expect(apiMeta).toBeDefined();
-  expect(_.get(apiMeta, "output", "GraphQLAPIIdOutput")).toBeDefined();
-  expect(_.get(apiMeta, "output", "GraphQLAPIEndpointOutput")).toBeDefined();
-  expect(_.get(apiMeta, "output", "GraphQLAPIKeyOutput")).toBeDefined();
+  expect(_.get(apiMeta, 'output', 'GraphQLAPIIdOutput')).toBeDefined();
+  expect(_.get(apiMeta, 'output', 'GraphQLAPIEndpointOutput')).toBeDefined();
+  expect(_.get(apiMeta, 'output', 'GraphQLAPIKeyOutput')).toBeDefined();
 };
 
-export const verifyCompiledSchema = (projectRoot: string, apiName: string, expected: string = '') => {
-  const compiledSchemaPath = join(projectRoot, "amplify", "backend", "api", apiName, "build", "schema.graphql");
+/**
+ *
+ * @param projectRoot
+ * @param apiName
+ * @param expected
+ */
+export const verifyCompiledSchema = (projectRoot: string, apiName: string, expected = '') => {
+  const compiledSchemaPath = join(projectRoot, 'amplify', 'backend', 'api', apiName, 'build', 'schema.graphql');
   expect(fs.existsSync(compiledSchemaPath)).toEqual(true);
 
-  const schema = fs.readFileSync(compiledSchemaPath, { encoding: "utf-8" });
+  const schema = fs.readFileSync(compiledSchemaPath, { encoding: 'utf-8' });
   const parsedSchema = parse(schema);
   expect(parsedSchema?.definitions).toBeDefined();
-  expect(schema).toContain("type Employee");
-  expect(schema).toContain("type Person");
-  expect(schema).toContain("type Contacts");
+  expect(schema).toContain('type Employee');
+  expect(schema).toContain('type Person');
+  expect(schema).toContain('type Contacts');
   if (!_.isEmpty(expected)) {
     expect(schema.trim()).toEqual(expected.trim());
   }
 };
 
+/**
+ *
+ */
 export type TestDBSetupInfo = {
   database: string,
   host: string,
@@ -46,29 +61,33 @@ export type TestDBSetupInfo = {
   identifier: string
 };
 
+/**
+ *
+ * @param dbInfo
+ */
 export const setupRDSDatabase = async (
-  dbInfo: Pick<TestDBSetupInfo, 'username'|'password'|'database'|'identifier'|'region'>
+  dbInfo: Pick<TestDBSetupInfo, 'username'|'password'|'database'|'identifier'|'region'>,
 ): Promise<{ dbAdapter: RDSTestDataProvider, dbInfo: TestDBSetupInfo }> => {
   // Get the public IP of the machine running the test
-  const url = "http://api.ipify.org/";
+  const url = 'http://api.ipify.org/';
   const response = await axios(url);
   const publicIpCidr = `${response.data.trim()}/32`;
 
-  const username = dbInfo.username;
-  const password = dbInfo.password;
+  const { username } = dbInfo;
+  const { password } = dbInfo;
   const db = await createRDSInstance({
     identifier: dbInfo.identifier,
-    engine: "mysql",
+    engine: 'mysql',
     dbname: dbInfo.database,
     username,
     password,
-    region: dbInfo.region
+    region: dbInfo.region,
   });
 
   await addRDSPortInboundRule({
     region: dbInfo.region,
     port: db.port,
-    cidrIp: publicIpCidr
+    cidrIp: publicIpCidr,
   });
 
   const dbAdapter = new RDSTestDataProvider({
@@ -76,10 +95,10 @@ export const setupRDSDatabase = async (
     port: db.port,
     username,
     password,
-    database: dbInfo.database
+    database: dbInfo.database,
   });
-  return { 
-    dbAdapter: dbAdapter,
+  return {
+    dbAdapter,
     dbInfo: {
       host: db.endpoint,
       port: db.port,
@@ -87,19 +106,25 @@ export const setupRDSDatabase = async (
       password,
       database: dbInfo.database,
       region: dbInfo.region,
-      publicIpCidr: publicIpCidr,
-      identifier: dbInfo.identifier
-    }
+      publicIpCidr,
+      identifier: dbInfo.identifier,
+    },
   };
 };
 
-export const verifyRDSSchema = (projectRoot: string, apiName: string, expected: string = '') => {
-  const rdsSchemaPath = join(projectRoot, "amplify", "backend", "api", apiName, "schema.rds.graphql");
+/**
+ *
+ * @param projectRoot
+ * @param apiName
+ * @param expected
+ */
+export const verifyRDSSchema = (projectRoot: string, apiName: string, expected = '') => {
+  const rdsSchemaPath = join(projectRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
   const expectExists = !_.isEmpty(expected);
   expect(fs.existsSync(rdsSchemaPath)).toEqual(expectExists);
-  if(!expectExists) {
+  if (!expectExists) {
     return;
   }
-  const schema = fs.readFileSync(rdsSchemaPath, { encoding: "utf-8" });
+  const schema = fs.readFileSync(rdsSchemaPath, { encoding: 'utf-8' });
   expect(schema.trim()).toEqual(expected.trim());
 };

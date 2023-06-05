@@ -4,11 +4,17 @@ import { FileAssetPackaging, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { TransformerStackSythesizer } from './stack-synthesizer';
 
+/**
+ *
+ */
 export interface TemplateProps {
   readonly fileContent: string;
   readonly fileName: string;
 }
 
+/**
+ *
+ */
 export class FileAsset extends Construct implements cdk.IAsset {
   public readonly assetHash: string;
   public readonly httpUrl: string;
@@ -51,11 +57,10 @@ function findRootStack(scope: Construct): Stack {
     throw new Error('Nested stacks cannot be defined as a root construct');
   }
 
-  const rootStack = scope.node.scopes.find(p => Stack.isStack(p));
+  const rootStack = scope.node.scopes.find((p) => Stack.isStack(p));
   if (!rootStack) {
     throw new Error('Nested stacks must be defined within scope of another non-nested stack');
   }
 
   return rootStack as Stack;
 }
-

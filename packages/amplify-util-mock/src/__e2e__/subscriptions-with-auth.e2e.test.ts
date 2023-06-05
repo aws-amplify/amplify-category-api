@@ -1,11 +1,11 @@
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
-import { deploy, launchDDBLocal, terminateDDB } from './utils/index';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import AWS = require('aws-sdk');
 import gql from 'graphql-tag';
+import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
+import { deploy, launchDDBLocal, terminateDDB } from './utils/index';
 import 'isomorphic-fetch';
 import { GraphQLClient } from './utils/graphql-client';
 
@@ -26,19 +26,19 @@ const JEST_TIMEOUT = 20000;
 
 jest.setTimeout(JEST_TIMEOUT);
 
-let GRAPHQL_ENDPOINT = undefined;
+let GRAPHQL_ENDPOINT;
 let ddbEmulator = null;
 let dbPath = null;
 let server;
 const AWS_REGION = 'my-local-2';
 
-let APPSYNC_CLIENT_1: AWSAppSyncClient<any> = undefined;
-let APPSYNC_CLIENT_2: AWSAppSyncClient<any> = undefined;
-let APPSYNC_CLIENT_3: AWSAppSyncClient<any> = undefined;
+let APPSYNC_CLIENT_1: AWSAppSyncClient<any>;
+let APPSYNC_CLIENT_2: AWSAppSyncClient<any>;
+let APPSYNC_CLIENT_3: AWSAppSyncClient<any>;
 
-let GRAPHQL_CLIENT_1: GraphQLClient = undefined;
-let GRAPHQL_CLIENT_2: GraphQLClient = undefined;
-let GRAPHQL_CLIENT_3: GraphQLClient = undefined;
+let GRAPHQL_CLIENT_1: GraphQLClient;
+let GRAPHQL_CLIENT_2: GraphQLClient;
+let GRAPHQL_CLIENT_3: GraphQLClient;
 
 const USER_POOL_ID = 'fake_user_pool';
 
@@ -131,7 +131,7 @@ beforeAll(async () => {
       }),
     ],
     featureFlags: {
-      getBoolean: name => (name === 'improvePluralization' ? true : false),
+      getBoolean: (name) => (name === 'improvePluralization'),
     } as FeatureFlagProvider,
   });
 
@@ -144,7 +144,7 @@ beforeAll(async () => {
     const result = await deploy(out, ddbClient);
     server = result.simulator;
 
-    GRAPHQL_ENDPOINT = server.url + '/graphql';
+    GRAPHQL_ENDPOINT = `${server.url}/graphql`;
     // Verify we have all the details
     expect(GRAPHQL_ENDPOINT).toBeTruthy();
     // Configure Amplify, create users, and sign in.
@@ -199,7 +199,7 @@ beforeAll(async () => {
 
     // Wait for any propagation to avoid random
     // "The security token included in the request is invalid" errors
-    await new Promise(res => setTimeout(res, PROPAGATAION_DELAY));
+    await new Promise((res) => setTimeout(res, PROPAGATAION_DELAY));
   } catch (e) {
     console.error(e);
     expect(true).toEqual(false);
@@ -221,7 +221,7 @@ afterAll(async () => {
 /**
  * Tests
  */
-test('Test that only authorized members are allowed to view subscriptions', async () => {
+test('that only authorized members are allowed to view subscriptions', async () => {
   // subscribe to create students as user 2
   const observer = APPSYNC_CLIENT_2.subscribe({
     query: gql`
@@ -238,7 +238,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
   });
 
   const subscriptionPromise = new Promise((resolve, _) => {
-    let subscription = observer.subscribe((event: any) => {
+    const subscription = observer.subscribe((event: any) => {
       const student = event.data.onCreateStudent;
       subscription.unsubscribe();
       expect(student.name).toEqual('student1');
@@ -248,7 +248,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   await createStudent(GRAPHQL_CLIENT_1, {
     name: 'student1',
@@ -259,7 +259,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
   return subscriptionPromise;
 });
 
-test('Test a subscription on update', async () => {
+test('a subscription on update', async () => {
   // susbcribe to update students as user 2
   const subscriptionPromise = new Promise((resolve, _) => {
     const observer = APPSYNC_CLIENT_2.subscribe({
@@ -275,7 +275,7 @@ test('Test a subscription on update', async () => {
         }
       `,
     });
-    let subscription = observer.subscribe((event: any) => {
+    const subscription = observer.subscribe((event: any) => {
       const student = event.data.onUpdateStudent;
       subscription.unsubscribe();
       expect(student.id).toEqual(student3ID);
@@ -285,7 +285,7 @@ test('Test a subscription on update', async () => {
       resolve(undefined);
     });
   });
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   const student3 = await createStudent(GRAPHQL_CLIENT_1, {
     name: 'student3',
@@ -307,7 +307,7 @@ test('Test a subscription on update', async () => {
   return subscriptionPromise;
 });
 
-test('Test a subscription on delete', async () => {
+test('a subscription on delete', async () => {
   // subscribe to onDelete as user 2
   const subscriptionPromise = new Promise((resolve, _) => {
     const observer = APPSYNC_CLIENT_2.subscribe({
@@ -323,7 +323,7 @@ test('Test a subscription on delete', async () => {
         }
       `,
     });
-    let subscription = observer.subscribe((event: any) => {
+    const subscription = observer.subscribe((event: any) => {
       const student = event.data.onDeleteStudent;
       subscription.unsubscribe();
       expect(student.id).toEqual(student4ID);
@@ -334,7 +334,7 @@ test('Test a subscription on delete', async () => {
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   const student4 = await createStudent(GRAPHQL_CLIENT_1, {
     name: 'student4',
@@ -351,7 +351,7 @@ test('Test a subscription on delete', async () => {
   return subscriptionPromise;
 });
 
-test('test that group is only allowed to listen to subscriptions and listen to onCreate', async () => {
+test('that group is only allowed to listen to subscriptions and listen to onCreate', async () => {
   const memberID = '001';
   const memberName = 'username00';
   // test that a user that only read can't mutate
@@ -382,7 +382,7 @@ test('test that group is only allowed to listen to subscriptions and listen to o
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
   // user that is authorized creates the update the mutation
   await createMember(GRAPHQL_CLIENT_1, { id: memberID, name: memberName });
 
@@ -416,7 +416,7 @@ test('authorized group is allowed to listen to onUpdate', async () => {
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
   // user that is authorized creates the update the mutation
   await updateMember(GRAPHQL_CLIENT_1, { id: memberID, name: memberName });
 
@@ -450,7 +450,7 @@ test('authoirzed group is allowed to listen to onDelete', async () => {
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
   // user that is authorized creates the update the mutation
   await deleteMember(GRAPHQL_CLIENT_1, { id: memberID });
 
@@ -458,7 +458,7 @@ test('authoirzed group is allowed to listen to onDelete', async () => {
 });
 
 // ownerField Tests
-test('Test subscription onCreatePost with ownerField', async () => {
+test('subscription onCreatePost with ownerField', async () => {
   const subscriptionPromise = new Promise((resolve, _) => {
     const observer = APPSYNC_CLIENT_1.subscribe({
       query: gql`
@@ -470,7 +470,7 @@ test('Test subscription onCreatePost with ownerField', async () => {
           }
       }`,
     });
-    let subscription = observer.subscribe((event: any) => {
+    const subscription = observer.subscribe((event: any) => {
       const post = event.data.onCreatePost;
       subscription.unsubscribe();
       expect(post.title).toEqual('someTitle');
@@ -479,7 +479,7 @@ test('Test subscription onCreatePost with ownerField', async () => {
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   await createPost(GRAPHQL_CLIENT_1, {
     title: 'someTitle',
@@ -506,7 +506,7 @@ async function createStudent(client: GraphQLClient, input: CreateStudentInput) {
   const result = await client.query(
     request,
     {
-      input: input
+      input,
     },
   );
   return result;
@@ -527,7 +527,7 @@ async function createMember(client: GraphQLClient, input: MemberInput) {
   const result = await client.query(
     request,
     {
-      input: input
+      input,
     },
   );
   return result;
@@ -548,7 +548,7 @@ async function updateMember(client: GraphQLClient, input: MemberInput) {
   const result = await client.query(
     request,
     {
-      input: input
+      input,
     },
   );
   return result;
@@ -569,7 +569,7 @@ async function deleteMember(client: GraphQLClient, input: MemberInput) {
   const result = await client.query(
     request,
     {
-      input: input
+      input,
     },
   );
   return result;
@@ -591,7 +591,7 @@ async function updateStudent(client: GraphQLClient, input: UpdateStudentInput) {
   const result = await client.query(
     request,
     {
-      input: input
+      input,
     },
   );
   return result;
@@ -613,7 +613,7 @@ async function deleteStudent(client: GraphQLClient, input: DeleteTypeInput) {
   const result = await client.query(
     request,
     {
-      input: input
+      input,
     },
   );
   return result;
@@ -633,7 +633,7 @@ async function createPost(client: GraphQLClient, input: CreatePostInput) {
   const result = await client.query(
     request,
     {
-      input: input
+      input,
     },
   );
   return result;

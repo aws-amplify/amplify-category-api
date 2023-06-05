@@ -1,13 +1,7 @@
-import { Transformer, TransformerContext, getDirectiveArguments, gql, InvalidDirectiveError } from 'graphql-transformer-core';
-import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode } from 'graphql';
-import { ResourceFactory } from './resources';
 import {
-  makeSearchableScalarInputObject,
-  makeSearchableXFilterInputObject,
-  makeSearchableSortDirectionEnumObject,
-  makeSearchableXSortableFieldsEnumObject,
-  makeSearchableXSortInputObject,
-} from './definitions';
+  Transformer, TransformerContext, getDirectiveArguments, gql, InvalidDirectiveError,
+} from 'graphql-transformer-core';
+import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode } from 'graphql';
 import {
   makeNamedType,
   blankObjectExtension,
@@ -18,10 +12,18 @@ import {
   makeInputValueDefinition,
   STANDARD_SCALARS,
   makeNonNullType,
+  ResolverResourceIDs, SearchableResourceIDs, ModelResourceIDs, getBaseType, ResourceConstants,
 } from 'graphql-transformer-common';
 import { Expression, str } from 'graphql-mapping-template';
-import { ResolverResourceIDs, SearchableResourceIDs, ModelResourceIDs, getBaseType, ResourceConstants } from 'graphql-transformer-common';
 import path = require('path');
+import {
+  makeSearchableScalarInputObject,
+  makeSearchableXFilterInputObject,
+  makeSearchableSortDirectionEnumObject,
+  makeSearchableXSortableFieldsEnumObject,
+  makeSearchableXSortInputObject,
+} from './definitions';
+import { ResourceFactory } from './resources';
 
 const STACK_NAME = 'SearchableStack';
 const nonKeywordTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSDate', 'AWSDateTime'];
@@ -42,7 +44,7 @@ export class SearchableModelTransformer extends Transformer {
 
   constructor() {
     super(
-      `SearchableModelTransformer`,
+      'SearchableModelTransformer',
       gql`
         directive @searchable(queries: SearchableQueryMap) on OBJECT
         input SearchableQueryMap {
@@ -77,16 +79,18 @@ export class SearchableModelTransformer extends Transformer {
   /**
    * Given the initial input and context manipulate the context to handle this object directive.
    * @param initial The input passed to the transform.
+   * @param def
+   * @param directive
    * @param ctx The accumulated context for the transform.
    */
   public object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
-    const modelDirective = def.directives.find(dir => dir.name.value === 'model');
+    const modelDirective = def.directives.find((dir) => dir.name.value === 'model');
     if (!modelDirective) {
       throw new InvalidDirectiveError('Types annotated with @searchable must also be annotated with @model.');
     }
     const directiveArguments: SearchableDirectiveArgs = getDirectiveArguments(directive);
     let shouldMakeSearch = true;
-    let searchFieldNameOverride = undefined;
+    let searchFieldNameOverride;
 
     // Figure out which queries to make and if they have name overrides.
     if (directiveArguments.queries) {
@@ -107,7 +111,7 @@ export class SearchableModelTransformer extends Transformer {
     // SearchablePostSortableFields
     const queryFields = [];
     const nonKeywordFields: Expression[] = [];
-    def.fields.forEach(field => {
+    def.fields.forEach((field) => {
       if (nonKeywordTypes.includes(getBaseType(field.type))) {
         nonKeywordFields.push(str(field.name.value));
       }

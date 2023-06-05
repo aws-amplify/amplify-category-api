@@ -8,14 +8,23 @@ import {
   DEFAULT_OWNER_FIELD,
   getAuthDirectiveRules,
 } from '@aws-amplify/graphql-auth-transformer';
-import { $TSContext, stateManager, pathManager, FeatureFlags } from '@aws-amplify/amplify-cli-core';
-import { parse, ObjectTypeDefinitionNode, DirectiveNode, FieldDefinitionNode } from 'graphql';
+import {
+  $TSContext, stateManager, pathManager, FeatureFlags,
+} from '@aws-amplify/amplify-cli-core';
+import {
+  parse, ObjectTypeDefinitionNode, DirectiveNode, FieldDefinitionNode,
+} from 'graphql';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
 import { readProjectSchema } from 'graphql-transformer-core';
-import { getTransformerVersion } from '../graphql-transformer';
 import * as path from 'path';
+import { getTransformerVersion } from '../graphql-transformer';
 
+/**
+ *
+ * @param context
+ * @param modelName
+ */
 export const showApiAuthAcm = async (context: $TSContext, modelName: string): Promise<void> => {
   const providerPlugin = await import(context.amplify.getProviderPlugins(context)?.awscloudformation);
   const transformerVersion = await getTransformerVersion(context);
@@ -64,11 +73,15 @@ export const showApiAuthAcm = async (context: $TSContext, modelName: string): Pr
   printACM(schema, modelName);
 };
 
+/**
+ *
+ * @param sdl
+ * @param nodeName
+ */
 export function printACM(sdl: string, nodeName: string) {
   const schema = parse(sdl);
   const type = schema.definitions.find(
-    (node) =>
-      node.kind === 'ObjectTypeDefinition' && node.name.value === nodeName && node?.directives?.find((dir) => dir.name.value === 'model'),
+    (node) => node.kind === 'ObjectTypeDefinition' && node.name.value === nodeName && node?.directives?.find((dir) => dir.name.value === 'model'),
   ) as ObjectTypeDefinitionNode;
   if (!type) {
     throw new Error(`Model "${nodeName}" does not exist.`);

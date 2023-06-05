@@ -2,6 +2,12 @@ import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { CrudOperation, PermissionSetting } from './cdk-stack-builder/types';
 
+/**
+ *
+ * @param deprecatedParametersFileName
+ * @param deprecatedParametersFilePath
+ * @param resourceName
+ */
 export function convertDeperecatedRestApiPaths(
   deprecatedParametersFileName: string,
   deprecatedParametersFilePath: string,
@@ -15,17 +21,16 @@ export function convertDeperecatedRestApiPaths(
     throw e;
   }
 
-  let paths = {};
+  const paths = {};
 
   if (!Array.isArray(deprecatedParameters.paths) || deprecatedParameters.paths.length < 1) {
     throw new Error(`Expected paths to be defined in "${deprecatedParametersFilePath}", but none found.`);
   }
 
   deprecatedParameters.paths.forEach((path: Record<string, any>) => {
-    let pathPermissionSetting =
-      path.privacy?.open === true
-        ? PermissionSetting.OPEN
-        : path.privacy?.private === true
+    const pathPermissionSetting = path.privacy?.open === true
+      ? PermissionSetting.OPEN
+      : path.privacy?.private === true
         ? PermissionSetting.PRIVATE
         : PermissionSetting.PROTECTED;
 
@@ -88,5 +93,5 @@ function _convertDeprecatedPermissionArrayToCRUD(deprecatedPrivacyArray: string[
     '/PATCH': CrudOperation.UPDATE,
     '/DELETE': CrudOperation.DELETE,
   };
-  return Array.from(new Set(deprecatedPrivacyArray.map(op => opMap[op])));
+  return Array.from(new Set(deprecatedPrivacyArray.map((op) => opMap[op])));
 }

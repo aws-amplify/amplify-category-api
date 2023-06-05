@@ -4,6 +4,10 @@ import * as path from 'path';
 
 export const name = AmplifyCategories.API;
 
+/**
+ *
+ * @param context
+ */
 export const run = async (context: $TSContext) => {
   if (/^win/.test(process.platform)) {
     try {
@@ -67,7 +71,7 @@ export const run = async (context: $TSContext) => {
     {
       name: 'update-secrets',
       description: 'Updates the API plugin related secrets',
-    }
+    },
   ];
 
   context.amplify.showHelp(header, commands);

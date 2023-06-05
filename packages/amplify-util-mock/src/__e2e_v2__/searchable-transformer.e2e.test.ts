@@ -1,8 +1,10 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { deploy, launchDDBLocal, logDebug, GraphQLClient, terminateDDB } from '../__e2e__/utils';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
+import {
+  deploy, launchDDBLocal, logDebug, GraphQLClient, terminateDDB,
+} from '../__e2e__/utils';
 
 jest.setTimeout(2000000);
 
@@ -30,10 +32,10 @@ describe('@searchable transformer', () => {
       const result = await deploy(out, ddbClient);
       server = result.simulator;
 
-      GRAPHQL_ENDPOINT = server.url + '/graphql';
+      GRAPHQL_ENDPOINT = `${server.url}/graphql`;
       logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
-      const apiKey = result.config.appSync.apiKey;
+      const { apiKey } = result.config.appSync;
       logDebug(apiKey);
       GRAPHQL_CLIENT = new GraphQLClient(GRAPHQL_ENDPOINT, {
         'x-api-key': apiKey,

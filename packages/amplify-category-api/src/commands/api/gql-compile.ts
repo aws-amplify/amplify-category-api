@@ -5,6 +5,10 @@ const subcommand = 'gql-compile';
 
 export const name = subcommand;
 
+/**
+ *
+ * @param context
+ */
 export const run = async (context: $TSContext) => {
   if (context?.input?.options?.force) {
     forceRefreshSchema();

@@ -2,6 +2,9 @@ import { GraphQLError, printError } from 'graphql';
 import * as os from 'os';
 
 const GRAPHQL_TRANSFORMER_V2_DIRECTIVES = ['hasOne', 'index', 'primaryKey', 'belongsTo', 'manyToMany', 'hasMany', 'default'];
+/**
+ *
+ */
 export class InvalidTransformerError extends Error {
   constructor(message: string) {
     super(message);
@@ -13,14 +16,17 @@ export class InvalidTransformerError extends Error {
   }
 }
 
+/**
+ *
+ */
 export class SchemaValidationError extends Error {
   constructor(errors: Readonly<GraphQLError[]>) {
     const v2DirectivesInUse = new Set<string>();
-    const newErrors = errors.filter(error => {
+    const newErrors = errors.filter((error) => {
       if (!error.message.startsWith('Unknown directive')) {
         return true;
       }
-      const dir = GRAPHQL_TRANSFORMER_V2_DIRECTIVES.find(d => error.message.endsWith(`"@${d}".`));
+      const dir = GRAPHQL_TRANSFORMER_V2_DIRECTIVES.find((d) => error.message.endsWith(`"@${d}".`));
       if (!dir) {
         return true;
       }
@@ -30,7 +36,7 @@ export class SchemaValidationError extends Error {
 
     if (v2DirectivesInUse.size > 0) {
       const v2DirectiveErrorMessage = `Your GraphQL Schema is using ${Array.from(v2DirectivesInUse.values())
-        .map(d => `"@${d}"`)
+        .map((d) => `"@${d}"`)
         .join(', ')} ${
         v2DirectivesInUse.size > 1 ? 'directives' : 'directive'
       } from the newer version of the GraphQL Transformer. Visit https://docs.amplify.aws/cli/migration/transformer-migration/ to learn how to migrate your GraphQL schema.`;
@@ -38,12 +44,12 @@ export class SchemaValidationError extends Error {
         super(v2DirectiveErrorMessage);
       } else {
         super(
-          v2DirectiveErrorMessage +
-            ` There are additional validation errors listed below: \n\n ${newErrors.map(error => printError(error)).join('\n\n')}`,
+          `${v2DirectiveErrorMessage
+          } There are additional validation errors listed below: \n\n ${newErrors.map((error) => printError(error)).join('\n\n')}`,
         );
       }
     } else {
-      super(`Schema validation failed.\n\n${newErrors.map(error => printError(error)).join('\n\n')} `);
+      super(`Schema validation failed.\n\n${newErrors.map((error) => printError(error)).join('\n\n')} `);
     }
     Object.setPrototypeOf(this, SchemaValidationError.prototype);
     this.name = 'SchemaValidationError';
@@ -71,6 +77,9 @@ export class TransformerContractError extends Error {
   }
 }
 
+/**
+ *
+ */
 export class DestructiveMigrationError extends Error {
   constructor(message: string, private removedModels: string[], private replacedModels: string[]) {
     super(message);
@@ -88,6 +97,7 @@ export class DestructiveMigrationError extends Error {
     }
     this.message = `${this.message}${os.EOL}ALL EXISTING DATA IN THESE TABLES WILL BE LOST!${os.EOL}If this is intended, rerun the command with '--allow-destructive-graphql-schema-updates'.`;
   }
+
   toString = () => this.message;
 }
 
@@ -100,9 +110,13 @@ export class InvalidMigrationError extends Error {
     Object.setPrototypeOf(this, new.target.prototype);
     this.name = 'InvalidMigrationError';
   }
+
   toString = () => `${this.message}\nCause: ${this.causedBy}\nHow to fix: ${this.fix}`;
 }
 
+/**
+ *
+ */
 export class InvalidGSIMigrationError extends InvalidMigrationError {
   fix: string;
   causedBy: string;
@@ -112,6 +126,9 @@ export class InvalidGSIMigrationError extends InvalidMigrationError {
   }
 }
 
+/**
+ *
+ */
 export class InvalidDirectiveError extends Error {
   constructor(message: string) {
     super(message);
@@ -123,6 +140,9 @@ export class InvalidDirectiveError extends Error {
   }
 }
 
+/**
+ *
+ */
 export class UnknownDirectiveError extends Error {
   constructor(message: string) {
     super(message);
@@ -134,6 +154,9 @@ export class UnknownDirectiveError extends Error {
   }
 }
 
+/**
+ *
+ */
 export class ApiCategorySchemaNotFoundError extends Error {
   link: string;
   constructor(schemaFilePath: string) {

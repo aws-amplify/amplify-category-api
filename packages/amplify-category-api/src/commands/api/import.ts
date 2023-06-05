@@ -2,8 +2,8 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 import fs from 'fs-extra';
-import { importAppSyncAPIWalkthrough, writeDefaultGraphQLSchema } from '../../provider-utils/awscloudformation/service-walkthroughs/import-appsync-api-walkthrough';
 import { RDS_SCHEMA_FILE_NAME } from '@aws-amplify/graphql-transformer-core';
+import { importAppSyncAPIWalkthrough, writeDefaultGraphQLSchema } from '../../provider-utils/awscloudformation/service-walkthroughs/import-appsync-api-walkthrough';
 import { getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { writeSchemaFile, generateRDSSchema } from '../../provider-utils/awscloudformation/utils/graphql-schema-utils';
 
@@ -11,11 +11,14 @@ const subcommand = 'import';
 
 export const name = subcommand;
 
+/**
+ *
+ * @param context
+ */
 export const run = async (context: $TSContext) => {
-
   // Disable the command for now
-  throw new Error("This command has been disabled.");
-  
+  throw new Error('This command has been disabled.');
+
   const importAppSyncAPIWalkInputs = await importAppSyncAPIWalkthrough(context);
 
   if (importAppSyncAPIWalkInputs?.dataSourceConfig) {

@@ -3,18 +3,36 @@ import { migrateDefaultAuthMode } from './defaultAuth';
 import { migrateOwnerAuth } from './ownerAuth';
 import { createArgumentNode, createDirectiveNode, createListValueNode } from '../generators';
 
+/**
+ *
+ * @param node
+ */
 export function hasAuthDirectives(node: any) {
   return node.directives.some((dir: any) => dir.name.value === 'auth');
 }
 
+/**
+ *
+ * @param node
+ */
 export function getAuthRules(node: any) {
   return node.directives.find((dir: any) => dir.name.value === 'auth').arguments[0].value.values;
 }
 
+/**
+ *
+ * @param node
+ * @param rules
+ */
 export function setAuthRules(node: any, rules: any) {
   node.directives.find((dir: any) => dir.name.value === 'auth').arguments[0].value.values = rules;
 }
 
+/**
+ *
+ * @param node
+ * @param rule
+ */
 export function addAuthRuleToNode(node: any, rule: any) {
   if (!hasAuthDirectives(node)) {
     const valueNode = createListValueNode([rule]);
@@ -36,6 +54,11 @@ export const defaultProviderMap: Map<string, string> = new Map<string, string>([
   ['groups', 'userPools'],
 ]);
 
+/**
+ *
+ * @param node
+ * @param defaultAuthMode
+ */
 export function migrateAuth(node: any, defaultAuthMode: any) {
   if (!isModelType(node)) {
     return;

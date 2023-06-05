@@ -16,12 +16,16 @@ import { checkAppsyncApiResourceMigration } from '../../provider-utils/awscloudf
 
 export const name = 'override';
 
+/**
+ *
+ * @param context
+ */
 export const run = async (context: $TSContext) => {
   const amplifyMeta = stateManager.getMeta();
   const apiResources: string[] = [];
 
   if (amplifyMeta[AmplifyCategories.API]) {
-    Object.keys(amplifyMeta[AmplifyCategories.API]).forEach(resourceName => {
+    Object.keys(amplifyMeta[AmplifyCategories.API]).forEach((resourceName) => {
       apiResources.push(resourceName);
     });
   }
@@ -76,14 +80,13 @@ export const run = async (context: $TSContext) => {
           throw new Error(`Invalid dependsOn entry found in amplify-meta.json for "${ADMIN_QUERIES_NAME}"`);
         }
 
-        const getResourceNameFromDependsOn = (categoryName: string, dependsOn: Record<string, any>[]) =>
-          dependsOn.filter(entry => entry.category === categoryName)[0].resourceName;
+        const getResourceNameFromDependsOn = (categoryName: string, dependsOn: Record<string, any>[]) => dependsOn.filter((entry) => entry.category === categoryName)[0].resourceName;
 
         const props: AdminQueriesProps = {
           apiName: selectedResourceName,
           authResourceName: getResourceNameFromDependsOn(AmplifyCategories.AUTH, dependsOn),
           functionName: getResourceNameFromDependsOn(AmplifyCategories.FUNCTION, dependsOn),
-          dependsOn: dependsOn,
+          dependsOn,
         };
         await apigwInputState.migrateAdminQueries(props);
       } else {

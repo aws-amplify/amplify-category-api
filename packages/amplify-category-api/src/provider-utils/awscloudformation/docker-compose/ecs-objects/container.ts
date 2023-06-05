@@ -1,6 +1,11 @@
-import { IContainerDefinitions, PortMappings, IBuildConfig, ContainerHealthCheck, IContainerHealthCheckItem } from './types';
+import {
+  IContainerDefinitions, PortMappings, IBuildConfig, ContainerHealthCheck, IContainerHealthCheckItem,
+} from './types';
 import { ListOrDict } from '../compose-spec/v1';
 
+/**
+ *
+ */
 class Container implements IContainerDefinitions {
   readonly defaultLogConfiguration = {
     logDriver: 'awslogs',
@@ -25,7 +30,7 @@ class Container implements IContainerDefinitions {
   secrets: Set<string>;
 
   constructor(
-    build: string | IBuildConfig | undefined, //Really for CodeBuild. Do we need in this class?
+    build: string | IBuildConfig | undefined, // Really for CodeBuild. Do we need in this class?
     name: string,
     portMappings: PortMappings,
     command?: string | string[] | undefined,
@@ -46,24 +51,25 @@ class Container implements IContainerDefinitions {
     this.env_file = [].concat(env_file);
     this.environment = Array.isArray(environment)
       ? environment.reduce((acc, element) => {
-          const [key, value] = element.split('=');
+        const [key, value] = element.split('=');
 
-          acc[key] = value;
-          return acc;
-        }, {} as Record<string, string>)
+        acc[key] = value;
+        return acc;
+      }, {} as Record<string, string>)
       : (environment as Record<string, string>);
     this.image = image;
 
-    this.healthcheck = (({ interval, command, start_period, timeout, retries }) =>
-      command
-        ? {
-            interval: toSeconds(interval),
-            command: [].concat(command),
-            start_period: toSeconds(start_period),
-            timeout: toSeconds(timeout),
-            retries,
-          }
-        : undefined)(healthcheck);
+    this.healthcheck = (({
+      interval, command, start_period, timeout, retries,
+    }) => (command
+      ? {
+        interval: toSeconds(interval),
+        command: [].concat(command),
+        start_period: toSeconds(start_period),
+        timeout: toSeconds(timeout),
+        retries,
+      }
+      : undefined))(healthcheck);
 
     this.working_dir = working_dir;
     this.user = user;

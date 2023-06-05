@@ -2,7 +2,9 @@ import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator'
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { deploy, launchDDBLocal, terminateDDB, logDebug, reDeploy, GraphQLClient } from '../__e2e__/utils';
+import {
+  deploy, launchDDBLocal, terminateDDB, logDebug, reDeploy, GraphQLClient,
+} from '../__e2e__/utils';
 
 let GRAPHQL_ENDPOINT: string;
 let GRAPHQL_CLIENT: GraphQLClient;
@@ -16,7 +18,7 @@ const runTransformer = async (validSchema: string) => {
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer()],
     featureFlags: {
-      getBoolean: name => (name === 'improvePluralization' ? true : false),
+      getBoolean: (name) => (name === 'improvePluralization'),
     } as FeatureFlagProvider,
     sandboxModeEnabled: true,
   });
@@ -39,10 +41,10 @@ describe('$util method', () => {
       const result = await deploy(out, ddbClient);
       server = result.simulator;
 
-      GRAPHQL_ENDPOINT = server.url + '/graphql';
+      GRAPHQL_ENDPOINT = `${server.url}/graphql`;
       logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
-      const apiKey = result.config.appSync.apiKey;
+      const { apiKey } = result.config.appSync;
       logDebug(apiKey);
       GRAPHQL_CLIENT = new GraphQLClient(GRAPHQL_ENDPOINT, {
         'x-api-key': apiKey,
@@ -82,7 +84,7 @@ describe('$util method', () => {
     test('it should not throw error when validation condition is true', async () => {
       transformerOutput.resolvers[
         'Query.getPost.res.vtl'
-      ] = `$util.validate(true, "Validation Error", "ValidationError", { "id": "11", "title": "Title Sent from Error" })\n$util.toJson({"id": 11, "title": "Non Error title"})`;
+      ] = '$util.validate(true, "Validation Error", "ValidationError", { "id": "11", "title": "Title Sent from Error" })\n$util.toJson({"id": 11, "title": "Non Error title"})';
       await reDeploy(transformerOutput, server, ddbClient);
       const response = await GRAPHQL_CLIENT.query(queryString, {});
       expect(response.data).toBeDefined();
@@ -94,7 +96,7 @@ describe('$util method', () => {
     test('$util.validate should throw error and pass the data along with error message and error type when the condition fails', async () => {
       transformerOutput.resolvers[
         'Query.getPost.req.vtl'
-      ] = `$util.validate(false, "Validation Error", "ValidationError", { "id": "10", "title": "Title Sent from Error" })`;
+      ] = '$util.validate(false, "Validation Error", "ValidationError", { "id": "10", "title": "Title Sent from Error" })';
       await reDeploy(transformerOutput, server, ddbClient);
 
       const response = await GRAPHQL_CLIENT.query(queryString, {});
@@ -109,7 +111,7 @@ describe('$util method', () => {
     });
 
     test('$util.validate should return error message and CustomTemplateException when error type is not passed', async () => {
-      transformerOutput.resolvers['Query.getPost.req.vtl'] = `$util.validate(false, "Validation Error")`;
+      transformerOutput.resolvers['Query.getPost.req.vtl'] = '$util.validate(false, "Validation Error")';
       await reDeploy(transformerOutput, server, ddbClient);
 
       const response = await GRAPHQL_CLIENT.query(queryString, {});
@@ -123,7 +125,7 @@ describe('$util method', () => {
     });
 
     test('$util.validate should allow overriding the error type', async () => {
-      transformerOutput.resolvers['Query.getPost.req.vtl'] = `$util.validate(false, "Validation Error", "MyErrorType")`;
+      transformerOutput.resolvers['Query.getPost.req.vtl'] = '$util.validate(false, "Validation Error", "MyErrorType")';
       await reDeploy(transformerOutput, server, ddbClient);
 
       const response = await GRAPHQL_CLIENT.query(queryString, {});

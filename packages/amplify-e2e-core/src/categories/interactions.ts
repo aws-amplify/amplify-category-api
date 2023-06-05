@@ -1,5 +1,10 @@
 import { nspawn as spawn, getCLIPath } from '..';
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addSampleInteraction(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'interactions'], { cwd, stripColors: true })

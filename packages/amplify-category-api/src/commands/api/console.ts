@@ -6,6 +6,10 @@ const subcommand = 'console';
 
 export const name = subcommand;
 
+/**
+ *
+ * @param context
+ */
 export const run = async (context: $TSContext) => {
   const servicesMetadata = (await import(path.join('..', '..', 'provider-utils', 'supported-services'))).supportedServices;
   const result = await context.amplify.serviceSelectionPrompt(context, AmplifyCategories.API, servicesMetadata);

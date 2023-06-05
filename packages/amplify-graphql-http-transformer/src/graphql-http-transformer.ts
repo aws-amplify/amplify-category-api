@@ -86,6 +86,9 @@ const directiveDefinition = /* GraphQL */ `
   }
 `;
 
+/**
+ *
+ */
 export class HttpTransformer extends TransformerPluginBase {
   private directiveList: HttpDirectiveConfiguration[] = [];
 
@@ -127,22 +130,18 @@ export class HttpTransformer extends TransformerPluginBase {
     }
 
     const newFieldArgsArray: InputValueDefinitionNode[] = [];
-    let params = args.path.match(/:\w+/g);
+    const params = args.path.match(/:\w+/g);
 
     if (params) {
-      const paramsMap = params.map(p => p.replace(':', ''));
+      const paramsMap = params.map((p) => p.replace(':', ''));
 
       // If there are URL parameters, remove them from the array used to
       // create the query and body types
-      args.queryAndBodyArgs = args.queryAndBodyArgs.filter(arg => {
-        return isScalar(arg.type) && !(paramsMap as string[]).includes(arg.name.value);
-      });
+      args.queryAndBodyArgs = args.queryAndBodyArgs.filter((arg) => isScalar(arg.type) && !(paramsMap as string[]).includes(arg.name.value));
 
       // Replace each URL parameter with $ctx.args.params.parameter_name for
       // use in the resolver template.
-      args.path = args.path.replace(/:\w+/g, (str: string) => {
-        return `\$\{ctx.args.params.${str.replace(':', '')}\}`;
-      });
+      args.path = args.path.replace(/:\w+/g, (str: string) => `\$\{ctx.args.params.${str.replace(':', '')}\}`);
 
       const urlParamInputObject = makeUrlParamInputObject(args, paramsMap);
       context.output.addInput(urlParamInputObject);
@@ -158,7 +157,7 @@ export class HttpTransformer extends TransformerPluginBase {
       // If any of the arguments for the query are non-null, then make the
       // newly generated type wrapper non-null too (this only really applies
       // to GET requests).
-      const makeNonNull = queryInputObject.fields!.filter(a => a.type.kind === Kind.NON_NULL_TYPE).length > 0;
+      const makeNonNull = queryInputObject.fields!.filter((a) => a.type.kind === Kind.NON_NULL_TYPE).length > 0;
 
       context.output.addInput(queryInputObject);
       newFieldArgsArray.push(makeHttpArgument('query', queryInputObject, makeNonNull));
@@ -180,7 +179,7 @@ export class HttpTransformer extends TransformerPluginBase {
       };
 
       const mostRecentParent = context.output.getType(parent.name.value) as ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode;
-      let updatedFieldsInParent = mostRecentParent.fields!.filter(f => f.name.value !== definition.name.value);
+      const updatedFieldsInParent = mostRecentParent.fields!.filter((f) => f.name.value !== definition.name.value);
       updatedFieldsInParent.push(updatedField);
 
       const updatedParentType = {
@@ -201,12 +200,12 @@ export class HttpTransformer extends TransformerPluginBase {
 
     const stack: cdk.Stack = context.stackManager.createStack(HTTP_DIRECTIVE_STACK);
     const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
-    const region = stack.region;
+    const { region } = stack;
 
     stack.templateOptions.templateFormatVersion = '2010-09-09';
     stack.templateOptions.description = 'An auto-generated nested stack for the @http directive.';
 
-    this.directiveList.forEach(directive => {
+    this.directiveList.forEach((directive) => {
       // Create a new data source if necessary.
       const dataSourceId = HttpResourceIDs.HttpDataSourceID(directive.origin);
 
@@ -222,19 +221,19 @@ export class HttpTransformer extends TransformerPluginBase {
 
 function createResolver(stack: cdk.Stack, dataSourceId: string, context: TransformerContextProvider, config: HttpDirectiveConfiguration) {
   const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
-  const region = stack.region;
+  const { region } = stack;
 
   const { method, supportsBody } = config;
   const reqCompoundExpr: any[] = [];
   const requestParams: any = { headers: ref('util.toJson($headers)') };
-  const parsedHeaders = config.headers!.map(header => qref(`$headers.put("${header.key}", "${header.value}")`));
+  const parsedHeaders = config.headers!.map((header) => qref(`$headers.put("${header.key}", "${header.value}")`));
 
   if (method !== 'DELETE') {
     requestParams.query = ref('util.toJson($ctx.args.query)');
   }
 
   if (supportsBody) {
-    const nonNullArgs = config.queryAndBodyArgs.filter(arg => arg.type.kind === Kind.NON_NULL_TYPE);
+    const nonNullArgs = config.queryAndBodyArgs.filter((arg) => arg.type.kind === Kind.NON_NULL_TYPE);
 
     requestParams.body = ref('util.toJson($ctx.args.body)');
 
@@ -244,7 +243,7 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
           comment('START: Manually checking that all non-null arguments are provided either in the query or the body'),
           iff(
             or(
-              nonNullArgs.map(arg => {
+              nonNullArgs.map((arg) => {
                 const name = arg.name.value;
 
                 return parens(and([raw(`!$ctx.args.body.${name}`), raw(`!$ctx.args.query.${name}`)]));
@@ -282,7 +281,7 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
     qref(`$ctx.stash.put("fieldName", "${config.resolverFieldName}")`),
   ];
   const authModes = [context.authConfig.defaultAuthentication, ...(context.authConfig.additionalAuthenticationProviders || [])].map(
-    mode => mode?.authenticationType,
+    (mode) => mode?.authenticationType,
   );
 
   if (authModes.includes(AuthorizationType.IAM)) {
@@ -310,9 +309,9 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
   const functionRequestMappingTemplate = cdk.Token.isUnresolved(functionRequestTemplateString)
     ? MappingTemplate.inlineTemplateFromString(functionRequestTemplateString)
     : MappingTemplate.s3MappingTemplateFromString(
-        functionRequestTemplateString,
-        `${config.resolverTypeName}.${config.resolverFieldName}.DataResolver.req.vtl`,
-      );
+      functionRequestTemplateString,
+      `${config.resolverTypeName}.${config.resolverFieldName}.DataResolver.req.vtl`,
+    );
   const appsyncFunction = context.api.host.addAppSyncFunction(
     functionId,
     functionRequestMappingTemplate,
@@ -376,9 +375,7 @@ function makeUrlParamInputObject(directive: HttpDirectiveConfiguration, urlParam
       kind: 'Name',
       value: ModelResourceIDs.UrlParamsInputObjectName(directive.resolverTypeName, directive.resolverFieldName),
     },
-    fields: urlParams.map(param => {
-      return makeInputValueDefinition(param, makeNonNullType(makeNamedType('String')));
-    }),
+    fields: urlParams.map((param) => makeInputValueDefinition(param, makeNonNullType(makeNamedType('String')))),
     directives: [],
   };
 }
@@ -391,12 +388,10 @@ function makeHttpArgument(name: string, inputType: InputObjectTypeDefinitionNode
 function makeHttpInputObject(name: string, argArray: InputValueDefinitionNode[], makeNonNull: boolean): InputObjectTypeDefinitionNode {
   // Unwrap all the non-nulls in the argument array if the flag is set.
   const fields: InputValueDefinitionNode[] = makeNonNull
-    ? argArray.map((arg: InputValueDefinitionNode) => {
-        return {
-          ...arg,
-          type: unwrapNonNull(arg.type),
-        };
-      })
+    ? argArray.map((arg: InputValueDefinitionNode) => ({
+      ...arg,
+      type: unwrapNonNull(arg.type),
+    }))
     : argArray;
   return {
     kind: 'InputObjectTypeDefinition',

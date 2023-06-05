@@ -1,20 +1,25 @@
 import { $TSContext, AmplifyCategories, stateManager } from '@aws-amplify/amplify-cli-core';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import _ from 'lodash';
-import { GRAPHQL_API_ENDPOINT_OUTPUT, GRAPHQL_API_KEY_OUTPUT, MOCK_API_KEY, MOCK_API_PORT } from '../../api/api';
+import {
+  GRAPHQL_API_ENDPOINT_OUTPUT, GRAPHQL_API_KEY_OUTPUT, MOCK_API_KEY, MOCK_API_PORT,
+} from '../../api/api';
 
 /**
  * Loads all parameters that should be passed into the lambda CFN template when resolving values
  *
  * Iterates through a list of parameter getters. If multiple getters return the same key, the latter will overwrite the former
+ * @param print
+ * @param resourceName
+ * @param overrideApiToLocal
  */
 export const populateCfnParams = async (
   print: $TSContext['print'],
   resourceName: string,
-  overrideApiToLocal: boolean = false,
+  overrideApiToLocal = false,
 ): Promise<Record<string, string>> => {
   const cfnParams = [getCfnPseudoParams, getAmplifyMetaParams, getParametersJsonParams]
-    .map(paramProvider => paramProvider(print, resourceName, overrideApiToLocal))
+    .map((paramProvider) => paramProvider(print, resourceName, overrideApiToLocal))
     .reduce((acc, it) => ({ ...acc, ...it }), {});
 
   const resourceParamManager = (await ensureEnvParamManager()).instance.getResourceParamManager(AmplifyCategories.API, resourceName);
@@ -42,11 +47,14 @@ const getCfnPseudoParams = (): Record<string, string> => {
 
 /**
  * Loads CFN parameters by matching the dependsOn field of the resource with the CFN outputs of other resources in the project
+ * @param print
+ * @param resourceName
+ * @param overrideApiToLocal
  */
 const getAmplifyMetaParams = (
   print: $TSContext['print'],
   resourceName: string,
-  overrideApiToLocal: boolean = false,
+  overrideApiToLocal = false,
 ): Record<string, string> => {
   const projectMeta = stateManager.getMeta();
   if (!Array.isArray(projectMeta?.function?.[resourceName]?.dependsOn)) {
@@ -58,7 +66,7 @@ const getAmplifyMetaParams = (
     attributes: string[];
   }[];
   return dependencies.reduce((acc, dependency) => {
-    dependency.attributes.forEach(attribute => {
+    dependency.attributes.forEach((attribute) => {
       let val = projectMeta?.[dependency.category]?.[dependency.resourceName]?.output?.[attribute];
       if (!val) {
         print.warning(
@@ -86,7 +94,7 @@ const getAmplifyMetaParams = (
 
 /**
  * Loads CFN parameters from the parameters.json file for the resource (if present)
+ * @param _
+ * @param resourceName
  */
-const getParametersJsonParams = (_, resourceName: string): Record<string, string> => {
-  return stateManager.getResourceParametersJson(undefined, 'function', resourceName, { throwIfNotExist: false }) ?? {};
-};
+const getParametersJsonParams = (_, resourceName: string): Record<string, string> => stateManager.getResourceParametersJson(undefined, 'function', resourceName, { throwIfNotExist: false }) ?? {};

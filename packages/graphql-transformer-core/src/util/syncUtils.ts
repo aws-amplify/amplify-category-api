@@ -16,7 +16,10 @@ type DeltaSyncConfig = {
   BaseTableTTL: number;
 };
 
-export module SyncUtils {
+export namespace SyncUtils {
+  /**
+   *
+   */
   export function createSyncTable() {
     return new DynamoDB.Table({
       TableName: joinWithEnv('-', [SyncResourceIDs.syncTableName, Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')]),
@@ -45,6 +48,9 @@ export module SyncUtils {
     });
   }
 
+  /**
+   *
+   */
   export function createSyncIAMRole() {
     const roleName = SyncResourceIDs.syncIAMRoleName;
     return new IAM.Role({
@@ -94,6 +100,12 @@ export module SyncUtils {
       ],
     });
   }
+  /**
+   *
+   * @param root0
+   * @param root0.name
+   * @param root0.region
+   */
   export function syncLambdaArnResource({ name, region }: { name: string; region?: string }) {
     const env = 'env';
     const substitutions = {};
@@ -106,6 +118,11 @@ export module SyncUtils {
       Fn.Sub(lambdaArnKey(removeEnvReference(name), region), {}),
     );
   }
+  /**
+   *
+   * @param name
+   * @param region
+   */
   export function lambdaArnKey(name: string, region?: string) {
     return region
       ? `arn:aws:lambda:${region}:\${AWS::AccountId}:function:${name}`
@@ -124,6 +141,12 @@ export module SyncUtils {
       Fn.Join(separator, listToJoin),
     );
   }
+  /**
+   *
+   * @param root0
+   * @param root0.name
+   * @param root0.region
+   */
   export function syncLambdaIAMRole({ name, region }: { name: string; region?: string }) {
     return new IAM.Role({
       RoleName: Fn.If(
@@ -169,6 +192,12 @@ export module SyncUtils {
     });
   }
 
+  /**
+   *
+   * @param root0
+   * @param root0.name
+   * @param root0.region
+   */
   export function createSyncLambdaIAMPolicy({ name, region }: { name: string; region?: string }) {
     return new IAM.Role.Policy({
       PolicyName: 'InvokeLambdaFunction',
@@ -184,12 +213,18 @@ export module SyncUtils {
       },
     });
   }
+  /**
+   *
+   */
   export function syncTTLConfig() {
     return {
       AttributeName: '_ttl',
       Enabled: true,
     };
   }
+  /**
+   *
+   */
   export function syncDataSourceConfig(): DeltaSyncConfig {
     return {
       DeltaSyncTableName: joinWithEnv('-', [
@@ -201,6 +236,10 @@ export module SyncUtils {
     };
     // default values for deltasync
   }
+  /**
+   *
+   * @param syncConfig
+   */
   export function syncResolverConfig(syncConfig: SyncConfigOPTIMISTIC | SyncConfigLAMBDA | SyncConfigSERVER): SyncConfig {
     const resolverObj: SyncConfig = {
       ConflictDetection: syncConfig.ConflictDetection,
@@ -213,13 +252,17 @@ export module SyncUtils {
     }
     return resolverObj;
   }
+  /**
+   *
+   * @param obj
+   */
   export function isLambdaSyncConfig(obj: any): obj is SyncConfigLAMBDA {
     const lambbdaConfigKey: keyof SyncConfigLAMBDA = 'LambdaConflictHandler';
     if (obj && obj.ConflictHandler === 'LAMBDA') {
       if (obj.hasOwnProperty(lambbdaConfigKey)) {
         return true;
       }
-      throw Error(`Invalid Lambda SyncConfig`);
+      throw Error('Invalid Lambda SyncConfig');
     }
     return false;
   }

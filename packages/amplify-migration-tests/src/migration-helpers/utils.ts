@@ -43,6 +43,10 @@ export type ExcludeFromParameterDiff = (
 
 /**
  * Asserts that parameters between two project directories didn't drift.
+ * @param projectRoot1
+ * @param projectRoot2
+ * @param options
+ * @param options.excludeFromParameterDiff
  */
 export const assertNoParameterChangesBetweenProjects = (
   projectRoot1: string,
@@ -111,6 +115,9 @@ export type ExcludeFromCFNDiff = (
 
 /**
  * Collects all differences between cloud formation templates into a single string.
+ * @param projectRoot1
+ * @param projectRoot2
+ * @param excludeFn
  */
 export const collectCloudformationDiffBetweenProjects = (projectRoot1: string, projectRoot2: string, excludeFn?: ExcludeFromCFNDiff): string => {
   const backendConfig1 = getBackendConfig(projectRoot1);
@@ -144,6 +151,8 @@ export const collectCloudformationDiffBetweenProjects = (projectRoot1: string, p
 
 /**
  * Pulls and pushes project with latest codebase. Validates parameter and cfn drift.
+ * @param projRoot
+ * @param projName
  */
 export const pullPushWithLatestCodebaseValidateParameterAndCfnDrift = async (
   projRoot: string,

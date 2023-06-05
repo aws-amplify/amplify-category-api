@@ -22,42 +22,52 @@ export const stacksTypes: Record<string, string> = {
 
 const rootStackNameInConstruct = 'transformer-root-stack';
 
+/**
+ *
+ * @param constructPathArr
+ * @param id
+ * @param nestedStackArr
+ * @param node
+ */
 export const getStackMeta = (constructPathArr: string[], id: string, nestedStackArr: string[], node: Construct): ConstructResourceMeta => {
   const resource = node as CfnResource;
-  if (nestedStackArr.find(val => val === constructPathArr[1])) {
-    const nestedStackName = nestedStackArr.find(val => val === constructPathArr[1]);
-    const resourceName = constructPathArr.filter(path => path !== nestedStackName && path !== rootStackNameInConstruct).join('');
+  if (nestedStackArr.find((val) => val === constructPathArr[1])) {
+    const nestedStackName = nestedStackArr.find((val) => val === constructPathArr[1]);
+    const resourceName = constructPathArr.filter((path) => path !== nestedStackName && path !== rootStackNameInConstruct).join('');
     return {
       resourceName,
       resourceType: resource.cfnResourceType,
       nestedStack: {
         stackName: nestedStackName!,
-        stackType: stacksTypes[nestedStackName!] ?? stacksTypes['MODELS'],
-      },
-    };
-  } else {
-    // root stack
-    const resourceName = constructPathArr.filter(path => path !== rootStackNameInConstruct).join('');
-    return {
-      resourceName: id === 'Resource' ? resourceName : `${resourceName}${id}`,
-      resourceType: resource.cfnResourceType,
-      rootStack: {
-        stackName: constructPathArr[0],
-        stackType: stacksTypes.API,
+        stackType: stacksTypes[nestedStackName!] ?? stacksTypes.MODELS,
       },
     };
   }
+  // root stack
+  const resourceName = constructPathArr.filter((path) => path !== rootStackNameInConstruct).join('');
+  return {
+    resourceName: id === 'Resource' ? resourceName : `${resourceName}${id}`,
+    resourceType: resource.cfnResourceType,
+    rootStack: {
+      stackName: constructPathArr[0],
+      stackType: stacksTypes.API,
+    },
+  };
 };
 
+/**
+ *
+ * @param amplifyObj
+ */
 export const convertToAppsyncResourceObj = (amplifyObj: any) => {
-  let appsyncResourceObject: AmplifyApiGraphQlResourceStackTemplate = {};
-  Object.keys(amplifyObj).forEach(keys => {
+  const appsyncResourceObject: AmplifyApiGraphQlResourceStackTemplate = {};
+  Object.keys(amplifyObj).forEach((keys) => {
     if (keys === 'api') {
       appsyncResourceObject.api = amplifyObj.api;
     } else if (keys === 'models' && !_.isEmpty(amplifyObj[keys])) {
       // require filter using keyName
       appsyncResourceObject.models = {};
-      Object.keys(amplifyObj.models).forEach(key => {
+      Object.keys(amplifyObj.models).forEach((key) => {
         appsyncResourceObject.models![key] = generateModelDirectiveObject(amplifyObj.models[key]);
       });
     } else if (keys === 'function' && !_.isEmpty(amplifyObj[keys])) {
@@ -72,8 +82,7 @@ export const convertToAppsyncResourceObj = (amplifyObj: any) => {
     } else if (keys === 'predictions' && !_.isEmpty(amplifyObj[keys])) {
       appsyncResourceObject.predictions = amplifyObj.predictions.PredictionsDirectiveStack;
       if (!_.isEmpty(amplifyObj.predictions.PredictionsDirectiveStack['predictionsLambda.handler'])) {
-        appsyncResourceObject.predictions!.predictionsLambdaFunction =
-          amplifyObj.predictions.PredictionsDirectiveStack['predictionsLambda.handler'];
+        appsyncResourceObject.predictions!.predictionsLambdaFunction = amplifyObj.predictions.PredictionsDirectiveStack['predictionsLambda.handler'];
       }
     }
   });
@@ -81,8 +90,8 @@ export const convertToAppsyncResourceObj = (amplifyObj: any) => {
 };
 
 const generateFunctionDirectiveObject = (functionStackObj: any) => {
-  let functionObj: Partial<FunctionDirectiveStack & AppsyncStackCommon> = {};
-  Object.keys(functionStackObj).forEach(key => {
+  const functionObj: Partial<FunctionDirectiveStack & AppsyncStackCommon> = {};
+  Object.keys(functionStackObj).forEach((key) => {
     if (key.endsWith('resolvers')) {
       functionObj.resolvers = functionStackObj.resolvers;
     } else if (key.endsWith('appsyncFunctions')) {
@@ -111,8 +120,8 @@ const generateFunctionDirectiveObject = (functionStackObj: any) => {
 };
 
 const generateHttpDirectiveObject = (httpStackObj: any) => {
-  let httpObj: Partial<HttpsDirectiveStack & AppsyncStackCommon> = {};
-  Object.keys(httpStackObj).forEach(key => {
+  const httpObj: Partial<HttpsDirectiveStack & AppsyncStackCommon> = {};
+  Object.keys(httpStackObj).forEach((key) => {
     if (key.endsWith('resolvers')) {
       httpObj.resolvers = httpStackObj.resolvers;
     } else if (key.endsWith('appsyncFunctions')) {
@@ -135,7 +144,7 @@ const generateHttpDirectiveObject = (httpStackObj: any) => {
 };
 
 const generateOpenSearchDirectiveObject = (opensearchStackObj: any) => {
-  let opensearchObj: OpenSearchDirectiveStack & AppsyncStackCommon = _.pick(
+  const opensearchObj: OpenSearchDirectiveStack & AppsyncStackCommon = _.pick(
     opensearchStackObj,
     'OpenSearchDataSource',
     'OpenSearchAccessIAMRole',
@@ -149,7 +158,7 @@ const generateOpenSearchDirectiveObject = (opensearchStackObj: any) => {
     'appsyncFunctions',
   );
 
-  Object.keys(opensearchStackObj).forEach(key => {
+  Object.keys(opensearchStackObj).forEach((key) => {
     if (key !== 'resolvers' && key !== 'appsyncFunctions' && opensearchStackObj[key].cfnResourceType.includes('EventSourceMapping')) {
       if (!opensearchObj.OpenSearchModelLambdaMapping) {
         opensearchObj.OpenSearchModelLambdaMapping = {};
@@ -164,9 +173,9 @@ const generateOpenSearchDirectiveObject = (opensearchStackObj: any) => {
 };
 
 const generateModelDirectiveObject = (modelStackObj: any) => {
-  let modelObj: ModelDirectiveStack = _.pick(modelStackObj, 'appsyncFunctions', 'DynamoDBAccess', 'InvokdeLambdaFunction', 'resolvers');
-  let strippedModelObj = _.omit(modelStackObj, 'appsyncFunctions', 'DynamoDBAccess', 'InvokdeLambdaFunction', 'resolvers');
-  Object.keys(strippedModelObj).forEach(key => {
+  const modelObj: ModelDirectiveStack = _.pick(modelStackObj, 'appsyncFunctions', 'DynamoDBAccess', 'InvokdeLambdaFunction', 'resolvers');
+  const strippedModelObj = _.omit(modelStackObj, 'appsyncFunctions', 'DynamoDBAccess', 'InvokdeLambdaFunction', 'resolvers');
+  Object.keys(strippedModelObj).forEach((key) => {
     if (strippedModelObj[key].cfnResourceType.includes('DataSource')) {
       modelObj.modelDatasource = modelStackObj[key];
     }

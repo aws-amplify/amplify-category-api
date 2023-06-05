@@ -2,6 +2,10 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { getMockDataDirectory } from './mock-data-directory';
 
+/**
+ *
+ * @param context
+ */
 export function addMockDataToGitIgnore(context) {
   const gitIgnoreFilePath = context.amplify.pathManager.getGitIgnoreFilePath();
   if (fs.existsSync(gitIgnoreFilePath)) {
@@ -9,7 +13,7 @@ export function addMockDataToGitIgnore(context) {
     const mockDataDirectory = path.relative(gitRoot, getMockDataDirectory(context)).replace(/\\/g, '/');
     let gitIgnoreContent = fs.readFileSync(gitIgnoreFilePath).toString();
     if (gitIgnoreContent.search(RegExp(`^\\s*${mockDataDirectory}\\w*$`, 'gm')) === -1) {
-      gitIgnoreContent += '\n' + mockDataDirectory;
+      gitIgnoreContent += `\n${mockDataDirectory}`;
       fs.writeFileSync(gitIgnoreFilePath, gitIgnoreContent);
     }
   }

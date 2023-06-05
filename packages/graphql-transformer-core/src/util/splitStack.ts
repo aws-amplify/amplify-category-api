@@ -3,11 +3,11 @@ import {
   Template,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Fn, CloudFormation, StringParameter } from 'cloudform-types';
+import Output from 'cloudform-types/types/output';
 import { getTemplateReferences } from './getTemplateReferences';
 import getIn from './getIn';
 import setIn from './setIn';
 import blankTemplate from './blankTemplate';
-import Output from 'cloudform-types/types/output';
 
 /**
  * Stack resources
@@ -17,7 +17,13 @@ interface NestedStackInfo {
   stackParameterMap: { [k: string]: { [p: string]: any } };
 }
 
+/**
+ *
+ */
 export type StackRules = Map<string, string>;
+/**
+ *
+ */
 export interface SplitStackOptions {
   stack: Template;
   stackRules: StackRules;
@@ -31,19 +37,24 @@ export interface SplitStackOptions {
     deploymentKeyParameterName: string;
   };
 }
+/**
+ *
+ * @param opts
+ */
 export default function splitStack(opts: SplitStackOptions): NestedStacks {
-  const stack = opts.stack;
-  const stackRules = opts.stackRules;
+  const { stack } = opts;
+  const { stackRules } = opts;
   const rootStackName = opts.rootStackName || 'root';
   const defaultParameterValues = opts.defaultParameterValues || {};
   const defaultParameterDefinitions = opts.defaultParameterDefinitions || {};
   const defaultDependencies = opts.defaultDependencies || [];
-  const importExportPrefix = opts.importExportPrefix;
+  const { importExportPrefix } = opts;
 
   /**
    * Returns a map where the keys are the Resource/Output ids and the values are
    * the names of the stack where that Resource/Output belongs. This fills
    * any missing values with that of the root stack and thus returns a full-mapping.
+   * @param keys
    */
   function createMapByStackRules(keys: string[]): { [key: string]: string } {
     const stackMap = {};
@@ -61,6 +72,7 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
   /**
    * Returns a map where the keys are the resource ids and the values are the
    * names of the stack where that resource belongs.
+   * @param template
    */
   function mapResourcesToStack(template: Template): { [key: string]: string } {
     return createMapByStackRules(Object.keys(template.Resources));
@@ -73,6 +85,7 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
   /**
    * Returns a map where the keys are the Outputs ids and the values are the
    * names of the stack where that Output belongs.
+   * @param template
    */
   function mapOutputsToStack(template: Template): { [key: string]: string } {
     return createMapByStackRules(Object.keys(template.Outputs));
@@ -80,12 +93,13 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
 
   /**
    * Uses the stackRules to split resources out into the different stacks.
+   * @param template
    */
   function collectTemplates(
     template: Template,
     resourceToStackMap: { [k: string]: string },
     outputToStackMap: { [k: string]: string },
-    mappingsToStackMap: { [k: string]: string }
+    mappingsToStackMap: { [k: string]: string },
   ) {
     const resourceIds = Object.keys(resourceToStackMap);
     const templateMap = {};
@@ -103,11 +117,9 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
       }
       const resource = template.Resources[resourceId];
       // Remove any dependsOn that will no longer be in the same template.
-      let depends: string | string[] = resource.DependsOn as any;
+      const depends: string | string[] = resource.DependsOn as any;
       if (depends && Array.isArray(depends)) {
-        resource.DependsOn = depends.filter(id => {
-          return resourceToStackMap[id] === stackName;
-        });
+        resource.DependsOn = depends.filter((id) => resourceToStackMap[id] === stackName);
       } else if (depends && typeof depends === 'string') {
         resource.DependsOn = resourceToStackMap[depends] === stackName ? depends : undefined;
       }
@@ -183,7 +195,7 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
               }
               referencedStack.Outputs[exportLogicalId] = outputForInput;
             }
-            if (stackDependsOnMap[thisStackName] && !stackDependsOnMap[thisStackName].find(s => s === referencedStackName)) {
+            if (stackDependsOnMap[thisStackName] && !stackDependsOnMap[thisStackName].find((s) => s === referencedStackName)) {
               stackDependsOnMap[thisStackName].push(referencedStackName);
             }
           } else if (getAttNeedsReplacing && isChildReferencingRoot) {
@@ -213,7 +225,7 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
               }
               referencedStack.Outputs[exportLogicalId] = outputForInput;
             }
-            if (stackDependsOnMap[thisStackName] && !stackDependsOnMap[thisStackName].find(s => s === referencedStackName)) {
+            if (stackDependsOnMap[thisStackName] && !stackDependsOnMap[thisStackName].find((s) => s === referencedStackName)) {
               stackDependsOnMap[thisStackName].push(referencedStackName);
             }
           }
@@ -228,6 +240,7 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
 
   /**
    * Create an import value node that replaces a Ref.
+   * @param resourceId
    */
   function makeImportValueForRef(resourceId: string): any {
     return Fn.ImportValue(Fn.Join(':', [importExportPrefix, 'Ref', resourceId]));
@@ -275,6 +288,7 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
    * reference as a parameter.
    * @param root The root stack
    * @param stacks The list of stacks keyed by filename.
+   * @param stackInfo
    */
   function updateRootWithNestedStacks(root: Template, stacks: { [key: string]: Template }, stackInfo: NestedStackInfo) {
     const stackFileNames = Object.keys(stacks);
@@ -285,14 +299,14 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
         ...acc,
         [name]: Fn.Ref(name),
       }),
-      defaultParameterValues
+      defaultParameterValues,
     );
     // Also forward the API id of the top level API.
     // allParamValues[ResourceConstants.RESOURCES.GraphQLAPILogicalID] = Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
     for (const stackName of stackFileNames) {
       const dependsOnStacks = stackInfo.stackDependencyMap[stackName] || [];
       const extraParams = stackInfo.stackParameterMap[stackName] || {};
-      let stackResource = new CloudFormation.Stack({
+      const stackResource = new CloudFormation.Stack({
         Parameters: {
           ...allParamValues,
           ...extraParams,
@@ -302,7 +316,7 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
           Fn.Ref(opts.deployment.deploymentBucketParameterName),
           Fn.Ref(opts.deployment.deploymentKeyParameterName),
           'stacks',
-          stackName + '.json',
+          `${stackName}.json`,
         ]),
       }).dependsOn([...defaultDependencies, ...dependsOnStacks]);
       root.Resources[stackName] = stackResource;

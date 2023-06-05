@@ -17,6 +17,9 @@ import { GitHubSourceActionInfo, PipelineWithAwaiter } from './pipeline-with-awa
 
 const PIPELINE_AWAITER_ZIP = 'custom-resource-pipeline-awaiter.zip';
 
+/**
+ *
+ */
 export enum DEPLOYMENT_MECHANISM {
   /**
    * on every amplify push.
@@ -32,6 +35,9 @@ export enum DEPLOYMENT_MECHANISM {
   SELF_MANAGED = 'SELF_MANAGED',
 }
 
+/**
+ *
+ */
 export type ContainersStackProps = Readonly<{
   skipWait?: boolean;
   categoryName: string;
@@ -56,6 +62,9 @@ export type ContainersStackProps = Readonly<{
   existingEcrRepositories: Set<string>;
   currentStackName: string;
 }>;
+/**
+ *
+ */
 export abstract class ContainersStack extends cdk.Stack {
   protected readonly vpcId: string;
   private readonly vpcCidrBlock: string;
@@ -111,7 +120,9 @@ export abstract class ContainersStack extends cdk.Stack {
     this.envName = envName;
     this.deploymentBucketName = deploymentBucketName;
     this.awaiterS3Key = awaiterS3Key;
-    const { service, serviceSecurityGroup, containersInfo, cloudMapService } = this.ecs();
+    const {
+      service, serviceSecurityGroup, containersInfo, cloudMapService,
+    } = this.ecs();
 
     this.cloudMapService = cloudMapService;
     this.ecsService = service;
@@ -122,7 +133,7 @@ export abstract class ContainersStack extends cdk.Stack {
     const { pipelineWithAwaiter } = this.pipeline({
       skipWait,
       service,
-      containersInfo: containersInfo.filter(container => container.repository),
+      containersInfo: containersInfo.filter((container) => container.repository),
       gitHubSourceActionInfo,
     });
 
@@ -171,7 +182,7 @@ export abstract class ContainersStack extends cdk.Stack {
     };
 
     dependsOn.forEach(({ category, resourceName, attributes }) => {
-      attributes.forEach(attrib => {
+      attributes.forEach((attrib) => {
         const paramName = [category, resourceName, attrib].join('');
 
         const type = paramTypes[paramName] ?? 'String';
@@ -247,7 +258,7 @@ export abstract class ContainersStack extends cdk.Stack {
       createCloudMapService,
     } = this.props;
 
-    let cloudMapService: cloudmap.CfnService = undefined;
+    let cloudMapService: cloudmap.CfnService;
 
     if (createCloudMapService) {
       cloudMapService = new cloudmap.CfnService(this, 'CloudmapService', {
@@ -272,7 +283,7 @@ export abstract class ContainersStack extends cdk.Stack {
       family: `${this.envName}-${apiName}`,
     });
     (task.node.defaultChild as ecs.CfnTaskDefinition).overrideLogicalId('TaskDefinition');
-    policies.forEach(policy => {
+    policies.forEach((policy) => {
       const statement = isPolicyStatement(policy) ? policy : wrapJsonPoliciesInCdkPolicies(policy);
 
       task.addToTaskRolePolicy(statement);
@@ -305,13 +316,12 @@ export abstract class ContainersStack extends cdk.Stack {
 
         const { logDriver, options: { 'awslogs-stream-prefix': streamPrefix } = {} } = logConfiguration;
 
-        const logging: ecs.LogDriver =
-          logDriver === 'awslogs'
-            ? ecs.LogDriver.awsLogs({
-                streamPrefix,
-                logGroup: logs.LogGroup.fromLogGroupName(this, `${name}logGroup`, logGroup.logGroupName),
-              })
-            : undefined;
+        const logging: ecs.LogDriver = logDriver === 'awslogs'
+          ? ecs.LogDriver.awsLogs({
+            streamPrefix,
+            logGroup: logs.LogGroup.fromLogGroupName(this, `${name}logGroup`, logGroup.logGroupName),
+          })
+          : undefined;
 
         let repository: ecr.IRepository;
         if (build) {
@@ -402,7 +412,7 @@ export abstract class ContainersStack extends cdk.Stack {
           ipProtocol: '-1',
         },
       ],
-      securityGroupIngress: taskPorts.map(servicePort => ({
+      securityGroupIngress: taskPorts.map((servicePort) => ({
         ipProtocol: 'tcp',
         fromPort: servicePort,
         toPort: servicePort,
@@ -410,7 +420,7 @@ export abstract class ContainersStack extends cdk.Stack {
       })),
     });
 
-    let serviceRegistries: ecs.CfnService.ServiceRegistryProperty[] = undefined;
+    let serviceRegistries: ecs.CfnService.ServiceRegistryProperty[];
 
     if (cloudMapService) {
       serviceRegistries = [
@@ -431,7 +441,7 @@ export abstract class ContainersStack extends cdk.Stack {
         awsvpcConfiguration: {
           assignPublicIp: 'ENABLED',
           securityGroups: [serviceSecurityGroup.attrGroupId],
-          subnets: <string[]>this.subnets,
+          subnets: <string[]> this.subnets,
         },
       },
       taskDefinition: task.taskDefinitionArn,
@@ -495,6 +505,10 @@ export abstract class ContainersStack extends cdk.Stack {
     return this.pipelineWithAwaiter.getPipelineName();
   }
 
+  /**
+   *
+   * @param region
+   */
   getPipelineConsoleUrl(region: string) {
     const pipelineName = this.getPipelineName();
     return `https://${region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${pipelineName}/view`;
@@ -516,12 +530,15 @@ export abstract class ContainersStack extends cdk.Stack {
     return assembly.getStackArtifact(this.artifactId).template;
   }
 
+  /**
+   *
+   */
   toCloudFormation() {
     this.node
       .findAll()
-      .filter(construct => construct instanceof CfnFunction)
-      .map(construct => construct as CfnFunction)
-      .forEach(lambdaFunction => {
+      .filter((construct) => construct instanceof CfnFunction)
+      .map((construct) => construct as CfnFunction)
+      .forEach((lambdaFunction) => {
         if (lambdaFunction.logicalId.includes('AwaiterMyProvider')) {
           lambdaFunction.code = {
             s3Bucket: this.deploymentBucketName,
@@ -532,7 +549,7 @@ export abstract class ContainersStack extends cdk.Stack {
 
     const cfn = this.renderCfnTemplate();
 
-    Object.keys(cfn.Parameters).forEach(k => {
+    Object.keys(cfn.Parameters).forEach((k) => {
       if (k.startsWith('AssetParameters')) {
         delete cfn.Parameters[k];
       }

@@ -11,6 +11,12 @@ import { plurality, toLower, toUpper } from 'graphql-transformer-common';
 import pluralize from 'pluralize';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
 
+/**
+ *
+ * @param config
+ * @param ctx
+ * @param op
+ */
 export function lookupResolverName(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, op: string): string | null {
   const { object, modelDirective } = config;
   const argName = op === 'get' || op === 'list' || op === 'sync' ? 'queries' : 'mutations';
@@ -48,6 +54,10 @@ export function lookupResolverName(config: PrimaryKeyDirectiveConfiguration, ctx
   return resolverName;
 }
 
+/**
+ *
+ * @param config
+ */
 export function validateNotSelfReferencing(config: IndexDirectiveConfiguration | PrimaryKeyDirectiveConfiguration) {
   const { directive, field, sortKeyFields } = config;
   const fieldName = field.name.value;
@@ -61,6 +71,10 @@ export function validateNotSelfReferencing(config: IndexDirectiveConfiguration |
 
 /**
  * Checks if @auth owner field has been set to a sortKeyField for @primaryKey
+ * @param sortKeyField
+ * @param root0
+ * @param root0.object
+ * @param ctx
  */
 export const validateNotOwnerAuth = (
   sortKeyField: string,
@@ -72,7 +86,7 @@ export const validateNotOwnerAuth = (
 
   if (!authDir || !featureFlagEnabled) return true;
 
-  const authDirRules = (authDir.arguments?.find(arg => arg.name.value === 'rules')?.value as ListValueNode | undefined)?.values || [];
+  const authDirRules = (authDir.arguments?.find((arg) => arg.name.value === 'rules')?.value as ListValueNode | undefined)?.values || [];
 
   return !authDirRules.map(ownerFieldsFromOwnerRule).includes(sortKeyField);
 };
@@ -85,7 +99,7 @@ const ownerFieldsFromOwnerRule = (rule: ValueNode): string => {
     identityClaim: 'sub::username', // default identity claim
   };
 
-  ((rule as ObjectValueNode).fields || []).forEach(field => {
+  ((rule as ObjectValueNode).fields || []).forEach((field) => {
     const name: string = field.name.value;
     const value: string = (field?.value as StringValueNode | undefined)?.value || '';
 
@@ -97,12 +111,16 @@ const ownerFieldsFromOwnerRule = (rule: ValueNode): string => {
   }
 
   return '';
-}
+};
 
 /*
  * Accepts a model and field name, and potentially empty list of sortKeyFields to generate a unique index name.
  * e.g. modelName = Employee, fieldName = manager, sortKeyFields = [level]
  * will generate a name like employeeByManagerAndLevel.
+ */
+/**
+ *
+ * @param config
  */
 export const generateKeyAndQueryNameForConfig = (config: IndexDirectiveConfiguration): string => {
   const modelName = config.object.name.value;

@@ -2,10 +2,12 @@ import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import { GraphQLClient } from './utils/graphql-client';
-import { deploy, launchDDBLocal, terminateDDB, logDebug } from './utils/index';
+import {
+  deploy, launchDDBLocal, terminateDDB, logDebug,
+} from './utils/index';
 
-let GRAPHQL_ENDPOINT = undefined;
-let GRAPHQL_CLIENT = undefined;
+let GRAPHQL_ENDPOINT;
+let GRAPHQL_CLIENT;
 let ddbEmulator = null;
 let dbPath = null;
 let server;
@@ -60,7 +62,7 @@ beforeAll(async () => {
         }),
       ],
       featureFlags: {
-        getBoolean: name => (name === 'improvePluralization' ? true : false),
+        getBoolean: (name) => (name === 'improvePluralization'),
       } as FeatureFlagProvider,
     });
     const out = await transformer.transform(validSchema);
@@ -69,10 +71,10 @@ beforeAll(async () => {
     const result = await deploy(out, ddbClient);
     server = result.simulator;
 
-    GRAPHQL_ENDPOINT = server.url + '/graphql';
+    GRAPHQL_ENDPOINT = `${server.url}/graphql`;
     logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
-    const apiKey = result.config.appSync.apiKey;
+    const { apiKey } = result.config.appSync;
     logDebug(apiKey);
     GRAPHQL_CLIENT = new GraphQLClient(GRAPHQL_ENDPOINT, {
       'x-api-key': apiKey,
@@ -108,7 +110,7 @@ afterEach(async () => {
     );
     const rows = response.data.listPosts.items || [];
     const deletePromises = [];
-    rows.forEach(row => {
+    rows.forEach((row) => {
       deletePromises.push(
         GRAPHQL_CLIENT.query(`mutation delete{
       deletePost(input: {id: "${row.id}"}) { id }
@@ -124,7 +126,7 @@ afterEach(async () => {
 /**
  * Test queries below
  */
-test('Test createAuthor mutation', async () => {
+test('createAuthor mutation', async () => {
   try {
     const response = await GRAPHQL_CLIENT.query(
       `mutation($input: CreateAuthorInput!) {
@@ -157,7 +159,7 @@ test('Test createAuthor mutation', async () => {
   }
 });
 
-test('Test createPost mutation', async () => {
+test('createPost mutation', async () => {
   try {
     const response = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -181,7 +183,7 @@ test('Test createPost mutation', async () => {
   }
 });
 
-test('Test query on get query with null field', async () => {
+test('query on get query with null field', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `
     mutation {
@@ -217,7 +219,7 @@ test('Test query on get query with null field', async () => {
   }
 });
 
-test('Test updatePost mutation', async () => {
+test('updatePost mutation', async () => {
   try {
     const createResponse = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -251,7 +253,7 @@ test('Test updatePost mutation', async () => {
   }
 });
 
-test('Test createPost and updatePost mutation with a client generated id.', async () => {
+test('createPost and updatePost mutation with a client generated id.', async () => {
   try {
     const clientId = 'a-client-side-generated-id';
     const createResponse = await GRAPHQL_CLIENT.query(
@@ -324,7 +326,7 @@ test('Test createPost and updatePost mutation with a client generated id.', asyn
   }
 });
 
-test('Test deletePost mutation', async () => {
+test('deletePost mutation', async () => {
   try {
     const createResponse = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -369,7 +371,7 @@ test('Test deletePost mutation', async () => {
   }
 });
 
-test('Test getPost query', async () => {
+test('getPost query', async () => {
   try {
     const createResponse = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -401,7 +403,7 @@ test('Test getPost query', async () => {
   }
 });
 
-test('Test listPosts query', async () => {
+test('listPosts query', async () => {
   try {
     const createResponse = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -428,7 +430,7 @@ test('Test listPosts query', async () => {
       {},
     );
     expect(listResponse.data.listPosts.items).toBeDefined();
-    const items = listResponse.data.listPosts.items;
+    const { items } = listResponse.data.listPosts;
     expect(items.length).toBeGreaterThan(0);
   } catch (e) {
     logDebug(e);
@@ -437,7 +439,7 @@ test('Test listPosts query', async () => {
   }
 });
 
-test('Test listPosts query with filter', async () => {
+test('listPosts query with filter', async () => {
   try {
     const createResponse = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -469,7 +471,7 @@ test('Test listPosts query with filter', async () => {
     );
     logDebug(JSON.stringify(listWithFilterResponse, null, 4));
     expect(listWithFilterResponse.data.listPosts.items).toBeDefined();
-    const items = listWithFilterResponse.data.listPosts.items;
+    const { items } = listWithFilterResponse.data.listPosts;
     expect(items.length).toEqual(1);
     expect(items[0].title).toEqual('Test List with filter');
   } catch (e) {
@@ -479,7 +481,7 @@ test('Test listPosts query with filter', async () => {
   }
 });
 
-test('Test enum filters List', async () => {
+test('enum filters List', async () => {
   try {
     await GRAPHQL_CLIENT.query(
       `mutation {
@@ -541,7 +543,7 @@ test('Test enum filters List', async () => {
       {},
     );
     expect(appearsInWithFilterResponseJedi.data.listPosts.items).toBeDefined();
-    const items = appearsInWithFilterResponseJedi.data.listPosts.items;
+    const { items } = appearsInWithFilterResponseJedi.data.listPosts;
     logDebug(items);
     expect(items.length).toEqual(1);
     expect(items[0].title).toEqual('Appears in Jedi');
@@ -562,7 +564,7 @@ test('Test enum filters List', async () => {
     expect(appearsInWithFilterResponseNonJedi.data.listPosts.items).toBeDefined();
     const appearsInNonJediItems = appearsInWithFilterResponseNonJedi.data.listPosts.items;
     expect(appearsInNonJediItems.length).toEqual(3);
-    appearsInNonJediItems.forEach(item => {
+    appearsInNonJediItems.forEach((item) => {
       expect(['Appears in Empire & JEDI', 'Appears in New Hope', 'Appears in Empire'].includes(item.title)).toBeTruthy();
     });
 
@@ -581,7 +583,7 @@ test('Test enum filters List', async () => {
     expect(appearsInContainingJedi.data.listPosts.items).toBeDefined();
     const appearsInWithJediItems = appearsInContainingJedi.data.listPosts.items;
     expect(appearsInWithJediItems.length).toEqual(2);
-    appearsInWithJediItems.forEach(item => {
+    appearsInWithJediItems.forEach((item) => {
       expect(['Appears in Empire & JEDI', 'Appears in Jedi'].includes(item.title)).toBeTruthy();
     });
 
@@ -600,7 +602,7 @@ test('Test enum filters List', async () => {
     expect(appearsInNotContainingJedi.data.listPosts.items).toBeDefined();
     const appearsInWithNonJediItems = appearsInNotContainingJedi.data.listPosts.items;
     expect(appearsInWithNonJediItems.length).toEqual(2);
-    appearsInWithNonJediItems.forEach(item => {
+    appearsInWithNonJediItems.forEach((item) => {
       expect(['Appears in New Hope', 'Appears in Empire'].includes(item.title)).toBeTruthy();
     });
 
@@ -637,7 +639,7 @@ test('Test enum filters List', async () => {
     expect(nonJediEpisode.data.listPosts.items).toBeDefined();
     const nonJediEpisodeItems = nonJediEpisode.data.listPosts.items;
     expect(nonJediEpisodeItems.length).toEqual(3);
-    nonJediEpisodeItems.forEach(item => {
+    nonJediEpisodeItems.forEach((item) => {
       expect(['Appears in New Hope', 'Appears in Empire', 'Appears in Empire & JEDI'].includes(item.title)).toBeTruthy();
     });
   } catch (e) {
@@ -647,7 +649,7 @@ test('Test enum filters List', async () => {
   }
 });
 
-test('Test createPost mutation with non-model types', async () => {
+test('createPost mutation with non-model types', async () => {
   try {
     const response = await GRAPHQL_CLIENT.query(
       `mutation CreatePost($input: CreatePostInput!) {
@@ -701,7 +703,7 @@ test('Test createPost mutation with non-model types', async () => {
   }
 });
 
-test('Test updatePost mutation with non-model types', async () => {
+test('updatePost mutation with non-model types', async () => {
   try {
     const createResponse = await GRAPHQL_CLIENT.query(
       `mutation {

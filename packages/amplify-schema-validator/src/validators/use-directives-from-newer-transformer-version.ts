@@ -14,6 +14,11 @@ import { transformerValidationErrors } from '../helpers/transformer-validation';
  */
 
 const GRAPHQL_TRANSFORMER_V2_DIRECTIVES = ['hasOne', 'index', 'primaryKey', 'belongsTo', 'manyToMany', 'hasMany', 'default'];
+/**
+ *
+ * @param schema
+ * @param props
+ */
 export const validateDirectivesFromNewerTransformerVersionAreNotUsed = (
   schema: DocumentNode, props: ValidateSchemaProps,
 ): Error[] => {

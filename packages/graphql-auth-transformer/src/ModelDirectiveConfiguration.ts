@@ -1,22 +1,34 @@
 import { getDirectiveArguments } from 'graphql-transformer-core';
 import { graphqlName, toUpper, plurality } from 'graphql-transformer-common';
-import { ModelQuery, ModelMutation } from './AuthRule';
 import { DirectiveNode, ObjectTypeDefinitionNode } from 'graphql';
+import { ModelQuery, ModelMutation } from './AuthRule';
 
+/**
+ *
+ */
 export interface QueryNameMap {
   get?: string;
   list?: string;
   query?: string;
 }
 
+/**
+ *
+ */
 export interface MutationNameMap {
   create?: string;
   update?: string;
   delete?: string;
 }
 
+/**
+ *
+ */
 export type ModelSubscriptionLevel = 'off' | 'public' | 'on';
 
+/**
+ *
+ */
 export interface SubscriptionNameMap {
   onCreate?: string[];
   onUpdate?: string[];
@@ -24,12 +36,18 @@ export interface SubscriptionNameMap {
   level?: ModelSubscriptionLevel;
 }
 
+/**
+ *
+ */
 export interface ModelDirectiveArgs {
   queries?: QueryNameMap;
   mutations?: MutationNameMap;
   subscriptions?: SubscriptionNameMap;
 }
 
+/**
+ *
+ */
 export type ModelDirectiveOperationType = ModelQuery | ModelMutation | 'onCreate' | 'onUpdate' | 'onDelete' | 'level';
 
 type ModelDirectiveOperation = {
@@ -38,6 +56,9 @@ type ModelDirectiveOperation = {
   names?: string[];
 };
 
+/**
+ *
+ */
 export class ModelDirectiveConfiguration {
   map: Map<ModelDirectiveOperationType, ModelDirectiveOperation> = new Map();
 
@@ -45,10 +66,7 @@ export class ModelDirectiveConfiguration {
     const typeName = def.name.value;
     const directiveArguments: ModelDirectiveArgs = getDirectiveArguments(directive);
 
-    const makeName = (operation: ModelDirectiveOperationType, nameOverride?: string, isList: boolean = false) =>
-      nameOverride
-        ? nameOverride
-        : graphqlName(operation + (isList ? plurality(toUpper(typeName), improvePluralization) : toUpper(typeName)));
+    const makeName = (operation: ModelDirectiveOperationType, nameOverride?: string, isList = false) => (nameOverride || graphqlName(operation + (isList ? plurality(toUpper(typeName), improvePluralization) : toUpper(typeName))));
 
     let shouldHaveCreate = true;
     let shouldHaveUpdate = true;
@@ -58,15 +76,15 @@ export class ModelDirectiveConfiguration {
     let shouldHaveOnCreate = true;
     let shouldHaveOnUpdate = true;
     let shouldHaveOnDelete = true;
-    let shouldHaveLevel = true;
+    const shouldHaveLevel = true;
     let createName: string;
     let updateName: string;
     let deleteName: string;
     let getName: string;
     let listName: string;
-    let onCreateNames: string[] = [];
-    let onUpdateNames: string[] = [];
-    let onDeleteNames: string[] = [];
+    const onCreateNames: string[] = [];
+    const onUpdateNames: string[] = [];
+    const onDeleteNames: string[] = [];
     let level: ModelSubscriptionLevel = 'on';
 
     // Figure out which mutations to make and if they have name overrides
@@ -119,7 +137,7 @@ export class ModelDirectiveConfiguration {
       listName = makeName('list', null, true);
     }
 
-    const subscriptions = directiveArguments.subscriptions;
+    const { subscriptions } = directiveArguments;
     if (subscriptions === null) {
       shouldHaveOnCreate = false;
       shouldHaveOnUpdate = false;
@@ -129,21 +147,21 @@ export class ModelDirectiveConfiguration {
       if (!directiveArguments.subscriptions.onCreate) {
         shouldHaveOnCreate = false;
       } else {
-        directiveArguments.subscriptions.onCreate.forEach(name => {
+        directiveArguments.subscriptions.onCreate.forEach((name) => {
           onCreateNames.push(makeName('onCreate', name));
         });
       }
       if (!directiveArguments.subscriptions.onUpdate) {
         shouldHaveOnUpdate = false;
       } else {
-        directiveArguments.subscriptions.onUpdate.forEach(name => {
+        directiveArguments.subscriptions.onUpdate.forEach((name) => {
           onUpdateNames.push(makeName('onUpdate', name));
         });
       }
       if (!directiveArguments.subscriptions.onDelete) {
         shouldHaveOnDelete = false;
       } else {
-        directiveArguments.subscriptions.onDelete.forEach(name => {
+        directiveArguments.subscriptions.onDelete.forEach((name) => {
           onDeleteNames.push(makeName('onDelete', name));
         });
       }
@@ -174,10 +192,18 @@ export class ModelDirectiveConfiguration {
     this.map.set('level', { shouldHave: shouldHaveLevel, name: level });
   }
 
+  /**
+   *
+   * @param op
+   */
   public shouldHave(op: ModelDirectiveOperationType): boolean {
     return this.map.get(op).shouldHave;
   }
 
+  /**
+   *
+   * @param op
+   */
   public getName(op: ModelDirectiveOperationType): string | undefined {
     const { shouldHave, name } = this.map.get(op);
 
@@ -186,6 +212,10 @@ export class ModelDirectiveConfiguration {
     }
   }
 
+  /**
+   *
+   * @param op
+   */
   public getNames(op: ModelDirectiveOperationType): string[] | undefined {
     const { shouldHave, names } = this.map.get(op);
 

@@ -8,12 +8,12 @@ import { v4 as uuid } from 'uuid';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { gt } from 'semver';
 
-export * from './configure/';
-export * from './init/';
-export * from './utils/';
+export * from './configure';
+export * from './init';
+export * from './utils';
 export * from './categories';
 export * from './utils/sdk-calls';
-export * from './export/';
+export * from './export';
 export { addFeatureFlag } from './utils/feature-flags';
 export * from './cli-version-controller';
 
@@ -27,24 +27,36 @@ declare global {
 
 const amplifyTestsDir = 'amplify-e2e-tests';
 
+/**
+ *
+ * @param testingWithLatestCodebase
+ */
 export function getCLIPath(testingWithLatestCodebase = false) {
   if (!testingWithLatestCodebase) {
     if (process.env.AMPLIFY_PATH && fs.existsSync(process.env.AMPLIFY_PATH)) {
-      console.log("Resolving CLI path to AMPLIFY_PATH:", process.env.AMPLIFY_PATH);
+      console.log('Resolving CLI path to AMPLIFY_PATH:', process.env.AMPLIFY_PATH);
       return process.env.AMPLIFY_PATH;
     }
-    console.log("Resolving CLI path to present executable:", process.platform === 'win32' ? 'amplify.exe' : 'amplify');
+    console.log('Resolving CLI path to present executable:', process.platform === 'win32' ? 'amplify.exe' : 'amplify');
     return process.platform === 'win32' ? 'amplify.exe' : 'amplify';
   }
   const amplifyScriptPath = path.join(__dirname, '..', '..', '..', 'node_modules', 'amplify-cli-internal', 'bin', 'amplify');
-  console.log("Resolving CLI Path to source code:", amplifyScriptPath);
+  console.log('Resolving CLI Path to source code:', amplifyScriptPath);
   return amplifyScriptPath;
 }
 
+/**
+ *
+ * @param scriptRunnerPath
+ */
 export function isTestingWithLatestCodebase(scriptRunnerPath) {
   return scriptRunnerPath === process.execPath;
 }
 
+/**
+ *
+ * @param testingWithLatestCodebase
+ */
 export function getScriptRunnerPath(testingWithLatestCodebase = false) {
   if (!testingWithLatestCodebase) {
     return process.platform === 'win32' ? 'node.exe' : 'exec';
@@ -54,6 +66,9 @@ export function getScriptRunnerPath(testingWithLatestCodebase = false) {
   return process.execPath;
 }
 
+/**
+ *
+ */
 export function getNpxPath() {
   let npxPath = 'npx';
   if (process.platform === 'win32') {
@@ -62,6 +77,9 @@ export function getNpxPath() {
   return npxPath;
 }
 
+/**
+ *
+ */
 export function getNpmPath() {
   let npmPath = 'npm';
   if (process.platform === 'win32') {
@@ -70,10 +88,17 @@ export function getNpmPath() {
   return npmPath;
 }
 
+/**
+ *
+ */
 export function isCI(): boolean {
-  return process.env.CI && process.env.CIRCLECI ? true : false;
+  return !!(process.env.CI && process.env.CIRCLECI);
 }
 
+/**
+ *
+ * @param profileName
+ */
 export function injectSessionToken(profileName: string) {
   const credentialsContents = ini.parse(fs.readFileSync(pathManager.getAWSCredentialsFilePath()).toString());
   credentialsContents[profileName] = credentialsContents[profileName] || {};
@@ -81,31 +106,44 @@ export function injectSessionToken(profileName: string) {
   fs.writeFileSync(pathManager.getAWSCredentialsFilePath(), ini.stringify(credentialsContents));
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function npmInstall(cwd: string) {
   spawnSync('npm', ['install'], { cwd });
 }
 
-export async function installAmplifyCLI(version: string = 'latest') {
+/**
+ *
+ * @param version
+ */
+export async function installAmplifyCLI(version = 'latest') {
   spawnSync('npm', ['install', '-g', `@aws-amplify/cli@${version}`], {
     cwd: process.cwd(),
     env: process.env,
     stdio: 'inherit',
   });
-  
-  console.log("SETTING PATH:");
-  if(gt(version, '10.0.0')){
+
+  console.log('SETTING PATH:');
+  if (gt(version, '10.0.0')) {
     process.env.AMPLIFY_PATH = process.platform === 'win32'
-    ? path.join(os.homedir(), '.amplify', 'bin', 'amplify')
-    : path.join(os.homedir(), '.amplify', 'bin', 'amplify');
+      ? path.join(os.homedir(), '.amplify', 'bin', 'amplify')
+      : path.join(os.homedir(), '.amplify', 'bin', 'amplify');
   } else {
     process.env.AMPLIFY_PATH = process.platform === 'win32'
-    ? path.join(os.homedir(), '..', '..', 'Program` Files', 'nodejs', 'node_modules', '@aws-amplify', 'cli', 'bin', 'amplify')
-    : path.join(os.homedir(), '.npm-global', 'bin', 'amplify');
+      ? path.join(os.homedir(), '..', '..', 'Program` Files', 'nodejs', 'node_modules', '@aws-amplify', 'cli', 'bin', 'amplify')
+      : path.join(os.homedir(), '.npm-global', 'bin', 'amplify');
   }
-  
-  console.log("PATH SET:", process.env.AMPLIFY_PATH);
+
+  console.log('PATH SET:', process.env.AMPLIFY_PATH);
 }
 
+/**
+ *
+ * @param projectName
+ * @param prefix
+ */
 export async function createNewProjectDir(
   projectName: string,
   prefix = path.join(fs.realpathSync(os.tmpdir()), amplifyTestsDir),
@@ -122,6 +160,9 @@ export async function createNewProjectDir(
   return projectDir;
 }
 
+/**
+ *
+ */
 export const createTempDir = () => {
   const osTempDir = fs.realpathSync(os.tmpdir());
   const tempProjectDir = path.join(osTempDir, amplifyTestsDir, uuid());

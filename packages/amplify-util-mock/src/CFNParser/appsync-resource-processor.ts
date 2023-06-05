@@ -19,14 +19,20 @@ const CFN_DEFAULT_PARAMS = {
 
 const RESOLVER_TEMPLATE_LOCATION_PREFIX = 's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/';
 
+/**
+ *
+ * @param resources
+ * @param transformResult
+ * @param appSyncConfig
+ */
 export function processApiResources(
   resources: Record<string, { Type: string; result: any }>,
   transformResult: any,
   appSyncConfig: AmplifyAppSyncSimulatorConfig,
 ): void {
-  Object.values(resources).forEach(resource => {
+  Object.values(resources).forEach((resource) => {
     const { Type: resourceType } = resource;
-    const result: any = resource.result;
+    const { result } = resource;
 
     switch (resourceType) {
       case 'AWS::AppSync::DataSource':
@@ -76,6 +82,11 @@ export function processApiResources(
     }
   });
 }
+/**
+ *
+ * @param resources
+ * @param transformResult
+ */
 export function processCloudFormationResults(resources, transformResult) {
   const processedResources: AmplifyAppSyncSimulatorConfig = {
     schema: {
@@ -112,6 +123,11 @@ export function processCloudFormationResults(resources, transformResult) {
 
   return processedResources;
 }
+/**
+ *
+ * @param transformResult
+ * @param params
+ */
 export function processTransformerStacks(transformResult, params = {}): AmplifyAppSyncSimulatorConfig {
   registerAppSyncResourceProcessor();
   registerIAMResourceProcessor();

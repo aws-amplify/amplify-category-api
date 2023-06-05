@@ -13,10 +13,15 @@ import {
 import { prompter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import { join } from 'path';
-import { ApigwInputs, ApigwStackTransform, CrudOperation, Path, PermissionSetting } from './cdk-stack-builder';
+import {
+  ApigwInputs, ApigwStackTransform, CrudOperation, Path, PermissionSetting,
+} from './cdk-stack-builder';
 import { convertDeperecatedRestApiPaths } from './convert-deprecated-apigw-paths';
 import { ApigwWalkthroughReturnPromise } from './service-walkthrough-types/apigw-types';
 
+/**
+ *
+ */
 export class ApigwInputState {
   projectRootPath: string;
   resourceName: string;
@@ -131,14 +136,24 @@ export class ApigwInputState {
     await this.createApigwArtifacts();
   };
 
+  /**
+   *
+   */
   public cliInputsFileExists() {
     return stateManager.resourceInputsJsonExists(this.projectRootPath, AmplifyCategories.API, this.resourceName);
   }
 
+  /**
+   *
+   */
   public getCliInputPayload() {
     return stateManager.getResourceInputsJson(this.projectRootPath, AmplifyCategories.API, this.resourceName);
   }
 
+  /**
+   *
+   * @param cliInputs
+   */
   public isCLIInputsValid(cliInputs?: ApigwInputs) {
     if (!cliInputs) {
       cliInputs = this.getCliInputPayload();
@@ -169,6 +184,9 @@ export class ApigwInputState {
   }
 }
 
+/**
+ *
+ */
 export type AdminQueriesProps = {
   apiName: string;
   functionName: string;

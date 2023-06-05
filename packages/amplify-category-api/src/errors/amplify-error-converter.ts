@@ -37,5 +37,5 @@ export abstract class AmplifyGraphQLTransformerErrorConverter {
       );
     }
     return error;
-  }
+  };
 }

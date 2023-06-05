@@ -16,8 +16,18 @@ export const SLOT_NAMES = new Set([
 
 const EXCLUDE_FILES = new Set(['README.md']);
 
+/**
+ *
+ * @param userDefinedTemplates
+ */
 export function parseUserDefinedSlots(userDefinedTemplates: Record<string, string>): Record<string, UserDefinedSlot[]> {
+  /**
+   *
+   */
   type ResolverKey = string;
+  /**
+   *
+   */
   type ResolverOrder = number;
   const groupedResolversMap: Record<ResolverKey, Record<ResolverOrder, UserDefinedSlot>> = {};
 

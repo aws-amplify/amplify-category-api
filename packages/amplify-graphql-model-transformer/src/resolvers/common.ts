@@ -14,6 +14,7 @@ import {
 const API_KEY = 'API Key Authorization';
 /**
  * Util function to generate sandbox mode expression
+ * @param enabled
  */
 export const generateAuthExpressionForSandboxMode = (enabled: boolean): string => {
   let exp;
@@ -31,6 +32,4 @@ export const generateAuthExpressionForSandboxMode = (enabled: boolean): string =
  * @param typeName Name of the type
  * @param fieldName Name of the field
  */
-export const generateResolverKey = (typeName: string, fieldName: string): string => {
-  return `${typeName}.${fieldName}`;
-};
+export const generateResolverKey = (typeName: string, fieldName: string): string => `${typeName}.${fieldName}`;

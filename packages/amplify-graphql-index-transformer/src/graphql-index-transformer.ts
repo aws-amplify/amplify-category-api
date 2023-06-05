@@ -19,7 +19,9 @@ import {
   ObjectTypeDefinitionNode,
 } from 'graphql';
 import { isListType, isScalarOrEnum } from 'graphql-transformer-common';
-import { appendSecondaryIndex, constructSyncVTL, updateResolversForIndex, getDeltaSyncTableTtl } from './resolvers';
+import {
+  appendSecondaryIndex, constructSyncVTL, updateResolversForIndex, getDeltaSyncTableTtl,
+} from './resolvers';
 import { addKeyConditionInputs, ensureQueryField, updateMutationConditionInput } from './schema';
 import { IndexDirectiveConfiguration } from './types';
 import { generateKeyAndQueryNameForConfig, validateNotSelfReferencing } from './utils';
@@ -100,6 +102,7 @@ export class IndexTransformer extends TransformerPluginBase {
 /**
  * Return the name if provided in our args, else
  * compute the name based on the field name, and sortKeyFields.
+ * @param config
  */
 const getOrGenerateDefaultName = (config: IndexDirectiveConfiguration): string => {
   if (config.name) {
@@ -116,6 +119,8 @@ const getOrGenerateDefaultName = (config: IndexDirectiveConfiguration): string =
 /**
  * Return the queryField if provided in our args, else
  * compute the queryField based on the field name, and sortKeyFields if the feature flag is enabled.
+ * @param context
+ * @param config
  */
 const getOrGenerateDefaultQueryField = (
   context: TransformerSchemaVisitStepContextProvider,
@@ -138,6 +143,7 @@ const getOrGenerateDefaultQueryField = (
  * sortKeyFields are optional so default to empty list,
  * if we get a raw object just wrap in an array,
  * else return the list which was provided correctly.
+ * @param config
  */
 const getOrGenerateDefaultSortKeyFields = (config: IndexDirectiveConfiguration): string[] => {
   if (!config.sortKeyFields) {
@@ -157,7 +163,7 @@ const validate = (config: IndexDirectiveConfiguration, ctx: TransformerContextPr
 
   validateNotSelfReferencing(config);
 
-  const modelDirective = object.directives!.find(directive => directive.name.value === 'model');
+  const modelDirective = object.directives!.find((directive) => directive.name.value === 'model');
 
   if (!modelDirective) {
     throw new InvalidDirectiveError(`The @${directiveName} directive may only be added to object definitions annotated with @model.`);

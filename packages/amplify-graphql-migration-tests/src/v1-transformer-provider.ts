@@ -8,6 +8,10 @@ import { GraphQLTransform } from 'graphql-transformer-core';
 import { featureFlagProviderStub } from './feature-flag-stub';
 import { V1TransformerTestConfig } from './test-case-types';
 
+/**
+ *
+ * @param config
+ */
 export const v1transformerProvider = (config: Partial<V1TransformerTestConfig> = {}): GraphQLTransform => {
   const subbedConfig: V1TransformerTestConfig = { ...getDefaultConfig(), ...config };
 

@@ -14,18 +14,18 @@ export const resolveFieldTypeName = (type: TypeNode): string => {
     case 'NonNullType': {
       if (type.type.kind === 'NamedType') {
         return type.type.name.value;
-      } else if (type.type.kind === 'ListType') {
-          if (type.type.type.kind === 'NamedType') {
-            return type.type.type.name.value;
-          } if (type.type.type.kind === 'NonNullType') {
-            return (type.type.type.type as NamedTypeNode).name.value;
-          } throw new Error(`Unknown type ${type}`);
+      } if (type.type.kind === 'ListType') {
+        if (type.type.type.kind === 'NamedType') {
+          return type.type.type.name.value;
+        } if (type.type.type.kind === 'NonNullType') {
+          return (type.type.type.type as NamedTypeNode).name.value;
+        } throw new Error(`Unknown type ${type}`);
       } throw new Error(`Unknown type ${type}`);
     }
     case 'ListType': {
       if (type.type.kind === 'NamedType') {
         return type.type.name.value;
-      } else if (type.type.kind === 'NonNullType') {
+      } if (type.type.kind === 'NonNullType') {
         return (type.type.type as NamedTypeNode).name.value;
       } throw new Error(`Unknown type ${type}`);
     }

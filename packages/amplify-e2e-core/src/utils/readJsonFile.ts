@@ -7,6 +7,11 @@ function stripBOM(content: string) {
   return content;
 }
 
+/**
+ *
+ * @param jsonFilePath
+ * @param encoding
+ */
 export function readJsonFile(jsonFilePath, encoding: BufferEncoding = 'utf8') {
   return JSON.parse(stripBOM(fs.readFileSync(jsonFilePath, encoding)));
 }

@@ -1,17 +1,23 @@
-import { APICategory } from '.';
 import _ from 'lodash';
 import path from 'path';
+import { APICategory } from '.';
 
-const getParameterNameForDBSecret = (secret: string, secretsKey: string): string => {
-  return `${secretsKey}_${secret}`;
-};
+const getParameterNameForDBSecret = (secret: string, secretsKey: string): string => `${secretsKey}_${secret}`;
 
 /* This adheres to the following convention:
   /amplify/<appId>/<envName>/AMPLIFY_${categoryName}${resourceName}${paramName}
   where paramName is secretsKey_<secretName>
 */
+/**
+ *
+ * @param secret
+ * @param secretsKey
+ * @param apiName
+ * @param environmentName
+ * @param appId
+ */
 export const getParameterStoreSecretPath = (secret: string, secretsKey:string, apiName: string, environmentName: string, appId: string): string => {
-  if(_.isEmpty(appId)) {
+  if (_.isEmpty(appId)) {
     throw new Error('Unable to read the App ID');
   }
   const categoryName = APICategory;

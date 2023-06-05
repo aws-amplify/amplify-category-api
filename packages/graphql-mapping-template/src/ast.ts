@@ -7,6 +7,12 @@ export interface IfNode {
   expr: Expression;
   inline: boolean;
 }
+/**
+ *
+ * @param predicate
+ * @param expr
+ * @param inline
+ */
 export function iff(predicate: Expression, expr: Expression, inline?: boolean): IfNode {
   return {
     kind: 'If',
@@ -26,6 +32,13 @@ export interface IfElseNode {
   elseExpr: Expression;
   inline: boolean;
 }
+/**
+ *
+ * @param predicate
+ * @param ifExpr
+ * @param elseExpr
+ * @param inline
+ */
 export function ifElse(predicate: Expression, ifExpr: Expression, elseExpr: Expression, inline?: boolean): IfElseNode {
   return {
     kind: 'IfElse',
@@ -43,6 +56,10 @@ export interface AndNode {
   kind: 'And';
   expressions: Expression[];
 }
+/**
+ *
+ * @param expressions
+ */
 export function and(expressions: Expression[]): AndNode {
   return {
     kind: 'And',
@@ -57,6 +74,10 @@ export interface OrNode {
   kind: 'Or';
   expressions: Expression[];
 }
+/**
+ *
+ * @param expressions
+ */
 export function or(expressions: Expression[]): OrNode {
   return {
     kind: 'Or',
@@ -64,13 +85,20 @@ export function or(expressions: Expression[]): OrNode {
   };
 }
 
-/**Node
+/** Node
  * WrapsNodeNode an expression in (...) for order of operations.
+ */
+/**
+ *
  */
 export interface ParensNode {
   kind: 'Parens';
   expr: Expression;
 }
+/**
+ *
+ * @param expr
+ */
 export function parens(expr: Expression): ParensNode {
   return {
     kind: 'Parens',
@@ -86,6 +114,11 @@ export interface EqualsNode {
   leftExpr: Expression;
   rightExpr: Expression;
 }
+/**
+ *
+ * @param leftExpr
+ * @param rightExpr
+ */
 export function equals(leftExpr: Expression, rightExpr: Expression): EqualsNode {
   return {
     kind: 'Equals',
@@ -102,6 +135,11 @@ export interface NotEqualsNode {
   leftExpr: Expression;
   rightExpr: Expression;
 }
+/**
+ *
+ * @param leftExpr
+ * @param rightExpr
+ */
 export function notEquals(leftExpr: Expression, rightExpr: Expression): NotEqualsNode {
   return {
     kind: 'NotEquals',
@@ -117,6 +155,10 @@ export interface NotNode {
   kind: 'Not';
   expr: Expression;
 }
+/**
+ *
+ * @param expr
+ */
 export function not(expr: Expression): NotNode {
   return {
     kind: 'Not',
@@ -131,6 +173,10 @@ export interface ReturnNode {
   kind: 'Return';
   value: Expression;
 }
+/**
+ *
+ * @param value
+ */
 export function ret(value?: Expression): ReturnNode {
   return {
     kind: 'Return',
@@ -147,6 +193,12 @@ export interface ForEachNode {
   collection: ReferenceNode;
   expressions: Expression[];
 }
+/**
+ *
+ * @param key
+ * @param collection
+ * @param expressions
+ */
 export function forEach(key: ReferenceNode, collection: ReferenceNode, expressions: Expression[]): ForEachNode {
   return {
     kind: 'ForEach',
@@ -163,6 +215,10 @@ export interface StringNode {
   kind: 'String';
   value: string;
 }
+/**
+ *
+ * @param value
+ */
 export function str(value: string): StringNode {
   return {
     kind: 'String',
@@ -177,6 +233,10 @@ export interface RawNode {
   kind: 'Raw';
   value: string;
 }
+/**
+ *
+ * @param value
+ */
 export function raw(value: string): RawNode {
   return {
     kind: 'Raw',
@@ -191,6 +251,10 @@ export interface QuotesNode {
   kind: 'Quotes';
   expr: Expression;
 }
+/**
+ *
+ * @param expr
+ */
 export function quotes(expr: Expression): QuotesNode {
   return {
     kind: 'Quotes',
@@ -205,6 +269,10 @@ export interface FloatNode {
   kind: 'Float';
   value: number;
 }
+/**
+ *
+ * @param value
+ */
 export function float(value: number): FloatNode {
   return {
     kind: 'Float',
@@ -219,6 +287,10 @@ export interface IntNode {
   kind: 'Int';
   value: number;
 }
+/**
+ *
+ * @param value
+ */
 export function int(value: number): IntNode {
   return {
     kind: 'Int',
@@ -233,6 +305,10 @@ export interface BooleanNode {
   kind: 'Boolean';
   value: boolean;
 }
+/**
+ *
+ * @param value
+ */
 export function bool(value: boolean): BooleanNode {
   return {
     kind: 'Boolean',
@@ -246,6 +322,9 @@ export function bool(value: boolean): BooleanNode {
 export interface NullNode {
   kind: 'Null';
 }
+/**
+ *
+ */
 export function nul(): NullNode {
   return {
     kind: 'Null',
@@ -260,6 +339,10 @@ export interface ReferenceNode {
   kind: 'Reference';
   value: string;
 }
+/**
+ *
+ * @param value
+ */
 export function ref(value: string): ReferenceNode {
   return {
     kind: 'Reference',
@@ -275,6 +358,10 @@ export interface QuietReferenceNode {
   kind: 'QuietReference';
   value: string|Expression;
 }
+/**
+ *
+ * @param value
+ */
 export function qref(value: string| Expression): QuietReferenceNode {
   return {
     kind: 'QuietReference',
@@ -290,6 +377,9 @@ export interface ObjectNode {
   attributes: [string, Expression][];
 }
 // TODO: This can also take a plain object. What is easier in practice?
+/**
+ *
+ */
 export function obj(o: { [key: string]: Expression }): ObjectNode {
   const attributes = Object.keys(o).map((key: string) => [key, o[key]] as [string, Expression]);
   return {
@@ -305,6 +395,10 @@ export interface ListNode {
   kind: 'List';
   expressions: Expression[];
 }
+/**
+ *
+ * @param expressions
+ */
 export function list(expressions: Expression[]): ListNode {
   return {
     kind: 'List',
@@ -320,6 +414,11 @@ export interface SetNode {
   key: ReferenceNode;
   value: Expression;
 }
+/**
+ *
+ * @param key
+ * @param value
+ */
 export function set(key: ReferenceNode, value: Expression): SetNode {
   return {
     kind: 'Set',
@@ -328,10 +427,17 @@ export function set(key: ReferenceNode, value: Expression): SetNode {
   };
 }
 
+/**
+ *
+ */
 export interface CommentNode {
   kind: 'Comment';
   text: string;
 }
+/**
+ *
+ * @param text
+ */
 export function comment(text: string): CommentNode {
   return {
     kind: 'Comment',
@@ -339,6 +445,9 @@ export function comment(text: string): CommentNode {
   };
 }
 
+/**
+ *
+ */
 export interface CompoundExpressionNode {
   kind: 'CompoundExpression';
   expressions: Expression[];
@@ -347,19 +456,32 @@ export interface CompoundExpressionNode {
   // Useful to set to false if concatenating a compound espression on a single line
   recurseIndent: boolean;
 }
-export function compoundExpression(expressions: Expression[], joiner: string = `\n`, recurseIndent = true): CompoundExpressionNode {
+/**
+ *
+ * @param expressions
+ * @param joiner
+ * @param recurseIndent
+ */
+export function compoundExpression(expressions: Expression[], joiner = '\n', recurseIndent = true): CompoundExpressionNode {
   return {
     kind: 'CompoundExpression',
     expressions,
     joiner,
-    recurseIndent: recurseIndent,
+    recurseIndent,
   };
 }
 
+/**
+ *
+ */
 export type ToJsonNode = {
   kind: 'Util.ToJson';
   expr: Expression;
 };
+/**
+ *
+ * @param expr
+ */
 export function toJson(expr: Expression): ToJsonNode {
   return {
     kind: 'Util.ToJson',
@@ -367,31 +489,54 @@ export function toJson(expr: Expression): ToJsonNode {
   };
 }
 
+/**
+ *
+ */
 export type IsNullOrEmptyNode = {
   kind: 'Util.isNullOrEmpty';
   expr: Expression;
 };
 
+/**
+ *
+ * @param expr
+ */
 export function isNullOrEmpty(expr: Expression): IsNullOrEmptyNode {
   return {
     kind: 'Util.isNullOrEmpty',
     expr,
-  }
+  };
 }
 
+/**
+ *
+ */
 export type NewLineNode = {
   kind: 'NewLine';
 };
+/**
+ *
+ */
 export function newline(): NewLineNode {
   return {
     kind: 'NewLine',
   };
 }
 
+/**
+ *
+ * @param name
+ * @param exprs
+ */
 export function block(name: string, exprs: Expression[]): CompoundExpressionNode {
   return compoundExpression([comment(`[Start] ${name}`), ...exprs, comment(`[End] ${name}`)]);
 }
 
+/**
+ *
+ * @param methodName
+ * @param {...any} params
+ */
 export function methodCall(methodName: ReferenceNode, ...params: Expression[]): CompoundExpressionNode {
   return compoundExpression([methodName, parens(compoundExpression(params, ', '))], '', false);
 }

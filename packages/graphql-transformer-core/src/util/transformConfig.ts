@@ -1,17 +1,21 @@
 import * as path from 'path';
 import { Template } from 'cloudform-types';
-import { throwIfNotJSONExt } from './fileUtils';
-import { ProjectOptions } from './amplifyUtils';
-const fs = require('fs-extra');
 import _ from 'lodash';
 import { parse, Kind, ObjectTypeDefinitionNode } from 'graphql';
+import { throwIfNotJSONExt } from './fileUtils';
+import { ProjectOptions } from './amplifyUtils';
 import { ApiCategorySchemaNotFoundError } from '../errors';
 
-export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
+const fs = require('fs-extra');
+
+export const TRANSFORM_CONFIG_FILE_NAME = 'transform.conf.json';
 export const TRANSFORM_BASE_VERSION = 4;
 export const TRANSFORM_CURRENT_VERSION = 5;
 const MODEL_DIRECTIVE_NAME = 'model';
 
+/**
+ *
+ */
 export interface TransformMigrationConfig {
   V1?: {
     Resources: string[];
@@ -19,20 +23,35 @@ export interface TransformMigrationConfig {
 }
 
 // Sync Config
+/**
+ *
+ */
 export const enum ConflictHandlerType {
   OPTIMISTIC = 'OPTIMISTIC_CONCURRENCY',
   AUTOMERGE = 'AUTOMERGE',
   LAMBDA = 'LAMBDA',
 }
+/**
+ *
+ */
 export type ConflictDetectionType = 'VERSION' | 'NONE';
+/**
+ *
+ */
 export type SyncConfigOPTIMISTIC = {
   ConflictDetection: ConflictDetectionType;
   ConflictHandler: ConflictHandlerType.OPTIMISTIC;
 };
+/**
+ *
+ */
 export type SyncConfigSERVER = {
   ConflictDetection: ConflictDetectionType;
   ConflictHandler: ConflictHandlerType.AUTOMERGE;
 };
+/**
+ *
+ */
 export type SyncConfigLAMBDA = {
   ConflictDetection: ConflictDetectionType;
   ConflictHandler: ConflictHandlerType.LAMBDA;
@@ -42,8 +61,14 @@ export type SyncConfigLAMBDA = {
     lambdaArn?: any;
   };
 };
+/**
+ *
+ */
 export type SyncConfig = SyncConfigOPTIMISTIC | SyncConfigSERVER | SyncConfigLAMBDA;
 
+/**
+ *
+ */
 export type ResolverConfig = {
   project?: SyncConfig;
   models?: {
@@ -115,6 +140,10 @@ export interface TransformConfig {
  * if it does not exist then we return a blank object
  *  */
 
+/**
+ *
+ * @param projectDir
+ */
 export async function loadConfig(projectDir: string): Promise<TransformConfig> {
   // Initialize the config always with the latest version, other members are optional for now.
   let config = {
@@ -133,12 +162,21 @@ export async function loadConfig(projectDir: string): Promise<TransformConfig> {
   }
 }
 
+/**
+ *
+ * @param projectDir
+ * @param config
+ */
 export async function writeConfig(projectDir: string, config: TransformConfig): Promise<TransformConfig> {
   const configFilePath = path.join(projectDir, TRANSFORM_CONFIG_FILE_NAME);
   await fs.writeFile(configFilePath, JSON.stringify(config, null, 4));
   return config;
 }
 
+/**
+ *
+ * @param projectDir
+ */
 export const isDataStoreEnabled = async (projectDir: string): Promise<boolean> => {
   const transformerConfig = await loadConfig(projectDir);
   return transformerConfig?.ResolverConfig?.project !== undefined || transformerConfig?.ResolverConfig?.models !== undefined;
@@ -165,6 +203,11 @@ interface ProjectConfiguration {
   config: TransformConfig;
   modelToDatasourceMap: Map<string, DatasourceType>;
 }
+/**
+ *
+ * @param projectDirectory
+ * @param opts
+ */
 export async function loadProject(projectDirectory: string, opts?: ProjectOptions): Promise<ProjectConfiguration> {
   // Schema
   const { schema, modelToDatasourceMap } = await readSchema(projectDirectory);
@@ -264,26 +307,26 @@ export async function readSchema(projectDirectory: string): Promise<{schema: str
   let modelToDatasourceMap = new Map<string, DatasourceType>();
   const schemaFilePaths = [
     path.join(projectDirectory, 'schema.graphql'),
-    path.join(projectDirectory, 'schema.rds.graphql')
+    path.join(projectDirectory, 'schema.rds.graphql'),
   ];
 
-  const existingSchemaFiles = schemaFilePaths.filter( path => fs.existsSync(path));
+  const existingSchemaFiles = schemaFilePaths.filter((path) => fs.existsSync(path));
   const schemaDirectoryPath = path.join(projectDirectory, 'schema');
 
-  let schema = "";
+  let schema = '';
   if (!(_.isEmpty(existingSchemaFiles))) {
     // Schema.graphql contains the models for DynamoDB datasource
-    // Schema.rds.graphql contains the models for imported 'MySQL' datasource 
-    // Intentionally using 'for ... of ...' instead of 'object.foreach' to process this in sequence 
+    // Schema.rds.graphql contains the models for imported 'MySQL' datasource
+    // Intentionally using 'for ... of ...' instead of 'object.foreach' to process this in sequence
     for (const file of existingSchemaFiles) {
-      const datasourceType = file.endsWith('.rds.graphql') ? constructDataSourceType("MySQL", false) : constructDataSourceType("DDB");
+      const datasourceType = file.endsWith('.rds.graphql') ? constructDataSourceType('MySQL', false) : constructDataSourceType('DDB');
       const fileSchema = (await fs.readFile(file)).toString();
       modelToDatasourceMap = new Map([...modelToDatasourceMap.entries(), ...constructDataSourceMap(fileSchema, datasourceType).entries()]);
       schema += fileSchema;
     }
   } else if (fs.existsSync(schemaDirectoryPath)) {
     // Schema folder is used only for DynamoDB datasource
-    const datasourceType = constructDataSourceType("DDB");
+    const datasourceType = constructDataSourceType('DDB');
     const schemaInDirectory = (await readSchemaDocuments(schemaDirectoryPath)).join('\n');
     modelToDatasourceMap = new Map([...modelToDatasourceMap.entries(), ...constructDataSourceMap(schemaInDirectory, datasourceType).entries()]);
     schema += schemaInDirectory;
@@ -317,26 +360,32 @@ async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[
   return schemaDocuments;
 }
 
+/**
+ *
+ */
 export type DBType = 'MySQL' | 'DDB';
 
+/**
+ *
+ */
 export interface DatasourceType {
   dbType: DBType;
   provisionDB: boolean;
 }
 
-function constructDataSourceType(dbType: DBType, provisionDB: boolean = true): DatasourceType {
+function constructDataSourceType(dbType: DBType, provisionDB = true): DatasourceType {
   return {
     dbType,
     provisionDB,
-  }
+  };
 }
 
 function constructDataSourceMap(schema: string, datasourceType: DatasourceType): Map<string, DatasourceType> {
   const parsedSchema = parse(schema);
   const result = new Map<string, DatasourceType>();
   parsedSchema.definitions
-    .filter(obj => obj.kind === Kind.OBJECT_TYPE_DEFINITION && obj.directives.some(dir => dir.name.value === MODEL_DIRECTIVE_NAME))
-    .forEach(type => {
+    .filter((obj) => obj.kind === Kind.OBJECT_TYPE_DEFINITION && obj.directives.some((dir) => dir.name.value === MODEL_DIRECTIVE_NAME))
+    .forEach((type) => {
       result.set(
         (type as ObjectTypeDefinitionNode).name.value,
         datasourceType,

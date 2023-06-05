@@ -15,6 +15,11 @@ import { ValidateSchemaProps } from '../helpers/schema-validator-props';
  * @returns true if models do not refer each other with @hasMany/@hasOne relation when dataStore is enabled
  */
 
+/**
+ *
+ * @param schema
+ * @param props
+ */
 export const validateBelongsToIsUsedWhenDatastoreInUse = (
   schema: DocumentNode, props: ValidateSchemaProps,
 ): Error[] => {

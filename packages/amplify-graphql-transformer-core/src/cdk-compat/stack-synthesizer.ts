@@ -18,6 +18,8 @@ export class TransformerStackSythesizer extends LegacyStackSynthesizer {
    * synthesizeStackTemplate
    *
    * This method has been deprecated by cdk and is not used in runtime.
+   * @param stack
+   * @param session
    * @deprecated Replaced by synthesizeTemplate.
    */
   protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): void {
@@ -50,6 +52,8 @@ export class TransformerStackSythesizer extends LegacyStackSynthesizer {
 
   /**
    * setStackAsset
+   * @param templateName
+   * @param template
    */
   setStackAsset(templateName: string, template: string): void {
     this.stackAssets.set(templateName, JSON.parse(template));
@@ -64,6 +68,8 @@ export class TransformerStackSythesizer extends LegacyStackSynthesizer {
 
   /**
    * setMappingTemplates
+   * @param templateName
+   * @param template
    */
   setMappingTemplates(templateName: string, template: string): void {
     this.mapingTemplateAssets.set(templateName, template);
@@ -78,6 +84,7 @@ export class TransformerStackSythesizer extends LegacyStackSynthesizer {
 
   /**
    * addFileAsset
+   * @param asset
    */
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     const bucketName = this.deploymentBucket.valueAsString;
@@ -131,6 +138,7 @@ export class TransformerStackSythesizer extends LegacyStackSynthesizer {
 
 /**
  * assertNotNull
+ * @param x
  */
 export function assertNotNull<A>(x: A | undefined): asserts x is NonNullable<A> {
   if (x === null && x === undefined) {

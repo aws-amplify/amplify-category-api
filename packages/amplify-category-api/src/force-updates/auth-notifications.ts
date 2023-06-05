@@ -60,6 +60,8 @@ const loadResolvers = async (apiResourceDirectory: string): Promise<Record<strin
 
 /**
  * checks if we should display auth notification
+ * @param directiveMap
+ * @param fieldDirectives
  */
 export const displayAuthNotification = (directiveMap: any, fieldDirectives: Set<string>): boolean => {
   const usesTransformerV2 = FeatureFlags.getNumber('graphqltransformer.transformerVersion') === 2;
@@ -84,6 +86,7 @@ export const displayAuthNotification = (directiveMap: any, fieldDirectives: Set<
 
 /**
  * checks if the schema has the auth directives
+ * @param doc
  */
 export const hasFieldAuthDirectives = (doc: DocumentNode): Set<string> => {
   const haveFieldAuthDir: Set<string> = new Set();
@@ -105,6 +108,7 @@ export const hasFieldAuthDirectives = (doc: DocumentNode): Set<string> => {
 
 /**
  * security notification
+ * @param context
  */
 export const notifyFieldAuthSecurityChange = async (context: $TSContext): Promise<boolean> => {
   const flagName = 'showFieldAuthNotification';
@@ -146,6 +150,7 @@ export const notifyFieldAuthSecurityChange = async (context: $TSContext): Promis
 
 /**
  * checks if the schema has the V2 auth directives
+ * @param doc
  */
 const hasV2AuthDirectives = (doc: DocumentNode): boolean => {
   let containsAuthDir = false;
@@ -162,6 +167,7 @@ const hasV2AuthDirectives = (doc: DocumentNode): boolean => {
 
 /**
  * security notification
+ * @param context
  */
 export const notifyListQuerySecurityChange = async (context: $TSContext): Promise<boolean> => {
   const apiResourceDir = await getApiResourceDir();
@@ -205,6 +211,7 @@ export const notifyListQuerySecurityChange = async (context: $TSContext): Promis
 
 /**
  * Checks for security enhancements in the schema and displays a warning if they are found.
+ * @param context
  */
 export const notifySecurityEnhancement = async (context: $TSContext): Promise<void> => {
   if (FeatureFlags.getBoolean('graphqltransformer.securityEnhancementNotification')) {

@@ -25,6 +25,7 @@ import { generateConditionSlot } from './common';
 /**
  * Generates VTL template in update mutation
  * @param modelName Name of the model
+ * @param isSyncEnabled
  */
 export const generateUpdateRequestTemplate = (modelName: string, isSyncEnabled: boolean): string => {
   const objectKeyVariable = 'ctx.stash.metadata.modelObjectKey';
@@ -145,12 +146,13 @@ export const generateUpdateRequestTemplate = (modelName: string, isSyncEnabled: 
     ),
     toJson(ref('UpdateItem')),
   ];
-  return printBlock(`Mutation Update resolver`)(compoundExpression(statements));
+  return printBlock('Mutation Update resolver')(compoundExpression(statements));
 };
 
 /**
  * Generates VTL template in create mutation
  * @param modelName Name of the model
+ * @param modelIndexFields
  */
 export const generateCreateRequestTemplate = (modelName: string, modelIndexFields: string[]): string => {
   const statements: Expression[] = [
@@ -165,7 +167,7 @@ export const generateCreateRequestTemplate = (modelName: string, modelIndexField
 
     ...(modelIndexFields.length ? [
       set(ref('nullIndexFields'), list([])),
-      set(ref('indexFields'), list(modelIndexFields.map(it => str(it)))),
+      set(ref('indexFields'), list(modelIndexFields.map((it) => str(it)))),
 
       forEach(ref('entry'), ref('util.map.copyAndRetainAllKeys($mergedValues, $indexFields).entrySet()'), [
         iff(raw('$util.isNull($entry.value)'), qref(methodCall(ref('nullIndexFields.add'), ref('entry.key')))),
@@ -255,6 +257,8 @@ export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
 /**
  * Generates VTL template in delete mutation
  *
+ * @param modelName
+ * @param isSyncEnabled
  */
 export const generateDeleteRequestTemplate = (modelName:string, isSyncEnabled: boolean): string => {
   const statements: Expression[] = [
@@ -327,6 +331,7 @@ export const generateUpdateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
 
 /**
  * generateApplyDefaultsToInputTemplate
+ * @param target
  */
 export const generateApplyDefaultsToInputTemplate = (target: string): Expression => compoundExpression([
   set(ref(target), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),

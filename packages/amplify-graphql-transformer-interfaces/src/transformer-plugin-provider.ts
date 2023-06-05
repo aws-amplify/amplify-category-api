@@ -23,6 +23,9 @@ import {
 import { TransformerPreProcessContextProvider } from './transformer-context';
 import { TransformerLog } from './transformer-log';
 
+/**
+ *
+ */
 export enum TransformerPluginType {
   DATA_SOURCE_PROVIDER = 'DATA_SOURCE_PROVIDER',
   DATA_SOURCE_ENHANCER = 'DATA_SOURCE_ENHANCER',
@@ -30,6 +33,9 @@ export enum TransformerPluginType {
   AUTH = 'AUTH',
 }
 
+/**
+ *
+ */
 export interface TransformerPluginProvider {
   pluginType: TransformerPluginType;
 

@@ -19,8 +19,6 @@ import {
   OperationTypeDefinitionNode,
   InterfaceTypeDefinitionNode,
 } from 'graphql';
-import blankTemplate from './util/blankTemplate';
-import DefaultSchemaDefinition from './defaultSchema';
 import {
   InterfaceTypeExtensionNode,
   UnionTypeExtensionNode,
@@ -30,9 +28,15 @@ import {
   InputObjectTypeExtensionNode,
   InputValueDefinitionNode,
 } from 'graphql/language/ast';
-import { ResolverConfig } from './util';
 import { makeOperationType } from 'graphql-transformer-common';
+import blankTemplate from './util/blankTemplate';
+import DefaultSchemaDefinition from './defaultSchema';
+import { ResolverConfig } from './util';
 import { FeatureFlagProvider } from './FeatureFlags';
+
+/**
+ *
+ */
 export interface MappingParameters {
   [key: string]: {
     [key: string]: {
@@ -41,6 +45,10 @@ export interface MappingParameters {
   };
 }
 
+/**
+ *
+ * @param name
+ */
 export function blankObject(name: string): ObjectTypeDefinitionNode {
   return {
     kind: 'ObjectTypeDefinition',
@@ -54,6 +62,11 @@ export function blankObject(name: string): ObjectTypeDefinitionNode {
   };
 }
 
+/**
+ *
+ * @param name
+ * @param fields
+ */
 export function objectExtension(name: string, fields: FieldDefinitionNode[] = []): ObjectTypeExtensionNode {
   return {
     kind: Kind.OBJECT_TYPE_EXTENSION,
@@ -67,20 +80,36 @@ export function objectExtension(name: string, fields: FieldDefinitionNode[] = []
   };
 }
 
+/**
+ *
+ */
 export class TransformerContextMetadata {
   /**
    * Used by transformers to pass information between one another.
    */
   private metadata: { [key: string]: any } = {};
 
+  /**
+   *
+   * @param key
+   */
   public get(key: string): any {
     return this.metadata[key];
   }
 
+  /**
+   *
+   * @param key
+   * @param val
+   */
   public set(key: string, val: any): void {
     return (this.metadata[key] = val);
   }
 
+  /**
+   *
+   * @param key
+   */
   public has(key: string) {
     return Boolean(this.metadata[key] !== undefined);
   }
@@ -112,7 +141,7 @@ export class TransformerContext {
 
   private resolverConfig: ResolverConfig;
 
-  private transformerVersion: Number;
+  private transformerVersion: number;
 
   constructor(inputSDL: string, public readonly featureFlags: FeatureFlagProvider) {
     const isInputSDLEmpty = inputSDL.trim().length === 0;
@@ -220,6 +249,9 @@ export class TransformerContext {
     return typeDefs;
   }
 
+  /**
+   *
+   */
   public mergeResources(resources: { [key: string]: Resource }) {
     for (const resourceId of Object.keys(resources)) {
       if (this.template.Resources[resourceId]) {
@@ -229,6 +261,9 @@ export class TransformerContext {
     this.template.Resources = { ...this.template.Resources, ...resources };
   }
 
+  /**
+   *
+   */
   public mergeParameters(params: { [key: string]: Parameter }) {
     for (const parameterName of Object.keys(params)) {
       if (this.template.Parameters[parameterName]) {
@@ -238,6 +273,9 @@ export class TransformerContext {
     this.template.Parameters = { ...this.template.Parameters, ...params };
   }
 
+  /**
+   *
+   */
   public mergeConditions(conditions: { [key: string]: Condition }) {
     if (!this.template.Conditions) {
       this.template.Conditions = {};
@@ -250,22 +288,43 @@ export class TransformerContext {
     this.template.Conditions = { ...this.template.Conditions, ...conditions };
   }
 
+  /**
+   *
+   * @param resource
+   */
   public getResource(resource: string): Resource {
     return this.template.Resources[resource];
   }
 
+  /**
+   *
+   * @param key
+   * @param resource
+   */
   public setResource(key: string, resource: Resource): void {
     this.template.Resources[key] = resource;
   }
 
+  /**
+   *
+   * @param key
+   * @param output
+   */
   public setOutput(key: string, output: Output): void {
     this.template.Outputs[key] = output;
   }
 
+  /**
+   *
+   * @param key
+   */
   public getOutput(key: string): Output {
     return this.template.Outputs[key];
   }
 
+  /**
+   *
+   */
   public mergeOutputs(outputs: { [key: string]: Output }) {
     for (const outputName of Object.keys(outputs)) {
       if (this.template.Parameters[outputName]) {
@@ -275,6 +334,10 @@ export class TransformerContext {
     this.template.Outputs = { ...this.template.Outputs, ...outputs };
   }
 
+  /**
+   *
+   * @param mapping
+   */
   public mergeMappings(mapping: MappingParameters) {
     for (const mappingName of Object.keys(mapping)) {
       if (this.template.Mappings[mappingName]) {
@@ -303,6 +366,9 @@ export class TransformerContext {
     return this.nodeMap.__schema as SchemaDefinitionNode;
   }
 
+  /**
+   *
+   */
   public getQueryTypeName(): string | undefined {
     const schemaNode = this.getSchema();
     const queryTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'query');
@@ -311,6 +377,9 @@ export class TransformerContext {
     }
   }
 
+  /**
+   *
+   */
   public getQuery(): ObjectTypeDefinitionNode | undefined {
     const queryTypeName = this.getQueryTypeName();
     if (queryTypeName) {
@@ -318,6 +387,9 @@ export class TransformerContext {
     }
   }
 
+  /**
+   *
+   */
   public getMutationTypeName(): string | undefined {
     const schemaNode = this.getSchema();
     const mutationTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'mutation');
@@ -326,6 +398,9 @@ export class TransformerContext {
     }
   }
 
+  /**
+   *
+   */
   public getMutation(): ObjectTypeDefinitionNode | undefined {
     const mutationTypeName = this.getMutationTypeName();
     if (mutationTypeName) {
@@ -333,6 +408,9 @@ export class TransformerContext {
     }
   }
 
+  /**
+   *
+   */
   public getSubscriptionTypeName(): string | undefined {
     const schemaNode = this.getSchema();
     const subscriptionTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'subscription');
@@ -341,6 +419,9 @@ export class TransformerContext {
     }
   }
 
+  /**
+   *
+   */
   public getSubscription(): ObjectTypeDefinitionNode | undefined {
     const subscriptionTypeName = this.getSubscriptionTypeName();
     if (subscriptionTypeName) {
@@ -359,10 +440,18 @@ export class TransformerContext {
     this.nodeMap[obj.name.value] = obj;
   }
 
+  /**
+   *
+   * @param obj
+   */
   public putType(obj: TypeDefinitionNode) {
     this.nodeMap[obj.name.value] = obj;
   }
 
+  /**
+   *
+   * @param name
+   */
   public getType(name: string): TypeSystemDefinitionNode | undefined {
     return this.nodeMap[name];
   }
@@ -379,6 +468,10 @@ export class TransformerContext {
     this.nodeMap[obj.name.value] = obj;
   }
 
+  /**
+   *
+   * @param obj
+   */
   public updateObject(obj: ObjectTypeDefinitionNode) {
     if (!this.nodeMap[obj.name.value]) {
       throw new Error(`Type ${obj.name.value} does not exist.`);
@@ -386,6 +479,10 @@ export class TransformerContext {
     this.nodeMap[obj.name.value] = obj;
   }
 
+  /**
+   *
+   * @param name
+   */
   public getObject(name: string): ObjectTypeDefinitionNode | undefined {
     if (this.nodeMap[name]) {
       const node = this.nodeMap[name];
@@ -407,7 +504,7 @@ export class TransformerContext {
       if (!this.getType(queryTypeName)) {
         this.addType(blankObject(queryTypeName));
       }
-      let queryType = objectExtension(queryTypeName, fields);
+      const queryType = objectExtension(queryTypeName, fields);
       this.addObjectExtension(queryType);
     }
   }
@@ -441,7 +538,7 @@ export class TransformerContext {
       if (!this.getType(mutationTypeName)) {
         this.addType(blankObject(mutationTypeName));
       }
-      let mutationType = objectExtension(mutationTypeName, fields);
+      const mutationType = objectExtension(mutationTypeName, fields);
       this.addObjectExtension(mutationType);
     }
   }
@@ -475,7 +572,7 @@ export class TransformerContext {
       if (!this.getType(subscriptionTypeName)) {
         this.addType(blankObject(subscriptionTypeName));
       }
-      let subscriptionType = objectExtension(subscriptionTypeName, fields);
+      const subscriptionType = objectExtension(subscriptionTypeName, fields);
       this.addObjectExtension(subscriptionType);
     }
   }
@@ -497,7 +594,7 @@ export class TransformerContext {
     // Filter out duplicate directives, do not add them
     if (obj.directives) {
       for (const newDir of obj.directives) {
-        if (Boolean(oldDirs.find(d => d.name.value === newDir.name.value)) === false) {
+        if (Boolean(oldDirs.find((d) => d.name.value === newDir.name.value)) === false) {
           newDirs.push(newDir);
         }
       }
@@ -739,32 +836,49 @@ export class TransformerContext {
     this.stackMapping.set(resource, stackName);
   }
 
+  /**
+   *
+   */
   public getStackMapping(): StackMapping {
     return this.stackMapping;
   }
 
   /**
    * Setter and getter the sync config
+   * @param resolverConfig
    */
   public setResolverConfig(resolverConfig: ResolverConfig) {
     if (this.resolverConfig) {
-      throw new Error(`Resolver Configuration has already been added to the context`);
+      throw new Error('Resolver Configuration has already been added to the context');
     }
     this.resolverConfig = resolverConfig;
   }
 
+  /**
+   *
+   */
   public getResolverConfig(): ResolverConfig {
     return this.resolverConfig;
   }
 
-  public setTransformerVersion(version: Number) {
+  /**
+   *
+   * @param version
+   */
+  public setTransformerVersion(version: number) {
     this.transformerVersion = version;
   }
 
-  public getTransformerVersion(): Number {
+  /**
+   *
+   */
+  public getTransformerVersion(): number {
     return this.transformerVersion;
   }
 
+  /**
+   *
+   */
   public isProjectUsingDataStore(): boolean {
     return this.resolverConfig && (typeof this.resolverConfig.project !== undefined || typeof this.resolverConfig.models !== undefined);
   }

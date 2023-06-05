@@ -15,8 +15,10 @@ const CFN_DEFAULT_CONDITIONS = {
  * Loads the necessary parameters for mocking a lambda function
  *
  * Locates and parses the CFN template for the function and injects environment variables
+ * @param context
  * @param resourceName The labmda resource to load
  * @param print The print object from context
+ * @param overrideApiToLocal
  */
 export const loadLambdaConfig = async (
   context: $TSContext,

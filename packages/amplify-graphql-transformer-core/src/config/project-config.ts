@@ -1,4 +1,8 @@
 import { TransformConfig } from './transformer-config';
+
+/**
+ *
+ */
 export type Template = {
   Parameters: Record<string, any>;
   Resources: Record<string, any>;
@@ -6,6 +10,9 @@ export type Template = {
   Conditions: Record<string, any>;
 };
 
+/**
+ *
+ */
 export interface TransformerProjectConfig {
   schema: string;
   functions: Record<string, string>;
@@ -16,8 +23,14 @@ export interface TransformerProjectConfig {
   modelToDatasourceMap: Map<string, DatasourceType>;
 }
 
+/**
+ *
+ */
 export type DBType = 'MySQL' | 'DDB';
 
+/**
+ *
+ */
 export interface DatasourceType {
   dbType: DBType;
   provisionDB: boolean;

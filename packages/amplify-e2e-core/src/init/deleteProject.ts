@@ -1,12 +1,20 @@
-import { nspawn as spawn, retry, getCLIPath, describeCloudFormationStack } from '..';
+import {
+  nspawn as spawn, retry, getCLIPath, describeCloudFormationStack,
+} from '..';
 import { getBackendAmplifyMeta } from '../utils';
 
+/**
+ *
+ * @param cwd
+ * @param profileConfig
+ * @param usingLatestCodebase
+ */
 export const deleteProject = async (cwd: string, profileConfig?: any, usingLatestCodebase = false): Promise<void> => {
   // Read the meta from backend otherwise it could fail on non-pushed, just initialized projects
   const { StackName: stackName, Region: region } = getBackendAmplifyMeta(cwd).providers.awscloudformation;
   await retry(
     () => describeCloudFormationStack(stackName, region, profileConfig),
-    stack => stack.StackStatus.endsWith('_COMPLETE') || stack.StackStatus.endsWith('_FAILED'),
+    (stack) => stack.StackStatus.endsWith('_COMPLETE') || stack.StackStatus.endsWith('_FAILED'),
   );
   const noOutputTimeout = 1000 * 60 * 20; // 20 minutes;
   return spawn(getCLIPath(usingLatestCodebase), ['delete', '--debug'], { cwd, stripColors: true, noOutputTimeout })

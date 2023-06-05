@@ -15,6 +15,10 @@ import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
  * @returns true if index exists in the related model
  */
 
+/**
+ *
+ * @param schema
+ */
 export const validateIndexExistsInRelatedModel = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(

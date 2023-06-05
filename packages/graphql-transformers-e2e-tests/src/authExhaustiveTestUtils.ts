@@ -42,6 +42,7 @@ export const AUTH_TEST_OPERATIONS: ModelOperation[] = ['create', 'get', 'list', 
 
 /**
  *
+ * @param key
  */
 export const outputValueSelector = (key: string): any => (outputs: Output[]) => {
   const output = outputs.find((o: Output) => o.OutputKey === key);
@@ -50,6 +51,13 @@ export const outputValueSelector = (key: string): any => (outputs: Output[]) => 
 
 /**
  *
+ * @param graphqlEndpoint
+ * @param strategy
+ * @param provider
+ * @param idToken
+ * @param accessToken
+ * @param apiKey
+ * @param validAuth
  */
 export const createGraphQLClient = async (
   graphqlEndpoint: string,
@@ -217,6 +225,16 @@ export const createGraphQLClient = async (
 
 /**
  *
+ * @param graphqlEndpoint
+ * @param modelName
+ * @param strategy
+ * @param provider
+ * @param operation
+ * @param idToken
+ * @param accessToken
+ * @param apiKey
+ * @param hasCustomPrimaryKey
+ * @param hasPartialAccess
  */
 export const testAuthResolver = async (
   graphqlEndpoint: string,
@@ -378,6 +396,11 @@ export const testAuthResolver = async (
 
 /**
  *
+ * @param authStrategy
+ * @param authProvider
+ * @param operation
+ * @param hasPartialAccess
+ * @param hasCustomPrimaryKey
  */
 export const generateTestModel = (
   authStrategy: AuthStrategy,
@@ -405,6 +428,9 @@ export const generateTestModel = (
 
 /**
  *
+ * @param region
+ * @param userPoolId
+ * @param userPoolClientId
  */
 export const generateAuthConfig = (
   region: string,
@@ -437,6 +463,13 @@ export const generateAuthConfig = (
 
 /**
  *
+ * @param schema
+ * @param stackName
+ * @param bucketName
+ * @param authRoleName
+ * @param unauthRoleName
+ * @param buildDir
+ * @param buildTimestamp
  */
 export const deploySchema = async (
   schema: string,
@@ -486,7 +519,6 @@ export const deploySchema = async (
       }),
       getNumber: jest.fn(),
       getObject: jest.fn(),
-     
 
     },
     transformers: [
@@ -513,7 +545,7 @@ export const deploySchema = async (
 
   // Wait for any propagation to avoid random
   // "The security token included in the request is invalid" errors
-  await new Promise<void>(res => setTimeout(() => res(), 5000));
+  await new Promise<void>((res) => setTimeout(() => res(), 5000));
 
   expect(finishedStack).toBeDefined();
   const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
@@ -552,6 +584,12 @@ export const deploySchema = async (
 
 /**
  *
+ * @param stackName
+ * @param bucketName
+ * @param authRoleName
+ * @param unauthRoleName
+ * @param userPoolId
+ * @param identityPoolId
  */
 export const cleanupAuthExhaustiveTest = async (
   stackName: string,
@@ -582,6 +620,11 @@ export const cleanupAuthExhaustiveTest = async (
 
 /**
  *
+ * @param userPool
+ * @param username
+ * @param email
+ * @param groups
+ * @param tokenType
  */
 export const getJWTToken = (
   userPool: string,
@@ -608,6 +651,9 @@ export const getJWTToken = (
 
 /**
  *
+ * @param authStrategy
+ * @param authProvider
+ * @param operation
  */
 export const generateAuthDirective = (
   authStrategy: AuthStrategy,

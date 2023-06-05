@@ -26,6 +26,9 @@ import {
 } from 'graphql-transformer-common';
 import { DirectiveWrapper } from '../utils/directive-wrapper';
 
+/**
+ *
+ */
 export class GenericFieldWrapper {
   protected type: TypeNode;
   public readonly directives: DirectiveWrapper[];
@@ -35,15 +38,12 @@ export class GenericFieldWrapper {
     this.type = field.type;
     this.name = field.name.value;
     this.loc = field.loc;
-    this.directives = (field.directives || []).map(d => new DirectiveWrapper(d));
+    this.directives = (field.directives || []).map((d) => new DirectiveWrapper(d));
   }
-  isList = (): boolean => {
-    return this.isListType(this.type);
-  };
 
-  isNonNullable = (): boolean => {
-    return this.type.kind === 'NonNullType';
-  };
+  isList = (): boolean => this.isListType(this.type);
+
+  isNonNullable = (): boolean => this.type.kind === 'NonNullType';
 
   makeNullable = (): boolean => {
     if (this.isNonNullable()) {
@@ -82,9 +82,8 @@ export class GenericFieldWrapper {
   private isListType = (type: TypeNode): boolean => {
     if (type.kind === Kind.NON_NULL_TYPE) {
       return isListType(type.type);
-    } else {
-      return type.kind === Kind.LIST_TYPE;
     }
+    return type.kind === Kind.LIST_TYPE;
   };
 
   public getBaseType = (): NamedTypeNode => {
@@ -94,9 +93,8 @@ export class GenericFieldWrapper {
     }
     return node;
   };
-  public getTypeName = (): string => {
-    return this.getBaseType().name.value;
-  };
+
+  public getTypeName = (): string => this.getBaseType().name.value;
 
   public isScalar = (): boolean => {
     const typeName = this.getTypeName();
@@ -124,6 +122,9 @@ export class GenericFieldWrapper {
 //          };
 //  }
 
+/**
+ *
+ */
 export class InputFieldWrapper extends GenericFieldWrapper {
   public readonly argumenets?: InputValueDefinitionNode[];
   public readonly description?: StringValueNode;
@@ -137,16 +138,14 @@ export class InputFieldWrapper extends GenericFieldWrapper {
     this.name = field.name.value;
   }
 
-  public serialize = (): InputValueDefinitionNode => {
-    return {
-      ...this.field,
-      kind: 'InputValueDefinition',
-      name: { kind: 'Name', value: this.name },
-      type: this.type,
-      description: this.description,
-      directives: this.directives?.map(d => d.serialize()),
-    };
-  };
+  public serialize = (): InputValueDefinitionNode => ({
+    ...this.field,
+    kind: 'InputValueDefinition',
+    name: { kind: 'Name', value: this.name },
+    type: this.type,
+    description: this.description,
+    directives: this.directives?.map((d) => d.serialize()),
+  });
 
   static fromField = (name: string, field: FieldDefinitionNode, parent: ObjectTypeDefinitionNode,
     document: DocumentNode): InputFieldWrapper => {
@@ -203,6 +202,9 @@ export class InputFieldWrapper extends GenericFieldWrapper {
     return field;
   };
 }
+/**
+ *
+ */
 export class FieldWrapper extends GenericFieldWrapper {
   public readonly argumenets?: InputValueDefinitionNode[];
   public readonly description?: StringValueNode;
@@ -216,16 +218,14 @@ export class FieldWrapper extends GenericFieldWrapper {
     this.loc = field.loc;
   }
 
-  public serialize = (): FieldDefinitionNode => {
-    return {
-      kind: 'FieldDefinition',
-      name: { kind: 'Name', value: this.name },
-      type: this.type,
-      arguments: this.argumenets,
-      description: this.description,
-      directives: this.directives?.map(d => d.serialize()),
-    };
-  };
+  public serialize = (): FieldDefinitionNode => ({
+    kind: 'FieldDefinition',
+    name: { kind: 'Name', value: this.name },
+    type: this.type,
+    arguments: this.argumenets,
+    description: this.description,
+    directives: this.directives?.map((d) => d.serialize()),
+  });
 
   static create = (name: string, type: string, isNullable = false, isList = false): FieldWrapper => {
     const field = new FieldWrapper({
@@ -252,35 +252,36 @@ export class FieldWrapper extends GenericFieldWrapper {
   };
 }
 
+/**
+ *
+ */
 export class ObjectDefinitionWrapper {
   public readonly directives?: DirectiveWrapper[];
   public readonly fields: FieldWrapper[];
   public readonly name: string;
   constructor(private node: ObjectTypeDefinitionNode) {
-    this.directives = (node.directives || []).map(d => new DirectiveWrapper(d));
-    this.fields = (node.fields || []).map(f => new FieldWrapper(f));
+    this.directives = (node.directives || []).map((d) => new DirectiveWrapper(d));
+    this.fields = (node.fields || []).map((f) => new FieldWrapper(f));
     this.name = node.name.value;
   }
 
-  public serialize = (): ObjectTypeDefinitionNode => {
-    return {
-      ...this.node,
-      name: {
-        kind: 'Name',
-        value: this.name,
-      },
-      fields: this.fields.map(f => f.serialize()),
-      directives: this.directives?.map(d => d.serialize()),
-    };
-  };
+  public serialize = (): ObjectTypeDefinitionNode => ({
+    ...this.node,
+    name: {
+      kind: 'Name',
+      value: this.name,
+    },
+    fields: this.fields.map((f) => f.serialize()),
+    directives: this.directives?.map((d) => d.serialize()),
+  });
 
   hasField = (name: string): boolean => {
-    const field = this.fields.find(f => f.name === name);
-    return field ? true : false;
+    const field = this.fields.find((f) => f.name === name);
+    return !!field;
   };
 
   getField = (name: string): FieldWrapper => {
-    const field = this.fields.find(f => f.name === name);
+    const field = this.fields.find((f) => f.name === name);
     if (!field) {
       throw new Error(`Field ${name} missing in type ${this.name}`);
     }
@@ -303,43 +304,43 @@ export class ObjectDefinitionWrapper {
     this.fields.splice(index, 1);
   };
 
-  static create = (name: string, fields: FieldDefinitionNode[] = [], directives: DirectiveNode[] = []): ObjectDefinitionWrapper => {
-    return new ObjectDefinitionWrapper({
-      kind: 'ObjectTypeDefinition',
-      name: {
-        kind: 'Name',
-        value: name,
-      },
-      fields: fields,
-      directives: directives,
-    });
-  };
+  static create = (name: string, fields: FieldDefinitionNode[] = [], directives: DirectiveNode[] = []): ObjectDefinitionWrapper => new ObjectDefinitionWrapper({
+    kind: 'ObjectTypeDefinition',
+    name: {
+      kind: 'Name',
+      value: name,
+    },
+    fields,
+    directives,
+  });
 }
 
+/**
+ *
+ */
 export class InputObjectDefinitionWrapper {
   public readonly directives?: DirectiveWrapper[];
   public readonly fields: InputFieldWrapper[];
   public readonly name: string;
   constructor(private node: InputObjectTypeDefinitionNode) {
-    this.directives = (node.directives || []).map(d => new DirectiveWrapper(d));
-    this.fields = (node.fields || []).map(f => new InputFieldWrapper(f));
+    this.directives = (node.directives || []).map((d) => new DirectiveWrapper(d));
+    this.fields = (node.fields || []).map((f) => new InputFieldWrapper(f));
     this.name = node.name.value;
   }
 
-  public serialize = (): InputObjectTypeDefinitionNode => {
-    return {
-      ...this.node,
-      fields: this.fields.map(f => f.serialize()),
-      directives: this.directives?.map(d => d.serialize()),
-    };
-  };
+  public serialize = (): InputObjectTypeDefinitionNode => ({
+    ...this.node,
+    fields: this.fields.map((f) => f.serialize()),
+    directives: this.directives?.map((d) => d.serialize()),
+  });
+
   hasField = (name: string): boolean => {
-    const field = this.fields.find(f => f.name === name);
-    return field ? true : false;
+    const field = this.fields.find((f) => f.name === name);
+    return !!field;
   };
 
   getField = (name: string): InputFieldWrapper => {
-    const field = this.fields.find(f => f.name === name);
+    const field = this.fields.find((f) => f.name === name);
     if (!field) {
       throw new Error(`Field ${name} missing in type ${this.name}`);
     }
@@ -374,9 +375,9 @@ export class InputObjectDefinitionWrapper {
         value: name,
       },
       fields: [],
-      directives: directives,
+      directives,
     });
-    for (let field of fields) {
+    for (const field of fields) {
       const fieldWrapper = new InputFieldWrapper(field);
       wrappedObj.addField(fieldWrapper);
     }
@@ -392,7 +393,7 @@ export class InputObjectDefinitionWrapper {
     };
 
     const wrappedInput = new InputObjectDefinitionWrapper(inputObj);
-    for (let f of def.fields || []) {
+    for (const f of def.fields || []) {
       const wrappedField = InputFieldWrapper.fromField(f.name.value, f, def, document);
       wrappedInput.fields.push(wrappedField);
     }
@@ -400,37 +401,39 @@ export class InputObjectDefinitionWrapper {
   };
 }
 
+/**
+ *
+ */
 export class EnumWrapper {
   public readonly name: string;
   public values: string[];
   public directives: DirectiveWrapper[];
   constructor(private node: EnumTypeDefinitionNode) {
     this.name = node.name.value;
-    this.values = node.values?.map(v => v.name.value) || [];
-    this.directives = (node.directives || []).map(d => new DirectiveWrapper(d));
+    this.values = node.values?.map((v) => v.name.value) || [];
+    this.directives = (node.directives || []).map((d) => new DirectiveWrapper(d));
   }
 
   addValue = (value: string): void => {
     this.values.push(value);
   };
 
-  serialize = (): EnumTypeDefinitionNode => {
-    return {
-      ...this.node,
+  serialize = (): EnumTypeDefinitionNode => ({
+    ...this.node,
+    name: {
+      kind: 'Name',
+      value: this.name,
+    },
+    directives: this.directives.map((d) => d.serialize()),
+    values: this.values.map((value) => ({
+      kind: 'EnumValueDefinition',
       name: {
         kind: 'Name',
-        value: this.name,
+        value,
       },
-      directives: this.directives.map(d => d.serialize()),
-      values: this.values.map(value => ({
-        kind: 'EnumValueDefinition',
-        name: {
-          kind: 'Name',
-          value: value,
-        },
-      })),
-    };
-  };
+    })),
+  });
+
   static create = (name: string, values: string[] = []): EnumWrapper => {
     const wrappedEnum = new EnumWrapper({
       kind: 'EnumTypeDefinition',
@@ -440,7 +443,7 @@ export class EnumWrapper {
       },
       values: [],
     });
-    values.forEach(val => {
+    values.forEach((val) => {
       wrappedEnum.addValue(val);
     });
     return wrappedEnum;

@@ -116,17 +116,21 @@ const schemaTemplatesV2 = [
   },
 ];
 
+/**
+ *
+ * @param context
+ */
 export const openConsole = async (context: $TSContext) => {
   const amplifyMeta = stateManager.getMeta();
   const categoryAmplifyMeta = amplifyMeta[category];
   const { Region } = amplifyMeta.providers[providerName];
 
-  const graphQLApis = Object.keys(categoryAmplifyMeta).filter(resourceName => {
+  const graphQLApis = Object.keys(categoryAmplifyMeta).filter((resourceName) => {
     const resource = categoryAmplifyMeta[resourceName];
 
     return (
-      resource.output &&
-      (resource.service === serviceName || (resource.service === elasticContainerServiceName && resource.apiType === 'GRAPHQL'))
+      resource.output
+      && (resource.service === serviceName || (resource.service === elasticContainerServiceName && resource.apiType === 'GRAPHQL'))
     );
   });
 
@@ -206,6 +210,11 @@ export const openConsole = async (context: $TSContext) => {
   }
 };
 
+/**
+ *
+ * @param context
+ * @param serviceMetadata
+ */
 export const serviceApiInputWalkthrough = async (context: $TSContext, serviceMetadata) => {
   let continuePrompt = false;
   let authConfig;
@@ -239,16 +248,16 @@ export const serviceApiInputWalkthrough = async (context: $TSContext, serviceMet
     const getAuthModeChoice = async () => {
       if (authConfig.defaultAuthentication.authenticationType === 'API_KEY') {
         return `${
-          authProviderChoices.find(choice => choice.value === authConfig.defaultAuthentication.authenticationType).name
+          authProviderChoices.find((choice) => choice.value === authConfig.defaultAuthentication.authenticationType).name
         } (default, expiration time: ${authConfig.defaultAuthentication.apiKeyConfig.apiKeyExpirationDays} days from now)`;
       }
-      return `${authProviderChoices.find(choice => choice.value === authConfig.defaultAuthentication.authenticationType).name} (default)`;
+      return `${authProviderChoices.find((choice) => choice.value === authConfig.defaultAuthentication.authenticationType).name} (default)`;
     };
 
     const getAdditionalAuthModeChoices = async () => {
       let additionalAuthModesText = '';
-      authConfig.additionalAuthenticationProviders.map(async authMode => {
-        additionalAuthModesText += `, ${authProviderChoices.find(choice => choice.value === authMode.authenticationType).name}`;
+      authConfig.additionalAuthenticationProviders.map(async (authMode) => {
+        additionalAuthModesText += `, ${authProviderChoices.find((choice) => choice.value === authMode.authenticationType).name}`;
       });
       return additionalAuthModesText;
     };
@@ -273,7 +282,7 @@ export const serviceApiInputWalkthrough = async (context: $TSContext, serviceMet
     if (resolverConfig?.project) {
       basicInfoQuestionChoices.push({
         name: chalk`{bold Conflict resolution strategy:} ${
-          conflictResolutionHanlderChoices.find(x => x.value === resolverConfig.project.ConflictHandler).name
+          conflictResolutionHanlderChoices.find((x) => x.value === resolverConfig.project.ConflictHandler).name
         }`,
         value: 'CONFLICT_STRATEGY',
       });
@@ -292,7 +301,7 @@ export const serviceApiInputWalkthrough = async (context: $TSContext, serviceMet
       choices: basicInfoQuestionChoices,
     };
 
-    let { basicApiSettings } = await inquirer.prompt([basicInfoQuestion]);
+    const { basicApiSettings } = await inquirer.prompt([basicInfoQuestion]);
 
     switch (basicApiSettings) {
       case 'API_NAME':
@@ -391,14 +400,18 @@ const updateApiInputWalkthrough = async (context: $TSContext, project: Record<st
   };
 };
 
+/**
+ *
+ * @param context
+ * @param serviceMetadata
+ */
 export const serviceWalkthrough = async (context: $TSContext, serviceMetadata: Record<string, any>) => {
   const resourceName = resourceAlreadyExists();
   const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
   await addLambdaAuthorizerChoice(context);
 
   if (resourceName) {
-    const errMessage =
-      'You already have an AppSync API in your project. Use the "amplify update api" command to update your existing AppSync API.';
+    const errMessage = 'You already have an AppSync API in your project. Use the "amplify update api" command to update your existing AppSync API.';
     printer.warn(errMessage);
     await context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
     exitOnNextTick(0);
@@ -409,7 +422,7 @@ export const serviceWalkthrough = async (context: $TSContext, serviceMetadata: R
 
   const basicInfoAnswers = await serviceApiInputWalkthrough(context, serviceMetadata);
   let schemaContent = '';
-  let askToEdit = true;
+  const askToEdit = true;
 
   // Schema template selection
   const schemaTemplateOptions = transformerVersion === 2 ? schemaTemplatesV2 : schemaTemplatesV1;
@@ -434,13 +447,17 @@ export const serviceWalkthrough = async (context: $TSContext, serviceMetadata: R
   };
 };
 
+/**
+ *
+ * @param context
+ */
 export const updateWalkthrough = async (context: $TSContext): Promise<UpdateApiRequest> => {
   const { allResources } = await context.amplify.getResourceStatus();
   let resourceDir;
   let resourceName;
   let resource;
   let authConfig;
-  const resources = allResources.filter(resource => resource.service === 'AppSync');
+  const resources = allResources.filter((resource) => resource.service === 'AppSync');
   await addLambdaAuthorizerChoice(context);
 
   // There can only be one appsync resource
@@ -472,10 +489,10 @@ export const updateWalkthrough = async (context: $TSContext): Promise<UpdateApiR
 
   // Check for common errors
   const directiveMap = collectDirectivesByTypeNames(project.schema);
-  let modelTypes = [];
+  const modelTypes = [];
 
   if (directiveMap.types) {
-    Object.keys(directiveMap.types).forEach(type => {
+    Object.keys(directiveMap.types).forEach((type) => {
       if (directiveMap.types[type].includes('model')) {
         modelTypes.push(type);
       }
@@ -499,11 +516,11 @@ export const updateWalkthrough = async (context: $TSContext): Promise<UpdateApiR
 };
 
 async function displayApiInformation(context: $TSContext, resource: Record<string, any>, project: Record<string, any>) {
-  let authModes: string[] = [];
+  const authModes: string[] = [];
   authModes.push(
     `- Default: ${await displayAuthMode(context, resource, resource.output.authConfig.defaultAuthentication.authenticationType)}`,
   );
-  await resource.output.authConfig.additionalAuthenticationProviders?.map(async authMode => {
+  await resource.output.authConfig.additionalAuthenticationProviders?.map(async (authMode) => {
     authModes.push(`- ${await displayAuthMode(context, resource, authMode.authenticationType)}`);
   });
 
@@ -517,14 +534,14 @@ async function displayApiInformation(context: $TSContext, resource: Record<strin
   printer.info('');
 
   printer.info('Authorization modes');
-  authModes.forEach(authMode => printer.info(authMode));
+  authModes.forEach((authMode) => printer.info(authMode));
   printer.info('');
 
   printer.info('Conflict detection (required for DataStore)');
   if (project.config && !_.isEmpty(project.config.ResolverConfig)) {
     printer.info(
       `- Conflict resolution strategy: ${
-        conflictResolutionHanlderChoices.find(choice => choice.value === project.config.ResolverConfig.project.ConflictHandler).name
+        conflictResolutionHanlderChoices.find((choice) => choice.value === project.config.ResolverConfig.project.ConflictHandler).name
       }`,
     );
   } else {
@@ -536,19 +553,19 @@ async function displayApiInformation(context: $TSContext, resource: Record<strin
 
 async function displayAuthMode(context: $TSContext, resource: Record<string, any>, authMode: string) {
   if (authMode === 'API_KEY' && resource.output.GraphQLAPIKeyOutput) {
-    let { apiKeys } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getGraphQLApiKeys', {
+    const { apiKeys } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getGraphQLApiKeys', {
       apiId: resource.output.GraphQLAPIIdOutput,
     });
-    let apiKeyExpires = apiKeys.find(key => key.id == resource.output.GraphQLAPIKeyOutput)?.expires;
+    const apiKeyExpires = apiKeys.find((key) => key.id == resource.output.GraphQLAPIKeyOutput)?.expires;
     if (!apiKeyExpires) {
-      return authProviderChoices.find(choice => choice.value === authMode).name;
+      return authProviderChoices.find((choice) => choice.value === authMode).name;
     }
-    let apiKeyExpiresDate = new Date(apiKeyExpires * 1000);
-    return `${authProviderChoices.find(choice => choice.value === authMode).name} expiring ${apiKeyExpiresDate}: ${
+    const apiKeyExpiresDate = new Date(apiKeyExpires * 1000);
+    return `${authProviderChoices.find((choice) => choice.value === authMode).name} expiring ${apiKeyExpiresDate}: ${
       resource.output.GraphQLAPIKeyOutput
     }`;
   }
-  return authProviderChoices.find(choice => choice.value === authMode).name;
+  return authProviderChoices.find((choice) => choice.value === authMode).name;
 }
 
 async function askAdditionalQuestions(context: $TSContext, authConfig, defaultAuthType, modelTypes?) {
@@ -567,8 +584,8 @@ async function askResolverConflictQuestion(context: $TSContext, resolverConfig, 
 }
 
 async function askResolverConflictHandlerQuestion(context: $TSContext, modelTypes?) {
-  let resolverConfig: Record<string, any> = {};
-  const askConflictResolutionStrategy = async msg => {
+  const resolverConfig: Record<string, any> = {};
+  const askConflictResolutionStrategy = async (msg) => {
     let conflictResolutionStrategy;
 
     do {
@@ -585,7 +602,7 @@ async function askResolverConflictHandlerQuestion(context: $TSContext, modelType
       ({ conflictResolutionStrategy } = await inquirer.prompt([conflictResolutionQuestion]));
     } while (conflictResolutionStrategy === 'Learn More');
 
-    let syncConfig: Record<string, any> = {
+    const syncConfig: Record<string, any> = {
       ConflictHandler: conflictResolutionStrategy,
       ConflictDetection: 'VERSION',
     };
@@ -655,7 +672,7 @@ async function askSyncFunctionQuestion() {
       type: 'input',
       name: 'lambdaFunctionName',
       message: 'Enter lambda function name',
-      validate: val => !!val,
+      validate: (val) => !!val,
     };
     ({ lambdaFunctionName } = await inquirer.prompt([syncLambdaNameQuestion]));
   }
@@ -665,7 +682,7 @@ async function askSyncFunctionQuestion() {
 
 async function addLambdaAuthorizerChoice(context: $TSContext) {
   const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
-  if (transformerVersion === 2 && !authProviderChoices.some(choice => choice.value == 'AWS_LAMBDA')) {
+  if (transformerVersion === 2 && !authProviderChoices.some((choice) => choice.value == 'AWS_LAMBDA')) {
     authProviderChoices.push({
       name: 'Lambda',
       value: 'AWS_LAMBDA',
@@ -676,8 +693,7 @@ async function addLambdaAuthorizerChoice(context: $TSContext) {
 async function askDefaultAuthQuestion(context: $TSContext) {
   await addLambdaAuthorizerChoice(context);
   const currentAuthConfig = getAppSyncAuthConfig(stateManager.getMeta());
-  const currentDefaultAuth =
-    currentAuthConfig && currentAuthConfig.defaultAuthentication ? currentAuthConfig.defaultAuthentication.authenticationType : undefined;
+  const currentDefaultAuth = currentAuthConfig && currentAuthConfig.defaultAuthentication ? currentAuthConfig.defaultAuthentication.authenticationType : undefined;
 
   const defaultAuthTypeQuestion = {
     type: 'list',
@@ -700,17 +716,23 @@ async function askDefaultAuthQuestion(context: $TSContext) {
   };
 }
 
+/**
+ *
+ * @param context
+ * @param authConfig
+ * @param defaultAuthType
+ */
 export async function askAdditionalAuthQuestions(context: $TSContext, authConfig: Record<string, any>, defaultAuthType) {
   const currentAuthConfig = getAppSyncAuthConfig(stateManager.getMeta());
   authConfig.additionalAuthenticationProviders = [];
   if (await context.prompt.confirm('Configure additional auth types?')) {
     // Get additional auth configured
-    const remainingAuthProviderChoices = authProviderChoices.filter(p => p.value !== defaultAuthType);
+    const remainingAuthProviderChoices = authProviderChoices.filter((p) => p.value !== defaultAuthType);
     const currentAdditionalAuth = (
       (currentAuthConfig && currentAuthConfig.additionalAuthenticationProviders
         ? currentAuthConfig.additionalAuthenticationProviders
         : []) as any[]
-    ).map(authProvider => authProvider.authenticationType);
+    ).map((authProvider) => authProvider.authenticationType);
 
     const additionalProvidersQuestion: CheckboxQuestion = {
       type: 'checkbox',
@@ -727,19 +749,26 @@ export async function askAdditionalAuthQuestions(context: $TSContext, authConfig
         authProvider,
         context,
         true,
-        currentAuthConfig?.additionalAuthenticationProviders?.find(authSetting => authSetting.authenticationType == authProvider),
+        currentAuthConfig?.additionalAuthenticationProviders?.find((authSetting) => authSetting.authenticationType == authProvider),
       );
 
       authConfig.additionalAuthenticationProviders.push(config);
     }
   } else {
     authConfig.additionalAuthenticationProviders = (currentAuthConfig?.additionalAuthenticationProviders || []).filter(
-      p => p.authenticationType !== defaultAuthType,
+      (p) => p.authenticationType !== defaultAuthType,
     );
   }
   return authConfig;
 }
 
+/**
+ *
+ * @param authType
+ * @param context
+ * @param printLeadText
+ * @param authSettings
+ */
 export async function askAuthQuestions(authType: string, context: $TSContext, printLeadText = false, authSettings) {
   if (authType === 'AMAZON_COGNITO_USER_POOLS') {
     if (printLeadText) {
@@ -812,8 +841,12 @@ async function askUserPoolQuestions(context: $TSContext) {
   };
 }
 
+/**
+ *
+ * @param authSettings
+ */
 export async function askApiKeyQuestions(authSettings: Record<string, any> = undefined) {
-  let defaultValues = {
+  const defaultValues = {
     apiKeyExpirationDays: 7,
     description: '',
   };
@@ -833,7 +866,7 @@ export async function askApiKeyQuestions(authSettings: Record<string, any> = und
       default: defaultValues.apiKeyExpirationDays,
       validate: validateDays,
       // adding filter to ensure parsing input as int -> https://github.com/SBoudrias/Inquirer.js/issues/866
-      filter: value => {
+      filter: (value) => {
         const val = parseInt(value, 10);
         if (isNaN(val) || val <= 0 || val > 365) {
           return value;
@@ -845,7 +878,7 @@ export async function askApiKeyQuestions(authSettings: Record<string, any> = und
 
   const apiKeyConfig: Record<string, any> = {};
   for (const apiKeyQuestion of apiKeyQuestions) {
-    apiKeyConfig[apiKeyQuestion.name] = await prompter.input(apiKeyQuestion.message, { initial: apiKeyQuestion.default as string })
+    apiKeyConfig[apiKeyQuestion.name] = await prompter.input(apiKeyQuestion.message, { initial: apiKeyQuestion.default as string });
   }
   const apiKeyExpirationDaysNum = Number(apiKeyConfig.apiKeyExpirationDays);
   apiKeyConfig.apiKeyExpirationDate = Expiration.after(Duration.days(apiKeyExpirationDaysNum)).date;
@@ -858,7 +891,7 @@ export async function askApiKeyQuestions(authSettings: Record<string, any> = und
 }
 
 async function askOpenIDConnectQuestions(authSettings: Record<string, any>) {
-  let defaultValues = {
+  const defaultValues = {
     authTTL: undefined,
     clientId: undefined,
     iatTTL: undefined,
@@ -922,10 +955,9 @@ async function validateDays(input: string) {
 }
 
 function validateIssuerUrl(input: string) {
-  const isValid =
-    /^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$/.test(
-      input,
-    );
+  const isValid = /^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$/.test(
+    input,
+  );
 
   if (!isValid) {
     return 'The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost.';
@@ -961,6 +993,10 @@ function resourceAlreadyExists() {
   return resourceName;
 }
 
+/**
+ *
+ * @param context
+ */
 export const migrate = async (context: $TSContext) => {
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
     forceCompile: true,
@@ -968,12 +1004,17 @@ export const migrate = async (context: $TSContext) => {
   });
 };
 
+/**
+ *
+ * @param resourceName
+ * @param operations
+ */
 export const getIAMPolicies = (resourceName: string, operations: string[]) => {
   let policy: Record<string, any> = {};
   const resources = [];
   const actions = [];
   if (!FeatureFlags.getBoolean('appSync.generateGraphQLPermissions')) {
-    operations.forEach(crudOption => {
+    operations.forEach((crudOption) => {
       switch (crudOption) {
         case 'create':
           actions.push('appsync:Create*', 'appsync:StartSchemaCreation', 'appsync:GraphQL');
@@ -995,7 +1036,7 @@ export const getIAMPolicies = (resourceName: string, operations: string[]) => {
     resources.push(buildPolicyResource(resourceName, null));
   } else {
     actions.push('appsync:GraphQL');
-    operations.forEach(operation => resources.push(buildPolicyResource(resourceName, `/types/${operation}/*`)));
+    operations.forEach((operation) => resources.push(buildPolicyResource(resourceName, `/types/${operation}/*`)));
   }
 
   policy = {
@@ -1012,36 +1053,33 @@ export const getIAMPolicies = (resourceName: string, operations: string[]) => {
   return { policy, attributes };
 };
 
-const buildPolicyResource = (resourceName: string, path: string | null) => {
-  return {
-    'Fn::Join': [
-      '',
-      [
-        'arn:aws:appsync:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':apis/',
-        {
-          Ref: `${category}${resourceName}GraphQLAPIIdOutput`,
-        },
-        ...(path ? [path] : []),
-      ],
+const buildPolicyResource = (resourceName: string, path: string | null) => ({
+  'Fn::Join': [
+    '',
+    [
+      'arn:aws:appsync:',
+      { Ref: 'AWS::Region' },
+      ':',
+      { Ref: 'AWS::AccountId' },
+      ':apis/',
+      {
+        Ref: `${category}${resourceName}GraphQLAPIIdOutput`,
+      },
+      ...(path ? [path] : []),
     ],
-  };
-};
+  ],
+});
 
-const templateSchemaFilter = authConfig => {
+const templateSchemaFilter = (authConfig) => {
   const authIncludesCognito = getAuthTypes(authConfig).includes('AMAZON_COGNITO_USER_POOLS');
-  return (templateOption: ListChoiceOptions): boolean =>
-    authIncludesCognito ||
-    templateOption.name !== 'Objects with fine-grained access control (e.g., a project management app with owner-based authorization)';
+  return (templateOption: ListChoiceOptions): boolean => authIncludesCognito
+    || templateOption.name !== 'Objects with fine-grained access control (e.g., a project management app with owner-based authorization)';
 };
 
-const getAuthTypes = authConfig => {
+const getAuthTypes = (authConfig) => {
   const additionalAuthTypes = (authConfig.additionalAuthenticationProviders || [])
-    .map(provider => provider.authenticationType)
-    .filter(t => !!t);
+    .map((provider) => provider.authenticationType)
+    .filter((t) => !!t);
 
   const uniqueAuthTypes = new Set([...additionalAuthTypes, authConfig.defaultAuthentication.authenticationType]);
 
@@ -1063,7 +1101,7 @@ async function askLambdaQuestion(context) {
     });
   }
 
-  let defaultFunctionType = 'newFunction';
+  const defaultFunctionType = 'newFunction';
   const lambdaAnswer = await inquirer.prompt({
     name: 'functionType',
     type: 'list',
@@ -1099,7 +1137,7 @@ function functionsExist(context: $TSContext): boolean {
   }
 
   const lambdaFunctions = [];
-  Object.keys(functionResources).forEach(resourceName => {
+  Object.keys(functionResources).forEach((resourceName) => {
     if (functionResources[resourceName].service === FunctionServiceNameLambdaFunction) {
       lambdaFunctions.push(resourceName);
     }
@@ -1127,7 +1165,7 @@ async function newLambdaFunction(context: $TSContext) {
 async function askLambdaFromProject(context: $TSContext) {
   const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
   const lambdaFunctions = [];
-  Object.keys(functionResources).forEach(resourceName => {
+  Object.keys(functionResources).forEach((resourceName) => {
     if (functionResources[resourceName].service === FunctionServiceNameLambdaFunction) {
       lambdaFunctions.push(resourceName);
     }

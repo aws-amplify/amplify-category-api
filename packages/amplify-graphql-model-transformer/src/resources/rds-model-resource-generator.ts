@@ -14,6 +14,10 @@ export const RDS_STACK_NAME = 'RdsApiStack';
 export class RdsModelResourceGenerator extends ModelResourceGenerator {
   protected readonly generatorType = 'RdsModelResourceGenerator';
 
+  /**
+   *
+   * @param context
+   */
   generateResources(context: TransformerContextProvider): void {
     if (this.isEnabled()) {
       const secretEntry = context.datasourceSecretParameterLocations.get(MYSQL_DB_TYPE);
@@ -58,6 +62,9 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
   }
 
   // eslint-disable-next-line class-methods-use-this
+  /**
+   *
+   */
   getVTLGenerator(): ModelVTLGenerator {
     return new RDSModelVTLGenerator();
   }

@@ -3,6 +3,9 @@ import { GraphQLAPIProvider, MappingTemplateProvider } from '../graphql-api-prov
 import { DataSourceProvider } from './transformer-datasource-provider';
 import { TransformerContextProvider } from './transformer-context-provider';
 
+/**
+ *
+ */
 export interface TransformerResolverProvider {
   addToSlot: (
     slotName: string,
@@ -14,6 +17,9 @@ export interface TransformerResolverProvider {
   mapToStack: (stack: Stack) => void;
 }
 
+/**
+ *
+ */
 export interface TransformerResolversManagerProvider {
   addResolver: (typeName: string, fieldName: string, resolver: TransformerResolverProvider) => TransformerResolverProvider;
   getResolver: (typeName: string, fieldName: string) => TransformerResolverProvider | void;

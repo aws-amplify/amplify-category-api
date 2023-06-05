@@ -1,7 +1,9 @@
 import { Pinpoint } from 'aws-sdk';
-import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from '..';
 import _ from 'lodash';
 import { EOL } from 'os';
+import {
+  getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW,
+} from '..';
 
 const settings = {
   name: EOL,
@@ -45,6 +47,10 @@ const serviceRegionMap = {
   'me-south-1': 'ap-south-1',
 };
 
+/**
+ *
+ * @param pinpointProjectId
+ */
 export async function pinpointAppExist(pinpointProjectId: string): Promise<boolean> {
   let result = false;
 
@@ -75,11 +81,15 @@ export async function pinpointAppExist(pinpointProjectId: string): Promise<boole
   return result;
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function initProjectForPinpoint(cwd: string): Promise<void> {
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['init'], {
+    const chain = spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
       env: {
@@ -133,6 +143,10 @@ export function initProjectForPinpoint(cwd: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function addPinpointAnalytics(cwd: string): Promise<string> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true })
@@ -154,6 +168,10 @@ export function addPinpointAnalytics(cwd: string): Promise<string> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function pushToCloud(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
@@ -170,6 +188,10 @@ export function pushToCloud(cwd: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function amplifyDelete(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['delete'], { cwd, stripColors: true })

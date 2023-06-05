@@ -11,6 +11,8 @@ import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';
  * Appends default labmda environment variables to the environment property of the processedLambda
  * (see https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-runtime)
  * Some values are stubbed properly and others have static default values
+ * @param context
+ * @param processedLambda
  */
 export const populateLambdaMockEnvVars = async (context: $TSContext, processedLambda: ProcessedLambdaFunction) => {
   processedLambda.environment = (

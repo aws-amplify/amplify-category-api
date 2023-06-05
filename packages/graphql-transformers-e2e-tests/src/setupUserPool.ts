@@ -1,4 +1,6 @@
-import { createGroup, addUserToGroup, configureAmplify, authenticateUser, signupUser } from './cognitoUtils';
+import {
+  createGroup, addUserToGroup, configureAmplify, authenticateUser, signupUser,
+} from './cognitoUtils';
 
 const USERNAME1 = 'user1@test.com';
 const USERNAME2 = 'user2@test.com';
@@ -11,6 +13,11 @@ const DEVS_GROUP_NAME = 'Devs';
 const PARTICIPANT_GROUP_NAME = 'Participant';
 const WATCHER_GROUP_NAME = 'Watcher';
 
+/**
+ *
+ * @param userPoolId
+ * @param userPoolClientId
+ */
 export async function setupUserPool(userPoolId: string, userPoolClientId: string) {
   configureAmplify(userPoolId, userPoolClientId);
 

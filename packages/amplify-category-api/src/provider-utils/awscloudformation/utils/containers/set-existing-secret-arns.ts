@@ -22,6 +22,8 @@ import * as cdk from 'aws-cdk-lib';
         }
       }
     }
+  * @param secretsMap
+  * @param cfnObj
   */
 export const setExistingSecretArns = (secretsMap: Map<string, string>, cfnObj: any) => {
   if (_.isEmpty(cfnObj)) {
@@ -34,20 +36,19 @@ export const setExistingSecretArns = (secretsMap: Map<string, string>, cfnObj: a
     return;
   }
   containerDefs
-    .map(def => def?.Secrets) // get the secrets array
-    .filter(secrets => !_.isEmpty(secrets)) // filter out defs that don't contain secrets
+    .map((def) => def?.Secrets) // get the secrets array
+    .filter((secrets) => !_.isEmpty(secrets)) // filter out defs that don't contain secrets
     .flat(1) // merge nested secrets array into one array
-    .filter(secretDef => !!secretDef?.Name) // make sure the name is defined
-    .filter(secretDef => !!secretDef.ValueFrom) // make sure the arn is defined
-    .forEach(secretDef => {
+    .filter((secretDef) => !!secretDef?.Name) // make sure the name is defined
+    .filter((secretDef) => !!secretDef.ValueFrom) // make sure the arn is defined
+    .forEach((secretDef) => {
       if (typeof secretDef.ValueFrom === 'object' && secretDef.ValueFrom['Fn::Join']) {
         const [delimiter, values] = secretDef.ValueFrom['Fn::Join'];
         secretsMap.set(
           secretDef.Name,
-          cdk.Fn.join(delimiter, values.map(val => val.Ref ? cdk.Fn.ref(val.Ref) : val)),
+          cdk.Fn.join(delimiter, values.map((val) => (val.Ref ? cdk.Fn.ref(val.Ref) : val))),
         );
-      }
-      else {
+      } else {
         secretsMap.set(secretDef.Name, secretDef.ValueFrom);
       }
     }); // add it to the secretsMap map

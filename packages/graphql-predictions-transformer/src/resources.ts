@@ -18,22 +18,37 @@ import {
   comment,
   HttpMappingTemplate,
 } from 'graphql-mapping-template';
-import { iamActions } from './predictions_utils';
-import { IAM, Fn, AppSync, Lambda } from 'cloudform-types';
-import { HttpConfig, LambdaConfig } from 'cloudform-types/types/appSync/dataSource';
-import DataSource from 'cloudform-types/types/appSync/dataSource';
+import {
+  IAM, Fn, AppSync, Lambda,
+} from 'cloudform-types';
+import DataSource, { HttpConfig, LambdaConfig } from 'cloudform-types/types/appSync/dataSource';
 import { Policy } from 'cloudform-types/types/iam/group';
+import { iamActions } from './predictions_utils';
 
 // tslint:disable: no-magic-numbers
+/**
+ *
+ */
 export interface PredictionsDSConfig {
   id: 'RekognitionDataSource' | 'TranslateDataSource' | 'LambdaDataSource';
   httpConfig?: HttpConfig;
   lambdaConfig?: LambdaConfig;
 }
+/**
+ *
+ */
 export type ActionPolicyMap = {
   [action: string]: Policy;
 };
+/**
+ *
+ */
 export class ResourceFactory {
+  /**
+   *
+   * @param map
+   * @param bucketName
+   */
   public createIAMRole(map: ActionPolicyMap, bucketName: string) {
     return new IAM.Role({
       RoleName: this.joinWithEnv('-', [
@@ -76,7 +91,7 @@ export class ResourceFactory {
       hash: Fn.Select(3, Fn.Split('-', Fn.Ref('AWS::StackName'))),
     };
     if (this.referencesEnv(name)) {
-      substitutions['env'] = Fn.Ref(ResourceConstants.PARAMETERS.Env);
+      substitutions.env = Fn.Ref(ResourceConstants.PARAMETERS.Env);
     }
     return Fn.If(
       ResourceConstants.CONDITIONS.HasEnvironmentParameter,
@@ -90,7 +105,7 @@ export class ResourceFactory {
       hash: Fn.Select(3, Fn.Split('-', Fn.Ref('AWS::StackName'))),
     };
     if (this.referencesEnv(storage)) {
-      substitutions['env'] = Fn.Ref(ResourceConstants.PARAMETERS.Env);
+      substitutions.env = Fn.Ref(ResourceConstants.PARAMETERS.Env);
     }
     return Fn.If(
       ResourceConstants.CONDITIONS.HasEnvironmentParameter,
@@ -105,6 +120,11 @@ export class ResourceFactory {
     return `arn:aws:s3:::${name}/public/*`;
   }
 
+  /**
+   *
+   * @param map
+   * @param action
+   */
   public mergeActionRole(map: ActionPolicyMap, action: string) {
     if (!map[action] && iamActions[action]) {
       map[action] = new IAM.Role.Policy({
@@ -124,9 +144,13 @@ export class ResourceFactory {
     return map;
   }
 
+  /**
+   *
+   * @param map
+   */
   public mergeLambdaActionRole(map: ActionPolicyMap) {
-    if (!map['PredictionsLambdaAccess']) {
-      map['PredictionsLambdaAccess'] = new IAM.Role.Policy({
+    if (!map.PredictionsLambdaAccess) {
+      map.PredictionsLambdaAccess = new IAM.Role.Policy({
         PolicyName: 'PredictionsLambdaAccess',
         PolicyDocument: {
           Version: '2012-10-17',
@@ -143,6 +167,10 @@ export class ResourceFactory {
     return map;
   }
 
+  /**
+   *
+   * @param bucketName
+   */
   public createLambdaIAMRole(bucketName: string) {
     return new IAM.Role({
       RoleName: this.joinWithEnv('-', [
@@ -179,6 +207,10 @@ export class ResourceFactory {
     });
   }
 
+  /**
+   *
+   * @param config
+   */
   public createPredictionsDataSource(config: PredictionsDSConfig): DataSource {
     let dataSource: DataSource;
     if (config.httpConfig) {
@@ -202,6 +234,10 @@ export class ResourceFactory {
     return dataSource;
   }
 
+  /**
+   *
+   * @param action
+   */
   public getPredictionsDSConfig(action: string): PredictionsDSConfig {
     switch (action) {
       case 'identifyEntities':
@@ -254,6 +290,13 @@ export class ResourceFactory {
     );
   }
 
+  /**
+   *
+   * @param type
+   * @param field
+   * @param pipelineFunctions
+   * @param bucketName
+   */
   public createResolver(type: string, field: string, pipelineFunctions: any[], bucketName: string) {
     return new AppSync.Resolver({
       ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
@@ -281,6 +324,11 @@ export class ResourceFactory {
   }
 
   // predictions action functions
+  /**
+   *
+   * @param action
+   * @param datasourceName
+   */
   public createActionFunction(action: string, datasourceName: string) {
     const httpPayload = `${action}Payload`;
     const actionFunctionResolvers = {
@@ -448,6 +496,9 @@ export class ResourceFactory {
   }
 
   // Predictions Lambda Function
+  /**
+   *
+   */
   public createPredictionsLambda() {
     return new Lambda.Function({
       Code: {
@@ -470,10 +521,18 @@ export class ResourceFactory {
   }
 
   // storage env ref
+  /**
+   *
+   * @param value
+   */
   public referencesEnv(value: string) {
     return value.match(/(\${env})/) !== null;
   }
 
+  /**
+   *
+   * @param value
+   */
   public removeEnvReference(value: string) {
     return value.replace(/(-\${env})/, '');
   }

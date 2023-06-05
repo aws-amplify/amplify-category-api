@@ -6,12 +6,16 @@ const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
 const amplifyAppBinPath = path.join(__dirname, '..', '..', 'node_modules', '.bin', '@aws-amplify/amplify-app');
 const spawnCommand = isCI() ? 'amplify-app' : amplifyAppBinPath;
 
+/**
+ *
+ * @param projRoot
+ */
 function amplifyAppAndroid(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(spawnCommand, ['--platform', 'android'], { cwd: projRoot, stripColors: true })
       .wait('Successfully created base Amplify Project')
       .wait('Amplify setup completed successfully')
-      .run(function (err) {
+      .run((err) => {
         if (!err) {
           resolve();
         } else {
@@ -21,12 +25,16 @@ function amplifyAppAndroid(projRoot: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param projRoot
+ */
 function amplifyAppIos(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(spawnCommand, ['--platform', 'ios'], { cwd: projRoot, stripColors: true })
       .wait('Successfully created base Amplify Project')
       .wait('Amplify setup completed successfully')
-      .run(function (err) {
+      .run((err) => {
         if (!err) {
           resolve();
         } else {
@@ -36,6 +44,10 @@ function amplifyAppIos(projRoot: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param projRoot
+ */
 function amplifyAppAngular(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(spawnCommand, [], { cwd: projRoot, stripColors: true })
@@ -43,7 +55,7 @@ function amplifyAppAngular(projRoot: string): Promise<void> {
       .sendCarriageReturn()
       .wait('What javascript framework are you using')
       .sendCarriageReturn()
-      .run(function (err) {
+      .run((err) => {
         if (!err) {
           resolve();
         } else {
@@ -53,6 +65,10 @@ function amplifyAppAngular(projRoot: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param projRoot
+ */
 function amplifyAppReact(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(spawnCommand, [], { cwd: projRoot, stripColors: true })
@@ -60,7 +76,7 @@ function amplifyAppReact(projRoot: string): Promise<void> {
       .sendCarriageReturn()
       .wait('What javascript framework are you using')
       .sendLine(`${KEY_DOWN_ARROW}${KEY_DOWN_ARROW}${KEY_DOWN_ARROW}`)
-      .run(function (err) {
+      .run((err) => {
         if (!err) {
           resolve();
         } else {
@@ -70,9 +86,13 @@ function amplifyAppReact(projRoot: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param projRoot
+ */
 function amplifyModelgen(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(npm, ['run', 'amplify-modelgen'], { cwd: projRoot, stripColors: true }).run(function (err) {
+    spawn(npm, ['run', 'amplify-modelgen'], { cwd: projRoot, stripColors: true }).run((err) => {
       if (!err) {
         resolve();
       } else {
@@ -82,9 +102,13 @@ function amplifyModelgen(projRoot: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param projRoot
+ */
 function amplifyPush(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(npm, ['run', 'amplify-push'], { cwd: projRoot, stripColors: true }).run(function (err) {
+    spawn(npm, ['run', 'amplify-push'], { cwd: projRoot, stripColors: true }).run((err) => {
       if (!err) {
         resolve();
       } else {
@@ -94,15 +118,21 @@ function amplifyPush(projRoot: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param projRoot
+ */
 function addIntegAccountInConfig(projRoot: string) {
   // add test account to config since no default account in circle ci
   if (isCI()) {
     const buildConfigPath = path.join(projRoot, 'amplify-build-config.json');
     const buildConfigFile = fs.readFileSync(buildConfigPath);
-    let buildConfig = JSON.parse(buildConfigFile.toString());
+    const buildConfig = JSON.parse(buildConfigFile.toString());
     buildConfig.profile = 'amplify-integ-test-user';
     fs.writeFileSync(buildConfigPath, JSON.stringify(buildConfig));
   }
 }
 
-export { amplifyAppAndroid, amplifyAppIos, amplifyAppAngular, amplifyAppReact, amplifyModelgen, amplifyPush, addIntegAccountInConfig };
+export {
+  amplifyAppAndroid, amplifyAppIos, amplifyAppAngular, amplifyAppReact, amplifyModelgen, amplifyPush, addIntegAccountInConfig,
+};

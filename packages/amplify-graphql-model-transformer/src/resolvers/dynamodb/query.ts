@@ -23,6 +23,7 @@ import {
   raw,
 } from 'graphql-mapping-template';
 import { ResourceConstants, setArgs } from 'graphql-transformer-common';
+
 const authFilter = ref('ctx.stash.authFilter');
 
 /**
@@ -75,6 +76,10 @@ export const generateGetRequestTemplate = (): string => {
   return printBlock('Get Request template')(compoundExpression(statements));
 };
 
+/**
+ *
+ * @param isSyncEnabled
+ */
 export const generateGetResponseTemplate = (isSyncEnabled: boolean): string => {
   const statements = new Array<Expression>();
   if (isSyncEnabled) {
@@ -97,13 +102,16 @@ export const generateGetResponseTemplate = (isSyncEnabled: boolean): string => {
   return printBlock('Get Response template')(compoundExpression(statements));
 };
 
+/**
+ *
+ */
 export const generateListRequestTemplate = (): string => {
   const requestVariable = 'ListRequest';
   const modelQueryObj = 'ctx.stash.modelQueryExpression';
   const indexNameVariable = 'ctx.stash.metadata.index';
   const expression = compoundExpression([
     setArgs,
-    set(ref('limit'), methodCall(ref(`util.defaultIfNull`), ref('args.limit'), int(100))),
+    set(ref('limit'), methodCall(ref('util.defaultIfNull'), ref('args.limit'), int(100))),
     set(
       ref(requestVariable),
       obj({
@@ -124,7 +132,7 @@ export const generateListRequestTemplate = (): string => {
       not(isNullOrEmpty(ref('filter'))),
       compoundExpression([
         set(
-          ref(`filterExpression`),
+          ref('filterExpression'),
           methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref('filter'))),
         ),
         iff(
@@ -138,7 +146,7 @@ export const generateListRequestTemplate = (): string => {
               equals(methodCall(ref('filterExpression.expressionValues.size')), int(0)),
               qref(methodCall(ref('filterExpression.remove'), str('expressionValues'))),
             ),
-            set(ref(`${requestVariable}.filter`), ref(`filterExpression`)),
+            set(ref(`${requestVariable}.filter`), ref('filterExpression')),
           ]),
         ),
       ]),
@@ -165,6 +173,9 @@ export const generateListRequestTemplate = (): string => {
   return printBlock('List Request')(expression);
 };
 
+/**
+ *
+ */
 export const generateSyncRequestTemplate = (): string => {
   const requestVariable = 'ctx.stash.QueryRequest';
   return printBlock('Sync Request template')(
@@ -239,7 +250,7 @@ export const generateSyncRequestTemplate = (): string => {
         not(isNullOrEmpty(ref('filter'))),
         compoundExpression([
           set(
-            ref(`filterExpression`),
+            ref('filterExpression'),
             methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref('filter'))),
           ),
           iff(

@@ -4,6 +4,9 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
+/**
+ *
+ */
 export type ListOrDict =
   | {
       /**
@@ -13,6 +16,9 @@ export type ListOrDict =
       [k: string]: string | number | null;
     }
   | string[];
+/**
+ *
+ */
 export type Labels =
   | {
       /**
@@ -22,7 +28,13 @@ export type Labels =
       [k: string]: string;
     }
   | string[];
+/**
+ *
+ */
 export type ListOfStrings = string[];
+/**
+ *
+ */
 export type StringOrList = string | ListOfStrings;
 /**
  * This interface was referenced by `PropertiesVolumes`'s JSON-Schema definition
@@ -32,6 +44,9 @@ export type DefinitionsVolume = {
   [k: string]: any;
 } | null;
 
+/**
+ *
+ */
 export interface ConfigSchemaV24Json {
   version?: string;
   services?: PropertiesServices;
@@ -43,6 +58,9 @@ export interface ConfigSchemaV24Json {
    */
   [k: string]: any;
 }
+/**
+ *
+ */
 export interface PropertiesServices {
   [k: string]: DefinitionsService;
 }
@@ -219,14 +237,23 @@ export interface DefinitionsService {
    */
   [k: string]: any;
 }
+/**
+ *
+ */
 export interface BlkioLimit {
   path?: string;
   rate?: number | string;
 }
+/**
+ *
+ */
 export interface BlkioWeight {
   path?: string;
   weight?: number;
 }
+/**
+ *
+ */
 export interface DefinitionsHealthcheck {
   disable?: boolean;
   interval?: string;
@@ -235,6 +262,9 @@ export interface DefinitionsHealthcheck {
   test?: string | string[];
   timeout?: string;
 }
+/**
+ *
+ */
 export interface PropertiesNetworks {
   [k: string]: DefinitionsNetwork;
 }
@@ -277,6 +307,9 @@ export interface DefinitionsNetwork {
    */
   [k: string]: any;
 }
+/**
+ *
+ */
 export interface DefinitionsIpamConfig {
   subnet?: string;
   ip_range?: string;
@@ -289,6 +322,9 @@ export interface DefinitionsIpamConfig {
     [k: string]: string;
   };
 }
+/**
+ *
+ */
 export interface PropertiesVolumes {
   [k: string]: DefinitionsVolume;
 }

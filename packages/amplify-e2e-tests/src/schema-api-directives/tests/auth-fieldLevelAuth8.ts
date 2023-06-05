@@ -1,13 +1,18 @@
-//handle subscription from another user
+// handle subscription from another user
 import { runAuthTest } from '../common';
 
+/**
+ *
+ * @param projectDir
+ * @param testModule
+ */
 export async function runTest(projectDir: string, testModule: any) {
-  //test owner
+  // test owner
   await runAuthTest(projectDir, testModule);
-  //todo: test other user's ability to subscribe
+  // todo: test other user's ability to subscribe
 }
 
-//schema
+// schema
 export const schema = `
 type Employee @model
   @auth(rules: [
@@ -22,7 +27,7 @@ type Employee @model
 
 ##fieldLevelAuth8`;
 
-//mutations
+// mutations
 export const mutation = `
 #error: title and content are not in the Employee type
 #change: changed them to name and address
@@ -51,7 +56,7 @@ export const expected_result_mutation = {
   },
 };
 
-//queries
+// queries
 export const query = `
  query GetEmployee {
     getEmployee(id: "1") {

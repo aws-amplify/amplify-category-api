@@ -50,6 +50,7 @@ export class AccessControlMatrix {
 
   /**
    * set role to acm
+   * @param input
    */
   public setRole(input: SetRoleInput): void {
     const {
@@ -75,6 +76,7 @@ export class AccessControlMatrix {
 
   /**
    * check if acm has role
+   * @param role
    */
   public hasRole(role: string): boolean {
     return this.roles.includes(role);
@@ -103,6 +105,7 @@ export class AccessControlMatrix {
 
   /**
    * check if acm has resource
+   * @param resource
    */
   public hasResource(resource: string): boolean {
     return this.resources.includes(resource);
@@ -110,6 +113,9 @@ export class AccessControlMatrix {
 
   /**
    * checks if role is allowed on resource for operation
+   * @param role
+   * @param resource
+   * @param operation
    */
   public isAllowed(role: string, resource: string, operation: ModelOperation): boolean {
     this.validate({ role, resource, operations: [operation] });
@@ -121,6 +127,7 @@ export class AccessControlMatrix {
 
   /**
    * resets access for resource
+   * @param resource
    */
   public resetAccessForResource(resource: string): void {
     this.validate({ resource });
@@ -177,6 +184,7 @@ export class AccessControlMatrix {
 
   /**
    * helpers
+   * @param input
    */
   private validate(input: ValidateInput): void {
     if (input.resource && !this.resources.includes(input.resource)) {
@@ -186,7 +194,7 @@ export class AccessControlMatrix {
       throw new TransformerContractError(`Role: ${input.role} does not exist in ACM.`);
     }
     if (input.operations) {
-      input.operations.forEach(operation => {
+      input.operations.forEach((operation) => {
         if (this.operations.indexOf(operation) === -1) {
           throw new TransformerContractError(`Operation: ${operation} does not exist in the ACM.`);
         }
@@ -228,7 +236,7 @@ export class AccessControlMatrix {
 
   private getOperationList(operations: Array<string>): Array<boolean> {
     const operationList: Array<boolean> = [];
-    this.operations.forEach(operation => {
+    this.operations.forEach((operation) => {
       operationList.push(operations.includes(operation));
     });
     return operationList;

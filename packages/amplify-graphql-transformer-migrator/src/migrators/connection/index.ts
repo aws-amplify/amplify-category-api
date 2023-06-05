@@ -2,18 +2,34 @@ import { isListType } from 'graphql-transformer-common';
 
 const validConnectionDirectiveNames = new Set(['hasOne', 'hasMany', 'connection']);
 
+/**
+ *
+ * @param fields
+ */
 export function getFieldsWithConnection(fields: any) {
   return fields.filter((field: any) => field.directives.find((d: any) => d.name.value === 'connection'));
 }
 
+/**
+ *
+ * @param connection
+ */
 export function getConnectionFieldsArg(connection: any) {
   return connection.arguments.find((a: any) => a?.name?.value === 'fields')?.value?.values?.map((v: any) => v.value);
 }
 
+/**
+ *
+ * @param field
+ */
 export function isFieldIndex(field: any) {
   return field.directives.some((dir: any) => dir.name.value === 'index');
 }
 
+/**
+ *
+ * @param field
+ */
 export function getConnectionDirective(field: any) {
   return field.directives.find(
     (d: any) => d.name.value === 'connection' || d.name.value === 'hasMany' || d.name.value === 'hasOne' || d.name.value === 'belongsTo',
@@ -29,11 +45,15 @@ function getRelatedType(output: any, relatedTypeName: any) {
 function getFieldType(field: any): any {
   if (field.type.kind === 'NamedType') {
     return field.type.name.value;
-  } else {
-    return getFieldType(field.type);
   }
+  return getFieldType(field.type);
 }
 
+/**
+ *
+ * @param node
+ * @param ast
+ */
 export function migrateConnection(node: any, ast: any) {
   const connections = getFieldsWithConnection(node.fields);
   if (connections.length === 0) {
@@ -42,7 +62,7 @@ export function migrateConnection(node: any, ast: any) {
 
   connections.forEach((connectionField: any) => {
     const connectionDirective = getConnectionDirective(connectionField);
-    let typeIsList = connectionField.type ? isListType(connectionField.type) : false;
+    const typeIsList = connectionField.type ? isListType(connectionField.type) : false;
     if (typeIsList) {
       connectionDirective.name.value = 'hasMany';
       const keyNameArg = connectionDirective.arguments.find((a: any) => a.name.value === 'keyName');
@@ -62,9 +82,7 @@ export function migrateConnection(node: any, ast: any) {
           return false;
         }
 
-        return relatedField?.directives?.find((relatedDirective: any) => {
-          return validConnectionDirectiveNames.has(relatedDirective.name.value);
-        });
+        return relatedField?.directives?.find((relatedDirective: any) => validConnectionDirectiveNames.has(relatedDirective.name.value));
       });
 
       if (biDirectionalRelation?.type && isListType(biDirectionalRelation.type)) {

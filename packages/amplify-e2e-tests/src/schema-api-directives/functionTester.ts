@@ -7,6 +7,11 @@ import { configureAmplify, getApiKey, getConfiguredAppsyncClientAPIKeyAuth } fro
 
 import { updateSchemaInTestProject, testQueries } from './common';
 
+/**
+ *
+ * @param projectDir
+ * @param testModule
+ */
 export async function runFunctionTest(projectDir: string, testModule: any) {
   const functionName = await addSimpleFunction(projectDir, testModule, 'func');
   await addApi(projectDir, { transformerVersion: 1 });
@@ -21,6 +26,12 @@ export async function runFunctionTest(projectDir: string, testModule: any) {
   await testQueries(testModule, appSyncClient);
 }
 
+/**
+ *
+ * @param projectDir
+ * @param testModule
+ * @param funcName
+ */
 export async function addSimpleFunction(projectDir: string, testModule: any, funcName: string): Promise<string> {
   const functionName = randomizedFunctionName(funcName);
   await addFunction(
@@ -40,12 +51,22 @@ export async function addSimpleFunction(projectDir: string, testModule: any, fun
   return functionName;
 }
 
+/**
+ *
+ * @param functionName
+ */
 export function randomizedFunctionName(functionName: string) {
   functionName = functionName.toLowerCase().replace(/[^0-9a-zA-Z]/gi, '');
   const [shortId] = uuid().split('-');
   return `${functionName}${shortId}`;
 }
 
+/**
+ *
+ * @param projectDir
+ * @param functionNamePlaceHolder
+ * @param functionName
+ */
 export function updateFunctionNameInSchema(projectDir: string, functionNamePlaceHolder: string, functionName: string) {
   const backendApiDirPath = path.join(projectDir, 'amplify', 'backend', 'api');
   const apiResDirName = fs.readdirSync(backendApiDirPath)[0];

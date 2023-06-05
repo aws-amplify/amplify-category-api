@@ -1,4 +1,6 @@
-import { $TSContext, isResourceNameUnique, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
+import {
+  $TSContext, isResourceNameUnique, JSONUtilities, pathManager,
+} from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { cfnParametersFilename, parametersFileName, rootAssetDir } from './aws-constants';
@@ -6,6 +8,14 @@ import { serviceMetadataFor } from './utils/dynamic-imports';
 
 // this is the old logic for generating resources in the project directory
 // it is still used for adding REST APIs
+/**
+ *
+ * @param serviceWalkthroughPromise
+ * @param context
+ * @param category
+ * @param service
+ * @param options
+ */
 export const legacyAddResource = async (
   serviceWalkthroughPromise: Promise<any>,
   context: $TSContext,
@@ -52,6 +62,13 @@ export const legacyAddResource = async (
 };
 
 // exported because the update flow still uses this method directly for now
+/**
+ *
+ * @param context
+ * @param category
+ * @param options
+ * @param cfnFilename
+ */
 export const copyCfnTemplate = (context: $TSContext, category: string, options, cfnFilename) => {
   const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, category, options.resourceName);
 
@@ -67,9 +84,13 @@ export const copyCfnTemplate = (context: $TSContext, category: string, options, 
   return context.amplify.copyBatch(context, copyJobs, options, true, false);
 };
 
-export const addPolicyResourceNameToPaths = paths => {
+/**
+ *
+ * @param paths
+ */
+export const addPolicyResourceNameToPaths = (paths) => {
   if (Array.isArray(paths)) {
-    paths.forEach(p => {
+    paths.forEach((p) => {
       const pathName = p.name;
       if (typeof pathName === 'string') {
         p.policyResourceName = pathName.replace(/{[a-zA-Z0-9\-]+}/g, '*');

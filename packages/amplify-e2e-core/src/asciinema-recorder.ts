@@ -1,6 +1,9 @@
 import * as pty from 'node-pty';
 import chalk from 'chalk';
 
+/**
+ *
+ */
 export type RecordingHeader = {
   version: 2;
   width: number;
@@ -10,14 +13,23 @@ export type RecordingHeader = {
   env: any;
 };
 
+/**
+ *
+ */
 export type RecordingFrame = [number, 'o' | 'i', string];
+/**
+ *
+ */
 export type Recording = {
   header: RecordingHeader;
   frames: RecordingFrame[];
 };
 
+/**
+ *
+ */
 export class Recorder {
-  private isPaused: boolean = false;
+  private isPaused = false;
   private childProcess: pty.IPty;
   private onDataHandlers: ((data: string) => void)[] = [];
   private onExitHandlers: ((exitCode: number, signal: string | number) => void)[] = [];
@@ -48,6 +60,9 @@ export class Recorder {
     };
   }
 
+  /**
+   *
+   */
   run() {
     this.startTime = Date.now();
     if (this.exitCode !== undefined) {
@@ -68,6 +83,10 @@ export class Recorder {
     this.childProcess.onExit(this.onExit.bind(this));
   }
 
+  /**
+   *
+   * @param data
+   */
   write(data: string): void {
     if (this.childProcess && this.exitCode === undefined) {
       this.childProcess.write(data);
@@ -76,13 +95,26 @@ export class Recorder {
     throw new Error('Can not write data. Program is either already executed or has not been run');
   }
 
+  /**
+   *
+   * @param fn
+   */
   addOnDataHandler(fn: (content: string) => void) {
     this.onDataHandlers.push(fn);
   }
 
+  /**
+   *
+   * @param fn
+   */
   addOnExitHandlers(fn: (code: number, signal: string | number) => void) {
     this.onExitHandlers.push(fn);
   }
+
+  /**
+   *
+   * @param fn
+   */
   removeOnExitHandlers(fn: (code: number, signal: string | number) => void): boolean {
     const idx = this.onExitHandlers.indexOf(fn);
     if (idx === -1) {
@@ -92,26 +124,44 @@ export class Recorder {
     return true;
   }
 
+  /**
+   *
+   */
   getRecording(): string {
-    return [JSON.stringify(this.recording.header), ...this.recording.frames.map(frame => JSON.stringify(frame))].join('\n');
+    return [JSON.stringify(this.recording.header), ...this.recording.frames.map((frame) => JSON.stringify(frame))].join('\n');
   }
 
+  /**
+   *
+   */
   getRecordingFrames(): Readonly<RecordingFrame[]> {
     return [...this.recording.frames];
   }
 
+  /**
+   *
+   */
   pauseRecording(): void {
     this.isPaused = true;
   }
 
+  /**
+   *
+   */
   kill() {
     this.childProcess.kill();
   }
 
+  /**
+   *
+   */
   sendEof() {
     this.childProcess.write('\x04'); // ^D
   }
 
+  /**
+   *
+   */
   resumeRecording(): void {
     this.isPaused = false;
   }
@@ -120,7 +170,7 @@ export class Recorder {
     if (!this.isPaused) {
       this.addFrame(data);
     }
-    for (let handler of this.onDataHandlers) {
+    for (const handler of this.onDataHandlers) {
       try {
         handler(data);
       } catch (e) {
@@ -134,7 +184,7 @@ export class Recorder {
     const length = (Date.now() - this.startTime) / 1000;
     this.addFrame(this.renderPrompt(this.cwd));
     this.recording.header.timestamp = length;
-    for (let handler of this.onExitHandlers) {
+    for (const handler of this.onExitHandlers) {
       try {
         handler(this.exitCode, status.signal);
       } catch (e) {

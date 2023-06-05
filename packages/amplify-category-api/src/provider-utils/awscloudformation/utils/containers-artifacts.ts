@@ -3,20 +3,29 @@ import * as fs from 'fs-extra';
 import inquirer from 'inquirer';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
-import { provider as cloudformationProviderName } from '../../../provider-utils/awscloudformation/aws-constants';
-import { getContainers } from '../../../provider-utils/awscloudformation/docker-compose';
+import {
+  $TSContext, JSONUtilities, pathManager, readCFNTemplate,
+} from '@aws-amplify/amplify-cli-core';
+import * as cdk from 'aws-cdk-lib';
+import { provider as cloudformationProviderName } from '../aws-constants';
+import { getContainers } from '../docker-compose';
 import Container from '../docker-compose/ecs-objects/container';
 import { EcsStack } from '../ecs-apigw-stack';
-import { API_TYPE, ResourceDependency } from '../../../provider-utils/awscloudformation/service-walkthroughs/containers-walkthrough';
-import { getGitHubOwnerRepoFromPath } from '../../../provider-utils/awscloudformation/utils/github';
-import { $TSContext, JSONUtilities, pathManager, readCFNTemplate } from '@aws-amplify/amplify-cli-core';
+import { API_TYPE, ResourceDependency } from '../service-walkthroughs/containers-walkthrough';
+import { getGitHubOwnerRepoFromPath } from './github';
 import { DEPLOYMENT_MECHANISM } from '../base-api-stack';
 import { setExistingSecretArns } from './containers/set-existing-secret-arns';
 import { category } from '../../../category-constants';
-import * as cdk from 'aws-cdk-lib';
 
+/**
+ *
+ * @param resourceName
+ */
 export const cfnFileName = (resourceName: string) => `${resourceName}-cloudformation-template.json`;
 
+/**
+ *
+ */
 export type ApiResource = {
   category: string;
   resourceName: string;
@@ -46,10 +55,16 @@ type ContainerArtifactsMetadata = {
   pipelineInfo: { consoleUrl: string };
 };
 
+/**
+ *
+ * @param context
+ * @param resource
+ * @param askForExposedContainer
+ */
 export async function generateContainersArtifacts(
   context: $TSContext,
   resource: ApiResource,
-  askForExposedContainer: boolean = false,
+  askForExposedContainer = false,
 ): Promise<ContainerArtifactsMetadata> {
   const {
     providers: { [cloudformationProviderName]: provider },
@@ -73,7 +88,9 @@ export async function generateContainersArtifacts(
   const resourceDir = path.normalize(path.join(backendDir, categoryName, resourceName));
   const srcPath = path.join(resourceDir, 'src');
 
-  const { containersPorts, containers, isInitialDeploy, desiredCount, exposedContainer, secretsArns } = await processDockerConfig(
+  const {
+    containersPorts, containers, isInitialDeploy, desiredCount, exposedContainer, secretsArns,
+  } = await processDockerConfig(
     context,
     resource,
     srcPath,
@@ -84,7 +101,7 @@ export async function generateContainersArtifacts(
   const existingEcrRepositories: Set<string> = new Set(
     repositories
       .map(({ repositoryName }) => repositoryName)
-      .filter(repositoryName => repositoryName.startsWith(`${envName}-${categoryName}-${resourceName}-`)),
+      .filter((repositoryName) => repositoryName.startsWith(`${envName}-${categoryName}-${resourceName}-`)),
   );
 
   const stack = new EcsStack(undefined, 'ContainersStack', {
@@ -117,11 +134,18 @@ export async function generateContainersArtifacts(
   };
 }
 
+/**
+ *
+ * @param context
+ * @param resource
+ * @param srcPath
+ * @param askForExposedContainer
+ */
 export async function processDockerConfig(
   context: $TSContext,
   resource: ApiResource,
   srcPath: string,
-  askForExposedContainer: boolean = false,
+  askForExposedContainer = false,
 ) {
   const {
     providers: { [cloudformationProviderName]: provider },
@@ -129,7 +153,9 @@ export async function processDockerConfig(
 
   const { StackName: envName } = provider;
 
-  const { resourceName, gitHubInfo, deploymentMechanism, output, exposedContainer: exposedContainerFromMeta } = resource;
+  const {
+    resourceName, gitHubInfo, deploymentMechanism, output, exposedContainer: exposedContainerFromMeta,
+  } = resource;
 
   const dockerComposeFileNameYaml = 'docker-compose.yaml';
   const dockerComposeFileNameYml = 'docker-compose.yml';
@@ -158,7 +184,9 @@ export async function processDockerConfig(
 
         const octokit = new Octokit({ auth: gitHubToken });
 
-        const { owner, repo, branch, path: pathInRepo } = getGitHubOwnerRepoFromPath(repoUri);
+        const {
+          owner, repo, branch, path: pathInRepo,
+        } = getGitHubOwnerRepoFromPath(repoUri);
 
         try {
           const {
@@ -198,7 +226,9 @@ export async function processDockerConfig(
   const composeContents = containerDefinitionFiles[dockerComposeFileNameYaml] || containerDefinitionFiles[dockerComposeFileNameYml];
   const { [dockerfileFileName]: dockerfileContents } = containerDefinitionFiles;
 
-  const { buildspec, containers, service, secrets } = getContainers(composeContents, dockerfileContents);
+  const {
+    buildspec, containers, service, secrets,
+  } = getContainers(composeContents, dockerfileContents);
 
   const containersPorts = containers.reduce(
     (acc, container) => acc.concat(container.portMappings.map(({ containerPort }) => containerPort)),
@@ -210,11 +240,11 @@ export async function processDockerConfig(
   let isInitialDeploy = Object.keys(output ?? {}).length === 0;
   const currentContainersSet = new Set(output?.ContainerNames?.split(','));
   // Service require all containers to exists
-  isInitialDeploy = isInitialDeploy || newContainersName.some(newContainer => !currentContainersSet.has(newContainer));
+  isInitialDeploy = isInitialDeploy || newContainersName.some((newContainer) => !currentContainersSet.has(newContainer));
 
   let exposedContainer: { name: string; port: number };
 
-  const containersExposed = containers.filter(container => container.portMappings.length > 0);
+  const containersExposed = containers.filter((container) => container.portMappings.length > 0);
 
   if (containersPorts.length === 0) {
     throw new Error('Service requires at least one exposed port');
@@ -291,7 +321,7 @@ export async function processDockerConfig(
         version: uuid(),
       });
 
-      const [prefix,] = secretArn.toString().split(ssmSecretName);
+      const [prefix] = secretArn.toString().split(ssmSecretName);
       const secretArnRef = cdk.Fn.join('', [
         prefix,
         cdk.Fn.ref('rootStackName'),
@@ -340,25 +370,24 @@ async function shouldUpdateSecrets(context: $TSContext, secrets: Record<string, 
 async function checkContainerExposed(
   containersExposed: Container[],
   exposedContainerFromMeta: { name: string; port: number } = { name: '', port: 0 },
-  askForExposedContainer: boolean = false,
+  askForExposedContainer = false,
 ): Promise<{ name: string; port: number }> {
-  const containerExposed = containersExposed.find(container => container.name === exposedContainerFromMeta.name);
+  const containerExposed = containersExposed.find((container) => container.name === exposedContainerFromMeta.name);
 
-  if (!askForExposedContainer && containerExposed?.portMappings.find(port => port.containerPort === exposedContainerFromMeta.port)) {
+  if (!askForExposedContainer && containerExposed?.portMappings.find((port) => port.containerPort === exposedContainerFromMeta.port)) {
     return { ...exposedContainerFromMeta };
-  } else {
-    const choices: { name: string; value: Container }[] = containersExposed.map(container => ({ name: container.name, value: container }));
-
-    const { containerToExpose } = await inquirer.prompt({
-      message: 'Select which container is the entrypoint',
-      name: 'containerToExpose',
-      type: 'list',
-      choices,
-    });
-
-    return {
-      name: containerToExpose.name,
-      port: containerToExpose.portMappings[0].containerPort,
-    };
   }
+  const choices: { name: string; value: Container }[] = containersExposed.map((container) => ({ name: container.name, value: container }));
+
+  const { containerToExpose } = await inquirer.prompt({
+    message: 'Select which container is the entrypoint',
+    name: 'containerToExpose',
+    type: 'list',
+    choices,
+  });
+
+  return {
+    name: containerToExpose.name,
+    port: containerToExpose.portMappings[0].containerPort,
+  };
 }

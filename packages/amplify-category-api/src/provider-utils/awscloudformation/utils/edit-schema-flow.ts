@@ -4,6 +4,11 @@ import * as path from 'path';
 import { category } from '../../../category-constants';
 import { gqlSchemaFilename } from '../aws-constants';
 
+/**
+ *
+ * @param context
+ * @param apiName
+ */
 export const editSchemaFlow = async (context: $TSContext, apiName: string) => {
   if (!(await prompter.yesOrNo('Do you want to edit the schema now?', true))) {
     return;

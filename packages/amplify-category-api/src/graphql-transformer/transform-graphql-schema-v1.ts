@@ -2,7 +2,6 @@ import fs from 'fs-extra';
 import path from 'path';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
-import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import {
   $TSContext,
   AmplifyCategories,
@@ -14,9 +13,9 @@ import {
   JSONUtilities,
   pathManager,
   stateManager,
+  exitOnNextTick,
 } from '@aws-amplify/amplify-cli-core';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { isAuthModeUpdated } from './auth-mode-compare';
 import {
   collectDirectivesByTypeNames,
   readTransformerConfiguration,
@@ -30,7 +29,8 @@ import {
   buildAPIProject,
   getSanityCheckRules,
 } from 'graphql-transformer-core';
-import { exitOnNextTick } from '@aws-amplify/amplify-cli-core';
+import { isAuthModeUpdated } from './auth-mode-compare';
+import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import { searchablePushChecks } from './api-utils';
 import { getTransformerFactory } from './transformer-factory';
 
@@ -43,17 +43,22 @@ const DESTRUCTIVE_UPDATES_FLAG = 'allow-destructive-graphql-schema-updates';
 const PROVIDER_NAME = 'awscloudformation';
 
 async function warnOnAuth(context, map) {
-  const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
+  const unAuthModelTypes = Object.keys(map).filter((type) => !map[type].includes('auth') && map[type].includes('model'));
   if (unAuthModelTypes.length) {
     const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
     const docLink = getGraphQLTransformerAuthDocLink(transformerVersion);
     context.print.warning("\nThe following types do not have '@auth' enabled. Consider using @auth with @model");
-    context.print.warning(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'));
+    context.print.warning(unAuthModelTypes.map((type) => `\t - ${type}`).join('\n'));
     context.print.info(`Learn more about @auth here: ${docLink}\n`);
   }
 }
 
 /**
+ * @param context
+ * @param resourceDir
+ * @param cloudBackendDirectory
+ * @param updatedResources
+ * @param usedDirectives
  * @TODO Include a map of versions to keep track
  */
 async function transformerVersionCheck(context, resourceDir, cloudBackendDirectory, updatedResources, usedDirectives) {
@@ -62,8 +67,8 @@ async function transformerVersionCheck(context, resourceDir, cloudBackendDirecto
   const searchable = getGraphQLTransformerOpenSearchProductionDocLink(transformerVersion);
   const versionChangeMessage = `The default behavior for @auth has changed in the latest version of Amplify\nRead here for details: ${authDocLink}`;
   const warningESMessage = `The behavior for @searchable has changed after version 4.14.1.\nRead here for details: ${searchable}`;
-  const checkVersionExist = config => config && config.Version;
-  const checkESWarningExists = config => config && config.ElasticsearchWarning;
+  const checkVersionExist = (config) => config && config.Version;
+  const checkESWarningExists = (config) => config && config.ElasticsearchWarning;
   let writeToConfig = false;
 
   // this is where we check if there is a prev version of the transformer being used
@@ -82,7 +87,7 @@ async function transformerVersionCheck(context, resourceDir, cloudBackendDirecto
   const showPrompt = !(cloudVersionExist || localVersionExist);
   const showWarning = !(cloudWarningExist || localWarningExist);
 
-  const resources = updatedResources.filter(resource => resource.service === 'AppSync');
+  const resources = updatedResources.filter((resource) => resource.service === 'AppSync');
   if (resources.length > 0) {
     if (showPrompt && usedDirectives.includes('auth')) {
       await warningMessage(context, versionChangeMessage);
@@ -119,7 +124,7 @@ async function warningMessage(context, warningMessage) {
     const response = await inquirer.prompt({
       name: 'transformerConfig',
       type: 'confirm',
-      message: `Do you wish to continue?`,
+      message: 'Do you wish to continue?',
       default: false,
     });
     if (!response.transformerConfig) {
@@ -130,7 +135,7 @@ async function warningMessage(context, warningMessage) {
 }
 
 function apiProjectIsFromOldVersion(pathToProject, resourcesToBeCreated) {
-  const resources = resourcesToBeCreated.filter(resource => resource.service === 'AppSync');
+  const resources = resourcesToBeCreated.filter((resource) => resource.service === 'AppSync');
   if (!pathToProject || resources.length > 0) {
     return false;
   }
@@ -146,6 +151,7 @@ function apiProjectIsFromOldVersion(pathToProject, resourcesToBeCreated) {
  * the new implementation and call update stack again.
  * @param {*} context
  * @param {*} resourceDir
+ * @param options
  */
 async function migrateProject(context, options) {
   const { resourceDir, isCLIMigration, cloudBackendDirectory } = options;
@@ -187,6 +193,11 @@ async function migrateProject(context, options) {
   }
 }
 
+/**
+ *
+ * @param context
+ * @param options
+ */
 export async function transformGraphQLSchemaV1(context, options) {
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const flags = context.parameters.options;
@@ -206,8 +217,8 @@ export async function transformGraphQLSchemaV1(context, options) {
   // cloud formation push will fail even if there is no changes in the GraphQL API
   // https://github.com/aws-amplify/amplify-console/issues/10
   const resourceNeedCompile = allResources
-    .filter(r => !resources.includes(r))
-    .filter(r => {
+    .filter((r) => !resources.includes(r))
+    .filter((r) => {
       const buildDir = path.normalize(path.join(backEndDir, apiCategory, r.resourceName, 'build'));
       return !fs.existsSync(buildDir);
     });
@@ -216,9 +227,9 @@ export async function transformGraphQLSchemaV1(context, options) {
   if (forceCompile) {
     resources = resources.concat(allResources);
   }
-  resources = resources.filter(resource => resource.service === 'AppSync');
+  resources = resources.filter((resource) => resource.service === 'AppSync');
   // check if api is in update status or create status
-  const isNewAppSyncAPI: boolean = resourcesToBeCreated.filter(resource => resource.service === 'AppSync').length === 0 ? false : true;
+  const isNewAppSyncAPI: boolean = resourcesToBeCreated.filter((resource) => resource.service === 'AppSync').length !== 0;
 
   if (!resourceDir) {
     // There can only be one appsync resource
@@ -271,24 +282,23 @@ export async function transformGraphQLSchemaV1(context, options) {
   };
   if (isCLIMigration && isOldApiVersion) {
     return await migrateProject(context, migrateOptions);
-  } else if (isOldApiVersion) {
+  } if (isOldApiVersion) {
     let IsOldApiProject;
 
     if (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
       IsOldApiProject = context.exeInfo.inputParams.yes;
     } else {
-      const migrateMessage =
-        `${chalk.bold('The CLI is going to take the following actions during the migration step:')}\n` +
-        '\n1. If you have a GraphQL API, we will update the corresponding Cloudformation stack to support larger annotated schemas and custom resolvers.\n' +
-        'In this process, we will be making Cloudformation API calls to update your GraphQL API Cloudformation stack. This operation will result in deletion of your AppSync resolvers and then the creation of new ones and for a brief while your AppSync API will be unavailable until the migration finishes\n' +
-        '\n2. We will be updating your local Cloudformation files present inside the ‘amplify/‘ directory of your app project, for the GraphQL API service\n' +
-        '\n3. If for any reason the migration fails, the CLI will rollback your cloud and local changes and you can take a look at https://aws-amplify.github.io/docs/cli/migrate?sdk=js for manually migrating your project so that it’s compatible with the latest version of the CLI\n' +
-        '\n4. ALL THE ABOVE MENTIONED OPERATIONS WILL NOT DELETE ANY DATA FROM ANY OF YOUR DATA STORES\n' +
-        `\n${chalk.bold('Before the migration, please be aware of the following things:')}\n` +
-        '\n1. Make sure to have an internet connection through the migration process\n' +
-        '\n2. Make sure to not exit/terminate the migration process (by interrupting it explicitly in the middle of migration), as this will lead to inconsistency within your project\n' +
-        '\n3. Make sure to take a backup of your entire project (including the amplify related config files)\n' +
-        '\nDo you want to continue?\n';
+      const migrateMessage = `${chalk.bold('The CLI is going to take the following actions during the migration step:')}\n`
+        + '\n1. If you have a GraphQL API, we will update the corresponding Cloudformation stack to support larger annotated schemas and custom resolvers.\n'
+        + 'In this process, we will be making Cloudformation API calls to update your GraphQL API Cloudformation stack. This operation will result in deletion of your AppSync resolvers and then the creation of new ones and for a brief while your AppSync API will be unavailable until the migration finishes\n'
+        + '\n2. We will be updating your local Cloudformation files present inside the ‘amplify/‘ directory of your app project, for the GraphQL API service\n'
+        + '\n3. If for any reason the migration fails, the CLI will rollback your cloud and local changes and you can take a look at https://aws-amplify.github.io/docs/cli/migrate?sdk=js for manually migrating your project so that it’s compatible with the latest version of the CLI\n'
+        + '\n4. ALL THE ABOVE MENTIONED OPERATIONS WILL NOT DELETE ANY DATA FROM ANY OF YOUR DATA STORES\n'
+        + `\n${chalk.bold('Before the migration, please be aware of the following things:')}\n`
+        + '\n1. Make sure to have an internet connection through the migration process\n'
+        + '\n2. Make sure to not exit/terminate the migration process (by interrupting it explicitly in the middle of migration), as this will lead to inconsistency within your project\n'
+        + '\n3. Make sure to take a backup of your entire project (including the amplify related config files)\n'
+        + '\nDo you want to continue?\n';
       ({ IsOldApiProject } = await inquirer.prompt({
         name: 'IsOldApiProject',
         type: 'confirm',
@@ -437,6 +447,7 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
 /**
  * S3API
  * TBD: Remove this once all invoke functions are moved to a library shared across amplify
+ * @param context
  * */
 async function invokeS3GetResourceName(context) {
   const s3ResourceName = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetResourceName', [context]);

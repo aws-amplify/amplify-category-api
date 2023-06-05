@@ -7,6 +7,10 @@ const gqlConfigFilename = '.graphqlconfig.yml';
 
 export const name = subcommand;
 
+/**
+ *
+ * @param context
+ */
 export const run = async (context: $TSContext) => {
   const resourceName = context.parameters.first;
 

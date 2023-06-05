@@ -33,6 +33,11 @@ const intrinsicFunctionMap = {
   'Fn::ImportValue': cfnImportValue,
 };
 
+/**
+ *
+ * @param node
+ * @param context
+ */
 export function parseValue(node, context: CloudFormationParseContext) {
   if (['string', 'number'].includes(typeof node)) return node;
 

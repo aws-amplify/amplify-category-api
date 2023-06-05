@@ -14,6 +14,10 @@ import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
  * @returns true if @manyToMany relation has correct type
  */
 
+/**
+ *
+ * @param schema
+ */
 export const validateCorrectTypeInManyToManyRelation = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(

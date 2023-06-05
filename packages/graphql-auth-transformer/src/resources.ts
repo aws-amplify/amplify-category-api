@@ -1,6 +1,7 @@
 import Template from 'cloudform-types/types/template';
-import { AppSync, Fn, StringParameter, Refs, NumberParameter, IAM, Value } from 'cloudform-types';
-import { AuthRule, AuthProvider } from './AuthRule';
+import {
+  AppSync, Fn, StringParameter, Refs, NumberParameter, IAM, Value,
+} from 'cloudform-types';
 import {
   str,
   ref,
@@ -36,11 +37,14 @@ import GraphQLApi, {
   AdditionalAuthenticationProvider,
   OpenIDConnectConfig,
 } from 'cloudform-types/types/appSync/graphQlApi';
-import * as Transformer from './ModelAuthTransformer';
 import { FieldDefinitionNode } from 'graphql';
-
-import { DEFAULT_OWNER_FIELD, DEFAULT_IDENTITY_FIELD, DEFAULT_GROUPS_FIELD, DEFAULT_GROUP_CLAIM } from './constants';
 import ManagedPolicy from 'cloudform-types/types/iam/managedPolicy';
+import * as Transformer from './ModelAuthTransformer';
+
+import {
+  DEFAULT_OWNER_FIELD, DEFAULT_IDENTITY_FIELD, DEFAULT_GROUPS_FIELD, DEFAULT_GROUP_CLAIM,
+} from './constants';
+import { AuthRule, AuthProvider } from './AuthRule';
 
 function replaceIfUsername(identityClaim: string): string {
   return identityClaim === 'username' ? 'cognito:username' : identityClaim;
@@ -50,7 +54,13 @@ function isUsername(identityClaim: string): boolean {
   return identityClaim === 'username';
 }
 
+/**
+ *
+ */
 export class ResourceFactory {
+  /**
+   *
+   */
   public makeParams() {
     return {
       [ResourceConstants.PARAMETERS.AppSyncApiName]: new StringParameter({
@@ -59,17 +69,17 @@ export class ResourceFactory {
       }),
       [ResourceConstants.PARAMETERS.APIKeyExpirationEpoch]: new NumberParameter({
         Description:
-          'The epoch time in seconds when the API Key should expire.' +
-          ' Setting this to 0 will default to 7 days from the deployment date.' +
-          ' Setting this to -1 will not create an API Key.',
+          'The epoch time in seconds when the API Key should expire.'
+          + ' Setting this to 0 will default to 7 days from the deployment date.'
+          + ' Setting this to -1 will not create an API Key.',
         Default: 0,
         MinValue: -1,
       }),
       [ResourceConstants.PARAMETERS.CreateAPIKey]: new NumberParameter({
         Description:
-          'The boolean value to control if an API Key will be created or not.' +
-          ' The value of the property is automatically set by the CLI.' +
-          ' If the value is set to 0 no API Key will be created.',
+          'The boolean value to control if an API Key will be created or not.'
+          + ' The value of the property is automatically set by the CLI.'
+          + ' If the value is set to 0 no API Key will be created.',
         Default: 0,
         MinValue: 0,
         MaxValue: 1,
@@ -83,6 +93,7 @@ export class ResourceFactory {
 
   /**
    * Creates the barebones template for an application.
+   * @param apiKeyConfig
    */
   public initTemplate(apiKeyConfig: Transformer.ApiKeyConfig): Template {
     return {
@@ -103,6 +114,10 @@ export class ResourceFactory {
     };
   }
 
+  /**
+   *
+   * @param apiKeyConfig
+   */
   public makeAppSyncApiKey(apiKeyConfig: Transformer.ApiKeyConfig) {
     let expirationDays = 7;
     if (apiKeyConfig && apiKeyConfig.apiKeyExpirationDays) {
@@ -140,8 +155,13 @@ export class ResourceFactory {
     };
   }
 
+  /**
+   *
+   * @param apiRecord
+   * @param authConfig
+   */
   public updateGraphQLAPIWithAuth(apiRecord: GraphQLApi, authConfig: Transformer.AppSyncAuthConfiguration) {
-    let properties: GraphQLApiProperties = {
+    const properties: GraphQLApiProperties = {
       ...apiRecord.Properties,
       Name: apiRecord.Properties.Name,
       AuthenticationType: authConfig.defaultAuthentication.authenticationType,
@@ -223,6 +243,11 @@ export class ResourceFactory {
     });
   }
 
+  /**
+   *
+   * @param type
+   * @param field
+   */
   public blankResolver(type: string, field: string) {
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -239,6 +264,9 @@ export class ResourceFactory {
     });
   }
 
+  /**
+   *
+   */
   public noneDataSource() {
     return new AppSync.DataSource({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -252,24 +280,25 @@ export class ResourceFactory {
    * ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable variable to
    * true if the user is static group authorized.
    * @param rules The list of static group authorization rules.
+   * @param field
    */
   public staticGroupAuthorizationExpression(rules: AuthRule[], field?: FieldDefinitionNode): Expression {
     if (!rules || rules.length === 0) {
-      return comment(`No Static Group Authorization Rules`);
+      return comment('No Static Group Authorization Rules');
     }
     const variableToSet = this.getStaticAuthorizationVariable(field);
     let groupAuthorizationExpressions = [];
     for (const rule of rules) {
-      const groups = rule.groups;
+      const { groups } = rule;
       const groupClaimAttribute = rule.groupClaim || DEFAULT_GROUP_CLAIM;
 
       if (groups) {
         groupAuthorizationExpressions = groupAuthorizationExpressions.concat(
           comment(`Authorization rule: { allow: groups, groups: ${JSON.stringify(groups)}, groupClaim: "${groupClaimAttribute}" }`),
           this.setUserGroups(rule.groupClaim),
-          set(ref('allowedGroups'), list(groups.map(s => str(s)))),
+          set(ref('allowedGroups'), list(groups.map((s) => str(s)))),
           forEach(ref('userGroup'), ref('userGroups'), [
-            iff(raw(`$allowedGroups.contains($userGroup)`), compoundExpression([set(ref(variableToSet), raw('true')), raw('#break')])),
+            iff(raw('$allowedGroups.contains($userGroup)'), compoundExpression([set(ref(variableToSet), raw('true')), raw('#break')])),
           ]),
         );
       }
@@ -293,11 +322,11 @@ export class ResourceFactory {
    */
   public dynamicGroupAuthorizationExpressionForCreateOperations(
     rules: AuthRule[],
-    variableToCheck: string = 'ctx.args.input',
+    variableToCheck = 'ctx.args.input',
     variableToSet: string = ResourceConstants.SNIPPETS.IsDynamicGroupAuthorizedVariable,
   ): Expression {
     if (!rules || rules.length === 0) {
-      return comment(`No Dynamic Group Authorization Rules`);
+      return comment('No Dynamic Group Authorization Rules');
     }
     return block('Dynamic Group Authorization Checks', [
       this.dynamicAuthorizationExpressionForCreate(rules, variableToCheck, variableToSet),
@@ -308,23 +337,24 @@ export class ResourceFactory {
    * Given a set of dynamic group authorization rules verifies that input
    * value satisfies at least one dynamic group authorization rule.
    * @param rules The list of authorization rules.
+   * @param fieldToCheck
    * @param variableToCheck The name of the value containing the input.
    * @param variableToSet The name of the variable to set when auth is satisfied.
    */
   public dynamicGroupAuthorizationExpressionForCreateOperationsByField(
     rules: AuthRule[],
     fieldToCheck: string,
-    variableToCheck: string = 'ctx.args.input',
+    variableToCheck = 'ctx.args.input',
     variableToSet: string = ResourceConstants.SNIPPETS.IsDynamicGroupAuthorizedVariable,
   ): Expression {
     if (!rules || rules.length === 0) {
       return comment(`No dynamic group authorization rules for field "${fieldToCheck}"`);
     }
-    let groupAuthorizationExpression: Expression = this.dynamicAuthorizationExpressionForCreate(
+    const groupAuthorizationExpression: Expression = this.dynamicAuthorizationExpressionForCreate(
       rules,
       variableToCheck,
       variableToSet,
-      rule => `Authorization rule on field "${fieldToCheck}": { allow: ${rule.allow}, \
+      (rule) => `Authorization rule on field "${fieldToCheck}": { allow: ${rule.allow}, \
 groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}", groupClaim: "${rule.groupClaim || DEFAULT_GROUP_CLAIM}" }`,
     );
     return block(`Dynamic group authorization rules for field "${fieldToCheck}"`, [groupAuthorizationExpression]);
@@ -332,7 +362,7 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}", groupClaim: "${rule.
 
   private dynamicAuthorizationExpressionForCreate(
     rules: AuthRule[],
-    variableToCheck: string = 'ctx.args.input',
+    variableToCheck = 'ctx.args.input',
     variableToSet: string = ResourceConstants.SNIPPETS.IsDynamicGroupAuthorizedVariable,
     formatComment?: (rule: AuthRule) => string,
   ) {
@@ -367,38 +397,53 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}", groupClaim: "${rule.
    * Given a set of owner authorization rules verifies that input
    * value satisfies at least one rule.
    * @param rules The list of authorization rules.
+   * @param fieldIsList
    * @param variableToCheck The name of the value containing the input.
    * @param variableToSet The name of the variable to set when auth is satisfied.
    */
   public ownerAuthorizationExpressionForCreateOperations(
     rules: AuthRule[],
     fieldIsList: (fieldName: string) => boolean,
-    variableToCheck: string = 'ctx.args.input',
+    variableToCheck = 'ctx.args.input',
     variableToSet: string = ResourceConstants.SNIPPETS.IsOwnerAuthorizedVariable,
   ): Expression {
     if (!rules || rules.length === 0) {
-      return comment(`No Owner Authorization Rules`);
+      return comment('No Owner Authorization Rules');
     }
     return block('Owner Authorization Checks', [
       this.ownershipAuthorizationExpressionForCreate(rules, fieldIsList, variableToCheck, variableToSet),
     ]);
   }
 
+  /**
+   *
+   * @param rules
+   * @param variableToCheck
+   * @param variableToSet
+   */
   public ownerAuthorizationExpressionForSubscriptions(
     rules: AuthRule[],
-    variableToCheck: string = 'ctx.args',
+    variableToCheck = 'ctx.args',
     variableToSet: string = ResourceConstants.SNIPPETS.IsOwnerAuthorizedVariable,
   ): Expression {
     if (!rules || rules.length === 0) {
-      return comment(`No Owner Authorization Rules`);
+      return comment('No Owner Authorization Rules');
     }
     return block('Owner Authorization Checks', [
       this.ownershipAuthorizationExpressionForSubscriptions(rules, variableToCheck, variableToSet),
     ]);
   }
+
+  /**
+   *
+   * @param rules
+   * @param variableToCheck
+   * @param variableToSet
+   * @param formatComment
+   */
   public ownershipAuthorizationExpressionForSubscriptions(
     rules: AuthRule[],
-    variableToCheck: string = 'ctx.args',
+    variableToCheck = 'ctx.args',
     variableToSet: string = ResourceConstants.SNIPPETS.IsOwnerAuthorizedVariable,
     formatComment?: (rule: AuthRule) => string,
   ) {
@@ -417,17 +462,17 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}", groupClaim: "${rule.
         set(ref(allowedOwnersVariable), raw(`$util.defaultIfNull($${variableToCheck}.${ownerAttribute}, null)`)),
         isUser
           ? // tslint:disable-next-line
-            set(
-              ref('identityValue'),
-              raw(`$util.defaultIfNull($ctx.identity.claims.get("${rawUsername}"),
+          set(
+            ref('identityValue'),
+            raw(`$util.defaultIfNull($ctx.identity.claims.get("${rawUsername}"),
                         $util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}"))`),
-            )
+          )
           : set(ref('identityValue'), raw(`$util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}")`)),
         // If a list of owners check for at least one.
         iff(
           raw(`$util.isList($${allowedOwnersVariable})`),
           forEach(ref('allowedOwner'), ref(allowedOwnersVariable), [
-            iff(raw(`$allowedOwner == $identityValue`), set(ref(variableToSet), raw('true'))),
+            iff(raw('$allowedOwner == $identityValue'), set(ref(variableToSet), raw('true'))),
           ]),
         ),
         // If a single owner check for at least one.
@@ -438,13 +483,15 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}", groupClaim: "${rule.
       );
       ruleNumber++;
     }
-    return compoundExpression([set(ref(variableToSet), raw(`false`)), ...ownershipAuthorizationExpressions]);
+    return compoundExpression([set(ref(variableToSet), raw('false')), ...ownershipAuthorizationExpressions]);
   }
 
   /**
    * Given a set of owner authorization rules verifies that if the input
    * specifies the given input field, the value satisfies at least one rule.
    * @param rules The list of authorization rules.
+   * @param fieldToCheck
+   * @param fieldIsList
    * @param variableToCheck The name of the value containing the input.
    * @param variableToSet The name of the variable to set when auth is satisfied.
    */
@@ -452,11 +499,11 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}", groupClaim: "${rule.
     rules: AuthRule[],
     fieldToCheck: string,
     fieldIsList: (fieldName: string) => boolean,
-    variableToCheck: string = 'ctx.args.input',
+    variableToCheck = 'ctx.args.input',
     variableToSet: string = ResourceConstants.SNIPPETS.IsOwnerAuthorizedVariable,
   ): Expression {
     if (!rules || rules.length === 0) {
-      return comment(`No Owner Authorization Rules`);
+      return comment('No Owner Authorization Rules');
     }
     return block(`Owner authorization rules for field "${fieldToCheck}"`, [
       this.ownershipAuthorizationExpressionForCreate(
@@ -464,17 +511,25 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}", groupClaim: "${rule.
         fieldIsList,
         variableToCheck,
         variableToSet,
-        rule => `Authorization rule: { allow: ${rule.allow}, \
+        (rule) => `Authorization rule: { allow: ${rule.allow}, \
 ownerField: "${rule.ownerField || DEFAULT_OWNER_FIELD}", \
 identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_FIELD}" }`,
       ),
     ]);
   }
 
+  /**
+   *
+   * @param rules
+   * @param fieldIsList
+   * @param variableToCheck
+   * @param variableToSet
+   * @param formatComment
+   */
   public ownershipAuthorizationExpressionForCreate(
     rules: AuthRule[],
     fieldIsList: (fieldName: string) => boolean,
-    variableToCheck: string = 'ctx.args.input',
+    variableToCheck = 'ctx.args.input',
     variableToSet: string = ResourceConstants.SNIPPETS.IsOwnerAuthorizedVariable,
     formatComment?: (rule: AuthRule) => string,
   ) {
@@ -494,18 +549,18 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         set(ref(allowedOwnersVariable), raw(`$util.defaultIfNull($${variableToCheck}.${ownerAttribute}, null)`)),
         isUser
           ? // tslint:disable-next-line
-            set(
-              ref('identityValue'),
-              raw(
-                `$util.defaultIfNull($ctx.identity.claims.get("${rawUsername}"), $util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}"))`,
-              ),
-            )
+          set(
+            ref('identityValue'),
+            raw(
+              `$util.defaultIfNull($ctx.identity.claims.get("${rawUsername}"), $util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}"))`,
+            ),
+          )
           : set(ref('identityValue'), raw(`$util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}")`)),
         // If a list of owners check for at least one.
         iff(
           raw(`$util.isList($${allowedOwnersVariable})`),
           forEach(ref('allowedOwner'), ref(allowedOwnersVariable), [
-            iff(raw(`$allowedOwner == $identityValue`), set(ref(variableToSet), raw('true'))),
+            iff(raw('$allowedOwner == $identityValue'), set(ref(variableToSet), raw('true'))),
           ]),
         ),
         // If a single owner check for at least one.
@@ -546,13 +601,15 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
       }
       ruleNumber++;
     }
-    return compoundExpression([set(ref(variableToSet), raw(`false`)), ...ownershipAuthorizationExpressions]);
+    return compoundExpression([set(ref(variableToSet), raw('false')), ...ownershipAuthorizationExpressions]);
   }
 
   /**
    * Given a set of dynamic group authorization rules verifies w/ a conditional
    * expression that the existing object has the correct group expression.
    * @param rules The list of authorization rules.
+   * @param fieldIsList
+   * @param fieldBeingProtected
    * @param variableToCheck The name of the value containing the input.
    * @param variableToSet The name of the variable to set when auth is satisfied.
    */
@@ -560,7 +617,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     rules: AuthRule[],
     fieldIsList: (fieldName: string) => boolean,
     fieldBeingProtected?: string,
-    variableToCheck: string = 'ctx.args.input',
+    variableToCheck = 'ctx.args.input',
     variableToSet: string = ResourceConstants.SNIPPETS.IsDynamicGroupAuthorizedVariable,
   ): Expression {
     const fieldMention = fieldBeingProtected ? ` for field "${fieldBeingProtected}"` : '';
@@ -609,6 +666,8 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
    * Given a set of owner authorization rules verifies with a conditional
    * expression that the existing object is owned.
    * @param rules The list of authorization rules.
+   * @param fieldIsList
+   * @param fieldBeingProtected
    * @param variableToCheck The name of the value containing the input.
    * @param variableToSet The name of the variable to set when auth is satisfied.
    */
@@ -616,7 +675,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     rules: AuthRule[],
     fieldIsList: (fieldName: string) => boolean,
     fieldBeingProtected?: string,
-    variableToCheck: string = 'ctx.args.input',
+    variableToCheck = 'ctx.args.input',
     variableToSet: string = ResourceConstants.SNIPPETS.IsOwnerAuthorizedVariable,
   ): Expression {
     const fieldMention = fieldBeingProtected ? ` for field "${fieldBeingProtected}"` : '';
@@ -650,11 +709,11 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         // tslint:disable
         isUser
           ? raw(
-              `$util.qr($ownerAuthExpressionValues.put(":${identityName}", $util.dynamodb.toDynamoDB($util.defaultIfNull($ctx.identity.claims.get("${rawUsername}"), $util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}")))))`,
-            )
+            `$util.qr($ownerAuthExpressionValues.put(":${identityName}", $util.dynamodb.toDynamoDB($util.defaultIfNull($ctx.identity.claims.get("${rawUsername}"), $util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}")))))`,
+          )
           : raw(
-              `$util.qr($ownerAuthExpressionValues.put(":${identityName}", $util.dynamodb.toDynamoDB($util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}"))))`,
-            ),
+            `$util.qr($ownerAuthExpressionValues.put(":${identityName}", $util.dynamodb.toDynamoDB($util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}"))))`,
+          ),
         // tslint:enable
       );
       ruleNumber++;
@@ -671,15 +730,18 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
    * Given a list of rules return a VTL expression that checks if the given variableToCheck
    * statisies at least one of the auth rules.
    * @param rules The list of dynamic group authorization rules.
+   * @param variableToCheck
+   * @param variableToSet
+   * @param defaultValue
    */
   public dynamicGroupAuthorizationExpressionForReadOperations(
     rules: AuthRule[],
-    variableToCheck: string = 'ctx.result',
+    variableToCheck = 'ctx.result',
     variableToSet: string = ResourceConstants.SNIPPETS.IsDynamicGroupAuthorizedVariable,
     defaultValue: Expression = raw(`$util.defaultIfNull($${variableToSet}, false)`),
   ): Expression {
     if (!rules || rules.length === 0) {
-      return comment(`No Dynamic Group Authorization Rules`);
+      return comment('No Dynamic Group Authorization Rules');
     }
     let groupAuthorizationExpressions = [];
     for (const rule of rules) {
@@ -690,8 +752,8 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         set(ref('allowedGroups'), ref(`util.defaultIfNull($${variableToCheck}.${groupsAttribute}, [])`)),
         this.setUserGroups(rule.groupClaim),
         forEach(ref('userGroup'), ref('userGroups'), [
-          iff(raw('$util.isList($allowedGroups)'), iff(raw(`$allowedGroups.contains($userGroup)`), set(ref(variableToSet), raw('true')))),
-          iff(raw(`$util.isString($allowedGroups)`), iff(raw(`$allowedGroups == $userGroup`), set(ref(variableToSet), raw('true')))),
+          iff(raw('$util.isList($allowedGroups)'), iff(raw('$allowedGroups.contains($userGroup)'), set(ref(variableToSet), raw('true')))),
+          iff(raw('$util.isString($allowedGroups)'), iff(raw('$allowedGroups == $userGroup'), set(ref(variableToSet), raw('true')))),
         ]),
       );
     }
@@ -703,15 +765,18 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
    * Given a list of rules return a VTL expression that checks if the given variableToCheck
    * statisies at least one of the auth rules.
    * @param rules The list of dynamic group authorization rules.
+   * @param variableToCheck
+   * @param variableToSet
+   * @param defaultValue
    */
   public ownerAuthorizationExpressionForReadOperations(
     rules: AuthRule[],
-    variableToCheck: string = 'ctx.result',
+    variableToCheck = 'ctx.result',
     variableToSet: string = ResourceConstants.SNIPPETS.IsOwnerAuthorizedVariable,
     defaultValue: Expression = raw(`$util.defaultIfNull($${variableToSet}, false)`),
   ): Expression {
     if (!rules || rules.length === 0) {
-      return comment(`No Owner Authorization Rules`);
+      return comment('No Owner Authorization Rules');
     }
     let ownerAuthorizationExpressions = [];
     let ruleNumber = 0;
@@ -726,17 +791,17 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         set(ref(allowedOwnersVariable), ref(`util.defaultIfNull($${variableToCheck}.${ownerAttribute}, [])`)),
         isUser
           ? // tslint:disable-next-line
-            set(
-              ref('identityValue'),
-              raw(
-                `$util.defaultIfNull($ctx.identity.claims.get("${rawUsername}"), $util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}"))`,
-              ),
-            )
+          set(
+            ref('identityValue'),
+            raw(
+              `$util.defaultIfNull($ctx.identity.claims.get("${rawUsername}"), $util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}"))`,
+            ),
+          )
           : set(ref('identityValue'), raw(`$util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}")`)),
         iff(
           raw(`$util.isList($${allowedOwnersVariable})`),
           forEach(ref('allowedOwner'), ref(allowedOwnersVariable), [
-            iff(raw(`$allowedOwner == $identityValue`), set(ref(variableToSet), raw('true'))),
+            iff(raw('$allowedOwner == $identityValue'), set(ref(variableToSet), raw('true'))),
           ]),
         ),
         iff(
@@ -749,6 +814,9 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     return block('Owner Authorization Checks', [set(ref(variableToSet), defaultValue), ...ownerAuthorizationExpressions]);
   }
 
+  /**
+   *
+   */
   public throwIfSubscriptionUnauthorized(): Expression {
     const ifUnauthThrow = iff(
       not(
@@ -764,6 +832,10 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     return block('Throw if unauthorized', [ifUnauthThrow]);
   }
 
+  /**
+   *
+   * @param field
+   */
   public throwIfUnauthorized(field?: FieldDefinitionNode): Expression {
     const staticGroupAuthorizedVariable = this.getStaticAuthorizationVariable(field);
     const ifUnauthThrow = iff(
@@ -781,10 +853,18 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     return block('Throw if unauthorized', [ifUnauthThrow]);
   }
 
+  /**
+   *
+   * @param objectPath
+   */
   public returnIfEmpty(objectPath: string): Expression {
     return iff(isNullOrEmpty(ref(objectPath)), ret());
   }
 
+  /**
+   *
+   * @param field
+   */
   public throwIfStaticGroupUnauthorized(field?: FieldDefinitionNode): Expression {
     const staticGroupAuthorizedVariable = this.getStaticAuthorizationVariable(field);
     const ifUnauthThrow = iff(equals(ref(staticGroupAuthorizedVariable), raw('false')), raw('$util.unauthorized()'));
@@ -794,6 +874,10 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
   // A = IsStaticallyAuthed
   // B = AuthConditionIsNotNull
   // ! (A OR B) == (!A AND !B)
+  /**
+   *
+   * @param field
+   */
   public throwIfNotStaticGroupAuthorizedOrAuthConditionIsEmpty(field?: FieldDefinitionNode): Expression {
     const staticGroupAuthorizedVariable = this.getStaticAuthorizationVariable(field);
     const ifUnauthThrow = iff(
@@ -803,6 +887,9 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     return block('Throw if unauthorized', [ifUnauthThrow]);
   }
 
+  /**
+   *
+   */
   public collectAuthCondition(): Expression {
     return block('Collect Auth Condition', [
       set(
@@ -822,8 +909,8 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
       iff(
         ref('groupAuthExpressions'),
         forEach(ref('authExpr'), ref('groupAuthExpressions'), [
-          set(ref('totalAuthExpression'), str(`$totalAuthExpression $authExpr`)),
-          iff(ref('foreach.hasNext'), set(ref('totalAuthExpression'), str(`$totalAuthExpression OR`))),
+          set(ref('totalAuthExpression'), str('$totalAuthExpression $authExpr')),
+          iff(ref('foreach.hasNext'), set(ref('totalAuthExpression'), str('$totalAuthExpression OR'))),
         ]),
       ),
       iff(
@@ -837,14 +924,14 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
 
       comment('Add owner auth conditions if they exist'),
       iff(
-        raw(`$totalAuthExpression != "" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0`),
-        set(ref('totalAuthExpression'), str(`$totalAuthExpression OR`)),
+        raw('$totalAuthExpression != "" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0'),
+        set(ref('totalAuthExpression'), str('$totalAuthExpression OR')),
       ),
       iff(
         ref('ownerAuthExpressions'),
         forEach(ref('authExpr'), ref('ownerAuthExpressions'), [
-          set(ref('totalAuthExpression'), str(`$totalAuthExpression $authExpr`)),
-          iff(ref('foreach.hasNext'), set(ref('totalAuthExpression'), str(`$totalAuthExpression OR`))),
+          set(ref('totalAuthExpression'), str('$totalAuthExpression $authExpr')),
+          iff(ref('foreach.hasNext'), set(ref('totalAuthExpression'), str('$totalAuthExpression OR'))),
         ]),
       ),
       iff(
@@ -859,10 +946,10 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
 
       comment('Set final expression if it has changed.'),
       iff(
-        raw(`$totalAuthExpression != ""`),
+        raw('$totalAuthExpression != ""'),
         ifElse(
           raw(`$util.isNullOrEmpty($${ResourceConstants.SNIPPETS.AuthCondition}.expression)`),
-          set(ref(`${ResourceConstants.SNIPPETS.AuthCondition}.expression`), str(`($totalAuthExpression)`)),
+          set(ref(`${ResourceConstants.SNIPPETS.AuthCondition}.expression`), str('($totalAuthExpression)')),
           set(
             ref(`${ResourceConstants.SNIPPETS.AuthCondition}.expression`),
             str(`$${ResourceConstants.SNIPPETS.AuthCondition}.expression AND ($totalAuthExpression)`),
@@ -872,6 +959,9 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     ]);
   }
 
+  /**
+   *
+   */
   public appendItemIfLocallyAuthorized(): Expression {
     return iff(
       parens(
@@ -884,6 +974,10 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     );
   }
 
+  /**
+   *
+   * @param customGroup
+   */
   public setUserGroups(customGroup?: string): Expression {
     if (customGroup) {
       return compoundExpression([
@@ -901,7 +995,12 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     return set(ref('userGroups'), raw(`$util.defaultIfNull($ctx.identity.claims.get("${DEFAULT_GROUP_CLAIM}"), [])`));
   }
 
-  public generateSubscriptionResolver(fieldName: string, subscriptionTypeName: string = 'Subscription') {
+  /**
+   *
+   * @param fieldName
+   * @param subscriptionTypeName
+   */
+  public generateSubscriptionResolver(fieldName: string, subscriptionTypeName = 'Subscription') {
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       DataSourceName: 'NONE',
@@ -913,24 +1012,38 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     "payload": {}
 }`),
       ),
-      ResponseMappingTemplate: print(raw(`$util.toJson(null)`)),
+      ResponseMappingTemplate: print(raw('$util.toJson(null)')),
     });
   }
 
+  /**
+   *
+   * @param operation
+   * @param field
+   */
   public operationCheckExpression(operation: string, field: FieldDefinitionNode) {
     // check if the field has @connection
-    const connectionDirective = field.directives.find(dir => dir.name.value === 'connection');
-    const returnValue: Expression = connectionDirective ? toJson(ref(`context.result`)) : toJson(ref(`context.source.${field.name.value}`));
+    const connectionDirective = field.directives.find((dir) => dir.name.value === 'connection');
+    const returnValue: Expression = connectionDirective ? toJson(ref('context.result')) : toJson(ref(`context.source.${field.name.value}`));
     return block('Checking for allowed operations which can return this field', [
       set(ref('operation'), raw('$util.defaultIfNull($context.source.operation, "null")')),
       ifElse(raw(`$operation == "${operation}"`), ref('util.toJson(null)'), returnValue),
     ]);
   }
 
+  /**
+   *
+   * @param operation
+   */
   public setOperationExpression(operation: string): string {
     return print(block('Setting the operation', [qref(print(methodCall(ref('ctx.result.put'), str('operation'), str(operation))))]));
   }
 
+  /**
+   *
+   * @param expectedAuthModes
+   * @param expression
+   */
   public getAuthModeCheckWrappedExpression(expectedAuthModes: Set<AuthProvider>, expression: Expression): Expression {
     if (!expectedAuthModes || expectedAuthModes.size === 0) {
       return expression;
@@ -947,9 +1060,14 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     ]);
   }
 
+  /**
+   *
+   * @param authProviders
+   * @param isUserPoolTheDefault
+   */
   public getAuthModeDeterminationExpression(authProviders: Set<AuthProvider>, isUserPoolTheDefault: boolean): Expression {
     if (!authProviders || authProviders.size === 0) {
-      return comment(`No authentication mode determination needed`);
+      return comment('No authentication mode determination needed');
     }
 
     const expressions = [];
@@ -958,33 +1076,33 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
       if (authProvider === 'userPools') {
         const statements = [
           raw(`$util.isNullOrEmpty($${ResourceConstants.SNIPPETS.AuthMode})`),
-          not(raw(`$util.isNull($ctx.identity)`)),
-          not(raw(`$util.isNull($ctx.identity.sub)`)),
-          not(raw(`$util.isNull($ctx.identity.issuer)`)),
-          not(raw(`$util.isNull($ctx.identity.username)`)),
-          not(raw(`$util.isNull($ctx.identity.claims)`)),
-          not(raw(`$util.isNull($ctx.identity.sourceIp)`)),
+          not(raw('$util.isNull($ctx.identity)')),
+          not(raw('$util.isNull($ctx.identity.sub)')),
+          not(raw('$util.isNull($ctx.identity.issuer)')),
+          not(raw('$util.isNull($ctx.identity.username)')),
+          not(raw('$util.isNull($ctx.identity.claims)')),
+          not(raw('$util.isNull($ctx.identity.sourceIp)')),
         ];
 
         if (isUserPoolTheDefault === true) {
-          statements.push(not(raw(`$util.isNull($ctx.identity.defaultAuthStrategy)`)));
+          statements.push(not(raw('$util.isNull($ctx.identity.defaultAuthStrategy)')));
         }
 
-        const userPoolsExpression = iff(and(statements), set(ref(ResourceConstants.SNIPPETS.AuthMode), str(`userPools`)));
+        const userPoolsExpression = iff(and(statements), set(ref(ResourceConstants.SNIPPETS.AuthMode), str('userPools')));
 
         expressions.push(userPoolsExpression);
       } else if (authProvider === 'oidc') {
         const oidcExpression = iff(
           and([
             raw(`$util.isNullOrEmpty($${ResourceConstants.SNIPPETS.AuthMode})`),
-            not(raw(`$util.isNull($ctx.identity)`)),
-            not(raw(`$util.isNull($ctx.identity.sub)`)),
-            not(raw(`$util.isNull($ctx.identity.issuer)`)),
-            not(raw(`$util.isNull($ctx.identity.claims)`)),
-            raw(`$util.isNull($ctx.identity.username)`),
-            raw(`$util.isNull($ctx.identity.sourceIp)`),
+            not(raw('$util.isNull($ctx.identity)')),
+            not(raw('$util.isNull($ctx.identity.sub)')),
+            not(raw('$util.isNull($ctx.identity.issuer)')),
+            not(raw('$util.isNull($ctx.identity.claims)')),
+            raw('$util.isNull($ctx.identity.username)'),
+            raw('$util.isNull($ctx.identity.sourceIp)'),
           ]),
-          set(ref(ResourceConstants.SNIPPETS.AuthMode), str(`oidc`)),
+          set(ref(ResourceConstants.SNIPPETS.AuthMode), str('oidc')),
         );
 
         if (expressions.length > 0) {
@@ -998,13 +1116,22 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     return block('Determine request authentication mode', expressions);
   }
 
+  /**
+   *
+   * @param field
+   */
   public getStaticAuthorizationVariable(field: FieldDefinitionNode): string {
     return field
       ? `${field.name.value}_${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}`
       : ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable;
   }
 
-  public makeIAMPolicyForRole(isAuthPolicy: Boolean, resources: Set<string>): ManagedPolicy[] {
+  /**
+   *
+   * @param isAuthPolicy
+   * @param resources
+   */
+  public makeIAMPolicyForRole(isAuthPolicy: boolean, resources: Set<string>): ManagedPolicy[] {
     const policies = new Array<ManagedPolicy>();
     const authPiece = isAuthPolicy ? 'auth' : 'unauth';
     let policyResources: object[] = [];
@@ -1018,23 +1145,22 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     // 89 + 11 extra = 100
     const RESOURCE_OVERHEAD = 100;
 
-    const createPolicy = newPolicyResources =>
-      new IAM.ManagedPolicy({
-        Roles: [
-          //HACK double casting needed because it cannot except Ref
+    const createPolicy = (newPolicyResources) => new IAM.ManagedPolicy({
+      Roles: [
+          // HACK double casting needed because it cannot except Ref
           { Ref: `${authPiece}RoleName` } as unknown as Value<string>,
+      ],
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: ['appsync:GraphQL'],
+            Resource: newPolicyResources,
+          },
         ],
-        PolicyDocument: {
-          Version: '2012-10-17',
-          Statement: [
-            {
-              Effect: 'Allow',
-              Action: ['appsync:GraphQL'],
-              Resource: newPolicyResources,
-            },
-          ],
-        },
-      });
+      },
+    });
 
     for (const resource of resources) {
       // We always have 2 parts, no need to check
@@ -1094,6 +1220,10 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
    * ES EXPRESSIONS
    */
 
+  /**
+   *
+   * @param includeVersion
+   */
   public makeESItemsExpression(includeVersion: boolean) {
     // generate es expresion to appsync
     return compoundExpression([
@@ -1116,6 +1246,9 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     return [qref('$es_items.add($entry.get("_source"))')];
   };
 
+  /**
+   *
+   */
   public makeESToGQLExpression() {
     return compoundExpression([
       set(

@@ -1,6 +1,13 @@
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable func-style */
 
+/**
+ *
+ * @param promiseToWait
+ * @param timeout
+ * @param timeoutMessage
+ * @param cleanupFn
+ */
 export async function withTimeOut<T>(
   promiseToWait: Promise<T>,
   timeout: number,
@@ -18,6 +25,13 @@ export async function withTimeOut<T>(
   return Promise.race([promiseToWait, timeoutPromise]);
 }
 
+/**
+ *
+ * @param promiseToWait
+ * @param timeout
+ * @param timeoutMessage
+ * @param cleanupFn
+ */
 export async function expectTimeOut(
   promiseToWait: Promise<any>,
   timeout: number,

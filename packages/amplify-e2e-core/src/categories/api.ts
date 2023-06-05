@@ -18,11 +18,20 @@ import { multiSelect, singleSelect } from '../utils/selectors';
 import { selectRuntime, selectTemplate } from './lambda-function';
 import { modifiedApi } from './resources/modified-api-index';
 
+/**
+ *
+ * @param schemaName
+ */
 export function getSchemaPath(schemaName: string): string {
   return path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'schemas', schemaName);
 }
 
-export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = false) {
+/**
+ *
+ * @param cwd
+ * @param testingWithLatestCodebase
+ */
+export function apiGqlCompile(cwd: string, testingWithLatestCodebase = false) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['api', 'gql-compile'], { cwd, stripColors: true })
       .wait('GraphQL schema compiled successfully.')
@@ -36,12 +45,18 @@ export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = 
   });
 }
 
+/**
+ *
+ */
 export interface AddApiOptions {
   apiName: string;
   testingWithLatestCodebase: boolean;
   transformerVersion: number;
 }
 
+/**
+ *
+ */
 export interface ImportApiOptions {
   database: string;
   host: string;
@@ -56,6 +71,11 @@ export const defaultOptions: AddApiOptions = {
   transformerVersion: 2,
 };
 
+/**
+ *
+ * @param cwd
+ * @param opts
+ */
 export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
@@ -88,6 +108,11 @@ export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions & {
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param opts
+ */
 export function addApiWithOneModel(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
@@ -116,6 +141,11 @@ export function addApiWithOneModel(cwd: string, opts: Partial<AddApiOptions & { 
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param opts
+ */
 export function addApiWithThreeModels(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
@@ -145,6 +175,11 @@ export function addApiWithThreeModels(cwd: string, opts: Partial<AddApiOptions &
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param opts
+ */
 export function addApiWithBlankSchema(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
@@ -208,6 +243,11 @@ function selectConflictHandlerType(
   }
 }
 
+/**
+ *
+ * @param cwd
+ * @param opts
+ */
 export function addApiWithBlankSchemaAndConflictDetection(
   cwd: string,
   opts: Partial<AddApiOptions & { apiKeyExpirationDays: number, conflictHandlerType: ConflictHandlerType }> = {},
@@ -251,6 +291,8 @@ export function addApiWithBlankSchemaAndConflictDetection(
 
 /**
  * Note: Lambda Authorizer is enabled only for Transformer V2
+ * @param cwd
+ * @param opts
  */
 export function addApiWithAllAuthModes(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
   const options = _.assign(defaultOptions, opts);
@@ -323,7 +365,14 @@ export function addApiWithAllAuthModes(cwd: string, opts: Partial<AddApiOptions 
   });
 }
 
-export function updateApiSchema(cwd: string, projectName: string, schemaName: string, forceUpdate: boolean = false) {
+/**
+ *
+ * @param cwd
+ * @param projectName
+ * @param schemaName
+ * @param forceUpdate
+ */
+export function updateApiSchema(cwd: string, projectName: string, schemaName: string, forceUpdate = false) {
   const testSchemaPath = getSchemaPath(schemaName);
   let schemaText = fs.readFileSync(testSchemaPath).toString();
   if (forceUpdate) {
@@ -332,6 +381,13 @@ export function updateApiSchema(cwd: string, projectName: string, schemaName: st
   updateSchema(cwd, projectName, schemaText);
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ * @param settings.testingWithLatestCodebase
+ * @param settings.doMigrate
+ */
 export function updateApiWithMultiAuth(cwd: string, settings?: { testingWithLatestCodebase?: boolean; doMigrate?: boolean }) {
   return new Promise<void>((resolve, reject) => {
     const testingWithLatestCodebase = settings?.testingWithLatestCodebase ?? false;
@@ -389,6 +445,11 @@ export function updateApiWithMultiAuth(cwd: string, settings?: { testingWithLate
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param opts
+ */
 export function updateApiConflictHandlerType(
   cwd: string,
   opts: Partial<AddApiOptions> & { conflictHandlerType: ConflictHandlerType },
@@ -417,9 +478,14 @@ export function updateApiConflictHandlerType(
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param opts
+ */
 export function updateApiConflictHandlerTypePerModel(
   cwd: string,
-  opts?: Partial<AddApiOptions>
+  opts?: Partial<AddApiOptions>,
 ) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
@@ -436,11 +502,12 @@ export function updateApiConflictHandlerTypePerModel(
       .wait('Select the models from below:')
       .send('a')
       .sendCarriageReturn()
-      .wait('Select the resolution strategy for') //First model
-      .sendKeyDown(2).sendCarriageReturn() // Select Lambda Handler
+      .wait('Select the resolution strategy for') // First model
+      .sendKeyDown(2)
+      .sendCarriageReturn() // Select Lambda Handler
       .wait(/.*Select from the options below.*/)
       .sendCarriageReturn() // Create a new Lambda
-      .wait('Select the resolution strategy for') //Second model
+      .wait('Select the resolution strategy for') // Second model
       .sendCarriageReturn() // Select Automerge Handler
       .wait(/.*Successfully updated resource*/)
       .run((err: Error) => {
@@ -453,6 +520,11 @@ export function updateApiConflictHandlerTypePerModel(
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function apiEnableDataStore(cwd: string, settings: any) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
@@ -477,6 +549,11 @@ export function apiEnableDataStore(cwd: string, settings: any) {
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function apiDisableDataStore(cwd: string, settings: any) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
@@ -497,6 +574,11 @@ export function apiDisableDataStore(cwd: string, settings: any) {
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function updateAPIWithResolutionStrategyWithoutModels(cwd: string, settings: any) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
@@ -520,6 +602,11 @@ export function updateAPIWithResolutionStrategyWithoutModels(cwd: string, settin
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function updateAPIWithResolutionStrategyWithModels(cwd: string, settings: any) {
   return new Promise<void>((resolve, reject) => {
     const testingWithLatestCodebase = settings?.testingWithLatestCodebase ?? false;
@@ -549,6 +636,9 @@ export function updateAPIWithResolutionStrategyWithModels(cwd: string, settings:
   });
 }
 
+/**
+ *
+ */
 export type RestAPISettings = {
   path?: string;
   isFirstRestApi?: boolean;
@@ -560,9 +650,14 @@ export type RestAPISettings = {
   hasUserPoolGroups?: boolean;
   isCrud?: boolean;
 };
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addRestApi(cwd: string, settings: RestAPISettings) {
   const isFirstRestApi = settings.isFirstRestApi ?? true;
-  let chain = spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+  const chain = spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
     .wait('Select from one of the below mentioned services')
     .sendKeyDown()
     .sendCarriageReturn(); // REST
@@ -595,9 +690,8 @@ export function addRestApi(cwd: string, settings: RestAPISettings) {
       protectAPI(settings, chain);
       chain.wait('Do you want to add another path').sendNo().sendEof();
       return chain.runAsync();
-    } else {
-      chain.sendNo();
     }
+    chain.sendNo();
   }
 
   chain.wait('Provide a friendly name for your resource to be used as a label for this category in the project');
@@ -692,6 +786,11 @@ const updateRestApiDefaultSettings = {
   testingWithLatestCodebase: false,
 };
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function updateRestApi(cwd: string, settings: Partial<typeof updateRestApiDefaultSettings> = {}) {
   const completeSettings = { ...updateRestApiDefaultSettings, ...settings };
   const chain = spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
@@ -716,19 +815,25 @@ export function updateRestApi(cwd: string, settings: Partial<typeof updateRestAp
     default:
       throw new Error(`updateOperation ${completeSettings.updateOperation} is not implemented`);
   }
-  chain.wait('Restrict API access').sendNo().wait('Do you want to add another path').sendNo().wait('Successfully updated resource');
+  chain.wait('Restrict API access').sendNo().wait('Do you want to add another path').sendNo()
+    .wait('Successfully updated resource');
   return chain.runAsync();
 }
 
 const allAuthTypes = ['API key', 'Amazon Cognito User Pool', 'IAM', 'OpenID Connect'];
 
+/**
+ *
+ * @param projectDir
+ * @param settings
+ */
 export function addApi(projectDir: string, settings?: any) {
   const transformerVersion = settings?.transformerVersion ?? 2;
   delete settings?.transformerVersion;
 
   let authTypesToSelectFrom = allAuthTypes.slice();
   return new Promise<void>((resolve, reject) => {
-    let chain = spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd: projectDir, stripColors: true })
+    const chain = spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Select from one of the below mentioned services:')
       .sendCarriageReturn();
 
@@ -749,7 +854,7 @@ export function addApi(projectDir: string, settings?: any) {
 
         chain.wait('Configure additional auth types?').sendConfirmYes();
 
-        authTypesToSelectFrom = authTypesToSelectFrom.filter(x => x !== defaultType);
+        authTypesToSelectFrom = authTypesToSelectFrom.filter((x) => x !== defaultType);
 
         multiSelect(
           chain.wait('Choose the additional authorization types you want to configure for the API'),
@@ -757,7 +862,7 @@ export function addApi(projectDir: string, settings?: any) {
           authTypesToSelectFrom,
         );
 
-        authTypesToAdd.forEach(authType => {
+        authTypesToAdd.forEach((authType) => {
           setupAuthType(authType, chain, settings);
         });
       } else {
@@ -788,6 +893,10 @@ export function addApi(projectDir: string, settings?: any) {
   });
 }
 
+/**
+ *
+ * @param projectDir
+ */
 export function addV1RDSDataSource(projectDir: string) {
   return new Promise<void>((resolve, reject) => {
     // This test executes only partial workflow
@@ -805,7 +914,7 @@ export function addV1RDSDataSource(projectDir: string) {
           resolve();
         }
       });
- });
+  });
 }
 
 function setupAuthType(authType: string, chain: any, settings?: any) {
@@ -844,7 +953,7 @@ function setupCognitoUserPool(chain: any) {
 }
 
 function setupIAM(chain: any) {
-  //no need to do anything
+  // no need to do anything
 }
 
 function setupOIDC(chain: any, settings?: any) {
@@ -869,6 +978,11 @@ function setupOIDC(chain: any, settings?: any) {
     .sendCarriageReturn();
 }
 
+/**
+ *
+ * @param projectDir
+ * @param opts
+ */
 export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(
   projectDir: string,
   opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {},
@@ -904,6 +1018,11 @@ export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(
     setTransformerVersionFlag(projectDir, options.transformerVersion);
   });
 }
+/**
+ *
+ * @param projectDir
+ * @param opts
+ */
 export function addRestContainerApi(projectDir: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
@@ -937,15 +1056,26 @@ export function addRestContainerApi(projectDir: string, opts: Partial<AddApiOpti
   });
 }
 
+/**
+ *
+ * @param projDir
+ * @param apiName
+ */
 export function rebuildApi(projDir: string, apiName: string) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['rebuild', 'api'], { cwd: projDir, stripColors: true })
       .wait('Type the name of the API to confirm you want to continue')
       .sendLine(apiName)
-      .run(err => (err ? reject(err) : resolve()));
+      .run((err) => (err ? reject(err) : resolve()));
   });
 }
 
+/**
+ *
+ * @param projectDir
+ * @param settings
+ * @param settings.name
+ */
 export function addRestContainerApiForCustomPolicies(projectDir: string, settings: { name: string }) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
@@ -972,11 +1102,21 @@ export function addRestContainerApiForCustomPolicies(projectDir: string, setting
   });
 }
 
+/**
+ *
+ * @param projectDir
+ * @param apiName
+ */
 export function modifyRestAPI(projectDir: string, apiName: string) {
   const indexFilePath = path.join(projectDir, 'amplify', 'backend', 'api', apiName, 'src', 'express', 'index.js');
   fs.writeFileSync(indexFilePath, modifiedApi);
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function cancelAmplifyMockApi(cwd: string, settings: any = {}): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['mock', 'api'], { cwd, stripColors: true })
@@ -992,6 +1132,11 @@ export function cancelAmplifyMockApi(cwd: string, settings: any = {}): Promise<v
   });
 }
 
+/**
+ *
+ * @param projRoot
+ * @param meta
+ */
 export async function validateRestApiMeta(projRoot: string, meta?: any) {
   meta = meta ?? getProjectMeta(projRoot);
   expect(meta.providers.awscloudformation).toBeDefined();
@@ -1011,9 +1156,10 @@ export async function validateRestApiMeta(projRoot: string, meta?: any) {
 
   expect(meta.function).toBeDefined();
   let seenAtLeastOneFunc = false;
-  for (let key of Object.keys(meta.function)) {
-    const { service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash } =
-      meta.function[key];
+  for (const key of Object.keys(meta.function)) {
+    const {
+      service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash,
+    } = meta.function[key];
     expect(service).toBe('Lambda');
     expect(build).toBeTruthy();
     expect(lastBuildTimeStamp).toBeDefined();
@@ -1026,6 +1172,12 @@ export async function validateRestApiMeta(projRoot: string, meta?: any) {
   expect(seenAtLeastOneFunc).toBe(true);
 }
 
+/**
+ *
+ * @param projRoot
+ * @param apiName
+ * @param stackMapping
+ */
 export function setStackMapping(projRoot: string, apiName: string, stackMapping: Record<string, string>) {
   setTransformConfigValue(projRoot, apiName, 'StackMapping', stackMapping);
 }
@@ -1055,22 +1207,27 @@ export const removeTransformConfigValue = (projRoot: string, apiName: string, ke
   setTransformConfig(projRoot, apiName, transformConfig);
 };
 
+/**
+ *
+ * @param cwd
+ * @param opts
+ */
 export function importRDSDatabase(cwd: string, opts: ImportApiOptions & { apiExists: boolean }) {
   const options = _.assign(defaultOptions, opts);
-  const database = options.database;
+  const { database } = options;
   return new Promise<void>((resolve, reject) => {
     const importCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['import', 'api'], { cwd, stripColors: true });
     if (!options.apiExists) {
       importCommands
-      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
-      .sendKeyUp(3)
-      .sendCarriageReturn()
-      .wait('Provide API name:')
-      .sendLine(options.apiName)
-      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
-      .sendCarriageReturn()
+        .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+        .sendKeyUp(3)
+        .sendCarriageReturn()
+        .wait('Provide API name:')
+        .sendLine(options.apiName)
+        .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+        .sendCarriageReturn();
     }
-    
+
     importCommands
       .wait('Enter the name of the MySQL database to import:')
       .sendLine(database);
@@ -1087,8 +1244,13 @@ export function importRDSDatabase(cwd: string, opts: ImportApiOptions & { apiExi
         }
       });
   });
-};
+}
 
+/**
+ *
+ * @param cwd
+ * @param opts
+ */
 export function apiUpdateSecrets(cwd: string, opts: ImportApiOptions) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
@@ -1096,15 +1258,20 @@ export function apiUpdateSecrets(cwd: string, opts: ImportApiOptions) {
     askDBInformation(updateSecretsCommands, options);
     updateSecretsCommands.wait(`Successfully updated the secrets for ${options.database} database.`);
     updateSecretsCommands.run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
-};
+}
 
+/**
+ *
+ * @param cwd
+ * @param opts
+ */
 export function apiGenerateSchema(cwd: string, opts: ImportApiOptions & { validCredentials: boolean }) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
@@ -1113,15 +1280,19 @@ export function apiGenerateSchema(cwd: string, opts: ImportApiOptions & { validC
       askDBInformation(generateSchemaCommands, options);
     }
     generateSchemaCommands.run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
     });
   });
-};
+}
 
+/**
+ *
+ * @param cwd
+ */
 export function removeApi(cwd: string) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'api'], { cwd, stripColors: true })
@@ -1140,10 +1311,10 @@ export function removeApi(cwd: string) {
         }
       });
   });
-};
+}
 
 const askDBInformation = (executionContext: ExecutionContext, options: ImportApiOptions) => {
-  const database = options.database;
+  const { database } = options;
   return executionContext
     .wait(`Enter the host for ${database} database:`)
     .sendLine(options.host)
@@ -1152,6 +1323,5 @@ const askDBInformation = (executionContext: ExecutionContext, options: ImportApi
     .wait(`Enter the username for ${database} database user:`)
     .sendLine(options.username)
     .wait(`Enter the password for ${database} database user:`)
-    .sendLine(options.password)
+    .sendLine(options.password);
 };
-

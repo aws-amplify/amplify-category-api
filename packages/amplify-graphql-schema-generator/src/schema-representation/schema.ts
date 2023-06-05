@@ -1,19 +1,32 @@
 import { Model } from './types';
 import { Engine } from './engine';
 
+/**
+ *
+ */
 export class Schema {
   private models: Model[] = [];
   constructor(private engine: Engine) {
   }
 
+  /**
+   *
+   */
   public getModels(): Model[] {
     return this.models;
   }
 
+  /**
+   *
+   */
   public getEngine(): Engine {
     return this.engine;
   }
 
+  /**
+   *
+   * @param model
+   */
   public addModel(model: Model): void {
     const modelName = model.getName();
     if (this.hasModel(modelName)) {
@@ -22,7 +35,11 @@ export class Schema {
     this.models.push(model);
   }
 
+  /**
+   *
+   * @param name
+   */
   public hasModel(name: string): boolean {
-    return this.models.some(model => model.getName() === name);
+    return this.models.some((model) => model.getName() === name);
   }
 }

@@ -1,5 +1,17 @@
 import { getCLIPath, nspawn as spawn } from '..';
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ * @param settings.override
+ * @param settings.emptyDir
+ * @param settings.appId
+ * @param settings.withRestore
+ * @param settings.noUpdateBackend
+ * @param settings.envName
+ * @param testingWithLatestCodebase
+ */
 export const amplifyPull = (
   cwd: string,
   settings: { override?: boolean; emptyDir?: boolean; appId?: string; withRestore?: boolean; noUpdateBackend?: boolean; envName?: string },
@@ -75,6 +87,14 @@ export const amplifyPull = (
   });
 });
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ * @param settings.sandboxId
+ * @param settings.appType
+ * @param settings.framework
+ */
 export const amplifyPullSandbox = (cwd: string, settings: { sandboxId: string; appType: string; framework: string })
 : Promise<any> => new Promise((resolve, reject) => {
   const args = ['pull', '--sandboxId', settings.sandboxId];

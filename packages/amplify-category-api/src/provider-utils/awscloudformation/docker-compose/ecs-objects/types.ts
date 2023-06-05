@@ -1,5 +1,8 @@
 import { ListOrDict } from '../compose-spec/v2';
 
+/**
+ *
+ */
 export interface IServiceDefinition {
   containers: IContainerDefinitions[];
   cpu?: number | string;
@@ -7,6 +10,9 @@ export interface IServiceDefinition {
   tags?: string[];
 }
 
+/**
+ *
+ */
 export type ContainerHealthCheck = {
   command?: string[];
   interval?: number;
@@ -15,6 +21,9 @@ export type ContainerHealthCheck = {
   timeout?: number;
 };
 
+/**
+ *
+ */
 export interface IContainerDefinitions {
   build: string | IBuildConfig | undefined;
   image?: string;
@@ -33,6 +42,9 @@ export interface IContainerDefinitions {
   user?: string;
 }
 
+/**
+ *
+ */
 export interface ILogConfiguration {
   logDriver: string;
   options: {
@@ -40,12 +52,18 @@ export interface ILogConfiguration {
   };
 }
 
+/**
+ *
+ */
 export interface IBuildConfig {
   context?: string;
   dockerfile?: string;
   args?: ListOrDict;
 }
 
+/**
+ *
+ */
 export type PortMappings = IPortMappingItem[];
 
 interface IPortMappingItem {
@@ -54,6 +72,9 @@ interface IPortMappingItem {
   protocol: string;
 }
 
+/**
+ *
+ */
 export interface IContainerHealthCheckItem {
   command?: string | string[];
   interval?: number | string;
@@ -62,6 +83,9 @@ export interface IContainerHealthCheckItem {
   timeout?: string;
 }
 
+/**
+ *
+ */
 export type ServiceHealthCheck = IALBHealthCheckItem;
 
 interface IALBHealthCheckItem {
@@ -69,6 +93,9 @@ interface IALBHealthCheckItem {
   port: number;
 }
 
+/**
+ *
+ */
 export type DeploymentConfiguration = IDeploymentConfiguration;
 
 interface IDeploymentConfiguration {
@@ -76,6 +103,9 @@ interface IDeploymentConfiguration {
   MinimumHealthyPercent: number;
 }
 
+/**
+ *
+ */
 export type TaskConfig = ITaskConfig;
 
 interface ITaskConfig {
@@ -83,6 +113,9 @@ interface ITaskConfig {
   vCPU: number;
 }
 
+/**
+ *
+ */
 export type ContainerConfig = IContainerConfig;
 
 interface IContainerConfig {
@@ -90,4 +123,7 @@ interface IContainerConfig {
   cpu: number;
 }
 
+/**
+ *
+ */
 export type BuildHashMap = Record<string, string>;

@@ -1,6 +1,12 @@
-const https = require('https');
 import fetch from 'node-fetch';
 
+const https = require('https');
+
+/**
+ *
+ * @param root0
+ * @param root0.body
+ */
 export function post({ body, ...options }) {
   return new Promise((resolve, reject) => {
     const req = https.request(
@@ -8,9 +14,9 @@ export function post({ body, ...options }) {
         method: 'POST',
         ...options,
       },
-      res => {
+      (res) => {
         const chunks = [];
-        res.on('data', data => chunks.push(data));
+        res.on('data', (data) => chunks.push(data));
         res.on('end', () => {
           let body = Buffer.concat(chunks);
           if (res.headers['content-type'].startsWith('application/json')) {
@@ -29,6 +35,10 @@ export function post({ body, ...options }) {
   });
 }
 
+/**
+ *
+ * @param url
+ */
 export async function get(url: string) {
   return fetch(url);
 }

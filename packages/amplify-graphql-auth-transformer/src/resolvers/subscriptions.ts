@@ -19,7 +19,7 @@ import {
   qref,
   raw,
   parens,
-  int
+  int,
 } from 'graphql-mapping-template';
 import {
   COGNITO_AUTH_TYPE,
@@ -187,6 +187,8 @@ const combineAuthExpressionAndFilter = (ownerExpression: Array<Expression>, grou
 
 /**
  * Generates auth expressions for each auth type for Subscription requests
+ * @param providers
+ * @param roles
  */
 export const generateAuthExpressionForSubscriptions = (providers: ConfiguredAuthProviders, roles: Array<RoleDefinition>): string => {
   const {

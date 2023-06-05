@@ -7,12 +7,18 @@
 // (TransformerPlatform.all & ~TransformerPlatform.flutterDataStore). Ideally, we should be
 // working toward a state where TransformerPlatform.all is the only value needed
 
+/**
+ *
+ */
 export const enum TransformerVersion {
   v1 = 1 << 0,
   v2 = 1 << 1,
   all = ~0,
 }
 
+/**
+ *
+ */
 export const enum TransformerPlatform {
   none = 0,
   api = 1 << 0,
@@ -29,6 +35,9 @@ export const enum TransformerPlatform {
   all = ~0,
 }
 
+/**
+ *
+ */
 export type TransformerSchema = {
   description: string;
   transformerVersion: TransformerVersion;
@@ -101,11 +110,11 @@ export const schemas: { [key: string]: TransformerSchema } = {
     description: 'Cyclic @hasOne dependency between two models',
     transformerVersion: TransformerVersion.v2,
     supportedPlatforms:
-      TransformerPlatform.api |
-      TransformerPlatform.js |
-      TransformerPlatform.ios |
-      TransformerPlatform.android |
-      TransformerPlatform.flutter,
+      TransformerPlatform.api
+      | TransformerPlatform.js
+      | TransformerPlatform.ios
+      | TransformerPlatform.android
+      | TransformerPlatform.flutter,
     sdl: `
       type Blog @model {
         id: ID!
@@ -121,11 +130,11 @@ export const schemas: { [key: string]: TransformerSchema } = {
     description: 'Cyclic @hasMany dependency between two models',
     transformerVersion: TransformerVersion.v2,
     supportedPlatforms:
-      TransformerPlatform.api |
-      TransformerPlatform.js |
-      TransformerPlatform.ios |
-      TransformerPlatform.android |
-      TransformerPlatform.flutter,
+      TransformerPlatform.api
+      | TransformerPlatform.js
+      | TransformerPlatform.ios
+      | TransformerPlatform.android
+      | TransformerPlatform.flutter,
     sdl: `
       type Blog @model {
         id: ID!

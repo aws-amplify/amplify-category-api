@@ -1,10 +1,18 @@
-import { obj, Expression, str, ObjectNode, iff, ifElse, ref, raw, int, CompoundExpressionNode, compoundExpression, set, qref } from './ast';
+import {
+  obj, Expression, str, ObjectNode, iff, ifElse, ref, raw, int, CompoundExpressionNode, compoundExpression, set, qref,
+} from './ast';
 
+/**
+ *
+ */
 export class HttpMappingTemplate {
   static RESOLVER_VERSION_ID = '2018-05-29';
 
   /**
    * Create a mapping template for HTTP GET requests
+   * @param root0
+   * @param root0.resourcePath
+   * @param root0.params
    */
   public static getRequest({ resourcePath, params }: { resourcePath: string; params: ObjectNode }): ObjectNode {
     return obj({
@@ -17,6 +25,9 @@ export class HttpMappingTemplate {
 
   /**
    * Create a mapping template for HTTP POST requests.
+   * @param root0
+   * @param root0.resourcePath
+   * @param root0.params
    */
   public static postRequest({ resourcePath, params }: { resourcePath: string; params: ObjectNode }): ObjectNode {
     return obj({
@@ -29,6 +40,9 @@ export class HttpMappingTemplate {
 
   /**
    * Create a mapping template for HTTP PUT requests.
+   * @param root0
+   * @param root0.resourcePath
+   * @param root0.params
    */
   public static putRequest({ resourcePath, params }: { resourcePath: string; params: ObjectNode }): ObjectNode {
     return obj({
@@ -41,6 +55,9 @@ export class HttpMappingTemplate {
 
   /**
    * Create a mapping template for HTTP DELETE requests.
+   * @param root0
+   * @param root0.resourcePath
+   * @param root0.params
    */
   public static deleteRequest({ resourcePath, params }: { resourcePath: string; params: ObjectNode }): ObjectNode {
     return obj({
@@ -53,6 +70,9 @@ export class HttpMappingTemplate {
 
   /**
    * Create a mapping template for HTTP PATCH requests.
+   * @param root0
+   * @param root0.resourcePath
+   * @param root0.params
    */
   public static patchRequest({ resourcePath, params }: { resourcePath: string; params: ObjectNode }): ObjectNode {
     return obj({

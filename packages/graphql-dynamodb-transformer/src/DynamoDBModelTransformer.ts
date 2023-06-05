@@ -1,5 +1,7 @@
 import { DeletionPolicy, AppSync } from 'cloudform-types';
-import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
+import {
+  DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, FieldDefinitionNode,
+} from 'graphql';
 import {
   blankObject,
   makeConnectionField,
@@ -12,7 +14,9 @@ import {
   ResolverResourceIDs,
   getBaseType,
 } from 'graphql-transformer-common';
-import { getDirectiveArguments, gql, Transformer, TransformerContext, SyncConfig, InvalidDirectiveError } from 'graphql-transformer-core';
+import {
+  getDirectiveArguments, gql, Transformer, TransformerContext, SyncConfig, InvalidDirectiveError,
+} from 'graphql-transformer-core';
 import {
   getNonModelObjectArray,
   makeCreateInputObject,
@@ -34,6 +38,9 @@ import { ResourceFactory } from './resources';
 
 const METADATA_KEY = 'DynamoDBTransformerMetadata';
 
+/**
+ *
+ */
 export interface DynamoDBModelTransformerOptions {
   EnableDeletionProtection?: boolean;
   SyncConfig?: SyncConfig;
@@ -95,6 +102,9 @@ export const directiveDefinition = gql`
   }
 `;
 
+/**
+ *
+ */
 export class DynamoDBModelTransformer extends Transformer {
   resources: ResourceFactory;
   opts: DynamoDBModelTransformerOptions;
@@ -133,13 +143,14 @@ export class DynamoDBModelTransformer extends Transformer {
   /**
    * Given the initial input and context manipulate the context to handle this object directive.
    * @param initial The input passed to the transform.
+   * @param def
+   * @param directive
    * @param ctx The accumulated context for the transform.
    */
   public object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
-    const isTypeNameReserved =
-      def.name.value === ctx.getQueryTypeName() ||
-      def.name.value === ctx.getMutationTypeName() ||
-      def.name.value === ctx.getSubscriptionTypeName();
+    const isTypeNameReserved = def.name.value === ctx.getQueryTypeName()
+      || def.name.value === ctx.getMutationTypeName()
+      || def.name.value === ctx.getSubscriptionTypeName();
 
     if (isTypeNameReserved && ctx.featureFlags.getBoolean('validateTypeNameReservedWords', true)) {
       throw new InvalidDirectiveError(
@@ -168,7 +179,7 @@ export class DynamoDBModelTransformer extends Transformer {
     // TODO: Handle types with more than a single "id" hash key
     const typeName = def.name.value;
     this.setSyncConfig(ctx, typeName);
-    const isSyncEnabled = this.opts.SyncConfig ? true : false;
+    const isSyncEnabled = !!this.opts.SyncConfig;
     const tableLogicalID = ModelResourceIDs.ModelTableResourceID(typeName);
     const iamRoleLogicalID = ModelResourceIDs.ModelTableIAMRoleID(typeName);
     const dataSourceRoleLogicalID = ModelResourceIDs.ModelTableDataSourceID(typeName);
@@ -229,8 +240,8 @@ export class DynamoDBModelTransformer extends Transformer {
   private addTimestampFields(def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void {
     const createdAtField = getCreatedAtFieldName(directive);
     const updatedAtField = getUpdatedAtFieldName(directive);
-    const existingCreatedAtField = def.fields.find(f => f.name.value === createdAtField);
-    const existingUpdatedAtField = def.fields.find(f => f.name.value === updatedAtField);
+    const existingCreatedAtField = def.fields.find((f) => f.name.value === createdAtField);
+    const existingUpdatedAtField = def.fields.find((f) => f.name.value === updatedAtField);
     // Todo: Consolidate how warnings are shown. Instead of printing them here, the invoker of transformer should get
     // all the warnings together and decide how to render those warning
     if (!DynamoDBModelTransformer.isTimestampCompatibleField(existingCreatedAtField)) {
@@ -261,7 +272,7 @@ export class DynamoDBModelTransformer extends Transformer {
 
   // Add ID field to type when does not have id
   private addIdField(def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void {
-    const hasIdField = def.fields.find(f => f.name.value === 'id');
+    const hasIdField = def.fields.find((f) => f.name.value === 'id');
     if (!hasIdField) {
       const obj = ctx.getObject(def.name.value);
       const newObj: ObjectTypeDefinitionNode = {
@@ -279,7 +290,7 @@ export class DynamoDBModelTransformer extends Transformer {
     nonModelArray: ObjectTypeDefinitionNode[],
   ) => {
     const typeName = def.name.value;
-    const isSyncEnabled = this.opts.SyncConfig ? true : false;
+    const isSyncEnabled = !!this.opts.SyncConfig;
 
     const mutationFields = [];
     // Get any name overrides provided by the user. If an empty map it provided
@@ -290,16 +301,16 @@ export class DynamoDBModelTransformer extends Transformer {
     let shouldMakeCreate = true;
     let shouldMakeUpdate = true;
     let shouldMakeDelete = true;
-    let createFieldNameOverride = undefined;
-    let updateFieldNameOverride = undefined;
-    let deleteFieldNameOverride = undefined;
+    let createFieldNameOverride;
+    let updateFieldNameOverride;
+    let deleteFieldNameOverride;
 
     // timestamp fields
     const createdAtField = getCreatedAtFieldName(directive);
     const updatedAtField = getUpdatedAtFieldName(directive);
 
-    const existingCreatedAtField = def.fields.find(f => f.name.value === createdAtField);
-    const existingUpdatedAtField = def.fields.find(f => f.name.value === updatedAtField);
+    const existingCreatedAtField = def.fields.find((f) => f.name.value === createdAtField);
+    const existingUpdatedAtField = def.fields.find((f) => f.name.value === updatedAtField);
 
     // auto populate the timestamp field only if they are of AWSDateTime type
     const timestampFields = {
@@ -363,7 +374,7 @@ export class DynamoDBModelTransformer extends Transformer {
     if (shouldMakeUpdate) {
       const updateInput = makeUpdateInputObject(def, nonModelArray, ctx, isSyncEnabled);
       const optionalNonNullableFields = getFieldsOptionalNonNullableField(
-        updateInput.fields.map(r => r),
+        updateInput.fields.map((r) => r),
         def,
       );
       if (!ctx.getType(updateInput.name.value)) {
@@ -420,9 +431,9 @@ export class DynamoDBModelTransformer extends Transformer {
     // Configure queries based on *queries* argument
     let shouldMakeGet = true;
     let shouldMakeList = true;
-    let getFieldNameOverride = undefined;
-    let listFieldNameOverride = undefined;
-    const isSyncEnabled = this.opts.SyncConfig ? true : false;
+    let getFieldNameOverride;
+    let listFieldNameOverride;
+    const isSyncEnabled = !!this.opts.SyncConfig;
 
     // Figure out which queries to make and if they have name overrides.
     // If queries is undefined (default), create all queries
@@ -538,6 +549,9 @@ export class DynamoDBModelTransformer extends Transformer {
    *      Will continue as is creating subscription operations
    *   subscriptions.level === ON || subscriptions === undefined
    *      If auth is enabled it will enabled protection on subscription operations and resolvers
+   * @param def
+   * @param directive
+   * @param ctx
    */
   private createSubscriptions = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
     const typeName = def.name.value;
@@ -612,7 +626,7 @@ export class DynamoDBModelTransformer extends Transformer {
     return Boolean(type in ctx.nodeMap);
   }
 
-  private generateModelXConnectionType(ctx: TransformerContext, def: ObjectTypeDefinitionNode, isSync: Boolean = false): void {
+  private generateModelXConnectionType(ctx: TransformerContext, def: ObjectTypeDefinitionNode, isSync = false): void {
     const tableXConnectionName = ModelResourceIDs.ModelConnectionTypeName(def.name.value);
     if (this.typeExist(tableXConnectionName, ctx)) {
       return;
@@ -728,7 +742,7 @@ export class DynamoDBModelTransformer extends Transformer {
       if (this.typeExist(tableXMutationConditionInputName, ctx)) {
         const tableXMutationConditionInput = <InputObjectTypeDefinitionNode>ctx.getType(tableXMutationConditionInputName);
 
-        const keyDirectives = type.directives.filter(d => d.name.value === 'key');
+        const keyDirectives = type.directives.filter((d) => d.name.value === 'key');
 
         // If there are @key directives defined we've nothing to do, it will handle everything
         if (keyDirectives && keyDirectives.length > 0) {
@@ -736,10 +750,10 @@ export class DynamoDBModelTransformer extends Transformer {
         }
 
         // Remove the field named 'id' from the condition if there is one
-        const idField = tableXMutationConditionInput.fields.find(f => f.name.value === 'id');
+        const idField = tableXMutationConditionInput.fields.find((f) => f.name.value === 'id');
 
         if (idField) {
-          const reducedFields = tableXMutationConditionInput.fields.filter(f => Boolean(f.name.value !== 'id'));
+          const reducedFields = tableXMutationConditionInput.fields.filter((f) => Boolean(f.name.value !== 'id'));
 
           const updatedInput = {
             ...tableXMutationConditionInput,

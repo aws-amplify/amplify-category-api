@@ -4,6 +4,7 @@ import { conflictResolutionToResolverConfig } from './resolver-config-to-conflic
 
 /**
  *
+ * @param context
  * @param resourceName
  * @returns resolverConfig
  */

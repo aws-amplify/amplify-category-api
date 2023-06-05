@@ -14,6 +14,10 @@ import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
  * @returns true
  */
 
+/**
+ *
+ * @param schema
+ */
 export const validateManyToManyTwoLocations = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(

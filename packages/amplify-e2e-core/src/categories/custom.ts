@@ -1,5 +1,10 @@
 import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '..';
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addCDKCustomResource(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'custom'], { cwd, stripColors: true })
@@ -20,6 +25,11 @@ export function addCDKCustomResource(cwd: string, settings: any): Promise<void> 
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addCFNCustomResource(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'custom'], { cwd, stripColors: true })
@@ -47,6 +57,10 @@ export function addCFNCustomResource(cwd: string, settings: any): Promise<void> 
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function buildCustomResources(cwd: string, settings: {}) {
   return new Promise((resolve, reject) => {
     const args = ['custom', 'build'];

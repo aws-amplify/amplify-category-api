@@ -25,7 +25,7 @@ const getGlobalAmplifyInputEntries = async (
       name: 'engine',
       type: 'String',
       default: dataSourceType,
-    }
+    },
   ];
 
   if (includeAuthRule && (await ApiCategoryFacade.getTransformerVersion(context) === 2)) {
@@ -34,20 +34,29 @@ const getGlobalAmplifyInputEntries = async (
       name: 'globalAuthRule',
       type: 'AuthRule',
       default: '{ allow: public }',
-      comment: `This "input" configures a global authorization rule to enable public access to all models in this schema. Learn more about authorization rules here:${authDocLink}`
+      comment: `This "input" configures a global authorization rule to enable public access to all models in this schema. Learn more about authorization rules here:${authDocLink}`,
     });
-  };
+  }
   return inputs;
 };
 
-export const constructDefaultGlobalAmplifyInput = async (context: $TSContext, dataSourceType: ImportedRDSType, includeAuthRule: boolean = true) => {
+/**
+ *
+ * @param context
+ * @param dataSourceType
+ * @param includeAuthRule
+ */
+export const constructDefaultGlobalAmplifyInput = async (context: $TSContext, dataSourceType: ImportedRDSType, includeAuthRule = true) => {
   const inputs = await getGlobalAmplifyInputEntries(context, dataSourceType, includeAuthRule);
-  const inputsString = inputs.reduce((acc: string, input): string =>
-    acc + ` ${input.name}: ${input.type} = ${input.type === 'String' ? '"'+ input.default + '"' : input.default} ${input.comment ? '# ' + input.comment: ''} \n`
-  , '');
+  const inputsString = inputs.reduce((acc: string, input): string => `${acc} ${input.name}: ${input.type} = ${input.type === 'String' ? `"${input.default}"` : input.default} ${input.comment ? `# ${input.comment}` : ''} \n`,
+    '');
   return `input Amplify {\n${inputsString}}\n`;
 };
 
+/**
+ *
+ * @param pathToSchemaFile
+ */
 export const readRDSGlobalAmplifyInput = async (pathToSchemaFile: string): Promise<InputObjectTypeDefinitionNode | undefined> => {
   if (!fs.existsSync(pathToSchemaFile)) {
     return;
@@ -60,10 +69,9 @@ export const readRDSGlobalAmplifyInput = async (pathToSchemaFile: string): Promi
   const parsedSchema = parse(schemaContent);
 
   const inputNode = parsedSchema.definitions.find(
-    (definition) =>
-      definition.kind === 'InputObjectTypeDefinition' &&
-      definition.name &&
-      definition.name.value === 'Amplify'
+    (definition) => definition.kind === 'InputObjectTypeDefinition'
+      && definition.name
+      && definition.name.value === 'Amplify',
   );
 
   if (inputNode) {
@@ -71,22 +79,27 @@ export const readRDSGlobalAmplifyInput = async (pathToSchemaFile: string): Promi
   }
 };
 
+/**
+ *
+ * @param context
+ * @param config
+ * @param pathToSchemaFile
+ */
 export const constructRDSGlobalAmplifyInput = async (context: $TSContext, config: any, pathToSchemaFile: string): Promise<string> => {
   const existingInputNode:any = await readRDSGlobalAmplifyInput(pathToSchemaFile) || {};
-  if ( existingInputNode?.fields && existingInputNode?.fields?.length > 0 ) {
-    const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL)).map(item => item.name);
+  if (existingInputNode?.fields && existingInputNode?.fields?.length > 0) {
+    const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL)).map((item) => item.name);
     expectedInputs.forEach((input) => {
       const inputNodeField = existingInputNode?.fields?.find(
         (field: any) => field?.name?.value === input,
       );
       if (inputNodeField && config[input]) {
-        inputNodeField['defaultValue']['value'] = config[input];
+        inputNodeField.defaultValue.value = config[input];
       }
     });
     return print(existingInputNode);
   }
-  else {
-    const engine = config['engine'] || ImportedRDSType.MYSQL;
-    return constructDefaultGlobalAmplifyInput(context, engine, false);
-  }
+
+  const engine = config.engine || ImportedRDSType.MYSQL;
+  return constructDefaultGlobalAmplifyInput(context, engine, false);
 };

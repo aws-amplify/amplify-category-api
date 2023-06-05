@@ -34,12 +34,21 @@ import {
 import { IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import path from 'path';
-import {RDSConnectionSecrets} from '@aws-amplify/graphql-transformer-core';
+import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 
+/**
+ *
+ */
 export type OPERATIONS = 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'SYNC';
 
 const OPERATION_KEY = '__operation';
 
+/**
+ *
+ * @param stack
+ * @param apiGraphql
+ * @param lambdaRole
+ */
 export const createRdsLambda = (
   stack: Stack,
   apiGraphql: GraphQLAPIProvider,
@@ -62,6 +71,12 @@ export const createRdsLambda = (
   );
 };
 
+/**
+ *
+ * @param roleName
+ * @param stack
+ * @param secretEntry
+ */
 export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEntry: RDSConnectionSecrets): IRole => {
   const { RDSLambdaIAMRoleLogicalID } = ResourceConstants.RESOURCES;
   const role = new Role(stack, RDSLambdaIAMRoleLogicalID, {
@@ -73,7 +88,7 @@ export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEn
       actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
       effect: Effect.ALLOW,
       resources: ['arn:aws:logs:*:*:*'],
-    })
+    }),
   ];
   if (secretEntry) {
     policyStatements.push(
@@ -81,8 +96,8 @@ export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEn
         actions: ['ssm:GetParameter', 'ssm:GetParameters'],
         effect: Effect.ALLOW,
         resources: [`arn:aws:ssm:*:*:parameter${secretEntry.username}`, `arn:aws:ssm:*:*:parameter${secretEntry.password}`],
-      })
-    )
+      }),
+    );
   }
   role.attachInlinePolicy(
     new Policy(stack, 'CloudwatchLogsAccess', {
@@ -93,28 +108,36 @@ export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEn
   return role;
 };
 
-export const generateLambdaRequestTemplate = (tableName: string, operation: string, operationName: string): string => {
-  return printBlock('Invoke RDS Lambda data source')(
-    compoundExpression([
-      set(ref('lambdaInput'), obj({})),
-      set(ref('lambdaInput.args'), obj({})),
-      set(ref('lambdaInput.table'), str(tableName)),
-      set(ref('lambdaInput.operation'), str(operation)),
-      set(ref('lambdaInput.operationName'), str(operationName)),
-      set(ref('lambdaInput.args.metadata'), obj({})),
-      set(ref('lambdaInput.args.metadata.keys'), list([])),
-      qref(methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([])))),
-      set(ref('lambdaInput.args.input'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
-      qref(methodCall(ref('lambdaInput.args.input.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
-      obj({
-        version: str('2018-05-29'),
-        operation: str('Invoke'),
-        payload: methodCall(ref('util.toJson'), ref('lambdaInput')),
-      }),
-    ]),
-  );
-};
+/**
+ *
+ * @param tableName
+ * @param operation
+ * @param operationName
+ */
+export const generateLambdaRequestTemplate = (tableName: string, operation: string, operationName: string): string => printBlock('Invoke RDS Lambda data source')(
+  compoundExpression([
+    set(ref('lambdaInput'), obj({})),
+    set(ref('lambdaInput.args'), obj({})),
+    set(ref('lambdaInput.table'), str(tableName)),
+    set(ref('lambdaInput.operation'), str(operation)),
+    set(ref('lambdaInput.operationName'), str(operationName)),
+    set(ref('lambdaInput.args.metadata'), obj({})),
+    set(ref('lambdaInput.args.metadata.keys'), list([])),
+    qref(methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([])))),
+    set(ref('lambdaInput.args.input'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
+    qref(methodCall(ref('lambdaInput.args.input.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
+    obj({
+      version: str('2018-05-29'),
+      operation: str('Invoke'),
+      payload: methodCall(ref('util.toJson'), ref('lambdaInput')),
+    }),
+  ]),
+);
 
+/**
+ *
+ * @param isSyncEnabled
+ */
 export const generateGetLambdaResponseTemplate = (isSyncEnabled: boolean): string => {
   const statements: Expression[] = [];
   if (isSyncEnabled) {
@@ -137,6 +160,8 @@ export const generateGetLambdaResponseTemplate = (isSyncEnabled: boolean): strin
 /**
  * Generate common response template used by most of the resolvers.
  * Append operation if response is coming from a mutation, this is to protect field resolver for subscriptions
+ * @param isSyncEnabled
+ * @param mutation
  */
 export const generateDefaultLambdaResponseMappingTemplate = (isSyncEnabled: boolean, mutation = false): string => {
   const statements: Expression[] = [];

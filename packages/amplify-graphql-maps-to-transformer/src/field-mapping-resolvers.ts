@@ -35,8 +35,15 @@ type AttachInputMappingSlotParams = {
 /**
  * Adds an init slot to the given resolver that maps currAttrName to origAttrName in the incoming request
  * Calls createPostDataLoadMapping to create a slot to map origAttrName back to currAttrName in the response
+ * @param root0
+ * @param root0.resolver
+ * @param root0.resolverTypeName
+ * @param root0.resolverFieldName
+ * @param root0.fieldMap
  */
-export const attachInputMappingSlot = ({ resolver, resolverTypeName, resolverFieldName, fieldMap }: AttachInputMappingSlotParams): void => {
+export const attachInputMappingSlot = ({
+  resolver, resolverTypeName, resolverFieldName, fieldMap,
+}: AttachInputMappingSlotParams): void => {
   resolver.addToSlot(
     'preUpdate',
     MappingTemplate.s3MappingTemplateFromString(
@@ -57,7 +64,13 @@ type AttachResponseMappingSlotParams = {
 
 /**
  * Attaches either a postDataLoad or postUpdate slot to the given resolver. The template maps the original foreign key name to current foreign key name in the result object
+ * @param slotName.slotName
  * @param slotName Which slot type to insert
+ * @param slotName.resolver
+ * @param slotName.resolverFieldName
+ * @param slotName.resolverTypeName
+ * @param slotName.fieldMap
+ * @param slotName.isList
  */
 export const attachResponseMappingSlot = ({
   slotName,
@@ -93,6 +106,16 @@ type AttachFilterConditionInputMappingSlotParams = {
   dataSource: LambdaDataSource;
 };
 
+/**
+ *
+ * @param root0
+ * @param root0.slotName
+ * @param root0.resolver
+ * @param root0.resolverTypeName
+ * @param root0.resolverFieldName
+ * @param root0.fieldMap
+ * @param root0.dataSource
+ */
 export const attachFilterAndConditionInputMappingSlot = ({
   slotName,
   resolver,
@@ -173,8 +196,7 @@ const createMultiRemapExpression = (
   return compoundExpression(expressions);
 };
 
-const createRemapExpression = (vtlMapName: string, sourceAttrName: string, destAttrName: string): Expression =>
-  compoundExpression([
-    qref(methodCall(ref(`${vtlMapName}.put`), str(destAttrName), ref(`${vtlMapName}.${sourceAttrName}`))),
-    qref(methodCall(ref(`${vtlMapName}.remove`), str(sourceAttrName))),
-  ]);
+const createRemapExpression = (vtlMapName: string, sourceAttrName: string, destAttrName: string): Expression => compoundExpression([
+  qref(methodCall(ref(`${vtlMapName}.put`), str(destAttrName), ref(`${vtlMapName}.${sourceAttrName}`))),
+  qref(methodCall(ref(`${vtlMapName}.remove`), str(sourceAttrName))),
+]);

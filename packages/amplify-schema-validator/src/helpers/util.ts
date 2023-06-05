@@ -13,4 +13,8 @@ export const getGraphqlName = (val: string): string => {
   return cleaned;
 };
 
+/**
+ *
+ * @param word
+ */
 export const toUpper = (word: string): string => word.charAt(0).toUpperCase() + word.slice(1);

@@ -3,6 +3,10 @@ import { start } from '../../storage';
 
 export const name = 'storage';
 
+/**
+ *
+ * @param context
+ */
 export const run = async (context: $TSContext) => {
   if (context.parameters.options.help) {
     const header = `amplify mock ${name} \nDescriptions:

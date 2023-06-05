@@ -1,17 +1,43 @@
-import { CloudFormationParseContext } from './types';
 import { isPlainObject } from 'lodash';
+import { CloudFormationParseContext } from './types';
 import { importModelTableResolver } from './import-model-table-resolver';
 
-export function cfnJoin(valNode: [string, string[]], { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
+/**
+ *
+ * @param valNode
+ * @param root0
+ * @param root0.params
+ * @param root0.conditions
+ * @param root0.resources
+ * @param root0.exports
+ * @param processValue
+ */
+export function cfnJoin(valNode: [string, string[]], {
+  params, conditions, resources, exports,
+}: CloudFormationParseContext, processValue) {
   if (!(Array.isArray(valNode) && valNode.length === 2 && Array.isArray(valNode[1]))) {
     throw new Error(`FN::Join expects an array with 2 elements instead got ${JSON.stringify(valNode)}`);
   }
   const delimiter = valNode[0];
-  const items = valNode[1].map(item => processValue(item, { params, conditions, resources, exports }));
+  const items = valNode[1].map((item) => processValue(item, {
+    params, conditions, resources, exports,
+  }));
   return items.join(delimiter);
 }
 
-export function cfnSub(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
+/**
+ *
+ * @param valNode
+ * @param root0
+ * @param root0.params
+ * @param root0.conditions
+ * @param root0.resources
+ * @param root0.exports
+ * @param processValue
+ */
+export function cfnSub(valNode, {
+  params, conditions, resources, exports,
+}: CloudFormationParseContext, processValue) {
   if (typeof valNode === 'string') {
     return templateReplace(valNode, params);
   }
@@ -51,6 +77,13 @@ function templateReplace(template: string, args: any = {}) {
   });
 }
 
+/**
+ *
+ * @param valNode
+ * @param root0
+ * @param root0.resources
+ * @param processValue
+ */
 export function cfnGetAtt(valNode, { resources }: CloudFormationParseContext, processValue) {
   if (!Array.isArray(valNode) && valNode.length !== 2) {
     throw new Error(`FN::GetAtt expects an array with 2 elements instead got ${JSON.stringify(valNode)}`);
@@ -66,10 +99,9 @@ export function cfnGetAtt(valNode, { resources }: CloudFormationParseContext, pr
 
     if (attrSplit.length === 2 && attrSplit[0] === 'Outputs' && Object.keys(selectedResource.result.outputs).includes(attrSplit[1])) {
       return selectedResource.result.outputs[attrSplit[1]];
-    } else {
-      // todo: investigate handling more cases when ref is directly the resource name etx
-      throw new Error(`Could not get attribute ${attributeName} from resource ${resourceName}`);
     }
+    // todo: investigate handling more cases when ref is directly the resource name etx
+    throw new Error(`Could not get attribute ${attributeName} from resource ${resourceName}`);
   } else if (!selectedResource.result.cfnExposedAttributes) {
     throw new Error(`No attributes are exposed to Fn::GetAtt on resource type ${selectedResource.Type}`);
   }
@@ -83,7 +115,19 @@ export function cfnGetAtt(valNode, { resources }: CloudFormationParseContext, pr
   return selectedResource.result[effectiveAttrKey];
 }
 
-export function cfnSplit(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
+/**
+ *
+ * @param valNode
+ * @param root0
+ * @param root0.params
+ * @param root0.conditions
+ * @param root0.resources
+ * @param root0.exports
+ * @param processValue
+ */
+export function cfnSplit(valNode, {
+  params, conditions, resources, exports,
+}: CloudFormationParseContext, processValue) {
   if (!Array.isArray(valNode) && valNode.length !== 2) {
     throw new Error(`FN::Split expects an array with 2 elements instead got ${JSON.stringify(valNode)}`);
   }
@@ -97,6 +141,14 @@ export function cfnSplit(valNode, { params, conditions, resources, exports }: Cl
   return str.split(delim);
 }
 
+/**
+ *
+ * @param valNode
+ * @param root0
+ * @param root0.params
+ * @param root0.resources
+ * @param processValue
+ */
 export function cfnRef(valNode, { params, resources }: CloudFormationParseContext, processValue) {
   let key;
   if (typeof valNode === 'string') {
@@ -113,7 +165,7 @@ export function cfnRef(valNode, { params, resources }: CloudFormationParseContex
 
   if (Object.keys(resources).includes(key)) {
     const result = resources[key]?.result ?? {};
-    const refKey = Object.keys(result).find(k => k.toLowerCase() === 'ref');
+    const refKey = Object.keys(result).find((k) => k.toLowerCase() === 'ref');
     if (!refKey) {
       throw new Error(`Ref is missing in resource ${key}`);
     }
@@ -123,6 +175,12 @@ export function cfnRef(valNode, { params, resources }: CloudFormationParseContex
   return key;
 }
 
+/**
+ *
+ * @param valNode
+ * @param parseContext
+ * @param processValue
+ */
 export function cfnSelect(valNode, parseContext: CloudFormationParseContext, processValue) {
   if (!Array.isArray(valNode) && valNode.length !== 2) {
     throw new Error(`FN::Select expects an array with 2 elements instead got ${JSON.stringify(valNode)}`);
@@ -139,7 +197,19 @@ export function cfnSelect(valNode, parseContext: CloudFormationParseContext, pro
   return processValue(selectionList[index]);
 }
 
-export function cfnIf(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
+/**
+ *
+ * @param valNode
+ * @param root0
+ * @param root0.params
+ * @param root0.conditions
+ * @param root0.resources
+ * @param root0.exports
+ * @param processValue
+ */
+export function cfnIf(valNode, {
+  params, conditions, resources, exports,
+}: CloudFormationParseContext, processValue) {
   if (!Array.isArray(valNode) && valNode.length !== 3) {
     throw new Error(`FN::If expects an array with  3 elements instead got ${JSON.stringify(valNode)}`);
   }
@@ -148,10 +218,24 @@ export function cfnIf(valNode, { params, conditions, resources, exports }: Cloud
   if (result.Ref && result.Ref === 'AWS::NoValue') {
     return undefined;
   }
-  return processValue(result, { params, condition, resources, exports });
+  return processValue(result, {
+    params, condition, resources, exports,
+  });
 }
 
-export function cfnEquals(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
+/**
+ *
+ * @param valNode
+ * @param root0
+ * @param root0.params
+ * @param root0.conditions
+ * @param root0.resources
+ * @param root0.exports
+ * @param processValue
+ */
+export function cfnEquals(valNode, {
+  params, conditions, resources, exports,
+}: CloudFormationParseContext, processValue) {
   if (!Array.isArray(valNode) && valNode.length !== 2) {
     throw new Error(`FN::Equal expects an array with  2 elements instead got ${JSON.stringify(valNode)}`);
   }
@@ -170,35 +254,98 @@ export function cfnEquals(valNode, { params, conditions, resources, exports }: C
   return lhs == rhs;
 }
 
-export function cfnNot(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
+/**
+ *
+ * @param valNode
+ * @param root0
+ * @param root0.params
+ * @param root0.conditions
+ * @param root0.resources
+ * @param root0.exports
+ * @param processValue
+ */
+export function cfnNot(valNode, {
+  params, conditions, resources, exports,
+}: CloudFormationParseContext, processValue) {
   if (!Array.isArray(valNode) && valNode.length !== 1) {
     throw new Error(`FN::Not expects an array with  1 element instead got ${JSON.stringify(valNode)}`);
   }
-  return !processValue(valNode[0], { params, conditions, resources, exports });
+  return !processValue(valNode[0], {
+    params, conditions, resources, exports,
+  });
 }
 
-export function cfnAnd(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
+/**
+ *
+ * @param valNode
+ * @param root0
+ * @param root0.params
+ * @param root0.conditions
+ * @param root0.resources
+ * @param root0.exports
+ * @param processValue
+ */
+export function cfnAnd(valNode, {
+  params, conditions, resources, exports,
+}: CloudFormationParseContext, processValue) {
   if (!Array.isArray(valNode) && !(valNode.length >= 2 && valNode.length <= 10)) {
     throw new Error(`FN::And expects an array with  2-10 elements instead got ${JSON.stringify(valNode)}`);
   }
-  return valNode.map(val => processValue(val, { params, conditions, resources, exports })).every(val => !!val);
+  return valNode.map((val) => processValue(val, {
+    params, conditions, resources, exports,
+  })).every((val) => !!val);
 }
 
-export function cfnOr(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
+/**
+ *
+ * @param valNode
+ * @param root0
+ * @param root0.params
+ * @param root0.conditions
+ * @param root0.resources
+ * @param root0.exports
+ * @param processValue
+ */
+export function cfnOr(valNode, {
+  params, conditions, resources, exports,
+}: CloudFormationParseContext, processValue) {
   if (!Array.isArray(valNode) && !(valNode.length >= 2 && valNode.length <= 10)) {
     throw new Error(`FN::And expects an array with  2-10 elements instead got ${JSON.stringify(valNode)}`);
   }
-  return valNode.map(val => processValue(val, { params, conditions, resources, exports })).some(val => !!val);
+  return valNode.map((val) => processValue(val, {
+    params, conditions, resources, exports,
+  })).some((val) => !!val);
 }
 
-export function cfnImportValue(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
+/**
+ *
+ * @param valNode
+ * @param root0
+ * @param root0.params
+ * @param root0.conditions
+ * @param root0.resources
+ * @param root0.exports
+ * @param processValue
+ */
+export function cfnImportValue(valNode, {
+  params, conditions, resources, exports,
+}: CloudFormationParseContext, processValue) {
   if (!(isPlainObject(valNode) || typeof valNode === 'string')) {
     throw new Error(`FN::ImportValue expects an array with  1 elements instead got ${JSON.stringify(valNode)}`);
   }
-  const key = processValue(valNode, { params, conditions, resources, exports });
+  const key = processValue(valNode, {
+    params, conditions, resources, exports,
+  });
   return exports[key] ?? importModelTableResolver(key, params.env);
 }
 
+/**
+ *
+ * @param valNode
+ * @param root0
+ * @param root0.conditions
+ * @param processValue
+ */
 export function cfnCondition(valNode, { conditions }: CloudFormationParseContext, processValue) {
   if (typeof valNode !== 'string') {
     throw new Error(`Condition should be a string value, instead got ${JSON.stringify(valNode)}`);

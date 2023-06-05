@@ -2,22 +2,37 @@ import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/grap
 import { InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { FieldWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
 import { makeConditionFilterInput, makeSubscriptionFilterInput } from './common';
+
+/**
+ *
+ * @param ctx
+ * @param name
+ * @param object
+ */
 export const makeListQueryFilterInput = (
   ctx: TransformerTransformSchemaStepContextProvider,
   name: string,
   object: ObjectTypeDefinitionNode,
-): InputObjectTypeDefinitionNode => {
-  return makeConditionFilterInput(ctx, name, object).serialize();
-};
+): InputObjectTypeDefinitionNode => makeConditionFilterInput(ctx, name, object).serialize();
 
+/**
+ *
+ * @param ctx
+ * @param name
+ * @param object
+ */
 export const makeSubscriptionQueryFilterInput = (
   ctx: TransformerTransformSchemaStepContextProvider,
   name: string,
   object: ObjectTypeDefinitionNode,
-): InputObjectTypeDefinitionNode => {
-  return makeSubscriptionFilterInput(ctx, name, object).serialize();
-};
+): InputObjectTypeDefinitionNode => makeSubscriptionFilterInput(ctx, name, object).serialize();
 
+/**
+ *
+ * @param type
+ * @param modelName
+ * @param isSyncEnabled
+ */
 export const makeListQueryModel = (type: ObjectTypeDefinitionNode, modelName: string, isSyncEnabled: boolean): ObjectTypeDefinitionNode => {
   const outputType = ObjectDefinitionWrapper.create(modelName);
 

@@ -10,6 +10,7 @@ import {
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
+  TransformerPreProcessContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   ArgumentNode,
@@ -30,14 +31,13 @@ import {
   makeValueNode,
 } from 'graphql-transformer-common';
 import { produce } from 'immer';
-import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { WritableDraft } from 'immer/dist/types/types-external';
 import { makeGetItemConnectionWithKeyResolver } from './resolvers';
 import {
   addFieldsToDefinition,
   convertSortKeyFieldsToSortKeyConnectionFields,
   ensureHasOneConnectionField,
-  getSortKeyFieldsNoContext
+  getSortKeyFieldsNoContext,
 } from './schema';
 import { HasOneDirectiveConfiguration, ObjectDefinition } from './types';
 import {
@@ -87,17 +87,18 @@ export class HasOneTransformer extends TransformerPluginBase {
 
   /** During the preProcess step, modify the document node and return it
    * so that it represents any schema modifications the plugin needs
+   * @param context
    */
   mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
-    const document: DocumentNode = produce(context.inputDocument, draftDoc => {
-      const filteredDefs = draftDoc?.definitions?.filter(def => def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension');
+    const document: DocumentNode = produce(context.inputDocument, (draftDoc) => {
+      const filteredDefs = draftDoc?.definitions?.filter((def) => def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension');
       const objectDefs = new Map<string, WritableDraft<ObjectDefinition>>((filteredDefs as Array<WritableDraft<ObjectDefinition>>)
-        .map(def => [def.name.value, def]));
+        .map((def) => [def.name.value, def]));
 
-      objectDefs?.forEach(def => {
-        const filteredFields = def?.fields?.filter(field => field?.directives?.some(dir => dir.name.value === directiveName));
-        filteredFields?.forEach(field => {
-          field?.directives?.forEach(dir => {
+      objectDefs?.forEach((def) => {
+        const filteredFields = def?.fields?.filter((field) => field?.directives?.some((dir) => dir.name.value === directiveName));
+        filteredFields?.forEach((field) => {
+          field?.directives?.forEach((dir) => {
             const connectionAttributeName = getConnectionAttributeName(
               context.featureFlags,
               def.name.value,
@@ -131,7 +132,7 @@ export class HasOneTransformer extends TransformerPluginBase {
               ) as WritableDraft<FieldDefinitionNode>;
               // eslint-disable-next-line no-param-reassign
               dir.arguments = [makeArgument('fields', makeValueNode(
-                [connectionAttributeName, ...sortKeyFields.map(skf => skf.name.value)],
+                [connectionAttributeName, ...sortKeyFields.map((skf) => skf.name.value)],
               )) as WritableDraft<ArgumentNode>];
               addFieldsToDefinition(def, [connField, ...sortKeyFields]);
             }
@@ -140,13 +141,14 @@ export class HasOneTransformer extends TransformerPluginBase {
       });
     });
     return document;
-  }
+  };
 
   /**
    * During the prepare step, register any foreign keys that are renamed due to a model rename
+   * @param context
    */
   prepare = (context: TransformerPrepareStepContextProvider): void => {
-    this.directiveList.forEach(config => {
+    this.directiveList.forEach((config) => {
       registerHasOneForeignKeyMappings({
         featureFlags: context.featureFlags,
         resourceHelper: context.resourceHelper,

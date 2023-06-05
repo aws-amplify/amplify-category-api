@@ -15,9 +15,16 @@ import { Construct } from 'constructs';
 import * as crypto from 'crypto';
 import { TransformerRootStack } from './root-stack';
 import { TransformerStackSythesizer } from './stack-synthesizer';
+
+/**
+ *
+ */
 export type TransformerNestedStackProps = NestedStackProps & {
   synthesizer?: IStackSynthesizer;
 };
+/**
+ *
+ */
 export class TransformerNestedStack extends TransformerRootStack {
   public readonly templateFile: string;
   public readonly nestedStackResource?: CfnResource;
@@ -48,9 +55,7 @@ export class TransformerNestedStack extends TransformerRootStack {
 
     this.resource = new CfnStack(parentScope, `${id}.NestedStackResource`, {
       templateUrl: Lazy.uncachedString({
-        produce: () => {
-          return this._templateUrl || '<unresolved>';
-        },
+        produce: () => this._templateUrl || '<unresolved>',
       }),
       parameters: Lazy.any({
         produce: () => (Object.keys(this.parameters).length > 0 ? this.parameters : undefined),
@@ -147,9 +152,8 @@ export class TransformerNestedStack extends TransformerRootStack {
       resolve: (context: IResolveContext) => {
         if (Stack.of(context.scope) === this) {
           return innerValue;
-        } else {
-          return outerValue;
         }
+        return outerValue;
       },
     });
   }
@@ -159,7 +163,7 @@ function findRootStack(scope: Construct): Stack {
     throw new Error('Nested stacks cannot be defined as a root construct');
   }
 
-  const rootStack = scope.node.scopes.find(p => Stack.isStack(p));
+  const rootStack = scope.node.scopes.find((p) => Stack.isStack(p));
   if (!rootStack) {
     throw new Error('Nested stacks must be defined within scope of another non-nested stack');
   }

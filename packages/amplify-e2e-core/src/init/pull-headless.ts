@@ -1,5 +1,5 @@
-import { nspawn as spawn, getCLIPath } from '..';
 import { EOL } from 'os';
+import { nspawn as spawn, getCLIPath } from '..';
 
 const defaultSettings = {
   name: EOL,
@@ -16,6 +16,11 @@ const defaultSettings = {
   appId: '',
 };
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function pullProject(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {

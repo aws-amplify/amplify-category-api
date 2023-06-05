@@ -47,11 +47,12 @@ import {
   generateOwnerClaimExpression,
   generateOwnerClaimListExpression,
   generateOwnerMultiClaimExpression,
-  generateInvalidClaimsCondition
+  generateInvalidClaimsCondition,
 } from './helpers';
 
 /**
  * There is only one role for ApiKey we can use the first index
+ * @param roles
  */
 const apiKeyExpression = (roles: Array<RoleDefinition>): Expression | null => {
   const expression = new Array<Expression>();
@@ -72,6 +73,7 @@ const apiKeyExpression = (roles: Array<RoleDefinition>): Expression | null => {
 
 /**
  * There is only one role for Lambda we can use the first index
+ * @param roles
  */
 const lambdaExpression = (roles: Array<RoleDefinition>): Expression | null => {
   const expression = new Array<Expression>();
@@ -101,7 +103,7 @@ const iamExpression = (
     expression.push(iamAdminRoleCheckExpression(adminRoles));
   }
   if (roles.length > 0) {
-    roles.forEach(role => {
+    roles.forEach((role) => {
       if (role.areAllFieldsAllowed && role.areAllFieldsNullAllowed) {
         expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), identityPoolId));
       } else {
@@ -125,7 +127,7 @@ const iamExpression = (
 
 const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Expression[] => {
   const staticRoleExpression: Array<Expression> = [];
-  const privateRoleIdx = roles.findIndex(r => r.strategy === 'private');
+  const privateRoleIdx = roles.findIndex((r) => r.strategy === 'private');
   if (privateRoleIdx > -1) {
     const privateRole = roles[privateRoleIdx];
     if (privateRole.areAllFieldsAllowed && privateRole.areAllFieldsNullAllowed) {
@@ -147,7 +149,7 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Expression[
             ref('staticGroupRoles'),
             raw(
               JSON.stringify(
-                roles.map(r => ({
+                roles.map((r) => ({
                   claim: r.claim,
                   entity: r.entity,
                   allowedFields: r.allowedFields,
@@ -268,6 +270,9 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
  * unauthorized if
  *  - none of the roles have been met and there are no field conditions
  *  - role is partially allowed but the field conditions have not been met
+ * @param providers
+ * @param roles
+ * @param fields
  */
 export const generateAuthExpressionForUpdate = (
   providers: ConfiguredAuthProviders,

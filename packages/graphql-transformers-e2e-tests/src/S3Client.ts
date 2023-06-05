@@ -16,6 +16,9 @@ async function promisify<I, O>(fun: (arg: I, cb: (e: Error, d: O) => void) => vo
   });
 }
 
+/**
+ *
+ */
 export class S3Client {
   client: S3;
 
@@ -23,16 +26,24 @@ export class S3Client {
     this.client = new S3({ region: this.region });
   }
 
+  /**
+   *
+   * @param bucketName
+   */
   async createBucket(bucketName: string) {
     return await promisify<S3.Types.CreateBucketRequest, S3.Types.CreateBucketOutput>(
       this.client.createBucket,
       {
         Bucket: bucketName,
       },
-      this.client
+      this.client,
     );
   }
 
+  /**
+   *
+   * @param bucketName
+   */
   async putBucketVersioning(bucketName: string) {
     return await promisify<S3.Types.PutBucketVersioningRequest, {}>(
       this.client.putBucketVersioning,
@@ -42,11 +53,18 @@ export class S3Client {
           Status: 'Enabled',
         },
       },
-      this.client
+      this.client,
     );
   }
 
-  async uploadZIPFile(bucketName: string, filePath: string, s3key: string, contentType: string = 'application/zip') {
+  /**
+   *
+   * @param bucketName
+   * @param filePath
+   * @param s3key
+   * @param contentType
+   */
+  async uploadZIPFile(bucketName: string, filePath: string, s3key: string, contentType = 'application/zip') {
     const fileContent = this.readZIPFile(filePath);
 
     return await promisify<S3.Types.PutObjectRequest, S3.Types.PutObjectOutput>(
@@ -57,10 +75,16 @@ export class S3Client {
         Body: fileContent,
         ContentType: contentType,
       },
-      this.client
+      this.client,
     );
   }
 
+  /**
+   *
+   * @param bucketName
+   * @param filePath
+   * @param s3key
+   */
   async uploadFile(bucketName: string, filePath: string, s3key: string) {
     const fileContent = this.readFile(filePath);
 
@@ -71,10 +95,15 @@ export class S3Client {
         Key: s3key,
         Body: fileContent,
       },
-      this.client
+      this.client,
     );
   }
 
+  /**
+   *
+   * @param bucketName
+   * @param s3key
+   */
   async getFileVersion(bucketName: string, s3key: string) {
     return await promisify<S3.Types.GetObjectRequest, S3.Types.GetObjectOutput>(
       this.client.getObject,
@@ -82,20 +111,30 @@ export class S3Client {
         Bucket: bucketName,
         Key: s3key,
       },
-      this.client
+      this.client,
     );
   }
 
+  /**
+   *
+   * @param bucketName
+   */
   async getAllObjectVersions(bucketName: string) {
     return await promisify<S3.Types.ListObjectVersionsRequest, S3.Types.ListObjectVersionsOutput>(
       this.client.listObjectVersions,
       {
         Bucket: bucketName,
       },
-      this.client
+      this.client,
     );
   }
 
+  /**
+   *
+   * @param bucketName
+   * @param versionId
+   * @param s3key
+   */
   async deleteObjectVersion(bucketName: string, versionId: string, s3key: string) {
     return await promisify<S3.Types.DeleteObjectRequest, S3.Types.DeleteObjectOutput>(
       this.client.deleteObject,
@@ -104,10 +143,15 @@ export class S3Client {
         Key: s3key,
         VersionId: versionId,
       },
-      this.client
+      this.client,
     );
   }
 
+  /**
+   *
+   * @param bucketName
+   * @param s3key
+   */
   async deleteFile(bucketName: string, s3key: string) {
     const response = await this.getAllObjectVersions(bucketName);
     const versions = response.Versions;
@@ -116,16 +160,27 @@ export class S3Client {
     }
   }
 
+  /**
+   *
+   * @param bucketName
+   */
   async deleteBucket(bucketName: string) {
     return await promisify<S3.Types.DeleteBucketRequest, {}>(
       this.client.deleteBucket,
       {
         Bucket: bucketName,
       },
-      this.client
+      this.client,
     );
   }
 
+  /**
+   *
+   * @param bucketName
+   * @param filePath
+   * @param s3key
+   * @param zip
+   */
   async setUpS3Resources(bucketName: string, filePath: string, s3key: string, zip?: boolean) {
     await this.createBucket(bucketName);
     await this.putBucketVersioning(bucketName);
@@ -137,6 +192,11 @@ export class S3Client {
     return await this.getFileVersion(bucketName, s3key);
   }
 
+  /**
+   *
+   * @param bucketName
+   * @param s3key
+   */
   async cleanUpS3Resources(bucketName: string, s3key: string) {
     await this.deleteFile(bucketName, s3key);
     await this.deleteBucket(bucketName);
@@ -150,8 +210,14 @@ export class S3Client {
     return fs.createReadStream(filePath);
   }
 
+  /**
+   *
+   * @param secs
+   * @param fun
+   * @param {...any} args
+   */
   public async wait<T>(secs: number, fun: (...args: any[]) => Promise<T>, ...args: any[]): Promise<T> {
-    return new Promise<T>(resolve => {
+    return new Promise<T>((resolve) => {
       setTimeout(() => {
         resolve(fun.apply(this, args));
       }, 1000 * secs);

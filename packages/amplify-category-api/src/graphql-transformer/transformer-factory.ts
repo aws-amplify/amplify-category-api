@@ -61,6 +61,9 @@ type TransformerFactoryArgs = {
 
 /**
  * Return the graphql transformer factory based on the projects current transformer version.
+ * @param context
+ * @param resourceDir
+ * @param authConfig
  */
 export const getTransformerFactory = async (
   context: $TSContext,
@@ -114,7 +117,7 @@ const getTransformerFactoryV2 = (
   const customTransformerList = customTransformersConfig?.config?.transformers;
   const customTransformers = (Array.isArray(customTransformerList) ? customTransformerList : [])
     .map(importTransformerModule)
-    .map(imported => {
+    .map((imported) => {
       const CustomTransformer = imported.default;
 
       if (typeof CustomTransformer === 'function') {
@@ -127,7 +130,7 @@ const getTransformerFactoryV2 = (
 
       throw new Error("Custom Transformers' default export must be a function or an object");
     })
-    .filter(customTransformer => customTransformer);
+    .filter((customTransformer) => customTransformer);
 
   if (customTransformers.length > 0) {
     transformerList.push(...customTransformers);
@@ -158,18 +161,18 @@ function getTransformerFactoryV1(context: $TSContext, resourceDir: string, authC
       customTransformersConfig && customTransformersConfig.transformers ? customTransformersConfig.transformers : []
     )
       .map(importTransformerModule)
-      .map(imported => {
+      .map((imported) => {
         const CustomTransformer = imported.default;
 
         if (typeof CustomTransformer === 'function') {
           return new CustomTransformer();
-        } else if (typeof CustomTransformer === 'object') {
+        } if (typeof CustomTransformer === 'object') {
           return CustomTransformer;
         }
 
         throw new Error("Custom Transformers' default export must be a function or an object");
       })
-      .filter(customTransformer => customTransformer);
+      .filter((customTransformer) => customTransformer);
 
     if (customTransformers.length > 0) {
       transformerList.push(...customTransformers);
@@ -178,7 +181,7 @@ function getTransformerFactoryV1(context: $TSContext, resourceDir: string, authC
     // TODO: Build dependency mechanism into transformers. Auth runs last
     // so any resolvers that need to be protected will already be created.
 
-    let amplifyAdminEnabled: boolean = false;
+    let amplifyAdminEnabled = false;
 
     try {
       const amplifyMeta = stateManager.getMeta();
@@ -199,6 +202,7 @@ function getTransformerFactoryV1(context: $TSContext, resourceDir: string, authC
  * - modulePath is an absolute path to an NPM package
  * - modulePath is a package name, then it will be loaded from the project's root's node_modules with createRequireFromPath.
  * - modulePath is a name of a globally installed package
+ * @param transformerName
  */
 const importTransformerModule = (transformerName: string) => {
   const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformerName);

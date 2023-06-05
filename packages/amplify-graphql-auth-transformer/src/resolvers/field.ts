@@ -124,6 +124,10 @@ const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields:
 
 /**
  * Generates an auth expression for field
+ * @param providers
+ * @param roles
+ * @param fields
+ * @param fieldName
  */
 export const generateAuthExpressionForField = (
   providers: ConfiguredAuthProviders,
@@ -174,6 +178,9 @@ export const generateAuthExpressionForField = (
 
 /**
  * This is the response resolver for fields to protect subscriptions
+ * @param operation
+ * @param fieldName
+ * @param subscriptionsEnabled
  */
 export const generateFieldAuthResponse = (operation: string, fieldName: string, subscriptionsEnabled: boolean): string => {
   if (subscriptionsEnabled) {
@@ -189,6 +196,8 @@ export const generateFieldAuthResponse = (operation: string, fieldName: string, 
 
 /**
  * Creates expression to deny field flag
+ * @param operation
+ * @param subscriptionsEnabled
  */
 export const setDeniedFieldFlag = (operation: string, subscriptionsEnabled: boolean): string => {
   if (subscriptionsEnabled) {
@@ -206,6 +215,7 @@ export const setDeniedFieldFlag = (operation: string, subscriptionsEnabled: bool
 
 /**
  * Generates sandbox expression for field
+ * @param sandboxEnabled
  */
 export const generateSandboxExpressionForField = (sandboxEnabled: boolean): string => {
   let exp: Expression;

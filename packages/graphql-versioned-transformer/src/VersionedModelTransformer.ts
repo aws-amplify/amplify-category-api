@@ -1,6 +1,12 @@
-import { Transformer, TransformerContext, InvalidDirectiveError, TransformerContractError, gql } from 'graphql-transformer-core';
-import { valueFromASTUntyped, ArgumentNode, ObjectTypeDefinitionNode, DirectiveNode, Kind } from 'graphql';
-import { printBlock, compoundExpression, set, ref, qref, obj, str, raw } from 'graphql-mapping-template';
+import {
+  Transformer, TransformerContext, InvalidDirectiveError, TransformerContractError, gql,
+} from 'graphql-transformer-core';
+import {
+  valueFromASTUntyped, ArgumentNode, ObjectTypeDefinitionNode, DirectiveNode, Kind,
+} from 'graphql';
+import {
+  printBlock, compoundExpression, set, ref, qref, obj, str, raw,
+} from 'graphql-mapping-template';
 import {
   ResourceConstants,
   ModelResourceIDs,
@@ -12,6 +18,9 @@ import {
   makeField,
 } from 'graphql-transformer-common';
 
+/**
+ *
+ */
 export class VersionedModelTransformer extends Transformer {
   constructor() {
     super(
@@ -19,7 +28,7 @@ export class VersionedModelTransformer extends Transformer {
       // TODO: Allow version attribute selection. Could be `@version on FIELD_DEFINITION`
       gql`
         directive @versioned(versionField: String = "version", versionInput: String = "expectedVersion") on OBJECT
-      `
+      `,
     );
   }
 
@@ -39,10 +48,13 @@ export class VersionedModelTransformer extends Transformer {
    * the types mutations that actually perform the conflict resolutions by
    * checking the "version" attribute in the table with the "expectedVersion" passed
    * by the user.
+   * @param def
+   * @param directive
+   * @param ctx
    */
   public object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
     // @versioned may only be used on types that are also @model
-    const modelDirective = def.directives.find(dir => dir.name.value === 'model');
+    const modelDirective = def.directives.find((dir) => dir.name.value === 'model');
     if (!modelDirective) {
       throw new InvalidDirectiveError('Types annotated with @versioned must also be annotated with @model.');
     }
@@ -70,6 +82,7 @@ export class VersionedModelTransformer extends Transformer {
   /**
    * Set the "version"  to 1
    * @param ctx
+   * @param typeName
    * @param versionField
    * @param versionInput
    */
@@ -78,7 +91,7 @@ export class VersionedModelTransformer extends Transformer {
     const mutationResolverLogicalId = ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
     const resolver = ctx.getResource(mutationResolverLogicalId);
     if (resolver) {
-      resolver.Properties.RequestMappingTemplate = snippet + '\n\n' + resolver.Properties.RequestMappingTemplate;
+      resolver.Properties.RequestMappingTemplate = `${snippet}\n\n${resolver.Properties.RequestMappingTemplate}`;
       ctx.setResource(mutationResolverLogicalId, resolver);
     }
   }
@@ -87,12 +100,13 @@ export class VersionedModelTransformer extends Transformer {
    * Prefix the update operation with a conditional expression that checks
    * the object versions.
    * @param ctx
+   * @param typeName
    * @param versionField
    * @param versionInput
    */
   private augmentDeleteMutation(ctx: TransformerContext, typeName: string, versionField: string, versionInput: string) {
     const mutationResolverLogicalId = ResolverResourceIDs.DynamoDBDeleteResolverResourceID(typeName);
-    const snippet = printBlock(`Inject @versioned condition.`)(
+    const snippet = printBlock('Inject @versioned condition.')(
       compoundExpression([
         set(
           ref(ResourceConstants.SNIPPETS.VersionedCondition),
@@ -104,21 +118,21 @@ export class VersionedModelTransformer extends Transformer {
             expressionNames: obj({
               [`#${versionField}`]: str(`${versionField}`),
             }),
-          })
+          }),
         ),
         qref(`$ctx.args.input.remove("${versionInput}")`),
-      ])
+      ]),
     );
     const resolver = ctx.getResource(mutationResolverLogicalId);
     if (resolver) {
-      resolver.Properties.RequestMappingTemplate = snippet + '\n\n' + resolver.Properties.RequestMappingTemplate;
+      resolver.Properties.RequestMappingTemplate = `${snippet}\n\n${resolver.Properties.RequestMappingTemplate}`;
       ctx.setResource(mutationResolverLogicalId, resolver);
     }
   }
 
   private augmentUpdateMutation(ctx: TransformerContext, typeName: string, versionField: string, versionInput: string) {
     const mutationResolverLogicalId = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName);
-    const snippet = printBlock(`Inject @versioned condition.`)(
+    const snippet = printBlock('Inject @versioned condition.')(
       compoundExpression([
         set(
           ref(ResourceConstants.SNIPPETS.VersionedCondition),
@@ -130,16 +144,16 @@ export class VersionedModelTransformer extends Transformer {
             expressionNames: obj({
               [`#${versionField}`]: str(`${versionField}`),
             }),
-          })
+          }),
         ),
         set(ref('newVersion'), raw(`$ctx.args.input.${versionInput} + 1`)),
         qref(`$ctx.args.input.put("${versionField}", $newVersion)`),
         qref(`$ctx.args.input.remove("${versionInput}")`),
-      ])
+      ]),
     );
     const resolver = ctx.getResource(mutationResolverLogicalId);
     if (resolver) {
-      resolver.Properties.RequestMappingTemplate = snippet + '\n\n' + resolver.Properties.RequestMappingTemplate;
+      resolver.Properties.RequestMappingTemplate = `${snippet}\n\n${resolver.Properties.RequestMappingTemplate}`;
       ctx.setResource(mutationResolverLogicalId, resolver);
     }
   }
@@ -148,12 +162,12 @@ export class VersionedModelTransformer extends Transformer {
     const createInputName = ModelResourceIDs.ModelCreateInputObjectName(typeName);
     const input = ctx.getType(createInputName);
     if (input && input.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION) {
-      const updatedFields = input.fields.filter(f => f.name.value !== versionField);
+      const updatedFields = input.fields.filter((f) => f.name.value !== versionField);
       if (updatedFields.length === 0) {
         throw new InvalidDirectiveError(
           `After stripping away version field "${versionField}", \
                     the create input for type "${typeName}" cannot be created \
-                    with 0 fields. Add another field to type "${typeName}" to continue.`
+                    with 0 fields. Add another field to type "${typeName}" to continue.`,
         );
       }
       const updatedInput = {
@@ -188,7 +202,7 @@ export class VersionedModelTransformer extends Transformer {
     const type = ctx.getType(typeName);
     if (type && type.kind === Kind.OBJECT_TYPE_DEFINITION) {
       let updatedFields = type.fields;
-      const versionFieldImpl = type.fields.find(f => f.name.value === versionField);
+      const versionFieldImpl = type.fields.find((f) => f.name.value === versionField);
       let updatedField = versionFieldImpl;
       if (versionFieldImpl) {
         const baseType = getBaseType(versionFieldImpl.type);
@@ -199,7 +213,7 @@ export class VersionedModelTransformer extends Transformer {
               ...updatedField,
               type: makeNonNullType(versionFieldImpl.type),
             };
-            updatedFields = updatedFields.map(f => (f.name.value === versionField ? updatedField : f));
+            updatedFields = updatedFields.map((f) => (f.name.value === versionField ? updatedField : f));
           }
         } else {
           throw new TransformerContractError(`The versionField "${versionField}" is required to be of type "Int" or "BigInt".`);

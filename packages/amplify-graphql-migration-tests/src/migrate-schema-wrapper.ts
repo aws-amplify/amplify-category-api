@@ -8,8 +8,16 @@ jest.mock('@aws-amplify/amplify-prompts');
 const fs_mock = fs as jest.Mocked<typeof fs>;
 const prompter_mock = prompter as jest.Mocked<typeof prompter>;
 
+/**
+ *
+ */
 export type AuthMode = 'apiKey' | 'iam' | 'userPools' | 'oidc';
 
+/**
+ *
+ * @param schema
+ * @param authMode
+ */
 export const migrateSchema = async (schema: string, authMode: AuthMode = 'apiKey'): Promise<string> => {
   const pathHash = Date.now().toLocaleString().replace(/,/g, '');
   fs_mock.writeFile.mockClear();

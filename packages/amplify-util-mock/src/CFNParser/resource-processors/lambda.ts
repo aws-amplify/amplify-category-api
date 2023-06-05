@@ -10,6 +10,7 @@ import {
 /**
  * Handles the parsing of a lambda CFN resource into relevant bits of information
  * @param _ (resourceName) not used, but required to satisfy the CloudFormationResourceProcessorFn interface
+ * @param resourceName
  * @param resource The CFN resource as a JSON object
  * @param cfnContext The parameters, exports and other context required to parse the CFN
  */
@@ -39,6 +40,12 @@ export const lambdaFunctionHandler = (
   };
 };
 
+/**
+ *
+ * @param resourceName
+ * @param resource
+ * @param cfnContext
+ */
 export const lambdaEventSourceHandler = (
   resourceName: string,
   resource: CloudFormationResource,

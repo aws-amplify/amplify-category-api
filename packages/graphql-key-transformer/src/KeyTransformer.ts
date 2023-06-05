@@ -1,4 +1,6 @@
-import { Transformer, gql, TransformerContext, getDirectiveArguments, InvalidDirectiveError } from 'graphql-transformer-core';
+import {
+  Transformer, gql, TransformerContext, getDirectiveArguments, InvalidDirectiveError,
+} from 'graphql-transformer-core';
 import {
   obj,
   str,
@@ -74,6 +76,9 @@ interface KeyArguments {
   queryField?: string;
 }
 
+/**
+ *
+ */
 export class KeyTransformer extends Transformer {
   constructor() {
     // prettier-ignore
@@ -81,7 +86,7 @@ export class KeyTransformer extends Transformer {
       'KeyTransformer',
       gql`
         directive @key(name: String, fields: [String!]!, queryField: String) repeatable on OBJECT
-      `
+      `,
     );
   }
 
@@ -114,8 +119,12 @@ export class KeyTransformer extends Transformer {
       }
     }
   };
+
   /**
    * Augment the table key structures based on the @key.
+   * @param definition
+   * @param directive
+   * @param ctx
    */
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
     this.validate(definition, directive, ctx);
@@ -152,6 +161,9 @@ export class KeyTransformer extends Transformer {
    *
    * Creates:
    * 1. A query field for each secondary index.
+   * @param definition
+   * @param directive
+   * @param ctx
    */
   private updateSchema = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
     this.updateQueryFields(definition, directive, ctx);
@@ -164,6 +176,9 @@ export class KeyTransformer extends Transformer {
 
   /**
    * Update the get, list, create, update, and delete resolvers with updated key information.
+   * @param definition
+   * @param directive
+   * @param ctx
    */
   private updateResolvers = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
     const directiveArgs: KeyArguments = getDirectiveArguments(directive);
@@ -253,10 +268,10 @@ export class KeyTransformer extends Transformer {
   };
 
   private removeAutoCreatedPrimaryKey = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
-    const schemaHasIdField = definition.fields.find(f => f.name.value === 'id');
+    const schemaHasIdField = definition.fields.find((f) => f.name.value === 'id');
     if (!schemaHasIdField) {
       const obj = ctx.getObject(definition.name.value);
-      const fields = obj.fields.filter(f => f.name.value !== 'id');
+      const fields = obj.fields.filter((f) => f.name.value !== 'id');
       const newObj: ObjectTypeDefinitionNode = {
         ...obj,
         fields,
@@ -273,7 +288,7 @@ export class KeyTransformer extends Transformer {
       // as it is in the key field list
       const compositeKeyFields = [];
       for (const compositeKeyFieldName of compositeKeyFieldNames) {
-        const field = definition.fields.find(field => field.name.value === compositeKeyFieldName);
+        const field = definition.fields.find((field) => field.name.value === compositeKeyFieldName);
         if (!field) {
           throw new InvalidDirectiveError(
             `Can't find field: ${compositeKeyFieldName} in ${definition.name.value}, but it was specified in the @key definition.`,
@@ -293,7 +308,7 @@ export class KeyTransformer extends Transformer {
       }
     } else if (args.fields.length === 2) {
       const finalSortKeyFieldName = args.fields[1];
-      const finalSortKeyField = definition.fields.find(f => f.name.value === finalSortKeyFieldName);
+      const finalSortKeyField = definition.fields.find((f) => f.name.value === finalSortKeyFieldName);
       const typeResolver = (baseType: string) => {
         const resolvedEnumType = ctx.getType(baseType) as EnumTypeDefinitionNode;
         return resolvedEnumType ? 'String' : undefined;
@@ -333,16 +348,16 @@ export class KeyTransformer extends Transformer {
     if (getResolverResource && this.isPrimaryKey(directive)) {
       // By default takes a single argument named 'id'. Replace it with the updated primary key structure.
       let getField: FieldDefinitionNode = query.fields.find(
-        field => field.name.value === getResolverResource.Properties.FieldName,
+        (field) => field.name.value === getResolverResource.Properties.FieldName,
       ) as FieldDefinitionNode;
       const args: KeyArguments = getDirectiveArguments(directive);
-      const getArguments = args.fields.map(keyAttributeName => {
-        const keyField = definition.fields.find(field => field.name.value === keyAttributeName);
+      const getArguments = args.fields.map((keyAttributeName) => {
+        const keyField = definition.fields.find((field) => field.name.value === keyAttributeName);
         const keyArgument = makeInputValueDefinition(keyAttributeName, makeNonNullType(makeNamedType(getBaseType(keyField.type))));
         return keyArgument;
       });
       getField = { ...getField, arguments: getArguments };
-      query = { ...query, fields: query.fields.map(field => (field.name.value === getField.name.value ? getField : field)) };
+      query = { ...query, fields: query.fields.map((field) => (field.name.value === getField.name.value ? getField : field)) };
       ctx.putType(query);
     }
   };
@@ -355,7 +370,7 @@ export class KeyTransformer extends Transformer {
       // By default takes a single argument named 'id'. Replace it with the updated primary key structure.
       let query = ctx.getQuery();
       let listField: FieldDefinitionNode = query.fields.find(
-        field => field.name.value === listResolverResource.Properties.FieldName,
+        (field) => field.name.value === listResolverResource.Properties.FieldName,
       ) as FieldDefinitionNode;
       let listArguments: InputValueDefinitionNode[] = [...listField.arguments];
       const args: KeyArguments = getDirectiveArguments(directive);
@@ -370,7 +385,7 @@ export class KeyTransformer extends Transformer {
       }
       listArguments.push(makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')));
       listField = { ...listField, arguments: listArguments };
-      query = { ...query, fields: query.fields.map(field => (field.name.value === listField.name.value ? listField : field)) };
+      query = { ...query, fields: query.fields.map((field) => (field.name.value === listField.name.value ? listField : field)) };
       ctx.putType(query);
     }
   };
@@ -461,7 +476,7 @@ export class KeyTransformer extends Transformer {
       let shouldMakeDelete = true;
 
       if (ctx.featureFlags.getBoolean('skipOverrideMutationInputTypes', false)) {
-        const modelDirective = definition.directives.find(dir => dir.name.value === 'model');
+        const modelDirective = definition.directives.find((dir) => dir.name.value === 'model');
         const modelDirectiveArgs = getDirectiveArguments(modelDirective);
 
         if (!_.isEmpty(modelDirectiveArgs) && Object.keys(modelDirectiveArgs).includes('mutations')) {
@@ -471,7 +486,7 @@ export class KeyTransformer extends Transformer {
           shouldMakeDelete = !!modelDirectiveArgs?.mutations?.delete;
         }
       }
-      const hasIdField = definition.fields.find(f => f.name.value === 'id');
+      const hasIdField = definition.fields.find((f) => f.name.value === 'id');
       if (!hasIdField) {
         const createInput = ctx.getType(
           ModelResourceIDs.ModelCreateInputObjectName(definition.name.value),
@@ -493,10 +508,10 @@ export class KeyTransformer extends Transformer {
   };
 
   // Return a VTL snippet that sets the key for key for get, update, and delete operations.
-  private setKeySnippet = (directive: DirectiveNode, isMutation: boolean = false) => {
+  private setKeySnippet = (directive: DirectiveNode, isMutation = false) => {
     const directiveArgs = getDirectiveArguments(directive);
     const cmds: Expression[] = [set(ref(ResourceConstants.SNIPPETS.ModelObjectKey), modelObjectKey(directiveArgs, isMutation))];
-    return printBlock(`Set the primary @key`)(compoundExpression(cmds));
+    return printBlock('Set the primary @key')(compoundExpression(cmds));
   };
 
   // When issuing an create/update mutation that creates/changes one part of a composite sort key,
@@ -511,10 +526,10 @@ export class KeyTransformer extends Transformer {
       return printBlock(`Validate ${keyOperation} mutation for @key '${directiveArgs.name}'`)(
         compoundExpression([
           set(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), bool(false)),
-          set(ref('keyFieldNames'), list(sortKeyFields.map(f => str(f)))),
+          set(ref('keyFieldNames'), list(sortKeyFields.map((f) => str(f)))),
           forEach(ref('keyFieldName'), ref('keyFieldNames'), [
             iff(
-              raw(`$ctx.args.input.containsKey("$keyFieldName")`),
+              raw('$ctx.args.input.containsKey("$keyFieldName")'),
               set(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), bool(true)),
               true,
             ),
@@ -525,7 +540,7 @@ export class KeyTransformer extends Transformer {
               raw(
                 `$util.error("When ${keyOperation.replace(/.$/, 'ing')} any part of the composite sort key for @key '${
                   directiveArgs.name
-                }',` + ` you must provide all fields for the key. Missing key: '$keyFieldName'.")`,
+                }',` + ' you must provide all fields for the key. Missing key: \'$keyFieldName\'.")',
               ),
             ),
           ]),
@@ -551,7 +566,7 @@ export class KeyTransformer extends Transformer {
     const directiveArgs = getDirectiveArguments(directive);
     if (!directiveArgs.name) {
       // 1. Make sure there are no more directives without a name.
-      for (const otherDirective of definition.directives.filter(d => d.name.value === 'key')) {
+      for (const otherDirective of definition.directives.filter((d) => d.name.value === 'key')) {
         const otherArgs = getDirectiveArguments(otherDirective);
         if (otherDirective !== directive && !otherArgs.name) {
           throw new InvalidDirectiveError(`You may only supply one primary @key on type '${definition.name.value}'.`);
@@ -561,15 +576,15 @@ export class KeyTransformer extends Transformer {
         const primaryHashField = directiveArgs.fields[0];
         const otherHashField = otherArgs.fields[0];
         if (
-          otherDirective !== directive &&
-          !hasPrimarySortKey &&
+          otherDirective !== directive
+          && !hasPrimarySortKey
           // If the primary key and other key share the first field and are not the same directive it is an LSI.
-          primaryHashField === otherHashField
+          && primaryHashField === otherHashField
         ) {
           throw new InvalidDirectiveError(
-            `Invalid @key "${otherArgs.name}". You may not create a @key where the first field in 'fields' ` +
-              `is the same as that of the primary @key unless the primary @key has multiple 'fields'. ` +
-              `You cannot have a local secondary index without a sort key in the primary index.`,
+            `Invalid @key "${otherArgs.name}". You may not create a @key where the first field in 'fields' `
+              + 'is the same as that of the primary @key unless the primary @key has multiple \'fields\'. '
+              + 'You cannot have a local secondary index without a sort key in the primary index.',
           );
         }
       }
@@ -579,7 +594,7 @@ export class KeyTransformer extends Transformer {
       }
     } else {
       // 2. Make sure there are no more directives with the same name.
-      for (const otherDirective of definition.directives.filter(d => d.name.value === 'key')) {
+      for (const otherDirective of definition.directives.filter((d) => d.name.value === 'key')) {
         const otherArgs = getDirectiveArguments(otherDirective);
         if (otherDirective !== directive && otherArgs.name === directiveArgs.name) {
           throw new InvalidDirectiveError(
@@ -617,7 +632,7 @@ export class KeyTransformer extends Transformer {
    */
   isPrimaryKey = (directive: DirectiveNode) => {
     const directiveArgs = getDirectiveArguments(directive);
-    return !Boolean(directiveArgs.name);
+    return !directiveArgs.name;
   };
 
   /**
@@ -633,14 +648,14 @@ export class KeyTransformer extends Transformer {
     const tableLogicalID = ModelResourceIDs.ModelTableResourceID(definition.name.value);
     const tableResource = ctx.getResource(tableLogicalID);
     if (!tableResource) {
-      throw new InvalidDirectiveError(`The @key directive may only be added to object definitions annotated with @model.`);
+      throw new InvalidDirectiveError('The @key directive may only be added to object definitions annotated with @model.');
     } else {
       // First remove any attribute definitions in the current primary key.
-      const existingAttrDefSet = new Set(tableResource.Properties.AttributeDefinitions.map(ad => ad.AttributeName));
+      const existingAttrDefSet = new Set(tableResource.Properties.AttributeDefinitions.map((ad) => ad.AttributeName));
       for (const existingKey of tableResource.Properties.KeySchema) {
         if (existingAttrDefSet.has(existingKey.AttributeName)) {
           tableResource.Properties.AttributeDefinitions = tableResource.Properties.AttributeDefinitions.filter(
-            ad => ad.AttributeName !== existingKey.AttributeName,
+            (ad) => ad.AttributeName !== existingKey.AttributeName,
           );
           existingAttrDefSet.delete(existingKey.AttributeName);
         }
@@ -671,7 +686,7 @@ export class KeyTransformer extends Transformer {
     const primaryPartitionKeyName = primaryKeyDirective ? getDirectiveArguments(primaryKeyDirective).fields[0] : 'id';
     const defaultGSI = ctx.featureFlags.getBoolean('secondaryKeyAsGSI', false);
     if (!tableResource) {
-      throw new InvalidDirectiveError(`The @key directive may only be added to object definitions annotated with @model.`);
+      throw new InvalidDirectiveError('The @key directive may only be added to object definitions annotated with @model.');
     } else {
       const baseIndexProperties = {
         IndexName: args.name,
@@ -701,7 +716,7 @@ export class KeyTransformer extends Transformer {
           }),
         );
       }
-      const existingAttrDefSet = new Set(tableResource.Properties.AttributeDefinitions.map(ad => ad.AttributeName));
+      const existingAttrDefSet = new Set(tableResource.Properties.AttributeDefinitions.map((ad) => ad.AttributeName));
       for (const attr of attrDefs) {
         if (!existingAttrDefSet.has(attr.AttributeName)) {
           tableResource.Properties.AttributeDefinitions.push(attr);
@@ -717,7 +732,7 @@ export class KeyTransformer extends Transformer {
     if (this.typeExist(tableXMutationConditionInputName, ctx)) {
       const tableXMutationConditionInput = <InputObjectTypeDefinitionNode>ctx.getType(tableXMutationConditionInputName);
 
-      const fieldNames = new Set<String>();
+      const fieldNames = new Set<string>();
 
       // Get PK for the type from @key directive or default to 'id'
       const getKeyFieldNames = (): void => {
@@ -727,14 +742,14 @@ export class KeyTransformer extends Transformer {
           const fieldsArg = <Array<string>>getDirectiveArgument(directive, 'fields');
 
           if (fieldsArg && fieldsArg.length && fieldsArg.length > 0) {
-            fields = type.fields.filter(f => fieldsArg.includes(f.name.value));
+            fields = type.fields.filter((f) => fieldsArg.includes(f.name.value));
           }
         }
 
         fieldNames.add('id');
 
         if (fields && fields.length > 0) {
-          fields.forEach(f => fieldNames.add(f.name.value));
+          fields.forEach((f) => fieldNames.add(f.name.value));
         } else {
           // Add default named key for exclusion from input type
           fieldNames.add('id');
@@ -744,7 +759,7 @@ export class KeyTransformer extends Transformer {
       getKeyFieldNames();
 
       if (fieldNames.size > 0) {
-        const reducedFields = tableXMutationConditionInput.fields.filter(field => !fieldNames.has(field.name.value));
+        const reducedFields = tableXMutationConditionInput.fields.filter((field) => !fieldNames.has(field.name.value));
 
         const updatedInput = {
           ...tableXMutationConditionInput,
@@ -755,9 +770,11 @@ export class KeyTransformer extends Transformer {
       }
     }
   }
+
   private typeExist(type: string, ctx: TransformerContext): boolean {
     return Boolean(type in ctx.nodeMap);
   }
+
   private supportsConditions(context: TransformerContext) {
     return context.getTransformerVersion() >= CONDITIONS_MINIMUM_VERSION;
   }
@@ -774,9 +791,8 @@ function keySchema(args: KeyArguments) {
       { AttributeName: args.fields[0], KeyType: 'HASH' },
       { AttributeName: condensedSortKey, KeyType: 'RANGE' },
     ];
-  } else {
-    return [{ AttributeName: args.fields[0], KeyType: 'HASH' }];
   }
+  return [{ AttributeName: args.fields[0], KeyType: 'HASH' }];
 }
 
 function attributeTypeFromType(type: TypeNode, ctx: TransformerContext) {
@@ -792,6 +808,7 @@ function attributeTypeFromType(type: TypeNode, ctx: TransformerContext) {
  * Return a list of attribute definitions given a @key directive arguments and an object definition.
  * @param args The arguments passed to @key.
  * @param def The object type definition containing the @key.
+ * @param ctx
  */
 function attributeDefinitions(args: KeyArguments, def: ObjectTypeDefinitionNode, ctx: TransformerContext) {
   const fieldMap = new Map();
@@ -805,17 +822,16 @@ function attributeDefinitions(args: KeyArguments, def: ObjectTypeDefinitionNode,
       { AttributeName: hashName, AttributeType: attributeTypeFromType(fieldMap.get(hashName).type, ctx) },
       { AttributeName: condensedSortKey, AttributeType: 'S' },
     ];
-  } else if (args.fields.length === 2) {
+  } if (args.fields.length === 2) {
     const hashName = args.fields[0];
     const sortName = args.fields[1];
     return [
       { AttributeName: hashName, AttributeType: attributeTypeFromType(fieldMap.get(hashName).type, ctx) },
       { AttributeName: sortName, AttributeType: attributeTypeFromType(fieldMap.get(sortName).type, ctx) },
     ];
-  } else {
-    const fieldName = args.fields[0];
-    return [{ AttributeName: fieldName, AttributeType: attributeTypeFromType(fieldMap.get(fieldName).type, ctx) }];
   }
+  const fieldName = args.fields[0];
+  return [{ AttributeName: fieldName, AttributeType: attributeTypeFromType(fieldMap.get(fieldName).type, ctx) }];
 }
 
 function append<T>(maybeList: T[] | undefined, item: T) {
@@ -834,8 +850,8 @@ function getPrimaryKey(obj: ObjectTypeDefinitionNode): DirectiveNode | undefined
 }
 
 function primaryIdFields(definition: ObjectTypeDefinitionNode, keyFields: string[]): InputValueDefinitionNode[] {
-  return keyFields.map(keyFieldName => {
-    const keyField: FieldDefinitionNode = definition.fields.find(field => field.name.value === keyFieldName);
+  return keyFields.map((keyFieldName) => {
+    const keyField: FieldDefinitionNode = definition.fields.find((field) => field.name.value === keyFieldName);
     return makeInputValueDefinition(keyFieldName, makeNonNullType(makeNamedType(getBaseType(keyField.type))));
   });
 }
@@ -846,8 +862,8 @@ function replaceUpdateInput(
   input: InputObjectTypeDefinitionNode,
   keyFields: string[],
 ): InputObjectTypeDefinitionNode {
-  const schemaHasIdField = definition.fields!.some(f => f.name.value === 'id');
-  const inputFields = input.fields!.filter(f => {
+  const schemaHasIdField = definition.fields!.some((f) => f.name.value === 'id');
+  const inputFields = input.fields!.filter((f) => {
     if (!schemaHasIdField && f.name.value === 'id') {
       return false;
     }
@@ -857,8 +873,8 @@ function replaceUpdateInput(
 
   return {
     ...input,
-    fields: inputFields.map(f => {
-      if (keyFields.find(k => k === f.name.value)) {
+    fields: inputFields.map((f) => {
+      if (keyFields.find((k) => k === f.name.value)) {
         return makeInputValueDefinition(f.name.value, wrapNonNull(withNamedNodeNamed(f.type, getBaseType(f.type))));
       }
 
@@ -879,7 +895,7 @@ function replaceCreateInput(
 ): InputObjectTypeDefinitionNode {
   return {
     ...input,
-    fields: input.fields.filter(f => f.name.value !== 'id'),
+    fields: input.fields.filter((f) => f.name.value !== 'id'),
   };
 }
 
@@ -895,7 +911,7 @@ function replaceDeleteInput(
   // field id of type ID is a special case that we need to filter as this is automatically inserted to input by dynamo db transformer
   // Todo: Find out a better way to handle input types
   const existingFields = input.fields.filter(
-    f => !(idFields.find(pf => pf.name.value === f.name.value) || (getBaseType(f.type) === 'ID' && f.name.value === 'id')),
+    (f) => !(idFields.find((pf) => pf.name.value === f.name.value) || (getBaseType(f.type) === 'ID' && f.name.value === 'id')),
   );
 
   return {
@@ -907,23 +923,24 @@ function replaceDeleteInput(
 /**
  * Return a VTL object containing the compressed key information.
  * @param args The arguments of the @key directive.
+ * @param isMutation
  */
 function modelObjectKey(args: KeyArguments, isMutation: boolean) {
   const argsPrefix = isMutation ? 'ctx.args.input' : 'ctx.args';
   if (args.fields.length > 2) {
     const rangeKeyFields = args.fields.slice(1);
     const condensedSortKey = condenseRangeKey(rangeKeyFields);
-    const condensedSortKeyValue = condenseRangeKey(rangeKeyFields.map(keyField => `\${${argsPrefix}.${keyField}}`));
+    const condensedSortKeyValue = condenseRangeKey(rangeKeyFields.map((keyField) => `\${${argsPrefix}.${keyField}}`));
     return obj({
       [args.fields[0]]: ref(`util.dynamodb.toDynamoDB($${argsPrefix}.${args.fields[0]})`),
       [condensedSortKey]: ref(`util.dynamodb.toDynamoDB("${condensedSortKeyValue}")`),
     });
-  } else if (args.fields.length === 2) {
+  } if (args.fields.length === 2) {
     return obj({
       [args.fields[0]]: ref(`util.dynamodb.toDynamoDB($${argsPrefix}.${args.fields[0]})`),
       [args.fields[1]]: ref(`util.dynamodb.toDynamoDB($${argsPrefix}.${args.fields[1]})`),
     });
-  } else if (args.fields.length === 1) {
+  } if (args.fields.length === 1) {
     return obj({
       [args.fields[0]]: ref(`util.dynamodb.toDynamoDB($${argsPrefix}.${args.fields[0]})`),
     });
@@ -941,8 +958,8 @@ function ensureCompositeKeySnippet(dir: DirectiveNode, conditionallySetSortKey: 
   if (args.fields.length > 2) {
     const rangeKeyFields = args.fields.slice(1);
     const condensedSortKey = condenseRangeKey(rangeKeyFields);
-    const dynamoDBFriendlySortKeyName = toCamelCase(rangeKeyFields.map(f => graphqlName(f)));
-    const condensedSortKeyValue = condenseRangeKey(rangeKeyFields.map(keyField => `\${${argsPrefix}.${keyField}}`));
+    const dynamoDBFriendlySortKeyName = toCamelCase(rangeKeyFields.map((f) => graphqlName(f)));
+    const condensedSortKeyValue = condenseRangeKey(rangeKeyFields.map((keyField) => `\${${argsPrefix}.${keyField}}`));
     return print(
       compoundExpression([
         ifElse(
@@ -957,9 +974,9 @@ function ensureCompositeKeySnippet(dir: DirectiveNode, conditionallySetSortKey: 
         ),
         conditionallySetSortKey
           ? iff(
-              ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg),
-              qref(`$ctx.args.input.put("${condensedSortKey}","${condensedSortKeyValue}")`),
-            )
+            ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg),
+            qref(`$ctx.args.input.put("${condensedSortKey}","${condensedSortKeyValue}")`),
+          )
           : qref(`$ctx.args.input.put("${condensedSortKey}","${condensedSortKeyValue}")`),
       ]),
     );
@@ -1024,8 +1041,8 @@ function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: Dire
 function setQuerySnippet(definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext, isListResolver: boolean) {
   const args: KeyArguments = getDirectiveArguments(directive);
   const keys = args.fields;
-  const keyTypes = keys.map(k => {
-    const field = definition.fields.find(f => f.name.value === k);
+  const keyTypes = keys.map((k) => {
+    const field = definition.fields.find((f) => f.name.value === k);
     return attributeTypeFromType(field.type, ctx);
   });
 
@@ -1035,15 +1052,15 @@ function setQuerySnippet(definition: ObjectTypeDefinitionNode, directive: Direct
   // TODO: when we will have featureflags we can fix it by not generating sortDirection parameter at all for these operations
   if (keys.length === 1) {
     const sortDirectionValidation = iff(
-      raw(`!$util.isNull($ctx.args.sortDirection)`),
-      raw(`$util.error("sortDirection is not supported for List operations without a Sort key defined.", "InvalidArgumentsError")`),
+      raw('!$util.isNull($ctx.args.sortDirection)'),
+      raw('$util.error("sortDirection is not supported for List operations without a Sort key defined.", "InvalidArgumentsError")'),
     );
 
     expressions.push(sortDirectionValidation);
   } else if (isListResolver === true && keys.length >= 1) {
     // We only need this check for List queries, and not for @key queries
     const sortDirectionValidation = iff(
-      and([raw(`$util.isNull($ctx.args.${keys[0]})`), raw(`!$util.isNull($ctx.args.sortDirection)`)]),
+      and([raw(`$util.isNull($ctx.args.${keys[0]})`), raw('!$util.isNull($ctx.args.sortDirection)')]),
       raw(`$util.error("When providing argument 'sortDirection' you must also provide argument '${keys[0]}'.", "InvalidArgumentsError")`),
     );
 
@@ -1055,7 +1072,7 @@ function setQuerySnippet(definition: ObjectTypeDefinitionNode, directive: Direct
     applyKeyExpressionForCompositeKey(keys, keyTypes, ResourceConstants.SNIPPETS.ModelQueryExpression),
   );
 
-  return block(`Set query expression for @key`, expressions);
+  return block('Set query expression for @key', expressions);
 }
 
 function addHashField(
@@ -1063,8 +1080,8 @@ function addHashField(
   args: KeyArguments,
   elems: InputValueDefinitionNode[],
 ): InputValueDefinitionNode[] {
-  let hashFieldName = args.fields[0];
-  const hashField = definition.fields.find(field => field.name.value === hashFieldName);
+  const hashFieldName = args.fields[0];
+  const hashField = definition.fields.find((field) => field.name.value === hashFieldName);
   const hashKey = makeInputValueDefinition(hashFieldName, makeNamedType(getBaseType(hashField.type)));
   return [hashKey, ...elems];
 }
@@ -1074,11 +1091,11 @@ function addSimpleSortKey(
   args: KeyArguments,
   elems: InputValueDefinitionNode[],
 ): InputValueDefinitionNode[] {
-  let sortKeyName = args.fields[1];
-  const sortField = definition.fields.find(field => field.name.value === sortKeyName);
+  const sortKeyName = args.fields[1];
+  const sortField = definition.fields.find((field) => field.name.value === sortKeyName);
   const baseType = getBaseType(sortField.type);
   const resolvedTypeIfEnum = (ctx.getType(baseType) as EnumTypeDefinitionNode) ? 'String' : undefined;
-  const resolvedType = resolvedTypeIfEnum ? resolvedTypeIfEnum : baseType;
+  const resolvedType = resolvedTypeIfEnum || baseType;
   const hashKey = makeInputValueDefinition(sortKeyName, makeNamedType(ModelResourceIDs.ModelKeyConditionInputTypeName(resolvedType)));
   return [hashKey, ...elems];
 }
@@ -1087,7 +1104,7 @@ function addCompositeSortKey(
   args: KeyArguments,
   elems: InputValueDefinitionNode[],
 ): InputValueDefinitionNode[] {
-  let sortKeyNames = args.fields.slice(1);
+  const sortKeyNames = args.fields.slice(1);
   const compositeSortKeyName = toCamelCase(sortKeyNames);
   const hashKey = makeInputValueDefinition(
     compositeSortKeyName,
@@ -1104,15 +1121,15 @@ function setSyncQueryMapSnippet(directive: DirectiveNode, isTable: boolean) {
   const args: KeyArguments = getDirectiveArguments(directive);
   const keys = args.fields;
   const expressions: Expression[] = [];
-  const index: String = isTable ? 'dbTable' : args.name;
-  let key: String = '';
+  const index: string = isTable ? 'dbTable' : args.name;
+  let key = '';
   if (keys.length === 1) {
     key = `${keys[0]}+null`;
   } else if (keys.length > 1) {
     key = keys.join('+');
   }
   expressions.push(raw(`$util.qr($QueryMap.put('${key}' , '${index}'))`), raw(`$util.qr($PkMap.put('${keys[0]}' , '${index}'))`));
-  return block(`Set query expression for @key`, expressions);
+  return block('Set query expression for @key', expressions);
 }
 
 function setSyncQueryFilterSnippet() {
@@ -1121,14 +1138,14 @@ function setSyncQueryFilterSnippet() {
     compoundExpression([
       set(ref('filterArgsMap'), ref('ctx.args.filter.get("and")')),
       ifElse(
-        raw(`!$util.isNullOrEmpty($filterArgsMap) && ($util.isNull($ctx.args.lastSync) || $ctx.args.lastSync == 0)`),
+        raw('!$util.isNullOrEmpty($filterArgsMap) && ($util.isNull($ctx.args.lastSync) || $ctx.args.lastSync == 0)'),
         compoundExpression([
-          set(ref('json'), raw(`$filterArgsMap`)),
-          forEach(ref('item'), ref(`json`), [
+          set(ref('json'), raw('$filterArgsMap')),
+          forEach(ref('item'), ref('json'), [
             set(ref('ind'), ref('foreach.index')),
             forEach(ref('entry'), ref('item.entrySet()'), [
               iff(
-                raw(`$ind == 0 && !$util.isNullOrEmpty($entry.value.eq) && !$util.isNullOrEmpty($PkMap.get($entry.key))`),
+                raw('$ind == 0 && !$util.isNullOrEmpty($entry.value.eq) && !$util.isNullOrEmpty($PkMap.get($entry.key))'),
                 compoundExpression([
                   set(ref('pk'), ref('entry.key')),
                   set(ref('scan'), bool(false)),
@@ -1148,11 +1165,11 @@ function setSyncQueryFilterSnippet() {
             ]),
           ]),
         ]),
-        set(ref(`filterMap`), raw(`$ctx.args.filter`)),
+        set(ref('filterMap'), raw('$ctx.args.filter')),
       ),
     ]),
   );
-  return block(`Set query expression for @key`, expressions);
+  return block('Set query expression for @key', expressions);
 }
 
 function generateSyncResolverInit() {
@@ -1165,7 +1182,7 @@ function generateSyncResolverInit() {
     set(ref('PkMap'), obj({})),
     set(ref('filterArgsMap'), obj({})),
   );
-  return block(`Set map initialization for @key`, expressions);
+  return block('Set map initialization for @key', expressions);
 }
 
 function setSyncKeyExpressionForHashKey(queryExprReference: string) {
@@ -1173,24 +1190,24 @@ function setSyncKeyExpressionForHashKey(queryExprReference: string) {
   expressions.push(
     set(ref(ResourceConstants.SNIPPETS.ModelQueryExpression), obj({})),
     iff(
-      raw(`!$util.isNull($pk)`),
+      raw('!$util.isNull($pk)'),
       compoundExpression([
-        set(ref(`${queryExprReference}.expression`), str(`#pk = :pk`)),
-        set(ref(`${queryExprReference}.expressionNames`), obj({ [`#pk`]: str('$pk') })),
+        set(ref(`${queryExprReference}.expression`), str('#pk = :pk')),
+        set(ref(`${queryExprReference}.expressionNames`), obj({ '#pk': str('$pk') })),
         set(
           ref(`${queryExprReference}.expressionValues`),
-          obj({ [`:pk`]: ref('util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($pk)))') }),
+          obj({ ':pk': ref('util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($pk)))') }),
         ),
       ]),
     ),
   );
-  return block(`Set Primary Key initialization @key`, expressions);
+  return block('Set Primary Key initialization @key', expressions);
 }
 
 function setSyncKeyExpressionForRangeKey(queryExprReference: string) {
   return block('Applying Key Condition', [
     iff(
-      raw(`!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).beginsWith)`),
+      raw('!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).beginsWith)'),
       compoundExpression([
         set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND begins_with(#sortKey, :sortKey)"`)),
         qref(`$${queryExprReference}.expressionNames.put("#sortKey", $sk)`),
@@ -1200,7 +1217,7 @@ function setSyncKeyExpressionForRangeKey(queryExprReference: string) {
       ]),
     ),
     iff(
-      raw(`!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).between)`),
+      raw('!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).between)'),
       compoundExpression([
         set(
           ref(`${queryExprReference}.expression`),
@@ -1216,7 +1233,7 @@ function setSyncKeyExpressionForRangeKey(queryExprReference: string) {
       ]),
     ),
     iff(
-      raw(`!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).eq)`),
+      raw('!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).eq)'),
       compoundExpression([
         set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey = :sortKey"`)),
         qref(`$${queryExprReference}.expressionNames.put("#sortKey", $sk)`),
@@ -1226,7 +1243,7 @@ function setSyncKeyExpressionForRangeKey(queryExprReference: string) {
       ]),
     ),
     iff(
-      raw(`!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).lt)`),
+      raw('!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).lt)'),
       compoundExpression([
         set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey < :sortKey"`)),
         qref(`$${queryExprReference}.expressionNames.put("#sortKey", $sk)`),
@@ -1236,7 +1253,7 @@ function setSyncKeyExpressionForRangeKey(queryExprReference: string) {
       ]),
     ),
     iff(
-      raw(`!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).le)`),
+      raw('!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).le)'),
       compoundExpression([
         set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey <= :sortKey"`)),
         qref(`$${queryExprReference}.expressionNames.put("#sortKey", $sk)`),
@@ -1246,7 +1263,7 @@ function setSyncKeyExpressionForRangeKey(queryExprReference: string) {
       ]),
     ),
     iff(
-      raw(`!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).gt)`),
+      raw('!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).gt)'),
       compoundExpression([
         set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey > :sortKey"`)),
         qref(`$${queryExprReference}.expressionNames.put("#sortKey", $sk)`),
@@ -1256,7 +1273,7 @@ function setSyncKeyExpressionForRangeKey(queryExprReference: string) {
       ]),
     ),
     iff(
-      raw(`!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).ge)`),
+      raw('!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).ge)'),
       compoundExpression([
         set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey >= :sortKey"`)),
         qref(`$${queryExprReference}.expressionNames.put("#sortKey", $sk)`),
@@ -1296,7 +1313,7 @@ function makeSyncQueryResolver() {
           raw('!$util.isNullOrEmpty($filterMap)'),
           set(ref(`${requestVariable}.filter`), ref('util.parseJson($util.transform.toDynamoDBFilterExpression($filterMap))')),
         ),
-        iff(raw(`$index != "dbTable"`), set(ref(`${requestVariable}.index`), ref('index'))),
+        iff(raw('$index != "dbTable"'), set(ref(`${requestVariable}.index`), ref('index'))),
         raw(`$util.toJson($${requestVariable})`),
       ]),
       DynamoDBMappingTemplate.syncItem({
@@ -1311,7 +1328,7 @@ function makeSyncQueryResolver() {
       }),
     ),
   );
-  return block(` Set query expression for @key`, expressions);
+  return block(' Set query expression for @key', expressions);
 }
 
 function constructSyncResolver(directive: DirectiveNode, ctx: TransformerContext, syncResolver: any, isTable: boolean) {

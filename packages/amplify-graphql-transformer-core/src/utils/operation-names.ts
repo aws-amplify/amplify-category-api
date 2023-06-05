@@ -23,4 +23,9 @@ const fieldNameFuncMap: Record<Operation, (typeName: string) => string> = {
   onDelete: (typeName: string) => truncateSubscriptionName(toPrefixedCamelCase('onDelete')(typeName)),
 };
 
+/**
+ *
+ * @param op
+ * @param typeName
+ */
 export const getFieldNameFor = (op: Operation, typeName: string): string => fieldNameFuncMap[op](typeName);

@@ -3,6 +3,9 @@ import { TestEntry } from './test-case-types';
 /*
   REGISTER TEST CASES HERE!
 */
+/**
+ *
+ */
 export const getTestCaseRegistry = (): TestEntry[] => [
   ['bi-di connection', biDiConnectionSchema],
   ['many to many', manyToManySchema],

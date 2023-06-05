@@ -22,29 +22,48 @@ import { TransformerContextProviderRegistry } from './provider-registry';
 import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
-import {RDSConnectionSecrets} from '../types';
+import { RDSConnectionSecrets } from '../types';
 
 export { TransformerResolver } from './resolver';
 export { StackManager } from './stack-manager';
+/**
+ *
+ */
 export class TransformerContextMetadata implements TransformerContextMetadataProvider {
   /**
    * Used by transformers to pass information between one another.
    */
   private metadata: { [key: string]: any } = new Map<string, any>();
 
+  /**
+   *
+   * @param key
+   */
   public get<T>(key: string): T | undefined {
     return this.metadata[key] as T;
   }
 
+  /**
+   *
+   * @param key
+   * @param val
+   */
   public set<T>(key: string, val: T): void {
     this.metadata[key] = val;
   }
 
+  /**
+   *
+   * @param key
+   */
   public has(key: string) {
     return this.metadata[key] !== undefined;
   }
 }
 
+/**
+ *
+ */
 export class TransformerContext implements TransformerContextProvider {
   public readonly output: TransformerContextOutputProvider;
   public readonly resolvers: ResolverManager;
@@ -91,7 +110,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.metadata = new TransformerContextMetadata();
     this.modelToDatasourceMap = modelToDatasourceMap;
     this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
-    this.getResourceOverrides = () => getResourceOverrides ? getResourceOverrides(this.stackManager as StackManager) : {};
+    this.getResourceOverrides = () => (getResourceOverrides ? getResourceOverrides(this.stackManager as StackManager) : {});
   }
 
   /**
@@ -103,6 +122,10 @@ export class TransformerContext implements TransformerContextProvider {
     this._api = api;
     this.resourceHelper.bind(api);
   }
+
+  /**
+   *
+   */
   public get api(): GraphQLAPIProvider {
     if (!this._api) {
       throw new Error('API is not initialized till generateResolver step');
@@ -112,6 +135,9 @@ export class TransformerContext implements TransformerContextProvider {
 
   public getResolverConfig = <ResolverConfig>(): ResolverConfig | undefined => this.resolverConfig as ResolverConfig;
 
+  /**
+   *
+   */
   public isProjectUsingDataStore(): boolean {
     return !!this.resolverConfig?.project || !!this.resolverConfig?.models;
   }

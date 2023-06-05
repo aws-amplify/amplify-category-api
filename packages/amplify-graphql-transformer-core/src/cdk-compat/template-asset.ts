@@ -8,6 +8,9 @@ import { Construct } from 'constructs';
 import * as crypto from 'crypto';
 import { FileAsset } from './file-asset';
 
+/**
+ *
+ */
 export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
   public readonly type = MappingTemplateType.S3_LOCATION;
   private asset?: FileAsset;
@@ -19,6 +22,10 @@ export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
     this.filePath = filePath;
   }
 
+  /**
+   *
+   * @param scope
+   */
   bind(scope: Construct): FileAsset {
     if (!this.asset) {
       this.asset = new FileAsset(scope, `Code${this.fileName}`, {
@@ -29,12 +36,20 @@ export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
     return this.asset;
   }
 }
+/**
+ *
+ */
 export class S3MappingTemplate implements S3MappingTemplateProvider {
   private content: string;
   private name: string;
   private asset?: FileAsset;
   public readonly type = MappingTemplateType.S3_LOCATION;
 
+  /**
+   *
+   * @param code
+   * @param templateName
+   */
   static fromInlineTemplate(code: string, templateName?: string): S3MappingTemplate {
     return new S3MappingTemplate(code, templateName);
   }
@@ -45,6 +60,10 @@ export class S3MappingTemplate implements S3MappingTemplateProvider {
     this.name = name || `mapping-template-${assetHash}.vtl`;
   }
 
+  /**
+   *
+   * @param scope
+   */
   bind(scope: Construct): string {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
@@ -64,6 +83,10 @@ export class S3MappingTemplate implements S3MappingTemplateProvider {
     return crypto.createHash('sha256').update(this.content).digest('base64');
   }
 
+  /**
+   *
+   * @param values
+   */
   substitueValues(values: Record<string, string | number>): void {
     let { name } = this;
     Object.entries(values).forEach(([key, value]) => {
@@ -74,11 +97,17 @@ export class S3MappingTemplate implements S3MappingTemplateProvider {
   }
 }
 
+/**
+ *
+ */
 export class InlineTemplate implements InlineMappingTemplateProvider {
   public readonly type = MappingTemplateType.INLINE;
 
   // eslint-disable-next-line no-useless-constructor
   constructor(private content: string) {}
+  /**
+   *
+   */
   bind(): string {
     return this.content;
   }
@@ -92,11 +121,23 @@ export class InlineTemplate implements InlineMappingTemplateProvider {
   }
 }
 
+/**
+ *
+ */
 export class MappingTemplate {
+  /**
+   *
+   * @param template
+   */
   static inlineTemplateFromString(template: string): InlineTemplate {
     return new InlineTemplate(template);
   }
 
+  /**
+   *
+   * @param template
+   * @param templateName
+   */
   static s3MappingTemplateFromString(template: string, templateName: string): S3MappingTemplate {
     const templatePrefix = 'resolvers';
     return new S3MappingTemplate(template, `${templatePrefix}/${templateName}`);

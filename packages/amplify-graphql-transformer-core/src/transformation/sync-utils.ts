@@ -4,14 +4,14 @@ import {
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
-import { TransformerContext } from '../transformer-context';
-import { ResolverConfig, SyncConfig, SyncConfigLambda } from '../config/transformer-config';
 import {
   StackManagerProvider,
   TransformerContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerContext } from '../transformer-context';
+import { ResolverConfig, SyncConfig, SyncConfigLambda } from '../config/transformer-config';
 
 type DeltaSyncConfig = {
   DeltaSyncTableName: any;
@@ -19,6 +19,10 @@ type DeltaSyncConfig = {
   BaseTableTTL: number;
 };
 
+/**
+ *
+ * @param context
+ */
 export function createSyncTable(context: TransformerContext) {
   const stack = context.stackManager.getStackFor(SyncResourceIDs.syncTableName);
   const tableName = context.resourceHelper.generateTableName(SyncResourceIDs.syncTableName);
@@ -79,6 +83,9 @@ function createSyncIAMRole(context: TransformerContext, stack: cdk.Stack, tableN
   );
 }
 
+/**
+ *
+ */
 export function syncDataSourceConfig(): DeltaSyncConfig {
   return {
     DeltaSyncTableName: joinWithEnv('-', [
@@ -90,6 +97,11 @@ export function syncDataSourceConfig(): DeltaSyncConfig {
   };
 }
 
+/**
+ *
+ * @param ctx
+ * @param typeName
+ */
 export function validateResolverConfigForType(ctx: TransformerSchemaVisitStepContextProvider, typeName: string): void {
   const resolverConfig = ctx.getResolverConfig<ResolverConfig>();
   const typeResolverConfig = resolverConfig?.models?.[typeName];
@@ -98,6 +110,11 @@ export function validateResolverConfigForType(ctx: TransformerSchemaVisitStepCon
   }
 }
 
+/**
+ *
+ * @param ctx
+ * @param typeName
+ */
 export function getSyncConfig(ctx: TransformerTransformSchemaStepContextProvider, typeName: string): SyncConfig | undefined {
   let syncConfig: SyncConfig | undefined;
 
@@ -118,17 +135,28 @@ export function getSyncConfig(ctx: TransformerTransformSchemaStepContextProvider
   return syncConfig;
 }
 
+/**
+ *
+ * @param syncConfig
+ */
 export function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda {
   const lambdaConfigKey: keyof SyncConfigLambda = 'LambdaConflictHandler';
   if (syncConfig && syncConfig.ConflictHandler === 'LAMBDA') {
     if (syncConfig.hasOwnProperty(lambdaConfigKey)) {
       return true;
     }
-    throw Error(`Invalid Lambda SyncConfig`);
+    throw Error('Invalid Lambda SyncConfig');
   }
   return false;
 }
 
+/**
+ *
+ * @param context
+ * @param stack
+ * @param name
+ * @param region
+ */
 export function createSyncLambdaIAMPolicy(context: TransformerContextProvider, stack: cdk.Stack, name: string, region?: string): iam.Policy {
   return new iam.Policy(stack, 'InvokeLambdaFunction', {
     statements: [

@@ -13,6 +13,8 @@ import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
  * Else leave it disabled.
  * @param projectDir the root directory for the project.
  * @param apiName the name of the api to attempt and pull the flag from.
+ * @param projectRoot
+ * @param currentCloudBackendDir
  * @returns whether or not NodeToNodeEncryption should be enabled on a searchable instance as well as any warning message.
  */
 export const shouldEnableNodeToNodeEncryption = (
@@ -22,7 +24,7 @@ export const shouldEnableNodeToNodeEncryption = (
 ): boolean => {
   try {
     const nodeToNodeEncryptionParameter = getNodeToNodeEncryptionConfigValue(projectRoot, apiName);
-    const doesExistingBackendHaveNodeToNodeEncryption = getCurrentCloudBackendStackFiles(currentCloudBackendDir, apiName).some(definition => hasNodeToNodeEncryptionOptions(definition));
+    const doesExistingBackendHaveNodeToNodeEncryption = getCurrentCloudBackendStackFiles(currentCloudBackendDir, apiName).some((definition) => hasNodeToNodeEncryptionOptions(definition));
 
     warnOnExistingNodeToNodeEncryption(doesExistingBackendHaveNodeToNodeEncryption);
 
@@ -63,8 +65,8 @@ const getCurrentCloudBackendStackFiles = (currentCloudBackendDir: string, apiNam
  */
 export const hasNodeToNodeEncryptionOptions = (stackDefinition: any): boolean => {
   try {
-    const domain = stackDefinition['Resources'][ResourceConstants.RESOURCES.OpenSearchDomainLogicalID];
-    const nodeToNodeEncryptionOption = domain['Properties']['NodeToNodeEncryptionOptions']['Enabled'];
+    const domain = stackDefinition.Resources[ResourceConstants.RESOURCES.OpenSearchDomainLogicalID];
+    const nodeToNodeEncryptionOption = domain.Properties.NodeToNodeEncryptionOptions.Enabled;
     return nodeToNodeEncryptionOption === true;
   } catch (e) {}
   return false;

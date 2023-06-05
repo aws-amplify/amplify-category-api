@@ -14,6 +14,10 @@ import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
  * @returns true if fields match in parent model
  */
 
+/**
+ *
+ * @param schema
+ */
 export const validateFieldsMatchInParentModel = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(

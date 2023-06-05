@@ -1,11 +1,16 @@
 import * as path from 'path';
 import { Readable } from 'stream';
+
 const fs = require('fs-extra');
 
 /**
  * Helpers
  */
 
+/**
+ *
+ * @param directory
+ */
 export async function emptyDirectory(directory: string) {
   const pathExists = await fs.exists(directory);
   if (!pathExists) {
@@ -22,6 +27,11 @@ export async function emptyDirectory(directory: string) {
   }
 }
 
+/**
+ *
+ * @param directory
+ * @param obj
+ */
 export async function writeToPath(directory: string, obj: any): Promise<void> {
   if (Array.isArray(obj)) {
     await fs.ensureDir(directory);
@@ -64,11 +74,15 @@ export async function readFromPath(directory: string): Promise<any> {
   return accum;
 }
 
+/**
+ *
+ */
 export type FileHandler = (file: { Key: string; Body: Buffer | string | Readable }) => Promise<string>;
 
 /**
  * Uploads a file with exponential backoff up to a point.
  * @param opts The deployment options
+ * @param handler
  * @param key The bucket key
  * @param body The blob body as a buffer
  * @param backoffMS The time to wait this invocation
@@ -78,8 +92,8 @@ export async function handleFile(
   handler: FileHandler,
   key: string,
   body: Buffer | string | Readable,
-  backoffMS: number = 500,
-  numTries: number = 3,
+  backoffMS = 500,
+  numTries = 3,
 ) {
   try {
     return await handler({
@@ -95,6 +109,10 @@ export async function handleFile(
   }
 }
 
+/**
+ *
+ * @param stackFile
+ */
 export function throwIfNotJSONExt(stackFile: string) {
   const extension = path.extname(stackFile);
   if (extension === '.yaml' || extension === '.yml') {

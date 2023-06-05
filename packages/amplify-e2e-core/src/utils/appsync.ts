@@ -1,8 +1,14 @@
 import url from 'url';
 import path from 'path';
 import fs from 'fs-extra';
-import { post } from '../utils/request';
+import { post } from './request';
 
+/**
+ *
+ * @param op
+ * @param op.query
+ * @param op.variables
+ */
 export async function appsyncGraphQLRequest(resource: { [id: string]: any }, op: { query: string; variables: string | null }) {
   const postData = JSON.stringify(op);
   const target = url.parse(resource.output.GraphQLAPIEndpointOutput);
@@ -18,6 +24,11 @@ export async function appsyncGraphQLRequest(resource: { [id: string]: any }, op:
   });
 }
 
+/**
+ *
+ * @param projRoot
+ * @param apiName
+ */
 export const getProjectSchema = (projRoot: string, apiName: string) => {
   const schemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.graphql');
   return fs.readFileSync(schemaFilePath, 'utf8');

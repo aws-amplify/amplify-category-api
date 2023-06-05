@@ -3,9 +3,11 @@ import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aw
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient } from '../__e2e__/utils';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
+import {
+  deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient,
+} from '../__e2e__/utils';
 
 let GRAPHQL_CLIENT: GraphQLClient;
 let GRAPHQL_ENDPOINT: string;
@@ -74,10 +76,10 @@ describe('@model with relational transformer', () => {
       const result = await deploy(out, ddbClient);
       server = result.simulator;
 
-      GRAPHQL_ENDPOINT = server.url + '/graphql';
+      GRAPHQL_ENDPOINT = `${server.url}/graphql`;
       logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
-      const apiKey = result.config.appSync.apiKey;
+      const { apiKey } = result.config.appSync;
       logDebug(apiKey);
       GRAPHQL_CLIENT = new GraphQLClient(GRAPHQL_ENDPOINT, {
         'x-api-key': apiKey,
@@ -104,7 +106,7 @@ describe('@model with relational transformer', () => {
    * Test queries below
    */
 
-  test('Test queryPost query', async () => {
+  test('queryPost query', async () => {
     const createResponse = await GRAPHQL_CLIENT.query(
       `mutation {
           createPost(input: { title: "Test Query" }) {
@@ -149,12 +151,12 @@ describe('@model with relational transformer', () => {
       {},
     );
     expect(queryResponse.data.getPost).toBeDefined();
-    const items = queryResponse.data.getPost.comments.items;
+    const { items } = queryResponse.data.getPost.comments;
     expect(items.length).toEqual(1);
     expect(items[0].id).toEqual(createCommentResponse.data.createComment.id);
   });
 
-  test('Test create comment without a post and then querying the comment.', async () => {
+  test('create comment without a post and then querying the comment.', async () => {
     const comment1 = 'a comment and a date! - 1';
 
     try {
@@ -195,7 +197,7 @@ describe('@model with relational transformer', () => {
     }
   });
 
-  test('Test default limit is 50', async () => {
+  test('default limit is 50', async () => {
     const postID = 'e2eConnectionPost';
     const postTitle = 'samplePost';
     const createPost = await GRAPHQL_CLIENT.query(

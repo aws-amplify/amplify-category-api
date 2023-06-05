@@ -36,16 +36,23 @@ import { RelationalPrimaryMapConfig, RoleDefinition, SearchableConfig } from './
 
 /**
  * collectFieldNames
+ * @param object
  */
 export const collectFieldNames = (object: ObjectTypeDefinitionNode): Array<string> => object.fields!.map((field: FieldDefinitionNode) => field.name.value);
 
 /**
  * fieldIsList
+ * @param fields
+ * @param fieldName
  */
-export const fieldIsList = (fields: ReadonlyArray<FieldDefinitionNode>, fieldName: string) => fields.some(field => field.name.value === fieldName && isListType(field.type));
+export const fieldIsList = (fields: ReadonlyArray<FieldDefinitionNode>, fieldName: string) => fields.some((field) => field.name.value === fieldName && isListType(field.type));
 
 /**
  * getModelConfig
+ * @param directive
+ * @param typeName
+ * @param featureFlags
+ * @param isDataStoreEnabled
  */
 export const getModelConfig = (directive: DirectiveNode, typeName: string, featureFlags: FeatureFlagProvider, isDataStoreEnabled = false): ModelDirectiveConfiguration => {
   const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
@@ -76,6 +83,9 @@ export const getModelConfig = (directive: DirectiveNode, typeName: string, featu
 
 /**
  * getSearchableConfig
+ * @param directive
+ * @param typeName
+ * @param featureFlags
  */
 export const getSearchableConfig = (directive: DirectiveNode, typeName: string, featureFlags: FeatureFlagProvider): SearchableConfig | null => {
   const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
@@ -102,6 +112,10 @@ export const getSearchableConfig = (directive: DirectiveNode, typeName: string, 
  */
 /**
  *
+ * @param ctx
+ * @param def
+ * @param field
+ * @param relatedModel
  */
 export const getRelationalPrimaryMap = (
   ctx: TransformerContextProvider,
@@ -109,7 +123,7 @@ export const getRelationalPrimaryMap = (
   field: FieldDefinitionNode,
   relatedModel: ObjectTypeDefinitionNode,
 ): RelationalPrimaryMapConfig => {
-  const relationalDirective = field.directives.find(dir => RELATIONAL_DIRECTIVES.includes(dir.name.value));
+  const relationalDirective = field.directives.find((dir) => RELATIONAL_DIRECTIVES.includes(dir.name.value));
   const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(relationalDirective);
   const primaryFieldMap = new Map();
   if (relationalDirective.name.value === 'hasMany') {
@@ -165,17 +179,22 @@ export const getRelationalPrimaryMap = (
 
 /**
  *
+ * @param field
  */
-export const hasRelationalDirective = (field: FieldDefinitionNode): boolean => field.directives && field.directives.some(dir => RELATIONAL_DIRECTIVES.includes(dir.name.value));
+export const hasRelationalDirective = (field: FieldDefinitionNode): boolean => field.directives && field.directives.some((dir) => RELATIONAL_DIRECTIVES.includes(dir.name.value));
 
 /**
  *
  * given the keySchema from a DynamoDBDataSource it will return the partitionKey
+ * @param ks
  */
 export const getPartitionKey = (ks: any): string => ks.find((att: any) => att.keyType === 'HASH')!.attributeName;
 
 /**
  * extendTypeWithDirectives
+ * @param ctx
+ * @param typeName
+ * @param directives
  */
 export const extendTypeWithDirectives = (
   ctx: TransformerTransformSchemaStepContextProvider,
@@ -189,6 +208,10 @@ export const extendTypeWithDirectives = (
 
 /**
  * addDirectivesToField
+ * @param ctx
+ * @param typeName
+ * @param fieldName
+ * @param directives
  */
 export const addDirectivesToField = (
   ctx: TransformerTransformSchemaStepContextProvider,
@@ -198,9 +221,9 @@ export const addDirectivesToField = (
 ) => {
   const type = ctx.output.getType(typeName) as ObjectTypeDefinitionNode;
   if (type) {
-    const field = type.fields?.find(f => f.name.value === fieldName);
+    const field = type.fields?.find((f) => f.name.value === fieldName);
     if (field) {
-      const newFields = [...type.fields!.filter(f => f.name.value !== field.name.value), extendFieldWithDirectives(field, directives)];
+      const newFields = [...type.fields!.filter((f) => f.name.value !== field.name.value), extendFieldWithDirectives(field, directives)];
 
       const newType = {
         ...type,
@@ -214,6 +237,9 @@ export const addDirectivesToField = (
 
 /**
  * addSubscriptionArguments
+ * @param ctx
+ * @param operationName
+ * @param subscriptionRoles
  */
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const addSubscriptionArguments = (
@@ -222,21 +248,25 @@ export const addSubscriptionArguments = (
   subscriptionRoles: Array<RoleDefinition>,
 ) => {
   let subscription = ctx.output.getSubscription()!;
-  let createField: FieldDefinitionNode = subscription!.fields!.find(field => field.name.value === operationName) as FieldDefinitionNode;
-  const subscriptionArgumentList = subscriptionRoles.map(role => makeInputValueDefinition(role.entity!, makeNamedType('String')));
+  let createField: FieldDefinitionNode = subscription!.fields!.find((field) => field.name.value === operationName) as FieldDefinitionNode;
+  const subscriptionArgumentList = subscriptionRoles.map((role) => makeInputValueDefinition(role.entity!, makeNamedType('String')));
   createField = {
     ...createField,
     arguments: [...createField.arguments, ...subscriptionArgumentList],
   };
   subscription = {
     ...subscription,
-    fields: subscription!.fields!.map(field => (field.name.value === operationName ? createField : field)),
+    fields: subscription!.fields!.map((field) => (field.name.value === operationName ? createField : field)),
   };
   ctx.output.putType(subscription);
 };
 
 /**
  * addDirectivesToOperation
+ * @param ctx
+ * @param typeName
+ * @param operationName
+ * @param directives
  */
 export const addDirectivesToOperation = (
   ctx: TransformerTransformSchemaStepContextProvider,
@@ -250,7 +280,7 @@ export const addDirectivesToOperation = (
   // add the directives to the result type of the operation
   const type = ctx.output.getType(typeName) as ObjectTypeDefinitionNode;
   if (type) {
-    const field = type.fields!.find(f => f.name.value === operationName);
+    const field = type.fields!.find((f) => f.name.value === operationName);
 
     if (field) {
       const returnFieldType = field.type as NamedTypeNode;
@@ -266,6 +296,7 @@ export const addDirectivesToOperation = (
 
 /**
  * getQueryFieldNames
+ * @param modelDirectiveConfig
  */
 export const getQueryFieldNames = (
   modelDirectiveConfig: ModelDirectiveConfiguration,
@@ -299,6 +330,7 @@ export const getQueryFieldNames = (
 
 /**
  * getMutationFieldNames
+ * @param modelDirectiveConfig
  */
 export const getMutationFieldNames = (
   modelDirectiveConfig: ModelDirectiveConfiguration,
@@ -333,6 +365,7 @@ export const getMutationFieldNames = (
 
 /**
  * getSubscriptionFieldNames
+ * @param modelDirectiveConfig
  */
 export const getSubscriptionFieldNames = (
   modelDirectiveConfig: ModelDirectiveConfiguration,
@@ -385,8 +418,8 @@ const ensureValidSubscriptionName = (name: string): string => {
 
 const getKeyFields = (ctx: TransformerContextProvider, model: ObjectTypeDefinitionNode): Array<string> => {
   const table = getTable(ctx, model);
-  const hashKeyField = table.keySchema.find(f => f.keyType === 'HASH').attributeName;
-  const sortKeyFields = table.keySchema.find(f => f.keyType === 'RANGE')?.attributeName.split('#');
+  const hashKeyField = table.keySchema.find((f) => f.keyType === 'HASH').attributeName;
+  const sortKeyFields = table.keySchema.find((f) => f.keyType === 'RANGE')?.attributeName.split('#');
   const keyFields = [hashKeyField];
   if (sortKeyFields) {
     keyFields.push(...sortKeyFields);

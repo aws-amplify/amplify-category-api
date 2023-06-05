@@ -60,19 +60,21 @@ import {
   ResourceConstants,
   toCamelCase,
 } from 'graphql-transformer-common';
-import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../types';
-import { lookupResolverName } from '../utils';
 import * as path from 'path';
 import _ from 'lodash';
+import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../types';
+import { lookupResolverName } from '../utils';
 import {
   RDSIndexVTLGenerator,
-  DynamoDBIndexVTLGenerator
+  DynamoDBIndexVTLGenerator,
 } from './generators';
 
 const API_KEY = 'API Key Authorization';
 
 /**
  * replaceDdbPrimaryKey
+ * @param config
+ * @param ctx
  */
 export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
   // Replace the table's primary key with the value from @primaryKey
@@ -85,7 +87,7 @@ export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, c
   const attrDefs = attributeDefinitions(config, ctx);
   const existingAttrDefSet = new Set(tableAttrDefs.map((ad: any) => ad.attributeName));
   const primaryKeyPartitionKeyName = field.name.value ?? 'id';
-  const primaryKeyPartitionKeyType = attrDefs.find(attr => attr.attributeName === primaryKeyPartitionKeyName)?.attributeType ?? 'S';
+  const primaryKeyPartitionKeyType = attrDefs.find((attr) => attr.attributeName === primaryKeyPartitionKeyName)?.attributeType ?? 'S';
 
   // First, remove any attribute definitions in the current primary key.
   for (const existingKey of tableKeySchema) {
@@ -112,6 +114,9 @@ export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, c
 
 /**
  * updateResolvers
+ * @param config
+ * @param ctx
+ * @param resolverMap
  */
 export function updateResolvers(
   config: PrimaryKeyDirectiveConfiguration,
@@ -182,6 +187,11 @@ function getDdbKeySchema(config: PrimaryKeyDirectiveConfiguration) {
   return schema;
 }
 
+/**
+ *
+ * @param type
+ * @param ctx
+ */
 export function attributeTypeFromType(type: TypeNode, ctx: TransformerContextProvider) {
   const baseTypeName = getBaseType(type);
   const ofType = ctx.output.getType(baseTypeName);
@@ -214,6 +224,12 @@ function getSortKeyName(config: PrimaryKeyDirectiveConfiguration): string {
   return config.sortKeyFields.join(ModelResourceIDs.ModelCompositeKeySeparator());
 }
 
+/**
+ *
+ * @param config
+ * @param ctx
+ * @param op
+ */
 export function getResolverObject(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, op: string) {
   const resolverName = lookupResolverName(config, ctx, op);
 
@@ -250,7 +266,7 @@ function modelObjectKeySnippet(config: PrimaryKeyDirectiveConfiguration, isMutat
   if (sortKeyFields.length > 1) {
     const compositeSortKey = getSortKeyName(config);
     const compositeSortKeyValue = sortKeyFields
-      .map(keyField => `\${${argsPrefix}.${keyField}}`)
+      .map((keyField) => `\${${argsPrefix}.${keyField}}`)
       .join(ModelResourceIDs.ModelCompositeKeySeparator());
 
     modelObject[compositeSortKey] = ref(`util.dynamodb.toDynamoDB("${compositeSortKeyValue}")`);
@@ -261,6 +277,11 @@ function modelObjectKeySnippet(config: PrimaryKeyDirectiveConfiguration, isMutat
   return obj(modelObject);
 }
 
+/**
+ *
+ * @param config
+ * @param conditionallySetSortKey
+ */
 export function ensureCompositeKeySnippet(config: PrimaryKeyDirectiveConfiguration, conditionallySetSortKey: boolean): string {
   const { sortKeyFields } = config;
 
@@ -270,9 +291,9 @@ export function ensureCompositeKeySnippet(config: PrimaryKeyDirectiveConfigurati
 
   const argsPrefix = 'mergedValues';
   const condensedSortKey = getSortKeyName(config);
-  const dynamoDBFriendlySortKeyName = toCamelCase(sortKeyFields.map(f => graphqlName(f)));
+  const dynamoDBFriendlySortKeyName = toCamelCase(sortKeyFields.map((f) => graphqlName(f)));
   const condensedSortKeyValue = sortKeyFields
-    .map(keyField => `\${${argsPrefix}.${keyField}}`)
+    .map((keyField) => `\${${argsPrefix}.${keyField}}`)
     .join(ModelResourceIDs.ModelCompositeKeySeparator());
 
   return print(
@@ -304,11 +325,17 @@ export function ensureCompositeKeySnippet(config: PrimaryKeyDirectiveConfigurati
   );
 }
 
+/**
+ *
+ * @param config
+ * @param ctx
+ * @param isListResolver
+ */
 export function setQuerySnippet(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, isListResolver: boolean) {
   const { field, sortKey, sortKeyFields } = config;
   const keyFields = [field, ...sortKey];
   const keyNames = [field.name.value, ...sortKeyFields];
-  const keyTypes = keyFields.map(k => attributeTypeFromType(k.type, ctx));
+  const keyTypes = keyFields.map((k) => attributeTypeFromType(k.type, ctx));
   const expressions = validateSortDirectionInput(config, isListResolver);
   expressions.push(
     set(ref(ResourceConstants.SNIPPETS.ModelQueryExpression), obj({})),
@@ -320,6 +347,8 @@ export function setQuerySnippet(config: PrimaryKeyDirectiveConfiguration, ctx: T
 
 /**
  * Validations for sort direction input
+ * @param config
+ * @param isListResolver
  */
 export function validateSortDirectionInput(config: PrimaryKeyDirectiveConfiguration, isListResolver: boolean): Expression[] {
   const { field, sortKeyFields } = config;
@@ -351,6 +380,8 @@ export function validateSortDirectionInput(config: PrimaryKeyDirectiveConfigurat
 
 /**
  * appendSecondaryIndex
+ * @param config
+ * @param ctx
  */
 export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const { name, object, primaryKeyField } = config;
@@ -365,8 +396,8 @@ export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: T
   const primaryKeyPartitionKeyName = primaryKeyField?.name?.value ?? 'id';
   const partitionKeyName = keySchema[0]?.attributeName;
   const sortKeyName = keySchema?.[1]?.attributeName;
-  const partitionKeyType = attrDefs.find(attr => attr.attributeName === partitionKeyName)?.attributeType ?? 'S';
-  const sortKeyType = sortKeyName ? attrDefs.find(attr => attr.attributeName === sortKeyName)?.attributeType ?? 'S' : undefined;
+  const partitionKeyType = attrDefs.find((attr) => attr.attributeName === partitionKeyName)?.attributeType ?? 'S';
+  const sortKeyType = sortKeyName ? attrDefs.find((attr) => attr.attributeName === sortKeyName)?.attributeType ?? 'S' : undefined;
   const defaultGSI = ctx.featureFlags.getBoolean('secondaryKeyAsGSI', false);
 
   if (!defaultGSI && primaryKeyPartitionKeyName === partitionKeyName) {
@@ -427,6 +458,9 @@ function appendIndex(list: any, newIndex: any): any[] {
 
 /**
  * updateResolversForIndex
+ * @param config
+ * @param ctx
+ * @param resolverMap
  */
 export function updateResolversForIndex(
   config: IndexDirectiveConfiguration,
@@ -553,7 +587,7 @@ function validateIndexArgumentSnippet(config: IndexDirectiveConfiguration, keyOp
   return printBlock(`Validate ${keyOperation} mutation for @index '${name}'`)(
     compoundExpression([
       set(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), bool(false)),
-      set(ref('keyFieldNames'), list(sortKeyFields.map(f => str(f)))),
+      set(ref('keyFieldNames'), list(sortKeyFields.map((f) => str(f)))),
       forEach(ref('keyFieldName'), ref('keyFieldNames'), [
         iff(raw('$mergedValues.containsKey("$keyFieldName")'), set(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), bool(true)), true),
       ]),
@@ -570,10 +604,19 @@ function validateIndexArgumentSnippet(config: IndexDirectiveConfiguration, keyOp
   );
 }
 
+/**
+ *
+ */
 export function mergeInputsAndDefaultsSnippet() {
   return printBlock('Merge default values and inputs')(generateApplyDefaultsToInputTemplate('mergedValues'));
 }
 
+/**
+ *
+ * @param resolver
+ * @param lines
+ * @param isSync
+ */
 export function addIndexToResolverSlot(resolver: TransformerResolverProvider, lines: string[], isSync = false): void {
   const res = resolver as any;
 
@@ -621,6 +664,9 @@ function setSyncQueryMapSnippet(name: string, config: PrimaryKeyDirectiveConfigu
 
 /**
  * constructSyncVTL
+ * @param syncVTLContent
+ * @param resolver
+ * @param deltaSyncTableTtl
  */
 export function constructSyncVTL(syncVTLContent: string, resolver: TransformerResolverProvider, deltaSyncTableTtl: number) {
   const checks = [
@@ -639,6 +685,7 @@ export function constructSyncVTL(syncVTLContent: string, resolver: TransformerRe
  * This function generates the VTL snippet to check whether a GSI/table can be queried to apply the sync filter.
  * The filter must enclosed in an 'and' condition.
  * { filter: { and: [ { genre: { eq: testSong.genre } } ] } }
+ * @param deltaSyncTableTtl
  */
 function setSyncQueryFilterSnippet(deltaSyncTableTtl: number) {
   const expressions: Expression[] = [];
@@ -648,7 +695,7 @@ function setSyncQueryFilterSnippet(deltaSyncTableTtl: number) {
       generateDeltaTableTTLCheck(
         'isLastSyncInDeltaTTLWindow',
         deltaSyncTableTtl,
-        'ctx.args.lastSync'
+        'ctx.args.lastSync',
       ),
       ifElse(
         raw('!$util.isNullOrEmpty($filterArgsMap) && !$isLastSyncInDeltaTTLWindow'),
@@ -665,7 +712,7 @@ function setSyncQueryFilterSnippet(deltaSyncTableTtl: number) {
                   set(ref('queryRequestVariables.partitionKey'), ref('pk')),
                   set(ref('queryRequestVariables.sortKeys'), ref('SkMap.get($PkMap.get($pk))')),
                   set(ref('queryRequestVariables.partitionKeyFilter'), obj({})),
-                  raw(`$util.qr($queryRequestVariables.partitionKeyFilter.put($pk, {'eq': $entry.value.eq}))`),
+                  raw('$util.qr($queryRequestVariables.partitionKeyFilter.put($pk, {\'eq\': $entry.value.eq}))'),
                   raw('$util.qr($ctx.args.put($pk,$entry.value.eq))'),
                   set(ref('index'), ref('PkMap.get($pk)')),
                 ]),
@@ -692,7 +739,7 @@ function setSyncQueryFilterSnippet(deltaSyncTableTtl: number) {
 const generateDeltaTableTTLCheck = (
   deltaTTLCheckRefName: string,
   deltaTTLInMinutes: number,
-  lastSyncRefName: string
+  lastSyncRefName: string,
 ): Expression => {
   const deltaTTLInMilliSeconds = deltaTTLInMinutes * 60 * 1000;
   return compoundExpression([
@@ -705,9 +752,9 @@ const generateDeltaTableTTLCheck = (
         raw(`$minLastSync <= $${lastSyncRefName}`),
       ]),
       set(ref(deltaTTLCheckRefName), bool(true)),
-    )
+    ),
   ]);
-}
+};
 
 function setSyncKeyExpressionForHashKey(queryExprReference: string) {
   const expressions: Expression[] = [];
@@ -846,7 +893,7 @@ function makeSyncQueryResolver() {
         iff(raw('$index != "dbTable"'), set(ref(`${requestVariable}.index`), ref('index'))),
       ]),
     ),
-    raw(`$util.toJson({})`),
+    raw('$util.toJson({})'),
   );
   return block(' Set query expression for @key', expressions);
 }
@@ -872,6 +919,7 @@ function generateSyncResolverInit() {
 }
 /**
  * Util function to generate sandbox mode expression
+ * @param enabled
  */
 export const generateAuthExpressionForSandboxMode = (enabled: boolean): string => {
   let exp;
@@ -884,6 +932,11 @@ export const generateAuthExpressionForSandboxMode = (enabled: boolean): string =
   );
 };
 
+/**
+ *
+ * @param resourceOverrides
+ * @param resource
+ */
 export const getDeltaSyncTableTtl = (resourceOverrides: any, resource: TransformerResolverProvider) => {
   if (_.get(resource, 'typeName') !== 'Query') {
     return SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
@@ -891,20 +944,34 @@ export const getDeltaSyncTableTtl = (resourceOverrides: any, resource: Transform
   const modelName = _.get(resource, ['datasource', 'name'])?.replace(new RegExp('Table$'), '');
   const deltaSyncTtlOverride = _.get(resourceOverrides, ['models', modelName, 'modelDatasource', 'dynamoDbConfig', 'deltaSyncConfig', 'deltaSyncTableTtl']);
   return deltaSyncTtlOverride || SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
-}
+};
 
+/**
+ *
+ * @param ctx
+ * @param modelName
+ */
 export function getDBInfo(ctx: TransformerContextProvider, modelName: string) {
   const dbInfo = ctx.modelToDatasourceMap.get(modelName);
   const result = dbInfo ?? { dbType: 'DDB', provisionDB: true };
   return result;
 }
 
+/**
+ *
+ * @param ctx
+ * @param modelName
+ */
 export function getDBType(ctx: TransformerContextProvider, modelName: string) {
   const dbInfo = getDBInfo(ctx, modelName);
   const dbType = dbInfo ? dbInfo.dbType : 'DDB';
   return dbType;
 }
 
+/**
+ *
+ * @param dbInfo
+ */
 export const getVTLGenerator = (dbInfo: DatasourceType|undefined): RDSIndexVTLGenerator|DynamoDBIndexVTLGenerator => {
   const dbType = dbInfo ? dbInfo.dbType : 'DDB';
   if (dbType === 'MySQL') {

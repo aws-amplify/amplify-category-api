@@ -4,10 +4,12 @@ import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 
 import { GraphQLClient } from './utils/graphql-client';
-import { deploy, launchDDBLocal, terminateDDB, logDebug } from './utils/index';
+import {
+  deploy, launchDDBLocal, terminateDDB, logDebug,
+} from './utils/index';
 
-let GRAPHQL_CLIENT = undefined;
-let GRAPHQL_ENDPOINT = undefined;
+let GRAPHQL_CLIENT;
+let GRAPHQL_ENDPOINT;
 let ddbEmulator = null;
 let dbPath = null;
 let server;
@@ -50,7 +52,7 @@ beforeAll(async () => {
         new ModelConnectionTransformer(),
       ],
       featureFlags: {
-        getBoolean: name => (name === 'improvePluralization' ? true : false),
+        getBoolean: (name) => (name === 'improvePluralization'),
       } as FeatureFlagProvider,
     });
     const out = transformer.transform(validSchema);
@@ -60,10 +62,10 @@ beforeAll(async () => {
     const result = await deploy(out, ddbClient);
     server = result.simulator;
 
-    GRAPHQL_ENDPOINT = server.url + '/graphql';
+    GRAPHQL_ENDPOINT = `${server.url}/graphql`;
     logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
-    const apiKey = result.config.appSync.apiKey;
+    const { apiKey } = result.config.appSync;
     logDebug(apiKey);
     GRAPHQL_CLIENT = new GraphQLClient(GRAPHQL_ENDPOINT, {
       'x-api-key': apiKey,
@@ -90,7 +92,7 @@ afterAll(async () => {
  * Test queries below
  */
 
-test('Test queryPost query', async () => {
+test('queryPost query', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Query" }) {
@@ -135,7 +137,7 @@ test('Test queryPost query', async () => {
     {},
   );
   expect(queryResponse.data.getPost).toBeDefined();
-  const items = queryResponse.data.getPost.comments.items;
+  const { items } = queryResponse.data.getPost.comments;
   expect(items.length).toEqual(1);
   expect(items[0].id).toEqual(createCommentResponse.data.createComment.id);
 });
@@ -149,7 +151,7 @@ const whenmid = '2018-12-01T00:00:00.000Z';
 const when2 = '2019-10-01T00:00:01.000Z';
 const whenfuture = '2020-10-01T00:00:00.000Z';
 
-test('Test queryPost query with sortField', async () => {
+test('queryPost query with sortField', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "${title}" }) {
@@ -223,7 +225,7 @@ test('Test queryPost query with sortField', async () => {
     {},
   );
   expect(queryResponse.data.getPost).toBeDefined();
-  const items = queryResponse.data.getPost.sortedComments.items;
+  const { items } = queryResponse.data.getPost.sortedComments;
   expect(items.length).toEqual(2);
   expect(items[0].id).toEqual(createCommentResponse1.data.createSortedComment.id);
   expect(items[1].id).toEqual(createCommentResponse2.data.createSortedComment.id);
@@ -400,7 +402,7 @@ test('Test queryPost query with sortField', async () => {
   expect(itemsDescWithKeyConditionBetween[0].id).toEqual(createCommentResponse2.data.createSortedComment.id);
 });
 
-test('Test create comment without a post and then querying the comment.', async () => {
+test('create comment without a post and then querying the comment.', async () => {
   try {
     const createCommentResponse1 = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -441,7 +443,7 @@ test('Test create comment without a post and then querying the comment.', async 
   }
 });
 
-test('Test default limit is 50', async () => {
+test('default limit is 50', async () => {
   // create Auth logic around this
   const postID = 'e2eConnectionPost';
   const postTitle = 'samplePost';

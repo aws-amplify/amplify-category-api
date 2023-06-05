@@ -1,3 +1,6 @@
+/**
+ *
+ */
 export interface TransformMigrationConfig {
   V1?: {
     Resources: string[];
@@ -5,37 +8,64 @@ export interface TransformMigrationConfig {
 }
 
 // Sync Config
+/**
+ *
+ */
 export const enum ConflictHandlerType {
   OPTIMISTIC = 'OPTIMISTIC_CONCURRENCY',
   AUTOMERGE = 'AUTOMERGE',
   LAMBDA = 'LAMBDA',
 }
 
+/**
+ *
+ */
 export type ConflictDetectionType = 'VERSION' | 'NONE';
+/**
+ *
+ */
 export type SyncConfigOptimistic = {
   ConflictDetection: ConflictDetectionType;
   ConflictHandler: ConflictHandlerType.OPTIMISTIC;
 };
+/**
+ *
+ */
 export type SyncConfigServer = {
   ConflictDetection: ConflictDetectionType;
   ConflictHandler: ConflictHandlerType.AUTOMERGE;
 };
+/**
+ *
+ */
 export type SyncConfigLambda = {
   ConflictDetection: ConflictDetectionType;
   ConflictHandler: ConflictHandlerType.LAMBDA;
   LambdaConflictHandler: LambdaConflictHandler;
 };
+/**
+ *
+ */
 export type LambdaConflictHandler = {
   name: string;
   region?: string;
   lambdaArn?: any;
 };
+/**
+ *
+ */
 export type SyncConfig = SyncConfigOptimistic | SyncConfigServer | SyncConfigLambda;
 
+/**
+ *
+ */
 export type ResolverConfig = {
   project?: SyncConfig;
   models?: Record<string, SyncConfig>;
 };
+/**
+ *
+ */
 export interface TransformConfig {
   /**
    * The transform library uses a "StackMapping" to determine which stack

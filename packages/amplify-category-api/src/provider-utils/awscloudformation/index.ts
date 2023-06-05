@@ -1,4 +1,6 @@
-import { $TSContext, AmplifySupportedService, exitOnNextTick, NotImplementedError } from '@aws-amplify/amplify-cli-core';
+import {
+  $TSContext, AmplifySupportedService, exitOnNextTick, NotImplementedError,
+} from '@aws-amplify/amplify-cli-core';
 import { UpdateApiRequest } from 'amplify-headless-interface';
 import { printer } from '@aws-amplify/amplify-prompts';
 import inquirer from 'inquirer';
@@ -17,6 +19,15 @@ import { datasourceMetadataFor, getServiceWalkthrough, serviceMetadataFor } from
 import { editSchemaFlow } from './utils/edit-schema-flow';
 import { serviceWalkthroughResultToAddApiRequest } from './utils/service-walkthrough-result-to-add-api-request';
 
+/**
+ *
+ * @param context
+ * @param apiProps
+ * @param apiProps.apiName
+ * @param apiProps.functionName
+ * @param apiProps.authResourceName
+ * @param apiProps.dependsOn
+ */
 export async function addAdminQueriesApi(
   context: $TSContext,
   apiProps: { apiName: string; functionName: string; authResourceName: string; dependsOn: Record<string, any>[] },
@@ -25,6 +36,15 @@ export async function addAdminQueriesApi(
   return apigwInputState.addAdminQueriesResource(apiProps);
 }
 
+/**
+ *
+ * @param context
+ * @param apiProps
+ * @param apiProps.apiName
+ * @param apiProps.functionName
+ * @param apiProps.authResourceName
+ * @param apiProps.dependsOn
+ */
 export async function updateAdminQueriesApi(
   context: $TSContext,
   apiProps: { apiName: string; functionName: string; authResourceName: string; dependsOn: Record<string, any>[] },
@@ -39,6 +59,11 @@ export async function updateAdminQueriesApi(
   }
 }
 
+/**
+ *
+ * @param context
+ * @param service
+ */
 export async function console(context: $TSContext, service: string) {
   const { serviceWalkthroughFilename } = await serviceMetadataFor(service);
   const serviceWalkthroughSrc = path.join(__dirname, 'service-walkthroughs', serviceWalkthroughFilename);
@@ -72,7 +97,7 @@ async function addNonContainerResource(context: $TSContext, service: string, opt
   switch (service) {
     case AmplifySupportedService.APPSYNC:
       const walkthroughResult = await serviceWalkthroughPromise;
-      const askToEdit = walkthroughResult.askToEdit;
+      const { askToEdit } = walkthroughResult;
       const apiName = await getCfnApiArtifactHandler(context).createArtifacts(serviceWalkthroughResultToAddApiRequest(walkthroughResult));
       if (askToEdit) {
         await editSchemaFlow(context, apiName);
@@ -86,6 +111,12 @@ async function addNonContainerResource(context: $TSContext, service: string, opt
   }
 }
 
+/**
+ *
+ * @param context
+ * @param service
+ * @param options
+ */
 export async function addResource(context: $TSContext, service: string, options) {
   let useContainerResource = false;
   let apiType = API_TYPE.GRAPHQL;
@@ -161,13 +192,21 @@ async function isRestContainer() {
   return restSelection;
 }
 
+/**
+ *
+ * @param context
+ * @param category
+ * @param service
+ * @param options
+ */
 export async function updateResource(context: $TSContext, category: string, service: string, options) {
   const allowContainers = options?.allowContainers ?? true;
   let useContainerResource = false;
   let apiType = API_TYPE.GRAPHQL;
   if (allowContainers && isContainersEnabled(context)) {
-    const { hasAPIGatewayContainerResource, hasAPIGatewayLambdaResource, hasGraphQLAppSyncResource, hasGraphqlContainerResource } =
-      await describeApiResourcesBySubCategory(context);
+    const {
+      hasAPIGatewayContainerResource, hasAPIGatewayLambdaResource, hasGraphQLAppSyncResource, hasGraphqlContainerResource,
+    } = await describeApiResourcesBySubCategory(context);
 
     switch (service) {
       case AmplifySupportedService.APPSYNC:
@@ -200,23 +239,21 @@ export async function updateResource(context: $TSContext, category: string, serv
 
 async function describeApiResourcesBySubCategory(context: $TSContext) {
   const { allResources } = await context.amplify.getResourceStatus();
-  const resources = allResources.filter(resource => resource.category === category && resource.mobileHubMigrated !== true);
+  const resources = allResources.filter((resource) => resource.category === category && resource.mobileHubMigrated !== true);
 
   let hasAPIGatewayContainerResource = false;
   let hasAPIGatewayLambdaResource = false;
   let hasGraphQLAppSyncResource = false;
   let hasGraphqlContainerResource = false;
 
-  resources.forEach(resource => {
-    hasAPIGatewayContainerResource =
-      hasAPIGatewayContainerResource || (resource.service === 'ElasticContainer' && resource.apiType === API_TYPE.REST);
+  resources.forEach((resource) => {
+    hasAPIGatewayContainerResource = hasAPIGatewayContainerResource || (resource.service === 'ElasticContainer' && resource.apiType === API_TYPE.REST);
 
     hasAPIGatewayLambdaResource = hasAPIGatewayLambdaResource || resource.service === AmplifySupportedService.APIGW;
 
     hasGraphQLAppSyncResource = hasGraphQLAppSyncResource || resource.service === AmplifySupportedService.APPSYNC;
 
-    hasGraphqlContainerResource =
-      hasGraphqlContainerResource || (resource.service === 'ElasticContainer' && resource.apiType === API_TYPE.GRAPHQL);
+    hasGraphqlContainerResource = hasGraphqlContainerResource || (resource.service === 'ElasticContainer' && resource.apiType === API_TYPE.GRAPHQL);
   });
 
   return {
@@ -268,17 +305,22 @@ async function updateNonContainerResource(context: $TSContext, service: string) 
   }
 }
 
+/**
+ *
+ * @param context
+ * @param projectPath
+ * @param service
+ * @param resourceName
+ */
 export async function migrateResource(context: $TSContext, projectPath: string, service: string, resourceName: string) {
   if (service === 'ElasticContainer') {
     return migrateResourceContainer(context, projectPath, service, resourceName);
-  } else {
-    return migrateResourceNonContainer(context, projectPath, service, resourceName);
   }
+  return migrateResourceNonContainer(context, projectPath, service, resourceName);
 }
 
 async function migrateResourceContainer(context: $TSContext, projectPath: string, service: string, resourceName: string) {
   printer.info(`No migration required for ${resourceName}`);
-  return;
 }
 
 async function migrateResourceNonContainer(context: $TSContext, projectPath: string, service: string, resourceName: string) {
@@ -295,18 +337,30 @@ async function migrateResourceNonContainer(context: $TSContext, projectPath: str
   return await migrate(context, projectPath, resourceName);
 }
 
+/**
+ *
+ * @param context
+ * @param category
+ * @param datasource
+ */
 export async function addDatasource(context: $TSContext, category, datasource) {
   const serviceMetadata = await datasourceMetadataFor(datasource);
   const { serviceWalkthroughFilename } = serviceMetadata;
   return (await getServiceWalkthrough(serviceWalkthroughFilename))(context, serviceMetadata);
 }
 
+/**
+ *
+ * @param context
+ * @param service
+ * @param resourceName
+ * @param crudOptions
+ */
 export async function getPermissionPolicies(context: $TSContext, service: string, resourceName: string, crudOptions) {
   if (service === 'ElasticContainer') {
     return getPermissionPoliciesContainer(context, service, resourceName, crudOptions);
-  } else {
-    return getPermissionPoliciesNonContainer(service, resourceName, crudOptions);
   }
+  return getPermissionPoliciesNonContainer(service, resourceName, crudOptions);
 }
 
 async function getPermissionPoliciesContainer(context: $TSContext, service: string, resourceName: string, crudOptions) {

@@ -1,5 +1,10 @@
 import { Kind, TypeNode } from 'graphql';
 
+/**
+ *
+ * @param t
+ * @param n
+ */
 export function withNamedNodeNamed(t: TypeNode, n: string): TypeNode {
   switch (t.kind) {
     case Kind.NON_NULL_TYPE:

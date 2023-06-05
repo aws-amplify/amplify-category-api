@@ -3,12 +3,14 @@ import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import { GraphQLClient } from './utils/graphql-client';
-import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
+import {
+  deploy, launchDDBLocal, logDebug, terminateDDB,
+} from './utils/index';
 import 'isomorphic-fetch';
 
 jest.setTimeout(2000000);
 
-let GRAPHQL_ENDPOINT = undefined;
+let GRAPHQL_ENDPOINT;
 
 let ddbEmulator = null;
 let dbPath = null;
@@ -16,22 +18,22 @@ let server;
 /**
  * Client 1 is logged in and is a member of the Admin group.
  */
-let GRAPHQL_CLIENT_1 = undefined;
+let GRAPHQL_CLIENT_1;
 
 /**
  * Client 1 is logged in and is a member of the Admin group via an access token.
  */
-let GRAPHQL_CLIENT_1_ACCESS = undefined;
+let GRAPHQL_CLIENT_1_ACCESS;
 
 /**
  * Client 2 is logged in and is a member of the Devs group.
  */
-let GRAPHQL_CLIENT_2 = undefined;
+let GRAPHQL_CLIENT_2;
 
 /**
  * Client 3 is logged in and has no group memberships.
  */
-let GRAPHQL_CLIENT_3 = undefined;
+let GRAPHQL_CLIENT_3;
 
 const USER_POOL_ID = 'fake_user_pool';
 
@@ -141,7 +143,7 @@ beforeAll(async () => {
       }),
     ],
     featureFlags: {
-      getBoolean: name => (name === 'improvePluralization' ? true : false),
+      getBoolean: (name) => (name === 'improvePluralization'),
     } as FeatureFlagProvider,
   });
 
@@ -154,10 +156,10 @@ beforeAll(async () => {
     const result = await deploy(out, ddbClient);
     server = result.simulator;
 
-    GRAPHQL_ENDPOINT = server.url + '/graphql';
+    GRAPHQL_ENDPOINT = `${server.url}/graphql`;
     logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
-    const apiKey = result.config.appSync.apiKey;
+    const { apiKey } = result.config.appSync;
 
     const idToken = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME1, USERNAME1, [
       ADMIN_GROUP_NAME,
@@ -191,7 +193,7 @@ beforeAll(async () => {
 
     // Wait for any propagation to avoid random
     // "The security token included in the request is invalid" errors
-    await new Promise<void>(res => setTimeout(() => res(), 5000));
+    await new Promise<void>((res) => setTimeout(() => res(), 5000));
   } catch (e) {
     console.error(e);
     expect(true).toEqual(false);
@@ -213,7 +215,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('Test createPost mutation', async () => {
+test('createPost mutation', async () => {
   const response = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createPost(input: { title: "Hello, World!" }) {
@@ -254,7 +256,7 @@ test('Test createPost mutation', async () => {
   expect(response2.data.createPost.owner).toEqual(USERNAME1);
 });
 
-test('Test getPost query when authorized', async () => {
+test('getPost query when authorized', async () => {
   const response = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createPost(input: { title: "Hello, World!" }) {
@@ -311,7 +313,7 @@ test('Test getPost query when authorized', async () => {
   expect(getResponseAccess.data.getPost.owner).toEqual(USERNAME1);
 });
 
-test('Test getPost query when not authorized', async () => {
+test('getPost query when not authorized', async () => {
   const response = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createPost(input: { title: "Hello, World!" }) {
@@ -346,7 +348,7 @@ test('Test getPost query when not authorized', async () => {
   expect((getResponse.errors[0] as any).errorType).toEqual('Unauthorized');
 });
 
-test('Test updatePost mutation when authorized', async () => {
+test('updatePost mutation when authorized', async () => {
   const response = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createPost(input: { title: "Hello, World!" }) {
@@ -397,7 +399,7 @@ test('Test updatePost mutation when authorized', async () => {
   expect(updateResponseAccess.data.updatePost.updatedAt > response.data.createPost.updatedAt).toEqual(true);
 });
 
-test('Test updatePost mutation when not authorized', async () => {
+test('updatePost mutation when not authorized', async () => {
   const response = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createPost(input: { title: "Hello, World!" }) {
@@ -434,7 +436,7 @@ test('Test updatePost mutation when not authorized', async () => {
   expect((updateResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 });
 
-test('Test deletePost mutation when authorized', async () => {
+test('deletePost mutation when authorized', async () => {
   const response = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createPost(input: { title: "Hello, World!" }) {
@@ -490,7 +492,7 @@ test('Test deletePost mutation when authorized', async () => {
   expect(deleteResponseAccess.data.deletePost.id).toEqual(responseAccess.data.createPost.id);
 });
 
-test('Test deletePost mutation when not authorized', async () => {
+test('deletePost mutation when not authorized', async () => {
   const response = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createPost(input: { title: "Hello, World!" }) {
@@ -522,7 +524,7 @@ test('Test deletePost mutation when not authorized', async () => {
   expect((deleteResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 });
 
-test('Test listPosts query when authorized', async () => {
+test('listPosts query when authorized', async () => {
   const firstPost = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createPost(input: { title: "testing list" }) {
@@ -583,7 +585,7 @@ test('Test listPosts query when authorized', async () => {
 /**
  * Static Group Auth
  */
-test(`Test createSalary w/ Admin group protection authorized`, async () => {
+test('createSalary w/ Admin group protection authorized', async () => {
   const req = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createSalary(input: { wage: 10 }) {
@@ -596,7 +598,7 @@ test(`Test createSalary w/ Admin group protection authorized`, async () => {
   expect(req.data.createSalary.wage).toEqual(10);
 });
 
-test(`Test update my own salary without admin permission`, async () => {
+test('update my own salary without admin permission', async () => {
   const req = await GRAPHQL_CLIENT_2.query(`
     mutation {
         createSalary(input: { wage: 10 }) {
@@ -619,7 +621,7 @@ test(`Test update my own salary without admin permission`, async () => {
   expect(req2.data.updateSalary.wage).toEqual(14);
 });
 
-test(`Test updating someone else's salary as an admin`, async () => {
+test('updating someone else\'s salary as an admin', async () => {
   const req = await GRAPHQL_CLIENT_2.query(`
     mutation {
         createSalary(input: { wage: 11 }) {
@@ -644,7 +646,7 @@ test(`Test updating someone else's salary as an admin`, async () => {
   expect(req2.data.updateSalary.wage).toEqual(12);
 });
 
-test(`Test updating someone else's salary when I am not admin.`, async () => {
+test('updating someone else\'s salary when I am not admin.', async () => {
   const req = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createSalary(input: { wage: 13 }) {
@@ -670,7 +672,7 @@ test(`Test updating someone else's salary when I am not admin.`, async () => {
   expect((req2.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 });
 
-test(`Test deleteSalary w/ Admin group protection authorized`, async () => {
+test('deleteSalary w/ Admin group protection authorized', async () => {
   const req = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createSalary(input: { wage: 15 }) {
@@ -695,7 +697,7 @@ test(`Test deleteSalary w/ Admin group protection authorized`, async () => {
   expect(req2.data.deleteSalary.wage).toEqual(15);
 });
 
-test(`Test deleteSalary w/ Admin group protection not authorized`, async () => {
+test('deleteSalary w/ Admin group protection not authorized', async () => {
   const req = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createSalary(input: { wage: 16 }) {
@@ -721,7 +723,7 @@ test(`Test deleteSalary w/ Admin group protection not authorized`, async () => {
   expect((req2.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 });
 
-test(`Test and Admin can get a salary created by any user`, async () => {
+test('and Admin can get a salary created by any user', async () => {
   const req = await GRAPHQL_CLIENT_2.query(`
     mutation {
         createSalary(input: { wage: 15 }) {
@@ -745,7 +747,7 @@ test(`Test and Admin can get a salary created by any user`, async () => {
   expect(req2.data.getSalary.wage).toEqual(15);
 });
 
-test(`Test owner can create and get a salary when not admin`, async () => {
+test('owner can create and get a salary when not admin', async () => {
   const req = await GRAPHQL_CLIENT_2.query(`
     mutation {
         createSalary(input: { wage: 15 }) {
@@ -769,7 +771,7 @@ test(`Test owner can create and get a salary when not admin`, async () => {
   expect(req2.data.getSalary.wage).toEqual(15);
 });
 
-test(`Test getSalary w/ Admin group protection not authorized`, async () => {
+test('getSalary w/ Admin group protection not authorized', async () => {
   const req = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createSalary(input: { wage: 16 }) {
@@ -794,7 +796,7 @@ test(`Test getSalary w/ Admin group protection not authorized`, async () => {
   expect((req2.errors[0] as any).errorType).toEqual('Unauthorized');
 });
 
-test(`Test listSalaries w/ Admin group protection authorized`, async () => {
+test('listSalaries w/ Admin group protection authorized', async () => {
   const req = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createSalary(input: { wage: 101 }) {
@@ -821,7 +823,7 @@ test(`Test listSalaries w/ Admin group protection authorized`, async () => {
   expect(req2.data.listSalaries.items[0].wage).toEqual(101);
 });
 
-test(`Test listSalaries w/ Admin group protection not authorized`, async () => {
+test('listSalaries w/ Admin group protection not authorized', async () => {
   const req = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createSalary(input: { wage: 102 }) {
@@ -849,7 +851,7 @@ test(`Test listSalaries w/ Admin group protection not authorized`, async () => {
 /**
  * Dynamic Group Auth
  */
-test(`Test createManyGroupProtected w/ dynamic group protection authorized`, async () => {
+test('createManyGroupProtected w/ dynamic group protection authorized', async () => {
   const req = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createManyGroupProtected(input: { value: 10, groups: ["Admin"] }) {
@@ -865,7 +867,7 @@ test(`Test createManyGroupProtected w/ dynamic group protection authorized`, asy
   expect(req.data.createManyGroupProtected.groups).toEqual(['Admin']);
 });
 
-test(`Test createManyGroupProtected w/ dynamic group protection when not authorized`, async () => {
+test('createManyGroupProtected w/ dynamic group protection when not authorized', async () => {
   const req = await GRAPHQL_CLIENT_2.query(`
     mutation {
         createManyGroupProtected(input: { value: 10, groups: ["Admin"] }) {
@@ -881,7 +883,7 @@ test(`Test createManyGroupProtected w/ dynamic group protection when not authori
   expect((req.errors[0] as any).errorType).toEqual('Unauthorized');
 });
 
-test(`Test createSingleGroupProtected w/ dynamic group protection authorized`, async () => {
+test('createSingleGroupProtected w/ dynamic group protection authorized', async () => {
   const req = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createSingleGroupProtected(input: { value: 10, group: "Admin" }) {
@@ -897,7 +899,7 @@ test(`Test createSingleGroupProtected w/ dynamic group protection authorized`, a
   expect(req.data.createSingleGroupProtected.group).toEqual('Admin');
 });
 
-test(`Test createSingleGroupProtected w/ dynamic group protection when not authorized`, async () => {
+test('createSingleGroupProtected w/ dynamic group protection when not authorized', async () => {
   const req = await GRAPHQL_CLIENT_2.query(`
     mutation {
         createSingleGroupProtected(input: { value: 10, group: "Admin" }) {
@@ -913,7 +915,7 @@ test(`Test createSingleGroupProtected w/ dynamic group protection when not autho
   expect((req.errors[0] as any).errorType).toEqual('Unauthorized');
 });
 
-test(`Test listPWProtecteds when the user is authorized.`, async () => {
+test('listPWProtecteds when the user is authorized.', async () => {
   const req = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createPWProtected(input: { content: "Foobie", participants: "${PARTICIPANT_GROUP_NAME}", watchers: "${WATCHER_GROUP_NAME}" }) {
@@ -984,7 +986,7 @@ test(`Test listPWProtecteds when the user is authorized.`, async () => {
   expect(dReq.data.deletePWProtected).toBeTruthy();
 });
 
-test(`Test Protecteds when the user is not authorized.`, async () => {
+test('Protecteds when the user is not authorized.', async () => {
   const req = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createPWProtected(input: { content: "Barbie", participants: "${PARTICIPANT_GROUP_NAME}", watchers: "${WATCHER_GROUP_NAME}" }) {
@@ -1069,7 +1071,7 @@ test(`Test Protecteds when the user is not authorized.`, async () => {
   expect(getReq.data.getPWProtected).toBeTruthy();
 });
 
-test(`Test creating, updating, and deleting an admin note as an admin`, async () => {
+test('creating, updating, and deleting an admin note as an admin', async () => {
   const req = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createAdminNote(input: { content: "Hello" }) {
@@ -1105,7 +1107,7 @@ test(`Test creating, updating, and deleting an admin note as an admin`, async ()
   expect(req3.data.deleteAdminNote.content).toEqual('Hello 2');
 });
 
-test(`Test creating, updating, and deleting an admin note as a non admin`, async () => {
+test('creating, updating, and deleting an admin note as a non admin', async () => {
   const adminReq = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createAdminNote(input: { content: "Hello" }) {
@@ -1159,7 +1161,7 @@ test(`Test creating, updating, and deleting an admin note as a non admin`, async
  * Get Query Tests
  */
 
-test(`Test getAllThree as admin.`, async () => {
+test('getAllThree as admin.', async () => {
   const ownedBy2 = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createAllThree(input: {
@@ -1201,7 +1203,7 @@ test(`Test getAllThree as admin.`, async () => {
   expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
 });
 
-test(`Test getAllThree as owner.`, async () => {
+test('getAllThree as owner.', async () => {
   const ownedBy2 = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createAllThree(input: {
@@ -1243,7 +1245,7 @@ test(`Test getAllThree as owner.`, async () => {
   expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
 });
 
-test(`Test getAllThree as one of a set of editors.`, async () => {
+test('getAllThree as one of a set of editors.', async () => {
   const ownedBy2 = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createAllThree(input: {
@@ -1285,7 +1287,7 @@ test(`Test getAllThree as one of a set of editors.`, async () => {
   expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
 });
 
-test(`Test getAllThree as a member of a dynamic group.`, async () => {
+test('getAllThree as a member of a dynamic group.', async () => {
   const ownedByAdmins = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createAllThree(input: {
@@ -1342,7 +1344,7 @@ test(`Test getAllThree as a member of a dynamic group.`, async () => {
   expect(deleteReq.data.deleteAllThree.id).toEqual(ownedByAdmins.data.createAllThree.id);
 });
 
-test(`Test getAllThree as a member of the alternative group.`, async () => {
+test('getAllThree as a member of the alternative group.', async () => {
   const ownedByAdmins = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createAllThree(input: {
@@ -1403,7 +1405,7 @@ test(`Test getAllThree as a member of the alternative group.`, async () => {
  * List Query Tests
  */
 
-test(`Test listAllThrees as admin.`, async () => {
+test('listAllThrees as admin.', async () => {
   const ownedBy2 = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createAllThree(input: {
@@ -1448,7 +1450,7 @@ test(`Test listAllThrees as admin.`, async () => {
   expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
 });
 
-test(`Test listAllThrees as owner.`, async () => {
+test('listAllThrees as owner.', async () => {
   const ownedBy2 = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createAllThree(input: {
@@ -1493,7 +1495,7 @@ test(`Test listAllThrees as owner.`, async () => {
   expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
 });
 
-test(`Test listAllThrees as one of a set of editors.`, async () => {
+test('listAllThrees as one of a set of editors.', async () => {
   const ownedBy2 = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createAllThree(input: {
@@ -1538,7 +1540,7 @@ test(`Test listAllThrees as one of a set of editors.`, async () => {
   expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
 });
 
-test(`Test listAllThrees as a member of a dynamic group.`, async () => {
+test('listAllThrees as a member of a dynamic group.', async () => {
   const ownedByAdmins = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createAllThree(input: {
@@ -1599,7 +1601,7 @@ test(`Test listAllThrees as a member of a dynamic group.`, async () => {
   expect(deleteReq.data.deleteAllThree.id).toEqual(ownedByAdmins.data.createAllThree.id);
 });
 
-test(`Test getAllThree as a member of the alternative group.`, async () => {
+test('getAllThree as a member of the alternative group.', async () => {
   const ownedByAdmins = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createAllThree(input: {
@@ -1664,7 +1666,7 @@ test(`Test getAllThree as a member of the alternative group.`, async () => {
  * Create Mutation Tests
  */
 
-test(`Test createAllThree as admin.`, async () => {
+test('createAllThree as admin.', async () => {
   const ownedBy2 = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createAllThree(input: {
@@ -1731,7 +1733,7 @@ test(`Test createAllThree as admin.`, async () => {
   expect(deleteReq2.data.deleteAllThree.id).toEqual(ownedBy2NoEditors.data.createAllThree.id);
 });
 
-test(`Test createAllThree as owner.`, async () => {
+test('createAllThree as owner.', async () => {
   const ownedBy2 = await GRAPHQL_CLIENT_2.query(`
     mutation {
         createAllThree(input: {
@@ -1782,7 +1784,7 @@ test(`Test createAllThree as owner.`, async () => {
   expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
 });
 
-test(`Test createAllThree as one of a set of editors.`, async () => {
+test('createAllThree as one of a set of editors.', async () => {
   const ownedBy2 = await GRAPHQL_CLIENT_2.query(`
     mutation {
         createAllThree(input: {
@@ -1863,7 +1865,7 @@ test(`Test createAllThree as one of a set of editors.`, async () => {
   expect(deleteReq2.data.deleteAllThree.id).toEqual(ownedBy2WithDefaultOwner.data.createAllThree.id);
 });
 
-test(`Test createAllThree as a member of a dynamic group.`, async () => {
+test('createAllThree as a member of a dynamic group.', async () => {
   const ownedByDevs = await GRAPHQL_CLIENT_2.query(`
     mutation {
         createAllThree(input: {
@@ -1916,7 +1918,7 @@ test(`Test createAllThree as a member of a dynamic group.`, async () => {
   expect(deleteReq.data.deleteAllThree.id).toEqual(ownedByDevs.data.createAllThree.id);
 });
 
-test(`Test createAllThree as a member of the alternative group.`, async () => {
+test('createAllThree as a member of the alternative group.', async () => {
   const ownedByAdmins = await GRAPHQL_CLIENT_2.query(`
     mutation {
         createAllThree(input: {
@@ -1972,7 +1974,7 @@ test(`Test createAllThree as a member of the alternative group.`, async () => {
  * Update Mutation Tests
  */
 
-test(`Test updateAllThree and deleteAllThree as admin.`, async () => {
+test('updateAllThree and deleteAllThree as admin.', async () => {
   const ownedBy2 = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createAllThree(input: {
@@ -2030,7 +2032,7 @@ test(`Test updateAllThree and deleteAllThree as admin.`, async () => {
   expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
 });
 
-test(`Test updateAllThree and deleteAllThree as owner.`, async () => {
+test('updateAllThree and deleteAllThree as owner.', async () => {
   const ownedBy2 = await GRAPHQL_CLIENT_2.query(`
     mutation {
         createAllThree(input: {
@@ -2086,7 +2088,7 @@ test(`Test updateAllThree and deleteAllThree as owner.`, async () => {
   expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
 });
 
-test(`Test updateAllThree and deleteAllThree as one of a set of editors.`, async () => {
+test('updateAllThree and deleteAllThree as one of a set of editors.', async () => {
   const ownedBy2 = await GRAPHQL_CLIENT_2.query(`
     mutation {
         createAllThree(input: {
@@ -2142,7 +2144,7 @@ test(`Test updateAllThree and deleteAllThree as one of a set of editors.`, async
   expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
 });
 
-test(`Test updateAllThree and deleteAllThree as a member of a dynamic group.`, async () => {
+test('updateAllThree and deleteAllThree as a member of a dynamic group.', async () => {
   const ownedByDevs = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createAllThree(input: {
@@ -2218,7 +2220,7 @@ test(`Test updateAllThree and deleteAllThree as a member of a dynamic group.`, a
   expect(deleteReq.data.deleteAllThree.id).toEqual(ownedByDevs.data.createAllThree.id);
 });
 
-test(`Test updateAllThree and deleteAllThree as a member of the alternative group.`, async () => {
+test('updateAllThree and deleteAllThree as a member of the alternative group.', async () => {
   const ownedByDevs = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createAllThree(input: {
@@ -2324,7 +2326,7 @@ test(`Test updateAllThree and deleteAllThree as a member of the alternative grou
   expect(deleteReq.data.deleteAllThree.id).toEqual(ownedByDevs.data.createAllThree.id);
 });
 
-test(`Test createTestIdentity as admin.`, async () => {
+test('createTestIdentity as admin.', async () => {
   const ownedBy2 = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createTestIdentity(input: {
@@ -2386,7 +2388,7 @@ test(`Test createTestIdentity as admin.`, async () => {
     }`,
     {},
   );
-  const relevantPost = listResponse.data.listTestIdentities.items.find(p => p.id === getReq.data.getTestIdentity.id);
+  const relevantPost = listResponse.data.listTestIdentities.items.find((p) => p.id === getReq.data.getTestIdentity.id);
   logDebug(JSON.stringify(listResponse, null, 4));
   expect(relevantPost).toBeTruthy();
   expect(relevantPost.title).toEqual('Test title update');
@@ -2413,7 +2415,7 @@ test(`Test createTestIdentity as admin.`, async () => {
 /**
  * Test 'operations' argument
  */
-test("Test get and list with 'read' operation set", async () => {
+test("get and list with 'read' operation set", async () => {
   const response = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createOwnerReadProtected(input: { content: "Hello, World!", owner: "${USERNAME1}" }) {
@@ -2481,7 +2483,7 @@ test("Test get and list with 'read' operation set", async () => {
   expect(response5.data.listOwnerReadProtecteds.items).toHaveLength(0);
 });
 
-test("Test createOwnerCreateUpdateDeleteProtected with 'create' operation set", async () => {
+test("createOwnerCreateUpdateDeleteProtected with 'create' operation set", async () => {
   const response = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createOwnerCreateUpdateDeleteProtected(input: { content: "Hello, World!", owner: "${USERNAME1}" }) {
@@ -2512,7 +2514,7 @@ test("Test createOwnerCreateUpdateDeleteProtected with 'create' operation set", 
   expect(response2.errors).toHaveLength(1);
 });
 
-test("Test updateOwnerCreateUpdateDeleteProtected with 'update' operation set", async () => {
+test("updateOwnerCreateUpdateDeleteProtected with 'update' operation set", async () => {
   const response = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createOwnerCreateUpdateDeleteProtected(input: { content: "Hello, World!", owner: "${USERNAME1}" }) {
@@ -2568,7 +2570,7 @@ test("Test updateOwnerCreateUpdateDeleteProtected with 'update' operation set", 
   expect(response3.data.updateOwnerCreateUpdateDeleteProtected.owner).toEqual(USERNAME1);
 });
 
-test("Test deleteOwnerCreateUpdateDeleteProtected with 'update' operation set", async () => {
+test("deleteOwnerCreateUpdateDeleteProtected with 'update' operation set", async () => {
   const response = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createOwnerCreateUpdateDeleteProtected(input: { content: "Hello, World!", owner: "${USERNAME1}" }) {

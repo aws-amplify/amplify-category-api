@@ -2,6 +2,9 @@ import { TransformerDataSourceManagerProvider } from '@aws-amplify/graphql-trans
 import { BackedDataSource } from 'aws-cdk-lib/aws-appsync';
 import { ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode } from 'graphql';
 
+/**
+ *
+ */
 export class TransformerDataSourceManager implements TransformerDataSourceManagerProvider {
   private dataSourceMap: Map<string, BackedDataSource> = new Map();
   add = (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: BackedDataSource) => {
@@ -20,11 +23,7 @@ export class TransformerDataSourceManager implements TransformerDataSourceManage
     return this.dataSourceMap.get(key)!;
   };
 
-  collectDataSources = (): Readonly<Map<string, BackedDataSource>> => {
-    return this.dataSourceMap;
-  };
+  collectDataSources = (): Readonly<Map<string, BackedDataSource>> => this.dataSourceMap;
 
-  has = (name: string): boolean => {
-    return this.dataSourceMap.has(name);
-  };
+  has = (name: string): boolean => this.dataSourceMap.has(name);
 }

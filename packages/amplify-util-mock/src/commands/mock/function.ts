@@ -3,6 +3,10 @@ import { start } from '../../func';
 
 export const name = 'function';
 
+/**
+ *
+ * @param context
+ */
 export const run = async (context: $TSContext) => {
   if (context.parameters.options.help) {
     const header = `amplify mock ${name} \nDescriptions:

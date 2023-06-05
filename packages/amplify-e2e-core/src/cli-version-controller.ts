@@ -15,6 +15,7 @@ class CLIVersionController {
   #getCLIPathSpy: jest.SpyInstance<string>;
   /**
    * All CLI calls (that use getCLIVersion) will use the specified CLI version
+   * @param version
    */
   useCliVersion = async (version: string) => {
     const overridePath = await this.getCLIVersionPath(version);

@@ -31,6 +31,9 @@ export interface SearchableConfig {
   };
 }
 
+/**
+ *
+ */
 export type GetAuthRulesOptions = GetArgumentsOptions & {
   isField?: boolean;
 };

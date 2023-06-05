@@ -1,6 +1,8 @@
 import * as fs from 'fs-extra';
 
-import { compoundExpression, forEach, iff, list, methodCall, obj, print, ref, ret, set, str, ReferenceNode, StringNode } from 'graphql-mapping-template';
+import {
+  compoundExpression, forEach, iff, list, methodCall, obj, print, ref, ret, set, str, ReferenceNode, StringNode,
+} from 'graphql-mapping-template';
 import { graphqlName, plurality, toUpper } from 'graphql-transformer-common';
 
 import AppSync from 'cloudform-types/types/appSync';
@@ -38,12 +40,14 @@ export class RelationalDBResolverGenerator {
     this.stringFieldMap = context.stringFieldMap;
     this.intFieldMap = context.intFieldMap;
     this.typePrimaryKeyTypeMap = context.typePrimaryKeyTypeMap;
-    this.variableMapRefName = 'variableMap'
+    this.variableMapRefName = 'variableMap';
   }
 
   /**
    * Creates the CRUDL+Q Resolvers as a Map of Cloudform Resources. The output can then be
    * merged with an existing Template's map of Resources.
+   * @param resolverFilePath
+   * @param improvePluralization
    */
   public createRelationalResolvers(resolverFilePath: string, improvePluralization: boolean) {
     let resources = {};
@@ -52,11 +56,11 @@ export class RelationalDBResolverGenerator {
       const resourceName = key.replace(/[^A-Za-z0-9]/g, '');
       resources = {
         ...resources,
-        ...{ [resourceName + 'CreateResolver']: this.makeCreateRelationalResolver(key) },
-        ...{ [resourceName + 'GetResolver']: this.makeGetRelationalResolver(key) },
-        ...{ [resourceName + 'UpdateResolver']: this.makeUpdateRelationalResolver(key) },
-        ...{ [resourceName + 'DeleteResolver']: this.makeDeleteRelationalResolver(key) },
-        ...{ [resourceName + 'ListResolver']: this.makeListRelationalResolver(key, improvePluralization) },
+        ...{ [`${resourceName}CreateResolver`]: this.makeCreateRelationalResolver(key) },
+        ...{ [`${resourceName}GetResolver`]: this.makeGetRelationalResolver(key) },
+        ...{ [`${resourceName}UpdateResolver`]: this.makeUpdateRelationalResolver(key) },
+        ...{ [`${resourceName}DeleteResolver`]: this.makeDeleteRelationalResolver(key) },
+        ...{ [`${resourceName}ListResolver`]: this.makeListRelationalResolver(key, improvePluralization) },
       };
       // TODO: Add Guesstimate Query Resolvers
     });
@@ -75,7 +79,7 @@ export class RelationalDBResolverGenerator {
    * @param type - the graphql type for which the create resolver will be created
    * @param mutationTypeName - will be 'Mutation'
    */
-  private makeCreateRelationalResolver(type: string, mutationTypeName: string = 'Mutation') {
+  private makeCreateRelationalResolver(type: string, mutationTypeName = 'Mutation') {
     const tableName = this.getTableName(type);
     const operationType = GRAPHQL_RESOLVER_OPERATION.Create;
     const fieldName = this.getFieldName(type, operationType);
@@ -90,22 +94,22 @@ export class RelationalDBResolverGenerator {
         set(ref('vals'), list([])),
         set(ref(this.variableMapRefName), obj({})),
         forEach(ref('entry'), ref(`ctx.args.create${tableName}Input.keySet()`), [
-          set(ref('discard'), ref(`cols.add($entry)`)),
-          set(ref('discard'), ref(`vals.add(":$entry")`)),
+          set(ref('discard'), ref('cols.add($entry)')),
+          set(ref('discard'), ref('vals.add(":$entry")')),
           methodCall(
-            ref('util.qr'), 
+            ref('util.qr'),
             methodCall(
-              ref(`${this.variableMapRefName}.put`), 
+              ref(`${this.variableMapRefName}.put`),
               str(':$entry'),
-              ref(`ctx.args.create${tableName}Input[$entry]`)
-            )
+              ref(`ctx.args.create${tableName}Input[$entry]`),
+            ),
           ),
         ]),
         set(ref('valStr'), ref('vals.toString().replace("[","(").replace("]",")")')),
         set(ref('colStr'), ref('cols.toString().replace("[","(").replace("]",")")')),
         RelationalDBMappingTemplate.rdsQuery({
           statements: list([str(createSql), str(selectSql)]),
-          variableMapRefName: this.variableMapRefName
+          variableMapRefName: this.variableMapRefName,
         }),
       ]),
     );
@@ -115,7 +119,7 @@ export class RelationalDBResolverGenerator {
     fs.writeFileSync(`${this.resolverFilePath}/${reqFileName}`, reqTemplate, 'utf8');
     fs.writeFileSync(`${this.resolverFilePath}/${resFileName}`, resTemplate, 'utf8');
 
-    let resolver = new AppSync.Resolver({
+    const resolver = new AppSync.Resolver({
       ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
       DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.RelationalDatabaseDataSource, 'Name'),
       TypeName: mutationTypeName,
@@ -141,7 +145,7 @@ export class RelationalDBResolverGenerator {
    * @param type - the graphql type for which the get resolver will be created
    * @param queryTypeName  - will be 'Query'
    */
-  private makeGetRelationalResolver(type: string, queryTypeName: string = 'Query') {
+  private makeGetRelationalResolver(type: string, queryTypeName = 'Query') {
     const operationType = GRAPHQL_RESOLVER_OPERATION.Get;
     const fieldName = this.getFieldName(type, operationType);
     const selectSql = this.generateSelectByPrimaryKeyStatement(type, operationType);
@@ -156,7 +160,7 @@ export class RelationalDBResolverGenerator {
         methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(`:${primaryKey}`), primaryKeyRef)),
         RelationalDBMappingTemplate.rdsQuery({
           statements: list([str(selectSql)]),
-          variableMapRefName: this.variableMapRefName
+          variableMapRefName: this.variableMapRefName,
         }),
       ]),
     );
@@ -176,7 +180,7 @@ export class RelationalDBResolverGenerator {
     fs.writeFileSync(`${this.resolverFilePath}/${reqFileName}`, reqTemplate, 'utf8');
     fs.writeFileSync(`${this.resolverFilePath}/${resFileName}`, resTemplate, 'utf8');
 
-    let resolver = new AppSync.Resolver({
+    const resolver = new AppSync.Resolver({
       ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
       DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.RelationalDatabaseDataSource, 'Name'),
       FieldName: fieldName,
@@ -202,7 +206,7 @@ export class RelationalDBResolverGenerator {
    * @param type - the graphql type for which the update resolver will be created
    * @param mutationTypeName - will be 'Mutation'
    */
-  private makeUpdateRelationalResolver(type: string, mutationTypeName: string = 'Mutation') {
+  private makeUpdateRelationalResolver(type: string, mutationTypeName = 'Mutation') {
     const tableName = this.getTableName(type);
     const operationType = GRAPHQL_RESOLVER_OPERATION.Update;
     const fieldName = this.getFieldName(type, operationType);
@@ -217,19 +221,19 @@ export class RelationalDBResolverGenerator {
         set(ref(this.variableMapRefName), obj({})),
         forEach(ref('entry'), ref(`ctx.args.update${tableName}Input.keySet()`), [
           methodCall(
-            ref('util.qr'), 
+            ref('util.qr'),
             methodCall(
-              ref(`${this.variableMapRefName}.put`), 
+              ref(`${this.variableMapRefName}.put`),
               str(':$entry'),
-              ref(`ctx.args.update${tableName}Input[$entry]`)
-            )
+              ref(`ctx.args.update${tableName}Input[$entry]`),
+            ),
           ),
-          set(ref('discard'), ref(`updateList.put($entry, ":$entry")`)),
+          set(ref('discard'), ref('updateList.put($entry, ":$entry")')),
         ]),
-        set(ref('update'), ref(`updateList.toString().replace("{","").replace("}","")`)),
+        set(ref('update'), ref('updateList.toString().replace("{","").replace("}","")')),
         RelationalDBMappingTemplate.rdsQuery({
           statements: list([str(updateSql), str(selectSql)]),
-          variableMapRefName: this.variableMapRefName
+          variableMapRefName: this.variableMapRefName,
         }),
       ]),
     );
@@ -250,7 +254,7 @@ export class RelationalDBResolverGenerator {
     fs.writeFileSync(`${this.resolverFilePath}/${reqFileName}`, reqTemplate, 'utf8');
     fs.writeFileSync(`${this.resolverFilePath}/${resFileName}`, resTemplate, 'utf8');
 
-    let resolver = new AppSync.Resolver({
+    const resolver = new AppSync.Resolver({
       ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
       DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.RelationalDatabaseDataSource, 'Name'),
       TypeName: mutationTypeName,
@@ -276,7 +280,7 @@ export class RelationalDBResolverGenerator {
    * @param type - the graphql type for which the delete resolver will be created
    * @param mutationTypeName - will be 'Mutation'
    */
-  private makeDeleteRelationalResolver(type: string, mutationTypeName: string = 'Mutation') {
+  private makeDeleteRelationalResolver(type: string, mutationTypeName = 'Mutation') {
     const operationType = GRAPHQL_RESOLVER_OPERATION.Delete;
     const fieldName = this.getFieldName(type, operationType);
     const selectSql = this.generateSelectByPrimaryKeyStatement(type, operationType);
@@ -292,7 +296,7 @@ export class RelationalDBResolverGenerator {
         methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(`:${primaryKey}`), primaryKeyRef)),
         RelationalDBMappingTemplate.rdsQuery({
           statements: list([str(selectSql), str(deleteSql)]),
-          variableMapRefName: this.variableMapRefName
+          variableMapRefName: this.variableMapRefName,
         }),
       ]),
     );
@@ -312,7 +316,7 @@ export class RelationalDBResolverGenerator {
     fs.writeFileSync(`${this.resolverFilePath}/${reqFileName}`, reqTemplate, 'utf8');
     fs.writeFileSync(`${this.resolverFilePath}/${resFileName}`, resTemplate, 'utf8');
 
-    let resolver = new AppSync.Resolver({
+    const resolver = new AppSync.Resolver({
       ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
       DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.RelationalDatabaseDataSource, 'Name'),
       TypeName: mutationTypeName,
@@ -337,9 +341,10 @@ export class RelationalDBResolverGenerator {
    * a GraphQL type
    *
    * @param type - the graphql type for which the list resolver will be created
+   * @param improvePluralization
    * @param queryTypeName - will be 'Query'
    */
-  private makeListRelationalResolver(type: string, improvePluralization: boolean, queryTypeName: string = 'Query') {
+  private makeListRelationalResolver(type: string, improvePluralization: boolean, queryTypeName = 'Query') {
     const fieldName = graphqlName(GRAPHQL_RESOLVER_OPERATION.List + plurality(toUpper(type), improvePluralization));
     const selectSql = this.generateSelectStatement(type);
     const reqFileName = `${queryTypeName}.${fieldName}.req.vtl`;
@@ -354,7 +359,7 @@ export class RelationalDBResolverGenerator {
     fs.writeFileSync(`${this.resolverFilePath}/${reqFileName}`, reqTemplate, 'utf8');
     fs.writeFileSync(`${this.resolverFilePath}/${resFileName}`, resTemplate, 'utf8');
 
-    let resolver = new AppSync.Resolver({
+    const resolver = new AppSync.Resolver({
       ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
       DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.RelationalDatabaseDataSource, 'Name'),
       TypeName: queryTypeName,

@@ -2,8 +2,12 @@ import { default as S3 } from 'aws-sdk/clients/s3';
 import { resolveTestRegion } from './testSetup';
 
 const region = resolveTestRegion();
-const awsS3Client = new S3({ region: region });
+const awsS3Client = new S3({ region });
 
+/**
+ *
+ * @param bucket
+ */
 const emptyBucket = async (bucket: string) => {
   let listObjects = await awsS3Client
     .listObjectsV2({
@@ -12,7 +16,7 @@ const emptyBucket = async (bucket: string) => {
     .promise();
   while (true) {
     try {
-      const objectIds = listObjects.Contents.map(content => ({
+      const objectIds = listObjects.Contents.map((content) => ({
         Key: content.Key,
       }));
       const response = await awsS3Client

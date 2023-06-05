@@ -5,6 +5,13 @@ import { parametersFileName } from './aws-constants';
 import { addPolicyResourceNameToPaths, copyCfnTemplate } from './legacy-add-resource';
 import { serviceMetadataFor } from './utils/dynamic-imports';
 
+/**
+ *
+ * @param updateWalkthroughPromise
+ * @param context
+ * @param category
+ * @param service
+ */
 export const legacyUpdateResource = async (updateWalkthroughPromise: Promise<any>, context: $TSContext, category: string, service) => {
   let answers;
   let { cfnFilename } = await serviceMetadataFor(service);

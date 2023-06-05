@@ -11,19 +11,28 @@ import {
   str,
   obj,
 } from 'graphql-mapping-template';
-import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../../types';
 import _ from 'lodash';
+import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../../types';
 import {
   addIndexToResolverSlot,
   getResolverObject,
-  validateSortDirectionInput
+  validateSortDirectionInput,
 } from '../resolvers';
 import {
   IndexVTLGenerator,
-} from "./vtl-generator";
+} from './vtl-generator';
 
+/**
+ *
+ */
 export class RDSIndexVTLGenerator implements IndexVTLGenerator {
-
+  /**
+   *
+   * @param config
+   * @param ctx
+   * @param tableName
+   * @param operationName
+   */
   generateIndexQueryRequestTemplate(
     config: IndexDirectiveConfiguration,
     ctx: TransformerContextProvider,
@@ -72,7 +81,7 @@ export class RDSIndexVTLGenerator implements IndexVTLGenerator {
       const sortDirectionValidation = printBlock('Validate the sort direction input')(compoundExpression(validateSortDirectionInput(config, true)));
       addIndexToResolverSlot(listResolver, [
         primaryKeySnippet,
-        sortDirectionValidation
+        sortDirectionValidation,
       ]);
     }
 
@@ -92,17 +101,17 @@ export class RDSIndexVTLGenerator implements IndexVTLGenerator {
   setPrimaryKeySnippet = (config: PrimaryKeyDirectiveConfiguration): string => {
     const expressions: Expression[] = [
       set(ref('keys'), list([])),
-      qref(methodCall(ref('keys.add'), str(config.field.name.value)))
+      qref(methodCall(ref('keys.add'), str(config.field.name.value))),
     ];
 
-    config.sortKeyFields.map( field => {
+    config.sortKeyFields.map((field) => {
       expressions.push(
-        qref(methodCall(ref('keys.add'), str(field)))
+        qref(methodCall(ref('keys.add'), str(field))),
       );
     });
 
-    expressions.push(qref(methodCall(ref('ctx.stash.put'), str('keys'), ref('keys'))),);
+    expressions.push(qref(methodCall(ref('ctx.stash.put'), str('keys'), ref('keys'))));
 
     return printBlock('Set the primary key information in metadata')(compoundExpression(expressions));
   };
-};
+}

@@ -1,3 +1,5 @@
-exports.handler = async event => {
-  return event.arguments.msg;
-};
+/**
+ *
+ * @param event
+ */
+exports.handler = async (event) => event.arguments.msg;

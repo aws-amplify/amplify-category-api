@@ -1,8 +1,14 @@
 import path from 'path';
-import { nspawn as spawn, getCLIPath, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from 'amplify-category-api-e2e-core';
+import {
+  nspawn as spawn, getCLIPath, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW,
+} from 'amplify-category-api-e2e-core';
 import fs from 'fs-extra';
 import os from 'os';
 
+/**
+ *
+ * @param projRoot
+ */
 export async function initWithoutCredentialFileAndNoNewUserSetup(projRoot) {
   const settings = {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -46,7 +52,7 @@ async function initWorkflow(cwd: string, settings: { accessKeyId: string; secret
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['init'], {
+    const chain = spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
       env: {

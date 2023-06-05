@@ -7,8 +7,7 @@ import {
   TransformerResolverProvider,
   TransformerResolversManagerProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
-import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
+import { AuthorizationType, CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { isResolvableObject, Stack, CfnParameter } from 'aws-cdk-lib';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
@@ -189,7 +188,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     slotName: string,
     requestMappingTemplate?: MappingTemplateProvider,
     responseMappingTemplate?: MappingTemplateProvider,
-  ): boolean => this.findSlot(slotName, requestMappingTemplate, responseMappingTemplate) !== undefined
+  ): boolean => this.findSlot(slotName, requestMappingTemplate, responseMappingTemplate) !== undefined;
 
   findSlot = (
     slotName: string,
@@ -211,7 +210,7 @@ export class TransformerResolver implements TransformerResolverProvider {
         (slotEntry.requestMappingTemplate as any)?.name ?? 'NOT-FOUND',
         (slotEntry.responseMappingTemplate as any)?.name ?? 'NOT-FOUND',
       ]
-        .map(name => name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex));
+        .map((name) => name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex));
 
       // If both request and response mapping templates are inline, skip check
       if (slotEntryRequestMappingTemplate === '' && slotEntryResponseMappingTemplate === '') {
@@ -227,7 +226,7 @@ export class TransformerResolver implements TransformerResolverProvider {
       }
       slotIndex++;
     }
-  }
+  };
 
   updateSlot = (
     slotName: string,
@@ -243,7 +242,7 @@ export class TransformerResolver implements TransformerResolverProvider {
         ? responseMappingTemplate
         : slot.responseMappingTemplate;
     }
-  }
+  };
 
   synthesize = (context: TransformerContextProvider, api: GraphQLAPIProvider): void => {
     const stack = this.stack || (context.stackManager as StackManager).rootStack;
@@ -251,7 +250,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     const requestFns = this.synthesizeResolvers(stack, api, this.requestSlots);
     const responseFns = this.synthesizeResolvers(stack, api, this.responseSlots);
     // substitue template name values
-    [this.requestMappingTemplate, this.requestMappingTemplate].map(template => this.substitueSlotInfo(template, 'main', 0));
+    [this.requestMappingTemplate, this.requestMappingTemplate].map((template) => this.substitueSlotInfo(template, 'main', 0));
 
     const dataSourceProviderFn = api.host.addAppSyncFunction(
       toPascalCase([this.typeName, this.fieldName, 'DataResolverFn']),
@@ -273,8 +272,8 @@ export class TransformerResolver implements TransformerResolverProvider {
           }
 
           if (context.isProjectUsingDataStore()) {
-            //Remove the suffix "Table" from the datasource name
-            //The stack name cannot be retrieved as during the runtime it is tokenized and value not being revealed
+            // Remove the suffix "Table" from the datasource name
+            // The stack name cannot be retrieved as during the runtime it is tokenized and value not being revealed
             const modelName = this.datasource.name.slice(0, -5);
             const syncConfig = SyncUtils.getSyncConfig(context, modelName)!;
             const funcConf = dataSourceProviderFn.node.children.find(
@@ -340,18 +339,18 @@ export class TransformerResolver implements TransformerResolverProvider {
     ${dataSource}
     `;
     const authModes = [context.authConfig.defaultAuthentication, ...(context.authConfig.additionalAuthenticationProviders || [])].map(
-      mode => mode?.authenticationType,
+      (mode) => mode?.authenticationType,
     );
     if (authModes.includes(AuthorizationType.IAM)) {
       const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
       const unauthRoleParameter = (context.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
       initResolver += dedent`\n
       $util.qr($ctx.stash.put("authRole", "arn:aws:sts::${
-        Stack.of(context.stackManager.rootStack).account
-      }:assumed-role/${authRoleParameter}/CognitoIdentityCredentials"))
+  Stack.of(context.stackManager.rootStack).account
+}:assumed-role/${authRoleParameter}/CognitoIdentityCredentials"))
       $util.qr($ctx.stash.put("unauthRole", "arn:aws:sts::${
-        Stack.of(context.stackManager.rootStack).account
-      }:assumed-role/${unauthRoleParameter}/CognitoIdentityCredentials"))
+  Stack.of(context.stackManager.rootStack).account
+}:assumed-role/${unauthRoleParameter}/CognitoIdentityCredentials"))
       `;
     }
     initResolver += '\n$util.toJson({})';
@@ -362,7 +361,7 @@ export class TransformerResolver implements TransformerResolverProvider {
       MappingTemplate.inlineTemplateFromString('$util.toJson($ctx.prev.result)'),
       this.resolverLogicalId,
       undefined,
-      [...requestFns, dataSourceProviderFn, ...responseFns].map(fn => fn.functionId),
+      [...requestFns, dataSourceProviderFn, ...responseFns].map((fn) => fn.functionId),
       stack,
     );
   };
@@ -398,18 +397,24 @@ export class TransformerResolver implements TransformerResolverProvider {
 
   /**
    * substitueSlotInfo
+   * @param template
+   * @param slotName
+   * @param index
    */
   private substitueSlotInfo(template: MappingTemplateProvider, slotName: string, index: number) {
     // Check the constructor name instead of using 'instanceof' because the latter does not work
     // with copies of the class, which happens with custom transformers.
     // See: https://github.com/aws-amplify/amplify-cli/issues/9362
     if (template.constructor.name === S3MappingTemplate.name) {
-      (template as S3MappingTemplate).substitueValues({ slotName, slotIndex: index, typeName: this.typeName, fieldName: this.fieldName });
+      (template as S3MappingTemplate).substitueValues({
+        slotName, slotIndex: index, typeName: this.typeName, fieldName: this.fieldName,
+      });
     }
   }
 
   /**
    * ensureNoneDataSource
+   * @param api
    */
   private ensureNoneDataSource(api: GraphQLAPIProvider) {
     if (!api.host.hasDataSource(NONE_DATA_SOURCE_NAME)) {

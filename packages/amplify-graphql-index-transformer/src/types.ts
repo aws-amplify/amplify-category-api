@@ -1,5 +1,8 @@
 import { DirectiveNode, FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 
+/**
+ *
+ */
 export type PrimaryKeyDirectiveConfiguration = {
   object: ObjectTypeDefinitionNode;
   field: FieldDefinitionNode;
@@ -9,6 +12,9 @@ export type PrimaryKeyDirectiveConfiguration = {
   modelDirective: DirectiveNode;
 };
 
+/**
+ *
+ */
 export type IndexDirectiveConfiguration = PrimaryKeyDirectiveConfiguration & {
   name: string | null;
   queryField: string | null;

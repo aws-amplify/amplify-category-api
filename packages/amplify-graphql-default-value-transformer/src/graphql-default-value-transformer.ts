@@ -91,6 +91,9 @@ const validate = (ctx: TransformerSchemaVisitStepContextProvider, config: Defaul
   validateDefaultValueType(ctx, config);
 };
 
+/**
+ *
+ */
 export class DefaultValueTransformer extends TransformerPluginBase {
   private directiveMap = new Map<string, DefaultValueDirectiveConfiguration[]>();
 

@@ -17,8 +17,8 @@ import {
   InputObjectTypeDefinitionNode,
 } from 'graphql';
 
-const intTypes = [`INTEGER`, `INT`, `SMALLINT`, `TINYINT`, `MEDIUMINT`, `BIGINT`, `BIT`];
-const floatTypes = [`FLOAT`, `DOUBLE`, `REAL`, `REAL_AS_FLOAT`, `DOUBLE PRECISION`, `DEC`, `DECIMAL`, `FIXED`, `NUMERIC`];
+const intTypes = ['INTEGER', 'INT', 'SMALLINT', 'TINYINT', 'MEDIUMINT', 'BIGINT', 'BIT'];
+const floatTypes = ['FLOAT', 'DOUBLE', 'REAL', 'REAL_AS_FLOAT', 'DOUBLE PRECISION', 'DEC', 'DECIMAL', 'FIXED', 'NUMERIC'];
 
 /**
  * Creates a non-null type, which is a node wrapped around another type that simply defines it is non-nullable.
@@ -90,7 +90,7 @@ export function getOperationFieldDefinition(
       value: name,
     },
     arguments: args,
-    type: type,
+    type,
     directives: directives || [],
   };
 }
@@ -128,7 +128,7 @@ export function getTypeDefinition(fields: ReadonlyArray<FieldDefinitionNode>, ty
       kind: Kind.NAME,
       value: typeName,
     },
-    fields: fields,
+    fields,
     directives: [],
     interfaces: [],
   };
@@ -148,7 +148,7 @@ export function getInputTypeDefinition(fields: ReadonlyArray<InputValueDefinitio
       kind: Kind.NAME,
       value: typeName,
     },
-    fields: fields,
+    fields,
     directives: [],
   };
 }
@@ -187,7 +187,7 @@ export function getSingletonListTypeNode(name: string): ListTypeNode {
 export function getListValueNode(values: ReadonlyArray<ValueNode>): ListValueNode {
   return {
     kind: Kind.LIST,
-    values: values,
+    values,
   };
 }
 
@@ -200,7 +200,7 @@ export function getListValueNode(values: ReadonlyArray<ValueNode>): ListValueNod
 export function getStringValueNode(value: string): StringValueNode {
   return {
     kind: Kind.STRING,
-    value: value,
+    value,
   };
 }
 
@@ -255,22 +255,22 @@ export function getArgumentNode(argument: string): ArgumentNode {
  */
 export function getGraphQLTypeFromMySQLType(dbType: string): string {
   const normalizedType = dbType.toUpperCase().split('(')[0];
-  if (`BOOL` == normalizedType) {
-    return `Boolean`;
-  } else if (`JSON` == normalizedType) {
-    return `AWSJSON`;
-  } else if (`TIME` == normalizedType) {
-    return `AWSTime`;
-  } else if (`DATE` == normalizedType) {
-    return `AWSDate`;
-  } else if (`DATETIME` == normalizedType) {
-    return `AWSDateTime`;
-  } else if (`TIMESTAMP` == normalizedType) {
-    return `AWSTimestamp`;
-  } else if (intTypes.indexOf(normalizedType) > -1) {
-    return `Int`;
-  } else if (floatTypes.indexOf(normalizedType) > -1) {
-    return `Float`;
+  if (normalizedType == 'BOOL') {
+    return 'Boolean';
+  } if (normalizedType == 'JSON') {
+    return 'AWSJSON';
+  } if (normalizedType == 'TIME') {
+    return 'AWSTime';
+  } if (normalizedType == 'DATE') {
+    return 'AWSDate';
+  } if (normalizedType == 'DATETIME') {
+    return 'AWSDateTime';
+  } if (normalizedType == 'TIMESTAMP') {
+    return 'AWSTimestamp';
+  } if (intTypes.indexOf(normalizedType) > -1) {
+    return 'Int';
+  } if (floatTypes.indexOf(normalizedType) > -1) {
+    return 'Float';
   }
-  return `String`;
+  return 'String';
 }

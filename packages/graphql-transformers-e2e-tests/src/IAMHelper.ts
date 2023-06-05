@@ -3,17 +3,22 @@ import { resolveTestRegion } from './testSetup';
 
 const REGION = resolveTestRegion();
 
+/**
+ *
+ */
 export class IAMHelper {
   client: IAM;
   constructor(region: string = REGION, credentials?: Credentials) {
     this.client = new IAM({
       region,
-      credentials
+      credentials,
     });
   }
 
   /**
    * Creates auth and unauth roles
+   * @param authRoleName
+   * @param unauthRoleName
    */
   async createRoles(authRoleName: string, unauthRoleName: string): Promise<{ authRole: IAM.Role; unauthRole: IAM.Role }> {
     const authRole = await this.client
@@ -53,6 +58,11 @@ export class IAMHelper {
 
     return { authRole: authRole.Role, unauthRole: unauthRole.Role };
   }
+
+  /**
+   *
+   * @param name
+   */
   async createRoleForCognitoGroup(name: string): Promise<IAM.Role> {
     const role = await this.client
       .createRole({
@@ -74,6 +84,10 @@ export class IAMHelper {
     return role.Role;
   }
 
+  /**
+   *
+   * @param name
+   */
   async createLambdaExecutionRole(name: string) {
     return await this.client
       .createRole({
@@ -94,6 +108,10 @@ export class IAMHelper {
       .promise();
   }
 
+  /**
+   *
+   * @param name
+   */
   async createLambdaExecutionPolicy(name: string) {
     return await this.client
       .createPolicy({
@@ -116,6 +134,11 @@ export class IAMHelper {
       .promise();
   }
 
+  /**
+   *
+   * @param policyArn
+   * @param roleName
+   */
   async attachLambdaExecutionPolicy(policyArn: string, roleName: string) {
     return await this.client
       .attachRolePolicy({
@@ -125,14 +148,27 @@ export class IAMHelper {
       .promise();
   }
 
+  /**
+   *
+   * @param policyArn
+   */
   async deletePolicy(policyArn: string) {
     return await this.client.deletePolicy({ PolicyArn: policyArn }).promise();
   }
 
+  /**
+   *
+   * @param roleName
+   */
   async deleteRole(roleName: string) {
     return await this.client.deleteRole({ RoleName: roleName }).promise();
   }
 
+  /**
+   *
+   * @param policyArn
+   * @param roleName
+   */
   async detachLambdaExecutionPolicy(policyArn: string, roleName: string) {
     return await this.client
       .detachRolePolicy({

@@ -1,5 +1,10 @@
 import { nspawn as spawn, getCLIPath } from 'amplify-category-api-e2e-core';
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addCodegen(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     const run = spawn(getCLIPath(), ['codegen', 'add'], { cwd, stripColors: true });

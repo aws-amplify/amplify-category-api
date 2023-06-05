@@ -1,7 +1,7 @@
+import { DocumentNode } from 'graphql';
 import { TransformerResolversManagerProvider } from './transformer-resolver-provider';
 import { TransformerDataSourceManagerProvider, DatasourceType } from './transformer-datasource-provider';
 import { TransformerProviderRegistry } from './transformer-provider-registry';
-import { DocumentNode } from 'graphql';
 import { TransformerContextOutputProvider } from './transformer-context-output-provider';
 import { StackManagerProvider } from './stack-manager-provider';
 import { AppSyncAuthConfiguration, GraphQLAPIProvider } from '../graphql-api-provider';
@@ -10,14 +10,23 @@ import { FeatureFlagProvider } from '../feature-flag-provider';
 import { TransformerFilepathsProvider } from './transformer-filepaths-provider';
 import { OverridesProvider } from './overrides-provider';
 
+/**
+ *
+ */
 export interface TransformerContextMetadataProvider {
-  set<T>(key: string, value: T): void;
-  get<T>(key: string): T | undefined;
-  has(key: string): boolean;
+  set: <T>(key: string, value: T) => void;
+  get: <T>(key: string) => T | undefined;
+  has: (key: string) => boolean;
 }
 
+/**
+ *
+ */
 export type TransformerSecrets = {[key: string]: any};
 
+/**
+ *
+ */
 export interface TransformerContextProvider {
   metadata: TransformerContextMetadataProvider;
   resolvers: TransformerResolversManagerProvider;
@@ -36,11 +45,14 @@ export interface TransformerContextProvider {
   sandboxModeEnabled: boolean;
   filepaths: TransformerFilepathsProvider;
 
-  isProjectUsingDataStore(): boolean;
-  getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
+  isProjectUsingDataStore: () => boolean;
+  getResolverConfig: <ResolverConfig>() => ResolverConfig | undefined;
   getResourceOverrides: OverridesProvider;
 }
 
+/**
+ *
+ */
 export type TransformerBeforeStepContextProvider = Pick<
   TransformerContextProvider,
   | 'inputDocument'
@@ -53,6 +65,9 @@ export type TransformerBeforeStepContextProvider = Pick<
   | 'sandboxModeEnabled'
 >;
 
+/**
+ *
+ */
 export type TransformerSchemaVisitStepContextProvider = Pick<
   TransformerContextProvider,
   | 'inputDocument'
@@ -68,6 +83,9 @@ export type TransformerSchemaVisitStepContextProvider = Pick<
   | 'sandboxModeEnabled'
 >;
 
+/**
+ *
+ */
 export type TransformerValidationStepContextProvider = Pick<
   TransformerContextProvider,
   | 'inputDocument'
@@ -86,6 +104,12 @@ export type TransformerValidationStepContextProvider = Pick<
   | 'stackManager'
 >;
 
+/**
+ *
+ */
 export type TransformerPrepareStepContextProvider = TransformerValidationStepContextProvider;
 
+/**
+ *
+ */
 export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;

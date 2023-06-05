@@ -4,6 +4,10 @@ const subcommand = 'push';
 
 export const name = subcommand;
 
+/**
+ *
+ * @param context
+ */
 export const run = async (context: $TSContext) => {
   const resourceName = context.parameters.first;
   context.amplify.constructExeInfo(context);

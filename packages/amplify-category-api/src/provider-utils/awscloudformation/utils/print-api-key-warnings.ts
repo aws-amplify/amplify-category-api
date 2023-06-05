@@ -1,6 +1,11 @@
 import { printer } from '@aws-amplify/amplify-prompts';
 
 // If adding or removing the API_KEY auth type, print a warning that resources that depend on the API must re-add the API as a dependency to have the API key parameter added / removed.
+/**
+ *
+ * @param oldConfigHadApiKey
+ * @param newConfigHasApiKey
+ */
 export const printApiKeyWarnings = (oldConfigHadApiKey: boolean, newConfigHasApiKey: boolean) => {
   if (oldConfigHadApiKey && !newConfigHasApiKey) {
     printer.warn('The API_KEY auth type has been removed from the API.');

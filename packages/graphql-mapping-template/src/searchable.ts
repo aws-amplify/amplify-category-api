@@ -1,11 +1,20 @@
 import { print } from './print';
-import { obj, Expression, str, ObjectNode, raw, CompoundExpressionNode, ListNode, BooleanNode, bool } from './ast';
+import {
+  obj, Expression, str, ObjectNode, raw, CompoundExpressionNode, ListNode, BooleanNode, bool,
+} from './ast';
 
 const RESOLVER_VERSION_ID = '2018-05-29';
 
+/**
+ *
+ */
 export class SearchableMappingTemplate {
   /**
    * Create a mapping template for @searchable.
+   * @param root0
+   * @param root0.operation
+   * @param root0.path
+   * @param root0.params
    */
   public static genericTemplate({
     operation,
@@ -26,10 +35,18 @@ export class SearchableMappingTemplate {
 
   /**
    * Create a search item resolver template.
+   * @param size.path
    * @param size the size limit
    * @param search_after the next token
    * @param from the pagination offset
    * @param query the query
+   * @param size.sort
+   * @param size.query
+   * @param size.size
+   * @param size.search_after
+   * @param size.from
+   * @param size.version
+   * @param size.aggs
    */
   public static searchItem({
     query,
@@ -68,11 +85,19 @@ export class SearchableMappingTemplate {
 
   /**
    * Create a search item resolver template.
+   * @param size.path
    * @param size the size limit
    * @param search_after the next token
    * @param from the pagination offset
    * @param query the query
    * @param aggs aggregate the query results
+   * @param size.sort
+   * @param size.query
+   * @param size.size
+   * @param size.search_after
+   * @param size.from
+   * @param size.version
+   * @param size.aggs
    */
   public static searchTemplate({
     query,

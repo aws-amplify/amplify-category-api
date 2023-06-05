@@ -1,10 +1,10 @@
-import { S3Client } from './S3Client';
-import { CloudFormationClient } from './CloudFormationClient';
 import * as fs from 'fs';
 import * as path from 'path';
 import { DeploymentResources } from 'graphql-transformer-core';
-import { deleteUserPool, deleteIdentityPool } from './cognitoUtils';
 import { CognitoIdentityServiceProvider, CognitoIdentity } from 'aws-sdk';
+import { deleteUserPool, deleteIdentityPool } from './cognitoUtils';
+import { CloudFormationClient } from './CloudFormationClient';
+import { S3Client } from './S3Client';
 import emptyBucket from './emptyBucket';
 
 function deleteDirectory(directory: string) {
@@ -28,7 +28,7 @@ async function cleanupBucket(client: S3Client, directory: string, bucket: string
     if (fs.lstatSync(contentPath).isDirectory()) {
       await cleanupBucket(client, contentPath, bucket, s3Location, buildTimestamp);
     } else {
-      const fileKey = s3Location + '.' + buildTimestamp;
+      const fileKey = `${s3Location}.${buildTimestamp}`;
       await client.deleteFile(bucket, fileKey);
     }
   }
@@ -58,7 +58,7 @@ async function uploadDirectory(client: S3Client, directory: string, bucket: stri
         .split('.')
         .map((s, i) => (i > 0 ? `${s[0].toUpperCase()}${s.slice(1, s.length)}` : s))
         .join('');
-      s3LocationMap[formattedName] = 's3://' + path.join(bucket, fileKey);
+      s3LocationMap[formattedName] = `s3://${path.join(bucket, fileKey)}`;
     }
   }
   return s3LocationMap;
@@ -66,64 +66,85 @@ async function uploadDirectory(client: S3Client, directory: string, bucket: stri
 
 function writeDeploymentToDisk(deployment: DeploymentResources, directory: string) {
   // Write the schema to disk
-  const schema = deployment.schema;
-  const fullSchemaPath = path.normalize(directory + `/schema.graphql`);
+  const { schema } = deployment;
+  const fullSchemaPath = path.normalize(`${directory}/schema.graphql`);
   fs.writeFileSync(fullSchemaPath, schema);
 
   // Write resolvers to disk
   const resolverFileNames = Object.keys(deployment.resolvers);
-  const resolverRootPath = path.normalize(directory + `/resolvers`);
+  const resolverRootPath = path.normalize(`${directory}/resolvers`);
   if (!fs.existsSync(resolverRootPath)) {
     fs.mkdirSync(resolverRootPath);
   }
   for (const resolverFileName of resolverFileNames) {
-    const fullResolverPath = path.normalize(resolverRootPath + '/' + resolverFileName);
+    const fullResolverPath = path.normalize(`${resolverRootPath}/${resolverFileName}`);
     fs.writeFileSync(fullResolverPath, deployment.resolvers[resolverFileName]);
   }
 
   // Write the stacks to disk
   const stackNames = Object.keys(deployment.stacks);
-  const stackRootPath = path.normalize(directory + `/stacks`);
+  const stackRootPath = path.normalize(`${directory}/stacks`);
   if (!fs.existsSync(stackRootPath)) {
     fs.mkdirSync(stackRootPath);
   }
   for (const stackFileName of stackNames) {
-    const fullStackPath = path.normalize(stackRootPath + '/' + stackFileName + '.json');
+    const fullStackPath = path.normalize(`${stackRootPath}/${stackFileName}.json`);
     fs.writeFileSync(fullStackPath, JSON.stringify(deployment.stacks[stackFileName], null, 4));
   }
 
   // Write any functions to disk
   const functionNames = Object.keys(deployment.functions);
-  const functionRootPath = path.normalize(directory + `/functions`);
+  const functionRootPath = path.normalize(`${directory}/functions`);
   if (!fs.existsSync(functionRootPath)) {
     fs.mkdirSync(functionRootPath);
   }
   for (const functionName of functionNames) {
-    const fullFunctionPath = path.normalize(functionRootPath + '/' + functionName);
+    const fullFunctionPath = path.normalize(`${functionRootPath}/${functionName}`);
     const zipContents = fs.readFileSync(deployment.functions[functionName]);
     fs.writeFileSync(fullFunctionPath, zipContents);
   }
 
   // Write any pipeline functions to disk
   const pipelineFunctions = Object.keys(deployment.pipelineFunctions);
-  const pipelineFunctionsPath = path.normalize(directory + `/pipelineFunctions`);
+  const pipelineFunctionsPath = path.normalize(`${directory}/pipelineFunctions`);
   if (!fs.existsSync(pipelineFunctionsPath)) {
     fs.mkdirSync(pipelineFunctionsPath);
   }
   for (const pipelineFunctionName of pipelineFunctions) {
-    const fullFunctionPath = path.normalize(pipelineFunctionsPath + '/' + pipelineFunctionName);
+    const fullFunctionPath = path.normalize(`${pipelineFunctionsPath}/${pipelineFunctionName}`);
     fs.writeFileSync(fullFunctionPath, deployment.pipelineFunctions[pipelineFunctionName]);
   }
 
-  const rootStack = deployment.rootStack;
-  const rootStackPath = path.normalize(directory + `/rootStack.json`);
+  const { rootStack } = deployment;
+  const rootStackPath = path.normalize(`${directory}/rootStack.json`);
   fs.writeFileSync(rootStackPath, JSON.stringify(rootStack, null, 4));
 }
 
+/**
+ *
+ * @param s3Client
+ * @param buildPath
+ * @param bucketName
+ * @param rootKey
+ * @param buildTimestamp
+ */
 export async function cleanupS3Bucket(s3Client: S3Client, buildPath: string, bucketName: string, rootKey: string, buildTimestamp: string) {
   return cleanupBucket(s3Client, buildPath, bucketName, rootKey, buildTimestamp);
 }
 
+/**
+ *
+ * @param s3Client
+ * @param cf
+ * @param stackName
+ * @param deploymentResources
+ * @param params
+ * @param buildPath
+ * @param bucketName
+ * @param rootKey
+ * @param buildTimeStamp
+ * @param initialDeployment
+ */
 export async function deploy(
   s3Client: S3Client,
   cf: CloudFormationClient,
@@ -134,7 +155,7 @@ export async function deploy(
   bucketName: string,
   rootKey: string,
   buildTimeStamp: string,
-  initialDeployment: boolean = true,
+  initialDeployment = true,
 ) {
   try {
     if (!fs.existsSync(buildPath)) {
@@ -200,6 +221,18 @@ function addAPIKeys(stack: DeploymentResources) {
   }
 }
 
+/**
+ *
+ * @param bucketName
+ * @param stackName
+ * @param cf
+ * @param cognitoParams
+ * @param cognitoParams.cognitoClient
+ * @param cognitoParams.userPoolId
+ * @param identityParams
+ * @param identityParams.identityClient
+ * @param identityParams.identityPoolId
+ */
 export const cleanupStackAfterTest = async (
   bucketName: string,
   stackName: string | undefined,

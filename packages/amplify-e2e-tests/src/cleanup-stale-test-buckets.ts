@@ -6,6 +6,7 @@ const BUCKET_STALE_DURATION_MS = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
 
 /**
  * We define a bucket as viable for deletion if it has 'test' in the name, and if it is >6 hours old.
+ * @param bucket
  */
 const testBucketStalenessFilter = (bucket: S3.Bucket): boolean => {
   const isTestBucket = bucket.Name.match(TEST_BUCKET_REGEX);
@@ -21,6 +22,10 @@ type AWSAccountInfo = {
 
 /**
  * Get the relevant AWS config object for a given account and region.
+ * @param root0
+ * @param root0.accessKeyId
+ * @param root0.secretAccessKey
+ * @param root0.sessionToken
  */
 const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccountInfo): S3.ClientConfiguration => ({
   credentials: {
@@ -32,6 +37,7 @@ const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccount
 
 /**
  * Get all S3 buckets in the account, and filter down to the ones we consider stale.
+ * @param account
  */
 const getStaleS3TestBuckets = async (account: AWSAccountInfo): Promise<S3.Bucket[]> => {
   const s3Client = new S3(getAWSConfig(account));
@@ -69,7 +75,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
   });
   try {
     const orgAccounts = await orgApi.listAccounts().promise();
-    const accountCredentialPromises = orgAccounts.Accounts.map(async account => {
+    const accountCredentialPromises = orgAccounts.Accounts.map(async (account) => {
       if (account.Id === parentAccountIdentity.Account) {
         return {
           accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -105,7 +111,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
 
 const deleteBucketsForAccount = async (account: AWSAccountInfo, accountIndex: number): Promise<void> => {
   const buckets = await getStaleS3TestBuckets(account);
-  await Promise.all(buckets.map(bucket => deleteBucket(account, accountIndex, bucket)));
+  await Promise.all(buckets.map((bucket) => deleteBucket(account, accountIndex, bucket)));
   console.log(`[ACCOUNT ${accountIndex}] Cleanup done!`);
 };
 

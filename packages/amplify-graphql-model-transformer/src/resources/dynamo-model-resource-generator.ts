@@ -27,6 +27,10 @@ import { DynamoDBModelVTLGenerator, ModelVTLGenerator } from '../resolvers';
 export class DynamoModelResourceGenerator extends ModelResourceGenerator {
   protected readonly generatorType = 'DynamoModelResourceGenerator';
 
+  /**
+   *
+   * @param ctx
+   */
   generateResources(ctx: TransformerContextProvider): void {
     if (!this.isEnabled()) {
       return;
@@ -76,6 +80,9 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
   }
 
   // eslint-disable-next-line class-methods-use-this
+  /**
+   *
+   */
   getVTLGenerator(): ModelVTLGenerator {
     return new DynamoDBModelVTLGenerator();
   }
@@ -238,6 +245,10 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
 
   /**
    * createIAMRole
+   * @param context
+   * @param def
+   * @param stack
+   * @param tableName
    */
   createIAMRole = (context: TransformerContextProvider, def: ObjectTypeDefinitionNode, stack: cdk.Stack, tableName: string): iam.Role => {
     const roleName = context.resourceHelper.generateIAMRoleName(ModelResourceIDs.ModelTableIAMRoleID(def!.name.value));
@@ -297,5 +308,5 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     }
 
     return role;
-  }
+  };
 }

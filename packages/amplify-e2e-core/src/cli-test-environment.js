@@ -1,5 +1,8 @@
 const NodeEnvironment = require('jest-environment-node');
 
+/**
+ *
+ */
 class CLIEnvironment extends NodeEnvironment {
   constructor(config, context) {
     super(config, context);
@@ -18,29 +21,29 @@ class CLIEnvironment extends NodeEnvironment {
     this.currentBlock = this.cliExecutionLogs;
   }
 
+  /**
+   *
+   */
   async setup() {
     await super.setup();
-    this.global.storeCLIExecutionLog = result => {
+    this.global.storeCLIExecutionLog = (result) => {
       this.currentBlock.logs.push(result);
     };
 
     // Helper function used for tagging the test name in resource
-    this.global.getTestName = () => {
-      return this.testName;
-    };
+    this.global.getTestName = () => this.testName;
 
-    this.global.getDescibeBlocks = () => {
-      return this.describeBlocks.filter(b => b !== 'ROOT_DESCRIBE_BLOCK');
-    };
+    this.global.getDescibeBlocks = () => this.describeBlocks.filter((b) => b !== 'ROOT_DESCRIBE_BLOCK');
 
-    this.global.getHookName = () => {
-      return this.hook;
-    };
+    this.global.getHookName = () => this.hook;
   }
 
+  /**
+   *
+   */
   async teardown() {
     if (this.context.global.addCLITestRunnerLogs) {
-      const result = this.cliExecutionLogs.children.find(log => log.type === 'describe' && log.name === 'ROOT_DESCRIBE_BLOCK');
+      const result = this.cliExecutionLogs.children.find((log) => log.type === 'describe' && log.name === 'ROOT_DESCRIBE_BLOCK');
       if (result) {
         this.context.global.addCLITestRunnerLogs(result);
       }
@@ -48,10 +51,19 @@ class CLIEnvironment extends NodeEnvironment {
     await super.teardown();
   }
 
+  /**
+   *
+   * @param script
+   */
   runScript(script) {
     return super.runScript(script);
   }
 
+  /**
+   *
+   * @param event
+   * @param state
+   */
   handleTestEvent(event, state) {
     let hookName;
     let currentBlock;

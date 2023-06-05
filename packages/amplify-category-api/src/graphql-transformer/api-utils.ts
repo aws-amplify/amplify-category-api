@@ -5,6 +5,12 @@ import {
 import { printer } from '@aws-amplify/amplify-prompts';
 import { ResourceConstants } from 'graphql-transformer-common';
 
+/**
+ *
+ * @param context
+ * @param map
+ * @param apiName
+ */
 export async function searchablePushChecks(context: $TSContext, map: Record<string, any>, apiName: string): Promise<void> {
   const searchableModelTypes = Object.keys(map).filter((type) => map[type].includes('searchable') && map[type].includes('model'));
   if (searchableModelTypes.length) {

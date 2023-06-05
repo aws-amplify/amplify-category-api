@@ -9,7 +9,9 @@ import {
 import {
   DirectiveNode, EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, StringValueNode,
 } from 'graphql';
-import { getBaseType, isScalarOrEnum, makeField, makeNamedType, makeNonNullType, toCamelCase, toPascalCase } from 'graphql-transformer-common';
+import {
+  getBaseType, isScalarOrEnum, makeField, makeNamedType, makeNonNullType, toCamelCase, toPascalCase,
+} from 'graphql-transformer-common';
 import {
   BelongsToDirectiveConfiguration,
   HasManyDirectiveConfiguration,
@@ -17,6 +19,12 @@ import {
   ManyToManyDirectiveConfiguration,
 } from './types';
 
+/**
+ *
+ * @param config
+ * @param ctx
+ * @param indexName
+ */
 export function getRelatedTypeIndex(
   config: HasOneDirectiveConfiguration,
   ctx: TransformerContextProvider,
@@ -103,6 +111,10 @@ export function getRelatedTypeIndex(
   return [partitionField, ...sortFields];
 }
 
+/**
+ *
+ * @param config
+ */
 export function ensureFieldsArray(config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration) {
   if (!config.fields) {
     config.fields = [];
@@ -113,10 +125,18 @@ export function ensureFieldsArray(config: HasManyDirectiveConfiguration | HasOne
   }
 }
 
+/**
+ *
+ * @param objectType
+ */
 export function getModelDirective(objectType: ObjectTypeDefinitionNode) {
-  return objectType.directives!.find(directive => directive.name.value === 'model');
+  return objectType.directives!.find((directive) => directive.name.value === 'model');
 }
 
+/**
+ *
+ * @param config
+ */
 export function validateModelDirective(
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration | ManyToManyDirectiveConfiguration,
 ) {
@@ -125,6 +145,11 @@ export function validateModelDirective(
   }
 }
 
+/**
+ *
+ * @param config
+ * @param ctx
+ */
 export function getRelatedType(
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
   ctx: TransformerContextProvider,
@@ -141,6 +166,11 @@ export function getRelatedType(
   return relatedType;
 }
 
+/**
+ *
+ * @param config
+ * @param ctx
+ */
 export function getFieldsNodes(
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
   ctx: TransformerContextProvider,
@@ -148,8 +178,8 @@ export function getFieldsNodes(
   const { directiveName, fields, object } = config;
   const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
 
-  return fields.map(fieldName => {
-    const fieldNode = object.fields!.find(field => field.name.value === fieldName);
+  return fields.map((fieldName) => {
+    const fieldNode = object.fields!.find((field) => field.name.value === fieldName);
 
     if (!fieldNode) {
       throw new InvalidDirectiveError(`${fieldName} is not a field in ${object.name.value}`);
@@ -163,6 +193,10 @@ export function getFieldsNodes(
   });
 }
 
+/**
+ *
+ * @param config
+ */
 export function validateRelatedModelDirective(
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
 ) {
@@ -179,20 +213,47 @@ function getIndexName(directive: DirectiveNode): string | undefined {
   }
 }
 
+/**
+ *
+ * @param featureFlags
+ * @param type
+ * @param field
+ * @param relatedTypeField
+ */
 export function getConnectionAttributeName(featureFlags: FeatureFlagProvider, type: string, field: string, relatedTypeField: string) {
   const nameSuffix = featureFlags.getBoolean('respectPrimaryKeyAttributesOnConnectionField') ? relatedTypeField : 'id';
   return toCamelCase([type, field, nameSuffix]);
 }
 
+/**
+ *
+ * @param featureFlags
+ * @param field
+ * @param relatedTypeField
+ */
 export function getManyToManyConnectionAttributeName(featureFlags: FeatureFlagProvider, field: string, relatedTypeField: string) {
   const nameSuffix = featureFlags.getBoolean('respectPrimaryKeyAttributesOnConnectionField') ? toPascalCase([relatedTypeField]) : 'ID';
   return `${toCamelCase([field])}${nameSuffix}`;
 }
 
+/**
+ *
+ * @param type
+ * @param field
+ * @param relatedTypeField
+ */
 export function getSortKeyConnectionAttributeName(type: string, field: string, relatedTypeField: string) {
   return toCamelCase([type, field, relatedTypeField]);
 }
 
+/**
+ *
+ * @param featureFlags
+ * @param resourceHelper
+ * @param type
+ * @param field
+ * @param relatedTypeField
+ */
 export function getBackendConnectionAttributeName(
   featureFlags: FeatureFlagProvider,
   resourceHelper: TransformerResourceHelperProvider,
@@ -203,6 +264,11 @@ export function getBackendConnectionAttributeName(
   return getConnectionAttributeName(featureFlags, resourceHelper.getModelNameMapping(type), field, relatedTypeField);
 }
 
+/**
+ *
+ * @param config
+ * @param ctx
+ */
 export function validateDisallowedDataStoreRelationships(
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration,
   ctx: TransformerContextProvider,
@@ -226,12 +292,12 @@ export function validateDisallowedDataStoreRelationships(
     return;
   }
 
-  const hasUnsupportedConnectionFields = relatedType.fields!.some(field =>
+  const hasUnsupportedConnectionFields = relatedType.fields!.some((field) =>
     // If the related field has the same data type as this model, and @hasOne or @hasMany
     // is present, then the connection is unsupported.
     (
       getBaseType(field.type) === modelType
-      && field.directives!.some(directive => directive.name.value === 'hasOne' || directive.name.value === 'hasMany')
+      && field.directives!.some((directive) => directive.name.value === 'hasOne' || directive.name.value === 'hasMany')
     ));
 
   if (hasUnsupportedConnectionFields) {
@@ -251,6 +317,12 @@ type RegisterForeignKeyMappingParams = {
 
 /**
  * If thisTypeName maps to a different value, it registers the auto-generated foreign key fields to map to their original name
+ * @param root0
+ * @param root0.featureFlags
+ * @param root0.resourceHelper
+ * @param root0.thisTypeName
+ * @param root0.thisFieldName
+ * @param root0.relatedType
  */
 export function registerHasOneForeignKeyMappings({
   featureFlags,
@@ -266,7 +338,7 @@ export function registerHasOneForeignKeyMappings({
     const modelFieldMap = resourceHelper.getModelFieldMap(thisTypeName);
     modelFieldMap.addMappedField({ currentFieldName: currAttrName, originalFieldName: origAttrName });
 
-    (['create', 'update', 'delete', 'get', 'list', 'sync'] as const).forEach(op => {
+    (['create', 'update', 'delete', 'get', 'list', 'sync'] as const).forEach((op) => {
       const opFieldName = getFieldNameFor(op, thisTypeName);
       const opTypeName = op === 'create' || op === 'update' || op === 'delete' ? 'Mutation' : 'Query';
       const opIsList = op === 'list' || op === 'sync';
@@ -286,6 +358,12 @@ export function registerHasOneForeignKeyMappings({
  * This function is similar to registerHasOneForeignKeyMappings but subtly different
  * Because hasMany creates a foreign key field on the related type, this function registers the mapping on the related type.
  * It attaches a resolver reference to the hasMany field so the renamed foreign key is mapped when fetching the related object through the hasMany field
+ * @param root0
+ * @param root0.featureFlags
+ * @param root0.resourceHelper
+ * @param root0.thisTypeName
+ * @param root0.thisFieldName
+ * @param root0.relatedType
  */
 export function registerHasManyForeignKeyMappings({
   featureFlags,
@@ -306,7 +384,7 @@ export function registerHasManyForeignKeyMappings({
     .addMappedField({ currentFieldName: currAttrName, originalFieldName: origAttrName })
     .addResolverReference({ typeName: thisTypeName, fieldName: thisFieldName, isList: true });
 
-  (['create', 'update', 'delete', 'get', 'list', 'sync'] as const).forEach(op => {
+  (['create', 'update', 'delete', 'get', 'list', 'sync'] as const).forEach((op) => {
     const opFieldName = getFieldNameFor(op, relatedType.name.value);
     const opTypeName = op === 'create' || op === 'update' || op === 'delete' ? 'Mutation' : 'Query';
     const opIsList = op === 'list' || op === 'sync';
@@ -316,6 +394,9 @@ export function registerHasManyForeignKeyMappings({
   });
 }
 
+/**
+ *
+ */
 export type ManyToManyForeignKeyMappingParams = {
   resourceHelper: TransformerResourceHelperProvider;
   typeName: string;
@@ -323,6 +404,14 @@ export type ManyToManyForeignKeyMappingParams = {
   fieldMap: FieldMapEntry[];
 };
 
+/**
+ *
+ * @param root0
+ * @param root0.resourceHelper
+ * @param root0.typeName
+ * @param root0.referencedBy
+ * @param root0.fieldMap
+ */
 export function registerManyToManyForeignKeyMappings({
   resourceHelper,
   typeName,
@@ -333,7 +422,7 @@ export function registerManyToManyForeignKeyMappings({
   fieldMap.forEach(modelFieldMap.addMappedField);
   referencedBy.forEach(modelFieldMap.addResolverReference);
 
-  (['create', 'update', 'delete', 'get', 'list', 'sync'] as const).forEach(op => {
+  (['create', 'update', 'delete', 'get', 'list', 'sync'] as const).forEach((op) => {
     const opFieldName = getFieldNameFor(op, typeName);
     const opTypeName = op === 'create' || op === 'update' || op === 'delete' ? 'Mutation' : 'Query';
     const opIsList = op === 'list' || op === 'sync';
@@ -341,11 +430,15 @@ export function registerManyToManyForeignKeyMappings({
   });
 }
 
+/**
+ *
+ * @param object
+ */
 export const getObjectPrimaryKey = (object: ObjectTypeDefinitionNode): FieldDefinitionNode => {
   let primaryKey = makeField('id', [], makeNonNullType(makeNamedType('ID')));
 
-  object.fields!.forEach(objectField => {
-    objectField.directives!.forEach(directive => {
+  object.fields!.forEach((objectField) => {
+    objectField.directives!.forEach((directive) => {
       if (directive.name.value === 'primaryKey') {
         primaryKey = objectField;
       }

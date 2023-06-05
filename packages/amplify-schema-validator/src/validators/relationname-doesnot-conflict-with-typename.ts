@@ -14,6 +14,10 @@ import { getGraphqlName, toUpper } from '../helpers/util';
  * @returns true if relation name does not conflict with an existing type name
  */
 
+/**
+ *
+ * @param schema
+ */
 export const validateRelationNameDoesNotConflictWithTypeName = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(

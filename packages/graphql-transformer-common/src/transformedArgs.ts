@@ -1,4 +1,6 @@
-import { methodCall, ref, ReferenceNode, set } from 'graphql-mapping-template';
+import {
+  methodCall, ref, ReferenceNode, set,
+} from 'graphql-mapping-template';
 
 /**
  * VTL Ref to the transformedArgs in the context stash
@@ -12,5 +14,6 @@ export const setArgs = set(ref('args'), methodCall(ref('util.defaultIfNull'), tr
 
 /**
  * VTL node to set transformedArgs to the given value
+ * @param value
  */
 export const setTransformedArgs = (value: ReferenceNode) => set(transformedArgsRef, value);

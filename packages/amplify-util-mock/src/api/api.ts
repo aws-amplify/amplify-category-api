@@ -1,19 +1,20 @@
 import * as fs from 'fs-extra';
 import * as dynamoEmulator from 'amplify-category-api-dynamodb-simulator';
 import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorConfig } from '@aws-amplify/amplify-appsync-simulator';
-import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-codegen';
+import {
+  add, generate, isCodegenConfigured, switchToSDLSchema,
+} from 'amplify-codegen';
 import * as path from 'path';
 import * as chokidar from 'chokidar';
 
-import { getAmplifyMeta, getMockDataDirectory } from '../utils';
-import { checkJavaVersion } from '../utils/index';
+import { getInvoker } from '@aws-amplify/amplify-category-function';
+import { getAmplifyMeta, getMockDataDirectory, checkJavaVersion } from '../utils';
 import { runTransformer } from './run-graphql-transformer';
 import { processAppSyncResources } from '../CFNParser';
 import { ResolverOverrides } from './resolver-overrides';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { configureDDBDataSource, createAndUpdateTable } from '../utils/dynamo-db';
 import { getMockConfig } from '../utils/mock-config-file';
-import { getInvoker } from '@aws-amplify/amplify-category-function';
 import { lambdaArnToConfig } from './lambda-arn-to-config';
 import { timeConstrainedInvoker } from '../func';
 
@@ -22,6 +23,9 @@ export const GRAPHQL_API_KEY_OUTPUT = 'GraphQLAPIKeyOutput';
 export const MOCK_API_KEY = 'da2-fakeApiId123456';
 export const MOCK_API_PORT = 20002;
 
+/**
+ *
+ */
 export class APITest {
   private apiName: string;
   private transformerResult: any;
@@ -34,9 +38,15 @@ export class APITest {
   private apiParameters: object = {};
   private userOverriddenSlots: string[] = [];
 
-  async start(context, port: number = MOCK_API_PORT, wsPort: number = 20003) {
+  /**
+   *
+   * @param context
+   * @param port
+   * @param wsPort
+   */
+  async start(context, port: number = MOCK_API_PORT, wsPort = 20003) {
     try {
-      context.amplify.addCleanUpTask(async context => {
+      context.amplify.addCleanUpTask(async (context) => {
         await this.stop(context);
       });
       this.configOverrideManager = await ConfigOverrideManager.getInstance(context);
@@ -66,6 +76,10 @@ export class APITest {
     }
   }
 
+  /**
+   *
+   * @param context
+   */
   async stop(context) {
     this.ddbClient = null;
     if (this.watcher) {
@@ -123,7 +137,7 @@ export class APITest {
     const parameterFilePath = await this.getAPIParameterFilePath(context);
     try {
       let shouldReload;
-      if (this.resolverOverrideManager.isTemplateFile(filePath, action === 'unlink' ? true : false)) {
+      if (this.resolverOverrideManager.isTemplateFile(filePath, action === 'unlink')) {
         switch (action) {
           case 'add':
             shouldReload = this.resolverOverrideManager.onAdd(filePath);
@@ -181,19 +195,19 @@ export class APITest {
   }
 
   private async ensureDDBTables(config) {
-    const tables = config.tables.map(t => t.Properties);
+    const tables = config.tables.map((t) => t.Properties);
     await createAndUpdateTable(this.ddbClient, config);
   }
 
   private async configureLambdaDataSource(context, config) {
-    const lambdaDataSources = config.dataSources.filter(d => d.type === 'AWS_LAMBDA');
+    const lambdaDataSources = config.dataSources.filter((d) => d.type === 'AWS_LAMBDA');
     if (lambdaDataSources.length === 0) {
       return config;
     }
     return {
       ...config,
       dataSources: await Promise.all(
-        config.dataSources.map(async d => {
+        config.dataSources.map(async (d) => {
           if (d.type !== 'AWS_LAMBDA') {
             return d;
           }
@@ -205,14 +219,12 @@ export class APITest {
           });
           return {
             ...d,
-            invoke: payload => {
-              return timeConstrainedInvoker(
-                invoker({
-                  event: payload,
-                }),
-                context.input.options,
-              );
-            },
+            invoke: (payload) => timeConstrainedInvoker(
+              invoker({
+                event: payload,
+              }),
+              context.input.options,
+            ),
           };
         }),
       ),
@@ -222,13 +234,13 @@ export class APITest {
   private async watch(context) {
     this.watcher = await this.registerWatcher(context);
     this.watcher
-      .on('add', path => {
+      .on('add', (path) => {
         this.reload(context, path, 'add');
       })
-      .on('change', path => {
+      .on('change', (path) => {
         this.reload(context, path, 'change');
       })
-      .on('unlink', path => {
+      .on('unlink', (path) => {
         this.reload(context, path, 'unlink');
       });
   }
@@ -237,6 +249,7 @@ export class APITest {
     const ddbConfig = this.ddbClient.config;
     return configureDDBDataSource(config, ddbConfig);
   }
+
   private async getAppSyncAPI(context) {
     const currentMeta = await getAmplifyMeta(context);
     const { api: apis = {} } = currentMeta;
@@ -294,6 +307,7 @@ export class APITest {
     const apiDirectory = await this.getAPIBackendDirectory(context);
     return apiDirectory;
   }
+
   private async registerWatcher(context: any): Promise<chokidar.FSWatcher> {
     const watchDir = await this.getAPIBackendDirectory(context);
     return chokidar.watch(watchDir, {
@@ -304,6 +318,7 @@ export class APITest {
       awaitWriteFinish: true,
     });
   }
+
   private async generateFrontendExports(
     context: any,
     localAppSyncDetails: {

@@ -1,7 +1,11 @@
 import { ResourceConstants } from 'graphql-transformer-common';
 import { CfnParameter, Stack } from 'aws-cdk-lib';
-import {ALLOWABLE_SEARCHABLE_INSTANCE_TYPES} from '../constants';
+import { ALLOWABLE_SEARCHABLE_INSTANCE_TYPES } from '../constants';
 
+/**
+ *
+ * @param stack
+ */
 export const createParametersStack = (stack: Stack): Map<string, CfnParameter> => {
   const {
     OpenSearchAccessIAMRoleName,

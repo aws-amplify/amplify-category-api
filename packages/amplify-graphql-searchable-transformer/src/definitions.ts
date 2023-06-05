@@ -85,6 +85,10 @@ const getScalarConditions = (type: string): string[] => {
   }
 };
 
+/**
+ *
+ * @param type
+ */
 export const makeSearchableScalarInputObject = (type: string): InputObjectTypeDefinitionNode => {
   const name = SearchableResourceIDs.SearchableFilterInputTypeName(type);
   const conditions = getScalarConditions(type);
@@ -112,6 +116,11 @@ export const makeSearchableScalarInputObject = (type: string): InputObjectTypeDe
   };
 };
 
+/**
+ *
+ * @param obj
+ * @param document
+ */
 export const makeSearchableXFilterInputObject = (obj: ObjectTypeDefinitionNode, document: DocumentNode): InputObjectTypeDefinitionNode => {
   const name = SearchableResourceIDs.SearchableFilterInputTypeName(obj.name.value);
   if (!obj.fields) {
@@ -191,6 +200,9 @@ export const makeSearchableXFilterInputObject = (obj: ObjectTypeDefinitionNode, 
   };
 };
 
+/**
+ *
+ */
 export const makeSearchableSortDirectionEnumObject = (): EnumTypeDefinitionNode => {
   const name = graphqlName('SearchableSortDirection');
   return {
@@ -215,6 +227,10 @@ export const makeSearchableSortDirectionEnumObject = (): EnumTypeDefinitionNode 
   };
 };
 
+/**
+ *
+ * @param obj
+ */
 export const makeSearchableXSortableFieldsEnumObject = (obj: ObjectTypeDefinitionNode): EnumTypeDefinitionNode => {
   const name = graphqlName(`Searchable${obj.name.value}SortableFields`);
   if (!obj.fields) {
@@ -239,6 +255,11 @@ export const makeSearchableXSortableFieldsEnumObject = (obj: ObjectTypeDefinitio
   };
 };
 
+/**
+ *
+ * @param obj
+ * @param document
+ */
 export const makeSearchableXAggregateFieldEnumObject = (obj: ObjectTypeDefinitionNode, document: DocumentNode): EnumTypeDefinitionNode => {
   const name = graphqlName(`Searchable${obj.name.value}AggregateField`);
   if (!obj.fields) {
@@ -263,6 +284,10 @@ export const makeSearchableXAggregateFieldEnumObject = (obj: ObjectTypeDefinitio
   };
 };
 
+/**
+ *
+ * @param obj
+ */
 export const makeSearchableXSortInputObject = (obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode => {
   const name = graphqlName(`Searchable${obj.name.value}SortInput`);
   return {
@@ -304,6 +329,9 @@ export const makeSearchableXSortInputObject = (obj: ObjectTypeDefinitionNode): I
   };
 };
 
+/**
+ *
+ */
 export const makeSearchableAggregateTypeEnumObject = (): EnumTypeDefinitionNode => {
   const name = graphqlName('SearchableAggregateType');
   const values: EnumValueDefinitionNode[] = ['terms', 'avg', 'min', 'max', 'sum'].map((type: string) => ({
@@ -323,6 +351,10 @@ export const makeSearchableAggregateTypeEnumObject = (): EnumTypeDefinitionNode 
   };
 };
 
+/**
+ *
+ * @param obj
+ */
 export const makeSearchableXAggregationInputObject = (obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode => {
   const name = graphqlName(`Searchable${obj.name.value}AggregationInput`);
   return {
@@ -355,6 +387,12 @@ export const makeSearchableXAggregationInputObject = (obj: ObjectTypeDefinitionN
   };
 };
 
+/**
+ *
+ * @param ctx
+ * @param typeName
+ * @param directives
+ */
 export const extendTypeWithDirectives = (
   ctx: TransformerTransformSchemaStepContextProvider,
   typeName: string,
@@ -365,6 +403,13 @@ export const extendTypeWithDirectives = (
   ctx.output.addObjectExtension(objectTypeExtension);
 };
 
+/**
+ *
+ * @param ctx
+ * @param typeName
+ * @param fieldName
+ * @param directives
+ */
 export const addDirectivesToField = (
   ctx: TransformerTransformSchemaStepContextProvider,
   typeName: string,
@@ -387,6 +432,13 @@ export const addDirectivesToField = (
   }
 };
 
+/**
+ *
+ * @param ctx
+ * @param typeName
+ * @param operationName
+ * @param directives
+ */
 export const addDirectivesToOperation = (
   ctx: TransformerTransformSchemaStepContextProvider,
   typeName: string,

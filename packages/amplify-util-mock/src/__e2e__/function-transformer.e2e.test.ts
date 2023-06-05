@@ -6,10 +6,10 @@ import { deploy, logDebug } from './utils/index';
 
 jest.setTimeout(2000000);
 
-const ECHO_FUNCTION_NAME = `echoFunction`;
-const HELLO_FUNCTION_NAME = `hello`;
+const ECHO_FUNCTION_NAME = 'echoFunction';
+const HELLO_FUNCTION_NAME = 'hello';
 
-let GRAPHQL_CLIENT = undefined;
+let GRAPHQL_CLIENT;
 let server;
 
 beforeAll(async () => {
@@ -37,7 +37,7 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
       transformers: [new DynamoDBModelTransformer(), new FunctionTransformer()],
       featureFlags: {
-        getBoolean: name => (name === 'improvePluralization' ? true : false),
+        getBoolean: (name) => (name === 'improvePluralization'),
       } as FeatureFlagProvider,
     });
     const out = transformer.transform(validSchema);
@@ -45,10 +45,10 @@ beforeAll(async () => {
     const result = await deploy(out);
     server = result.simulator;
 
-    const endpoint = server.url + '/graphql';
+    const endpoint = `${server.url}/graphql`;
     logDebug(`Using graphql url: ${endpoint}`);
 
-    const apiKey = result.config.appSync.apiKey;
+    const { apiKey } = result.config.appSync;
     GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey });
   } catch (e) {
     logDebug(e);
@@ -70,7 +70,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('Test simple echo function', async () => {
+test('simple echo function', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         echo(msg: "Hello") {
@@ -89,7 +89,7 @@ test('Test simple echo function', async () => {
   expect(response.data.echo.fieldName).toEqual('echo');
 });
 
-test('Test simple duplicate function', async () => {
+test('simple duplicate function', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         duplicate(msg: "Hello") {
@@ -108,7 +108,7 @@ test('Test simple duplicate function', async () => {
   expect(response.data.duplicate.fieldName).toEqual('duplicate');
 });
 
-test('Test pipeline of @function(s)', async () => {
+test('pipeline of @function(s)', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         pipeline(msg: "IGNORED")
@@ -119,7 +119,7 @@ test('Test pipeline of @function(s)', async () => {
   expect(response.data.pipeline).toEqual('Hello, world!');
 });
 
-test('Test pipelineReverse of @function(s)', async () => {
+test('pipelineReverse of @function(s)', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         pipelineReverse(msg: "Hello") {

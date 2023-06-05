@@ -1,20 +1,32 @@
 import { getDirectiveArguments } from 'graphql-transformer-core';
 import { DirectiveNode } from 'graphql';
 
+/**
+ *
+ */
 export interface QueryNameMap {
   get?: string;
   list?: string;
   query?: string;
 }
 
+/**
+ *
+ */
 export interface MutationNameMap {
   create?: string;
   update?: string;
   delete?: string;
 }
 
+/**
+ *
+ */
 export type ModelSubscriptionLevel = 'off' | 'public' | 'on';
 
+/**
+ *
+ */
 export interface SubscriptionNameMap {
   onCreate?: string[];
   onUpdate?: string[];
@@ -22,11 +34,17 @@ export interface SubscriptionNameMap {
   level?: ModelSubscriptionLevel;
 }
 
+/**
+ *
+ */
 export interface ModelDirectiveTimestampConfiguration {
   createdAt?: string;
   updatedAt?: string;
 }
 
+/**
+ *
+ */
 export interface ModelDirectiveArgs {
   queries?: QueryNameMap;
   mutations?: MutationNameMap;
@@ -34,14 +52,28 @@ export interface ModelDirectiveArgs {
   timestamps?: ModelDirectiveTimestampConfiguration;
 }
 
+/**
+ *
+ * @param directive
+ */
 export function getCreatedAtFieldName(directive: DirectiveNode): string | undefined {
   return getTimestampFieldName(directive, 'createdAt', 'createdAt');
 }
 
+/**
+ *
+ * @param directive
+ */
 export function getUpdatedAtFieldName(directive: DirectiveNode): string | undefined {
   return getTimestampFieldName(directive, 'updatedAt', 'updatedAt');
 }
 
+/**
+ *
+ * @param directive
+ * @param fieldName
+ * @param defaultFiledValue
+ */
 export function getTimestampFieldName(directive: DirectiveNode, fieldName: string, defaultFiledValue: string): string | undefined {
   const directiveArguments: ModelDirectiveArgs = getDirectiveArguments(directive);
   const timestamp = directiveArguments.timestamps;

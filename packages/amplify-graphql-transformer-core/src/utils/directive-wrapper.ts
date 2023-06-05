@@ -11,10 +11,16 @@ import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces
 
 const DEEP_MERGE_FLAG_NAME = 'shouldDeepMergeDirectiveConfigDefaults';
 
+/**
+ *
+ */
 export type GetArgumentsOptions = {
   deepMergeArguments?: boolean;
 }
 
+/**
+ *
+ */
 export class ArgumentWrapper {
   public readonly name: NameNode;
   public readonly value: ValueNode;
@@ -23,32 +29,31 @@ export class ArgumentWrapper {
     this.value = argument.value;
   }
 
-  serialize = (): ArgumentNode => {
-    return {
-      kind: 'Argument',
-      name: this.name,
-      value: this.value,
-    };
-  };
+  serialize = (): ArgumentNode => ({
+    kind: 'Argument',
+    name: this.name,
+    value: this.value,
+  });
 }
 
+/**
+ *
+ */
 export class DirectiveWrapper {
   private arguments: ArgumentWrapper[] = [];
   private name: NameNode;
   private location?: Location;
   constructor(node: DirectiveNode) {
     this.name = node.name;
-    this.arguments = (node.arguments ?? []).map(arg => new ArgumentWrapper(arg));
+    this.arguments = (node.arguments ?? []).map((arg) => new ArgumentWrapper(arg));
     this.location = this.location;
   }
 
-  public serialize = (): DirectiveNode => {
-    return {
-      kind: 'Directive',
-      name: this.name,
-      arguments: this.arguments.map(arg => arg.serialize()),
-    };
-  };
+  public serialize = (): DirectiveNode => ({
+    kind: 'Directive',
+    name: this.name,
+    arguments: this.arguments.map((arg) => arg.serialize()),
+  });
 
   public getArguments = <T>(defaultValue: Required<T>, options?: GetArgumentsOptions): Required<T> => {
     const argValues = this.arguments.reduce(
@@ -65,8 +70,10 @@ export class DirectiveWrapper {
   };
 }
 
-export const generateGetArgumentsInput = (featureFlags: FeatureFlagProvider): GetArgumentsOptions => {
-  return {
-    deepMergeArguments: featureFlags.getBoolean(DEEP_MERGE_FLAG_NAME, false),
-  };
-};
+/**
+ *
+ * @param featureFlags
+ */
+export const generateGetArgumentsInput = (featureFlags: FeatureFlagProvider): GetArgumentsOptions => ({
+  deepMergeArguments: featureFlags.getBoolean(DEEP_MERGE_FLAG_NAME, false),
+});

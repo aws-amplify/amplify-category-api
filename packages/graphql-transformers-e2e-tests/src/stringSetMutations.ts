@@ -184,6 +184,10 @@ $util.qr($update.put("expression", "$expression"))
 }
 `;
 // replace create/update vtl functions
+/**
+ *
+ * @param out
+ */
 function addStringSets(out: DeploymentResources) {
   out.resolvers['Mutation.createUser.req.vtl'] = createStringSetVTL;
   out.resolvers['Mutation.updateUser.req.vtl'] = updateStringSetVTL;

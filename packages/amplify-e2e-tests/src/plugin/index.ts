@@ -1,12 +1,16 @@
+import { nspawn as spawn, getCLIPath } from 'amplify-category-api-e2e-core';
+
 export * from './new-plugin';
 export * from './verifyPluginStructure';
-
-import { nspawn as spawn, getCLIPath } from 'amplify-category-api-e2e-core';
+/**
+ *
+ * @param cwd
+ */
 export function help(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['plugin', 'help'], { cwd, stripColors: true })
       .wait(/.*/)
-      .run(function (err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -16,11 +20,15 @@ export function help(cwd: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function scan(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['plugin', 'scan'], { cwd, stripColors: true })
       .wait(/.*/)
-      .run(function (err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -30,6 +38,10 @@ export function scan(cwd: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function listActive(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['plugin', 'list'], { cwd, stripColors: true })
@@ -37,7 +49,7 @@ export function listActive(cwd: string): Promise<void> {
       .sendLine('')
       .wait('Select the name of the plugin to list')
       .sendLine('k')
-      .run(function (err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -47,12 +59,16 @@ export function listActive(cwd: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function listExcluded(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['plugin', 'list'], { cwd, stripColors: true })
       .wait('Select the section to list')
       .sendLine('j')
-      .run(function (err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -62,12 +78,16 @@ export function listExcluded(cwd: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function listGeneralInfo(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['plugin', 'list'], { cwd, stripColors: true })
       .wait('Select the section to list')
       .sendLine('j')
-      .run(function (err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {

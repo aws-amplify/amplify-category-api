@@ -19,6 +19,9 @@ import {
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'API Gateway Resource for AWS Amplify CLI';
 
+/**
+ *
+ */
 export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigwResourceTemplate {
   restApi: apigw.CfnRestApi;
   deploymentResource: apigw.CfnDeployment;
@@ -42,26 +45,51 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
     this.templateOptions.description = ROOT_CFN_DESCRIPTION;
   }
 
+  /**
+   *
+   * @param props
+   * @param logicalId
+   */
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
     this.validateLogicalId(logicalId);
     new cdk.CfnOutput(this, logicalId, props);
   }
 
+  /**
+   *
+   * @param props
+   * @param logicalId
+   */
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
     this.validateLogicalId(logicalId);
     new cdk.CfnMapping(this, logicalId, props);
   }
 
+  /**
+   *
+   * @param props
+   * @param logicalId
+   */
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
     this.validateLogicalId(logicalId);
     new cdk.CfnCondition(this, logicalId, props);
   }
 
+  /**
+   *
+   * @param props
+   * @param logicalId
+   */
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
     this.validateLogicalId(logicalId);
     new cdk.CfnResource(this, logicalId, props);
   }
 
+  /**
+   *
+   * @param props
+   * @param logicalId
+   */
   addCfnLambdaPermissionResource(props: lambda.CfnPermissionProps, logicalId: string): void {
     this.validateLogicalId(logicalId);
     new lambda.CfnPermission(this, logicalId, props);
@@ -81,6 +109,9 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
     }
   }
 
+  /**
+   *
+   */
   getCfnParameterValues() {
     return this._cfnParameterValues;
   }
@@ -119,6 +150,14 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
     });
   }
 
+  /**
+   *
+   * @param apiResourceName
+   * @param authRoleLogicalId
+   * @param groupName
+   * @param pathName
+   * @param supportedOperations
+   */
   addIamPolicyResourceForUserPoolGroup(
     apiResourceName: string,
     authRoleLogicalId: string,

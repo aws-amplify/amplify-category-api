@@ -11,10 +11,9 @@ import _ from 'lodash';
  * Converts the authConfig object that is returned by the AppSync walkthrough into the AppSyncAuthType defined by the AddApiRequest
  *
  * Used when transforming the walkthrough result into an AddApiRequest
+ * @param authConfig
  */
-export const authConfigToAppSyncAuthType = (authConfig: any = {}): AppSyncAuthType => {
-  return _.get(authConfigToAppSyncAuthTypeMap, authConfig.authenticationType, () => undefined)(authConfig);
-};
+export const authConfigToAppSyncAuthType = (authConfig: any = {}): AppSyncAuthType => _.get(authConfigToAppSyncAuthTypeMap, authConfig.authenticationType, () => undefined)(authConfig);
 
 /**
  * Converts an AppSyncAuthType object into the authConfig object that gets written to amplify-meta
@@ -28,7 +27,7 @@ export const appSyncAuthTypeToAuthConfig = (authType?: AppSyncAuthType) => {
 };
 
 const authConfigToAppSyncAuthTypeMap: Record<string, (authConfig: any) => AppSyncAuthType> = {
-  API_KEY: authConfig => ({
+  API_KEY: (authConfig) => ({
     mode: 'API_KEY',
     expirationTime: authConfig.apiKeyConfig.apiKeyExpirationDays,
     apiKeyExpirationDate: authConfig.apiKeyConfig?.apiKeyExpirationDate,
@@ -37,11 +36,11 @@ const authConfigToAppSyncAuthTypeMap: Record<string, (authConfig: any) => AppSyn
   AWS_IAM: () => ({
     mode: 'AWS_IAM',
   }),
-  AMAZON_COGNITO_USER_POOLS: authConfig => ({
+  AMAZON_COGNITO_USER_POOLS: (authConfig) => ({
     mode: 'AMAZON_COGNITO_USER_POOLS',
     cognitoUserPoolId: authConfig.userPoolConfig.userPoolId,
   }),
-  OPENID_CONNECT: authConfig => ({
+  OPENID_CONNECT: (authConfig) => ({
     mode: 'OPENID_CONNECT',
     openIDProviderName: authConfig.openIDConnectConfig.name,
     openIDIssuerURL: authConfig.openIDConnectConfig.issuerUrl,
@@ -49,7 +48,7 @@ const authConfigToAppSyncAuthTypeMap: Record<string, (authConfig: any) => AppSyn
     openIDAuthTTL: authConfig.openIDConnectConfig.authTTL,
     openIDIatTTL: authConfig.openIDConnectConfig.iatTTL,
   }),
-  AWS_LAMBDA: authConfig => ({
+  AWS_LAMBDA: (authConfig) => ({
     mode: 'AWS_LAMBDA',
     lambdaFunction: authConfig.lambdaAuthorizerConfig.lambdaFunction,
     ttlSeconds: authConfig.lambdaAuthorizerConfig.ttlSeconds,

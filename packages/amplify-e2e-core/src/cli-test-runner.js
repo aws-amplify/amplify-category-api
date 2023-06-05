@@ -3,9 +3,17 @@ const throat = require('throat');
 const { v4: uuid } = require('uuid');
 
 const mutex = throat(1);
+/**
+ *
+ * @param globalConfig
+ * @param config
+ * @param environment
+ * @param runtime
+ * @param testPath
+ */
 export const run = async (globalConfig, config, environment, runtime, testPath) => {
   const CLITestRunner = {};
-  environment.global.addCLITestRunnerLogs = logs => {
+  environment.global.addCLITestRunnerLogs = (logs) => {
     CLITestRunner.logs = logs;
   };
 

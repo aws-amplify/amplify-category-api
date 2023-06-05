@@ -1,7 +1,15 @@
-import { ConflictResolution, PerModelResolutionstrategy, ResolutionStrategy, LambdaResolutionStrategy } from 'amplify-headless-interface';
-import { ResolverConfig, SyncConfig, ConflictHandlerType, SyncConfigLAMBDA } from 'graphql-transformer-core';
+import {
+  ConflictResolution, PerModelResolutionstrategy, ResolutionStrategy, LambdaResolutionStrategy,
+} from 'amplify-headless-interface';
+import {
+  ResolverConfig, SyncConfig, ConflictHandlerType, SyncConfigLAMBDA,
+} from 'graphql-transformer-core';
 import _ from 'lodash';
 
+/**
+ *
+ * @param conflictResolution
+ */
 export const conflictResolutionToResolverConfig = (conflictResolution: ConflictResolution = {}): ResolverConfig => {
   const result: ResolverConfig = {};
   if (_.isEmpty(conflictResolution)) return undefined;
@@ -14,6 +22,10 @@ export const conflictResolutionToResolverConfig = (conflictResolution: ConflictR
   return result;
 };
 
+/**
+ *
+ * @param resolverConfig
+ */
 export const resolverConfigToConflictResolution = (resolverConfig: ResolverConfig = {}): ConflictResolution => {
   const result: ConflictResolution = {};
   if (resolverConfig.project) {
@@ -28,7 +40,7 @@ export const resolverConfigToConflictResolution = (resolverConfig: ResolverConfi
 const modelSyncConfigTransformer = (perModelResolutionStrategy: PerModelResolutionstrategy[]): { [key: string]: SyncConfig } => {
   const result: { [key: string]: SyncConfig } = {};
   perModelResolutionStrategy.forEach(
-    strategy => (result[strategy.entityName] = resolutionStrategyToSyncConfig(strategy.resolutionStrategy)),
+    (strategy) => (result[strategy.entityName] = resolutionStrategyToSyncConfig(strategy.resolutionStrategy)),
   );
   return result;
 };
@@ -42,7 +54,7 @@ const modelResolutionStrategyTransformer = (modelSyncConfig: { [key: string]: Sy
         entityName: key,
       }),
     )
-    .forEach(modelStrategy => result.push(modelStrategy));
+    .forEach((modelStrategy) => result.push(modelStrategy));
   return result;
 };
 
@@ -93,14 +105,14 @@ const syncConfigToResolutionStrategyMap: Record<ConflictHandlerType, (sc: SyncCo
     type: 'LAMBDA',
     resolver: (syncConfig.LambdaConflictHandler as any).new
       ? {
-          // this is a hack to pass the "new" flag into the ResolutionStrategy
-          type: 'NEW',
-        }
+        // this is a hack to pass the "new" flag into the ResolutionStrategy
+        type: 'NEW',
+      }
       : {
-          type: 'EXISTING',
-          name: syncConfig.LambdaConflictHandler.name,
-          region: syncConfig.LambdaConflictHandler.region,
-          arn: syncConfig.LambdaConflictHandler.lambdaArn,
-        },
+        type: 'EXISTING',
+        name: syncConfig.LambdaConflictHandler.name,
+        region: syncConfig.LambdaConflictHandler.region,
+        arn: syncConfig.LambdaConflictHandler.lambdaArn,
+      },
   }),
 };

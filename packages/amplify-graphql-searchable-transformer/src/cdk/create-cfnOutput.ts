@@ -3,6 +3,13 @@ import { CfnOutput, Fn } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { ResourceConstants } from 'graphql-transformer-common';
 
+/**
+ *
+ * @param stack
+ * @param endpoint
+ * @param apiId
+ * @param arn
+ */
 export const createStackOutputs = (stack: Construct, endpoint: string, apiId: string, arn: string): void => {
   const { OpenSearchDomainArn, OpenSearchDomainEndpoint } = ResourceConstants.OUTPUTS;
   new CfnOutput(stack, OpenSearchDomainArn, {

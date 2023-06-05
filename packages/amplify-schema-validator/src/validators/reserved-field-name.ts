@@ -12,6 +12,10 @@ import { ValidationError } from '../exceptions/validation-error';
  * @returns true if reserved words are not used in field names
  */
 
+/**
+ *
+ * @param schema
+ */
 export const validateReservedFieldNames = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const reservedWords = ['_version', '_changedAt', '_deleted'];

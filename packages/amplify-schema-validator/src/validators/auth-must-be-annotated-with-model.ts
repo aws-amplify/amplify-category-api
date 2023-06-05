@@ -12,6 +12,10 @@ import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
    * @returns true if types annotated with @auth are also be annotated with @model.
    */
 
+/**
+ *
+ * @param schema
+ */
 export const validateAuthIsAnnotatedWithModel = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(

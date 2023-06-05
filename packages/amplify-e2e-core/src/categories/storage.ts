@@ -1,17 +1,28 @@
 import { singleSelect } from '../utils/selectors';
 import { getCLIPath, nspawn as spawn, RETURN } from '..';
 
+/**
+ *
+ */
 export type AddStorageSettings = {
   resourceName?: string;
   bucketName?: string;
 };
 
+/**
+ *
+ */
 export type AddDynamoDBSettings = {
   resourceName: string;
   tableName: string;
   gsiName: string;
 };
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addSimpleDDB(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
@@ -53,6 +64,12 @@ export function addSimpleDDB(cwd: string, settings: any): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ * @param settings.ddbResourceName
+ */
 export function addDDBWithTrigger(cwd: string, settings: { ddbResourceName?: string }): Promise<void> {
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
@@ -105,6 +122,11 @@ export function addDDBWithTrigger(cwd: string, settings: { ddbResourceName?: str
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function updateDDBWithTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'storage'], { cwd, stripColors: true })
@@ -135,6 +157,11 @@ export function updateDDBWithTrigger(cwd: string, settings: any): Promise<void> 
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function updateDDBWithTriggerMigration(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'storage'], { cwd, stripColors: true })
@@ -167,6 +194,11 @@ export function updateDDBWithTriggerMigration(cwd: string, settings: any): Promi
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function updateSimpleDDBwithGSI(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
@@ -210,6 +242,11 @@ export function updateSimpleDDBwithGSI(cwd: string, settings: any): Promise<void
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addSimpleDDBwithGSI(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
@@ -260,6 +297,10 @@ export function addSimpleDDBwithGSI(cwd: string, settings: any): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function overrideDDB(cwd: string, settings: {}) {
   return new Promise((resolve, reject) => {
     const args = ['override', 'storage'];
@@ -278,6 +319,10 @@ export function overrideDDB(cwd: string, settings: {}) {
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function buildOverrideStorage(cwd: string, settings: {}) {
   return new Promise((resolve, reject) => {
     // Add 'storage' as a category param once implemented
@@ -293,9 +338,14 @@ export function buildOverrideStorage(cwd: string, settings: {}) {
   });
 }
 
+/**
+ *
+ * @param projectDir
+ * @param settings
+ */
 export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: AddDynamoDBSettings): Promise<void> {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
+    const chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
 
     singleSelect(chain.wait('Select from one of the below mentioned services:'), 'NoSQL Database', [
       'Content (Images, audio, video, etc.)',
@@ -367,6 +417,11 @@ export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: Add
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addS3(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
@@ -394,6 +449,11 @@ export function addS3(cwd: string, settings: any): Promise<void> {
 }
 
 // Adds auth and S3 to test case where user adds storage without adding auth first
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
@@ -429,6 +489,11 @@ export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any): Prom
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addS3WithGuestAccess(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
@@ -461,6 +526,11 @@ export function addS3WithGuestAccess(cwd: string, settings: any): Promise<void> 
 }
 
 // Expects 2 existing user pool groups
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addS3WithGroupAccess(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
@@ -495,6 +565,11 @@ export function addS3WithGroupAccess(cwd: string, settings: any): Promise<void> 
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addS3WithTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
@@ -525,6 +600,11 @@ export function addS3WithTrigger(cwd: string, settings: any): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function updateS3AddTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
@@ -555,8 +635,13 @@ export function updateS3AddTrigger(cwd: string, settings: any): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function updateS3AddTriggerWithAuthOnlyReqMigration(cwd: string, settings: any): Promise<void> {
-  const testingWithLatestCodebase = settings.testingWithLatestCodebase;
+  const { testingWithLatestCodebase } = settings;
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['update', 'storage'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services')
@@ -584,6 +669,11 @@ export function updateS3AddTriggerWithAuthOnlyReqMigration(cwd: string, settings
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function updateS3AddTriggerNewFunctionWithFunctionExisting(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
@@ -602,7 +692,7 @@ export function updateS3AddTriggerNewFunctionWithFunctionExisting(cwd: string, s
       .sendConfirmYes()
       .wait('Select from the following options')
       .sendKeyDown()
-      .sendCarriageReturn() //Create a new function
+      .sendCarriageReturn() // Create a new function
       .wait('Do you want to edit the local')
       .sendConfirmNo()
       .sendEof()
@@ -616,11 +706,15 @@ export function updateS3AddTriggerNewFunctionWithFunctionExisting(cwd: string, s
   });
 }
 
+/**
+ *
+ * @param projectDir
+ */
 export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
+    const chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
 
-    chain.wait('Select from one of the below mentioned services:').sendCarriageReturn(); //select - Content (Images, audio, video, etc.)
+    chain.wait('Select from one of the below mentioned services:').sendCarriageReturn(); // select - Content (Images, audio, video, etc.)
 
     chain
       .wait('Provide a friendly name for your resource that will be used to label this category in the project:')
@@ -634,11 +728,11 @@ export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
 
     chain
       .wait('What kind of access do you want for Authenticated users?')
-      .send(' ') //'create/update'
+      .send(' ') // 'create/update'
       .sendKeyDown()
-      .send(' ') //'read'
+      .send(' ') // 'read'
       .sendKeyDown()
-      .send(' ') //'delete'
+      .send(' ') // 'delete'
       .sendCarriageReturn();
 
     chain.wait('Do you want to add a Lambda Trigger for your S3 Bucket?').sendConfirmNo();
@@ -653,11 +747,15 @@ export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param projectDir
+ */
 export function addS3Storage(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
+    const chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
     chain
-      .wait('Select from one of the below mentioned services:') //'Content (Images, audio, video, etc.)'
+      .wait('Select from one of the below mentioned services:') // 'Content (Images, audio, video, etc.)'
       .sendCarriageReturn()
       .wait('Provide a friendly name for your resource that will be used to label this category in the project:')
       .sendCarriageReturn()
@@ -665,12 +763,12 @@ export function addS3Storage(projectDir: string): Promise<void> {
       .sendCarriageReturn()
       .wait('Who should have access:')
       .sendKeyDown()
-      .send(' ') //Auth and guest
+      .send(' ') // Auth and guest
       .sendCarriageReturn()
-      .wait('What kind of access do you want for Authenticated users?') //Auth
+      .wait('What kind of access do you want for Authenticated users?') // Auth
       .sendCtrlA()
       .sendCarriageReturn()
-      .wait('What kind of access do you want for Guest users?') //Guest
+      .wait('What kind of access do you want for Guest users?') // Guest
       .sendCtrlA()
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket?')
@@ -685,19 +783,23 @@ export function addS3Storage(projectDir: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param projectDir
+ */
 export function addS3StorageWithAuthOnly(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
+    const chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
     chain
-      .wait('Select from one of the below mentioned services:') //'Content (Images, audio, video, etc.)'
+      .wait('Select from one of the below mentioned services:') // 'Content (Images, audio, video, etc.)'
       .sendCarriageReturn()
       .wait('Provide a friendly name for your resource that will be used to label this category in the project:')
       .sendCarriageReturn()
       .wait('Provide bucket name:')
       .sendCarriageReturn()
       .wait('Who should have access:')
-      .sendCarriageReturn() //Auth users only
-      .wait('What kind of access do you want for Authenticated users?') //Auth
+      .sendCarriageReturn() // Auth users only
+      .wait('What kind of access do you want for Authenticated users?') // Auth
       .sendCtrlA()
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket?')
@@ -712,6 +814,10 @@ export function addS3StorageWithAuthOnly(projectDir: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function overrideS3(cwd: string, settings: {}) {
   return new Promise((resolve, reject) => {
     const args = ['override', 'storage'];
@@ -729,13 +835,18 @@ export function overrideS3(cwd: string, settings: {}) {
   });
 }
 
+/**
+ *
+ * @param projectDir
+ * @param settings
+ */
 export function addS3StorageWithSettings(projectDir: string, settings: AddStorageSettings): Promise<void> {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
+    const chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
 
     chain
       .wait('Select from one of the below mentioned services:')
-      .send(' ') //'Content (Images, audio, video, etc.)'
+      .send(' ') // 'Content (Images, audio, video, etc.)'
       .sendCarriageReturn();
 
     chain

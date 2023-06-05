@@ -1,3 +1,7 @@
+/**
+ *
+ * @param path
+ */
 export function getGitHubOwnerRepoFromPath(path: string) {
   if (!path.startsWith('https://github.com/')) {
     throw Error(`Invalid Repo Path ${path}`);

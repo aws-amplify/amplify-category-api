@@ -14,7 +14,10 @@ import {
   DocumentNode,
 } from 'graphql';
 
-
+/**
+ *
+ * @param sdl
+ */
 export function collectDirectives(sdl: string): DirectiveNode[] {
   if (sdl.trim() === '') {
     return [];
@@ -49,12 +52,16 @@ export function collectDirectives(sdl: string): DirectiveNode[] {
   return directives;
 }
 
+/**
+ *
+ * @param sdl
+ */
 export function collectDirectivesByTypeNames(sdl: string) {
-  let types = collectDirectivesByType(sdl);
-  const typeToDirectiveMap: Record<string, string[]> = {}
+  const types = collectDirectivesByType(sdl);
+  const typeToDirectiveMap: Record<string, string[]> = {};
   const directives: Set<string> = new Set();
-  Object.keys(types).forEach(dir => {
-    let set: Set<string> = new Set();
+  Object.keys(types).forEach((dir) => {
+    const set: Set<string> = new Set();
     types[dir].forEach((d: DirectiveNode) => {
       set.add(d.name.value);
       directives.add(d.name.value);
@@ -64,13 +71,17 @@ export function collectDirectivesByTypeNames(sdl: string) {
   return { types: typeToDirectiveMap, directives: Array.from(directives) };
 }
 
+/**
+ *
+ * @param sdl
+ */
 export function collectDirectivesByType(sdl: string): Record<string, DirectiveNode[]> {
   if (sdl.trim() === '') {
     return {};
   }
   const doc = parseWithErrorHint(sdl);
   // defined types with directives list
-  let types: Record<string, DirectiveNode[]> = {};
+  const types: Record<string, DirectiveNode[]> = {};
   for (const def of doc.definitions) {
     switch (def.kind) {
       case Kind.OBJECT_TYPE_DEFINITION:
@@ -98,6 +109,10 @@ export function collectDirectivesByType(sdl: string): Record<string, DirectiveNo
   return types;
 }
 
+/**
+ *
+ * @param node
+ */
 export function collectObjectDirectives(node: ObjectTypeDefinitionNode): DirectiveNode[] {
   let dirs: DirectiveNode[] = [];
   for (const field of node.fields || []) {
@@ -107,6 +122,10 @@ export function collectObjectDirectives(node: ObjectTypeDefinitionNode): Directi
   return dirs.concat(node.directives || []);
 }
 
+/**
+ *
+ * @param node
+ */
 export function collectInterfaceDirectives(node: InterfaceTypeDefinitionNode): DirectiveNode[] {
   let dirs: DirectiveNode[] = [];
   for (const field of node.fields || []) {
@@ -116,6 +135,10 @@ export function collectInterfaceDirectives(node: InterfaceTypeDefinitionNode): D
   return dirs.concat(node.directives || []);
 }
 
+/**
+ *
+ * @param node
+ */
 export function collectFieldDirectives(node: FieldDefinitionNode): DirectiveNode[] {
   let dirs: DirectiveNode[] = [];
   for (const arg of node.arguments || []) {
@@ -125,18 +148,34 @@ export function collectFieldDirectives(node: FieldDefinitionNode): DirectiveNode
   return dirs.concat(node.directives || []);
 }
 
+/**
+ *
+ * @param node
+ */
 export function collectArgumentDirectives(node: InputValueDefinitionNode): DirectiveNode[] {
   return [...(node.directives || [])];
 }
 
+/**
+ *
+ * @param node
+ */
 export function collectUnionDirectives(node: UnionTypeDefinitionNode): DirectiveNode[] {
   return [...(node.directives || [])];
 }
 
+/**
+ *
+ * @param node
+ */
 export function collectScalarDirectives(node: ScalarTypeDefinitionNode): DirectiveNode[] {
   return [...(node.directives || [])];
 }
 
+/**
+ *
+ * @param node
+ */
 export function collectInputObjectDirectives(node: InputObjectTypeDefinitionNode): DirectiveNode[] {
   let dirs: DirectiveNode[] = [];
   for (const field of node.fields || []) {
@@ -146,6 +185,10 @@ export function collectInputObjectDirectives(node: InputObjectTypeDefinitionNode
   return dirs.concat(node.directives || []);
 }
 
+/**
+ *
+ * @param node
+ */
 export function collectEnumDirectives(node: EnumTypeDefinitionNode): DirectiveNode[] {
   let dirs: DirectiveNode[] = [];
   for (const val of node.values || []) {
@@ -155,6 +198,10 @@ export function collectEnumDirectives(node: EnumTypeDefinitionNode): DirectiveNo
   return dirs.concat(node.directives || []);
 }
 
+/**
+ *
+ * @param node
+ */
 export function collectEnumValueDirectives(node: EnumValueDefinitionNode): DirectiveNode[] {
   return [...(node.directives || [])];
 }

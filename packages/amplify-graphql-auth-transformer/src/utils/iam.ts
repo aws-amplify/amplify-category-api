@@ -4,6 +4,10 @@ interface PolicyDocument {
   [key: string]: any;
 }
 
+/**
+ *
+ * @param resources
+ */
 export const createPolicyDocumentForManagedPolicy = (resources: Set<string>) => {
   const policyDocuments = new Array<PolicyDocument>();
   let policyDocumentResources = new Array<string>();
@@ -17,18 +21,16 @@ export const createPolicyDocumentForManagedPolicy = (resources: Set<string>) => 
   // 89 + 11 extra = 100
   const RESOURCE_OVERHEAD = 100;
 
-  const createPolicyDocument = (newPolicyDocumentResources: Array<string>): PolicyDocument => {
-    return {
-      Version: '2012-10-17',
-      Statement: [
-        {
-          Effect: 'Allow',
-          Action: ['appsync:GraphQL'],
-          Resource: newPolicyDocumentResources,
-        },
-      ],
-    };
-  };
+  const createPolicyDocument = (newPolicyDocumentResources: Array<string>): PolicyDocument => ({
+    Version: '2012-10-17',
+    Statement: [
+      {
+        Effect: 'Allow',
+        Action: ['appsync:GraphQL'],
+        Resource: newPolicyDocumentResources,
+      },
+    ],
+  });
 
   for (const resource of resources) {
     // We always have 2 parts, no need to check

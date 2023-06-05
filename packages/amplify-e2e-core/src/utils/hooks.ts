@@ -1,5 +1,7 @@
 import * as path from 'path';
 
-export const getHooksDirPath = (projRoot: string): string => {
-  return path.join(projRoot, 'amplify', 'hooks');
-};
+/**
+ *
+ * @param projRoot
+ */
+export const getHooksDirPath = (projRoot: string): string => path.join(projRoot, 'amplify', 'hooks');

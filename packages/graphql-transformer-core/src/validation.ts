@@ -1,4 +1,6 @@
-import { Kind, DocumentNode, parse, SchemaDefinitionNode } from 'graphql/language';
+import {
+  Kind, DocumentNode, parse, SchemaDefinitionNode,
+} from 'graphql/language';
 import { validate, ValidationRule } from 'graphql/validation';
 import { buildASTSchema } from 'graphql/utilities/buildASTSchema';
 
@@ -123,28 +125,31 @@ type Query {
 }
 `);
 
+/**
+ *
+ * @param doc
+ */
 export const validateModelSchema = (doc: DocumentNode) => {
   const fullDocument = {
     kind: Kind.DOCUMENT,
     definitions: [...EXTRA_DIRECTIVES_DOCUMENT.definitions, ...doc.definitions, ...EXTRA_SCALARS_DOCUMENT.definitions],
   };
 
-  const schemaDef = doc.definitions.find(d => d.kind === Kind.SCHEMA_DEFINITION) as SchemaDefinitionNode;
-  const queryOperation = schemaDef ? schemaDef.operationTypes.find(o => o.operation === 'query') : undefined;
+  const schemaDef = doc.definitions.find((d) => d.kind === Kind.SCHEMA_DEFINITION) as SchemaDefinitionNode;
+  const queryOperation = schemaDef ? schemaDef.operationTypes.find((o) => o.operation === 'query') : undefined;
   const queryName = queryOperation ? queryOperation.type.name.value : 'Query';
   const existingQueryType = doc.definitions.find(
-    d =>
-      d.kind !== Kind.DIRECTIVE_DEFINITION && d.kind !== Kind.SCHEMA_DEFINITION && (d as any).name && (d as any).name.value === queryName,
+    (d) => d.kind !== Kind.DIRECTIVE_DEFINITION && d.kind !== Kind.SCHEMA_DEFINITION && (d as any).name && (d as any).name.value === queryName,
   );
 
   if (!existingQueryType) {
     fullDocument.definitions.push(...NOOP_QUERY.definitions);
   }
 
-const errors = validateSDL(fullDocument);
-if (errors.length > 0) {
-  return errors;
-}
+  const errors = validateSDL(fullDocument);
+  if (errors.length > 0) {
+    return errors;
+  }
   const schema = buildASTSchema(fullDocument, { assumeValid: true });
   return validate(schema, fullDocument, specifiedRules);
 };

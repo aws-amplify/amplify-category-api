@@ -12,6 +12,10 @@ import { ValidationError } from '../exceptions/validation-error';
  * @returns true if reserved words are not used in type names
  */
 
+/**
+ *
+ * @param schema
+ */
 export const validateReservedTypeNames = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const reservedWords = ['Query', 'Mutation', 'Subscription'];

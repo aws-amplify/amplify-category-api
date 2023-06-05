@@ -4,9 +4,15 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
+/**
+ *
+ */
 export type DefinitionsDeployment = {
   [k: string]: any;
 } | null;
+/**
+ *
+ */
 export type ListOrDict =
   | {
       /**
@@ -16,8 +22,17 @@ export type ListOrDict =
       [k: string]: string | number | null;
     }
   | string[];
+/**
+ *
+ */
 export type ListOfStrings = string[];
+/**
+ *
+ */
 export type StringOrList = string | ListOfStrings;
+/**
+ *
+ */
 export type Labels =
   | {
       /**
@@ -42,12 +57,18 @@ export type DefinitionsVolume = {
   [k: string]: any;
 } | null;
 
+/**
+ *
+ */
 export interface ConfigSchemaV30Json {
   version: string;
   services?: PropertiesServices;
   networks?: PropertiesNetworks;
   volumes?: PropertiesVolumes;
 }
+/**
+ *
+ */
 export interface PropertiesServices {
   [k: string]: DefinitionsService;
 }
@@ -141,6 +162,9 @@ export interface DefinitionsService {
   volumes?: string[];
   working_dir?: string;
 }
+/**
+ *
+ */
 export interface DefinitionsHealthcheck {
   disable?: boolean;
   interval?: string;
@@ -148,9 +172,15 @@ export interface DefinitionsHealthcheck {
   test?: string | string[];
   timeout?: string;
 }
+/**
+ *
+ */
 export interface PropertiesNetworks {
   [k: string]: DefinitionsNetwork;
 }
+/**
+ *
+ */
 export interface PropertiesVolumes {
   [k: string]: DefinitionsVolume;
 }

@@ -12,6 +12,10 @@ import { ValidationError } from '../exceptions/validation-error';
  * @returns true if a type is defined once in the schema
  */
 
+/**
+ *
+ * @param schema
+ */
 export const validateTypeIsDefinedOnce = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(

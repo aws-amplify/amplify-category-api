@@ -1,3 +1,6 @@
+/**
+ *
+ */
 export interface TransformerFilepathsProvider {
   getBackendDirPath: () => string;
   findProjectRoot: () => string;

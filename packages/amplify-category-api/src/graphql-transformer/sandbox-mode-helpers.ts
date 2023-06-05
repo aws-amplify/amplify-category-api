@@ -12,6 +12,10 @@ const ALLOW = 'allow';
 const PUBLIC = 'public';
 
 // eslint-disable-next-line consistent-return
+/**
+ *
+ * @param context
+ */
 export async function showSandboxModePrompts(context: $TSContext): Promise<any> {
   if (!(await hasApiKey(context))) {
     printer.info(
@@ -28,6 +32,10 @@ sandbox mode disabled, do not create an API Key.
   }
 }
 
+/**
+ *
+ * @param doclink
+ */
 export function showGlobalSandboxModeWarning(doclink: string): void {
   printer.info(
     `
@@ -41,6 +49,11 @@ function matchesGlobalAuth(field: any): boolean {
   return ['global_auth_rule', 'globalAuthRule'].includes(field.name.value);
 }
 
+/**
+ *
+ * @param schema
+ * @param docLink
+ */
 export function schemaHasSandboxModeEnabled(schema: string, docLink: string): boolean {
   const { definitions } = parse(schema);
   const amplifyInputType: any = definitions.find((d: any) => d.kind === 'InputObjectTypeDefinition' && d.name.value === AMPLIFY);

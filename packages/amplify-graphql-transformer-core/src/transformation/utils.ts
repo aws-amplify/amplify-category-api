@@ -10,6 +10,14 @@ import {
 } from 'graphql';
 import { TransformerPluginProvider, TransformerPluginType } from '@aws-amplify/graphql-transformer-interfaces';
 
+/**
+ *
+ * @param directive
+ * @param type
+ * @param field
+ * @param arg
+ * @param index
+ */
 export function makeSeenTransformationKey(
   directive: DirectiveNode,
   type: TypeDefinitionNode,
@@ -35,8 +43,10 @@ export function makeSeenTransformationKey(
 /**
  * If this instance of the directive validates against its definition return true.
  * If the definition does not apply to the instance return false.
+ * @param definition
  * @param directive The directive definition to validate against.
  * @param nodeKind The kind of the current node where the directive was found.
+ * @param node
  */
 export function matchDirective(definition: DirectiveDefinitionNode, directive: DirectiveNode, node: TypeSystemDefinitionNode) {
   if (!directive) {
@@ -50,37 +60,37 @@ export function matchDirective(definition: DirectiveDefinitionNode, directive: D
   for (const location of definition.locations) {
     // tslint:disable-next-line: switch-default
     switch (location.value) {
-      case `SCHEMA`:
+      case 'SCHEMA':
         isValidLocation = node.kind === Kind.SCHEMA_DEFINITION || isValidLocation;
         break;
-      case `SCALAR`:
+      case 'SCALAR':
         isValidLocation = node.kind === Kind.SCALAR_TYPE_DEFINITION || isValidLocation;
         break;
-      case `OBJECT`:
+      case 'OBJECT':
         isValidLocation = node.kind === Kind.OBJECT_TYPE_DEFINITION || isValidLocation;
         break;
-      case `FIELD_DEFINITION`:
+      case 'FIELD_DEFINITION':
         isValidLocation = (node.kind as string) === Kind.FIELD_DEFINITION || isValidLocation;
         break;
-      case `ARGUMENT_DEFINITION`:
+      case 'ARGUMENT_DEFINITION':
         isValidLocation = (node.kind as string) === Kind.INPUT_VALUE_DEFINITION || isValidLocation;
         break;
-      case `INTERFACE`:
+      case 'INTERFACE':
         isValidLocation = node.kind === Kind.INTERFACE_TYPE_DEFINITION || isValidLocation;
         break;
-      case `UNION`:
+      case 'UNION':
         isValidLocation = node.kind === Kind.UNION_TYPE_DEFINITION || isValidLocation;
         break;
-      case `ENUM`:
+      case 'ENUM':
         isValidLocation = node.kind === Kind.ENUM_TYPE_DEFINITION || isValidLocation;
         break;
-      case `ENUM_VALUE`:
+      case 'ENUM_VALUE':
         isValidLocation = (node.kind as string) === Kind.ENUM_VALUE_DEFINITION || isValidLocation;
         break;
-      case `INPUT_OBJECT`:
+      case 'INPUT_OBJECT':
         isValidLocation = node.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION || isValidLocation;
         break;
-      case `INPUT_FIELD_DEFINITION`:
+      case 'INPUT_FIELD_DEFINITION':
         isValidLocation = (node.kind as string) === Kind.INPUT_VALUE_DEFINITION || isValidLocation;
         break;
       default:
@@ -90,6 +100,12 @@ export function matchDirective(definition: DirectiveDefinitionNode, directive: D
   return isValidLocation;
 }
 
+/**
+ *
+ * @param definition
+ * @param directive
+ * @param node
+ */
 export function matchFieldDirective(definition: DirectiveDefinitionNode, directive: DirectiveNode, node: FieldDefinitionNode) {
   if (definition.name.value !== directive.name.value) {
     // The definition is for the wrong directive. Do not match.
@@ -98,7 +114,7 @@ export function matchFieldDirective(definition: DirectiveDefinitionNode, directi
   let isValidLocation = false;
   for (const location of definition.locations) {
     switch (location.value) {
-      case `FIELD_DEFINITION`:
+      case 'FIELD_DEFINITION':
         isValidLocation = node.kind === Kind.FIELD_DEFINITION || isValidLocation;
         break;
       default:
@@ -108,6 +124,12 @@ export function matchFieldDirective(definition: DirectiveDefinitionNode, directi
   return isValidLocation;
 }
 
+/**
+ *
+ * @param definition
+ * @param directive
+ * @param node
+ */
 export function matchInputFieldDirective(definition: DirectiveDefinitionNode, directive: DirectiveNode, node: InputValueDefinitionNode) {
   if (definition.name.value !== directive.name.value) {
     // The definition is for the wrong directive. Do not match.
@@ -116,7 +138,7 @@ export function matchInputFieldDirective(definition: DirectiveDefinitionNode, di
   let isValidLocation = false;
   for (const location of definition.locations) {
     switch (location.value) {
-      case `INPUT_FIELD_DEFINITION`:
+      case 'INPUT_FIELD_DEFINITION':
         isValidLocation = node.kind === Kind.INPUT_VALUE_DEFINITION || isValidLocation;
         break;
       default:
@@ -126,6 +148,12 @@ export function matchInputFieldDirective(definition: DirectiveDefinitionNode, di
   return isValidLocation;
 }
 
+/**
+ *
+ * @param definition
+ * @param directive
+ * @param node
+ */
 export function matchArgumentDirective(definition: DirectiveDefinitionNode, directive: DirectiveNode, node: InputValueDefinitionNode) {
   if (definition.name.value !== directive.name.value) {
     // The definition is for the wrong directive. Do not match.
@@ -134,7 +162,7 @@ export function matchArgumentDirective(definition: DirectiveDefinitionNode, dire
   let isValidLocation = false;
   for (const location of definition.locations) {
     switch (location.value) {
-      case `ARGUMENT_DEFINITION`:
+      case 'ARGUMENT_DEFINITION':
         isValidLocation = node.kind === Kind.INPUT_VALUE_DEFINITION || isValidLocation;
         break;
       default:
@@ -144,6 +172,12 @@ export function matchArgumentDirective(definition: DirectiveDefinitionNode, dire
   return isValidLocation;
 }
 
+/**
+ *
+ * @param definition
+ * @param directive
+ * @param node
+ */
 export function matchEnumValueDirective(definition: DirectiveDefinitionNode, directive: DirectiveNode, node: EnumValueDefinitionNode) {
   if (definition.name.value !== directive.name.value) {
     // The definition is for the wrong directive. Do not match.
@@ -152,7 +186,7 @@ export function matchEnumValueDirective(definition: DirectiveDefinitionNode, dir
   let isValidLocation = false;
   for (const location of definition.locations) {
     switch (location.value) {
-      case `ENUM_VALUE`:
+      case 'ENUM_VALUE':
         isValidLocation = node.kind === Kind.ENUM_VALUE_DEFINITION || isValidLocation;
         break;
       default:

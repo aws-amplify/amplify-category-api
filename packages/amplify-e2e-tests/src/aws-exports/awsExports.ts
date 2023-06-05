@@ -1,10 +1,18 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
+/**
+ *
+ * @param projRoot
+ */
 export function getAWSExportsPath(projRoot: string): string {
   return path.join(projRoot, 'src', 'aws-exports.js');
 }
 
+/**
+ *
+ * @param projectRoot
+ */
 export function getAWSExports(projectRoot: string) {
   const awsExportsPath = getAWSExportsPath(projectRoot);
   // From Jest 25, ESM modules can only be loaded with mjs extension and Jest takes over

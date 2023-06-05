@@ -6,6 +6,11 @@ import { updateSchemaInTestProject, testQueries } from '../common';
 
 import { addSimpleFunction, updateFunctionNameInSchema } from '../functionTester';
 
+/**
+ *
+ * @param projectDir
+ * @param testModule
+ */
 export async function runTest(projectDir: string, testModule: any) {
   const function1Name = await addSimpleFunction(projectDir, testModule, 'func1');
   const function2Name = await addSimpleFunction(projectDir, testModule, 'func2');
@@ -22,7 +27,7 @@ export async function runTest(projectDir: string, testModule: any) {
   await testQueries(testModule, appSyncClient);
 }
 
-//schema
+// schema
 const env = '${env}';
 export const schema = `
 #error: when type Mutation is the only type in the schema, the following error is received:
@@ -39,7 +44,7 @@ type Query {
 }
 `;
 
-//functions
+// functions
 export const func1 = `
 //#extra
 exports.handler = async event => {
@@ -53,7 +58,7 @@ exports.handler = async event => {
 };
 `;
 
-//queries
+// queries
 export const query = `
 #extra
 query DoSomeWork {

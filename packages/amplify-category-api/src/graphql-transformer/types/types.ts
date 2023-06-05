@@ -1,3 +1,6 @@
+/**
+ *
+ */
 export type ConstructResourceMeta = {
   rootStack?: StackMeta;
   nestedStack?: StackMeta;
@@ -5,6 +8,9 @@ export type ConstructResourceMeta = {
   resourceType: string;
 };
 
+/**
+ *
+ */
 export type StackMeta = {
   stackName: string;
   stackType: string;

@@ -3,6 +3,9 @@ import { setupAmplifyAdminUI, getAmplifyBackendJobStatus } from '../utils/sdk-ca
 
 /**
  * Kick off Amplify backend provisioning and poll until provisioning complete (or failed)
+ * @param appId
+ * @param __envName
+ * @param region
  */
 export const enableAdminUI = async (appId: string, __envName: string, region: string): Promise<void> => {
   const { JobId, BackendEnvironmentName } = await setupAmplifyAdminUI(appId, region);
@@ -10,12 +13,12 @@ export const enableAdminUI = async (appId: string, __envName: string, region: st
   try {
     await retry(
       () => getAmplifyBackendJobStatus(JobId, appId, BackendEnvironmentName, region),
-      jobDetails => jobDetails.Status === 'COMPLETED',
+      (jobDetails) => jobDetails.Status === 'COMPLETED',
       {
         timeoutMS: 1000 * 60 * 5, // 5 minutes
         stopOnError: false,
       },
-      jobDetails => jobDetails.Status === 'FAILED',
+      (jobDetails) => jobDetails.Status === 'FAILED',
     );
   } catch {
     throw new Error('Setting up Amplify Studio failed');

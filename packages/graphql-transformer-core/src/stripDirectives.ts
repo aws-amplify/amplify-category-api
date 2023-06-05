@@ -14,6 +14,11 @@ import {
   DocumentNode,
 } from 'graphql';
 
+/**
+ *
+ * @param doc
+ * @param except
+ */
 export function stripDirectives(doc: DocumentNode, except: string[] = []): DocumentNode {
   const definitions = [];
   for (const def of doc.definitions) {
@@ -40,7 +45,7 @@ export function stripDirectives(doc: DocumentNode, except: string[] = []): Docum
   }
 
   function excepted(dir: DirectiveNode) {
-    return Boolean(except.find(f => dir.name.value === f));
+    return Boolean(except.find((f) => dir.name.value === f));
   }
 
   function stripObjectDirectives(node: ObjectTypeDefinitionNode): ObjectTypeDefinitionNode {

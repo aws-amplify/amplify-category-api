@@ -3,6 +3,7 @@ import { defaultProviderMap } from '../auth';
 
 /**
  * Create a graphql name node given a name value
+ * @param name
  */
 export function createNameNode(name: any) {
   return {
@@ -11,6 +12,11 @@ export function createNameNode(name: any) {
   };
 }
 
+/**
+ *
+ * @param name
+ * @param args
+ */
 export function createDirectiveNode(name: any, args: any) {
   return {
     kind: 'Directive',
@@ -19,23 +25,35 @@ export function createDirectiveNode(name: any, args: any) {
   };
 }
 
+/**
+ *
+ * @param name
+ * @param value
+ */
 export function createArgumentNode(name: any, value: any) {
   return {
     kind: 'Argument',
     name: createNameNode(name),
-    value: value,
+    value,
   };
 }
 
+/**
+ *
+ * @param values
+ */
 export function createListValueNode(values: any) {
   return {
     kind: 'ListValue',
-    values: values,
+    values,
   };
 }
 
 /**
  * Note this only supports strategy, provider and operations. Group and owner auth is not supported
+ * @param strategy
+ * @param provider
+ * @param operations
  */
 export function createAuthRule(strategy: any, provider: any, operations?: any) {
   let rule = `{allow: ${strategy}`;

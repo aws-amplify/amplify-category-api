@@ -1,6 +1,13 @@
 import { $TSMeta } from '@aws-amplify/amplify-cli-core';
 import { v4 as uuid } from 'uuid';
 
+/**
+ *
+ * @param project
+ * @param project.amplifyMeta
+ * @param project.projectConfig
+ * @param project.projectConfig.projectName
+ */
 export const getAllDefaults = (project: { amplifyMeta: $TSMeta; projectConfig: { projectName: string } }) => {
   const name = project.projectConfig.projectName.toLowerCase();
   const region = project.amplifyMeta.providers.awscloudformation.Region;

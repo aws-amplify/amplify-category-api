@@ -1,5 +1,9 @@
-import { Transformer, gql, TransformerContext, getDirectiveArguments, TransformerContractError } from 'graphql-transformer-core';
-import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff } from 'graphql-mapping-template';
+import {
+  Transformer, gql, TransformerContext, getDirectiveArguments, TransformerContractError,
+} from 'graphql-transformer-core';
+import {
+  obj, str, ref, printBlock, compoundExpression, qref, raw, iff,
+} from 'graphql-mapping-template';
 import { ResolverResourceIDs, FunctionResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode } from 'graphql';
 import { AppSync, IAM, Fn } from 'cloudform-types';
@@ -7,6 +11,9 @@ import { lambdaArnResource } from './lambdaArns';
 
 const FUNCTION_DIRECTIVE_STACK = 'FunctionDirectiveStack';
 
+/**
+ *
+ */
 export class FunctionTransformer extends Transformer {
   constructor() {
     // prettier-ignore
@@ -14,17 +21,21 @@ export class FunctionTransformer extends Transformer {
       'FunctionTransformer',
       gql`
         directive @function(name: String!, region: String) repeatable on FIELD_DEFINITION
-      `
+      `,
     );
   }
 
   /**
    * Add the required resources to invoke a lambda function for this field.
+   * @param parent
+   * @param definition
+   * @param directive
+   * @param ctx
    */
   field = (parent: ObjectTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
     const { name, region } = getDirectiveArguments(directive);
     if (!name) {
-      throw new TransformerContractError(`Must supply a 'name' to @function.`);
+      throw new TransformerContractError('Must supply a \'name\' to @function.');
     }
 
     // Add the iam role if it does not exist.
@@ -59,130 +70,137 @@ export class FunctionTransformer extends Transformer {
     } else if (resolver.Properties.Kind === 'PIPELINE') {
       ctx.setResource(
         resolverKey,
-        this.appendFunctionToResolver(resolver, FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region))
+        this.appendFunctionToResolver(resolver, FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region)),
       );
     }
   };
 
   /**
    * Create a role that allows our AppSync API to talk to our Lambda function.
+   * @param name
+   * @param region
    */
-  role = (name: string, region: string): any => {
-    return new IAM.Role({
-      RoleName: Fn.If(
-        ResourceConstants.CONDITIONS.HasEnvironmentParameter,
-        Fn.Join('-', [
-          FunctionResourceIDs.FunctionIAMRoleName(name, true), // max of 64. 64-10-26-28 = 0
-          Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
-          Fn.Ref(ResourceConstants.PARAMETERS.Env), // 10
-        ]),
-        Fn.Join('-', [
-          FunctionResourceIDs.FunctionIAMRoleName(name, false), // max of 64. 64-26-38 = 0
-          Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
-        ])
-      ),
-      AssumeRolePolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Principal: {
-              Service: 'appsync.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-        ],
-      },
-      Policies: [
+  role = (name: string, region: string): any => new IAM.Role({
+    RoleName: Fn.If(
+      ResourceConstants.CONDITIONS.HasEnvironmentParameter,
+      Fn.Join('-', [
+        FunctionResourceIDs.FunctionIAMRoleName(name, true), // max of 64. 64-10-26-28 = 0
+        Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
+        Fn.Ref(ResourceConstants.PARAMETERS.Env), // 10
+      ]),
+      Fn.Join('-', [
+        FunctionResourceIDs.FunctionIAMRoleName(name, false), // max of 64. 64-26-38 = 0
+        Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
+      ]),
+    ),
+    AssumeRolePolicyDocument: {
+      Version: '2012-10-17',
+      Statement: [
         {
-          PolicyName: 'InvokeLambdaFunction',
-          PolicyDocument: {
-            Version: '2012-10-17',
-            Statement: [
-              {
-                Effect: 'Allow',
-                Action: ['lambda:InvokeFunction'],
-                Resource: lambdaArnResource(name, region),
-              },
-            ],
+          Effect: 'Allow',
+          Principal: {
+            Service: 'appsync.amazonaws.com',
           },
+          Action: 'sts:AssumeRole',
         },
       ],
-    });
-  };
+    },
+    Policies: [
+      {
+        PolicyName: 'InvokeLambdaFunction',
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Action: ['lambda:InvokeFunction'],
+              Resource: lambdaArnResource(name, region),
+            },
+          ],
+        },
+      },
+    ],
+  });
 
   /**
    * Creates a lambda data source that registers the lambda function and associated role.
+   * @param name
+   * @param region
    */
-  datasource = (name: string, region: string): any => {
-    return new AppSync.DataSource({
-      ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
-      Name: FunctionResourceIDs.FunctionDataSourceID(name, region),
-      Type: 'AWS_LAMBDA',
-      ServiceRoleArn: Fn.GetAtt(FunctionResourceIDs.FunctionIAMRoleID(name, region), 'Arn'),
-      LambdaConfig: {
-        LambdaFunctionArn: lambdaArnResource(name, region),
-      },
-    }).dependsOn(FunctionResourceIDs.FunctionIAMRoleID(name, region));
-  };
+  datasource = (name: string, region: string): any => new AppSync.DataSource({
+    ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
+    Name: FunctionResourceIDs.FunctionDataSourceID(name, region),
+    Type: 'AWS_LAMBDA',
+    ServiceRoleArn: Fn.GetAtt(FunctionResourceIDs.FunctionIAMRoleID(name, region), 'Arn'),
+    LambdaConfig: {
+      LambdaFunctionArn: lambdaArnResource(name, region),
+    },
+  }).dependsOn(FunctionResourceIDs.FunctionIAMRoleID(name, region));
 
   /**
    * Create a new pipeline function that calls out to the lambda function and returns the value.
+   * @param name
+   * @param region
    */
-  function = (name: string, region: string): any => {
-    return new AppSync.FunctionConfiguration({
-      ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
-      Name: FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region),
-      DataSourceName: FunctionResourceIDs.FunctionDataSourceID(name, region),
-      FunctionVersion: '2018-05-29',
-      RequestMappingTemplate: printBlock(`Invoke AWS Lambda data source: ${FunctionResourceIDs.FunctionDataSourceID(name, region)}`)(
-        obj({
-          version: str('2018-05-29'),
-          operation: str('Invoke'),
-          payload: obj({
-            typeName: str('$ctx.stash.get("typeName")'),
-            fieldName: str('$ctx.stash.get("fieldName")'),
-            arguments: ref('util.toJson($ctx.arguments)'),
-            identity: ref('util.toJson($ctx.identity)'),
-            source: ref('util.toJson($ctx.source)'),
-            request: ref('util.toJson($ctx.request)'),
-            prev: ref('util.toJson($ctx.prev)'),
-          }),
-        })
-      ),
-      ResponseMappingTemplate: printBlock('Handle error or return result')(
-        compoundExpression([
-          iff(ref('ctx.error'), raw('$util.error($ctx.error.message, $ctx.error.type)')),
-          raw('$util.toJson($ctx.result)'),
-        ])
-      ),
-    }).dependsOn(FunctionResourceIDs.FunctionDataSourceID(name, region));
-  };
+  function = (name: string, region: string): any => new AppSync.FunctionConfiguration({
+    ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
+    Name: FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region),
+    DataSourceName: FunctionResourceIDs.FunctionDataSourceID(name, region),
+    FunctionVersion: '2018-05-29',
+    RequestMappingTemplate: printBlock(`Invoke AWS Lambda data source: ${FunctionResourceIDs.FunctionDataSourceID(name, region)}`)(
+      obj({
+        version: str('2018-05-29'),
+        operation: str('Invoke'),
+        payload: obj({
+          typeName: str('$ctx.stash.get("typeName")'),
+          fieldName: str('$ctx.stash.get("fieldName")'),
+          arguments: ref('util.toJson($ctx.arguments)'),
+          identity: ref('util.toJson($ctx.identity)'),
+          source: ref('util.toJson($ctx.source)'),
+          request: ref('util.toJson($ctx.request)'),
+          prev: ref('util.toJson($ctx.prev)'),
+        }),
+      }),
+    ),
+    ResponseMappingTemplate: printBlock('Handle error or return result')(
+      compoundExpression([
+        iff(ref('ctx.error'), raw('$util.error($ctx.error.message, $ctx.error.type)')),
+        raw('$util.toJson($ctx.result)'),
+      ]),
+    ),
+  }).dependsOn(FunctionResourceIDs.FunctionDataSourceID(name, region));
 
   /**
    * Create a resolver of one that calls the "function" function.
+   * @param type
+   * @param field
+   * @param name
+   * @param region
    */
-  resolver = (type: string, field: string, name: string, region?: string): any => {
-    return new AppSync.Resolver({
-      ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
-      TypeName: type,
-      FieldName: field,
-      Kind: 'PIPELINE',
-      PipelineConfig: {
-        Functions: [Fn.GetAtt(FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region), 'FunctionId')],
-      },
-      RequestMappingTemplate: printBlock('Stash resolver specific context.')(
-        compoundExpression([qref(`$ctx.stash.put("typeName", "${type}")`), qref(`$ctx.stash.put("fieldName", "${field}")`), obj({})])
-      ),
-      ResponseMappingTemplate: '$util.toJson($ctx.prev.result)',
-    }).dependsOn(FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region));
-  };
+  resolver = (type: string, field: string, name: string, region?: string): any => new AppSync.Resolver({
+    ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
+    TypeName: type,
+    FieldName: field,
+    Kind: 'PIPELINE',
+    PipelineConfig: {
+      Functions: [Fn.GetAtt(FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region), 'FunctionId')],
+    },
+    RequestMappingTemplate: printBlock('Stash resolver specific context.')(
+      compoundExpression([qref(`$ctx.stash.put("typeName", "${type}")`), qref(`$ctx.stash.put("fieldName", "${field}")`), obj({})]),
+    ),
+    ResponseMappingTemplate: '$util.toJson($ctx.prev.result)',
+  }).dependsOn(FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region));
 
+  /**
+   *
+   * @param resolver
+   * @param functionId
+   */
   appendFunctionToResolver(resolver: any, functionId: string) {
     if (
-      resolver.Properties.PipelineConfig &&
-      resolver.Properties.PipelineConfig.Functions &&
-      Array.isArray(resolver.Properties.PipelineConfig.Functions)
+      resolver.Properties.PipelineConfig
+      && resolver.Properties.PipelineConfig.Functions
+      && Array.isArray(resolver.Properties.PipelineConfig.Functions)
     ) {
       resolver.Properties.PipelineConfig.Functions.push(Fn.GetAtt(functionId, 'FunctionId'));
     }

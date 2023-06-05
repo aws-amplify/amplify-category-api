@@ -9,7 +9,13 @@ import { InvalidMigrationError, InvalidGSIMigrationError, DestructiveMigrationEr
 import { TRANSFORM_CONFIG_FILE_NAME } from '..';
 
 type Diff = DeepDiff<DiffableProject, DiffableProject>;
+/**
+ *
+ */
 export type DiffRule = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject) => void;
+/**
+ *
+ */
 export type ProjectRule = (diffs: Diff[], currentBuild: DiffableProject, nextBuild: DiffableProject) => void;
 
 interface DiffableProject {
@@ -22,6 +28,11 @@ interface DiffableProject {
 /**
  * Calculates a diff between the last saved cloud backend's build directory
  * and the most recent build.
+ * @param currentCloudBackendDir
+ * @param buildDirectory
+ * @param rootStackName
+ * @param diffRules
+ * @param projectRule
  */
 export const sanityCheckProject = async (
   currentCloudBackendDir: string,
@@ -42,6 +53,14 @@ export const sanityCheckProject = async (
   }
 };
 
+/**
+ *
+ * @param diffs
+ * @param current
+ * @param next
+ * @param diffRules
+ * @param projectRules
+ */
 export const sanityCheckDiffs = (
   diffs: Diff[],
   current: DiffableProject,
@@ -72,6 +91,7 @@ export const sanityCheckDiffs = (
  * @param diffs The set of diffs between currentBuild and nextBuild.
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
+ * @param iterativeUpdatesEnabled
  */
 export const getCantEditKeySchemaRule = (iterativeUpdatesEnabled = false) => {
   const cantEditKeySchemaRule = (diff: Diff): void => {
@@ -106,6 +126,7 @@ export const getCantEditKeySchemaRule = (iterativeUpdatesEnabled = false) => {
  * @param diffs The set of diffs between currentBuild and nextBuild.
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
+ * @param iterativeUpdatesEnabled
  */
 export const getCantAddLSILaterRule = (iterativeUpdatesEnabled = false) => {
   const cantAddLSILaterRule = (diff: Diff): void => {
@@ -142,6 +163,7 @@ export const getCantAddLSILaterRule = (iterativeUpdatesEnabled = false) => {
  * Throws a helpful error when a customer is trying to complete an invalid migration.
  * Users are unable to change GSI KeySchemas after they are created.
  * @param diffs The set of diffs between currentBuild and nextBuild.
+ * @param diff
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
  */
@@ -200,6 +222,7 @@ export const cantEditGSIKeySchemaRule = (diff: Diff, currentBuild: DiffableProje
  * Throws a helpful error when a customer is trying to complete an invalid migration.
  * Users are unable to add and remove GSIs at the same time.
  * @param diffs The set of diffs between currentBuild and nextBuild.
+ * @param diff
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
  */
@@ -252,6 +275,12 @@ export const cantAddAndRemoveGSIAtSameTimeRule = (diff: Diff, currentBuild: Diff
   }
 };
 
+/**
+ *
+ * @param diff
+ * @param currentBuild
+ * @param nextBuild
+ */
 export const cantBatchMutateGSIAtUpdateTimeRule = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject): void => {
   // path indicating adding new gsis or removing gsis from table
   // ['stacks', 'Book.json', 'Resources', 'BookTable', 'Properties', 'GlobalSecondaryIndexes']
@@ -318,6 +347,7 @@ export const cantMutateMultipleGSIAtUpdateTimeRule = (diffs: Diff[], currentBuil
  * @param diffs The set of diffs between currentBuild and nextBuild.
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
+ * @param iterativeUpdatesEnabled
  */
 export const getCantEditLSIKeySchemaRule = (iterativeUpdatesEnabled = false) => {
   const cantEditLSIKeySchemaRule = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject): void => {
@@ -364,6 +394,10 @@ export const getCantEditLSIKeySchemaRule = (iterativeUpdatesEnabled = false) => 
   return cantEditLSIKeySchemaRule;
 };
 
+/**
+ *
+ * @param iterativeUpdatesEnabled
+ */
 export const getCantRemoveLSILater = (iterativeUpdatesEnabled = false) => {
   const cantRemoveLSILater = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject) => {
     const throwError = (stackName: string, tableName: string): void => {
@@ -392,6 +426,12 @@ export const getCantRemoveLSILater = (iterativeUpdatesEnabled = false) => {
   return cantRemoveLSILater;
 };
 
+/**
+ *
+ * @param diffs
+ * @param currentBuild
+ * @param nextBuild
+ */
 export const cantHaveMoreThan500ResourcesRule = (diffs: Diff[], currentBuild: DiffableProject, nextBuild: DiffableProject): void => {
   const stackKeys = Object.keys(nextBuild.stacks);
 
@@ -413,15 +453,21 @@ export const cantHaveMoreThan500ResourcesRule = (diffs: Diff[], currentBuild: Di
   }
 };
 
+/**
+ *
+ * @param _
+ * @param currentBuild
+ * @param nextBuild
+ */
 export const cantRemoveTableAfterCreation = (_: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject): void => {
   const getTableLogicalIds = (proj: DiffableProject) => Object.values(proj.stacks)
-    .flatMap(stack => Object.entries(stack.Resources))
+    .flatMap((stack) => Object.entries(stack.Resources))
     .filter(([_, resource]) => resource.Type === 'AWS::DynamoDB::Table')
     .map(([name]) => name);
 
   const currentTables = getTableLogicalIds(currentBuild);
   const nextTables = getTableLogicalIds(nextBuild);
-  const removedTables = currentTables.filter(currModel => !nextTables.includes(currModel));
+  const removedTables = currentTables.filter((currModel) => !nextTables.includes(currModel));
   if (removedTables.length > 0) {
     throw new DestructiveMigrationError(
       'Removing a model from the GraphQL schema will also remove the underlying DynamoDB table.',

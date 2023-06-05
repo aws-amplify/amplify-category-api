@@ -1,4 +1,7 @@
-import { Kind, ObjectTypeDefinitionNode, SchemaDefinitionNode, InputObjectTypeDefinitionNode, DocumentNode } from 'graphql';
+import {
+  Kind, ObjectTypeDefinitionNode, SchemaDefinitionNode, InputObjectTypeDefinitionNode, DocumentNode,
+} from 'graphql';
+import { plurality, toUpper } from 'graphql-transformer-common';
 import {
   getSingletonListTypeNode,
   getNamedType,
@@ -12,7 +15,6 @@ import {
 } from './RelationalDBSchemaTransformerUtils';
 import { RelationalDBParsingException } from './RelationalDBParsingException';
 import { IRelationalDBReader } from './IRelationalDBReader';
-import { plurality, toUpper } from 'graphql-transformer-common';
 
 /**
  * This class is used to transition all of the columns and key metadata from a table for use
@@ -81,6 +83,9 @@ export class TemplateContext {
   }
 }
 
+/**
+ *
+ */
 export class RelationalDBSchemaTransformer {
   dbReader: IRelationalDBReader;
   database: string;
@@ -107,8 +112,8 @@ export class RelationalDBSchemaTransformer {
       return null;
     }
 
-    const typeContexts = new Array();
-    const types = new Array();
+    const typeContexts = [];
+    const types = [];
     const pkeyMap = new Map<string, string>();
     const pkeyTypeMap = new Map<string, string>();
     const stringFieldMap = new Map<string, string[]>();
@@ -130,7 +135,7 @@ export class RelationalDBSchemaTransformer {
         // Generate the 'connection' type for each table type definition
         // TODO: Determine if Connection is needed as Data API doesn't provide pagination
         // TODO: As we add different db sources, we should conditionally do this even if we don't for Aurora serverless.
-        //types.push(this.getConnectionType(tableName))
+        // types.push(this.getConnectionType(tableName))
         // Generate the create operation input for each table type definition
         types.push(type.createTypeDefinition);
         // Generate the default shape for the table's structure
@@ -156,7 +161,7 @@ export class RelationalDBSchemaTransformer {
       types.push(this.getSchemaType());
     }
 
-    let context = this.dbReader.hydrateTemplateContext(
+    const context = this.dbReader.hydrateTemplateContext(
       new TemplateContext({ kind: Kind.DOCUMENT, definitions: types }, pkeyMap, stringFieldMap, intFieldMap, pkeyTypeMap),
     );
 

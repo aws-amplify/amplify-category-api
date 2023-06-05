@@ -25,15 +25,15 @@ function walk(node: any, path: string[]): ReferenceMap {
       refsFromAllKeys = mergeReferenceMaps(refsFromAllKeys, refsForKey);
     }
     return refsFromAllKeys;
-  } else if (typeof jsonNode === 'object') {
+  } if (typeof jsonNode === 'object') {
     // tslint:disable-next-line
-    const refValue = jsonNode['Ref'];
+    const refValue = jsonNode.Ref;
     const getAtt = jsonNode['Fn::GetAtt'];
     if (refValue) {
       return {
         [refValue]: [path],
       };
-    } else if (getAtt) {
+    } if (getAtt) {
       return {
         [getAtt[0]]: [path],
       };
@@ -44,9 +44,8 @@ function walk(node: any, path: string[]): ReferenceMap {
       refsFromAllKeys = mergeReferenceMaps(refsFromAllKeys, refsForKey);
     }
     return refsFromAllKeys;
-  } else {
-    return {};
   }
+  return {};
 }
 function mergeReferenceMaps(a: ReferenceMap, b: ReferenceMap): ReferenceMap {
   const bKeys = Object.keys(b);

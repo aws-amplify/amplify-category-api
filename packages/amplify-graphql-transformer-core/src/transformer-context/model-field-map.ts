@@ -11,6 +11,7 @@ export class ModelFieldMapImpl implements ModelFieldMap {
   /**
    * Registers a field mapping. Errors if a duplicate is inserted
    * Returns this object to enable method chaining
+   * @param entry
    */
   addMappedField = (entry: FieldMapEntry) => {
     const existingEntry = this.#fieldMapping.find(fieldMapEqualsPredicate(entry));
@@ -26,17 +27,16 @@ export class ModelFieldMapImpl implements ModelFieldMap {
   /**
    * Registers a resolver where the model is referenced. Does not insert duplicates.
    * If an entry already exists with a different isList value, an error is thrown.
+   * @param entry
    */
   addResolverReference = (entry: ResolverReferenceEntry) => {
     const existingEntry = this.#resolverReferences.find(resolverReferenceEqualsPredicate(entry));
     if (!existingEntry) {
       this.#resolverReferences.push(entry);
-    } else {
-      if (existingEntry.isList !== entry.isList) {
-        throw new Error(
-          `Resolver of type [${existingEntry.typeName}] and field [${existingEntry.fieldName}] already registered with isList set to [${existingEntry.isList}]`,
-        );
-      }
+    } else if (existingEntry.isList !== entry.isList) {
+      throw new Error(
+        `Resolver of type [${existingEntry.typeName}] and field [${existingEntry.fieldName}] already registered with isList set to [${existingEntry.isList}]`,
+      );
     }
     return this;
   };
@@ -53,10 +53,8 @@ export class ModelFieldMapImpl implements ModelFieldMap {
 }
 
 // checks the currentFieldName of two FieldMapEntry objects for equivalence
-const fieldMapEqualsPredicate = (compareTo: FieldMapEntry) => (entry: FieldMapEntry) =>
-  compareTo.currentFieldName === entry.currentFieldName;
+const fieldMapEqualsPredicate = (compareTo: FieldMapEntry) => (entry: FieldMapEntry) => compareTo.currentFieldName === entry.currentFieldName;
 
 // note that this predicate does NOT compare the isList property of the ResolverReferenceEntry
 // that is handled separately in the addResolverReference method above
-const resolverReferenceEqualsPredicate = (compareTo: ResolverReferenceEntry) => (entry: ResolverReferenceEntry) =>
-  compareTo.typeName === entry.typeName && compareTo.fieldName === entry.fieldName;
+const resolverReferenceEqualsPredicate = (compareTo: ResolverReferenceEntry) => (entry: ResolverReferenceEntry) => compareTo.typeName === entry.typeName && compareTo.fieldName === entry.fieldName;

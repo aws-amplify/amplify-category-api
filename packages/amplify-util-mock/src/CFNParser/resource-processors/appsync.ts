@@ -2,9 +2,15 @@ import { parseValue } from '../field-parser';
 import { CloudFormationProcessedResourceResult } from '../stack/types';
 import { CloudFormationParseContext } from '../types';
 
+/**
+ *
+ * @param resourceName
+ * @param resource
+ * @param cfnContext
+ */
 export function dynamoDBResourceHandler(resourceName, resource, cfnContext: CloudFormationParseContext) {
   const tableName = resourceName;
-  const gsis = (resource.Properties.GlobalSecondaryIndexes || []).map(gsi => {
+  const gsis = (resource.Properties.GlobalSecondaryIndexes || []).map((gsi) => {
     const p = { ...gsi };
     delete p.ProvisionedThroughput;
     return p;
@@ -32,6 +38,9 @@ export function dynamoDBResourceHandler(resourceName, resource, cfnContext: Clou
   return processedResource;
 }
 
+/**
+ *
+ */
 export type AppSyncDataSourceProcessedResource = CloudFormationProcessedResourceResult & {
   name: string;
   type: 'AMAZON_DYNAMODB' | 'AWS_LAMBDA' | 'AMAZON_ELASTICSEARCH' | 'NONE';
@@ -40,6 +49,12 @@ export type AppSyncDataSourceProcessedResource = CloudFormationProcessedResource
     tableName: string;
   };
 };
+/**
+ *
+ * @param resourceName
+ * @param resource
+ * @param cfnContext
+ */
 export function appSyncDataSourceHandler(
   resourceName,
   resource,
@@ -80,7 +95,7 @@ export function appSyncDataSourceHandler(
   }
 
   if (typeName === 'AMAZON_ELASTICSEARCH') {
-    console.log(`@searchable mocking is not supported. Search queries will not work as expected.`);
+    console.log('@searchable mocking is not supported. Search queries will not work as expected.');
 
     return {
       ...commonProps,
@@ -97,6 +112,9 @@ export function appSyncDataSourceHandler(
   };
 }
 
+/**
+ *
+ */
 export type AppSyncAPIProcessedResource = CloudFormationProcessedResourceResult & {
   name: string;
   Ref: string;
@@ -106,6 +124,12 @@ export type AppSyncAPIProcessedResource = CloudFormationProcessedResourceResult 
   GraphQLUrl: string;
   additionalAuthenticationProviders: any;
 };
+/**
+ *
+ * @param resourceName
+ * @param resource
+ * @param cfnContext
+ */
 export function appSyncAPIResourceHandler(resourceName, resource, cfnContext: CloudFormationParseContext): AppSyncAPIProcessedResource {
   const apiId = 'amplify-test-api-id';
   const processedResource = {
@@ -122,25 +146,32 @@ export function appSyncAPIResourceHandler(resourceName, resource, cfnContext: Cl
     GraphQLUrl: 'http://localhost:20002/',
     ...(resource.Properties.AdditionalAuthenticationProviders
       ? {
-          additionalAuthenticationProviders: resource.Properties.AdditionalAuthenticationProviders.map(p => {
-            return {
-              authenticationType: p.AuthenticationType,
-              ...(p.OpenIDConnectConfig ? { openIDConnectConfig: p.OpenIDConnectConfig } : {}),
-              ...(p.CognitoUserPoolConfig ? { cognitoUserPoolConfig: p.CognitoUserPoolConfig } : {}),
-            };
-          }),
-        }
+        additionalAuthenticationProviders: resource.Properties.AdditionalAuthenticationProviders.map((p) => ({
+          authenticationType: p.AuthenticationType,
+          ...(p.OpenIDConnectConfig ? { openIDConnectConfig: p.OpenIDConnectConfig } : {}),
+          ...(p.CognitoUserPoolConfig ? { cognitoUserPoolConfig: p.CognitoUserPoolConfig } : {}),
+        })),
+      }
       : {
-          additionalAuthenticationProviders: [],
-        }),
+        additionalAuthenticationProviders: [],
+      }),
   };
   return processedResource;
 }
 
+/**
+ *
+ */
 export type AppSyncAPIKeyProcessedResource = CloudFormationProcessedResourceResult & {
   ApiKey: string;
   Ref: string;
 };
+/**
+ *
+ * @param resourceName
+ * @param resource
+ * @param cfnContext
+ */
 export function appSyncAPIKeyResourceHandler(
   resourceName,
   resource,
@@ -157,10 +188,19 @@ export function appSyncAPIKeyResourceHandler(
   return processedResource;
 }
 
+/**
+ *
+ */
 export type AppSyncSchemaProcessedResource = CloudFormationProcessedResourceResult & {
   definitionS3Location?: string;
   definition?: string;
 };
+/**
+ *
+ * @param resourceName
+ * @param resource
+ * @param cfnContext
+ */
 export function appSyncSchemaHandler(resourceName, resource, cfnContext: CloudFormationParseContext): AppSyncSchemaProcessedResource {
   const result: AppSyncSchemaProcessedResource = { cfnExposedAttributes: {} };
   if (resource && resource.Properties && resource.Properties.Definition) {
@@ -175,6 +215,9 @@ export function appSyncSchemaHandler(resourceName, resource, cfnContext: CloudFo
   return result;
 }
 
+/**
+ *
+ */
 export type AppSyncResolverProcessedResource = CloudFormationProcessedResourceResult & {
   dataSourceName?: string;
   functions: string[];
@@ -188,6 +231,12 @@ export type AppSyncResolverProcessedResource = CloudFormationProcessedResourceRe
   kind: 'UNIT' | 'PIPELINE';
 };
 
+/**
+ *
+ * @param resourceName
+ * @param resource
+ * @param cfnContext
+ */
 export function appSyncResolverHandler(resourceName, resource, cfnContext: CloudFormationParseContext): AppSyncResolverProcessedResource {
   const { Properties: properties } = resource;
   const requestMappingTemplateLocation = properties.RequestMappingTemplateS3Location
@@ -208,7 +257,7 @@ export function appSyncResolverHandler(resourceName, resource, cfnContext: Cloud
     if (typeof properties.PipelineConfig === 'undefined') {
       throw new Error('Pipeline DataSource config is missing required property PipelineConfig');
     }
-    functions = (properties.PipelineConfig.Functions || []).map(f => parseValue(f, cfnContext));
+    functions = (properties.PipelineConfig.Functions || []).map((f) => parseValue(f, cfnContext));
   } else {
     dataSourceName = parseValue(properties.DataSourceName, cfnContext);
   }
@@ -219,8 +268,8 @@ export function appSyncResolverHandler(resourceName, resource, cfnContext: Cloud
     typeName: properties.TypeName,
     functions,
     fieldName: properties.FieldName,
-    requestMappingTemplateLocation: requestMappingTemplateLocation,
-    responseMappingTemplateLocation: responseMappingTemplateLocation,
+    requestMappingTemplateLocation,
+    responseMappingTemplateLocation,
     requestMappingTemplate,
     responseMappingTemplate,
     kind: properties.Kind || 'UNIT',
@@ -228,6 +277,9 @@ export function appSyncResolverHandler(resourceName, resource, cfnContext: Cloud
   };
 }
 
+/**
+ *
+ */
 export type AppSyncFunctionProcessedResource = CloudFormationProcessedResourceResult & {
   dataSourceName: string;
   ref: string;
@@ -238,6 +290,12 @@ export type AppSyncFunctionProcessedResource = CloudFormationProcessedResourceRe
   responseMappingTemplate?: string;
 };
 
+/**
+ *
+ * @param resourceName
+ * @param resource
+ * @param cfnContext
+ */
 export function appSyncFunctionHandler(resourceName, resource, cfnContext: CloudFormationParseContext): AppSyncFunctionProcessedResource {
   const { Properties: properties } = resource;
   const requestMappingTemplateLocation = properties.RequestMappingTemplateS3Location
@@ -254,11 +312,13 @@ export function appSyncFunctionHandler(resourceName, resource, cfnContext: Cloud
   const dataSourceName = parseValue(properties.DataSourceName, cfnContext);
   return {
     ref: `arn:aws:appsync:us-east-1:123456789012:apis/graphqlapiid/functions/${resource.Properties.Name}`,
-    cfnExposedAttributes: { DataSourceName: 'dataSourceName', FunctionArn: 'ref', FunctionId: 'name', Name: 'name' },
+    cfnExposedAttributes: {
+      DataSourceName: 'dataSourceName', FunctionArn: 'ref', FunctionId: 'name', Name: 'name',
+    },
     name: resource.Properties.Name,
     dataSourceName,
-    requestMappingTemplateLocation: requestMappingTemplateLocation,
-    responseMappingTemplateLocation: responseMappingTemplateLocation,
+    requestMappingTemplateLocation,
+    responseMappingTemplateLocation,
     requestMappingTemplate,
     responseMappingTemplate,
   };

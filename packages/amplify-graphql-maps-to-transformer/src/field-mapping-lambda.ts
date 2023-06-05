@@ -5,6 +5,11 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import * as path from 'path';
 
+/**
+ *
+ * @param host
+ * @param stackManager
+ */
 export const createMappingLambda = (host: TransformHostProvider, stackManager: StackManagerProvider) => {
   const baseName = 'MapsToFieldMapping';
 
@@ -45,7 +50,7 @@ export const createMappingLambda = (host: TransformHostProvider, stackManager: S
           actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
           effect: iam.Effect.ALLOW,
           resources: [
-            cdk.Fn.sub(`arn:aws:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/\${funcName}:log-stream:*`, {
+            cdk.Fn.sub('arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${funcName}:log-stream:*', {
               funcName: lambdaFunc.functionName,
             }),
           ],

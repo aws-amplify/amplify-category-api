@@ -5,13 +5,9 @@ import { dockerComposeToObject, dockerfileToObject, generateBuildSpec } from './
 import Container from './ecs-objects/container';
 import { BuildHashMap, PortMappings } from './ecs-objects/types';
 
-const isv1Schema = (obj: any): obj is v1Types.ConfigSchemaV1Json => {
-  return obj && obj.version === undefined;
-};
+const isv1Schema = (obj: any): obj is v1Types.ConfigSchemaV1Json => obj && obj.version === undefined;
 
-const hasHealthCheck = (obj: any): obj is v2Types.DefinitionsHealthcheck => {
-  return obj.healthcheck !== undefined;
-};
+const hasHealthCheck = (obj: any): obj is v2Types.DefinitionsHealthcheck => obj.healthcheck !== undefined;
 
 function isV38Service(obj: any): obj is v38Types.DefinitionsService {
   return obj && (<v38Types.DefinitionsService>obj).secrets !== undefined;
@@ -19,10 +15,12 @@ function isV38Service(obj: any): obj is v38Types.DefinitionsService {
 const mapComposeEntriesToContainer = (record: [string, v1Types.DefinitionsService | v2Types.DefinitionsService]): Container => {
   const [k, v] = record;
 
-  const { image, ports, build, command, entrypoint, env_file, environment, working_dir, user } = v;
+  const {
+    image, ports, build, command, entrypoint, env_file, environment, working_dir, user,
+  } = v;
   const { container_name: name = k } = v;
 
-  var healthcheck: v2Types.DefinitionsHealthcheck = {};
+  let healthcheck: v2Types.DefinitionsHealthcheck = {};
   if (hasHealthCheck(v)) {
     Object.entries(v).forEach((item: [string, v2Types.DefinitionsHealthcheck]) => {
       const [, healthVal] = item;
@@ -32,10 +30,10 @@ const mapComposeEntriesToContainer = (record: [string, v1Types.DefinitionsServic
     });
   }
 
-  let portArray: PortMappings = [];
-  ports?.forEach(item => {
-    //For task definitions that use the awsvpc network mode, you should only specify the containerPort.
-    //The hostPort can be left blank or it must be the same value as the containerPort.
+  const portArray: PortMappings = [];
+  ports?.forEach((item) => {
+    // For task definitions that use the awsvpc network mode, you should only specify the containerPort.
+    // The hostPort can be left blank or it must be the same value as the containerPort.
     const [containerPort, hostPort = containerPort] = item.toString().split(':');
 
     portArray.push({
@@ -47,7 +45,7 @@ const mapComposeEntriesToContainer = (record: [string, v1Types.DefinitionsServic
 
   const secrets = new Set<string>();
   if (isV38Service(v)) {
-    v.secrets.filter(s => typeof s === 'string').forEach(s => secrets.add(<string>s));
+    v.secrets.filter((s) => typeof s === 'string').forEach((s) => secrets.add(<string>s));
   }
 
   return new Container(
@@ -70,7 +68,7 @@ const mapComposeEntriesToContainer = (record: [string, v1Types.DefinitionsServic
 };
 
 const convertDockerObjectToContainerArray = (yamlObject: v2Types.ConfigSchemaV24Json | v1Types.ConfigSchemaV1Json) => {
-  let containerArr: Container[] = [];
+  const containerArr: Container[] = [];
 
   if (isv1Schema(yamlObject)) {
     Object.entries(yamlObject).forEach((record: [string, v1Types.DefinitionsService]) => {
@@ -110,8 +108,13 @@ type DockerServiceInfo = {
   containers: Container[];
   secrets: Record<string, string>;
 };
+/**
+ *
+ * @param composeContents
+ * @param dockerfileContents
+ */
 export function getContainers(composeContents?: string, dockerfileContents?: string): DockerServiceInfo {
-  //Step 1: Detect if there is a docker-compose or just a Dockerfile.
+  // Step 1: Detect if there is a docker-compose or just a Dockerfile.
   //        Just Dockerfile-> create registry using function name, buildspec, zip and put on S3
   //        Compose file -> Begin by parsing it:
   const dockerCompose = composeContents ? dockerComposeToObject(composeContents) : dockerfileToObject(dockerfileContents);
@@ -126,21 +129,21 @@ export function getContainers(composeContents?: string, dockerfileContents?: str
     }
   }
 
-  //Step 2: Take compose object and pull all the containers out:
+  // Step 2: Take compose object and pull all the containers out:
   const containers = convertDockerObjectToContainerArray(dockerCompose);
 
-  //Step 3: Populate Build mapping for creation of the buildpsec
+  // Step 3: Populate Build mapping for creation of the buildpsec
   const buildmapping: BuildHashMap = {};
-  containers.forEach(res => {
+  containers.forEach((res) => {
     if (typeof res.build === 'object') {
-      //console.log(res.build.args);
+      // console.log(res.build.args);
     }
     if (typeof res.healthcheck === 'object') {
-      //console.log(res.healthcheck.command)
+      // console.log(res.healthcheck.command)
     }
-    //Step 4: Create ECR Entry if build is specified - TODO with Francisco..... - this will go in registryArn
+    // Step 4: Create ECR Entry if build is specified - TODO with Francisco..... - this will go in registryArn
     if (res.build != undefined) {
-      let buildContext: string = '';
+      let buildContext = '';
 
       if (typeof res.build === 'object') {
         buildContext = res.build.context!;
@@ -148,7 +151,7 @@ export function getContainers(composeContents?: string, dockerfileContents?: str
         buildContext = res.build;
       }
 
-      //Wont need this if statement later, just using for testing
+      // Wont need this if statement later, just using for testing
       /** This will look like this for each container where res.build != undefined:
        * let registryArn = new ecr.Repository(this, res.name, {});
        * buildmapping[res.name] = {buildPath: buildContext, registryArn };
@@ -157,7 +160,7 @@ export function getContainers(composeContents?: string, dockerfileContents?: str
     }
   });
 
-  //Step 5: Generate the buildfiles
+  // Step 5: Generate the buildfiles
   const buildspec = generateBuildSpec(buildmapping);
 
   const service = findServiceDeployment(dockerCompose);

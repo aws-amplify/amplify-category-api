@@ -67,6 +67,10 @@ export const MAP_SCALARS: { [k: string]: boolean } = {
   AWSJSON: true,
 };
 
+/**
+ *
+ * @param scalar
+ */
 export function attributeTypeFromScalar(scalar: TypeNode): 'S' | 'N' {
   const baseType = getBaseType(scalar);
   const baseScalar = DEFAULT_SCALARS[baseType];
@@ -81,73 +85,103 @@ export function attributeTypeFromScalar(scalar: TypeNode): 'S' | 'N' {
     case 'Float':
       return 'N';
     case 'Boolean':
-      throw new Error(`Boolean values cannot be used as sort keys.`);
+      throw new Error('Boolean values cannot be used as sort keys.');
     default:
       throw new Error(`There is no valid DynamoDB attribute type for scalar ${baseType}`);
   }
 }
 
+/**
+ *
+ * @param type
+ */
 export function isScalar(type: TypeNode) {
   if (type.kind === Kind.NON_NULL_TYPE) {
     return isScalar(type.type);
-  } else if (type.kind === Kind.LIST_TYPE) {
+  } if (type.kind === Kind.LIST_TYPE) {
     return isScalar(type.type);
-  } else {
-    return Boolean(DEFAULT_SCALARS[type.name.value]);
   }
+  return Boolean(DEFAULT_SCALARS[type.name.value]);
 }
 
+/**
+ *
+ * @param type
+ * @param enums
+ */
 export function isScalarOrEnum(type: TypeNode, enums: EnumTypeDefinitionNode[]) {
   if (type.kind === Kind.NON_NULL_TYPE) {
     return isScalarOrEnum(type.type, enums);
-  } else if (type.kind === Kind.LIST_TYPE) {
+  } if (type.kind === Kind.LIST_TYPE) {
     return isScalarOrEnum(type.type, enums);
-  } else {
-    for (const e of enums) {
-      if (e.name.value === type.name.value) {
-        return true;
-      }
-    }
-    return Boolean(DEFAULT_SCALARS[type.name.value]);
   }
+  for (const e of enums) {
+    if (e.name.value === type.name.value) {
+      return true;
+    }
+  }
+  return Boolean(DEFAULT_SCALARS[type.name.value]);
 }
 
+/**
+ *
+ * @param type
+ * @param document
+ */
 export function isEnum(type: TypeNode, document: DocumentNode) {
   const baseType = getBaseType(type);
-  return document.definitions.find(def => {
-    return def.kind === Kind.ENUM_TYPE_DEFINITION && def.name.value === baseType;
-  });
+  return document.definitions.find((def) => def.kind === Kind.ENUM_TYPE_DEFINITION && def.name.value === baseType);
 }
 
+/**
+ *
+ * @param type
+ */
 export function getBaseType(type: TypeNode): string {
   if (type.kind === Kind.NON_NULL_TYPE) {
     return getBaseType(type.type);
-  } else if (type.kind === Kind.LIST_TYPE) {
+  } if (type.kind === Kind.LIST_TYPE) {
     return getBaseType(type.type);
-  } else {
-    return type.name.value;
   }
+  return type.name.value;
 }
 
+/**
+ *
+ * @param type
+ */
 export function isListType(type: TypeNode): boolean {
   if (type.kind === Kind.NON_NULL_TYPE) {
     return isListType(type.type);
-  } else if (type.kind === Kind.LIST_TYPE) {
+  } if (type.kind === Kind.LIST_TYPE) {
     return true;
-  } else {
-    return false;
   }
+  return false;
 }
 
+/**
+ *
+ * @param type
+ */
 export function isNonNullType(type: TypeNode): boolean {
   return type.kind === Kind.NON_NULL_TYPE;
 }
 
+/**
+ *
+ * @param directive
+ * @param arg
+ * @param dflt
+ */
 export function getDirectiveArgument(directive: DirectiveNode, arg: string, dflt?: any) {
-  const argument = directive.arguments.find(a => a.name.value === arg);
+  const argument = directive.arguments.find((a) => a.name.value === arg);
   return argument ? valueFromASTUntyped(argument.value) : dflt;
 }
 
+/**
+ *
+ * @param type
+ */
 export function unwrapNonNull(type: TypeNode) {
   if (type.kind === 'NonNullType') {
     return unwrapNonNull(type.type);
@@ -155,6 +189,10 @@ export function unwrapNonNull(type: TypeNode) {
   return type;
 }
 
+/**
+ *
+ * @param type
+ */
 export function wrapNonNull(type: TypeNode) {
   if (type.kind !== 'NonNullType') {
     return makeNonNullType(type);
@@ -162,6 +200,11 @@ export function wrapNonNull(type: TypeNode) {
   return type;
 }
 
+/**
+ *
+ * @param operation
+ * @param type
+ */
 export function makeOperationType(operation: OperationTypeNode, type: string): OperationTypeDefinitionNode {
   return {
     kind: 'OperationTypeDefinition',
@@ -176,6 +219,10 @@ export function makeOperationType(operation: OperationTypeNode, type: string): O
   };
 }
 
+/**
+ *
+ * @param operationTypes
+ */
 export function makeSchema(operationTypes: OperationTypeDefinitionNode[]): SchemaDefinitionNode {
   return {
     kind: Kind.SCHEMA_DEFINITION,
@@ -184,6 +231,10 @@ export function makeSchema(operationTypes: OperationTypeDefinitionNode[]): Schem
   };
 }
 
+/**
+ *
+ * @param name
+ */
 export function blankObject(name: string): ObjectTypeDefinitionNode {
   return {
     kind: 'ObjectTypeDefinition',
@@ -197,6 +248,10 @@ export function blankObject(name: string): ObjectTypeDefinitionNode {
   };
 }
 
+/**
+ *
+ * @param name
+ */
 export function blankObjectExtension(name: string): ObjectTypeExtensionNode {
   return {
     kind: Kind.OBJECT_TYPE_EXTENSION,
@@ -210,6 +265,11 @@ export function blankObjectExtension(name: string): ObjectTypeExtensionNode {
   };
 }
 
+/**
+ *
+ * @param object
+ * @param fields
+ */
 export function extensionWithFields(object: ObjectTypeExtensionNode, fields: FieldDefinitionNode[]): ObjectTypeExtensionNode {
   return {
     ...object,
@@ -217,12 +277,17 @@ export function extensionWithFields(object: ObjectTypeExtensionNode, fields: Fie
   };
 }
 
+/**
+ *
+ * @param object
+ * @param directives
+ */
 export function extensionWithDirectives(object: ObjectTypeExtensionNode, directives: DirectiveNode[]): ObjectTypeExtensionNode {
   if (directives && directives.length > 0) {
     const newDirectives = [];
 
     for (const directive of directives) {
-      if (!object.directives.find(d => d.name.value === directive.name.value)) {
+      if (!object.directives.find((d) => d.name.value === directive.name.value)) {
         newDirectives.push(directive);
       }
     }
@@ -238,12 +303,17 @@ export function extensionWithDirectives(object: ObjectTypeExtensionNode, directi
   return object;
 }
 
+/**
+ *
+ * @param field
+ * @param directives
+ */
 export function extendFieldWithDirectives(field: FieldDefinitionNode, directives: DirectiveNode[]): FieldDefinitionNode {
   if (directives && directives.length > 0) {
     const newDirectives = [];
 
     for (const directive of directives) {
-      if (!field.directives.find(d => d.name.value === directive.name.value)) {
+      if (!field.directives.find((d) => d.name.value === directive.name.value)) {
         newDirectives.push(directive);
       }
     }
@@ -259,6 +329,11 @@ export function extendFieldWithDirectives(field: FieldDefinitionNode, directives
   return field;
 }
 
+/**
+ *
+ * @param name
+ * @param types
+ */
 export function defineUnionType(name: string, types: NamedTypeNode[] = []): UnionTypeDefinitionNode {
   return {
     kind: Kind.UNION_TYPE_DEFINITION,
@@ -266,10 +341,15 @@ export function defineUnionType(name: string, types: NamedTypeNode[] = []): Unio
       kind: 'Name',
       value: name,
     },
-    types: types,
+    types,
   };
 }
 
+/**
+ *
+ * @param name
+ * @param inputs
+ */
 export function makeInputObjectDefinition(name: string, inputs: InputValueDefinitionNode[]): InputObjectTypeDefinitionNode {
   return {
     kind: 'InputObjectTypeDefinition',
@@ -282,6 +362,11 @@ export function makeInputObjectDefinition(name: string, inputs: InputValueDefini
   };
 }
 
+/**
+ *
+ * @param name
+ * @param inputs
+ */
 export function makeObjectDefinition(name: string, inputs: FieldDefinitionNode[]): ObjectTypeDefinitionNode {
   return {
     kind: Kind.OBJECT_TYPE_DEFINITION,
@@ -294,6 +379,13 @@ export function makeObjectDefinition(name: string, inputs: FieldDefinitionNode[]
   };
 }
 
+/**
+ *
+ * @param name
+ * @param args
+ * @param type
+ * @param directives
+ */
 export function makeField(
   name: string,
   args: InputValueDefinitionNode[],
@@ -312,6 +404,11 @@ export function makeField(
   };
 }
 
+/**
+ *
+ * @param name
+ * @param args
+ */
 export function makeDirective(name: string, args: ArgumentNode[]): DirectiveNode {
   return {
     kind: Kind.DIRECTIVE,
@@ -323,6 +420,11 @@ export function makeDirective(name: string, args: ArgumentNode[]): DirectiveNode
   };
 }
 
+/**
+ *
+ * @param name
+ * @param value
+ */
 export function makeArgument(name: string, value: ValueNode): ArgumentNode {
   return {
     kind: Kind.ARGUMENT,
@@ -334,23 +436,27 @@ export function makeArgument(name: string, value: ValueNode): ArgumentNode {
   };
 }
 
+/**
+ *
+ * @param value
+ */
 export function makeValueNode(value: any): ValueNode {
   if (typeof value === 'string') {
-    return { kind: Kind.STRING, value: value };
-  } else if (Number.isInteger(value)) {
-    return { kind: Kind.INT, value: value };
-  } else if (typeof value === 'number') {
+    return { kind: Kind.STRING, value };
+  } if (Number.isInteger(value)) {
+    return { kind: Kind.INT, value };
+  } if (typeof value === 'number') {
     return { kind: Kind.FLOAT, value: String(value) };
-  } else if (typeof value === 'boolean') {
-    return { kind: Kind.BOOLEAN, value: value };
-  } else if (value === null) {
+  } if (typeof value === 'boolean') {
+    return { kind: Kind.BOOLEAN, value };
+  } if (value === null) {
     return { kind: Kind.NULL };
-  } else if (Array.isArray(value)) {
+  } if (Array.isArray(value)) {
     return {
       kind: Kind.LIST,
-      values: value.map(v => makeValueNode(v)),
+      values: value.map((v) => makeValueNode(v)),
     };
-  } else if (typeof value === 'object') {
+  } if (typeof value === 'object') {
     return {
       kind: Kind.OBJECT,
       fields: Object.keys(value).map((key: string) => {
@@ -365,6 +471,11 @@ export function makeValueNode(value: any): ValueNode {
   }
 }
 
+/**
+ *
+ * @param name
+ * @param type
+ */
 export function makeInputValueDefinition(name: string, type: TypeNode): InputValueDefinitionNode {
   return {
     kind: Kind.INPUT_VALUE_DEFINITION,
@@ -377,6 +488,10 @@ export function makeInputValueDefinition(name: string, type: TypeNode): InputVal
   };
 }
 
+/**
+ *
+ * @param name
+ */
 export function makeNamedType(name: string): NamedTypeNode {
   return {
     kind: 'NamedType',
@@ -387,6 +502,10 @@ export function makeNamedType(name: string): NamedTypeNode {
   };
 }
 
+/**
+ *
+ * @param type
+ */
 export function makeNonNullType(type: NamedTypeNode | ListTypeNode): NonNullTypeNode {
   return {
     kind: Kind.NON_NULL_TYPE,
@@ -394,6 +513,10 @@ export function makeNonNullType(type: NamedTypeNode | ListTypeNode): NonNullType
   };
 }
 
+/**
+ *
+ * @param type
+ */
 export function makeListType(type: TypeNode): ListTypeNode {
   return {
     kind: 'ListType',

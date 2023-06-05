@@ -13,6 +13,16 @@ import {
 import * as fs from 'fs';
 import * as path from 'path';
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ * @param settings.layerName
+ * @param settings.permissions
+ * @param settings.accountId
+ * @param settings.orgId
+ * @param settings.runtimes
+ */
 export function legacyAddLayer(
   cwd: string,
   settings: {
@@ -66,19 +76,35 @@ export function legacyAddLayer(
   });
 }
 
+/**
+ *
+ * @param projRoot
+ * @param layerName
+ */
 export function legacyAddOptData(projRoot: string, layerName: string): void {
   fs.writeFileSync(path.join(projRoot, 'amplify', 'backend', 'function', layerName, 'opt', 'data.txt'), 'data', 'utf8');
 }
 
+/**
+ *
+ * @param projRoot
+ * @param layerName
+ * @param data
+ */
 export function legacyUpdateOptData(projRoot: string, layerName: string, data: string): void {
   fs.writeFileSync(path.join(projRoot, 'amplify', 'backend', 'function', layerName, 'opt', 'data.txt'), data, 'utf8');
 }
 
+/**
+ *
+ * @param projRoot
+ * @param layerName
+ */
 export function validateLayerConfigFilesMigrated(projRoot: string, layerName: string) {
   const layerDirPath = pathManager.getResourceDirectoryPath(projRoot, 'function', layerName);
   return (
-    fs.existsSync(path.join(layerDirPath, 'layer-configuration.json')) &&
-    !fs.existsSync(path.join(layerDirPath, 'layer-runtimes.json')) &&
-    !fs.existsSync(path.join(layerDirPath, 'layer-parameters.json'))
+    fs.existsSync(path.join(layerDirPath, 'layer-configuration.json'))
+    && !fs.existsSync(path.join(layerDirPath, 'layer-runtimes.json'))
+    && !fs.existsSync(path.join(layerDirPath, 'layer-parameters.json'))
   );
 }

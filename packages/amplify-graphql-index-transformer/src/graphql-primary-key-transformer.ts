@@ -3,7 +3,7 @@ import {
   generateGetArgumentsInput,
   InvalidDirectiveError,
   TransformerPluginBase,
-  DatasourceType
+  DatasourceType,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -19,12 +19,12 @@ import {
   Kind,
   ObjectTypeDefinitionNode,
 } from 'graphql';
-import { 
-  isListType, 
-  isNonNullType, 
+import {
+  isListType,
+  isNonNullType,
   isScalarOrEnum,
   makeInputValueDefinition,
-  makeNamedType
+  makeNamedType,
 } from 'graphql-transformer-common';
 import {
   constructSyncVTL,
@@ -39,13 +39,13 @@ import {
   updateMutationConditionInput,
   createHashField,
   ensureModelSortDirectionEnum,
-  tryAndCreateSortField
+  tryAndCreateSortField,
 } from './schema';
 import { PrimaryKeyDirectiveConfiguration } from './types';
 import {
   validateNotSelfReferencing,
   validateNotOwnerAuth,
-  lookupResolverName
+  lookupResolverName,
 } from './utils';
 
 const directiveName = 'primaryKey';
@@ -53,6 +53,9 @@ const directiveDefinition = `
   directive @${directiveName}(sortKeyFields: [String]) on FIELD_DEFINITION
 `;
 
+/**
+ *
+ */
 export class PrimaryKeyTransformer extends TransformerPluginBase {
   private directiveList: PrimaryKeyDirectiveConfiguration[] = [];
   private resolverMap: Map<TransformerResolverProvider, string> = new Map();
@@ -126,9 +129,7 @@ function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
 
   validateNotSelfReferencing(config);
 
-  const modelDirective = object.directives!.find(directive => {
-    return directive.name.value === 'model';
-  });
+  const modelDirective = object.directives!.find((directive) => directive.name.value === 'model');
 
   if (!modelDirective) {
     throw new InvalidDirectiveError(`The @${directiveName} directive may only be added to object definitions annotated with @model.`);
@@ -183,7 +184,7 @@ function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
 
     if (!validateNotOwnerAuth(sortKeyFieldName, config, ctx)) {
       throw new InvalidDirectiveError(
-        `The primary key's sort key type '${sortKeyFieldName}' cannot be used as an owner @auth field too. Please use another field for the sort key.`
+        `The primary key's sort key type '${sortKeyFieldName}' cannot be used as an owner @auth field too. Please use another field for the sort key.`,
       );
     }
 
@@ -191,6 +192,11 @@ function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
   }
 }
 
+/**
+ *
+ * @param config
+ * @param ctx
+ */
 export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const resolverName = lookupResolverName(config, ctx, 'list');
   let query = ctx.output.getQuery();
@@ -221,9 +227,7 @@ export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: T
     listField = { ...listField, arguments: args };
     query = {
       ...query,
-      fields: query.fields!.map((field: FieldDefinitionNode) => {
-        return field.name.value === listField.name.value ? listField : field;
-      }),
+      fields: query.fields!.map((field: FieldDefinitionNode) => (field.name.value === listField.name.value ? listField : field)),
     };
     ctx.output.updateObject(query);
   }

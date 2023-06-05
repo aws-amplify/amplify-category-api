@@ -4,6 +4,11 @@ import { configureAmplify, getConfiguredAppsyncClientIAMAuth } from '../authHelp
 
 import { updateSchemaInTestProject, testMutations, testQueries } from '../common';
 
+/**
+ *
+ * @param projectDir
+ * @param testModule
+ */
 export async function runTest(projectDir: string, testModule: any) {
   await addApi(projectDir, {
     IAM: {},
@@ -19,7 +24,7 @@ export async function runTest(projectDir: string, testModule: any) {
   await testQueries(testModule, appSyncClient);
 }
 
-//schema
+// schema
 export const schema = `
 # public authorization with provider override
 type Post @model @auth(rules: [{allow: public, provider: iam}]) {
@@ -28,7 +33,7 @@ type Post @model @auth(rules: [{allow: public, provider: iam}]) {
 }
 
 ##public2`;
-//mutations
+// mutations
 export const mutation1 = `
 mutation CreatePost(
     $input: CreatePostInput!

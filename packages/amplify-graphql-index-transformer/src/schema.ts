@@ -36,6 +36,11 @@ import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
 import { lookupResolverName } from './utils';
 
+/**
+ *
+ * @param config
+ * @param ctx
+ */
 export function addKeyConditionInputs(
   config: PrimaryKeyDirectiveConfiguration | IndexDirectiveConfiguration,
   ctx: TransformerContextProvider,
@@ -74,9 +79,14 @@ export function addKeyConditionInputs(
   }
 }
 
+/**
+ *
+ * @param config
+ * @param ctx
+ */
 export function removeAutoCreatedPrimaryKey(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const { object } = config;
-  const schemaHasIdField = object?.fields?.some(f => f.name.value === 'id');
+  const schemaHasIdField = object?.fields?.some((f) => f.name.value === 'id');
 
   if (schemaHasIdField) {
     return;
@@ -92,6 +102,11 @@ export function removeAutoCreatedPrimaryKey(config: PrimaryKeyDirectiveConfigura
   ctx.output.updateObject(newObj);
 }
 
+/**
+ *
+ * @param config
+ * @param ctx
+ */
 export function updateGetField(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const resolverName = lookupResolverName(config, ctx, 'get');
   let query = ctx.output.getQuery();
@@ -105,22 +120,23 @@ export function updateGetField(config: PrimaryKeyDirectiveConfiguration, ctx: Tr
   if (resolverField) {
     const args = [
       makeInputValueDefinition(field.name.value, makeNonNullType(makeNamedType(getBaseType(field.type)))),
-      ...sortKey.map(keyField => {
-        return makeInputValueDefinition(keyField.name.value, makeNonNullType(makeNamedType(getBaseType(keyField.type))));
-      }),
+      ...sortKey.map((keyField) => makeInputValueDefinition(keyField.name.value, makeNonNullType(makeNamedType(getBaseType(keyField.type))))),
     ];
 
     resolverField = { ...resolverField, arguments: args };
     query = {
       ...query,
-      fields: query.fields!.map((field: FieldDefinitionNode) => {
-        return field.name.value === resolverField.name.value ? resolverField : field;
-      }),
+      fields: query.fields!.map((field: FieldDefinitionNode) => (field.name.value === resolverField.name.value ? resolverField : field)),
     };
     ctx.output.updateObject(query);
   }
 }
 
+/**
+ *
+ * @param config
+ * @param ctx
+ */
 export function updateInputObjects(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const { object, modelDirective } = config;
   let shouldMakeCreate = true;
@@ -178,6 +194,11 @@ export function updateInputObjects(config: PrimaryKeyDirectiveConfiguration, ctx
   }
 }
 
+/**
+ *
+ * @param config
+ * @param ctx
+ */
 export function updateMutationConditionInput(
   config: PrimaryKeyDirectiveConfiguration | IndexDirectiveConfiguration,
   ctx: TransformerContextProvider,
@@ -194,17 +215,19 @@ export function updateMutationConditionInput(
   const fieldNames = new Set(indexName ? ['id'] : ['id', field.name.value, ...sortKeyFields]);
   const updatedInput = {
     ...tableXMutationConditionInput,
-    fields: tableXMutationConditionInput.fields!.filter(field => {
-      return !fieldNames.has(field.name.value);
-    }),
+    fields: tableXMutationConditionInput.fields!.filter((field) => !fieldNames.has(field.name.value)),
   };
 
   ctx.output.putType(updatedInput);
 }
 
+/**
+ *
+ * @param config
+ */
 export function createHashField(config: PrimaryKeyDirectiveConfiguration | IndexDirectiveConfiguration): InputValueDefinitionNode {
   const { field } = config;
-  const type = "queryField" in config ? makeNonNullType(makeNamedType(getBaseType(field.type))) : makeNamedType(getBaseType(field.type));
+  const type = 'queryField' in config ? makeNonNullType(makeNamedType(getBaseType(field.type))) : makeNamedType(getBaseType(field.type));
   return makeInputValueDefinition(field.name.value, type);
 }
 
@@ -263,14 +286,14 @@ export const tryAndCreateSortField = (
 };
 
 function replaceCreateInput(input: InputObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
-  return { ...input, fields: input.fields!.filter(f => f.name.value !== 'id') };
+  return { ...input, fields: input.fields!.filter((f) => f.name.value !== 'id') };
 }
 
 function replaceUpdateInput(config: PrimaryKeyDirectiveConfiguration, input: InputObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
   const { field, object, sortKey } = config;
-  const schemaHasIdField = object.fields!.some(f => f.name.value === 'id');
+  const schemaHasIdField = object.fields!.some((f) => f.name.value === 'id');
   const keyFields = [field, ...sortKey];
-  const inputFields = input.fields!.filter(f => {
+  const inputFields = input.fields!.filter((f) => {
     if (!schemaHasIdField && f.name.value === 'id') {
       return false;
     }
@@ -280,8 +303,8 @@ function replaceUpdateInput(config: PrimaryKeyDirectiveConfiguration, input: Inp
 
   return {
     ...input,
-    fields: inputFields.map(f => {
-      if (keyFields.find(k => k.name.value === f.name.value)) {
+    fields: inputFields.map((f) => {
+      if (keyFields.find((k) => k.name.value === f.name.value)) {
         return makeInputValueDefinition(f.name.value, wrapNonNull(withNamedNodeNamed(f.type, getBaseType(f.type))));
       }
 
@@ -296,19 +319,22 @@ function replaceUpdateInput(config: PrimaryKeyDirectiveConfiguration, input: Inp
 
 function replaceDeleteInput(config: PrimaryKeyDirectiveConfiguration, input: InputObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
   const { field, sortKey } = config;
-  const primaryKeyFields = [field, ...sortKey].map((keyField: FieldDefinitionNode) => {
-    return makeInputValueDefinition(keyField.name.value, makeNonNullType(makeNamedType(getBaseType(keyField.type))));
-  });
+  const primaryKeyFields = [field, ...sortKey].map((keyField: FieldDefinitionNode) => makeInputValueDefinition(keyField.name.value, makeNonNullType(makeNamedType(getBaseType(keyField.type)))));
   const existingFields = input.fields!.filter(
-    f => !(primaryKeyFields.some(pf => pf.name.value === f.name.value) || (getBaseType(f.type) === 'ID' && f.name.value === 'id')),
+    (f) => !(primaryKeyFields.some((pf) => pf.name.value === f.name.value) || (getBaseType(f.type) === 'ID' && f.name.value === 'id')),
   );
 
   return { ...input, fields: [...primaryKeyFields, ...existingFields] };
 }
 
+/**
+ *
+ * @param config
+ * @param ctx
+ */
 export function ensureQueryField(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const { name, object, queryField } = config;
-  const hasAuth = object.directives?.some(dir => dir.name.value === 'auth');
+  const hasAuth = object.directives?.some((dir) => dir.name.value === 'auth');
   const directives = [];
 
   if (!queryField) {
@@ -364,6 +390,10 @@ function generateModelXConnectionType(config: IndexDirectiveConfiguration, ctx: 
   ctx.output.addObjectExtension(connectionTypeExtension);
 }
 
+/**
+ *
+ * @param ctx
+ */
 export function ensureModelSortDirectionEnum(ctx: TransformerContextProvider): void {
   if (!ctx.output.hasType('ModelSortDirection')) {
     const modelSortDirection = makeModelSortDirectionEnumObject();
@@ -396,10 +426,9 @@ function makeModelXFilterInputObject(config: IndexDirectiveConfiguration, ctx: T
       const fieldType = ctx.output.getType(baseType);
       const isList = isListType(field.type);
       const isEnumType = fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION;
-      const filterTypeName =
-        isEnumType && isList
-          ? ModelResourceIDs.ModelFilterListInputTypeName(baseType, !supportsConditions)
-          : ModelResourceIDs.ModelScalarFilterInputTypeName(baseType, !supportsConditions);
+      const filterTypeName = isEnumType && isList
+        ? ModelResourceIDs.ModelFilterListInputTypeName(baseType, !supportsConditions)
+        : ModelResourceIDs.ModelScalarFilterInputTypeName(baseType, !supportsConditions);
 
       return {
         kind: Kind.INPUT_VALUE_DEFINITION,

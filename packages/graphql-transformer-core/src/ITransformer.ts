@@ -14,6 +14,9 @@ import {
 } from 'graphql';
 import { TransformerContext } from './TransformerContext';
 
+/**
+ *
+ */
 export interface ITransformer {
   name: string;
 

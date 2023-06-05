@@ -12,6 +12,10 @@ import { ValidationError } from '../exceptions/validation-error';
  * @returns true if an enum is defined once
  */
 
+/**
+ *
+ * @param schema
+ */
 export const validateEnumIsDefinedOnce = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const enumTypeDefinitions = schema.definitions.filter(

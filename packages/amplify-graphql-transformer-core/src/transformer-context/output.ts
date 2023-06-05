@@ -22,12 +22,16 @@ import {
   UnionTypeDefinitionNode,
   UnionTypeExtensionNode,
 } from 'graphql';
+import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { stripDirectives } from '../utils/strip-directives';
 import { DEFAULT_SCHEMA_DEFINITION } from '../utils/defaultSchema';
-import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 const AMPLIFY = 'AMPLIFY';
 
+/**
+ *
+ * @param name
+ */
 export function blankObject(name: string): ObjectTypeDefinitionNode {
   return {
     kind: 'ObjectTypeDefinition',
@@ -41,6 +45,11 @@ export function blankObject(name: string): ObjectTypeDefinitionNode {
   };
 }
 
+/**
+ *
+ * @param name
+ * @param fields
+ */
 export function objectExtension(name: string, fields: FieldDefinitionNode[] = []): ObjectTypeExtensionNode {
   return {
     kind: Kind.OBJECT_TYPE_EXTENSION,
@@ -54,6 +63,9 @@ export function objectExtension(name: string, fields: FieldDefinitionNode[] = []
   };
 }
 
+/**
+ *
+ */
 export class TransformerOutput implements TransformerContextOutputProvider {
   public nodeMap: { [name: string]: TypeSystemDefinitionNode } = {};
 
@@ -127,6 +139,11 @@ export class TransformerOutput implements TransformerContextOutputProvider {
       }
     }
   }
+
+  /**
+   *
+   * @param kind
+   */
   public getTypeDefinitionsOfKind(kind: string) {
     const typeDefs: TypeDefinitionNode[] = [];
     for (const key of Object.keys(this.nodeMap)) {
@@ -138,12 +155,24 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     return typeDefs;
   }
 
+  /**
+   *
+   * @param obj
+   */
   public putSchema(obj: SchemaDefinitionNode) {
     this.nodeMap.__schema = obj;
   }
+
+  /**
+   *
+   */
   public getSchema(): SchemaDefinitionNode {
     return this.nodeMap.__schema as SchemaDefinitionNode;
   }
+
+  /**
+   *
+   */
   public getQueryTypeName(): string | undefined {
     const schemaNode = this.getSchema();
     const queryTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'query');
@@ -151,6 +180,10 @@ export class TransformerOutput implements TransformerContextOutputProvider {
       return queryTypeName.type.name.value;
     }
   }
+
+  /**
+   *
+   */
   public getQuery(): ObjectTypeDefinitionNode | undefined {
     const queryTypeName = this.getQueryTypeName();
     if (queryTypeName) {
@@ -158,6 +191,9 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     }
   }
 
+  /**
+   *
+   */
   public getMutationTypeName(): string | undefined {
     const schemaNode = this.getSchema();
     const mutationTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'mutation');
@@ -166,6 +202,9 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     }
   }
 
+  /**
+   *
+   */
   public getMutation(): ObjectTypeDefinitionNode | undefined {
     const mutationTypeName = this.getMutationTypeName();
     if (mutationTypeName) {
@@ -173,6 +212,9 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     }
   }
 
+  /**
+   *
+   */
   public getSubscriptionTypeName(): string | undefined {
     const schemaNode = this.getSchema();
     const subscriptionTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'subscription');
@@ -181,6 +223,9 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     }
   }
 
+  /**
+   *
+   */
   public getSubscription(): ObjectTypeDefinitionNode | undefined {
     const subscriptionTypeName = this.getSubscriptionTypeName();
     if (subscriptionTypeName) {
@@ -198,14 +243,27 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     }
     this.nodeMap[obj.name.value] = obj;
   }
+
+  /**
+   *
+   * @param obj
+   */
   public putType(obj: TypeDefinitionNode) {
     this.nodeMap[obj.name.value] = obj;
   }
 
+  /**
+   *
+   * @param name
+   */
   public getType(name: string): TypeSystemDefinitionNode | undefined {
     return this.nodeMap[name];
   }
 
+  /**
+   *
+   * @param name
+   */
   public hasType(name: string): boolean {
     return name in this.nodeMap;
   }
@@ -222,6 +280,10 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     this.nodeMap[obj.name.value] = obj;
   }
 
+  /**
+   *
+   * @param obj
+   */
   public updateObject(obj: ObjectTypeDefinitionNode) {
     if (!this.nodeMap[obj.name.value]) {
       throw new Error(`Type ${obj.name.value} does not exist.`);
@@ -229,6 +291,10 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     this.nodeMap[obj.name.value] = obj;
   }
 
+  /**
+   *
+   * @param name
+   */
   public getObject(name: string): ObjectTypeDefinitionNode | undefined {
     if (this.nodeMap[name]) {
       const node = this.nodeMap[name];
@@ -262,7 +328,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
       if (!this.getType(queryTypeName)) {
         this.addType(blankObject(queryTypeName));
       }
-      let queryType = objectExtension(queryTypeName, fields);
+      const queryType = objectExtension(queryTypeName, fields);
       this.addObjectExtension(queryType);
     }
   }
@@ -279,7 +345,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
       if (!this.getType(mutationTypeName)) {
         this.addType(blankObject(mutationTypeName));
       }
-      let mutationType = objectExtension(mutationTypeName, fields);
+      const mutationType = objectExtension(mutationTypeName, fields);
       this.addObjectExtension(mutationType);
     }
   }
@@ -296,7 +362,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
       if (!this.getType(subscriptionTypeName)) {
         this.addType(blankObject(subscriptionTypeName));
       }
-      let subscriptionType = objectExtension(subscriptionTypeName, fields);
+      const subscriptionType = objectExtension(subscriptionTypeName, fields);
       this.addObjectExtension(subscriptionType);
     }
   }
@@ -321,7 +387,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     // Filter out duplicate directives, do not add them
     if (obj.directives) {
       for (const newDir of obj.directives) {
-        if (Boolean(oldDirs.find(d => d.name.value === newDir.name.value)) === false) {
+        if (Boolean(oldDirs.find((d) => d.name.value === newDir.name.value)) === false) {
           newDirs.push(newDir);
         }
       }
@@ -554,6 +620,9 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     this.nodeMap[en.name.value] = en;
   }
 
+  /**
+   *
+   */
   public buildSchema(): string {
     const mutationNode: ObjectTypeDefinitionNode | undefined = this.getMutation();
     const queryNode: ObjectTypeDefinitionNode | undefined = this.getQuery();
@@ -609,6 +678,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
       },
     };
   }
+
   private static makeSchema(operationTypes: OperationTypeDefinitionNode[]): SchemaDefinitionNode {
     return {
       kind: Kind.SCHEMA_DEFINITION,

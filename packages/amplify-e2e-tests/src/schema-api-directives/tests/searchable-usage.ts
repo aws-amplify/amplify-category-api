@@ -4,22 +4,27 @@ import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } fro
 
 import { updateSchemaInTestProject, testMutations, testQueries } from '../common';
 
+/**
+ *
+ * @param projectDir
+ * @param testModule
+ */
 export async function runTest(projectDir: string, testModule: any) {
   await addApi(projectDir, { transformerVersion: 1 });
   updateSchemaInTestProject(projectDir, testModule.schema);
   await amplifyPush(projectDir);
-  await new Promise<void>(res => setTimeout(() => res(), 60000));
+  await new Promise<void>((res) => setTimeout(() => res(), 60000));
 
   const awsconfig = configureAmplify(projectDir);
   const apiKey = getApiKey(projectDir);
   const appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, apiKey);
 
   await testMutations(testModule, appSyncClient);
-  await new Promise<void>(res => setTimeout(() => res(), 60000));
+  await new Promise<void>((res) => setTimeout(() => res(), 60000));
   await testQueries(testModule, appSyncClient);
 }
 
-//schema
+// schema
 export const schema = `
 type Post @model @searchable {
   id: ID!
@@ -29,7 +34,7 @@ type Post @model @searchable {
   upvotes: Int
 }`;
 
-//mutations
+// mutations
 export const mutation = `
 mutation CreatePost {
   createPost(input: { title: "Stream me to Elasticsearch!" }) {
@@ -53,8 +58,8 @@ export const expected_result_mutation = {
   },
 };
 
-//queries
-//#error: add "s" for searchPosts
+// queries
+// #error: add "s" for searchPosts
 export const query1 = `
 #error: add "s" for searchPosts
 query SearchPosts {
@@ -88,7 +93,7 @@ query SearchPosts {
     }
   }
 }`;
-//#error: wildcard is not working properly, the query does not contain the expected items
+// #error: wildcard is not working properly, the query does not contain the expected items
 export const expected_result_query2 = {
   data: {
     searchPosts: {

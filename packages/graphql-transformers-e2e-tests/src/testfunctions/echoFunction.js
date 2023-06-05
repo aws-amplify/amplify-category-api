@@ -1,4 +1,8 @@
-exports.handler = async event => {
+/**
+ *
+ * @param event
+ */
+exports.handler = async (event) => {
   console.log(event);
   return event;
 };

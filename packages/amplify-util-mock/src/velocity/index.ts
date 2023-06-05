@@ -20,17 +20,29 @@ type iamCognitoIdentityContext = Partial<
   Pick<IAMToken, 'cognitoIdentityPoolId' | 'cognitoIdentityAuthProvider' | 'cognitoIdentityAuthType' | 'cognitoIdentityId'>
 >;
 
+/**
+ *
+ */
 export interface VelocityTemplateSimulatorOptions {
   authConfig: AppSyncAuthConfiguration;
 }
+/**
+ *
+ */
 export type AppSyncVTLContext = Partial<AppSyncVTLRenderContext>;
 
+/**
+ *
+ */
 export type AppSyncVTLPayload = {
   context: Partial<AppSyncVTLRenderContext>;
   requestParameters: AppSyncGraphQLExecutionContext;
   info?: Partial<GraphQLResolveInfo>;
 };
 
+/**
+ *
+ */
 export class VelocityTemplateSimulator {
   private gqlSimulator: AmplifyAppSyncSimulator;
 
@@ -48,14 +60,32 @@ export class VelocityTemplateSimulator {
       },
     });
   }
+
+  /**
+   *
+   * @param template
+   * @param payload
+   */
   render(template: string, payload: AppSyncVTLPayload) {
-    const ctxParameters: AppSyncVTLRenderContext = { source: {}, arguments: { input: {} }, stash: {}, ...payload.context };
-    const vtlInfo: any = { fieldNodes: [], fragments: {}, path: { key: '' }, ...(payload.info ?? {}) };
+    const ctxParameters: AppSyncVTLRenderContext = {
+      source: {}, arguments: { input: {} }, stash: {}, ...payload.context,
+    };
+    const vtlInfo: any = {
+      fieldNodes: [], fragments: {}, path: { key: '' }, ...(payload.info ?? {}),
+    };
     const vtlTemplate = new VelocityTemplate({ content: template }, this.gqlSimulator);
     return vtlTemplate.render(ctxParameters, payload.requestParameters, vtlInfo);
   }
 }
 
+/**
+ *
+ * @param userPool
+ * @param username
+ * @param email
+ * @param groups
+ * @param tokenType
+ */
 export const getJWTToken = (
   userPool: string,
   username: string,
@@ -79,22 +109,32 @@ export const getJWTToken = (
   return token;
 };
 
-export const getGenericToken = (username: string, email: string, groups: string[] = [], tokenType: 'id' | 'access' = 'id'): JWTToken => {
-  return {
-    iss: 'https://some-oidc-provider/auth',
-    sub: v4(),
-    aud: '75pk49boud2olipfda0ke3snic',
-    exp: Math.floor(Date.now() / 1000) + 10000,
-    iat: Math.floor(Date.now() / 1000),
-    event_id: v4(),
-    token_use: tokenType,
-    auth_time: Math.floor(Date.now() / 1000),
-    username,
-    email,
-    groups,
-  };
-};
+/**
+ *
+ * @param username
+ * @param email
+ * @param groups
+ * @param tokenType
+ */
+export const getGenericToken = (username: string, email: string, groups: string[] = [], tokenType: 'id' | 'access' = 'id'): JWTToken => ({
+  iss: 'https://some-oidc-provider/auth',
+  sub: v4(),
+  aud: '75pk49boud2olipfda0ke3snic',
+  exp: Math.floor(Date.now() / 1000) + 10000,
+  iat: Math.floor(Date.now() / 1000),
+  event_id: v4(),
+  token_use: tokenType,
+  auth_time: Math.floor(Date.now() / 1000),
+  username,
+  email,
+  groups,
+});
 
+/**
+ *
+ * @param username
+ * @param identityInfo
+ */
 export const getIAMToken = (username: string, identityInfo?: iamCognitoIdentityContext): IAMToken => {
   let iamRoleName = username;
   if (identityInfo?.cognitoIdentityAuthType) {

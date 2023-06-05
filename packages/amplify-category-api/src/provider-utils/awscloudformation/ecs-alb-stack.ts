@@ -17,6 +17,9 @@ type EcsStackProps = ContainersStackProps &
     hostedZoneId?: string;
     authName: string;
   }>;
+/**
+ *
+ */
 export class EcsAlbStack extends ContainersStack {
   private readonly userPoolDomain: string;
 
@@ -51,10 +54,10 @@ export class EcsAlbStack extends ContainersStack {
     const sharedSecretHeaderName = 'x-cf-token';
     const sharedSecretHeader = uuid();
 
-    const userPoolDomain = this.userPoolDomain;
+    const { userPoolDomain } = this;
 
-    const vpcId = this.vpcId;
-    const subnets = <string[]>this.subnets;
+    const { vpcId } = this;
+    const subnets = <string[]> this.subnets;
 
     const userPoolArn = cdk.Fn.join('', [
       'arn:',
@@ -86,18 +89,18 @@ export class EcsAlbStack extends ContainersStack {
 
     const userPoolClient = restrictAccess
       ? new cognito.CfnUserPoolClient(this, 'UserPoolClient', {
-          userPoolId: this.userPoolId,
-          allowedOAuthFlows: [
-            // 'implicit',
-            'code',
-          ],
-          allowedOAuthFlowsUserPoolClient: true,
-          allowedOAuthScopes: ['profile', 'phone', 'email', 'openid', 'aws.cognito.signin.user.admin'],
-          generateSecret: true,
-          supportedIdentityProviders: ['COGNITO'],
-          callbackUrLs: [`https://${distributionDomainName}/oauth2/idpresponse`],
-          logoutUrLs: [`https://${distributionDomainName}/oauth2/idpresponse`],
-        })
+        userPoolId: this.userPoolId,
+        allowedOAuthFlows: [
+          // 'implicit',
+          'code',
+        ],
+        allowedOAuthFlowsUserPoolClient: true,
+        allowedOAuthScopes: ['profile', 'phone', 'email', 'openid', 'aws.cognito.signin.user.admin'],
+        generateSecret: true,
+        supportedIdentityProviders: ['COGNITO'],
+        callbackUrLs: [`https://${distributionDomainName}/oauth2/idpresponse`],
+        logoutUrLs: [`https://${distributionDomainName}/oauth2/idpresponse`],
+      })
       : undefined;
 
     const targetGroup = new elb2.CfnTargetGroup(this, 'TargetGroup', {
@@ -146,14 +149,14 @@ export class EcsAlbStack extends ContainersStack {
       subnets,
     });
 
-    (<ecs.CfnService.LoadBalancerProperty[]>this.ecsService.loadBalancers) = [
+    (<ecs.CfnService.LoadBalancerProperty[]> this.ecsService.loadBalancers) = [
       {
         containerName,
         containerPort: port,
         targetGroupArn: targetGroup.ref,
       },
     ];
-    (<ec2.CfnSecurityGroup.IngressProperty[]>this.ecsServiceSecurityGroup.securityGroupIngress).push({
+    (<ec2.CfnSecurityGroup.IngressProperty[]> this.ecsServiceSecurityGroup.securityGroupIngress).push({
       ipProtocol: ec2.Protocol.TCP,
       fromPort: port,
       toPort: port,
@@ -184,14 +187,14 @@ export class EcsAlbStack extends ContainersStack {
       actions: [].concat(
         restrictAccess
           ? {
-              order: actionsOrderCounter++,
-              type: 'authenticate-cognito',
-              authenticateCognitoConfig: {
-                userPoolArn,
-                userPoolClientId: userPoolClient.ref,
-                userPoolDomain,
-              },
-            }
+            order: actionsOrderCounter++,
+            type: 'authenticate-cognito',
+            authenticateCognitoConfig: {
+              userPoolArn,
+              userPoolClientId: userPoolClient.ref,
+              userPoolDomain,
+            },
+          }
           : undefined,
         {
           order: actionsOrderCounter++,

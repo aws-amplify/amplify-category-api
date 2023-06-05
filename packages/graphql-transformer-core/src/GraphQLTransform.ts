@@ -16,6 +16,7 @@ import {
   UnionTypeDefinitionNode,
 } from 'graphql';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
+import { SyncResourceIDs } from 'graphql-transformer-common';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from './errors';
 import { TransformerContext } from './TransformerContext';
 import { Transformer } from './Transformer';
@@ -23,7 +24,6 @@ import { ITransformer } from './ITransformer';
 import { validateModelSchema } from './validation';
 import { TransformFormatter } from './TransformFormatter';
 import { TransformConfig, SyncUtils } from './util';
-import { SyncResourceIDs } from 'graphql-transformer-common';
 import { FeatureFlagProvider, NoopFeatureFlagProvider } from './FeatureFlags';
 
 function isFunction(obj: any) {
@@ -55,8 +55,10 @@ function makeSeenTransformationKey(
 /**
  * If this instance of the directive validates against its definition return true.
  * If the definition does not apply to the instance return false.
+ * @param definition
  * @param directive The directive definition to validate against.
  * @param nodeKind The kind of the current node where the directive was found.
+ * @param node
  */
 function matchDirective(definition: DirectiveDefinitionNode, directive: DirectiveNode, node: TypeSystemDefinitionNode) {
   if (!directive) {
@@ -70,37 +72,37 @@ function matchDirective(definition: DirectiveDefinitionNode, directive: Directiv
   for (const location of definition.locations) {
     // tslint:disable-next-line: switch-default
     switch (location.value) {
-      case `SCHEMA`:
+      case 'SCHEMA':
         isValidLocation = node.kind === Kind.SCHEMA_DEFINITION || isValidLocation;
         break;
-      case `SCALAR`:
+      case 'SCALAR':
         isValidLocation = node.kind === Kind.SCALAR_TYPE_DEFINITION || isValidLocation;
         break;
-      case `OBJECT`:
+      case 'OBJECT':
         isValidLocation = node.kind === Kind.OBJECT_TYPE_DEFINITION || isValidLocation;
         break;
-      case `FIELD_DEFINITION`:
+      case 'FIELD_DEFINITION':
         isValidLocation = (node.kind as string) === Kind.FIELD_DEFINITION || isValidLocation;
         break;
-      case `ARGUMENT_DEFINITION`:
+      case 'ARGUMENT_DEFINITION':
         isValidLocation = (node.kind as string) === Kind.INPUT_VALUE_DEFINITION || isValidLocation;
         break;
-      case `INTERFACE`:
+      case 'INTERFACE':
         isValidLocation = node.kind === Kind.INTERFACE_TYPE_DEFINITION || isValidLocation;
         break;
-      case `UNION`:
+      case 'UNION':
         isValidLocation = node.kind === Kind.UNION_TYPE_DEFINITION || isValidLocation;
         break;
-      case `ENUM`:
+      case 'ENUM':
         isValidLocation = node.kind === Kind.ENUM_TYPE_DEFINITION || isValidLocation;
         break;
-      case `ENUM_VALUE`:
+      case 'ENUM_VALUE':
         isValidLocation = (node.kind as string) === Kind.ENUM_VALUE_DEFINITION || isValidLocation;
         break;
-      case `INPUT_OBJECT`:
+      case 'INPUT_OBJECT':
         isValidLocation = node.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION || isValidLocation;
         break;
-      case `INPUT_FIELD_DEFINITION`:
+      case 'INPUT_FIELD_DEFINITION':
         isValidLocation = (node.kind as string) === Kind.INPUT_VALUE_DEFINITION || isValidLocation;
         break;
     }
@@ -117,7 +119,7 @@ function matchFieldDirective(definition: DirectiveDefinitionNode, directive: Dir
   for (const location of definition.locations) {
     // tslint:disable-next-line: switch-default
     switch (location.value) {
-      case `FIELD_DEFINITION`:
+      case 'FIELD_DEFINITION':
         isValidLocation = node.kind === Kind.FIELD_DEFINITION || isValidLocation;
         break;
     }
@@ -134,7 +136,7 @@ function matchInputFieldDirective(definition: DirectiveDefinitionNode, directive
   for (const location of definition.locations) {
     // tslint:disable-next-line: switch-default
     switch (location.value) {
-      case `INPUT_FIELD_DEFINITION`:
+      case 'INPUT_FIELD_DEFINITION':
         isValidLocation = node.kind === Kind.INPUT_VALUE_DEFINITION || isValidLocation;
         break;
     }
@@ -151,7 +153,7 @@ function matchArgumentDirective(definition: DirectiveDefinitionNode, directive: 
   for (const location of definition.locations) {
     // tslint:disable-next-line: switch-default
     switch (location.value) {
-      case `ARGUMENT_DEFINITION`:
+      case 'ARGUMENT_DEFINITION':
         isValidLocation = node.kind === Kind.INPUT_VALUE_DEFINITION || isValidLocation;
         break;
     }
@@ -168,7 +170,7 @@ function matchEnumValueDirective(definition: DirectiveDefinitionNode, directive:
   for (const location of definition.locations) {
     // tslint:disable-next-line: switch-default
     switch (location.value) {
-      case `ENUM_VALUE`:
+      case 'ENUM_VALUE':
         isValidLocation = node.kind === Kind.ENUM_VALUE_DEFINITION || isValidLocation;
         break;
     }
@@ -194,7 +196,13 @@ export interface GraphQLTransformOptions {
   transformConfig?: TransformConfig;
   featureFlags?: FeatureFlagProvider;
 }
+/**
+ *
+ */
 export type StackMapping = { [resourceId: string]: string };
+/**
+ *
+ */
 export class GraphQLTransform {
   private transformers: ITransformer[];
   private stackMappingOverrides: StackMapping;

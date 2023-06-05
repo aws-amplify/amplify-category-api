@@ -1,5 +1,7 @@
 import { keys } from 'lodash';
-import { $TSContext, stateManager, getGraphQLTransformerFunctionDocLink, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
+import {
+  $TSContext, stateManager, getGraphQLTransformerFunctionDocLink, ApiCategoryFacade,
+} from '@aws-amplify/amplify-cli-core';
 import _ = require('lodash');
 import { ServiceName } from '@aws-amplify/amplify-category-function';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
@@ -7,6 +9,8 @@ import { ProcessedLambdaFunction } from '../CFNParser/stack/types';
 
 /**
  * Attempts to match an arn object against the array of lambdas configured in the project
+ * @param context
+ * @param arn
  */
 export const lambdaArnToConfig = async (context: $TSContext, arn: any): Promise<ProcessedLambdaFunction> => {
   const version = await ApiCategoryFacade.getTransformerVersion(context);
@@ -30,7 +34,7 @@ export const lambdaArnToConfig = async (context: $TSContext, arn: any): Promise<
   const lambdaNames = _.entries<{ service: string }>(_.get(stateManager.getMeta(), ['function']))
     .filter(([_, funcMeta]) => funcMeta.service === ServiceName.LambdaFunction)
     .map(([key]) => key);
-  const foundLambdaName = lambdaNames.find(name => searchString.includes(name));
+  const foundLambdaName = lambdaNames.find((name) => searchString.includes(name));
   if (!foundLambdaName) {
     throw new Error(
       `Did not find a Lambda matching ARN [${JSON.stringify(

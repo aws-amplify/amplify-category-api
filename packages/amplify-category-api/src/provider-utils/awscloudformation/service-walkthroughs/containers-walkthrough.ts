@@ -26,11 +26,17 @@ export interface ResourceDependency {
   attributeEnvMap?: { [name: string]: string }; // optional attributes to environment variable names map that will be exposed to the function
 }
 
+/**
+ *
+ */
 export enum API_TYPE {
   GRAPHQL = 'GRAPHQL',
   REST = 'REST',
 }
 
+/**
+ *
+ */
 export type ServiceConfiguration = {
   resourceName: string;
   imageSource: { type: IMAGE_SOURCE_TYPE; template?: string };
@@ -46,6 +52,11 @@ export type ServiceConfiguration = {
   gitHubInfo?: GitHubSourceActionInfo;
 };
 
+/**
+ *
+ * @param context
+ * @param apiType
+ */
 export async function serviceWalkthrough(context: $TSContext, apiType: API_TYPE): Promise<Partial<ServiceConfiguration>> {
   const allDefaultValues = getAllDefaults();
 
@@ -83,6 +94,9 @@ async function askContainerSource(context: $TSContext, resourceName: string, api
   return newContainer(context, resourceName, apiType);
 }
 
+/**
+ *
+ */
 export enum IMAGE_SOURCE_TYPE {
   TEMPLATE = 'TEMPLATE',
   CUSTOM = 'CUSTOM',
@@ -193,13 +207,11 @@ async function newContainer(context: $TSContext, resourceName: string, apiType: 
   }
 
   const meta = context.amplify.getProjectDetails().amplifyMeta;
-  const hasAccessableResources = ['storage', 'function'].some(categoryName => {
-    return Object.keys(meta[categoryName] ?? {}).length > 0;
-  });
+  const hasAccessableResources = ['storage', 'function'].some((categoryName) => Object.keys(meta[categoryName] ?? {}).length > 0);
   let rolePermissions: any = {};
   if (
-    hasAccessableResources &&
-    (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your api?'))
+    hasAccessableResources
+    && (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your api?'))
   ) {
     rolePermissions = await context.amplify.invokePluginMethod(context, 'function', undefined, 'askExecRolePermissionsQuestions', [
       context,
@@ -211,7 +223,9 @@ async function newContainer(context: $TSContext, resourceName: string, apiType: 
     ]);
   }
 
-  const { categoryPolicies, environmentMap, dependsOn, mutableParametersState } = rolePermissions;
+  const {
+    categoryPolicies, environmentMap, dependsOn, mutableParametersState,
+  } = rolePermissions;
 
   const restrictApiQuestion = await inquirer.prompt({
     name: 'rescrict_access',
@@ -233,15 +247,19 @@ async function newContainer(context: $TSContext, resourceName: string, apiType: 
   };
 }
 
+/**
+ *
+ * @param context
+ * @param apiType
+ */
 export async function updateWalkthrough(context: $TSContext, apiType: API_TYPE) {
   const { allResources } = await context.amplify.getResourceStatus();
 
   const resources = allResources
     .filter(
-      resource =>
-        resource.category === category && resource.service === serviceName && !!resource.providerPlugin && resource.apiType === apiType,
+      (resource) => resource.category === category && resource.service === serviceName && !!resource.providerPlugin && resource.apiType === apiType,
     )
-    .map(resource => resource.resourceName);
+    .map((resource) => resource.resourceName);
 
   // There can only be one appsync resource
   if (resources.length === 0) {
@@ -264,11 +282,10 @@ export async function updateWalkthrough(context: $TSContext, apiType: API_TYPE) 
   const { resourceName } = await inquirer.prompt(question);
 
   const resourceSettings = allResources.find(
-    resource =>
-      resource.resourceName === resourceName &&
-      resource.category === category &&
-      resource.service === serviceName &&
-      !!resource.providerPlugin,
+    (resource) => resource.resourceName === resourceName
+      && resource.category === category
+      && resource.service === serviceName
+      && !!resource.providerPlugin,
   );
 
   let { gitHubInfo: { path = undefined } = {} } = resourceSettings;
@@ -298,13 +315,11 @@ export async function updateWalkthrough(context: $TSContext, apiType: API_TYPE) 
   const { environmentMap = {}, mutableParametersState = {} } = resourceSettings;
 
   const meta = context.amplify.getProjectDetails().amplifyMeta;
-  const hasAccessableResources = ['storage', 'function'].some(categoryName => {
-    return Object.keys(meta[categoryName] ?? {}).length > 0;
-  });
+  const hasAccessableResources = ['storage', 'function'].some((categoryName) => Object.keys(meta[categoryName] ?? {}).length > 0);
   let rolePermissions: any = {};
   if (
-    hasAccessableResources &&
-    (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your api?'))
+    hasAccessableResources
+    && (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your api?'))
   ) {
     rolePermissions = await context.amplify.invokePluginMethod(context, 'function', undefined, 'askExecRolePermissionsQuestions', [
       context,
@@ -353,6 +368,13 @@ async function confirm(question: string) {
   return confirm;
 }
 
+/**
+ *
+ * @param context
+ * @param service
+ * @param resourceName
+ * @param crudOptions
+ */
 export async function getPermissionPolicies(context, service, resourceName, crudOptions) {
   throw new Error('IAM access not available for this resource');
 }

@@ -50,6 +50,8 @@ const PROVIDER_NAME = 'awscloudformation';
 
 /**
  * Transform GraphQL Schema
+ * @param context
+ * @param options
  */
 export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Promise<DeploymentResources | undefined> => {
   let resourceName: string;
@@ -71,8 +73,8 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
   // cloud formation push will fail even if there is no changes in the GraphQL API
   // https://github.com/aws-amplify/amplify-console/issues/10
   const resourceNeedCompile = allResources
-    .filter(r => !resources.includes(r))
-    .filter(r => {
+    .filter((r) => !resources.includes(r))
+    .filter((r) => {
       const buildDir = path.normalize(path.join(backEndDir, AmplifyCategories.API, r.resourceName, 'build'));
       return !fs.existsSync(buildDir);
     });
@@ -81,7 +83,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
   if (forceCompile) {
     resources = resources.concat(allResources);
   }
-  resources = resources.filter(resource => resource.service === 'AppSync');
+  resources = resources.filter((resource) => resource.service === 'AppSync');
 
   if (!resourceDir) {
     // There can only be one appsync resource
@@ -187,6 +189,8 @@ place .graphql files in a directory at ${schemaDirPath}`);
 
 /**
  * buildAPIProject
+ * @param context
+ * @param opts
  */
 const buildAPIProject = async (
   context: $TSContext,
@@ -248,10 +252,8 @@ const _buildProject = async (context: $TSContext, opts: TransformerProjectOption
     userDefinedSlots,
     resolverConfig: opts.resolverConfig,
     overrideConfig: {
-      applyOverride: (stackManager: StackManager) => {
-        return applyOverride(stackManager, path.join(pathManager.getBackendDirPath(), 'api', getAppSyncAPIName()));
-      },
-      ...opts.overrideConfig
+      applyOverride: (stackManager: StackManager) => applyOverride(stackManager, path.join(pathManager.getBackendDirPath(), 'api', getAppSyncAPIName())),
+      ...opts.overrideConfig,
     },
   });
 
@@ -299,4 +301,4 @@ const printTransformLogs = (transform: GraphQLTransform) => {
         printer.error(log.message);
     }
   });
-}
+};

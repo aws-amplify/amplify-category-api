@@ -19,10 +19,17 @@ import {
 
 export const RESOLVER_VERSION_ID = '2018-05-29';
 
+/**
+ *
+ */
 export class DynamoDBMappingTemplate {
   /**
    * Create a put item resolver template.
    * @param keys A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
+   * @param keys.key
+   * @param keys.attributeValues
+   * @param keys.condition
+   * @param version
    */
   public static putItem(
     {
@@ -47,7 +54,9 @@ export class DynamoDBMappingTemplate {
 
   /**
    * Create a get item resolver template.
+   * @param key.key
    * @param key A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
+   * @param key.isSyncEnabled
    */
   public static getItem({ key, isSyncEnabled }: { key: ObjectNode | Expression; isSyncEnabled?: boolean }): ObjectNode {
     let version = RESOLVER_VERSION_ID;
@@ -64,6 +73,12 @@ export class DynamoDBMappingTemplate {
   /**
    * Create a query resolver template.
    * @param key A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
+   * @param key.query
+   * @param key.scanIndexForward
+   * @param key.filter
+   * @param key.limit
+   * @param key.nextToken
+   * @param key.index
    */
   public static query({
     query,
@@ -95,6 +110,13 @@ export class DynamoDBMappingTemplate {
   /**
    * Create a list item resolver template.
    * @param key A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
+   * @param key.filter
+   * @param key.limit
+   * @param key.nextToken
+   * @param key.scanIndexForward
+   * @param key.query
+   * @param key.index
+   * @param version
    */
   public static listItem(
     {
@@ -129,6 +151,10 @@ export class DynamoDBMappingTemplate {
   /**
    * Creates a sync resolver template
    * @param param An object used when creating the operation request to appsync
+   * @param param.filter
+   * @param param.limit
+   * @param param.nextToken
+   * @param param.lastSync
    */
   public static syncItem({
     filter,
@@ -155,7 +181,10 @@ export class DynamoDBMappingTemplate {
 
   /**
    * Create a delete item resolver template.
+   * @param key.key
    * @param key A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
+   * @param key.condition
+   * @param key.isSyncEnabled
    */
   public static deleteItem({
     key,
@@ -177,7 +206,12 @@ export class DynamoDBMappingTemplate {
 
   /**
    * Create an update item resolver template.
+   * @param key.key
    * @param key
+   * @param key.condition
+   * @param key.objectKeyVariable
+   * @param key.nameOverrideMap
+   * @param key.isSyncEnabled
    */
   public static updateItem({
     key,
@@ -203,12 +237,11 @@ export class DynamoDBMappingTemplate {
       keyFields = [...keyFields, str('_version'), str('_deleted'), str('_lastChangedAt')];
       version = '2018-05-29';
     }
-    const handleRename = (keyVar: string) =>
-      ifElse(
-        raw(`!$util.isNull($${nameOverrideMap}) && $${nameOverrideMap}.containsKey("${keyVar}")`),
-        set(ref(entryKeyAttributeNameVar), raw(`$${nameOverrideMap}.get("${keyVar}")`)),
-        set(ref(entryKeyAttributeNameVar), raw(keyVar)),
-      );
+    const handleRename = (keyVar: string) => ifElse(
+      raw(`!$util.isNull($${nameOverrideMap}) && $${nameOverrideMap}.containsKey("${keyVar}")`),
+      set(ref(entryKeyAttributeNameVar), raw(`$${nameOverrideMap}.get("${keyVar}")`)),
+      set(ref(entryKeyAttributeNameVar), raw(keyVar)),
+    );
     return compoundExpression([
       set(ref('expNames'), obj({})),
       set(ref('expValues'), obj({})),
@@ -223,7 +256,7 @@ export class DynamoDBMappingTemplate {
         ]),
         set(ref('keyFields'), list(keyFields)),
       ),
-      forEach(ref('entry'), ref(`util.map.copyAndRemoveAllKeys($context.args.input, $keyFields).entrySet()`), [
+      forEach(ref('entry'), ref('util.map.copyAndRemoveAllKeys($context.args.input, $keyFields).entrySet()'), [
         handleRename('$entry.key'),
         ifElse(
           ref('util.isNull($entry.value)'),
@@ -284,14 +317,23 @@ export class DynamoDBMappingTemplate {
     ]);
   }
 
+  /**
+   *
+   * @param isSyncEnabled
+   * @param returnExpression
+   */
   public static dynamoDBResponse(isSyncEnabled: boolean, returnExpression?: Expression): CompoundExpressionNode {
     const errorExpresion = isSyncEnabled
       ? ref('util.error($ctx.error.message, $ctx.error.type, $ctx.result)')
       : ref('util.error($ctx.error.message, $ctx.error.type)');
-    const resultExpression = returnExpression ? returnExpression : ref('util.toJson($ctx.result)');
+    const resultExpression = returnExpression || ref('util.toJson($ctx.result)');
     return compoundExpression([ifElse(ref('ctx.error'), errorExpresion, resultExpression)]);
   }
 
+  /**
+   *
+   * @param value
+   */
   public static stringAttributeValue(value: Expression): ObjectNode {
     return {
       kind: 'Object',
@@ -299,6 +341,10 @@ export class DynamoDBMappingTemplate {
     };
   }
 
+  /**
+   *
+   * @param value
+   */
   public static numericAttributeValue(value: Expression): ObjectNode {
     return {
       kind: 'Object',
@@ -306,6 +352,10 @@ export class DynamoDBMappingTemplate {
     };
   }
 
+  /**
+   *
+   * @param value
+   */
   public static binaryAttributeValue(value: Expression): ObjectNode {
     return {
       kind: 'Object',
@@ -313,6 +363,9 @@ export class DynamoDBMappingTemplate {
     };
   }
 
+  /**
+   *
+   */
   public static paginatedResponse(): ObjectNode {
     return obj({
       items: ref('util.toJson($ctx.result.items)'),

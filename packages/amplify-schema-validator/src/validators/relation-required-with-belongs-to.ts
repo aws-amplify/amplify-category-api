@@ -14,6 +14,10 @@ import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
  * @returns true
  */
 
+/**
+ *
+ * @param schema
+ */
 export const validateRequireBelongsToRelation = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(

@@ -5,11 +5,11 @@ import { TemplateContext, TableContext } from './RelationalDBSchemaTransformer';
  * various forms of clients.
  */
 export interface IRelationalDBReader {
-  listTables(): Promise<string[]>;
+  listTables: () => Promise<string[]>;
 
-  getTableForeignKeyReferences(tableName: string): Promise<string[]>;
+  getTableForeignKeyReferences: (tableName: string) => Promise<string[]>;
 
-  describeTable(tableName: string): Promise<TableContext>;
+  describeTable: (tableName: string) => Promise<TableContext>;
 
-  hydrateTemplateContext(contextShell: TemplateContext): Promise<TemplateContext>;
+  hydrateTemplateContext: (contextShell: TemplateContext) => Promise<TemplateContext>;
 }

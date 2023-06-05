@@ -2,11 +2,17 @@ import * as cdk from 'aws-cdk-lib';
 import * as apigwCdk from 'aws-cdk-lib/aws-apigateway';
 import * as iamCdk from 'aws-cdk-lib/aws-iam';
 
+/**
+ *
+ */
 export type ApigwInputs = {
   version: number;
   paths: { [pathName: string]: Path };
 };
 
+/**
+ *
+ */
 export type Path = {
   lambdaFunction: string;
   permissions: {
@@ -17,6 +23,9 @@ export type Path = {
   };
 };
 
+/**
+ *
+ */
 export enum CrudOperation {
   CREATE = 'create',
   READ = 'read',
@@ -24,6 +33,9 @@ export enum CrudOperation {
   DELETE = 'delete',
 }
 
+/**
+ *
+ */
 export enum PermissionSetting {
   PRIVATE = 'private',
   PROTECTED = 'protected',
@@ -31,13 +43,16 @@ export enum PermissionSetting {
 }
 
 type AmplifyCDKL1 = {
-  addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void;
-  addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void;
-  addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void;
-  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string, value?: any): void;
-  addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void;
+  addCfnCondition: (props: cdk.CfnConditionProps, logicalId: string) => void;
+  addCfnMapping: (props: cdk.CfnMappingProps, logicalId: string) => void;
+  addCfnOutput: (props: cdk.CfnOutputProps, logicalId: string) => void;
+  addCfnParameter: (props: cdk.CfnParameterProps, logicalId: string, value?: any) => void;
+  addCfnResource: (props: cdk.CfnResourceProps, logicalId: string) => void;
 };
 
+/**
+ *
+ */
 export type AmplifyApigwResourceTemplate = {
   restApi: apigwCdk.CfnRestApi;
   deploymentResource: apigwCdk.CfnDeployment;
@@ -46,6 +61,9 @@ export type AmplifyApigwResourceTemplate = {
   };
 } & AmplifyCDKL1;
 
+/**
+ *
+ */
 export type ApigwPathPolicy = {
   auth?: iamCdk.CfnPolicy;
   guest?: iamCdk.CfnPolicy;

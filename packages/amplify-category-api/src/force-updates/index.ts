@@ -8,6 +8,7 @@ import {
 /**
  * Extracted data force update logic from the `push` command in CLI.
  * Runs through expected force updates in order.
+ * @param context
  */
 export const checkForcedUpdates = async (context: $TSContext): Promise<void> => {
   await notifySecurityEnhancement(context);

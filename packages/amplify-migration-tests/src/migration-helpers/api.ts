@@ -12,6 +12,8 @@ import { assign } from 'lodash';
 
 /**
  * Old Dx prior to this api workflow change https://github.com/aws-amplify/amplify-cli/pull/8153
+ * @param cwd
+ * @param opts
  */
 export function addApiWithoutSchemaOldDx(cwd: string, opts: Partial<AddApiOptions> = {}) {
   const options = assign(defaultOptions, opts);
@@ -48,6 +50,11 @@ export function addApiWithoutSchemaOldDx(cwd: string, opts: Partial<AddApiOption
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param schemaFile
+ */
 export function addApiWithSchemaAndConflictDetectionOldDx(cwd: string, schemaFile: string) {
   const schemaPath = getSchemaPath(schemaFile);
   return new Promise<void>((resolve, reject) => {
@@ -87,9 +94,14 @@ export function addApiWithSchemaAndConflictDetectionOldDx(cwd: string, schemaFil
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addRestApiOldDx(cwd: string, settings: any) {
   const isFirstRestApi = settings.isFirstRestApi ?? true;
-  let chain = spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+  const chain = spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
     .wait('Select from one of the below mentioned services')
     .sendKeyDown()
     .sendCarriageReturn(); // REST
@@ -118,9 +130,8 @@ export function addRestApiOldDx(cwd: string, settings: any) {
         .sendEof();
 
       return chain.runAsync();
-    } else {
-      chain.sendConfirmNo();
     }
+    chain.sendConfirmNo();
   }
 
   chain.wait('Provide a friendly name for your resource to be used as a label for this category in the project');

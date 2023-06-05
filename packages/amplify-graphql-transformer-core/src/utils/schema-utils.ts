@@ -7,6 +7,8 @@ import { ModelResourceIDs } from 'graphql-transformer-common';
 
 /**
  * getKeySchema
+ * @param table
+ * @param indexName
  */
 export const getKeySchema = (table: any, indexName?: string): any => (
   (
@@ -17,6 +19,8 @@ export const getKeySchema = (table: any, indexName?: string): any => (
 
 /**
  * getTable
+ * @param ctx
+ * @param object
  */
 export const getTable = (ctx: TransformerContextProvider, object: ObjectTypeDefinitionNode): any => {
   const ddbDataSource = ctx.dataSources.get(object) as DynamoDbDataSource;
@@ -31,16 +35,17 @@ export const getTable = (ctx: TransformerContextProvider, object: ObjectTypeDefi
 
 /**
  * getSortKeyFieldNames
+ * @param type
  */
 export const getSortKeyFieldNames = (type: ObjectTypeDefinitionNode): string[] => {
   const sortKeyFieldNames: string[] = [];
 
-  type.fields!.forEach(field => {
-    field.directives!.forEach(directive => {
+  type.fields!.forEach((field) => {
+    field.directives!.forEach((directive) => {
       if (directive.name.value === 'primaryKey') {
-        const values = directive.arguments?.find(arg => arg.name.value === 'sortKeyFields')?.value as ListValueNode;
+        const values = directive.arguments?.find((arg) => arg.name.value === 'sortKeyFields')?.value as ListValueNode;
         if (values) {
-          sortKeyFieldNames.push(...values.values.map(it => (it as StringValueNode).value));
+          sortKeyFieldNames.push(...values.values.map((it) => (it as StringValueNode).value));
         }
       }
     });

@@ -1,5 +1,5 @@
-import { nspawn as spawn, getCLIPath, singleSelect } from '..';
 import { EOL } from 'os';
+import { nspawn as spawn, getCLIPath, singleSelect } from '..';
 
 type AmplifyConfiguration = {
   accessKeyId: string;
@@ -41,9 +41,13 @@ const authenticationOptions = ['AWS profile', 'AWS access keys'];
 
 const MANDATORY_PARAMS = ['accessKeyId', 'secretAccessKey', 'region'];
 
+/**
+ *
+ * @param settings
+ */
 export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> {
   const s = { ...defaultSettings, ...settings };
-  const missingParam = MANDATORY_PARAMS.filter(p => !Object.keys(s).includes(p));
+  const missingParam = MANDATORY_PARAMS.filter((p) => !Object.keys(s).includes(p));
   if (missingParam.length) {
     throw new Error(`mandatory params ${missingParam.join(' ')} are missing`);
   }
@@ -71,6 +75,10 @@ export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> 
     .runAsync();
 }
 
+/**
+ *
+ * @param settings
+ */
 export const amplifyConfigureBeforeOrAtV10_7 = (settings: AmplifyConfiguration): Promise<void> => {
   const s = { ...defaultSettings, ...settings };
   const missingParam = MANDATORY_PARAMS.filter((p) => !Object.keys(s).includes(p));
@@ -103,6 +111,16 @@ export const amplifyConfigureBeforeOrAtV10_7 = (settings: AmplifyConfiguration):
 };
 
 // TODO amplify admin enabled case
+/**
+ *
+ * @param settings
+ * @param settings.cwd
+ * @param settings.enableContainers
+ * @param settings.configLevel
+ * @param settings.profileOption
+ * @param settings.authenticationOption
+ * @param settings.region
+ */
 export function amplifyConfigureProject(settings: {
   cwd: string;
   enableContainers?: boolean;

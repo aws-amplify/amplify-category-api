@@ -1,6 +1,6 @@
-export { ConstructResourceMeta, StackMeta } from "./types";
+export { ConstructResourceMeta, StackMeta } from './types';
 export {
   stacksTypes,
   getStackMeta,
   convertToAppsyncResourceObj,
-} from "./utils";
+} from './utils';

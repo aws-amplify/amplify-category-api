@@ -1,3 +1,6 @@
+/**
+ *
+ */
 export type SandboxApp = {
   backendManagerAppId: string;
   versionId: string;

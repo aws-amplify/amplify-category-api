@@ -3,16 +3,23 @@ import * as path from 'path';
 import { runTest, runAuthTest } from './common';
 import { runFunctionTest } from './functionTester';
 
-//The contents in the test files might be modified from its original version in the Amplify CLI doc,
-//and mutations or queries might be added to test the input schema.
-//Modification are marked in the test file:
-//#change: modified the original content, such as adding the missing pieces in imcomplete schemas, etc.
-//#error: corrected error in the original content
-//#extra: the content does not exist in the Amplify CLI document, added for the completeness of the testing, such as the mutation needed to test subscriptions
+// The contents in the test files might be modified from its original version in the Amplify CLI doc,
+// and mutations or queries might be added to test the input schema.
+// Modification are marked in the test file:
+// #change: modified the original content, such as adding the missing pieces in imcomplete schemas, etc.
+// #error: corrected error in the original content
+// #extra: the content does not exist in the Amplify CLI document, added for the completeness of the testing, such as the mutation needed to test subscriptions
 
 // to deal with subscriptions in node env
 (global as any).WebSocket = require('ws');
 
+/**
+ *
+ * @param projectDir
+ * @param directive
+ * @param section
+ * @param appName
+ */
 export async function testSchema(projectDir: string, directive: string, section: string, appName?: string): Promise<boolean> {
   let testModule;
 

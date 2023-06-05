@@ -1,5 +1,11 @@
 import { CloudFormationParseContext } from '../types';
 
+/**
+ *
+ * @param resourceName
+ * @param resource
+ * @param cfnContext
+ */
 export function iamPolicyResourceHandler(resourceName, resource, cfnContext: CloudFormationParseContext) {
   const processedResource = {
     cfnExposedAttributes: {},
@@ -8,6 +14,12 @@ export function iamPolicyResourceHandler(resourceName, resource, cfnContext: Clo
   return processedResource;
 }
 
+/**
+ *
+ * @param resourceName
+ * @param resource
+ * @param cfnContext
+ */
 export function iamRoleResourceHandler(resourceName, resource, cfnContext: CloudFormationParseContext) {
   const processedResource = {
     cfnExposedAttributes: { Arn: 'Arn', RoleId: 'RoleId' },

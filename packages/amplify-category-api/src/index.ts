@@ -13,8 +13,9 @@ import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-he
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { RDS_SCHEMA_FILE_NAME, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import _ from 'lodash';
 import { run } from './commands/api/console';
-import { getAppSyncAuthConfig, getAppSyncResourceName } from './provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { getAppSyncAuthConfig, getAppSyncResourceName, getAPIResourceDir } from './provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { provider } from './provider-utils/awscloudformation/aws-constants';
 import { ApigwStackTransform } from './provider-utils/awscloudformation/cdk-stack-builder';
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
@@ -22,10 +23,8 @@ import { askAuthQuestions } from './provider-utils/awscloudformation/service-wal
 import { authConfigToAppSyncAuthType } from './provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { checkAppsyncApiResourceMigration } from './provider-utils/awscloudformation/utils/check-appsync-api-migration';
 import { getAppSyncApiResourceName } from './provider-utils/awscloudformation/utils/getAppSyncApiName';
-import { getAPIResourceDir } from './provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { configureMultiEnvDBSecrets } from './provider-utils/awscloudformation/utils/rds-secrets/multi-env-database-secrets';
 import { deleteConnectionSecrets, getSecretsKey, getDatabaseName } from './provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
-import _ from 'lodash';
 import { AmplifyGraphQLTransformerErrorConverter } from './errors/amplify-error-converter';
 
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
@@ -54,6 +53,7 @@ const category = AmplifyCategories.API;
 
 /**
  * Open the AppSync/API Gateway AWS console
+ * @param context
  */
 export const console = async (context: $TSContext): Promise<void> => {
   await run(context);
@@ -61,6 +61,8 @@ export const console = async (context: $TSContext): Promise<void> => {
 
 /**
  * Migrate from original API config
+ * @param context
+ * @param serviceName
  */
 export const migrate = async (context: $TSContext, serviceName?: string): Promise<void> => {
   const { projectPath } = context?.migrationInfo ?? { projectPath: pathManager.findProjectRoot() };
@@ -104,6 +106,7 @@ export const migrate = async (context: $TSContext, serviceName?: string): Promis
 
 /**
  * Setup new environment with rds datasource
+ * @param context
  */
 export const initEnv = async (context: $TSContext): Promise<void> => {
   const datasource = 'Aurora Serverless';
@@ -148,7 +151,7 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   // proceed if there are any existing imported Relational Data Sources
   const apiResourceDir = getAPIResourceDir(resourceName);
   const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
-  if(fs.existsSync(pathToSchemaFile)) {
+  if (fs.existsSync(pathToSchemaFile)) {
     // read and validate the RDS connection parameters
     const secretsKey = await getSecretsKey();
 
@@ -156,8 +159,8 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
       isNewEnv: context.exeInfo?.isNewEnv,
       sourceEnv: context.exeInfo?.sourceEnvName,
       yesFlagSet: _.get(context, ['parameters', 'options', 'yes'], false),
-      envName: envName
-    }
+      envName,
+    };
     await configureMultiEnvDBSecrets(context, secretsKey, resourceName, envInfo);
   }
 
@@ -186,7 +189,7 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   // execute the walkthrough
   await providerController
     .addDatasource(context, category, datasource)
-    .then(answers => {
+    .then((answers) => {
       /**
        * Update environment parameter manager with answers
        */
@@ -204,6 +207,8 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
 
 /**
  * Get permissions for depending on this resource
+ * @param context
+ * @param resourceOpsMapping
  */
 export const getPermissionPolicies = async (
   context: $TSContext,
@@ -214,7 +219,7 @@ export const getPermissionPolicies = async (
   const resourceAttributes = [];
 
   await Promise.all(
-    Object.keys(resourceOpsMapping).map(async resourceName => {
+    Object.keys(resourceOpsMapping).map(async (resourceName) => {
       try {
         const providerName = amplifyMeta[category][resourceName].providerPlugin;
         if (providerName) {
@@ -241,6 +246,7 @@ export const getPermissionPolicies = async (
 
 /**
  * Main entry point for executing an api subcommand
+ * @param context
  */
 export const executeAmplifyCommand = async (context: $TSContext): Promise<void> => {
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
@@ -272,6 +278,8 @@ export const executeAmplifyCommand = async (context: $TSContext): Promise<void> 
 
 /**
  * Main entry point for executing a headless api command
+ * @param context
+ * @param headlessPayload
  */
 export const executeAmplifyHeadlessCommand = async (context: $TSContext, headlessPayload: string): Promise<void> => {
   context.usageData.pushHeadlessFlow(headlessPayload, context.input);
@@ -292,6 +300,8 @@ export const executeAmplifyHeadlessCommand = async (context: $TSContext, headles
 
 /**
  * Handle state changes in Amplify app.
+ * @param context
+ * @param args
  */
 export const handleAmplifyEvent = async (context: $TSContext, args: any): Promise<void> => {
   switch (args.event) {
@@ -310,6 +320,8 @@ export const handleAmplifyEvent = async (context: $TSContext, args: any): Promis
 
 /**
  * Add a new auth mode to the API
+ * @param context
+ * @param args
  */
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const addGraphQLAuthorizationMode = async (context: $TSContext, args: Record<string, any>) => {
@@ -344,13 +356,15 @@ export const addGraphQLAuthorizationMode = async (context: $TSContext, args: Rec
 
 /**
  * Synthesize the CFN template for the API
+ * @param context
+ * @param resource
  */
 export const transformCategoryStack = async (context: $TSContext, resource: Record<string, any>): Promise<void> => {
   if (resource.service === AmplifySupportedService.APPSYNC) {
     if (canResourceBeTransformed(resource.resourceName)) {
       const backendDir = pathManager.getBackendDirPath();
       const overrideDir = path.join(backendDir, resource.category, resource.resourceName);
-      const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
+      const isBuild = await buildOverrideDir(backendDir, overrideDir).catch((error) => {
         throw new AmplifyError('InvalidOverrideError', {
           message: error.message,
           link: 'https://docs.amplify.aws/cli/graphql/override/',

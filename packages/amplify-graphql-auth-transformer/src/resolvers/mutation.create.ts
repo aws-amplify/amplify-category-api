@@ -20,6 +20,7 @@ import {
   ifElse,
   or,
 } from 'graphql-mapping-template';
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   getIdentityClaimExp,
   getInputFields,
@@ -32,7 +33,7 @@ import {
   generatePopulateOwnerField,
   addAllowedFieldsIfElse,
   generateOwnerMultiClaimExpression,
-  generateInvalidClaimsCondition
+  generateInvalidClaimsCondition,
 } from './helpers';
 import {
   API_KEY_AUTH_TYPE,
@@ -48,10 +49,10 @@ import {
   ALLOWED_FIELDS,
   DENIED_FIELDS,
 } from '../utils';
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 /**
  * There is only one role for ApiKey we can use the first index
+ * @param roles
  */
 const apiKeyExpression = (roles: Array<RoleDefinition>): Expression | null => {
   const expression = new Array<Expression>();
@@ -68,6 +69,10 @@ const apiKeyExpression = (roles: Array<RoleDefinition>): Expression | null => {
 
 /**
  * No need to combine allowed fields as the request can only be signed by one iam role
+ * @param roles
+ * @param hasAdminRolesEnabled
+ * @param adminRoles
+ * @param identityPoolId
  */
 const iamExpression = (
   roles: Array<RoleDefinition>,
@@ -81,7 +86,7 @@ const iamExpression = (
     expression.push(iamAdminRoleCheckExpression(adminRoles));
   }
   if (roles.length > 0) {
-    roles.forEach(role => {
+    roles.forEach((role) => {
       if (role.areAllFieldsAllowed) {
         expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), identityPoolId));
       } else {
@@ -98,6 +103,7 @@ const iamExpression = (
 
 /**
  * There is only one role for Lambda we can use the first index
+ * @param roles
  */
 const lambdaExpression = (roles: Array<RoleDefinition>): Expression | null => {
   const expression = new Array<Expression>();
@@ -115,7 +121,7 @@ const lambdaExpression = (roles: Array<RoleDefinition>): Expression | null => {
 
 const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
   const staticRoleExpression: Array<Expression> = [];
-  const privateRoleIdx = roles.findIndex(r => r.strategy === 'private');
+  const privateRoleIdx = roles.findIndex((r) => r.strategy === 'private');
   if (privateRoleIdx > -1) {
     const privateRole = roles[privateRoleIdx];
     if (privateRole.areAllFieldsAllowed) {
@@ -134,7 +140,7 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expre
             ref('staticGroupRoles'),
             raw(
               JSON.stringify(
-                roles.map(r => ({
+                roles.map((r) => ({
                   claim: r.claim,
                   entity: r.entity,
                   allowedFields: r.allowedFields ?? [],
@@ -219,7 +225,7 @@ const dynamicRoleExpression = (ctx: TransformerContextProvider, roles: Array<Rol
               ]),
             ),
           ]),
-        )
+        ),
       );
     }
     if (role.strategy === 'groups') {
@@ -263,6 +269,10 @@ const dynamicRoleExpression = (ctx: TransformerContextProvider, roles: Array<Rol
  * Unauthorized if
  * - auth conditions could not be met
  * - there are fields conditions that could not be met
+ * @param ctx
+ * @param providers
+ * @param roles
+ * @param fields
  */
 export const generateAuthExpressionForCreate = (
   ctx: TransformerContextProvider,
@@ -319,4 +329,3 @@ export const generateAuthExpressionForCreate = (
   );
   return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
 };
-

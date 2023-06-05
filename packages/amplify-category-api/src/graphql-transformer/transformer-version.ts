@@ -15,6 +15,7 @@ const transformerVersionFF = (): number => FeatureFlags.getNumber('graphQLTransf
 /**
  * Inspect feature flags for the project and determine if this particular project should be using graphql v2 or v1.
  * Coerces feature flags into a sane state if they are out of, and throws error on invalid configuration.
+ * @param context
  */
 export const getTransformerVersion = async (context): Promise<number> => {
   if (useExperimentalPipelinedTransformerFF() === false) {
@@ -43,6 +44,7 @@ const isLegacyFeatureFlagConfiguration = (): boolean => useExperimentalPipelined
 
 /**
  * Update project feature flags and alert the user if they have a deprecated set of feature flags.
+ * @param context
  */
 const migrateToTransformerVersionFeatureFlag = async (context: $TSContext): Promise<void> => {
   const projectPath = pathManager.findProjectRoot() ?? process.cwd();

@@ -8,7 +8,9 @@ import {
   EnumTypeDefinitionNode,
   EnumValueDefinitionNode,
 } from 'graphql';
-import { graphqlName, makeNamedType, isScalar, makeListType, getBaseType, SearchableResourceIDs } from 'graphql-transformer-common';
+import {
+  graphqlName, makeNamedType, isScalar, makeListType, getBaseType, SearchableResourceIDs,
+} from 'graphql-transformer-common';
 
 const ID_CONDITIONS = [
   'ne',
@@ -31,6 +33,10 @@ const INT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range'];
 const FLOAT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range'];
 const BOOLEAN_CONDITIONS = ['eq', 'ne'];
 
+/**
+ *
+ * @param type
+ */
 export function makeSearchableScalarInputObject(type: string): InputObjectTypeDefinitionNode {
   const name = SearchableResourceIDs.SearchableFilterInputTypeName(type);
   const conditions = getScalarConditions(type);
@@ -58,6 +64,10 @@ export function makeSearchableScalarInputObject(type: string): InputObjectTypeDe
   };
 }
 
+/**
+ *
+ * @param obj
+ */
 export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
   const name = SearchableResourceIDs.SearchableFilterInputTypeName(obj.name.value);
   const fields: InputValueDefinitionNode[] = obj.fields
@@ -117,8 +127,11 @@ export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode):
   };
 }
 
+/**
+ *
+ */
 export function makeSearchableSortDirectionEnumObject(): EnumTypeDefinitionNode {
-  const name = graphqlName(`SearchableSortDirection`);
+  const name = graphqlName('SearchableSortDirection');
   return {
     kind: Kind.ENUM_TYPE_DEFINITION,
     name: {
@@ -141,6 +154,10 @@ export function makeSearchableSortDirectionEnumObject(): EnumTypeDefinitionNode 
   };
 }
 
+/**
+ *
+ * @param obj
+ */
 export function makeSearchableXSortableFieldsEnumObject(obj: ObjectTypeDefinitionNode): EnumTypeDefinitionNode {
   const name = graphqlName(`Searchable${obj.name.value}SortableFields`);
   const values: EnumValueDefinitionNode[] = obj.fields
@@ -162,6 +179,10 @@ export function makeSearchableXSortableFieldsEnumObject(obj: ObjectTypeDefinitio
   };
 }
 
+/**
+ *
+ * @param obj
+ */
 export function makeSearchableXSortInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
   const name = graphqlName(`Searchable${obj.name.value}SortInput`);
   return {

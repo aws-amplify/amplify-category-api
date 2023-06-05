@@ -1,14 +1,16 @@
-import { TransformerContext } from './TransformerContext';
 import { Fn, StringParameter } from 'cloudform-types';
 import Resource from 'cloudform-types/types/resource';
-import { makeOperationType, makeSchema } from 'graphql-transformer-common';
+import { makeOperationType, makeSchema, ResourceConstants } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode, print } from 'graphql';
+import { DeploymentResources, ResolversFunctionsAndSchema } from '@aws-amplify/graphql-transformer-interfaces';
 import { stripDirectives } from './stripDirectives';
 import { SchemaResourceUtil } from './util/SchemaResourceUtil';
 import splitStack from './util/splitStack';
-import { DeploymentResources, ResolversFunctionsAndSchema } from '@aws-amplify/graphql-transformer-interfaces';
-import { ResourceConstants } from 'graphql-transformer-common';
+import { TransformerContext } from './TransformerContext';
 
+/**
+ *
+ */
 export class TransformFormatter {
   private schemaResourceUtil = new SchemaResourceUtil();
 
@@ -41,7 +43,7 @@ export class TransformFormatter {
       },
       defaultParameterDefinitions: {
         [ResourceConstants.PARAMETERS.AppSyncApiId]: new StringParameter({
-          Description: `The id of the AppSync API associated with this project.`,
+          Description: 'The id of the AppSync API associated with this project.',
         }),
       },
       deployment: {
@@ -59,6 +61,7 @@ export class TransformFormatter {
 
   /**
    * Schema helper to pull resources from the context and output the final schema resource.
+   * @param ctx
    */
   private buildSchema(ctx: TransformerContext): string {
     const mutationNode: ObjectTypeDefinitionNode | undefined = ctx.getMutation();
@@ -105,6 +108,7 @@ export class TransformFormatter {
   /**
    * Builds the schema and creates the schema record to pull from S3.
    * Returns the schema SDL text as a string.
+   * @param ctx
    */
   private buildAndSetSchema(ctx: TransformerContext): string {
     const SDL = this.buildSchema(ctx);

@@ -7,6 +7,8 @@ import { transformGraphQLSchemaV2 } from './transform-graphql-schema-v2';
 
 /**
  * Determine which transformer version is in effect, and execute the appropriate transformation.
+ * @param context
+ * @param options
  */
 export const transformGraphQLSchema = async (
   context: $TSContext,

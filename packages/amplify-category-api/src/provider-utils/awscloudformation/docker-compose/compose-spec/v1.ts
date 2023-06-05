@@ -4,8 +4,17 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
+/**
+ *
+ */
 export type StringOrList = string | ListOfStrings;
+/**
+ *
+ */
 export type ListOfStrings = string[];
+/**
+ *
+ */
 export type ListOrDict =
   | {
       /**
@@ -15,6 +24,9 @@ export type ListOrDict =
       [k: string]: string | number | null;
     }
   | string[];
+/**
+ *
+ */
 export type Labels =
   | {
       /**
@@ -25,6 +37,9 @@ export type Labels =
     }
   | string[];
 
+/**
+ *
+ */
 export interface ConfigSchemaV1Json {
   [k: string]: DefinitionsService;
 }

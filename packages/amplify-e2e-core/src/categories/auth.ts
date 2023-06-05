@@ -1,11 +1,19 @@
 import _ from 'lodash';
-import { getCLIPath, getSocialProviders, KEY_DOWN_ARROW, KEY_UP_ARROW, nspawn as spawn, setTransformerVersionFlag } from '..';
+import {
+  getCLIPath, getSocialProviders, KEY_DOWN_ARROW, KEY_UP_ARROW, nspawn as spawn, setTransformerVersionFlag,
+} from '..';
 
+/**
+ *
+ */
 export type AddAuthUserPoolOnlyNoOAuthSettings = {
   resourceName: string;
   userPoolName: string;
 };
 
+/**
+ *
+ */
 export type AddAuthUserPoolOnlyWithOAuthSettings = AddAuthUserPoolOnlyNoOAuthSettings & {
   domainPrefix: string;
   signInUrl1: string;
@@ -24,6 +32,9 @@ export type AddAuthUserPoolOnlyWithOAuthSettings = AddAuthUserPoolOnlyNoOAuthSet
   appleAppPrivateKey: string;
 };
 
+/**
+ *
+ */
 export type AddAuthIdentityPoolAndUserPoolWithOAuthSettings = AddAuthUserPoolOnlyWithOAuthSettings & {
   identityPoolName: string;
   allowUnauthenticatedIdentities: boolean;
@@ -34,6 +45,11 @@ export type AddAuthIdentityPoolAndUserPoolWithOAuthSettings = AddAuthUserPoolOnl
   idpAppleAppId: string;
 };
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addAuthWithDefault(cwd: string, settings: any = {}): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
@@ -54,6 +70,10 @@ export function addAuthWithDefault(cwd: string, settings: any = {}): Promise<voi
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function runAmplifyAuthConsole(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['auth', 'console'], { cwd, stripColors: true })
@@ -70,6 +90,10 @@ export function runAmplifyAuthConsole(cwd: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function removeAuthWithDefault(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'auth'], { cwd, stripColors: true })
@@ -88,6 +112,11 @@ export function removeAuthWithDefault(cwd: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addAuthWithGroupTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
@@ -131,6 +160,11 @@ const defaultOptions: AddApiOptions = {
   transformerVersion: 2,
 };
 
+/**
+ *
+ * @param cwd
+ * @param opts
+ */
 export function addAuthViaAPIWithTrigger(cwd: string, opts: Partial<AddApiOptions> = {}): Promise<void> {
   const options = _.assign(defaultOptions, opts);
   return new Promise((resolve, reject) => {
@@ -181,6 +215,11 @@ export function addAuthViaAPIWithTrigger(cwd: string, opts: Partial<AddApiOption
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param opts
+ */
 export function addAuthwithUserPoolGroupsViaAPIWithTrigger(cwd: string, opts: Partial<AddApiOptions> = {}): Promise<void> {
   const options = _.assign(defaultOptions, opts);
   return new Promise((resolve, reject) => {
@@ -228,7 +267,7 @@ export function addAuthwithUserPoolGroupsViaAPIWithTrigger(cwd: string, opts: Pa
       .sendCarriageReturn()
       .wait('What attributes are required for signing up?')
       .sendCarriageReturn()
-      .wait(`Specify the app's refresh token expiration period (in days):`)
+      .wait('Specify the app\'s refresh token expiration period (in days):')
       .sendCarriageReturn()
       .wait('Do you want to specify the user attributes this app can read and write?')
       .sendCarriageReturn()
@@ -270,6 +309,11 @@ export function addAuthwithUserPoolGroupsViaAPIWithTrigger(cwd: string, opts: Pa
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addAuthWithCustomTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
@@ -350,6 +394,11 @@ export function addAuthWithCustomTrigger(cwd: string, settings: any): Promise<vo
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<void> {
   const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   return new Promise((resolve, reject) => {
@@ -390,6 +439,11 @@ export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function updateAuthToRemoveFederation(cwd: string, settings: any): Promise<void> {
   const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   return new Promise((resolve, reject) => {
@@ -412,6 +466,11 @@ export function updateAuthToRemoveFederation(cwd: string, settings: any): Promis
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function updateAuthWithoutCustomTrigger(cwd: string, settings: any): Promise<void> {
   const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   return new Promise((resolve, reject) => {
@@ -472,6 +531,11 @@ export function updateAuthWithoutCustomTrigger(cwd: string, settings: any): Prom
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addAuthWithRecaptchaTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
@@ -505,6 +569,11 @@ export function addAuthWithRecaptchaTrigger(cwd: string, settings: any): Promise
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any): Promise<void> {
   const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   console.log(testingWithLatestCodebase);
@@ -564,6 +633,11 @@ export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any): Pr
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addAuthWithSignInSignOutUrl(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
@@ -600,10 +674,16 @@ export function addAuthWithSignInSignOutUrl(cwd: string, settings: any): Promise
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addAuthWithDefaultSocial_v4_30(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET } =
-      getSocialProviders(true);
+    const {
+      FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET,
+    } = getSocialProviders(true);
 
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
@@ -655,6 +735,11 @@ export function addAuthWithDefaultSocial_v4_30(cwd: string, settings: any): Prom
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addAuthWithDefaultSocial(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     const {
@@ -732,6 +817,11 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any): Promise<vo
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addAuthUserPoolOnly(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     const {
@@ -893,6 +983,10 @@ export function addAuthUserPoolOnly(cwd: string, settings: any): Promise<void> {
 }
 
 // creates 2 groups: Admins, Users
+/**
+ *
+ * @param cwd
+ */
 export function addAuthWithGroups(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
@@ -959,6 +1053,11 @@ export function addAuthWithGroups(cwd: string): Promise<void> {
 }
 
 // creates 2 groups: Admins, Users
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addAuthWithGroupsAndAdminAPI(cwd: string, settings?: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
@@ -1033,6 +1132,11 @@ export function addAuthWithGroupsAndAdminAPI(cwd: string, settings?: any): Promi
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void> {
   const {
     FACEBOOK_APP_ID,
@@ -1238,7 +1342,11 @@ export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void>
   });
 }
 
-//add default auth with pre token generation trigger
+// add default auth with pre token generation trigger
+/**
+ *
+ * @param projectDir
+ */
 export function addAuthWithPreTokenGenerationTrigger(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd: projectDir, stripColors: true })
@@ -1251,7 +1359,7 @@ export function addAuthWithPreTokenGenerationTrigger(projectDir: string): Promis
       .wait('What attributes are required for signing up?')
       .sendCarriageReturn()
       .wait('Do you want to enable any of the following capabilities')
-      .send(KEY_UP_ARROW) //Override ID Token Claims
+      .send(KEY_UP_ARROW) // Override ID Token Claims
       .sendLine(' ')
       .wait('Successfully added the Lambda function locally')
       .wait('Do you want to edit your alter-claims function now')
@@ -1266,6 +1374,12 @@ export function addAuthWithPreTokenGenerationTrigger(projectDir: string): Promis
   });
 }
 
+/**
+ *
+ * @param projectDir
+ * @param groupNames
+ * @param settings
+ */
 export function updateAuthAddUserGroups(projectDir: string, groupNames: string[], settings?: any): Promise<void> {
   if (groupNames.length == 0) {
     return;
@@ -1314,6 +1428,11 @@ export function updateAuthAddUserGroups(projectDir: string, groupNames: string[]
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addAuthUserPoolOnlyWithOAuth(cwd: string, settings: AddAuthUserPoolOnlyWithOAuthSettings): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
@@ -1412,12 +1531,17 @@ export function addAuthUserPoolOnlyWithOAuth(cwd: string, settings: AddAuthUserP
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addAuthIdentityPoolAndUserPoolWithOAuth(
   cwd: string,
   settings: AddAuthIdentityPoolAndUserPoolWithOAuthSettings,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
       .sendKeyDown(2)
       .sendCarriageReturn()
@@ -1536,6 +1660,11 @@ export function addAuthIdentityPoolAndUserPoolWithOAuth(
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addAuthUserPoolOnlyNoOAuth(cwd: string, settings: AddAuthUserPoolOnlyNoOAuthSettings): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
@@ -1591,7 +1720,13 @@ export function addAuthUserPoolOnlyNoOAuth(cwd: string, settings: AddAuthUserPoo
   });
 }
 
-export function updateAuthAddAdminQueries(projectDir: string, groupName: string = 'adminQueriesGroup', settings: any = {}): Promise<void> {
+/**
+ *
+ * @param projectDir
+ * @param groupName
+ * @param settings
+ */
+export function updateAuthAddAdminQueries(projectDir: string, groupName = 'adminQueriesGroup', settings: any = {}): Promise<void> {
   const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd: projectDir, stripColors: true });
@@ -1620,6 +1755,11 @@ export function updateAuthAddAdminQueries(projectDir: string, groupName: string 
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function updateAuthWithoutTrigger(cwd: string, settings: any): Promise<void> {
   const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   return new Promise((resolve, reject) => {
@@ -1671,6 +1811,12 @@ export function updateAuthWithoutTrigger(cwd: string, settings: any): Promise<vo
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ * @param settings.testingWithLatestCodebase
+ */
 export function updateAuthAdminQueriesWithExtMigration(cwd: string, settings: { testingWithLatestCodebase: boolean }): Promise<void> {
   return spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true })
     .wait('Do you want to migrate auth resource')
@@ -1690,6 +1836,11 @@ export function updateAuthAdminQueriesWithExtMigration(cwd: string, settings: { 
     .runAsync();
 }
 
+/**
+ *
+ * @param projectDir
+ * @param settings
+ */
 export function updateAuthMFAConfiguration(projectDir: string, settings: any = {}): Promise<void> {
   return spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'auth'], { cwd: projectDir, stripColors: true })
     .wait('What do you want to do?')
@@ -1725,7 +1876,7 @@ export function updateAuthMFAConfiguration(projectDir: string, settings: any = {
     .wait('Do you want to override the default password policy for this User Pool?')
     .sendNo()
     .sendCarriageReturn()
-    .wait(`Specify the app's refresh token expiration period (in days)`)
+    .wait('Specify the app\'s refresh token expiration period (in days)')
     .sendCarriageReturn() // 30
     .wait('Do you want to specify the user attributes this app can read and write?')
     .sendNo()

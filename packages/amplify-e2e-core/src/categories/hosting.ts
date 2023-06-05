@@ -1,10 +1,16 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { nspawn as spawn, getCLIPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile, getNpxPath } from '..';
 import _ from 'lodash';
 import { spawnSync } from 'child_process';
+import {
+  nspawn as spawn, getCLIPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile, getNpxPath,
+} from '..';
 import { getBackendAmplifyMeta } from '../utils';
 
+/**
+ *
+ * @param cwd
+ */
 export function addDEVHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
@@ -29,6 +35,10 @@ export function addDEVHosting(cwd: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function enableContainerHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['configure', 'project'], { cwd, stripColors: true })
@@ -47,6 +57,10 @@ export function enableContainerHosting(cwd: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function addDevContainerHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
@@ -67,6 +81,10 @@ export function addDevContainerHosting(cwd: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function addPRODHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
@@ -88,6 +106,10 @@ export function addPRODHosting(cwd: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function removePRODCloudFront(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'hosting'], { cwd, stripColors: true })
@@ -114,6 +136,10 @@ export function removePRODCloudFront(cwd: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function amplifyPushWithUpdate(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
@@ -129,6 +155,10 @@ export function amplifyPushWithUpdate(cwd: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function amplifyPublishWithUpdate(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['publish'], { cwd, stripColors: true })
@@ -144,21 +174,29 @@ export function amplifyPublishWithUpdate(cwd: string): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function amplifyPublishWithoutUpdate(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['publish'], { cwd, stripColors: true })
-    .wait('Do you still want to publish the frontend')
-    .sendConfirmYes()
-    .run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
+      .wait('Do you still want to publish the frontend')
+      .sendConfirmYes()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
   });
 }
 
+/**
+ *
+ * @param cwd
+ */
 export function removeHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'hosting'], { cwd, stripColors: true })
@@ -177,6 +215,9 @@ export function removeHosting(cwd: string): Promise<void> {
   });
 }
 
+/**
+ *
+ */
 export async function createReactTestProject(): Promise<string> {
   const projRoot = await createNewProjectDir('hosting');
   const projectName = path.basename(projRoot);
@@ -187,6 +228,11 @@ export async function createReactTestProject(): Promise<string> {
   return projRoot;
 }
 
+/**
+ *
+ * @param projectDir
+ * @param newBuildCommand
+ */
 export function resetBuildCommand(projectDir: string, newBuildCommand: string): string {
   const projectConfigFilePath = path.join(projectDir, 'amplify', '.config', 'project-config.json');
   const projectConfig = readJsonFile(projectConfigFilePath);
@@ -196,6 +242,10 @@ export function resetBuildCommand(projectDir: string, newBuildCommand: string): 
   return currentBuildCommand;
 }
 
+/**
+ *
+ * @param projectDir
+ */
 export function extractHostingBucketInfo(projectDir: string) {
   const meta = getBackendAmplifyMeta(projectDir);
   return _.get(meta, ['hosting', 'S3AndCloudFront', 'output', 'HostingBucketName']);

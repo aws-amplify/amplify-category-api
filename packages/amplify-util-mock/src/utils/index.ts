@@ -1,17 +1,25 @@
+import * as which from 'which';
+import * as execa from 'execa';
+import * as semver from 'semver';
+
 export { getMockDataDirectory } from './mock-data-directory';
 export { addMockDataToGitIgnore } from './git-ignore';
+/**
+ *
+ * @param context
+ */
 export async function getAmplifyMeta(context: any) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   return context.amplify.readJsonFile(amplifyMetaFilePath);
 }
 
-import * as which from 'which';
-import * as execa from 'execa';
-import * as semver from 'semver';
-
 const minJavaVersion = '>=1.8 <= 2.0 ||  >=8.0';
 
-export const checkJavaVersion = async context => {
+/**
+ *
+ * @param context
+ */
+export const checkJavaVersion = async (context) => {
   const executablePath = which.sync('java', {
     nothrow: true,
   });
@@ -28,14 +36,18 @@ export const checkJavaVersion = async context => {
 
   // Java prints version to stderr
   if (isUnsupportedJavaVersion(result.stderr)) {
-    context.print.warning(`Update java to 8+`);
+    context.print.warning('Update java to 8+');
   }
 };
 
+/**
+ *
+ * @param stderr
+ */
 function isUnsupportedJavaVersion(stderr: string | null): boolean {
   const regex = /version "(\d+)(\.(\d+\.)(\d))?/g;
   const versionStrings: Array<string> = stderr ? stderr.split(/\r?\n/) : [''];
-  const mayVersion = versionStrings.map(line => line.match(regex)).find(v => v != null);
+  const mayVersion = versionStrings.map((line) => line.match(regex)).find((v) => v != null);
   if (mayVersion === undefined) {
     return true;
   }

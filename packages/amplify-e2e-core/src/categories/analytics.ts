@@ -1,5 +1,10 @@
 import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '..';
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addPinpoint(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true })
@@ -25,6 +30,11 @@ export function addPinpoint(cwd: string, settings: any): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addKinesis(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true })
@@ -53,6 +63,11 @@ export function addKinesis(cwd: string, settings: any): Promise<void> {
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function removeAnalytics(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'analytics'], { cwd, stripColors: true })

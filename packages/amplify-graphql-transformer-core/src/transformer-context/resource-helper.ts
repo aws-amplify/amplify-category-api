@@ -2,9 +2,11 @@ import { GraphQLAPIProvider, ModelFieldMap, TransformerResourceHelperProvider } 
 import { CfnParameter, Token } from 'aws-cdk-lib';
 import { ModelResourceIDs } from 'graphql-transformer-common';
 import md5 from 'md5';
+import {
+  DirectiveNode, FieldNode, ObjectTypeDefinitionNode, ObjectTypeExtensionNode,
+} from 'graphql';
 import { ModelFieldMapImpl } from './model-field-map';
 import { StackManager } from './stack-manager';
-import { DirectiveNode, FieldNode, ObjectTypeDefinitionNode, ObjectTypeExtensionNode } from 'graphql';
 
 /**
  * Contains helper methods for transformers to access and compile context about resource generation
@@ -28,6 +30,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
 
   /**
    * Given a modelName, get the corresponding table name
+   * @param modelName
    */
   generateTableName = (modelName: string): string => {
     if (!this.api) {
@@ -54,6 +57,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
 
   /**
    * binds api to Resource helper class
+   * @param api
    */
   bind(api: GraphQLAPIProvider): void {
     this.api = api;
@@ -70,16 +74,19 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
 
   /**
    * Gets the mapped name of a model, if present in the map. Otherwise, returns the given model name unchanged
+   * @param modelName
    */
   getModelNameMapping = (modelName: string): string => this.#modelNameMap.get(modelName) ?? modelName;
 
   /**
    * True if the model name has a mapping, false otherwise
+   * @param modelName
    */
   isModelRenamed = (modelName: string): boolean => this.getModelNameMapping(modelName) !== modelName;
 
   /**
    * Gets the field mapping object for the model if present. If not present, an new field map object is created and returned
+   * @param modelName
    */
   getModelFieldMap = (modelName: string): ModelFieldMap => {
     if (!this.#modelFieldMaps.has(modelName)) {
@@ -90,6 +97,8 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
 
   /**
    * Gets the mapped name of a model field, if present. Otherwise, returns the given field name unchanged.
+   * @param modelName
+   * @param fieldName
    */
   getFieldNameMapping = (modelName: string, fieldName: string): string => {
     if (!this.#modelFieldMaps.has(modelName)) {
@@ -99,7 +108,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
       this.#modelFieldMaps
         .get(modelName)
         ?.getMappedFields()
-        .find(entry => entry.currentFieldName === fieldName)?.originalFieldName || fieldName
+        .find((entry) => entry.currentFieldName === fieldName)?.originalFieldName || fieldName
     );
   };
 
@@ -117,9 +126,10 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
    * @param directive the directive
    */
   addDirectiveConfigExclusion = (
-      object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
-      field: FieldNode | undefined,
-      directive: DirectiveNode): void => {
+    object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
+    field: FieldNode | undefined,
+    directive: DirectiveNode,
+  ): void => {
     this.exclusionSet.add(this.convertDirectiveConfigToKey(object, field, directive));
   };
 
@@ -131,11 +141,10 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
    * @return boolean true if the configuration has been excluded
    */
   isDirectiveConfigExcluded = (
-      object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
-      field: FieldNode | undefined,
-      directive: DirectiveNode): boolean => {
-    return this.exclusionSet.has(this.convertDirectiveConfigToKey(object, field, directive));
-  };
+    object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
+    field: FieldNode | undefined,
+    directive: DirectiveNode,
+  ): boolean => this.exclusionSet.has(this.convertDirectiveConfigToKey(object, field, directive));
 
   private ensureEnv = (): void => {
     if (!this.stackManager.getParameter('env')) {
@@ -147,12 +156,11 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
   };
 
   private convertDirectiveConfigToKey = (
-      object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
-      field: FieldNode | undefined,
-      directive: DirectiveNode): string => {
-    const argString = directive?.arguments?.map(arg => {
-      return `${arg?.name?.value}|${arg?.value?.kind === 'StringValue' || arg?.value?.kind === 'IntValue' || arg?.value?.kind === 'FloatValue' ? arg.value.value : 'NullValue'}`
-    })?.join('-');
+    object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
+    field: FieldNode | undefined,
+    directive: DirectiveNode,
+  ): string => {
+    const argString = directive?.arguments?.map((arg) => `${arg?.name?.value}|${arg?.value?.kind === 'StringValue' || arg?.value?.kind === 'IntValue' || arg?.value?.kind === 'FloatValue' ? arg.value.value : 'NullValue'}`)?.join('-');
     return `${object.name.value}/${field?.name?.value ?? 'NullField'}/${directive.name.value}/${argString}`;
-  }
+  };
 }

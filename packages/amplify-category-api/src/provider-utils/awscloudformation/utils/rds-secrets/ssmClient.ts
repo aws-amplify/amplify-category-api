@@ -1,6 +1,9 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import aws from 'aws-sdk';
 
+/**
+ *
+ */
 export type Secret = {
   secretName: string,
   secretValue: string
@@ -23,6 +26,7 @@ export class SSMClient {
 
   /**
    * Returns a list of secret name value pairs
+   * @param secretNames
    */
   getSecrets = async (secretNames: string[]): Promise<Secret[]> => {
     if (!secretNames || secretNames?.length === 0) {
@@ -40,6 +44,7 @@ export class SSMClient {
 
   /**
    * Returns all secret names under a path. Does NOT decrypt any secrets
+   * @param secretPath
    */
   getSecretNamesByPath = async (secretPath: string): Promise<string[]> => {
     let nextToken: string|undefined;
@@ -56,10 +61,10 @@ export class SSMClient {
               Values: ['SecureString'],
             },
           ],
-          NextToken: nextToken
+          NextToken: nextToken,
         })
         .promise();
-      secretNames.push(...result?.Parameters?.map(param => param?.Name));
+      secretNames.push(...result?.Parameters?.map((param) => param?.Name));
       nextToken = result?.NextToken;
     } while (nextToken);
     return secretNames;
@@ -67,6 +72,8 @@ export class SSMClient {
 
   /**
    * Sets the given secretName to the secretValue. If secretName is already present, it is overwritten.
+   * @param secretName
+   * @param secretValue
    */
   setSecret = async (secretName: string, secretValue: string): Promise<void> => {
     await this.ssmClient
@@ -81,6 +88,7 @@ export class SSMClient {
 
   /**
    * Deletes secretName. If it already doesn't exist, this is treated as success. All other errors will throw.
+   * @param secretName
    */
   deleteSecret = async (secretName: string): Promise<void> => {
     try {
@@ -95,6 +103,7 @@ export class SSMClient {
 
   /**
    * Deletes all secrets in secretNames.If secret doesn't exist, this is treated as success. All other errors will throw.
+   * @param secretNames
    */
   deleteSecrets = async (secretNames: string[]): Promise<void> => {
     try {

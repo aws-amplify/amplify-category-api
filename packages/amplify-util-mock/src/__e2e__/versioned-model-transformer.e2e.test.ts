@@ -2,11 +2,13 @@ import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import { VersionedModelTransformer } from 'graphql-versioned-transformer';
 import { GraphQLClient } from './utils/graphql-client';
-import { deploy, launchDDBLocal, terminateDDB, logDebug } from './utils/index';
+import {
+  deploy, launchDDBLocal, terminateDDB, logDebug,
+} from './utils/index';
 
 jest.setTimeout(20000);
 
-let GRAPHQL_CLIENT = undefined;
+let GRAPHQL_CLIENT;
 let ddbEmulator = null;
 let dbPath = null;
 let server;
@@ -26,7 +28,7 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
       transformers: [new DynamoDBModelTransformer(), new VersionedModelTransformer()],
       featureFlags: {
-        getBoolean: name => (name === 'improvePluralization' ? true : false),
+        getBoolean: (name) => (name === 'improvePluralization'),
       } as FeatureFlagProvider,
     });
     const out = transformer.transform(validSchema);
@@ -37,10 +39,10 @@ beforeAll(async () => {
     const result = await deploy(out, ddbClient);
     server = result.simulator;
 
-    const endpoint = server.url + '/graphql';
+    const endpoint = `${server.url}/graphql`;
     logDebug(`Using graphql url: ${endpoint}`);
 
-    const apiKey = result.config.appSync.apiKey;
+    const { apiKey } = result.config.appSync;
     expect(apiKey).toBeDefined();
     expect(endpoint).toBeDefined();
     GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey });
@@ -65,7 +67,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('Test createPost mutation', async () => {
+test('createPost mutation', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Hello, World!" }) {
@@ -85,7 +87,7 @@ test('Test createPost mutation', async () => {
   expect(response.data.createPost.version).toEqual(1);
 });
 
-test('Test updatePost mutation', async () => {
+test('updatePost mutation', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Update" }) {
@@ -119,7 +121,7 @@ test('Test updatePost mutation', async () => {
   expect(updateResponse.data.updatePost.version).toEqual(2);
 });
 
-test('Test failed updatePost mutation with wrong version', async () => {
+test('failed updatePost mutation with wrong version', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Update" }) {
@@ -154,7 +156,7 @@ test('Test failed updatePost mutation with wrong version', async () => {
   expect((updateResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 });
 
-test('Test deletePost mutation', async () => {
+test('deletePost mutation', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Delete" }) {
@@ -184,7 +186,7 @@ test('Test deletePost mutation', async () => {
   expect(deleteResponse.data.deletePost.version).toEqual(createResponse.data.createPost.version);
 });
 
-test('Test deletePost mutation with wrong version', async () => {
+test('deletePost mutation with wrong version', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Delete" }) {

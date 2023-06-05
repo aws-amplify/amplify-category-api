@@ -1,6 +1,6 @@
 import { Sorter } from '@hapi/topo';
 import { isPlainObject } from 'lodash';
-import '../../CFNParser';
+import '..';
 import { parseValue } from '../field-parser';
 import { getResourceProcessorFor } from '../resource-processors';
 import { CloudFormationParseContext } from '../types';
@@ -22,6 +22,13 @@ export const CFN_PSEUDO_PARAMS = {
   'AWS::URLSuffix': 'amazonaws.com',
 };
 
+/**
+ *
+ * @param resourceName
+ * @param resource
+ * @param cfnContext
+ * @param cfnTemplateFetcher
+ */
 export function nestedStackHandler(
   resourceName: string,
   resource: CloudFormationResource,
@@ -34,12 +41,10 @@ export function nestedStackHandler(
   const parameters = resource.Properties.Parameters || {};
 
   // process all the parameters
-  const processedParameters = Object.entries(parameters).reduce((acc, [parameterName, parameterValue]) => {
-    return {
-      ...acc,
-      [parameterName]: parseValue(parameterValue, cfnContext),
-    };
-  }, {});
+  const processedParameters = Object.entries(parameters).reduce((acc, [parameterName, parameterValue]) => ({
+    ...acc,
+    [parameterName]: parseValue(parameterValue, cfnContext),
+  }), {});
 
   // get the template
   const templatePath = parseValue(resource.Properties.TemplateURL, cfnContext);
@@ -53,6 +58,11 @@ export function nestedStackHandler(
 
   return processCloudFormationStack(stackTemplate, processedParameters, cfnContext.exports, cfnTemplateFetcher);
 }
+/**
+ *
+ * @param templateParameters
+ * @param inputParameters
+ */
 export function mergeParameters(templateParameters: CloudFormationParameters, inputParameters): Record<string, any> {
   const processedParams: Record<string, any> = {};
   Object.keys(templateParameters).forEach((paramName: string) => {
@@ -67,9 +77,14 @@ export function mergeParameters(templateParameters: CloudFormationParameters, in
   return { ...CFN_PSEUDO_PARAMS, ...processedParams };
 }
 
+/**
+ *
+ * @param conditions
+ * @param processedParams
+ */
 export function processConditions(conditions: CloudFormationConditions, processedParams: Record<string, any>): Record<string, boolean> {
   const processedConditions: Record<string, boolean> = {};
-  Object.keys(conditions).forEach(conditionName => {
+  Object.keys(conditions).forEach((conditionName) => {
     const condition = conditions[conditionName];
     processedConditions[conditionName] = parseValue(condition, {
       params: processedParams,
@@ -81,6 +96,11 @@ export function processConditions(conditions: CloudFormationConditions, processe
   return processedConditions;
 }
 
+/**
+ *
+ * @param node
+ * @param params
+ */
 export function getDependencyResources(node: object | any[], params: Record<string, any> = {}): string[] {
   let result: string[] = [];
   if (typeof node === 'string') {
@@ -90,16 +110,16 @@ export function getDependencyResources(node: object | any[], params: Record<stri
   if (isPlainObject(node) && Object.keys(node).length === 1) {
     const fnName = Object.keys(node)[0];
     const fnArgs = node[fnName];
-    if ('Ref' === fnName) {
+    if (fnName === 'Ref') {
       const resourceName = fnArgs;
       if (!Object.keys(params).includes(resourceName)) {
         result.push(resourceName);
       }
-    } else if ('Fn::GetAtt' === fnName) {
+    } else if (fnName === 'Fn::GetAtt') {
       const resourceName = fnArgs[0];
       result.push(resourceName);
     } else if (typeof fnArgs !== 'string') {
-      for (var i = 0; i < fnArgs.length; i++) {
+      for (let i = 0; i < fnArgs.length; i++) {
         result = [...result, ...getDependencyResources(fnArgs[i], params)];
       }
     }
@@ -109,14 +129,19 @@ export function getDependencyResources(node: object | any[], params: Record<stri
   return result;
 }
 
+/**
+ *
+ * @param resources
+ * @param params
+ */
 export function sortResources(resources: CloudFormationResources, params: Record<string, any>): string[] {
   const resourceSorter: Sorter<string> = new Sorter();
-  Object.keys(resources).forEach(resourceName => {
+  Object.keys(resources).forEach((resourceName) => {
     const resource = resources[resourceName];
     let dependsOn: string[] = [];
     // intrinsic dependency
     const intrinsicDependency = Object.values(resource.Properties)
-      .map(propValue => getDependencyResources(propValue, params))
+      .map((propValue) => getDependencyResources(propValue, params))
       .reduce((sum, val) => [...sum, ...val], []);
 
     // Todo: enable this once e2e test invoke transformer the same way as
@@ -134,7 +159,7 @@ export function sortResources(resources: CloudFormationResources, params: Record
     if (resource.DependsOn) {
       if (Array.isArray(resource.DependsOn) || typeof resource.DependsOn === 'string') {
         dependsOn = typeof resource.DependsOn === 'string' ? [resource.DependsOn] : resource.DependsOn;
-        if (dependsOn.some(dependsOnResource => !(dependsOnResource in resources))) {
+        if (dependsOn.some((dependsOnResource) => !(dependsOnResource in resources))) {
           throw new Error(`Resource ${resourceName} DependsOn a non-existent resource`);
         }
       } else {
@@ -156,6 +181,11 @@ export function sortResources(resources: CloudFormationResources, params: Record
   return resourceSorter.nodes;
 }
 
+/**
+ *
+ * @param resources
+ * @param conditions
+ */
 export function filterResourcesBasedOnConditions(
   resources: CloudFormationResources,
   conditions: Record<string, boolean>,
@@ -178,6 +208,14 @@ export function filterResourcesBasedOnConditions(
   return filteredResources;
 }
 
+/**
+ *
+ * @param parameters
+ * @param conditions
+ * @param resources
+ * @param cfnExports
+ * @param cfnTemplateFetcher
+ */
 export function processResources(
   parameters: Record<string, any>,
   conditions: Record<string, boolean>,
@@ -188,7 +226,7 @@ export function processResources(
   const filteredResources = filterResourcesBasedOnConditions(resources, conditions);
   const sortedResourceNames = sortResources(filteredResources, parameters);
   const processedResources = {};
-  sortedResourceNames.forEach(resourceName => {
+  sortedResourceNames.forEach((resourceName) => {
     const resource = filteredResources[resourceName];
     const resourceType = resource.Type;
     const cfnContext: CloudFormationParseContext = {
@@ -222,6 +260,14 @@ export function processResources(
   return { resources: processedResources, stackExports: cfnExports };
 }
 
+/**
+ *
+ * @param output
+ * @param parameters
+ * @param conditions
+ * @param resources
+ * @param cfnExports
+ */
 export function processExports(
   output: CloudFormationOutputs,
   parameters: Record<string, any>,
@@ -230,8 +276,10 @@ export function processExports(
   cfnExports: Record<string, any> = {},
 ): Record<string, any> {
   const stackExports = {};
-  const cfnContext = { params: parameters, conditions, resources, exports: cfnExports };
-  Object.values(output).forEach(output => {
+  const cfnContext = {
+    params: parameters, conditions, resources, exports: cfnExports,
+  };
+  Object.values(output).forEach((output) => {
     if (output.Export && output.Export.Name) {
       const exportName = parseValue(output.Export.Name, cfnContext);
       let exportValue;
@@ -251,6 +299,14 @@ export function processExports(
   return stackExports;
 }
 
+/**
+ *
+ * @param output
+ * @param parameters
+ * @param conditions
+ * @param resources
+ * @param cfnExports
+ */
 export function processOutputs(
   output: CloudFormationOutputs,
   parameters: Record<string, any>,
@@ -259,13 +315,22 @@ export function processOutputs(
   cfnExports: Record<string, any> = {},
 ): Record<string, any> {
   const outputs = {};
-  const cfnContext = { params: parameters, conditions, resources, exports: cfnExports };
+  const cfnContext = {
+    params: parameters, conditions, resources, exports: cfnExports,
+  };
   Object.entries(output).forEach(([name, res]) => {
     outputs[name] = parseValue(res.Value, cfnContext);
   });
   return outputs;
 }
 
+/**
+ *
+ * @param template
+ * @param parameters
+ * @param cfnExports
+ * @param cfnTemplateFetcher
+ */
 export function processCloudFormationStack(
   template: CloudFormationTemplate,
   parameters: Record<string, any>,

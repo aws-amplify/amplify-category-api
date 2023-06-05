@@ -13,7 +13,11 @@ import { transformerValidationErrors } from '../helpers/transformer-validation';
  * @returns true if correct directives are used
  */
 
-
+/**
+ *
+ * @param schema
+ * @param props
+ */
 export const validateDirectivesFromOlderTransformerVersionAreNotUsed = (
   schema: DocumentNode, props: ValidateSchemaProps,
 ): Error[] => {

@@ -4,7 +4,7 @@
 import {
   AppSyncAuthConfiguration,
   TransformerPluginProvider,
-  Template
+  Template,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   OverrideConfig,

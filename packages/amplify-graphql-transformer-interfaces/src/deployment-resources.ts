@@ -1,3 +1,6 @@
+/**
+ *
+ */
 export interface Template {
   AWSTemplateFormatVersion?: string;
   Description?: string;
@@ -14,10 +17,16 @@ export interface Template {
   Outputs?: Record<string, any>;
 }
 
+/**
+ *
+ */
 export interface StackMapping {
   [resourceId: string]: string;
 }
 
+/**
+ *
+ */
 export interface ResolversFunctionsAndSchema {
   // Resolver templates keyed by their filename.
   resolvers: Record<string, string>;
@@ -31,6 +40,9 @@ export interface ResolversFunctionsAndSchema {
   userOverriddenSlots: string[];
 }
 
+/**
+ *
+ */
 export interface NestedStacks {
   // The root stack template.
   rootStack: Template;

@@ -1,4 +1,6 @@
-import { $TSContext, AmplifyCategories, FeatureFlags, stateManager } from '@aws-amplify/amplify-cli-core';
+import {
+  $TSContext, AmplifyCategories, FeatureFlags, stateManager,
+} from '@aws-amplify/amplify-cli-core';
 import { printer, prompter, exact } from '@aws-amplify/amplify-prompts';
 
 const subcommand = 'rebuild';
@@ -7,6 +9,10 @@ export const name = subcommand;
 
 const rebuild = true;
 
+/**
+ *
+ * @param context
+ */
 export const run = async (context: $TSContext) => {
   if (!FeatureFlags.getBoolean('graphqlTransformer.enableIterativeGSIUpdates')) {
     printer.error('Iterative GSI Updates must be enabled to rebuild an API. See https://docs.amplify.aws/cli/reference/feature-flags/');

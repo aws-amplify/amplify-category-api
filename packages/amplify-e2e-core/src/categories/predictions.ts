@@ -1,6 +1,11 @@
 import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '..';
 
 // add convert resource
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addConvert(cwd: string, settings: any): Promise<void> {
   const resourceName = 'convertTest1';
   return new Promise((resolve, reject) => {
@@ -31,6 +36,11 @@ export function addConvert(cwd: string, settings: any): Promise<void> {
 }
 
 // add identify test
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addIdentifyCollection(cwd: string, settings: any): Promise<void> {
   const resourceName = 'identifyCollectionTest1';
   return new Promise((resolve, reject) => {
@@ -70,6 +80,11 @@ export function addIdentifyCollection(cwd: string, settings: any): Promise<void>
 }
 
 // add interpret resource
+/**
+ *
+ * @param cwd
+ * @param settings
+ */
 export function addInterpret(cwd: string, settings: any): Promise<void> {
   const resourceName = 'interpretTest1';
   return new Promise((resolve, reject) => {

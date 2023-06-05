@@ -27,7 +27,7 @@ import {
   generateOwnerClaimExpression,
   generateOwnerClaimListExpression,
   generateOwnerMultiClaimExpression,
-  generateInvalidClaimsCondition
+  generateInvalidClaimsCondition,
 } from './helpers';
 import {
   API_KEY_AUTH_TYPE,
@@ -44,6 +44,7 @@ import {
 
 /**
  * There is only one role for ApiKey we can use the first index
+ * @param roles
  */
 const apiKeyExpression = (roles: Array<RoleDefinition>): Expression | null => {
   const expression = new Array<Expression>();
@@ -55,6 +56,10 @@ const apiKeyExpression = (roles: Array<RoleDefinition>): Expression | null => {
 };
 /**
  * No need to combine allowed fields as the request can only be signed by one iam role
+ * @param roles
+ * @param hasAdminRolesEnabled
+ * @param adminRoles
+ * @param identityPoolId
  */
 const iamExpression = (
   roles: Array<RoleDefinition>,
@@ -68,7 +73,7 @@ const iamExpression = (
     expression.push(iamAdminRoleCheckExpression(adminRoles));
   }
   if (roles.length > 0) {
-    roles.forEach(role => {
+    roles.forEach((role) => {
       expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), identityPoolId));
     });
   } else {
@@ -79,6 +84,7 @@ const iamExpression = (
 
 /**
  * There is only one role for Lambda we can use the first index
+ * @param roles
  */
 const lambdaExpression = (roles: Array<RoleDefinition>): Expression | null => {
   const expression = new Array<Expression>();
@@ -92,7 +98,7 @@ const lambdaExpression = (roles: Array<RoleDefinition>): Expression | null => {
 
 const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
   const staticRoleExpression: Array<Expression> = [];
-  const privateRoleIdx = roles.findIndex(r => r.strategy === 'private');
+  const privateRoleIdx = roles.findIndex((r) => r.strategy === 'private');
   if (privateRoleIdx > -1) {
     staticRoleExpression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
     roles.splice(privateRoleIdx, -1);
@@ -102,7 +108,7 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expre
       iff(
         not(ref(IS_AUTHORIZED_FLAG)),
         compoundExpression([
-          set(ref('staticGroupRoles'), raw(JSON.stringify(roles.map(r => ({ claim: r.claim, entity: r.entity }))))),
+          set(ref('staticGroupRoles'), raw(JSON.stringify(roles.map((r) => ({ claim: r.claim, entity: r.entity }))))),
           forEach(/** for */ ref('groupRole'), /** in */ ref('staticGroupRoles'), [
             set(ref('groupsInToken'), getIdentityClaimExp(ref('groupRole.claim'), list([]))),
             iff(
@@ -202,6 +208,9 @@ const dynamicGroupRoleExpression = (
 
 /**
  * Generates auth expression for delete
+ * @param providers
+ * @param roles
+ * @param fields
  */
 export const generateAuthExpressionForDelete = (
   providers: ConfiguredAuthProviders,

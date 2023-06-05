@@ -9,7 +9,7 @@ import {
   TransformHostProvider,
   TransformerLog,
   TransformerFilepathsProvider,
-  AmplifyApiGraphQlResourceStackTemplate
+  AmplifyApiGraphQlResourceStackTemplate,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import {
@@ -29,9 +29,10 @@ import {
   TypeDefinitionNode,
   TypeExtensionNode,
   UnionTypeDefinitionNode,
-  print
+  print,
 } from 'graphql';
 import _ from 'lodash';
+import { DocumentNode } from 'graphql/language';
 import { ResolverConfig, TransformConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
@@ -53,7 +54,6 @@ import {
   sortTransformerPlugins,
 } from './utils';
 import { validateAuthModes, validateModelSchema } from './validation';
-import { DocumentNode } from 'graphql/language';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { DatasourceType } from '../config/project-config';
 
@@ -90,7 +90,13 @@ export interface GraphQLTransformOptions {
   readonly overrideConfig?: OverrideConfig;
   readonly filepaths?: TransformerFilepathsProvider;
 }
+/**
+ *
+ */
 export type StackMapping = { [resourceId: string]: string };
+/**
+ *
+ */
 export class GraphQLTransform {
   private transformers: TransformerPluginProvider[];
   private stackMappingOverrides: StackMapping;
@@ -137,9 +143,9 @@ export class GraphQLTransform {
     this.overrideConfig = options.overrideConfig;
     this.resolverConfig = options.resolverConfig || {};
     this.filepaths = options.filepaths || {
-      getBackendDirPath: () => { throw new Error('Unable to get backend dir path.') },
-      findProjectRoot: () => { throw new Error('Unable to find project root.') },
-      getCurrentCloudBackendDirPath: () => { throw new Error('Unable to get current cloud backend dir path') },
+      getBackendDirPath: () => { throw new Error('Unable to get backend dir path.'); },
+      findProjectRoot: () => { throw new Error('Unable to find project root.'); },
+      getCurrentCloudBackendDirPath: () => { throw new Error('Unable to get current cloud backend dir path'); },
     };
 
     this.logs = [];
@@ -159,13 +165,13 @@ export class GraphQLTransform {
     const context = new TransformerPreProcessContext(schema, this?.options?.featureFlags);
 
     this.transformers
-        .filter(transformer => isFunction(transformer.preMutateSchema))
-        .map(transformer => transformer.preMutateSchema as Function)
-        .forEach(preMutateSchema => preMutateSchema(context));
+      .filter((transformer) => isFunction(transformer.preMutateSchema))
+      .map((transformer) => transformer.preMutateSchema as Function)
+      .forEach((preMutateSchema) => preMutateSchema(context));
 
     return this.transformers
-      .filter(transformer => isFunction(transformer.mutateSchema))
-      .map(transformer => transformer.mutateSchema as Function)
+      .filter((transformer) => isFunction(transformer.mutateSchema))
+      .map((transformer) => transformer.mutateSchema as Function)
       .reduce((mutateContext, mutateSchema) => {
         const updatedSchema = mutateSchema(mutateContext);
         return {
@@ -200,7 +206,7 @@ export class GraphQLTransform {
       this.resolverConfig,
       datasourceConfig?.datasourceSecretParameterLocations,
       this.overrideConfig?.applyOverride,
-   );
+    );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
       {
@@ -349,7 +355,7 @@ export class GraphQLTransform {
       disableResolverDeduping: this.transformConfig.DisableResolverDeduping,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
-      mode => mode?.authorizationType,
+      (mode) => mode?.authorizationType,
     );
 
     const hasLegacyAPIKeyConfigDisabled = 'CreateAPIKey' in this.buildParameters && this.buildParameters.CreateAPIKey !== 1;
@@ -358,7 +364,7 @@ export class GraphQLTransform {
       const apiKeyConfig: AuthorizationMode | undefined = [
         authorizationConfig.defaultAuthorization,
         ...(authorizationConfig.additionalAuthorizationModes || []),
-      ].find(auth => auth?.authorizationType == AuthorizationType.API_KEY);
+      ].find((auth) => auth?.authorizationType == AuthorizationType.API_KEY);
       const apiKeyDescription = apiKeyConfig!.apiKeyConfig?.description;
       const apiKeyExpirationDays = apiKeyConfig!.apiKeyConfig?.expires;
 
@@ -429,7 +435,7 @@ export class GraphQLTransform {
     for (const [resolverName] of resolverEntries) {
       const userSlots = this.userDefinedSlots[resolverName] || [];
 
-      userSlots.forEach(slot => {
+      userSlots.forEach((slot) => {
         const fileName = slot.requestResolver?.fileName;
         if (fileName && fileName in resolvers) {
           userOverriddenSlots.push(fileName);
@@ -455,7 +461,7 @@ export class GraphQLTransform {
     for (const [resolverName, resolver] of resolverEntries) {
       const userSlots = this.userDefinedSlots[resolverName] || [];
 
-      userSlots.forEach(slot => {
+      userSlots.forEach((slot) => {
         const requestTemplate = slot.requestResolver
           ? MappingTemplate.s3MappingTemplateFromString(slot.requestResolver.template, slot.requestResolver.fileName)
           : undefined;
@@ -769,6 +775,9 @@ export class GraphQLTransform {
     }
   }
 
+  /**
+   *
+   */
   public getLogs(): TransformerLog[] {
     return this.logs;
   }
@@ -782,10 +791,9 @@ const removeAmplifyInputDefinition = (schema: string): string => {
   const parsedSchema: any = parse(schema);
 
   parsedSchema.definitions = parsedSchema?.definitions?.filter(
-    (definition: any) =>
-      !(definition?.kind === 'InputObjectTypeDefinition' &&
-      definition?.name &&
-      definition?.name?.value === 'Amplify')
+    (definition: any) => !(definition?.kind === 'InputObjectTypeDefinition'
+      && definition?.name
+      && definition?.name?.value === 'Amplify'),
   );
 
   const sanitizedSchema = print(parsedSchema);

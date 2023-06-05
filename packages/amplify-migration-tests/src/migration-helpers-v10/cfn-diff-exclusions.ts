@@ -7,6 +7,11 @@ import { ExcludeFromCFNDiff } from '../migration-helpers/utils';
  * https://github.com/aws/aws-cdk/issues/8646#issuecomment-647561856
  *
  * AWS::ApiGateway::GatewayResponse is also excluded
+ * @param currentCategory
+ * @param currentResourceKey
+ * @param cfnTemplates
+ * @param cfnTemplates.project1
+ * @param cfnTemplates.project2
  */
 export const cfnDiffExclusions: ExcludeFromCFNDiff = (currentCategory: string, currentResourceKey: string, cfnTemplates: {
     project1: any;

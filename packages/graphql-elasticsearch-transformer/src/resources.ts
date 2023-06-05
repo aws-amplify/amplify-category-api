@@ -179,6 +179,7 @@ export class ResourceFactory {
 
   /**
    * Creates the barebones template for an application.
+   * @param isProjectUsingDataStore
    */
   public initTemplate(isProjectUsingDataStore = false): Template {
     return {
@@ -304,6 +305,7 @@ export class ResourceFactory {
   /**
    * Deploy a lambda function that will stream data from our DynamoDB table
    * to our elasticsearch index.
+   * @param isProjectUsingDataStore
    */
   public makeDynamoDBStreamingFunction(isProjectUsingDataStore = false) {
     return new Lambda.Function({
@@ -339,6 +341,7 @@ export class ResourceFactory {
 
   /**
    *
+   * @param typeName
    */
   public makeDynamoDBStreamEventSourceMapping(typeName: string) {
     return new Lambda.EventSourceMapping({
@@ -512,6 +515,13 @@ export class ResourceFactory {
 
   /**
    * Create the Elasticsearch search resolver.
+   * @param type
+   * @param nonKeywordFields
+   * @param primaryKey
+   * @param queryTypeName
+   * @param improvePluralization
+   * @param nameOverride
+   * @param includeVersion
    */
   public makeSearchResolver(
     type: string,

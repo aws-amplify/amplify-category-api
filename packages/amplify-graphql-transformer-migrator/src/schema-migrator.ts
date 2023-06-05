@@ -1,12 +1,19 @@
 import * as fs from 'fs-extra';
-import { Kind, parse, print, visit } from 'graphql';
-import { migrateKeys } from './migrators/key';
-import { migrateAuth } from './migrators/auth';
-import { migrateConnection } from './migrators/connection';
-import { combineSchemas, getDefaultAuth, replaceFile, SchemaDocument } from './utils';
+import {
+  Kind, parse, print, visit,
+} from 'graphql';
 import { DocumentNode } from 'graphql/language';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
+import { validateModelSchema, SchemaValidationError } from '@aws-amplify/graphql-transformer-core';
+import * as os from 'os';
+import * as glob from 'glob';
+import { migrateKeys } from './migrators/key';
+import { migrateAuth } from './migrators/auth';
+import { migrateConnection } from './migrators/connection';
+import {
+  combineSchemas, getDefaultAuth, replaceFile, SchemaDocument,
+} from './utils';
 import {
   authRuleUsesQueriesOrMutations,
   detectCustomRootTypes,
@@ -15,12 +22,11 @@ import {
   detectPassthroughDirectives,
   graphQLUsingSQL,
 } from './schema-inspector';
-import { validateModelSchema, SchemaValidationError } from '@aws-amplify/graphql-transformer-core';
 import { backupCliJson, revertTransformerVersion, updateTransformerVersion } from './state-migrator';
 import { GRAPHQL_DIRECTIVES_SCHEMA } from './constants/graphql-directives';
-import * as os from 'os';
-import { backupLocation, backupSchemas, doesBackupExist, restoreSchemas } from './schema-backup';
-import * as glob from 'glob';
+import {
+  backupLocation, backupSchemas, doesBackupExist, restoreSchemas,
+} from './schema-backup';
 
 const cliToMigratorAuthMap: Map<string, string> = new Map<string, string>([
   ['API_KEY', 'apiKey'],
@@ -31,6 +37,15 @@ const cliToMigratorAuthMap: Map<string, string> = new Map<string, string>([
 
 const MIGRATION_DOCS_URL = 'https://docs.amplify.aws/cli/migration/transformer-migration/';
 
+/**
+ *
+ * @param resourceDir
+ * @param apiName
+ * @param featureFlags
+ * @param featureFlags.transformerVersion
+ * @param featureFlags.improvePluralization
+ * @param envName
+ */
 export async function attemptV2TransformerMigration(
   resourceDir: string,
   apiName: string,
@@ -82,9 +97,14 @@ export async function attemptV2TransformerMigration(
   printer.info(`Original schemas are backed up at ${backupLocation(resourceDir)}`);
   printer.info(postMigrationStatusMessage);
   printer.info(`More migration instructions can be found at ${MIGRATION_DOCS_URL}`);
-  printer.info(`To revert the migration run 'amplify migrate api --revert'`);
+  printer.info('To revert the migration run \'amplify migrate api --revert\'');
 }
 
+/**
+ *
+ * @param resourceDir
+ * @param envName
+ */
 export async function revertV2Migration(resourceDir: string, envName: string) {
   if (!doesBackupExist(resourceDir)) {
     printer.error(`No backup found at ${backupLocation(resourceDir)}`);
@@ -99,8 +119,13 @@ export async function revertV2Migration(resourceDir: string, envName: string) {
   await runRevert(resourceDir, envName);
 }
 
+/**
+ *
+ * @param schemas
+ * @param authMode
+ */
 export async function runMigration(schemas: SchemaDocument[], authMode: string): Promise<void> {
-  const schemaList = schemas.map(doc => doc.schema);
+  const schemaList = schemas.map((doc) => doc.schema);
 
   const fullSchema = schemaList.join('\n');
   const fullSchemaNode = parse(fullSchema);
@@ -112,14 +137,17 @@ export async function runMigration(schemas: SchemaDocument[], authMode: string):
     newSchemaList.push({ schema: newSchema, filePath: doc.filePath });
   }
 
-  await Promise.all(newSchemaList.map(doc => replaceFile(doc.schema, doc.filePath)));
+  await Promise.all(newSchemaList.map((doc) => replaceFile(doc.schema, doc.filePath)));
 }
 
 /**
  * Exported for testing
+ * @param schema
+ * @param authMode
+ * @param massSchema
  */
 export function migrateGraphQLSchema(schema: string, authMode: string, massSchema: DocumentNode): string {
-  let output = parse(schema);
+  const output = parse(schema);
   visit(output, {
     ObjectTypeDefinition: {
       enter(node) {
@@ -143,7 +171,7 @@ function doSchemaValidation(schema: string) {
   const appendedSchema = schema + GRAPHQL_DIRECTIVES_SCHEMA;
   const parsedSchema = parse(appendedSchema);
 
-  let allModelDefinitions = [...parsedSchema.definitions];
+  const allModelDefinitions = [...parsedSchema.definitions];
   const errors = validateModelSchema({ kind: Kind.DOCUMENT, definitions: allModelDefinitions });
   if (errors && errors.length) {
     throw new SchemaValidationError(errors);
@@ -161,9 +189,9 @@ async function getSchemaDocs(resourceDir: string): Promise<SchemaDocument[]> {
   }
   if (schemaFileExists) {
     return [{ schema: await fs.readFile(schemaFilePath, 'utf8'), filePath: schemaFilePath }];
-  } else if (schemaDirectoryExists) {
-    const schemaFiles = glob.sync('**/*.graphql', { cwd: schemaDirectoryPath }).map(fileName => path.join(schemaDirectoryPath, fileName));
-    return await Promise.all(schemaFiles.map(async fileName => ({ schema: await fs.readFile(fileName, 'utf8'), filePath: fileName })));
+  } if (schemaDirectoryExists) {
+    const schemaFiles = glob.sync('**/*.graphql', { cwd: schemaDirectoryPath }).map((fileName) => path.join(schemaDirectoryPath, fileName));
+    return await Promise.all(schemaFiles.map(async (fileName) => ({ schema: await fs.readFile(fileName, 'utf8'), filePath: fileName })));
   }
   return [];
 }

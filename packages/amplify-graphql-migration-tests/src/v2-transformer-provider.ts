@@ -15,6 +15,10 @@ import { TransformerPluginProvider, AppSyncAuthConfiguration } from '@aws-amplif
 import { featureFlagProviderStub } from './feature-flag-stub';
 import { V2TransformerTestConfig } from './test-case-types';
 
+/**
+ *
+ * @param config
+ */
 export const v2transformerProvider = (config: Partial<V2TransformerTestConfig> = {}): GraphQLTransform => {
   const transform = new GraphQLTransform({
     transformers: config.transformers ?? getDefaultTransformers(),

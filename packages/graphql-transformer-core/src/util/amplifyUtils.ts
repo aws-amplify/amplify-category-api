@@ -3,10 +3,14 @@ import * as path from 'path';
 import glob from 'glob';
 import { CloudFormation, Fn, Template } from 'cloudform-types';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
-import { GraphQLTransform, StackMapping } from '../GraphQLTransform';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { readFromPath, writeToPath, throwIfNotJSONExt, emptyDirectory, handleFile, FileHandler } from './fileUtils';
-import { writeConfig, TransformConfig, TransformMigrationConfig, loadProject, readSchema, loadConfig } from './transformConfig';
+import { GraphQLTransform, StackMapping } from '../GraphQLTransform';
+import {
+  readFromPath, writeToPath, throwIfNotJSONExt, emptyDirectory, handleFile, FileHandler,
+} from './fileUtils';
+import {
+  writeConfig, TransformConfig, TransformMigrationConfig, loadProject, readSchema, loadConfig,
+} from './transformConfig';
 import { FeatureFlagProvider } from '../FeatureFlags';
 import {
   cantAddAndRemoveGSIAtSameTimeRule,
@@ -26,6 +30,9 @@ import {
 export const CLOUDFORMATION_FILE_NAME = 'cloudformation-template.json';
 export const PARAMETERS_FILE_NAME = 'parameters.json';
 
+/**
+ *
+ */
 export interface ProjectOptions {
   projectDirectory?: string;
   transformersFactory: Function;
@@ -41,11 +48,18 @@ export interface ProjectOptions {
   sanityCheckRules: SanityCheckRules;
 }
 
+/**
+ *
+ */
 export interface SanityCheckRules {
   projectRules: ProjectRule[];
   diffRules: DiffRule[];
 }
 
+/**
+ *
+ * @param opts
+ */
 export async function buildProject(opts: ProjectOptions) {
   await ensureMissingStackMappings(opts);
 
@@ -56,11 +70,10 @@ export async function buildProject(opts: ProjectOptions) {
       builtProject,
       path.join(opts.projectDirectory, 'build'),
       opts.rootStackFileName,
-      opts.buildParameters
+      opts.buildParameters,
     );
 
-    const lastBuildPath =
-      opts.currentCloudBackendDirectory !== undefined ? path.join(opts.currentCloudBackendDirectory, 'build') : undefined;
+    const lastBuildPath = opts.currentCloudBackendDirectory !== undefined ? path.join(opts.currentCloudBackendDirectory, 'build') : undefined;
     const thisBuildPath = opts.projectDirectory !== undefined ? path.join(opts.projectDirectory, 'build') : undefined;
 
     await sanityCheckProject(
@@ -99,6 +112,7 @@ async function _buildProject(opts: ProjectOptions) {
  * Returns a map where the keys are the names of the resources and the values are root.
  * This will be passed to the transform constructor to cause resources from a migration
  * to remain in the top level stack.
+ * @param config
  */
 function getStackMappingFromProjectConfig(config?: TransformConfig): StackMapping {
   const stackMapping = getOrDefault(config, 'StackMapping', {});
@@ -118,6 +132,7 @@ function getStackMappingFromProjectConfig(config?: TransformConfig): StackMappin
  * while still allowing the transform to customize that logical resource.
  * @param resources The resources to change.
  * @param idsToHoist The logical ids to hoist into the root of the template.
+ * @param migrationConfig
  */
 function adjustBuildForMigration(resources: DeploymentResources, migrationConfig?: TransformMigrationConfig): DeploymentResources {
   if (migrationConfig && migrationConfig.V1) {
@@ -136,7 +151,7 @@ function adjustBuildForMigration(resources: DeploymentResources, migrationConfig
         }
       }
     }
-    const rootStack = resources.rootStack;
+    const { rootStack } = resources;
     for (const resourceKey of Object.keys(rootStack.Resources)) {
       if (resourceIdMap[resourceKey]) {
         // Handle any special detials for migrated details.
@@ -154,20 +169,21 @@ function adjustBuildForMigration(resources: DeploymentResources, migrationConfig
  * bug in June 2019 (https://github.com/aws-amplify/amplify-cli/issues/1652).
  * This allows APIs that were deployed with the bug to continue
  * working without changes.
+ * @param config
  */
 async function ensureMissingStackMappings(config: ProjectOptions) {
   const { currentCloudBackendDirectory } = config;
-  let transformOutput = undefined;
+  let transformOutput;
 
   if (currentCloudBackendDirectory) {
     const missingStackMappings = {};
     transformOutput = await _buildProject(config);
     const copyOfCloudBackend = await readFromPath(currentCloudBackendDirectory);
-    const stackMapping = transformOutput.stackMapping;
+    const { stackMapping } = transformOutput;
     if (copyOfCloudBackend && copyOfCloudBackend.build && copyOfCloudBackend.build.stacks) {
       // leave the custom stack alone. Don't split them into separate stacks
       const customStacks = Object.keys(copyOfCloudBackend.stacks || {});
-      const stackNames = Object.keys(copyOfCloudBackend.build.stacks).filter(stack => !customStacks.includes(stack));
+      const stackNames = Object.keys(copyOfCloudBackend.build.stacks).filter((stack) => !customStacks.includes(stack));
 
       // We walk through each of the stacks that were deployed in the most recent deployment.
       // If we find a resource that was deployed into a different stack than it should have
@@ -195,13 +211,13 @@ async function ensureMissingStackMappings(config: ProjectOptions) {
       const lastDeployedStack = JSON.parse(copyOfCloudBackend.build[config.rootStackFileName]);
       const resourceIdsInStack = Object.keys(lastDeployedStack.Resources);
       for (const resourceId of resourceIdsInStack) {
-        if (stackMapping[resourceId] && 'root' !== stackMapping[resourceId]) {
+        if (stackMapping[resourceId] && stackMapping[resourceId] !== 'root') {
           missingStackMappings[resourceId] = 'root';
         }
       }
       const outputIdsInStack = Object.keys(lastDeployedStack.Outputs || {});
       for (const outputId of outputIdsInStack) {
-        if (stackMapping[outputId] && 'root' !== stackMapping[outputId]) {
+        if (stackMapping[outputId] && stackMapping[outputId] !== 'root') {
           missingStackMappings[outputId] = 'root';
         }
       }
@@ -219,12 +235,14 @@ async function ensureMissingStackMappings(config: ProjectOptions) {
 
 /**
  * Merge user config on top of transform output when needed.
+ * @param userConfig
+ * @param transformOutput
  */
 function mergeUserConfigWithTransformOutput(userConfig: Partial<DeploymentResources>, transformOutput: DeploymentResources) {
   // Override user defined functions.
   const userFunctions = userConfig.functions || {};
   const transformFunctions = transformOutput.functions;
-  const pipelineFunctions = transformOutput.pipelineFunctions;
+  const { pipelineFunctions } = transformOutput;
 
   // override functions
   for (const userFunction of Object.keys(userFunctions)) {
@@ -246,7 +264,7 @@ function mergeUserConfigWithTransformOutput(userConfig: Partial<DeploymentResour
   // Override user defined stacks.
   const userStacks = userConfig.stacks || {};
   const transformStacks = transformOutput.stacks;
-  const rootStack = transformOutput.rootStack;
+  const { rootStack } = transformOutput;
 
   // Get all the transform stacks. Custom stacks will depend on all of them
   // so they can always access data sources created by the transform.
@@ -274,7 +292,7 @@ function mergeUserConfigWithTransformOutput(userConfig: Partial<DeploymentResour
 
   // Load the root stack's parameters as we will update them with the Child Stack's parameters
   // if they are not already present in the root stack.
-  let updatedParameters = rootStack.Parameters;
+  const updatedParameters = rootStack.Parameters;
 
   for (const userStack of Object.keys(userStacks)) {
     if (transformOutput.stacks[userStack]) {
@@ -339,6 +357,9 @@ function mergeUserConfigWithTransformOutput(userConfig: Partial<DeploymentResour
   };
 }
 
+/**
+ *
+ */
 export interface UploadOptions {
   directory: string;
   upload: FileHandler;
@@ -350,7 +371,7 @@ export interface UploadOptions {
  */
 export async function uploadDeployment(opts: UploadOptions) {
   if (!opts.directory) {
-    throw new Error(`You must provide a 'directory'`);
+    throw new Error('You must provide a \'directory\'');
   }
 
   if (!fs.existsSync(opts.directory)) {
@@ -358,17 +379,17 @@ export async function uploadDeployment(opts: UploadOptions) {
   }
 
   if (!opts.upload || typeof opts.upload !== 'function') {
-    throw new Error(`You must provide an 'upload' function`);
+    throw new Error('You must provide an \'upload\' function');
   }
 
   const { directory, upload } = opts;
 
-  var fileNames = glob.sync('**/*', {
+  const fileNames = glob.sync('**/*', {
     cwd: directory,
     nodir: true,
   });
 
-  const uploadPromises = fileNames.map(async fileName => {
+  const uploadPromises = fileNames.map(async (fileName) => {
     const resourceContent = fs.createReadStream(path.join(directory, fileName));
 
     await handleFile(upload, fileName, resourceContent);
@@ -379,19 +400,23 @@ export async function uploadDeployment(opts: UploadOptions) {
 
 /**
  * Writes a deployment to disk at a path.
+ * @param deployment
+ * @param directory
+ * @param rootStackFileName
+ * @param buildParameters
  */
 async function writeDeploymentToDisk(
   deployment: DeploymentResources,
   directory: string,
-  rootStackFileName: string = 'rootStack.json',
-  buildParameters: Object
+  rootStackFileName = 'rootStack.json',
+  buildParameters: Object,
 ) {
   // Delete the last deployments resources.
   await emptyDirectory(directory);
 
   // Write the schema to disk
-  const schema = deployment.schema;
-  const fullSchemaPath = path.normalize(directory + `/schema.graphql`);
+  const { schema } = deployment;
+  const fullSchemaPath = path.normalize(`${directory}/schema.graphql`);
   fs.writeFileSync(fullSchemaPath, schema);
 
   // Setup the directories if they do not exist.
@@ -401,7 +426,7 @@ async function writeDeploymentToDisk(
   const resolverFileNames = Object.keys(deployment.resolvers);
   const resolverRootPath = resolverDirectoryPath(directory);
   for (const resolverFileName of resolverFileNames) {
-    const fullResolverPath = path.normalize(resolverRootPath + '/' + resolverFileName);
+    const fullResolverPath = path.normalize(`${resolverRootPath}/${resolverFileName}`);
     fs.writeFileSync(fullResolverPath, deployment.resolvers[resolverFileName]);
   }
 
@@ -409,7 +434,7 @@ async function writeDeploymentToDisk(
   const pipelineFunctions = Object.keys(deployment.pipelineFunctions);
   const pipelineFunctionRootPath = pipelineFunctionDirectoryPath(directory);
   for (const functionFileName of pipelineFunctions) {
-    const fullTemplatePath = path.normalize(pipelineFunctionRootPath + '/' + functionFileName);
+    const fullTemplatePath = path.normalize(`${pipelineFunctionRootPath}/${functionFileName}`);
     fs.writeFileSync(fullTemplatePath, deployment.pipelineFunctions[functionFileName]);
   }
 
@@ -423,28 +448,27 @@ async function writeDeploymentToDisk(
     }
     const fullFileName = fileNameParts.join('.');
     throwIfNotJSONExt(fullFileName);
-    const fullStackPath = path.normalize(stackRootPath + '/' + fullFileName);
+    const fullStackPath = path.normalize(`${stackRootPath}/${fullFileName}`);
     let stackString: any = deployment.stacks[stackFileName];
-    stackString =
-      typeof stackString === 'string'
-        ? deployment.stacks[stackFileName]
-        : JSON.stringify(deployment.stacks[stackFileName], null, 4);
+    stackString = typeof stackString === 'string'
+      ? deployment.stacks[stackFileName]
+      : JSON.stringify(deployment.stacks[stackFileName], null, 4);
     fs.writeFileSync(fullStackPath, stackString);
   }
 
   // Write any functions to disk
   const functionNames = Object.keys(deployment.functions);
-  const functionRootPath = path.normalize(directory + `/functions`);
+  const functionRootPath = path.normalize(`${directory}/functions`);
   if (!fs.existsSync(functionRootPath)) {
     fs.mkdirSync(functionRootPath);
   }
   for (const functionName of functionNames) {
-    const fullFunctionPath = path.normalize(functionRootPath + '/' + functionName);
+    const fullFunctionPath = path.normalize(`${functionRootPath}/${functionName}`);
     const zipContents = fs.readFileSync(deployment.functions[functionName]);
     fs.writeFileSync(fullFunctionPath, zipContents);
   }
-  const rootStack = deployment.rootStack;
-  const rootStackPath = path.normalize(directory + `/${rootStackFileName}`);
+  const { rootStack } = deployment;
+  const rootStackPath = path.normalize(`${directory}/${rootStackFileName}`);
   const rootStackString = JSON.stringify(rootStack, null, 4);
   fs.writeFileSync(rootStackPath, rootStackString);
 
@@ -466,7 +490,7 @@ interface MigrationOptions {
  * @param opts
  */
 export async function migrateAPIProject(opts: MigrationOptions) {
-  const projectDirectory = opts.projectDirectory;
+  const { projectDirectory } = opts;
   const cloudBackendDirectory = opts.cloudBackendDirectory || projectDirectory;
 
   // Read the existing project structures from both the current cloud directory
@@ -489,6 +513,11 @@ export async function migrateAPIProject(opts: MigrationOptions) {
   };
 }
 
+/**
+ *
+ * @param directory
+ * @param oldProject
+ */
 export async function revertAPIMigration(directory: string, oldProject: AmplifyApiV1Project) {
   await fs.remove(directory);
   await writeToPath(directory, oldProject);
@@ -502,6 +531,7 @@ interface AmplifyApiV1Project {
 
 /**
  * Read the configuration for the old version of amplify CLI.
+ * @param projectDirectory
  */
 export async function readV1ProjectConfiguration(projectDirectory: string): Promise<AmplifyApiV1Project> {
   // Schema
@@ -530,6 +560,10 @@ export async function readV1ProjectConfiguration(projectDirectory: string): Prom
   };
 }
 
+/**
+ *
+ * @param project
+ */
 export function makeTransformConfigFromOldProject(project: AmplifyApiV1Project): TransformConfig {
   const migrationResourceIds = [];
   for (const key of Object.keys(project.template.Resources)) {
@@ -583,6 +617,9 @@ function removeSSE(resource: any) {
 
 /**
  * Updates the project to a temporary configuration that stages the real migration.
+ * @param projectDirectory
+ * @param project
+ * @param config
  */
 async function updateToIntermediateProject(projectDirectory: string, project: AmplifyApiV1Project, config: TransformConfig) {
   // Write the config to disk.
@@ -708,24 +745,30 @@ function initStacksAndResolversDirectories(directory: string) {
 }
 
 function pipelineFunctionDirectoryPath(rootPath: string) {
-  return path.normalize(rootPath + `/pipelineFunctions`);
+  return path.normalize(`${rootPath}/pipelineFunctions`);
 }
 
 function resolverDirectoryPath(rootPath: string) {
-  return path.normalize(rootPath + `/resolvers`);
+  return path.normalize(`${rootPath}/resolvers`);
 }
 
 function stacksDirectoryPath(rootPath: string) {
-  return path.normalize(rootPath + `/stacks`);
+  return path.normalize(`${rootPath}/stacks`);
 }
 
 function getOrDefault(o: any, k: string, d: any) {
   return o[k] || d;
 }
 
-export function getSanityCheckRules(isNewAppSyncAPI: boolean, ff: FeatureFlagProvider, allowDestructiveUpdates: boolean = false) {
-  let diffRules: DiffRule[] = [];
-  let projectRules: ProjectRule[] = [];
+/**
+ *
+ * @param isNewAppSyncAPI
+ * @param ff
+ * @param allowDestructiveUpdates
+ */
+export function getSanityCheckRules(isNewAppSyncAPI: boolean, ff: FeatureFlagProvider, allowDestructiveUpdates = false) {
+  const diffRules: DiffRule[] = [];
+  const projectRules: ProjectRule[] = [];
   // If we have iterative GSI upgrades enabled it means we only do sanity check on LSIs
   // as the other checks will be carried out as series of updates.
   if (!isNewAppSyncAPI) {

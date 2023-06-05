@@ -7,12 +7,16 @@ const subcommand = 'update';
 export const name = subcommand;
 export const alias = ['configure'];
 
+/**
+ *
+ * @param context
+ */
 export const run = async (context: $TSContext) => {
   const servicesMetadata = (await import(path.join('..', '..', 'provider-utils', 'supported-services'))).supportedServices;
 
   return context.amplify
     .serviceSelectionPrompt(context, AmplifyCategories.API, servicesMetadata)
-    .then(async result => {
+    .then(async (result) => {
       const providerController = await import(path.join('..', '..', 'provider-utils', result.providerName, 'index'));
       if (!providerController) {
         printer.error('Provider not configured for this category');

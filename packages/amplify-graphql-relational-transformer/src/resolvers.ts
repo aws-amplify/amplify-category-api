@@ -49,8 +49,8 @@ const authFilter = ref('ctx.stash.authFilter');
 const PARTITION_KEY_VALUE = 'partitionKeyValue';
 const SORT_KEY_VALUE = 'sortKeyValue';
 
-function buildKeyValueExpression(fieldName: string, object: ObjectTypeDefinitionNode, isPartitionKey: boolean = false) {
-  const field = object.fields?.find(it => it.name.value === fieldName);
+function buildKeyValueExpression(fieldName: string, object: ObjectTypeDefinitionNode, isPartitionKey = false) {
+  const field = object.fields?.find((it) => it.name.value === fieldName);
 
   // can be auto-generated
   const attributeType = field ? attributeTypeFromScalar(field.type) : 'S';
@@ -58,7 +58,7 @@ function buildKeyValueExpression(fieldName: string, object: ObjectTypeDefinition
   return ref(
     `util.parseJson($util.dynamodb.toDynamoDBJson($util.${
       attributeType === 'S' ? 'defaultIfNullOrBlank' : 'defaultIfNull'
-    }(${isPartitionKey ?  `$${PARTITION_KEY_VALUE}` : `$ctx.source.${fieldName}`}, "${NONE_VALUE}")))`,
+    }(${isPartitionKey ? `$${PARTITION_KEY_VALUE}` : `$ctx.source.${fieldName}`}, "${NONE_VALUE}")))`,
   );
 }
 
@@ -92,7 +92,7 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
   if (relatedTypeIndex.length > 2) {
     const rangeKeyFields = localFields.slice(1);
     const sortKeyName = keySchema[1].attributeName;
-    const condensedSortKeyValue = condenseRangeKey(rangeKeyFields.map(keyField => `\${ctx.source.${keyField}}`));
+    const condensedSortKeyValue = condenseRangeKey(rangeKeyFields.map((keyField) => `\${ctx.source.${keyField}}`));
 
     totalExpressions.push('#sortKeyName = :sortKeyName');
     totalExpressionNames['#sortKeyName'] = str(sortKeyName);
@@ -119,15 +119,15 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
           set(
             ref(PARTITION_KEY_VALUE),
             methodCall(
-              ref(`util.defaultIfNull`),
+              ref('util.defaultIfNull'),
               ref(`ctx.stash.connectionAttibutes.get("${localFields[0]}")`),
-              ref(`ctx.source.${localFields[0]}`)
-            )
+              ref(`ctx.source.${localFields[0]}`),
+            ),
           ),
           ifElse(
             or([
               methodCall(ref('util.isNull'), ref(PARTITION_KEY_VALUE)),
-              ...localFields.slice(1).map(f => raw(`$util.isNull($ctx.source.${f})`))
+              ...localFields.slice(1).map((f) => raw(`$util.isNull($ctx.source.${f})`)),
             ]),
             raw('#return'),
             compoundExpression([
@@ -201,9 +201,9 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
   const setup: Expression[] = [
     set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${limit})`)),
     ...connectionAttributes.slice(1).map((ca, idx) => set(ref(`${SORT_KEY_VALUE}${idx}`), methodCall(
-      ref(`util.defaultIfNull`),
+      ref('util.defaultIfNull'),
       ref(`ctx.stash.connectionAttibutes.get("${ca}")`),
-      ref(`ctx.source.${ca}`)
+      ref(`ctx.source.${ca}`),
     ))),
     set(ref('query'), makeExpression(keySchema, connectionAttributes)),
   ];
@@ -212,7 +212,7 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
   // passed in via $ctx.args.
   if (keySchema[1] && !connectionAttributes[1]) {
     const sortKeyFieldName = keySchema[1].attributeName;
-    const sortKeyField = relatedType.fields!.find(f => f.name.value === sortKeyFieldName);
+    const sortKeyField = relatedType.fields!.find((f) => f.name.value === sortKeyFieldName);
 
     if (sortKeyField) {
       setup.push(applyKeyConditionExpression(sortKeyFieldName, attributeTypeFromScalar(sortKeyField.type), 'query'));
@@ -284,10 +284,10 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
           set(
             ref(PARTITION_KEY_VALUE),
             methodCall(
-              ref(`util.defaultIfNull`),
+              ref('util.defaultIfNull'),
               ref(`ctx.stash.connectionAttributes.get("${connectionAttributes[0]}")`),
-              ref(`ctx.source.${connectionAttributes[0]}`)
-            )
+              ref(`ctx.source.${connectionAttributes[0]}`),
+            ),
           ),
           ifElse(
             methodCall(ref('util.isNull'), ref(PARTITION_KEY_VALUE)),
@@ -359,6 +359,8 @@ function condenseRangeKey(fields: string[]): string {
 
 /**
  * adds GSI to the table if it doesn't already exists for connection
+ * @param config
+ * @param ctx
  */
 export function updateTableForConnection(config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider) {
   let { fields, indexName } = config;
@@ -395,11 +397,11 @@ export function updateTableForConnection(config: HasManyDirectiveConfiguration, 
       type: partitionKeyType,
     },
     sortKey: sortKeyAttributeDefinitions
-    ? {
-      name: sortKeyAttributeDefinitions.sortKeyName,
-      type: sortKeyAttributeDefinitions.sortKeyType,
-    }
-    : undefined,
+      ? {
+        name: sortKeyAttributeDefinitions.sortKeyName,
+        type: sortKeyAttributeDefinitions.sortKeyType,
+      }
+      : undefined,
     readCapacity: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
     writeCapacity: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
   });
@@ -445,14 +447,13 @@ function getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(
     return undefined;
   }
   const mappedObjectName = ctx.resourceHelper.getModelNameMapping(object.name.value);
-  const connectedSortKeyFieldNames: string[] = sortKeyFields.map(sortKeyField =>
-    getConnectionAttributeName(ctx.featureFlags, mappedObjectName, hasManyField.name.value, sortKeyField.name.value));
+  const connectedSortKeyFieldNames: string[] = sortKeyFields.map((sortKeyField) => getConnectionAttributeName(ctx.featureFlags, mappedObjectName, hasManyField.name.value, sortKeyField.name.value));
   if (connectedSortKeyFieldNames.length === 1) {
     return {
       sortKeyName: connectedSortKeyFieldNames[0],
       sortKeyType: attributeTypeFromType(sortKeyFields[0].type, ctx),
     };
-  } else if (sortKeyFields.length > 1) {
+  } if (sortKeyFields.length > 1) {
     return {
       sortKeyName: condenseRangeKey(connectedSortKeyFieldNames),
       sortKeyType: 'S',

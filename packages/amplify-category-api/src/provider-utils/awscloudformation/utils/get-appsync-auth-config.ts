@@ -4,6 +4,7 @@ import { appSyncAuthTypeToAuthConfig } from './auth-config-to-app-sync-auth-type
 
 /**
  *
+ * @param context
  * @param resourceName
  * @returns authConfig
  */

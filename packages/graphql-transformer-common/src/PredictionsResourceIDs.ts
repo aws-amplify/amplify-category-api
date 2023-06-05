@@ -1,3 +1,6 @@
+/**
+ *
+ */
 export class PredictionsResourceIDs {
   static actionMapID = 'predictionsActionMap';
   static iamRole = 'predictionsIAMRole';
@@ -8,6 +11,10 @@ export class PredictionsResourceIDs {
   static lambdaRuntime = 'nodejs14.x';
   static lambdaTimeout = 60;
 
+  /**
+   *
+   * @param action
+   */
   static getPredictionFunctionName(action: string) {
     return `${action}Function`;
   }

@@ -29,6 +29,11 @@ const authFilter = ref('ctx.stash.authFilter');
 const API_KEY = 'API Key Authorization';
 const allowedAggFieldsList = 'allowedAggFields';
 
+/**
+ *
+ * @param enabled
+ * @param fields
+ */
 export const sandboxMappingTemplate = (enabled: boolean, fields: Array<string>): string => {
   let sandboxExp: Expression;
   if (enabled) {
@@ -56,6 +61,14 @@ const getSourceMapper = (includeVersion: boolean): Expression[] => {
   return [qref('$es_items.add($entry.get("_source"))')];
 };
 
+/**
+ *
+ * @param primaryKey
+ * @param nonKeywordFields
+ * @param includeVersion
+ * @param indexName
+ * @param keyFields
+ */
 export const requestTemplate = (
   primaryKey: string,
   nonKeywordFields: Expression[],
@@ -131,7 +144,7 @@ export const requestTemplate = (
           + '    $util.error("Unauthorized to run aggregation on field: ${aggItem.field}", "Unauthorized")\n'
           + '  #end',
       ),
-      generateAddAggregateValues()
+      generateAddAggregateValues(),
     ]),
     ifElse(
       not(isNullOrEmpty(authFilter)),
@@ -168,27 +181,32 @@ export const requestTemplate = (
   ]),
 );
 
-export const generateAddAggregateValues = (): Expression => {
-  return compoundExpression([
-    set(ref('aggregateValue'), obj({})),
-    qref('$aggregateValue.put("filter", $aggFilter)'),
-    set(ref('aggsValue'), obj({})),
-    set(ref('aggItemType'), obj({})),
-    ifElse(
-      ref('nonKeywordFields.contains($aggItem.field)'),
-      qref(
-        '$aggItemType.put("$aggItem.type", { "field": "$aggItem.field" })',
-      ),
-      qref(
-        '$aggItemType.put("$aggItem.type", { "field": "${aggItem.field}.keyword" })',
-      ),
+/**
+ *
+ */
+export const generateAddAggregateValues = (): Expression => compoundExpression([
+  set(ref('aggregateValue'), obj({})),
+  qref('$aggregateValue.put("filter", $aggFilter)'),
+  set(ref('aggsValue'), obj({})),
+  set(ref('aggItemType'), obj({})),
+  ifElse(
+    ref('nonKeywordFields.contains($aggItem.field)'),
+    qref(
+      '$aggItemType.put("$aggItem.type", { "field": "$aggItem.field" })',
     ),
-    qref('$aggsValue.put("$aggItem.name", $aggItemType)'),
-    qref('$aggregateValue.put("aggs", $aggsValue)'),
-    qref('$aggregateValues.put("$aggItem.name", $aggregateValue)'),
-  ]);
-};
+    qref(
+      '$aggItemType.put("$aggItem.type", { "field": "${aggItem.field}.keyword" })',
+    ),
+  ),
+  qref('$aggsValue.put("$aggItem.name", $aggItemType)'),
+  qref('$aggregateValue.put("aggs", $aggsValue)'),
+  qref('$aggregateValues.put("$aggItem.name", $aggregateValue)'),
+]);
 
+/**
+ *
+ * @param includeVersion
+ */
 export const responseTemplate = (includeVersion = false): string => print(
   compoundExpression([
     set(ref('es_items'), list([])),
