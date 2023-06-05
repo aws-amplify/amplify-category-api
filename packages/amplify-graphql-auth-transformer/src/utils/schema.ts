@@ -345,32 +345,35 @@ export const getSubscriptionFieldNames = (
     typeName: string;
   }> = new Set();
 
-  if (modelDirectiveConfig?.subscriptions?.level === SubscriptionLevel.on) {
-    if (modelDirectiveConfig?.subscriptions?.onCreate && modelDirectiveConfig.mutations?.create) {
-      for (const fieldName of modelDirectiveConfig.subscriptions.onCreate) {
-        fields.add({
-          typeName: 'Subscription',
-          fieldName,
-        });
-      }
-    }
+  const subscriptionLevel = modelDirectiveConfig?.subscriptions?.level ?? SubscriptionLevel.on;
+  if (subscriptionLevel !== SubscriptionLevel.on) {
+    return fields;
+  }
 
-    if (modelDirectiveConfig?.subscriptions?.onUpdate && modelDirectiveConfig.mutations?.update) {
-      for (const fieldName of modelDirectiveConfig.subscriptions.onUpdate) {
-        fields.add({
-          typeName: 'Subscription',
-          fieldName,
-        });
-      }
+  if (modelDirectiveConfig?.subscriptions?.onCreate && modelDirectiveConfig.mutations?.create) {
+    for (const fieldName of modelDirectiveConfig.subscriptions.onCreate) {
+      fields.add({
+        typeName: 'Subscription',
+        fieldName,
+      });
     }
+  }
 
-    if (modelDirectiveConfig?.subscriptions?.onDelete && modelDirectiveConfig.mutations?.delete) {
-      for (const fieldName of modelDirectiveConfig.subscriptions.onDelete) {
-        fields.add({
-          typeName: 'Subscription',
-          fieldName,
-        });
-      }
+  if (modelDirectiveConfig?.subscriptions?.onUpdate && modelDirectiveConfig.mutations?.update) {
+    for (const fieldName of modelDirectiveConfig.subscriptions.onUpdate) {
+      fields.add({
+        typeName: 'Subscription',
+        fieldName,
+      });
+    }
+  }
+
+  if (modelDirectiveConfig?.subscriptions?.onDelete && modelDirectiveConfig.mutations?.delete) {
+    for (const fieldName of modelDirectiveConfig.subscriptions.onDelete) {
+      fields.add({
+        typeName: 'Subscription',
+        fieldName,
+      });
     }
   }
 

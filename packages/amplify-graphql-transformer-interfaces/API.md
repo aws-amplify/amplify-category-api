@@ -190,6 +190,8 @@ export interface GraphQLAPIProvider extends IConstruct {
     grantSubscription: (grantee: IGrantable, ...fields: string[]) => Grant;
     // (undocumented)
     readonly host: TransformHostProvider;
+    // (undocumented)
+    readonly name: string;
 }
 
 // @public (undocumented)
@@ -437,6 +439,8 @@ export interface TransformerContextProvider {
     // (undocumented)
     featureFlags: FeatureFlagProvider;
     // (undocumented)
+    filepaths: TransformerFilepathsProvider;
+    // (undocumented)
     getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
     // (undocumented)
     inputDocument: DocumentNode;
@@ -472,6 +476,16 @@ export interface TransformerDataSourceManagerProvider {
     get(type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): DataSourceInstance;
     // (undocumented)
     has(name: string): boolean;
+}
+
+// @public (undocumented)
+export interface TransformerFilepathsProvider {
+    // (undocumented)
+    findProjectRoot: () => string;
+    // (undocumented)
+    getBackendDirPath: () => string;
+    // (undocumented)
+    getCurrentCloudBackendDirPath: () => string;
 }
 
 // @public (undocumented)

@@ -10,9 +10,12 @@ const secretNames = ['database', 'host', 'port', 'username', 'password'];
 
 export const getExistingConnectionSecrets = async (context: $TSContext, secretsKey: string, apiName: string, envName?: string): Promise<RDSConnectionSecrets|undefined> => {
   try {
+    const environmentName = envName || stateManager.getCurrentEnvName();
+    const appId = stateManager.getAppID();
+
     const ssmClient = await SSMClient.getInstance(context);
     const secrets = await ssmClient.getSecrets(
-      secretNames.map( secret => getParameterStoreSecretPath(secret, secretsKey, apiName, envName))
+      secretNames.map( secret => getParameterStoreSecretPath(secret, secretsKey, apiName, environmentName, appId))
     );
 
     if(_.isEmpty(secrets)) {
@@ -20,7 +23,7 @@ export const getExistingConnectionSecrets = async (context: $TSContext, secretsK
     }
 
     const existingSecrets = secretNames.map( secretName => {
-      const secretPath = getParameterStoreSecretPath(secretName, secretsKey, apiName, envName);
+      const secretPath = getParameterStoreSecretPath(secretName, secretsKey, apiName, environmentName, appId);
       const matchingSecret = secrets?.find( secret => (secret?.secretName === secretPath) && !_.isEmpty(secret?.secretValue) );
       const result = {};
       if(matchingSecret) {
@@ -44,9 +47,11 @@ export const getExistingConnectionSecrets = async (context: $TSContext, secretsK
 
 export const getExistingConnectionSecretNames = async (context: $TSContext, apiName: string, secretsKey: string, envName?: string): Promise<RDSConnectionSecrets|undefined> => {
   try {
+    const environmentName = envName || stateManager.getCurrentEnvName();
+    const appId = stateManager.getAppID();
     const ssmClient = await SSMClient.getInstance(context);
     const secrets = await ssmClient.getSecrets(
-      secretNames.map( secret => getParameterStoreSecretPath(secret, secretsKey, apiName, envName))
+      secretNames.map( secret => getParameterStoreSecretPath(secret, secretsKey, apiName, environmentName, appId))
     );
 
     if(_.isEmpty(secrets)) {
@@ -54,7 +59,7 @@ export const getExistingConnectionSecretNames = async (context: $TSContext, apiN
     }
 
     const existingSecrets = secretNames.map((secretName) => {
-      const secretPath = getParameterStoreSecretPath(secretName, secretsKey, apiName, envName);
+      const secretPath = getParameterStoreSecretPath(secretName, secretsKey, apiName, environmentName, appId);
       const matchingSecret = secrets?.find((secret) => (secret?.secretName === secretPath) && !_.isEmpty(secret?.secretValue));
       const result = {};
       if (matchingSecret) {
@@ -76,16 +81,21 @@ export const getExistingConnectionSecretNames = async (context: $TSContext, apiN
 };
 
 export const storeConnectionSecrets = async (context: $TSContext, secrets: RDSConnectionSecrets, apiName: string, secretsKey: string) => {
+  const environmentName = stateManager.getCurrentEnvName();
+  const appId = stateManager.getAppID();
+
   const ssmClient = await SSMClient.getInstance(context);
   secretNames.map( async (secret) => {
-    const parameterPath = getParameterStoreSecretPath(secret, secretsKey, apiName);
+    const parameterPath = getParameterStoreSecretPath(secret, secretsKey, apiName, environmentName, appId);
     await ssmClient.setSecret(parameterPath, secrets[secret]?.toString());
   });
 };
 
 export const deleteConnectionSecrets = async (context: $TSContext, secretsKey: string, apiName: string, envName?: string) => {
+  let appId;
+  const environmentName = stateManager.getCurrentEnvName();
   try {
-    const appId = stateManager.getAppID();
+    appId = stateManager.getAppID();
   }
   catch (error) {
     printer.debug(`No AppId found when deleting parameters for environment ${envName}`);
@@ -93,7 +103,7 @@ export const deleteConnectionSecrets = async (context: $TSContext, secretsKey: s
   }
   const ssmClient = await SSMClient.getInstance(context);
   const secretParameterPaths = secretNames.map( secret => {
-    return getParameterStoreSecretPath(secret, secretsKey, apiName, envName);
+    return getParameterStoreSecretPath(secret, secretsKey, apiName, environmentName, appId);
   });
   await ssmClient.deleteSecrets(secretParameterPaths);
 };
@@ -127,10 +137,12 @@ export const getSecretsKey = async (): Promise<string> => {
 };
 
 export const getDatabaseName = async (context: $TSContext, apiName: string, secretsKey: string): Promise<string|undefined> => {
+  const environmentName = stateManager.getCurrentEnvName();
+  const appId = stateManager.getAppID();
   const ssmClient = await SSMClient.getInstance(context);
 
   const secrets = await ssmClient.getSecrets(
-    [getParameterStoreSecretPath('database', secretsKey, apiName)]
+    [getParameterStoreSecretPath('database', secretsKey, apiName, environmentName, appId)]
   );
 
   if(_.isEmpty(secrets)) {

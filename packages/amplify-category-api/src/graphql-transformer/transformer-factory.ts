@@ -48,11 +48,11 @@ import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { parseUserDefinedSlots } from './user-defined-slots';
 import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import { TransformerProjectOptions } from './transformer-options-types';
+import { shouldEnableNodeToNodeEncryption } from '../provider-utils/awscloudformation/current-backend-state/searchable-node-to-node-encryption';
 
 const PROVIDER_NAME = 'awscloudformation';
 
 type TransformerFactoryArgs = {
-    addSearchableTransformer: boolean;
     authConfig: any;
     storageConfig?: any;
     adminRoles?: Array<string>;
@@ -76,6 +76,14 @@ export const getTransformerFactory = async (
 const getTransformerFactoryV2 = (
   resourceDir: string,
 ): (options: TransformerFactoryArgs) => Promise<TransformerPluginProviderV2[]> => async (options?: TransformerFactoryArgs) => {
+  const resourceDirParts = resourceDir.split(path.sep);
+  const apiName = resourceDirParts[resourceDirParts.length - 1];
+  const nodeToNodeEncryption = shouldEnableNodeToNodeEncryption(
+    apiName,
+    pathManager.findProjectRoot(),
+    pathManager.getCurrentCloudBackendDirPath(),
+  );
+
   const modelTransformer = new ModelTransformerV2();
   const indexTransformer = new IndexTransformerV2();
   const hasOneTransformer = new HasOneTransformerV2();
@@ -97,14 +105,10 @@ const getTransformerFactoryV2 = (
     new DefaultValueTransformerV2(),
     authTransformer,
     new MapsToTransformerV2(),
-    // TODO: initialize transformer plugins
+    new SearchableModelTransformerV2({
+      enableNodeToNodeEncryption: nodeToNodeEncryption,
+    }),
   ];
-
-  if (options?.addSearchableTransformer) {
-    const resourceDirParts = resourceDir.split(path.sep);
-    const apiName = resourceDirParts[resourceDirParts.length - 1];
-    transformerList.push(new SearchableModelTransformerV2(apiName));
-  }
 
   const customTransformersConfig = await loadProject(resourceDir);
   const customTransformerList = customTransformersConfig?.config?.transformers;

@@ -48,7 +48,8 @@
     "extract-api": "lerna run extract-api",
     "verify-api-extract": "yarn extract-api && ./scripts/verify-extract-api.sh",
     "verify-yarn-lock": "./scripts/verify-yarn-lock.sh",
-    "update-test-timing-data": "ts-node ./scripts/cci/get-test-timing-from-cci-job-metrics.ts"
+    "update-test-timing-data": "ts-node ./scripts/cci/get-test-timing-from-cci-job-metrics.ts",
+    "lint-deps": "git diff --name-only --cached --diff-filter d | grep -E '\\.(js|jsx|ts|tsx)$' | xargs eslint --no-eslintrc --config depcheck.config.js"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-category-api/issues"
@@ -63,7 +64,7 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "yarn verify-commit && yarn lint-fix"
+      "pre-commit": "yarn verify-commit && yarn lint-fix && yarn lint-deps"
     }
   },
   "author": "Amazon Web Services",

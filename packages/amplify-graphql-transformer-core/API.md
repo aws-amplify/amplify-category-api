@@ -4,7 +4,6 @@
 
 ```ts
 
-import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { APIIAMResourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ApiKeyConfig } from 'aws-cdk-lib/aws-appsync';
 import { App } from 'aws-cdk-lib';
@@ -80,6 +79,7 @@ import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transfo
 import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerDataSourceManagerProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerFilepathsProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerModelEnhancementProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerModelProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -152,12 +152,6 @@ export const enum ConflictHandlerType {
     // (undocumented)
     OPTIMISTIC = "OPTIMISTIC_CONCURRENCY"
 }
-
-// @public (undocumented)
-export const constructDefaultGlobalAmplifyInput: (context: $TSContext, dataSourceType: ImportedRDSType, includeAuthRule?: boolean) => Promise<string>;
-
-// @public (undocumented)
-export const constructRDSGlobalAmplifyInput: (context: $TSContext, config: any, pathToSchemaFile: string) => Promise<string>;
 
 // @public (undocumented)
 function createSyncLambdaIAMPolicy(context: TransformerContextProvider, stack: cdk.Stack, name: string, region?: string): iam.Policy;
@@ -244,10 +238,7 @@ export const getFieldNameFor: (op: Operation, typeName: string) => string;
 export const getKeySchema: (table: any, indexName?: string) => any;
 
 // @public (undocumented)
-export const getParameterStoreSecretPath: (secret: string, secretsKey: string, apiName: string, envName?: string) => string;
-
-// @public (undocumented)
-export const getRDSDBConfigFromAmplifyInput: (context: $TSContext, inputNode: any) => Promise<Partial<ImportedDataSourceConfig>>;
+export const getParameterStoreSecretPath: (secret: string, secretsKey: string, apiName: string, environmentName: string, appId: string) => string;
 
 // @public (undocumented)
 export const getSortKeyFieldNames: (type: ObjectTypeDefinitionNode) => string[];
@@ -288,6 +279,8 @@ export interface GraphQLTransformOptions {
     readonly disableResolverDeduping?: boolean;
     // (undocumented)
     readonly featureFlags?: FeatureFlagProvider;
+    // (undocumented)
+    readonly filepaths?: TransformerFilepathsProvider;
     // (undocumented)
     readonly host?: TransformHostProvider;
     // (undocumented)
@@ -416,31 +409,6 @@ export class InvalidTransformerError extends Error {
 function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda;
 
 // @public (undocumented)
-export class JSONUtilities {
-    // (undocumented)
-    static parse: <T>(jsonString: string, options?: {
-        preserveComments?: boolean;
-    }) => T;
-    // (undocumented)
-    static readJson: <T>(fileName: string, options?: {
-        throwIfNotExist?: boolean;
-        preserveComments?: boolean;
-    }) => T | undefined;
-    // (undocumented)
-    static stringify: (data: unknown, options?: {
-        minify?: boolean;
-        orderedKeys?: boolean;
-    }) => string;
-    // (undocumented)
-    static writeJson: (fileName: string, data: unknown, options?: {
-        mode?: number;
-        minify?: boolean;
-        secureFile?: boolean;
-        orderedKeys?: boolean;
-    }) => void;
-}
-
-// @public (undocumented)
 export class MappingTemplate {
     // Warning: (ae-forgotten-export) The symbol "InlineTemplate" needs to be exported by the entry point index.d.ts
     //
@@ -501,9 +469,6 @@ export type RDSConnectionSecrets = TransformerSecrets & {
 export type RDSDataSourceConfig = RDSConnectionSecrets & {
     engine: ImportedRDSType;
 };
-
-// @public (undocumented)
-export const readRDSGlobalAmplifyInput: (pathToSchemaFile: string) => Promise<InputObjectTypeDefinitionNode | undefined>;
 
 // @public (undocumented)
 export type ResolverConfig = {
