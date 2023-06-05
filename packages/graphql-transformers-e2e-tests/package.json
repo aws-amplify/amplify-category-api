@@ -74,7 +74,13 @@
     ],
     "reporters": [
       "default",
-      "jest-junit"
+      "jest-junit",
+      [
+        "amplify-category-api-e2e-core/failed-test-reporter",
+        {
+          "reportPath": "./amplify-e2e-reports/amplify-e2e-failed-test.txt"
+        }
+      ]
     ],
     "testURL": "http://localhost",
     "testRegex": "(src/__tests__/.*.test.*)$",

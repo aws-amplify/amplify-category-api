@@ -24,6 +24,7 @@
     "link-win": "node ./scripts/link-bin.js node_modules/amplify-cli-internal/bin/amplify amplify-dev",
     "setup-dev-win": "(yarn && lerna run build) && yarn add-cli-no-save && (yarn hoist-cli-win && yarn rm-dev-link && yarn link-win)",
     "split-e2e-tests": "yarn ts-node ./scripts/split-e2e-tests.ts && git add .circleci/config.yml",
+    "split-e2e-tests-cb": "yarn ts-node ./scripts/split-e2e-tests-codebuild.ts",
     "verify-commit": "yarn ts-node ./scripts/verify-commit.ts",
     "publish:beta": "lerna publish --exact --dist-tag=beta --preid=beta --conventional-commits --conventional-prerelease --message 'chore(release): Publish [ci skip]' --no-verify-access --yes",
     "publish:tag": "lerna publish --exact --dist-tag=$NPM_TAG --preid=$NPM_TAG --conventional-commits --conventional-prerelease --message 'chore(release): Publish tagged release $NPM_TAG [ci skip]' --no-verify-access --yes",

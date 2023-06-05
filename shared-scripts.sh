@@ -186,21 +186,14 @@ function _runE2ETestsLinux {
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     _installCLIFromLocalRegistry  
-    amplify version
-    echo "Run Amplify E2E tests"
-    echo $TEST_SUITE
     _loadTestAccountCredentials
     retry runE2eTest
 }
 function _runGqlE2ETests {
     echo "RUN GraphQL E2E tests"
     loadCacheFromBuildJob
-    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-    _installCLIFromLocalRegistry  
-    amplify version
-    cd packages/graphql-transformers-e2e-tests/
     _loadTestAccountCredentials
-    retry yarn run e2e --maxWorkers=4 $TEST_SUITE
+    retry runGraphQLE2eTest
 }
 function _runMigrationV5Test {
     echo RUN Migration V5 Test
@@ -356,6 +349,22 @@ function runE2eTest {
     if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
         echo "using Amplify CLI version: "$(amplify --version)
         cd $(pwd)/packages/amplify-e2e-tests
+    fi
+
+    if [ -f  $FAILED_TEST_REGEX_FILE ]; then
+        # read the content of failed tests
+        failedTests=$(<$FAILED_TEST_REGEX_FILE)
+        yarn run e2e --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+    else
+        yarn run e2e --maxWorkers=4 $TEST_SUITE
+    fi
+}
+
+function runGraphQLE2eTest {
+    FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
+
+    if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
+        cd $(pwd)/packages/graphql-transformers-e2e-tests
     fi
 
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then

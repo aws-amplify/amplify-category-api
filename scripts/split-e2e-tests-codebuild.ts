@@ -35,22 +35,35 @@ const TEST_TIMINGS_PATH = join(REPO_ROOT, 'scripts', 'cci', 'test-timings.data.j
 const CODEBUILD_CONFIG_BASE_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_base.yml');
 const CODEBUILD_GENERATE_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow.yml');
 const RUN_SOLO = [
+  'src/__tests__/apigw.test.ts',
   'src/__tests__/containers-api-1.test.ts',
   'src/__tests__/containers-api-2.test.ts',
   'src/__tests__/graphql-v2/searchable-datastore.test.ts',
   'src/__tests__/schema-searchable.test.ts',
   'src/__tests__/schema-auth-1.test.ts',
   'src/__tests__/schema-auth-5.test.ts',
+  'src/__tests__/schema-auth-7.test.ts',
   'src/__tests__/schema-auth-11.test.ts',
+  'src/__tests__/schema-auth-14.test.ts',
   'src/__tests__/schema-auth-15.test.ts',
   'src/__tests__/schema-iterative-update-4.test.ts',
   'src/__tests__/schema-iterative-update-5.test.ts',
+  'src/__tests__/schema-model.test.ts',
   'src/__tests__/schema-key.test.ts',
   'src/__tests__/schema-connection.test.ts',
   'src/__tests__/transformer-migrations/searchable-migration.test.ts',
   "src/__tests__/transformer-migrations/model-migration.test.ts",
-
-  'src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts'
+  'src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts',
+  // GrapQL E2E tests
+  'src/__tests__/FunctionTransformerTestsV2.e2e.test.ts',
+  'src/__tests__/HttpTransformer.e2e.test.ts',
+  'src/__tests__/HttpTransformerV2.e2e.test.ts',
+  'src/__tests__/PerFieldAuthV2Transformer.e2e.test.ts',
+  'src/__tests__/PerFieldAuthV2TransformerWithFF.e2e.test.ts',
+  'src/__tests__/AuthV2ExhaustiveT1A.test.ts',
+  'src/__tests__/AuthV2ExhaustiveT2A.test.ts',
+  'src/__tests__/AuthV2ExhaustiveT2C.test.ts',
+  'src/__tests__/SearchableWithAuthV2WithFF.e2e.test.ts',
 ];
 const EXCLUDE_E2E_TESTS = [
   'src/__tests__/transformer-migrations/searchable-migration.test.ts',
