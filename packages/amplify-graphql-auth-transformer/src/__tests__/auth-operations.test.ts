@@ -29,6 +29,49 @@ test('invalid granular read operation at the field level', () => {
   );
 });
 
+test('renamed subscriptions should generate auth resolver', () => {
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [{
+      authenticationType: 'API_KEY',
+    }],
+  };
+  const validSchema = `
+    type Note
+      @model(subscriptions: { onUpdate: ["onNoteUpdate"] })
+      @auth(rules: [{ allow: private, provider: userPools }])
+    {
+      noteId: String!
+      userId: String!
+      assignedTo: String!
+      comments: String
+    }`;
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags: {
+      getBoolean: (value: string) => {
+        if (value === 'useSubUsernameForDefaultIdentityClaim') {
+          return true;
+        }
+        return false;
+      },
+      getNumber: jest.fn(),
+      getObject: jest.fn(),
+    },
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  // should generate auth resolver for renamed subscription
+  expect(out.resolvers['Subscription.onNoteUpdate.auth.1.req.vtl']).toBeDefined();
+  expect(out.resolvers['Subscription.onNoteUpdate.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Subscription.onNoteUpdate.postAuth.1.req.vtl']).toBeDefined();
+  expect(out.resolvers['Subscription.onNoteUpdate.postAuth.1.req.vtl']).toMatchSnapshot();
+});
+
 test('invalid read list operation combination', () => {
   const authConfig: AppSyncAuthConfiguration = {
     defaultAuthentication: {

@@ -1,4 +1,4 @@
-import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import { getParameterStoreSecretPath } from '@aws-amplify/graphql-transformer-core';
 import { getExistingConnectionSecrets } from '../../../../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 
@@ -37,10 +37,12 @@ describe('Test database secrets management', () => {
   });
 
   it('Returns correct path for secrets in parameter store for a database', () => {
-    const usernamePath = getParameterStoreSecretPath('username', mockDatabase, mockAPIName);
+    const appId = stateManager.getAppID();
+    const envName = stateManager.getCurrentEnvName();
+    const usernamePath = getParameterStoreSecretPath('username', mockDatabase, mockAPIName, envName, appId);
     expect(usernamePath).toEqual('/amplify/fake-app-id/test/AMPLIFY_apimockapimockdatabase_username');
 
-    const passwordPath = getParameterStoreSecretPath('password', mockDatabase, mockAPIName);
+    const passwordPath = getParameterStoreSecretPath('password', mockDatabase, mockAPIName, envName, appId);
     expect(passwordPath).toEqual('/amplify/fake-app-id/test/AMPLIFY_apimockapimockdatabase_password');
   });
 

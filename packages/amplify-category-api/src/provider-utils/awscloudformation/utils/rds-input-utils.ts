@@ -6,7 +6,7 @@ import {
   getGraphQLTransformerAuthDocLink,
 } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
-import { ImportedRDSType, ImportedDataSourceConfig } from '../types/import-appsync-api-types';
+import { ImportedRDSType, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
 
 type AmplifyInputEntry = {
   name: string,
@@ -71,21 +71,6 @@ export const readRDSGlobalAmplifyInput = async (pathToSchemaFile: string): Promi
   }
 };
 
-export const getRDSDBConfigFromAmplifyInput = async (context:$TSContext, inputNode: any): Promise<Partial<ImportedDataSourceConfig>> => {
-  const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL, false)).map(item => item.name);
-  const inputs: any = {};
-  expectedInputs.map((input) => {
-    const value = inputNode?.fields?.find(
-      (field: any) => field?.name?.value === input,
-    )?.defaultValue?.value;
-    if (_.isEmpty(value)) {
-      throw new Error(`Invalid value for ${input} input in the GraphQL schema. Correct and re-try.`);
-    }
-    inputs[input] = value;
-  });
-  return inputs;
-};
-
 export const constructRDSGlobalAmplifyInput = async (context: $TSContext, config: any, pathToSchemaFile: string): Promise<string> => {
   const existingInputNode:any = await readRDSGlobalAmplifyInput(pathToSchemaFile) || {};
   if ( existingInputNode?.fields && existingInputNode?.fields?.length > 0 ) {
@@ -104,29 +89,4 @@ export const constructRDSGlobalAmplifyInput = async (context: $TSContext, config
     const engine = config['engine'] || ImportedRDSType.MYSQL;
     return constructDefaultGlobalAmplifyInput(context, engine, false);
   }
-};
-
-export const isGlobalAuthRulePresent = (inputNode: InputObjectTypeDefinitionNode) => {
-  const authRuleField = inputNode?.fields?.find(
-    (field: any) => field?.name?.value === "globalAuthRule",
-  );
-  return authRuleField ? true : false;
-};
-
-export const removeAmplifyInputDefinition = (schema: string): string => {
-  if (_.isEmpty(schema)) {
-    return schema;
-  }
-
-  const parsedSchema: any = parse(schema);
-
-  parsedSchema.definitions = parsedSchema?.definitions?.filter(
-    (definition: any) =>
-      !(definition?.kind === 'InputObjectTypeDefinition' &&
-      definition?.name &&
-      definition?.name?.value === 'Amplify')
-  );
-
-  const sanitizedSchema = print(parsedSchema);
-  return sanitizedSchema;
 };

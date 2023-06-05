@@ -50,7 +50,6 @@ type SanityCheckRules = {
  * Used to determine how to create a new GraphQLTransform
  */
 export type TransformerFactoryArgs = {
-  addSearchableTransformer: boolean;
   authConfig: any;
   storageConfig?: any;
   adminRoles?: Array<string>;

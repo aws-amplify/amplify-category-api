@@ -1,7 +1,6 @@
 import { 
   initJSProjectWithProfile, 
   deleteProject, 
-  getProjectMeta, 
   getCustomPoliciesPath, 
   amplifyPushWithoutCodegen,
   readJsonFile,
@@ -11,7 +10,7 @@ import {
   deleteProjectDir 
 } from 'amplify-category-api-e2e-core';
 import _ from 'lodash';
-import { JSONUtilities } from '@aws-amplify/graphql-transformer-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import AWS from 'aws-sdk';
 import path from 'path';
 

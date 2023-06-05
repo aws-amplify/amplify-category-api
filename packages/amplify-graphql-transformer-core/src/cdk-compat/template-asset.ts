@@ -6,7 +6,6 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
 import * as crypto from 'crypto';
-import * as fs from 'fs-extra';
 import { FileAsset } from './file-asset';
 
 export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
@@ -35,10 +34,6 @@ export class S3MappingTemplate implements S3MappingTemplateProvider {
   private name: string;
   private asset?: FileAsset;
   public readonly type = MappingTemplateType.S3_LOCATION;
-  static fromFile(name: string, path: string): S3MappingTemplate {
-    const fileContents = fs.readFileSync(path, { encoding: 'utf-8' });
-    return new S3MappingTemplate(fileContents, name);
-  }
 
   static fromInlineTemplate(code: string, templateName?: string): S3MappingTemplate {
     return new S3MappingTemplate(code, templateName);
@@ -65,7 +60,7 @@ export class S3MappingTemplate implements S3MappingTemplateProvider {
    * get the resolver content
    * @returns string
    */
-   getTemplateHash() : string {
+  getTemplateHash() : string {
     return crypto.createHash('sha256').update(this.content).digest('base64');
   }
 
@@ -92,7 +87,7 @@ export class InlineTemplate implements InlineMappingTemplateProvider {
    *  get the resolver inline template content
    * @returns string
    */
-   getTemplateHash(): string {
+  getTemplateHash(): string {
     return crypto.createHash('sha256').update(this.content).digest('base64');
   }
 }
@@ -101,6 +96,7 @@ export class MappingTemplate {
   static inlineTemplateFromString(template: string): InlineTemplate {
     return new InlineTemplate(template);
   }
+
   static s3MappingTemplateFromString(template: string, templateName: string): S3MappingTemplate {
     const templatePrefix = 'resolvers';
     return new S3MappingTemplate(template, `${templatePrefix}/${templateName}`);

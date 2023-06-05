@@ -60,7 +60,6 @@ import { createSearchableDomain, createSearchableDomainRole } from './cdk/create
 import { createSearchableDataSource } from './cdk/create-searchable-datasource';
 import { createEventSourceMapping, createLambda, createLambdaRole } from './cdk/create-streaming-lambda';
 import { createStackOutputs } from './cdk/create-cfnOutput';
-import { shouldEnableNodeToNodeEncryption } from './nodeToNodeEncryption';
 
 const nonKeywordTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSDate', 'AWSDateTime'];
 const STACK_NAME = 'SearchableStack';
@@ -258,11 +257,15 @@ const generateSearchableInputs = (ctx: TransformerSchemaVisitStepContextProvider
   }
 };
 
+export type SearchableModelTransformerOptions = {
+  enableNodeToNodeEncryption?: boolean;
+};
+
 export class SearchableModelTransformer extends TransformerPluginBase {
   searchableObjectTypeDefinitions: { node: ObjectTypeDefinitionNode; fieldName: string }[];
   searchableObjectNames: string[];
 
-  constructor(private apiName?: string) {
+  constructor(private options: SearchableModelTransformerOptions = {}) {
     super(
       'amplify-searchable-transformer',
       /* GraphQL */ `
@@ -276,7 +279,18 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     this.searchableObjectNames = [];
   }
 
+  /**
+   * Returns whether or not there are any searchable objects configured in the schema.
+   */
+  private isSearchableConfigured(): boolean {
+    return this.searchableObjectNames.length !== 0;
+  }
+
   generateResolvers = (context: TransformerContextProvider): void => {
+    if (!this.isSearchableConfigured()) {
+      return;
+    }
+
     const { Env } = ResourceConstants.PARAMETERS;
 
     const { HasEnvironmentParameter } = ResourceConstants.CONDITIONS;
@@ -299,12 +313,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     const parameterMap = createParametersInStack(context.stackManager.rootStack);
 
-    const nodeToNodeEncryption = this.apiName ? shouldEnableNodeToNodeEncryption(this.apiName) : { enabled: false, log: undefined };
-    if (nodeToNodeEncryption.log) {
-      this.warn(nodeToNodeEncryption.log);
-    }
-
-    const domain = createSearchableDomain(stack, parameterMap, context.api.apiId, nodeToNodeEncryption.enabled);
+    const domain = createSearchableDomain(stack, parameterMap, context.api.apiId, this.options?.enableNodeToNodeEncryption ?? false);
 
     const openSearchRole = createSearchableDomainRole(context, stack, parameterMap);
 
@@ -464,7 +473,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       generateSearchableInputs(ctx, searchObject);
     }
     // add api key to aggregate types if sandbox mode is enabled
-    if (ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+    if (this.isSearchableConfigured() && ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
       for (const aggType of AGGREGATE_TYPES) {
         const aggObject = ctx.output.getObject(aggType)!;
         const hasApiKey = aggObject.directives?.some((dir) => dir.name.value === 'aws_api_key') ?? false;
