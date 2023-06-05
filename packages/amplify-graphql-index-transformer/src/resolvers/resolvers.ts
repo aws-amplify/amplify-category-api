@@ -622,11 +622,11 @@ function setSyncQueryMapSnippet(name: string, config: PrimaryKeyDirectiveConfigu
 /**
  * constructSyncVTL
  */
-export function constructSyncVTL(syncVTLContent: string, resolver: TransformerResolverProvider, deltaSyncTableTtl: number) {
+export function constructSyncVTL(syncVTLContent: string, resolver: TransformerResolverProvider) {
   const checks = [
     print(generateSyncResolverInit()),
     syncVTLContent,
-    print(setSyncQueryFilterSnippet(deltaSyncTableTtl)),
+    print(setSyncQueryFilterSnippet()),
     print(setSyncKeyExpressionForHashKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
     print(setSyncKeyExpressionForRangeKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
     print(makeSyncQueryResolver()),
@@ -640,14 +640,13 @@ export function constructSyncVTL(syncVTLContent: string, resolver: TransformerRe
  * The filter must enclosed in an 'and' condition.
  * { filter: { and: [ { genre: { eq: testSong.genre } } ] } }
  */
-function setSyncQueryFilterSnippet(deltaSyncTableTtl: number) {
+function setSyncQueryFilterSnippet() {
   const expressions: Expression[] = [];
   expressions.push(
     compoundExpression([
       set(ref('filterArgsMap'), ref('ctx.args.filter.get("and")')),
       generateDeltaTableTTLCheck(
         'isLastSyncInDeltaTTLWindow',
-        deltaSyncTableTtl,
         'ctx.args.lastSync'
       ),
       ifElse(
@@ -691,13 +690,11 @@ function setSyncQueryFilterSnippet(deltaSyncTableTtl: number) {
 
 const generateDeltaTableTTLCheck = (
   deltaTTLCheckRefName: string,
-  deltaTTLInMinutes: number,
   lastSyncRefName: string
 ): Expression => {
-  const deltaTTLInMilliSeconds = deltaTTLInMinutes * 60 * 1000;
   return compoundExpression([
     set(ref(deltaTTLCheckRefName), bool(false)),
-    set(ref('minLastSync'), raw(`$util.time.nowEpochMilliSeconds() - ${deltaTTLInMilliSeconds}`)),
+    set(ref('minLastSync'), raw(`$util.time.nowEpochMilliSeconds() - $ctx.stash.deltaSyncTableTtl * 60 * 1000`)),
     iff(
       and([
         not(methodCall(ref('util.isNull'), ref(lastSyncRefName))),
