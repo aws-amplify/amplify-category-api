@@ -167,7 +167,7 @@ export abstract class ModelResourceGenerator {
         context.resolvers.addResolver(mutation.typeName, mutation.fieldName, resolver);
       });
 
-      const subscriptionLevel = this.modelDirectiveMap.get(def.name.value)?.subscriptions?.level;
+      const subscriptionLevel = this.modelDirectiveMap.get(def.name.value)?.subscriptions?.level ?? SubscriptionLevel.on;
       // in order to create subscription resolvers the level needs to be on
       if (subscriptionLevel !== SubscriptionLevel.off) {
         const subscriptionFields = this.getSubscriptionFieldNames(def!);

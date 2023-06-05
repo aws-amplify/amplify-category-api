@@ -1,7 +1,7 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { FeatureFlagProvider, TransformerFilepathsProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Kind, parse } from 'graphql';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 import { featureFlags, hasGeneratedField } from './test-helpers';
@@ -21,6 +21,11 @@ test('fails if used as a has one relation', () => {
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     featureFlags,
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('@hasMany must be used with a list. Use @hasOne for non-list types.');
@@ -42,6 +47,11 @@ test('fails if the provided indexName does not exist.', () => {
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     featureFlags,
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('Index notDefault does not exist for model Test1');
@@ -86,6 +96,11 @@ test('accepts @hasMany without a sort key', () => {
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer()],
     featureFlags,
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   expect(() => transformer.transform(inputSchema)).not.toThrowError();
@@ -107,6 +122,11 @@ test('fails if provided sort key type does not match custom index sort key type'
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer()],
     featureFlags,
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('email field is not of type ID');
@@ -129,6 +149,11 @@ test('fails if partition key type passed in does not match custom index partitio
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer()],
     featureFlags,
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('email field is not of type ID');
@@ -149,6 +174,11 @@ test('fails if @hasMany was used on an object that is not a model type', () => {
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new HasManyTransformer()],
     featureFlags,
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('@hasMany must be on an @model object type field.');
@@ -169,6 +199,11 @@ test('fails if @hasMany was used with a related type that is not a model', () =>
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new HasManyTransformer()],
     featureFlags,
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('Object type Test1 must be annotated with @model.');
@@ -189,6 +224,11 @@ test('fails if the related type does not exist', () => {
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new HasManyTransformer()],
     featureFlags,
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('Unknown type "Test2". Did you mean "Test" or "Test1"?');
@@ -209,6 +249,11 @@ test('fails if an empty list of fields is passed in', () => {
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new HasManyTransformer()],
     featureFlags,
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('No fields passed to @hasMany directive.');
@@ -230,6 +275,11 @@ test('fails if any of the fields passed in are not in the parent model', () => {
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     featureFlags,
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('name is not a field in Test');
@@ -251,6 +301,11 @@ test('has many query case', () => {
   const transformer = new GraphQLTransform({
     featureFlags,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   const out = transformer.transform(inputSchema);
@@ -288,6 +343,11 @@ test('bidirectional has many query case', () => {
   const transformer = new GraphQLTransform({
     featureFlags,
     transformers: [new ModelTransformer(), new IndexTransformer(), new BelongsToTransformer(), new HasManyTransformer()],
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   const out = transformer.transform(inputSchema);
@@ -339,6 +399,11 @@ test('has many query with a composite sort key', () => {
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     featureFlags,
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   const out = transformer.transform(inputSchema);
@@ -379,6 +444,11 @@ test('has many query with a composite sort key passed in as an argument', () => 
   const transformer = new GraphQLTransform({
     featureFlags,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   const out = transformer.transform(inputSchema);
@@ -432,6 +502,11 @@ test('many to many query', () => {
       },
     },
     transformers: [new ModelTransformer(), new IndexTransformer(), new HasOneTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   const out = transformer.transform(inputSchema);
@@ -455,6 +530,11 @@ test('has many with implicit index and fields', () => {
   const transformer = new GraphQLTransform({
     featureFlags,
     transformers: [new ModelTransformer(), new HasManyTransformer()],
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   const out = transformer.transform(inputSchema);
@@ -504,6 +584,11 @@ test('has many with implicit index and fields and a user-defined primary key', (
   const transformer = new GraphQLTransform({
     featureFlags,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   const out = transformer.transform(inputSchema);
@@ -566,6 +651,11 @@ test('the limit of 100 is used by default', () => {
   const transformer = new GraphQLTransform({
     featureFlags,
     transformers: [new ModelTransformer(), new HasManyTransformer()],
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   const out = transformer.transform(inputSchema);
@@ -590,6 +680,11 @@ test('the default limit argument can be overridden', () => {
   const transformer = new GraphQLTransform({
     featureFlags,
     transformers: [new ModelTransformer(), new HasManyTransformer()],
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   const out = transformer.transform(inputSchema);
@@ -669,6 +764,11 @@ test('validates VTL of a complex schema', () => {
       new HasManyTransformer(),
       new BelongsToTransformer(),
     ],
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   const out = transformer.transform(inputSchema);
@@ -692,6 +792,11 @@ test('@hasMany and @hasMany can point at each other if DataStore is not enabled'
   const transformer = new GraphQLTransform({
     featureFlags,
     transformers: [new ModelTransformer(), new HasManyTransformer()],
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   const out = transformer.transform(inputSchema);
@@ -720,6 +825,11 @@ test('@hasMany and @hasMany cannot point at each other if DataStore is enabled',
       },
     },
     transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError(
@@ -742,6 +852,11 @@ test('recursive @hasMany relationships are supported if DataStore is enabled', (
       },
     },
     transformers: [new ModelTransformer(), new HasManyTransformer()],
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
   });
 
   const out = transformer.transform(inputSchema);
@@ -761,6 +876,11 @@ test('has many with queries null generate correct filter input objects for scala
     }`;
   const transformer = new GraphQLTransform({
     featureFlags,
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
   });
 
@@ -797,6 +917,11 @@ test('has many with queries null generate correct filter input objects for enum 
     }`;
   const transformer = new GraphQLTransform({
     featureFlags,
+    filepaths: {
+      getBackendDirPath: () => 'fake-backend-dir',
+      findProjectRoot: () => '.',
+      getCurrentCloudBackendDirPath: () => 'amplify/backend',
+    } as TransformerFilepathsProvider,
     transformers: [new ModelTransformer(), new HasManyTransformer()],
   });
 
@@ -819,6 +944,11 @@ describe('Pre Processing Has Many Tests', () => {
   beforeEach(() => {
     transformer = new GraphQLTransform({
       featureFlags,
+      filepaths: {
+        getBackendDirPath: () => 'fake-backend-dir',
+        findProjectRoot: () => '.',
+        getCurrentCloudBackendDirPath: () => 'amplify/backend',
+      } as TransformerFilepathsProvider,
       transformers: [new ModelTransformer(), new HasManyTransformer()],
     });
   });
@@ -886,6 +1016,11 @@ describe('@hasMany connection field nullability tests', () => {
     `;
     const transformer = new GraphQLTransform({
       featureFlags,
+      filepaths: {
+        getBackendDirPath: () => 'fake-backend-dir',
+        findProjectRoot: () => '.',
+        getCurrentCloudBackendDirPath: () => 'amplify/backend',
+      } as TransformerFilepathsProvider,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     });
   

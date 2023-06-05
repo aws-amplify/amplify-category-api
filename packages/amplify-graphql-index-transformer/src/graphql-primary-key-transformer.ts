@@ -90,7 +90,7 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
   public after = (ctx: TransformerContextProvider): void => {
     if (!ctx.isProjectUsingDataStore()) return;
 
-    const overriddenResources = getResourceOverrides([this], ctx?.stackManager);
+    const overriddenResources = getResourceOverrides([this], ctx.filepaths.getBackendDirPath(), ctx.api.name, ctx.stackManager);
     // construct sync VTL code
     this.resolverMap.forEach((syncVTLContent, resource) => {
       if (syncVTLContent) {

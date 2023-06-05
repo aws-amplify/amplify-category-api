@@ -1,4 +1,4 @@
-import { JSONUtilities } from '@aws-amplify/graphql-transformer-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import {
   addAuthIdentityPoolAndUserPoolWithOAuth,
   addAuthUserPoolOnlyWithOAuth,

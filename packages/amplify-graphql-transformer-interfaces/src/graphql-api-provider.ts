@@ -116,6 +116,7 @@ export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingT
 export interface GraphQLAPIProvider extends IConstruct {
   readonly apiId: string;
   readonly host: TransformHostProvider;
+  readonly name: string;
 
   // getDefaultAuthorization(): Readonly<AuthorizationMode>;
   // getAdditionalAuthorizationModes(): Readonly<AuthorizationMode[]>;
