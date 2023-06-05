@@ -16,7 +16,7 @@ export const getDirectiveDefinitions = async (context: $TSContext, resourceDir: 
   const transformerVersion = await getTransformerVersion(context);
   const transformer = await getTransformerFactory(context, resourceDir);
   const transformList = transformerVersion === 2
-    ? await transformer({ addSearchableTransformer: true, authConfig: {} })
+    ? await transformer({ authConfig: {} })
     : await transformer(true);
 
   const transformDirectives = transformList

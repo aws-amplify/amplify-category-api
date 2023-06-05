@@ -27,7 +27,9 @@ Our work is done directly on Github and PR's are sent to the github repo by core
 
 This section should get you running with **Amplify API Category** and get you familiar with the basics of the codebase.
 
-### Local Environment Setup
+### Local Development
+
+#### Environment Setup
 
 1. Ensure you have [Node.js](https://nodejs.org/en/download/) installed, which comes bundled with [`npm`](https://github.com/npm/cli). Use it to install or upgrade [`yarn`](https://classic.yarnpkg.com/en/docs/install):
 
@@ -60,7 +62,22 @@ This section should get you running with **Amplify API Category** and get you fa
    cd amplify-category-api
    ```
 
-1. Then, you can run the `setup-dev` script, which installs dependencies and performs initial configuration:
+#### Building and Running Tests
+
+1. To build local packages and verify your change is valid and doesn't break the build, you can run :
+
+   ```sh
+   yarn # Install all dependencies for the workspace
+   yarn build # Build all packages in the repo
+   yarn test # Run tests for all packages in the repo
+   ```
+
+1. Note: once you've run an initial `yarn` unless you're changing dependencies in a package, re-running should not be necessary.
+1. After an initial build, if you're testing changes to a single package, you can run `yarn build` and `yarn test` specifically from that directory (e.g. `/packages/amplify-graphql-model-transformer`) in order to speed up your iteration cycle.
+
+#### Building the CLI Locally for functional testing
+
+1. You can run the `setup-dev` script, which installs dependencies and performs initial configuration:
 
    ```sh
    # Linux / macOS
@@ -69,6 +86,14 @@ This section should get you running with **Amplify API Category** and get you fa
    # Windows
    yarn setup-dev-win
    ```
+
+1. Ensure amplify-dev exists on your path.
+
+   ```sh
+   yarn global bin # Update your `$PATH` to include this directory.
+   ```
+
+1. To update your local `amplify-dev` executable, you can simply `yarn build` the specific package you're editing, and those changes will be reflected automatically in the dev target.
 
 > NOTE: Make sure to always [sync your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) with _main_ branch of amplify-category-api
 

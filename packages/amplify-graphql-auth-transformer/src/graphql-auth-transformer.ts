@@ -409,7 +409,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
           this.protectFieldResolver(context, def, modelName, field.name.value, allowedRoles);
         }
       });
-      if (errorFields.length > 0 && modelNameConfig.subscriptions?.level === SubscriptionLevel.on) {
+      const subscriptionLevel = modelNameConfig.subscriptions?.level ?? SubscriptionLevel.on;
+      if (errorFields.length > 0 && subscriptionLevel === SubscriptionLevel.on) {
         throw new InvalidDirectiveError("When using field-level authorization rules you need to add rules to all of the model's required fields with at least read permissions. "
         + `Found model "${def.name.value}" with required fields ${JSON.stringify(errorFields)} missing field-level authorization rules.\n\n`
         + 'For more information visit https://docs.amplify.aws/cli/graphql/authorization-rules/#field-level-authorization-rules');
@@ -556,24 +557,25 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     }
 
     const subscriptions = modelConfig?.subscriptions;
-    if (subscriptions?.level === SubscriptionLevel.on) {
+    const subscriptionLevel = subscriptions?.level ?? SubscriptionLevel.on;
+    if (subscriptionLevel === SubscriptionLevel.on) {
       const subscriptionArguments = acm
         .getRolesPerOperation('listen')
         .map((role) => this.roleMap.get(role)!)
         .filter((roleDef) => roleDef.strategy === 'owner' && !fieldIsList(def.fields ?? [], roleDef.entity!));
-      if (subscriptions.onCreate && modelConfig?.mutations?.create) {
+      if (subscriptions?.onCreate && modelConfig?.mutations?.create) {
         subscriptions.onCreate.forEach((onCreateSub) => {
           addServiceDirective(ctx.output.getSubscriptionTypeName()!, 'listen', onCreateSub);
           addSubscriptionArguments(ctx, onCreateSub, subscriptionArguments);
         });
       }
-      if (subscriptions.onUpdate && modelConfig?.mutations?.update) {
+      if (subscriptions?.onUpdate && modelConfig?.mutations?.update) {
         subscriptions.onUpdate.forEach((onUpdateSub) => {
           addServiceDirective(ctx.output.getSubscriptionTypeName()!, 'listen', onUpdateSub);
           addSubscriptionArguments(ctx, onUpdateSub, subscriptionArguments);
         });
       }
-      if (subscriptions.onDelete && modelConfig?.mutations?.delete) {
+      if (subscriptions?.onDelete && modelConfig?.mutations?.delete) {
         subscriptions.onDelete.forEach((onDeleteSub) => {
           addServiceDirective(ctx.output.getSubscriptionTypeName()!, 'listen', onDeleteSub);
           addSubscriptionArguments(ctx, onDeleteSub, subscriptionArguments);
