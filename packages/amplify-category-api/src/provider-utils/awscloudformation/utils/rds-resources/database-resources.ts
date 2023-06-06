@@ -10,7 +10,12 @@ import { DeleteRoleCommand, IAMClient } from '@aws-sdk/client-iam';
 
 const secretNames = ['database', 'host', 'port', 'username', 'password'];
 
-export const getVpcMetadataLambdaName = (appId: string, envName: string) => `${appId}-rds-schema-inspector-${envName}`;
+export const getVpcMetadataLambdaName = (appId: string, envName: string): string => {
+  if (appId && envName) {
+    return `${appId}-rds-schema-inspector-${envName}`;
+  }
+  throw new Error("AppId and environment name are required to generate the schema inspector lambda.");
+};
 
 export const getExistingConnectionSecrets = async (context: $TSContext, secretsKey: string, apiName: string, envName?: string): Promise<RDSConnectionSecrets|undefined> => {
   try {
