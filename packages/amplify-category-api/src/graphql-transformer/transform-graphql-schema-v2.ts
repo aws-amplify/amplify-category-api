@@ -1,17 +1,12 @@
 import {
   GraphQLTransform,
   RDSConnectionSecrets,
-  ImportedRDSType,
   MYSQL_DB_TYPE,
-  ResolverConfig,
-  TransformerProjectConfig,
   StackManager,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
   DeploymentResources,
-  Template,
-  TransformerPluginProvider,
   TransformerLogLevel,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
@@ -20,7 +15,6 @@ import {
   AmplifySupportedService,
   JSONUtilities,
   pathManager,
-  stateManager,
 } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
@@ -39,7 +33,7 @@ import {
 } from './utils';
 import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerFactoryArgs, TransformerProjectOptions } from './transformer-options-types';
-import { getExistingConnectionSecretNames, getSecretsKey, getDatabaseName } from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
+import { getExistingConnectionSecretNames, getSecretsKey } from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { applyOverride } from './override';
 
@@ -239,11 +233,6 @@ const _buildProject = async (context: $TSContext, opts: TransformerProjectOption
     buildParameters: opts.buildParameters,
     stacks: opts.projectConfig.stacks || {},
     featureFlags: new AmplifyCLIFeatureFlagAdapter(),
-    filepaths: {
-      getBackendDirPath: () => pathManager.getBackendDirPath(),
-      findProjectRoot: () => pathManager.findProjectRoot(),
-      getCurrentCloudBackendDirPath: () => pathManager.getCurrentCloudBackendDirPath(),
-    },
     sandboxModeEnabled: opts.sandboxModeEnabled,
     userDefinedSlots,
     resolverConfig: opts.resolverConfig,

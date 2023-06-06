@@ -7,7 +7,6 @@ import { StackManagerProvider } from './stack-manager-provider';
 import { AppSyncAuthConfiguration, GraphQLAPIProvider } from '../graphql-api-provider';
 import { TransformerResourceHelperProvider } from './resource-resource-provider';
 import { FeatureFlagProvider } from '../feature-flag-provider';
-import { TransformerFilepathsProvider } from './transformer-filepaths-provider';
 import { OverridesProvider } from './overrides-provider';
 
 export interface TransformerContextMetadataProvider {
@@ -34,7 +33,6 @@ export interface TransformerContextProvider {
   featureFlags: FeatureFlagProvider;
   authConfig: AppSyncAuthConfiguration;
   sandboxModeEnabled: boolean;
-  filepaths: TransformerFilepathsProvider;
 
   isProjectUsingDataStore(): boolean;
   getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;

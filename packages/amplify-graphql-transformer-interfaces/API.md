@@ -529,8 +529,6 @@ export interface TransformerContextProvider {
     // (undocumented)
     featureFlags: FeatureFlagProvider;
     // (undocumented)
-    filepaths: TransformerFilepathsProvider;
-    // (undocumented)
     getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
     // (undocumented)
     getResourceOverrides: OverridesProvider;
@@ -568,16 +566,6 @@ export interface TransformerDataSourceManagerProvider {
     get(type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): DataSourceInstance;
     // (undocumented)
     has(name: string): boolean;
-}
-
-// @public (undocumented)
-export interface TransformerFilepathsProvider {
-    // (undocumented)
-    findProjectRoot: () => string;
-    // (undocumented)
-    getBackendDirPath: () => string;
-    // (undocumented)
-    getCurrentCloudBackendDirPath: () => string;
 }
 
 // @public (undocumented)
