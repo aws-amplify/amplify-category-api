@@ -8,8 +8,6 @@ import {
   TransformerPluginProvider,
   TransformHostProvider,
   TransformerLog,
-  TransformerFilepathsProvider,
-  AmplifyApiGraphQlResourceStackTemplate
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import {
@@ -29,7 +27,7 @@ import {
   TypeDefinitionNode,
   TypeExtensionNode,
   UnionTypeDefinitionNode,
-  print
+  print,
 } from 'graphql';
 import _ from 'lodash';
 import { ResolverConfig, TransformConfig } from '../config/transformer-config';
@@ -88,7 +86,6 @@ export interface GraphQLTransformOptions {
   readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   readonly resolverConfig?: ResolverConfig;
   readonly overrideConfig?: OverrideConfig;
-  readonly filepaths?: TransformerFilepathsProvider;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
@@ -101,7 +98,6 @@ export class GraphQLTransform {
   private readonly buildParameters: Record<string, any>;
   private readonly userDefinedSlots: Record<string, UserDefinedSlot[]>;
   private readonly overrideConfig?: OverrideConfig;
-  private readonly filepaths: TransformerFilepathsProvider;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
   // that specifies we have run already run a directive at a given location.
@@ -136,11 +132,6 @@ export class GraphQLTransform {
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
     this.overrideConfig = options.overrideConfig;
     this.resolverConfig = options.resolverConfig || {};
-    this.filepaths = options.filepaths || {
-      getBackendDirPath: () => { throw new Error('Unable to get backend dir path.') },
-      findProjectRoot: () => { throw new Error('Unable to find project root.') },
-      getCurrentCloudBackendDirPath: () => { throw new Error('Unable to get current cloud backend dir path') },
-    };
 
     this.logs = [];
   }
@@ -194,7 +185,6 @@ export class GraphQLTransform {
       datasourceConfig?.modelToDatasourceMap ?? new Map<string, DatasourceType>(),
       this.stackMappingOverrides,
       this.authConfig,
-      this.filepaths,
       this.options.sandboxModeEnabled,
       this.options.featureFlags,
       this.resolverConfig,

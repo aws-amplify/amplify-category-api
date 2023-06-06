@@ -13,7 +13,7 @@ import {
 } from '@aws-amplify/graphql-relational-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { ConflictHandlerType, GraphQLTransform, GraphQLTransformOptions } from '@aws-amplify/graphql-transformer-core';
-import { FeatureFlagProvider, TransformerPluginProvider, TransformerFilepathsProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { FeatureFlagProvider, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   schemas, TransformerPlatform, TransformerSchema, TransformerVersion,
 } from '..';
@@ -95,11 +95,6 @@ function createV2Transformer(options: Partial<Writeable<GraphQLTransformOptions>
     getNumber: jest.fn(),
     getObject: jest.fn(),
   } as FeatureFlagProvider;
-  options.filepaths = {
-    getBackendDirPath: () => 'fake-backend-dir',
-    findProjectRoot: () => '.',
-    getCurrentCloudBackendDirPath: () => 'amplify/backend',
-  } as TransformerFilepathsProvider;
 
   return new GraphQLTransform(options as GraphQLTransformOptions);
 }
