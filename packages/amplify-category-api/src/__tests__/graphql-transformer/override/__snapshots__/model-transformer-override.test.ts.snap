@@ -236,6 +236,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -288,6 +289,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -415,6 +417,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -467,6 +470,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -1094,6 +1098,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 
 $util.toJson({})",
             ],
@@ -1142,6 +1147,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 
 $util.toJson({})",
             ],
@@ -1190,6 +1196,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 
 $util.toJson({})",
             ],
@@ -1244,6 +1251,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -1654,6 +1662,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
@@ -1703,6 +1712,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
@@ -1827,6 +1837,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
@@ -1876,6 +1887,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
@@ -2177,6 +2189,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 
 $util.toJson({})",
             ],
@@ -2219,6 +2232,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 
 $util.toJson({})",
             ],
@@ -2261,6 +2275,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 
 $util.toJson({})",
             ],
@@ -2309,6 +2324,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
@@ -2563,6 +2579,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -2615,6 +2632,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -2742,6 +2760,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -2794,6 +2813,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -3413,6 +3433,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 
 $util.toJson({})",
             ],
@@ -3461,6 +3482,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 
 $util.toJson({})",
             ],
@@ -3544,6 +3566,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "PostTable",
@@ -3946,6 +3969,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
@@ -3995,6 +4019,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
@@ -4119,6 +4144,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
@@ -4168,6 +4194,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
@@ -4469,6 +4496,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 
 $util.toJson({})",
             ],
@@ -4511,6 +4539,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 
 $util.toJson({})",
             ],
@@ -4553,6 +4582,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 
 $util.toJson({})",
             ],
@@ -4601,6 +4631,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               },
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"30\\")
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
               Object {
                 "Ref": "CommentTable",
