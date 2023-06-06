@@ -2,8 +2,8 @@ import { GraphQLTransform, StackManager } from '@aws-amplify/graphql-transformer
 import { parse } from 'graphql';
 import path from 'path';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
-import { applyOverride } from '@aws-amplify/amplify-category-api';
-import { HttpTransformer } from '..';
+import { applyOverride } from '../../../graphql-transformer/override';
+import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
 
 jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
 jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
@@ -23,7 +23,7 @@ test('it generates the overrided resources', () => {
     transformers: [new HttpTransformer()],
     overrideConfig: {
       applyOverride: (stackManager: StackManager) => {
-        return applyOverride(stackManager, path.join(__dirname, 'overrides'))
+        return applyOverride(stackManager, path.join(__dirname, 'http-overrides'))
       },
       overrideFlag: true,
     },

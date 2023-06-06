@@ -1,9 +1,9 @@
 import { GraphQLTransform, StackManager } from '@aws-amplify/graphql-transformer-core';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
-import { applyOverride } from '@aws-amplify/amplify-category-api';
+import { applyOverride } from '../../../graphql-transformer/override';
 import { parse } from 'graphql';
 import * as path from 'path';
-import { FunctionTransformer } from '..';
+import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 
 jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
 jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
@@ -19,7 +19,7 @@ test('it ovderrides the expected resources', () => {
     transformers: [new FunctionTransformer()],
     overrideConfig: {
       applyOverride: (stackManager: StackManager) => {
-        return applyOverride(stackManager, path.join(__dirname, 'overrides'))
+        return applyOverride(stackManager, path.join(__dirname, 'function-overrides'))
       },
       overrideFlag: true,
     },
