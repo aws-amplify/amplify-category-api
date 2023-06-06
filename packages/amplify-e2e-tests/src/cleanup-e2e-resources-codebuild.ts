@@ -258,12 +258,12 @@ const getCodeBuildClient = (): CodeBuild => {
   return new CodeBuild({ 
     apiVersion: '2016-10-06',
     region: 'us-east-1',
-    // credentials: isCI() ? undefined :
-    // {
-    //   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    //   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    //   sessionToken: process.env.AWS_SESSION_TOKEN,
-    // }
+    credentials: isCI() ? undefined :
+    {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      sessionToken: process.env.AWS_SESSION_TOKEN,
+    }
   });
 };
 
@@ -597,14 +597,14 @@ const getFilterPredicate = (args: any): JobFilterPredicate => {
  * to get all accounts within the root account organization.
  */
 const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
-  // const testAccountCred = {
-  //   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  //   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  //   sessionToken: process.env.AWS_SESSION_TOKEN,
-  // }
+  const testAccountCred = {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    sessionToken: process.env.AWS_SESSION_TOKEN,
+  }
   const stsClient = new aws.STS({
     apiVersion: '2011-06-15',
-    // credentials: isCI() ? undefined : testAccountCred
+    credentials: isCI() ? undefined : testAccountCred
   });
   const assumeRoleResForE2EParent = await stsClient
   .assumeRole({

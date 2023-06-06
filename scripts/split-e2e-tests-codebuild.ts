@@ -23,14 +23,14 @@ const FORCE_REGION_MAP = {
 type FORCE_TESTS = 'interactions' | 'containers';
 // some tests require additional time, the parent account can handle longer tests (up to 90 minutes)
 const USE_PARENT_ACCOUNT = [
-  'api-key-migration2',
-  'api-key-migration3',
-  'api-key-migration4',
-  'api-key-migration5',
   'src/__tests__/transformer-migrations/searchable-migration',
   'src/__tests__/graphql-v2/searchable-datastore',
   'src/__tests__/schema-searchable',
-  'FunctionTransformerTestsV2'
+  'src/__tests__/migration/api.key.migration2.test.ts',
+  'src/__tests__/migration/api.key.migration3.test.ts',
+  'src/__tests__/migration/api.key.migration4.test.ts',
+  'src/__tests__/migration/api.key.migration5.test.ts',
+  'src/__tests__/FunctionTransformerTestsV2.e2e.test.ts'
 ];
 const REPO_ROOT = join(__dirname, '..');
 const TEST_TIMINGS_PATH = join(REPO_ROOT, 'scripts', 'cci', 'test-timings.data.json');
@@ -41,6 +41,7 @@ const RUN_SOLO = [
   'src/__tests__/containers-api-1.test.ts',
   'src/__tests__/containers-api-2.test.ts',
   'src/__tests__/graphql-v2/searchable-datastore.test.ts',
+  'src/__tests__/migration/api.key.migration1.test.ts',
   'src/__tests__/schema-searchable.test.ts',
   'src/__tests__/schema-auth-1.test.ts',
   'src/__tests__/schema-auth-5.test.ts',
@@ -247,10 +248,7 @@ function main(): void {
       'depend-on': ['publish_to_local_registry'],
     },
     join(REPO_ROOT, 'packages', 'graphql-transformers-e2e-tests'),
-    false,
-    (tests: string[]) => {
-      return tests.filter((testName) => !EXCLUDE_E2E_TESTS.includes(testName))
-    }
+    false
   );
   const splitMigrationV5Tests = splitTests(
     {
