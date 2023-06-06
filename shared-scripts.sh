@@ -190,6 +190,7 @@ function _runE2ETestsLinux {
     echo "Run Amplify E2E tests"
     echo $TEST_SUITE
     _loadTestAccountCredentials
+    _setShell
     retry runE2eTest
 }
 function _runMigrationV5Test {
@@ -298,7 +299,7 @@ function retry {
 
     resetAwsAccountCredentials
     TEST_SUITE=${TEST_SUITE:-"TestSuiteNotSet"}
-    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-category-api-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE
+    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-category-api-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE --profile amplify-integ-test-user
     echo "Attempt $n succeeded."
     exit 0 # don't fail the step if putting the metric fails
 }
