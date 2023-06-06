@@ -5,6 +5,11 @@ import * as ini from 'ini';
 import { pathManager } from "@aws-amplify/amplify-cli-core";
 
 export const refreshCredentials = (): AWSTempCredentials|undefined => {
+  // Early return if CI environment is not Codebuild
+  if (!process.env.CI || !process.env.CODEBUILD) {
+    return;
+  }
+
   const stringifedCreds = execSync(`./refresh-credentials.sh`, { shell: true })?.toString();
 
   if (!_.isEmpty(stringifedCreds)) {
