@@ -6,9 +6,11 @@ import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { MySQLDataSourceAdapter, Schema, Engine, DataSourceAdapter, MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { DeleteFunctionCommand, LambdaClient } from '@aws-sdk/client-lambda';
-import { DeletePolicyCommand, DeleteRoleCommand, IAMClient } from '@aws-sdk/client-iam';
+import { DeleteRoleCommand, IAMClient } from '@aws-sdk/client-iam';
 
 const secretNames = ['database', 'host', 'port', 'username', 'password'];
+
+export const getVpcMetadataLambdaName = (appId: string, envName: string) => `${appId}-rds-schema-inspector-${envName}`;
 
 export const getExistingConnectionSecrets = async (context: $TSContext, secretsKey: string, apiName: string, envName?: string): Promise<RDSConnectionSecrets|undefined> => {
   try {
@@ -161,7 +163,7 @@ export const removeVpcSchemaInspectorLambda = async (context) => {
     const { AmplifyAppId, Region } = meta.providers.awscloudformation;
     const { amplify } = context;
     const { envName } = amplify.getEnvInfo();
-    const lambdaName = `${AmplifyAppId}-rds-schema-inspector-${envName}`;
+    const lambdaName = getVpcMetadataLambdaName(AmplifyAppId, envName);
 
     const client = new LambdaClient({ region: Region });
     const command = new DeleteFunctionCommand({ FunctionName: lambdaName });

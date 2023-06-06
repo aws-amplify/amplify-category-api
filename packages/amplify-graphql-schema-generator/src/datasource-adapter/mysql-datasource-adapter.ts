@@ -93,8 +93,8 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
   public async getTablesList(): Promise<string[]> {
     const SHOW_TABLES_QUERY = `SHOW TABLES`;
     let result;
-    if (this.useVPC) {
-      result = await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda!, this.config, SHOW_TABLES_QUERY, this.vpcLambdaRegion);
+    if (this.useVPC && this.vpcSchemaInspectorLambda) {
+      result = await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, SHOW_TABLES_QUERY, this.vpcLambdaRegion);
     }
     else {
       result = (await this.dbBuilder.raw(SHOW_TABLES_QUERY))[0];
@@ -138,8 +138,8 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     const LOAD_FIELDS_QUERY = `SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '${this.config.database}'`;
     this.fields = [];
     let columnResult;
-    if (this.useVPC) {
-      columnResult = await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda!, this.config, LOAD_FIELDS_QUERY, this.vpcLambdaRegion);
+    if (this.useVPC && this.vpcSchemaInspectorLambda) {
+      columnResult = await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, LOAD_FIELDS_QUERY, this.vpcLambdaRegion);
     }
     else {
       columnResult = (await this.dbBuilder.raw(LOAD_FIELDS_QUERY))[0];
@@ -167,8 +167,8 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     const LOAD_INDEXES_QUERY = `SELECT * FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = '${this.config.database}'`;
     this.indexes = [];
     let indexResult;
-    if (this.useVPC) {
-      indexResult = await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda!, this.config, LOAD_INDEXES_QUERY, this.vpcLambdaRegion);
+    if (this.useVPC && this.vpcSchemaInspectorLambda) {
+      indexResult = await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, LOAD_INDEXES_QUERY, this.vpcLambdaRegion);
     }
     else {
       indexResult = (await this.dbBuilder.raw(LOAD_INDEXES_QUERY))[0];

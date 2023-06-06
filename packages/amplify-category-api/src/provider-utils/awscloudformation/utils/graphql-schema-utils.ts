@@ -5,6 +5,7 @@ import * as os from 'os';
 import { constructRDSGlobalAmplifyInput } from './rds-input-utils';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
+import { getVpcMetadataLambdaName } from './rds-resources/database-resources';
 
 export const writeSchemaFile = (pathToSchemaFile: string, schemaString: string) => {
   fs.ensureFileSync(pathToSchemaFile);
@@ -64,7 +65,7 @@ const retryWithVpcLambda = async (context, databaseConfig, adapter): Promise<boo
     const shouldTryVpc = await prompter.confirmContinue(`Unable to connect to the database from this machine. Would you like to try from VPC '${vpc.vpcId}'?`);
     
     if (shouldTryVpc) {
-      const schemaInspectorLambda = `${AmplifyAppId}-rds-schema-inspector-${envName}`;
+      const schemaInspectorLambda = getVpcMetadataLambdaName(AmplifyAppId, envName);
       await provisionSchemaInspectorLambda(schemaInspectorLambda, vpc, Region);
       adapter.useVpc(schemaInspectorLambda, Region);
       await adapter.initialize();
