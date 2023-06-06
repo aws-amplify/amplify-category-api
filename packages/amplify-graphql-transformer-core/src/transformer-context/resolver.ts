@@ -12,11 +12,7 @@ import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { isResolvableObject, Stack, CfnParameter } from 'aws-cdk-lib';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
-<<<<<<< HEAD
-=======
 import { get as lodashGet } from 'lodash';
-import { IConstruct } from 'constructs';
->>>>>>> 9d65b7d0a (wip: ttl overrides)
 import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
 import { InvalidDirectiveError } from '../errors';
 import * as SyncUtils from '../transformation/sync-utils';
@@ -278,10 +274,7 @@ export class TransformerResolver implements TransformerResolverProvider {
           }
 
           if (context.isProjectUsingDataStore()) {
-            //Remove the suffix "Table" from the datasource name
-            //The stack name cannot be retrieved as during the runtime it is tokenized and value not being revealed
-            const modelName = this.datasource.name.slice(0, -5);
-            const syncConfig = SyncUtils.getSyncConfig(context, modelName)!;
+            const syncConfig = SyncUtils.getSyncConfig(context, this.modelName!)!;
             const funcConf = dataSourceProviderFn.node.children.find(
               (it: any) => it.cfnResourceType === 'AWS::AppSync::FunctionConfiguration',
             ) as CfnFunctionConfiguration;
@@ -334,6 +327,8 @@ export class TransformerResolver implements TransformerResolverProvider {
           throw new Error('Unknown DataSource type');
       }
     }
+
+    const deltaSyncTableTtl = this.getDeltaSyncTableTtl(context);
     let initResolver = dedent`
     $util.qr($ctx.stash.put("typeName", "${this.typeName}"))
     $util.qr($ctx.stash.put("fieldName", "${this.fieldName}"))
@@ -342,6 +337,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     $util.qr($ctx.stash.metadata.put("dataSourceType", "${dataSourceType}"))
     $util.qr($ctx.stash.metadata.put("apiId", "${api.apiId}"))
     $util.qr($ctx.stash.put("connectionAttributes", {}))
+    $util.qr($ctx.stash.put("deltaSyncTableTtl", "${deltaSyncTableTtl}")
     ${dataSource}
     `;
     const authModes = [context.authConfig.defaultAuthentication, ...(context.authConfig.additionalAuthenticationProviders || [])].map(
@@ -424,13 +420,20 @@ export class TransformerResolver implements TransformerResolverProvider {
       });
     }
   }
-<<<<<<< HEAD
-=======
 
   private get modelName(): string | undefined {
     // Remove the suffix "Table" from the datasource name
     // The stack name cannot be retrieved as during the runtime it is tokenized and value not being revealed
     return this.datasource?.name?.replace(new RegExp('Table$'), '');
   }
->>>>>>> 9d65b7d0a (wip: ttl overrides)
+
+  private getDeltaSyncTableTtl(context: TransformerContextProvider): number {
+    const { modelName } = this;
+    if (this.typeName !== 'Query' || modelName === undefined) {
+      return SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
+    }
+    const overriddenResources = context.getResourceOverrides();
+    const deltaSyncTtlOverride = lodashGet(overriddenResources, ['models', modelName, 'modelDatasource', 'dynamoDbConfig', 'deltaSyncConfig', 'deltaSyncTableTtl']);
+    return deltaSyncTtlOverride || SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
+  }
 }
