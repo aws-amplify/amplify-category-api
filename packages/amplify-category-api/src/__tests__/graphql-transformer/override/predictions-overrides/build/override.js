@@ -1,8 +1,6 @@
 function override(resource, amplifyProjectInfo) {
-  resource.function.lambdaDataSource['Echofunction'].serviceRoleArn = 'mockArn';
-  resource.function.lambdaDataSource['Otherfunction'].serviceRoleArn = 'mockArn';
-  // override resolver
-  resource.function.resolvers['queryEchoResolver'].requestMappingTemplate = 'mockTemplate';
+  resource.predictions.TranslateDataSource.serviceRoleArn = 'mockArn';
+  resource.predictions.resolvers['querySpeakTranslatedLabelTextResolver'].requestMappingTemplate = 'mockTeplate';
 
   if (amplifyProjectInfo.envName != 'testEnvName') {
     throw new Error(`Unexpected envName: ${amplifyProjectInfo.envName}`);

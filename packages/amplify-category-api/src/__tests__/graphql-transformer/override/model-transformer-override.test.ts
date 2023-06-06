@@ -29,7 +29,7 @@ describe('ModelTransformer: ', () => {
       transformers: [new ModelTransformer()],
       overrideConfig: {
         applyOverride: (stackManager: StackManager) => {
-          return applyOverride(stackManager, path.join(__dirname, 'overrides'))
+          return applyOverride(stackManager, path.join(__dirname, 'model-overrides'))
         },
         overrideFlag: true,
       },

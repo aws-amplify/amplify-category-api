@@ -1,8 +1,8 @@
 import { GraphQLTransform, StackManager } from '@aws-amplify/graphql-transformer-core';
 import * as path from 'path';
-import { PredictionsTransformer } from '..';
+import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
-import { applyOverride } from '@aws-amplify/amplify-category-api';
+import { applyOverride } from '../../../graphql-transformer/override';
 
 jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
 jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
@@ -18,7 +18,7 @@ test('it generates resources with overrides', () => {
     transformers: [new PredictionsTransformer({ bucketName: 'myStorage${hash}-${env}' })],
     overrideConfig: {
       applyOverride: (stackManager: StackManager) => {
-        return applyOverride(stackManager, path.join(__dirname, 'overrides'))
+        return applyOverride(stackManager, path.join(__dirname, 'predictions-overrides'))
       },
       overrideFlag: true,
     },

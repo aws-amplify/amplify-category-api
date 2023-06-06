@@ -1,12 +1,10 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, StackManager } from '@aws-amplify/graphql-transformer-core';
-import {
-  Match, Template,
-} from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as path from 'path';
-import { SearchableModelTransformer } from '..';
+import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
-import { applyOverride } from '@aws-amplify/amplify-category-api';
+import { applyOverride } from '../../../graphql-transformer/override';
 
 jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
 jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
@@ -40,7 +38,7 @@ test('it overrides expected resources', () => {
     featureFlags,
     overrideConfig: {
       applyOverride: (stackManager: StackManager) => {
-        return applyOverride(stackManager, path.join(__dirname, 'overrides'))
+        return applyOverride(stackManager, path.join(__dirname, 'searchable-overrides'))
       },
       overrideFlag: true,
     },
