@@ -4,11 +4,13 @@ import {
   GraphQLTransform,
   SyncConfig,
   validateModelSchema,
+  StackManager,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   FeatureFlagProvider,
   Template,
   TransformerFilepathsProvider,
+  AmplifyApiGraphQlResourceStackTemplate,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Template as AssertionTemplate } from 'aws-cdk-lib/assertions';
 import { DocumentNode, parse } from 'graphql';
@@ -1334,6 +1336,22 @@ it('sync query resolver renders with deltaSyncTableTTL override', () => {
       findProjectRoot: () => '.',
       getCurrentCloudBackendDirPath: () => 'amplify/backend',
     } as TransformerFilepathsProvider,
+    overrideConfig: {
+      overrideFlag: true,
+      applyOverride: (stackManager: StackManager) => ({
+        models: {
+          Song: {
+            modelDatasource: {
+              dynamoDbConfig: {
+                deltaSyncConfig: {
+                  deltaSyncTableTtl: 15
+                }
+              }
+            }
+          }
+        }
+      } as AmplifyApiGraphQlResourceStackTemplate),
+    }
   });
 
   const out = transformer.transform(validSchema);
