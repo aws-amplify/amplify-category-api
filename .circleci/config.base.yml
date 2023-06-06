@@ -139,6 +139,30 @@ jobs:
       - restore_cache:
           key: amplify-category-api-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
       - run: chmod +x .circleci/lint_pr.sh && ./.circleci/lint_pr.sh
+    environment:
+      NODE_OPTIONS: --max-old-space-size=5120
+
+  lint-deps:
+    <<: *linux-e2e-executor
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-category-api-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+      - run: yarn lint:deps:check
+    environment:
+      NODE_OPTIONS: --max-old-space-size=5120
+
+  lint-package-json:
+    <<: *linux-e2e-executor
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-category-api-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+      - run: yarn lint:package-json:check
+    environment:
+      NODE_OPTIONS: --max-old-space-size=5120
 
   verify-api-extract:
     <<: *linux-e2e-executor
@@ -519,6 +543,12 @@ workflows:
           name: build_windows
           os: w
       - lint:
+          requires:
+            - build_linux
+      - lint-deps:
+          requires:
+            - build_linux
+      - lint-package-json:
           requires:
             - build_linux
       - validate_cdk_version:

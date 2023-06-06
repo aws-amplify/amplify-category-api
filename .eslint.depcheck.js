@@ -59,6 +59,11 @@ module.exports = {
     'lib/**',
     'node_modules',
     '*/node_modules',
+    '.eslintrc.js',
+    'dist',
+    'build',
+    '__mocks__',
+    'coverage',
   ],
   overrides: [
     {
@@ -66,6 +71,14 @@ module.exports = {
       excludedFiles: [
         '__tests__/**',
         '*.test.ts',
+        'lib/**',
+        'node_modules',
+        '*/node_modules',
+        '.eslintrc.js',
+        'dist',
+        'build',
+        '__mocks__',
+        'coverage',
       ],
       rules: {
         'no-restricted-imports': ['error', ...TRANSFORMER_RESTRICTED_IMPORTS.map((importName) => ({

@@ -9,7 +9,6 @@
     "test-ci": "lerna run test --concurrency 1 -- --ci -i",
     "e2e": "lerna run e2e",
     "cloud-e2e": "CURR_BRANCH=$(git branch | awk '/\\*/{printf \"%s\", $2}') && UPSTREAM_BRANCH=run-e2e/$USER/$CURR_BRANCH && git push $(git remote -v | grep aws-amplify/amplify-category-api | head -n1 | awk '{print $1;}') $CURR_BRANCH:$UPSTREAM_BRANCH --no-verify --force-with-lease && echo \"\n\n 🏃 E2E test are running at:\nhttps://app.circleci.com/pipelines/github/aws-amplify/amplify-category-api?branch=$UPSTREAM_BRANCH\"",
-    "lint-fix": "git diff --name-only --cached --diff-filter d | grep -E '\\.(js|jsx|ts|tsx)$' | xargs eslint --fix --quiet",
     "clean": "lerna run clean && lerna exec yarn rimraf tsconfig.tsbuildinfo && lerna clean --yes && yarn rimraf node_modules",
     "check-version-conflicts:beta": "yarn ts-node ./scripts/check-version.ts beta",
     "check-version-conflicts:release": "yarn ts-node ./scripts/check-version.ts",
@@ -48,7 +47,12 @@
     "extract-api": "lerna run extract-api",
     "verify-api-extract": "yarn extract-api && ./scripts/verify-extract-api.sh",
     "verify-yarn-lock": "./scripts/verify-yarn-lock.sh",
-    "lint-deps": "git diff --name-only --cached --diff-filter d | grep -E '\\.(js|jsx|ts|tsx)$' | xargs eslint --no-eslintrc --config depcheck.config.js"
+    "lint:fix": "git diff --name-only --cached --diff-filter d | grep -E '\\.(js|jsx|ts|tsx)$' | xargs eslint --fix --quiet",
+    "lint:check": "eslint ./packages --ext .js,.jsx,.ts,.tsx --max-warnings=0",
+    "lint:deps:fix": "git diff --name-only --cached --diff-filter d | grep -E '\\.(js|jsx|ts|tsx)$' | xargs eslint --no-eslintrc --config .eslint.depcheck.js --fix --quiet",
+    "lint:deps:check": "eslint ./packages --no-eslintrc --config .eslint.depcheck.js",
+    "lint:package-json:fix": "eslint --no-eslintrc --config .eslint.package.js '**/package.json' --fix --quiet",
+    "lint:package-json:check": "eslint --no-eslintrc --config .eslint.package.js '**/package.json'"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-category-api/issues"
@@ -63,7 +67,7 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "yarn verify-commit && yarn lint-fix && yarn lint-deps"
+      "pre-commit": "yarn lint:package-json:fix && yarn lint:deps:fix && yarn lint:fix && yarn verify-commit"
     }
   },
   "author": "Amazon Web Services",
@@ -110,6 +114,7 @@
     "eslint-plugin-jest": "^26.1.1",
     "eslint-plugin-jsdoc": "^40.1.0",
     "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-package-json-dependencies": "^1.0.17",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "eslint-plugin-react": "^7.29.4",
     "eslint-plugin-spellcheck": "^0.0.17",
