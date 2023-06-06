@@ -43,3 +43,11 @@ export {
 } from './deployment-resources';
 
 export { TransformerLog, TransformerLogLevel } from './transformer-log';
+export {
+  AmplifyApiGraphQlResourceStackTemplate,
+  AppsyncStackCommon,
+  FunctionDirectiveStack,
+  HttpsDirectiveStack,
+  ModelDirectiveStack,
+  OpenSearchDirectiveStack,
+} from './amplify-api-resource-stack-types';

@@ -28,7 +28,6 @@ import {
 } from 'graphql-transformer-common';
 import {
   constructSyncVTL,
-  getResourceOverrides,
   getDeltaSyncTableTtl,
   getVTLGenerator,
 } from './resolvers/resolvers';
@@ -90,7 +89,7 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
   public after = (ctx: TransformerContextProvider): void => {
     if (!ctx.isProjectUsingDataStore()) return;
 
-    const overriddenResources = getResourceOverrides([this], ctx.filepaths.getBackendDirPath(), ctx.api.name, ctx.stackManager);
+    const overriddenResources = ctx.getResourceOverrides();
     // construct sync VTL code
     this.resolverMap.forEach((syncVTLContent, resource) => {
       if (syncVTLContent) {

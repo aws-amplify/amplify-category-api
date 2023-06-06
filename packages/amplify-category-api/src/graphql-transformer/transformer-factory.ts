@@ -16,7 +16,7 @@ import {
   ManyToManyTransformer as ManyToManyTransformerV2,
 } from '@aws-amplify/graphql-relational-transformer';
 import { SearchableModelTransformer as SearchableModelTransformerV2 } from '@aws-amplify/graphql-searchable-transformer';
-import { TransformerPluginProvider as TransformerPluginProviderV2 } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerPluginProvider as TransformerPluginProviderV2, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDBModelTransformer as DynamoDBModelTransformerV1 } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer as ModelAuthTransformerV1 } from 'graphql-auth-transformer';
 import { ModelConnectionTransformer as ModelConnectionTransformerV1 } from 'graphql-connection-transformer';
@@ -268,7 +268,6 @@ export const constructGraphQLTransformV2 = async (opts: TransformerProjectOption
     sandboxModeEnabled: opts.sandboxModeEnabled,
     userDefinedSlots,
     resolverConfig: opts.resolverConfig,
-    overrideConfig: opts.overrideConfig,
   });
 
   return transform;

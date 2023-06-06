@@ -1,8 +1,9 @@
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform, StackManager } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
-import { HttpTransformer } from '..';
 import path from 'path';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
+import { applyOverride } from '@aws-amplify/amplify-category-api';
+import { HttpTransformer } from '..';
 
 jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
 jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
@@ -21,9 +22,10 @@ test('it generates the overrided resources', () => {
   const transformer = new GraphQLTransform({
     transformers: [new HttpTransformer()],
     overrideConfig: {
-      overrideDir: path.join(__dirname, 'overrides'),
+      applyOverride: (stackManager: StackManager) => {
+        return applyOverride(stackManager, path.join(__dirname, 'overrides'))
+      },
       overrideFlag: true,
-      resourceName: 'myResource',
     },
   });
   const out = transformer.transform(validSchema);
@@ -48,9 +50,10 @@ test('it skips override if file does not exist', () => {
   const transformer = new GraphQLTransform({
     transformers: [new HttpTransformer()],
     overrideConfig: {
-      overrideDir: path.join(__dirname, 'non-existing-override-directory'),
+      applyOverride: (stackManager: StackManager) => {
+        return applyOverride(stackManager, path.join(__dirname, 'non-existing-override-dir'))
+      },
       overrideFlag: true,
-      resourceName: 'myResource',
     },
   });
   const out = transformer.transform(validSchema);

@@ -8,6 +8,7 @@ import { AppSyncAuthConfiguration, GraphQLAPIProvider } from '../graphql-api-pro
 import { TransformerResourceHelperProvider } from './resource-resource-provider';
 import { FeatureFlagProvider } from '../feature-flag-provider';
 import { TransformerFilepathsProvider } from './transformer-filepaths-provider';
+import { OverridesProvider } from './overrides-provider';
 
 export interface TransformerContextMetadataProvider {
   set<T>(key: string, value: T): void;
@@ -37,6 +38,7 @@ export interface TransformerContextProvider {
 
   isProjectUsingDataStore(): boolean;
   getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
+  getResourceOverrides: OverridesProvider;
 }
 
 export type TransformerBeforeStepContextProvider = Pick<

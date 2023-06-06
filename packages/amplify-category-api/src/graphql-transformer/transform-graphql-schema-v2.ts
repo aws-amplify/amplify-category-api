@@ -3,9 +3,9 @@ import {
   RDSConnectionSecrets,
   ImportedRDSType,
   MYSQL_DB_TYPE,
-  OverrideConfig,
   ResolverConfig,
   TransformerProjectConfig,
+  StackManager,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
@@ -41,6 +41,7 @@ import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerFactoryArgs, TransformerProjectOptions } from './transformer-options-types';
 import { getExistingConnectionSecretNames, getSecretsKey, getDatabaseName } from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { applyOverride } from './override';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
@@ -246,7 +247,12 @@ const _buildProject = async (context: $TSContext, opts: TransformerProjectOption
     sandboxModeEnabled: opts.sandboxModeEnabled,
     userDefinedSlots,
     resolverConfig: opts.resolverConfig,
-    overrideConfig: opts.overrideConfig,
+    overrideConfig: {
+      applyOverride: (stackManager: StackManager) => {
+        return applyOverride(stackManager, path.join(pathManager.getBackendDirPath(), 'api', getAppSyncAPIName()));
+      },
+      ...opts.overrideConfig
+    },
   });
 
   const { schema, modelToDatasourceMap } = userProjectConfig;

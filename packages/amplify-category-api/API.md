@@ -5,6 +5,7 @@
 ```ts
 
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { AmplifyApiGraphQlResourceStackTemplate } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
 import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
 import { Construct } from 'constructs';
@@ -14,6 +15,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { ResolverConfig } from 'graphql-transformer-core';
+import { StackManager } from '@aws-amplify/graphql-transformer-core';
 import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 
 // @public (undocumented)
@@ -51,6 +53,9 @@ export type ApiResource = {
         port: number;
     };
 };
+
+// @public (undocumented)
+export function applyOverride(stackManager: StackManager, overrideDir: string): AmplifyApiGraphQlResourceStackTemplate;
 
 // @public (undocumented)
 export const checkForcedUpdates: (context: $TSContext) => Promise<void>;
