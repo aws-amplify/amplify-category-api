@@ -200,36 +200,34 @@ batch:
           CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
-    - identifier: >-
-        schema_auth_5_searchable_datastore_schema_iterative_update_4_schema_searchable
+    - identifier: schema_auth_5_schema_iterative_update_4_api_6_schema_auth_6
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/schema-auth-5.test.ts|src/__tests__/graphql-v2/searchable-datastore.test.ts|src/__tests__/schema-iterative-update-4.test.ts|src/__tests__/schema-searchable.test.ts
+            src/__tests__/schema-auth-5.test.ts|src/__tests__/schema-iterative-update-4.test.ts|src/__tests__/api_6.test.ts|src/__tests__/schema-auth-6.test.ts
           CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        api_6_schema_auth_6_searchable_previous_deployment_had_node_to_node_searchable_previous_deployment_no_node_to_node
+        searchable_previous_deployment_had_node_to_node_searchable_previous_deployment_no_node_to_node_api_lambda_auth_api_9
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_6.test.ts|src/__tests__/schema-auth-6.test.ts|src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-had-node-to-node.test.ts|src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts
-          CLI_REGION: eu-central-1
+            src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-had-node-to-node.test.ts|src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts|src/__tests__/graphql-v2/api_lambda_auth.test.ts|src/__tests__/api_9.test.ts
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
-    - identifier: api_lambda_auth_api_9_api_2
+    - identifier: api_2
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          TEST_SUITE: >-
-            src/__tests__/graphql-v2/api_lambda_auth.test.ts|src/__tests__/api_9.test.ts|src/__tests__/api_2.test.ts
-          CLI_REGION: ap-southeast-1
+          TEST_SUITE: src/__tests__/api_2.test.ts
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_15
@@ -268,13 +266,43 @@ batch:
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
+    - identifier: searchable_datastore
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: src/__tests__/graphql-v2/searchable-datastore.test.ts
+          CLI_REGION: eu-central-1
+          USE_PARENT_ACCOUNT: 1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: schema_searchable
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: src/__tests__/schema-searchable.test.ts
+          CLI_REGION: ap-northeast-1
+          USE_PARENT_ACCOUNT: 1
+      depend-on:
+        - publish_to_local_registry
     - identifier: schema_connection
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: src/__tests__/schema-connection.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: ap-southeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: searchable_migration
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: src/__tests__/transformer-migrations/searchable-migration.test.ts
+          CLI_REGION: us-east-2
+          USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
     - identifier: api_key_migration_v5

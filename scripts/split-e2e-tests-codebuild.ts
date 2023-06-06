@@ -27,7 +27,9 @@ const USE_PARENT_ACCOUNT = [
   'api-key-migration3',
   'api-key-migration4',
   'api-key-migration5',
-  'searchable-migration',
+  'src/__tests__/transformer-migrations/searchable-migration',
+  'src/__tests__/graphql-v2/searchable-datastore',
+  'src/__tests__/schema-searchable',
   'FunctionTransformerTestsV2'
 ];
 const REPO_ROOT = join(__dirname, '..');
@@ -41,6 +43,8 @@ const RUN_SOLO = [
   'src/__tests__/schema-auth-15.test.ts',
   'src/__tests__/schema-connection.test.ts',
   'src/__tests__/transformer-migrations/searchable-migration.test.ts',
+  'src/__tests__/graphql-v2/searchable-datastore.test.ts',
+  'src/__tests__/schema-searchable.test.ts'
 ];
 
 export function loadConfigBase() {
