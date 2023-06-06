@@ -42,9 +42,6 @@ const RUN_SOLO = [
   'src/__tests__/schema-connection.test.ts',
   'src/__tests__/transformer-migrations/searchable-migration.test.ts',
 ];
-const EXCLUDE_E2E_TESTS = [
-  'src/__tests__/transformer-migrations/searchable-migration.test.ts',
-]
 
 export function loadConfigBase() {
   return yaml.load(fs.readFileSync(CODEBUILD_CONFIG_BASE_PATH, 'utf8'));
@@ -109,7 +106,7 @@ const splitTests = (
   baseJobLinux: any,
   testDirectory: string,
   isMigration: boolean,
-  pickTests: ((testSuites: string[]) => string[]) | undefined,
+  pickTests?: ((testSuites: string[]) => string[]),
 ) => {
   const output: any[] = [];
   let testSuites = getTestFiles(testDirectory);
@@ -213,10 +210,7 @@ function main(): void {
       'depend-on': ['publish_to_local_registry'],
     },
     join(REPO_ROOT, 'packages', 'amplify-e2e-tests'),
-    false,
-    (tests: string[]) => {
-      return tests.filter((testName) => !EXCLUDE_E2E_TESTS.includes(testName))
-    }
+    false
   );
   const splitMigrationV5Tests = splitTests(
     {
