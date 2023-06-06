@@ -1350,7 +1350,7 @@ it('sync query resolver renders with deltaSyncTableTTL override', () => {
             }
           }
         }
-      } as AmplifyApiGraphQlResourceStackTemplate),
+      } as unknown as AmplifyApiGraphQlResourceStackTemplate),
     }
   });
 
