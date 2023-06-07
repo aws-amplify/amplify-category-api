@@ -1,5 +1,5 @@
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { constructTransformerChain } from '../../amplify-graphql-transform/graphql-transformer-v2';
+import { constructTransformerChain } from '../graphql-transformer';
 
 describe('constructTransformerChain', () => {
   it('returns 14 transformers when no custom transformers are provided', () => {

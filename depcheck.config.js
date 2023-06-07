@@ -22,6 +22,7 @@ const GQL_V2_TRANSFORMER_PACKAGES = [
   'amplify-graphql-transformer-interfaces',
   'graphql-transformer-common',
   'graphql-mapping-template',
+  'amplify-graphql-transformer',
 ];
 
 const TRANSFORMER_RESTRICTED_IMPORTS = [

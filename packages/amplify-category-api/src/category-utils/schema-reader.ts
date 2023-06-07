@@ -15,7 +15,7 @@ import {
 } from '../graphql-transformer/constants';
 import { generateTransformerOptions } from '../graphql-transformer/transformer-options-v2';
 import { contextUtil } from './context-util';
-import { constructTransform } from '../amplify-graphql-transform';
+import { constructTransform } from '@aws-amplify/graphql-transformer';
 
 /**
  * SchemaReader is a utility point to consolidate and abstract GraphQL Schema reading
