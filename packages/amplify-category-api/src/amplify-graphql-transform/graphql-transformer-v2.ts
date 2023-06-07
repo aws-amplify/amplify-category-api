@@ -14,10 +14,21 @@ import {
 } from '@aws-amplify/graphql-relational-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import {
-  AppSyncAuthConfiguration, FeatureFlagProvider, Template, TransformerPluginProvider,
+  AppSyncAuthConfiguration,
+  DeploymentResources,
+  FeatureFlagProvider,
+  Template,
+  TransformerPluginProvider,
+  TransformerLog,
+  TransformerLogLevel,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
-  GraphQLTransform, OverrideConfig, ResolverConfig, UserDefinedSlot,
+  DatasourceType,
+  GraphQLTransform,
+  OverrideConfig,
+  RDSConnectionSecrets,
+  ResolverConfig,
+  UserDefinedSlot,
 } from '@aws-amplify/graphql-transformer-core';
 
 export type TransformerSearchConfig = {
@@ -84,6 +95,11 @@ export const constructTransformerChain = (
   ];
 };
 
+/**
+ * Given a set of input config, construct a GraphQL transform to be executed.
+ * @param config the config to provide for transformation.
+ * @returns the GraphQLTransform object, which can be used for transformation or preprocessing a given schema.
+ */
 export const constructTransform = (config: TransformConfig): GraphQLTransform => {
   const {
     transformersFactoryArgs,
@@ -114,4 +130,60 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
     legacyApiKeyEnabled,
     disableResolverDeduping,
   });
+};
+
+export type ExecuteTransformConfig = TransformConfig & {
+  schema: string;
+  modelToDatasourceMap?: Map<string, DatasourceType>;
+  datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
+  printTransformerLog?: (log: TransformerLog) => void;
+};
+
+/**
+ * By default, rely on console to print out the transformer logs.
+ * @param log the log to print.
+ */
+const defaultPrintTransformerLog = (log: TransformerLog): void => {
+  switch (log.level) {
+    case TransformerLogLevel.ERROR:
+      console.error(log.message);
+      break;
+    case TransformerLogLevel.WARN:
+      console.warn(log.message);
+      break;
+    case TransformerLogLevel.INFO:
+      console.info(log.message);
+      break;
+    case TransformerLogLevel.DEBUG:
+      console.debug(log.message);
+      break;
+    default:
+      console.error(log.message);
+  }
+};
+
+/**
+ * Construct a GraphQLTransform, and execute using the provided schema and optional datasource configuration.
+ * @param config the configuration for the transform.
+ * @returns the transformed api deployment resources.
+ */
+export const executeTransform = (config: ExecuteTransformConfig): DeploymentResources => {
+  const {
+    schema,
+    modelToDatasourceMap,
+    datasourceSecretParameterLocations,
+    printTransformerLog,
+  } = config;
+
+  const printLog = printTransformerLog ?? defaultPrintTransformerLog;
+  const transform = constructTransform(config);
+
+  try {
+    return transform.transform(schema, {
+      modelToDatasourceMap,
+      datasourceSecretParameterLocations,
+    });
+  } finally {
+    transform.getLogs().forEach(printLog);
+  }
 };

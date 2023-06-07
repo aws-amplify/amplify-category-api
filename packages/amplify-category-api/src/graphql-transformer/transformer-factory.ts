@@ -15,7 +15,6 @@ import {
 } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import {
-  loadProject,
   readTransformerConfiguration,
   TRANSFORM_CONFIG_FILE_NAME,
   ITransformer,
@@ -24,35 +23,8 @@ import {
 import importFrom from 'import-from';
 import importGlobal from 'import-global';
 import path from 'path';
-import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 const PROVIDER_NAME = 'awscloudformation';
-
-/**
- * Scan the project config for custom transformers, then attempt to load them from the various node paths which Amplify supports.
- * @param resourceDir the directory to search for transformer configuration.
- * @returns a list of custom plugins.
- */
-export const loadCustomTransformersV2 = async (resourceDir: string): Promise<TransformerPluginProvider[]> => {
-  const customTransformersConfig = await loadProject(resourceDir);
-  const customTransformerList = customTransformersConfig?.config?.transformers;
-  return (Array.isArray(customTransformerList) ? customTransformerList : [])
-    .map(importTransformerModule)
-    .map((imported) => {
-      const CustomTransformer = imported.default;
-
-      if (typeof CustomTransformer === 'function') {
-        return new CustomTransformer();
-      } if (typeof CustomTransformer === 'object') {
-        // Todo: Use a shim to ensure that it adheres to TransformerProvider interface. For now throw error
-        // return CustomTransformer;
-        throw new Error("Custom Transformers' should implement TransformerProvider interface");
-      }
-
-      throw new Error("Custom Transformers' default export must be a function or an object");
-    })
-    .filter((customTransformer) => customTransformer);
-};
 
 export const getTransformerFactoryV1 = (
   context: $TSContext,
@@ -114,7 +86,7 @@ export const getTransformerFactoryV1 = (
  * - modulePath is a package name, then it will be loaded from the project's root's node_modules with createRequireFromPath.
  * - modulePath is a name of a globally installed package
  */
-const importTransformerModule = (transformerName: string): any => {
+export const importTransformerModule = (transformerName: string): any => {
   const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformerName);
   const modulePath = fileUrlMatch ? fileUrlMatch[1] : transformerName;
 
