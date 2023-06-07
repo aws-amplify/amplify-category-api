@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import {
   RDSClient,
   DescribeDBClustersCommand,
@@ -7,13 +8,13 @@ import {
   DescribeDBInstancesCommandOutput,
   DescribeDBInstancesCommandInput,
   DescribeDBSubnetGroupsCommand,
-} from "@aws-sdk/client-rds";
-import { 
-  IAMClient, 
-  CreateRoleCommand, 
-  GetRoleCommand, 
-  GetRoleCommandOutput, 
-  CreateRoleCommandOutput, 
+} from '@aws-sdk/client-rds';
+import {
+  IAMClient,
+  CreateRoleCommand,
+  GetRoleCommand,
+  GetRoleCommandOutput,
+  CreateRoleCommandOutput,
   Role,
   CreatePolicyCommand,
   Policy,
@@ -21,28 +22,31 @@ import {
   AttachRolePolicyCommand,
   waitUntilPolicyExists,
   waitUntilRoleExists,
-} from "@aws-sdk/client-iam";
-import { 
-  LambdaClient, 
-  CreateFunctionCommand, 
-  CreateFunctionCommandInput, 
-  InvokeCommand, 
-  LogType, 
-  UpdateFunctionCodeCommand, 
-  UpdateFunctionCodeCommandInput, 
+} from '@aws-sdk/client-iam';
+import {
+  LambdaClient,
+  CreateFunctionCommand,
+  CreateFunctionCommandInput,
+  InvokeCommand,
+  LogType,
+  UpdateFunctionCodeCommand,
+  UpdateFunctionCodeCommandInput,
   GetFunctionCommand,
   GetFunctionCommandOutput,
   waitUntilFunctionActive,
   FunctionConfiguration,
   DeleteFunctionCommand,
-} from "@aws-sdk/client-lambda"; 
+} from '@aws-sdk/client-lambda';
 import * as fs from 'fs-extra';
 import ora from 'ora';
-import { printer } from "@aws-amplify/amplify-prompts";
+import { printer } from '@aws-amplify/amplify-prompts';
 
-const DB_ENGINES = ["aurora-mysql", "mysql"];
+const DB_ENGINES = ['aurora-mysql', 'mysql'];
 const spinner = ora('');
 
+/**
+ * Type for VPC configuration required to deploy a lambda function.
+ */
 export type VpcConfig = {
   vpcId: string;
   subnetIds: string[];
@@ -54,9 +58,9 @@ const checkHostInDBInstances = async (hostname: string, region: string): Promise
   const params: DescribeDBInstancesCommandInput = {
     Filters: [
       {
-        Name: "engine",
+        Name: 'engine',
         Values: DB_ENGINES,
-      }
+      },
     ],
   };
 
@@ -64,7 +68,7 @@ const checkHostInDBInstances = async (hostname: string, region: string): Promise
   const response: DescribeDBInstancesCommandOutput = await client.send(command);
 
   if (!response.DBInstances) {
-    throw new Error("Error in fetching DB Instances");
+    throw new Error('Error in fetching DB Instances');
   }
 
   const instance = response.DBInstances.find((dbInstance) => dbInstance?.Endpoint?.Address == hostname);
@@ -84,9 +88,9 @@ const checkHostInDBClusters = async (hostname: string, region: string): Promise<
   const params: DescribeDBClustersCommandInput = {
     Filters: [
       {
-        Name: "engine",
+        Name: 'engine',
         Values: DB_ENGINES,
-      }
+      },
     ],
   };
 
@@ -94,7 +98,7 @@ const checkHostInDBClusters = async (hostname: string, region: string): Promise<
   const response: DescribeDBClustersCommandOutput = await client.send(command);
 
   if (!response.DBClusters) {
-    throw new Error("Error in fetching DB Clusters");
+    throw new Error('Error in fetching DB Clusters');
   }
 
   const cluster = response.DBClusters.find((dbCluster) => dbCluster?.Endpoint == hostname);
@@ -113,32 +117,40 @@ const checkHostInDBClusters = async (hostname: string, region: string): Promise<
 const getSubnetIds = async (subnetGroupName: string, region: string): Promise<string[]> => {
   const client = new RDSClient({ region });
   const command = new DescribeDBSubnetGroupsCommand({
-    DBSubnetGroupName: subnetGroupName, 
+    DBSubnetGroupName: subnetGroupName,
   });
   const response = await client.send(command);
   const subnetGroup = response.DBSubnetGroups?.find((subnetGroup) => subnetGroup?.DBSubnetGroupName == subnetGroupName);
   return subnetGroup.Subnets?.map((subnet) => subnet.SubnetIdentifier) ?? [];
 };
 
-export const getHostVpc = async (hostname: string, region: string): Promise<VpcConfig | undefined> => {
-  return (await checkHostInDBInstances(hostname, region)) ?? (await checkHostInDBClusters(hostname, region));
-};
+/**
+ * Searches for the host in DB Instances and DB Clusters and returns the VPC configuration if found.
+ * @param hostname Hostname of the database.
+ * @param region AWS region.
+ */
+export const getHostVpc = async (hostname: string, region: string): Promise<VpcConfig | undefined> => (checkHostInDBInstances(hostname, region) ?? checkHostInDBClusters(hostname, region));
 
+/**
+ * Provisions a lambda function to introspect the database schema.
+ * @param lambdaName Name of the lambda function.
+ * @param vpc VPC configuration.
+ * @param region AWS region.
+ */
 export const provisionSchemaInspectorLambda = async (lambdaName: string, vpc: VpcConfig, region: string): Promise<void> => {
   const roleName = `${lambdaName}-execution-role`;
   let createLambda = true;
   const iamRole = await createRoleIfNotExists(roleName);
   const existingLambda = await getSchemaInspectorLambda(lambdaName, region);
-  spinner.start(`Provisioning a function to introspect the database schema...`);
+  spinner.start('Provisioning a function to introspect the database schema...');
   try {
     if (existingLambda) {
-      const vpcConfigMismatch = existingLambda.VpcConfig?.SecurityGroupIds?.sort().join() != vpc.securityGroupIds.sort().join() ||
-        existingLambda.VpcConfig?.SubnetIds?.sort().join() != vpc.subnetIds.sort().join();
+      const vpcConfigMismatch = existingLambda.VpcConfig?.SecurityGroupIds?.sort().join() !== vpc.securityGroupIds.sort().join()
+        || existingLambda.VpcConfig?.SubnetIds?.sort().join() !== vpc.subnetIds.sort().join();
       if (vpcConfigMismatch) {
         await deleteSchemaInspectorLambdaRole(lambdaName, region);
         createLambda = true;
-      }
-      else {
+      } else {
         await updateSchemaInspectorLambda(lambdaName, region);
         createLambda = false;
       }
@@ -146,13 +158,12 @@ export const provisionSchemaInspectorLambda = async (lambdaName: string, vpc: Vp
     if (createLambda) {
       await createSchemaInspectorLambda(lambdaName, iamRole, vpc, region);
     }
-  }
-  catch (err) {
-    spinner.fail(`Failed to provision a function to introspect the database schema.`);
+  } catch (err) {
+    spinner.fail('Failed to provision a function to introspect the database schema.');
     printer.debug(`Error provisioning a function to introspect the database schema: ${err}`);
     throw err;
   }
-  spinner.succeed(`Successfully provisioned a function to introspect the database schema.`);
+  spinner.succeed('Successfully provisioned a function to introspect the database schema.');
 };
 
 const getSchemaInspectorLambda = async (lambdaName: string, region: string): Promise<FunctionConfiguration | undefined> => {
@@ -164,8 +175,7 @@ const getSchemaInspectorLambda = async (lambdaName: string, region: string): Pro
   try {
     const response: GetFunctionCommandOutput = await lambdaClient.send(new GetFunctionCommand(params));
     return response.Configuration;
-  }
-  catch (err) {
+  } catch (err) {
     return undefined;
   }
 };
@@ -184,16 +194,16 @@ const deleteSchemaInspectorLambdaRole = async (lambdaName: string, region: strin
 
 const createSchemaInspectorLambda = async (lambdaName: string, iamRole: Role, vpc: VpcConfig, region: string): Promise<void> => {
   const lambdaClient = new LambdaClient({ region });
-  
+
   const params: CreateFunctionCommandInput = {
     Code: {
       ZipFile: await fs.readFile(`${__dirname}/../rds-schema-inspector.zip`),
     },
-    PackageType: "Zip",
+    PackageType: 'Zip',
     FunctionName: lambdaName,
-    Handler: "index.handler",
+    Handler: 'index.handler',
     Role: iamRole.Arn,
-    Runtime: "nodejs18.x",
+    Runtime: 'nodejs18.x',
     VpcConfig: {
       SecurityGroupIds: vpc.securityGroupIds,
       SubnetIds: vpc.subnetIds,
@@ -207,7 +217,7 @@ const createSchemaInspectorLambda = async (lambdaName: string, iamRole: Role, vp
 
 const updateSchemaInspectorLambda = async (lambdaName: string, region: string): Promise<void> => {
   const lambdaClient = new LambdaClient({ region });
-  
+
   const params: UpdateFunctionCodeCommandInput = {
     FunctionName: lambdaName,
     ZipFile: await fs.readFile(`${__dirname}/../rds-schema-inspector.zip`),
@@ -219,7 +229,7 @@ const updateSchemaInspectorLambda = async (lambdaName: string, region: string): 
 const createRoleIfNotExists = async (roleName): Promise<Role> => {
   let role = await getRole(roleName);
   // Wait for role created with SDK to propagate.
-  // Otherwise it will throw error "The role defined for the function cannot be assumed by Lambda" while creating the lambda. 
+  // Otherwise it will throw error "The role defined for the function cannot be assumed by Lambda" while creating the lambda.
   const ROLE_PROPAGATION_DELAY = 10000;
   if (!role) {
     role = await createRole(roleName);
@@ -228,22 +238,26 @@ const createRoleIfNotExists = async (roleName): Promise<Role> => {
   return role;
 };
 
-export const sleep = async (milliseconds: number): Promise<void> => new Promise(resolve => setTimeout(resolve, milliseconds));
+/**
+ * Sleeps for the specified time.
+ * @param milliseconds Time in milliseconds.
+ */
+export const sleep = async (milliseconds: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 const createPolicy = async (policyName: string): Promise<Policy | undefined> => {
   const client = new IAMClient({});
   const command = new CreatePolicyCommand({
     PolicyName: policyName,
     PolicyDocument: JSON.stringify({
-      Version: "2012-10-17",
+      Version: '2012-10-17',
       Statement: [
         {
-          Effect: "Allow",
-          Resource: "*",
+          Effect: 'Allow',
+          Resource: '*',
           Action: [
-            "ec2:CreateNetworkInterface",
-            "ec2:DescribeNetworkInterfaces",
-            "ec2:DeleteNetworkInterface",
+            'ec2:CreateNetworkInterface',
+            'ec2:DescribeNetworkInterfaces',
+            'ec2:DeleteNetworkInterface',
           ],
         },
       ],
@@ -259,14 +273,14 @@ const createRole = async (roleName): Promise<Role | undefined> => {
   const policy = await createPolicy(`${roleName}-policy`);
   const command = new CreateRoleCommand({
     AssumeRolePolicyDocument: JSON.stringify({
-      Version: "2012-10-17",
+      Version: '2012-10-17',
       Statement: [
         {
-          Effect: "Allow",
+          Effect: 'Allow',
           Principal: {
-            Service: "lambda.amazonaws.com",
+            Service: 'lambda.amazonaws.com',
           },
-          Action: "sts:AssumeRole",
+          Action: 'sts:AssumeRole',
         },
       ],
     }),
@@ -292,23 +306,30 @@ const getRole = async (roleName): Promise<Role | undefined> => {
   try {
     const response: GetRoleCommandOutput = await client.send(command);
     return response.Role;
-  }
-  catch (err) {
-    if (err.name == "NoSuchEntityException") {
+  } catch (err) {
+    if (err.name == 'NoSuchEntityException') {
       return undefined;
     }
     throw err;
   }
 };
 
+/**
+ * Invokes the schema inspector lambda function.
+ * @param funcName Name of the lambda function.
+ * @param dbConfig Database configuration.
+ * @param query Query to be executed.
+ * @param region AWS region.
+ */
 export const invokeSchemaInspectorLambda = async (funcName, dbConfig, query, region) => {
   const client = new LambdaClient({ region });
+  const encoder = new TextEncoder();
   const command = new InvokeCommand({
     FunctionName: funcName,
-    Payload: JSON.stringify({
+    Payload: encoder.encode(JSON.stringify({
       config: dbConfig,
-      query: query,
-    }) as unknown as Uint8Array,
+      query,
+    })),
     LogType: LogType.Tail,
   });
 

@@ -4,7 +4,7 @@ import { MySQLDataSourceAdapter, generateGraphQLSchema, Schema, Engine, DataSour
 import * as os from 'os';
 import { constructRDSGlobalAmplifyInput } from './rds-input-utils';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
-import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
 import { getVpcMetadataLambdaName } from './rds-resources/database-resources';
 
 export const writeSchemaFile = (pathToSchemaFile: string, schemaString: string) => {
@@ -33,18 +33,19 @@ export const generateRDSSchema = async (
 
   try {
     await adapter.initialize();
-  } catch(error) {
+  } catch (error) {
     // If connection is unsuccessful, try connecting from VPC
     if (error.code === 'ETIMEDOUT') {
       const canConnectFromVpc = await retryWithVpcLambda(context, databaseConfig, adapter);
       if (!canConnectFromVpc) {
-        throw new Error(UNABLE_TO_CONNECT_MESSAGE);
+        throw new AmplifyError('UserInputError', {
+          message: UNABLE_TO_CONNECT_MESSAGE,
+        });
       }
-    }
-    else {
+    } else {
       throw error;
     }
-  };
+  }
 
   const models = await adapter.getModels();
   adapter.cleanup();

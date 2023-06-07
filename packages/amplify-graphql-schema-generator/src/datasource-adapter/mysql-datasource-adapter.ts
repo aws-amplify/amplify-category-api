@@ -51,8 +51,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
       await this.establishDBConnection();
       await this.loadAllFields();
       await this.loadAllIndexes();
-    }
-    catch(error) {
+    } catch (error) {
       spinner.fail('Failed to fetch the database schema.');
       throw error;
     }
@@ -91,21 +90,16 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
   }
 
   public async getTablesList(): Promise<string[]> {
-    const SHOW_TABLES_QUERY = `SHOW TABLES`;
-    let result;
-    if (this.useVPC && this.vpcSchemaInspectorLambda) {
-      result = await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, SHOW_TABLES_QUERY, this.vpcLambdaRegion);
-    }
-    else {
-      result = (await this.dbBuilder.raw(SHOW_TABLES_QUERY))[0];
-    }
+    const SHOW_TABLES_QUERY = 'SHOW TABLES';
+    const result = this.useVPC && this.vpcSchemaInspectorLambda
+      ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, SHOW_TABLES_QUERY, this.vpcLambdaRegion)
+      : (await this.dbBuilder.raw(SHOW_TABLES_QUERY))[0];
 
     const tables: string[] = result.map((row: any) => {
       const [firstKey] = Object.keys(row);
       const tableName = row[firstKey];
       return tableName;
     });
-
     return tables;
   }
 
@@ -137,58 +131,45 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     // Query INFORMATION_SCHEMA.COLUMNS table and load fields of all the tables from the database
     const LOAD_FIELDS_QUERY = `SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '${this.config.database}'`;
     this.fields = [];
-    let columnResult;
-    if (this.useVPC && this.vpcSchemaInspectorLambda) {
-      columnResult = await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, LOAD_FIELDS_QUERY, this.vpcLambdaRegion);
-    }
-    else {
-      columnResult = (await this.dbBuilder.raw(LOAD_FIELDS_QUERY))[0];
-    }
+    const columnResult = this.useVPC && this.vpcSchemaInspectorLambda
+      ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, LOAD_FIELDS_QUERY, this.vpcLambdaRegion)
+      : (await this.dbBuilder.raw(LOAD_FIELDS_QUERY))[0];
     this.setFields(columnResult);
   }
 
   private setFields(fields: any): void {
-    this.fields = fields.map((item: any) => {
-      return {
-        tableName: item["TABLE_NAME"],
-        columnName: item["COLUMN_NAME"],
-        default: item["COLUMN_DEFAULT"],
-        sequence: item["ORDINAL_POSITION"],
-        datatype: item["DATA_TYPE"],
-        columnType: item["COLUMN_TYPE"],
-        nullable: item["IS_NULLABLE"] === 'YES',
-        length: item["CHARACTER_MAXIMUM_LENGTH"],
-      };
-    });
+    this.fields = fields.map((item: any) => ({
+      tableName: item.TABLE_NAME,
+      columnName: item.COLUMN_NAME,
+      default: item.COLUMN_DEFAULT,
+      sequence: item.ORDINAL_POSITION,
+      datatype: item.DATA_TYPE,
+      columnType: item.COLUMN_TYPE,
+      nullable: item.IS_NULLABLE === 'YES',
+      length: item.CHARACTER_MAXIMUM_LENGTH,
+    }));
   }
 
   private async loadAllIndexes(): Promise<void> {
     // Query INFORMATION_SCHEMA.STATISTICS table and load indexes of all the tables from the database
     const LOAD_INDEXES_QUERY = `SELECT * FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = '${this.config.database}'`;
     this.indexes = [];
-    let indexResult;
-    if (this.useVPC && this.vpcSchemaInspectorLambda) {
-      indexResult = await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, LOAD_INDEXES_QUERY, this.vpcLambdaRegion);
-    }
-    else {
-      indexResult = (await this.dbBuilder.raw(LOAD_INDEXES_QUERY))[0];
-    }
-    
+    const indexResult = this.useVPC && this.vpcSchemaInspectorLambda
+      ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, LOAD_INDEXES_QUERY, this.vpcLambdaRegion)
+      : (await this.dbBuilder.raw(LOAD_INDEXES_QUERY))[0];
     this.setIndexes(indexResult);
   }
 
   private setIndexes(indexes: any): void {
-    this.indexes = indexes.map((item: any) => {
-      return {
-        tableName: item["TABLE_NAME"],
-        indexName: item["INDEX_NAME"],
-        nonUnique: item["NON_UNIQUE"],
-        columnName: item["COLUMN_NAME"],
-        sequence: item["SEQ_IN_INDEX"],
-        nullable: item["NULLABLE"] === 'YES' ? true : false,
-      };
-    });
-  } 
+    this.indexes = indexes.map((item: any) => ({
+      tableName: item.TABLE_NAME,
+      indexName: item.INDEX_NAME,
+      nonUnique: item.NON_UNIQUE,
+      columnName: item.COLUMN_NAME,
+      sequence: item.SEQ_IN_INDEX,
+      nullable: item.NULLABLE === 'YES',
+    }));
+  }
 
   public async getPrimaryKey(tableName: string): Promise<Index | null> {
     const key = this.indexes

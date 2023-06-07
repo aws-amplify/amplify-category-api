@@ -109,7 +109,7 @@ export const deleteConnectionSecrets = async (context: $TSContext, secretsKey: s
     return;
   }
   const ssmClient = await SSMClient.getInstance(context);
-  const secretParameterPaths = secretNames.map( secret => {
+  const secretParameterPaths = secretNames.map(secret => {
     return getParameterStoreSecretPath(secret, secretsKey, apiName, environmentName, AmplifyAppId);
   });
   await ssmClient.deleteSecrets(secretParameterPaths);
@@ -120,7 +120,7 @@ export const testDatabaseConnection = async (config: RDSConnectionSecrets) => {
   // Establish the connection
   let adapter: DataSourceAdapter;
   let schema: Schema;
-  switch(config.engine) {
+  switch (config.engine) {
     case ImportedRDSType.MYSQL:
       adapter = new MySQLDataSourceAdapter(config as MySQLDataSourceConfig);
       schema = new Schema(new Engine('MySQL'));
@@ -131,10 +131,10 @@ export const testDatabaseConnection = async (config: RDSConnectionSecrets) => {
 
   try {
     await adapter.initialize();
-  } catch(error) {
+  } catch (error) {
     printer.error('Failed to connect to the specified RDS Data Source. Check the connection details and retry.');
     adapter.cleanup();
-    throw(error);
+    throw error;
   }
   adapter.cleanup();
 };
@@ -160,8 +160,14 @@ export const getDatabaseName = async (context: $TSContext, apiName: string, secr
   return secrets[0].secretValue;
 };
 
-export const removeVpcSchemaInspectorLambda = async (context) => {
-  
+export const deleteSchemaInspectorLambdaRole = async (lambdaName: string): Promise<void> => {
+  const roleName = `${lambdaName}-execution-role`;
+  const client = new IAMClient({});
+  const command = new DeleteRoleCommand({ RoleName: roleName });
+  await client.send(command);
+};
+
+export const removeVpcSchemaInspectorLambda = async (context: $TSContext): Promise<void> => {
   try {
     // Delete the lambda function
     const meta = stateManager.getMeta();
@@ -176,17 +182,9 @@ export const removeVpcSchemaInspectorLambda = async (context) => {
 
     // Delete the role and policy
     await deleteSchemaInspectorLambdaRole(lambdaName);
-  }
-  catch (error) {
+  } catch (error) {
     printer.debug(`Error deleting the schema inspector lambda: ${error}`);
     // 1. Ignore if the AppId is not found error.
     // 2. Schema introspection will exist only on databases imported from VPC. Ignore the error on environment deletion.
   }
-};
-
-export const deleteSchemaInspectorLambdaRole = async (lambdaName: string) => {
-  const roleName = `${lambdaName}-execution-role`;
-  const client = new IAMClient({});
-  const command = new DeleteRoleCommand({ RoleName: roleName });
-  await client.send(command);
 };

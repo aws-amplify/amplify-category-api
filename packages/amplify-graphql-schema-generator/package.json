@@ -19,7 +19,7 @@
     "generator"
   ],
   "scripts": {
-    "build": "tsc && cd vpc-db-lambda && npm i && bestzip --force node ../lib/rds-schema-inspector.zip .",
+    "build": "tsc && cd vpc-db-lambda && rm -rf node_modules && npm install && tsc && cp -r node_modules lib && cd lib && bestzip --force node ../../lib/rds-schema-inspector.zip ./*",
     "watch": "tsc -w",
     "clean": "rimraf ./lib",
     "test": "jest"
