@@ -9,7 +9,7 @@ import {
   pathManager,
   stateManager,
 } from '@aws-amplify/amplify-cli-core';
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { collectDirectivesByTypeNames, OverrideConfig, StackManager } from '@aws-amplify/graphql-transformer-core';
 import { getSanityCheckRules, loadProject } from 'graphql-transformer-core';
 import path from 'path';
@@ -19,7 +19,7 @@ import _ from 'lodash';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { getAdminRoles, getIdentityPoolId } from './utils';
 import { schemaHasSandboxModeEnabled, showGlobalSandboxModeWarning, showSandboxModePrompts } from './sandbox-mode-helpers';
-import { loadCustomTransformersV2 } from './transformer-factory';
+import { importTransformerModule } from './transformer-factory';
 import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import {
   DESTRUCTIVE_UPDATES_FLAG, PARAMETERS_FILENAME, PROVIDER_NAME, ROOT_APPSYNC_S3_KEY,
@@ -270,6 +270,32 @@ export const generateTransformerOptions = async (
   };
 
   return buildConfig;
+};
+
+/**
+ * Scan the project config for custom transformers, then attempt to load them from the various node paths which Amplify supports.
+ * @param resourceDir the directory to search for transformer configuration.
+ * @returns a list of custom plugins.
+ */
+export const loadCustomTransformersV2 = async (resourceDir: string): Promise<TransformerPluginProvider[]> => {
+  const customTransformersConfig = await loadProject(resourceDir);
+  const customTransformerList = customTransformersConfig?.config?.transformers;
+  return (Array.isArray(customTransformerList) ? customTransformerList : [])
+    .map(importTransformerModule)
+    .map((imported) => {
+      const CustomTransformer = imported.default;
+
+      if (typeof CustomTransformer === 'function') {
+        return new CustomTransformer();
+      } if (typeof CustomTransformer === 'object') {
+        // Todo: Use a shim to ensure that it adheres to TransformerProvider interface. For now throw error
+        // return CustomTransformer;
+        throw new Error("Custom Transformers' should implement TransformerProvider interface");
+      }
+
+      throw new Error("Custom Transformers' default export must be a function or an object");
+    })
+    .filter((customTransformer) => customTransformer);
 };
 
 const getBucketName = (s3ResourceName: string): { bucketName: string } => {
