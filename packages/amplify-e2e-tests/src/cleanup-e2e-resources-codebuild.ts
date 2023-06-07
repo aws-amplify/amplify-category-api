@@ -597,18 +597,13 @@ const getFilterPredicate = (args: any): JobFilterPredicate => {
  * to get all accounts within the root account organization.
  */
 const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
-  const testAccountCred = {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    sessionToken: process.env.AWS_SESSION_TOKEN,
-  }
+  // This script runs using the codebuild project role to begin with
   const stsClient = new aws.STS({
-    apiVersion: '2011-06-15',
-    credentials: isCI() ? undefined : testAccountCred
+    apiVersion: '2011-06-15'
   });
   const assumeRoleResForE2EParent = await stsClient
   .assumeRole({
-    RoleArn: process.env.testAccountRole,
+    RoleArn: process.env.TEST_ACCOUNT_ROLE,
     RoleSessionName: `testSession${Math.floor(Math.random() * 100000)}`,
     // One hour
     DurationSeconds: 1 * 60 * 60,
@@ -662,9 +657,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
     return [
       {
         accountId: parentAccountIdentity.Account,
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        sessionToken: process.env.AWS_SESSION_TOKEN,
+        ...e2eParentAccountCred
       },
     ];
   }
