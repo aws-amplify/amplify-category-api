@@ -1,10 +1,15 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["src/**/*"],
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "lib",
     "composite": true,
     "strict": false,
+    "allowJs": false,
   },
+  "exclude": [
+    "vpc-db-lambda",
+    "lib",
+    "src/__tests__",
+  ]
 }
