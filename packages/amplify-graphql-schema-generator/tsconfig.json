@@ -4,7 +4,6 @@
     "rootDir": "./src",
     "outDir": "lib",
     "strict": false,
-    "module": "ES6",
   },
   "exclude": [
     "vpc-db-lambda",
