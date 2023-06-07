@@ -11,6 +11,7 @@
   "license": "Apache-2.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "type": "module",
   "keywords": [
     "graphql",
     "schema",
