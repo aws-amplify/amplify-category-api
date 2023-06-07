@@ -3,9 +3,10 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "lib",
-    "composite": true,
+    "composite": false,
     "strict": false,
     "allowJs": false,
+    "target": "es6",
   },
   "exclude": [
     "vpc-db-lambda",
