@@ -4,7 +4,7 @@
 import {
   AppSyncAuthConfiguration,
   TransformerPluginProvider,
-  Template
+  Template,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   OverrideConfig,
@@ -19,14 +19,13 @@ import {
 /**
  * Transformer Options used to create a GraphQL Transform and compile a GQL API
  */
-export type TransformerProjectOptions<T> = {
+export type TransformerProjectOptions = {
   buildParameters: {
     S3DeploymentBucket: string;
     S3DeploymentRootKey: string;
   };
   projectDirectory: string;
-  transformersFactory: (options: T) => Promise<TransformerPluginProvider[]>;
-  transformersFactoryArgs: T;
+  transformersFactoryArgs: TransformerFactoryArgs;
   rootStackFileName: 'cloudformation-template.json';
   currentCloudBackendDirectory?: string;
   lastDeployedProjectConfig?: TransformerProjectConfig;
@@ -54,9 +53,10 @@ export type TransformerSearchConfig = {
  * Used to determine how to create a new GraphQLTransform
  */
 export type TransformerFactoryArgs = {
-  authConfig: any;
+  authConfig?: any;
   storageConfig?: any;
   adminRoles?: Array<string>;
   identityPoolId?: string;
   searchConfig?: TransformerSearchConfig;
+  customTransformers: TransformerPluginProvider[];
 };

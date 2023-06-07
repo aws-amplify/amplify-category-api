@@ -14,25 +14,30 @@ import {
 } from '@aws-amplify/graphql-relational-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { TransformerFactoryArgs } from '../graphql-transformer/transformer-options-types';
+import { GraphQLTransform, StackManager } from '@aws-amplify/graphql-transformer-core';
+import { TransformerFactoryArgs, TransformerProjectOptions } from '../graphql-transformer/transformer-options-types';
+import { AmplifyCLIFeatureFlagAdapter } from '../graphql-transformer/amplify-cli-feature-flag-adapter';
+import { applyFileBasedOverride } from '../graphql-transformer/override';
+import { parseUserDefinedSlotsFromProject } from '../graphql-transformer/user-defined-slots';
 
 export const constructTransformerChain = (
-  customTransformers: TransformerPluginProvider[],
-  options?: TransformerFactoryArgs,
+  options: TransformerFactoryArgs,
 ): TransformerPluginProvider[] => {
   const modelTransformer = new ModelTransformer();
   const authTransformer = new AuthTransformer({
-    adminRoles: options?.adminRoles ?? [],
-    identityPoolId: options?.identityPoolId,
+    adminRoles: options.adminRoles ?? [],
+    identityPoolId: options.identityPoolId,
   });
   const indexTransformer = new IndexTransformer();
   const hasOneTransformer = new HasOneTransformer();
+
+  const customTransformers = options.customTransformers ?? [];
 
   return [
     modelTransformer,
     new FunctionTransformer(),
     new HttpTransformer(),
-    new PredictionsTransformer(options?.storageConfig),
+    new PredictionsTransformer(options.storageConfig),
     new PrimaryKeyTransformer(),
     indexTransformer,
     new HasManyTransformer(),
@@ -42,7 +47,24 @@ export const constructTransformerChain = (
     new DefaultValueTransformer(),
     authTransformer,
     new MapsToTransformer(),
-    new SearchableModelTransformer({ enableNodeToNodeEncryption: options?.searchConfig?.enableNodeToNodeEncryption }),
+    new SearchableModelTransformer({ enableNodeToNodeEncryption: options.searchConfig?.enableNodeToNodeEncryption }),
     ...customTransformers,
   ];
 };
+
+export const constructTransform = (opts: TransformerProjectOptions): GraphQLTransform => new GraphQLTransform({
+  transformers: constructTransformerChain(opts.transformersFactoryArgs),
+  stackMapping: opts.projectConfig.config.StackMapping,
+  transformConfig: opts.projectConfig.config,
+  authConfig: opts.authConfig,
+  buildParameters: opts.buildParameters,
+  stacks: opts.projectConfig.stacks || {},
+  featureFlags: new AmplifyCLIFeatureFlagAdapter(),
+  sandboxModeEnabled: opts.sandboxModeEnabled,
+  userDefinedSlots: parseUserDefinedSlotsFromProject(opts.projectConfig),
+  resolverConfig: opts.resolverConfig,
+  overrideConfig: {
+    applyOverride: (stackManager: StackManager) => applyFileBasedOverride(stackManager),
+    ...opts.overrideConfig,
+  },
+});
