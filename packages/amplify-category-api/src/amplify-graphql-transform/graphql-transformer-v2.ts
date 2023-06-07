@@ -55,12 +55,12 @@ export type TransformConfig = {
 };
 
 export const constructTransformerChain = (
-  options: TransformerFactoryArgs,
+  options?: TransformerFactoryArgs,
 ): TransformerPluginProvider[] => {
   const modelTransformer = new ModelTransformer();
   const authTransformer = new AuthTransformer({
-    adminRoles: options.adminRoles ?? [],
-    identityPoolId: options.identityPoolId,
+    adminRoles: options?.adminRoles ?? [],
+    identityPoolId: options?.identityPoolId,
   });
   const indexTransformer = new IndexTransformer();
   const hasOneTransformer = new HasOneTransformer();
@@ -69,7 +69,7 @@ export const constructTransformerChain = (
     modelTransformer,
     new FunctionTransformer(),
     new HttpTransformer(),
-    new PredictionsTransformer(options.storageConfig),
+    new PredictionsTransformer(options?.storageConfig),
     new PrimaryKeyTransformer(),
     indexTransformer,
     new HasManyTransformer(),
@@ -79,8 +79,8 @@ export const constructTransformerChain = (
     new DefaultValueTransformer(),
     authTransformer,
     new MapsToTransformer(),
-    new SearchableModelTransformer({ enableNodeToNodeEncryption: options.searchConfig?.enableNodeToNodeEncryption }),
-    ...(options.customTransformers ?? []),
+    new SearchableModelTransformer({ enableNodeToNodeEncryption: options?.searchConfig?.enableNodeToNodeEncryption }),
+    ...(options?.customTransformers ?? []),
   ];
 };
 

@@ -63,7 +63,7 @@ describe("transformGraphQLSchemaV2", () => {
         `,
         config: { StackMapping: {} },
       },
-      transformersFactory: constructTransformerChain({ customTransformers: [] }),
+      transformersFactory: constructTransformerChain(),
       transformersFactoryArgs: {},
       dryRun: true,
       projectDirectory: __dirname,

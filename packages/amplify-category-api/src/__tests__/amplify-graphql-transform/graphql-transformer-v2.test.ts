@@ -3,15 +3,14 @@ import { constructTransformerChain } from '../../amplify-graphql-transform/graph
 
 describe('constructTransformerChain', () => {
   it('returns 14 transformers when no custom transformers are provided', () => {
-    expect(constructTransformerChain({ customTransformers: [] }).length).toEqual(14);
+    expect(constructTransformerChain().length).toEqual(14);
   });
 
 
   it('returns 16 transformers when 2 custom transformers are provided', () => {
-    const customTransformers: TransformerPluginProvider[] = [
+    expect(constructTransformerChain({ customTransformers: [
       {} as unknown as TransformerPluginProvider,
       {} as unknown as TransformerPluginProvider,
-    ];
-    expect(constructTransformerChain({ customTransformers }).length).toEqual(16);
+    ] }).length).toEqual(16);
   });
 });
