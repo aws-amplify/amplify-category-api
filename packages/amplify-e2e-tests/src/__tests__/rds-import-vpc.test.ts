@@ -70,6 +70,7 @@ describe("RDS Tests", () => {
     await initJSProjectWithProfile(projRoot, {
       disableAmplifyAppCreation: false,
     });
+    
     const meta = getProjectMeta(projRoot);
     region = meta.providers.awscloudformation.Region;
     await setupDatabase();
