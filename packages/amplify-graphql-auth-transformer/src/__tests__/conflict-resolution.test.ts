@@ -18,7 +18,6 @@ test('single auth model is enabled with conflict resolution', () => {
       },
       additionalAuthenticationProviders: [],
     },
-    transformConfig: {},
     resolverConfig: {
       project: {
         ConflictDetection: 'VERSION',
@@ -54,7 +53,6 @@ test('multi auth model with conflict resolution', () => {
       },
       additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
     },
-    transformConfig: {},
     resolverConfig: {
       project: {
         ConflictDetection: 'VERSION',
@@ -106,7 +104,6 @@ test('multi auth model with field auth with conflict resolution', () => {
       },
       additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
     },
-    transformConfig: {},
     resolverConfig: {
       project: {
         ConflictDetection: 'VERSION',

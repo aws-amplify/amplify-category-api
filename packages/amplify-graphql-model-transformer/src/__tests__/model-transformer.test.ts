@@ -1187,7 +1187,6 @@ describe('ModelTransformer: ', () => {
     }`;
 
     const transformer = new GraphQLTransform({
-      transformConfig: {},
       resolverConfig: {
         project: {
           ConflictDetection: 'VERSION',
@@ -1266,7 +1265,6 @@ describe('ModelTransformer: ', () => {
     `;
 
     const transformer = new GraphQLTransform({
-      transformConfig: {},
       resolverConfig: {
         project: {
           ConflictDetection: "VERSION",
