@@ -7,7 +7,7 @@ export const establishDBConnection = (config: any): any => {
     port: config.port,
     user: config.username,
     password: config.password,
-    ssl: { rejectUnauthorized: false},
+    ssl: { rejectUnauthorized: false },
   };
   try {
     return knex({
