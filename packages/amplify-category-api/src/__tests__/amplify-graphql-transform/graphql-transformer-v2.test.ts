@@ -3,7 +3,7 @@ import { constructTransformerChain } from '../../amplify-graphql-transform/graph
 
 describe('constructTransformerChain', () => {
     it('returns 14 transformers when no custom transformers are provided', () => {
-        expect(constructTransformerChain([]).length).toEqual(14);
+        expect(constructTransformerChain({ authConfig: {}, customTransformers: [] }).length).toEqual(14);
     });
 
 
@@ -12,6 +12,6 @@ describe('constructTransformerChain', () => {
             {} as unknown as TransformerPluginProvider,
             {} as unknown as TransformerPluginProvider,
         ];
-        expect(constructTransformerChain(customTransformers).length).toEqual(16);
+        expect(constructTransformerChain({ authConfig: {}, customTransformers }).length).toEqual(16);
     });
 });

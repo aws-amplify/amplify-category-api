@@ -19,10 +19,10 @@ import _ from 'lodash';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { getAdminRoles, getIdentityPoolId } from './utils';
 import { schemaHasSandboxModeEnabled, showGlobalSandboxModeWarning, showSandboxModePrompts } from './sandbox-mode-helpers';
-import { getTransformerFactoryV2 } from './transformer-factory';
+import { loadCustomTransformersV2 } from './transformer-factory';
 import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import {
-  DESTRUCTIVE_UPDATES_FLAG, PARAMETERS_FILENAME, PROVIDER_NAME, ROOT_APPSYNC_S3_KEY
+  DESTRUCTIVE_UPDATES_FLAG, PARAMETERS_FILENAME, PROVIDER_NAME, ROOT_APPSYNC_S3_KEY,
 } from './constants';
 import { TransformerFactoryArgs, TransformerProjectOptions } from './transformer-options-types';
 import { contextUtil } from '../category-utils/context-util';
@@ -53,7 +53,7 @@ const warnOnAuth = (map: Record<string, any>, docLink: string): void => {
 export const generateTransformerOptions = async (
   context: $TSContext,
   options: any,
-): Promise<TransformerProjectOptions<TransformerFactoryArgs>> => {
+): Promise<TransformerProjectOptions> => {
   let resourceName: string;
   const backEndDir = pathManager.getBackendDirPath();
   const flags = context.parameters.options;
@@ -182,8 +182,6 @@ export const generateTransformerOptions = async (
     || authConfig.additionalAuthenticationProviders.some((authProvider) => authProvider.authenticationType === 'API_KEY');
   const showSandboxModeMessage = sandboxModeEnabled && hasApiKey;
 
-  const transformerListFactory = await getTransformerFactoryV2(resourceDir);
-
   await searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
 
   if (sandboxModeEnabled && options.promptApiKeyCreation) {
@@ -230,20 +228,23 @@ export const generateTransformerOptions = async (
     pathManager.getCurrentCloudBackendDirPath(),
   );
 
-  const buildConfig: TransformerProjectOptions<TransformerFactoryArgs> = {
+  const customTransformers = await loadCustomTransformersV2(resourceDir);
+
+  const transformersFactoryArgs: TransformerFactoryArgs = {
+    storageConfig,
+    // These are the same auth configs
+    authConfig,
+    adminRoles,
+    identityPoolId,
+    searchConfig: { enableNodeToNodeEncryption },
+    customTransformers,
+  };
+
+  return {
     ...options,
     buildParameters,
     projectDirectory: resourceDir,
-    transformersFactory: transformerListFactory,
-    transformersFactoryArgs: {
-      storageConfig,
-      authConfig,
-      adminRoles,
-      identityPoolId,
-      searchConfig: {
-        enableNodeToNodeEncryption,
-      },
-    },
+    transformersFactoryArgs,
     rootStackFileName: 'cloudformation-template.json',
     currentCloudBackendDirectory: previouslyDeployedBackendDir,
     projectConfig: project,
@@ -252,9 +253,7 @@ export const generateTransformerOptions = async (
     sandboxModeEnabled,
     sanityCheckRules,
     resolverConfig,
-  };
-
-  return buildConfig;
+  } as TransformerProjectOptions;
 };
 
 const getBucketName = (s3ResourceName: string): { bucketName: string } => {

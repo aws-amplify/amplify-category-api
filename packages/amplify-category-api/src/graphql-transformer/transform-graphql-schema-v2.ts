@@ -2,7 +2,6 @@ import {
   GraphQLTransform,
   RDSConnectionSecrets,
   MYSQL_DB_TYPE,
-  StackManager,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
@@ -25,17 +24,15 @@ import {
 import _ from 'lodash';
 import path from 'path';
 /* eslint-disable-next-line import/no-cycle */
-import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import { isAuthModeUpdated } from './auth-mode-compare';
-import { parseUserDefinedSlots, parseUserDefinedSlotsFromProject } from './user-defined-slots';
 import {
   mergeUserConfigWithTransformOutput, writeDeploymentToDisk,
 } from './utils';
 import { generateTransformerOptions } from './transformer-options-v2';
-import { TransformerFactoryArgs, TransformerProjectOptions } from './transformer-options-types';
+import { TransformerProjectOptions } from './transformer-options-types';
 import { getExistingConnectionSecretNames, getSecretsKey } from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { applyFileBasedOverride } from './override';
+import { constructTransform } from '../amplify-graphql-transform/graphql-transformer-v2';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
@@ -65,8 +62,8 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
   // cloud formation push will fail even if there is no changes in the GraphQL API
   // https://github.com/aws-amplify/amplify-console/issues/10
   const resourceNeedCompile = allResources
-    .filter(r => !resources.includes(r))
-    .filter(r => {
+    .filter((r) => !resources.includes(r))
+    .filter((r) => {
       const buildDir = path.normalize(path.join(backEndDir, AmplifyCategories.API, r.resourceName, 'build'));
       return !fs.existsSync(buildDir);
     });
@@ -75,7 +72,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
   if (forceCompile) {
     resources = resources.concat(allResources);
   }
-  resources = resources.filter(resource => resource.service === 'AppSync');
+  resources = resources.filter((resource) => resource.service === 'AppSync');
 
   if (!resourceDir) {
     // There can only be one appsync resource
@@ -159,7 +156,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
     fs.ensureDirSync(buildDir);
   }
 
-  const buildConfig: TransformerProjectOptions<TransformerFactoryArgs> = await generateTransformerOptions(context, options);
+  const buildConfig: TransformerProjectOptions = await generateTransformerOptions(context, options);
   if (!buildConfig) {
     return undefined;
   }
@@ -184,7 +181,7 @@ place .graphql files in a directory at ${schemaDirPath}`);
  */
 const buildAPIProject = async (
   context: $TSContext,
-  opts: TransformerProjectOptions<TransformerFactoryArgs>,
+  opts: TransformerProjectOptions,
 ): Promise<DeploymentResources|undefined> => {
   const schema = opts.projectConfig.schema.toString();
   // Skip building the project if the schema is blank
@@ -192,7 +189,7 @@ const buildAPIProject = async (
     return undefined;
   }
 
-  const builtProject = await _buildProject(context, opts);
+  const builtProject = await buildProject(context, opts);
 
   const buildLocation = path.join(opts.projectDirectory, 'build');
   const currentCloudLocation = opts.currentCloudBackendDirectory ? path.join(opts.currentCloudBackendDirectory, 'build') : undefined;
@@ -214,24 +211,8 @@ const buildAPIProject = async (
   return builtProject;
 };
 
-const _buildProject = async (context: $TSContext, opts: TransformerProjectOptions<TransformerFactoryArgs>): Promise<DeploymentResources> => {
-  const transformers = await opts.transformersFactory(opts.transformersFactoryArgs);
-  const transform = new GraphQLTransform({
-    transformers,
-    stackMapping: opts.projectConfig.config.StackMapping,
-    transformConfig: opts.projectConfig.config,
-    authConfig: opts.authConfig,
-    buildParameters: opts.buildParameters,
-    stacks: opts.projectConfig.stacks || {},
-    featureFlags: new AmplifyCLIFeatureFlagAdapter(),
-    sandboxModeEnabled: opts.sandboxModeEnabled,
-    userDefinedSlots: parseUserDefinedSlotsFromProject(opts.projectConfig),
-    resolverConfig: opts.resolverConfig,
-    overrideConfig: {
-      applyOverride: (stackManager: StackManager) => applyFileBasedOverride(stackManager),
-      ...opts.overrideConfig,
-    },
-  });
+const buildProject = async (context: $TSContext, opts: TransformerProjectOptions): Promise<DeploymentResources> => {
+  const transform = constructTransform(opts);
 
   const { schema, modelToDatasourceMap } = opts.projectConfig;
   const datasourceSecretMap = await getDatasourceSecretMap(context);
@@ -258,7 +239,7 @@ const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, 
   return outputMap;
 };
 
-const printTransformLogs = (transform: GraphQLTransform) => {
+const printTransformLogs = (transform: GraphQLTransform): void => {
   transform.getLogs().forEach((log) => {
     switch (log.level) {
       case TransformerLogLevel.ERROR:
@@ -277,4 +258,4 @@ const printTransformLogs = (transform: GraphQLTransform) => {
         printer.error(log.message);
     }
   });
-}
+};
