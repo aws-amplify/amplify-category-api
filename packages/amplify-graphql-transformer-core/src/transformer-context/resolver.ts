@@ -13,6 +13,7 @@ import { isResolvableObject, Stack, CfnParameter } from 'aws-cdk-lib';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
 import { get as lodashGet } from 'lodash';
+import { IConstruct } from 'constructs';
 import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
 import { InvalidDirectiveError } from '../errors';
 import * as SyncUtils from '../transformation/sync-utils';
@@ -327,8 +328,15 @@ export class TransformerResolver implements TransformerResolverProvider {
           throw new Error('Unknown DataSource type');
       }
     }
+    const deltaSyncTableTtl = lodashGet(this, [
+      'datasource',
+      'ds',
+      'dynamoDbConfig',
+      'deltaSyncConfig',
+      'deltaSyncTableTtl'
+    ]) || SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
+    console.log('deltaSyncTableTtl', deltaSyncTableTtl);
 
-    const deltaSyncTableTtl = this.getDeltaSyncTableTtl(context);
     let initResolver = dedent`
     $util.qr($ctx.stash.put("typeName", "${this.typeName}"))
     $util.qr($ctx.stash.put("fieldName", "${this.fieldName}"))
@@ -425,20 +433,5 @@ export class TransformerResolver implements TransformerResolverProvider {
     // Remove the suffix "Table" from the datasource name
     // The stack name cannot be retrieved as during the runtime it is tokenized and value not being revealed
     return this.datasource?.name?.replace(new RegExp('Table$'), '');
-  }
-
-  private getDeltaSyncTableTtl(context: TransformerContextProvider): number {
-    const defaultDeltaSyncTableTtl = SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
-    const { modelName } = this;
-    if (this.typeName !== 'Query' || modelName === undefined) {
-      return defaultDeltaSyncTableTtl;
-    }
-    try {
-      const overriddenResources = context.getResourceOverrides();
-      const deltaSyncTtlOverride = lodashGet(overriddenResources, ['models', modelName, 'modelDatasource', 'dynamoDbConfig', 'deltaSyncConfig', 'deltaSyncTableTtl']);
-      return deltaSyncTtlOverride || defaultDeltaSyncTableTtl;
-    } catch {
-      return defaultDeltaSyncTableTtl;
-    }
   }
 }
