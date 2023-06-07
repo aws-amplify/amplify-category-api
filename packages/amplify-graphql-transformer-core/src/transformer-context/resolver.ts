@@ -428,12 +428,17 @@ export class TransformerResolver implements TransformerResolverProvider {
   }
 
   private getDeltaSyncTableTtl(context: TransformerContextProvider): number {
+    const defaultDeltaSyncTableTtl = SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
     const { modelName } = this;
     if (this.typeName !== 'Query' || modelName === undefined) {
-      return SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
+      return defaultDeltaSyncTableTtl;
     }
-    const overriddenResources = context.getResourceOverrides();
-    const deltaSyncTtlOverride = lodashGet(overriddenResources, ['models', modelName, 'modelDatasource', 'dynamoDbConfig', 'deltaSyncConfig', 'deltaSyncTableTtl']);
-    return deltaSyncTtlOverride || SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
+    try {
+      const overriddenResources = context.getResourceOverrides();
+      const deltaSyncTtlOverride = lodashGet(overriddenResources, ['models', modelName, 'modelDatasource', 'dynamoDbConfig', 'deltaSyncConfig', 'deltaSyncTableTtl']);
+      return deltaSyncTtlOverride || defaultDeltaSyncTableTtl;
+    } catch {
+      return defaultDeltaSyncTableTtl;
+    }
   }
 }
