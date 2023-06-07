@@ -261,12 +261,6 @@ const getCodeBuildClient = (): CodeBuild => {
   return new CodeBuild({ 
     apiVersion: '2016-10-06',
     region: 'us-east-1',
-    credentials: isCI() ? undefined :
-    {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      sessionToken: process.env.AWS_SESSION_TOKEN,
-    }
   });
 };
 
