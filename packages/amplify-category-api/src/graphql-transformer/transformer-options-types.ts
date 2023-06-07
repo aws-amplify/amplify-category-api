@@ -45,6 +45,10 @@ type SanityCheckRules = {
   projectRules: ProjectRule[];
 };
 
+export type TransformerSearchConfig = {
+  enableNodeToNodeEncryption?: boolean;
+};
+
 /**
  * Arguments passed into a TransformerFactory
  * Used to determine how to create a new GraphQLTransform
@@ -54,4 +58,5 @@ export type TransformerFactoryArgs = {
   storageConfig?: any;
   adminRoles?: Array<string>;
   identityPoolId?: string;
+  searchConfig?: TransformerSearchConfig;
 };

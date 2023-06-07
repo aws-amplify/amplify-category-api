@@ -3,18 +3,20 @@ import * as fs from "fs-extra";
 import * as vm from "vm2";
 import * as path from "path";
 import _ from "lodash";
-import { stateManager } from "@aws-amplify/amplify-cli-core";
+import { pathManager, stateManager } from "@aws-amplify/amplify-cli-core";
 import { StackManager } from "@aws-amplify/graphql-transformer-core";
 import { AmplifyApiGraphQlResourceStackTemplate } from "@aws-amplify/graphql-transformer-interfaces";
 import { ConstructResourceMeta } from "./types/types";
 import { convertToAppsyncResourceObj, getStackMeta } from "./types/utils";
+import { getAppSyncAPIName } from "../provider-utils/awscloudformation/utils/amplify-meta-utils";
 
 /**
  *
  * @param stackManager
  * @param overrideDir
  */
-export function applyOverride(stackManager: StackManager, overrideDir: string): AmplifyApiGraphQlResourceStackTemplate {
+export function applyFileBasedOverride(stackManager: StackManager, overrideDirPath?: string): AmplifyApiGraphQlResourceStackTemplate {
+  const overrideDir = overrideDirPath ?? path.join(pathManager.getBackendDirPath(), 'api', getAppSyncAPIName());
   const overrideFilePath = path.join(overrideDir, "build", "override.js");
   if (!fs.existsSync(overrideFilePath)) {
     return {};

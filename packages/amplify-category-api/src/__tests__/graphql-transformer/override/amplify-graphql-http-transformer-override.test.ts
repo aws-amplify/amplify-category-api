@@ -2,7 +2,7 @@ import { GraphQLTransform, StackManager } from '@aws-amplify/graphql-transformer
 import { parse } from 'graphql';
 import path from 'path';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
-import { applyOverride } from '../../../graphql-transformer/override';
+import { applyFileBasedOverride } from '../../../graphql-transformer/override';
 import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
 
 jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
@@ -22,9 +22,7 @@ test('it generates the overrided resources', () => {
   const transformer = new GraphQLTransform({
     transformers: [new HttpTransformer()],
     overrideConfig: {
-      applyOverride: (stackManager: StackManager) => {
-        return applyOverride(stackManager, path.join(__dirname, 'http-overrides'))
-      },
+      applyOverride: (stackManager: StackManager) => applyFileBasedOverride(stackManager, path.join(__dirname, 'http-overrides')),
       overrideFlag: true,
     },
   });
@@ -50,9 +48,7 @@ test('it skips override if file does not exist', () => {
   const transformer = new GraphQLTransform({
     transformers: [new HttpTransformer()],
     overrideConfig: {
-      applyOverride: (stackManager: StackManager) => {
-        return applyOverride(stackManager, path.join(__dirname, 'non-existing-override-dir'))
-      },
+      applyOverride: (stackManager: StackManager) => applyFileBasedOverride(stackManager, path.join(__dirname, 'non-existing-override-dir')),
       overrideFlag: true,
     },
   });

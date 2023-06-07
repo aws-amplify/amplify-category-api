@@ -5,7 +5,7 @@ import {
   $TSContext,
 } from '@aws-amplify/amplify-cli-core';
 import { print } from 'graphql';
-import { getTransformerFactory } from './transformer-factory';
+import { getTransformerFactoryV2, getTransformerFactoryV1 } from './transformer-factory';
 import { getTransformerVersion } from './transformer-version';
 
 /**
@@ -14,13 +14,12 @@ import { getTransformerVersion } from './transformer-version';
  */
 export const getDirectiveDefinitions = async (context: $TSContext, resourceDir: string): Promise<string> => {
   const transformerVersion = await getTransformerVersion(context);
-  const transformer = await getTransformerFactory(context, resourceDir);
   const transformList = transformerVersion === 2
-    ? await transformer({ authConfig: {} })
-    : await transformer(true);
+    ? await (await getTransformerFactoryV2(resourceDir))({ authConfig: {} })
+    : await (await getTransformerFactoryV1(context, resourceDir))(true);
 
   const transformDirectives = transformList
-    .map(transformPluginInst => [transformPluginInst.directive, ...transformPluginInst.typeDefinitions].map(node => print(node)).join('\n'))
+    .map((transform) => [transform.directive, ...transform.typeDefinitions].map((node) => print(node)).join('\n'))
     .join('\n');
 
   return [getAppSyncServiceExtraDirectives(), transformDirectives].join('\n');

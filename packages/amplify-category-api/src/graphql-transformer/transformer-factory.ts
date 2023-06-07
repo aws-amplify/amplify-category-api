@@ -1,36 +1,16 @@
-import { AuthTransformer as AuthTransformerV2 } from '@aws-amplify/graphql-auth-transformer';
-import { DefaultValueTransformer as DefaultValueTransformerV2 } from '@aws-amplify/graphql-default-value-transformer';
-import { FunctionTransformer as FunctionTransformerV2 } from '@aws-amplify/graphql-function-transformer';
-import { HttpTransformer as HttpTransformerV2 } from '@aws-amplify/graphql-http-transformer';
-import {
-  IndexTransformer as IndexTransformerV2,
-  PrimaryKeyTransformer as PrimaryKeyTransformerV2,
-} from '@aws-amplify/graphql-index-transformer';
-import { MapsToTransformer as MapsToTransformerV2 } from '@aws-amplify/graphql-maps-to-transformer';
-import { ModelTransformer as ModelTransformerV2 } from '@aws-amplify/graphql-model-transformer';
-import { PredictionsTransformer as PredictionsTransformerV2 } from '@aws-amplify/graphql-predictions-transformer';
-import {
-  BelongsToTransformer as BelongsToTransformerV2,
-  HasManyTransformer as HasManyTransformerV2,
-  HasOneTransformer as HasOneTransformerV2,
-  ManyToManyTransformer as ManyToManyTransformerV2,
-} from '@aws-amplify/graphql-relational-transformer';
-import { SearchableModelTransformer as SearchableModelTransformerV2 } from '@aws-amplify/graphql-searchable-transformer';
-import { TransformerPluginProvider as TransformerPluginProviderV2, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DynamoDBModelTransformer as DynamoDBModelTransformerV1 } from 'graphql-dynamodb-transformer';
-import { ModelAuthTransformer as ModelAuthTransformerV1 } from 'graphql-auth-transformer';
-import { ModelConnectionTransformer as ModelConnectionTransformerV1 } from 'graphql-connection-transformer';
-import { SearchableModelTransformer as SearchableModelTransformerV1 } from 'graphql-elasticsearch-transformer';
-import { VersionedModelTransformer as VersionedModelTransformerV1 } from 'graphql-versioned-transformer';
-import { FunctionTransformer as FunctionTransformerV1 } from 'graphql-function-transformer';
-import { HttpTransformer as HttpTransformerV1 } from 'graphql-http-transformer';
-import { PredictionsTransformer as PredictionsTransformerV1 } from 'graphql-predictions-transformer';
-import { KeyTransformer as KeyTransformerV1 } from 'graphql-key-transformer';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
+import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
+import { VersionedModelTransformer } from 'graphql-versioned-transformer';
+import { FunctionTransformer } from 'graphql-function-transformer';
+import { HttpTransformer } from 'graphql-http-transformer';
+import { PredictionsTransformer } from 'graphql-predictions-transformer';
+import { KeyTransformer } from 'graphql-key-transformer';
 import {
   $TSContext,
   pathManager,
   stateManager,
-  ApiCategoryFacade,
   CloudformationProviderFacade,
 } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
@@ -45,71 +25,14 @@ import importFrom from 'import-from';
 import importGlobal from 'import-global';
 import path from 'path';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { parseUserDefinedSlots } from './user-defined-slots';
 import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
-import { TransformerProjectOptions } from './transformer-options-types';
-import { shouldEnableNodeToNodeEncryption } from '../provider-utils/awscloudformation/current-backend-state/searchable-node-to-node-encryption';
+import { parseUserDefinedSlotsFromProject } from './user-defined-slots';
+import { TransformerFactoryArgs, TransformerProjectOptions } from './transformer-options-types';
+import { constructTransformerChain } from '../amplify-graphql-transform';
 
 const PROVIDER_NAME = 'awscloudformation';
 
-type TransformerFactoryArgs = {
-    authConfig: any;
-    storageConfig?: any;
-    adminRoles?: Array<string>;
-    identityPoolId?: string;
-  };
-
-/**
- * Return the graphql transformer factory based on the projects current transformer version.
- */
-export const getTransformerFactory = async (
-  context: $TSContext,
-  resourceDir: string,
-  authConfig?: any,
-): Promise<(options: any) => Promise<(TransformerPluginProviderV2 | ITransformer)[]>> => {
-  const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
-  return transformerVersion === 2
-    ? getTransformerFactoryV2(resourceDir)
-    : getTransformerFactoryV1(context, resourceDir, authConfig);
-};
-
-const getTransformerFactoryV2 = (
-  resourceDir: string,
-): (options: TransformerFactoryArgs) => Promise<TransformerPluginProviderV2[]> => async (options?: TransformerFactoryArgs) => {
-  const resourceDirParts = resourceDir.split(path.sep);
-  const apiName = resourceDirParts[resourceDirParts.length - 1];
-  const nodeToNodeEncryption = shouldEnableNodeToNodeEncryption(
-    apiName,
-    pathManager.findProjectRoot(),
-    pathManager.getCurrentCloudBackendDirPath(),
-  );
-
-  const modelTransformer = new ModelTransformerV2();
-  const indexTransformer = new IndexTransformerV2();
-  const hasOneTransformer = new HasOneTransformerV2();
-  const authTransformer = new AuthTransformerV2({
-    adminRoles: options.adminRoles ?? [],
-    identityPoolId: options.identityPoolId,
-  });
-  const transformerList: TransformerPluginProviderV2[] = [
-    modelTransformer,
-    new FunctionTransformerV2(),
-    new HttpTransformerV2(),
-    new PredictionsTransformerV2(options?.storageConfig),
-    new PrimaryKeyTransformerV2(),
-    indexTransformer,
-    new HasManyTransformerV2(),
-    hasOneTransformer,
-    new ManyToManyTransformerV2(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
-    new BelongsToTransformerV2(),
-    new DefaultValueTransformerV2(),
-    authTransformer,
-    new MapsToTransformerV2(),
-    new SearchableModelTransformerV2({
-      enableNodeToNodeEncryption: nodeToNodeEncryption,
-    }),
-  ];
-
+export const getTransformerFactoryV2 = (resourceDir: string) => async (options?: TransformerFactoryArgs) => {
   const customTransformersConfig = await loadProject(resourceDir);
   const customTransformerList = customTransformersConfig?.config?.transformers;
   const customTransformers = (Array.isArray(customTransformerList) ? customTransformerList : [])
@@ -129,70 +52,62 @@ const getTransformerFactoryV2 = (
     })
     .filter(customTransformer => customTransformer);
 
+  return constructTransformerChain(customTransformers, options);
+};
+
+export const getTransformerFactoryV1 = (
+  context: $TSContext,
+  resourceDir: string,
+  authConfig?: any,
+) => async (addSearchableTransformer: boolean, storageConfig?: any) => {
+  const transformerList: ITransformer[] = [
+    new DynamoDBModelTransformer(),
+    new VersionedModelTransformer(),
+    new FunctionTransformer(),
+    new HttpTransformer(),
+    new KeyTransformer(),
+    new ModelConnectionTransformer(),
+    new PredictionsTransformer(storageConfig),
+  ];
+
+  if (addSearchableTransformer) {
+    transformerList.push(new SearchableModelTransformer());
+  }
+
+  const customTransformersConfig: TransformConfig = await readTransformerConfiguration(resourceDir);
+  const customTransformers = (
+    customTransformersConfig && customTransformersConfig.transformers ? customTransformersConfig.transformers : []
+  )
+    .map(importTransformerModule)
+    .map((imported) => {
+      const CustomTransformer = imported.default;
+      if (typeof CustomTransformer === 'function') return new CustomTransformer();
+      if (typeof CustomTransformer === 'object') return CustomTransformer;
+      throw new Error("Custom Transformers' default export must be a function or an object");
+    })
+    .filter((customTransformer) => customTransformer);
+
   if (customTransformers.length > 0) {
     transformerList.push(...customTransformers);
   }
 
+  // TODO: Build dependency mechanism into transformers. Auth runs last
+  // so any resolvers that need to be protected will already be created.
+
+  let amplifyAdminEnabled = false;
+
+  try {
+    const amplifyMeta = stateManager.getMeta();
+    const appId = amplifyMeta?.providers?.[PROVIDER_NAME]?.AmplifyAppId;
+    const res = await CloudformationProviderFacade.isAmplifyAdminApp(context, appId);
+    amplifyAdminEnabled = res.isAdminApp;
+  } catch (err) {
+    // if it is not an AmplifyAdmin app, do nothing
+  }
+
+  transformerList.push(new ModelAuthTransformer({ authConfig, addAwsIamAuthInOutputSchema: amplifyAdminEnabled }));
   return transformerList;
 };
-
-function getTransformerFactoryV1(context: $TSContext, resourceDir: string, authConfig?: any) {
-  return async (addSearchableTransformer: boolean, storageConfig?: any) => {
-    const transformerList: ITransformer[] = [
-      // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
-      new DynamoDBModelTransformerV1(),
-      new VersionedModelTransformerV1(),
-      new FunctionTransformerV1(),
-      new HttpTransformerV1(),
-      new KeyTransformerV1(),
-      new ModelConnectionTransformerV1(),
-      new PredictionsTransformerV1(storageConfig),
-    ];
-
-    if (addSearchableTransformer) {
-      transformerList.push(new SearchableModelTransformerV1());
-    }
-
-    const customTransformersConfig: TransformConfig = await readTransformerConfiguration(resourceDir);
-    const customTransformers = (
-      customTransformersConfig && customTransformersConfig.transformers ? customTransformersConfig.transformers : []
-    )
-      .map(importTransformerModule)
-      .map(imported => {
-        const CustomTransformer = imported.default;
-
-        if (typeof CustomTransformer === 'function') {
-          return new CustomTransformer();
-        } else if (typeof CustomTransformer === 'object') {
-          return CustomTransformer;
-        }
-
-        throw new Error("Custom Transformers' default export must be a function or an object");
-      })
-      .filter(customTransformer => customTransformer);
-
-    if (customTransformers.length > 0) {
-      transformerList.push(...customTransformers);
-    }
-
-    // TODO: Build dependency mechanism into transformers. Auth runs last
-    // so any resolvers that need to be protected will already be created.
-
-    let amplifyAdminEnabled: boolean = false;
-
-    try {
-      const amplifyMeta = stateManager.getMeta();
-      const appId = amplifyMeta?.providers?.[PROVIDER_NAME]?.AmplifyAppId;
-      const res = await CloudformationProviderFacade.isAmplifyAdminApp(context, appId);
-      amplifyAdminEnabled = res.isAdminApp;
-    } catch (err) {
-      // if it is not an AmplifyAdmin app, do nothing
-    }
-
-    transformerList.push(new ModelAuthTransformerV1({ authConfig, addAwsIamAuthInOutputSchema: amplifyAdminEnabled }));
-    return transformerList;
-  };
-}
 
 /**
  * Attempt to load the module from a transformer name using the following priority order
@@ -200,7 +115,7 @@ function getTransformerFactoryV1(context: $TSContext, resourceDir: string, authC
  * - modulePath is a package name, then it will be loaded from the project's root's node_modules with createRequireFromPath.
  * - modulePath is a name of a globally installed package
  */
-const importTransformerModule = (transformerName: string) => {
+const importTransformerModule = (transformerName: string): any => {
   const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformerName);
   const modulePath = fileUrlMatch ? fileUrlMatch[1] : transformerName;
 
@@ -246,29 +161,17 @@ const importTransformerModule = (transformerName: string) => {
  * @param opts The options produced by 'transformer-options'
  * @returns GraphQLTransform A brand new instance of the GraphQL Transform
  */
-export const constructGraphQLTransformV2 = async (opts: TransformerProjectOptions<TransformerFactoryArgs>): Promise<GraphQLTransform> => {
-  const userProjectConfig = opts.projectConfig;
-  const stackMapping = userProjectConfig.config.StackMapping;
-  const userDefinedSlots = {
-    ...parseUserDefinedSlots(userProjectConfig.pipelineFunctions),
-    ...parseUserDefinedSlots(userProjectConfig.resolvers),
-  };
-
-  // Create the transformer instances, we've to make sure we're not reusing them within the same CLI command
-  // because the StackMapping feature already builds the project once.
-  const transformers = await opts.transformersFactory(opts.transformersFactoryArgs);
-  const transform = new GraphQLTransform({
-    transformers,
-    stackMapping,
-    transformConfig: userProjectConfig.config,
-    authConfig: opts.authConfig,
-    buildParameters: opts.buildParameters,
-    stacks: opts.projectConfig.stacks || {},
-    featureFlags: new AmplifyCLIFeatureFlagAdapter(),
-    sandboxModeEnabled: opts.sandboxModeEnabled,
-    userDefinedSlots,
-    resolverConfig: opts.resolverConfig,
-  });
-
-  return transform;
-};
+export const constructGraphQLTransformV2 = async (
+  opts: TransformerProjectOptions<TransformerFactoryArgs>,
+): Promise<GraphQLTransform> => new GraphQLTransform({
+  transformers: await opts.transformersFactory(opts.transformersFactoryArgs),
+  stackMapping: opts.projectConfig.config.StackMapping,
+  transformConfig: opts.projectConfig.config,
+  authConfig: opts.authConfig,
+  buildParameters: opts.buildParameters,
+  stacks: opts.projectConfig.stacks || {},
+  featureFlags: new AmplifyCLIFeatureFlagAdapter(),
+  sandboxModeEnabled: opts.sandboxModeEnabled,
+  userDefinedSlots: parseUserDefinedSlotsFromProject(opts.projectConfig),
+  resolverConfig: opts.resolverConfig,
+});

@@ -27,7 +27,7 @@ import path from 'path';
 /* eslint-disable-next-line import/no-cycle */
 import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import { isAuthModeUpdated } from './auth-mode-compare';
-import { parseUserDefinedSlots } from './user-defined-slots';
+import { parseUserDefinedSlots, parseUserDefinedSlotsFromProject } from './user-defined-slots';
 import {
   mergeUserConfigWithTransformOutput, writeDeploymentToDisk,
 } from './utils';
@@ -35,7 +35,7 @@ import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerFactoryArgs, TransformerProjectOptions } from './transformer-options-types';
 import { getExistingConnectionSecretNames, getSecretsKey } from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { applyOverride } from './override';
+import { applyFileBasedOverride } from './override';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
@@ -215,36 +215,25 @@ const buildAPIProject = async (
 };
 
 const _buildProject = async (context: $TSContext, opts: TransformerProjectOptions<TransformerFactoryArgs>): Promise<DeploymentResources> => {
-  const userProjectConfig = opts.projectConfig;
-  const stackMapping = userProjectConfig.config.StackMapping;
-  const userDefinedSlots = {
-    ...parseUserDefinedSlots(userProjectConfig.pipelineFunctions),
-    ...parseUserDefinedSlots(userProjectConfig.resolvers),
-  };
-
-  // Create the transformer instances, we've to make sure we're not reusing them within the same CLI command
-  // because the StackMapping feature already builds the project once.
   const transformers = await opts.transformersFactory(opts.transformersFactoryArgs);
   const transform = new GraphQLTransform({
     transformers,
-    stackMapping,
-    transformConfig: userProjectConfig.config,
+    stackMapping: opts.projectConfig.config.StackMapping,
+    transformConfig: opts.projectConfig.config,
     authConfig: opts.authConfig,
     buildParameters: opts.buildParameters,
     stacks: opts.projectConfig.stacks || {},
     featureFlags: new AmplifyCLIFeatureFlagAdapter(),
     sandboxModeEnabled: opts.sandboxModeEnabled,
-    userDefinedSlots,
+    userDefinedSlots: parseUserDefinedSlotsFromProject(opts.projectConfig),
     resolverConfig: opts.resolverConfig,
     overrideConfig: {
-      applyOverride: (stackManager: StackManager) => {
-        return applyOverride(stackManager, path.join(pathManager.getBackendDirPath(), 'api', getAppSyncAPIName()));
-      },
-      ...opts.overrideConfig
+      applyOverride: (stackManager: StackManager) => applyFileBasedOverride(stackManager),
+      ...opts.overrideConfig,
     },
   });
 
-  const { schema, modelToDatasourceMap } = userProjectConfig;
+  const { schema, modelToDatasourceMap } = opts.projectConfig;
   const datasourceSecretMap = await getDatasourceSecretMap(context);
   try {
     const transformOutput = transform.transform(schema.toString(), {
@@ -252,7 +241,7 @@ const _buildProject = async (context: $TSContext, opts: TransformerProjectOption
       datasourceSecretParameterLocations: datasourceSecretMap,
     });
 
-    return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput, opts);
+    return mergeUserConfigWithTransformOutput(opts.projectConfig, transformOutput, opts);
   } finally {
     printTransformLogs(transform);
   }
