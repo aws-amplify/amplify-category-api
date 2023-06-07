@@ -32,7 +32,8 @@ type StackInfo = {
   resourcesFailedToDelete?: string[];
   tags: Record<string, string>;
   region: string;
-  cbInfo: CodeBuild.Build;
+  jobId: string;
+  cbInfo?: CodeBuild.Build;
 };
 
 type AmplifyAppInfo = {
@@ -44,6 +45,7 @@ type AmplifyAppInfo = {
 
 type S3BucketInfo = {
   name: string;
+  jobId?: string;
   cbInfo?: CodeBuild.Build;
 };
 
@@ -216,7 +218,8 @@ const getStackDetails = async (stackName: string, account: AWSAccountInfo, regio
     resourcesFailedToDelete,
     region,
     tags: tags.reduce((acc, tag) => ({ ...acc, [tag.Key]: tag.Value }), {}),
-    cbInfo: jobId && (await getJobCodeBuildDetails(jobId)),
+    jobId
+    // cbInfo: jobId && (await getJobCodeBuildDetails(jobId)),
   };
 };
 
@@ -267,11 +270,14 @@ const getCodeBuildClient = (): CodeBuild => {
   });
 };
 
-const getJobCodeBuildDetails = async (jobId: string): Promise<CodeBuild.Build> => {
+const getJobCodeBuildDetails = async (jobIds: string[]): Promise<CodeBuild.Build[]> => {
+  if (jobIds.length === 0) {
+    return [];
+  }
   const client = getCodeBuildClient();
   try {
-    const { builds } = await client.batchGetBuilds({ ids: [ jobId ] }).promise();
-    return builds[0];
+    const { builds } = await client.batchGetBuilds({ ids: jobIds }).promise();
+    return builds;
   } catch(e) {
     console.log(e);
   }
@@ -288,7 +294,7 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
       if (jobId) {
         result.push({
           name: bucket.Name,
-          cbInfo: await getJobCodeBuildDetails(jobId),
+          jobId
         });
       }
     } catch (e) {
@@ -306,51 +312,61 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
 /**
  * extract and moves CircleCI job details
  */
-const extractCCIJobInfo = (record: S3BucketInfo | StackInfo | AmplifyAppInfo): CBJobInfo => ({
-  buildBatchArn: _.get(record, ['0', 'cbInfo', 'buildBatchArn']),
-  projectName: _.get(record, ['0', 'cbInfo', 'projectName']),
-  buildComplete: _.get(record, ['0', 'cbInfo', 'buildComplete']),
-  cbJobDetails: _.get(record, ['0', 'cbInfo']),
-  buildStatus: _.get(record, ['0', 'cbInfo', 'buildStatus']),
-});
+const extractCCIJobInfo = (
+  record: S3BucketInfo | StackInfo | AmplifyAppInfo,
+  buildInfos: Record<string, CodeBuild.Build[]>
+  ): CBJobInfo => {
+  const buildId = _.get(record, ['0', 'jobId']);
+  return {
+    buildBatchArn: _.get(buildInfos, [ buildId, '0', 'buildBatchArn' ]),
+    projectName: _.get(buildInfos, [ buildId, '0', 'projectName' ]),
+    buildComplete: _.get(buildInfos, [ buildId, '0', 'buildComplete' ]),
+    cbJobDetails: _.get(buildInfos, [ buildId, '0' ]),
+    buildStatus: _.get(buildInfos, [ buildId, '0', 'buildStatus' ])
+  };
+}
+
 
 /**
  * Merges stale resources and returns a list grouped by the CodeBuild jobId. Amplify Apps that don't have
  * any backend environment are grouped as Orphan apps and apps that have Backend created by different CodeBuild jobs are
  * grouped as MULTI_JOB_APP. Any resource that do not have a CodeBuild job is grouped under UNKNOWN
  */
-const mergeResourcesByCCIJob = (
+const mergeResourcesByCCIJob = async (
   amplifyApp: AmplifyAppInfo[],
   cfnStacks: StackInfo[],
   s3Buckets: S3BucketInfo[],
   orphanS3Buckets: S3BucketInfo[],
   orphanIamRoles: IamRoleInfo[],
-): Record<string, ReportEntry> => {
+): Promise<Record<string, ReportEntry>> => {
   const result: Record<string, ReportEntry> = {};
 
-  const stacksByJobId = _.groupBy(cfnStacks, (stack: StackInfo) => _.get(stack, ['cbInfo', 'id'], UNKNOWN));
+  const stacksByJobId = _.groupBy(cfnStacks, (stack: StackInfo) => _.get(stack, ['jobId'], UNKNOWN));
 
-  const bucketByJobId = _.groupBy(s3Buckets, (bucketInfo: S3BucketInfo) => _.get(bucketInfo, ['cbInfo', 'id'], UNKNOWN));
+  const bucketByJobId = _.groupBy(s3Buckets, (bucketInfo: S3BucketInfo) => _.get(bucketInfo, ['jobId'], UNKNOWN));
 
   const amplifyAppByJobId = _.groupBy(amplifyApp, (appInfo: AmplifyAppInfo) => {
     if (Object.keys(appInfo.backends).length === 0) {
       return ORPHAN;
     }
 
-    const buildIds = _.groupBy(appInfo.backends, backendInfo => _.get(backendInfo, ['cciInfo', 'id'], UNKNOWN));
+    const buildIds = _.groupBy(appInfo.backends, backendInfo => _.get(backendInfo, ['jobId'], UNKNOWN));
     if (Object.keys(buildIds).length === 1) {
       return Object.keys(buildIds)[0];
     }
 
     return MULTI_JOB_APP;
   });
-
+  const codeBuildJobIds: string[] = _.uniq([...Object.keys(stacksByJobId), ...Object.keys(bucketByJobId), ...Object.keys(amplifyAppByJobId)])
+  .filter((jobId: string) => jobId !== UNKNOWN && jobId !== ORPHAN && jobId !== MULTI_JOB_APP)
+  const buildInfos = await getJobCodeBuildDetails(codeBuildJobIds);
+  const buildInfosByJobId = _.groupBy(buildInfos, (build: CodeBuild.Build) => _.get(build, ['id']));
   _.mergeWith(
     result,
     _.pickBy(amplifyAppByJobId, (__, key) => key !== MULTI_JOB_APP),
     (val, src, key) => ({
       ...val,
-      ...extractCCIJobInfo(src),
+      ...extractCCIJobInfo(src, buildInfosByJobId),
       jobId: key,
       amplifyApps: src,
     }),
@@ -362,7 +378,7 @@ const mergeResourcesByCCIJob = (
     (__: unknown, key: string) => key !== ORPHAN,
     (val, src, key) => ({
       ...val,
-      ...extractCCIJobInfo(src),
+      ...extractCCIJobInfo(src, buildInfosByJobId),
       jobId: key,
       stacks: src,
     }),
@@ -370,7 +386,7 @@ const mergeResourcesByCCIJob = (
 
   _.mergeWith(result, bucketByJobId, (val, src, key) => ({
     ...val,
-    ...extractCCIJobInfo(src),
+    ...extractCCIJobInfo(src, buildInfosByJobId),
     jobId: key,
     buckets: src,
   }));
@@ -676,7 +692,7 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const orphanBuckets = await orphanBucketPromise;
   const orphanIamRoles = await orphanIamRolesPromise;
 
-  const allResources = mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles);
+  const allResources = await mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles);
   const staleResources = _.pickBy(allResources, filterPredicate);
 
   generateReport(staleResources);

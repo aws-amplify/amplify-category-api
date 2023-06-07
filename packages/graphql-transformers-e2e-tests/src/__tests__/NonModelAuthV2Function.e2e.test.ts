@@ -35,8 +35,8 @@ const awsS3Client = new S3({ region: REGION });
 const iamHelper = new IAMHelper(REGION);
 
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `FunctionTransformerTestsV2-${BUILD_TIMESTAMP}`;
-const BUCKET_NAME = `appsync-function-v2-transformer-test-bucket-${BUILD_TIMESTAMP}`;
+const STACK_NAME = `NonModelAuthV2FunctionTransformerTests-${BUILD_TIMESTAMP}`;
+const BUCKET_NAME = `non-model-auth-function-v2-transformer-test-bucket-${BUILD_TIMESTAMP}`;
 const LOCAL_FS_BUILD_DIR = '/tmp/nonmodel_auth_function_v2_transformer_tests/';
 const S3_ROOT_DIR_KEY = 'deployments';
 const ECHO_FUNCTION_NAME = `long-prefix-e2e-test-functions-echo-dev-${BUILD_TIMESTAMP}`;

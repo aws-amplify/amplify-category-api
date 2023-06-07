@@ -31,9 +31,9 @@ jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient(region);
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `PerFieldAuthV2Tests-${BUILD_TIMESTAMP}`;
-const BUCKET_NAME = `per-field-authv2-tests-bucket-${BUILD_TIMESTAMP}`;
-const LOCAL_BUILD_ROOT = '/tmp/per_field_authv2_tests/';
+const STACK_NAME = `PerFieldAuthV2FFTests-${BUILD_TIMESTAMP}`;
+const BUCKET_NAME = `per-field-authv2-ff-tests-bucket-${BUILD_TIMESTAMP}`;
+const LOCAL_BUILD_ROOT = '/tmp/per_field_authv2_ff_tests/';
 const DEPLOYMENT_ROOT_KEY = 'deployments';
 
 let GRAPHQL_ENDPOINT;

@@ -61,12 +61,6 @@ const RUN_SOLO = [
   'src/__tests__/FunctionTransformerTestsV2.e2e.test.ts',
   'src/__tests__/HttpTransformer.e2e.test.ts',
   'src/__tests__/HttpTransformerV2.e2e.test.ts',
-  'src/__tests__/PerFieldAuthV2Transformer.e2e.test.ts',
-  'src/__tests__/PerFieldAuthV2TransformerWithFF.e2e.test.ts',
-  'src/__tests__/AuthV2ExhaustiveT1A.test.ts',
-  'src/__tests__/AuthV2ExhaustiveT2A.test.ts',
-  'src/__tests__/AuthV2ExhaustiveT2C.test.ts',
-  'src/__tests__/SearchableWithAuthV2WithFF.e2e.test.ts',
 ];
 
 export function loadConfigBase() {
