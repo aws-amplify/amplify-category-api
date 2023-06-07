@@ -12,6 +12,11 @@ import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { isResolvableObject, Stack, CfnParameter } from 'aws-cdk-lib';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
+<<<<<<< HEAD
+=======
+import { get as lodashGet } from 'lodash';
+import { IConstruct } from 'constructs';
+>>>>>>> 9d65b7d0a (wip: ttl overrides)
 import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
 import { InvalidDirectiveError } from '../errors';
 import * as SyncUtils from '../transformation/sync-utils';
@@ -419,4 +424,13 @@ export class TransformerResolver implements TransformerResolverProvider {
       });
     }
   }
+<<<<<<< HEAD
+=======
+
+  private get modelName(): string | undefined {
+    // Remove the suffix "Table" from the datasource name
+    // The stack name cannot be retrieved as during the runtime it is tokenized and value not being revealed
+    return this.datasource?.name?.replace(new RegExp('Table$'), '');
+  }
+>>>>>>> 9d65b7d0a (wip: ttl overrides)
 }

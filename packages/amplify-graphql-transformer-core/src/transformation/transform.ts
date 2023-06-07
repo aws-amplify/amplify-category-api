@@ -307,10 +307,10 @@ export class GraphQLTransform {
         this.logs.push(...logs);
       }
     }
-    this.collectResolvers(context, context.api);
     if (this.overrideConfig?.overrideFlag) {
       this.overrideConfig?.applyOverride(stackManager);
     }
+    this.collectResolvers(context, context.api);
     return this.synthesize(context);
   }
 
