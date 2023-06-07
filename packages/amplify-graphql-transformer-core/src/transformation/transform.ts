@@ -30,7 +30,7 @@ import {
   print,
 } from 'graphql';
 import _ from 'lodash';
-import { ResolverConfig, TransformConfig } from '../config/transformer-config';
+import { ResolverConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
 import { TransformerContext } from '../transformer-context';
@@ -75,9 +75,7 @@ export interface GraphQLTransformOptions {
   // automatically.
   readonly stackMapping?: StackMapping;
   // transform config which can change the behavior of the transformer
-  readonly transformConfig?: TransformConfig;
   readonly authConfig?: AppSyncAuthConfiguration;
-  readonly buildParameters?: Record<string, any>;
   readonly stacks?: Record<string, Template>;
   readonly featureFlags?: FeatureFlagProvider;
   readonly host?: TransformHostProvider;
@@ -86,18 +84,19 @@ export interface GraphQLTransformOptions {
   readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   readonly resolverConfig?: ResolverConfig;
   readonly overrideConfig?: OverrideConfig;
+  readonly legacyApiKeyEnabled?: number;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
   private transformers: TransformerPluginProvider[];
   private stackMappingOverrides: StackMapping;
   private app: App | undefined;
-  private transformConfig: TransformConfig;
   private readonly authConfig: AppSyncAuthConfiguration;
   private readonly resolverConfig?: ResolverConfig;
-  private readonly buildParameters: Record<string, any>;
   private readonly userDefinedSlots: Record<string, UserDefinedSlot[]>;
   private readonly overrideConfig?: OverrideConfig;
+  private readonly disableResolverDeduping?: boolean;
+  private readonly legacyApiKeyEnabled?: number;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
   // that specifies we have run already run a directive at a given location.
@@ -126,12 +125,12 @@ export class GraphQLTransform {
 
     validateAuthModes(this.authConfig);
 
-    this.buildParameters = options.buildParameters || {};
     this.stackMappingOverrides = options.stackMapping || {};
-    this.transformConfig = options.transformConfig || {};
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
     this.overrideConfig = options.overrideConfig;
     this.resolverConfig = options.resolverConfig || {};
+    this.legacyApiKeyEnabled = options.legacyApiKeyEnabled;
+    this.disableResolverDeduping = options.disableResolverDeduping;
 
     this.logs = [];
   }
@@ -178,7 +177,6 @@ export class GraphQLTransform {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
     this.app = new App();
-    const modelDeltaSyncTableTtlMap = new Map<string, number>();
     const context = new TransformerContext(
       this.app,
       parsedDocument,
@@ -190,7 +188,7 @@ export class GraphQLTransform {
       this.resolverConfig,
       datasourceConfig?.datasourceSecretParameterLocations,
       this.overrideConfig?.applyOverride,
-   );
+    );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
       {
@@ -336,13 +334,15 @@ export class GraphQLTransform {
       host: this.options.host,
       sandboxModeEnabled: this.options.sandboxModeEnabled,
       environmentName: envName.valueAsString,
-      disableResolverDeduping: this.transformConfig.DisableResolverDeduping,
+      disableResolverDeduping: this.disableResolverDeduping,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
       mode => mode?.authorizationType,
     );
 
-    const hasLegacyAPIKeyConfigDisabled = 'CreateAPIKey' in this.buildParameters && this.buildParameters.CreateAPIKey !== 1;
+    const hasLegacyAPIKeyConfigDisabled = this.legacyApiKeyEnabled !== null
+      && this.legacyApiKeyEnabled !== undefined
+      && this.legacyApiKeyEnabled !== 1;
 
     if (authModes.includes(AuthorizationType.API_KEY) && !hasLegacyAPIKeyConfigDisabled) {
       const apiKeyConfig: AuthorizationMode | undefined = [

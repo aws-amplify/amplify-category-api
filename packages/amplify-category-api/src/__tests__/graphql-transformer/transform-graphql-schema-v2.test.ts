@@ -5,6 +5,8 @@ import { transformGraphQLSchemaV2 } from "../../graphql-transformer/transform-gr
 import { generateTransformerOptions } from "../../graphql-transformer/transformer-options-v2";
 import { getAppSyncAPIName } from "../../provider-utils/awscloudformation/utils/amplify-meta-utils";
 import { constructTransformerChain } from "../../amplify-graphql-transform/graphql-transformer-v2";
+import { TransformerProjectOptions } from "../../graphql-transformer/transformer-options-types";
+import { AmplifyCLIFeatureFlagAdapter } from "../../graphql-transformer/amplify-cli-feature-flag-adapter";
 
 jest.mock("@aws-amplify/amplify-cli-core");
 jest.mock("@aws-amplify/amplify-prompts");
@@ -71,6 +73,7 @@ describe("transformGraphQLSchemaV2", () => {
           authenticationType: "AMAZON_COGNITO_USER_POOLS",
         },
       },
+      featureFlags: new AmplifyCLIFeatureFlagAdapter(),
     });
     getAppSyncAPINameMock.mockReturnValue(["testapi"]);
 

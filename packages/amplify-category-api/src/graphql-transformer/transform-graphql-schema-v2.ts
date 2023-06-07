@@ -211,10 +211,10 @@ const buildAPIProject = async (
   return builtProject;
 };
 
-const buildProject = async (context: $TSContext, opts: TransformerProjectOptions): Promise<DeploymentResources> => {
-  const transform = constructTransform(opts);
+const buildProject = async (context: $TSContext, config: TransformerProjectOptions): Promise<DeploymentResources> => {
+  const transform = constructTransform(config);
 
-  const { schema, modelToDatasourceMap } = opts.projectConfig;
+  const { schema, modelToDatasourceMap } = config.projectConfig;
   const datasourceSecretMap = await getDatasourceSecretMap(context);
   try {
     const transformOutput = transform.transform(schema.toString(), {
@@ -222,7 +222,7 @@ const buildProject = async (context: $TSContext, opts: TransformerProjectOptions
       datasourceSecretParameterLocations: datasourceSecretMap,
     });
 
-    return mergeUserConfigWithTransformOutput(opts.projectConfig, transformOutput, opts);
+    return mergeUserConfigWithTransformOutput(config.projectConfig, transformOutput, config);
   } finally {
     printTransformLogs(transform);
   }

@@ -10,7 +10,7 @@ import {
   stateManager,
 } from '@aws-amplify/amplify-cli-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { collectDirectivesByTypeNames } from '@aws-amplify/graphql-transformer-core';
+import { collectDirectivesByTypeNames, OverrideConfig, StackManager } from '@aws-amplify/graphql-transformer-core';
 import { getSanityCheckRules, loadProject } from 'graphql-transformer-core';
 import path from 'path';
 import fs from 'fs-extra';
@@ -28,6 +28,8 @@ import { TransformerProjectOptions } from './transformer-options-types';
 import { contextUtil } from '../category-utils/context-util';
 import { searchablePushChecks } from './api-utils';
 import { shouldEnableNodeToNodeEncryption } from '../provider-utils/awscloudformation/current-backend-state/searchable-node-to-node-encryption';
+import { parseUserDefinedSlots } from './user-defined-slots';
+import { applyFileBasedOverride } from './override';
 
 export const APPSYNC_RESOURCE_SERVICE = 'AppSync';
 
@@ -228,6 +230,16 @@ export const generateTransformerOptions = async (
     pathManager.getCurrentCloudBackendDirPath(),
   );
 
+  const userDefinedSlots = {
+    ...parseUserDefinedSlots(project.pipelineFunctions),
+    ...parseUserDefinedSlots(project.resolvers),
+  };
+
+  const overrideConfig: OverrideConfig = {
+    applyOverride: (stackManager: StackManager) => applyFileBasedOverride(stackManager),
+    ...options.overrideConfig,
+  };
+
   const buildConfig: TransformerProjectOptions = {
     ...options,
     buildParameters,
@@ -248,6 +260,13 @@ export const generateTransformerOptions = async (
     sandboxModeEnabled,
     sanityCheckRules,
     resolverConfig,
+    userDefinedSlots,
+    overrideConfig,
+    featureFlags: new AmplifyCLIFeatureFlagAdapter(),
+    stacks: project.stacks,
+    stackMapping: project.config.StackMapping,
+    legacyApiKeyEnabled: parameters.CreateAPIKey,
+    disableResolverDeduping: (project.config as any).DisableResolverDeduping,
   };
 
   return buildConfig;

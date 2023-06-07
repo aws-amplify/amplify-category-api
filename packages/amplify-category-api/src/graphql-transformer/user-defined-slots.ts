@@ -1,4 +1,4 @@
-import { UserDefinedSlot, UserDefinedResolver, TransformerProjectConfig } from '@aws-amplify/graphql-transformer-core';
+import { UserDefinedSlot, UserDefinedResolver } from '@aws-amplify/graphql-transformer-core';
 import _ from 'lodash';
 
 export const SLOT_NAMES = new Set([
@@ -15,16 +15,6 @@ export const SLOT_NAMES = new Set([
 ]);
 
 const EXCLUDE_FILES = new Set(['README.md']);
-
-/**
- * Given a project config, parse all amplify user defined slots from it.
- */
-export const parseUserDefinedSlotsFromProject = (
-  { pipelineFunctions, resolvers }: TransformerProjectConfig,
-): Record<string, UserDefinedSlot[]> => ({
-  ...parseUserDefinedSlots(pipelineFunctions),
-  ...parseUserDefinedSlots(resolvers),
-});
 
 export function parseUserDefinedSlots(userDefinedTemplates: Record<string, string>): Record<string, UserDefinedSlot[]> {
   type ResolverKey = string;
