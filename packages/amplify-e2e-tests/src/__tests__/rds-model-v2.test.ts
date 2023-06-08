@@ -235,7 +235,7 @@ describe("RDS Model Directive", () => {
     ]));
   });
 
-  test('check CRUDL on student table with composite key', async () => {
+  test('check CRUDL, filter, limit and nextToken on student table with composite key', async () => {
     const student1A = await createStudent(1, 'A', 'David', 'Smith');
     const student1B = await createStudent(1, 'B', 'Chris', 'Sundersingh');
     const student2A = await createStudent(2, 'A', 'John', 'Doe');
@@ -294,6 +294,37 @@ describe("RDS Model Directive", () => {
       expect.objectContaining({ studentId: 1, classId: 'B', FirstName: 'Chris', LastName: 'Sundersingh' }),
       expect.objectContaining({ studentId: 2, classId: 'A', FirstName: 'John', LastName: 'Smith' }),
       expect.objectContaining({ studentId: 2, classId: 'B', FirstName: 'Jane', LastName: 'Doe' }),
+    ]));
+
+    // Validate limit and nextToken
+    const listStudentsResultWithLimit = await listStudents(2);
+    expect(listStudentsResultWithLimit.data.listStudents.items.length).toEqual(2);
+    expect(listStudentsResultWithLimit.data.listStudents.items).toEqual(expect.arrayContaining([
+      expect.objectContaining({ studentId: 1, classId: 'B', FirstName: 'Chris', LastName: 'Sundersingh' }),
+      expect.objectContaining({ studentId: 2, classId: 'A', FirstName: 'John', LastName: 'Smith' }),
+    ]));
+    expect(listStudentsResultWithLimit.data.listStudents.nextToken).toBeDefined();
+
+    const listStudentsResultWithNextToken = await listStudents(2, listStudentsResultWithLimit.data.listStudents.nextToken);
+    expect(listStudentsResultWithNextToken.data.listStudents.items.length).toEqual(1);
+    expect(listStudentsResultWithNextToken.data.listStudents.items).toEqual(expect.arrayContaining([
+      expect.objectContaining({ studentId: 2, classId: 'B', FirstName: 'Jane', LastName: 'Doe' }),
+    ]));
+    expect(listStudentsResultWithNextToken.data.listStudents.nextToken).toBeNull();
+
+    // Validate filter
+    const listStudentsResultWithFilter = await listStudents(10, null, { and: [{ FirstName: { eq: 'John' } }, { LastName: { eq: 'Smith' } }] });
+    expect(listStudentsResultWithFilter.data.listStudents.items.length).toEqual(1);
+    expect(listStudentsResultWithFilter.data.listStudents.items).toEqual(expect.arrayContaining([
+      expect.objectContaining({ studentId: 2, classId: 'A', FirstName: 'John', LastName: 'Smith' }),
+    ]));
+    expect(listStudentsResultWithFilter.data.listStudents.nextToken).toBeNull();
+
+    const listStudentsResultWithFilter2 = await listStudents(10, null, { FirstName: { size: { eq: 4 } } });
+    expect(listStudentsResultWithFilter2.data.listStudents.items.length).toEqual(2);
+    expect(listStudentsResultWithFilter2.data.listStudents.items).toEqual(expect.arrayContaining([
+      expect.objectContaining({ studentId: 2, classId: 'A', FirstName: 'John', LastName: 'Smith' }),
+      expect.objectContaining({ studentId: 2, classId: 'A', FirstName: 'John', LastName: 'Smith' }),
     ]));
   });
 
@@ -522,22 +553,28 @@ describe("RDS Model Directive", () => {
     return getResult;
   };
 
-  const listStudents = async () => {
+  const listStudents = async (limit: number = 100, nextToken: string | null = null, filter: any = null) => {
     const listQuery = /* GraphQL */ `
-        query ListStudents {
-          listStudents {
+        query ListStudents($limit: Int, $nextToken: String, $filter: ModelStudentFilterInput) {
+          listStudents(limit: $limit, nextToken: $nextToken, filter: $filter) {
             items {
               studentId
               classId
               FirstName
               LastName
             }
+            nextToken
           }
         }
       `;
     const listResult: any = await appSyncClient.query({
       query: gql(listQuery),
       fetchPolicy: 'no-cache',
+      variables: {
+        limit,
+        nextToken,
+        filter,
+      },
     });
 
     return listResult;

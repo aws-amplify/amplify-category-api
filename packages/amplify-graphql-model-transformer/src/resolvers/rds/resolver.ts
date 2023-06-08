@@ -34,6 +34,7 @@ export type OPERATIONS = 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'SYNC
 const OPERATION_KEY = '__operation';
 
 const RDSLayerMappingID = 'RDSLayerResourceMapping';
+// TODO: This is temporary state, we need to modify this to a production layer
 export const setRDSLayerMappings = (scope: Construct): CfnMapping => new CfnMapping(
   scope,
   RDSLayerMappingID,
