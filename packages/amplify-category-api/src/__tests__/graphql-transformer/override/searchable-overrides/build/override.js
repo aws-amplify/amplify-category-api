@@ -7,12 +7,6 @@ function override(resource, amplifyProjectInfo) {
   resource.opensearch.OpenSearchModelLambdaMapping['Post'].functionName = 'mockFunciton';
   // override resolver
   resource.opensearch.resolvers['querySearchPostsResolver'].requestMappingTemplate = 'mockTemplate';
-  resource.models.Post.modelDatasource.dynamoDbConfig.deltaSyncConfig = {
-    deltaSyncTableTtl: '5',
-    baseTableTtl: '10',
-    deltaSyncTableName: 'PostTable',
-  };
-  // resource.foo.bar;
 
   if (amplifyProjectInfo.envName != 'testEnvName') {
     throw new Error(`Unexpected envName: ${amplifyProjectInfo.envName}`);

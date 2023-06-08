@@ -12,8 +12,6 @@ import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { isResolvableObject, Stack, CfnParameter } from 'aws-cdk-lib';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
-import { get as lodashGet } from 'lodash';
-import { IConstruct } from 'constructs';
 import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
 import { InvalidDirectiveError } from '../errors';
 import * as SyncUtils from '../transformation/sync-utils';
@@ -279,7 +277,10 @@ export class TransformerResolver implements TransformerResolverProvider {
           }
 
           if (context.isProjectUsingDataStore()) {
-            const syncConfig = SyncUtils.getSyncConfig(context, this.modelName!)!;
+            //Remove the suffix "Table" from the datasource name
+            //The stack name cannot be retrieved as during the runtime it is tokenized and value not being revealed
+            const modelName = this.datasource.name.slice(0, -5);
+            const syncConfig = SyncUtils.getSyncConfig(context, modelName)!;
             const funcConf = dataSourceProviderFn.node.children.find(
               (it: any) => it.cfnResourceType === 'AWS::AppSync::FunctionConfiguration',
             ) as CfnFunctionConfiguration;
@@ -332,7 +333,6 @@ export class TransformerResolver implements TransformerResolverProvider {
           throw new Error('Unknown DataSource type');
       }
     }
-
     let initResolver = dedent`
     $util.qr($ctx.stash.put("typeName", "${this.typeName}"))
     $util.qr($ctx.stash.put("fieldName", "${this.fieldName}"))
@@ -422,11 +422,5 @@ export class TransformerResolver implements TransformerResolverProvider {
         description: 'None Data Source for Pipeline functions',
       });
     }
-  }
-
-  private get modelName(): string | undefined {
-    // Remove the suffix "Table" from the datasource name
-    // The stack name cannot be retrieved as during the runtime it is tokenized and value not being revealed
-    return this.datasource?.name?.replace(new RegExp('Table$'), '');
   }
 }
