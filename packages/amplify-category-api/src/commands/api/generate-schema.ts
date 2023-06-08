@@ -11,14 +11,16 @@ import {
   RDSConnectionSecrets,
 } from '@aws-amplify/graphql-transformer-core';
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { getExistingConnectionSecrets, storeConnectionSecrets, getSecretsKey, getDatabaseName } from '../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
+import { getExistingConnectionSecrets, storeConnectionSecrets, getSecretsKey, getDatabaseName } from '../../provider-utils/awscloudformation/utils/rds-resources/database-resources';
 import { writeSchemaFile, generateRDSSchema } from '../../provider-utils/awscloudformation/utils/graphql-schema-utils';
+import { PREVIEW_BANNER } from '../../category-constants';
 
 const subcommand = 'generate-schema';
 
 export const name = subcommand;
 
 export const run = async (context: $TSContext) => {
+  printer.warn(PREVIEW_BANNER);
   const apiName = getAppSyncAPIName();
   const apiResourceDir = getAPIResourceDir(apiName);
 

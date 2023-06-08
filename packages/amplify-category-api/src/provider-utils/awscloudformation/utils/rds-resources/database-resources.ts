@@ -5,8 +5,17 @@ import { SSMClient } from './ssmClient';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { MySQLDataSourceAdapter, Schema, Engine, DataSourceAdapter, MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
 import { printer } from '@aws-amplify/amplify-prompts';
+import { DeleteFunctionCommand, LambdaClient } from '@aws-sdk/client-lambda';
+import { DeleteRoleCommand, IAMClient } from '@aws-sdk/client-iam';
 
 const secretNames = ['database', 'host', 'port', 'username', 'password'];
+
+export const getVpcMetadataLambdaName = (appId: string, envName: string): string => {
+  if (appId && envName) {
+    return `${appId}-rds-schema-inspector-${envName}`;
+  }
+  throw new Error("AppId and environment name are required to generate the schema inspector lambda.");
+};
 
 export const getExistingConnectionSecrets = async (context: $TSContext, secretsKey: string, apiName: string, envName?: string): Promise<RDSConnectionSecrets|undefined> => {
   try {
@@ -92,27 +101,26 @@ export const storeConnectionSecrets = async (context: $TSContext, secrets: RDSCo
 };
 
 export const deleteConnectionSecrets = async (context: $TSContext, secretsKey: string, apiName: string, envName?: string) => {
-  let appId;
   const environmentName = stateManager.getCurrentEnvName();
-  try {
-    appId = stateManager.getAppID();
-  }
-  catch (error) {
+  const meta = stateManager.getMeta();
+  const { AmplifyAppId } = meta.providers.awscloudformation;
+  if (!AmplifyAppId) {
     printer.debug(`No AppId found when deleting parameters for environment ${envName}`);
     return;
   }
   const ssmClient = await SSMClient.getInstance(context);
-  const secretParameterPaths = secretNames.map( secret => {
-    return getParameterStoreSecretPath(secret, secretsKey, apiName, environmentName, appId);
+  const secretParameterPaths = secretNames.map(secret => {
+    return getParameterStoreSecretPath(secret, secretsKey, apiName, environmentName, AmplifyAppId);
   });
   await ssmClient.deleteSecrets(secretParameterPaths);
 };
 
+// TODO: This is not used. Leaving it here for now. Generate schema step already checks for connection. 
 export const testDatabaseConnection = async (config: RDSConnectionSecrets) => {
   // Establish the connection
   let adapter: DataSourceAdapter;
   let schema: Schema;
-  switch(config.engine) {
+  switch (config.engine) {
     case ImportedRDSType.MYSQL:
       adapter = new MySQLDataSourceAdapter(config as MySQLDataSourceConfig);
       schema = new Schema(new Engine('MySQL'));
@@ -123,10 +131,10 @@ export const testDatabaseConnection = async (config: RDSConnectionSecrets) => {
 
   try {
     await adapter.initialize();
-  } catch(error) {
+  } catch (error) {
     printer.error('Failed to connect to the specified RDS Data Source. Check the connection details and retry.');
     adapter.cleanup();
-    throw(error);
+    throw error;
   }
   adapter.cleanup();
 };
@@ -150,4 +158,33 @@ export const getDatabaseName = async (context: $TSContext, apiName: string, secr
   }
 
   return secrets[0].secretValue;
+};
+
+export const deleteSchemaInspectorLambdaRole = async (lambdaName: string): Promise<void> => {
+  const roleName = `${lambdaName}-execution-role`;
+  const client = new IAMClient({});
+  const command = new DeleteRoleCommand({ RoleName: roleName });
+  await client.send(command);
+};
+
+export const removeVpcSchemaInspectorLambda = async (context: $TSContext): Promise<void> => {
+  try {
+    // Delete the lambda function
+    const meta = stateManager.getMeta();
+    const { AmplifyAppId, Region } = meta.providers.awscloudformation;
+    const { amplify } = context;
+    const { envName } = amplify.getEnvInfo();
+    const lambdaName = getVpcMetadataLambdaName(AmplifyAppId, envName);
+
+    const client = new LambdaClient({ region: Region });
+    const command = new DeleteFunctionCommand({ FunctionName: lambdaName });
+    await client.send(command);
+
+    // Delete the role and policy
+    await deleteSchemaInspectorLambdaRole(lambdaName);
+  } catch (error) {
+    printer.debug(`Error deleting the schema inspector lambda: ${error}`);
+    // 1. Ignore if the AppId is not found error.
+    // 2. Schema introspection will exist only on databases imported from VPC. Ignore the error on environment deletion.
+  }
 };
