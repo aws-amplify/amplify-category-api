@@ -16,7 +16,7 @@ import {
   DiffRule,
   ProjectRule,
 } from 'graphql-transformer-core';
-import { TransformerFactoryArgs } from '../amplify-graphql-transform/graphql-transformer-v2';
+import { TransformerFactoryArgs } from '@aws-amplify/graphql-transformer';
 
 /**
  * Transformer Options used to create a GraphQL Transform and compile a GQL API

@@ -4,8 +4,7 @@ import { ApiCategoryFacade } from "@aws-amplify/amplify-cli-core";
 import { transformGraphQLSchemaV2 } from "../../graphql-transformer/transform-graphql-schema-v2";
 import { generateTransformerOptions } from "../../graphql-transformer/transformer-options-v2";
 import { getAppSyncAPIName } from "../../provider-utils/awscloudformation/utils/amplify-meta-utils";
-import { constructTransformerChain } from "../../amplify-graphql-transform/graphql-transformer-v2";
-import { TransformerProjectOptions } from "../../graphql-transformer/transformer-options-types";
+import { constructTransformerChain } from "@aws-amplify/graphql-transformer";
 import { AmplifyCLIFeatureFlagAdapter } from "../../graphql-transformer/amplify-cli-feature-flag-adapter";
 
 jest.mock("@aws-amplify/amplify-cli-core");
