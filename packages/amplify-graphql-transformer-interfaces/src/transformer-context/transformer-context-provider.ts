@@ -7,7 +7,6 @@ import { StackManagerProvider } from './stack-manager-provider';
 import { AppSyncAuthConfiguration, GraphQLAPIProvider } from '../graphql-api-provider';
 import { TransformerResourceHelperProvider } from './resource-resource-provider';
 import { FeatureFlagProvider } from '../feature-flag-provider';
-import { OverridesProvider } from './overrides-provider';
 
 export interface TransformerContextMetadataProvider {
   set<T>(key: string, value: T): void;
@@ -36,7 +35,6 @@ export interface TransformerContextProvider {
 
   isProjectUsingDataStore(): boolean;
   getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
-  getResourceOverrides: OverridesProvider;
 }
 
 export type TransformerBeforeStepContextProvider = Pick<

@@ -20,4 +20,3 @@ export {
 export { TransformerSchemaHelperProvider } from './schema-helper-provider';
 export { TransformerPreProcessContextProvider } from './transformer-preprocess-context-provider';
 export { StackManagerProvider } from './stack-manager-provider';
-export { OverridesProvider } from './overrides-provider';
