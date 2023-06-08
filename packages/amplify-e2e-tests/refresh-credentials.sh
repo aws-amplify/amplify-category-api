@@ -9,8 +9,7 @@ unset AWS_SECRET_ACCESS_KEY
 unset AWS_SESSION_TOKEN
 
 # Reassume the e2e test account role
-session_id=$((1 + $RANDOM % 10000))
-creds=$(aws sts assume-role --role-arn $TEST_ACCOUNT_ROLE --role-session-name testSession${session_id} --duration-seconds 3600)
+creds=$(aws sts assume-role --role-arn $TEST_ACCOUNT_ROLE --role-session-name testSession1248634 --duration-seconds 3600)
 if [ -z $(echo $creds | jq -c -r '.AssumedRoleUser.Arn') ]; then
     return
 fi
