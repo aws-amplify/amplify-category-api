@@ -84,7 +84,7 @@ export interface GraphQLTransformOptions {
   readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   readonly resolverConfig?: ResolverConfig;
   readonly overrideConfig?: OverrideConfig;
-  readonly legacyApiKeyEnabled?: number;
+  readonly legacyApiKeyEnabled?: boolean;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
@@ -96,7 +96,7 @@ export class GraphQLTransform {
   private readonly userDefinedSlots: Record<string, UserDefinedSlot[]>;
   private readonly overrideConfig?: OverrideConfig;
   private readonly disableResolverDeduping?: boolean;
-  private readonly legacyApiKeyEnabled?: number;
+  private readonly legacyApiKeyEnabled?: boolean;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
   // that specifies we have run already run a directive at a given location.
@@ -340,11 +340,7 @@ export class GraphQLTransform {
       mode => mode?.authorizationType,
     );
 
-    const hasLegacyAPIKeyConfigDisabled = this.legacyApiKeyEnabled !== null
-      && this.legacyApiKeyEnabled !== undefined
-      && this.legacyApiKeyEnabled !== 1;
-
-    if (authModes.includes(AuthorizationType.API_KEY) && !hasLegacyAPIKeyConfigDisabled) {
+    if (authModes.includes(AuthorizationType.API_KEY) && this.legacyApiKeyEnabled !== false) {
       const apiKeyConfig: AuthorizationMode | undefined = [
         authorizationConfig.defaultAuthorization,
         ...(authorizationConfig.additionalAuthorizationModes || []),

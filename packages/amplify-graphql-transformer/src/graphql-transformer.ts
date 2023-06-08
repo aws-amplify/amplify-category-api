@@ -52,7 +52,7 @@ export type TransformerFactoryArgs = {
  * Transformer Options used to create a GraphQL Transform and compile a GQL API
  */
 export type TransformConfig = {
-  legacyApiKeyEnabled?: number;
+  legacyApiKeyEnabled?: boolean;
   disableResolverDeduping?: boolean;
   transformersFactoryArgs: TransformerFactoryArgs;
   resolverConfig?: ResolverConfig;

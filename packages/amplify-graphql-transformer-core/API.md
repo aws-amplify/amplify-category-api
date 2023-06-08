@@ -239,7 +239,7 @@ export interface GraphQLTransformOptions {
     // (undocumented)
     readonly host?: TransformHostProvider;
     // (undocumented)
-    readonly legacyApiKeyEnabled?: number;
+    readonly legacyApiKeyEnabled?: boolean;
     // (undocumented)
     readonly overrideConfig?: OverrideConfig;
     // (undocumented)

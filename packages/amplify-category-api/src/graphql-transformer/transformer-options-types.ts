@@ -40,7 +40,7 @@ export type TransformerProjectOptions = {
   sanityCheckRules: SanityCheckRules;
   overrideConfig: OverrideConfig;
   userDefinedSlots: Record<string, UserDefinedSlot[]>;
-  legacyApiKeyEnabled?: number;
+  legacyApiKeyEnabled?: boolean;
   disableResolverDeduping?: boolean;
   stackMapping: Record<string, string>;
   featureFlags: FeatureFlagProvider;
