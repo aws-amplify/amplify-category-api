@@ -271,7 +271,8 @@ export class TransformerResolver implements TransformerResolverProvider {
         case 'AMAZON_DYNAMODB':
           if (this.datasource.ds.dynamoDbConfig && !isResolvableObject(this.datasource.ds.dynamoDbConfig)) {
             const tableName = this.datasource.ds.dynamoDbConfig?.tableName;
-            dataSource = `$util.qr($ctx.stash.put("tableName", "${tableName}"))`;
+            const deltaSyncTableTtl = this.datasource.ds.dynamoDbConfig?.deltaSyncConfig?.deltaSyncTableTtl;
+            dataSource = `$util.qr($ctx.stash.put("tableName", "${tableName}"))\n$util.qr($ctx.stash.put("deltaSyncTableTtl", "${deltaSyncTableTtl}")`;
           }
 
           if (context.isProjectUsingDataStore()) {
@@ -328,13 +329,6 @@ export class TransformerResolver implements TransformerResolverProvider {
           throw new Error('Unknown DataSource type');
       }
     }
-    const deltaSyncTableTtl = lodashGet(this, [
-      'datasource',
-      'ds',
-      'dynamoDbConfig',
-      'deltaSyncConfig',
-      'deltaSyncTableTtl'
-    ]) || SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
 
     let initResolver = dedent`
     $util.qr($ctx.stash.put("typeName", "${this.typeName}"))
@@ -344,7 +338,6 @@ export class TransformerResolver implements TransformerResolverProvider {
     $util.qr($ctx.stash.metadata.put("dataSourceType", "${dataSourceType}"))
     $util.qr($ctx.stash.metadata.put("apiId", "${api.apiId}"))
     $util.qr($ctx.stash.put("connectionAttributes", {}))
-    $util.qr($ctx.stash.put("deltaSyncTableTtl", "${deltaSyncTableTtl}")
     ${dataSource}
     `;
     const authModes = [context.authConfig.defaultAuthentication, ...(context.authConfig.additionalAuthenticationProviders || [])].map(
