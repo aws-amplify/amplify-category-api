@@ -328,12 +328,6 @@ export interface OpenSearchDirectiveStack {
 }
 
 // @public (undocumented)
-export interface OverridesProvider {
-    // (undocumented)
-    (): AmplifyApiGraphQlResourceStackTemplate;
-}
-
-// @public (undocumented)
 export enum QueryFieldType {
     // (undocumented)
     GET = "GET",
@@ -531,8 +525,6 @@ export interface TransformerContextProvider {
     // (undocumented)
     getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
     // (undocumented)
-    getResourceOverrides: OverridesProvider;
-    // (undocumented)
     inputDocument: DocumentNode;
     // (undocumented)
     isProjectUsingDataStore(): boolean;
@@ -583,7 +575,7 @@ export enum TransformerLogLevel {
     // (undocumented)
     INFO = "INFO",
     // (undocumented)
-    WARN = "WARN"
+    WARN = "WARN",
 }
 
 // @public (undocumented)
