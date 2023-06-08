@@ -38,6 +38,7 @@ const CODEBUILD_CONFIG_BASE_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workf
 const CODEBUILD_GENERATE_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow.yml');
 const RUN_SOLO = [
   'src/__tests__/apigw.test.ts',
+  'src/__tests__/api_2.test.ts',
   'src/__tests__/containers-api-1.test.ts',
   'src/__tests__/containers-api-2.test.ts',
   'src/__tests__/graphql-v2/searchable-datastore.test.ts',
@@ -45,6 +46,7 @@ const RUN_SOLO = [
   'src/__tests__/schema-searchable.test.ts',
   'src/__tests__/schema-auth-1.test.ts',
   'src/__tests__/schema-auth-5.test.ts',
+  'src/__tests__/schema-auth-6.test.ts',
   'src/__tests__/schema-auth-7.test.ts',
   'src/__tests__/schema-auth-11.test.ts',
   'src/__tests__/schema-auth-14.test.ts',
@@ -62,7 +64,7 @@ const RUN_SOLO = [
   'src/__tests__/FunctionTransformerTestsV2.e2e.test.ts',
   'src/__tests__/HttpTransformer.e2e.test.ts',
   'src/__tests__/HttpTransformerV2.e2e.test.ts',
-  'src/__tests__/MutationCondition.e2e.test.ts',
+  'src/__tests__/NonModelAuthV2Function.e2e.test.ts',
 ];
 
 export function loadConfigBase() {

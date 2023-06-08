@@ -184,13 +184,13 @@ batch:
           CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
-    - identifier: schema_auth_6_api_lambda_auth_api_9_api_2
+    - identifier: api_lambda_auth_api_9
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/schema-auth-6.test.ts|src/__tests__/graphql-v2/api_lambda_auth.test.ts|src/__tests__/api_9.test.ts|src/__tests__/api_2.test.ts
+            src/__tests__/graphql-v2/api_lambda_auth.test.ts|src/__tests__/api_9.test.ts
           CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
@@ -349,13 +349,22 @@ batch:
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
+    - identifier: schema_auth_6
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: src/__tests__/schema-auth-6.test.ts
+          CLI_REGION: ap-southeast-2
+      depend-on:
+        - publish_to_local_registry
     - identifier: schema_connection
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: src/__tests__/schema-connection.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_previous_deployment_had_node_to_node
@@ -365,7 +374,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-had-node-to-node.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_previous_deployment_no_node_to_node
@@ -375,7 +384,16 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: us-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: api_2
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: src/__tests__/api_2.test.ts
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_migration
@@ -384,7 +402,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: src/__tests__/transformer-migrations/searchable-migration.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: eu-central-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
@@ -400,13 +418,13 @@ batch:
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        NonModelAuthV2Function_FunctionTransformerTests_KeyWithAuth_NoneEnvFunctionTransformer
+        FunctionTransformerTests_KeyWithAuth_MutationCondition_NoneEnvFunctionTransformer
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/NonModelAuthV2Function.e2e.test.ts|src/__tests__/FunctionTransformerTests.e2e.test.ts|src/__tests__/KeyWithAuth.e2e.test.ts|src/__tests__/NoneEnvFunctionTransformer.e2e.test.ts
+            src/__tests__/FunctionTransformerTests.e2e.test.ts|src/__tests__/KeyWithAuth.e2e.test.ts|src/__tests__/MutationCondition.e2e.test.ts|src/__tests__/NoneEnvFunctionTransformer.e2e.test.ts
           CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
@@ -553,23 +571,23 @@ batch:
           CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
+    - identifier: NonModelAuthV2Function
+      buildspec: codebuild_specs/graphql_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: src/__tests__/NonModelAuthV2Function.e2e.test.ts
+          CLI_REGION: us-west-2
+      depend-on:
+        - publish_to_local_registry
     - identifier: FunctionTransformerTestsV2
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: src/__tests__/FunctionTransformerTestsV2.e2e.test.ts
-          CLI_REGION: us-west-2
-          USE_PARENT_ACCOUNT: 1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: MutationCondition
-      buildspec: codebuild_specs/graphql_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          TEST_SUITE: src/__tests__/MutationCondition.e2e.test.ts
           CLI_REGION: eu-west-2
+          USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
     - identifier: HttpTransformer
