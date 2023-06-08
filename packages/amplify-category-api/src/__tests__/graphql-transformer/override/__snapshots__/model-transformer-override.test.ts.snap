@@ -241,7 +241,6 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "PostTable",
               },
               "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"undefined\\")
 $util.toJson({})",
             ],
           ],
@@ -294,7 +293,6 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "PostTable",
               },
               "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"undefined\\")
 $util.toJson({})",
             ],
           ],
@@ -422,7 +420,6 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "PostTable",
               },
               "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"undefined\\")
 $util.toJson({})",
             ],
           ],
@@ -475,7 +472,6 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "PostTable",
               },
               "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"undefined\\")
 $util.toJson({})",
             ],
           ],
@@ -1253,7 +1249,6 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "PostTable",
               },
               "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"undefined\\")
 $util.toJson({})",
             ],
           ],
@@ -1664,7 +1659,6 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "CommentTable",
               },
               "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"undefined\\")
 $util.toJson({})",
             ],
           ],
@@ -1714,7 +1708,6 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "CommentTable",
               },
               "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"undefined\\")
 $util.toJson({})",
             ],
           ],
@@ -1839,7 +1832,6 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "CommentTable",
               },
               "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"undefined\\")
 $util.toJson({})",
             ],
           ],
@@ -1889,7 +1881,6 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "CommentTable",
               },
               "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"undefined\\")
 $util.toJson({})",
             ],
           ],
@@ -2323,7 +2314,6 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "CommentTable",
               },
               "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"undefined\\")
 $util.toJson({})",
             ],
           ],
@@ -2578,7 +2568,6 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "PostTable",
               },
               "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"undefined\\")
 $util.toJson({})",
             ],
           ],
@@ -2631,7 +2620,6 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "PostTable",
               },
               "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"undefined\\")
 $util.toJson({})",
             ],
           ],
@@ -2759,7 +2747,6 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "PostTable",
               },
               "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"undefined\\")
 $util.toJson({})",
             ],
           ],
@@ -2812,7 +2799,6 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "PostTable",
               },
               "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"undefined\\")
 $util.toJson({})",
             ],
           ],
@@ -3563,7 +3549,6 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "PostTable",
               },
               "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"undefined\\")
 $util.toJson({})",
             ],
           ],
@@ -3966,7 +3951,6 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "CommentTable",
               },
               "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"undefined\\")
 $util.toJson({})",
             ],
           ],
@@ -4016,7 +4000,6 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "CommentTable",
               },
               "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"undefined\\")
 $util.toJson({})",
             ],
           ],
@@ -4141,7 +4124,6 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "CommentTable",
               },
               "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"undefined\\")
 $util.toJson({})",
             ],
           ],
@@ -4191,7 +4173,6 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "CommentTable",
               },
               "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"undefined\\")
 $util.toJson({})",
             ],
           ],
@@ -4625,7 +4606,6 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "CommentTable",
               },
               "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"undefined\\")
 $util.toJson({})",
             ],
           ],

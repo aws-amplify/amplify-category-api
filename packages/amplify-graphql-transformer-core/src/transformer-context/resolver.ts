@@ -271,8 +271,11 @@ export class TransformerResolver implements TransformerResolverProvider {
         case 'AMAZON_DYNAMODB':
           if (this.datasource.ds.dynamoDbConfig && !isResolvableObject(this.datasource.ds.dynamoDbConfig)) {
             const tableName = this.datasource.ds.dynamoDbConfig?.tableName;
-            const deltaSyncTableTtl = this.datasource.ds.dynamoDbConfig?.deltaSyncConfig?.deltaSyncTableTtl;
-            dataSource = `$util.qr($ctx.stash.put("tableName", "${tableName}"))\n$util.qr($ctx.stash.put("deltaSyncTableTtl", "${deltaSyncTableTtl}")`;
+            dataSource = `$util.qr($ctx.stash.put("tableName", "${tableName}"))`
+            if (this.datasource.ds.dynamoDbConfig?.deltaSyncConfig && !isResolvableObject(this.datasource.ds.dynamoDbConfig?.deltaSyncConfig)) { 
+              const deltaSyncTableTtl = this.datasource.ds.dynamoDbConfig?.deltaSyncConfig?.deltaSyncTableTtl;
+              dataSource += `\n$util.qr($ctx.stash.put("deltaSyncTableTtl", "${deltaSyncTableTtl}")`;
+            }
           }
 
           if (context.isProjectUsingDataStore()) {
