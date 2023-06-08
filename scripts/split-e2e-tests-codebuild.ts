@@ -48,6 +48,7 @@ const RUN_SOLO = [
   'src/__tests__/schema-auth-5.test.ts',
   'src/__tests__/schema-auth-6.test.ts',
   'src/__tests__/schema-auth-7.test.ts',
+  'src/__tests__/schema-auth-9.test.ts',
   'src/__tests__/schema-auth-11.test.ts',
   'src/__tests__/schema-auth-14.test.ts',
   'src/__tests__/schema-auth-15.test.ts',
@@ -64,7 +65,6 @@ const RUN_SOLO = [
   'src/__tests__/FunctionTransformerTestsV2.e2e.test.ts',
   'src/__tests__/HttpTransformer.e2e.test.ts',
   'src/__tests__/HttpTransformerV2.e2e.test.ts',
-  'src/__tests__/NonModelAuthV2Function.e2e.test.ts',
 ];
 
 export function loadConfigBase() {

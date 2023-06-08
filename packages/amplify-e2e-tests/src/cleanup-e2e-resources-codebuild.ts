@@ -593,7 +593,7 @@ const getFilterPredicate = (args: any): JobFilterPredicate => {
   if (args._.length === 0) {
     return filterAllStaleResources();
   }
-  if (args._[0] === 'workflow') {
+  if (args._[0] === 'buildBatchArn') {
     return filterByBuildBatchArn(args.buildBatchArn as string);
   }
   if (args._[0] === 'job') {
