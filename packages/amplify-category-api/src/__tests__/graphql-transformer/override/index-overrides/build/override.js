@@ -1,8 +1,8 @@
 function override(resource, amplifyProjectInfo) {
-  resource.models.Post.modelDatasource.dynamoDbConfig.deltaSyncConfig = {
-    deltaSyncTableTtl: '5',
-    baseTableTtl: '10',
-    deltaSyncTableName: 'PostTable',
+  resource.models.Song.modelDatasource.dynamoDbConfig.deltaSyncConfig = {
+    deltaSyncTableTtl: '15',
+    baseTableTtl: '20',
+    deltaSyncTableName: 'SongTable',
   };
 
   if (amplifyProjectInfo.envName != 'testEnvName') {

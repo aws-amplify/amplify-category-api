@@ -335,7 +335,6 @@ export class TransformerResolver implements TransformerResolverProvider {
       'deltaSyncConfig',
       'deltaSyncTableTtl'
     ]) || SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
-    console.log('deltaSyncTableTtl', deltaSyncTableTtl);
 
     let initResolver = dedent`
     $util.qr($ctx.stash.put("typeName", "${this.typeName}"))
