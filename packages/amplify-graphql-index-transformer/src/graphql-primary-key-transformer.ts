@@ -28,7 +28,6 @@ import {
 } from 'graphql-transformer-common';
 import {
   constructSyncVTL,
-  getDeltaSyncTableTtl,
   getVTLGenerator,
 } from './resolvers/resolvers';
 import {

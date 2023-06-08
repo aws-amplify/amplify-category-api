@@ -299,7 +299,7 @@ test('it generates expected resources', () => {
             {
               Ref: Match.anyValue(),
             },
-            '"))\n$util.qr($ctx.stash.put("connectionAttributes", {}))\n$util.qr($ctx.stash.put("deltaSyncTableTtl", "30")\n$util.qr($ctx.stash.put("endpoint", "https://',
+            '"))\n$util.qr($ctx.stash.put("connectionAttributes", {}))\n$util.qr($ctx.stash.put("endpoint", "https://',
             {
               'Fn::GetAtt': ['OpenSearchDomain', 'DomainEndpoint'],
             },

@@ -881,15 +881,6 @@ export const generateAuthExpressionForSandboxMode = (enabled: boolean): string =
   );
 };
 
-export const getDeltaSyncTableTtl = (resourceOverrides: any, resource: TransformerResolverProvider) => {
-  if (_.get(resource, 'typeName') !== 'Query') {
-    return SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
-  }
-  const modelName = _.get(resource, ['datasource', 'name'])?.replace(new RegExp('Table$'), '');
-  const deltaSyncTtlOverride = _.get(resourceOverrides, ['models', modelName, 'modelDatasource', 'dynamoDbConfig', 'deltaSyncConfig', 'deltaSyncTableTtl']);
-  return deltaSyncTtlOverride || SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL;
-}
-
 export function getDBInfo(ctx: TransformerContextProvider, modelName: string) {
   const dbInfo = ctx.modelToDatasourceMap.get(modelName);
   const result = dbInfo ?? { dbType: 'DDB', provisionDB: true };

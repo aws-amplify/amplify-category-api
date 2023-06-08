@@ -9,7 +9,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
-import { isResolvableObject, Stack, CfnParameter } from 'aws-cdk-lib';
+import { isResolvableObject, Stack, CfnParameter, Lazy } from 'aws-cdk-lib';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
 import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
@@ -271,7 +271,19 @@ export class TransformerResolver implements TransformerResolverProvider {
             const tableName = this.datasource.ds.dynamoDbConfig?.tableName;
             dataSource = `$util.qr($ctx.stash.put("tableName", "${tableName}"))`
             if (this.datasource.ds.dynamoDbConfig?.deltaSyncConfig && !isResolvableObject(this.datasource.ds.dynamoDbConfig?.deltaSyncConfig)) { 
-              const deltaSyncTableTtl = this.datasource.ds.dynamoDbConfig?.deltaSyncConfig?.deltaSyncTableTtl;
+              const deltaSyncTableTtl = Lazy.string({
+                produce: (): string => {
+                  if (this.datasource
+                    && this.datasource.ds.dynamoDbConfig
+                    && !isResolvableObject(this.datasource.ds.dynamoDbConfig) 
+                    && !isResolvableObject(this.datasource.ds.dynamoDbConfig.deltaSyncConfig)
+                  ) {
+                    return this.datasource.ds.dynamoDbConfig.deltaSyncConfig!.deltaSyncTableTtl || SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL.toString();
+                  } else {
+                    return SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL.toString();
+                  }
+                }
+              });
               dataSource += `\n$util.qr($ctx.stash.put("deltaSyncTableTtl", "${deltaSyncTableTtl}")`;
             }
           }
