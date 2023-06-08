@@ -9,13 +9,13 @@ import {
   AmplifyError,
   ApiCategoryFacade,
 } from '@aws-amplify/amplify-cli-core';
-import { constructGraphQLTransformV2 } from '../graphql-transformer/transformer-factory';
 import {
   SCHEMA_DIR_NAME,
   SCHEMA_FILENAME,
 } from '../graphql-transformer/constants';
 import { generateTransformerOptions } from '../graphql-transformer/transformer-options-v2';
 import { contextUtil } from './context-util';
+import { constructTransform } from '../amplify-graphql-transform';
 
 /**
  * SchemaReader is a utility point to consolidate and abstract GraphQL Schema reading
@@ -90,7 +90,7 @@ export class SchemaReader {
 
     if (preProcessSchema && !this.preProcessedSchemaDocument) {
       const transformerOptions = await generateTransformerOptions(context, options);
-      const transform = await constructGraphQLTransformV2(transformerOptions);
+      const transform = constructTransform(transformerOptions);
       this.preProcessedSchemaDocument = transform.preProcessSchema(this.schemaDocument);
     }
 

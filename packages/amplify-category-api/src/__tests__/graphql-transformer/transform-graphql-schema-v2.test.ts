@@ -3,8 +3,10 @@ import { printer } from "@aws-amplify/amplify-prompts";
 import { ApiCategoryFacade } from "@aws-amplify/amplify-cli-core";
 import { transformGraphQLSchemaV2 } from "../../graphql-transformer/transform-graphql-schema-v2";
 import { generateTransformerOptions } from "../../graphql-transformer/transformer-options-v2";
-import { getTransformerFactoryV2 } from "../../graphql-transformer/transformer-factory";
 import { getAppSyncAPIName } from "../../provider-utils/awscloudformation/utils/amplify-meta-utils";
+import { constructTransformerChain } from "../../amplify-graphql-transform/graphql-transformer-v2";
+import { TransformerProjectOptions } from "../../graphql-transformer/transformer-options-types";
+import { AmplifyCLIFeatureFlagAdapter } from "../../graphql-transformer/amplify-cli-feature-flag-adapter";
 
 jest.mock("@aws-amplify/amplify-cli-core");
 jest.mock("@aws-amplify/amplify-prompts");
@@ -61,7 +63,7 @@ describe("transformGraphQLSchemaV2", () => {
         `,
         config: { StackMapping: {} },
       },
-      transformersFactory: await getTransformerFactoryV2("resourceDir"),
+      transformersFactory: constructTransformerChain(),
       transformersFactoryArgs: {},
       dryRun: true,
       projectDirectory: __dirname,
@@ -71,6 +73,7 @@ describe("transformGraphQLSchemaV2", () => {
           authenticationType: "AMAZON_COGNITO_USER_POOLS",
         },
       },
+      featureFlags: new AmplifyCLIFeatureFlagAdapter(),
     });
     getAppSyncAPINameMock.mockReturnValue(["testapi"]);
 

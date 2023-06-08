@@ -101,7 +101,7 @@ describe('GraphQLTransform', () => {
       const transform = new TestGraphQLTransform({
         transformers: [mockTransformer],
         authConfig: apiKeyAuthConfig,
-        buildParameters: { CreateAPIKey: 1 },
+        legacyApiKeyEnabled: 1,
       });
       invokeAndVerifyIfAPIKeyIsDefined({ transform, isAPIKeyExpected: true });
     });
@@ -110,7 +110,7 @@ describe('GraphQLTransform', () => {
       const transform = new TestGraphQLTransform({
         transformers: [mockTransformer],
         authConfig: apiKeyAuthConfig,
-        buildParameters: { CreateAPIKey: 0 },
+        legacyApiKeyEnabled: 0,
       });
       invokeAndVerifyIfAPIKeyIsDefined({ transform, isAPIKeyExpected: false });
     });
@@ -119,7 +119,7 @@ describe('GraphQLTransform', () => {
       const transform = new TestGraphQLTransform({
         transformers: [mockTransformer],
         authConfig: apiKeyAuthConfig,
-        buildParameters: { CreateAPIKey: -1 },
+        legacyApiKeyEnabled: -1,
       });
       invokeAndVerifyIfAPIKeyIsDefined({ transform, isAPIKeyExpected: false });
     });
@@ -128,7 +128,7 @@ describe('GraphQLTransform', () => {
       const transform = new TestGraphQLTransform({
         transformers: [mockTransformer],
         authConfig: apiKeyAuthConfig,
-        buildParameters: { CreateAPIKey: '' },
+        legacyApiKeyEnabled: '' as unknown as number,
       });
       invokeAndVerifyIfAPIKeyIsDefined({ transform, isAPIKeyExpected: false });
     });

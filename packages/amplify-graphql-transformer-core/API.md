@@ -233,13 +233,13 @@ export interface GraphQLTransformOptions {
     // (undocumented)
     readonly authConfig?: AppSyncAuthConfiguration;
     // (undocumented)
-    readonly buildParameters?: Record<string, any>;
-    // (undocumented)
     readonly disableResolverDeduping?: boolean;
     // (undocumented)
     readonly featureFlags?: FeatureFlagProvider;
     // (undocumented)
     readonly host?: TransformHostProvider;
+    // (undocumented)
+    readonly legacyApiKeyEnabled?: number;
     // (undocumented)
     readonly overrideConfig?: OverrideConfig;
     // (undocumented)
@@ -252,8 +252,6 @@ export interface GraphQLTransformOptions {
     readonly stackMapping?: StackMapping;
     // (undocumented)
     readonly stacks?: Record<string, Template>;
-    // (undocumented)
-    readonly transformConfig?: TransformConfig;
     // (undocumented)
     readonly transformers: TransformerPluginProvider[];
     // (undocumented)

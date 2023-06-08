@@ -24,20 +24,21 @@ import {
 import importFrom from 'import-from';
 import importGlobal from 'import-global';
 import path from 'path';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
-import { parseUserDefinedSlotsFromProject } from './user-defined-slots';
-import { TransformerFactoryArgs, TransformerProjectOptions } from './transformer-options-types';
-import { constructTransformerChain } from '../amplify-graphql-transform';
+import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 const PROVIDER_NAME = 'awscloudformation';
 
-export const getTransformerFactoryV2 = (resourceDir: string) => async (options?: TransformerFactoryArgs) => {
+/**
+ * Scan the project config for custom transformers, then attempt to load them from the various node paths which Amplify supports.
+ * @param resourceDir the directory to search for transformer configuration.
+ * @returns a list of custom plugins.
+ */
+export const loadCustomTransformersV2 = async (resourceDir: string): Promise<TransformerPluginProvider[]> => {
   const customTransformersConfig = await loadProject(resourceDir);
   const customTransformerList = customTransformersConfig?.config?.transformers;
-  const customTransformers = (Array.isArray(customTransformerList) ? customTransformerList : [])
+  return (Array.isArray(customTransformerList) ? customTransformerList : [])
     .map(importTransformerModule)
-    .map(imported => {
+    .map((imported) => {
       const CustomTransformer = imported.default;
 
       if (typeof CustomTransformer === 'function') {
@@ -50,9 +51,7 @@ export const getTransformerFactoryV2 = (resourceDir: string) => async (options?:
 
       throw new Error("Custom Transformers' default export must be a function or an object");
     })
-    .filter(customTransformer => customTransformer);
-
-  return constructTransformerChain(customTransformers, options);
+    .filter((customTransformer) => customTransformer);
 };
 
 export const getTransformerFactoryV1 = (
@@ -155,23 +154,3 @@ const importTransformerModule = (transformerName: string): any => {
     throw error;
   }
 };
-
-/**
- * Use the options generated from 'transformer-options' to create a V2 GraphQL Transform instance
- * @param opts The options produced by 'transformer-options'
- * @returns GraphQLTransform A brand new instance of the GraphQL Transform
- */
-export const constructGraphQLTransformV2 = async (
-  opts: TransformerProjectOptions<TransformerFactoryArgs>,
-): Promise<GraphQLTransform> => new GraphQLTransform({
-  transformers: await opts.transformersFactory(opts.transformersFactoryArgs),
-  stackMapping: opts.projectConfig.config.StackMapping,
-  transformConfig: opts.projectConfig.config,
-  authConfig: opts.authConfig,
-  buildParameters: opts.buildParameters,
-  stacks: opts.projectConfig.stacks || {},
-  featureFlags: new AmplifyCLIFeatureFlagAdapter(),
-  sandboxModeEnabled: opts.sandboxModeEnabled,
-  userDefinedSlots: parseUserDefinedSlotsFromProject(opts.projectConfig),
-  resolverConfig: opts.resolverConfig,
-});

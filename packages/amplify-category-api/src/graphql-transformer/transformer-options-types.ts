@@ -3,30 +3,31 @@
  */
 import {
   AppSyncAuthConfiguration,
-  TransformerPluginProvider,
-  Template
+  FeatureFlagProvider,
+  Template,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   OverrideConfig,
   ResolverConfig,
   TransformerProjectConfig,
+  UserDefinedSlot,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DiffRule,
   ProjectRule,
 } from 'graphql-transformer-core';
+import { TransformerFactoryArgs } from '../amplify-graphql-transform/graphql-transformer-v2';
 
 /**
  * Transformer Options used to create a GraphQL Transform and compile a GQL API
  */
-export type TransformerProjectOptions<T> = {
+export type TransformerProjectOptions = {
   buildParameters: {
     S3DeploymentBucket: string;
     S3DeploymentRootKey: string;
   };
   projectDirectory: string;
-  transformersFactory: (options: T) => Promise<TransformerPluginProvider[]>;
-  transformersFactoryArgs: T;
+  transformersFactoryArgs: TransformerFactoryArgs;
   rootStackFileName: 'cloudformation-template.json';
   currentCloudBackendDirectory?: string;
   lastDeployedProjectConfig?: TransformerProjectConfig;
@@ -38,25 +39,14 @@ export type TransformerProjectOptions<T> = {
   sandboxModeEnabled?: boolean;
   sanityCheckRules: SanityCheckRules;
   overrideConfig: OverrideConfig;
+  userDefinedSlots: Record<string, UserDefinedSlot[]>;
+  legacyApiKeyEnabled?: number;
+  disableResolverDeduping?: boolean;
+  stackMapping: Record<string, string>;
+  featureFlags: FeatureFlagProvider;
 };
 
 type SanityCheckRules = {
   diffRules: DiffRule[];
   projectRules: ProjectRule[];
-};
-
-export type TransformerSearchConfig = {
-  enableNodeToNodeEncryption?: boolean;
-};
-
-/**
- * Arguments passed into a TransformerFactory
- * Used to determine how to create a new GraphQLTransform
- */
-export type TransformerFactoryArgs = {
-  authConfig: any;
-  storageConfig?: any;
-  adminRoles?: Array<string>;
-  identityPoolId?: string;
-  searchConfig?: TransformerSearchConfig;
 };
