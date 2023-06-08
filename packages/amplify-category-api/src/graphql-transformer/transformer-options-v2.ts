@@ -265,11 +265,18 @@ export const generateTransformerOptions = async (
     featureFlags: new AmplifyCLIFeatureFlagAdapter(),
     stacks: project.stacks,
     stackMapping: project.config.StackMapping,
-    legacyApiKeyEnabled: parameters.CreateAPIKey,
+    legacyApiKeyEnabled: legacyApiKeyEnabledFromParameters(parameters),
     disableResolverDeduping: (project.config as any).DisableResolverDeduping,
   };
 
   return buildConfig;
+};
+
+export const legacyApiKeyEnabledFromParameters = (parameters: any): boolean | undefined => {
+  if (!('CreateAPIKey' in parameters)) {
+    return undefined;
+  }
+  return parameters.CreateAPIKey === 1 || parameters.CreateAPIKey === '1';
 };
 
 /**

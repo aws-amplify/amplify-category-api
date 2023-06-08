@@ -36,7 +36,7 @@ export type ExecuteTransformConfig = TransformConfig & {
 
 // @public (undocumented)
 export type TransformConfig = {
-    legacyApiKeyEnabled?: number;
+    legacyApiKeyEnabled?: boolean;
     disableResolverDeduping?: boolean;
     transformersFactoryArgs: TransformerFactoryArgs;
     resolverConfig?: ResolverConfig;

@@ -97,38 +97,28 @@ describe('GraphQLTransform', () => {
       invokeAndVerifyIfAPIKeyIsDefined({ transform, isAPIKeyExpected: false });
     });
 
-    it('creates an api key for apps with API_KEY authorization if CreateApiKey is set to 1', () => {
+    it('creates an api key for apps with API_KEY authorization if legacyApiKeyEnabled is set to true', () => {
       const transform = new TestGraphQLTransform({
         transformers: [mockTransformer],
         authConfig: apiKeyAuthConfig,
-        legacyApiKeyEnabled: 1,
+        legacyApiKeyEnabled: true,
       });
       invokeAndVerifyIfAPIKeyIsDefined({ transform, isAPIKeyExpected: true });
     });
 
-    it('does not create an api key for apps with API_KEY authorization if CreateApiKey is set to 0', () => {
+    it('does not create an api key for apps with API_KEY authorization if legacyApiKeyEnabled is undefined', () => {
       const transform = new TestGraphQLTransform({
         transformers: [mockTransformer],
         authConfig: apiKeyAuthConfig,
-        legacyApiKeyEnabled: 0,
       });
-      invokeAndVerifyIfAPIKeyIsDefined({ transform, isAPIKeyExpected: false });
+      invokeAndVerifyIfAPIKeyIsDefined({ transform, isAPIKeyExpected: true });
     });
 
-    it('does not create an api key for apps with API_KEY authorization if CreateApiKey is set to -1', () => {
+    it('does not create an api key for apps with API_KEY authorization if legacyApiKeyEnabled is set to false', () => {
       const transform = new TestGraphQLTransform({
         transformers: [mockTransformer],
         authConfig: apiKeyAuthConfig,
-        legacyApiKeyEnabled: -1,
-      });
-      invokeAndVerifyIfAPIKeyIsDefined({ transform, isAPIKeyExpected: false });
-    });
-
-    it('does not create an api key for apps with API_KEY authorization if CreateApiKey is set to an empty string', () => {
-      const transform = new TestGraphQLTransform({
-        transformers: [mockTransformer],
-        authConfig: apiKeyAuthConfig,
-        legacyApiKeyEnabled: '' as unknown as number,
+        legacyApiKeyEnabled: false,
       });
       invokeAndVerifyIfAPIKeyIsDefined({ transform, isAPIKeyExpected: false });
     });
