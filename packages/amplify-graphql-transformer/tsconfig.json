@@ -3,13 +3,12 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "strict": false,
+    "strict": true,
     "allowJs": false
   },
   "exclude": [
     "coverage",
     "lib",
-    "scripts",
     "src/__tests__"
   ]
 }
