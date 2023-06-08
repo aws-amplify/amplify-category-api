@@ -1,0 +1,62 @@
+{
+  "name": "@aws-amplify/graphql-api-construct-alpha",
+  "version": "0.0.1",
+  "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-category-api.git",
+    "directory": "packages/amplify-graphql-api-construct"
+  },
+  "private": true,
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "test": "jest",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "keywords": [
+    "graphql",
+    "cloudformation",
+    "aws",
+    "amplify",
+    "api"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@aws-amplify/graphql-transformer": "0.0.1",
+    "@aws-amplify/graphql-transformer-core": "1.3.2",
+    "@aws-amplify/graphql-transformer-interfaces": "2.2.1",
+    "aws-cdk-lib": "~2.68.0",
+    "constructs": "^10.0.5",
+    "fs-extra": "^8.1.0",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.6",
+    "ts-jest": "^26.4.4",
+    "@types/fs-extra": "^8.0.1",
+    "rimraf": "^3.0.0"
+  },
+  "jest": {
+    "testURL": "http://localhost",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true
+  }
+}
