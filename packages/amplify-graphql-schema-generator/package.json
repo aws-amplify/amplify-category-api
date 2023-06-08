@@ -41,6 +41,9 @@
   "peerDependencies": {
     "@aws-amplify/amplify-prompts": "^2.6.8"
   },
+  "devDependencies": {
+    "@types/node": "^12.12.6"
+  },
   "jest": {
     "transform": {
       "^.+\\.tsx?$": "ts-jest"

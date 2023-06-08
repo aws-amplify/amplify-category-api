@@ -1,17 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
+  "include": ["src/**/*"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./lib",
     "strict": false,
     "composite": false,
-    "module": "commonjs",
   },
-  "exclude": [
-    "vpc-db-lambda",
-    "lib",
-    "src/__tests__",
-  ],
   "references": [
     {"path": "../amplify-graphql-transformer-core"},
   ]
