@@ -276,9 +276,10 @@ export class TransformerResolver implements TransformerResolverProvider {
                   if (this.datasource
                     && this.datasource.ds.dynamoDbConfig
                     && !isResolvableObject(this.datasource.ds.dynamoDbConfig) 
+                    && this.datasource.ds.dynamoDbConfig.deltaSyncConfig
                     && !isResolvableObject(this.datasource.ds.dynamoDbConfig.deltaSyncConfig)
                   ) {
-                    return this.datasource.ds.dynamoDbConfig.deltaSyncConfig!.deltaSyncTableTtl || SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL.toString();
+                    return this.datasource.ds.dynamoDbConfig.deltaSyncConfig.deltaSyncTableTtl || SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL.toString();
                   } else {
                     return SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL.toString();
                   }
