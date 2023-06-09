@@ -11,7 +11,7 @@
     "cloud-e2e": "CURR_BRANCH=$(git branch | awk '/\\*/{printf \"%s\", $2}') && UPSTREAM_BRANCH=run-e2e/$USER/$CURR_BRANCH && git push $(git remote -v | grep aws-amplify/amplify-category-api | head -n1 | awk '{print $1;}') $CURR_BRANCH:$UPSTREAM_BRANCH --no-verify --force-with-lease && echo \"\n\n 🏃 E2E test are running at:\nhttps://app.circleci.com/pipelines/github/aws-amplify/amplify-category-api?branch=$UPSTREAM_BRANCH\"",
     "cloud-e2e-cb": "source scripts/cloud-utils.sh && cloudE2E",
     "cloud-e2e-cb-beta": "source scripts/cloud-utils.sh && cloudE2EBeta",
-    "lint-fix": "git diff --name-only --cached --diff-filter d | grep -E '\\.(js|jsx|ts|tsx)$' | xargs eslint --fix --quiet",
+    "lint": "yarn eslint . --ext .js,.jsx,.ts,.tsx --max-warnings=11683",
     "clean": "lerna run clean && lerna exec yarn rimraf tsconfig.tsbuildinfo && lerna clean --yes && yarn rimraf node_modules",
     "check-version-conflicts:beta": "yarn ts-node ./scripts/check-version.ts beta",
     "check-version-conflicts:release": "yarn ts-node ./scripts/check-version.ts",
@@ -32,6 +32,8 @@
     "publish:main": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --no-verify-access --yes",
     "publish:release": "lerna publish --conventional-commits --conventional-graduate --exact --yes --message 'chore(release): Publish [ci skip]' --no-verify-access",
     "postpublish:release": "git fetch . release:main && git push origin main",
+    "prettier-check": "yarn prettier --check .",
+    "prettier-write": "yarn prettier --write .",
     "yarn-use-bash": "yarn config set script-shell /bin/bash",
     "verdaccio-start": "source .circleci/local_publish_helpers.sh && startLocalRegistry \"$(pwd)/.circleci/verdaccio.yaml\"",
     "verdaccio-clean": "rimraf ../verdaccio-cache",
@@ -51,6 +53,7 @@
     "verify-api-extract": "yarn extract-api && ./scripts/verify-extract-api.sh",
     "verify-yarn-lock": "./scripts/verify-yarn-lock.sh",
     "update-test-timing-data": "ts-node ./scripts/cci/get-test-timing-from-cci-job-metrics.ts",
+    "format-staged": "git-format-staged -f 'prettier --ignore-unknown --stdin --stdin-filepath \"{}\"' .",
     "lint-deps": "git diff --name-only --cached --diff-filter d | grep -E '\\.(js|jsx|ts|tsx)$' | xargs eslint --no-eslintrc --config depcheck.config.js",
     "split-codebuild-e2e-tests": "yarn ts-node ./scripts/split-e2e-tests-codebuild.ts && git add codebuild_specs/e2e_workflow.yml",
     "release-codebuild": "source ./scripts/cloud-release.sh && release",
@@ -70,7 +73,7 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "yarn verify-commit && yarn lint-fix && yarn lint-deps && yarn split-codebuild-e2e-tests"
+      "pre-commit": "yarn verify-commit && yarn format-staged && yarn lint-deps && yarn split-codebuild-e2e-tests"
     }
   },
   "author": "Amazon Web Services",
@@ -111,7 +114,7 @@
     "codecov": "^3.7.0",
     "copyfiles": "^2.2.0",
     "eslint": "^8.40.0",
-    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-prettier": "^8.8.0",
     "eslint-import-resolver-typescript": "^2.0.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^26.1.1",
@@ -121,6 +124,7 @@
     "eslint-plugin-react": "^7.29.4",
     "eslint-plugin-spellcheck": "^0.0.17",
     "execa": "^5.1.1",
+    "git-format-staged": "^3.0.0",
     "glob": "^7.2.0",
     "husky": "^3.0.3",
     "jest": "^26.6.3",
@@ -129,6 +133,7 @@
     "js-yaml": "^4.0.0",
     "lnk": "1.1.0",
     "pkg": "^5.4.1",
+    "prettier": "^2.8.8",
     "rimraf": "^3.0.0",
     "ts-jest": "^26.4.4",
     "ts-node": "^8.10.1",
