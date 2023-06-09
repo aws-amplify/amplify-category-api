@@ -57,6 +57,7 @@ const RUN_SOLO = [
   'src/__tests__/schema-model.test.ts',
   'src/__tests__/schema-key.test.ts',
   'src/__tests__/schema-connection.test.ts',
+  'src/__tests__/transformer-migrations/function-migration.test.ts',
   'src/__tests__/transformer-migrations/searchable-migration.test.ts',
   "src/__tests__/transformer-migrations/model-migration.test.ts",
   'src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts',
