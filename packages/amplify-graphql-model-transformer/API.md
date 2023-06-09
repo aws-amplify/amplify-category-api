@@ -351,7 +351,7 @@ export enum SubscriptionLevel {
     // (undocumented)
     on = "on",
     // (undocumented)
-    public = "public",
+    public = "public"
 }
 
 // (No @packageDocumentation comment for this package)

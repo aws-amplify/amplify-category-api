@@ -575,7 +575,7 @@ export enum TransformerLogLevel {
     // (undocumented)
     INFO = "INFO",
     // (undocumented)
-    WARN = "WARN",
+    WARN = "WARN"
 }
 
 // @public (undocumented)
