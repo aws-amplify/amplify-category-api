@@ -14,7 +14,7 @@ export const populateCfnParams = async (
   overrideApiToLocal: boolean = false,
 ): Promise<Record<string, string>> => {
   const cfnParams = [getCfnPseudoParams, getAmplifyMetaParams, getParametersJsonParams]
-    .map(paramProvider => paramProvider(print, resourceName, overrideApiToLocal))
+    .map((paramProvider) => paramProvider(print, resourceName, overrideApiToLocal))
     .reduce((acc, it) => ({ ...acc, ...it }), {});
 
   const resourceParamManager = (await ensureEnvParamManager()).instance.getResourceParamManager(AmplifyCategories.API, resourceName);
@@ -58,7 +58,7 @@ const getAmplifyMetaParams = (
     attributes: string[];
   }[];
   return dependencies.reduce((acc, dependency) => {
-    dependency.attributes.forEach(attribute => {
+    dependency.attributes.forEach((attribute) => {
       let val = projectMeta?.[dependency.category]?.[dependency.resourceName]?.output?.[attribute];
       if (!val) {
         print.warning(

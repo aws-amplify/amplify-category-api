@@ -2,7 +2,8 @@
 import {
   InlineMappingTemplateProvider,
   MappingTemplateType,
-  S3MappingFunctionCodeProvider, S3MappingTemplateProvider,
+  S3MappingFunctionCodeProvider,
+  S3MappingTemplateProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
 import * as crypto from 'crypto';
@@ -60,7 +61,7 @@ export class S3MappingTemplate implements S3MappingTemplateProvider {
    * get the resolver content
    * @returns string
    */
-  getTemplateHash() : string {
+  getTemplateHash(): string {
     return crypto.createHash('sha256').update(this.content).digest('base64');
   }
 

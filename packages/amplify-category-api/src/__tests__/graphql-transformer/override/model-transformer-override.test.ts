@@ -56,7 +56,8 @@ describe('ModelTransformer: ', () => {
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
       overrideConfig: {
-        applyOverride: (stackManager: StackManager) => applyFileBasedOverride(stackManager, path.join(__dirname, 'non-existing-override-directory')),
+        applyOverride: (stackManager: StackManager) =>
+          applyFileBasedOverride(stackManager, path.join(__dirname, 'non-existing-override-directory')),
         overrideFlag: true,
       },
       featureFlags,

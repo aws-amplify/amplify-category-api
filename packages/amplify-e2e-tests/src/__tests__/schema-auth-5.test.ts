@@ -23,7 +23,7 @@ describe('api directives @auth batch 5', () => {
     const testresult = await testSchema(projectDir, 'auth', 'customClaims');
     expect(testresult).toBeTruthy();
   });
-  
+
   it('auth combiningAuthRules1', async () => {
     const testresult = await testSchema(projectDir, 'auth', 'combiningAuthRules1');
     expect(testresult).toBeTruthy();

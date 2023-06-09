@@ -6,7 +6,7 @@ const actionName = 'Source';
 const codePipeline = new AWS.CodePipeline();
 const cloudFormation = new AWS.CloudFormation();
 
-exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
+exports.handler = async function ({ RequestType, ResourceProperties, StackId }) {
   const { pipelineName, artifactBucketName, artifactKey, deploymentMechanism } = ResourceProperties;
 
   console.log('Properties', ResourceProperties);

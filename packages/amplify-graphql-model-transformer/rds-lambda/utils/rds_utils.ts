@@ -1,7 +1,7 @@
 export type RDSQueryFilter = {
   rawSql: string;
   queryParams?: any[];
-}
+};
 
 /**
  * Util method to convert any GraphQL input filter argument to an AWS RDS query expression
@@ -19,13 +19,15 @@ export const toRDSQueryExpression = (filter: any): RDSQueryFilter => {
     switch (key) {
       case 'and':
       case 'or':
-        rdsExpression += value.map((subValue: any) => {
-          const { rawSql, queryParams } = toRDSQueryExpression(subValue);
-          if (queryParams) {
-            queryParameters.push(...queryParams);
-          }
-          return rawSql;
-        }).join(` ${key.toUpperCase()} `);
+        rdsExpression += value
+          .map((subValue: any) => {
+            const { rawSql, queryParams } = toRDSQueryExpression(subValue);
+            if (queryParams) {
+              queryParameters.push(...queryParams);
+            }
+            return rawSql;
+          })
+          .join(` ${key.toUpperCase()} `);
         break;
       case 'not':
         // eslint-disable-next-line no-case-declarations

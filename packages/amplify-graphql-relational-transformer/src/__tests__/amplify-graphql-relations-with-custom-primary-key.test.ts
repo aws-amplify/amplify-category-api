@@ -36,12 +36,7 @@ describe('custom primary key and relational directives', () => {
 
     const transformer = new GraphQLTransform({
       featureFlags: mockFeatureFlags(true),
-      transformers: [
-        new ModelTransformer(),
-        new PrimaryKeyTransformer(),
-        new HasOneTransformer(),
-        new BelongsToTransformer(),
-      ],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     });
 
     const out = transformer.transform(inputSchema);
@@ -77,12 +72,7 @@ describe('custom primary key and relational directives', () => {
 
     const transformer = new GraphQLTransform({
       featureFlags: mockFeatureFlags(true),
-      transformers: [
-        new ModelTransformer(),
-        new PrimaryKeyTransformer(),
-        new HasOneTransformer(),
-        new BelongsToTransformer(),
-      ],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     });
 
     const out = transformer.transform(inputSchema);
@@ -92,7 +82,9 @@ describe('custom primary key and relational directives', () => {
 
     const medicalAppointment = schema.definitions.find((def: any) => def.name && def.name.value === 'MedicalAppointment') as any;
     expect(medicalAppointment).toBeDefined();
-    const medicalAppointmentSsnConnectionField = medicalAppointment.fields.find((f: any) => f.name.value === 'medicalAppointmentPatientSsn');
+    const medicalAppointmentSsnConnectionField = medicalAppointment.fields.find(
+      (f: any) => f.name.value === 'medicalAppointmentPatientSsn',
+    );
     const medicalAppointmentIdConnectionField = medicalAppointment.fields.find((f: any) => f.name.value === 'medicalAppointmentPatientId');
 
     expect(medicalAppointmentSsnConnectionField).toBeDefined();
@@ -100,7 +92,9 @@ describe('custom primary key and relational directives', () => {
 
     const patient = schema.definitions.find((def: any) => def.name && def.name.value === 'Patient') as any;
     expect(patient).toBeDefined();
-    const patientAppointmentReferenceConnectionField = patient.fields.find((f: any) => f.name.value === 'patientMedicalAppointmentAppointmentReference');
+    const patientAppointmentReferenceConnectionField = patient.fields.find(
+      (f: any) => f.name.value === 'patientMedicalAppointmentAppointmentReference',
+    );
     const patientIdConnectionField = patient.fields.find((f: any) => f.name.value === 'patientMedicalAppointmentId');
 
     expect(patientAppointmentReferenceConnectionField).toBeDefined();
@@ -125,12 +119,7 @@ describe('custom primary key and relational directives', () => {
 
     const transformer = new GraphQLTransform({
       featureFlags: mockFeatureFlags(true),
-      transformers: [
-        new ModelTransformer(),
-        new PrimaryKeyTransformer(),
-        new HasManyTransformer(),
-        new BelongsToTransformer(),
-      ],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     });
 
     const out = transformer.transform(inputSchema);
@@ -166,12 +155,7 @@ describe('custom primary key and relational directives', () => {
 
     const transformer = new GraphQLTransform({
       featureFlags: mockFeatureFlags(true),
-      transformers: [
-        new ModelTransformer(),
-        new PrimaryKeyTransformer(),
-        new HasManyTransformer(),
-        new BelongsToTransformer(),
-      ],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     });
 
     const out = transformer.transform(inputSchema);
@@ -206,12 +190,7 @@ describe('custom primary key and relational directives', () => {
 
     const transformer = new GraphQLTransform({
       featureFlags: mockFeatureFlags(true),
-      transformers: [
-        new ModelTransformer(),
-        new PrimaryKeyTransformer(),
-        new HasOneTransformer(),
-        new BelongsToTransformer(),
-      ],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     });
 
     const out = transformer.transform(inputSchema);
@@ -233,10 +212,18 @@ describe('custom primary key and relational directives', () => {
     expect(givenNameConnectionField).toBeDefined();
     expect(familyNameConnectionField).toBeDefined();
 
-    const medicalAppointmentFilterInput = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelMedicalAppointmentFilterInput') as any;
-    const medicalAppointmentConditionInput = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelMedicalAppointmentConditionInput') as any;
-    const medicalAppointmentCreateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateMedicalAppointmentInput') as any;
-    const medicalAppointmentUpdateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateMedicalAppointmentInput') as any;
+    const medicalAppointmentFilterInput = schema.definitions.find(
+      (def: any) => def.name && def.name.value === 'ModelMedicalAppointmentFilterInput',
+    ) as any;
+    const medicalAppointmentConditionInput = schema.definitions.find(
+      (def: any) => def.name && def.name.value === 'ModelMedicalAppointmentConditionInput',
+    ) as any;
+    const medicalAppointmentCreateInput = schema.definitions.find(
+      (def: any) => def.name && def.name.value === 'CreateMedicalAppointmentInput',
+    ) as any;
+    const medicalAppointmentUpdateInput = schema.definitions.find(
+      (def: any) => def.name && def.name.value === 'UpdateMedicalAppointmentInput',
+    ) as any;
 
     expect(medicalAppointmentFilterInput).toBeDefined();
     expect(medicalAppointmentConditionInput).toBeDefined();
@@ -250,7 +237,7 @@ describe('custom primary key and relational directives', () => {
       medicalAppointmentUpdateInput,
     ];
 
-    inputs.forEach(it => {
+    inputs.forEach((it) => {
       const ssnInputField = it.fields.find((f: any) => f.name.value === 'medicalAppointmentPatientSsn');
       const givenNameInputField = it.fields.find((f: any) => f.name.value === 'medicalAppointmentPatientGivenName');
       const familyNameInputField = it.fields.find((f: any) => f.name.value === 'medicalAppointmentPatientFamilyName');
@@ -280,12 +267,7 @@ describe('custom primary key and relational directives', () => {
 
     const transformer = new GraphQLTransform({
       featureFlags: mockFeatureFlags(true),
-      transformers: [
-        new ModelTransformer(),
-        new PrimaryKeyTransformer(),
-        new HasOneTransformer(),
-        new BelongsToTransformer(),
-      ],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     });
 
     const out = transformer.transform(inputSchema);
@@ -295,7 +277,9 @@ describe('custom primary key and relational directives', () => {
 
     const medicalAppointment = schema.definitions.find((def: any) => def.name && def.name.value === 'MedicalAppointment') as any;
     expect(medicalAppointment).toBeDefined();
-    const medicalAppointmentSsnConnectionField = medicalAppointment.fields.find((f: any) => f.name.value === 'medicalAppointmentPatientSsn');
+    const medicalAppointmentSsnConnectionField = medicalAppointment.fields.find(
+      (f: any) => f.name.value === 'medicalAppointmentPatientSsn',
+    );
     const medicalAppointmentIdConnectionField = medicalAppointment.fields.find((f: any) => f.name.value === 'medicalAppointmentPatientId');
 
     expect(medicalAppointmentSsnConnectionField).toBeDefined();
@@ -303,7 +287,9 @@ describe('custom primary key and relational directives', () => {
 
     const patient = schema.definitions.find((def: any) => def.name && def.name.value === 'Patient') as any;
     expect(patient).toBeDefined();
-    const patientAppointmentReferenceConnectionField = patient.fields.find((f: any) => f.name.value === 'patientMedicalAppointmentAppointmentReference');
+    const patientAppointmentReferenceConnectionField = patient.fields.find(
+      (f: any) => f.name.value === 'patientMedicalAppointmentAppointmentReference',
+    );
     const patientIdConnectionField = patient.fields.find((f: any) => f.name.value === 'patientMedicalAppointmentId');
 
     expect(patientAppointmentReferenceConnectionField).toBeDefined();
@@ -322,14 +308,9 @@ describe('custom primary key and relational directives', () => {
     expect(patientCreateInput).toBeDefined();
     expect(patientUpdateInput).toBeDefined();
 
-    const inputs = [
-      patientFilterInput,
-      patientConditionInput,
-      patientCreateInput,
-      patientUpdateInput,
-    ];
+    const inputs = [patientFilterInput, patientConditionInput, patientCreateInput, patientUpdateInput];
 
-    inputs.forEach(it => {
+    inputs.forEach((it) => {
       const primaryKeyConnectionField = it.fields.find((f: any) => f.name.value === 'patientMedicalAppointmentAppointmentReference');
       const sortKeyConnectionField = it.fields.find((f: any) => f.name.value === 'patientMedicalAppointmentProvider');
 
@@ -357,12 +338,7 @@ describe('custom primary key and relational directives', () => {
 
     const transformer = new GraphQLTransform({
       featureFlags: mockFeatureFlags(true),
-      transformers: [
-        new ModelTransformer(),
-        new PrimaryKeyTransformer(),
-        new HasManyTransformer(),
-        new BelongsToTransformer(),
-      ],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     });
 
     const out = transformer.transform(inputSchema);
@@ -387,10 +363,18 @@ describe('custom primary key and relational directives', () => {
     expect(givenNameConnectionField).toBeDefined();
     expect(familyNameConnectionField).toBeDefined();
 
-    const medicalAppointmentFilterInput = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelMedicalAppointmentFilterInput') as any;
-    const medicalAppointmentConditionInput = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelMedicalAppointmentConditionInput') as any;
-    const medicalAppointmentCreateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateMedicalAppointmentInput') as any;
-    const medicalAppointmentUpdateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateMedicalAppointmentInput') as any;
+    const medicalAppointmentFilterInput = schema.definitions.find(
+      (def: any) => def.name && def.name.value === 'ModelMedicalAppointmentFilterInput',
+    ) as any;
+    const medicalAppointmentConditionInput = schema.definitions.find(
+      (def: any) => def.name && def.name.value === 'ModelMedicalAppointmentConditionInput',
+    ) as any;
+    const medicalAppointmentCreateInput = schema.definitions.find(
+      (def: any) => def.name && def.name.value === 'CreateMedicalAppointmentInput',
+    ) as any;
+    const medicalAppointmentUpdateInput = schema.definitions.find(
+      (def: any) => def.name && def.name.value === 'UpdateMedicalAppointmentInput',
+    ) as any;
 
     expect(medicalAppointmentFilterInput).toBeDefined();
     expect(medicalAppointmentConditionInput).toBeDefined();
@@ -404,7 +388,7 @@ describe('custom primary key and relational directives', () => {
       medicalAppointmentUpdateInput,
     ];
 
-    inputs.forEach(it => {
+    inputs.forEach((it) => {
       const ssnInputField = it.fields.find((f: any) => f.name.value === 'patientMedicalAppointmentsSsn');
       const givenNameInputField = it.fields.find((f: any) => f.name.value === 'patientMedicalAppointmentsGivenName');
       const familyNameInputField = it.fields.find((f: any) => f.name.value === 'patientMedicalAppointmentsFamilyName');
@@ -433,12 +417,7 @@ describe('custom primary key and relational directives', () => {
 
     const transformer = new GraphQLTransform({
       featureFlags: mockFeatureFlags(false),
-      transformers: [
-        new ModelTransformer(),
-        new PrimaryKeyTransformer(),
-        new HasOneTransformer(),
-        new BelongsToTransformer(),
-      ],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     });
 
     const out = transformer.transform(inputSchema);
@@ -469,12 +448,7 @@ describe('custom primary key and relational directives', () => {
 
     const transformer = new GraphQLTransform({
       featureFlags: mockFeatureFlags(false),
-      transformers: [
-        new ModelTransformer(),
-        new PrimaryKeyTransformer(),
-        new HasManyTransformer(),
-        new BelongsToTransformer(),
-      ],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     });
 
     const out = transformer.transform(inputSchema);
@@ -534,21 +508,39 @@ describe('custom primary key and relational directives', () => {
     const schema = parse(out.schema);
     validateModelSchema(schema);
 
-    expect(out.resolvers['Car.engine.req.vtl']).toContain('#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("carEngineVinNumber"), $ctx.source.carEngineVinNumber) )')
-    expect(out.resolvers['Car.engine.req.vtl']).toContain('if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.carEngineManufacturerReference) )');
-    expect(out.resolvers['Comment.post.req.vtl']).toContain('#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("postCommentsPostReference"), $ctx.source.postCommentsPostReference)')
-    expect(out.resolvers['Comment.post.req.vtl']).toContain('if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.postCommentsTitle) )');
-    expect(out.resolvers['Engine.car.req.vtl']).toContain('#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("engineCarVinNumber"), $ctx.source.engineCarVinNumber) )')
-    expect(out.resolvers['Engine.car.req.vtl']).toContain('if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.engineCarSerialNumber) )');
+    expect(out.resolvers['Car.engine.req.vtl']).toContain(
+      '#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("carEngineVinNumber"), $ctx.source.carEngineVinNumber) )',
+    );
+    expect(out.resolvers['Car.engine.req.vtl']).toContain(
+      'if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.carEngineManufacturerReference) )',
+    );
+    expect(out.resolvers['Comment.post.req.vtl']).toContain(
+      '#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("postCommentsPostReference"), $ctx.source.postCommentsPostReference)',
+    );
+    expect(out.resolvers['Comment.post.req.vtl']).toContain(
+      'if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.postCommentsTitle) )',
+    );
+    expect(out.resolvers['Engine.car.req.vtl']).toContain(
+      '#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("engineCarVinNumber"), $ctx.source.engineCarVinNumber) )',
+    );
+    expect(out.resolvers['Engine.car.req.vtl']).toContain(
+      'if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.engineCarSerialNumber) )',
+    );
 
     expect(out.resolvers['Car.engine.req.vtl']).toContain('"#sortKeyName": "manufacturerReference"');
-    expect(out.resolvers['Car.engine.req.vtl']).toContain('":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.carEngineManufacturerReference, "___xamznone____")))');
+    expect(out.resolvers['Car.engine.req.vtl']).toContain(
+      '":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.carEngineManufacturerReference, "___xamznone____")))',
+    );
 
     expect(out.resolvers['Comment.post.req.vtl']).toContain('"#sortKeyName": "title"');
-    expect(out.resolvers['Comment.post.req.vtl']).toContain('":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.postCommentsTitle, "___xamznone____")))');
+    expect(out.resolvers['Comment.post.req.vtl']).toContain(
+      '":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.postCommentsTitle, "___xamznone____")))',
+    );
 
     expect(out.resolvers['Engine.car.req.vtl']).toContain('"#sortKeyName": "serialNumber"');
-    expect(out.resolvers['Engine.car.req.vtl']).toContain('":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.engineCarSerialNumber, "___xamznone____")))');
+    expect(out.resolvers['Engine.car.req.vtl']).toContain(
+      '":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.engineCarSerialNumber, "___xamznone____")))',
+    );
   });
 
   it('generated correct allowed field for relational fields with custom PK and partial auth', () => {
@@ -603,10 +595,18 @@ describe('custom primary key and relational directives', () => {
     const schema = parse(out.schema);
     validateModelSchema(schema);
 
-    expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain('#set( $ownerAllowedFields0 = ["postReference","title","comments"] )');
-    expect(out.resolvers['Mutation.createComment.auth.1.req.vtl']).toContain('#set( $ownerAllowedFields0 = ["commentReference","title","post","postCommentsPostReference","postCommentsTitle"] )');
-    expect(out.resolvers['Mutation.createCar.auth.1.req.vtl']).toContain('#set( $ownerAllowedFields0 = ["vinNumber","serialNumber","engine","carEngineVinNumber","carEngineSerialNumber"] )');
-    expect(out.resolvers['Mutation.createEngine.auth.1.req.vtl']).toContain('#set( $ownerAllowedFields0 = ["vinNumber","manufacturerReference","car","engineCarVinNumber","engineCarManufacturerReference"] )');
+    expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain(
+      '#set( $ownerAllowedFields0 = ["postReference","title","comments"] )',
+    );
+    expect(out.resolvers['Mutation.createComment.auth.1.req.vtl']).toContain(
+      '#set( $ownerAllowedFields0 = ["commentReference","title","post","postCommentsPostReference","postCommentsTitle"] )',
+    );
+    expect(out.resolvers['Mutation.createCar.auth.1.req.vtl']).toContain(
+      '#set( $ownerAllowedFields0 = ["vinNumber","serialNumber","engine","carEngineVinNumber","carEngineSerialNumber"] )',
+    );
+    expect(out.resolvers['Mutation.createEngine.auth.1.req.vtl']).toContain(
+      '#set( $ownerAllowedFields0 = ["vinNumber","manufacturerReference","car","engineCarVinNumber","engineCarManufacturerReference"] )',
+    );
   });
 
   it('should generate correct fields in the many to many link object', () => {

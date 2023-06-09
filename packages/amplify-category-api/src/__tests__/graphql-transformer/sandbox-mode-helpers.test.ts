@@ -1,7 +1,11 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import chalk from 'chalk';
 import * as prompts from '@aws-amplify/amplify-prompts';
-import { showSandboxModePrompts, showGlobalSandboxModeWarning, schemaHasSandboxModeEnabled } from '../../graphql-transformer/sandbox-mode-helpers';
+import {
+  showSandboxModePrompts,
+  showGlobalSandboxModeWarning,
+  schemaHasSandboxModeEnabled,
+} from '../../graphql-transformer/sandbox-mode-helpers';
 import * as apiKeyHelpers from '../../graphql-transformer/api-key-helpers';
 
 let ctx;
@@ -10,7 +14,7 @@ let apiKeyPresent = true;
 describe('sandbox mode helpers', () => {
   beforeEach(() => {
     const envName = 'dev';
-    const getEnvInfo = (): {envName: string} => ({ envName });
+    const getEnvInfo = (): { envName: string } => ({ envName });
     ctx = {
       amplify: {
         getEnvInfo,
@@ -103,9 +107,7 @@ sandbox mode disabled, do not create an API Key.
         `;
 
         expect(() => schemaHasSandboxModeEnabled(schema, 'mockLink')).toThrow(
-          Error(
-            'There was a problem with your auth configuration. Learn more about auth here: mockLink',
-          ),
+          Error('There was a problem with your auth configuration. Learn more about auth here: mockLink'),
         );
       });
 
@@ -115,9 +117,7 @@ sandbox mode disabled, do not create an API Key.
         `;
 
         expect(() => schemaHasSandboxModeEnabled(schema, 'mockLink')).toThrow(
-          Error(
-            'There was a problem with your auth configuration. Learn more about auth here: mockLink',
-          ),
+          Error('There was a problem with your auth configuration. Learn more about auth here: mockLink'),
         );
       });
 
@@ -127,9 +127,7 @@ sandbox mode disabled, do not create an API Key.
         `;
 
         expect(() => schemaHasSandboxModeEnabled(schema, 'mockLink')).toThrowError(
-          Error(
-            'There was a problem with your auth configuration. Learn more about auth here: mockLink',
-          ),
+          Error('There was a problem with your auth configuration. Learn more about auth here: mockLink'),
         );
       });
     });

@@ -23,18 +23,11 @@ import {
 import { ResourceConstants } from 'graphql-transformer-common';
 import { Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import {
-  Effect,
-  IRole,
-  Policy,
-  PolicyStatement,
-  Role,
-  ServicePrincipal,
-} from 'aws-cdk-lib/aws-iam';
+import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import path from 'path';
-import {RDSConnectionSecrets} from '@aws-amplify/graphql-transformer-core';
+import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 
 export type OPERATIONS = 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'SYNC';
 
@@ -73,7 +66,7 @@ export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEn
       actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
       effect: Effect.ALLOW,
       resources: ['arn:aws:logs:*:*:*'],
-    })
+    }),
   ];
   if (secretEntry) {
     policyStatements.push(
@@ -81,8 +74,8 @@ export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEn
         actions: ['ssm:GetParameter', 'ssm:GetParameters'],
         effect: Effect.ALLOW,
         resources: [`arn:aws:ssm:*:*:parameter${secretEntry.username}`, `arn:aws:ssm:*:*:parameter${secretEntry.password}`],
-      })
-    )
+      }),
+    );
   }
   role.attachInlinePolicy(
     new Policy(stack, 'CloudwatchLogsAccess', {
@@ -103,7 +96,9 @@ export const generateLambdaRequestTemplate = (tableName: string, operation: stri
       set(ref('lambdaInput.operationName'), str(operationName)),
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
-      qref(methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([])))),
+      qref(
+        methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
+      ),
       set(ref('lambdaInput.args.input'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
       qref(methodCall(ref('lambdaInput.args.input.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
       obj({

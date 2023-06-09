@@ -9,7 +9,6 @@ import { DeploymentResources, FeatureFlagProvider } from '@aws-amplify/graphql-t
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
 import { expectedResolversForModelWithRenamedField } from './common';
 
-
 const featureFlags: FeatureFlagProvider = {
   getBoolean: (_: string): boolean => false,
   getNumber: jest.fn(),

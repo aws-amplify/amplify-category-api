@@ -14,8 +14,14 @@ import { default as moment } from 'moment';
 import * as Observable from 'zen-observable';
 import { CloudFormationClient } from '../CloudFormationClient';
 import {
-  addUserToGroup, authenticateUser, configureAmplify, createGroup, createIdentityPool, createUserPool,
-  createUserPoolClient, signupUser
+  addUserToGroup,
+  authenticateUser,
+  configureAmplify,
+  createGroup,
+  createIdentityPool,
+  createUserPool,
+  createUserPoolClient,
+  signupUser,
 } from '../cognitoUtils';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { IAMHelper } from '../IAMHelper';
@@ -105,32 +111,32 @@ const ADMIN_GROUP_NAME = 'Admin';
 // interface inputs
 interface CreateTaskInput {
   id?: string;
-  title?: string,
-  description?: string,
-  priority?: number,
-  severity?: number,
-  owner?: string
-  readOwners?: string[]
+  title?: string;
+  description?: string;
+  priority?: number;
+  severity?: number;
+  owner?: string;
+  readOwners?: string[];
 }
 
 interface UpdateTaskInput {
   id?: string;
-  title?: string,
-  description?: string,
-  priority?: number,
-  severity?: number,
-  owner?: string
-  readOwners?: string[]
+  title?: string;
+  description?: string;
+  priority?: number;
+  severity?: number;
+  owner?: string;
+  readOwners?: string[];
 }
 
 interface DeleteTaskInput {
   id?: string;
-  title?: string,
-  description?: string,
-  priority?: number,
-  severity?: number,
-  owner?: string
-  readOwners?: string[]
+  title?: string;
+  description?: string;
+  priority?: number;
+  severity?: number;
+  owner?: string;
+  readOwners?: string[];
 }
 
 interface CreateTaskGroupInput {
@@ -278,7 +284,6 @@ beforeAll(async () => {
         return defaultValue;
       },
 
-
       getNumber: jest.fn(),
       getObject: jest.fn(),
     },
@@ -396,7 +401,7 @@ beforeAll(async () => {
   });
   // Wait for any propagation to avoid random
   // "The security token included in the request is invalid" errors
-  await new Promise(res => setTimeout(res, PROPAGATION_DELAY));
+  await new Promise((res) => setTimeout(res, PROPAGATION_DELAY));
 });
 
 afterAll(async () => {
@@ -426,12 +431,7 @@ test('Basic runtime filtering with subscriptions work', async () => {
     // @ts-ignore
     query: gql`
       subscription OnCreateTask {
-        onCreateTask(filter: {
-          and: [
-            { priority: { eq: 8 } }
-            { severity: { gt: 5 } }
-          ]
-        }) {
+        onCreateTask(filter: { and: [{ priority: { eq: 8 } }, { severity: { gt: 5 } }] }) {
           id
           title
           description
@@ -457,7 +457,7 @@ test('Basic runtime filtering with subscriptions work', async () => {
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   await createTask(GRAPHQL_CLIENT_1, {
     title: 'task1',
@@ -488,10 +488,7 @@ test('Multiple owners auth is supported for subscriptions', async () => {
   const observer = API.graphql({
     // @ts-ignore
     query: gql`
-      subscription OnCreateTask(
-        $filter: ModelSubscriptionTaskFilterInput
-        $owner: String
-      ) {
+      subscription OnCreateTask($filter: ModelSubscriptionTaskFilterInput, $owner: String) {
         onCreateTask(filter: $filter, owner: $owner) {
           id
           title
@@ -518,7 +515,7 @@ test('Multiple owners auth is supported for subscriptions', async () => {
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   await createTask(GRAPHQL_CLIENT_2, {
     title: 'task3',
@@ -543,10 +540,7 @@ test('Basic runtime filtering with subscriptions and multiple owners auth work',
   const observer = API.graphql({
     // @ts-ignore
     query: gql`
-      subscription OnCreateTask(
-          $filter: ModelSubscriptionTaskFilterInput
-          $owner: String
-        ) {
+      subscription OnCreateTask($filter: ModelSubscriptionTaskFilterInput, $owner: String) {
         onCreateTask(filter: $filter, owner: $owner) {
           id
           title
@@ -560,10 +554,7 @@ test('Basic runtime filtering with subscriptions and multiple owners auth work',
     `,
     variables: {
       filter: {
-        or: [
-          { priority: { gt: 5 } },
-          { severity: { gt: 5 } },
-        ]
+        or: [{ priority: { gt: 5 } }, { severity: { gt: 5 } }],
       },
     },
     authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
@@ -581,7 +572,7 @@ test('Basic runtime filtering with subscriptions and multiple owners auth work',
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   await createTask(GRAPHQL_CLIENT_2, {
     title: 'task4',
@@ -614,12 +605,7 @@ test('Runtime filtering works with update mutation and multiple owners auth', as
     // @ts-ignore
     query: gql`
       subscription OnUpdateTask {
-        onUpdateTask(filter: {
-          or: [
-            { priority: { lt: 5 } }
-            { severity: { lt: 5 } }
-          ]
-        }) {
+        onUpdateTask(filter: { or: [{ priority: { lt: 5 } }, { severity: { lt: 5 } }] }) {
           id
           title
           description
@@ -645,7 +631,7 @@ test('Runtime filtering works with update mutation and multiple owners auth', as
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   await createTask(GRAPHQL_CLIENT_2, {
     id: 'task-06',
@@ -699,9 +685,7 @@ test('Runtime filtering works with delete mutation and multiple owners auth', as
     // @ts-ignore
     query: gql`
       subscription OnDeleteTask {
-        onDeleteTask(filter: {
-          severity: { eq: 10 }
-        }) {
+        onDeleteTask(filter: { severity: { eq: 10 } }) {
           id
           title
           description
@@ -727,7 +711,7 @@ test('Runtime filtering works with delete mutation and multiple owners auth', as
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   await createTask(GRAPHQL_CLIENT_2, {
     id: 'task-08',
@@ -760,7 +744,7 @@ test('Runtime filtering works with delete mutation and multiple owners auth', as
   });
 });
 
-const reconfigureAmplifyAPI = (appSyncAuthType: string, apiKey?: string):void => {
+const reconfigureAmplifyAPI = (appSyncAuthType: string, apiKey?: string): void => {
   if (appSyncAuthType === 'API_KEY') {
     API.configure({
       aws_appsync_graphqlEndpoint: GRAPHQL_ENDPOINT,
@@ -809,7 +793,7 @@ test('Static group auth should get precedence over owner argument', async () => 
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   await createTodo(GRAPHQL_CLIENT_2, {
     name: 'todo1',
@@ -859,7 +843,7 @@ test('Static group auth should get precedence over owner argument and filter', a
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   await createTodo(GRAPHQL_CLIENT_2, {
     name: 'todo1',
@@ -881,12 +865,7 @@ test('Runtime Filter with AND condition and IN & BEGINSWITH operators', async ()
     // @ts-ignore
     query: gql`
       subscription OnCreateTodo {
-        onCreateTodo(filter: {
-          and: [
-            {name: { in: ["todo", "test", "Testing"]}}
-            {description: { beginsWith: "Test"}}
-          ]
-        }) {
+        onCreateTodo(filter: { and: [{ name: { in: ["todo", "test", "Testing"] } }, { description: { beginsWith: "Test" } }] }) {
           id
           name
           description
@@ -911,7 +890,7 @@ test('Runtime Filter with AND condition and IN & BEGINSWITH operators', async ()
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   await createTodo(GRAPHQL_CLIENT_1, {
     name: 'todo',
@@ -949,12 +928,7 @@ test('Runtime Filter with OR condition and NOTIN & BETWEEN operators', async () 
     // @ts-ignore
     query: gql`
       subscription OnCreateTodo {
-        onCreateTodo(filter: {
-          or: [
-            {name: { notIn: ["todo", "test", "Testing"]}}
-            {level: { between: [5, 10]}}
-          ]
-        }) {
+        onCreateTodo(filter: { or: [{ name: { notIn: ["todo", "test", "Testing"] } }, { level: { between: [5, 10] } }] }) {
           id
           name
           description
@@ -979,7 +953,7 @@ test('Runtime Filter with OR condition and NOTIN & BETWEEN operators', async () 
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   await createTodo(GRAPHQL_CLIENT_1, {
     name: 'todo',
@@ -1009,9 +983,7 @@ test('Runtime Filter enum field type should be treated as string', async () => {
     // @ts-ignore
     query: gql`
       subscription OnCreateTodo {
-        onCreateTodo(filter: {
-          status: { eq: "COMPLETED" }
-        }) {
+        onCreateTodo(filter: { status: { eq: "COMPLETED" } }) {
           id
           name
           description
@@ -1037,7 +1009,7 @@ test('Runtime Filter enum field type should be treated as string', async () => {
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   await createTodo(GRAPHQL_CLIENT_1, {
     name: 'todo5',
@@ -1260,9 +1232,7 @@ describe('Runtime filtering with owner auth', () => {
           // @ts-ignore
           query: gql`
             subscription OnCreateTask {
-              onCreateTask(
-                filter: { priority: { eq: 8 } }
-              ) {
+              onCreateTask(filter: { priority: { eq: 8 } }) {
                 id
                 title
                 priority
@@ -1309,9 +1279,7 @@ describe('Runtime filtering with owner auth', () => {
           // @ts-ignore
           query: gql`
             subscription OnCreateTask {
-              onCreateTask(
-                filter: { priority: { eq: 8 } }
-              ) {
+              onCreateTask(filter: { priority: { eq: 8 } }) {
                 id
                 title
                 priority
@@ -1620,9 +1588,7 @@ describe('Runtime filtering with owner auth', () => {
           // @ts-ignore
           query: gql`
             subscription OnCreateTodo {
-              onCreateTodo(
-                filter: { name: { eq: "todo1" } }
-              ) {
+              onCreateTodo(filter: { name: { eq: "todo1" } }) {
                 id
                 name
                 owner
@@ -1663,9 +1629,7 @@ describe('Runtime filtering with owner auth', () => {
           // @ts-ignore
           query: gql`
             subscription OnCreateTodo {
-              onCreateTodo(
-                filter: { name: { eq: "todo1" } }
-              ) {
+              onCreateTodo(filter: { name: { eq: "todo1" } }) {
                 id
                 name
                 owner
@@ -1721,9 +1685,7 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
       const observer = API.graphql({
         // @ts-ignore
         query: gql`
-          subscription OnCreateTaskGroup(
-            $filter: ModelSubscriptionTaskGroupFilterInput
-          ) {
+          subscription OnCreateTaskGroup($filter: ModelSubscriptionTaskGroupFilterInput) {
             onCreateTaskGroup(filter: $filter) {
               id
               title
@@ -1734,12 +1696,9 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
           }
         `,
         authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-        variables:{
+        variables: {
           filter: {
-            and: [
-              { priority: { eq: 8 } },
-              { severity: { gt: 5 } },
-            ]
+            and: [{ priority: { eq: 8 } }, { severity: { gt: 5 } }],
           },
         },
       }) as unknown as Observable<any>;
@@ -1754,18 +1713,18 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
           },
           (err) => {
             reject(err);
-          }
+          },
         );
       });
       // Wait for a time period for subscription to be setup
-      await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+      await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
       // This should not be listened by User1 as User1 is not in member group
       await createTaskGroup(GRAPHQL_CLIENT_2, {
         title: 'taskGroup1',
         description: 'taskGroupDesc1',
         priority: 8,
         severity: 6,
-        groups: [ MEMBER_GROUP_NAME ],
+        groups: [MEMBER_GROUP_NAME],
       });
       // This should not be listend by User1 as it fails the input filter
       await createTaskGroup(GRAPHQL_CLIENT_2, {
@@ -1773,7 +1732,7 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
         description: 'taskGroupDesc2',
         priority: 1,
         severity: 1,
-        groups: [ INSTRUCTOR_GROUP_NAME, MEMBER_GROUP_NAME ],
+        groups: [INSTRUCTOR_GROUP_NAME, MEMBER_GROUP_NAME],
       });
       // This should be listend by User1
       await createTaskGroup(GRAPHQL_CLIENT_2, {
@@ -1781,12 +1740,12 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
         description: 'taskGroupDesc3',
         priority: 8,
         severity: 7,
-        groups: [ INSTRUCTOR_GROUP_NAME, MEMBER_GROUP_NAME ],
+        groups: [INSTRUCTOR_GROUP_NAME, MEMBER_GROUP_NAME],
       });
       // Validate the result. Will throw error if there is no data received within timeout or wrong result is listened
-      const result = await withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
+      const result = (await withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
         subscription?.unsubscribe();
-      }) as any;
+      })) as any;
       expect(result.title).toEqual('taskGroup3');
       expect(result.description).toEqual('taskGroupDesc3');
       expect(result.priority).toEqual(8);
@@ -1798,9 +1757,7 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
       const observer = API.graphql({
         // @ts-ignore
         query: gql`
-          subscription OnUpdateTaskGroup(
-            $filter: ModelSubscriptionTaskGroupFilterInput
-          ) {
+          subscription OnUpdateTaskGroup($filter: ModelSubscriptionTaskGroupFilterInput) {
             onUpdateTaskGroup(filter: $filter) {
               id
               title
@@ -1811,12 +1768,9 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
           }
         `,
         authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-        variables:{
+        variables: {
           filter: {
-            or: [
-              { priority: { lt: 5 } },
-              { severity: { lt: 5 } }
-            ],
+            or: [{ priority: { lt: 5 } }, { severity: { lt: 5 } }],
           },
         },
       }) as unknown as Observable<any>;
@@ -1831,18 +1785,18 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
           },
           (err) => {
             reject(err);
-          }
+          },
         );
       });
       // Wait for a time period for subscription to be setup
-      await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+      await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
       await createTaskGroup(GRAPHQL_CLIENT_2, {
         id: 'task-group-01',
         title: 'taskGroup1',
         description: 'taskGroupDesc1',
         priority: 8,
         severity: 6,
-        groups: [ MEMBER_GROUP_NAME ],
+        groups: [MEMBER_GROUP_NAME],
       });
       await createTaskGroup(GRAPHQL_CLIENT_2, {
         id: 'task-group-02',
@@ -1850,7 +1804,7 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
         description: 'taskGroupDesc2',
         priority: 1,
         severity: 1,
-        groups: [ INSTRUCTOR_GROUP_NAME, MEMBER_GROUP_NAME ],
+        groups: [INSTRUCTOR_GROUP_NAME, MEMBER_GROUP_NAME],
       });
       // This should not be listened by User1 as User1 is not in member group
       await updateTaskGroup(GRAPHQL_CLIENT_2, {
@@ -1869,9 +1823,9 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
         severity: 7,
       });
       // Validate the result. Will throw error if there is no data received within timeout or wrong result is listened
-      const result = await withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
+      const result = (await withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
         subscription?.unsubscribe();
-      }) as any;
+      })) as any;
       expect(result.id).toEqual('task-group-02');
       expect(result.title).toEqual('taskGroup2-updated');
       expect(result.description).toEqual('taskGroupDesc2-updated');
@@ -1884,9 +1838,7 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
       const observer = API.graphql({
         // @ts-ignore
         query: gql`
-          subscription OnDeleteTaskGroup(
-            $filter: ModelSubscriptionTaskGroupFilterInput
-          ) {
+          subscription OnDeleteTaskGroup($filter: ModelSubscriptionTaskGroupFilterInput) {
             onDeleteTaskGroup(filter: $filter) {
               id
               title
@@ -1897,7 +1849,7 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
           }
         `,
         authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-        variables:{
+        variables: {
           filter: {
             severity: { eq: 10 },
           },
@@ -1914,18 +1866,18 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
           },
           (err) => {
             reject(err);
-          }
+          },
         );
       });
       // Wait for a time period for subscription to be setup
-      await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+      await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
       await createTaskGroup(GRAPHQL_CLIENT_2, {
         id: 'task-group-03',
         title: 'taskGroup3',
         description: 'taskGroupDesc3',
         priority: 6,
         severity: 10,
-        groups: [ MEMBER_GROUP_NAME ],
+        groups: [MEMBER_GROUP_NAME],
       });
       await createTaskGroup(GRAPHQL_CLIENT_2, {
         id: 'task-group-04',
@@ -1933,7 +1885,7 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
         description: 'taskGroupDesc4',
         priority: 3,
         severity: 10,
-        groups: [ INSTRUCTOR_GROUP_NAME, MEMBER_GROUP_NAME ],
+        groups: [INSTRUCTOR_GROUP_NAME, MEMBER_GROUP_NAME],
       });
       // This should not be listened by User1 as User1 is not in member group
       await deleteTaskGroup(GRAPHQL_CLIENT_2, {
@@ -1944,9 +1896,9 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
         id: 'task-group-04',
       });
       // Validate the result. Will throw error if there is no data received within timeout or wrong result is listened
-      const result = await withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
+      const result = (await withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
         subscription?.unsubscribe();
-      }) as any;
+      })) as any;
       expect(result.id).toEqual('task-group-04');
       expect(result.title).toEqual('taskGroup4');
       expect(result.description).toEqual('taskGroupDesc4');
@@ -1961,9 +1913,7 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
       const observer = API.graphql({
         // @ts-ignore
         query: gql`
-          subscription OnCreateTaskGroup(
-            $filter: ModelSubscriptionTaskGroupFilterInput
-          ) {
+          subscription OnCreateTaskGroup($filter: ModelSubscriptionTaskGroupFilterInput) {
             onCreateTaskGroup(filter: $filter) {
               id
               title
@@ -1974,12 +1924,9 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
           }
         `,
         authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-        variables:{
+        variables: {
           filter: {
-            and: [
-              { priority: { eq: 8 } },
-              { severity: { gt: 5 } },
-            ]
+            and: [{ priority: { eq: 8 } }, { severity: { gt: 5 } }],
           },
         },
       }) as unknown as Observable<any>;
@@ -1994,11 +1941,11 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
           },
           (err) => {
             reject(err);
-          }
+          },
         );
       });
       // Wait for a time period for subscription to be setup
-      await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+      await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
       // This should not be listened by User1 as User1 is not in member group
       await createTaskGroup(GRAPHQL_CLIENT_2, {
         title: 'taskGroup1',
@@ -2024,9 +1971,9 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
         singleGroup: INSTRUCTOR_GROUP_NAME,
       });
       // Validate the result. Will throw error if there is no data received within timeout or wrong result is listened
-      const result = await withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
+      const result = (await withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
         subscription?.unsubscribe();
-      }) as any;
+      })) as any;
       expect(result.title).toEqual('taskGroup3');
       expect(result.description).toEqual('taskGroupDesc3');
       expect(result.priority).toEqual(8);
@@ -2038,9 +1985,7 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
       const observer = API.graphql({
         // @ts-ignore
         query: gql`
-          subscription OnUpdateTaskGroup(
-            $filter: ModelSubscriptionTaskGroupFilterInput
-          ) {
+          subscription OnUpdateTaskGroup($filter: ModelSubscriptionTaskGroupFilterInput) {
             onUpdateTaskGroup(filter: $filter) {
               id
               title
@@ -2051,12 +1996,9 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
           }
         `,
         authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-        variables:{
+        variables: {
           filter: {
-            or: [
-              { priority: { lt: 5 } },
-              { severity: { lt: 5 } }
-            ],
+            or: [{ priority: { lt: 5 } }, { severity: { lt: 5 } }],
           },
         },
       }) as unknown as Observable<any>;
@@ -2071,11 +2013,11 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
           },
           (err) => {
             reject(err);
-          }
+          },
         );
       });
       // Wait for a time period for subscription to be setup
-      await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+      await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
       await createTaskGroup(GRAPHQL_CLIENT_2, {
         id: 'task-single-group-01',
         title: 'taskGroup1',
@@ -2109,9 +2051,9 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
         severity: 7,
       });
       // Validate the result. Will throw error if there is no data received within timeout or wrong result is listened
-      const result = await withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
+      const result = (await withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
         subscription?.unsubscribe();
-      }) as any;
+      })) as any;
       expect(result.id).toEqual('task-single-group-02');
       expect(result.title).toEqual('taskGroup2-updated');
       expect(result.description).toEqual('taskGroupDesc2-updated');
@@ -2124,9 +2066,7 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
       const observer = API.graphql({
         // @ts-ignore
         query: gql`
-          subscription OnDeleteTaskGroup(
-            $filter: ModelSubscriptionTaskGroupFilterInput
-          ) {
+          subscription OnDeleteTaskGroup($filter: ModelSubscriptionTaskGroupFilterInput) {
             onDeleteTaskGroup(filter: $filter) {
               id
               title
@@ -2137,7 +2077,7 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
           }
         `,
         authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-        variables:{
+        variables: {
           filter: {
             severity: { eq: 10 },
           },
@@ -2154,11 +2094,11 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
           },
           (err) => {
             reject(err);
-          }
+          },
         );
       });
       // Wait for a time period for subscription to be setup
-      await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+      await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
       await createTaskGroup(GRAPHQL_CLIENT_2, {
         id: 'task-single-group-03',
         title: 'taskGroup3',
@@ -2184,9 +2124,9 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
         id: 'task-single-group-04',
       });
       // Validate the result. Will throw error if there is no data received within timeout or wrong result is listened
-      const result = await withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
+      const result = (await withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTaskGroup Subscription timed out', () => {
         subscription?.unsubscribe();
-      }) as any;
+      })) as any;
       expect(result.id).toEqual('task-single-group-04');
       expect(result.title).toEqual('taskGroup4');
       expect(result.description).toEqual('taskGroupDesc4');
@@ -2203,9 +2143,7 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
       const observer = API.graphql({
         // @ts-ignore
         query: gql`
-          subscription OnDeleteTaskGroup(
-            $filter: ModelSubscriptionTaskGroupFilterInput
-          ) {
+          subscription OnDeleteTaskGroup($filter: ModelSubscriptionTaskGroupFilterInput) {
             onDeleteTaskGroup(filter: $filter) {
               id
               title
@@ -2216,7 +2154,7 @@ describe('Runtime Filtering for Dynamic Group Auth', () => {
           }
         `,
         authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-        variables:{},
+        variables: {},
       }) as unknown as Observable<any>;
       let subscription: ZenObservable.Subscription;
       const subscriptionPromise = new Promise((resolve, reject) => {

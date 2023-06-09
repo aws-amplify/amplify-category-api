@@ -3,7 +3,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { DocumentNode, Kind, parse } from 'graphql';
 import { HasManyTransformer, HasOneTransformer } from '..';
-import {featureFlags, hasGeneratedField} from './test-helpers';
+import { featureFlags, hasGeneratedField } from './test-helpers';
 import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 test('fails if @hasOne was used on an object that is not a model type', () => {
@@ -493,15 +493,19 @@ describe('Pre Processing Has One Tests', () => {
   let transformer: GraphQLTransform;
   const hasGeneratedFieldArgument = (doc: DocumentNode, objectType: string, fieldName: string, generatedFieldName: string): boolean => {
     let hasFieldArgument = false;
-    doc?.definitions?.forEach(def => {
+    doc?.definitions?.forEach((def) => {
       if ((def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') && def.name.value === objectType) {
-        def?.fields?.forEach(field => {
+        def?.fields?.forEach((field) => {
           if (field.name.value === fieldName) {
-            field?.directives?.forEach(dir => {
+            field?.directives?.forEach((dir) => {
               if (dir.name.value === 'hasOne') {
-                dir?.arguments?.forEach(arg => {
+                dir?.arguments?.forEach((arg) => {
                   if (arg.name.value === 'fields') {
-                    if (arg.value.kind === 'ListValue' && arg.value.values[0].kind === 'StringValue' && arg.value.values[0].value === generatedFieldName) {
+                    if (
+                      arg.value.kind === 'ListValue' &&
+                      arg.value.values[0].kind === 'StringValue' &&
+                      arg.value.values[0].value === generatedFieldName
+                    ) {
                       hasFieldArgument = true;
                     } else if (arg.value.kind === 'StringValue' && arg.value.value === generatedFieldName) {
                       hasFieldArgument = true;
@@ -645,7 +649,7 @@ describe('@hasOne connection field nullability tests', () => {
       featureFlags,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     });
-  
+
     const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
@@ -708,7 +712,7 @@ describe('@hasOne connection field nullability tests', () => {
       featureFlags,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     });
-  
+
     const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);

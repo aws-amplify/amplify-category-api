@@ -195,8 +195,8 @@ jobs:
       - run:
           name: Emit Canary Failure Metric
           command: |
-              source .circleci/local_publish_helpers.sh
-              emitCanaryFailureMetric
+            source .circleci/local_publish_helpers.sh
+            emitCanaryFailureMetric
           when: on_fail
 
 # our single workflow, that triggers the setup job defined above
@@ -232,7 +232,7 @@ workflows:
 
 commands:
   scan_e2e_test_artifacts:
-    description: "Scan And Cleanup E2E Test Artifacts"
+    description: 'Scan And Cleanup E2E Test Artifacts'
     steps:
       - run:
           name: Scan E2E artifacts
@@ -245,7 +245,7 @@ commands:
             fi
           when: always
   run_client_tests:
-    description: "Run Amplify Client tests"
+    description: 'Run Amplify Client tests'
     steps:
       - run:
           name: Run E2e Tests

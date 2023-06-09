@@ -1,4 +1,5 @@
-import { FeatureFlagProvider,
+import {
+  FeatureFlagProvider,
   TransformerPreProcessContextProvider,
   TransformerSchemaHelperProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -11,10 +12,7 @@ export class TransformerPreProcessContext implements TransformerPreProcessContex
   featureFlags: FeatureFlagProvider;
   schemaHelper: TransformerSchemaHelperProvider;
 
-  constructor(
-    inputDocument: DocumentNode,
-    featureFlags?: FeatureFlagProvider,
-  ) {
+  constructor(inputDocument: DocumentNode, featureFlags?: FeatureFlagProvider) {
     this.inputDocument = inputDocument;
     this.featureFlags = featureFlags ?? new NoopFeatureFlagProvider();
     this.schemaHelper = new TransformerSchemaHelper();

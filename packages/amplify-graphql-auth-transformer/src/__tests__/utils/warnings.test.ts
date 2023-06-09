@@ -85,10 +85,10 @@ describe('defaultIdentityClaimWarning', () => {
           },
         };
         expect(defaultIdentityClaimWarning(context, [{ allow: 'owner' }])).toEqual(
-          ' WARNING: Amplify CLI will change the default identity claim from \'username\' '
-            + 'to use \'sub::username\'. To continue using only usernames, set \'identityClaim: "username"\' on your '
-            + '\'owner\' rules on your schema. The default will be officially switched with v9.0.0. To read '
-            + 'more: https://docs.amplify.aws/cli/migration/identity-claim-changes/',
+          " WARNING: Amplify CLI will change the default identity claim from 'username' " +
+            "to use 'sub::username'. To continue using only usernames, set 'identityClaim: \"username\"' on your " +
+            "'owner' rules on your schema. The default will be officially switched with v9.0.0. To read " +
+            'more: https://docs.amplify.aws/cli/migration/identity-claim-changes/',
         );
       });
     });
@@ -141,7 +141,7 @@ describe('ownerCanReassignWarning', () => {
           }
         `);
 
-        expect(transform.getLogs()).toMatchSnapshot();;
+        expect(transform.getLogs()).toMatchSnapshot();
       });
 
       test('does not warn on owner auth rule with field-level auth', () => {
@@ -153,7 +153,7 @@ describe('ownerCanReassignWarning', () => {
           }
         `);
 
-        expect(transform.getLogs()).toMatchSnapshot();;
+        expect(transform.getLogs()).toMatchSnapshot();
       });
 
       test('warns on multiple schemas with multiple reassignable owners each', () => {
@@ -177,7 +177,7 @@ describe('ownerCanReassignWarning', () => {
           }
         `);
 
-        expect(transform.getLogs()).toMatchSnapshot();;
+        expect(transform.getLogs()).toMatchSnapshot();
       });
 
       test('does not warn on custom owner fields with field-level overrides', () => {
@@ -195,7 +195,7 @@ describe('ownerCanReassignWarning', () => {
           }
         `);
 
-        expect(transform.getLogs()).toMatchSnapshot();;
+        expect(transform.getLogs()).toMatchSnapshot();
       });
 
       test('does not warn on single custom owner fields with field-level override', () => {
@@ -209,7 +209,7 @@ describe('ownerCanReassignWarning', () => {
           }
         `);
 
-        expect(transform.getLogs()).toMatchSnapshot();;
+        expect(transform.getLogs()).toMatchSnapshot();
       });
 
       test('malformed field-level auth will continue to warn', () => {
@@ -224,7 +224,7 @@ describe('ownerCanReassignWarning', () => {
           }
         `);
 
-        expect(transform.getLogs()).toMatchSnapshot();;
+        expect(transform.getLogs()).toMatchSnapshot();
       });
 
       test('should warn on implicit owner field', () => {
@@ -235,14 +235,16 @@ describe('ownerCanReassignWarning', () => {
           }
         `);
 
-        expect(transform.getLogs()).toMatchSnapshot();;
+        expect(transform.getLogs()).toMatchSnapshot();
       });
     });
   });
 });
 
 describe('ownerFieldCaseWarning', () => {
-  const OWNER_FIELD_CASE_MESSAGE = expect.stringContaining('are getting added to your schema but could be referencing the same owner field. ');
+  const OWNER_FIELD_CASE_MESSAGE = expect.stringContaining(
+    'are getting added to your schema but could be referencing the same owner field. ',
+  );
   const transformTestSchema = (schema: string): GraphQLTransform => {
     const transformer = new GraphQLTransform({
       authConfig: {
@@ -277,7 +279,7 @@ type Invoice
 }
 `;
     const transform = transformTestSchema(validSchema);
-    expect(transform.getLogs()).toMatchSnapshot();;
+    expect(transform.getLogs()).toMatchSnapshot();
   });
 
   test('does not show message with no auth rules', () => {
@@ -291,7 +293,7 @@ type Invoice
 }
 `;
     const transform = transformTestSchema(validSchema);
-    expect(transform.getLogs()).toMatchSnapshot();;
+    expect(transform.getLogs()).toMatchSnapshot();
   });
   test('shows message once with one case mismatch in fields', () => {
     const oneCaseMismatchSchema = `
@@ -311,7 +313,7 @@ type Invoice
 }
 `;
     const transform = transformTestSchema(oneCaseMismatchSchema);
-    expect(transform.getLogs()).toMatchSnapshot();;
+    expect(transform.getLogs()).toMatchSnapshot();
   });
 
   test('shows message twice with two case mismatch in fields', () => {
@@ -332,7 +334,7 @@ type Invoice
 }
 `;
     const transform = transformTestSchema(twoCaseMismatchSchema);
-    expect(transform.getLogs()).toMatchSnapshot();;
+    expect(transform.getLogs()).toMatchSnapshot();
   });
   test('shows message with implicit owner field', () => {
     const twoCaseMismatchSchema = `
@@ -353,6 +355,6 @@ type Invoice
 }
 `;
     const transform = transformTestSchema(twoCaseMismatchSchema);
-    expect(transform.getLogs()).toMatchSnapshot();;
+    expect(transform.getLogs()).toMatchSnapshot();
   });
 });

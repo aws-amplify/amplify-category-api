@@ -1,19 +1,25 @@
-import { createRDSInstance, addRDSPortInboundRule, RDSTestDataProvider, removeRDSPortInboundRule, deleteDBInstance } from 'amplify-category-api-e2e-core';
+import {
+  createRDSInstance,
+  addRDSPortInboundRule,
+  RDSTestDataProvider,
+  removeRDSPortInboundRule,
+  deleteDBInstance,
+} from 'amplify-category-api-e2e-core';
 import axios from 'axios';
 import generator from 'generate-password';
 
-describe("RDS Tests", () => {
-  let publicIpCidr = "0.0.0.0/0";
+describe('RDS Tests', () => {
+  let publicIpCidr = '0.0.0.0/0';
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
 
   beforeAll(async () => {
     // Get the public IP of the machine running the test
-    const url = "http://api.ipify.org/";
+    const url = 'http://api.ipify.org/';
     const response = await axios(url);
     publicIpCidr = `${response.data.trim()}/32`;
   });
 
-  it("create database, setup initial tables and delete database", async () => {
+  it('create database, setup initial tables and delete database', async () => {
     // This test performs the below
     // 1. Create a RDS Instance
     // 2. Add the external IP address of the current machine to security group inbound rule to allow public access
@@ -47,9 +53,9 @@ describe("RDS Tests", () => {
       database: db.dbName,
     });
     await dbAdapter.runQuery([
-      "CREATE TABLE Contacts (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))",
-      "CREATE TABLE Person (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))",
-      "CREATE TABLE Employee (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))",
+      'CREATE TABLE Contacts (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
+      'CREATE TABLE Person (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
+      'CREATE TABLE Employee (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
     ]);
     dbAdapter.cleanup();
 
@@ -60,4 +66,4 @@ describe("RDS Tests", () => {
     });
     await deleteDBInstance(identifier, region);
   });
-}); 
+});

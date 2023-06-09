@@ -20,7 +20,7 @@ import { TransformerContextProviderRegistry } from './provider-registry';
 import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
-import {RDSConnectionSecrets} from '../types';
+import { RDSConnectionSecrets } from '../types';
 
 export { TransformerResolver } from './resolver';
 export { StackManager } from './stack-manager';

@@ -28,7 +28,7 @@ export const resolverConfigToConflictResolution = (resolverConfig: ResolverConfi
 const modelSyncConfigTransformer = (perModelResolutionStrategy: PerModelResolutionstrategy[]): { [key: string]: SyncConfig } => {
   const result: { [key: string]: SyncConfig } = {};
   perModelResolutionStrategy.forEach(
-    strategy => (result[strategy.entityName] = resolutionStrategyToSyncConfig(strategy.resolutionStrategy)),
+    (strategy) => (result[strategy.entityName] = resolutionStrategyToSyncConfig(strategy.resolutionStrategy)),
   );
   return result;
 };
@@ -42,7 +42,7 @@ const modelResolutionStrategyTransformer = (modelSyncConfig: { [key: string]: Sy
         entityName: key,
       }),
     )
-    .forEach(modelStrategy => result.push(modelStrategy));
+    .forEach((modelStrategy) => result.push(modelStrategy));
   return result;
 };
 

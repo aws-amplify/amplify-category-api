@@ -22,8 +22,6 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 
 test('ModelConnectionTransformer should fail if connection was called on an object that is not a Model type.', () => {
@@ -376,7 +374,7 @@ test('Test ModelConnectionTransformer for One-to-One getItem case.', () => {
 
   const testObjType = getObjectType(schemaDoc, 'Test');
   expectFields(testObjType, ['otherHalf']);
-  const relatedField = testObjType.fields.find(f => f.name.value === 'otherHalf');
+  const relatedField = testObjType.fields.find((f) => f.name.value === 'otherHalf');
   expect(relatedField.type.kind).toEqual(Kind.NAMED_TYPE);
 });
 
@@ -410,7 +408,7 @@ test('Test ModelConnectionTransformer for One-to-Many query case.', () => {
 
   const testObjType = getObjectType(schemaDoc, 'Test');
   expectFields(testObjType, ['otherParts']);
-  const relatedField = testObjType.fields.find(f => f.name.value === 'otherParts');
+  const relatedField = testObjType.fields.find((f) => f.name.value === 'otherParts');
 
   expect(relatedField.arguments.length).toEqual(4);
   expectArguments(relatedField, ['filter', 'limit', 'nextToken', 'sortDirection']);
@@ -449,7 +447,7 @@ test('Test ModelConnectionTransformer for bidirectional One-to-Many query case.'
 
   const userType = getObjectType(schemaDoc, 'User');
   expectFields(userType, ['posts']);
-  const postsField = userType.fields.find(f => f.name.value === 'posts');
+  const postsField = userType.fields.find((f) => f.name.value === 'posts');
 
   expect(postsField.arguments.length).toEqual(5);
   expectArguments(postsField, ['id', 'filter', 'limit', 'nextToken', 'sortDirection']);
@@ -459,7 +457,7 @@ test('Test ModelConnectionTransformer for bidirectional One-to-Many query case.'
 
   const postType = getObjectType(schemaDoc, 'Post');
   expectFields(postType, ['author']);
-  const userField = postType.fields.find(f => f.name.value === 'author');
+  const userField = postType.fields.find((f) => f.name.value === 'author');
   expect(userField.type.kind).toEqual(Kind.NAMED_TYPE);
 });
 
@@ -495,7 +493,7 @@ test('Test ModelConnectionTransformer for One-to-Many query with a composite sor
 
   const testObjType = getObjectType(schemaDoc, 'Test');
   expectFields(testObjType, ['otherParts']);
-  const relatedField = testObjType.fields.find(f => f.name.value === 'otherParts');
+  const relatedField = testObjType.fields.find((f) => f.name.value === 'otherParts');
 
   expect(relatedField.arguments.length).toEqual(4);
   expectArguments(relatedField, ['filter', 'limit', 'nextToken', 'sortDirection']);
@@ -535,7 +533,7 @@ test('Test ModelConnectionTransformer for One-to-Many query with a composite sor
 
   const testObjType = getObjectType(schemaDoc, 'Test');
   expectFields(testObjType, ['otherParts']);
-  const relatedField = testObjType.fields.find(f => f.name.value === 'otherParts');
+  const relatedField = testObjType.fields.find((f) => f.name.value === 'otherParts');
 
   expect(relatedField.arguments.length).toEqual(5);
   expectArguments(relatedField, ['emailName', 'filter', 'limit', 'nextToken', 'sortDirection']);
@@ -576,7 +574,7 @@ test('Test ModelConnectionTransformer for One-to-One getItem with composite sort
 
   const testObjType = getObjectType(schemaDoc, 'Test');
   expectFields(testObjType, ['otherHalf']);
-  const relatedField = testObjType.fields.find(f => f.name.value === 'otherHalf');
+  const relatedField = testObjType.fields.find((f) => f.name.value === 'otherHalf');
   expect(relatedField.type.kind).toEqual(Kind.NAMED_TYPE);
 });
 

@@ -78,18 +78,18 @@ describe('ModelTransformer: ', () => {
       resolverConfig: {
         project: {
           ConflictDetection: 'VERSION',
-          ConflictHandler: ConflictHandlerType.AUTOMERGE
-        }
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        },
       },
       featureFlags,
     });
     const out = transformer.transform(alsoValidSchema);
     expect(out).toBeDefined();
-    
+
     validateModelSchema(parse(out.schema));
     parse(out.schema);
     expect(out.schema).toMatchSnapshot();
-    expect(out.schema).toContain("input NonModelTypeInput")
+    expect(out.schema).toContain('input NonModelTypeInput');
   });
 
   it('should support custom query overrides', () => {
@@ -121,7 +121,7 @@ describe('ModelTransformer: ', () => {
 
     // This id should always be optional.
     // aka a named type node aka name.value would not be set if it were a non null node
-    const idField = createPostInput!.fields!.find(f => f.name.value === 'id');
+    const idField = createPostInput!.fields!.find((f) => f.name.value === 'id');
     expect((idField!.type as NamedTypeNode).name!.value).toEqual('ID');
     const queryType = getObjectType(parsed, 'Query');
     expect(queryType).toBeDefined();
@@ -130,7 +130,7 @@ describe('ModelTransformer: ', () => {
     const subscriptionType = getObjectType(parsed, 'Subscription');
     expect(subscriptionType).toBeDefined();
     expectFields(subscriptionType!, ['onCreatePost', 'onUpdatePost', 'onDeletePost']);
-    const subField = subscriptionType!.fields!.find(f => f.name.value === 'onCreatePost');
+    const subField = subscriptionType!.fields!.find((f) => f.name.value === 'onCreatePost');
     expect(subField).toBeDefined();
     expect(subField!.directives!.length).toEqual(1);
     expect(subField!.directives![0].name!.value).toEqual('aws_subscribe');
@@ -349,10 +349,10 @@ describe('ModelTransformer: ', () => {
     validateModelSchema(schema);
 
     const createPostInput: InputObjectTypeDefinitionNode = schema.definitions.find(
-      d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreatePostInput',
+      (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreatePostInput',
     )! as InputObjectTypeDefinitionNode;
     expect(createPostInput).toBeDefined();
-    const defaultIdField: InputValueDefinitionNode = createPostInput.fields!.find(f => f.name.value === 'id')!;
+    const defaultIdField: InputValueDefinitionNode = createPostInput.fields!.find((f) => f.name.value === 'id')!;
     expect(defaultIdField).toBeDefined();
     expect(getBaseType(defaultIdField.type)).toEqual('ID');
   });
@@ -454,10 +454,10 @@ describe('ModelTransformer: ', () => {
     validateModelSchema(schema);
 
     const createPostInput: InputObjectTypeDefinitionNode = schema.definitions.find(
-      d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreatePostInput',
+      (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreatePostInput',
     )! as InputObjectTypeDefinitionNode;
     expect(createPostInput).toBeDefined();
-    const defaultIdField: InputValueDefinitionNode = createPostInput.fields!.find(f => f.name.value === 'id')!;
+    const defaultIdField: InputValueDefinitionNode = createPostInput.fields!.find((f) => f.name.value === 'id')!;
     expect(defaultIdField).toBeDefined();
     expect(getBaseType(defaultIdField.type)).toEqual('Int');
     // It should not add default value for ctx.arg.id as id is of type Int
@@ -746,8 +746,8 @@ describe('ModelTransformer: ', () => {
       resolverConfig: {
         project: {
           ConflictDetection: 'VERSION',
-          ConflictHandler: ConflictHandlerType.AUTOMERGE
-        }
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        },
       },
       featureFlags,
     });
@@ -776,8 +776,8 @@ describe('ModelTransformer: ', () => {
       resolverConfig: {
         project: {
           ConflictDetection: 'VERSION',
-          ConflictHandler: ConflictHandlerType.AUTOMERGE
-        }
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        },
       },
       featureFlags,
     });
@@ -806,8 +806,8 @@ describe('ModelTransformer: ', () => {
       resolverConfig: {
         project: {
           ConflictDetection: 'VERSION',
-          ConflictHandler: ConflictHandlerType.AUTOMERGE
-        }
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        },
       },
       featureFlags,
     });
@@ -835,8 +835,8 @@ describe('ModelTransformer: ', () => {
       resolverConfig: {
         project: {
           ConflictDetection: 'VERSION',
-          ConflictHandler: ConflictHandlerType.AUTOMERGE
-        }
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        },
       },
       featureFlags,
     });
@@ -867,8 +867,8 @@ describe('ModelTransformer: ', () => {
       resolverConfig: {
         project: {
           ConflictDetection: 'VERSION',
-          ConflictHandler: ConflictHandlerType.AUTOMERGE
-        }
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        },
       },
       featureFlags,
     });
@@ -938,8 +938,8 @@ describe('ModelTransformer: ', () => {
       resolverConfig: {
         project: {
           ConflictDetection: 'VERSION',
-          ConflictHandler: ConflictHandlerType.AUTOMERGE
-        }
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        },
       },
       featureFlags,
     });
@@ -1108,42 +1108,41 @@ describe('ModelTransformer: ', () => {
     const subscriptionType = getObjectType(parsed, 'Subscription');
     expect(subscriptionType).toBeDefined();
 
-    subscriptionType!.fields!.forEach(it => {
+    subscriptionType!.fields!.forEach((it) => {
       expect(it.name.value.length <= 50).toBeTruthy();
     });
 
     const iamStackResource = out.stacks.ThisIsAVeryLongNameModelThatShouldNotGenerateIAMRoleNamesOver64Characters;
     expect(iamStackResource).toBeDefined();
-    Template.fromJSON(iamStackResource)
-      .hasResourceProperties('AWS::IAM::Role', {
-        AssumeRolePolicyDocument: {
-          Statement: [
+    Template.fromJSON(iamStackResource).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'appsync.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      RoleName: {
+        'Fn::Join': [
+          '',
+          [
+            'ThisIsAVeryLongNameM2d9fca-',
             {
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: {
-                Service: 'appsync.amazonaws.com',
-              },
+              Ref: 'referencetotransformerrootstackGraphQLAPI20497F53ApiId',
+            },
+            '-',
+            {
+              Ref: 'referencetotransformerrootstackenv10C5A902Ref',
             },
           ],
-          Version: '2012-10-17',
-        },
-        RoleName: {
-          'Fn::Join': [
-            '',
-            [
-              'ThisIsAVeryLongNameM2d9fca-',
-              {
-                Ref: 'referencetotransformerrootstackGraphQLAPI20497F53ApiId',
-              },
-              '-',
-              {
-                Ref: 'referencetotransformerrootstackenv10C5A902Ref',
-              },
-            ],
-          ],
-        },
-      });
+        ],
+      },
+    });
 
     validateModelSchema(parsed);
   });
@@ -1171,7 +1170,7 @@ describe('ModelTransformer: ', () => {
 
     expectFieldsOnInputType(createTodoInput!, ['id', 'name']);
 
-    const idField = createTodoInput!.fields!.find(f => f.name.value === 'id');
+    const idField = createTodoInput!.fields!.find((f) => f.name.value === 'id');
     expect((idField!.type as NamedTypeNode).name!.value).toEqual('ID');
     expect((idField!.type as NamedTypeNode).kind).toEqual('NamedType');
 
@@ -1207,54 +1206,53 @@ describe('ModelTransformer: ', () => {
     expect(out.resolvers['Query.syncTodos.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Query.syncTodos.res.vtl']).toMatchSnapshot();
     // ds table
-    Template.fromJSON(out.rootStack)
-      .hasResourceProperties('AWS::DynamoDB::Table', {
-        KeySchema: [
-          {
-            AttributeName: 'ds_pk',
-            KeyType: 'HASH',
-          },
-          {
-            AttributeName: 'ds_sk',
-            KeyType: 'RANGE',
-          },
-        ],
-        AttributeDefinitions: [
-          {
-            AttributeName: 'ds_pk',
-            AttributeType: 'S',
-          },
-          {
-            AttributeName: 'ds_sk',
-            AttributeType: 'S',
-          },
-        ],
-        BillingMode: 'PAY_PER_REQUEST',
-        StreamSpecification: {
-          StreamViewType: 'NEW_AND_OLD_IMAGES',
+    Template.fromJSON(out.rootStack).hasResourceProperties('AWS::DynamoDB::Table', {
+      KeySchema: [
+        {
+          AttributeName: 'ds_pk',
+          KeyType: 'HASH',
         },
-        TableName: {
-          'Fn::Join': [
-            '',
-            [
-              'AmplifyDataStore-',
-              {
-                'Fn::GetAtt': ['GraphQLAPI', 'ApiId'],
-              },
-              '-',
-              {
-                Ref: 'env',
-              },
-            ],
+        {
+          AttributeName: 'ds_sk',
+          KeyType: 'RANGE',
+        },
+      ],
+      AttributeDefinitions: [
+        {
+          AttributeName: 'ds_pk',
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: 'ds_sk',
+          AttributeType: 'S',
+        },
+      ],
+      BillingMode: 'PAY_PER_REQUEST',
+      StreamSpecification: {
+        StreamViewType: 'NEW_AND_OLD_IMAGES',
+      },
+      TableName: {
+        'Fn::Join': [
+          '',
+          [
+            'AmplifyDataStore-',
+            {
+              'Fn::GetAtt': ['GraphQLAPI', 'ApiId'],
+            },
+            '-',
+            {
+              Ref: 'env',
+            },
           ],
-        },
-        TimeToLiveSpecification: {
-          AttributeName: '_ttl',
-          Enabled: true,
-        },
-      });
+        ],
+      },
+      TimeToLiveSpecification: {
+        AttributeName: '_ttl',
+        Enabled: true,
+      },
+    });
   });
-  it("the conflict detection of per model rule should be respected", () => {
+  it('the conflict detection of per model rule should be respected', () => {
     const validSchema = `
       type Todo @model {
         name: String
@@ -1267,74 +1265,67 @@ describe('ModelTransformer: ', () => {
     const transformer = new GraphQLTransform({
       resolverConfig: {
         project: {
-          ConflictDetection: "VERSION",
-          ConflictHandler: ConflictHandlerType.AUTOMERGE
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
         },
         models: {
           Todo: {
-            ConflictDetection: "VERSION",
+            ConflictDetection: 'VERSION',
             ConflictHandler: ConflictHandlerType.LAMBDA,
             LambdaConflictHandler: {
-              name: "myTodoConflictHandler"
-            }
+              name: 'myTodoConflictHandler',
+            },
           },
           Author: {
-            ConflictDetection: "VERSION",
-            ConflictHandler: ConflictHandlerType.AUTOMERGE
-          }
-        }
+            ConflictDetection: 'VERSION',
+            ConflictHandler: ConflictHandlerType.AUTOMERGE,
+          },
+        },
       },
       sandboxModeEnabled: true,
-      transformers: [new ModelTransformer()]
+      transformers: [new ModelTransformer()],
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
     // nested stacks for models
-    const todoStack = out.stacks["Todo"];
-    const authorStack = out.stacks["Author"];
+    const todoStack = out.stacks['Todo'];
+    const authorStack = out.stacks['Author'];
     // Todo stack should have lambda for conflict detect rather than auto merge
-    Template.fromJSON(todoStack).hasResourceProperties(
-      "AWS::AppSync::FunctionConfiguration",
-      {
-        SyncConfig: {
-          ConflictDetection: "VERSION",
-          ConflictHandler: "LAMBDA",
-        }
-      }
-    );
-    Template.fromJSON(todoStack).resourcePropertiesCountIs(
-      "AWS::AppSync::FunctionConfiguration",
-      {
-        SyncConfig: {
-          ConflictDetection: "VERSION",
-          ConflictHandler: "AUTOMERGE",
-        }
+    Template.fromJSON(todoStack).hasResourceProperties('AWS::AppSync::FunctionConfiguration', {
+      SyncConfig: {
+        ConflictDetection: 'VERSION',
+        ConflictHandler: 'LAMBDA',
       },
-      0
+    });
+    Template.fromJSON(todoStack).resourcePropertiesCountIs(
+      'AWS::AppSync::FunctionConfiguration',
+      {
+        SyncConfig: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: 'AUTOMERGE',
+        },
+      },
+      0,
     );
     // Author stack should have automerge for conflict detect rather than lambda
     Template.fromJSON(authorStack).resourcePropertiesCountIs(
-      "AWS::AppSync::FunctionConfiguration",
+      'AWS::AppSync::FunctionConfiguration',
       {
         SyncConfig: {
-          ConflictDetection: "VERSION",
-          ConflictHandler: "LAMBDA",
-        }
+          ConflictDetection: 'VERSION',
+          ConflictHandler: 'LAMBDA',
+        },
       },
-      0
+      0,
     );
-    Template.fromJSON(authorStack).hasResourceProperties(
-      "AWS::AppSync::FunctionConfiguration",
-      {
-        SyncConfig: {
-          ConflictDetection: "VERSION",
-          ConflictHandler: "AUTOMERGE",
-        }
-      }
-    );
-
+    Template.fromJSON(authorStack).hasResourceProperties('AWS::AppSync::FunctionConfiguration', {
+      SyncConfig: {
+        ConflictDetection: 'VERSION',
+        ConflictHandler: 'AUTOMERGE',
+      },
+    });
   });
   it('should add the model parameters at the root sack', () => {
     const modelParams = {
@@ -1420,12 +1411,12 @@ describe('ModelTransformer: ', () => {
     const postType = getObjectType(schema, 'Post')!;
     expect(postType).toBeDefined();
     expect(postType.directives).toBeDefined();
-    expect(postType.directives!.some(dir => dir.name.value === 'aws_api_key')).toEqual(true);
+    expect(postType.directives!.some((dir) => dir.name.value === 'aws_api_key')).toEqual(true);
 
     const tagType = getObjectType(schema, 'Tag')!;
     expect(tagType).toBeDefined();
     expect(tagType.directives).toBeDefined();
-    expect(tagType.directives!.some(dir => dir.name.value === 'aws_api_key')).toEqual(true);
+    expect(tagType.directives!.some((dir) => dir.name.value === 'aws_api_key')).toEqual(true);
 
     // check operations
     const queryType = getObjectType(schema, 'Query')!;
@@ -1436,7 +1427,7 @@ describe('ModelTransformer: ', () => {
     expect(subscriptionType).toBeDefined();
 
     for (const field of [...queryType.fields!, ...mutationType.fields!, ...subscriptionType.fields!]) {
-      expect(field.directives!.some(dir => dir.name.value === 'aws_api_key')).toEqual(true);
+      expect(field.directives!.some((dir) => dir.name.value === 'aws_api_key')).toEqual(true);
     }
   });
 

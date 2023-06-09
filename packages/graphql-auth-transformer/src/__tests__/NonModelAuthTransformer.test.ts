@@ -12,26 +12,24 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 
 describe('@auth directive without @model', async () => {
   const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined => {
-    return doc.definitions.find(def => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
+    return doc.definitions.find((def) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
       | ObjectTypeDefinitionNode
       | undefined;
   };
 
-  const getField = (type, name) => type.fields.find(f => f.name.value === name);
+  const getField = (type, name) => type.fields.find((f) => f.name.value === name);
 
-  const expectNone = fieldOrType => {
+  const expectNone = (fieldOrType) => {
     expect(fieldOrType.directives.length === 0);
   };
 
   const expectOne = (fieldOrType, directiveName) => {
     expect(fieldOrType.directives.length === 1);
-    expect(fieldOrType.directives.find(d => d.name.value === directiveName)).toBeDefined();
+    expect(fieldOrType.directives.find((d) => d.name.value === directiveName)).toBeDefined();
   };
 
   test('Test that @auth with no @model on type is failing validation as model is required', () => {

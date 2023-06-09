@@ -2,7 +2,7 @@ import { BaseRequest, BaseRequestArgs } from './BaseRequest';
 
 export enum SortDirection {
   ASC,
-  DESC
+  DESC,
 }
 
 export interface ListRequestArgs extends BaseRequestArgs {

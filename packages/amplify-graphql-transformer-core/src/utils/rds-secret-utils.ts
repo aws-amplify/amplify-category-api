@@ -10,8 +10,14 @@ const getParameterNameForDBSecret = (secret: string, secretsKey: string): string
   /amplify/<appId>/<envName>/AMPLIFY_${categoryName}${resourceName}${paramName}
   where paramName is secretsKey_<secretName>
 */
-export const getParameterStoreSecretPath = (secret: string, secretsKey:string, apiName: string, environmentName: string, appId: string): string => {
-  if(_.isEmpty(appId)) {
+export const getParameterStoreSecretPath = (
+  secret: string,
+  secretsKey: string,
+  apiName: string,
+  environmentName: string,
+  appId: string,
+): string => {
+  if (_.isEmpty(appId)) {
     throw new Error('Unable to read the App ID');
   }
   const categoryName = APICategory;

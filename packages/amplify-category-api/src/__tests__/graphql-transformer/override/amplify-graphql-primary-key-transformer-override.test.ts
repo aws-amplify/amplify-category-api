@@ -40,7 +40,7 @@ test('it overrides expected resources', () => {
     featureFlags,
     overrideConfig: {
       applyOverride: (stackManager: StackManager) => {
-        return applyFileBasedOverride(stackManager, path.join(__dirname, 'primary-key-overrides'))
+        return applyFileBasedOverride(stackManager, path.join(__dirname, 'primary-key-overrides'));
       },
       overrideFlag: true,
     },

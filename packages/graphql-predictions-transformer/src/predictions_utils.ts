@@ -1,4 +1,3 @@
-
 export const iamActions = {
   identifyText: 'rekognition:DetectText',
   identifyLabels: 'rekognition:DetectLabels',

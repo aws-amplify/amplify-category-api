@@ -38,12 +38,12 @@ export const expectAuthLocalAndOGMetaFilesOutputMatching = (projectRoot: string,
   const ogMeta = getBackendAmplifyMeta(ogProjectRoot);
 
   const authMeta = Object.keys(meta.auth)
-    .filter(key => meta.auth[key].service === 'Cognito')
-    .map(key => meta.auth[key])[0];
+    .filter((key) => meta.auth[key].service === 'Cognito')
+    .map((key) => meta.auth[key])[0];
 
   const ogAuthMeta = Object.keys(ogMeta.auth)
-    .filter(key => ogMeta.auth[key].service === 'Cognito')
-    .map(key => ogMeta.auth[key])[0];
+    .filter((key) => ogMeta.auth[key].service === 'Cognito')
+    .map((key) => ogMeta.auth[key])[0];
 
   expect(authMeta.output.AppClientID).toEqual(ogAuthMeta.output.AppClientID);
   expect(authMeta.output.AppClientIDWeb).toEqual(ogAuthMeta.output.AppClientIDWeb);
@@ -116,12 +116,12 @@ export const expectS3LocalAndOGMetaFilesOutputMatching = (projectRoot: string, o
   const ogMeta = getBackendAmplifyMeta(ogProjectRoot);
 
   const storageMeta = Object.keys(meta.storage)
-    .filter(key => meta.storage[key].service === 'S3')
-    .map(key => meta.storage[key])[0];
+    .filter((key) => meta.storage[key].service === 'S3')
+    .map((key) => meta.storage[key])[0];
 
   const ogStorageMeta = Object.keys(ogMeta.storage)
-    .filter(key => ogMeta.storage[key].service === 'S3')
-    .map(key => ogMeta.storage[key])[0];
+    .filter((key) => ogMeta.storage[key].service === 'S3')
+    .map((key) => ogMeta.storage[key])[0];
 
   expect(storageMeta.output.BucketName).toEqual(ogStorageMeta.output.BucketName);
   expect(storageMeta.output.Region).toEqual(ogStorageMeta.output.Region);
@@ -152,12 +152,12 @@ export const expectDynamoDBLocalAndOGMetaFilesOutputMatching = (projectRoot: str
   const ogMeta = getBackendAmplifyMeta(ogProjectRoot);
 
   const storageMeta = Object.keys(meta.storage)
-    .filter(key => meta.storage[key].service === 'DynamoDB')
-    .map(key => meta.storage[key])[0];
+    .filter((key) => meta.storage[key].service === 'DynamoDB')
+    .map((key) => meta.storage[key])[0];
 
   const ogStorageMeta = Object.keys(ogMeta.storage)
-    .filter(key => ogMeta.storage[key].service === 'DynamoDB')
-    .map(key => ogMeta.storage[key])[0];
+    .filter((key) => ogMeta.storage[key].service === 'DynamoDB')
+    .map((key) => ogMeta.storage[key])[0];
 
   expect(storageMeta.output.Name).toEqual(ogStorageMeta.output.Name);
   expect(storageMeta.output.Region).toEqual(ogStorageMeta.output.Region);

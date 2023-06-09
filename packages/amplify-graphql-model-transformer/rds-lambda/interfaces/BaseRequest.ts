@@ -1,10 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface BaseRequestArgs {
-  metadata: { keys: string[] }
+  metadata: { keys: string[] };
 }
 
 export interface RequestArgs extends BaseRequestArgs {
-  input: Map<string, any>
+  input: Map<string, any>;
 }
 
 export interface BaseRequest {

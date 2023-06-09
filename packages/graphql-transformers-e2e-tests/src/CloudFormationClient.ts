@@ -140,7 +140,7 @@ export class CloudFormationClient {
    * @param args The arguments to pass to the function after the wait.
    */
   public async wait<T>(secs: number, fun: (...args: any[]) => Promise<T>, ...args: any[]): Promise<T> {
-    return new Promise<T>(resolve => {
+    return new Promise<T>((resolve) => {
       setTimeout(() => {
         resolve(fun.apply(this, args));
       }, 1000 * secs);

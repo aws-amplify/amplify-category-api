@@ -12,10 +12,10 @@ const port = 20005; // port for S3
 /**
  * @returns Name of S3 resource or undefined
  */
- async function invokeS3GetResourceName(context) {
-   const s3ResourceName = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetResourceName', [context]);
-   return s3ResourceName;
- }
+async function invokeS3GetResourceName(context) {
+  const s3ResourceName = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetResourceName', [context]);
+  return s3ResourceName;
+}
 
 /**
  * Return the cli-inputs.json
@@ -23,13 +23,10 @@ const port = 20005; // port for S3
  * @param s3ResourceName
  * @returns
  */
- async function invokeS3GetUserInputs(context, s3ResourceName) {
-   const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetUserInput', [
-     context,
-     s3ResourceName,
-   ]);
-   return s3UserInputs;
- }
+async function invokeS3GetUserInputs(context, s3ResourceName) {
+  const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetUserInput', [context, s3ResourceName]);
+  return s3UserInputs;
+}
 
 export class StorageTest {
   private storageName: string;
@@ -60,7 +57,7 @@ export class StorageTest {
     let localDirS3 = this.createLocalStorage(context, `${s3UserInputs.bucketName}`);
 
     try {
-      context.amplify.addCleanUpTask(async context => {
+      context.amplify.addCleanUpTask(async (context) => {
         await this.stop();
       });
       this.configOverrideManager = await ConfigOverrideManager.getInstance(context);

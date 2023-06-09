@@ -13,4 +13,4 @@ type Post {
   description: String
   topic: String
 }
-`
+`;

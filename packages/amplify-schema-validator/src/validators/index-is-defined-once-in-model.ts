@@ -1,17 +1,12 @@
-import {
-  DocumentNode,
-  Kind,
-  ObjectTypeDefinitionNode,
-  StringValueNode,
-} from 'graphql';
+import { DocumentNode, Kind, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
 
 /**
-   * Validates that an index with same name exists only once in a model
-   *
-   * @param schema graphql schema
-   * @returns true if an index with same name exists only once in a model
-   */
+ * Validates that an index with same name exists only once in a model
+ *
+ * @param schema graphql schema
+ * @returns true if an index with same name exists only once in a model
+ */
 
 export const validateIndexIsDefinedOnce = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
@@ -20,9 +15,9 @@ export const validateIndexIsDefinedOnce = (schema: DocumentNode): Error[] => {
   ) as ObjectTypeDefinitionNode[];
   objectTypeDefinitions.forEach((objectTypeDefinition) => {
     const objectName = objectTypeDefinition.name.value;
-    const directiveFields = objectTypeDefinition.fields?.filter((objectField) => objectField.directives?.find(
-      (directive) => directive.name.value === 'index',
-    ));
+    const directiveFields = objectTypeDefinition.fields?.filter((objectField) =>
+      objectField.directives?.find((directive) => directive.name.value === 'index'),
+    );
 
     if (!directiveFields) {
       /* istanbul ignore next */
@@ -40,9 +35,7 @@ export const validateIndexIsDefinedOnce = (schema: DocumentNode): Error[] => {
         }
         const indexName = (fieldArg.value as StringValueNode).value;
         if (uniqueIndexNames.includes(indexName)) {
-          errors.push(new InvalidDirectiveError(
-            `You may only supply one @index with the name ${indexName} on type ${objectName}`,
-          ));
+          errors.push(new InvalidDirectiveError(`You may only supply one @index with the name ${indexName} on type ${objectName}`));
         } else {
           uniqueIndexNames.push(indexName);
         }

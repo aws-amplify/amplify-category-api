@@ -1,9 +1,5 @@
-import {
-  AuthProvider, AuthStrategy, AuthTransformer, ModelOperation,
-} from '@aws-amplify/graphql-auth-transformer';
-import {
-  JWTToken,
-} from '@aws-amplify/amplify-appsync-simulator';
+import { AuthProvider, AuthStrategy, AuthTransformer, ModelOperation } from '@aws-amplify/graphql-auth-transformer';
+import { JWTToken } from '@aws-amplify/amplify-appsync-simulator';
 import { Auth } from 'aws-amplify';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { CognitoIdentity, S3 } from 'aws-sdk';
@@ -19,7 +15,14 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { CloudFormationClient } from './CloudFormationClient';
 import {
-  addUserToGroup, authenticateUser, configureAmplify, createGroup, createIdentityPool, createUserPool, createUserPoolClient, signupUser,
+  addUserToGroup,
+  authenticateUser,
+  configureAmplify,
+  createGroup,
+  createIdentityPool,
+  createUserPool,
+  createUserPoolClient,
+  signupUser,
 } from './cognitoUtils';
 import { cleanupStackAfterTest, deploy } from './deployNestedStacks';
 import { IAMHelper } from './IAMHelper';
@@ -43,10 +46,12 @@ export const AUTH_TEST_OPERATIONS: ModelOperation[] = ['create', 'get', 'list', 
 /**
  *
  */
-export const outputValueSelector = (key: string): any => (outputs: Output[]) => {
-  const output = outputs.find((o: Output) => o.OutputKey === key);
-  return output ? output.OutputValue : null;
-};
+export const outputValueSelector =
+  (key: string): any =>
+  (outputs: Output[]) => {
+    const output = outputs.find((o: Output) => o.OutputKey === key);
+    return output ? output.OutputValue : null;
+  };
 
 /**
  *
@@ -141,15 +146,17 @@ export const createGraphQLClient = async (
             region: REGION,
             auth: {
               type: AUTH_TYPE.AWS_IAM,
-              credentials: validAuth ? {
-                accessKeyId: unauthCreds.accessKeyId,
-                secretAccessKey: unauthCreds.secretAccessKey,
-                sessionToken: unauthCreds.sessionToken,
-              } : {
-                accessKeyId: '',
-                secretAccessKey: '',
-                sessionToken: '',
-              },
+              credentials: validAuth
+                ? {
+                    accessKeyId: unauthCreds.accessKeyId,
+                    secretAccessKey: unauthCreds.secretAccessKey,
+                    sessionToken: unauthCreds.sessionToken,
+                  }
+                : {
+                    accessKeyId: '',
+                    secretAccessKey: '',
+                    sessionToken: '',
+                  },
             },
             disableOffline: true,
           });
@@ -193,15 +200,17 @@ export const createGraphQLClient = async (
             region: REGION,
             auth: {
               type: AUTH_TYPE.AWS_IAM,
-              credentials: validAuth ? {
-                accessKeyId: authCreds.accessKeyId,
-                secretAccessKey: authCreds.secretAccessKey,
-                sessionToken: authCreds.sessionToken,
-              } : {
-                accessKeyId: '',
-                secretAccessKey: '',
-                sessionToken: '',
-              },
+              credentials: validAuth
+                ? {
+                    accessKeyId: authCreds.accessKeyId,
+                    secretAccessKey: authCreds.secretAccessKey,
+                    sessionToken: authCreds.sessionToken,
+                  }
+                : {
+                    accessKeyId: '',
+                    secretAccessKey: '',
+                    sessionToken: '',
+                  },
             },
             disableOffline: true,
           });
@@ -230,14 +239,7 @@ export const testAuthResolver = async (
   hasCustomPrimaryKey = false,
   hasPartialAccess = false,
 ): Promise<void> => {
-  const client = await createGraphQLClient(
-    graphqlEndpoint,
-    strategy,
-    provider,
-    idToken,
-    accessToken,
-    apiKey,
-  );
+  const client = await createGraphQLClient(graphqlEndpoint, strategy, provider, idToken, accessToken, apiKey);
   const invalidClient = await createGraphQLClient(
     graphqlEndpoint,
     strategy,
@@ -337,7 +339,9 @@ export const testAuthResolver = async (
     let input = `{ profileId: "${profileId}", firstName: "Amplify", lastName: "CLI", title: "UPDATED" }`;
 
     if (operation === 'delete') {
-      input = hasCustomPrimaryKey ? `{ profileId: "${profileId}", firstName: "Amplify", lastName: "CLI" }` : `{ profileId: "${profileId}" }`;
+      input = hasCustomPrimaryKey
+        ? `{ profileId: "${profileId}", firstName: "Amplify", lastName: "CLI" }`
+        : `{ profileId: "${profileId}" }`;
     }
 
     const mutation = gql`
@@ -385,10 +389,14 @@ export const generateTestModel = (
   operation: ModelOperation,
   hasPartialAccess = false,
   hasCustomPrimaryKey = false,
-): { modelName: string, schema: string } => {
+): { modelName: string; schema: string } => {
   const authRuleDirective = generateAuthDirective(authStrategy, authProvider, operation);
   const authRuleDirectiveNoOps = generateAuthDirective(authStrategy, authProvider, operation !== 'create' ? 'create' : undefined);
-  const hash = crypto.createHash('sha256').update(authStrategy + authProvider + operation + hasCustomPrimaryKey + hasPartialAccess).digest('hex').slice(0, 8);
+  const hash = crypto
+    .createHash('sha256')
+    .update(authStrategy + authProvider + operation + hasCustomPrimaryKey + hasPartialAccess)
+    .digest('hex')
+    .slice(0, 8);
   const modelName = `Profile${hash}`;
   const schema = `
     type ${modelName} @model ${authRuleDirective} {
@@ -406,11 +414,7 @@ export const generateTestModel = (
 /**
  *
  */
-export const generateAuthConfig = (
-  region: string,
-  userPoolId: string,
-  userPoolClientId: string,
-): AppSyncAuthConfiguration => ({
+export const generateAuthConfig = (region: string, userPoolId: string, userPoolClientId: string): AppSyncAuthConfiguration => ({
   defaultAuthentication: {
     authenticationType: 'AMAZON_COGNITO_USER_POOLS',
   },
@@ -486,14 +490,8 @@ export const deploySchema = async (
       }),
       getNumber: jest.fn(),
       getObject: jest.fn(),
-     
-
     },
-    transformers: [
-      new ModelTransformer(),
-      new PrimaryKeyTransformer(),
-      new AuthTransformer({ identityPoolId }),
-    ],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer({ identityPoolId })],
   });
 
   const out = transformer.transform(schema);
@@ -513,7 +511,7 @@ export const deploySchema = async (
 
   // Wait for any propagation to avoid random
   // "The security token included in the request is invalid" errors
-  await new Promise<void>(res => setTimeout(() => res(), 5000));
+  await new Promise<void>((res) => setTimeout(() => res(), 5000));
 
   expect(finishedStack).toBeDefined();
   const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);

@@ -47,11 +47,14 @@ export class IndexTransformer extends TransformerPluginBase {
     context: TransformerSchemaVisitStepContextProvider,
   ): void => {
     const directiveWrapped = new DirectiveWrapper(directive);
-    const args = directiveWrapped.getArguments({
-      object: parent as ObjectTypeDefinitionNode,
-      field: definition,
-      directive,
-    } as IndexDirectiveConfiguration, generateGetArgumentsInput(context.featureFlags));
+    const args = directiveWrapped.getArguments(
+      {
+        object: parent as ObjectTypeDefinitionNode,
+        field: definition,
+        directive,
+      } as IndexDirectiveConfiguration,
+      generateGetArgumentsInput(context.featureFlags),
+    );
 
     /**
      * Impute Optional Fields
@@ -148,14 +151,12 @@ const getOrGenerateDefaultSortKeyFields = (config: IndexDirectiveConfiguration):
 };
 
 const validate = (config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-  const {
-    name, object, field, sortKeyFields,
-  } = config;
+  const { name, object, field, sortKeyFields } = config;
   const defaultGSI = ctx.featureFlags.getBoolean('secondaryKeyAsGSI', true);
 
   validateNotSelfReferencing(config);
 
-  const modelDirective = object.directives!.find(directive => directive.name.value === 'model');
+  const modelDirective = object.directives!.find((directive) => directive.name.value === 'model');
 
   if (!modelDirective) {
     throw new InvalidDirectiveError(`The @${directiveName} directive may only be added to object definitions annotated with @model.`);
@@ -174,21 +175,23 @@ const validate = (config: IndexDirectiveConfiguration, ctx: TransformerContextPr
       }
 
       if (peerDirective.name.value === 'primaryKey') {
-        const hasSortFields = peerDirective.arguments!.some((arg: any) => arg.name.value === 'sortKeyFields' && arg.value.values?.length > 0);
+        const hasSortFields = peerDirective.arguments!.some(
+          (arg: any) => arg.name.value === 'sortKeyFields' && arg.value.values?.length > 0,
+        );
         config.primaryKeyField = objectField;
 
         if (!hasSortFields && objectField.name.value === field.name.value) {
           throw new InvalidDirectiveError(
-            `Invalid @index '${name}'. You may not create an index where the partition key `
-              + 'is the same as that of the primary key unless the primary key has a sort field. '
-              + 'You cannot have a local secondary index without a sort key in the primary key.',
+            `Invalid @index '${name}'. You may not create an index where the partition key ` +
+              'is the same as that of the primary key unless the primary key has a sort field. ' +
+              'You cannot have a local secondary index without a sort key in the primary key.',
           );
         }
       }
 
       if (
-        peerDirective.name.value === directiveName
-        && peerDirective.arguments!.some((arg: any) => arg.name.value === 'name' && arg.value.value === name)
+        peerDirective.name.value === directiveName &&
+        peerDirective.arguments!.some((arg: any) => arg.name.value === 'name' && arg.value.value === name)
       ) {
         throw new InvalidDirectiveError(
           `You may only supply one @${directiveName} with the name '${name}' on type '${object.name.value}'.`,
@@ -201,9 +204,9 @@ const validate = (config: IndexDirectiveConfiguration, ctx: TransformerContextPr
 
       if (!defaultGSI && !hasSortFields && objectField == config.primaryKeyField && objectField.name.value === field.name.value) {
         throw new InvalidDirectiveError(
-          `Invalid @index '${name}'. You may not create an index where the partition key `
-            + 'is the same as that of the primary key unless the index has a sort field. '
-            + 'You cannot have a local secondary index without a sort key in the index.',
+          `Invalid @index '${name}'. You may not create an index where the partition key ` +
+            'is the same as that of the primary key unless the index has a sort field. ' +
+            'You cannot have a local secondary index without a sort key in the index.',
         );
       }
     }

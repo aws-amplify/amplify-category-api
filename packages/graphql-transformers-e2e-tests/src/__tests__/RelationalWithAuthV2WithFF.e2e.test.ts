@@ -144,11 +144,10 @@ beforeAll(async () => {
           }
           return false;
         },
-       
 
         getNumber: jest.fn(),
         getObject: jest.fn(),
-      }
+      },
     });
     out = transformer.transform(validSchema);
   } catch (e) {
@@ -223,7 +222,7 @@ beforeAll(async () => {
 
     // Wait for any propagation to avoid random
     // "The security token included in the request is invalid" errors
-    await new Promise<void>(res => setTimeout(() => res(), 5000));
+    await new Promise<void>((res) => setTimeout(() => res(), 5000));
   } catch (e) {
     console.error(e);
     expect(true).toEqual(false);

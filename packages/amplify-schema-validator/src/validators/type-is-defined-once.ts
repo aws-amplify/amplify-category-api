@@ -1,8 +1,4 @@
-import {
-  DocumentNode,
-  Kind,
-  ObjectTypeDefinitionNode,
-} from 'graphql';
+import { DocumentNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { ValidationError } from '../exceptions/validation-error';
 
 /**
@@ -24,9 +20,7 @@ export const validateTypeIsDefinedOnce = (schema: DocumentNode): Error[] => {
     if (!uniqueTypes.includes(objectName)) {
       uniqueTypes.push(objectName);
     } else {
-      errors.push(new ValidationError(
-        `Schema validation failed. There can be only one type named ${objectName}.`,
-      ));
+      errors.push(new ValidationError(`Schema validation failed. There can be only one type named ${objectName}.`));
     }
   });
   return errors;

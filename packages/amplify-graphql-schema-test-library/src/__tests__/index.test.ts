@@ -14,9 +14,7 @@ import {
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { ConflictHandlerType, GraphQLTransform, GraphQLTransformOptions } from '@aws-amplify/graphql-transformer-core';
 import { FeatureFlagProvider, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  schemas, TransformerPlatform, TransformerSchema, TransformerVersion,
-} from '..';
+import { schemas, TransformerPlatform, TransformerSchema, TransformerVersion } from '..';
 
 const featureFlags: FeatureFlagProvider = {
   getBoolean: (value: string): boolean => {
@@ -25,7 +23,6 @@ const featureFlags: FeatureFlagProvider = {
     }
     return false;
   },
- 
 
   getNumber: jest.fn(),
   getObject: jest.fn(),
@@ -90,7 +87,6 @@ function createV2Transformer(options: Partial<Writeable<GraphQLTransformOptions>
       }
       return defaultValue;
     },
-   
 
     getNumber: jest.fn(),
     getObject: jest.fn(),

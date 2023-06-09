@@ -43,12 +43,12 @@ const DESTRUCTIVE_UPDATES_FLAG = 'allow-destructive-graphql-schema-updates';
 const PROVIDER_NAME = 'awscloudformation';
 
 async function warnOnAuth(context, map) {
-  const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
+  const unAuthModelTypes = Object.keys(map).filter((type) => !map[type].includes('auth') && map[type].includes('model'));
   if (unAuthModelTypes.length) {
     const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
     const docLink = getGraphQLTransformerAuthDocLink(transformerVersion);
     context.print.warning("\nThe following types do not have '@auth' enabled. Consider using @auth with @model");
-    context.print.warning(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'));
+    context.print.warning(unAuthModelTypes.map((type) => `\t - ${type}`).join('\n'));
     context.print.info(`Learn more about @auth here: ${docLink}\n`);
   }
 }
@@ -62,8 +62,8 @@ async function transformerVersionCheck(context, resourceDir, cloudBackendDirecto
   const searchable = getGraphQLTransformerOpenSearchProductionDocLink(transformerVersion);
   const versionChangeMessage = `The default behavior for @auth has changed in the latest version of Amplify\nRead here for details: ${authDocLink}`;
   const warningESMessage = `The behavior for @searchable has changed after version 4.14.1.\nRead here for details: ${searchable}`;
-  const checkVersionExist = config => config && config.Version;
-  const checkESWarningExists = config => config && config.ElasticsearchWarning;
+  const checkVersionExist = (config) => config && config.Version;
+  const checkESWarningExists = (config) => config && config.ElasticsearchWarning;
   let writeToConfig = false;
 
   // this is where we check if there is a prev version of the transformer being used
@@ -82,7 +82,7 @@ async function transformerVersionCheck(context, resourceDir, cloudBackendDirecto
   const showPrompt = !(cloudVersionExist || localVersionExist);
   const showWarning = !(cloudWarningExist || localWarningExist);
 
-  const resources = updatedResources.filter(resource => resource.service === 'AppSync');
+  const resources = updatedResources.filter((resource) => resource.service === 'AppSync');
   if (resources.length > 0) {
     if (showPrompt && usedDirectives.includes('auth')) {
       await warningMessage(context, versionChangeMessage);
@@ -130,7 +130,7 @@ async function warningMessage(context, warningMessage) {
 }
 
 function apiProjectIsFromOldVersion(pathToProject, resourcesToBeCreated) {
-  const resources = resourcesToBeCreated.filter(resource => resource.service === 'AppSync');
+  const resources = resourcesToBeCreated.filter((resource) => resource.service === 'AppSync');
   if (!pathToProject || resources.length > 0) {
     return false;
   }
@@ -206,8 +206,8 @@ export async function transformGraphQLSchemaV1(context, options) {
   // cloud formation push will fail even if there is no changes in the GraphQL API
   // https://github.com/aws-amplify/amplify-console/issues/10
   const resourceNeedCompile = allResources
-    .filter(r => !resources.includes(r))
-    .filter(r => {
+    .filter((r) => !resources.includes(r))
+    .filter((r) => {
       const buildDir = path.normalize(path.join(backEndDir, apiCategory, r.resourceName, 'build'));
       return !fs.existsSync(buildDir);
     });
@@ -216,9 +216,9 @@ export async function transformGraphQLSchemaV1(context, options) {
   if (forceCompile) {
     resources = resources.concat(allResources);
   }
-  resources = resources.filter(resource => resource.service === 'AppSync');
+  resources = resources.filter((resource) => resource.service === 'AppSync');
   // check if api is in update status or create status
-  const isNewAppSyncAPI: boolean = resourcesToBeCreated.filter(resource => resource.service === 'AppSync').length === 0 ? false : true;
+  const isNewAppSyncAPI: boolean = resourcesToBeCreated.filter((resource) => resource.service === 'AppSync').length === 0 ? false : true;
 
   if (!resourceDir) {
     // There can only be one appsync resource
@@ -401,7 +401,9 @@ place .graphql files in a directory at ${schemaDirPath}`);
 
 function getProjectBucket(context) {
   const projectDetails = context.amplify.getProjectDetails();
-  const projectBucket = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[PROVIDER_NAME].DeploymentBucketName : '';
+  const projectBucket = projectDetails.amplifyMeta.providers
+    ? projectDetails.amplifyMeta.providers[PROVIDER_NAME].DeploymentBucketName
+    : '';
   return projectBucket;
 }
 

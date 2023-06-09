@@ -86,7 +86,7 @@ beforeAll(async () => {
       createdAt: AWSDateTime
       updatedAt: AWSDateTime
     }
-    type Application @model @auth(rules: [{allow: groups, groupsField: "projectId"}, {allow: private, operations: [create]}]) {
+    type Application @model @auth(rules: [{ allow: groups, groupsField: "projectId" }, { allow: private, operations: [create] }]) {
       id: ID!
       projectId: ID! @index(name: "byProjectId", queryField: "applicationsByProjectId")
       applicationName: String!
@@ -116,8 +116,6 @@ beforeAll(async () => {
       }),
       getNumber: jest.fn(),
       getObject: jest.fn(),
-     
-
     },
     authConfig: {
       defaultAuthentication: {

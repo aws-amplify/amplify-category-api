@@ -1,6 +1,6 @@
 type Test @model {
-    id: ID!
-    name: String! @index(name: "byName", sortKeyFields: ["createdAt"])
-    email: String
-    createdAt: String
+  id: ID!
+  name: String! @index(name: "byName", sortKeyFields: ["createdAt"])
+  email: String
+  createdAt: String
 }

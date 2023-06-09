@@ -30,7 +30,7 @@ describe('@mapsTo with @hasMany', () => {
   it('adds CRUD input and output mappings on related type and maps related type in hasMany field resolver', () => {
     const out = transformSchema(mappedHasMany);
     const expectedResolvers: string[] = expectedResolversForModelWithRenamedField('Task').concat('Employee.tasks.postDataLoad.1.res.vtl');
-    expectedResolvers.forEach(resolver => {
+    expectedResolvers.forEach((resolver) => {
       expect(out.resolvers[resolver]).toMatchSnapshot();
     });
   });

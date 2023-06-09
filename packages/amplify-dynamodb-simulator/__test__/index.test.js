@@ -41,8 +41,7 @@ describe('emulator operations', () => {
     if (fs.existsSync(dbPath)) {
       try {
         fs.removeSync(dbPath);
-      }
-      catch(err) {
+      } catch (err) {
         console.log(err);
       }
     }
@@ -56,7 +55,7 @@ describe('emulator operations', () => {
   });
 
   afterEach(async () => {
-    await Promise.all(emulators.map(emu => emu.terminate()));
+    await Promise.all(emulators.map((emu) => emu.terminate()));
     ensureNoDbPath();
   });
 

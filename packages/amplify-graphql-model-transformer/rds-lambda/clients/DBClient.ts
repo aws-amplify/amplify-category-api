@@ -11,13 +11,13 @@ export abstract class DBClient {
     keys.forEach((key) => {
       query.where(key, request.args.input[key]);
     });
-  }
+  };
 
   protected addSortConditions = (query: any, request: ListRequest | IndexRequest) => {
     // order using sort keys
     const sortDirection = request.args.sortDirection || SortDirection.ASC;
     const keys = request.args.metadata.keys || [];
-    if(keys.length > 1) {
+    if (keys.length > 1) {
       const sortKeys = request.args.metadata.keys.slice(1);
       const orderByConditions = sortKeys.map((sortKey) => {
         return {
@@ -27,5 +27,5 @@ export abstract class DBClient {
       });
       query.orderBy(orderByConditions);
     }
-  }
+  };
 }

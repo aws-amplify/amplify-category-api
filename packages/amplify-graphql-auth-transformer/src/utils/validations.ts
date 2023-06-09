@@ -1,8 +1,4 @@
-import {
-  DirectiveWrapper,
-  InvalidDirectiveError,
-  generateGetArgumentsInput,
-} from '@aws-amplify/graphql-transformer-core';
+import { DirectiveWrapper, InvalidDirectiveError, generateGetArgumentsInput } from '@aws-amplify/graphql-transformer-core';
 import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthRule, ConfiguredAuthProviders } from './definitions';
 
@@ -110,10 +106,7 @@ export const validateFieldRules = (
   fieldName: string,
   featureFlags: FeatureFlagProvider,
 ) => {
-  const rules = authDir.getArguments<{ rules: Array<AuthRule> }>(
-    { rules: [] },
-    generateGetArgumentsInput(featureFlags),
-  ).rules;
+  const rules = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }, generateGetArgumentsInput(featureFlags)).rules;
 
   if (rules.length === 0) {
     throw new InvalidDirectiveError(`@auth on ${fieldName} does not have any auth rules.`);

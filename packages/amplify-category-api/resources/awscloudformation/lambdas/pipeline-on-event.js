@@ -1,4 +1,4 @@
-exports.handler = async function({ RequestType, PhysicalResourceId, ResourceProperties }) {
+exports.handler = async function ({ RequestType, PhysicalResourceId, ResourceProperties }) {
   switch (RequestType) {
     case 'Delete':
     case 'Update':

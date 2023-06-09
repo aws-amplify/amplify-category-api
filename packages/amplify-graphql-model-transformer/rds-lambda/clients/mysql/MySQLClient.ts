@@ -29,7 +29,7 @@ export abstract class MySQLClient extends DBClient {
     };
 
     return doExecute();
-  }
+  };
 
   private executeCreate = async (request: Request): Promise<any> => {
     // Insert the record
@@ -40,14 +40,14 @@ export abstract class MySQLClient extends DBClient {
     this.addKeyConditions(resultQuery, request);
     const result = await resultQuery.select();
     return result ? result[0] : {};
-  }
+  };
 
   private executeGet = async (request: Request): Promise<any> => {
     const query = (await this.getClient())(request.table);
     this.addKeyConditions(query, request);
     const result = await query.select();
     return result ? result[0] : {};
-  }
+  };
 
   private executeUpdate = async (request: Request): Promise<any> => {
     // Update the record
@@ -60,14 +60,12 @@ export abstract class MySQLClient extends DBClient {
     this.addKeyConditions(resultQuery, request);
     const result = await resultQuery.select();
     return result ? result[0] : {};
-  }
+  };
 
   private executeList = async (request: ListRequest): Promise<any> => {
-    const nextOffset = request.args?.nextToken
-      ? Number.parseInt(Buffer.from(request.args.nextToken, 'base64').toString('utf-8'), 10)
-      : 0;
+    const nextOffset = request.args?.nextToken ? Number.parseInt(Buffer.from(request.args.nextToken, 'base64').toString('utf-8'), 10) : 0;
     const limit = request.args?.limit ?? 100;
-    const client = (await this.getClient());
+    const client = await this.getClient();
     let query = client(request.table).offset(nextOffset).limit(limit);
 
     if (request.args.filter) {
@@ -80,7 +78,7 @@ export abstract class MySQLClient extends DBClient {
     const endOfResults = result?.length && result?.length < limit;
     const nextToken = endOfResults ? null : Buffer.from((nextOffset + request.args.limit).toString()).toString('base64');
     return { items: result, nextToken };
-  }
+  };
 
   private executeDelete = async (request: Request): Promise<any> => {
     // Select the record
@@ -90,22 +88,22 @@ export abstract class MySQLClient extends DBClient {
 
     // Delete the record
     const query = (await this.getClient())(request.table);
-    Object.keys(request.args.input).filter((key) => request.args.input.hasOwnProperty(key)).forEach((key) => {
-      query.where(key, request.args.input[key]);
-    });
+    Object.keys(request.args.input)
+      .filter((key) => request.args.input.hasOwnProperty(key))
+      .forEach((key) => {
+        query.where(key, request.args.input[key]);
+      });
     await query.delete();
 
     return result ? result[0] : {};
-  }
+  };
 
   private executeIndex = async (request: IndexRequest): Promise<any> => {
     const searchFilter = JSON.parse(JSON.stringify(request.args.input));
-    ['filter', 'limit', 'nextToken', 'sortDirection'].forEach(key => {
+    ['filter', 'limit', 'nextToken', 'sortDirection'].forEach((key) => {
       delete searchFilter[key];
     });
-    const nextOffset = request.args?.nextToken
-      ? Number.parseInt(Buffer.from(request.args.nextToken, 'base64').toString('utf-8'), 10)
-      : 0;
+    const nextOffset = request.args?.nextToken ? Number.parseInt(Buffer.from(request.args.nextToken, 'base64').toString('utf-8'), 10) : 0;
     const limit = request.args?.limit ?? 100;
     const query = (await this.getClient())(request.table).where(searchFilter).select().offset(nextOffset).limit(limit);
 
@@ -114,5 +112,5 @@ export abstract class MySQLClient extends DBClient {
     const endOfResults = result?.length && result?.length < limit;
     const nextToken = endOfResults ? null : Buffer.from((nextOffset + request.args.limit).toString()).toString('base64');
     return { items: result, nextToken };
-  }
+  };
 }

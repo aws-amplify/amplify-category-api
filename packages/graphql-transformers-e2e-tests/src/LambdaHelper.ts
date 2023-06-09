@@ -10,7 +10,7 @@ export class LambdaHelper {
   constructor(region: string = REGION, credentials?: Credentials) {
     this.client = new Lambda({
       region,
-      credentials
+      credentials,
     });
   }
 
@@ -35,11 +35,13 @@ export class LambdaHelper {
   }
 
   async addAppSyncCrossAccountAccess(accountId: string, name: string) {
-    await this.client.addPermission( {
-      Action: 'lambda:InvokeFunction',
-      FunctionName: name,
-      Principal: `arn:aws:iam::${accountId}:root`,
-      StatementId: 'cross-account-appsync-lambda-access'
-    }).promise();
+    await this.client
+      .addPermission({
+        Action: 'lambda:InvokeFunction',
+        FunctionName: name,
+        Principal: `arn:aws:iam::${accountId}:root`,
+        StatementId: 'cross-account-appsync-lambda-access',
+      })
+      .promise();
   }
 }

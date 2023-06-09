@@ -113,7 +113,7 @@ describe('V2 transformer options', () => {
               },
               getNumber: jest.fn(),
               getObject: jest.fn(),
-            }
+            },
           });
 
           const out = transformer.transform(validSchema);

@@ -1,16 +1,8 @@
 import { print } from 'graphql';
 import { EXTRA_DIRECTIVES_DOCUMENT } from './transformation/validation';
 
-export {
-  GraphQLTransform,
-  GraphQLTransformOptions,
-  SyncUtils,
-} from './transformation';
-export {
-  OverrideConfig,
-  UserDefinedSlot,
-  UserDefinedResolver,
-} from './transformation/types';
+export { GraphQLTransform, GraphQLTransformOptions, SyncUtils } from './transformation';
+export { OverrideConfig, UserDefinedSlot, UserDefinedResolver } from './transformation/types';
 export { validateModelSchema } from './transformation/validation';
 export {
   ConflictDetectionType,

@@ -2,22 +2,23 @@ import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-int
 import { EbsDeviceVolumeType } from 'aws-cdk-lib/aws-ec2';
 import { CfnDomain, Domain, ElasticsearchVersion } from 'aws-cdk-lib/aws-elasticsearch';
 import { IRole, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import {
-  CfnParameter,
-  Fn,
-  RemovalPolicy,
-} from 'aws-cdk-lib';
+import { CfnParameter, Fn, RemovalPolicy } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { ResourceConstants } from 'graphql-transformer-common';
 
-export const createSearchableDomain = (stack: Construct, parameterMap: Map<string, CfnParameter>, apiId: string, nodeToNodeEncryption: boolean): Domain => {
+export const createSearchableDomain = (
+  stack: Construct,
+  parameterMap: Map<string, CfnParameter>,
+  apiId: string,
+  nodeToNodeEncryption: boolean,
+): Domain => {
   const { OpenSearchEBSVolumeGB, OpenSearchInstanceType, OpenSearchInstanceCount } = ResourceConstants.PARAMETERS;
   const { OpenSearchDomainLogicalID } = ResourceConstants.RESOURCES;
   const { HasEnvironmentParameter } = ResourceConstants.CONDITIONS;
 
   const domain = new Domain(stack, OpenSearchDomainLogicalID, {
     version: { version: '7.10' } as ElasticsearchVersion,
-    enforceHttps:true,
+    enforceHttps: true,
     ebs: {
       enabled: true,
       volumeType: EbsDeviceVolumeType.GP2,

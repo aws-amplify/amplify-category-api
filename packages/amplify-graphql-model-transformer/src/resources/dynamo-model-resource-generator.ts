@@ -1,19 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  ModelResourceIDs,
-  ResourceConstants,
-  SyncResourceIDs,
-} from 'graphql-transformer-common';
+import { ModelResourceIDs, ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { SyncUtils, TransformerNestedStack } from '@aws-amplify/graphql-transformer-core';
-import {
-  AttributeType,
-  CfnTable,
-  StreamViewType,
-  Table,
-  TableEncryption,
-} from 'aws-cdk-lib/aws-dynamodb';
+import { AttributeType, CfnTable, StreamViewType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnRole } from 'aws-cdk-lib/aws-iam';
@@ -273,15 +263,15 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
               }),
               ...(context.isProjectUsingDataStore()
                 ? [
-                  // eslint-disable-next-line no-template-curly-in-string
-                  cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
-                    tablename: amplifyDataStoreTableName,
-                  }),
-                  // eslint-disable-next-line no-template-curly-in-string
-                  cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
-                    tablename: amplifyDataStoreTableName,
-                  }),
-                ]
+                    // eslint-disable-next-line no-template-curly-in-string
+                    cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
+                      tablename: amplifyDataStoreTableName,
+                    }),
+                    // eslint-disable-next-line no-template-curly-in-string
+                    cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
+                      tablename: amplifyDataStoreTableName,
+                    }),
+                  ]
                 : []),
             ],
           }),
@@ -297,5 +287,5 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     }
 
     return role;
-  }
+  };
 }

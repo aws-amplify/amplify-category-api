@@ -56,7 +56,7 @@ describe('@mapsTo with @hasOne', () => {
   it('adds CRUD input and output mappings on hasOne type', () => {
     const out = transformSchema(mappedHasOne);
     const expectedResolvers: string[] = expectedResolversForModelWithRenamedField('Employee');
-    expectedResolvers.forEach(resolver => {
+    expectedResolvers.forEach((resolver) => {
       expect(out.resolvers[resolver]).toMatchSnapshot();
     });
   });

@@ -100,7 +100,7 @@ test('happy case with dynamic groups', () => {
   expect(out.resolvers['Mutation.deletePost.auth.1.res.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
 });
 
-test('\'groups\' @auth with dynamic groups and custom claim on index query', () => {
+test("'groups' @auth with dynamic groups and custom claim on index query", () => {
   const authConfig: AppSyncAuthConfiguration = {
     defaultAuthentication: {
       authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -313,25 +313,37 @@ describe('Dynamic group subscription auth tests', () => {
       featureFlags,
     });
     const out = transformer.transform(validSchema);
-  
+
     expect(out).toBeDefined();
     expect(out.rootStack!.Resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
       'AMAZON_COGNITO_USER_POOLS',
     );
-    expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )');
+    expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
+      '#set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )',
+    );
     expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.parseJson($groupClaim0) )');
     expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
-    expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain('$util.qr($authGroupRuntimeFilter.add({ "groups": { "containsAny": $groupClaim0 } }))');
+    expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
+      '$util.qr($authGroupRuntimeFilter.add({ "groups": { "containsAny": $groupClaim0 } }))',
+    );
 
-    expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )');
+    expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
+      '#set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )',
+    );
     expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.parseJson($groupClaim0) )');
     expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
-    expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain('$util.qr($authGroupRuntimeFilter.add({ "groups": { "containsAny": $groupClaim0 } }))');
+    expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
+      '$util.qr($authGroupRuntimeFilter.add({ "groups": { "containsAny": $groupClaim0 } }))',
+    );
 
-    expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )');
+    expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
+      '#set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )',
+    );
     expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.parseJson($groupClaim0) )');
     expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
-    expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain('$util.qr($authGroupRuntimeFilter.add({ "groups": { "containsAny": $groupClaim0 } }))');  
+    expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
+      '$util.qr($authGroupRuntimeFilter.add({ "groups": { "containsAny": $groupClaim0 } }))',
+    );
   });
   test('happy case with dynamic single group as string', () => {
     const authConfig: AppSyncAuthConfiguration = {
@@ -353,26 +365,37 @@ describe('Dynamic group subscription auth tests', () => {
       featureFlags,
     });
     const out = transformer.transform(validSchema);
-  
+
     expect(out).toBeDefined();
     expect(out.rootStack!.Resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
       'AMAZON_COGNITO_USER_POOLS',
     );
-    expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )');
+    expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
+      '#set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )',
+    );
     expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.parseJson($groupClaim0) )');
     expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
-    expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain('$util.qr($authGroupRuntimeFilter.add({ "group": { "in": $groupClaim0 } }))');
+    expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
+      '$util.qr($authGroupRuntimeFilter.add({ "group": { "in": $groupClaim0 } }))',
+    );
 
-    expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )');
+    expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
+      '#set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )',
+    );
     expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.parseJson($groupClaim0) )');
     expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
-    expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain('$util.qr($authGroupRuntimeFilter.add({ "group": { "in": $groupClaim0 } }))');
+    expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
+      '$util.qr($authGroupRuntimeFilter.add({ "group": { "in": $groupClaim0 } }))',
+    );
 
-    expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )');
+    expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
+      '#set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )',
+    );
     expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.parseJson($groupClaim0) )');
     expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
-    expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain('$util.qr($authGroupRuntimeFilter.add({ "group": { "in": $groupClaim0 } }))');  
-
+    expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
+      '$util.qr($authGroupRuntimeFilter.add({ "group": { "in": $groupClaim0 } }))',
+    );
   });
 });
 
@@ -395,12 +418,7 @@ describe('Group field as part of secondary index', () => {
       `;
     const transformer = new GraphQLTransform({
       authConfig,
-      transformers: [
-        new ModelTransformer(),
-        new AuthTransformer(),
-        new PrimaryKeyTransformer(),
-        new IndexTransformer(),
-      ],
+      transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
       featureFlags,
     });
     const out = transformer.transform(validSchema);
@@ -426,12 +444,7 @@ describe('Group field as part of secondary index', () => {
       `;
     const transformer = new GraphQLTransform({
       authConfig,
-      transformers: [
-        new ModelTransformer(),
-        new AuthTransformer(),
-        new PrimaryKeyTransformer(),
-        new IndexTransformer(),
-      ],
+      transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
       featureFlags,
     });
     const out = transformer.transform(validSchema);

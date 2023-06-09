@@ -178,7 +178,6 @@ beforeAll(async () => {
         }
         return false;
       },
-     
 
       getNumber: jest.fn(),
       getObject: jest.fn(),
@@ -931,7 +930,11 @@ const createEntries = async () => {
     title: 'golfing',
   });
   await createBlog(GRAPHQL_CLIENT_2, {
-    groupsField: 'editor', owner: USERNAME4, secret: `${USERNAME4}secret`, ups: 10, title: 'cooking',
+    groupsField: 'editor',
+    owner: USERNAME4,
+    secret: `${USERNAME4}secret`,
+    ups: 10,
+    title: 'cooking',
   });
   // Waiting for the ES Cluster + Streaming Lambda infra to be setup
   await cf.wait(120, () => Promise.resolve());

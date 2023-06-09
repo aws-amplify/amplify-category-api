@@ -113,8 +113,6 @@ beforeAll(async () => {
       }),
       getNumber: jest.fn(),
       getObject: jest.fn(),
-     
-
     },
     authConfig: {
       defaultAuthentication: {

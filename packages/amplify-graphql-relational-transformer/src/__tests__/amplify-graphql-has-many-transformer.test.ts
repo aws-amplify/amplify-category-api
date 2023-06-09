@@ -431,7 +431,13 @@ test('many to many query', () => {
         ConflictHandler: ConflictHandlerType.AUTOMERGE,
       },
     },
-    transformers: [new ModelTransformer(), new IndexTransformer(), new HasOneTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+    transformers: [
+      new ModelTransformer(),
+      new IndexTransformer(),
+      new HasOneTransformer(),
+      new HasManyTransformer(),
+      new BelongsToTransformer(),
+    ],
   });
 
   const out = transformer.transform(inputSchema);
@@ -888,7 +894,7 @@ describe('@hasMany connection field nullability tests', () => {
       featureFlags,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     });
-  
+
     const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);

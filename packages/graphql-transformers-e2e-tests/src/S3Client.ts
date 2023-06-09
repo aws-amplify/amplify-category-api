@@ -29,7 +29,7 @@ export class S3Client {
       {
         Bucket: bucketName,
       },
-      this.client
+      this.client,
     );
   }
 
@@ -42,7 +42,7 @@ export class S3Client {
           Status: 'Enabled',
         },
       },
-      this.client
+      this.client,
     );
   }
 
@@ -57,7 +57,7 @@ export class S3Client {
         Body: fileContent,
         ContentType: contentType,
       },
-      this.client
+      this.client,
     );
   }
 
@@ -71,7 +71,7 @@ export class S3Client {
         Key: s3key,
         Body: fileContent,
       },
-      this.client
+      this.client,
     );
   }
 
@@ -82,7 +82,7 @@ export class S3Client {
         Bucket: bucketName,
         Key: s3key,
       },
-      this.client
+      this.client,
     );
   }
 
@@ -92,7 +92,7 @@ export class S3Client {
       {
         Bucket: bucketName,
       },
-      this.client
+      this.client,
     );
   }
 
@@ -104,7 +104,7 @@ export class S3Client {
         Key: s3key,
         VersionId: versionId,
       },
-      this.client
+      this.client,
     );
   }
 
@@ -122,7 +122,7 @@ export class S3Client {
       {
         Bucket: bucketName,
       },
-      this.client
+      this.client,
     );
   }
 
@@ -151,7 +151,7 @@ export class S3Client {
   }
 
   public async wait<T>(secs: number, fun: (...args: any[]) => Promise<T>, ...args: any[]): Promise<T> {
-    return new Promise<T>(resolve => {
+    return new Promise<T>((resolve) => {
       setTimeout(() => {
         resolve(fun.apply(this, args));
       }, 1000 * secs);

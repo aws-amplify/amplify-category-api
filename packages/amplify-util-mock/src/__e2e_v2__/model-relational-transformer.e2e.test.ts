@@ -53,7 +53,7 @@ describe('@model with relational transformer', () => {
           new BelongsToTransformer(),
           new AuthTransformer(),
         ],
-        featureFlags: ({
+        featureFlags: {
           getBoolean: (featureName: string, defaultValue: boolean) => {
             if (featureName === 'improvePluralization') {
               return true;
@@ -65,7 +65,7 @@ describe('@model with relational transformer', () => {
 
             return defaultValue;
           },
-        } as FeatureFlagProvider),
+        } as FeatureFlagProvider,
       });
       const out = transformer.transform(validSchema);
 

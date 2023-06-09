@@ -28,7 +28,7 @@ export class SchemaResourceUtil {
   public makeEnvironmentConditions() {
     return {
       [ResourceConstants.CONDITIONS.HasEnvironmentParameter]: Fn.Not(
-        Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.Env), ResourceConstants.NONE)
+        Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.Env), ResourceConstants.NONE),
       ),
     };
   }
@@ -40,7 +40,7 @@ export class SchemaResourceUtil {
         S3DeploymentBucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
         S3DeploymentRootKey: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
         ResolverFileName: Fn.Join('.', [resource.Properties.TypeName, resource.Properties.FieldName, 'req', 'vtl']),
-      }
+      },
     );
     resource.Properties.ResponseMappingTemplateS3Location = Fn.Sub(
       's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}',
@@ -48,7 +48,7 @@ export class SchemaResourceUtil {
         S3DeploymentBucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
         S3DeploymentRootKey: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
         ResolverFileName: Fn.Join('.', [resource.Properties.TypeName, resource.Properties.FieldName, 'res', 'vtl']),
-      }
+      },
     );
     delete resource.Properties.RequestMappingTemplate;
     delete resource.Properties.ResponseMappingTemplate;
@@ -62,7 +62,7 @@ export class SchemaResourceUtil {
         S3DeploymentBucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
         S3DeploymentRootKey: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
         ResolverFileName: Fn.Join('.', [resource.Properties.Name, 'req', 'vtl']),
-      }
+      },
     );
     resource.Properties.ResponseMappingTemplateS3Location = Fn.Sub(
       's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/pipelineFunctions/${ResolverFileName}',
@@ -70,7 +70,7 @@ export class SchemaResourceUtil {
         S3DeploymentBucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
         S3DeploymentRootKey: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
         ResolverFileName: Fn.Join('.', [resource.Properties.Name, 'res', 'vtl']),
-      }
+      },
     );
     delete resource.Properties.RequestMappingTemplate;
     delete resource.Properties.ResponseMappingTemplate;

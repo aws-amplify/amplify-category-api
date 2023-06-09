@@ -21,9 +21,7 @@ import { getAdminRoles, getIdentityPoolId } from './utils';
 import { schemaHasSandboxModeEnabled, showGlobalSandboxModeWarning, showSandboxModePrompts } from './sandbox-mode-helpers';
 import { importTransformerModule } from './transformer-factory';
 import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
-import {
-  DESTRUCTIVE_UPDATES_FLAG, PARAMETERS_FILENAME, PROVIDER_NAME, ROOT_APPSYNC_S3_KEY,
-} from './constants';
+import { DESTRUCTIVE_UPDATES_FLAG, PARAMETERS_FILENAME, PROVIDER_NAME, ROOT_APPSYNC_S3_KEY } from './constants';
 import { TransformerProjectOptions } from './transformer-options-types';
 import { contextUtil } from '../category-utils/context-util';
 import { searchablePushChecks } from './api-utils';
@@ -52,10 +50,7 @@ const warnOnAuth = (map: Record<string, any>, docLink: string): void => {
  * @param context The $TSContext from the Amplify CLI
  * @param options The any options config coming from the Amplify CLI
  */
-export const generateTransformerOptions = async (
-  context: $TSContext,
-  options: any,
-): Promise<TransformerProjectOptions> => {
+export const generateTransformerOptions = async (context: $TSContext, options: any): Promise<TransformerProjectOptions> => {
   let resourceName: string;
   const backEndDir = pathManager.getBackendDirPath();
   const flags = context.parameters.options;
@@ -113,8 +108,9 @@ export const generateTransformerOptions = async (
 
       // OpenSearch Instance type support for x.y.search types
       if (parameters[ResourceConstants.PARAMETERS.OpenSearchInstanceType]) {
-        parameters[ResourceConstants.PARAMETERS.OpenSearchInstanceType] = parameters[ResourceConstants.PARAMETERS.OpenSearchInstanceType]
-          .replace('.search', '.elasticsearch');
+        parameters[ResourceConstants.PARAMETERS.OpenSearchInstanceType] = parameters[
+          ResourceConstants.PARAMETERS.OpenSearchInstanceType
+        ].replace('.search', '.elasticsearch');
       }
     } catch (e) {
       parameters = {};
@@ -180,8 +176,9 @@ export const generateTransformerOptions = async (
   const docLink = getGraphQLTransformerAuthDocLink(2);
   const sandboxModeEnabled = schemaHasSandboxModeEnabled(project.schema, docLink);
   const directiveMap = collectDirectivesByTypeNames(project.schema);
-  const hasApiKey = authConfig.defaultAuthentication.authenticationType === 'API_KEY'
-    || authConfig.additionalAuthenticationProviders.some((authProvider) => authProvider.authenticationType === 'API_KEY');
+  const hasApiKey =
+    authConfig.defaultAuthentication.authenticationType === 'API_KEY' ||
+    authConfig.additionalAuthenticationProviders.some((authProvider) => authProvider.authenticationType === 'API_KEY');
   const showSandboxModeMessage = sandboxModeEnabled && hasApiKey;
 
   await searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
@@ -294,7 +291,8 @@ export const loadCustomTransformersV2 = async (resourceDir: string): Promise<Tra
 
       if (typeof CustomTransformer === 'function') {
         return new CustomTransformer();
-      } if (typeof CustomTransformer === 'object') {
+      }
+      if (typeof CustomTransformer === 'object') {
         // Todo: Use a shim to ensure that it adheres to TransformerProvider interface. For now throw error
         // return CustomTransformer;
         throw new Error("Custom Transformers' should implement TransformerProvider interface");
@@ -323,7 +321,7 @@ const getBucketName = (s3ResourceName: string): { bucketName: string } => {
   return { bucketName };
 };
 
-const getPreviousDeploymentRootKey = async (previouslyDeployedBackendDir: string): Promise<string|undefined> => {
+const getPreviousDeploymentRootKey = async (previouslyDeployedBackendDir: string): Promise<string | undefined> => {
   // this is the function
   let parameters;
   try {

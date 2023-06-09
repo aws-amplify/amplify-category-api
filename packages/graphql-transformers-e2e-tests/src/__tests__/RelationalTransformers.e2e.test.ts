@@ -27,13 +27,9 @@ const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);
 const awsS3Client = new S3({ region: region });
 const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-
-  }),
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {}),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `RelationalTransformersTest-${BUILD_TIMESTAMP}`;

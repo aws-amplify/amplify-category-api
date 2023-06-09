@@ -34,9 +34,7 @@ test('subscriptions are only generated if the respective mutation operation exis
   expect(out).toBeDefined();
   const resources = out.rootStack.Resources;
   expect(resources).toBeDefined();
-  expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID]?.Properties?.AuthenticationType).toEqual(
-    'AMAZON_COGNITO_USER_POOLS',
-  );
+  expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID]?.Properties?.AuthenticationType).toEqual('AMAZON_COGNITO_USER_POOLS');
   expect(out.resolvers['Salary.secret.res.vtl']).toContain('#if( $operation == "Mutation" )');
 
   expect(out.resolvers['Mutation.createSalary.res.vtl']).toContain('$util.qr($ctx.result.put("__operation", "Mutation"))');

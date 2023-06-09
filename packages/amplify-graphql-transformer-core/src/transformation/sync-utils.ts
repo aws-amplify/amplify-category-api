@@ -1,6 +1,4 @@
-import {
-  AttributeType, BillingMode, StreamViewType, Table,
-} from 'aws-cdk-lib/aws-dynamodb';
+import { AttributeType, BillingMode, StreamViewType, Table } from 'aws-cdk-lib/aws-dynamodb';
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
@@ -129,7 +127,12 @@ export function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncCo
   return false;
 }
 
-export function createSyncLambdaIAMPolicy(context: TransformerContextProvider, stack: cdk.Stack, name: string, region?: string): iam.Policy {
+export function createSyncLambdaIAMPolicy(
+  context: TransformerContextProvider,
+  stack: cdk.Stack,
+  name: string,
+  region?: string,
+): iam.Policy {
   return new iam.Policy(stack, 'InvokeLambdaFunction', {
     statements: [
       new iam.PolicyStatement({

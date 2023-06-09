@@ -6,11 +6,11 @@ describe('constructTransformerChain', () => {
     expect(constructTransformerChain().length).toEqual(14);
   });
 
-
   it('returns 16 transformers when 2 custom transformers are provided', () => {
-    expect(constructTransformerChain({ customTransformers: [
-      {} as unknown as TransformerPluginProvider,
-      {} as unknown as TransformerPluginProvider,
-    ] }).length).toEqual(16);
+    expect(
+      constructTransformerChain({
+        customTransformers: [{} as unknown as TransformerPluginProvider, {} as unknown as TransformerPluginProvider],
+      }).length,
+    ).toEqual(16);
   });
 });

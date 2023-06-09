@@ -6,25 +6,25 @@ import { GetArgumentsOptions } from '@aws-amplify/graphql-transformer-core';
  */
 export type AuthStrategy = 'owner' | 'groups' | 'public' | 'private' | 'custom';
 /**
-  * AuthProvider
-  */
+ * AuthProvider
+ */
 export type AuthProvider = 'apiKey' | 'iam' | 'oidc' | 'userPools' | 'function';
 /**
-  * ModelMutation
-  */
+ * ModelMutation
+ */
 export type ModelMutation = 'create' | 'update' | 'delete';
 /**
-  * ModelOperation
-  */
+ * ModelOperation
+ */
 export type ModelOperation = 'create' | 'update' | 'delete' | 'get' | 'list' | 'sync' | 'search' | 'listen';
 
 /**
-  * RelationalPrimaryMapConfig
-  */
+ * RelationalPrimaryMapConfig
+ */
 export type RelationalPrimaryMapConfig = Map<string, { claim: string; field: string }>;
 /**
-  * SearchableConfig
-  */
+ * SearchableConfig
+ */
 export interface SearchableConfig {
   queries: {
     search: string;

@@ -14,9 +14,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
-import {
-  ArnFormat, CfnCondition, CfnParameter, Fn,
-} from 'aws-cdk-lib';
+import { ArnFormat, CfnCondition, CfnParameter, Fn } from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
 import { DirectiveNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { Expression, str } from 'graphql-mapping-template';
@@ -73,8 +71,11 @@ const getTable = (context: TransformerContextProvider, definition: ObjectTypeDef
 
 const getNonKeywordFields = (def: ObjectTypeDefinitionNode): Expression[] => {
   const nonKeywordTypeSet = new Set(nonKeywordTypes);
-  return def.fields?.filter((field) => nonKeywordTypeSet.has(getBaseType(field.type))
-    && !DATASTORE_SYNC_FIELDS.includes(field.name.value)).map((field) => str(field.name.value)) || [];
+  return (
+    def.fields
+      ?.filter((field) => nonKeywordTypeSet.has(getBaseType(field.type)) && !DATASTORE_SYNC_FIELDS.includes(field.name.value))
+      .map((field) => str(field.name.value)) || []
+  );
 };
 
 /**
@@ -324,28 +325,14 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       throw new Error('Could not access region from search domain');
     }
 
-    const datasource = createSearchableDataSource(
-      stack,
-      context.api,
-      domain.domainEndpoint,
-      openSearchRole,
-      region,
-    );
+    const datasource = createSearchableDataSource(stack, context.api, domain.domainEndpoint, openSearchRole, region);
 
     // streaming lambda role
     const lambdaRole = createLambdaRole(context, stack, parameterMap);
     domain.grantWrite(lambdaRole);
 
     // creates streaming lambda
-    const lambda = createLambda(
-      stack,
-      context.api,
-      parameterMap,
-      lambdaRole,
-      domain.domainEndpoint,
-      isProjectUsingDataStore,
-      region,
-    );
+    const lambda = createLambda(stack, context.api, parameterMap, lambdaRole, domain.domainEndpoint, isProjectUsingDataStore, region);
 
     for (const def of this.searchableObjectTypeDefinitions) {
       const type = def.node.name.value;
@@ -380,7 +367,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         MappingTemplate.s3MappingTemplateFromString(
           requestTemplate(
             attributeName,
-            getNonKeywordFields((context.output.getObject(type))as ObjectTypeDefinitionNode),
+            getNonKeywordFields(context.output.getObject(type) as ObjectTypeDefinitionNode),
             context.isProjectUsingDataStore(),
             openSearchIndexName,
             keyFields,

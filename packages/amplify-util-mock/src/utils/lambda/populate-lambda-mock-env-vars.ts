@@ -1,6 +1,4 @@
-import {
-  $TSContext, AmplifyCategories, pathManager, stateManager,
-} from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyCategories, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
@@ -15,7 +13,9 @@ import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';
 export const populateLambdaMockEnvVars = async (context: $TSContext, processedLambda: ProcessedLambdaFunction) => {
   processedLambda.environment = (
     await Promise.all(
-      [getAwsCredentials, getStaticDefaults, getDynamicDefaults, getDotEnvValues].map((envVarGetter) => envVarGetter(processedLambda, context)),
+      [getAwsCredentials, getStaticDefaults, getDynamicDefaults, getDotEnvValues].map((envVarGetter) =>
+        envVarGetter(processedLambda, context),
+      ),
     )
   ).reduce((acc, it) => ({ ...acc, ...it }), processedLambda.environment);
 };
@@ -65,9 +65,7 @@ const getDynamicDefaults = (processedLambda: ProcessedLambdaFunction): Record<st
 const getDotEnvValues = (processedLambda: ProcessedLambdaFunction): Record<string, string> => {
   try {
     const result = dotenv.config({
-      path: path.join(
-        pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.FUNCTION, processedLambda.name), '.env',
-      ),
+      path: path.join(pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.FUNCTION, processedLambda.name), '.env'),
     });
     if (result.error) {
       throw result.error;

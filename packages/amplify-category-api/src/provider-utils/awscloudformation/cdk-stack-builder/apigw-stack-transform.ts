@@ -44,7 +44,9 @@ export class ApigwStackTransform {
     const pathsWithUserPoolGroups = Object.entries(this.cliInputs.paths).filter(([_, path]) => !!path?.permissions?.groups);
 
     if (this.resourceName === ADMIN_QUERIES_NAME || pathsWithUserPoolGroups.length > 0) {
-      [authResourceName] = getAmplifyResourceByCategories(AmplifyCategories.AUTH).filter(resourceName => resourceName !== 'userPoolGroups');
+      [authResourceName] = getAmplifyResourceByCategories(AmplifyCategories.AUTH).filter(
+        (resourceName) => resourceName !== 'userPoolGroups',
+      );
     }
 
     // Generate cloudformation stack from cli-inputs.json
@@ -89,7 +91,7 @@ export class ApigwStackTransform {
           );
         }
       }
-      Array.from(uniqueUserPoolGroupsList).forEach(userPoolGroupName => {
+      Array.from(uniqueUserPoolGroupsList).forEach((userPoolGroupName) => {
         this.resourceTemplateObj.addCfnParameter(
           {
             type: 'String',
@@ -214,17 +216,23 @@ export class ApigwStackTransform {
         const { envName } = stateManager.getLocalEnvInfo();
         const { projectName } = stateManager.getProjectConfig();
         const projectInfo = {
-          envName, projectName,
+          envName,
+          projectName,
         };
         try {
-          await sandboxNode.run(overrideCode, overrideJSFilePath)
+          await sandboxNode
+            .run(overrideCode, overrideJSFilePath)
             .override(this.resourceTemplateObj as AmplifyApigwResourceStack, projectInfo);
         } catch (err) {
-          throw new AmplifyError('InvalidOverrideError', {
-            message: 'Executing overrides failed.',
-            details: err.message,
-            resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-          }, err);
+          throw new AmplifyError(
+            'InvalidOverrideError',
+            {
+              message: 'Executing overrides failed.',
+              details: err.message,
+              resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+            },
+            err,
+          );
         }
       }
     }
@@ -255,5 +263,5 @@ function convertCrudOperationsToCfnPermissions(crudOps: CrudOperation[]) {
     [CrudOperation.UPDATE]: ['/PUT', '/PATCH'],
     [CrudOperation.DELETE]: ['/DELETE'],
   };
-  return crudOps.flatMap(op => opMap[op]);
+  return crudOps.flatMap((op) => opMap[op]);
 }

@@ -120,7 +120,7 @@ function chain(context: Context): ExecutionContext {
     },
     resumeRecording: (): ExecutionContext => {
       let _resumeRecording: ExecutionStep = {
-        fn: data => {
+        fn: (data) => {
           context.process.resumeRecording();
           return true;
         },
@@ -135,7 +135,7 @@ function chain(context: Context): ExecutionContext {
     },
     expect: function (expectation: string | RegExp): ExecutionContext {
       let _expect: ExecutionStep = {
-        fn: data => {
+        fn: (data) => {
           return testExpectation(data, expectation, context);
         },
         name: '_expect',
@@ -151,7 +151,7 @@ function chain(context: Context): ExecutionContext {
 
     wait: function (expectation: string | RegExp, callback = (data: string) => {}): ExecutionContext {
       let _wait: ExecutionStep = {
-        fn: data => {
+        fn: (data) => {
           var val = testExpectation(data, expectation, context);
           if (val === true && typeof callback === 'function') {
             callback(data);
@@ -388,8 +388,8 @@ function chain(context: Context): ExecutionContext {
           const recordings = context.process?.getRecordingFrames() || [];
           const lastScreen = recordings.length
             ? recordings
-                .filter(f => f[1] === 'o')
-                .map(f => f[2])
+                .filter((f) => f[1] === 'o')
+                .map((f) => f[2])
                 .slice(-10)
                 .join('\n')
             : 'No output';
@@ -568,7 +568,7 @@ function chain(context: Context): ExecutionContext {
     // `context.queue` and responds to the `callback` accordingly.
     //
     function flushQueue() {
-      const remainingQueue = context.queue.slice().map(item => {
+      const remainingQueue = context.queue.slice().map((item) => {
         const description = ['_sendline', '_send'].includes(item.name) ? `[${item.name}] **redacted**` : item.description;
         return {
           ...item,
@@ -577,7 +577,7 @@ function chain(context: Context): ExecutionContext {
       });
       const step = context.queue.shift();
       const { fn: currentFn, name: currentFnName } = step;
-      const nonEmptyLines = stdout.map(line => line.replace('\r', '').trim()).filter(line => line !== '');
+      const nonEmptyLines = stdout.map((line) => line.replace('\r', '').trim()).filter((line) => line !== '');
 
       var lastLine = nonEmptyLines[nonEmptyLines.length - 1];
 
@@ -639,7 +639,7 @@ function chain(context: Context): ExecutionContext {
   return {
     ...partialExecutionContext,
     run,
-    runAsync: () => new Promise<void>((resolve, reject) => run(err => (err ? reject(err) : resolve()))),
+    runAsync: () => new Promise<void>((resolve, reject) => run((err) => (err ? reject(err) : resolve()))),
   };
 }
 

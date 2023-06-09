@@ -21,7 +21,7 @@ export const run = async (context: $TSContext) => {
   const apiResources: string[] = [];
 
   if (amplifyMeta[AmplifyCategories.API]) {
-    Object.keys(amplifyMeta[AmplifyCategories.API]).forEach(resourceName => {
+    Object.keys(amplifyMeta[AmplifyCategories.API]).forEach((resourceName) => {
       apiResources.push(resourceName);
     });
   }
@@ -77,7 +77,7 @@ export const run = async (context: $TSContext) => {
         }
 
         const getResourceNameFromDependsOn = (categoryName: string, dependsOn: Record<string, any>[]) =>
-          dependsOn.filter(entry => entry.category === categoryName)[0].resourceName;
+          dependsOn.filter((entry) => entry.category === categoryName)[0].resourceName;
 
         const props: AdminQueriesProps = {
           apiName: selectedResourceName,

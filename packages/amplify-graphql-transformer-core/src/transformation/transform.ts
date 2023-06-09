@@ -10,9 +10,7 @@ import {
   TransformerLog,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
-import {
-  App, Aws, CfnOutput, Fn,
-} from 'aws-cdk-lib';
+import { App, Aws, CfnOutput, Fn } from 'aws-cdk-lib';
 import {
   EnumTypeDefinitionNode,
   EnumValueDefinitionNode,
@@ -149,13 +147,13 @@ export class GraphQLTransform {
     const context = new TransformerPreProcessContext(schema, this?.options?.featureFlags);
 
     this.transformers
-        .filter(transformer => isFunction(transformer.preMutateSchema))
-        .map(transformer => transformer.preMutateSchema as Function)
-        .forEach(preMutateSchema => preMutateSchema(context));
+      .filter((transformer) => isFunction(transformer.preMutateSchema))
+      .map((transformer) => transformer.preMutateSchema as Function)
+      .forEach((preMutateSchema) => preMutateSchema(context));
 
     return this.transformers
-      .filter(transformer => isFunction(transformer.mutateSchema))
-      .map(transformer => transformer.mutateSchema as Function)
+      .filter((transformer) => isFunction(transformer.mutateSchema))
+      .map((transformer) => transformer.mutateSchema as Function)
       .reduce((mutateContext, mutateSchema) => {
         const updatedSchema = mutateSchema(mutateContext);
         return {
@@ -336,14 +334,14 @@ export class GraphQLTransform {
       disableResolverDeduping: this.disableResolverDeduping,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
-      mode => mode?.authorizationType,
+      (mode) => mode?.authorizationType,
     );
 
     if (authModes.includes(AuthorizationType.API_KEY) && this.legacyApiKeyEnabled !== false) {
       const apiKeyConfig: AuthorizationMode | undefined = [
         authorizationConfig.defaultAuthorization,
         ...(authorizationConfig.additionalAuthorizationModes || []),
-      ].find(auth => auth?.authorizationType == AuthorizationType.API_KEY);
+      ].find((auth) => auth?.authorizationType == AuthorizationType.API_KEY);
       const apiKeyDescription = apiKeyConfig!.apiKeyConfig?.description;
       const apiKeyExpirationDays = apiKeyConfig!.apiKeyConfig?.expires;
 
@@ -414,7 +412,7 @@ export class GraphQLTransform {
     for (const [resolverName] of resolverEntries) {
       const userSlots = this.userDefinedSlots[resolverName] || [];
 
-      userSlots.forEach(slot => {
+      userSlots.forEach((slot) => {
         const fileName = slot.requestResolver?.fileName;
         if (fileName && fileName in resolvers) {
           userOverriddenSlots.push(fileName);
@@ -440,7 +438,7 @@ export class GraphQLTransform {
     for (const [resolverName, resolver] of resolverEntries) {
       const userSlots = this.userDefinedSlots[resolverName] || [];
 
-      userSlots.forEach(slot => {
+      userSlots.forEach((slot) => {
         const requestTemplate = slot.requestResolver
           ? MappingTemplate.s3MappingTemplateFromString(slot.requestResolver.template, slot.requestResolver.fileName)
           : undefined;
@@ -767,10 +765,7 @@ const removeAmplifyInputDefinition = (schema: string): string => {
   const parsedSchema: any = parse(schema);
 
   parsedSchema.definitions = parsedSchema?.definitions?.filter(
-    (definition: any) =>
-      !(definition?.kind === 'InputObjectTypeDefinition' &&
-      definition?.name &&
-      definition?.name?.value === 'Amplify')
+    (definition: any) => !(definition?.kind === 'InputObjectTypeDefinition' && definition?.name && definition?.name?.value === 'Amplify'),
   );
 
   const sanitizedSchema = print(parsedSchema);

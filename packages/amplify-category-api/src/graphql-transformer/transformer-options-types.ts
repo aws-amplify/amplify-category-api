@@ -1,21 +1,9 @@
 /**
  * ProjectOptions Type Definition
  */
-import {
-  AppSyncAuthConfiguration,
-  FeatureFlagProvider,
-  Template,
-} from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  OverrideConfig,
-  ResolverConfig,
-  TransformerProjectConfig,
-  UserDefinedSlot,
-} from '@aws-amplify/graphql-transformer-core';
-import {
-  DiffRule,
-  ProjectRule,
-} from 'graphql-transformer-core';
+import { AppSyncAuthConfiguration, FeatureFlagProvider, Template } from '@aws-amplify/graphql-transformer-interfaces';
+import { OverrideConfig, ResolverConfig, TransformerProjectConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
+import { DiffRule, ProjectRule } from 'graphql-transformer-core';
 import { TransformerFactoryArgs } from '@aws-amplify/graphql-transformer';
 
 /**

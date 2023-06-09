@@ -29,7 +29,7 @@ import {
   generateOwnerClaimExpression,
   generateOwnerClaimListExpression,
   generateOwnerMultiClaimExpression,
-  generateInvalidClaimsCondition
+  generateInvalidClaimsCondition,
 } from './helpers';
 import {
   COGNITO_AUTH_TYPE,
@@ -89,14 +89,14 @@ const iamExpression = (
   if (hasAdminRolesEnabled) {
     const adminCheckExpression = compoundExpression([
       set(ref(allowedAggFieldsList), ref(totalFields)),
-      qref(methodCall(ref('ctx.stash.put'), str(allowedAggFieldsList), ref(allowedAggFieldsList)))
+      qref(methodCall(ref('ctx.stash.put'), str(allowedAggFieldsList), ref(allowedAggFieldsList))),
     ]);
     expression.push(iamAdminRoleCheckExpression(adminRoles, undefined, adminCheckExpression));
   }
   if (roles.length === 0) {
     expression.push(ref('util.unauthorized()'));
   } else {
-    roles.forEach(role => {
+    roles.forEach((role) => {
       const exp: Expression[] = [set(ref(IS_AUTHORIZED_FLAG), bool(true))];
       if (role.allowedFields) {
         exp.push(qref(methodCall(ref(`${allowedAggFieldsList}.addAll`), raw(JSON.stringify(role.allowedFields)))));
@@ -111,7 +111,7 @@ const iamExpression = (
 
 const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
   const staticRoleExpression: Array<Expression> = [];
-  const privateRoleIdx = roles.findIndex(r => r.strategy === 'private');
+  const privateRoleIdx = roles.findIndex((r) => r.strategy === 'private');
   if (privateRoleIdx > -1) {
     if (roles[privateRoleIdx].allowedFields) {
       staticRoleExpression.push(
@@ -132,7 +132,7 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expre
             ref('staticGroupRoles'),
             raw(
               JSON.stringify(
-                roles.map(r => ({ claim: r.claim, entity: r.entity, ...(r.allowedFields ? { allowedFields: r.allowedFields } : {}) })),
+                roles.map((r) => ({ claim: r.claim, entity: r.entity, ...(r.allowedFields ? { allowedFields: r.allowedFields } : {}) })),
               ),
             ),
           ),
@@ -203,7 +203,7 @@ const generateAuthFilter = (
       );
 
       if (role.allowedFields) {
-        role.allowedFields.forEach(field => {
+        role.allowedFields.forEach((field) => {
           if (!allowedAggFields.includes(field)) {
             aggFieldMap[field] = [...(aggFieldMap[field] ?? []), `$owner${idx}`];
           }
@@ -214,7 +214,7 @@ const generateAuthFilter = (
         set(ref(`groupClaim${idx}`), getIdentityClaimExp(str(role.claim!), list([]))),
         iff(
           not(raw(`$groupClaim${idx}.isEmpty()`)),
-          compoundExpression([ 
+          compoundExpression([
             set(
               ref(`group${idx}`),
               obj({
@@ -232,7 +232,7 @@ const generateAuthFilter = (
       );
 
       if (role.allowedFields) {
-        role.allowedFields.forEach(field => {
+        role.allowedFields.forEach((field) => {
           if (!allowedAggFields.includes(field)) {
             aggFieldMap[field] = [...(aggFieldMap[field] ?? []), `$group${idx}`];
           }
@@ -242,7 +242,7 @@ const generateAuthFilter = (
   });
   filterExpression.push(
     iff(
-      and([ not(ref(IS_AUTHORIZED_FLAG)), not(raw(`$${authFilterConditionsRefName}.isEmpty()`))]),
+      and([not(ref(IS_AUTHORIZED_FLAG)), not(raw(`$${authFilterConditionsRefName}.isEmpty()`))]),
       qref(methodCall(ref('ctx.stash.put'), str('authFilter'), obj({ bool: obj({ should: ref(authFilterConditionsRefName) }) }))),
     ),
   );
@@ -270,13 +270,12 @@ export const generateAuthExpressionForSearchQueries = (
   fields: ReadonlyArray<FieldDefinitionNode>,
   allowedAggFields: Array<string>,
 ): string => {
-  const {
-    cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles,
-  } = splitRoles(roles);
+  const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } =
+    splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [
     setHasAuthExpression,
     set(ref(IS_AUTHORIZED_FLAG), bool(false)),
-    set(ref(totalFields), raw(JSON.stringify(fields.map(f => f.name.value)))),
+    set(ref(totalFields), raw(JSON.stringify(fields.map((f) => f.name.value)))),
     set(ref(allowedAggFieldsList), raw(JSON.stringify(allowedAggFields))),
   ];
   if (providers.hasApiKey) {

@@ -14,7 +14,7 @@ export interface TransformerContextMetadataProvider {
   has(key: string): boolean;
 }
 
-export type TransformerSecrets = {[key: string]: any};
+export type TransformerSecrets = { [key: string]: any };
 
 export interface TransformerContextProvider {
   metadata: TransformerContextMetadataProvider;
@@ -24,7 +24,7 @@ export interface TransformerContextProvider {
 
   inputDocument: DocumentNode;
   modelToDatasourceMap: Map<string, DatasourceType>;
-  datasourceSecretParameterLocations: Map<string, TransformerSecrets>,
+  datasourceSecretParameterLocations: Map<string, TransformerSecrets>;
   output: TransformerContextOutputProvider;
   stackManager: StackManagerProvider;
   api: GraphQLAPIProvider;

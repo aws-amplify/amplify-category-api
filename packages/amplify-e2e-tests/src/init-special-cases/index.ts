@@ -90,7 +90,8 @@ async function initWorkflow(cwd: string, settings: { accessKeyId: string; secret
     chain
       .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
       .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {

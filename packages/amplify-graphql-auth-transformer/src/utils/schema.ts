@@ -15,9 +15,7 @@ import {
   TransformerContextProvider,
   FeatureFlagProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, NamedTypeNode,
-} from 'graphql';
+import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, NamedTypeNode } from 'graphql';
 import {
   blankObjectExtension,
   extendFieldWithDirectives,
@@ -37,53 +35,70 @@ import { RelationalPrimaryMapConfig, RoleDefinition, SearchableConfig } from './
 /**
  * collectFieldNames
  */
-export const collectFieldNames = (object: ObjectTypeDefinitionNode): Array<string> => object.fields!.map((field: FieldDefinitionNode) => field.name.value);
+export const collectFieldNames = (object: ObjectTypeDefinitionNode): Array<string> =>
+  object.fields!.map((field: FieldDefinitionNode) => field.name.value);
 
 /**
  * fieldIsList
  */
-export const fieldIsList = (fields: ReadonlyArray<FieldDefinitionNode>, fieldName: string) => fields.some(field => field.name.value === fieldName && isListType(field.type));
+export const fieldIsList = (fields: ReadonlyArray<FieldDefinitionNode>, fieldName: string) =>
+  fields.some((field) => field.name.value === fieldName && isListType(field.type));
 
 /**
  * getModelConfig
  */
-export const getModelConfig = (directive: DirectiveNode, typeName: string, featureFlags: FeatureFlagProvider, isDataStoreEnabled = false): ModelDirectiveConfiguration => {
+export const getModelConfig = (
+  directive: DirectiveNode,
+  typeName: string,
+  featureFlags: FeatureFlagProvider,
+  isDataStoreEnabled = false,
+): ModelDirectiveConfiguration => {
   const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
-  const options = directiveWrapped.getArguments<ModelDirectiveConfiguration>({
-    queries: {
-      get: toCamelCase(['get', typeName]),
-      list: toCamelCase(['list', plurality(typeName, true)]),
-      ...(isDataStoreEnabled ? { sync: toCamelCase(['sync', plurality(typeName, true)]) } : undefined),
+  const options = directiveWrapped.getArguments<ModelDirectiveConfiguration>(
+    {
+      queries: {
+        get: toCamelCase(['get', typeName]),
+        list: toCamelCase(['list', plurality(typeName, true)]),
+        ...(isDataStoreEnabled ? { sync: toCamelCase(['sync', plurality(typeName, true)]) } : undefined),
+      },
+      mutations: {
+        create: toCamelCase(['create', typeName]),
+        update: toCamelCase(['update', typeName]),
+        delete: toCamelCase(['delete', typeName]),
+      },
+      subscriptions: {
+        level: SubscriptionLevel.on,
+        onCreate: [ensureValidSubscriptionName(toCamelCase(['onCreate', typeName]))],
+        onDelete: [ensureValidSubscriptionName(toCamelCase(['onDelete', typeName]))],
+        onUpdate: [ensureValidSubscriptionName(toCamelCase(['onUpdate', typeName]))],
+      },
+      timestamps: {
+        createdAt: 'createdAt',
+        updatedAt: 'updatedAt',
+      },
     },
-    mutations: {
-      create: toCamelCase(['create', typeName]),
-      update: toCamelCase(['update', typeName]),
-      delete: toCamelCase(['delete', typeName]),
-    },
-    subscriptions: {
-      level: SubscriptionLevel.on,
-      onCreate: [ensureValidSubscriptionName(toCamelCase(['onCreate', typeName]))],
-      onDelete: [ensureValidSubscriptionName(toCamelCase(['onDelete', typeName]))],
-      onUpdate: [ensureValidSubscriptionName(toCamelCase(['onUpdate', typeName]))],
-    },
-    timestamps: {
-      createdAt: 'createdAt',
-      updatedAt: 'updatedAt',
-    },
-  }, generateGetArgumentsInput(featureFlags));
+    generateGetArgumentsInput(featureFlags),
+  );
   return options;
 };
 
 /**
  * getSearchableConfig
  */
-export const getSearchableConfig = (directive: DirectiveNode, typeName: string, featureFlags: FeatureFlagProvider): SearchableConfig | null => {
+export const getSearchableConfig = (
+  directive: DirectiveNode,
+  typeName: string,
+  featureFlags: FeatureFlagProvider,
+): SearchableConfig | null => {
   const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
-  const options = directiveWrapped.getArguments<SearchableConfig>({
-    queries: {
-      search: graphqlName(`search${plurality(toUpper(typeName), true)}`),
+  const options = directiveWrapped.getArguments<SearchableConfig>(
+    {
+      queries: {
+        search: graphqlName(`search${plurality(toUpper(typeName), true)}`),
+      },
     },
-  }, generateGetArgumentsInput(featureFlags));
+    generateGetArgumentsInput(featureFlags),
+  );
   return options;
 };
 /*
@@ -109,14 +124,17 @@ export const getRelationalPrimaryMap = (
   field: FieldDefinitionNode,
   relatedModel: ObjectTypeDefinitionNode,
 ): RelationalPrimaryMapConfig => {
-  const relationalDirective = field.directives.find(dir => RELATIONAL_DIRECTIVES.includes(dir.name.value));
+  const relationalDirective = field.directives.find((dir) => RELATIONAL_DIRECTIVES.includes(dir.name.value));
   const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(relationalDirective);
   const primaryFieldMap = new Map();
   if (relationalDirective.name.value === 'hasMany') {
-    const args = directiveWrapped.getArguments({
-      indexName: undefined,
-      fields: undefined,
-    }, generateGetArgumentsInput(ctx.featureFlags));
+    const args = directiveWrapped.getArguments(
+      {
+        indexName: undefined,
+        fields: undefined,
+      },
+      generateGetArgumentsInput(ctx.featureFlags),
+    );
     // we only generate a primary map if a index name or field is specified
     // if both are undefined then @hasMany will create a new gsi with a new readonly field
     // we don't need a primary map since this readonly field is not a auth field
@@ -136,21 +154,22 @@ export const getRelationalPrimaryMap = (
   } // manyToMany doesn't need a primaryMap since it will create it's own gsis
   // to the join table between related @models
   else if (relationalDirective.name.value !== 'manyToMany') {
-    const args = directiveWrapped.getArguments({
-      fields: [
-        getConnectionAttributeName(ctx.featureFlags, def.name.value, field.name.value, relatedModel.name.value),
-        ...getSortKeyFieldNames(relatedModel).map(
-          (it) => getSortKeyConnectionAttributeName(def.name.value, field.name.value, it),
-        ),
-      ],
-    }, generateGetArgumentsInput(ctx.featureFlags));
+    const args = directiveWrapped.getArguments(
+      {
+        fields: [
+          getConnectionAttributeName(ctx.featureFlags, def.name.value, field.name.value, relatedModel.name.value),
+          ...getSortKeyFieldNames(relatedModel).map((it) => getSortKeyConnectionAttributeName(def.name.value, field.name.value, it)),
+        ],
+      },
+      generateGetArgumentsInput(ctx.featureFlags),
+    );
     const relatedPrimaryFields = getKeyFields(ctx, relatedModel);
     // the fields provided by the directive (implicit/explicit) need to match the total amount of fields used for the primary key in the related table
     // otherwise the get request is incomplete
     if (args.fields.length !== relatedPrimaryFields.length) {
       throw new InvalidDirectiveError(
-        `Invalid @${relationalDirective.name.value} on ${def.name.value}:${field.name.value}. `
-        + `Provided fields do not match the size of primary key(s) for ${relatedModel.name.value}`,
+        `Invalid @${relationalDirective.name.value} on ${def.name.value}:${field.name.value}. ` +
+          `Provided fields do not match the size of primary key(s) for ${relatedModel.name.value}`,
       );
     }
     relatedPrimaryFields.forEach((field, idx) => {
@@ -166,7 +185,8 @@ export const getRelationalPrimaryMap = (
 /**
  *
  */
-export const hasRelationalDirective = (field: FieldDefinitionNode): boolean => field.directives && field.directives.some(dir => RELATIONAL_DIRECTIVES.includes(dir.name.value));
+export const hasRelationalDirective = (field: FieldDefinitionNode): boolean =>
+  field.directives && field.directives.some((dir) => RELATIONAL_DIRECTIVES.includes(dir.name.value));
 
 /**
  *
@@ -198,9 +218,9 @@ export const addDirectivesToField = (
 ) => {
   const type = ctx.output.getType(typeName) as ObjectTypeDefinitionNode;
   if (type) {
-    const field = type.fields?.find(f => f.name.value === fieldName);
+    const field = type.fields?.find((f) => f.name.value === fieldName);
     if (field) {
-      const newFields = [...type.fields!.filter(f => f.name.value !== field.name.value), extendFieldWithDirectives(field, directives)];
+      const newFields = [...type.fields!.filter((f) => f.name.value !== field.name.value), extendFieldWithDirectives(field, directives)];
 
       const newType = {
         ...type,
@@ -222,15 +242,15 @@ export const addSubscriptionArguments = (
   subscriptionRoles: Array<RoleDefinition>,
 ) => {
   let subscription = ctx.output.getSubscription()!;
-  let createField: FieldDefinitionNode = subscription!.fields!.find(field => field.name.value === operationName) as FieldDefinitionNode;
-  const subscriptionArgumentList = subscriptionRoles.map(role => makeInputValueDefinition(role.entity!, makeNamedType('String')));
+  let createField: FieldDefinitionNode = subscription!.fields!.find((field) => field.name.value === operationName) as FieldDefinitionNode;
+  const subscriptionArgumentList = subscriptionRoles.map((role) => makeInputValueDefinition(role.entity!, makeNamedType('String')));
   createField = {
     ...createField,
     arguments: [...createField.arguments, ...subscriptionArgumentList],
   };
   subscription = {
     ...subscription,
-    fields: subscription!.fields!.map(field => (field.name.value === operationName ? createField : field)),
+    fields: subscription!.fields!.map((field) => (field.name.value === operationName ? createField : field)),
   };
   ctx.output.putType(subscription);
 };
@@ -250,7 +270,7 @@ export const addDirectivesToOperation = (
   // add the directives to the result type of the operation
   const type = ctx.output.getType(typeName) as ObjectTypeDefinitionNode;
   if (type) {
-    const field = type.fields!.find(f => f.name.value === operationName);
+    const field = type.fields!.find((f) => f.name.value === operationName);
 
     if (field) {
       const returnFieldType = field.type as NamedTypeNode;
@@ -388,8 +408,8 @@ const ensureValidSubscriptionName = (name: string): string => {
 
 const getKeyFields = (ctx: TransformerContextProvider, model: ObjectTypeDefinitionNode): Array<string> => {
   const table = getTable(ctx, model);
-  const hashKeyField = table.keySchema.find(f => f.keyType === 'HASH').attributeName;
-  const sortKeyFields = table.keySchema.find(f => f.keyType === 'RANGE')?.attributeName.split('#');
+  const hashKeyField = table.keySchema.find((f) => f.keyType === 'HASH').attributeName;
+  const sortKeyFields = table.keySchema.find((f) => f.keyType === 'RANGE')?.attributeName.split('#');
   const keyFields = [hashKeyField];
   if (sortKeyFields) {
     keyFields.push(...sortKeyFields);

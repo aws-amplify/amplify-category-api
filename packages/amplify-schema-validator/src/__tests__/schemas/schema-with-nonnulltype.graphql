@@ -1,4 +1,4 @@
-type AllTypes @model @auth(rules: [{allow: public}, {allow: private}]) {
+type AllTypes @model @auth(rules: [{ allow: public }, { allow: private }]) {
   id: ID!
   name: String
   age: Int
@@ -16,7 +16,7 @@ type AllTypes @model @auth(rules: [{allow: public}, {allow: private}]) {
   test: String
 }
 
-type Contract @model @auth(rules: [{allow: public}]) {
+type Contract @model @auth(rules: [{ allow: public }]) {
   id: ID!
   OrderId: String
   status: String
@@ -26,7 +26,7 @@ type Contract @model @auth(rules: [{allow: public}]) {
   viewers: [String]
 }
 
-type Iccid @model @auth(rules: [{allow: public}]) {
+type Iccid @model @auth(rules: [{ allow: public }]) {
   serialNumber: ID!
   Status: String
   ops: String
@@ -35,7 +35,7 @@ type Iccid @model @auth(rules: [{allow: public}]) {
   viewers: [String]
 }
 
-type Relative @model @auth(rules: [{allow: public}]) {
+type Relative @model @auth(rules: [{ allow: public }]) {
   id: ID!
   User: User @hasOne
   seniors: [Senior] @manyToMany(relationName: "SeniorRelative")
@@ -43,7 +43,7 @@ type Relative @model @auth(rules: [{allow: public}]) {
   viewers: [String]
 }
 
-type Senior @model @auth(rules: [{allow: public}]) {
+type Senior @model @auth(rules: [{ allow: public }]) {
   id: ID!
   User: User @hasOne
   Relatives: [Relative] @manyToMany(relationName: "SeniorRelative")
@@ -51,7 +51,7 @@ type Senior @model @auth(rules: [{allow: public}]) {
   viewers: [String]
 }
 
-type Device @model @auth(rules: [{allow: public}]) {
+type Device @model @auth(rules: [{ allow: public }]) {
   id: ID!
   serialNumber: ID!
   Senior: Senior @hasOne
@@ -66,7 +66,7 @@ type Device @model @auth(rules: [{allow: public}]) {
   viewers: [String]
 }
 
-type Dashboard @model @auth(rules: [{allow: public}]) {
+type Dashboard @model @auth(rules: [{ allow: public }]) {
   id: ID!
   DashboardName: String!
   Devices: [Device] @manyToMany(relationName: "DashboardDevice")
@@ -75,12 +75,14 @@ type Dashboard @model @auth(rules: [{allow: public}]) {
   viewers: [String]
 }
 
-type User @model @auth(rules: [{allow: public}]) {
+type User @model @auth(rules: [{ allow: public }]) {
   id: ID!
   Email: String!
   Dashboards: [Dashboard] @manyToMany(relationName: "UserDashboard")
   UserContracts: [Contract] @manyToMany(relationName: "UserContract")
-  """UserContracts: [UserContract] @hasMany(indexName: "byUser", fields: ["id"])"""
+  """
+  UserContracts: [UserContract] @hasMany(indexName: "byUser", fields: ["id"])
+  """
   AliasName: String
   Birthday: String
   City: String
@@ -107,25 +109,25 @@ type User @model @auth(rules: [{allow: public}]) {
   viewers: [String]
 }
 
-type Foo @model @auth(rules: [{allow: public}]) {
+type Foo @model @auth(rules: [{ allow: public }]) {
   name: String
   Bar: Bar! @hasOne
 }
 
-type Bar @model @auth(rules: [{allow: public}]) {
+type Bar @model @auth(rules: [{ allow: public }]) {
   name: String
   description: String
   Foo: Foo @belongsTo
 }
 
-type Project @model @auth(rules: [{allow: public}]) {
+type Project @model @auth(rules: [{ allow: public }]) {
   id: ID!
   name: String!
   team: Team @hasOne
   projectID: ID
 }
 
-type Team @model @auth(rules: [{allow: public}]) {
+type Team @model @auth(rules: [{ allow: public }]) {
   id: ID!
   name: String!
   projectID: ID

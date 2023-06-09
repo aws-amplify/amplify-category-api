@@ -25,12 +25,7 @@ const GQL_V2_TRANSFORMER_PACKAGES = [
   'amplify-graphql-transformer',
 ];
 
-const TRANSFORMER_RESTRICTED_IMPORTS = [
-  'fs',
-  'fs-extra',
-  '@aws-amplify/amplify-cli-core',
-  '@aws-amplify/amplify-prompts',
-];
+const TRANSFORMER_RESTRICTED_IMPORTS = ['fs', 'fs-extra', '@aws-amplify/amplify-cli-core', '@aws-amplify/amplify-prompts'];
 
 module.exports = {
   parser: '@typescript-eslint/parser', // Specifies the ESLint parser
@@ -54,25 +49,19 @@ module.exports = {
     'import/parsers': { '@typescript-eslint/parser': ['.ts', '.tsx'] },
     'import/resolver': { typescript: {} },
   },
-  ignorePatterns: [
-    '__tests__/**',
-    '*.test.ts',
-    'lib/**',
-    'node_modules',
-    '*/node_modules',
-  ],
+  ignorePatterns: ['__tests__/**', '*.test.ts', 'lib/**', 'node_modules', '*/node_modules'],
   overrides: [
     {
       files: GQL_V2_TRANSFORMER_PACKAGES.map((packageName) => `packages/${packageName}/src/**`),
-      excludedFiles: [
-        '__tests__/**',
-        '*.test.ts',
-      ],
+      excludedFiles: ['__tests__/**', '*.test.ts'],
       rules: {
-        'no-restricted-imports': ['error', ...TRANSFORMER_RESTRICTED_IMPORTS.map((importName) => ({
-          name: importName,
-          message: `${importName} is not allowed in transformer v2 packages`,
-        }))],
+        'no-restricted-imports': [
+          'error',
+          ...TRANSFORMER_RESTRICTED_IMPORTS.map((importName) => ({
+            name: importName,
+            message: `${importName} is not allowed in transformer v2 packages`,
+          })),
+        ],
       },
     },
   ],

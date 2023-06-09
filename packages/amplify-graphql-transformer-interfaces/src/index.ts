@@ -34,13 +34,7 @@ export {
 
 export { TransformHostProvider, DynamoDbDataSourceOptions } from './transform-host-provider';
 
-export {
-  DeploymentResources,
-  NestedStacks,
-  ResolversFunctionsAndSchema,
-  StackMapping,
-  Template,
-} from './deployment-resources';
+export { DeploymentResources, NestedStacks, ResolversFunctionsAndSchema, StackMapping, Template } from './deployment-resources';
 
 export { TransformerLog, TransformerLogLevel } from './transformer-log';
 export {

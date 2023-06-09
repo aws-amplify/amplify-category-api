@@ -1,10 +1,4 @@
-import {
-  DocumentNode,
-  Kind,
-  ListValueNode,
-  ObjectTypeDefinitionNode,
-  StringValueNode,
-} from 'graphql';
+import { DocumentNode, Kind, ListValueNode, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
 
 /**
@@ -20,9 +14,11 @@ export const validateFieldsMatchInParentModel = (schema: DocumentNode): Error[] 
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,
   ) as ObjectTypeDefinitionNode[];
   objectTypeDefinitions.forEach((objectTypeDefinition) => {
-    const directiveFields = objectTypeDefinition.fields?.filter((objectField) => objectField.directives?.find(
-      (directive) => directive.name.value === 'connection' || directive.name.value === 'hasOne' || directive.name.value === 'belongsTo',
-    ));
+    const directiveFields = objectTypeDefinition.fields?.filter((objectField) =>
+      objectField.directives?.find(
+        (directive) => directive.name.value === 'connection' || directive.name.value === 'hasOne' || directive.name.value === 'belongsTo',
+      ),
+    );
 
     directiveFields?.forEach((directiveField) => {
       const fields = objectTypeDefinition?.fields;
@@ -45,9 +41,7 @@ export const validateFieldsMatchInParentModel = (schema: DocumentNode): Error[] 
         fieldArgVals.forEach((fieldArgVal) => {
           const val = (fieldArgVal as StringValueNode).value;
           if (!fieldVals.includes(val)) {
-            errors.push(new InvalidDirectiveError(
-              `${val} is not a field in ${objectTypeDefinition.name.value}`,
-            ));
+            errors.push(new InvalidDirectiveError(`${val} is not a field in ${objectTypeDefinition.name.value}`));
           }
         });
       });

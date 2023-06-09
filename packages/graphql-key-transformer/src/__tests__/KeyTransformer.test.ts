@@ -14,8 +14,6 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 
 test('Check KeyTransformer Resolver Code', () => {
@@ -197,10 +195,10 @@ test('KeyTransformer should remove default primary key when primary key overidde
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   const createBlogInput: InputObjectTypeDefinitionNode = schema.definitions.find(
-    d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreateBlogInput',
+    (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreateBlogInput',
   ) as InputObjectTypeDefinitionNode | undefined;
   expect(createBlogInput).toBeDefined();
-  const defaultIdField = createBlogInput.fields.find(f => f.name.value === 'id');
+  const defaultIdField = createBlogInput.fields.find((f) => f.name.value === 'id');
   expect(defaultIdField).toBeUndefined();
 });
 
@@ -221,10 +219,10 @@ test('KeyTransformer should not remove default primary key when primary key not 
   const schema = parse(out.schema);
 
   const createBlogInput: InputObjectTypeDefinitionNode = schema.definitions.find(
-    d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreateBlogInput',
+    (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreateBlogInput',
   ) as InputObjectTypeDefinitionNode | undefined;
   expect(createBlogInput).toBeDefined();
-  const defaultIdField = createBlogInput.fields.find(f => f.name.value === 'id');
+  const defaultIdField = createBlogInput.fields.find((f) => f.name.value === 'id');
   expect(defaultIdField).toBeDefined();
 });
 
@@ -281,7 +279,7 @@ test('Test that sort direction and filter input are generated if default list qu
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
-  const sortDirection = schema.definitions.find(d => d.kind === 'EnumTypeDefinition' && d.name.value === 'ModelSortDirection');
+  const sortDirection = schema.definitions.find((d) => d.kind === 'EnumTypeDefinition' && d.name.value === 'ModelSortDirection');
   expect(sortDirection).toBeDefined();
   const stringInputType = getInputType(schema, 'ModelStringFilterInput');
   expect(stringInputType).toBeDefined();
@@ -361,13 +359,13 @@ describe('check schema input', () => {
     const schema = parse(out.schema);
 
     const DeleteCallInput: InputObjectTypeDefinitionNode = schema.definitions.find(
-      d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput',
+      (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput',
     ) as InputObjectTypeDefinitionNode | undefined;
     expect(DeleteCallInput).toBeDefined();
-    const receiverIdField = DeleteCallInput.fields.find(f => f.name.value === 'receiverId');
+    const receiverIdField = DeleteCallInput.fields.find((f) => f.name.value === 'receiverId');
     expect(receiverIdField).toBeDefined();
     expect(receiverIdField.type.kind).toBe('NonNullType');
-    const senderIdField = DeleteCallInput.fields.find(f => f.name.value === 'senderId');
+    const senderIdField = DeleteCallInput.fields.find((f) => f.name.value === 'senderId');
     expect(senderIdField).toBeUndefined();
   });
 
@@ -398,13 +396,13 @@ describe('check schema input', () => {
     const schema = parse(out.schema);
 
     const DeleteCallInput: InputObjectTypeDefinitionNode = schema.definitions.find(
-      d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput',
+      (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput',
     ) as InputObjectTypeDefinitionNode | undefined;
     expect(DeleteCallInput).toBeDefined();
-    const receiverIdField = DeleteCallInput.fields.find(f => f.name.value === 'receiverId');
+    const receiverIdField = DeleteCallInput.fields.find((f) => f.name.value === 'receiverId');
     expect(receiverIdField).toBeDefined();
     expect(receiverIdField.type.kind).toBe('NonNullType');
-    const senderIdField = DeleteCallInput.fields.find(f => f.name.value === 'senderId');
+    const senderIdField = DeleteCallInput.fields.find((f) => f.name.value === 'senderId');
     expect(senderIdField).toBeDefined();
     expect(senderIdField.type.kind).toBe('NonNullType');
   });
@@ -434,25 +432,25 @@ describe('check schema input', () => {
 
     // checlk for delete input
     const DeleteCallInput: InputObjectTypeDefinitionNode = schema.definitions.find(
-      d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput',
+      (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput',
     ) as InputObjectTypeDefinitionNode | undefined;
     expect(DeleteCallInput).toBeDefined();
-    const receiverIdField = DeleteCallInput.fields.find(f => f.name.value === 'receiverId');
+    const receiverIdField = DeleteCallInput.fields.find((f) => f.name.value === 'receiverId');
     expect(receiverIdField).toBeDefined();
     expect(receiverIdField.type.kind).toBe('NonNullType');
-    const senderIdField = DeleteCallInput.fields.find(f => f.name.value === 'senderId');
+    const senderIdField = DeleteCallInput.fields.find((f) => f.name.value === 'senderId');
     expect(senderIdField).toBeDefined();
     expect(senderIdField.type.kind).toBe('NonNullType');
 
     // check for create input
     const CreateCallInput: InputObjectTypeDefinitionNode = schema.definitions.find(
-      d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreateCallInput',
+      (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreateCallInput',
     ) as InputObjectTypeDefinitionNode | undefined;
     expect(CreateCallInput).toBeDefined();
-    const receiverIdFieldCreate = CreateCallInput.fields.find(f => f.name.value === 'receiverId');
+    const receiverIdFieldCreate = CreateCallInput.fields.find((f) => f.name.value === 'receiverId');
     expect(receiverIdFieldCreate).toBeDefined();
     expect(receiverIdFieldCreate.type.kind).toBe('NonNullType');
-    const senderIdFieldCreate = CreateCallInput.fields.find(f => f.name.value === 'senderId');
+    const senderIdFieldCreate = CreateCallInput.fields.find((f) => f.name.value === 'senderId');
     expect(senderIdFieldCreate).toBeUndefined();
   });
 
@@ -480,25 +478,25 @@ describe('check schema input', () => {
 
     // checlk for delete input
     const DeleteCallInput: InputObjectTypeDefinitionNode = schema.definitions.find(
-      d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput',
+      (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput',
     ) as InputObjectTypeDefinitionNode | undefined;
     expect(DeleteCallInput).toBeDefined();
-    const receiverIdField = DeleteCallInput.fields.find(f => f.name.value === 'receiverId');
+    const receiverIdField = DeleteCallInput.fields.find((f) => f.name.value === 'receiverId');
     expect(receiverIdField).toBeDefined();
     expect(receiverIdField.type.kind).toBe('NonNullType');
-    const senderIdField = DeleteCallInput.fields.find(f => f.name.value === 'senderId');
+    const senderIdField = DeleteCallInput.fields.find((f) => f.name.value === 'senderId');
     expect(senderIdField).toBeDefined();
     expect(senderIdField.type.kind).toBe('NonNullType');
 
     // check for create input
     const CreateCallInput: InputObjectTypeDefinitionNode = schema.definitions.find(
-      d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreateCallInput',
+      (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreateCallInput',
     ) as InputObjectTypeDefinitionNode | undefined;
     expect(CreateCallInput).toBeDefined();
-    const receiverIdFieldCreate = CreateCallInput.fields.find(f => f.name.value === 'receiverId');
+    const receiverIdFieldCreate = CreateCallInput.fields.find((f) => f.name.value === 'receiverId');
     expect(receiverIdFieldCreate).toBeDefined();
     expect(receiverIdFieldCreate.type.kind).toBe('NonNullType');
-    const senderIdFieldCreate = CreateCallInput.fields.find(f => f.name.value === 'senderId');
+    const senderIdFieldCreate = CreateCallInput.fields.find((f) => f.name.value === 'senderId');
     expect(senderIdFieldCreate).toBeUndefined();
   });
 
@@ -528,10 +526,10 @@ describe('check schema input', () => {
     const schema = parse(out.schema);
 
     const UpdateReviewInput: InputObjectTypeDefinitionNode = schema.definitions.find(
-      d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'UpdateReviewInput',
+      (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'UpdateReviewInput',
     ) as InputObjectTypeDefinitionNode | undefined;
     expect(UpdateReviewInput).toBeDefined();
-    const idField = UpdateReviewInput.fields.find(f => f.name.value === 'id');
+    const idField = UpdateReviewInput.fields.find((f) => f.name.value === 'id');
     expect(idField).toBeDefined();
     expect(idField.type.kind).toBe('NamedType');
   });

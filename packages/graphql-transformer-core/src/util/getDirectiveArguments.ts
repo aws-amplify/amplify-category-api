@@ -10,7 +10,7 @@ export function getDirectiveArguments(directive: DirectiveNode): any {
           ...acc,
           [arg.name.value]: valueFromASTUntyped(arg.value),
         }),
-        {}
+        {},
       )
     : [];
 }

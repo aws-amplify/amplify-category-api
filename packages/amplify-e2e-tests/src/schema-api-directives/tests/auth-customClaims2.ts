@@ -8,9 +8,7 @@ import {
   amplifyPush,
 } from 'amplify-category-api-e2e-core';
 
-import {
-  getUserPoolId, configureAmplify, setupUser, signInUser, getConfiguredAppsyncClientCognitoAuth,
-} from '../authHelper';
+import { getUserPoolId, configureAmplify, setupUser, signInUser, getConfiguredAppsyncClientCognitoAuth } from '../authHelper';
 
 import { updateSchemaInTestProject, testMutation } from '../common';
 

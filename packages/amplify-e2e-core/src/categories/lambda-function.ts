@@ -362,7 +362,9 @@ export const selectTemplate = (chain: ExecutionContext, functionTemplate: string
 
 export const removeFunction = (cwd: string, funcName: string) =>
   new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['remove', 'function', funcName, '--yes'], { cwd, stripColors: true }).run(err => (err ? reject(err) : resolve()));
+    spawn(getCLIPath(), ['remove', 'function', funcName, '--yes'], { cwd, stripColors: true }).run((err) =>
+      err ? reject(err) : resolve(),
+    );
   });
 
 export interface LayerOptions {
@@ -403,12 +405,12 @@ const addLayerWalkthrough = (chain: ExecutionContext, options: LayerOptions) => 
 
   // If no versions present in options, skip the version selection prompt
   if (options.versions) {
-    options.select.forEach(selection => {
+    options.select.forEach((selection) => {
       chain.wait(`Select a version for ${selection}`);
 
       singleSelect(chain, options.versions[selection].version.toString(), [
         'Always choose latest version',
-        ...options.versions[selection].expectedVersionOptions.map(op => op.toString()),
+        ...options.versions[selection].expectedVersionOptions.map((op) => op.toString()),
       ]);
     });
   }
@@ -561,7 +563,7 @@ export const functionMockAssert = (
       .wait(settings.successString)
       .wait('Finished execution.')
       .sendEof()
-      .run(err => (err ? reject(err) : resolve()));
+      .run((err) => (err ? reject(err) : resolve()));
   });
 };
 
