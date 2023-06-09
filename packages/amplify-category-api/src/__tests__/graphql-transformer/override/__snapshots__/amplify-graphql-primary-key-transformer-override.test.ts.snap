@@ -2,1444 +2,420 @@
 
 exports[`it overrides expected resources 1`] = `
 Object {
-  "CreateTestResolver": Object {
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "FieldName": "createTest",
-      "Kind": "PIPELINE",
-      "PipelineConfig": Object {
-        "Functions": Array [
-          Object {
-            "Fn::GetAtt": Array [
-              "MutationcreateTestinit0FunctionMutationcreateTestinit0FunctionAppSyncFunction82753130",
-              "FunctionId",
-            ],
-          },
-          Object {
-            "Fn::GetAtt": Array [
-              "MutationcreateTestpreAuth0FunctionMutationcreateTestpreAuth0FunctionAppSyncFunctionC0EB74A1",
-              "FunctionId",
-            ],
-          },
-          Object {
-            "Fn::GetAtt": Array [
-              "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
-              "FunctionId",
-            ],
-          },
-          Object {
-            "Fn::GetAtt": Array [
-              "MutationCreateTestDataResolverFnMutationCreateTestDataResolverFnAppSyncFunction005BA3A1",
-              "FunctionId",
-            ],
-          },
-        ],
-      },
-      "RequestMappingTemplate": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
+  "Properties": Object {
+    "ApiId": Object {
+      "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+    },
+    "FieldName": "createTest",
+    "Kind": "PIPELINE",
+    "PipelineConfig": Object {
+      "Functions": Array [
+        Object {
+          "Fn::GetAtt": Array [
+            "MutationcreateTestinit0FunctionMutationcreateTestinit0FunctionAppSyncFunction82753130",
+            "FunctionId",
+          ],
+        },
+        Object {
+          "Fn::GetAtt": Array [
+            "MutationcreateTestpreAuth0FunctionMutationcreateTestpreAuth0FunctionAppSyncFunctionC0EB74A1",
+            "FunctionId",
+          ],
+        },
+        Object {
+          "Fn::GetAtt": Array [
+            "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
+            "FunctionId",
+          ],
+        },
+        Object {
+          "Fn::GetAtt": Array [
+            "MutationCreateTestDataResolverFnMutationCreateTestDataResolverFnAppSyncFunction005BA3A1",
+            "FunctionId",
+          ],
+        },
+      ],
+    },
+    "RequestMappingTemplate": Object {
+      "Fn::Join": Array [
+        "",
+        Array [
+          "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
 $util.qr($ctx.stash.put(\\"fieldName\\", \\"createTest\\"))
 $util.qr($ctx.stash.put(\\"conditions\\", []))
 $util.qr($ctx.stash.put(\\"metadata\\", {}))
 $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-            Object {
-              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-            },
-            "\\"))
+          Object {
+            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+          },
+          "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
-            Object {
-              "Ref": "TestTable",
-            },
-            "\\"))
+          Object {
+            "Ref": "TestTable",
+          },
+          "\\"))
 $util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"25\\")
 $util.toJson({})",
-          ],
         ],
-      },
-      "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-      "TypeName": "Mutation",
+      ],
     },
-    "Type": "AWS::AppSync::Resolver",
+    "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+    "TypeName": "Mutation",
   },
-  "DeleteTestResolver": Object {
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "FieldName": "deleteTest",
-      "Kind": "PIPELINE",
-      "PipelineConfig": Object {
-        "Functions": Array [
-          Object {
-            "Fn::GetAtt": Array [
-              "MutationdeleteTestpreAuth0FunctionMutationdeleteTestpreAuth0FunctionAppSyncFunctionC68C5724",
-              "FunctionId",
-            ],
-          },
-          Object {
-            "Fn::GetAtt": Array [
-              "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
-              "FunctionId",
-            ],
-          },
-          Object {
-            "Fn::GetAtt": Array [
-              "MutationDeleteTestDataResolverFnMutationDeleteTestDataResolverFnAppSyncFunction9230CF9A",
-              "FunctionId",
-            ],
-          },
-        ],
-      },
-      "RequestMappingTemplate": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"deleteTest\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-            Object {
-              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-            },
-            "\\"))
-$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-            Object {
-              "Ref": "TestTable",
-            },
-            "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"25\\")
-$util.toJson({})",
-          ],
-        ],
-      },
-      "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-      "TypeName": "Mutation",
+  "Type": "AWS::AppSync::Resolver",
+}
+`;
+
+exports[`it overrides expected resources 2`] = `
+Object {
+  "Properties": Object {
+    "ApiId": Object {
+      "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
     },
-    "Type": "AWS::AppSync::Resolver",
-  },
-  "DynamoDBAccess71ABE5AE": Object {
-    "Properties": Object {
-      "PolicyDocument": Object {
-        "Statement": Array [
-          Object {
-            "Action": Array [
-              "dynamodb:BatchGetItem",
-              "dynamodb:BatchWriteItem",
-              "dynamodb:PutItem",
-              "dynamodb:DeleteItem",
-              "dynamodb:GetItem",
-              "dynamodb:Scan",
-              "dynamodb:Query",
-              "dynamodb:UpdateItem",
-            ],
-            "Effect": "Allow",
-            "Resource": Array [
-              Object {
-                "Fn::Sub": Array [
-                  "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}",
-                  Object {
-                    "tablename": Object {
-                      "Fn::Join": Array [
-                        "",
-                        Array [
-                          "Test-",
-                          Object {
-                            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-                          },
-                          "-",
-                          Object {
-                            "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                          },
-                        ],
-                      ],
-                    },
-                  },
-                ],
-              },
-              Object {
-                "Fn::Sub": Array [
-                  "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}/*",
-                  Object {
-                    "tablename": Object {
-                      "Fn::Join": Array [
-                        "",
-                        Array [
-                          "Test-",
-                          Object {
-                            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-                          },
-                          "-",
-                          Object {
-                            "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                          },
-                        ],
-                      ],
-                    },
-                  },
-                ],
-              },
-              Object {
-                "Fn::Sub": Array [
-                  "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}",
-                  Object {
-                    "tablename": Object {
-                      "Fn::Join": Array [
-                        "",
-                        Array [
-                          "AmplifyDataStore-",
-                          Object {
-                            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-                          },
-                          "-",
-                          Object {
-                            "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                          },
-                        ],
-                      ],
-                    },
-                  },
-                ],
-              },
-              Object {
-                "Fn::Sub": Array [
-                  "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}/*",
-                  Object {
-                    "tablename": Object {
-                      "Fn::Join": Array [
-                        "",
-                        Array [
-                          "AmplifyDataStore-",
-                          Object {
-                            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-                          },
-                          "-",
-                          Object {
-                            "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                          },
-                        ],
-                      ],
-                    },
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-        "Version": "2012-10-17",
-      },
-      "PolicyName": "DynamoDBAccess71ABE5AE",
-      "Roles": Array [
+    "FieldName": "getTest",
+    "Kind": "PIPELINE",
+    "PipelineConfig": Object {
+      "Functions": Array [
         Object {
-          "Ref": "TestIAMRoleB964910C",
+          "Fn::GetAtt": Array [
+            "QuerygetTestpreAuth0FunctionQuerygetTestpreAuth0FunctionAppSyncFunction7DE868FF",
+            "FunctionId",
+          ],
+        },
+        Object {
+          "Fn::GetAtt": Array [
+            "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
+            "FunctionId",
+          ],
+        },
+        Object {
+          "Fn::GetAtt": Array [
+            "QueryGetTestDataResolverFnQueryGetTestDataResolverFnAppSyncFunctionCB6458E5",
+            "FunctionId",
+          ],
         },
       ],
     },
-    "Type": "AWS::IAM::Policy",
-  },
-  "GetTestResolver": Object {
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "FieldName": "getTest",
-      "Kind": "PIPELINE",
-      "PipelineConfig": Object {
-        "Functions": Array [
-          Object {
-            "Fn::GetAtt": Array [
-              "QuerygetTestpreAuth0FunctionQuerygetTestpreAuth0FunctionAppSyncFunction7DE868FF",
-              "FunctionId",
-            ],
-          },
-          Object {
-            "Fn::GetAtt": Array [
-              "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
-              "FunctionId",
-            ],
-          },
-          Object {
-            "Fn::GetAtt": Array [
-              "QueryGetTestDataResolverFnQueryGetTestDataResolverFnAppSyncFunctionCB6458E5",
-              "FunctionId",
-            ],
-          },
-        ],
-      },
-      "RequestMappingTemplate": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
+    "RequestMappingTemplate": Object {
+      "Fn::Join": Array [
+        "",
+        Array [
+          "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
 $util.qr($ctx.stash.put(\\"fieldName\\", \\"getTest\\"))
 $util.qr($ctx.stash.put(\\"conditions\\", []))
 $util.qr($ctx.stash.put(\\"metadata\\", {}))
 $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-            Object {
-              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-            },
-            "\\"))
+          Object {
+            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+          },
+          "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
-            Object {
-              "Ref": "TestTable",
-            },
-            "\\"))
+          Object {
+            "Ref": "TestTable",
+          },
+          "\\"))
 $util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"25\\")
 $util.toJson({})",
-          ],
         ],
-      },
-      "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-      "TypeName": "Query",
+      ],
     },
-    "Type": "AWS::AppSync::Resolver",
+    "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+    "TypeName": "Query",
   },
-  "ListTestResolver": Object {
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "FieldName": "listTests",
-      "Kind": "PIPELINE",
-      "PipelineConfig": Object {
-        "Functions": Array [
-          Object {
-            "Fn::GetAtt": Array [
-              "QuerylistTestspreAuth0FunctionQuerylistTestspreAuth0FunctionAppSyncFunction3CA4A90C",
-              "FunctionId",
-            ],
-          },
-          Object {
-            "Fn::GetAtt": Array [
-              "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
-              "FunctionId",
-            ],
-          },
-          Object {
-            "Fn::GetAtt": Array [
-              "QueryListTestsDataResolverFnQueryListTestsDataResolverFnAppSyncFunction177A117F",
-              "FunctionId",
-            ],
-          },
-        ],
-      },
-      "RequestMappingTemplate": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
+  "Type": "AWS::AppSync::Resolver",
+}
+`;
+
+exports[`it overrides expected resources 3`] = `
+Object {
+  "Properties": Object {
+    "ApiId": Object {
+      "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+    },
+    "FieldName": "listTests",
+    "Kind": "PIPELINE",
+    "PipelineConfig": Object {
+      "Functions": Array [
+        Object {
+          "Fn::GetAtt": Array [
+            "QuerylistTestspreAuth0FunctionQuerylistTestspreAuth0FunctionAppSyncFunction3CA4A90C",
+            "FunctionId",
+          ],
+        },
+        Object {
+          "Fn::GetAtt": Array [
+            "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
+            "FunctionId",
+          ],
+        },
+        Object {
+          "Fn::GetAtt": Array [
+            "QueryListTestsDataResolverFnQueryListTestsDataResolverFnAppSyncFunction177A117F",
+            "FunctionId",
+          ],
+        },
+      ],
+    },
+    "RequestMappingTemplate": Object {
+      "Fn::Join": Array [
+        "",
+        Array [
+          "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
 $util.qr($ctx.stash.put(\\"fieldName\\", \\"listTests\\"))
 $util.qr($ctx.stash.put(\\"conditions\\", []))
 $util.qr($ctx.stash.put(\\"metadata\\", {}))
 $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-            Object {
-              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-            },
-            "\\"))
+          Object {
+            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+          },
+          "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
-            Object {
-              "Ref": "TestTable",
-            },
-            "\\"))
+          Object {
+            "Ref": "TestTable",
+          },
+          "\\"))
 $util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"25\\")
 $util.toJson({})",
-          ],
         ],
-      },
-      "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-      "TypeName": "Query",
+      ],
     },
-    "Type": "AWS::AppSync::Resolver",
+    "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+    "TypeName": "Query",
   },
-  "MutationCreateTestDataResolverFnMutationCreateTestDataResolverFnAppSyncFunction005BA3A1": Object {
-    "DependsOn": Array [
-      "TestDataSource",
-    ],
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "DataSourceName": Object {
-        "Fn::GetAtt": Array [
-          "TestDataSource",
-          "Name",
-        ],
-      },
-      "FunctionVersion": "2018-05-29",
-      "Name": "MutationCreateTestDataResolverFn",
-      "RequestMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Mutation.createTest.req.vtl",
-          ],
-        ],
-      },
-      "ResponseMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Mutation.createTest.res.vtl",
-          ],
-        ],
-      },
-      "SyncConfig": Object {
-        "ConflictDetection": "VERSION",
-        "ConflictHandler": "AUTOMERGE",
-      },
-    },
-    "Type": "AWS::AppSync::FunctionConfiguration",
-  },
-  "MutationDeleteTestDataResolverFnMutationDeleteTestDataResolverFnAppSyncFunction9230CF9A": Object {
-    "DependsOn": Array [
-      "TestDataSource",
-    ],
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "DataSourceName": Object {
-        "Fn::GetAtt": Array [
-          "TestDataSource",
-          "Name",
-        ],
-      },
-      "FunctionVersion": "2018-05-29",
-      "Name": "MutationDeleteTestDataResolverFn",
-      "RequestMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Mutation.deleteTest.req.vtl",
-          ],
-        ],
-      },
-      "ResponseMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Mutation.deleteTest.res.vtl",
-          ],
-        ],
-      },
-      "SyncConfig": Object {
-        "ConflictDetection": "VERSION",
-        "ConflictHandler": "AUTOMERGE",
-      },
-    },
-    "Type": "AWS::AppSync::FunctionConfiguration",
-  },
-  "MutationUpdateTestDataResolverFnMutationUpdateTestDataResolverFnAppSyncFunction161162F8": Object {
-    "DependsOn": Array [
-      "TestDataSource",
-    ],
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "DataSourceName": Object {
-        "Fn::GetAtt": Array [
-          "TestDataSource",
-          "Name",
-        ],
-      },
-      "FunctionVersion": "2018-05-29",
-      "Name": "MutationUpdateTestDataResolverFn",
-      "RequestMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Mutation.updateTest.req.vtl",
-          ],
-        ],
-      },
-      "ResponseMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Mutation.updateTest.res.vtl",
-          ],
-        ],
-      },
-      "SyncConfig": Object {
-        "ConflictDetection": "VERSION",
-        "ConflictHandler": "AUTOMERGE",
-      },
-    },
-    "Type": "AWS::AppSync::FunctionConfiguration",
-  },
-  "MutationcreateTestinit0FunctionMutationcreateTestinit0FunctionAppSyncFunction82753130": Object {
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "DataSourceName": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-      },
-      "FunctionVersion": "2018-05-29",
-      "Name": "MutationcreateTestinit0Function",
-      "RequestMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Mutation.createTest.init.1.req.vtl",
-          ],
-        ],
-      },
-      "ResponseMappingTemplate": "$util.toJson({})",
-    },
-    "Type": "AWS::AppSync::FunctionConfiguration",
-  },
-  "MutationcreateTestpreAuth0FunctionMutationcreateTestpreAuth0FunctionAppSyncFunctionC0EB74A1": Object {
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "DataSourceName": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-      },
-      "FunctionVersion": "2018-05-29",
-      "Name": "MutationcreateTestpreAuth0Function",
-      "RequestMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Mutation.createTest.preAuth.1.req.vtl",
-          ],
-        ],
-      },
-      "ResponseMappingTemplate": "$util.toJson({})",
-    },
-    "Type": "AWS::AppSync::FunctionConfiguration",
-  },
-  "MutationdeleteTestpreAuth0FunctionMutationdeleteTestpreAuth0FunctionAppSyncFunctionC68C5724": Object {
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "DataSourceName": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-      },
-      "FunctionVersion": "2018-05-29",
-      "Name": "MutationdeleteTestpreAuth0Function",
-      "RequestMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Mutation.deleteTest.preAuth.1.req.vtl",
-          ],
-        ],
-      },
-      "ResponseMappingTemplate": "$util.toJson({})",
-    },
-    "Type": "AWS::AppSync::FunctionConfiguration",
-  },
-  "MutationupdateTestinit0FunctionMutationupdateTestinit0FunctionAppSyncFunctionC2375285": Object {
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "DataSourceName": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-      },
-      "FunctionVersion": "2018-05-29",
-      "Name": "MutationupdateTestinit0Function",
-      "RequestMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Mutation.updateTest.init.1.req.vtl",
-          ],
-        ],
-      },
-      "ResponseMappingTemplate": "$util.toJson({})",
-    },
-    "Type": "AWS::AppSync::FunctionConfiguration",
-  },
-  "QueryGetTestDataResolverFnQueryGetTestDataResolverFnAppSyncFunctionCB6458E5": Object {
-    "DependsOn": Array [
-      "TestDataSource",
-    ],
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "DataSourceName": Object {
-        "Fn::GetAtt": Array [
-          "TestDataSource",
-          "Name",
-        ],
-      },
-      "FunctionVersion": "2018-05-29",
-      "Name": "QueryGetTestDataResolverFn",
-      "RequestMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Query.getTest.req.vtl",
-          ],
-        ],
-      },
-      "ResponseMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Query.getTest.res.vtl",
-          ],
-        ],
-      },
-      "SyncConfig": Object {
-        "ConflictDetection": "VERSION",
-        "ConflictHandler": "AUTOMERGE",
-      },
-    },
-    "Type": "AWS::AppSync::FunctionConfiguration",
-  },
-  "QueryListTestsDataResolverFnQueryListTestsDataResolverFnAppSyncFunction177A117F": Object {
-    "DependsOn": Array [
-      "TestDataSource",
-    ],
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "DataSourceName": Object {
-        "Fn::GetAtt": Array [
-          "TestDataSource",
-          "Name",
-        ],
-      },
-      "FunctionVersion": "2018-05-29",
-      "Name": "QueryListTestsDataResolverFn",
-      "RequestMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Query.listTests.req.vtl",
-          ],
-        ],
-      },
-      "ResponseMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Query.listTests.res.vtl",
-          ],
-        ],
-      },
-      "SyncConfig": Object {
-        "ConflictDetection": "VERSION",
-        "ConflictHandler": "AUTOMERGE",
-      },
-    },
-    "Type": "AWS::AppSync::FunctionConfiguration",
-  },
-  "QuerySyncTestsDataResolverFnQuerySyncTestsDataResolverFnAppSyncFunction95B4DA0E": Object {
-    "DependsOn": Array [
-      "TestDataSource",
-    ],
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "DataSourceName": Object {
-        "Fn::GetAtt": Array [
-          "TestDataSource",
-          "Name",
-        ],
-      },
-      "FunctionVersion": "2018-05-29",
-      "Name": "QuerySyncTestsDataResolverFn",
-      "RequestMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Query.syncTests.req.vtl",
-          ],
-        ],
-      },
-      "ResponseMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Query.syncTests.res.vtl",
-          ],
-        ],
-      },
-      "SyncConfig": Object {
-        "ConflictDetection": "VERSION",
-        "ConflictHandler": "AUTOMERGE",
-      },
-    },
-    "Type": "AWS::AppSync::FunctionConfiguration",
-  },
-  "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A": Object {
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "DataSourceName": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-      },
-      "FunctionVersion": "2018-05-29",
-      "Name": "QuerygetTestpostAuth0Function",
-      "RequestMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Query.getTest.postAuth.1.req.vtl",
-          ],
-        ],
-      },
-      "ResponseMappingTemplate": "$util.toJson({})",
-    },
-    "Type": "AWS::AppSync::FunctionConfiguration",
-  },
-  "QuerygetTestpreAuth0FunctionQuerygetTestpreAuth0FunctionAppSyncFunction7DE868FF": Object {
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "DataSourceName": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-      },
-      "FunctionVersion": "2018-05-29",
-      "Name": "QuerygetTestpreAuth0Function",
-      "RequestMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Query.getTest.preAuth.1.req.vtl",
-          ],
-        ],
-      },
-      "ResponseMappingTemplate": "$util.toJson({})",
-    },
-    "Type": "AWS::AppSync::FunctionConfiguration",
-  },
-  "QuerylistTestspreAuth0FunctionQuerylistTestspreAuth0FunctionAppSyncFunction3CA4A90C": Object {
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "DataSourceName": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-      },
-      "FunctionVersion": "2018-05-29",
-      "Name": "QuerylistTestspreAuth0Function",
-      "RequestMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Query.listTests.preAuth.1.req.vtl",
-          ],
-        ],
-      },
-      "ResponseMappingTemplate": "$util.toJson({})",
-    },
-    "Type": "AWS::AppSync::FunctionConfiguration",
-  },
-  "QuerysyncTestspreAuth0FunctionQuerysyncTestspreAuth0FunctionAppSyncFunction6F326BAB": Object {
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "DataSourceName": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-      },
-      "FunctionVersion": "2018-05-29",
-      "Name": "QuerysyncTestspreAuth0Function",
-      "RequestMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Query.syncTests.preAuth.1.req.vtl",
-          ],
-        ],
-      },
-      "ResponseMappingTemplate": "$util.toJson({})",
-    },
-    "Type": "AWS::AppSync::FunctionConfiguration",
-  },
-  "SubscriptionOnCreateTestDataResolverFnSubscriptionOnCreateTestDataResolverFnAppSyncFunctionA6406D9F": Object {
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "DataSourceName": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-      },
-      "FunctionVersion": "2018-05-29",
-      "Name": "SubscriptionOnCreateTestDataResolverFn",
-      "RequestMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Subscription.onCreateTest.req.vtl",
-          ],
-        ],
-      },
-      "ResponseMappingTemplateS3Location": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "s3://",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "/",
-            Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-            },
-            "/resolvers/Subscription.onCreateTest.res.vtl",
-          ],
-        ],
-      },
-    },
-    "Type": "AWS::AppSync::FunctionConfiguration",
-  },
-  "SubscriptiononCreateTestResolver": Object {
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "FieldName": "onCreateTest",
-      "Kind": "PIPELINE",
-      "PipelineConfig": Object {
-        "Functions": Array [
-          Object {
-            "Fn::GetAtt": Array [
-              "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
-              "FunctionId",
-            ],
-          },
-          Object {
-            "Fn::GetAtt": Array [
-              "SubscriptionOnCreateTestDataResolverFnSubscriptionOnCreateTestDataResolverFnAppSyncFunctionA6406D9F",
-              "FunctionId",
-            ],
-          },
-        ],
-      },
-      "RequestMappingTemplate": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "$util.qr($ctx.stash.put(\\"typeName\\", \\"Subscription\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"onCreateTest\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"NONE\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-            Object {
-              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-            },
-            "\\"))
-$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+  "Type": "AWS::AppSync::Resolver",
+}
+`;
 
-$util.toJson({})",
-          ],
-        ],
-      },
-      "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-      "TypeName": "Subscription",
+exports[`it overrides expected resources 4`] = `
+Object {
+  "Properties": Object {
+    "ApiId": Object {
+      "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
     },
-    "Type": "AWS::AppSync::Resolver",
-  },
-  "SubscriptiononDeleteTestResolver": Object {
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "FieldName": "onDeleteTest",
-      "Kind": "PIPELINE",
-      "PipelineConfig": Object {
-        "Functions": Array [
-          Object {
-            "Fn::GetAtt": Array [
-              "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
-              "FunctionId",
-            ],
-          },
-          Object {
-            "Fn::GetAtt": Array [
-              "SubscriptionOnCreateTestDataResolverFnSubscriptionOnCreateTestDataResolverFnAppSyncFunctionA6406D9F",
-              "FunctionId",
-            ],
-          },
-        ],
-      },
-      "RequestMappingTemplate": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "$util.qr($ctx.stash.put(\\"typeName\\", \\"Subscription\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"onDeleteTest\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"NONE\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-            Object {
-              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-            },
-            "\\"))
-$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
-
-$util.toJson({})",
+    "FieldName": "deleteTest",
+    "Kind": "PIPELINE",
+    "PipelineConfig": Object {
+      "Functions": Array [
+        Object {
+          "Fn::GetAtt": Array [
+            "MutationdeleteTestpreAuth0FunctionMutationdeleteTestpreAuth0FunctionAppSyncFunctionC68C5724",
+            "FunctionId",
           ],
-        ],
-      },
-      "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-      "TypeName": "Subscription",
-    },
-    "Type": "AWS::AppSync::Resolver",
-  },
-  "SubscriptiononUpdateTestResolver": Object {
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "FieldName": "onUpdateTest",
-      "Kind": "PIPELINE",
-      "PipelineConfig": Object {
-        "Functions": Array [
-          Object {
-            "Fn::GetAtt": Array [
-              "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
-              "FunctionId",
-            ],
-          },
-          Object {
-            "Fn::GetAtt": Array [
-              "SubscriptionOnCreateTestDataResolverFnSubscriptionOnCreateTestDataResolverFnAppSyncFunctionA6406D9F",
-              "FunctionId",
-            ],
-          },
-        ],
-      },
-      "RequestMappingTemplate": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "$util.qr($ctx.stash.put(\\"typeName\\", \\"Subscription\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"onUpdateTest\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"NONE\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-            Object {
-              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-            },
-            "\\"))
-$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
-
-$util.toJson({})",
+        },
+        Object {
+          "Fn::GetAtt": Array [
+            "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
+            "FunctionId",
           ],
-        ],
-      },
-      "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-      "TypeName": "Subscription",
+        },
+        Object {
+          "Fn::GetAtt": Array [
+            "MutationDeleteTestDataResolverFnMutationDeleteTestDataResolverFnAppSyncFunction9230CF9A",
+            "FunctionId",
+          ],
+        },
+      ],
     },
-    "Type": "AWS::AppSync::Resolver",
-  },
-  "SyncTestResolver": Object {
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "FieldName": "syncTests",
-      "Kind": "PIPELINE",
-      "PipelineConfig": Object {
-        "Functions": Array [
-          Object {
-            "Fn::GetAtt": Array [
-              "QuerysyncTestspreAuth0FunctionQuerysyncTestspreAuth0FunctionAppSyncFunction6F326BAB",
-              "FunctionId",
-            ],
-          },
-          Object {
-            "Fn::GetAtt": Array [
-              "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
-              "FunctionId",
-            ],
-          },
-          Object {
-            "Fn::GetAtt": Array [
-              "QuerySyncTestsDataResolverFnQuerySyncTestsDataResolverFnAppSyncFunction95B4DA0E",
-              "FunctionId",
-            ],
-          },
-        ],
-      },
-      "RequestMappingTemplate": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"syncTests\\"))
+    "RequestMappingTemplate": Object {
+      "Fn::Join": Array [
+        "",
+        Array [
+          "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
+$util.qr($ctx.stash.put(\\"fieldName\\", \\"deleteTest\\"))
 $util.qr($ctx.stash.put(\\"conditions\\", []))
 $util.qr($ctx.stash.put(\\"metadata\\", {}))
 $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-            Object {
-              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-            },
-            "\\"))
+          Object {
+            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+          },
+          "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
-            Object {
-              "Ref": "TestTable",
-            },
-            "\\"))
+          Object {
+            "Ref": "TestTable",
+          },
+          "\\"))
 $util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"25\\")
 $util.toJson({})",
-          ],
         ],
-      },
-      "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-      "TypeName": "Query",
+      ],
     },
-    "Type": "AWS::AppSync::Resolver",
+    "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+    "TypeName": "Mutation",
   },
-  "TestDataSource": Object {
-    "DependsOn": Array [
-      "TestIAMRoleB964910C",
-    ],
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "DynamoDBConfig": Object {
-        "AwsRegion": Object {
-          "Ref": "AWS::Region",
-        },
-        "DeltaSyncConfig": Object {
-          "BaseTableTTL": "20",
-          "DeltaSyncTableName": "TestTable",
-          "DeltaSyncTableTTL": "25",
-        },
-        "TableName": Object {
-          "Ref": "TestTable",
-        },
-        "Versioned": true,
-      },
-      "Name": "TestTable",
-      "ServiceRoleArn": Object {
-        "Fn::GetAtt": Array [
-          "TestIAMRoleB964910C",
-          "Arn",
-        ],
-      },
-      "Type": "AMAZON_DYNAMODB",
+  "Type": "AWS::AppSync::Resolver",
+}
+`;
+
+exports[`it overrides expected resources 5`] = `
+Object {
+  "Properties": Object {
+    "ApiId": Object {
+      "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
     },
-    "Type": "AWS::AppSync::DataSource",
-  },
-  "TestIAMRoleB964910C": Object {
-    "Properties": Object {
-      "AssumeRolePolicyDocument": Object {
-        "Statement": Array [
-          Object {
-            "Action": "sts:AssumeRole",
-            "Effect": "Allow",
-            "Principal": Object {
-              "Service": "appsync.amazonaws.com",
-            },
-          },
-        ],
-        "Version": "2012-10-17",
-      },
-      "RoleName": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "TestIAMRoleafdc56-",
-            Object {
-              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-            },
-            "-",
-            Object {
-              "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-            },
-          ],
-        ],
-      },
-    },
-    "Type": "AWS::IAM::Role",
-  },
-  "TestIAMRoleDefaultPolicy94DC66DE": Object {
-    "Properties": Object {
-      "PolicyDocument": Object {
-        "Statement": Array [
-          Object {
-            "Action": Array [
-              "dynamodb:BatchGetItem",
-              "dynamodb:GetRecords",
-              "dynamodb:GetShardIterator",
-              "dynamodb:Query",
-              "dynamodb:GetItem",
-              "dynamodb:Scan",
-              "dynamodb:ConditionCheckItem",
-              "dynamodb:BatchWriteItem",
-              "dynamodb:PutItem",
-              "dynamodb:UpdateItem",
-              "dynamodb:DeleteItem",
-              "dynamodb:DescribeTable",
-            ],
-            "Effect": "Allow",
-            "Resource": Array [
-              Object {
-                "Fn::GetAtt": Array [
-                  "TestTable",
-                  "Arn",
-                ],
-              },
-              Object {
-                "Ref": "AWS::NoValue",
-              },
-            ],
-          },
-        ],
-        "Version": "2012-10-17",
-      },
-      "PolicyName": "TestIAMRoleDefaultPolicy94DC66DE",
-      "Roles": Array [
+    "FieldName": "updateTest",
+    "Kind": "PIPELINE",
+    "PipelineConfig": Object {
+      "Functions": Array [
         Object {
-          "Ref": "TestIAMRoleB964910C",
+          "Fn::GetAtt": Array [
+            "MutationupdateTestinit0FunctionMutationupdateTestinit0FunctionAppSyncFunctionC2375285",
+            "FunctionId",
+          ],
+        },
+        Object {
+          "Fn::GetAtt": Array [
+            "MutationcreateTestpreAuth0FunctionMutationcreateTestpreAuth0FunctionAppSyncFunctionC0EB74A1",
+            "FunctionId",
+          ],
+        },
+        Object {
+          "Fn::GetAtt": Array [
+            "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
+            "FunctionId",
+          ],
+        },
+        Object {
+          "Fn::GetAtt": Array [
+            "MutationUpdateTestDataResolverFnMutationUpdateTestDataResolverFnAppSyncFunction161162F8",
+            "FunctionId",
+          ],
         },
       ],
     },
-    "Type": "AWS::IAM::Policy",
-  },
-  "TestTable": Object {
-    "DeletionPolicy": "Delete",
-    "Properties": Object {
-      "AttributeDefinitions": Array [
-        Object {
-          "AttributeName": "email",
-          "AttributeType": "S",
-        },
-      ],
-      "BillingMode": Object {
-        "Fn::If": Array [
-          "ShouldUsePayPerRequestBilling",
-          "PAY_PER_REQUEST",
-          Object {
-            "Ref": "AWS::NoValue",
-          },
-        ],
-      },
-      "KeySchema": Array [
-        Object {
-          "AttributeName": "email",
-          "KeyType": "HASH",
-        },
-      ],
-      "PointInTimeRecoverySpecification": Object {
-        "Fn::If": Array [
-          "ShouldUsePointInTimeRecovery",
-          Object {
-            "PointInTimeRecoveryEnabled": true,
-          },
-          Object {
-            "Ref": "AWS::NoValue",
-          },
-        ],
-      },
-      "ProvisionedThroughput": Object {
-        "Fn::If": Array [
-          "ShouldUsePayPerRequestBilling",
-          Object {
-            "Ref": "AWS::NoValue",
-          },
-          Object {
-            "ReadCapacityUnits": Object {
-              "Ref": "DynamoDBModelTableReadIOPS",
-            },
-            "WriteCapacityUnits": Object {
-              "Ref": "DynamoDBModelTableWriteIOPS",
-            },
-          },
-        ],
-      },
-      "SSESpecification": Object {
-        "SSEEnabled": Object {
-          "Fn::If": Array [
-            "ShouldUseServerSideEncryption",
-            true,
-            false,
-          ],
-        },
-      },
-      "StreamSpecification": Object {
-        "StreamViewType": "NEW_AND_OLD_IMAGES",
-      },
-      "TableName": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "Test-",
-            Object {
-              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-            },
-            "-",
-            Object {
-              "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-            },
-          ],
-        ],
-      },
-      "TimeToLiveSpecification": Object {
-        "AttributeName": "_ttl",
-        "Enabled": true,
-      },
-    },
-    "Type": "AWS::DynamoDB::Table",
-    "UpdateReplacePolicy": "Delete",
-  },
-  "UpdateTestResolver": Object {
-    "Properties": Object {
-      "ApiId": Object {
-        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-      },
-      "FieldName": "updateTest",
-      "Kind": "PIPELINE",
-      "PipelineConfig": Object {
-        "Functions": Array [
-          Object {
-            "Fn::GetAtt": Array [
-              "MutationupdateTestinit0FunctionMutationupdateTestinit0FunctionAppSyncFunctionC2375285",
-              "FunctionId",
-            ],
-          },
-          Object {
-            "Fn::GetAtt": Array [
-              "MutationcreateTestpreAuth0FunctionMutationcreateTestpreAuth0FunctionAppSyncFunctionC0EB74A1",
-              "FunctionId",
-            ],
-          },
-          Object {
-            "Fn::GetAtt": Array [
-              "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
-              "FunctionId",
-            ],
-          },
-          Object {
-            "Fn::GetAtt": Array [
-              "MutationUpdateTestDataResolverFnMutationUpdateTestDataResolverFnAppSyncFunction161162F8",
-              "FunctionId",
-            ],
-          },
-        ],
-      },
-      "RequestMappingTemplate": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
+    "RequestMappingTemplate": Object {
+      "Fn::Join": Array [
+        "",
+        Array [
+          "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
 $util.qr($ctx.stash.put(\\"fieldName\\", \\"updateTest\\"))
 $util.qr($ctx.stash.put(\\"conditions\\", []))
 $util.qr($ctx.stash.put(\\"metadata\\", {}))
 $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-            Object {
-              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-            },
-            "\\"))
+          Object {
+            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+          },
+          "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
-            Object {
-              "Ref": "TestTable",
-            },
-            "\\"))
+          Object {
+            "Ref": "TestTable",
+          },
+          "\\"))
 $util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"25\\")
 $util.toJson({})",
-          ],
         ],
-      },
-      "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-      "TypeName": "Mutation",
+      ],
     },
-    "Type": "AWS::AppSync::Resolver",
+    "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+    "TypeName": "Mutation",
   },
+  "Type": "AWS::AppSync::Resolver",
+}
+`;
+
+exports[`it overrides expected resources 6`] = `
+Object {
+  "Properties": Object {
+    "ApiId": Object {
+      "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+    },
+    "FieldName": "syncTests",
+    "Kind": "PIPELINE",
+    "PipelineConfig": Object {
+      "Functions": Array [
+        Object {
+          "Fn::GetAtt": Array [
+            "QuerysyncTestspreAuth0FunctionQuerysyncTestspreAuth0FunctionAppSyncFunction6F326BAB",
+            "FunctionId",
+          ],
+        },
+        Object {
+          "Fn::GetAtt": Array [
+            "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
+            "FunctionId",
+          ],
+        },
+        Object {
+          "Fn::GetAtt": Array [
+            "QuerySyncTestsDataResolverFnQuerySyncTestsDataResolverFnAppSyncFunction95B4DA0E",
+            "FunctionId",
+          ],
+        },
+      ],
+    },
+    "RequestMappingTemplate": Object {
+      "Fn::Join": Array [
+        "",
+        Array [
+          "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
+$util.qr($ctx.stash.put(\\"fieldName\\", \\"syncTests\\"))
+$util.qr($ctx.stash.put(\\"conditions\\", []))
+$util.qr($ctx.stash.put(\\"metadata\\", {}))
+$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
+$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
+          Object {
+            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+          },
+          "\\"))
+$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
+$util.qr($ctx.stash.put(\\"tableName\\", \\"",
+          Object {
+            "Ref": "TestTable",
+          },
+          "\\"))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"25\\")
+$util.toJson({})",
+        ],
+      ],
+    },
+    "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+    "TypeName": "Query",
+  },
+  "Type": "AWS::AppSync::Resolver",
+}
+`;
+
+exports[`it overrides expected resources 7`] = `
+Object {
+  "DependsOn": Array [
+    "TestIAMRoleB964910C",
+  ],
+  "Properties": Object {
+    "ApiId": Object {
+      "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+    },
+    "DynamoDBConfig": Object {
+      "AwsRegion": Object {
+        "Ref": "AWS::Region",
+      },
+      "DeltaSyncConfig": Object {
+        "BaseTableTTL": "20",
+        "DeltaSyncTableName": "TestTable",
+        "DeltaSyncTableTTL": "25",
+      },
+      "TableName": Object {
+        "Ref": "TestTable",
+      },
+      "Versioned": true,
+    },
+    "Name": "TestTable",
+    "ServiceRoleArn": Object {
+      "Fn::GetAtt": Array [
+        "TestIAMRoleB964910C",
+        "Arn",
+      ],
+    },
+    "Type": "AMAZON_DYNAMODB",
+  },
+  "Type": "AWS::AppSync::DataSource",
 }
 `;

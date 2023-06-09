@@ -49,5 +49,11 @@ test('it overrides expected resources', () => {
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
-  expect(out.stacks.Song.Resources).toMatchSnapshot();
+  expect(out.stacks.Song.Resources.CreateSongResolver).toMatchSnapshot();
+  expect(out.stacks.Song.Resources.GetSongResolver).toMatchSnapshot();
+  expect(out.stacks.Song.Resources.ListSongResolver).toMatchSnapshot();
+  expect(out.stacks.Song.Resources.DeleteSongResolver).toMatchSnapshot();
+  expect(out.stacks.Song.Resources.UpdateSongResolver).toMatchSnapshot();
+  expect(out.stacks.Song.Resources.SyncSongResolver).toMatchSnapshot();
+  expect(out.stacks.Song.Resources.SongDataSource).toMatchSnapshot();
 });

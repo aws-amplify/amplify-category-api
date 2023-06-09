@@ -47,5 +47,11 @@ test('it overrides expected resources', () => {
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
-  expect(out.stacks.Test.Resources).toMatchSnapshot();
+  expect(out.stacks.Test.Resources.CreateTestResolver).toMatchSnapshot();
+  expect(out.stacks.Test.Resources.GetTestResolver).toMatchSnapshot();
+  expect(out.stacks.Test.Resources.ListTestResolver).toMatchSnapshot();
+  expect(out.stacks.Test.Resources.DeleteTestResolver).toMatchSnapshot();
+  expect(out.stacks.Test.Resources.UpdateTestResolver).toMatchSnapshot();
+  expect(out.stacks.Test.Resources.SyncTestResolver).toMatchSnapshot();
+  expect(out.stacks.Test.Resources.TestDataSource).toMatchSnapshot();
 });
