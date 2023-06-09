@@ -16,7 +16,7 @@ export const run = async (event): Promise<any> => {
 
 const createSSMClient = (): void => {
   secretsClient = new SSMClient({});
-}
+};
 
 const getSSMValue = async(key: string | undefined): Promise<string> => {
   if (!key) {
@@ -30,15 +30,15 @@ const getSSMValue = async(key: string | undefined): Promise<string> => {
   if ((data.$metadata?.httpStatusCode && data?.$metadata?.httpStatusCode >= 400) || !data.Parameter?.Value) {
     throw new Error('Unable to get secret for database connection');
   }
-  return data.Parameter?.Value ?? '';
-}
+  return data.Parameter?.Value;
+};
 
-const getDBConfig = async(): DBConfig  => {
+const getDBConfig = async (): DBConfig => {
   if (!secretsClient) {
     createSSMClient();
   }
 
-  return {
+  const config = {
     engine: 'mysql',
     host: await getSSMValue(process.env.host),
     port: Number.parseInt(await getSSMValue(process.env.port)) || 3306,
@@ -46,4 +46,10 @@ const getDBConfig = async(): DBConfig  => {
     password: await getSSMValue(process.env.password),
     database: await getSSMValue(process.env.database),
   };
-}
+
+  if (!config.host || !config.port || !config.username || !config.password || !config.database) {
+    throw Error('Missing database connection configuration');
+  }
+
+  return config;
+};
