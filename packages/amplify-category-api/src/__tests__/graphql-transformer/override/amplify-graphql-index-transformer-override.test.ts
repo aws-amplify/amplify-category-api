@@ -49,5 +49,5 @@ test('it overrides expected resources', () => {
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
-  expect(out.stacks.Song).toMatchSnapshot();
+  expect(out.stacks.Song.Resources).toMatchSnapshot();
 });

@@ -2,1612 +2,1453 @@
 
 exports[`it overrides expected resources 1`] = `
 Object {
-  "Conditions": Object {
-    "HasEnvironmentParameter": Object {
-      "Fn::Not": Array [
-        Object {
-          "Fn::Equals": Array [
-            Object {
-              "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-            },
-            "NONE",
-          ],
-        },
-      ],
-    },
-    "ShouldUsePayPerRequestBilling": Object {
-      "Fn::Equals": Array [
-        Object {
-          "Ref": "DynamoDBBillingMode",
-        },
-        "PAY_PER_REQUEST",
-      ],
-    },
-    "ShouldUsePointInTimeRecovery": Object {
-      "Fn::Equals": Array [
-        Object {
-          "Ref": "DynamoDBEnablePointInTimeRecovery",
-        },
-        "true",
-      ],
-    },
-    "ShouldUseServerSideEncryption": Object {
-      "Fn::Equals": Array [
-        Object {
-          "Ref": "DynamoDBEnableServerSideEncryption",
-        },
-        "true",
-      ],
-    },
-  },
-  "Outputs": Object {
-    "GetAttSongDataSourceName": Object {
-      "Description": "Your model DataSource name.",
-      "Export": Object {
-        "Name": Object {
-          "Fn::Join": Array [
-            ":",
-            Array [
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "GetAtt:SongDataSource:Name",
-            ],
-          ],
-        },
+  "CreateSongResolver": Object {
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
       },
-      "Value": Object {
-        "Fn::GetAtt": Array [
-          "SongDataSource",
-          "Name",
+      "FieldName": "createSong",
+      "Kind": "PIPELINE",
+      "PipelineConfig": Object {
+        "Functions": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "MutationcreateSonginit0FunctionMutationcreateSonginit0FunctionAppSyncFunction55782DDF",
+              "FunctionId",
+            ],
+          },
+          Object {
+            "Fn::GetAtt": Array [
+              "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102",
+              "FunctionId",
+            ],
+          },
+          Object {
+            "Fn::GetAtt": Array [
+              "MutationCreateSongDataResolverFnMutationCreateSongDataResolverFnAppSyncFunctionFC04B955",
+              "FunctionId",
+            ],
+          },
         ],
       },
-    },
-    "GetAttSongTableName": Object {
-      "Description": "Your DynamoDB table name.",
-      "Export": Object {
-        "Name": Object {
-          "Fn::Join": Array [
-            ":",
-            Array [
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "GetAtt:SongTable:Name",
-            ],
-          ],
-        },
-      },
-      "Value": Object {
-        "Ref": "SongTable",
-      },
-    },
-    "GetAttSongTableStreamArn": Object {
-      "Description": "Your DynamoDB table StreamArn.",
-      "Export": Object {
-        "Name": Object {
-          "Fn::Join": Array [
-            ":",
-            Array [
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "GetAtt:SongTable:StreamArn",
-            ],
-          ],
-        },
-      },
-      "Value": Object {
-        "Fn::GetAtt": Array [
-          "SongTable",
-          "StreamArn",
-        ],
-      },
-    },
-  },
-  "Parameters": Object {
-    "DynamoDBBillingMode": Object {
-      "AllowedValues": Array [
-        "PAY_PER_REQUEST",
-        "PROVISIONED",
-      ],
-      "Default": "PAY_PER_REQUEST",
-      "Description": "Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.",
-      "Type": "String",
-    },
-    "DynamoDBEnablePointInTimeRecovery": Object {
-      "AllowedValues": Array [
-        "true",
-        "false",
-      ],
-      "Default": "false",
-      "Description": "Whether to enable Point in Time Recovery on the table.",
-      "Type": "String",
-    },
-    "DynamoDBEnableServerSideEncryption": Object {
-      "AllowedValues": Array [
-        "true",
-        "false",
-      ],
-      "Default": "true",
-      "Description": "Enable server side encryption powered by KMS.",
-      "Type": "String",
-    },
-    "DynamoDBModelTableReadIOPS": Object {
-      "Default": 5,
-      "Description": "The number of read IOPS the table should support.",
-      "Type": "Number",
-    },
-    "DynamoDBModelTableWriteIOPS": Object {
-      "Default": 5,
-      "Description": "The number of write IOPS the table should support.",
-      "Type": "Number",
-    },
-    "referencetotransformerrootstackGraphQLAPI20497F53ApiId": Object {
-      "Type": "String",
-    },
-    "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name": Object {
-      "Type": "String",
-    },
-    "referencetotransformerrootstackS3DeploymentBucket7592718ARef": Object {
-      "Type": "String",
-    },
-    "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref": Object {
-      "Type": "String",
-    },
-    "referencetotransformerrootstackenv10C5A902Ref": Object {
-      "Type": "String",
-    },
-  },
-  "Resources": Object {
-    "CreateSongResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "createSong",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "MutationcreateSonginit0FunctionMutationcreateSonginit0FunctionAppSyncFunction55782DDF",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "MutationCreateSongDataResolverFnMutationCreateSongDataResolverFnAppSyncFunctionFC04B955",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
+      "RequestMappingTemplate": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
 $util.qr($ctx.stash.put(\\"fieldName\\", \\"createSong\\"))
 $util.qr($ctx.stash.put(\\"conditions\\", []))
 $util.qr($ctx.stash.put(\\"metadata\\", {}))
 $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
+            Object {
+              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+            },
+            "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "SongTable",
-              },
-              "\\"))
+            Object {
+              "Ref": "SongTable",
+            },
+            "\\"))
 $util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"15\\")
 $util.toJson({})",
-            ],
           ],
-        },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Mutation",
+        ],
       },
-      "Type": "AWS::AppSync::Resolver",
+      "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+      "TypeName": "Mutation",
     },
-    "DeleteSongResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "deleteSong",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "MutationDeleteSongDataResolverFnMutationDeleteSongDataResolverFnAppSyncFunctionDE1E317E",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
+    "Type": "AWS::AppSync::Resolver",
+  },
+  "DeleteSongResolver": Object {
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "FieldName": "deleteSong",
+      "Kind": "PIPELINE",
+      "PipelineConfig": Object {
+        "Functions": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102",
+              "FunctionId",
+            ],
+          },
+          Object {
+            "Fn::GetAtt": Array [
+              "MutationDeleteSongDataResolverFnMutationDeleteSongDataResolverFnAppSyncFunctionDE1E317E",
+              "FunctionId",
+            ],
+          },
+        ],
+      },
+      "RequestMappingTemplate": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
 $util.qr($ctx.stash.put(\\"fieldName\\", \\"deleteSong\\"))
 $util.qr($ctx.stash.put(\\"conditions\\", []))
 $util.qr($ctx.stash.put(\\"metadata\\", {}))
 $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
+            Object {
+              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+            },
+            "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "SongTable",
-              },
-              "\\"))
+            Object {
+              "Ref": "SongTable",
+            },
+            "\\"))
 $util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"15\\")
 $util.toJson({})",
-            ],
           ],
-        },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Mutation",
+        ],
       },
-      "Type": "AWS::AppSync::Resolver",
+      "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+      "TypeName": "Mutation",
     },
-    "DynamoDBAccess71ABE5AE": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
-                "dynamodb:BatchGetItem",
-                "dynamodb:BatchWriteItem",
-                "dynamodb:PutItem",
-                "dynamodb:DeleteItem",
-                "dynamodb:GetItem",
-                "dynamodb:Scan",
-                "dynamodb:Query",
-                "dynamodb:UpdateItem",
-              ],
-              "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::Sub": Array [
-                    "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}",
-                    Object {
-                      "tablename": Object {
-                        "Fn::Join": Array [
-                          "",
-                          Array [
-                            "Song-",
-                            Object {
-                              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-                            },
-                            "-",
-                            Object {
-                              "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                            },
-                          ],
-                        ],
-                      },
-                    },
-                  ],
-                },
-                Object {
-                  "Fn::Sub": Array [
-                    "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}/*",
-                    Object {
-                      "tablename": Object {
-                        "Fn::Join": Array [
-                          "",
-                          Array [
-                            "Song-",
-                            Object {
-                              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-                            },
-                            "-",
-                            Object {
-                              "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                            },
-                          ],
-                        ],
-                      },
-                    },
-                  ],
-                },
-                Object {
-                  "Fn::Sub": Array [
-                    "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}",
-                    Object {
-                      "tablename": Object {
-                        "Fn::Join": Array [
-                          "",
-                          Array [
-                            "AmplifyDataStore-",
-                            Object {
-                              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-                            },
-                            "-",
-                            Object {
-                              "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                            },
-                          ],
-                        ],
-                      },
-                    },
-                  ],
-                },
-                Object {
-                  "Fn::Sub": Array [
-                    "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}/*",
-                    Object {
-                      "tablename": Object {
-                        "Fn::Join": Array [
-                          "",
-                          Array [
-                            "AmplifyDataStore-",
-                            Object {
-                              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-                            },
-                            "-",
-                            Object {
-                              "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                            },
-                          ],
-                        ],
-                      },
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DynamoDBAccess71ABE5AE",
-        "Roles": Array [
+    "Type": "AWS::AppSync::Resolver",
+  },
+  "DynamoDBAccess71ABE5AE": Object {
+    "Properties": Object {
+      "PolicyDocument": Object {
+        "Statement": Array [
           Object {
-            "Ref": "SongIAMRole5755BC78",
+            "Action": Array [
+              "dynamodb:BatchGetItem",
+              "dynamodb:BatchWriteItem",
+              "dynamodb:PutItem",
+              "dynamodb:DeleteItem",
+              "dynamodb:GetItem",
+              "dynamodb:Scan",
+              "dynamodb:Query",
+              "dynamodb:UpdateItem",
+            ],
+            "Effect": "Allow",
+            "Resource": Array [
+              Object {
+                "Fn::Sub": Array [
+                  "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}",
+                  Object {
+                    "tablename": Object {
+                      "Fn::Join": Array [
+                        "",
+                        Array [
+                          "Song-",
+                          Object {
+                            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+                          },
+                          "-",
+                          Object {
+                            "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                          },
+                        ],
+                      ],
+                    },
+                  },
+                ],
+              },
+              Object {
+                "Fn::Sub": Array [
+                  "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}/*",
+                  Object {
+                    "tablename": Object {
+                      "Fn::Join": Array [
+                        "",
+                        Array [
+                          "Song-",
+                          Object {
+                            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+                          },
+                          "-",
+                          Object {
+                            "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                          },
+                        ],
+                      ],
+                    },
+                  },
+                ],
+              },
+              Object {
+                "Fn::Sub": Array [
+                  "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}",
+                  Object {
+                    "tablename": Object {
+                      "Fn::Join": Array [
+                        "",
+                        Array [
+                          "AmplifyDataStore-",
+                          Object {
+                            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+                          },
+                          "-",
+                          Object {
+                            "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                          },
+                        ],
+                      ],
+                    },
+                  },
+                ],
+              },
+              Object {
+                "Fn::Sub": Array [
+                  "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}/*",
+                  Object {
+                    "tablename": Object {
+                      "Fn::Join": Array [
+                        "",
+                        Array [
+                          "AmplifyDataStore-",
+                          Object {
+                            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+                          },
+                          "-",
+                          Object {
+                            "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                          },
+                        ],
+                      ],
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+      "PolicyName": "DynamoDBAccess71ABE5AE",
+      "Roles": Array [
+        Object {
+          "Ref": "SongIAMRole5755BC78",
+        },
+      ],
+    },
+    "Type": "AWS::IAM::Policy",
+  },
+  "GetSongResolver": Object {
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "FieldName": "getSong",
+      "Kind": "PIPELINE",
+      "PipelineConfig": Object {
+        "Functions": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102",
+              "FunctionId",
+            ],
+          },
+          Object {
+            "Fn::GetAtt": Array [
+              "QueryGetSongDataResolverFnQueryGetSongDataResolverFnAppSyncFunctionC7E7E88A",
+              "FunctionId",
+            ],
           },
         ],
       },
-      "Type": "AWS::IAM::Policy",
-    },
-    "GetSongResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "getSong",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "QueryGetSongDataResolverFnQueryGetSongDataResolverFnAppSyncFunctionC7E7E88A",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
+      "RequestMappingTemplate": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
 $util.qr($ctx.stash.put(\\"fieldName\\", \\"getSong\\"))
 $util.qr($ctx.stash.put(\\"conditions\\", []))
 $util.qr($ctx.stash.put(\\"metadata\\", {}))
 $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
+            Object {
+              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+            },
+            "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "SongTable",
-              },
-              "\\"))
+            Object {
+              "Ref": "SongTable",
+            },
+            "\\"))
 $util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"15\\")
 $util.toJson({})",
-            ],
           ],
-        },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Query",
+        ],
       },
-      "Type": "AWS::AppSync::Resolver",
+      "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+      "TypeName": "Query",
     },
-    "ListSongResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "listSongs",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "QueryListSongsDataResolverFnQueryListSongsDataResolverFnAppSyncFunctionD32DC12B",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
+    "Type": "AWS::AppSync::Resolver",
+  },
+  "ListSongResolver": Object {
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "FieldName": "listSongs",
+      "Kind": "PIPELINE",
+      "PipelineConfig": Object {
+        "Functions": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102",
+              "FunctionId",
+            ],
+          },
+          Object {
+            "Fn::GetAtt": Array [
+              "QueryListSongsDataResolverFnQueryListSongsDataResolverFnAppSyncFunctionD32DC12B",
+              "FunctionId",
+            ],
+          },
+        ],
+      },
+      "RequestMappingTemplate": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
 $util.qr($ctx.stash.put(\\"fieldName\\", \\"listSongs\\"))
 $util.qr($ctx.stash.put(\\"conditions\\", []))
 $util.qr($ctx.stash.put(\\"metadata\\", {}))
 $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
+            Object {
+              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+            },
+            "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "SongTable",
-              },
-              "\\"))
+            Object {
+              "Ref": "SongTable",
+            },
+            "\\"))
 $util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"15\\")
 $util.toJson({})",
-            ],
           ],
-        },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Query",
+        ],
       },
-      "Type": "AWS::AppSync::Resolver",
+      "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+      "TypeName": "Query",
     },
-    "MutationCreateSongDataResolverFnMutationCreateSongDataResolverFnAppSyncFunctionFC04B955": Object {
-      "DependsOn": Array [
-        "SongDataSource",
-      ],
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Fn::GetAtt": Array [
-            "SongDataSource",
-            "Name",
-          ],
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "MutationCreateSongDataResolverFn",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Mutation.createSong.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Mutation.createSong.res.vtl",
-            ],
-          ],
-        },
-        "SyncConfig": Object {
-          "ConflictDetection": "VERSION",
-          "ConflictHandler": "AUTOMERGE",
-        },
+    "Type": "AWS::AppSync::Resolver",
+  },
+  "MutationCreateSongDataResolverFnMutationCreateSongDataResolverFnAppSyncFunctionFC04B955": Object {
+    "DependsOn": Array [
+      "SongDataSource",
+    ],
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
       },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "MutationDeleteSongDataResolverFnMutationDeleteSongDataResolverFnAppSyncFunctionDE1E317E": Object {
-      "DependsOn": Array [
-        "SongDataSource",
-      ],
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Fn::GetAtt": Array [
-            "SongDataSource",
-            "Name",
-          ],
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "MutationDeleteSongDataResolverFn",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Mutation.deleteSong.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Mutation.deleteSong.res.vtl",
-            ],
-          ],
-        },
-        "SyncConfig": Object {
-          "ConflictDetection": "VERSION",
-          "ConflictHandler": "AUTOMERGE",
-        },
+      "DataSourceName": Object {
+        "Fn::GetAtt": Array [
+          "SongDataSource",
+          "Name",
+        ],
       },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "MutationUpdateSongDataResolverFnMutationUpdateSongDataResolverFnAppSyncFunction4ADCC009": Object {
-      "DependsOn": Array [
-        "SongDataSource",
-      ],
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Fn::GetAtt": Array [
-            "SongDataSource",
-            "Name",
-          ],
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "MutationUpdateSongDataResolverFn",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Mutation.updateSong.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Mutation.updateSong.res.vtl",
-            ],
-          ],
-        },
-        "SyncConfig": Object {
-          "ConflictDetection": "VERSION",
-          "ConflictHandler": "AUTOMERGE",
-        },
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "MutationcreateSonginit0FunctionMutationcreateSonginit0FunctionAppSyncFunction55782DDF": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "MutationcreateSonginit0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Mutation.createSong.init.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "MutationupdateSonginit0FunctionMutationupdateSonginit0FunctionAppSyncFunctionE35F0E12": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "MutationupdateSonginit0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Mutation.updateSong.init.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "QueryGetSongDataResolverFnQueryGetSongDataResolverFnAppSyncFunctionC7E7E88A": Object {
-      "DependsOn": Array [
-        "SongDataSource",
-      ],
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Fn::GetAtt": Array [
-            "SongDataSource",
-            "Name",
-          ],
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "QueryGetSongDataResolverFn",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Query.getSong.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Query.getSong.res.vtl",
-            ],
-          ],
-        },
-        "SyncConfig": Object {
-          "ConflictDetection": "VERSION",
-          "ConflictHandler": "AUTOMERGE",
-        },
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "QueryListSongsDataResolverFnQueryListSongsDataResolverFnAppSyncFunctionD32DC12B": Object {
-      "DependsOn": Array [
-        "SongDataSource",
-      ],
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Fn::GetAtt": Array [
-            "SongDataSource",
-            "Name",
-          ],
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "QueryListSongsDataResolverFn",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Query.listSongs.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Query.listSongs.res.vtl",
-            ],
-          ],
-        },
-        "SyncConfig": Object {
-          "ConflictDetection": "VERSION",
-          "ConflictHandler": "AUTOMERGE",
-        },
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "QuerySongInfoByGenreDataResolverFnQuerySongInfoByGenreDataResolverFnAppSyncFunction772935F8": Object {
-      "DependsOn": Array [
-        "SongDataSource",
-      ],
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Fn::GetAtt": Array [
-            "SongDataSource",
-            "Name",
-          ],
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "QuerySongInfoByGenreDataResolverFn",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Query.songInfoByGenre.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Query.songInfoByGenre.res.vtl",
-            ],
-          ],
-        },
-        "SyncConfig": Object {
-          "ConflictDetection": "VERSION",
-          "ConflictHandler": "AUTOMERGE",
-        },
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "QuerySyncSongsDataResolverFnQuerySyncSongsDataResolverFnAppSyncFunction70698E3C": Object {
-      "DependsOn": Array [
-        "SongDataSource",
-      ],
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Fn::GetAtt": Array [
-            "SongDataSource",
-            "Name",
-          ],
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "QuerySyncSongsDataResolverFn",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Query.syncSongs.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Query.syncSongs.res.vtl",
-            ],
-          ],
-        },
-        "SyncConfig": Object {
-          "ConflictDetection": "VERSION",
-          "ConflictHandler": "AUTOMERGE",
-        },
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "QuerygetSongpostAuth0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Query.getSong.postAuth.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "QuerysongInfoByGenreResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "songInfoByGenre",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
+      "FunctionVersion": "2018-05-29",
+      "Name": "MutationCreateSongDataResolverFn",
+      "RequestMappingTemplateS3Location": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "s3://",
             Object {
-              "Fn::GetAtt": Array [
-                "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102",
-                "FunctionId",
-              ],
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
             },
+            "/",
             Object {
-              "Fn::GetAtt": Array [
-                "QuerySongInfoByGenreDataResolverFnQuerySongInfoByGenreDataResolverFnAppSyncFunction772935F8",
-                "FunctionId",
-              ],
+              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
             },
+            "/resolvers/Mutation.createSong.req.vtl",
           ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
+        ],
+      },
+      "ResponseMappingTemplateS3Location": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "s3://",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+            },
+            "/",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+            },
+            "/resolvers/Mutation.createSong.res.vtl",
+          ],
+        ],
+      },
+      "SyncConfig": Object {
+        "ConflictDetection": "VERSION",
+        "ConflictHandler": "AUTOMERGE",
+      },
+    },
+    "Type": "AWS::AppSync::FunctionConfiguration",
+  },
+  "MutationDeleteSongDataResolverFnMutationDeleteSongDataResolverFnAppSyncFunctionDE1E317E": Object {
+    "DependsOn": Array [
+      "SongDataSource",
+    ],
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "DataSourceName": Object {
+        "Fn::GetAtt": Array [
+          "SongDataSource",
+          "Name",
+        ],
+      },
+      "FunctionVersion": "2018-05-29",
+      "Name": "MutationDeleteSongDataResolverFn",
+      "RequestMappingTemplateS3Location": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "s3://",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+            },
+            "/",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+            },
+            "/resolvers/Mutation.deleteSong.req.vtl",
+          ],
+        ],
+      },
+      "ResponseMappingTemplateS3Location": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "s3://",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+            },
+            "/",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+            },
+            "/resolvers/Mutation.deleteSong.res.vtl",
+          ],
+        ],
+      },
+      "SyncConfig": Object {
+        "ConflictDetection": "VERSION",
+        "ConflictHandler": "AUTOMERGE",
+      },
+    },
+    "Type": "AWS::AppSync::FunctionConfiguration",
+  },
+  "MutationUpdateSongDataResolverFnMutationUpdateSongDataResolverFnAppSyncFunction4ADCC009": Object {
+    "DependsOn": Array [
+      "SongDataSource",
+    ],
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "DataSourceName": Object {
+        "Fn::GetAtt": Array [
+          "SongDataSource",
+          "Name",
+        ],
+      },
+      "FunctionVersion": "2018-05-29",
+      "Name": "MutationUpdateSongDataResolverFn",
+      "RequestMappingTemplateS3Location": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "s3://",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+            },
+            "/",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+            },
+            "/resolvers/Mutation.updateSong.req.vtl",
+          ],
+        ],
+      },
+      "ResponseMappingTemplateS3Location": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "s3://",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+            },
+            "/",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+            },
+            "/resolvers/Mutation.updateSong.res.vtl",
+          ],
+        ],
+      },
+      "SyncConfig": Object {
+        "ConflictDetection": "VERSION",
+        "ConflictHandler": "AUTOMERGE",
+      },
+    },
+    "Type": "AWS::AppSync::FunctionConfiguration",
+  },
+  "MutationcreateSonginit0FunctionMutationcreateSonginit0FunctionAppSyncFunction55782DDF": Object {
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "DataSourceName": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
+      },
+      "FunctionVersion": "2018-05-29",
+      "Name": "MutationcreateSonginit0Function",
+      "RequestMappingTemplateS3Location": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "s3://",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+            },
+            "/",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+            },
+            "/resolvers/Mutation.createSong.init.1.req.vtl",
+          ],
+        ],
+      },
+      "ResponseMappingTemplate": "$util.toJson({})",
+    },
+    "Type": "AWS::AppSync::FunctionConfiguration",
+  },
+  "MutationupdateSonginit0FunctionMutationupdateSonginit0FunctionAppSyncFunctionE35F0E12": Object {
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "DataSourceName": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
+      },
+      "FunctionVersion": "2018-05-29",
+      "Name": "MutationupdateSonginit0Function",
+      "RequestMappingTemplateS3Location": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "s3://",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+            },
+            "/",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+            },
+            "/resolvers/Mutation.updateSong.init.1.req.vtl",
+          ],
+        ],
+      },
+      "ResponseMappingTemplate": "$util.toJson({})",
+    },
+    "Type": "AWS::AppSync::FunctionConfiguration",
+  },
+  "QueryGetSongDataResolverFnQueryGetSongDataResolverFnAppSyncFunctionC7E7E88A": Object {
+    "DependsOn": Array [
+      "SongDataSource",
+    ],
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "DataSourceName": Object {
+        "Fn::GetAtt": Array [
+          "SongDataSource",
+          "Name",
+        ],
+      },
+      "FunctionVersion": "2018-05-29",
+      "Name": "QueryGetSongDataResolverFn",
+      "RequestMappingTemplateS3Location": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "s3://",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+            },
+            "/",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+            },
+            "/resolvers/Query.getSong.req.vtl",
+          ],
+        ],
+      },
+      "ResponseMappingTemplateS3Location": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "s3://",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+            },
+            "/",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+            },
+            "/resolvers/Query.getSong.res.vtl",
+          ],
+        ],
+      },
+      "SyncConfig": Object {
+        "ConflictDetection": "VERSION",
+        "ConflictHandler": "AUTOMERGE",
+      },
+    },
+    "Type": "AWS::AppSync::FunctionConfiguration",
+  },
+  "QueryListSongsDataResolverFnQueryListSongsDataResolverFnAppSyncFunctionD32DC12B": Object {
+    "DependsOn": Array [
+      "SongDataSource",
+    ],
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "DataSourceName": Object {
+        "Fn::GetAtt": Array [
+          "SongDataSource",
+          "Name",
+        ],
+      },
+      "FunctionVersion": "2018-05-29",
+      "Name": "QueryListSongsDataResolverFn",
+      "RequestMappingTemplateS3Location": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "s3://",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+            },
+            "/",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+            },
+            "/resolvers/Query.listSongs.req.vtl",
+          ],
+        ],
+      },
+      "ResponseMappingTemplateS3Location": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "s3://",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+            },
+            "/",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+            },
+            "/resolvers/Query.listSongs.res.vtl",
+          ],
+        ],
+      },
+      "SyncConfig": Object {
+        "ConflictDetection": "VERSION",
+        "ConflictHandler": "AUTOMERGE",
+      },
+    },
+    "Type": "AWS::AppSync::FunctionConfiguration",
+  },
+  "QuerySongInfoByGenreDataResolverFnQuerySongInfoByGenreDataResolverFnAppSyncFunction772935F8": Object {
+    "DependsOn": Array [
+      "SongDataSource",
+    ],
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "DataSourceName": Object {
+        "Fn::GetAtt": Array [
+          "SongDataSource",
+          "Name",
+        ],
+      },
+      "FunctionVersion": "2018-05-29",
+      "Name": "QuerySongInfoByGenreDataResolverFn",
+      "RequestMappingTemplateS3Location": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "s3://",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+            },
+            "/",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+            },
+            "/resolvers/Query.songInfoByGenre.req.vtl",
+          ],
+        ],
+      },
+      "ResponseMappingTemplateS3Location": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "s3://",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+            },
+            "/",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+            },
+            "/resolvers/Query.songInfoByGenre.res.vtl",
+          ],
+        ],
+      },
+      "SyncConfig": Object {
+        "ConflictDetection": "VERSION",
+        "ConflictHandler": "AUTOMERGE",
+      },
+    },
+    "Type": "AWS::AppSync::FunctionConfiguration",
+  },
+  "QuerySyncSongsDataResolverFnQuerySyncSongsDataResolverFnAppSyncFunction70698E3C": Object {
+    "DependsOn": Array [
+      "SongDataSource",
+    ],
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "DataSourceName": Object {
+        "Fn::GetAtt": Array [
+          "SongDataSource",
+          "Name",
+        ],
+      },
+      "FunctionVersion": "2018-05-29",
+      "Name": "QuerySyncSongsDataResolverFn",
+      "RequestMappingTemplateS3Location": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "s3://",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+            },
+            "/",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+            },
+            "/resolvers/Query.syncSongs.req.vtl",
+          ],
+        ],
+      },
+      "ResponseMappingTemplateS3Location": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "s3://",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+            },
+            "/",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+            },
+            "/resolvers/Query.syncSongs.res.vtl",
+          ],
+        ],
+      },
+      "SyncConfig": Object {
+        "ConflictDetection": "VERSION",
+        "ConflictHandler": "AUTOMERGE",
+      },
+    },
+    "Type": "AWS::AppSync::FunctionConfiguration",
+  },
+  "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102": Object {
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "DataSourceName": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
+      },
+      "FunctionVersion": "2018-05-29",
+      "Name": "QuerygetSongpostAuth0Function",
+      "RequestMappingTemplateS3Location": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "s3://",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+            },
+            "/",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+            },
+            "/resolvers/Query.getSong.postAuth.1.req.vtl",
+          ],
+        ],
+      },
+      "ResponseMappingTemplate": "$util.toJson({})",
+    },
+    "Type": "AWS::AppSync::FunctionConfiguration",
+  },
+  "QuerysongInfoByGenreResolver": Object {
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "FieldName": "songInfoByGenre",
+      "Kind": "PIPELINE",
+      "PipelineConfig": Object {
+        "Functions": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102",
+              "FunctionId",
+            ],
+          },
+          Object {
+            "Fn::GetAtt": Array [
+              "QuerySongInfoByGenreDataResolverFnQuerySongInfoByGenreDataResolverFnAppSyncFunction772935F8",
+              "FunctionId",
+            ],
+          },
+        ],
+      },
+      "RequestMappingTemplate": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
 $util.qr($ctx.stash.put(\\"fieldName\\", \\"songInfoByGenre\\"))
 $util.qr($ctx.stash.put(\\"conditions\\", []))
 $util.qr($ctx.stash.put(\\"metadata\\", {}))
 $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
+            Object {
+              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+            },
+            "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "SongTable",
-              },
-              "\\"))
+            Object {
+              "Ref": "SongTable",
+            },
+            "\\"))
 $util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"15\\")
 $util.toJson({})",
-            ],
           ],
-        },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Query",
-      },
-      "Type": "AWS::AppSync::Resolver",
-    },
-    "QuerysyncSongspreAuth0FunctionQuerysyncSongspreAuth0FunctionAppSyncFunction06967782": Object {
-      "DependsOn": Array [
-        "SongDataSource",
-      ],
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Fn::GetAtt": Array [
-            "SongDataSource",
-            "Name",
-          ],
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "QuerysyncSongspreAuth0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Query.syncSongs.preAuth.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "SongDataSource": Object {
-      "DependsOn": Array [
-        "SongIAMRole5755BC78",
-      ],
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DynamoDBConfig": Object {
-          "AwsRegion": Object {
-            "Ref": "AWS::Region",
-          },
-          "DeltaSyncConfig": Object {
-            "BaseTableTTL": "20",
-            "DeltaSyncTableName": "SongTable",
-            "DeltaSyncTableTTL": "15",
-          },
-          "TableName": Object {
-            "Ref": "SongTable",
-          },
-          "Versioned": true,
-        },
-        "Name": "SongTable",
-        "ServiceRoleArn": Object {
-          "Fn::GetAtt": Array [
-            "SongIAMRole5755BC78",
-            "Arn",
-          ],
-        },
-        "Type": "AMAZON_DYNAMODB",
-      },
-      "Type": "AWS::AppSync::DataSource",
-    },
-    "SongIAMRole5755BC78": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "appsync.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "RoleName": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "SongIAMRole497f63-",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "-",
-              Object {
-                "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-              },
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "SongIAMRoleDefaultPolicy9FAAC6EB": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
-                "dynamodb:BatchGetItem",
-                "dynamodb:GetRecords",
-                "dynamodb:GetShardIterator",
-                "dynamodb:Query",
-                "dynamodb:GetItem",
-                "dynamodb:Scan",
-                "dynamodb:ConditionCheckItem",
-                "dynamodb:BatchWriteItem",
-                "dynamodb:PutItem",
-                "dynamodb:UpdateItem",
-                "dynamodb:DeleteItem",
-                "dynamodb:DescribeTable",
-              ],
-              "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::GetAtt": Array [
-                    "SongTable",
-                    "Arn",
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "SongTable",
-                          "Arn",
-                        ],
-                      },
-                      "/index/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "SongIAMRoleDefaultPolicy9FAAC6EB",
-        "Roles": Array [
-          Object {
-            "Ref": "SongIAMRole5755BC78",
-          },
         ],
       },
-      "Type": "AWS::IAM::Policy",
+      "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+      "TypeName": "Query",
     },
-    "SongTable": Object {
-      "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "AttributeDefinitions": Array [
-          Object {
-            "AttributeName": "id",
-            "AttributeType": "S",
-          },
-          Object {
-            "AttributeName": "genre",
-            "AttributeType": "S",
-          },
+    "Type": "AWS::AppSync::Resolver",
+  },
+  "QuerysyncSongspreAuth0FunctionQuerysyncSongspreAuth0FunctionAppSyncFunction06967782": Object {
+    "DependsOn": Array [
+      "SongDataSource",
+    ],
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "DataSourceName": Object {
+        "Fn::GetAtt": Array [
+          "SongDataSource",
+          "Name",
         ],
-        "BillingMode": Object {
-          "Fn::If": Array [
-            "ShouldUsePayPerRequestBilling",
-            "PAY_PER_REQUEST",
+      },
+      "FunctionVersion": "2018-05-29",
+      "Name": "QuerysyncSongspreAuth0Function",
+      "RequestMappingTemplateS3Location": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "s3://",
             Object {
-              "Ref": "AWS::NoValue",
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
             },
+            "/",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+            },
+            "/resolvers/Query.syncSongs.preAuth.1.req.vtl",
           ],
-        },
-        "GlobalSecondaryIndexes": Array [
-          Object {
-            "IndexName": "byGenre",
-            "KeySchema": Array [
-              Object {
-                "AttributeName": "genre",
-                "KeyType": "HASH",
-              },
-            ],
-            "Projection": Object {
-              "ProjectionType": "ALL",
-            },
-            "ProvisionedThroughput": Object {
-              "Fn::If": Array [
-                "ShouldUsePayPerRequestBilling",
-                Object {
-                  "Ref": "AWS::NoValue",
-                },
-                Object {
-                  "ReadCapacityUnits": Object {
-                    "Ref": "DynamoDBModelTableReadIOPS",
-                  },
-                  "WriteCapacityUnits": Object {
-                    "Ref": "DynamoDBModelTableWriteIOPS",
-                  },
-                },
-              ],
-            },
-          },
         ],
-        "KeySchema": Array [
-          Object {
-            "AttributeName": "id",
-            "KeyType": "HASH",
-          },
-        ],
-        "PointInTimeRecoverySpecification": Object {
-          "Fn::If": Array [
-            "ShouldUsePointInTimeRecovery",
-            Object {
-              "PointInTimeRecoveryEnabled": true,
-            },
-            Object {
-              "Ref": "AWS::NoValue",
-            },
-          ],
+      },
+      "ResponseMappingTemplate": "$util.toJson({})",
+    },
+    "Type": "AWS::AppSync::FunctionConfiguration",
+  },
+  "SongDataSource": Object {
+    "DependsOn": Array [
+      "SongIAMRole5755BC78",
+    ],
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "DynamoDBConfig": Object {
+        "AwsRegion": Object {
+          "Ref": "AWS::Region",
         },
-        "ProvisionedThroughput": Object {
-          "Fn::If": Array [
-            "ShouldUsePayPerRequestBilling",
-            Object {
-              "Ref": "AWS::NoValue",
-            },
-            Object {
-              "ReadCapacityUnits": Object {
-                "Ref": "DynamoDBModelTableReadIOPS",
-              },
-              "WriteCapacityUnits": Object {
-                "Ref": "DynamoDBModelTableWriteIOPS",
-              },
-            },
-          ],
-        },
-        "SSESpecification": Object {
-          "SSEEnabled": Object {
-            "Fn::If": Array [
-              "ShouldUseServerSideEncryption",
-              true,
-              false,
-            ],
-          },
-        },
-        "StreamSpecification": Object {
-          "StreamViewType": "NEW_AND_OLD_IMAGES",
+        "DeltaSyncConfig": Object {
+          "BaseTableTTL": "20",
+          "DeltaSyncTableName": "SongTable",
+          "DeltaSyncTableTTL": "15",
         },
         "TableName": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "Song-",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "-",
-              Object {
-                "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-              },
-            ],
-          ],
+          "Ref": "SongTable",
         },
-        "TimeToLiveSpecification": Object {
-          "AttributeName": "_ttl",
-          "Enabled": true,
-        },
+        "Versioned": true,
       },
-      "Type": "AWS::DynamoDB::Table",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "SubscriptionOnCreateSongDataResolverFnSubscriptionOnCreateSongDataResolverFnAppSyncFunction33E23797": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptionOnCreateSongDataResolverFn",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Subscription.onCreateSong.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Subscription.onCreateSong.res.vtl",
-            ],
-          ],
-        },
+      "Name": "SongTable",
+      "ServiceRoleArn": Object {
+        "Fn::GetAtt": Array [
+          "SongIAMRole5755BC78",
+          "Arn",
+        ],
       },
-      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Type": "AMAZON_DYNAMODB",
     },
-    "SubscriptiononCreateSongResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "onCreateSong",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102",
-                "FunctionId",
-              ],
+    "Type": "AWS::AppSync::DataSource",
+  },
+  "SongIAMRole5755BC78": Object {
+    "Properties": Object {
+      "AssumeRolePolicyDocument": Object {
+        "Statement": Array [
+          Object {
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": Object {
+              "Service": "appsync.amazonaws.com",
             },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+      "RoleName": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "SongIAMRole497f63-",
             Object {
-              "Fn::GetAtt": Array [
-                "SubscriptionOnCreateSongDataResolverFnSubscriptionOnCreateSongDataResolverFnAppSyncFunction33E23797",
-                "FunctionId",
-              ],
+              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+            },
+            "-",
+            Object {
+              "Ref": "referencetotransformerrootstackenv10C5A902Ref",
             },
           ],
+        ],
+      },
+    },
+    "Type": "AWS::IAM::Role",
+  },
+  "SongIAMRoleDefaultPolicy9FAAC6EB": Object {
+    "Properties": Object {
+      "PolicyDocument": Object {
+        "Statement": Array [
+          Object {
+            "Action": Array [
+              "dynamodb:BatchGetItem",
+              "dynamodb:GetRecords",
+              "dynamodb:GetShardIterator",
+              "dynamodb:Query",
+              "dynamodb:GetItem",
+              "dynamodb:Scan",
+              "dynamodb:ConditionCheckItem",
+              "dynamodb:BatchWriteItem",
+              "dynamodb:PutItem",
+              "dynamodb:UpdateItem",
+              "dynamodb:DeleteItem",
+              "dynamodb:DescribeTable",
+            ],
+            "Effect": "Allow",
+            "Resource": Array [
+              Object {
+                "Fn::GetAtt": Array [
+                  "SongTable",
+                  "Arn",
+                ],
+              },
+              Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "SongTable",
+                        "Arn",
+                      ],
+                    },
+                    "/index/*",
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+      "PolicyName": "SongIAMRoleDefaultPolicy9FAAC6EB",
+      "Roles": Array [
+        Object {
+          "Ref": "SongIAMRole5755BC78",
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Subscription\\"))
+      ],
+    },
+    "Type": "AWS::IAM::Policy",
+  },
+  "SongTable": Object {
+    "DeletionPolicy": "Delete",
+    "Properties": Object {
+      "AttributeDefinitions": Array [
+        Object {
+          "AttributeName": "id",
+          "AttributeType": "S",
+        },
+        Object {
+          "AttributeName": "genre",
+          "AttributeType": "S",
+        },
+      ],
+      "BillingMode": Object {
+        "Fn::If": Array [
+          "ShouldUsePayPerRequestBilling",
+          "PAY_PER_REQUEST",
+          Object {
+            "Ref": "AWS::NoValue",
+          },
+        ],
+      },
+      "GlobalSecondaryIndexes": Array [
+        Object {
+          "IndexName": "byGenre",
+          "KeySchema": Array [
+            Object {
+              "AttributeName": "genre",
+              "KeyType": "HASH",
+            },
+          ],
+          "Projection": Object {
+            "ProjectionType": "ALL",
+          },
+          "ProvisionedThroughput": Object {
+            "Fn::If": Array [
+              "ShouldUsePayPerRequestBilling",
+              Object {
+                "Ref": "AWS::NoValue",
+              },
+              Object {
+                "ReadCapacityUnits": Object {
+                  "Ref": "DynamoDBModelTableReadIOPS",
+                },
+                "WriteCapacityUnits": Object {
+                  "Ref": "DynamoDBModelTableWriteIOPS",
+                },
+              },
+            ],
+          },
+        },
+      ],
+      "KeySchema": Array [
+        Object {
+          "AttributeName": "id",
+          "KeyType": "HASH",
+        },
+      ],
+      "PointInTimeRecoverySpecification": Object {
+        "Fn::If": Array [
+          "ShouldUsePointInTimeRecovery",
+          Object {
+            "PointInTimeRecoveryEnabled": true,
+          },
+          Object {
+            "Ref": "AWS::NoValue",
+          },
+        ],
+      },
+      "ProvisionedThroughput": Object {
+        "Fn::If": Array [
+          "ShouldUsePayPerRequestBilling",
+          Object {
+            "Ref": "AWS::NoValue",
+          },
+          Object {
+            "ReadCapacityUnits": Object {
+              "Ref": "DynamoDBModelTableReadIOPS",
+            },
+            "WriteCapacityUnits": Object {
+              "Ref": "DynamoDBModelTableWriteIOPS",
+            },
+          },
+        ],
+      },
+      "SSESpecification": Object {
+        "SSEEnabled": Object {
+          "Fn::If": Array [
+            "ShouldUseServerSideEncryption",
+            true,
+            false,
+          ],
+        },
+      },
+      "StreamSpecification": Object {
+        "StreamViewType": "NEW_AND_OLD_IMAGES",
+      },
+      "TableName": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "Song-",
+            Object {
+              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+            },
+            "-",
+            Object {
+              "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+            },
+          ],
+        ],
+      },
+      "TimeToLiveSpecification": Object {
+        "AttributeName": "_ttl",
+        "Enabled": true,
+      },
+    },
+    "Type": "AWS::DynamoDB::Table",
+    "UpdateReplacePolicy": "Delete",
+  },
+  "SubscriptionOnCreateSongDataResolverFnSubscriptionOnCreateSongDataResolverFnAppSyncFunction33E23797": Object {
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "DataSourceName": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
+      },
+      "FunctionVersion": "2018-05-29",
+      "Name": "SubscriptionOnCreateSongDataResolverFn",
+      "RequestMappingTemplateS3Location": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "s3://",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+            },
+            "/",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+            },
+            "/resolvers/Subscription.onCreateSong.req.vtl",
+          ],
+        ],
+      },
+      "ResponseMappingTemplateS3Location": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "s3://",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+            },
+            "/",
+            Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+            },
+            "/resolvers/Subscription.onCreateSong.res.vtl",
+          ],
+        ],
+      },
+    },
+    "Type": "AWS::AppSync::FunctionConfiguration",
+  },
+  "SubscriptiononCreateSongResolver": Object {
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "FieldName": "onCreateSong",
+      "Kind": "PIPELINE",
+      "PipelineConfig": Object {
+        "Functions": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102",
+              "FunctionId",
+            ],
+          },
+          Object {
+            "Fn::GetAtt": Array [
+              "SubscriptionOnCreateSongDataResolverFnSubscriptionOnCreateSongDataResolverFnAppSyncFunction33E23797",
+              "FunctionId",
+            ],
+          },
+        ],
+      },
+      "RequestMappingTemplate": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "$util.qr($ctx.stash.put(\\"typeName\\", \\"Subscription\\"))
 $util.qr($ctx.stash.put(\\"fieldName\\", \\"onCreateSong\\"))
 $util.qr($ctx.stash.put(\\"conditions\\", []))
 $util.qr($ctx.stash.put(\\"metadata\\", {}))
 $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"NONE\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
+            Object {
+              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+            },
+            "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
 $util.toJson({})",
-            ],
           ],
-        },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Subscription",
+        ],
       },
-      "Type": "AWS::AppSync::Resolver",
+      "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+      "TypeName": "Subscription",
     },
-    "SubscriptiononDeleteSongResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "onDeleteSong",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "SubscriptionOnCreateSongDataResolverFnSubscriptionOnCreateSongDataResolverFnAppSyncFunction33E23797",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Subscription\\"))
+    "Type": "AWS::AppSync::Resolver",
+  },
+  "SubscriptiononDeleteSongResolver": Object {
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "FieldName": "onDeleteSong",
+      "Kind": "PIPELINE",
+      "PipelineConfig": Object {
+        "Functions": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102",
+              "FunctionId",
+            ],
+          },
+          Object {
+            "Fn::GetAtt": Array [
+              "SubscriptionOnCreateSongDataResolverFnSubscriptionOnCreateSongDataResolverFnAppSyncFunction33E23797",
+              "FunctionId",
+            ],
+          },
+        ],
+      },
+      "RequestMappingTemplate": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "$util.qr($ctx.stash.put(\\"typeName\\", \\"Subscription\\"))
 $util.qr($ctx.stash.put(\\"fieldName\\", \\"onDeleteSong\\"))
 $util.qr($ctx.stash.put(\\"conditions\\", []))
 $util.qr($ctx.stash.put(\\"metadata\\", {}))
 $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"NONE\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
+            Object {
+              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+            },
+            "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
 $util.toJson({})",
-            ],
           ],
-        },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Subscription",
+        ],
       },
-      "Type": "AWS::AppSync::Resolver",
+      "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+      "TypeName": "Subscription",
     },
-    "SubscriptiononUpdateSongResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "onUpdateSong",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "SubscriptionOnCreateSongDataResolverFnSubscriptionOnCreateSongDataResolverFnAppSyncFunction33E23797",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Subscription\\"))
+    "Type": "AWS::AppSync::Resolver",
+  },
+  "SubscriptiononUpdateSongResolver": Object {
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "FieldName": "onUpdateSong",
+      "Kind": "PIPELINE",
+      "PipelineConfig": Object {
+        "Functions": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102",
+              "FunctionId",
+            ],
+          },
+          Object {
+            "Fn::GetAtt": Array [
+              "SubscriptionOnCreateSongDataResolverFnSubscriptionOnCreateSongDataResolverFnAppSyncFunction33E23797",
+              "FunctionId",
+            ],
+          },
+        ],
+      },
+      "RequestMappingTemplate": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "$util.qr($ctx.stash.put(\\"typeName\\", \\"Subscription\\"))
 $util.qr($ctx.stash.put(\\"fieldName\\", \\"onUpdateSong\\"))
 $util.qr($ctx.stash.put(\\"conditions\\", []))
 $util.qr($ctx.stash.put(\\"metadata\\", {}))
 $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"NONE\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
+            Object {
+              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+            },
+            "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
 $util.toJson({})",
-            ],
           ],
-        },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Subscription",
+        ],
       },
-      "Type": "AWS::AppSync::Resolver",
+      "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+      "TypeName": "Subscription",
     },
-    "SyncSongResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "syncSongs",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "QuerysyncSongspreAuth0FunctionQuerysyncSongspreAuth0FunctionAppSyncFunction06967782",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "QuerySyncSongsDataResolverFnQuerySyncSongsDataResolverFnAppSyncFunction70698E3C",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
+    "Type": "AWS::AppSync::Resolver",
+  },
+  "SyncSongResolver": Object {
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "FieldName": "syncSongs",
+      "Kind": "PIPELINE",
+      "PipelineConfig": Object {
+        "Functions": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "QuerysyncSongspreAuth0FunctionQuerysyncSongspreAuth0FunctionAppSyncFunction06967782",
+              "FunctionId",
+            ],
+          },
+          Object {
+            "Fn::GetAtt": Array [
+              "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102",
+              "FunctionId",
+            ],
+          },
+          Object {
+            "Fn::GetAtt": Array [
+              "QuerySyncSongsDataResolverFnQuerySyncSongsDataResolverFnAppSyncFunction70698E3C",
+              "FunctionId",
+            ],
+          },
+        ],
+      },
+      "RequestMappingTemplate": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
 $util.qr($ctx.stash.put(\\"fieldName\\", \\"syncSongs\\"))
 $util.qr($ctx.stash.put(\\"conditions\\", []))
 $util.qr($ctx.stash.put(\\"metadata\\", {}))
 $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
+            Object {
+              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+            },
+            "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "SongTable",
-              },
-              "\\"))
+            Object {
+              "Ref": "SongTable",
+            },
+            "\\"))
 $util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"15\\")
 $util.toJson({})",
-            ],
           ],
-        },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Query",
+        ],
       },
-      "Type": "AWS::AppSync::Resolver",
+      "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+      "TypeName": "Query",
     },
-    "UpdateSongResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "updateSong",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "MutationupdateSonginit0FunctionMutationupdateSonginit0FunctionAppSyncFunctionE35F0E12",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "MutationUpdateSongDataResolverFnMutationUpdateSongDataResolverFnAppSyncFunction4ADCC009",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
+    "Type": "AWS::AppSync::Resolver",
+  },
+  "UpdateSongResolver": Object {
+    "Properties": Object {
+      "ApiId": Object {
+        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+      },
+      "FieldName": "updateSong",
+      "Kind": "PIPELINE",
+      "PipelineConfig": Object {
+        "Functions": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "MutationupdateSonginit0FunctionMutationupdateSonginit0FunctionAppSyncFunctionE35F0E12",
+              "FunctionId",
+            ],
+          },
+          Object {
+            "Fn::GetAtt": Array [
+              "QuerygetSongpostAuth0FunctionQuerygetSongpostAuth0FunctionAppSyncFunction30BEE102",
+              "FunctionId",
+            ],
+          },
+          Object {
+            "Fn::GetAtt": Array [
+              "MutationUpdateSongDataResolverFnMutationUpdateSongDataResolverFnAppSyncFunction4ADCC009",
+              "FunctionId",
+            ],
+          },
+        ],
+      },
+      "RequestMappingTemplate": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
 $util.qr($ctx.stash.put(\\"fieldName\\", \\"updateSong\\"))
 $util.qr($ctx.stash.put(\\"conditions\\", []))
 $util.qr($ctx.stash.put(\\"metadata\\", {}))
 $util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
 $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
+            Object {
+              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+            },
+            "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 $util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "SongTable",
-              },
-              "\\"))
+            Object {
+              "Ref": "SongTable",
+            },
+            "\\"))
 $util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"15\\")
 $util.toJson({})",
-            ],
           ],
-        },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Mutation",
+        ],
       },
-      "Type": "AWS::AppSync::Resolver",
+      "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+      "TypeName": "Mutation",
     },
+    "Type": "AWS::AppSync::Resolver",
   },
 }
 `;
