@@ -223,5 +223,7 @@ module.exports = {
 
     // Ignore CHANGELOG.md files
     '/packages/*/CHANGELOG.md',
+
+    'client-test-apps',
   ],
 };
