@@ -1255,7 +1255,7 @@ const actionName = 'Source';
 const codePipeline = new AWS.CodePipeline();
 const cloudFormation = new AWS.CloudFormation();
 
-exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
+exports.handler = async function ({ RequestType, ResourceProperties, StackId }) {
   const { pipelineName, artifactBucketName, artifactKey, deploymentMechanism } = ResourceProperties;
 
   console.log('Properties', ResourceProperties);
@@ -1459,7 +1459,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
       ],
       "Properties": Object {
         "Code": Object {
-          "ZipFile": "exports.handler = async function({ RequestType, PhysicalResourceId, ResourceProperties }) {
+          "ZipFile": "exports.handler = async function ({ RequestType, PhysicalResourceId, ResourceProperties }) {
   switch (RequestType) {
     case 'Delete':
     case 'Update':
@@ -2198,7 +2198,7 @@ const { DESIRED_COUNT: desiredCountStr, CLUSTER_NAME: cluster, SERVICE_NAME: ser
 
 const desiredCount = parseInt(desiredCountStr, 10);
 
-exports.handler = async function({ 'CodePipeline.job': { id: jobId } }) {
+exports.handler = async function ({ 'CodePipeline.job': { id: jobId } }) {
   await ecs
     .updateService({
       service,
