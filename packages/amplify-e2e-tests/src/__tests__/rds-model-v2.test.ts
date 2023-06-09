@@ -26,7 +26,7 @@ import gql from 'graphql-tag';
 (global as any).fetch = require('node-fetch');
 
 describe("RDS Model Directive", () => {
-  let publicIpCidr = "0.0.0.0/0";
+  const publicIpCidr = "0.0.0.0/0";
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
   
   // Generate settings for RDS instance
@@ -43,10 +43,6 @@ describe("RDS Model Directive", () => {
   let appSyncClient;
 
   beforeAll(async () => {
-    // Get the public IP of the machine running the test
-    const url = "http://api.ipify.org/";
-    const response = await axios(url);
-    publicIpCidr = `${response.data.trim()}/32`;
     projRoot = await createNewProjectDir('rdsmodelapi');
     await setupDatabase();
     await initProjectAndImportSchema();
@@ -80,12 +76,12 @@ describe("RDS Model Directive", () => {
   });
 
   afterAll(async () => {
-    // const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
-    // if (existsSync(metaFilePath)) {
-    //   await deleteProject(projRoot);
-    // }
-    // deleteProjectDir(projRoot);
-    // await cleanupDatabase();
+    const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    if (existsSync(metaFilePath)) {
+      await deleteProject(projRoot);
+    }
+    deleteProjectDir(projRoot);
+    await cleanupDatabase();
   });
 
   beforeEach(async () => {
