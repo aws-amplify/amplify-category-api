@@ -220,7 +220,7 @@ export const generateCreateRequestTemplate = (modelName: string, modelIndexField
  * Generate mapping template that sets default values for create mutation
  * @param modelConfig directive configuration
  */
-export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfiguration): string => {
+export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfiguration, initializeIdField: boolean): string => {
   const statements: Expression[] = [
     // initialize defaultValues
     qref(
