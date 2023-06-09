@@ -80,12 +80,12 @@ describe("RDS Model Directive", () => {
   });
 
   afterAll(async () => {
-    const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
-    if (existsSync(metaFilePath)) {
-      await deleteProject(projRoot);
-    }
-    deleteProjectDir(projRoot);
-    await cleanupDatabase();
+    // const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    // if (existsSync(metaFilePath)) {
+    //   await deleteProject(projRoot);
+    // }
+    // deleteProjectDir(projRoot);
+    // await cleanupDatabase();
   });
 
   beforeEach(async () => {
