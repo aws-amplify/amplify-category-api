@@ -78,10 +78,7 @@
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",
-    "*.{js,ts,jsx,tsx}": [
-      "eslint",
-      "eslint --no-eslintrc --config depcheck.config.js"
-    ]
+    "*.{js,ts,jsx,tsx}": "eslint --no-eslintrc --config depcheck.config.js"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
