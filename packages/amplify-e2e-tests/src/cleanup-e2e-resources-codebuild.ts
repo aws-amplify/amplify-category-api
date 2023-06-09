@@ -219,7 +219,6 @@ const getStackDetails = async (stackName: string, account: AWSAccountInfo, regio
     region,
     tags: tags.reduce((acc, tag) => ({ ...acc, [tag.Key]: tag.Value }), {}),
     jobId
-    // cbInfo: jobId && (await getJobCodeBuildDetails(jobId)),
   };
 };
 
