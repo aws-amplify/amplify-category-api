@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-function-transformer",
-  "version": "1.2.4",
+  "version": "1.2.5-with-standalone-transformer.0",
   "description": "Amplify GraphQL @function transformer",
   "repository": {
     "type": "git",
@@ -28,8 +28,8 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "1.3.2",
-    "@aws-amplify/graphql-transformer-interfaces": "2.2.1",
+    "@aws-amplify/graphql-transformer-core": "1.3.3-with-standalone-transformer.0",
+    "@aws-amplify/graphql-transformer-interfaces": "2.2.2-with-standalone-transformer.0",
     "aws-cdk-lib": "~2.68.0",
     "constructs": "^10.0.5",
     "graphql": "^15.5.0",

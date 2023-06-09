@@ -1,66 +1,65 @@
 {
-    "name": "@aws-amplify/graphql-transformer",
-    "version": "0.0.1",
-    "description": "Amplify GraphQL Transformer Root Package",
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/aws-amplify/amplify-category-api.git",
-      "directory": "packages/amplify-graphql-transformer"
+  "name": "@aws-amplify/graphql-transformer",
+  "version": "0.0.2-with-standalone-transformer.0",
+  "description": "Amplify GraphQL Transformer Root Package",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-category-api.git",
+    "directory": "packages/amplify-graphql-transformer"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "test": "jest",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "keywords": [
+    "graphql",
+    "cloudformation",
+    "aws",
+    "amplify",
+    "api"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@aws-amplify/graphql-auth-transformer": "2.1.7-with-standalone-transformer.0",
+    "@aws-amplify/graphql-default-value-transformer": "1.1.7-with-standalone-transformer.0",
+    "@aws-amplify/graphql-function-transformer": "1.2.5-with-standalone-transformer.0",
+    "@aws-amplify/graphql-http-transformer": "1.2.5-with-standalone-transformer.0",
+    "@aws-amplify/graphql-index-transformer": "1.2.3-with-standalone-transformer.0",
+    "@aws-amplify/graphql-maps-to-transformer": "2.1.7-with-standalone-transformer.0",
+    "@aws-amplify/graphql-model-transformer": "1.3.3-with-standalone-transformer.0",
+    "@aws-amplify/graphql-predictions-transformer": "1.2.5-with-standalone-transformer.0",
+    "@aws-amplify/graphql-relational-transformer": "1.2.3-with-standalone-transformer.0",
+    "@aws-amplify/graphql-searchable-transformer": "1.2.5-with-standalone-transformer.0",
+    "@aws-amplify/graphql-transformer-core": "1.3.3-with-standalone-transformer.0",
+    "@aws-amplify/graphql-transformer-interfaces": "2.2.2-with-standalone-transformer.0"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.6",
+    "rimraf": "^3.0.0",
+    "ts-jest": "26.4.4"
+  },
+  "jest": {
+    "testURL": "http://localhost",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
     },
-    "author": "Amazon Web Services",
-    "license": "Apache-2.0",
-    "main": "lib/index.js",
-    "scripts": {
-      "build": "tsc",
-      "watch": "tsc -w",
-      "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
-      "test": "jest",
-      "extract-api": "ts-node ../../scripts/extract-api.ts"
-    },
-    "keywords": [
-      "graphql",
-      "cloudformation",
-      "aws",
-      "amplify",
-      "api"
+    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
     ],
-    "publishConfig": {
-      "access": "public"
-    },
-    "dependencies": {
-      "@aws-amplify/graphql-auth-transformer": "2.1.6",
-      "@aws-amplify/graphql-default-value-transformer": "1.1.6",
-      "@aws-amplify/graphql-function-transformer": "1.2.4",
-      "@aws-amplify/graphql-http-transformer": "1.2.4",
-      "@aws-amplify/graphql-index-transformer": "1.2.2",
-      "@aws-amplify/graphql-maps-to-transformer": "2.1.6",
-      "@aws-amplify/graphql-model-transformer": "1.3.2",
-      "@aws-amplify/graphql-predictions-transformer": "1.2.4",
-      "@aws-amplify/graphql-relational-transformer": "1.2.2",
-      "@aws-amplify/graphql-searchable-transformer": "1.2.4",
-      "@aws-amplify/graphql-transformer-core": "1.3.2",
-      "@aws-amplify/graphql-transformer-interfaces": "2.2.1"
-    },
-    "devDependencies": {
-      "@types/node": "^12.12.6",
-      "ts-jest": "26.4.4",
-      "rimraf": "^3.0.0"
-    },
-    "jest": {
-      "testURL": "http://localhost",
-      "transform": {
-        "^.+\\.tsx?$": "ts-jest"
-      },
-      "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-      "moduleFileExtensions": [
-        "ts",
-        "tsx",
-        "js",
-        "jsx",
-        "json",
-        "node"
-      ],
-      "collectCoverage": true
-    }
+    "collectCoverage": true
   }
-  
+}
