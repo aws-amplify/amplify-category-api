@@ -199,7 +199,13 @@ export const getFieldNameFor: (op: Operation, typeName: string) => string;
 export const getKeySchema: (table: any, indexName?: string) => any;
 
 // @public (undocumented)
-export const getParameterStoreSecretPath: (secret: string, secretsKey: string, apiName: string, environmentName: string, appId: string) => string;
+export const getParameterStoreSecretPath: (
+secret: string,
+secretsKey: string,
+apiName: string,
+environmentName: string,
+appId: string
+) => string;
 
 // @public (undocumented)
 export const getSortKeyFieldNames: (type: ObjectTypeDefinitionNode) => string[];

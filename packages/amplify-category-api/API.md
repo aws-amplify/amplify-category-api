@@ -59,7 +59,11 @@ const console_2: (context: $TSContext) => Promise<void>;
 export { console_2 as console }
 
 // @public (undocumented)
-export function convertDeperecatedRestApiPaths(deprecatedParametersFileName: string, deprecatedParametersFilePath: string, resourceName: string): {};
+export function convertDeperecatedRestApiPaths(
+deprecatedParametersFileName: string,
+deprecatedParametersFilePath: string,
+resourceName: string
+): {};
 
 // @public (undocumented)
 export enum DEPLOYMENT_MECHANISM {
