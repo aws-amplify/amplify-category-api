@@ -7,12 +7,7 @@
  */
 module.exports = {
   root: true,
-  extends: [
-    'airbnb',
-    'eslint:recommended',
-    'plugin:import/recommended',
-    'plugin:@typescript-eslint/recommended',
-  ],
+  extends: ['eslint:recommended', 'plugin:import/recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
   parser: '@typescript-eslint/parser', // Specifies the ESLint parser
   env: {
     es6: true,
@@ -46,11 +41,12 @@ module.exports = {
 
     // Disables double quote error when using single quotes within string for readability
     // https://eslint.org/docs/rules/quotes#avoidescape
-    'quotes': ['error', 'single', { 'avoidEscape': true }],
+    quotes: ['error', 'single', { avoidEscape: true }],
 
     // Typescript rules
     // Extends recommended rules here: https://www.npmjs.com/package/@typescript-eslint/eslint-plugin
-    '@typescript-eslint/naming-convention': [ 'error',
+    '@typescript-eslint/naming-convention': [
+      'error',
       // Add to this block to enforce naming conventions on different identifiers
       // Docs here: https://github.com/typescript-eslint/typescript-eslint/blob/HEAD/packages/eslint-plugin/docs/rules/naming-convention.md
       {
@@ -94,22 +90,24 @@ module.exports = {
 
     // JSDoc Rules
     // Docs here: https://www.npmjs.com/package/eslint-plugin-jsdoc
-    'jsdoc/require-jsdoc': ['warn', {
-      publicOnly: true,
-      require: {
-        ClassDeclaration: true,
-        ArrowFunctionExpression: true,
+    'jsdoc/require-jsdoc': [
+      'warn',
+      {
+        publicOnly: true,
+        require: {
+          ClassDeclaration: true,
+          ArrowFunctionExpression: true,
+        },
+        contexts: [
+          'MethodDefinition:not([accessibility=/(private|protected)/]) > FunctionExpression', // Require JSDoc on public methods
+          'TSInterfaceDeclaration',
+          'TSTypeAliasDeclaration',
+          'TSEnumDeclaration',
+        ],
+        checkConstructors: false,
       },
-      contexts: [
-        'MethodDefinition:not([accessibility=/(private|protected)/]) > FunctionExpression', // Require JSDoc on public methods
-        'TSInterfaceDeclaration',
-        'TSTypeAliasDeclaration',
-        'TSEnumDeclaration',
-      ],
-      checkConstructors: false
-    }],
-    'jsdoc/require-description': ['error', { contexts: ['any'] }
     ],
+    'jsdoc/require-description': ['error', { contexts: ['any'] }],
     'jsdoc/require-param': 'warn',
     'jsdoc/require-param-description': 'error',
     'jsdoc/require-returns': 'warn',
@@ -121,13 +119,18 @@ module.exports = {
     // as well as the recommended ESLint rules here: https://eslint.org/docs/rules/
 
     // this is the same as the AirBnb rule, but with length of 140 instead of 100
-    'max-len': ['error', 140, 2, {
-      ignoreUrls: true,
-      ignoreComments: false,
-      ignoreRegExpLiterals: true,
-      ignoreStrings: true,
-      ignoreTemplateLiterals: true,
-    }],
+    'max-len': [
+      'error',
+      140,
+      2,
+      {
+        ignoreUrls: true,
+        ignoreComments: false,
+        ignoreRegExpLiterals: true,
+        ignoreStrings: true,
+        ignoreTemplateLiterals: true,
+      },
+    ],
     'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
     'max-classes-per-file': 'error',
     'no-lonely-if': 'error',
@@ -135,9 +138,9 @@ module.exports = {
     'no-use-before-define': 'off',
     'consistent-return': 'error',
     'no-bitwise': 'error',
-    'yoda': 'error',
+    yoda: 'error',
     'no-var': 'error',
-    'strict': 'error',
+    strict: 'error',
     'spaced-comment': ['error', 'always'],
     'no-new': 'error',
     'no-underscore-dangle': 'error',
@@ -149,7 +152,8 @@ module.exports = {
       'error',
       {
         selector: 'ForInStatement',
-        message: 'for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array.',
+        message:
+          'for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array.',
       },
       {
         selector: 'LabeledStatement',
@@ -167,11 +171,14 @@ module.exports = {
     'prefer-arrow/prefer-arrow-functions': ['error', { disallowPrototype: true }],
     // yes I know these are all supposed to be errors, but this one requires too much functional refactoring at the moment
     // we should still aim to keep functions small moving forward
-    'max-lines-per-function': ['warn', {
-      max: 50,
-      skipBlankLines: true,
-      skipComments: true,
-    }],
+    'max-lines-per-function': [
+      'warn',
+      {
+        max: 50,
+        skipBlankLines: true,
+        skipComments: true,
+      },
+    ],
     'max-depth': ['error', 4],
   },
   overrides: [
@@ -184,8 +191,8 @@ module.exports = {
         '@typescript-eslint/unbound-method': 'off',
         'jest/unbound-method': 'error',
         '@typescript-eslint/no-explicit-any': 'off',
-      }
-    }
+      },
+    },
   ],
   // Files / paths / globs that shouldn't be linted at all
   // (note that only .js, .jsx, .ts, and .tsx files are linted in the first place)

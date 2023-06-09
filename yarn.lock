@@ -10569,6 +10569,11 @@ eslint-config-airbnb@^18.0.1:
     object.assign "^4.1.2"
     object.entries "^1.1.2"
 
+eslint-config-prettier@^8.8.0:
+  version "8.8.0"
+  resolved "https://registry.npmjs.org/eslint-config-prettier/-/eslint-config-prettier-8.8.0.tgz#bfda738d412adc917fd7b038857110efe98c9348"
+  integrity sha512-wLbQiFre3tdGgpDv67NQKnJuTlcUVYHas3k+DZCc2U2BadthoEY4B7hLPvAxaqdyOGCzuLfii2fqGph10va7oA==
+
 eslint-import-resolver-node@^0.3.7:
   version "0.3.7"
   resolved "https://registry.npmjs.org/eslint-import-resolver-node/-/eslint-import-resolver-node-0.3.7.tgz#83b375187d412324a1963d84fa664377a23eb4d7"
@@ -11607,6 +11612,11 @@ getopts@2.3.0:
   version "2.3.0"
   resolved "https://registry.npmjs.org/getopts/-/getopts-2.3.0.tgz#71e5593284807e03e2427449d4f6712a268666f4"
   integrity sha512-5eDf9fuSXwxBL6q5HX+dhDj+dslFGWzU5thZ9kNKUkcPtaPdatmUFKwHFrLb/uf/WpA4BHET+AX3Scl56cAjpA==
+
+git-format-staged@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.npmjs.org/git-format-staged/-/git-format-staged-3.0.0.tgz#66fe89fcb537f78e8129412dc0b2511b34d49e32"
+  integrity sha512-cdDJxV06qY8ucBsW/uIFR4PYN/kDHl43nG8yg+VPPaDeLAf8hEPhEIJTeJ+yRClxcDSpoTmDPiFZUoxFx1wPCg==
 
 git-raw-commits@^2.0.0, git-raw-commits@^2.0.8:
   version "2.0.11"
@@ -16729,6 +16739,11 @@ prettier@^1.19.1:
   version "1.19.1"
   resolved "https://registry.npmjs.org/prettier/-/prettier-1.19.1.tgz#f7d7f5ff8a9cd872a7be4ca142095956a60797cb"
   integrity sha512-s7PoyDv/II1ObgQunCbB9PdLmUcBZcnWOcxDh7O0N/UwDEsHyqkW+Qh28jW+mVuCdx7gLB0BotYI1Y6uI9iyew==
+
+prettier@^2.8.8:
+  version "2.8.8"
+  resolved "https://registry.npmjs.org/prettier/-/prettier-2.8.8.tgz#e8c5d7e98a4305ffe3de2e1fc4aca1a71c28b1da"
+  integrity sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==
 
 pretty-format@^24.9.0:
   version "24.9.0"
