@@ -5,7 +5,6 @@ Object {
   "Mutation.createTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
-$util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
   \\"payload\\": {}
@@ -277,7 +276,6 @@ Object {
   "Mutation.createTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
-$util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
   \\"payload\\": {}
@@ -544,7 +542,6 @@ Object {
   "Mutation.createTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
-$util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
   \\"payload\\": {}
