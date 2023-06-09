@@ -27,6 +27,15 @@ describe('ecs stack', () => {
       ],
       currentStackName: 'testStack',
       dependsOn: [
+       {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "posts"
+        },
         {
           category: '',
           resourceName: 'NetworkStack',
@@ -50,7 +59,35 @@ describe('ecs stack', () => {
       isInitialDeploy: false,
       restrictAccess: false,
       taskPorts: [],
-      policies: [],
+      policies: [
+        {
+          Effect: "Allow",
+          Action: [
+            "dynamodb:Get*",
+            "dynamodb:BatchGetItem",
+            "dynamodb:List*",
+            "dynamodb:Describe*",
+            "dynamodb:Scan",
+            "dynamodb:Query"
+          ],
+          Resource: [
+            {
+              Ref: "storagepostsArn"
+            },
+            {
+              "Fn::Join": [
+                "/",
+                [
+                  {
+                    Ref: "storagepostsArn"
+                  },
+                  "index/*"
+                ]
+              ]
+            }
+          ]
+        }
+      ],
     });
 
     const cfn = ecsStack.toCloudFormation();
