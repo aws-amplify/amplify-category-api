@@ -102,7 +102,7 @@ export class PredictionsTransformer extends TransformerPluginBase {
     const args = directiveWrapped.getArguments({
       resolverTypeName: parent.name.value,
       resolverFieldName: definition.name.value,
-    } as PredictionsDirectiveConfiguration, generateGetArgumentsInput(context.featureFlags));
+    } as PredictionsDirectiveConfiguration, generateGetArgumentsInput(context.transformParameters));
 
     if (!Array.isArray(args.actions)) {
       args.actions = [args.actions as unknown as string];

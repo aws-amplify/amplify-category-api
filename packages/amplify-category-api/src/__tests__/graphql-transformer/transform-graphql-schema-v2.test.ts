@@ -72,7 +72,14 @@ describe("transformGraphQLSchemaV2", () => {
           authenticationType: "AMAZON_COGNITO_USER_POOLS",
         },
       },
-      featureFlags: new AmplifyCLIFeatureFlagAdapter(),
+      transformParameters: {
+        shouldDeepMergeDirectiveConfigDefaults: false,
+        useSubUsernameForDefaultIdentityClaim: false,
+        populateOwnerFieldForStaticGroupAuth: false,
+        secondaryKeyAsGSI: false,
+        enableAutoIndexQueryNames: false,
+        respectPrimaryKeyAttributesOnConnectionField: false,
+      },
     });
     getAppSyncAPINameMock.mockReturnValue(["testapi"]);
 

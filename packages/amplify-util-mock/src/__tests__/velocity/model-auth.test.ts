@@ -5,7 +5,6 @@ import { GraphQLTransform } from "@aws-amplify/graphql-transformer-core";
 import { AppSyncAuthConfiguration } from "@aws-amplify/graphql-transformer-interfaces";
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from "@aws-amplify/amplify-appsync-simulator";
 import { VelocityTemplateSimulator, AppSyncVTLContext, getJWTToken } from "../../velocity";
-import { featureFlags } from "./test-helper";
 
 jest.mock('@aws-amplify/amplify-prompts');
 
@@ -31,7 +30,6 @@ describe("@model owner mutation checks", () => {
     transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags
     });
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });
@@ -288,7 +286,6 @@ describe("@model operations", () => {
     transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags
     });
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });
@@ -550,7 +547,6 @@ describe("@model field auth", () => {
     transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags
     });
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });
@@ -746,21 +742,6 @@ describe("@model @primaryIndex @index auth", () => {
     };
     transformer = new GraphQLTransform({
       authConfig,
-      featureFlags: {
-        getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-          if (name === "secondaryKeyAsGSI") {
-            return true;
-          }
-          if (name === "useSubUsernameForDefaultIdentityClaim") {
-            return true;
-          }
-          return defaultValue;
-        }),
-        getNumber: jest.fn(),
-        getObject: jest.fn(),
-
-
-      },
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()]
     });
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
@@ -807,10 +788,9 @@ describe("with identity claim feature flag disabled", () => {
       transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: () => false }
-        }
+        transformParameters: {
+          useSubUsernameForDefaultIdentityClaim: false,
+        },
       });
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });
     });
@@ -1066,9 +1046,8 @@ describe("with identity claim feature flag disabled", () => {
       transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: () => false }
+        transformParameters: {
+          useSubUsernameForDefaultIdentityClaim: false,
         }
       });
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });
@@ -1327,10 +1306,6 @@ describe("with identity claim feature flag disabled", () => {
       transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: () => false }
-        }
       });
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });
     });
@@ -1529,20 +1504,8 @@ describe("with identity claim feature flag disabled", () => {
       };
       transformer = new GraphQLTransform({
         authConfig,
-        featureFlags: {
-          getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-            if (name === "secondaryKeyAsGSI") {
-              return true;
-            }
-            if (name === "useSubUsernameForDefaultIdentityClaim") {
-              return false;
-            }
-            return defaultValue;
-          }),
-          getNumber: jest.fn(),
-          getObject: jest.fn(),
-
-
+        transformParameters: {
+          useSubUsernameForDefaultIdentityClaim: false,
         },
         transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()]
       });
