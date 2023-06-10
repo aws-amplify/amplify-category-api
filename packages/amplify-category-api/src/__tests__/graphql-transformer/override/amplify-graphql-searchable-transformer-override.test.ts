@@ -9,17 +9,6 @@ import { applyFileBasedOverride } from '../../../graphql-transformer/override';
 jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
 jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
 
-const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name): boolean => {
-    if (name === 'improvePluralization') {
-      return true;
-    }
-    return false;
-  }),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-};
-
 test('it overrides expected resources', () => {
   const validSchema = `
     type Post @model @searchable {
@@ -35,7 +24,6 @@ test('it overrides expected resources', () => {
  `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    featureFlags,
     overrideConfig: {
       applyOverride: (stackManager: StackManager) => applyFileBasedOverride(stackManager, path.join(__dirname, 'searchable-overrides')),
       overrideFlag: true,

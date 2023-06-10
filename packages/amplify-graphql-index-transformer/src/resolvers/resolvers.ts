@@ -367,9 +367,8 @@ export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: T
   const sortKeyName = keySchema?.[1]?.attributeName;
   const partitionKeyType = attrDefs.find(attr => attr.attributeName === partitionKeyName)?.attributeType ?? 'S';
   const sortKeyType = sortKeyName ? attrDefs.find(attr => attr.attributeName === sortKeyName)?.attributeType ?? 'S' : undefined;
-  const defaultGSI = ctx.featureFlags.getBoolean('secondaryKeyAsGSI', false);
 
-  if (!defaultGSI && primaryKeyPartitionKeyName === partitionKeyName) {
+  if (!ctx.transformParameters.secondaryKeyAsGSI && primaryKeyPartitionKeyName === partitionKeyName) {
     // Create an LSI.
     table.addLocalSecondaryIndex({
       indexName: name,

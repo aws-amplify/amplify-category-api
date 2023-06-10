@@ -16,12 +16,12 @@ import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-tran
 import {
   AppSyncAuthConfiguration,
   DeploymentResources,
-  FeatureFlagProvider,
   Template,
   TransformerPluginProvider,
   TransformerLog,
   TransformerLogLevel,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
 import {
   DatasourceType,
   GraphQLTransform,
@@ -62,7 +62,7 @@ export type TransformConfig = {
   overrideConfig?: OverrideConfig;
   userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   stackMapping?: Record<string, string>;
-  featureFlags: FeatureFlagProvider;
+  transformParameters: TransformParameters;
 };
 
 export const constructTransformerChain = (
@@ -112,7 +112,7 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
     disableResolverDeduping,
     stacks,
     stackMapping,
-    featureFlags,
+    transformParameters,
   } = config;
 
   const transformers = constructTransformerChain(transformersFactoryArgs);
@@ -122,7 +122,7 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
     stackMapping,
     authConfig,
     stacks,
-    featureFlags,
+    transformParameters,
     sandboxModeEnabled,
     userDefinedSlots,
     resolverConfig,

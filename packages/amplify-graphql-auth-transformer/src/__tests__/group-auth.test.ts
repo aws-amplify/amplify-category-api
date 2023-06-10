@@ -4,7 +4,6 @@ import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '../graphql-auth-transformer';
-import { featureFlags } from './test-helpers';
 
 test('happy case with static groups', () => {
   const authConfig: AppSyncAuthConfiguration = {
@@ -23,7 +22,6 @@ test('happy case with static groups', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -50,7 +48,6 @@ test('Static groups with a single group provided as string does not error', () =
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(invalidSchema);
   expect(out).toBeDefined();
@@ -75,7 +72,6 @@ test('happy case with dynamic groups', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
 
@@ -120,7 +116,6 @@ test('\'groups\' @auth with dynamic groups and custom claim on index query', () 
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer(), new IndexTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
 
@@ -224,7 +219,6 @@ test('dynamic group auth generates authorized fields list correctly', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
-    featureFlags,
   });
   const result = transformer.transform(schema);
   // ideally this could be a more specific test rather than a big snapshot test
@@ -310,7 +304,6 @@ describe('Dynamic group subscription auth tests', () => {
     const transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
   
@@ -350,7 +343,6 @@ describe('Dynamic group subscription auth tests', () => {
     const transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
   
@@ -401,7 +393,6 @@ describe('Group field as part of secondary index', () => {
         new PrimaryKeyTransformer(),
         new IndexTransformer(),
       ],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
 
@@ -432,7 +423,6 @@ describe('Group field as part of secondary index', () => {
         new PrimaryKeyTransformer(),
         new IndexTransformer(),
       ],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
 

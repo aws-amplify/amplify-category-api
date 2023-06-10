@@ -51,7 +51,7 @@ export class IndexTransformer extends TransformerPluginBase {
       object: parent as ObjectTypeDefinitionNode,
       field: definition,
       directive,
-    } as IndexDirectiveConfiguration, generateGetArgumentsInput(context.featureFlags));
+    } as IndexDirectiveConfiguration, generateGetArgumentsInput(context.transformParameters));
 
     /**
      * Impute Optional Fields
@@ -121,7 +121,7 @@ const getOrGenerateDefaultQueryField = (
   context: TransformerSchemaVisitStepContextProvider,
   config: IndexDirectiveConfiguration,
 ): string | null => {
-  const autoIndexQueryNamesIsEnabled = context.featureFlags.getBoolean('enableAutoIndexQueryNames', false);
+  const autoIndexQueryNamesIsEnabled = context.transformParameters.enableAutoIndexQueryNames;
   // Any explicit null will take effect, if enableAutoIndexQueryNames and no queryField is provide set to null for consistency
   if (config.queryField === null || (!autoIndexQueryNamesIsEnabled && !config.queryField)) {
     return null;
@@ -153,8 +153,6 @@ const validate = (config: IndexDirectiveConfiguration, ctx: TransformerContextPr
   const {
     name, object, field, sortKeyFields,
   } = config;
-  const defaultGSI = ctx.featureFlags.getBoolean('secondaryKeyAsGSI', true);
-
   validateNotSelfReferencing(config);
 
   const modelDirective = object.directives!.find(directive => directive.name.value === 'model');
@@ -201,7 +199,11 @@ const validate = (config: IndexDirectiveConfiguration, ctx: TransformerContextPr
     for (const peerDirective of objectField.directives!) {
       const hasSortFields = peerDirective.arguments!.some((arg: any) => arg.name.value === 'sortKeyFields' && arg.value.values?.length > 0);
 
-      if (!defaultGSI && !hasSortFields && objectField == config.primaryKeyField && objectField.name.value === field.name.value) {
+      if (!ctx.transformParameters.secondaryKeyAsGSI
+        && !hasSortFields
+        && objectField == config.primaryKeyField
+        && objectField.name.value === field.name.value
+      ) {
         throw new InvalidDirectiveError(
           `Invalid @index '${name}'. You may not create an index where the partition key `
             + 'is the same as that of the primary key unless the index has a sort field. '

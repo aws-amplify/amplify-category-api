@@ -30,7 +30,6 @@ import { DocumentNode } from 'graphql/language';
 import { DocumentNode as DocumentNode_2 } from 'graphql';
 import { EnumTypeDefinitionNode } from 'graphql';
 import { EnumTypeExtensionNode } from 'graphql';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode } from 'graphql';
 import { FieldNode } from 'graphql';
 import { Grant } from 'aws-cdk-lib/aws-iam';
@@ -83,6 +82,7 @@ import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-
 import { TransformerSecrets } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TypeDefinitionNode } from 'graphql';
 import { TypeNode } from 'graphql';
 import { TypeSystemDefinitionNode } from 'graphql';
@@ -180,7 +180,7 @@ export class FieldWrapper extends GenericFieldWrapper {
 }
 
 // @public (undocumented)
-export const generateGetArgumentsInput: (featureFlags: FeatureFlagProvider) => GetArgumentsOptions;
+export const generateGetArgumentsInput: ({ shouldDeepMergeDirectiveConfigDefaults }: TransformParameters) => GetArgumentsOptions;
 
 // @public (undocumented)
 export const getAppSyncServiceExtraDirectives: () => string;
@@ -235,8 +235,6 @@ export interface GraphQLTransformOptions {
     // (undocumented)
     readonly disableResolverDeduping?: boolean;
     // (undocumented)
-    readonly featureFlags?: FeatureFlagProvider;
-    // (undocumented)
     readonly host?: TransformHostProvider;
     // (undocumented)
     readonly legacyApiKeyEnabled?: boolean;
@@ -254,6 +252,8 @@ export interface GraphQLTransformOptions {
     readonly stacks?: Record<string, Template>;
     // (undocumented)
     readonly transformers: TransformerPluginProvider[];
+    // (undocumented)
+    readonly transformParameters?: Partial<TransformParameters>;
     // (undocumented)
     readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
 }

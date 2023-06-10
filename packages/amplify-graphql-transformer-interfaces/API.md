@@ -194,16 +194,6 @@ export interface DynamoDbDataSourceOptions extends DataSourceOptions {
 }
 
 // @public (undocumented)
-export interface FeatureFlagProvider {
-    // (undocumented)
-    getBoolean(featureName: string, defaultValue?: boolean): boolean;
-    // (undocumented)
-    getNumber(featureName: string, defaultValue?: number): number;
-    // (undocumented)
-    getObject(featureName: string, defaultValue?: object): object;
-}
-
-// @public (undocumented)
 export type FieldMapEntry = {
     originalFieldName: string;
     currentFieldName: string;
@@ -456,7 +446,7 @@ export interface Template {
 export type TransformerAuthProvider = TransformerPluginProvider;
 
 // @public (undocumented)
-export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'sandboxModeEnabled'>;
+export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'sandboxModeEnabled'>;
 
 // @public (undocumented)
 export interface TransformerContextOutputProvider {
@@ -527,8 +517,6 @@ export interface TransformerContextProvider {
     // (undocumented)
     datasourceSecretParameterLocations: Map<string, TransformerSecrets>;
     // (undocumented)
-    featureFlags: FeatureFlagProvider;
-    // (undocumented)
     getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
     // (undocumented)
     getResourceOverrides: OverridesProvider;
@@ -556,6 +544,8 @@ export interface TransformerContextProvider {
     sandboxModeEnabled: boolean;
     // (undocumented)
     stackManager: StackManagerProvider;
+    // (undocumented)
+    transformParameters: TransformParameters;
 }
 
 // @public (undocumented)
@@ -713,11 +703,11 @@ export type TransformerPrepareStepContextProvider = TransformerValidationStepCon
 // @public (undocumented)
 export interface TransformerPreProcessContextProvider {
     // (undocumented)
-    featureFlags: FeatureFlagProvider;
-    // (undocumented)
     inputDocument: DocumentNode;
     // (undocumented)
     schemaHelper: TransformerSchemaHelperProvider;
+    // (undocumented)
+    transformParameters: TransformParameters;
 }
 
 // @public (undocumented)
@@ -797,7 +787,7 @@ export interface TransformerSchemaHelperProvider {
 }
 
 // @public (undocumented)
-export type TransformerSchemaVisitStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'sandboxModeEnabled'>;
+export type TransformerSchemaVisitStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'sandboxModeEnabled'>;
 
 // @public (undocumented)
 export type TransformerSecrets = {
@@ -808,7 +798,7 @@ export type TransformerSecrets = {
 export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;
 
 // @public (undocumented)
-export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'dataSources' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'sandboxModeEnabled' | 'resourceHelper' | 'resolvers' | 'stackManager'>;
+export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'dataSources' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'sandboxModeEnabled' | 'resourceHelper' | 'resolvers' | 'stackManager'>;
 
 // @public (undocumented)
 export interface TransformHostProvider {
@@ -841,6 +831,16 @@ export interface TransformHostProvider {
     // (undocumented)
     setAPI(api: GraphqlApiBase): void;
 }
+
+// @public (undocumented)
+export type TransformParameters = {
+    shouldDeepMergeDirectiveConfigDefaults: boolean;
+    useSubUsernameForDefaultIdentityClaim: boolean;
+    populateOwnerFieldForStaticGroupAuth: boolean;
+    secondaryKeyAsGSI: boolean;
+    enableAutoIndexQueryNames: boolean;
+    respectPrimaryKeyAttributesOnConnectionField: boolean;
+};
 
 // @public (undocumented)
 export interface UserPoolConfig {
