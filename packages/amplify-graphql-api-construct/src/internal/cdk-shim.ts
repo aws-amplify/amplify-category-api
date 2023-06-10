@@ -26,9 +26,9 @@ const cleanupGeneratedCDKMetadata = (stack: Template): void => {
     // eslint-disable-next-line no-param-reassign
     delete stack.Resources.CDKMetadata;
   }
-  if (stack && stack.Resources && stack.Resources.CDKMetadataAvailable) {
+  if (stack && stack.Conditions && stack.Conditions.CDKMetadataAvailable) {
     // eslint-disable-next-line no-param-reassign
-    delete stack.Resources.CDKMetadataAvailable;
+    delete stack.Conditions.CDKMetadataAvailable;
   }
 };
 
