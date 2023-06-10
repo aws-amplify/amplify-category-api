@@ -62,7 +62,7 @@ export type TransformConfig = {
   overrideConfig?: OverrideConfig;
   userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   stackMapping?: Record<string, string>;
-  transformParameters: TransformParameters;
+  transformParameters?: Partial<TransformParameters>;
 };
 
 export const constructTransformerChain = (

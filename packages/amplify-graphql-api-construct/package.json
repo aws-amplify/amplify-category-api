@@ -1,5 +1,5 @@
 {
-  "name": "@aws-amplify/graphql-api-construct-alpha",
+  "name": "agqlac",
   "version": "0.0.1",
   "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer.",
   "repository": {
@@ -7,7 +7,6 @@
     "url": "https://github.com/aws-amplify/amplify-category-api.git",
     "directory": "packages/amplify-graphql-api-construct"
   },
-  "private": true,
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "main": "lib/index.js",
@@ -34,7 +33,8 @@
     "@aws-amplify/graphql-transformer-interfaces": "2.2.1",
     "aws-cdk-lib": "~2.68.0",
     "constructs": "^10.0.5",
-    "fs-extra": "^8.1.0"
+    "fs-extra": "^8.1.0",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@types/node": "^12.12.6",

@@ -8,6 +8,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { executeTransform } from '@aws-amplify/graphql-transformer';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
   getAuthParameters,
@@ -18,13 +19,14 @@ import {
 } from './internal';
 import type { AuthorizationMode, AmplifyGraphQlApiResources } from './types';
 import { TransformerPluginProvider } from '../../amplify-graphql-transformer-interfaces';
-import { NoopFeatureFlagProvider } from './internal/NoopFeatureFlagProvider';
+import { parseUserDefinedSlots } from './internal/user-defined-slots';
 
 export type AmplifyApiCompatibilityLayer = {
   stackMappings?: Record<string, string>;
   slotOverrides?: Record<string, string>;
   customTransformers?: TransformerPluginProvider[];
   predictionsBucket?: s3.IBucket;
+  transformParameters?: Partial<TransformParameters>
 };
 
 export type AmplifyGraphQlApiProps = {
@@ -60,8 +62,7 @@ export class AmplifyGraphQlApi extends Construct {
       rootStack, stacks, resolvers, schema, functions,
     } = executeTransform({
       schema: preprocessedSchema,
-      // resolvers: _compat?.slotOverrides ?? {},
-      userDefinedSlots: {}, // TODO: Figure this out.
+      userDefinedSlots: _compat?.slotOverrides ? parseUserDefinedSlots(_compat.slotOverrides) : {},
       stacks: {},
       transformersFactoryArgs: {
         authConfig,
@@ -73,7 +74,7 @@ export class AmplifyGraphQlApi extends Construct {
       authConfig,
       stackMapping: _compat?.stackMappings ?? {},
       resolverConfig,
-      featureFlags: new NoopFeatureFlagProvider(), // TODO: Figure this out.
+      transformParameters: _compat?.transformParameters,
     });
 
     rewriteAssets(this, {
