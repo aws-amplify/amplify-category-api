@@ -1,6 +1,6 @@
 {
   "name": "agqlac",
-  "version": "0.0.1",
+  "version": "0.1.0-agqlac.0",
   "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer.",
   "repository": {
     "type": "git",
@@ -28,19 +28,19 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer": "0.0.1",
-    "@aws-amplify/graphql-transformer-core": "1.3.2",
-    "@aws-amplify/graphql-transformer-interfaces": "2.2.1",
+    "@aws-amplify/graphql-transformer": "0.0.2-agqlac.0",
+    "@aws-amplify/graphql-transformer-core": "1.3.3-agqlac.0",
+    "@aws-amplify/graphql-transformer-interfaces": "2.2.2-agqlac.0",
     "aws-cdk-lib": "~2.68.0",
     "constructs": "^10.0.5",
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@types/node": "^12.12.6",
-    "ts-jest": "^26.4.4",
     "@types/fs-extra": "^8.0.1",
-    "rimraf": "^3.0.0"
+    "@types/node": "^12.12.6",
+    "rimraf": "^3.0.0",
+    "ts-jest": "^26.4.4"
   },
   "jest": {
     "testURL": "http://localhost",
