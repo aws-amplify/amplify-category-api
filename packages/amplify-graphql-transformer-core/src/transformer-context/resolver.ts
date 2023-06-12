@@ -285,7 +285,7 @@ export class TransformerResolver implements TransformerResolverProvider {
                   }
                 }
               });
-              dataSource += `\n$util.qr($ctx.stash.put("deltaSyncTableTtl", "${deltaSyncTableTtl}")`;
+              dataSource += `\n$util.qr($ctx.stash.put("deltaSyncTableTtl", "${deltaSyncTableTtl}"))`;
             }
           }
 
