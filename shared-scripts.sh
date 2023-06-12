@@ -186,12 +186,15 @@ function _runE2ETestsLinux {
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     _installCLIFromLocalRegistry  
-    amplify version
-    echo "Run Amplify E2E tests"
-    echo $TEST_SUITE
     _loadTestAccountCredentials
     _setShell
     retry runE2eTest
+}
+function _runGqlE2ETests {
+    echo "RUN GraphQL E2E tests"
+    loadCacheFromBuildJob
+    _loadTestAccountCredentials
+    retry runGraphQLE2eTest
 }
 function _runMigrationV5Test {
     echo RUN Migration V5 Test
@@ -239,7 +242,9 @@ function _cleanupE2EResources {
   loadCacheFromBuildJob
   cd packages/amplify-e2e-tests
   echo "Running clean up script"
-  yarn clean-cb-e2e-resources --buildBatchArn $CODEBUILD_INITIATOR
+  build_batch_arn=$(aws codebuild batch-get-builds --ids $CODEBUILD_BUILD_ID | jq -r -c '.builds[0].buildBatchArn')
+  echo "Cleanup resources for batch build $build_batch_arn"
+  yarn clean-cb-e2e-resources --buildBatchArn $build_batch_arn
 }
 
 # The following functions are forked from circleci local publish helper
@@ -299,7 +304,7 @@ function retry {
 
     resetAwsAccountCredentials
     TEST_SUITE=${TEST_SUITE:-"TestSuiteNotSet"}
-    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-category-api-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE --profile amplify-integ-test-user
+    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-category-api-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE --profile amplify-integ-test-user || true
     echo "Attempt $n succeeded."
     exit 0 # don't fail the step if putting the metric fails
 }
@@ -345,6 +350,22 @@ function runE2eTest {
     if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
         echo "using Amplify CLI version: "$(amplify --version)
         cd $(pwd)/packages/amplify-e2e-tests
+    fi
+
+    if [ -f  $FAILED_TEST_REGEX_FILE ]; then
+        # read the content of failed tests
+        failedTests=$(<$FAILED_TEST_REGEX_FILE)
+        yarn run e2e --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+    else
+        yarn run e2e --maxWorkers=4 $TEST_SUITE
+    fi
+}
+
+function runGraphQLE2eTest {
+    FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
+
+    if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
+        cd $(pwd)/packages/graphql-transformers-e2e-tests
     fi
 
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then

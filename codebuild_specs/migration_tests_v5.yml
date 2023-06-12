@@ -22,3 +22,4 @@ phases:
 artifacts:
   files:
     - $CODEBUILD_SRC_DIR/packages/amplify-migration-tests/amplify-migration-reports/*
+  discard-paths: yes

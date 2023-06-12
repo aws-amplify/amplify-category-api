@@ -23,28 +23,49 @@ const FORCE_REGION_MAP = {
 type FORCE_TESTS = 'interactions' | 'containers';
 // some tests require additional time, the parent account can handle longer tests (up to 90 minutes)
 const USE_PARENT_ACCOUNT = [
-  'api-key-migration2',
-  'api-key-migration3',
-  'api-key-migration4',
-  'api-key-migration5',
   'src/__tests__/transformer-migrations/searchable-migration',
   'src/__tests__/graphql-v2/searchable-datastore',
   'src/__tests__/schema-searchable',
-  'FunctionTransformerTestsV2'
+  'src/__tests__/migration/api.key.migration2.test.ts',
+  'src/__tests__/migration/api.key.migration3.test.ts',
+  'src/__tests__/migration/api.key.migration4.test.ts',
+  'src/__tests__/migration/api.key.migration5.test.ts',
+  'src/__tests__/FunctionTransformerTestsV2.e2e.test.ts'
 ];
 const REPO_ROOT = join(__dirname, '..');
 const TEST_TIMINGS_PATH = join(REPO_ROOT, 'scripts', 'cci', 'test-timings.data.json');
 const CODEBUILD_CONFIG_BASE_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_base.yml');
 const CODEBUILD_GENERATE_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow.yml');
 const RUN_SOLO = [
+  'src/__tests__/apigw.test.ts',
+  'src/__tests__/api_2.test.ts',
   'src/__tests__/containers-api-1.test.ts',
   'src/__tests__/containers-api-2.test.ts',
-  'src/__tests__/schema-auth-11.test.ts',
-  'src/__tests__/schema-auth-15.test.ts',
-  'src/__tests__/schema-connection.test.ts',
-  'src/__tests__/transformer-migrations/searchable-migration.test.ts',
   'src/__tests__/graphql-v2/searchable-datastore.test.ts',
-  'src/__tests__/schema-searchable.test.ts'
+  'src/__tests__/migration/api.key.migration1.test.ts',
+  'src/__tests__/schema-searchable.test.ts',
+  'src/__tests__/schema-auth-1.test.ts',
+  'src/__tests__/schema-auth-5.test.ts',
+  'src/__tests__/schema-auth-6.test.ts',
+  'src/__tests__/schema-auth-7.test.ts',
+  'src/__tests__/schema-auth-9.test.ts',
+  'src/__tests__/schema-auth-11.test.ts',
+  'src/__tests__/schema-auth-14.test.ts',
+  'src/__tests__/schema-auth-15.test.ts',
+  'src/__tests__/schema-iterative-update-4.test.ts',
+  'src/__tests__/schema-iterative-update-5.test.ts',
+  'src/__tests__/schema-model.test.ts',
+  'src/__tests__/schema-key.test.ts',
+  'src/__tests__/schema-connection.test.ts',
+  'src/__tests__/transformer-migrations/function-migration.test.ts',
+  'src/__tests__/transformer-migrations/searchable-migration.test.ts',
+  "src/__tests__/transformer-migrations/model-migration.test.ts",
+  'src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts',
+  'src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-had-node-to-node.test.ts',
+  // GrapQL E2E tests
+  'src/__tests__/FunctionTransformerTestsV2.e2e.test.ts',
+  'src/__tests__/HttpTransformer.e2e.test.ts',
+  'src/__tests__/HttpTransformerV2.e2e.test.ts',
 ];
 
 export function loadConfigBase() {
@@ -216,6 +237,18 @@ function main(): void {
     join(REPO_ROOT, 'packages', 'amplify-e2e-tests'),
     false
   );
+  const splitGqlTests = splitTests(
+    {
+      identifier: 'gql_e2e_tests',
+      buildspec: 'codebuild_specs/graphql_e2e_tests.yml',
+      env: {
+        'compute-type': 'BUILD_GENERAL1_MEDIUM',
+      },
+      'depend-on': ['publish_to_local_registry'],
+    },
+    join(REPO_ROOT, 'packages', 'graphql-transformers-e2e-tests'),
+    false
+  );
   const splitMigrationV5Tests = splitTests(
     {
       identifier: 'migration_tests_v5',
@@ -261,7 +294,7 @@ function main(): void {
       return tests.filter((testName) => migrationFromV10Tests.find((t) => t === testName));
     },
   );
-  let allBuilds = [...splitE2ETests, ...splitMigrationV5Tests, ...splitMigrationV6Tests, ...splitMigrationV10Tests];
+  let allBuilds = [...splitE2ETests,...splitGqlTests, ...splitMigrationV5Tests, ...splitMigrationV6Tests, ...splitMigrationV10Tests];
   const cleanupResources = {
     identifier: 'cleanup_e2e_resources',
     buildspec: 'codebuild_specs/cleanup_e2e_resources.yml',

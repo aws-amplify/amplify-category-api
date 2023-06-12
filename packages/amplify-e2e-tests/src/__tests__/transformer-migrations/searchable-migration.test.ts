@@ -55,6 +55,7 @@ describe('transformer model searchable migration test', () => {
     await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 2);
     await addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', true);
 
+    refreshCredentials()
     await updateApiSchema(projRoot, projectName, v2Schema);
     await amplifyPushUpdate(projRoot);
 
