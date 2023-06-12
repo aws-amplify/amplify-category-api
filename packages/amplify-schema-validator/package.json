@@ -11,10 +11,8 @@
   "scripts": {
     "build": "tsc && yarn size",
     "clean": "rimraf -rf build node_modules dist coverage",
-    "prettier": "prettier --write '**/*.{js,ts,json,md}'",
     "test": "jest --coverage",
-    "size": "size-limit",
-    "lint-staged": "lint-staged"
+    "size": "size-limit"
   },
   "devDependencies": {
     "@size-limit/preset-small-lib": "6.0.4",
