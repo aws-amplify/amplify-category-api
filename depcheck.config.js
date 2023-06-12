@@ -49,7 +49,7 @@ module.exports = {
     'import/parsers': { '@typescript-eslint/parser': ['.ts', '.tsx'] },
     'import/resolver': { typescript: {} },
   },
-  ignorePatterns: ['__tests__/**', '*.test.ts', 'lib/**', 'node_modules', '*/node_modules'],
+  ignorePatterns: ['lib/**', 'node_modules', '*/node_modules'],
   overrides: [
     {
       files: GQL_V2_TRANSFORMER_PACKAGES.map((packageName) => `packages/${packageName}/src/**`),
