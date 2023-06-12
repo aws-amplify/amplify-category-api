@@ -23,7 +23,7 @@ module.exports = {
       modules: true,
       module: true,
     },
-    project: ['tsconfig.base.json'],
+    project: ['tsconfig.eslint.json', 'tsconfig.base.json'],
   },
   plugins: ['@typescript-eslint', 'spellcheck', 'import', 'jsdoc', 'prefer-arrow'],
   settings: {
@@ -197,12 +197,10 @@ module.exports = {
   // Files / paths / globs that shouldn't be linted at all
   // (note that only .js, .jsx, .ts, and .tsx files are linted in the first place)
   ignorePatterns: [
-    '.eslintrc.js',
     'node_modules',
     'dist',
     'build',
     '__mocks__',
-    '__tests__',
     'coverage',
 
     // Forked package
