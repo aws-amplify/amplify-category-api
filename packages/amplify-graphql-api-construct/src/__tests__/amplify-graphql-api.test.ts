@@ -17,9 +17,10 @@ describe('AmplifyGraphQlApi', () => {
           description: String!
         }
       `,
-      authorizationModes: [
-        { type: 'AMAZON_COGNITO_USER_POOLS', userPool },
-      ],
+      authorizationConfig: {
+        defaultAuthMode: 'AMAZON_COGNITO_USER_POOLS',
+        userPoolConfig: { userPool },
+      },
     });
 
     const template = Template.fromStack(stack);
@@ -52,9 +53,10 @@ describe('AmplifyGraphQlApi', () => {
           description: String!
         }
       `,
-      authorizationModes: [
-        { type: 'AMAZON_COGNITO_USER_POOLS', userPool },
-      ],
+      authorizationConfig: {
+        defaultAuthMode: 'AMAZON_COGNITO_USER_POOLS',
+        userPoolConfig: { userPool },
+      },
       resolverConfig: {
         project: {
           ConflictDetection: 'VERSION',
@@ -101,9 +103,10 @@ describe('AmplifyGraphQlApi', () => {
           description: String!
         }
       `,
-      authorizationModes: [
-        { type: 'AMAZON_COGNITO_USER_POOLS', userPool },
-      ],
+      authorizationConfig: {
+        defaultAuthMode: 'AMAZON_COGNITO_USER_POOLS',
+        userPoolConfig: { userPool },
+      },
     });
 
     const template = Template.fromStack(stack);

@@ -11,13 +11,12 @@ import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
-  getAuthParameters,
   rewriteAssets,
   preprocessGraphQLSchema,
   generateConstructExports,
   persistStackAssets,
 } from './internal';
-import type { AuthorizationMode, AmplifyGraphQlApiResources } from './types';
+import type { AuthorizationConfig, AmplifyGraphQlApiResources } from './types';
 import { TransformerPluginProvider } from '../../amplify-graphql-transformer-interfaces';
 import { parseUserDefinedSlots } from './internal/user-defined-slots';
 
@@ -25,7 +24,7 @@ export type AmplifyGraphQlApiProps = {
   schema: appsync.SchemaFile | string;
   envOverride?: string;
   apiName?: string;
-  authorizationModes?: AuthorizationMode[];
+  authorizationConfig: AuthorizationConfig;
   resolverConfig?: ResolverConfig;
   stackMappings?: Record<string, string>;
   slotOverrides?: Record<string, string>;
@@ -43,7 +42,7 @@ export class AmplifyGraphQlApi extends Construct {
 
     const {
       schema: modelSchema,
-      authorizationModes,
+      authorizationConfig,
       envOverride,
       resolverConfig,
       slotOverrides,
@@ -55,7 +54,12 @@ export class AmplifyGraphQlApi extends Construct {
 
     const assetDir = fs.mkdtempSync(path.join(os.tmpdir(), 'transformer'));
 
-    const { authConfig, identityPoolId, adminRoles } = convertAuthorizationModesToTransformerAuthConfig(authorizationModes);
+    const {
+      authConfig,
+      identityPoolId,
+      adminRoles,
+      cfnIncludeParameters: authCfnIncludeParameters,
+    } = convertAuthorizationModesToTransformerAuthConfig(authorizationConfig);
 
     const {
       rootStack, stacks, resolvers, schema, functions,
@@ -107,7 +111,7 @@ export class AmplifyGraphQlApi extends Construct {
         env: this.env,
         S3DeploymentBucket: cdk.DefaultStackSynthesizer.DEFAULT_FILE_ASSETS_BUCKET_NAME,
         S3DeploymentRootKey: cdk.DefaultStackSynthesizer.DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME,
-        ...getAuthParameters(authorizationModes),
+        ...authCfnIncludeParameters,
       },
       preserveLogicalIds: true,
     });
