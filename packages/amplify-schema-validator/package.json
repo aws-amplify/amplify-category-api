@@ -31,15 +31,6 @@
   "dependencies": {
     "graphql": "^15.5.0"
   },
-  "lint-staged": {
-    "*.{js,ts,json,md,scss,html}": [
-      "prettier --write",
-      "git add"
-    ],
-    "*.{js,ts}": [
-      "eslint --fix"
-    ]
-  },
   "size-limit": [
     {
       "path": "./dist/index.js",
