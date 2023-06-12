@@ -387,3 +387,11 @@ function emitCanaryFailureMetric {
             --region us-west-2
     fi
 }
+
+function deploy {
+  echo "Deploy"
+  loadCacheFromBuildJob
+  echo "Authenticate with NPM"
+  echo "//registry.npmjs.org/:_authToken=$NPM_PUBLISH_TOKEN" > ~/.npmrc
+  source ./codebuild_specs/scripts/publish.sh
+}
