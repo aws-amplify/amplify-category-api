@@ -128,7 +128,7 @@ describe("RDS Tests", () => {
     console.log(JSON.stringify(cfnTemplate, null, 4));
     expect(cfnTemplate.Resources).toBeDefined();
     const resources = Object.values(cfnTemplate.Resources);
-    const rdsLambdaFunction = resources.find(r => r.Type === 'AWS::Lambda::Function');
+    const rdsLambdaFunction = resources.find((r: any) => r.Type === 'AWS::Lambda::Function') as any;
     expect(rdsLambdaFunction).toBeDefined();
     expect(rdsLambdaFunction.Properties).toBeDefined();
     expect(rdsLambdaFunction.Properties.VpcConfig).toBeDefined();
