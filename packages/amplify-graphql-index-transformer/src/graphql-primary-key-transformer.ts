@@ -28,7 +28,6 @@ import {
 } from 'graphql-transformer-common';
 import {
   constructSyncVTL,
-  getDeltaSyncTableTtl,
   getVTLGenerator,
 } from './resolvers/resolvers';
 import {
@@ -89,12 +88,10 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
   public after = (ctx: TransformerContextProvider): void => {
     if (!ctx.isProjectUsingDataStore()) return;
 
-    const overriddenResources = ctx.getResourceOverrides();
     // construct sync VTL code
     this.resolverMap.forEach((syncVTLContent, resource) => {
       if (syncVTLContent) {
-        const deltaSyncTableTtl = getDeltaSyncTableTtl(overriddenResources, resource);
-        constructSyncVTL(syncVTLContent, resource, deltaSyncTableTtl);
+        constructSyncVTL(syncVTLContent, resource);
       }
     });
   };

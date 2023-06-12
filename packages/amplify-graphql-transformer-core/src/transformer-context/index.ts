@@ -6,7 +6,6 @@ import {
   TransformerContextProvider,
   TransformerDataSourceManagerProvider,
   AppSyncAuthConfiguration,
-  OverridesProvider,
   AmplifyApiGraphQlResourceStackTemplate,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
@@ -58,7 +57,6 @@ export class TransformerContext implements TransformerContextProvider {
   private resolverConfig: ResolverConfig | undefined;
   public readonly modelToDatasourceMap: Map<string, DatasourceType>;
   public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
-  public readonly getResourceOverrides: OverridesProvider;
 
   public metadata: TransformerContextMetadata;
   constructor(
@@ -71,7 +69,6 @@ export class TransformerContext implements TransformerContextProvider {
     featureFlags?: FeatureFlagProvider,
     resolverConfig?: ResolverConfig,
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
-    getResourceOverrides?: (stackManager: StackManager) => AmplifyApiGraphQlResourceStackTemplate,
   ) {
     this.output = new TransformerOutput(inputDocument);
     this.resolvers = new ResolverManager();
@@ -87,7 +84,6 @@ export class TransformerContext implements TransformerContextProvider {
     this.metadata = new TransformerContextMetadata();
     this.modelToDatasourceMap = modelToDatasourceMap;
     this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
-    this.getResourceOverrides = () => getResourceOverrides ? getResourceOverrides(this.stackManager as StackManager) : {};
   }
 
   /**
