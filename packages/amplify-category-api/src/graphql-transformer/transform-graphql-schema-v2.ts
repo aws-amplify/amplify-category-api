@@ -1,41 +1,52 @@
 import {
+  $TSContext,
+  AmplifyCategories,
+  AmplifyError,
+  AmplifySupportedService,
+  JSONUtilities,
+  pathManager,
+  stateManager,
+} from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
+import {
   GraphQLTransform,
-  RDSConnectionSecrets,
+  ImportedRDSType,
   MYSQL_DB_TYPE,
+  RDSConnectionSecrets,
   StackManager,
 } from '@aws-amplify/graphql-transformer-core';
 import {
+  AccountConfig,
   AppSyncAuthConfiguration,
   DeploymentResources,
   TransformerLogLevel,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  $TSContext,
-  AmplifyCategories,
-  AmplifySupportedService,
-  JSONUtilities,
-  pathManager,
-} from '@aws-amplify/amplify-cli-core';
-import { printer } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import {
+  DatasourceType,
   sanityCheckProject,
 } from 'graphql-transformer-core';
 import _ from 'lodash';
 import path from 'path';
 /* eslint-disable-next-line import/no-cycle */
+import { VpcConfig, getHostVpc } from '@aws-amplify/graphql-schema-generator';
+import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
+import {
+  getConnectionSecrets,
+  getExistingConnectionSecretNames,
+  getSecretsKey,
+  testDatabaseConnection,
+} from '../provider-utils/awscloudformation/utils/rds-resources/database-resources';
 import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import { isAuthModeUpdated } from './auth-mode-compare';
+import { applyOverride } from './override';
+import { TransformerFactoryArgs, TransformerProjectOptions } from './transformer-options-types';
+import { generateTransformerOptions } from './transformer-options-v2';
 import { parseUserDefinedSlots } from './user-defined-slots';
 import {
   mergeUserConfigWithTransformOutput, writeDeploymentToDisk,
 } from './utils';
-import { generateTransformerOptions } from './transformer-options-v2';
-import { TransformerFactoryArgs, TransformerProjectOptions } from './transformer-options-types';
-import { getExistingConnectionSecretNames, getSecretsKey } from '../provider-utils/awscloudformation/utils/rds-resources/database-resources';
-import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { applyOverride } from './override';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
@@ -214,13 +225,26 @@ const buildAPIProject = async (
   return builtProject;
 };
 
-const _buildProject = async (context: $TSContext, opts: TransformerProjectOptions<TransformerFactoryArgs>): Promise<DeploymentResources> => {
+// eslint-disable-next-line no-underscore-dangle
+const _buildProject = async (
+  context: $TSContext,
+  opts: TransformerProjectOptions<TransformerFactoryArgs>,
+): Promise<DeploymentResources> => {
   const userProjectConfig = opts.projectConfig;
   const stackMapping = userProjectConfig.config.StackMapping;
   const userDefinedSlots = {
     ...parseUserDefinedSlots(userProjectConfig.pipelineFunctions),
     ...parseUserDefinedSlots(userProjectConfig.resolvers),
   };
+  const { schema, modelToDatasourceMap } = userProjectConfig;
+  const datasourceSecretMap = await getDatasourceSecretMap(context);
+  const datasourceMapValues: Array<DatasourceType> = Array.from(modelToDatasourceMap.values());
+  let sqlLambdaVpcConfig: VpcConfig | undefined;
+  if (datasourceMapValues.some((value) => value.dbType === MYSQL_DB_TYPE && !value.provisionDB)) {
+    sqlLambdaVpcConfig = await isSqlLambdaVpcConfigRequired(context, getSecretsKey(), ImportedRDSType.MYSQL);
+  }
+
+  const accountConfig = getAccountConfig();
 
   // Create the transformer instances, we've to make sure we're not reusing them within the same CLI command
   // because the StackMapping feature already builds the project once.
@@ -237,15 +261,13 @@ const _buildProject = async (context: $TSContext, opts: TransformerProjectOption
     userDefinedSlots,
     resolverConfig: opts.resolverConfig,
     overrideConfig: {
-      applyOverride: (stackManager: StackManager) => {
-        return applyOverride(stackManager, path.join(pathManager.getBackendDirPath(), 'api', getAppSyncAPIName()));
-      },
-      ...opts.overrideConfig
+      applyOverride: (stackManager: StackManager) => applyOverride(stackManager, path.join(pathManager.getBackendDirPath(), 'api', getAppSyncAPIName())),
+      ...opts.overrideConfig,
     },
+    sqlLambdaVpcConfig,
+    accountConfig,
   });
 
-  const { schema, modelToDatasourceMap } = userProjectConfig;
-  const datasourceSecretMap = await getDatasourceSecretMap(context);
   try {
     const transformOutput = transform.transform(schema.toString(), {
       modelToDatasourceMap,
@@ -256,6 +278,37 @@ const _buildProject = async (context: $TSContext, opts: TransformerProjectOption
   } finally {
     printTransformLogs(transform);
   }
+};
+
+const getAccountConfig = (): AccountConfig => {
+  try {
+    const meta = stateManager.getMeta();
+    const { StackId: stackId, Region: region } = meta.providers.awscloudformation;
+    const accountId = stackId.split(':')[4]; // 5th element is the account id in ARN
+    return {
+      accountId,
+      region,
+    };
+  } catch (e) {
+    throw new AmplifyError('ConfigurationError', {
+      message: 'Error in retrieving the account details from amplify-meta.json file',
+    });
+  }
+};
+
+const isSqlLambdaVpcConfigRequired = async (
+  context: $TSContext,
+  secretsKey: string,
+  engine: ImportedRDSType,
+): Promise<VpcConfig | undefined> => {
+  const secrets = await getConnectionSecrets(context, secretsKey, engine);
+  const isDBPublic = await testDatabaseConnection(secrets.secrets);
+  if (isDBPublic) {
+    // No need to deploy the SQL Lambda in VPC if the DB is public
+    return undefined;
+  }
+  const vpcConfig = await getSQLLambdaVpcConfig(context);
+  return vpcConfig;
 };
 
 const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, RDSConnectionSecrets>> => {
@@ -288,4 +341,12 @@ const printTransformLogs = (transform: GraphQLTransform) => {
         printer.error(log.message);
     }
   });
-}
+};
+
+const getSQLLambdaVpcConfig = async (context: $TSContext): Promise<VpcConfig | undefined> => {
+  const [secretsKey, engine] = [getSecretsKey(), ImportedRDSType.MYSQL];
+  const { secrets } = await getConnectionSecrets(context, secretsKey, engine);
+  const region = context.amplify.getProjectMeta().providers.awscloudformation.Region;
+  const vpcConfig = getHostVpc(secrets.host, region);
+  return vpcConfig;
+};

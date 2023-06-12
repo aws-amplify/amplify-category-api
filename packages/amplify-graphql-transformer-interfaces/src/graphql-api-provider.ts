@@ -64,6 +64,17 @@ export interface LambdaConfig {
   ttlSeconds?: number;
 }
 
+export type VpcConfig = {
+  vpcId: string;
+  subnetIds: string[];
+  securityGroupIds: string[];
+};
+
+export type AccountConfig = {
+  accountId: string;
+  region: string;
+};
+
 export interface AppSyncFunctionConfigurationProvider extends IConstruct {
   readonly arn: string;
   readonly functionId: string;

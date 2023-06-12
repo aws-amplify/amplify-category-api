@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import {
   FeatureFlagProvider,
   GraphQLAPIProvider,
@@ -8,6 +9,7 @@ import {
   AppSyncAuthConfiguration,
   OverridesProvider,
   AmplifyApiGraphQlResourceStackTemplate,
+  VpcConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { App } from 'aws-cdk-lib';
@@ -22,6 +24,7 @@ import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
 import {RDSConnectionSecrets} from '../types';
+import { AccountConfig } from '@aws-amplify/graphql-transformer-interfaces/src/graphql-api-provider';
 
 export { TransformerResolver } from './resolver';
 export { StackManager } from './stack-manager';
@@ -59,6 +62,8 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly modelToDatasourceMap: Map<string, DatasourceType>;
   public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
   public readonly getResourceOverrides: OverridesProvider;
+  public readonly sqlLambdaVpcConfig?: VpcConfig;
+  public readonly accountConfig?: AccountConfig;
 
   public metadata: TransformerContextMetadata;
   constructor(
@@ -72,12 +77,15 @@ export class TransformerContext implements TransformerContextProvider {
     resolverConfig?: ResolverConfig,
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
     getResourceOverrides?: (stackManager: StackManager) => AmplifyApiGraphQlResourceStackTemplate,
+    sqlLambdaVpcConfig?: VpcConfig,
+    accountConfig?: AccountConfig,
   ) {
     this.output = new TransformerOutput(inputDocument);
     this.resolvers = new ResolverManager();
     this.dataSources = new TransformerDataSourceManager();
     this.providerRegistry = new TransformerContextProviderRegistry();
-    const stackManager = new StackManager(app, stackMapping);
+    this.accountConfig = accountConfig;
+    const stackManager = new StackManager(app, stackMapping, this.accountConfig);
     this.stackManager = stackManager;
     this.authConfig = authConfig;
     this.sandboxModeEnabled = sandboxModeEnabled ?? false;
@@ -87,7 +95,8 @@ export class TransformerContext implements TransformerContextProvider {
     this.metadata = new TransformerContextMetadata();
     this.modelToDatasourceMap = modelToDatasourceMap;
     this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
-    this.getResourceOverrides = () => getResourceOverrides ? getResourceOverrides(this.stackManager as StackManager) : {};
+    this.getResourceOverrides = () => (getResourceOverrides ? getResourceOverrides(this.stackManager as StackManager) : {});
+    this.sqlLambdaVpcConfig = sqlLambdaVpcConfig;
   }
 
   /**

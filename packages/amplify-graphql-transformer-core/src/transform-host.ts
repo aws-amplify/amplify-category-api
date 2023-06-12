@@ -1,6 +1,9 @@
 import {
   DynamoDbDataSourceOptions,
-  MappingTemplateProvider, SearchableDataSourceOptions, TransformHostProvider,
+  MappingTemplateProvider,
+  SearchableDataSourceOptions,
+  TransformHostProvider,
+  VpcConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   BaseDataSource,
@@ -20,6 +23,7 @@ import {
 import { Duration, Stack, Token } from 'aws-cdk-lib';
 import { ResolverResourceIDs, resourceName, toCamelCase } from 'graphql-transformer-common';
 import hash from 'object-hash';
+import { Subnet, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { AppSyncFunctionConfiguration } from './appsync-function';
 import { SearchableDataSource } from './cdk-compat/searchable-datasource';
 import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat/template-asset';
@@ -218,7 +222,7 @@ export class DefaultTransformHost implements TransformHostProvider {
       return resolver;
     }
     throw new Error('Resolver needs either dataSourceName or pipelineConfig to be passed');
-  }
+  };
 
   addLambdaFunction = (
     functionName: string,
@@ -231,6 +235,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     environment?: { [key: string]: string },
     timeout?: Duration,
     stack?: Stack,
+    vpc?: VpcConfig,
   ): IFunction => {
     const dummyCode = 'if __name__ == "__main__":'; // assing dummy code so as to be overriden later
     const fn = new Function(stack || this.api, functionName, {
@@ -241,6 +246,13 @@ export class DefaultTransformHost implements TransformHostProvider {
       layers,
       environment,
       timeout,
+      vpc: Vpc.fromLookup(stack || this.api, 'vpc', {
+        vpcId: vpc?.vpcId,
+      }),
+      vpcSubnets: {
+        subnets: vpc?.subnetIds?.map((subnet: string) => Subnet.fromSubnetId(stack || this.api, `subnet-${subnet}`, subnet)) || [],
+      },
+      securityGroups: vpc?.securityGroupIds?.map((sg: string) => SecurityGroup.fromSecurityGroupId(stack || this.api, `sg-${sg}`, sg)) || [],
     });
     fn.addLayers();
     const functionCode = new S3MappingFunctionCode(functionKey, filePath).bind(fn);
@@ -249,10 +261,10 @@ export class DefaultTransformHost implements TransformHostProvider {
       s3Bucket: functionCode.s3BucketName,
     };
     return fn;
-  }
+  };
 
   /**
-   *
+   * Adds NONE DS to the API
    * @param id The data source's id
    * @param options optional configuration for data source
    * @param stack  Stack to which this datasource needs to mapped to

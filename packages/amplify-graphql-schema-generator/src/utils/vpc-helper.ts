@@ -71,7 +71,7 @@ const checkHostInDBInstances = async (hostname: string, region: string): Promise
     throw new Error('Error in fetching DB Instances');
   }
 
-  const instance = response.DBInstances.find((dbInstance) => dbInstance?.Endpoint?.Address == hostname);
+  const instance = response.DBInstances.find((dbInstance) => dbInstance?.Endpoint?.Address === hostname);
   if (!instance) {
     return undefined;
   }
@@ -101,27 +101,33 @@ const checkHostInDBClusters = async (hostname: string, region: string): Promise<
     throw new Error('Error in fetching DB Clusters');
   }
 
-  const cluster = response.DBClusters.find((dbCluster) => dbCluster?.Endpoint == hostname);
+  const cluster = response.DBClusters.find((dbCluster) => dbCluster?.Endpoint === hostname);
   if (!cluster) {
     return undefined;
   }
 
-  // TODO: Clusters do not return subnet and security group information, need to investigate how it can be fetched.
+  const { subnetIds, vpcId } = await getSubnetIds(cluster.DBSubnetGroup, region);
   return {
-    vpcId: cluster.DBSubnetGroup,
-    subnetIds: await getSubnetIds(cluster.DBSubnetGroup, region),
+    vpcId,
+    subnetIds,
     securityGroupIds: cluster.VpcSecurityGroups.map((securityGroup) => securityGroup.VpcSecurityGroupId),
   };
 };
 
-const getSubnetIds = async (subnetGroupName: string, region: string): Promise<string[]> => {
+const getSubnetIds = async (subnetGroupName: string, region: string): Promise<{
+  subnetIds: string[],
+  vpcId: string,
+}> => {
   const client = new RDSClient({ region });
   const command = new DescribeDBSubnetGroupsCommand({
     DBSubnetGroupName: subnetGroupName,
   });
   const response = await client.send(command);
-  const subnetGroup = response.DBSubnetGroups?.find((subnetGroup) => subnetGroup?.DBSubnetGroupName == subnetGroupName);
-  return subnetGroup.Subnets?.map((subnet) => subnet.SubnetIdentifier) ?? [];
+  const subnetGroup = response.DBSubnetGroups?.find((sg) => sg?.DBSubnetGroupName === subnetGroupName);
+  return {
+    subnetIds: subnetGroup.Subnets?.map((subnet) => subnet.SubnetIdentifier) ?? [],
+    vpcId: subnetGroup.VpcId,
+  };
 };
 
 /**

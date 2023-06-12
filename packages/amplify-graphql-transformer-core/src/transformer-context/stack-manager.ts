@@ -1,6 +1,9 @@
-import { StackManagerProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { StackManagerProvider, AccountConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import {
-  Stack, App, CfnParameter, CfnParameterProps,
+  Stack,
+  App,
+  CfnParameter,
+  CfnParameterProps,
 } from 'aws-cdk-lib';
 import { TransformerNestedStack, TransformerRootStack, TransformerStackSythesizer } from '../cdk-compat';
 
@@ -16,9 +19,10 @@ export class StackManager implements StackManagerProvider {
   public readonly rootStack: TransformerRootStack;
   private resourceToStackMap: Map<string, string>;
   private paramMap: Map<string, CfnParameter> = new Map();
-  constructor(app: App, resourceMapping: ResourceToStackMap) {
+  constructor(app: App, resourceMapping: ResourceToStackMap, accountConfig?: AccountConfig) {
     this.rootStack = new TransformerRootStack(app, 'transformer-root-stack', {
       synthesizer: this.stackSynthesizer,
+      env: { account: accountConfig?.accountId, region: accountConfig?.region },
     });
     // add Env Parameter to ensure to adhere to contract
     this.resourceToStackMap = new Map(Object.entries(resourceMapping));

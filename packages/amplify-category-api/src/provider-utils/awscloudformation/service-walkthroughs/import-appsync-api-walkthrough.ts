@@ -11,9 +11,10 @@ import {
   ImportedDataSourceType,
   ImportedRDSType,
   ImportedDataSourceConfig,
+  RDSConnectionSecrets,
 } from '@aws-amplify/graphql-transformer-core';
 import { PREVIEW_BANNER, category } from '../../../category-constants';
-import { storeConnectionSecrets, getSecretsKey } from '../utils/rds-resources/database-resources';
+import { storeConnectionSecrets, getSecretsKey, getExistingConnectionSecrets } from '../utils/rds-resources/database-resources';
 import * as path from 'path';
 import { RDS_SCHEMA_FILE_NAME } from '@aws-amplify/graphql-transformer-core';
 import { constructDefaultGlobalAmplifyInput } from '../utils/rds-input-utils';
@@ -100,4 +101,25 @@ export const formatEngineName = (engine: ImportedDataSourceType) => {
     default:
       throw new Error(`Unsupported database engine: ${engine}`);
   }
+};
+
+export const getConnectionSecrets = async (
+  context: $TSContext,
+  apiName: string,
+  secretsKey: string,
+  engine: ImportedRDSType,
+): Promise<{ secrets: RDSConnectionSecrets, storeSecrets: boolean }> => {
+  const existingSecrets = await getExistingConnectionSecrets(context, secretsKey, apiName);
+  if (existingSecrets) {
+    return {
+      secrets: existingSecrets,
+      storeSecrets: false,
+    };
+  }
+
+  const databaseConfig: ImportedDataSourceConfig = await databaseConfigurationInputWalkthrough(engine);
+  return {
+    secrets: databaseConfig,
+    storeSecrets: true,
+  };
 };
