@@ -62,6 +62,12 @@ import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
 
 // @public (undocumented)
+export type AccountConfig = {
+    accountId: string;
+    region: string;
+};
+
+// @public (undocumented)
 export interface AmplifyApiGraphQlResourceStackTemplate {
     // Warning: (ae-forgotten-export) The symbol "AppsyncApiStack" needs to be exported by the entry point index.d.ts
     //
@@ -519,6 +525,8 @@ export interface TransformerContextOutputProvider {
 // @public (undocumented)
 export interface TransformerContextProvider {
     // (undocumented)
+    readonly accountConfig?: AccountConfig;
+    // (undocumented)
     api: GraphQLAPIProvider;
     // (undocumented)
     authConfig: AppSyncAuthConfiguration;
@@ -554,6 +562,8 @@ export interface TransformerContextProvider {
     resourceHelper: TransformerResourceHelperProvider;
     // (undocumented)
     sandboxModeEnabled: boolean;
+    // (undocumented)
+    readonly sqlLambdaVpcConfig?: VpcConfig;
     // (undocumented)
     stackManager: StackManagerProvider;
 }
@@ -823,7 +833,7 @@ export interface TransformHostProvider {
     // (undocumented)
     addLambdaFunction: (functionName: string, functionKey: string, handlerName: string, filePath: string, runtime: Runtime, layers?: ILayerVersion[], role?: IRole, environment?: {
         [key: string]: string;
-    }, timeout?: Duration, stack?: Stack) => IFunction;
+    }, timeout?: Duration, stack?: Stack, vpc?: VpcConfig) => IFunction;
     // (undocumented)
     addNoneDataSource(name: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource;
     // (undocumented)
@@ -847,6 +857,13 @@ export interface UserPoolConfig {
     // (undocumented)
     userPoolId: string;
 }
+
+// @public (undocumented)
+export type VpcConfig = {
+    vpcId: string;
+    subnetIds: string[];
+    securityGroupIds: string[];
+};
 
 // Warnings were encountered during analysis:
 //

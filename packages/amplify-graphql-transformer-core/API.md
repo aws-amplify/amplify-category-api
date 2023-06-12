@@ -4,6 +4,8 @@
 
 ```ts
 
+import { AccountConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { AccountConfig as AccountConfig_2 } from '@aws-amplify/graphql-transformer-interfaces/src/graphql-api-provider';
 import { AmplifyApiGraphQlResourceStackTemplate } from '@aws-amplify/graphql-transformer-interfaces';
 import { APIIAMResourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ApiKeyConfig } from 'aws-cdk-lib/aws-appsync';
@@ -88,6 +90,7 @@ import { TypeNode } from 'graphql';
 import { TypeSystemDefinitionNode } from 'graphql';
 import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
+import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export const APICategory = "api";
@@ -231,6 +234,8 @@ export class GraphQLTransform {
 // @public (undocumented)
 export interface GraphQLTransformOptions {
     // (undocumented)
+    readonly accountConfig?: AccountConfig;
+    // (undocumented)
     readonly authConfig?: AppSyncAuthConfiguration;
     // (undocumented)
     readonly buildParameters?: Record<string, any>;
@@ -246,6 +251,8 @@ export interface GraphQLTransformOptions {
     readonly resolverConfig?: ResolverConfig;
     // (undocumented)
     readonly sandboxModeEnabled?: boolean;
+    // (undocumented)
+    readonly sqlLambdaVpcConfig?: VpcConfig;
     // Warning: (ae-forgotten-export) The symbol "StackMapping" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -431,7 +438,7 @@ export class SchemaValidationError extends Error {
 // @public (undocumented)
 export class StackManager implements StackManagerProvider {
     // Warning: (ae-forgotten-export) The symbol "ResourceToStackMap" needs to be exported by the entry point index.d.ts
-    constructor(app: App, resourceMapping: ResourceToStackMap);
+    constructor(app: App, resourceMapping: ResourceToStackMap, accountConfig?: AccountConfig);
     // (undocumented)
     addParameter: (name: string, props: CfnParameterProps) => CfnParameter;
     // (undocumented)
