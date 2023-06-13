@@ -82,6 +82,7 @@ function _setShell {
 }
 function _buildLinux {
   _setShell
+  echo $CODEBUILD_SOURCE_VERSION
   echo "Linux Build"
   yarn run production-build
   yarn build-tests
@@ -122,8 +123,12 @@ function _lint {
 function _publishToLocalRegistry {
     echo "Publish To Local Registry"
     loadCacheFromBuildJob
-    export CODEBUILD_BRANCH="${CODEBUILD_WEBHOOK_TRIGGER#branch/*}"
-    git checkout $CODEBUILD_BRANCH
+    export BRANCH_NAME="$(git symbolic-ref HEAD --short 2>/dev/null)"
+    if [ "$BRANCH_NAME" = "" ] ; then
+      BRANCH_NAME="$(git rev-parse HEAD | xargs git name-rev | cut -d' ' -f2 | sed 's/remotes\/origin\///g')";
+    fi
+    echo $BRANCH_NAME
+    git checkout $BRANCH_NAME
   
     # Fetching git tags from upstream
     # For forked repo only
