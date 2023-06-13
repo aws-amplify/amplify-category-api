@@ -246,21 +246,22 @@ export class DefaultTransformHost implements TransformHostProvider {
       layers,
       environment,
       timeout,
-      ...(vpc?.vpcId && { functionName: PhysicalName.GENERATE_IF_NEEDED }),
-      vpc: vpc?.vpcId ? Vpc.fromLookup(stack || this.api, 'vpc', {
-        vpcId: vpc?.vpcId,
-      }) : undefined,
-      vpcSubnets: vpc ? {
-        subnets: vpc?.subnetIds?.map((subnet: string) => Subnet.fromSubnetId(stack || this.api, `subnet-${subnet}`, subnet)) || [],
-      } : undefined,
-      securityGroups: vpc ? (vpc?.securityGroupIds?.map((sg: string) => SecurityGroup.fromSecurityGroupId(stack || this.api, `sg-${sg}`, sg)) || []) : undefined,
     });
     fn.addLayers();
+    const cfnFn = fn.node.defaultChild as CfnFunction;
     const functionCode = new S3MappingFunctionCode(functionKey, filePath).bind(fn);
-    (fn.node.defaultChild as CfnFunction).code = {
+    cfnFn.code = {
       s3Key: functionCode.s3ObjectKey,
       s3Bucket: functionCode.s3BucketName,
     };
+
+    if (vpc?.vpcId) {
+      cfnFn.vpcConfig = {
+        subnetIds: vpc?.subnetIds,
+        securityGroupIds: vpc?.securityGroupIds,
+      };
+    }
+
     return fn;
   };
 

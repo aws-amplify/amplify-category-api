@@ -9,7 +9,7 @@ import {
 import { TransformerNestedStack, TransformerRootStack, TransformerStackSythesizer } from '../cdk-compat';
 
 export type ResourceToStackMap = Record<string, string>;
-const stacksRequireAccountInfoForSynth = ['RdsApiStack'];
+const stacksRequireAccountInfoForSynth = ['RdsApiStacks_XXXXXXXXXXXXXX'];
 
 /**
  * StackManager
@@ -24,7 +24,7 @@ export class StackManager implements StackManagerProvider {
   constructor(app: App, resourceMapping: ResourceToStackMap, private accountConfig?: AccountConfig) {
     this.rootStack = new TransformerRootStack(app, 'transformer-root-stack', {
       synthesizer: this.stackSynthesizer,
-      env: { account: this.accountConfig?.accountId, region: this.accountConfig?.region },
+      // env: { account: this.accountConfig?.accountId, region: this.accountConfig?.region },
     });
     // add Env Parameter to ensure to adhere to contract
     this.resourceToStackMap = new Map(Object.entries(resourceMapping));
