@@ -4,10 +4,12 @@ import {
   App,
   CfnParameter,
   CfnParameterProps,
+  StackProps,
 } from 'aws-cdk-lib';
 import { TransformerNestedStack, TransformerRootStack, TransformerStackSythesizer } from '../cdk-compat';
 
 export type ResourceToStackMap = Record<string, string>;
+const stacksRequireAccountInfoForSynth = ['RdsApiStack'];
 
 /**
  * StackManager
@@ -19,7 +21,7 @@ export class StackManager implements StackManagerProvider {
   public readonly rootStack: TransformerRootStack;
   private resourceToStackMap: Map<string, string>;
   private paramMap: Map<string, CfnParameter> = new Map();
-  constructor(app: App, resourceMapping: ResourceToStackMap, accountConfig?: AccountConfig) {
+  constructor(app: App, resourceMapping: ResourceToStackMap, private accountConfig?: AccountConfig) {
     this.rootStack = new TransformerRootStack(app, 'transformer-root-stack', {
       synthesizer: this.stackSynthesizer,
       env: { account: accountConfig?.accountId, region: accountConfig?.region },
@@ -34,9 +36,16 @@ export class StackManager implements StackManagerProvider {
 
   createStack = (stackName: string): Stack => {
     const synthesizer = new TransformerStackSythesizer();
-    const newStack = new TransformerNestedStack(this.rootStack, stackName, {
+    const stackProps: StackProps = {
       synthesizer,
-    });
+      ...stacksRequireAccountInfoForSynth.includes(stackName) && {
+        env: {
+          account: this.accountConfig?.accountId,
+          region: this.accountConfig?.region,
+        },
+      },
+    };
+    const newStack = new TransformerNestedStack(this.rootStack, stackName, stackProps);
     this.childStackSynthesizers.set(stackName, synthesizer);
     this.stacks.set(stackName, newStack);
     return newStack;

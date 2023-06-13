@@ -17,6 +17,10 @@ import { TransformerRootStack } from './root-stack';
 import { TransformerStackSythesizer } from './stack-synthesizer';
 export type TransformerNestedStackProps = NestedStackProps & {
   synthesizer?: IStackSynthesizer;
+  env?: {
+    account?: string;
+    region?: string;
+  };
 };
 export class TransformerNestedStack extends TransformerRootStack {
   public readonly templateFile: string;
