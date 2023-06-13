@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.5-transformer-without-feature-flags.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.1.4...amplify-category-api-e2e-core@4.1.5-transformer-without-feature-flags.0) (2023-06-13)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
 ## [4.1.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.1.3...amplify-category-api-e2e-core@4.1.4) (2023-06-05)
 
 **Note:** Version bump only for package amplify-category-api-e2e-core
