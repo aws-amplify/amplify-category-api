@@ -3,14 +3,13 @@ import { printer } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 import fs from 'fs-extra';
 import _ from 'lodash';
-import { getConnectionSecrets } from '../../provider-utils/awscloudformation/service-walkthroughs/import-appsync-api-walkthrough';
 import {
   ImportedRDSType,
   RDS_SCHEMA_FILE_NAME,
   ImportedDataSourceConfig,
 } from '@aws-amplify/graphql-transformer-core';
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { storeConnectionSecrets, getSecretsKey, getDatabaseName } from '../../provider-utils/awscloudformation/utils/rds-resources/database-resources';
+import { storeConnectionSecrets, getSecretsKey, getDatabaseName, getConnectionSecrets } from '../../provider-utils/awscloudformation/utils/rds-resources/database-resources';
 import { writeSchemaFile, generateRDSSchema } from '../../provider-utils/awscloudformation/utils/graphql-schema-utils';
 import { PREVIEW_BANNER } from '../../category-constants';
 
@@ -40,10 +39,10 @@ export const run = async (context: $TSContext) => {
   }
   
   // read and validate the RDS connection secrets
-  const { secrets, storeSecrets } = await getConnectionSecrets(context, apiName, secretsKey, engine);
+  const { secrets, storeSecrets } = await getConnectionSecrets(context, secretsKey, engine);
   const databaseConfig: ImportedDataSourceConfig = {
     ...secrets,
-    engine: engine
+    engine,
   };
 
   const schemaString = await generateRDSSchema(context, databaseConfig, pathToSchemaFile);

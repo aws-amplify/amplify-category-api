@@ -279,8 +279,8 @@ const isSqlLambdaVpcConfigRequired = async (
   secretsKey: string,
   engine: ImportedRDSType,
 ): Promise<VpcConfig | undefined> => {
-  const secrets = await getConnectionSecrets(context, secretsKey, engine);
-  const isDBPublic = await testDatabaseConnection(secrets.secrets);
+  const { secrets } = await getConnectionSecrets(context, secretsKey, engine);
+  const isDBPublic = await testDatabaseConnection(secrets);
   if (isDBPublic) {
     // No need to deploy the SQL Lambda in VPC if the DB is public
     return undefined;
