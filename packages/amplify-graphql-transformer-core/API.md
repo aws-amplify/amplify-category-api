@@ -438,7 +438,7 @@ export class SchemaValidationError extends Error {
 // @public (undocumented)
 export class StackManager implements StackManagerProvider {
     // Warning: (ae-forgotten-export) The symbol "ResourceToStackMap" needs to be exported by the entry point index.d.ts
-    constructor(app: App, resourceMapping: ResourceToStackMap, accountConfig?: AccountConfig);
+    constructor(app: App, resourceMapping: ResourceToStackMap, accountConfig?: AccountConfig | undefined);
     // (undocumented)
     addParameter: (name: string, props: CfnParameterProps) => CfnParameter;
     // (undocumented)

@@ -1,11 +1,9 @@
 import {
   $TSContext,
   AmplifyCategories,
-  AmplifyError,
   AmplifySupportedService,
   JSONUtilities,
   pathManager,
-  stateManager,
 } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import {
@@ -16,7 +14,6 @@ import {
   StackManager,
 } from '@aws-amplify/graphql-transformer-core';
 import {
-  AccountConfig,
   AppSyncAuthConfiguration,
   DeploymentResources,
   TransformerLogLevel,
@@ -31,7 +28,7 @@ import _ from 'lodash';
 import path from 'path';
 /* eslint-disable-next-line import/no-cycle */
 import { VpcConfig, getHostVpc } from '@aws-amplify/graphql-schema-generator';
-import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { getAccountConfig, getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import {
   getConnectionSecrets,
   getExistingConnectionSecretNames,
@@ -277,22 +274,6 @@ const _buildProject = async (
     return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput, opts);
   } finally {
     printTransformLogs(transform);
-  }
-};
-
-const getAccountConfig = (): AccountConfig => {
-  try {
-    const meta = stateManager.getMeta();
-    const { StackId: stackId, Region: region } = meta.providers.awscloudformation;
-    const accountId = stackId.split(':')[4]; // 5th element is the account id in ARN
-    return {
-      accountId,
-      region,
-    };
-  } catch (e) {
-    throw new AmplifyError('ConfigurationError', {
-      message: 'Error in retrieving the account details from amplify-meta.json file',
-    });
   }
 };
 
