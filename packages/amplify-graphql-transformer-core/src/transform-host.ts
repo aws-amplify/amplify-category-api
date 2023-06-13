@@ -20,7 +20,7 @@ import { IRole } from 'aws-cdk-lib/aws-iam';
 import {
   CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime,
 } from 'aws-cdk-lib/aws-lambda';
-import { Duration, Stack, Token } from 'aws-cdk-lib';
+import { Duration, PhysicalName, Stack, Token } from 'aws-cdk-lib';
 import { ResolverResourceIDs, resourceName, toCamelCase } from 'graphql-transformer-common';
 import hash from 'object-hash';
 import { Subnet, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
@@ -246,6 +246,7 @@ export class DefaultTransformHost implements TransformHostProvider {
       layers,
       environment,
       timeout,
+      ...(vpc?.vpcId && { functionName: PhysicalName.GENERATE_IF_NEEDED }),
       vpc: vpc?.vpcId ? Vpc.fromLookup(stack || this.api, 'vpc', {
         vpcId: vpc?.vpcId,
       }) : undefined,
