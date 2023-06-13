@@ -26,6 +26,9 @@ class TestDataSourceAdapter extends DataSourceAdapter {
   public cleanup(): void {
     // Do Nothing
   }
+  public async test(): Promise<boolean> {
+    return true;
+  }
 }
 
 describe("testDataSourceAdapter", () => {
