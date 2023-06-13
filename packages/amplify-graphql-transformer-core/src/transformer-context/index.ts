@@ -24,7 +24,6 @@ import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
 import {RDSConnectionSecrets} from '../types';
-import { AccountConfig } from '@aws-amplify/graphql-transformer-interfaces/src/graphql-api-provider';
 
 export { TransformerResolver } from './resolver';
 export { StackManager } from './stack-manager';
@@ -63,7 +62,6 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
   public readonly getResourceOverrides: OverridesProvider;
   public readonly sqlLambdaVpcConfig?: VpcConfig;
-  public readonly accountConfig?: AccountConfig;
 
   public metadata: TransformerContextMetadata;
   constructor(
@@ -78,14 +76,12 @@ export class TransformerContext implements TransformerContextProvider {
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
     getResourceOverrides?: (stackManager: StackManager) => AmplifyApiGraphQlResourceStackTemplate,
     sqlLambdaVpcConfig?: VpcConfig,
-    accountConfig?: AccountConfig,
   ) {
     this.output = new TransformerOutput(inputDocument);
     this.resolvers = new ResolverManager();
     this.dataSources = new TransformerDataSourceManager();
     this.providerRegistry = new TransformerContextProviderRegistry();
-    this.accountConfig = accountConfig;
-    const stackManager = new StackManager(app, stackMapping, this.accountConfig);
+    const stackManager = new StackManager(app, stackMapping);
     this.stackManager = stackManager;
     this.authConfig = authConfig;
     this.sandboxModeEnabled = sandboxModeEnabled ?? false;

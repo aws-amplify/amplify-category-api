@@ -9,7 +9,6 @@ import {
   TransformHostProvider,
   TransformerLog,
   VpcConfig,
-  AccountConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import {
@@ -89,7 +88,6 @@ export interface GraphQLTransformOptions {
   readonly resolverConfig?: ResolverConfig;
   readonly overrideConfig?: OverrideConfig;
   readonly sqlLambdaVpcConfig?: VpcConfig;
-  readonly accountConfig?: AccountConfig;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
@@ -103,7 +101,6 @@ export class GraphQLTransform {
   private readonly userDefinedSlots: Record<string, UserDefinedSlot[]>;
   private readonly overrideConfig?: OverrideConfig;
   private readonly sqlLambdaVpcConfig?: VpcConfig;
-  private readonly accountConfig?: AccountConfig;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
   // that specifies we have run already run a directive at a given location.
@@ -139,7 +136,6 @@ export class GraphQLTransform {
     this.overrideConfig = options.overrideConfig;
     this.resolverConfig = options.resolverConfig || {};
     this.sqlLambdaVpcConfig = options.sqlLambdaVpcConfig;
-    this.accountConfig = options.accountConfig;
     this.logs = [];
   }
 
@@ -198,7 +194,6 @@ export class GraphQLTransform {
       datasourceConfig?.datasourceSecretParameterLocations,
       this.overrideConfig?.applyOverride,
       this.sqlLambdaVpcConfig,
-      this.accountConfig,
     );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),

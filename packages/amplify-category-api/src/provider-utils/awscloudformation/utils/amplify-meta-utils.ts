@@ -1,5 +1,4 @@
-import { $TSMeta, AmplifyCategories, AmplifySupportedService, stateManager, pathManager, AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { AccountConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { $TSMeta, AmplifyCategories, AmplifySupportedService, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import * as path from 'path';
 
@@ -84,21 +83,4 @@ const getAppSyncAmplifyMetaEntry = (projectMeta: $TSMeta) => {
   return Object.entries(projectMeta[AmplifyCategories.API] || {}).find(
     ([, value]) => (value as Record<string, any>).service === AmplifySupportedService.APPSYNC,
   );
-};
-
-// Utility function to get the account details from amplify-meta.json file
-export const getAccountConfig = (): AccountConfig => {
-  try {
-    const meta = stateManager.getMeta();
-    const { StackId: stackId, Region: region } = meta.providers.awscloudformation;
-    const accountId = stackId.split(':')[4]; // 5th element is the account id in ARN
-    return {
-      accountId,
-      region,
-    };
-  } catch (e) {
-    throw new AmplifyError('ConfigurationError', {
-      message: 'Error in retrieving the account details from amplify-meta.json file',
-    });
-  }
 };

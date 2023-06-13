@@ -1,15 +1,13 @@
-import { StackManagerProvider, AccountConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { StackManagerProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   Stack,
   App,
   CfnParameter,
   CfnParameterProps,
-  StackProps,
 } from 'aws-cdk-lib';
 import { TransformerNestedStack, TransformerRootStack, TransformerStackSythesizer } from '../cdk-compat';
 
 export type ResourceToStackMap = Record<string, string>;
-const stacksRequireAccountInfoForSynth = ['RdsApiStacks_XXXXXXXXXXXXXX'];
 
 /**
  * StackManager
@@ -21,10 +19,9 @@ export class StackManager implements StackManagerProvider {
   public readonly rootStack: TransformerRootStack;
   private resourceToStackMap: Map<string, string>;
   private paramMap: Map<string, CfnParameter> = new Map();
-  constructor(app: App, resourceMapping: ResourceToStackMap, private accountConfig?: AccountConfig) {
+  constructor(app: App, resourceMapping: ResourceToStackMap) {
     this.rootStack = new TransformerRootStack(app, 'transformer-root-stack', {
       synthesizer: this.stackSynthesizer,
-      // env: { account: this.accountConfig?.accountId, region: this.accountConfig?.region },
     });
     // add Env Parameter to ensure to adhere to contract
     this.resourceToStackMap = new Map(Object.entries(resourceMapping));
@@ -36,16 +33,9 @@ export class StackManager implements StackManagerProvider {
 
   createStack = (stackName: string): Stack => {
     const synthesizer = new TransformerStackSythesizer();
-    const stackProps: StackProps = {
+    const newStack = new TransformerNestedStack(this.rootStack, stackName, {
       synthesizer,
-      ...stacksRequireAccountInfoForSynth.includes(stackName) && {
-        env: {
-          account: this.accountConfig?.accountId,
-          region: this.accountConfig?.region,
-        },
-      },
-    };
-    const newStack = new TransformerNestedStack(this.rootStack, stackName, stackProps);
+    });
     this.childStackSynthesizers.set(stackName, synthesizer);
     this.stacks.set(stackName, newStack);
     return newStack;

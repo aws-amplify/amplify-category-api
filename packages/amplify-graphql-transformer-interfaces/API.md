@@ -62,12 +62,6 @@ import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
 
 // @public (undocumented)
-export type AccountConfig = {
-    accountId: string;
-    region: string;
-};
-
-// @public (undocumented)
 export interface AmplifyApiGraphQlResourceStackTemplate {
     // Warning: (ae-forgotten-export) The symbol "AppsyncApiStack" needs to be exported by the entry point index.d.ts
     //
@@ -524,8 +518,6 @@ export interface TransformerContextOutputProvider {
 
 // @public (undocumented)
 export interface TransformerContextProvider {
-    // (undocumented)
-    readonly accountConfig?: AccountConfig;
     // (undocumented)
     api: GraphQLAPIProvider;
     // (undocumented)

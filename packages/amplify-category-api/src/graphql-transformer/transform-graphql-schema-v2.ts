@@ -28,7 +28,7 @@ import _ from 'lodash';
 import path from 'path';
 /* eslint-disable-next-line import/no-cycle */
 import { VpcConfig, getHostVpc } from '@aws-amplify/graphql-schema-generator';
-import { getAccountConfig, getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import {
   getConnectionSecrets,
   getExistingConnectionSecretNames,
@@ -241,8 +241,6 @@ const _buildProject = async (
     sqlLambdaVpcConfig = await isSqlLambdaVpcConfigRequired(context, getSecretsKey(), ImportedRDSType.MYSQL);
   }
 
-  const accountConfig = getAccountConfig();
-
   // Create the transformer instances, we've to make sure we're not reusing them within the same CLI command
   // because the StackMapping feature already builds the project once.
   const transformers = await opts.transformersFactory(opts.transformersFactoryArgs);
@@ -262,7 +260,6 @@ const _buildProject = async (
       ...opts.overrideConfig,
     },
     sqlLambdaVpcConfig,
-    accountConfig,
   });
 
   try {
