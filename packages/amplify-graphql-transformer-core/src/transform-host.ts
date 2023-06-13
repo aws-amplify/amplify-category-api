@@ -246,13 +246,13 @@ export class DefaultTransformHost implements TransformHostProvider {
       layers,
       environment,
       timeout,
-      vpc: Vpc.fromLookup(stack || this.api, 'vpc', {
+      vpc: vpc?.vpcId ? Vpc.fromLookup(stack || this.api, 'vpc', {
         vpcId: vpc?.vpcId,
-      }),
-      vpcSubnets: {
+      }) : undefined,
+      vpcSubnets: vpc ? {
         subnets: vpc?.subnetIds?.map((subnet: string) => Subnet.fromSubnetId(stack || this.api, `subnet-${subnet}`, subnet)) || [],
-      },
-      securityGroups: vpc?.securityGroupIds?.map((sg: string) => SecurityGroup.fromSecurityGroupId(stack || this.api, `sg-${sg}`, sg)) || [],
+      } : undefined,
+      securityGroups: vpc ? (vpc?.securityGroupIds?.map((sg: string) => SecurityGroup.fromSecurityGroupId(stack || this.api, `sg-${sg}`, sg)) || []) : undefined,
     });
     fn.addLayers();
     const functionCode = new S3MappingFunctionCode(functionKey, filePath).bind(fn);
