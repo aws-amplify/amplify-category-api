@@ -3,10 +3,10 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { AppSyncAuthConfiguration, FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { AuthTransformer } from '../graphql-auth-transformer';
-import { getField, getObjectType, featureFlags } from './test-helpers';
+import { getField, getObjectType } from './test-helpers';
 
 describe('owner based @auth', () => {
   test('auth transformer validation happy case', () => {
@@ -26,7 +26,6 @@ describe('owner based @auth', () => {
     const transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -55,7 +54,6 @@ describe('owner based @auth', () => {
     const transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -88,7 +86,6 @@ describe('owner based @auth', () => {
     const transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -119,7 +116,6 @@ describe('owner based @auth', () => {
     const transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out.resolvers['Post.owner.req.vtl']).toMatchSnapshot();
@@ -144,7 +140,6 @@ describe('owner based @auth', () => {
     const transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags,
     });
 
     const out = transformer.transform(validSchema);
@@ -190,7 +185,6 @@ describe('owner based @auth', () => {
     const transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags,
     });
 
     const out = transformer.transform(validSchema);
@@ -234,7 +228,6 @@ describe('owner based @auth', () => {
     const transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags,
     });
     const validSchema = `
     type Post @model
@@ -286,7 +279,6 @@ describe('owner based @auth', () => {
     const transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -325,19 +317,6 @@ describe('owner based @auth', () => {
     };
     const transformer = new GraphQLTransform({
       authConfig,
-      featureFlags: {
-        getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-          if (name === 'secondaryKeyAsGSI') {
-            return true;
-          }
-          if (name === 'useSubUsernameForDefaultIdentityClaim') {
-            return true;
-          }
-          return defaultValue;
-        }),
-        getNumber: jest.fn(),
-        getObject: jest.fn(),
-      },
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
     });
     const out = transformer.transform(validSchema);
@@ -395,18 +374,8 @@ describe('owner based @auth', () => {
 
     const transformer = new GraphQLTransform({
       authConfig,
-      featureFlags: {
-        getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-          if (name === 'secondaryKeyAsGSI') {
-            return false;
-          }
-          if (name === 'useSubUsernameForDefaultIdentityClaim') {
-            return true;
-          }
-          return defaultValue;
-        }),
-        getNumber: jest.fn(),
-        getObject: jest.fn(),
+      transformParameters: {
+        secondaryKeyAsGSI: false,
       },
       transformers: [
         new ModelTransformer(),
@@ -442,18 +411,8 @@ describe('owner based @auth', () => {
 
     const transformer = new GraphQLTransform({
       authConfig,
-      featureFlags: {
-        getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-          if (name === 'secondaryKeyAsGSI') {
-            return false;
-          }
-          if (name === 'useSubUsernameForDefaultIdentityClaim') {
-            return true;
-          }
-          return defaultValue;
-        }),
-        getNumber: jest.fn(),
-        getObject: jest.fn(),
+      transformParameters: {
+        secondaryKeyAsGSI: false,
       },
       transformers: [
         new ModelTransformer(),
@@ -488,7 +447,6 @@ describe('owner based @auth', () => {
     const transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags,
     });
 
     const out = transformer.transform(validSchema);
@@ -524,10 +482,6 @@ describe('owner based @auth', () => {
       const transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: () => false },
-        },
       });
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
@@ -553,19 +507,12 @@ describe('owner based @auth', () => {
           createdAt: String
           updatedAt: String
         }`;
-      const getBooleanFn = (featureName): boolean => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return false;
-        }
-        return true;
-      };
       const transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: getBooleanFn },
-        },
+        transformParameters: {
+          useSubUsernameForDefaultIdentityClaim: false
+        }
       });
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
@@ -595,18 +542,11 @@ describe('owner based @auth', () => {
           createdAt: String
           updatedAt: String
         }`;
-      const getBooleanFn = (featureName): boolean => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return false;
-        }
-        return true;
-      };
       const transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: getBooleanFn },
+        transformParameters: {
+          useSubUsernameForDefaultIdentityClaim: false,
         },
       });
       const out = transformer.transform(validSchema);
@@ -641,10 +581,6 @@ describe('owner based @auth', () => {
       const transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: () => false },
-        },
       });
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
@@ -689,10 +625,6 @@ describe('owner based @auth', () => {
       const transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: () => false },
-        },
       });
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
@@ -735,10 +667,6 @@ describe('owner based @auth', () => {
       const transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: () => false },
-        },
       });
       const validSchema = `
       type Post @model
@@ -790,10 +718,6 @@ describe('owner based @auth', () => {
       const transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: () => false },
-        },
       });
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
@@ -832,18 +756,8 @@ describe('owner based @auth', () => {
       };
       const transformer = new GraphQLTransform({
         authConfig,
-        featureFlags: {
-          getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-            if (name === 'secondaryKeyAsGSI') {
-              return true;
-            }
-            if (name === 'useSubUsernameForDefaultIdentityClaim') {
-              return false;
-            }
-            return defaultValue;
-          }),
-          getNumber: jest.fn(),
-          getObject: jest.fn(),
+        transformParameters: {
+          useSubUsernameForDefaultIdentityClaim: false,
         },
         transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
       });
@@ -902,18 +816,9 @@ describe('owner based @auth', () => {
 
       const transformer = new GraphQLTransform({
         authConfig,
-        featureFlags: {
-          getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-            if (name === 'secondaryKeyAsGSI') {
-              return false;
-            }
-            if (name === 'useSubUsernameForDefaultIdentityClaim') {
-              return false;
-            }
-            return defaultValue;
-          }),
-          getNumber: jest.fn(),
-          getObject: jest.fn(),
+        transformParameters: {
+          secondaryKeyAsGSI: false,
+          useSubUsernameForDefaultIdentityClaim: false,
         },
         transformers: [
           new ModelTransformer(),
@@ -949,18 +854,9 @@ describe('owner based @auth', () => {
 
       const transformer = new GraphQLTransform({
         authConfig,
-        featureFlags: {
-          getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-            if (name === 'secondaryKeyAsGSI') {
-              return false;
-            }
-            if (name === 'useSubUsernameForDefaultIdentityClaim') {
-              return false;
-            }
-            return defaultValue;
-          }),
-          getNumber: jest.fn(),
-          getObject: jest.fn(),
+        transformParameters: {
+          secondaryKeyAsGSI: false,
+          useSubUsernameForDefaultIdentityClaim: false,
         },
         transformers: [
           new ModelTransformer(),
@@ -1004,15 +900,6 @@ describe('owner based @auth', () => {
           new PrimaryKeyTransformer(),
           new AuthTransformer(),
         ],
-        featureFlags: ({
-          getBoolean: (featureName: string, defaultValue: boolean) => {
-            if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-              return true;
-            }
-
-            return defaultValue;
-          },
-        } as FeatureFlagProvider),
       });
 
       expect(() => {
@@ -1036,15 +923,9 @@ describe('owner based @auth', () => {
           new PrimaryKeyTransformer(),
           new AuthTransformer(),
         ],
-        featureFlags: ({
-          getBoolean: (featureName: string, defaultValue: boolean) => {
-            if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-              return false;
-            }
-
-            return defaultValue;
-          },
-        } as FeatureFlagProvider),
+        transformParameters: {
+          useSubUsernameForDefaultIdentityClaim: false,
+        },
       });
 
       const out = transformer.transform(schema);
@@ -1065,15 +946,6 @@ describe('owner based @auth', () => {
           new PrimaryKeyTransformer(),
           new AuthTransformer(),
         ],
-        featureFlags: ({
-          getBoolean: (featureName: string, defaultValue: boolean) => {
-            if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-              return true;
-            }
-
-            return defaultValue;
-          },
-        } as FeatureFlagProvider),
       });
 
       const out = transformer.transform(schema);
@@ -1094,15 +966,9 @@ describe('owner based @auth', () => {
           new PrimaryKeyTransformer(),
           new AuthTransformer(),
         ],
-        featureFlags: ({
-          getBoolean: (featureName: string, defaultValue: boolean) => {
-            if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-              return false;
-            }
-
-            return defaultValue;
-          },
-        } as FeatureFlagProvider),
+        transformParameters: {
+          useSubUsernameForDefaultIdentityClaim: false,
+        }
       });
 
       const out = transformer.transform(schema);
@@ -1123,15 +989,6 @@ describe('owner based @auth', () => {
           new PrimaryKeyTransformer(),
           new AuthTransformer(),
         ],
-        featureFlags: ({
-          getBoolean: (featureName: string, defaultValue: boolean) => {
-            if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-              return true;
-            }
-
-            return defaultValue;
-          },
-        } as FeatureFlagProvider),
       });
 
       expect(() => {
@@ -1161,15 +1018,6 @@ describe('owner based @auth', () => {
             new AuthTransformer(),
             new IndexTransformer(),
           ],
-          featureFlags: ({
-            getBoolean: (featureName: string, defaultValue: boolean) => {
-              if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-                return true;
-              }
-
-              return defaultValue;
-            },
-          } as FeatureFlagProvider),
         });
 
         const out = transformer.transform(schema);
@@ -1194,15 +1042,6 @@ describe('owner based @auth', () => {
             new AuthTransformer(),
             new IndexTransformer(),
           ],
-          featureFlags: ({
-            getBoolean: (featureName: string, defaultValue: boolean) => {
-              if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-                return true;
-              }
-
-              return defaultValue;
-            },
-          } as FeatureFlagProvider),
         });
 
         const out = transformer.transform(schema);
@@ -1227,15 +1066,6 @@ describe('owner based @auth', () => {
             new AuthTransformer(),
             new IndexTransformer(),
           ],
-          featureFlags: ({
-            getBoolean: (featureName: string, defaultValue: boolean) => {
-              if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-                return true;
-              }
-
-              return defaultValue;
-            },
-          } as FeatureFlagProvider),
         });
 
         const out = transformer.transform(schema);
@@ -1260,15 +1090,6 @@ describe('owner based @auth', () => {
             new AuthTransformer(),
             new IndexTransformer(),
           ],
-          featureFlags: ({
-            getBoolean: (featureName: string, defaultValue: boolean) => {
-              if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-                return true;
-              }
-
-              return defaultValue;
-            },
-          } as FeatureFlagProvider),
         });
 
         const out = transformer.transform(schema);
@@ -1292,19 +1113,12 @@ describe('owner based @auth', () => {
           createdAt: String
           updatedAt: String
         }`;
-      const getBooleanFn = (featureName): boolean => {
-        if (featureName === 'populateOwnerFieldForStaticGroupAuth') {
-          return false;
-        }
-        return true;
-      };
       const transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: getBooleanFn },
-        },
+        transformParameters: {
+          populateOwnerFieldForStaticGroupAuth: false,
+        }
       });
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
@@ -1330,19 +1144,12 @@ describe('owner based @auth', () => {
           createdAt: String
           updatedAt: String
         }`;
-      const getBooleanFn = (featureName): boolean => {
-        if (featureName === 'populateOwnerFieldForStaticGroupAuth') {
-          return false;
-        }
-        return true;
-      };
       const transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: getBooleanFn },
-        },
+        transformParameters: {
+          populateOwnerFieldForStaticGroupAuth: false,
+        }
       });
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
@@ -1368,19 +1175,12 @@ describe('owner based @auth', () => {
           createdAt: String
           updatedAt: String
         }`;
-      const getBooleanFn = (featureName): boolean => {
-        if (featureName === 'populateOwnerFieldForStaticGroupAuth') {
-          return false;
-        }
-        return true;
-      };
       const transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: getBooleanFn },
-        },
+        transformParameters: {
+          populateOwnerFieldForStaticGroupAuth: false,
+        }
       });
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
@@ -1406,18 +1206,11 @@ describe('owner based @auth', () => {
           createdAt: String
           updatedAt: String
         }`;
-      const getBooleanFn = (featureName): boolean => {
-        if (featureName === 'populateOwnerFieldForStaticGroupAuth') {
-          return false;
-        }
-        return true;
-      };
       const transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: getBooleanFn },
+        transformParameters: {
+          populateOwnerFieldForStaticGroupAuth: false,
         },
       });
       const out = transformer.transform(validSchema);

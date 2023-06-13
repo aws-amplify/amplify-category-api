@@ -73,7 +73,7 @@ export class HasManyTransformer extends TransformerPluginBase {
       field: definition,
       directive,
       limit: defaultLimit,
-    } as HasManyDirectiveConfiguration, generateGetArgumentsInput(context.featureFlags));
+    } as HasManyDirectiveConfiguration, generateGetArgumentsInput(context.transformParameters));
 
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);
@@ -93,7 +93,7 @@ export class HasManyTransformer extends TransformerPluginBase {
         filteredFields?.forEach(field => {
           const baseFieldType = getBaseType(field.type);
           const connectionAttributeName = getConnectionAttributeName(
-            context.featureFlags,
+            context.transformParameters,
             def.name.value,
             field.name.value,
             getObjectPrimaryKey(def as ObjectTypeDefinitionNode).name.value,
@@ -125,7 +125,7 @@ export class HasManyTransformer extends TransformerPluginBase {
   prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList.forEach(config => {
       registerHasManyForeignKeyMappings({
-        featureFlags: context.featureFlags,
+        transformParameters: context.transformParameters,
         resourceHelper: context.resourceHelper,
         thisTypeName: config.object.name.value,
         thisFieldName: config.field.name.value,

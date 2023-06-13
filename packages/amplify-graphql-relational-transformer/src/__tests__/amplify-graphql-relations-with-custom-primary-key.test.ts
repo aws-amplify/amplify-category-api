@@ -5,18 +5,6 @@ import { ObjectTypeDefinitionNode, parse } from 'graphql';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer, ManyToManyTransformer } from '..';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const mockFeatureFlags = (respectPrimaryKeyAttributesOnConnectionField: boolean) => ({
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'respectPrimaryKeyAttributesOnConnectionField') {
-      return respectPrimaryKeyAttributesOnConnectionField;
-    }
-    return defaultValue;
-  }),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-});
-
 describe('custom primary key and relational directives', () => {
   it('uses primary key name for hasOne relational connection field', () => {
     const inputSchema = `
@@ -35,7 +23,6 @@ describe('custom primary key and relational directives', () => {
     `;
 
     const transformer = new GraphQLTransform({
-      featureFlags: mockFeatureFlags(true),
       transformers: [
         new ModelTransformer(),
         new PrimaryKeyTransformer(),
@@ -76,7 +63,6 @@ describe('custom primary key and relational directives', () => {
     `;
 
     const transformer = new GraphQLTransform({
-      featureFlags: mockFeatureFlags(true),
       transformers: [
         new ModelTransformer(),
         new PrimaryKeyTransformer(),
@@ -124,7 +110,6 @@ describe('custom primary key and relational directives', () => {
     `;
 
     const transformer = new GraphQLTransform({
-      featureFlags: mockFeatureFlags(true),
       transformers: [
         new ModelTransformer(),
         new PrimaryKeyTransformer(),
@@ -165,7 +150,6 @@ describe('custom primary key and relational directives', () => {
     `;
 
     const transformer = new GraphQLTransform({
-      featureFlags: mockFeatureFlags(true),
       transformers: [
         new ModelTransformer(),
         new PrimaryKeyTransformer(),
@@ -205,7 +189,6 @@ describe('custom primary key and relational directives', () => {
     `;
 
     const transformer = new GraphQLTransform({
-      featureFlags: mockFeatureFlags(true),
       transformers: [
         new ModelTransformer(),
         new PrimaryKeyTransformer(),
@@ -279,7 +262,6 @@ describe('custom primary key and relational directives', () => {
     `;
 
     const transformer = new GraphQLTransform({
-      featureFlags: mockFeatureFlags(true),
       transformers: [
         new ModelTransformer(),
         new PrimaryKeyTransformer(),
@@ -356,7 +338,6 @@ describe('custom primary key and relational directives', () => {
     `;
 
     const transformer = new GraphQLTransform({
-      featureFlags: mockFeatureFlags(true),
       transformers: [
         new ModelTransformer(),
         new PrimaryKeyTransformer(),
@@ -432,13 +413,15 @@ describe('custom primary key and relational directives', () => {
     `;
 
     const transformer = new GraphQLTransform({
-      featureFlags: mockFeatureFlags(false),
       transformers: [
         new ModelTransformer(),
         new PrimaryKeyTransformer(),
         new HasOneTransformer(),
         new BelongsToTransformer(),
       ],
+      transformParameters: {
+        respectPrimaryKeyAttributesOnConnectionField: false,
+      }
     });
 
     const out = transformer.transform(inputSchema);
@@ -468,13 +451,15 @@ describe('custom primary key and relational directives', () => {
     `;
 
     const transformer = new GraphQLTransform({
-      featureFlags: mockFeatureFlags(false),
       transformers: [
         new ModelTransformer(),
         new PrimaryKeyTransformer(),
         new HasManyTransformer(),
         new BelongsToTransformer(),
       ],
+      transformParameters: {
+        respectPrimaryKeyAttributesOnConnectionField: false,
+      }
     });
 
     const out = transformer.transform(inputSchema);
@@ -519,7 +504,6 @@ describe('custom primary key and relational directives', () => {
     `;
 
     const transformer = new GraphQLTransform({
-      featureFlags: mockFeatureFlags(true),
       transformers: [
         new ModelTransformer(),
         new PrimaryKeyTransformer(),
@@ -587,7 +571,6 @@ describe('custom primary key and relational directives', () => {
         },
         additionalAuthenticationProviders: [],
       },
-      featureFlags: mockFeatureFlags(true),
       transformers: [
         new ModelTransformer(),
         new PrimaryKeyTransformer(),
@@ -610,7 +593,7 @@ describe('custom primary key and relational directives', () => {
   });
 
   it('should generate correct fields in the many to many link object', () => {
-    [true, false].forEach((ff) => {
+    [true, false].forEach((respectPrimaryKeyAttributesOnConnectionField) => {
       const inputSchema = `
       type Post @model {
         customPostId: ID! @primaryKey(sortKeyFields: ["sortId"])
@@ -636,7 +619,6 @@ describe('custom primary key and relational directives', () => {
           },
           additionalAuthenticationProviders: [],
         },
-        featureFlags: mockFeatureFlags(ff),
         transformers: [
           modelTransformer,
           primaryKeyTransformer,
@@ -645,6 +627,7 @@ describe('custom primary key and relational directives', () => {
           new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
           authTransformer,
         ],
+        transformParameters: { respectPrimaryKeyAttributesOnConnectionField },
       });
       const out = transformer.transform(inputSchema);
       expect(out).toBeDefined();
@@ -655,10 +638,10 @@ describe('custom primary key and relational directives', () => {
       expect(type).toBeDefined();
       expect(type.fields?.find((f) => f.name.value === 'taglabel')).toBeDefined();
       expect(type.fields?.find((f) => f.name.value === 'postsortId')).toBeDefined();
-      expect((type.fields?.find((f) => f.name.value === 'postCustomPostId') !== undefined) === ff).toBe(true);
-      expect((type.fields?.find((f) => f.name.value === 'tagCustomTagId') !== undefined) === ff).toBe(true);
-      expect((type.fields?.find((f) => f.name.value === 'postID') !== undefined) !== ff).toBe(true);
-      expect((type.fields?.find((f) => f.name.value === 'tagID') !== undefined) !== ff).toBe(true);
+      expect((type.fields?.find((f) => f.name.value === 'postCustomPostId') !== undefined) === respectPrimaryKeyAttributesOnConnectionField).toBe(true);
+      expect((type.fields?.find((f) => f.name.value === 'tagCustomTagId') !== undefined) === respectPrimaryKeyAttributesOnConnectionField).toBe(true);
+      expect((type.fields?.find((f) => f.name.value === 'postID') !== undefined) !== respectPrimaryKeyAttributesOnConnectionField).toBe(true);
+      expect((type.fields?.find((f) => f.name.value === 'tagID') !== undefined) !== respectPrimaryKeyAttributesOnConnectionField).toBe(true);
     });
   });
 });
@@ -764,7 +747,6 @@ describe('Resolvers for custom primary key and relational directives', () => {
 
   it('should generate correct dynamoDB partition key and sort key for CPK schema in resolver VTL when CPK feature is enabled', () => {
     const transformer = new GraphQLTransform({
-      featureFlags: mockFeatureFlags(true),
       transformers: setupTransformers(),
     });
     const out = transformer.transform(inputSchema);
@@ -783,8 +765,10 @@ describe('Resolvers for custom primary key and relational directives', () => {
   });
   it('should not generate sort key field in implicit hasMany relation when CPK feature is disabled', () => {
     const transformer = new GraphQLTransform({
-      featureFlags: mockFeatureFlags(false),
       transformers: setupTransformers(),
+      transformParameters: {
+        respectPrimaryKeyAttributesOnConnectionField: false,
+      }
     });
     const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();

@@ -7,7 +7,6 @@
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { OverrideConfig } from '@aws-amplify/graphql-transformer-core';
 import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
@@ -15,6 +14,7 @@ import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
 import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 
 // @public (undocumented)
@@ -46,7 +46,7 @@ export type TransformConfig = {
     overrideConfig?: OverrideConfig;
     userDefinedSlots?: Record<string, UserDefinedSlot[]>;
     stackMapping?: Record<string, string>;
-    featureFlags: FeatureFlagProvider;
+    transformParameters: TransformParameters;
 };
 
 // @public (undocumented)

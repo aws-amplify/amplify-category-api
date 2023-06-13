@@ -17,6 +17,7 @@ import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import _ from 'lodash';
 import { printer } from '@aws-amplify/amplify-prompts';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
 import { getAdminRoles, getIdentityPoolId } from './utils';
 import { schemaHasSandboxModeEnabled, showGlobalSandboxModeWarning, showSandboxModePrompts } from './sandbox-mode-helpers';
 import { importTransformerModule } from './transformer-factory';
@@ -240,7 +241,7 @@ export const generateTransformerOptions = async (
     ...options.overrideConfig,
   };
 
-  const buildConfig: TransformerProjectOptions = {
+  return {
     ...options,
     buildParameters,
     projectDirectory: resourceDir,
@@ -262,14 +263,28 @@ export const generateTransformerOptions = async (
     resolverConfig,
     userDefinedSlots,
     overrideConfig,
-    featureFlags: new AmplifyCLIFeatureFlagAdapter(),
     stacks: project.stacks,
     stackMapping: project.config.StackMapping,
     legacyApiKeyEnabled: legacyApiKeyEnabledFromParameters(parameters),
     disableResolverDeduping: (project.config as any).DisableResolverDeduping,
+    transformParameters: generateTransformParameters(),
   };
+};
 
-  return buildConfig;
+/**
+ * Generate transform parameters from feature flags and other config sources.
+ * @returns a single set of params to configure the transform behavior.
+ */
+const generateTransformParameters = (): TransformParameters => {
+  const featureFlagProvider = new AmplifyCLIFeatureFlagAdapter();
+  return {
+    shouldDeepMergeDirectiveConfigDefaults: featureFlagProvider.getBoolean('shouldDeepMergeDirectiveConfigDefaults'),
+    useSubUsernameForDefaultIdentityClaim: featureFlagProvider.getBoolean('useSubUsernameForDefaultIdentityClaim'),
+    populateOwnerFieldForStaticGroupAuth: featureFlagProvider.getBoolean('populateOwnerFieldForStaticGroupAuth'),
+    secondaryKeyAsGSI: featureFlagProvider.getBoolean('secondaryKeyAsGSI'),
+    enableAutoIndexQueryNames: featureFlagProvider.getBoolean('enableAutoIndexQueryNames'),
+    respectPrimaryKeyAttributesOnConnectionField: featureFlagProvider.getBoolean('respectPrimaryKeyAttributesOnConnectionField'),
+  };
 };
 
 export const legacyApiKeyEnabledFromParameters = (parameters: any): boolean | undefined => {

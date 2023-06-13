@@ -51,16 +51,6 @@ test('renamed subscriptions should generate auth resolver', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
-    featureFlags: {
-      getBoolean: (value: string) => {
-        if (value === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return false;
-      },
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-    },
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -245,16 +235,6 @@ test('read get list auth operations', () => {
     transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
     resolverConfig: {
       project: config,
-    },
-    featureFlags: {
-      getBoolean: (value: string) => {
-        if (value === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return false;
-      },
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
     },
   });
 

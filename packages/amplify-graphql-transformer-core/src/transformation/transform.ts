@@ -2,13 +2,13 @@
 import {
   AppSyncAuthConfiguration,
   DeploymentResources,
-  FeatureFlagProvider,
   GraphQLAPIProvider,
   Template,
   TransformerPluginProvider,
   TransformHostProvider,
   TransformerLog,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import {
   App, Aws, CfnOutput, Fn,
@@ -54,6 +54,7 @@ import { validateAuthModes, validateModelSchema } from './validation';
 import { DocumentNode } from 'graphql/language';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { DatasourceType } from '../config/project-config';
+import { defaultTransformParameters } from '../transformer-context/transform-parameters';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
@@ -77,7 +78,7 @@ export interface GraphQLTransformOptions {
   // transform config which can change the behavior of the transformer
   readonly authConfig?: AppSyncAuthConfiguration;
   readonly stacks?: Record<string, Template>;
-  readonly featureFlags?: FeatureFlagProvider;
+  readonly transformParameters?: Partial<TransformParameters>;
   readonly host?: TransformHostProvider;
   readonly sandboxModeEnabled?: boolean;
   readonly disableResolverDeduping?: boolean;
@@ -97,6 +98,7 @@ export class GraphQLTransform {
   private readonly overrideConfig?: OverrideConfig;
   private readonly disableResolverDeduping?: boolean;
   private readonly legacyApiKeyEnabled?: boolean;
+  private readonly transformParameters: TransformParameters;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
   // that specifies we have run already run a directive at a given location.
@@ -131,6 +133,10 @@ export class GraphQLTransform {
     this.resolverConfig = options.resolverConfig || {};
     this.legacyApiKeyEnabled = options.legacyApiKeyEnabled;
     this.disableResolverDeduping = options.disableResolverDeduping;
+    this.transformParameters = {
+      ...defaultTransformParameters,
+      ...(options.transformParameters ?? {}),
+    };
 
     this.logs = [];
   }
@@ -146,7 +152,7 @@ export class GraphQLTransform {
    * @param schema A parsed GraphQL DocumentNode
    */
   public preProcessSchema(schema: DocumentNode): DocumentNode {
-    const context = new TransformerPreProcessContext(schema, this?.options?.featureFlags);
+    const context = new TransformerPreProcessContext(schema, this.transformParameters);
 
     this.transformers
         .filter(transformer => isFunction(transformer.preMutateSchema))
@@ -183,8 +189,8 @@ export class GraphQLTransform {
       datasourceConfig?.modelToDatasourceMap ?? new Map<string, DatasourceType>(),
       this.stackMappingOverrides,
       this.authConfig,
+      this.transformParameters,
       this.options.sandboxModeEnabled,
-      this.options.featureFlags,
       this.resolverConfig,
       datasourceConfig?.datasourceSecretParameterLocations,
     );

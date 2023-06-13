@@ -1,9 +1,7 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema, DatasourceType } from '@aws-amplify/graphql-transformer-core';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 import { Template } from 'aws-cdk-lib/assertions';
-import { expect as cdkExpect, haveResourceLike } from '@aws-cdk/assert';
 import { Kind, parse } from 'graphql';
 import { PrimaryKeyTransformer } from '..';
 import _ from 'lodash';
@@ -17,15 +15,6 @@ test('throws if multiple primary keys are defined on an object', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
   expect(() => {
@@ -42,15 +31,6 @@ test('throws if partition key is nullable', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
   expect(() => {
@@ -67,15 +47,6 @@ test('throws if sort key is nullable', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
   expect(() => {
@@ -112,15 +83,6 @@ test('throws if @primaryKey is used on a non-scalar field', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
   expect(() => {
@@ -137,15 +99,6 @@ test('throws if @primaryKey uses a sort key field that does not exist', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
   expect(() => {
@@ -166,15 +119,6 @@ test('throws if @primaryKey uses a sort key field that is a non-scalar', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
   expect(() => {
@@ -191,15 +135,6 @@ test('throws if @primaryKey refers to itself', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
   expect(() => {
@@ -216,15 +151,6 @@ test('throws if @primaryKey is specified on a list', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
   expect(() => {
@@ -242,15 +168,6 @@ test('throws if @primaryKey sort key fields are a list', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
   expect(() => {
@@ -271,15 +188,6 @@ test('handles sortKeyFields being a string instead of an array', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
   expect(() => {
@@ -295,15 +203,6 @@ test('a primary key with no sort key is properly configured', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -347,15 +246,6 @@ test('a primary key with a single sort key field is properly configured', () => 
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -395,15 +285,6 @@ test('a primary key with a composite sort key is properly configured', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -479,15 +360,6 @@ test('enums are supported in keys', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -524,15 +396,6 @@ test('user provided id fields are not removed', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -561,15 +424,6 @@ test('null resolvers on @model are supported', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -608,15 +462,6 @@ test('@model null resolvers can be overridden', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -649,15 +494,6 @@ test('resolvers can be renamed by @model', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -702,15 +538,6 @@ test('individual resolvers can be made null by @model', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -737,15 +564,6 @@ it('id field should be optional in updateInputObjects when it is not a primary k
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -770,15 +588,6 @@ test('primary key with id as partition key is not required on createInput', () =
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -812,15 +621,6 @@ test('primary key with id and createdAt is not required on createInput', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -853,15 +653,6 @@ test('key with complex fields updates the input objects', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
   const out = transformer.transform(inputSchema);
@@ -906,15 +697,6 @@ test('list queries use correct pluralization', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -937,15 +719,6 @@ test('lowercase model names generate the correct get/list query arguments', () =
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
   const out = transformer.transform(inputSchema);
@@ -988,15 +761,6 @@ describe('RDS primary key transformer tests', () => {
 
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      featureFlags: ({
-        getBoolean: (featureName: string, defaultValue: boolean) => {
-          if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-            return true;
-          }
-
-          return defaultValue;
-        },
-      } as FeatureFlagProvider),
     });
     const out = transformer.transform(inputSchema, { modelToDatasourceMap });
     const schema = parse(out.schema);
@@ -1024,15 +788,6 @@ describe('RDS primary key transformer tests', () => {
 
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      featureFlags: ({
-        getBoolean: (featureName: string, defaultValue: boolean) => {
-          if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-            return true;
-          }
-
-          return defaultValue;
-        },
-      } as FeatureFlagProvider),
     });
     const out = transformer.transform(inputSchema, { modelToDatasourceMap });
     const schema = parse(out.schema);
@@ -1075,15 +830,6 @@ describe('RDS primary key transformer tests', () => {
 
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      featureFlags: ({
-        getBoolean: (featureName: string, defaultValue: boolean) => {
-          if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-            return true;
-          }
-
-          return defaultValue;
-        },
-      } as FeatureFlagProvider),
     });
     const out = transformer.transform(inputSchema, { modelToDatasourceMap });
     const schema = parse(out.schema);
@@ -1148,15 +894,6 @@ describe('RDS primary key transformer tests', () => {
 
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      featureFlags: ({
-        getBoolean: (featureName: string, defaultValue: boolean) => {
-          if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-            return true;
-          }
-
-          return defaultValue;
-        },
-      } as FeatureFlagProvider),
     });
     const out = transformer.transform(inputSchema, { modelToDatasourceMap });
     const schema = parse(out.schema);
@@ -1195,15 +932,6 @@ describe('RDS primary key transformer tests', () => {
 
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      featureFlags: ({
-        getBoolean: (featureName: string, defaultValue: boolean) => {
-          if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-            return true;
-          }
-
-          return defaultValue;
-        },
-      } as FeatureFlagProvider),
     });
     const out = transformer.transform(inputSchema, { modelToDatasourceMap });
     const schema = parse(out.schema);
@@ -1236,15 +964,6 @@ describe('RDS primary key transformer tests', () => {
 
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      featureFlags: ({
-        getBoolean: (featureName: string, defaultValue: boolean) => {
-          if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-            return true;
-          }
-
-          return defaultValue;
-        },
-      } as FeatureFlagProvider),
     });
     const out = transformer.transform(inputSchema, { modelToDatasourceMap });
     const schema = parse(out.schema);
@@ -1289,15 +1008,6 @@ describe('RDS primary key transformer tests', () => {
 
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      featureFlags: ({
-        getBoolean: (featureName: string, defaultValue: boolean) => {
-          if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-            return true;
-          }
-
-          return defaultValue;
-        },
-      } as FeatureFlagProvider),
     });
     const out = transformer.transform(inputSchema, { modelToDatasourceMap });
     const schema = parse(out.schema);

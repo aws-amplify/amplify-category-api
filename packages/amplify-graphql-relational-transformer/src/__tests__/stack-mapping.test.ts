@@ -1,7 +1,6 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { BelongsToTransformer, HasManyTransformer } from '..';
-import { featureFlags } from './test-helpers';
 
 describe('transformer stack mapping', () => {
   it('maps relational resolvers to specified stack', async () => {
@@ -19,7 +18,6 @@ describe('transformer stack mapping', () => {
       }
     `;
     const transformer = new GraphQLTransform({
-      featureFlags,
       transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
       stackMapping: {
         BlogpostsResolver: 'myCustomStack1',

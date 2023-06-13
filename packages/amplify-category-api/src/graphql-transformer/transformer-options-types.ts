@@ -3,9 +3,9 @@
  */
 import {
   AppSyncAuthConfiguration,
-  FeatureFlagProvider,
   Template,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   OverrideConfig,
   ResolverConfig,
@@ -43,7 +43,7 @@ export type TransformerProjectOptions = {
   legacyApiKeyEnabled?: boolean;
   disableResolverDeduping?: boolean;
   stackMapping: Record<string, string>;
-  featureFlags: FeatureFlagProvider;
+  transformParameters: TransformParameters;
 };
 
 type SanityCheckRules = {

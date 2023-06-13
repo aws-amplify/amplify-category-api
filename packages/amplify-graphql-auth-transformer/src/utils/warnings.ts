@@ -11,9 +11,7 @@ export const defaultIdentityClaimWarning = (context: TransformerContextProvider,
   const usesDefaultIdentityClaim = rules.some((rule) => rule.allow === 'owner' && rule.identityClaim === undefined);
 
   if (usesDefaultIdentityClaim) {
-    const hasFeatureFlagEnabled = context.featureFlags?.getBoolean('useSubUsernameForDefaultIdentityClaim');
-
-    if (hasFeatureFlagEnabled) return;
+    if (context.transformParameters.useSubUsernameForDefaultIdentityClaim) return;
 
     return ' WARNING: Amplify CLI will change the default identity claim from \'username\' '
         + 'to use \'sub::username\'. To continue using only usernames, set \'identityClaim: "username"\' on your '
