@@ -11,31 +11,26 @@ import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
-  getAuthParameters,
   rewriteAssets,
   preprocessGraphQLSchema,
   generateConstructExports,
   persistStackAssets,
 } from './internal';
-import type { AuthorizationMode, AmplifyGraphQlApiResources } from './types';
+import type { AuthorizationConfig, AmplifyGraphQlApiResources } from './types';
 import { TransformerPluginProvider } from '../../amplify-graphql-transformer-interfaces';
 import { parseUserDefinedSlots } from './internal/user-defined-slots';
 
-export type AmplifyApiCompatibilityLayer = {
+export type AmplifyGraphQlApiProps = {
+  schema: appsync.SchemaFile | string;
+  envOverride?: string;
+  apiName?: string;
+  authorizationConfig: AuthorizationConfig;
+  resolverConfig?: ResolverConfig;
   stackMappings?: Record<string, string>;
   slotOverrides?: Record<string, string>;
   customTransformers?: TransformerPluginProvider[];
   predictionsBucket?: s3.IBucket;
   transformParameters?: Partial<TransformParameters>
-};
-
-export type AmplifyGraphQlApiProps = {
-  schema: appsync.SchemaFile | string;
-  envOverride?: string;
-  apiName: string;
-  authorizationModes?: AuthorizationMode[];
-  resolverConfig?: ResolverConfig;
-  _compat?: AmplifyApiCompatibilityLayer;
 };
 
 export class AmplifyGraphQlApi extends Construct {
@@ -47,34 +42,42 @@ export class AmplifyGraphQlApi extends Construct {
 
     const {
       schema: modelSchema,
-      authorizationModes,
+      authorizationConfig,
       envOverride,
-      _compat,
       resolverConfig,
+      slotOverrides,
+      customTransformers,
+      predictionsBucket,
+      stackMappings,
+      transformParameters,
     } = props;
 
     const assetDir = fs.mkdtempSync(path.join(os.tmpdir(), 'transformer'));
 
-    const preprocessedSchema = preprocessGraphQLSchema(modelSchema);
-    const { authConfig, identityPoolId, adminRoles } = convertAuthorizationModesToTransformerAuthConfig(authorizationModes);
+    const {
+      authConfig,
+      identityPoolId,
+      adminRoles,
+      cfnIncludeParameters: authCfnIncludeParameters,
+    } = convertAuthorizationModesToTransformerAuthConfig(authorizationConfig);
 
     const {
       rootStack, stacks, resolvers, schema, functions,
     } = executeTransform({
-      schema: preprocessedSchema,
-      userDefinedSlots: _compat?.slotOverrides ? parseUserDefinedSlots(_compat.slotOverrides) : {},
+      schema: preprocessGraphQLSchema(modelSchema),
+      userDefinedSlots: slotOverrides ? parseUserDefinedSlots(slotOverrides) : {},
       stacks: {},
       transformersFactoryArgs: {
         authConfig,
         identityPoolId,
         adminRoles,
-        customTransformers: _compat?.customTransformers ?? [],
-        ...(_compat?.predictionsBucket ? { predictionsConfig: { bucketName: _compat.predictionsBucket.bucketName } } : {}),
+        customTransformers: customTransformers ?? [],
+        ...(predictionsBucket ? { predictionsConfig: { bucketName: predictionsBucket.bucketName } } : {}),
       },
       authConfig,
-      stackMapping: _compat?.stackMappings ?? {},
+      stackMapping: stackMappings ?? {},
       resolverConfig,
-      transformParameters: _compat?.transformParameters,
+      transformParameters,
     });
 
     rewriteAssets(this, {
@@ -104,11 +107,11 @@ export class AmplifyGraphQlApi extends Construct {
       templateFile: rootTemplateFile,
       loadNestedStacks: nestedStackConfig,
       parameters: {
-        AppSyncApiName: props.apiName,
+        AppSyncApiName: props.apiName ?? id,
         env: this.env,
         S3DeploymentBucket: cdk.DefaultStackSynthesizer.DEFAULT_FILE_ASSETS_BUCKET_NAME,
         S3DeploymentRootKey: cdk.DefaultStackSynthesizer.DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME,
-        ...getAuthParameters(authorizationModes),
+        ...authCfnIncludeParameters,
       },
       preserveLogicalIds: true,
     });

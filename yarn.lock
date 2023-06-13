@@ -429,6 +429,33 @@
     handlebars "4.7.7"
     yargs "^15.1.0"
 
+"@aws-amplify/graphql-transformer-core@1.3.2", "@aws-amplify/graphql-transformer-core@^1.2.1":
+  version "1.3.2"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-core/-/graphql-transformer-core-1.3.2.tgz#f6f8e2f4d34c7a81fb8b6c32b07b0fa7f8d8a3b0"
+  integrity sha512-vUt+b3Q9RJcpxSy9TWbUklC9fSCWbr1EVfy8Ue8IWIuqaPePqJMi81GUAlS2ZUoebGNCGgpwjm3kwAEYfUH0Xg==
+  dependencies:
+    "@aws-amplify/graphql-transformer-interfaces" "2.2.1"
+    aws-cdk-lib "~2.68.0"
+    constructs "^10.0.5"
+    fs-extra "^8.1.0"
+    graphql "^15.5.0"
+    graphql-transformer-common "4.24.6"
+    hjson "^3.2.2"
+    lodash "^4.17.21"
+    md5 "^2.3.0"
+    object-hash "^3.0.0"
+    ts-dedent "^2.0.0"
+    vm2 "^3.9.8"
+
+"@aws-amplify/graphql-transformer-interfaces@2.2.1", "@aws-amplify/graphql-transformer-interfaces@^2.1.1":
+  version "2.2.1"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-interfaces/-/graphql-transformer-interfaces-2.2.1.tgz#a7f37b4e10d79e2f2407a382217174639bcbab3c"
+  integrity sha512-uiPpLXWdBXbArJtW3xLIthszFaAGLa6Tn0xbpXvuOw8aWPf5nvo2s80Ppp44SPxn++tIS9WXSr9ZikPcCQsc4w==
+  dependencies:
+    aws-cdk-lib "~2.68.0"
+    constructs "^10.0.5"
+    graphql "^15.5.0"
+
 "@aws-amplify/graphql-types-generator@3.0.2":
   version "3.0.2"
   resolved "https://registry.npmjs.org/@aws-amplify/graphql-types-generator/-/graphql-types-generator-3.0.2.tgz#bf0a0ef54ea263408b0991484dcde7a3ffefd60a"
@@ -11870,6 +11897,21 @@ graphql-tag@^2.10.1, graphql-tag@^2.11.0:
   integrity sha512-FdSNcu2QQcWnM2VNvSCCDCVS5PpPqpzgFT8+GXzqJuoDd0CBncxCY278u4mhRO7tMgo2JjgJA5aZ+nWSQ/Z+xg==
   dependencies:
     tslib "^2.1.0"
+
+graphql-transformer-core@^8.0.3:
+  version "8.1.2"
+  resolved "https://registry.npmjs.org/graphql-transformer-core/-/graphql-transformer-core-8.1.2.tgz#11a19d63e134ae449d45ea36178cf5b9e2552e3a"
+  integrity sha512-QnTXh3IKnzstT93GPVCSbSi/4AIdLCIj9cbjvDgbs8THUoOOszbVBljO+7xjTxgnUx3omNbF73pDrvpB2MrEEA==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "1.3.2"
+    "@aws-amplify/graphql-transformer-interfaces" "2.2.1"
+    cloudform-types "^4.2.0"
+    deep-diff "^1.0.2"
+    fs-extra "^8.1.0"
+    glob "^7.2.0"
+    graphql "^15.5.0"
+    graphql-transformer-common "4.24.6"
+    lodash "^4.17.21"
 
 graphql@15.8.0, graphql@^15.5.0:
   version "15.8.0"

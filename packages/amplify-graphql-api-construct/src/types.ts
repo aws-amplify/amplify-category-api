@@ -5,23 +5,26 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
-export type IamAuthorizationMode = {
-  type: 'AWS_IAM';
-  userRoleConfig?: {
-    identityPoolId: string;
-    authRole: iam.IRole;
-    unauthRole: iam.IRole;
-  },
+export type IAMAuthorizationConfig = {
+  identityPoolId?: string;
+  authRole?: iam.IRole;
+  unauthRole?: iam.IRole;
   adminRoles?: iam.IRole[];
 };
 
-export type UserPoolAuthorizationMode = {
-  type: 'AMAZON_COGNITO_USER_POOLS';
+export type IAMAuthorizationConfigWithMode = IAMAuthorizationConfig & {
+  type: 'AWS_IAM';
+};
+
+export type UserPoolAuthorizationConfig = {
   userPool: cognito.IUserPool;
 };
 
-export type OidcAuthorizationMode = {
-  type: 'OPENID_CONNECT';
+export type UserPoolAuthorizationConfigWithMode = UserPoolAuthorizationConfig & {
+  type: 'AMAZON_COGNITO_USER_POOLS';
+};
+
+export type OIDCAuthorizationConfig = {
   oidcProviderName: string;
   oidcIssuerUrl: string;
   clientId?: string;
@@ -29,24 +32,50 @@ export type OidcAuthorizationMode = {
   tokenExpiryFromIssue: cdk.Duration;
 };
 
-export type ApiKeyAuthorizationMode = {
-  type: 'API_KEY';
+export type OIDCAuthorizationConfigWithMode = OIDCAuthorizationConfig & {
+  type: 'OPENID_CONNECT';
+};
+
+export type ApiKeyAuthorizationConfig = {
   description?: string;
   expires: cdk.Duration;
 };
 
-export type LambdaAuthorizationMode = {
-  type: 'AWS_LAMBDA';
+export type ApiKeyAuthorizationConfigWithMode = ApiKeyAuthorizationConfig & {
+  type: 'API_KEY';
+};
+
+export type LambdaAuthorizationConfig = {
   function: lambda.IFunction;
   ttl: cdk.Duration;
 };
 
+export type LambdaAuthorizationConfigWithMode = LambdaAuthorizationConfig & {
+  type: 'AWS_LAMBDA';
+};
+
 export type AuthorizationMode =
-  | IamAuthorizationMode
-  | UserPoolAuthorizationMode
-  | OidcAuthorizationMode
-  | ApiKeyAuthorizationMode
-  | LambdaAuthorizationMode;
+  | 'AWS_IAM'
+  | 'AMAZON_COGNITO_USER_POOLS'
+  | 'OPENID_CONNECT'
+  | 'API_KEY'
+  | 'AWS_LAMBDA';
+
+export type AuthorizationConfigMode =
+  | IAMAuthorizationConfigWithMode
+  | UserPoolAuthorizationConfigWithMode
+  | OIDCAuthorizationConfigWithMode
+  | ApiKeyAuthorizationConfigWithMode
+  | LambdaAuthorizationConfigWithMode;
+
+export type AuthorizationConfig = {
+  defaultAuthMode: AuthorizationMode;
+  iamConfig?: IAMAuthorizationConfig;
+  userPoolConfig?: UserPoolAuthorizationConfig;
+  oidcConfig?: OIDCAuthorizationConfig;
+  apiKeyConfig?: ApiKeyAuthorizationConfig;
+  lambdaConfig?: LambdaAuthorizationConfig;
+};
 
 export type AmplifyGraphQlApiResources = {
   api: appsync.CfnGraphQLApi;

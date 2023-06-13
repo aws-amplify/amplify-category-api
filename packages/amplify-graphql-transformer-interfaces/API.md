@@ -318,12 +318,6 @@ export interface OpenSearchDirectiveStack {
 }
 
 // @public (undocumented)
-export interface OverridesProvider {
-    // (undocumented)
-    (): AmplifyApiGraphQlResourceStackTemplate;
-}
-
-// @public (undocumented)
 export enum QueryFieldType {
     // (undocumented)
     GET = "GET",
@@ -518,8 +512,6 @@ export interface TransformerContextProvider {
     datasourceSecretParameterLocations: Map<string, TransformerSecrets>;
     // (undocumented)
     getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
-    // (undocumented)
-    getResourceOverrides: OverridesProvider;
     // (undocumented)
     inputDocument: DocumentNode;
     // (undocumented)

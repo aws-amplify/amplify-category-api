@@ -1,30 +1,29 @@
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationMode, IamAuthorizationMode, UserPoolAuthorizationMode } from '../types';
+import { AuthorizationConfig, AuthorizationConfigMode } from '../types';
 
 /**
  * Converts a single auth mode config into the amplify-internal representation.
  * @param authMode C
  */
-const convertAuthModeToAuthProvider = (authMode: AuthorizationMode): AppSyncAuthConfigurationEntry => {
+const convertAuthModeToAuthProvider = (authMode: AuthorizationConfigMode): AppSyncAuthConfigurationEntry => {
+  const authenticationType = authMode.type;
   switch (authMode.type) {
     case 'API_KEY': return {
-      authenticationType: 'API_KEY',
+      authenticationType,
       apiKeyConfig: {
         description: authMode.description,
         apiKeyExpirationDays: authMode.expires.toDays(),
       },
     };
-    case 'AWS_IAM': return {
-      authenticationType: 'AWS_IAM',
-    };
+    case 'AWS_IAM': return { authenticationType };
     case 'AMAZON_COGNITO_USER_POOLS': return {
-      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      authenticationType,
       userPoolConfig: {
         userPoolId: authMode.userPool.userPoolId,
       },
     };
     case 'OPENID_CONNECT': return {
-      authenticationType: 'OPENID_CONNECT',
+      authenticationType,
       openIDConnectConfig: {
         name: authMode.oidcProviderName,
         issuerUrl: authMode.oidcIssuerUrl,
@@ -34,14 +33,34 @@ const convertAuthModeToAuthProvider = (authMode: AuthorizationMode): AppSyncAuth
       },
     };
     case 'AWS_LAMBDA': return {
-      authenticationType: 'AWS_LAMBDA',
+      authenticationType,
       lambdaAuthorizerConfig: {
         lambdaFunction: authMode.function.functionName,
         ttlSeconds: authMode.ttl.toSeconds(),
       },
     };
-    default: throw new Error(`Unexpected AuthMode type ${(authMode as any).type} encountered.`);
+    default: throw new Error(`Unexpected AuthMode type ${authenticationType} encountered.`);
   }
+};
+
+/**
+ * Given an appsync auth configuration, convert into appsync auth provider setup.
+ * @param authConfig the config to transform
+ * @returns the appsync config object.
+ */
+const convertAuthConfigToAppSyncAuth = (authConfig: AuthorizationConfig): AppSyncAuthConfiguration => {
+  const authModes = [
+    authConfig.apiKeyConfig ? { type: 'API_KEY', ...authConfig.apiKeyConfig } : null,
+    authConfig.lambdaConfig ? { type: 'AWS_LAMBDA', ...authConfig.lambdaConfig } : null,
+    authConfig.oidcConfig ? { type: 'OPENID_CONNECT', ...authConfig.oidcConfig } : null,
+    authConfig.userPoolConfig ? { type: 'AMAZON_COGNITO_USER_POOLS', ...authConfig.userPoolConfig } : null,
+    authConfig.iamConfig ? { type: 'AWS_IAM', ...authConfig.iamConfig } : null,
+  ].filter((mode) => mode) as AuthorizationConfigMode[];
+  const authProviders = authModes.map(convertAuthModeToAuthProvider);
+  return {
+    defaultAuthentication: authProviders.filter((provider) => provider.authenticationType === authConfig.defaultAuthMode)[0],
+    additionalAuthenticationProviders: authProviders.filter((provider) => provider.authenticationType !== authConfig.defaultAuthMode),
+  };
 };
 
 export interface AuthConfig {
@@ -51,73 +70,32 @@ export interface AuthConfig {
   adminRoles?: Array<string>;
   /** when authorizing private/public @auth can also check authenticated/unauthenticated status for a given identityPoolId */
   identityPoolId?: string;
+  /**
+   * Params to include the the cfnInclude statement, this is striclty part of the shim for now, and should be refactored out pre-GA.
+   */
+  cfnIncludeParameters: Record<string, any>;
 }
 
 /**
  * Convert the list of auth modes into the necessary flags and params (effectively a reducer on the rule list)
- * @param authorizationModes the list of auth modes configured on the API.
+ * @param authConfig the list of auth modes configured on the API.
  * @returns the AuthConfig which the AuthTransformer needs as input.
  */
-export const convertAuthorizationModesToTransformerAuthConfig = (authorizationModes?: AuthorizationMode[]): AuthConfig => {
-  // Split authmodes into a default and remaining, and convert into transformer-representation.
-  if (!authorizationModes || authorizationModes.length === 0) {
-    throw new Error('At least a single AuthorizationMode must be configured on the API.');
-  }
-  const [
-    defaultAuthentication,
-    ...additionalAuthenticationProviders
-  ] = authorizationModes.map((authMode) => convertAuthModeToAuthProvider(authMode));
-
-  // Extract all admin roles from all IAM Authorization modes.
-  const adminRoles = authorizationModes
-    .filter((authMode) => authMode.type === 'AWS_IAM')
-    .flatMap((iamAuthMode) => (iamAuthMode as IamAuthorizationMode).adminRoles ?? [])
-    .map((role) => role.roleArn);
-
-  // Extract identityPoolId if configured on the API, throw if more than one is provided.
-  const iamUserRoleModes = authorizationModes.filter((authMode) => authMode.type === 'AWS_IAM');
-  if (iamUserRoleModes.length > 1) {
-    throw new Error(`Expected at most a single AWS_IAM configuration on the API, found ${iamUserRoleModes.length}`);
-  }
-  const identityPoolId = iamUserRoleModes.length === 1
-    ? (iamUserRoleModes[0] as IamAuthorizationMode).userRoleConfig?.identityPoolId
-    : undefined;
-
-  return {
-    authConfig: {
-      defaultAuthentication,
-      additionalAuthenticationProviders,
-    },
-    adminRoles,
-    identityPoolId,
-  };
-};
+export const convertAuthorizationModesToTransformerAuthConfig = (authConfig: AuthorizationConfig): AuthConfig => ({
+  authConfig: convertAuthConfigToAppSyncAuth(authConfig),
+  adminRoles: authConfig.iamConfig?.adminRoles?.map((role) => role.roleArn) ?? [],
+  identityPoolId: authConfig.iamConfig?.identityPoolId,
+  cfnIncludeParameters: getAuthParameters(authConfig),
+});
 
 /**
  * Hacky, but get the required auth-related params to wire into the CfnInclude statement.
- * @param authorizationModes the auth modes provided to the construct.
+ * @param authConfig the auth modes provided to the construct.
  * @returns a record of params to be consumed by the CfnInclude statement.
  */
-export const getAuthParameters = (authorizationModes: AuthorizationMode[] = []): Record<string, any> => {
-  // Extract identityPoolId if configured on the API, throw if more than one is provided.
-  const userPoolAuthModes = authorizationModes.filter((authMode) => authMode.type === 'AMAZON_COGNITO_USER_POOLS');
-  if (userPoolAuthModes.length > 1) {
-    throw new Error(`Expected at most a single AMAZON_COGNITO_USER_POOLS auth mode to be configured on the API, found ${userPoolAuthModes.length}`);
-  }
-  const userPoolId = userPoolAuthModes.length === 1
-    ? (userPoolAuthModes[0] as UserPoolAuthorizationMode).userPool.userPoolId
-    : undefined;
-
-  const iamAuthModes = authorizationModes.filter((authMode) => authMode.type === 'AWS_IAM');
-  if (iamAuthModes.length > 1) {
-    throw new Error(`Expected at most a single AWS_IAM auth mode to be configured on the API, found ${iamAuthModes.length}`);
-  }
-  const iamAuthMode = iamAuthModes[0] as IamAuthorizationMode | undefined;
-
-  return {
-    ...(userPoolId ? { AuthCognitoUserPoolId: userPoolId } : {}),
-    ...(iamAuthMode?.userRoleConfig?.authRole ? { authRoleName: iamAuthMode.userRoleConfig.authRole.roleName } : {}),
-    ...(iamAuthMode?.userRoleConfig?.unauthRole ? { unauthRoleName: iamAuthMode.userRoleConfig.unauthRole.roleName } : {}),
-    ...(iamAuthMode?.adminRoles ? { adminRoleArn: iamAuthMode.adminRoles.map((r) => r.roleArn).join(',') } : {}),
-  };
-};
+const getAuthParameters = (authConfig: AuthorizationConfig): Record<string, any> => ({
+  ...(authConfig.userPoolConfig?.userPool ? { AuthCognitoUserPoolId: authConfig.userPoolConfig.userPool.userPoolId } : {}),
+  ...(authConfig?.iamConfig?.authRole ? { authRoleName: authConfig.iamConfig.authRole.roleName } : {}),
+  ...(authConfig?.iamConfig?.unauthRole ? { unauthRoleName: authConfig.iamConfig.unauthRole.roleName } : {}),
+  ...(authConfig.iamConfig?.adminRoles ? { adminRoleArn: authConfig.iamConfig.adminRoles.map((r) => r.roleArn).join(',') } : {}),
+});
