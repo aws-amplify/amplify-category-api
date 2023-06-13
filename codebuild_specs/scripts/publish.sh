@@ -18,7 +18,7 @@ if [ -z "$GITHUB_USER" ]; then
   echo "GITHUB_USER is missing"
   exit 1
 else
-  git config --global user.email $GITHUB_USER
+  git config --global user.name $GITHUB_USER
 fi
 
 if [[ "$BRANCH_NAME" =~ ^tagged-release ]]; then

@@ -393,5 +393,5 @@ function deploy {
   loadCacheFromBuildJob
   echo "Authenticate with NPM"
   echo "//registry.npmjs.org/:_authToken=$NPM_PUBLISH_TOKEN" > ~/.npmrc
-  source ./codebuild_specs/scripts/publish.sh
+  ./codebuild_specs/scripts/publish.sh
 }
