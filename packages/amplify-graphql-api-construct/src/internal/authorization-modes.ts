@@ -1,9 +1,23 @@
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationConfig, AuthorizationConfigMode } from '../types';
+import {
+  ApiKeyAuthorizationConfig,
+  AuthorizationConfig,
+  IAMAuthorizationConfig,
+  LambdaAuthorizationConfig,
+  OIDCAuthorizationConfig,
+  UserPoolAuthorizationConfig,
+} from '../types';
+
+type AuthorizationConfigMode =
+  | IAMAuthorizationConfig & { type: 'AWS_IAM' }
+  | UserPoolAuthorizationConfig & { type: 'AMAZON_COGNITO_USER_POOLS' }
+  | OIDCAuthorizationConfig & { type: 'OPENID_CONNECT' }
+  | ApiKeyAuthorizationConfig & { type: 'API_KEY' }
+  | LambdaAuthorizationConfig & { type: 'AWS_LAMBDA' };
 
 /**
  * Converts a single auth mode config into the amplify-internal representation.
- * @param authMode C
+ * @param authMode the auth mode to convert into the Appsync CDK representation.
  */
 const convertAuthModeToAuthProvider = (authMode: AuthorizationConfigMode): AppSyncAuthConfigurationEntry => {
   const authenticationType = authMode.type;
@@ -49,6 +63,7 @@ const convertAuthModeToAuthProvider = (authMode: AuthorizationConfigMode): AppSy
  * @returns the appsync config object.
  */
 const convertAuthConfigToAppSyncAuth = (authConfig: AuthorizationConfig): AppSyncAuthConfiguration => {
+  // Convert auth modes into an array of appsync configs, and include the type so we can use that for switching and partitioning later.
   const authModes = [
     authConfig.apiKeyConfig ? { type: 'API_KEY', ...authConfig.apiKeyConfig } : null,
     authConfig.lambdaConfig ? { type: 'AWS_LAMBDA', ...authConfig.lambdaConfig } : null,
@@ -57,6 +72,24 @@ const convertAuthConfigToAppSyncAuth = (authConfig: AuthorizationConfig): AppSyn
     authConfig.iamConfig ? { type: 'AWS_IAM', ...authConfig.iamConfig } : null,
   ].filter((mode) => mode) as AuthorizationConfigMode[];
   const authProviders = authModes.map(convertAuthModeToAuthProvider);
+
+  // Validate inputs make sense, needs at least one mode, and a default mode is required if there are multiple modes.
+  if (authProviders.length === 0) {
+    throw new Error('At least one auth config is required, but none were found.');
+  }
+  if (authProviders.length > 1 && !authConfig.defaultAuthMode) {
+    throw new Error('A defaultAuthMode is required if multiple auth modes are configured.');
+  }
+
+  // In the case of a single mode, defaultAuthMode is not required, just use the provided value.
+  if (authProviders.length === 1) {
+    return {
+      defaultAuthentication: authProviders[0],
+      additionalAuthenticationProviders: [],
+    };
+  }
+
+  // For multi-auth, partition into the defaultMode and non-default modes.
   return {
     defaultAuthentication: authProviders.filter((provider) => provider.authenticationType === authConfig.defaultAuthMode)[0],
     additionalAuthenticationProviders: authProviders.filter((provider) => provider.authenticationType !== authConfig.defaultAuthMode),

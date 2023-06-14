@@ -4,59 +4,26 @@
 
 ```ts
 
-import * as appsync from 'aws-cdk-lib/aws-appsync';
-import { BackedDataSource } from 'aws-cdk-lib/aws-appsync';
-import { BaseDataSource } from 'aws-cdk-lib/aws-appsync';
-import * as cdk from 'aws-cdk-lib';
-import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
-import { CfnParameter } from 'aws-cdk-lib';
-import { CfnParameterProps } from 'aws-cdk-lib';
+import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
+import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
+import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
+import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
+import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
+import { CfnPolicy } from 'aws-cdk-lib/aws-iam';
 import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { CfnResource } from 'aws-cdk-lib';
-import * as cognito from 'aws-cdk-lib/aws-cognito';
+import { CfnRole } from 'aws-cdk-lib/aws-iam';
+import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
-import { DirectiveDefinitionNode } from 'graphql';
-import { DirectiveNode } from 'graphql';
-import { DocumentNode } from 'graphql';
 import { Duration } from 'aws-cdk-lib';
-import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
-import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
-import { EnumTypeDefinitionNode } from 'graphql';
-import { EnumTypeExtensionNode } from 'graphql';
-import { EnumValueDefinitionNode } from 'graphql';
-import { FieldDefinitionNode } from 'graphql';
-import { FieldNode } from 'graphql';
-import { Grant } from 'aws-cdk-lib/aws-iam';
-import { GraphqlApiBase } from 'aws-cdk-lib/aws-appsync';
-import { HttpDataSource } from 'aws-cdk-lib/aws-appsync';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { IConstruct } from 'constructs';
+import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
-import { IGrantable } from 'aws-cdk-lib/aws-iam';
-import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
-import { InputObjectTypeDefinitionNode } from 'graphql';
-import { InputObjectTypeExtensionNode } from 'graphql';
-import { InputValueDefinitionNode } from 'graphql';
-import { InterfaceTypeDefinitionNode } from 'graphql';
-import { InterfaceTypeExtensionNode } from 'graphql';
 import { IRole } from 'aws-cdk-lib/aws-iam';
-import { ITable } from 'aws-cdk-lib/aws-dynamodb';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
-import { NoneDataSource } from 'aws-cdk-lib/aws-appsync';
-import { ObjectTypeDefinitionNode } from 'graphql';
-import { ObjectTypeExtensionNode } from 'graphql';
+import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import { ScalarTypeDefinitionNode } from 'graphql';
-import { SchemaDefinitionNode } from 'graphql';
-import { Stack } from 'aws-cdk-lib';
-import type { TransformParameters as TransformParameters_2 } from '@aws-amplify/graphql-transformer-interfaces';
-import { TypeDefinitionNode } from 'graphql';
-import { TypeSystemDefinitionNode } from 'graphql';
-import { UnionTypeDefinitionNode } from 'graphql';
-import { UnionTypeExtensionNode } from 'graphql';
+import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
+import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export class AmplifyGraphQlApi extends Construct {
@@ -69,7 +36,7 @@ export class AmplifyGraphQlApi extends Construct {
 
 // @public (undocumented)
 export type AmplifyGraphQlApiProps = {
-    schema: appsync.SchemaFile | string;
+    schema: AmplifyGraphQlApiSchema;
     envOverride?: string;
     apiName?: string;
     authorizationConfig: AuthorizationConfig;
@@ -77,38 +44,36 @@ export type AmplifyGraphQlApiProps = {
     stackMappings?: Record<string, string>;
     slotOverrides?: Record<string, string>;
     customTransformers?: TransformerPluginProvider[];
-    predictionsBucket?: s3.IBucket;
-    transformParameters?: Partial<TransformParameters_2>;
+    predictionsBucket?: IBucket;
+    transformParameters?: Partial<TransformParameters>;
 };
 
 // @public (undocumented)
 export type AmplifyGraphQlApiResources = {
-    api: appsync.CfnGraphQLApi;
-    schema: appsync.CfnGraphQLSchema;
-    apiKey?: appsync.CfnApiKey;
-    resolvers: Record<string, appsync.CfnResolver>;
-    appsyncFunctions: Record<string, appsync.CfnFunctionConfiguration>;
-    dataSources: Record<string, appsync.CfnDataSource>;
-    tables: Record<string, dynamodb.CfnTable>;
-    roles: Record<string, iam.CfnRole>;
-    policies: Record<string, iam.CfnPolicy>;
-    additionalResources: Record<string, cdk.CfnResource>;
+    api: CfnGraphQLApi;
+    schema: CfnGraphQLSchema;
+    apiKey?: CfnApiKey;
+    resolvers: Record<string, CfnResolver>;
+    appsyncFunctions: Record<string, CfnFunctionConfiguration>;
+    dataSources: Record<string, CfnDataSource>;
+    tables: Record<string, CfnTable>;
+    roles: Record<string, CfnRole>;
+    policies: Record<string, CfnPolicy>;
+    additionalResources: Record<string, CfnResource>;
 };
+
+// @public (undocumented)
+export type AmplifyGraphQlApiSchema = SchemaFile | SchemaFile[] | string;
 
 // @public (undocumented)
 export type ApiKeyAuthorizationConfig = {
     description?: string;
-    expires: cdk.Duration;
-};
-
-// @public (undocumented)
-export type ApiKeyAuthorizationConfigWithMode = ApiKeyAuthorizationConfig & {
-    type: 'API_KEY';
+    expires: Duration;
 };
 
 // @public (undocumented)
 export type AuthorizationConfig = {
-    defaultAuthMode: AuthorizationMode;
+    defaultAuthMode?: 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
     iamConfig?: IAMAuthorizationConfig;
     userPoolConfig?: UserPoolAuthorizationConfig;
     oidcConfig?: OIDCAuthorizationConfig;
@@ -117,33 +82,45 @@ export type AuthorizationConfig = {
 };
 
 // @public (undocumented)
-export type AuthorizationConfigMode = IAMAuthorizationConfigWithMode | UserPoolAuthorizationConfigWithMode | OIDCAuthorizationConfigWithMode | ApiKeyAuthorizationConfigWithMode | LambdaAuthorizationConfigWithMode;
+export type CreateSlotOverrideBaseParams = {
+    fieldName: string;
+    slotIndex: number;
+    templateType: 'req' | 'res';
+};
 
 // @public (undocumented)
-export type AuthorizationMode = 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
+export type CreateSlotOverrideMutationParams = CreateSlotOverrideBaseParams & {
+    typeName: 'Mutation';
+    slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preUpdate' | 'postUpdate' | 'finish';
+};
+
+// @public (undocumented)
+export type CreateSlotOverrideParams = CreateSlotOverrideMutationParams | CreateSlotOverrideQueryParams | CreateSlotOverrideSubscriptionParams;
+
+// @public (undocumented)
+export type CreateSlotOverrideQueryParams = CreateSlotOverrideBaseParams & {
+    typeName: 'Query';
+    slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
+};
+
+// @public (undocumented)
+export type CreateSlotOverrideSubscriptionParams = CreateSlotOverrideBaseParams & {
+    typeName: 'Subscription';
+    slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preSubscribe';
+};
 
 // @public (undocumented)
 export type IAMAuthorizationConfig = {
     identityPoolId?: string;
-    authRole?: iam.IRole;
-    unauthRole?: iam.IRole;
-    adminRoles?: iam.IRole[];
-};
-
-// @public (undocumented)
-export type IAMAuthorizationConfigWithMode = IAMAuthorizationConfig & {
-    type: 'AWS_IAM';
+    authRole?: IRole;
+    unauthRole?: IRole;
+    adminRoles?: IRole[];
 };
 
 // @public (undocumented)
 export type LambdaAuthorizationConfig = {
-    function: lambda.IFunction;
-    ttl: cdk.Duration;
-};
-
-// @public (undocumented)
-export type LambdaAuthorizationConfigWithMode = LambdaAuthorizationConfig & {
-    type: 'AWS_LAMBDA';
+    function: IFunction;
+    ttl: Duration;
 };
 
 // @public (undocumented)
@@ -151,33 +128,17 @@ export type OIDCAuthorizationConfig = {
     oidcProviderName: string;
     oidcIssuerUrl: string;
     clientId?: string;
-    tokenExpiryFromAuth: cdk.Duration;
-    tokenExpiryFromIssue: cdk.Duration;
+    tokenExpiryFromAuth: Duration;
+    tokenExpiryFromIssue: Duration;
 };
 
 // @public (undocumented)
-export type OIDCAuthorizationConfigWithMode = OIDCAuthorizationConfig & {
-    type: 'OPENID_CONNECT';
-};
-
-// Warning: (ae-forgotten-export) The symbol "CreateSlotOverrideNameProps" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export const slotName: (p: CreateSlotOverrideNameProps) => string;
+export const slotName: (params: CreateSlotOverrideParams) => string;
 
 // @public (undocumented)
 export type UserPoolAuthorizationConfig = {
-    userPool: cognito.IUserPool;
+    userPool: IUserPool;
 };
-
-// @public (undocumented)
-export type UserPoolAuthorizationConfigWithMode = UserPoolAuthorizationConfig & {
-    type: 'AMAZON_COGNITO_USER_POOLS';
-};
-
-// Warnings were encountered during analysis:
-//
-// src/amplify-graphql-api.ts:31:3 - (ae-forgotten-export) The symbol "TransformerPluginProvider" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

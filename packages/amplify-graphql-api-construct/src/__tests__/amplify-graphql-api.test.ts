@@ -18,7 +18,6 @@ describe('AmplifyGraphQlApi', () => {
         }
       `,
       authorizationConfig: {
-        defaultAuthMode: 'AMAZON_COGNITO_USER_POOLS',
         userPoolConfig: { userPool },
       },
     });
@@ -54,7 +53,6 @@ describe('AmplifyGraphQlApi', () => {
         }
       `,
       authorizationConfig: {
-        defaultAuthMode: 'AMAZON_COGNITO_USER_POOLS',
         userPoolConfig: { userPool },
       },
       resolverConfig: {
@@ -104,7 +102,6 @@ describe('AmplifyGraphQlApi', () => {
         }
       `,
       authorizationConfig: {
-        defaultAuthMode: 'AMAZON_COGNITO_USER_POOLS',
         userPoolConfig: { userPool },
       },
     });

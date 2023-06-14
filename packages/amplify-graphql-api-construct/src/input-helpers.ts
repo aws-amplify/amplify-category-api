@@ -1,22 +1,54 @@
-export type TypeName = 'Mutation' | 'Query' | 'Subscription';
-export type QuerySlot = 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
-export type MutationSlot = 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preUpdate' | 'postUpdate' | 'finish';
-export type SubscriptionSlot = 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preSubscribe';
-export type TemplateType = 'req' | 'res';
-
-export type CreateSlotOverrideNameProps = {
-  typeName: TypeName;
+/**
+ * Common slot parameters.
+ */
+export type CreateSlotOverrideBaseParams = {
   fieldName: string;
-  slotName: QuerySlot | MutationSlot | SubscriptionSlot;
   slotIndex: number;
-  templateType: TemplateType;
+  templateType: 'req' | 'res';
 };
 
-export const slotName = (p: CreateSlotOverrideNameProps): string => [
-  p.typeName,
-  p.fieldName,
-  p.slotName,
-  p.slotIndex,
-  p.templateType,
+/**
+ * Slot types for Mutation Resolvers.
+ */
+export type CreateSlotOverrideMutationParams = CreateSlotOverrideBaseParams & {
+  typeName: 'Mutation';
+  slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preUpdate' | 'postUpdate' | 'finish';
+};
+
+/**
+ * Slot types for Query Resolvers.
+ */
+export type CreateSlotOverrideQueryParams = CreateSlotOverrideBaseParams & {
+  typeName: 'Query';
+  slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
+};
+
+/**
+ * Slot types for Subscription Resolvers.
+ */
+export type CreateSlotOverrideSubscriptionParams = CreateSlotOverrideBaseParams & {
+  typeName: 'Subscription';
+  slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preSubscribe';
+};
+
+/**
+ * Input params to uniquely identify the slot which is being overridden.
+ */
+export type CreateSlotOverrideParams =
+  | CreateSlotOverrideMutationParams
+  | CreateSlotOverrideQueryParams
+  | CreateSlotOverrideSubscriptionParams;
+
+/**
+ * Given a set of strongly typed input params, generate a valid transformer slot name.
+ * @param params the slot configuration
+ * @returns the slot id
+ */
+export const slotName = (params: CreateSlotOverrideParams): string => [
+  params.typeName,
+  params.fieldName,
+  params.slotName,
+  params.slotIndex,
+  params.templateType,
   'vtl',
 ].join('.');

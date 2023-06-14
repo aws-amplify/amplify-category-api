@@ -1,9 +1,16 @@
 import { Template } from '@aws-amplify/graphql-transformer-interfaces';
-import * as cdk from 'aws-cdk-lib';
-import * as appsync from 'aws-cdk-lib/aws-appsync';
-import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cfninclude from 'aws-cdk-lib/cloudformation-include';
+import { CfnResource } from 'aws-cdk-lib';
+import {
+  CfnGraphQLApi,
+  CfnGraphQLSchema,
+  CfnApiKey,
+  CfnResolver,
+  CfnFunctionConfiguration,
+  CfnDataSource,
+} from 'aws-cdk-lib/aws-appsync';
+import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
+import { CfnRole, CfnPolicy } from 'aws-cdk-lib/aws-iam';
+import { CfnInclude } from 'aws-cdk-lib/cloudformation-include';
 import { AmplifyGraphQlApiResources } from '../types';
 
 /**
@@ -31,7 +38,7 @@ type StackResourceMapping = {
 export const generateConstructExports = (
   rootStack: Template,
   stacks: Record<string, Template>,
-  transformerStack: cfninclude.CfnInclude,
+  transformerStack: CfnInclude,
 ): AmplifyGraphQlApiResources => {
   const singletonReferenceMapping: Record<string, StackResourceMapping> = {};
   const cfnResolverResourceMapping: StackResourceMapping[] = [];
@@ -92,7 +99,7 @@ export const generateConstructExports = (
     throw new Error('expected an api and schema');
   }
 
-  const getL1Resource = <T extends cdk.CfnResource>({ stackName, id }: StackResourceMapping): T => {
+  const getL1Resource = <T extends CfnResource>({ stackName, id }: StackResourceMapping): T => {
     const referencedStack = stackName
       ? transformerStack.getNestedStack(stackName).includedTemplate
       : transformerStack;
@@ -100,20 +107,20 @@ export const generateConstructExports = (
   };
 
   // eslint-disable-next-line arrow-body-style
-  const getL1Resources = <T extends cdk.CfnResource>(mappings: StackResourceMapping[]): Record<string, T> => {
+  const getL1Resources = <T extends CfnResource>(mappings: StackResourceMapping[]): Record<string, T> => {
     return Object.fromEntries(mappings.map((stackResourceMapping) => [stackResourceMapping.id, getL1Resource<T>(stackResourceMapping)]));
   };
 
   return {
-    api: getL1Resource<appsync.CfnGraphQLApi>(apiResourceMapping),
-    schema: getL1Resource<appsync.CfnGraphQLSchema>(schemaResourceMapping),
-    apiKey: apiKeyResourceMapping && <appsync.CfnApiKey>getL1Resource(apiKeyResourceMapping),
-    resolvers: getL1Resources<appsync.CfnResolver>(cfnResolverResourceMapping),
-    appsyncFunctions: getL1Resources<appsync.CfnFunctionConfiguration>(cfnAppSyncFunctionResourceMapping),
-    dataSources: getL1Resources<appsync.CfnDataSource>(cfnDataSourceResourceMapping),
-    tables: getL1Resources<dynamodb.CfnTable>(cfnTableResourceMapping),
-    roles: getL1Resources<iam.CfnRole>(cfnRoleResourceMapping),
-    policies: getL1Resources<iam.CfnPolicy>(cfnPolicyResourceMapping),
+    api: getL1Resource<CfnGraphQLApi>(apiResourceMapping),
+    schema: getL1Resource<CfnGraphQLSchema>(schemaResourceMapping),
+    apiKey: apiKeyResourceMapping && <CfnApiKey>getL1Resource(apiKeyResourceMapping),
+    resolvers: getL1Resources<CfnResolver>(cfnResolverResourceMapping),
+    appsyncFunctions: getL1Resources<CfnFunctionConfiguration>(cfnAppSyncFunctionResourceMapping),
+    dataSources: getL1Resources<CfnDataSource>(cfnDataSourceResourceMapping),
+    tables: getL1Resources<CfnTable>(cfnTableResourceMapping),
+    roles: getL1Resources<CfnRole>(cfnRoleResourceMapping),
+    policies: getL1Resources<CfnPolicy>(cfnPolicyResourceMapping),
     additionalResources: getL1Resources(additionalResourceMapping),
   };
 };

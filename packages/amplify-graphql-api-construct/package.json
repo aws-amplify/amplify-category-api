@@ -19,10 +19,11 @@
   },
   "keywords": [
     "graphql",
-    "cloudformation",
+    "cdk",
     "aws",
     "amplify",
-    "api"
+    "api",
+    "appsync"
   ],
   "publishConfig": {
     "access": "public"
@@ -33,8 +34,7 @@
     "@aws-amplify/graphql-transformer-interfaces": "2.2.2-agqlac.1",
     "aws-cdk-lib": "~2.68.0",
     "constructs": "^10.0.5",
-    "fs-extra": "^8.1.0",
-    "lodash": "^4.17.21"
+    "fs-extra": "^8.1.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
