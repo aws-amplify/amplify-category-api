@@ -1,6 +1,6 @@
 {
   "name": "agqlac",
-  "version": "0.1.0-agqlac.2",
+  "version": "0.1.0-agqlac.3",
   "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer.",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer": "0.1.0-agqlac.0",
+    "@aws-amplify/graphql-transformer": "0.1.0-agqlac.1",
     "@aws-amplify/graphql-transformer-core": "1.3.3-agqlac.1",
     "@aws-amplify/graphql-transformer-interfaces": "2.2.2-agqlac.1",
     "aws-cdk-lib": "~2.68.0",
