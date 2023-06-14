@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# set exit on error to true
+set -e
+# load .env
+set -o allexport
+source ./scripts/.env set
+
+REGION=us-east-1
+export CURR_BRANCH=$(git branch --show-current)
+
+function authenticate {
+    account_number=$1
+    role_name=$2
+    profile_name=$3
+    echo Authenticating terminal...
+    mwinit
+    echo Loading account credentials for Account $account_number with Role: $role_name...
+    ada cred update --profile="${profile_name}" --account="${account_number}" --role=${role_name} --provider=isengard --once
+    aws configure set region $REGION --profile $profile_name
+}
+
+function triggerProjectBatch {
+    account_number=$1
+    role_name=$2
+    profile_name=$3
+    project_name=$4
+    target_branch=$5
+    authenticate $account_number $role_name $profile_name
+    echo AWS Account: $account_number
+    echo Project: $project_name 
+    echo Target Branch: $target_branch
+    RESULT=$(aws codebuild start-build-batch --profile="${profile_name}" --project-name $project_name --source-version=$target_branch \
+     --environment-variables-override name=BRANCH_NAME,value=$target_branch,type=PLAINTEXT \
+     --query 'buildBatch.id' --output text)
+    echo "https://$REGION.console.aws.amazon.com/codesuite/codebuild/$account_number/projects/$project_name/batch/$RESULT?region=$REGION"
+}
+
+function cloudE2EBeta {
+    echo Running Beta E2E Test Suite
+    export E2E_ROLE_NAME=CodebuildDeveloper
+    export E2E_PROFILE_NAME=AmplifyAPIE2EBeta
+    export E2E_PROJECT_NAME=amplify-category-api-e2e-workflow
+    export TARGET_BRANCH=$CURR_BRANCH
+    triggerProjectBatch $E2E_ACCOUNT_BETA $E2E_ROLE_NAME $E2E_PROFILE_NAME $E2E_PROJECT_NAME $TARGET_BRANCH
+}
