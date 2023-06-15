@@ -29,6 +29,7 @@
     "verify-commit": "yarn ts-node ./scripts/verify-commit.ts",
     "publish:beta": "lerna publish --exact --dist-tag=beta --preid=beta --conventional-commits --conventional-prerelease --message 'chore(release): Publish [ci skip]' --no-verify-access --yes",
     "publish:tag": "lerna publish --exact --dist-tag=$NPM_TAG --preid=$NPM_TAG --conventional-commits --conventional-prerelease --message 'chore(release): Publish tagged release $NPM_TAG [ci skip]' --no-verify-access --yes",
+    "publish:main": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --no-verify-access --yes",
     "publish:release": "lerna publish --conventional-commits --conventional-graduate --exact --yes --message 'chore(release): Publish [ci skip]' --no-verify-access",
     "postpublish:release": "git fetch . release:main && git push origin main",
     "yarn-use-bash": "yarn config set script-shell /bin/bash",
@@ -44,7 +45,6 @@
     "add-cli-no-save": "yarn add @aws-amplify/cli-internal -W --pure-lockfile && git checkout -- package.json",
     "hoist-cli": "rm -rf node_modules/amplify-cli-internal && mkdir node_modules/amplify-cli-internal && cp -r node_modules/@aws-amplify/cli-internal/* node_modules/amplify-cli-internal",
     "hoist-cli-win": "rimraf node_modules/amplify-cli-internal && mkdir node_modules\\amplify-cli-internal && xcopy /e /q node_modules\\@aws-amplify\\cli-internal node_modules\\amplify-cli-internal\\",
-    "publish:main": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --no-verify-access --yes",
     "refresh-lockfile": "rimraf yarn.lock && yarn",
     "update-cli-packages": "./scripts/update-cli-dependencies.sh && yarn",
     "extract-api": "lerna run extract-api",
@@ -52,7 +52,8 @@
     "verify-yarn-lock": "./scripts/verify-yarn-lock.sh",
     "update-test-timing-data": "ts-node ./scripts/cci/get-test-timing-from-cci-job-metrics.ts",
     "lint-deps": "git diff --name-only --cached --diff-filter d | grep -E '\\.(js|jsx|ts|tsx)$' | xargs eslint --no-eslintrc --config depcheck.config.js",
-    "split-codebuild-e2e-tests": "yarn ts-node ./scripts/split-e2e-tests-codebuild.ts && git add codebuild_specs/e2e_workflow.yml"
+    "split-codebuild-e2e-tests": "yarn ts-node ./scripts/split-e2e-tests-codebuild.ts && git add codebuild_specs/e2e_workflow.yml",
+    "release-codebuild": "source ./scripts/cloud-release.sh && release"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-category-api/issues"
