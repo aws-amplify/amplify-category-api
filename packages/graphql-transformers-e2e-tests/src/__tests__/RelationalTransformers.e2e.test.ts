@@ -161,7 +161,9 @@ type ModelB @model {
       ],
       sandboxModeEnabled: true,
       transformParameters: {
-        shouldDeepMergeDirectiveConfigDefaults: false
+        shouldDeepMergeDirectiveConfigDefaults: false,
+        populateOwnerFieldForStaticGroupAuth: false,
+        useSubUsernameForDefaultIdentityClaim: false
       }
     });
     out = transformer.transform(validSchema);

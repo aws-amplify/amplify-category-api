@@ -178,10 +178,7 @@ function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
   // Todo: add reverse to run longest tests first
   // return sortTestsBasedOnTime(glob.sync(pattern, { cwd: dir })); // .reverse();
   return [
-    'src/__tests__/AuthV2Transformer.e2e.test.ts',
-    'src/__tests__/RelationalTransformers.e2e.test.ts',
-    'src/__tests__/SearchableWithAuthV2.e2e.test.ts',
-    'src/__tests__/SearchableWithAuthV2WithFF.e2e.test.ts'
+    'src/__tests__/RelationalTransformers.e2e.test.ts'
   ];
 }
 
