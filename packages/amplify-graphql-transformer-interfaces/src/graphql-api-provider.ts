@@ -64,6 +64,15 @@ export interface LambdaConfig {
   ttlSeconds?: number;
 }
 
+/**
+ * VpcConfig required to deploy a lambda in a VPC
+ */
+export type VpcConfig = {
+  vpcId: string;
+  subnetIds: string[];
+  securityGroupIds: string[];
+};
+
 export interface AppSyncFunctionConfigurationProvider extends IConstruct {
   readonly arn: string;
   readonly functionId: string;

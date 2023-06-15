@@ -29,6 +29,7 @@ export {
   AppSyncAuthConfigurationUserPoolEntry,
   AppSyncAuthMode,
   UserPoolConfig,
+  VpcConfig,
   SearchableDataSourceOptions,
 } from './graphql-api-provider';
 

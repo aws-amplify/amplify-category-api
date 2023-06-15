@@ -45,6 +45,16 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     super();
   }
 
+  public async test(): Promise<boolean> {
+    const TEST_QUERY = 'SELECT 1';
+    try {
+      await this.dbBuilder.raw(TEST_QUERY);
+    } catch (error) {
+      return false;
+    }
+    return true;
+  }
+
   public async initialize(): Promise<void> {
     spinner.start('Fetching the database schema...');
     try {

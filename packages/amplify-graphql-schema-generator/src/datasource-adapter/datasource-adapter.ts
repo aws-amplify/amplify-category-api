@@ -8,6 +8,7 @@ export abstract class DataSourceAdapter {
   public abstract mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName:string, columnType: string): FieldType;
   public abstract initialize(): Promise<void>;
   public abstract cleanup(): void;
+  public abstract test(): Promise<boolean>;
   public useVPC: boolean = false;
   public vpcSchemaInspectorLambda: string | undefined = undefined;
   public vpcLambdaRegion: string | undefined = undefined;

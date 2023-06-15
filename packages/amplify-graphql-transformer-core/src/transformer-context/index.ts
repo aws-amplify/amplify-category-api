@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import {
   FeatureFlagProvider,
   GraphQLAPIProvider,
@@ -8,6 +9,7 @@ import {
   AppSyncAuthConfiguration,
   OverridesProvider,
   AmplifyApiGraphQlResourceStackTemplate,
+  VpcConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { App } from 'aws-cdk-lib';
@@ -59,6 +61,7 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly modelToDatasourceMap: Map<string, DatasourceType>;
   public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
   public readonly getResourceOverrides: OverridesProvider;
+  public readonly sqlLambdaVpcConfig?: VpcConfig;
 
   public metadata: TransformerContextMetadata;
   constructor(
@@ -72,6 +75,7 @@ export class TransformerContext implements TransformerContextProvider {
     resolverConfig?: ResolverConfig,
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
     getResourceOverrides?: (stackManager: StackManager) => AmplifyApiGraphQlResourceStackTemplate,
+    sqlLambdaVpcConfig?: VpcConfig,
   ) {
     this.output = new TransformerOutput(inputDocument);
     this.resolvers = new ResolverManager();
@@ -87,7 +91,8 @@ export class TransformerContext implements TransformerContextProvider {
     this.metadata = new TransformerContextMetadata();
     this.modelToDatasourceMap = modelToDatasourceMap;
     this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
-    this.getResourceOverrides = () => getResourceOverrides ? getResourceOverrides(this.stackManager as StackManager) : {};
+    this.getResourceOverrides = () => (getResourceOverrides ? getResourceOverrides(this.stackManager as StackManager) : {});
+    this.sqlLambdaVpcConfig = sqlLambdaVpcConfig;
   }
 
   /**

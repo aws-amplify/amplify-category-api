@@ -11,9 +11,10 @@ import {
   ImportedDataSourceType,
   ImportedRDSType,
   ImportedDataSourceConfig,
+  RDSConnectionSecrets,
 } from '@aws-amplify/graphql-transformer-core';
 import { PREVIEW_BANNER, category } from '../../../category-constants';
-import { storeConnectionSecrets, getSecretsKey } from '../utils/rds-resources/database-resources';
+import { storeConnectionSecrets, getSecretsKey, getExistingConnectionSecrets } from '../utils/rds-resources/database-resources';
 import * as path from 'path';
 import { RDS_SCHEMA_FILE_NAME } from '@aws-amplify/graphql-transformer-core';
 import { constructDefaultGlobalAmplifyInput } from '../utils/rds-input-utils';

@@ -1,12 +1,14 @@
 import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
-import { getParameterStoreSecretPath, RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
+import { getParameterStoreSecretPath, RDSConnectionSecrets, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
 import { SSMClient } from './ssmClient';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { MySQLDataSourceAdapter, Schema, Engine, DataSourceAdapter, MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { DeleteFunctionCommand, LambdaClient } from '@aws-sdk/client-lambda';
 import { DeleteRoleCommand, IAMClient } from '@aws-sdk/client-iam';
+import { getAppSyncAPIName } from '../amplify-meta-utils';
+import { databaseConfigurationInputWalkthrough } from '../../service-walkthroughs/import-appsync-api-walkthrough';
 
 const secretNames = ['database', 'host', 'port', 'username', 'password'];
 
@@ -116,33 +118,30 @@ export const deleteConnectionSecrets = async (context: $TSContext, secretsKey: s
 };
 
 // TODO: This is not used. Leaving it here for now. Generate schema step already checks for connection. 
-export const testDatabaseConnection = async (config: RDSConnectionSecrets) => {
+export const testDatabaseConnection = async (config: RDSConnectionSecrets): Promise<boolean> => {
   // Establish the connection
   let adapter: DataSourceAdapter;
-  let schema: Schema;
+  let canConnect = false;
+
   switch (config.engine) {
     case ImportedRDSType.MYSQL:
       adapter = new MySQLDataSourceAdapter(config as MySQLDataSourceConfig);
-      schema = new Schema(new Engine('MySQL'));
       break;
     default:
       printer.error('Only MySQL Data Source is supported.');
   }
 
   try {
-    await adapter.initialize();
-  } catch (error) {
-    printer.error('Failed to connect to the specified RDS Data Source. Check the connection details and retry.');
+    canConnect = await adapter.test();
+  } finally {
     adapter.cleanup();
-    throw error;
   }
-  adapter.cleanup();
+
+  return canConnect;
 };
 
-export const getSecretsKey = async (): Promise<string> => {
-  // this will be an extension point when we support multiple database imports.
-  return 'schema';
-};
+// this will be an extension point when we support multiple database imports.
+export const getSecretsKey = (): string => 'schema';
 
 export const getDatabaseName = async (context: $TSContext, apiName: string, secretsKey: string): Promise<string|undefined> => {
   const environmentName = stateManager.getCurrentEnvName();
@@ -187,4 +186,27 @@ export const removeVpcSchemaInspectorLambda = async (context: $TSContext): Promi
     // 1. Ignore if the AppId is not found error.
     // 2. Schema introspection will exist only on databases imported from VPC. Ignore the error on environment deletion.
   }
+};
+
+export const getConnectionSecrets = async (context: $TSContext, secretsKey: string, engine: ImportedRDSType): Promise<{ secrets: RDSConnectionSecrets, storeSecrets: boolean }> => {
+  const apiName = getAppSyncAPIName();
+  const existingSecrets = await getExistingConnectionSecrets(context, secretsKey, apiName);
+  if (existingSecrets) {
+    return {
+      secrets: {
+        engine,
+        ...existingSecrets,
+      },
+      storeSecrets: false,
+    };
+  }
+
+  const databaseConfig: ImportedDataSourceConfig = await databaseConfigurationInputWalkthrough(engine);
+  return {
+    secrets: {
+      engine,
+      ...databaseConfig,
+    },
+    storeSecrets: true,
+  };
 };

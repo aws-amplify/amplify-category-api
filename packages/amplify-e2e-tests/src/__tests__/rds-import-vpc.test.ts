@@ -1,5 +1,7 @@
 import {
   addApiWithoutSchema, 
+  amplifyPush, 
+  apiGqlCompile, 
   createNewProjectDir, 
   createRDSInstance, 
   deleteDBInstance, 
@@ -7,12 +9,15 @@ import {
   deleteProjectDir, 
   getProjectMeta, 
   importRDSDatabase, 
-  initJSProjectWithProfile, 
+  initJSProjectWithProfile,
+  updateSchema, 
 } from 'amplify-category-api-e2e-core';
 import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
+import gql from 'graphql-tag';
 import path from 'path';
+import { print } from 'graphql';
 
 describe("RDS Tests", () => {
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
@@ -25,7 +30,7 @@ describe("RDS Tests", () => {
   const database = 'default_db';
   let host = 'localhost';
   const identifier = `integtest${db_identifier}`;
-
+  const projName = 'rdsimportapi';
   let projRoot;
 
   beforeAll(async () => {
@@ -69,6 +74,7 @@ describe("RDS Tests", () => {
     const apiName = 'rdsapivpc';
     await initJSProjectWithProfile(projRoot, {
       disableAmplifyAppCreation: false,
+      name: projName,
     });
     
     const meta = getProjectMeta(projRoot);
@@ -98,5 +104,39 @@ describe("RDS Tests", () => {
     const dbObjectType = schema.definitions.find(d => d.kind === 'ObjectTypeDefinition' && d.name.value === 'db') as ObjectTypeDefinitionNode;
     expect(dbObjectType).toBeDefined();
     expect(dbObjectType.directives.find(d => d.name.value === 'model')).toBeDefined();
+
+    const updatedSchema = gql`
+      input Amplify {
+        engine: String = "mysql"
+        globalAuthRule: AuthRule = {allow: public}
+      }
+
+      type component @model {
+        component_id: Int! @primaryKey
+        component_group_id: Int!
+        component_urn: String!
+      }
+    `;
+    updateSchema(projRoot, apiName, print(updatedSchema), 'schema.rds.graphql');
+    await apiGqlCompile(projRoot);
+
+    // Validate if the SQL lambda function has VPC configuration
+    const apisDirectory = path.join(projRoot, 'amplify', 'backend', 'api');
+    const apiDirectory = path.join(apisDirectory, apiName);
+    const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', `RdsApiStack.json`);
+    const cfnTemplate = JSON.parse(readFileSync(cfnRDSTemplateFile, 'utf8'));
+    console.log(JSON.stringify(cfnTemplate, null, 4));
+    expect(cfnTemplate.Resources).toBeDefined();
+    const resources = Object.values(cfnTemplate.Resources);
+    const rdsLambdaFunction = resources.find((r: any) => r.Type === 'AWS::Lambda::Function') as any;
+    expect(rdsLambdaFunction).toBeDefined();
+    expect(rdsLambdaFunction.Properties).toBeDefined();
+    expect(rdsLambdaFunction.Properties.VpcConfig).toBeDefined();
+    expect(rdsLambdaFunction.Properties.VpcConfig.SubnetIds).toBeDefined();
+    expect(rdsLambdaFunction.Properties.VpcConfig.SubnetIds.length).toBeGreaterThan(0);
+    expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds).toBeDefined();
+    expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds.length).toBeGreaterThan(0);
+
+    await amplifyPush(projRoot);
   });
 }); 

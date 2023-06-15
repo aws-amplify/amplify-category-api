@@ -41,6 +41,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
           port: secretEntry?.port ?? '',
           database: secretEntry?.database ?? '',
         },
+        context.sqlLambdaVpcConfig,
       );
 
       const lambdaDataSourceStack = context.stackManager.getStackFor(RDSLambdaDataSourceLogicalID, RDS_STACK_NAME);
