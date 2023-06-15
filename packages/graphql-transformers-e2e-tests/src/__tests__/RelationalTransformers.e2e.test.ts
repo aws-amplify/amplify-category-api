@@ -160,6 +160,9 @@ type ModelB @model {
         authTransformer,
       ],
       sandboxModeEnabled: true,
+      transformParameters: {
+        shouldDeepMergeDirectiveConfigDefaults: false
+      }
     });
     out = transformer.transform(validSchema);
   } catch (e) {
