@@ -449,7 +449,7 @@ function main(): void {
       return tests.filter(testName => migrationFromV10Tests.find((t) => t === testName));
     }
   );
-  saveConfig(splitGqlTests);
+  saveConfig(splitV10MigrationTests);
   verifyConfig();
 }
 main();
