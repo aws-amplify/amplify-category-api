@@ -163,7 +163,8 @@ type ModelB @model {
       transformParameters: {
         shouldDeepMergeDirectiveConfigDefaults: false,
         populateOwnerFieldForStaticGroupAuth: false,
-        useSubUsernameForDefaultIdentityClaim: false
+        useSubUsernameForDefaultIdentityClaim: false,
+        respectPrimaryKeyAttributesOnConnectionField: false
       }
     });
     out = transformer.transform(validSchema);
