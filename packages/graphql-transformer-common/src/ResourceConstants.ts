@@ -29,9 +29,14 @@ export class ResourceConstants {
 
     // RDS
     RDSLambdaIAMRoleLogicalID: 'RDSLambdaIAMRole',
+    RDSLambdaLogAccessPolicy: 'RDSLambdaLogAccessPolicy',
+    RDSPatchingLambdaIAMRoleLogicalID: 'RDSPatchingLambdaIAMRole',
     RDSLambdaLogicalID: 'RDSLambdaLogicalID',
+    RDSPatchingLambdaLogAccessPolicy: 'RDSPatchingLambdaLogAccessPolicy',
+    RDSPatchingLambdaLogicalID: 'RDSPatchingLambdaLogicalID',
     RDSLambdaDataSourceLogicalID: 'RDSLambdaDataSource',
     RDSLambdaDataSourceLogicalName: 'RDSLambdaDatabase',
+    RDSPatchingSubscriptionLogicalID: 'RDSPatchingSubscriptionLogicalID',
 
     // Local. Try not to collide with model data sources.
     NoneDataSource: 'NoneDataSource',

@@ -144,7 +144,7 @@ export const createRdsLambda = (
     `functions/${RDSLambdaLogicalID}.zip`,
     'handler.run',
     path.resolve(__dirname, '..', '..', '..', 'lib', 'rds-lambda.zip'),
-    Runtime.NODEJS_16_X,
+    Runtime.NODEJS_18_X,
     [
       LayerVersion.fromLayerVersionArn(
         stack,
@@ -161,13 +161,42 @@ export const createRdsLambda = (
 };
 
 /**
+ * Create RDS Patching Lambda function
+ * @param stack Construct
+ * @param apiGraphql GraphQLAPIProvider
+ * @param lambdaRole IRole
+ */
+export const createRdsPatchingLambda = (
+  stack: Stack,
+  apiGraphql: GraphQLAPIProvider,
+  lambdaRole: IRole,
+  environment?: { [key: string]: string },
+  sqlLambdaVpcConfig?: VpcConfig,
+): IFunction => {
+  const { RDSPatchingLambdaLogicalID } = ResourceConstants.RESOURCES;
+  return apiGraphql.host.addLambdaFunction(
+    RDSPatchingLambdaLogicalID,
+    `functions/${RDSPatchingLambdaLogicalID}.zip`,
+    'index.handler',
+    path.resolve(__dirname, '..', '..', '..', 'lib', 'rds-patching-lambda.zip'),
+    Runtime.NODEJS_18_X,
+    [],
+    lambdaRole,
+    environment,
+    Duration.seconds(60),
+    stack,
+    sqlLambdaVpcConfig,
+  );
+};
+
+/**
  * Create RDS Lambda IAM role
  * @param roleName string
  * @param stack Construct
  * @param secretEntry RDSConnectionSecrets
  */
 export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEntry: RDSConnectionSecrets): IRole => {
-  const { RDSLambdaIAMRoleLogicalID } = ResourceConstants.RESOURCES;
+  const { RDSLambdaIAMRoleLogicalID, RDSLambdaLogAccessPolicy } = ResourceConstants.RESOURCES;
   const role = new Role(stack, RDSLambdaIAMRoleLogicalID, {
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
     roleName,
@@ -195,7 +224,57 @@ export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEn
     );
   }
 
-  role.attachInlinePolicy(new Policy(stack, 'LogsAndParametersAccess', {
+  role.attachInlinePolicy(new Policy(stack, RDSLambdaLogAccessPolicy, {
+    statements: policyStatements,
+    policyName: `${roleName}Policy`,
+  }));
+
+  role.addToPolicy(
+    new PolicyStatement({
+      effect: Effect.ALLOW,
+      resources: ['*'],
+      actions: [
+        'ec2:CreateNetworkInterface',
+        'ec2:DescribeNetworkInterfaces',
+        'ec2:DeleteNetworkInterface',
+      ],
+    }),
+  );
+
+  return role;
+};
+
+/**
+ * Create RDS Patching Lambda IAM role
+ * @param roleName string
+ * @param stack Construct
+ * @param functionArn FunctionArn
+ */
+export const createRdsPatchingLambdaRole = (roleName: string, stack: Construct, functionArn: string): IRole => {
+  const { RDSPatchingLambdaIAMRoleLogicalID, RDSPatchingLambdaLogAccessPolicy } = ResourceConstants.RESOURCES;
+  const role = new Role(stack, RDSPatchingLambdaIAMRoleLogicalID, {
+    assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+    roleName,
+  });
+  const policyStatements = [
+    new PolicyStatement({
+      actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+      effect: Effect.ALLOW,
+      resources: ['arn:aws:logs:*:*:*'],
+    }),
+    new PolicyStatement({
+      actions: ['lambda:UpdateFunctionConfiguration'],
+      effect: Effect.ALLOW,
+      resources: [functionArn],
+    }),
+    new PolicyStatement({
+      actions: ['lambda:GetLayerVersion', 'lambda:GetLayerVersionPolicy'],
+      effect: Effect.ALLOW,
+      resources: ['*'],
+    }),
+  ];
+
+  role.attachInlinePolicy(new Policy(stack, RDSPatchingLambdaLogAccessPolicy, {
     statements: policyStatements,
     policyName: `${roleName}Policy`,
   }));

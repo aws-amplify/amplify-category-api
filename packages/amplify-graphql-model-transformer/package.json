@@ -21,9 +21,12 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc && cd rds-lambda && mkdir -p node_modules && rm -rf node_modules && npm install && tsc && cp -r node_modules lib && cd lib && bestzip --force node ../../lib/rds-lambda.zip ./*",
+    "build-rds-lambda": "cd rds-lambda && mkdir -p node_modules && rm -rf node_modules && npm install && tsc && cp -r node_modules lib && cd lib && bestzip --force node ../../lib/rds-lambda.zip ./* && cd ../..",
+    "build-rds-patching-lambda": "cd rds-patching-lambda && mkdir -p node_modules && rm -rf node_modules && npm install && tsc && cp -r node_modules lib && cd lib && bestzip --force node ../../lib/rds-patching-lambda.zip ./* && cd ../..",
+    "build-notification-lambda": "cd publish-notification-lambda && mkdir -p node_modules && rm -rf node_modules && npm install && tsc && cp -r node_modules lib && cd lib && bestzip --force node ../../lib/rds-notification-lambda.zip ./* && cd ../..",
+    "build": "tsc && yarn build-rds-lambda && yarn build-rds-patching-lambda && yarn build-notification-lambda",
     "watch": "tsc -w",
-    "clean": "rimraf ./lib",
+    "clean": "rimraf ./lib && rimraf ./rds-lambda/lib && rimraf ./rds-patching-lambda/lib && rimraf ./publish-notification-lambda/lib",
     "test": "jest",
     "test-watch": "jest --watch",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
