@@ -45,7 +45,7 @@ export const constructDefaultGlobalAmplifyInput = async (context: $TSContext, da
   const inputsString = inputs.reduce((acc: string, input): string =>
     acc + ` ${input.name}: ${input.type} = ${input.type === 'String' ? '"'+ input.default + '"' : input.default} ${input.comment ? '# ' + input.comment: ''} \n`
   , '');
-  return `input Amplify {\n${inputsString}}\n`;
+  return `input AMPLIFY {\n${inputsString}}\n`;
 };
 
 export const readRDSGlobalAmplifyInput = async (pathToSchemaFile: string): Promise<InputObjectTypeDefinitionNode | undefined> => {
