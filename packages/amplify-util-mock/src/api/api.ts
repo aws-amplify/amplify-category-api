@@ -223,13 +223,13 @@ export class APITest {
     this.watcher = await this.registerWatcher(context);
     this.watcher
       .on('add', path => {
-        await this.reload(context, path, 'add');
+        this.reload(context, path, 'add');
       })
       .on('change', path => {
-        await this.reload(context, path, 'change');
+        this.reload(context, path, 'change');
       })
       .on('unlink', path => {
-        await this.reload(context, path, 'unlink');
+        this.reload(context, path, 'unlink');
       });
   }
 
