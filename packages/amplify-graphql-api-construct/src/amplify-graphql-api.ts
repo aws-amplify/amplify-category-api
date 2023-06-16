@@ -4,12 +4,12 @@ import * as cfninclude from 'aws-cdk-lib/cloudformation-include';
 import { executeTransform } from '@aws-amplify/graphql-transformer';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
-  preprocessGraphQLSchema,
+  preprocessGraphqlSchema,
   generateConstructExports,
   rewriteAndPersistAssets,
   defaultTransformParameters,
 } from './internal';
-import type { AmplifyGraphQlApiResources, AmplifyGraphQlApiProps } from './types';
+import type { AmplifyGraphqlApiResources, AmplifyGraphqlApiProps } from './types';
 import { parseUserDefinedSlots } from './internal/user-defined-slots';
 
 /**
@@ -36,20 +36,18 @@ import { parseUserDefinedSlots } from './internal/user-defined-slots';
  * ```
  * `resources.<ResourceType>.<ResourceName>` - you can then perform any CDK action on these resulting resoureces.
  */
-export class AmplifyGraphQlApi extends Construct {
-  public readonly resources: AmplifyGraphQlApiResources;
-  public readonly env: string;
+export class AmplifyGraphqlApi extends Construct {
+  public readonly resources: AmplifyGraphqlApiResources;
 
-  constructor(scope: Construct, id: string, props: AmplifyGraphQlApiProps) {
+  constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps) {
     super(scope, id);
 
     const {
       schema: modelSchema,
       authorizationConfig,
-      envOverride,
       resolverConfig,
-      slotOverrides,
-      customTransformers,
+      functionSlots,
+      transformers,
       predictionsBucket,
       stackMappings,
       transformParameters: overriddenTransformParameters,
@@ -63,13 +61,13 @@ export class AmplifyGraphQlApi extends Construct {
     } = convertAuthorizationModesToTransformerAuthConfig(authorizationConfig);
 
     const transformedResources = executeTransform({
-      schema: preprocessGraphQLSchema(modelSchema),
-      userDefinedSlots: slotOverrides ? parseUserDefinedSlots(slotOverrides) : {},
+      schema: preprocessGraphqlSchema(modelSchema),
+      userDefinedSlots: functionSlots ? parseUserDefinedSlots(functionSlots) : {},
       transformersFactoryArgs: {
         authConfig,
         identityPoolId,
         adminRoles,
-        customTransformers: customTransformers ?? [],
+        customTransformers: transformers ?? [],
         ...(predictionsBucket ? { predictionsConfig: { bucketName: predictionsBucket.bucketName } } : {}),
       },
       authConfig,
@@ -92,16 +90,16 @@ export class AmplifyGraphQlApi extends Construct {
     // Allow env as an override prop, otherwise retrieve from context, and use value 'NONE' if no value can be found.
     // env is required for logical id suffixing, as well as Exports from the nested stacks.
     // Allow export so customers can reuse the env in their own references downstream.
-    this.env = envOverride ?? this.node.tryGetContext('env') ?? 'NONE';
-    if (this.env.length > 8) {
-      throw new Error(`envOverride prop or cdk --context env must have a length <= 8, found ${this.env}`);
+    const env = this.node.tryGetContext('env') ?? 'NONE';
+    if (env.length > 8) {
+      throw new Error(`or cdk --context env must have a length <= 8, found ${env}`);
     }
 
     const transformerStack = new cfninclude.CfnInclude(this, 'RootStack', {
       ...stackAssets,
       parameters: {
         AppSyncApiName: props.apiName ?? id,
-        env: this.env,
+        env,
         S3DeploymentBucket: cdk.DefaultStackSynthesizer.DEFAULT_FILE_ASSETS_BUCKET_NAME,
         S3DeploymentRootKey: cdk.DefaultStackSynthesizer.DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME,
         ...authCfnIncludeParameters,

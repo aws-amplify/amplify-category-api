@@ -96,26 +96,62 @@ export type AuthorizationConfig = {
 /**
  * Schema representation for transformation. Accepts either a raw string, single, or array of appsync SchemaFile objects.
  */
-export type AmplifyGraphQlApiSchema =
+export type AmplifyGraphqlApiSchema =
   | SchemaFile
   | SchemaFile[]
   | string;
 
 /**
+ * Common slot parameters.
+ */
+export type FunctionSlotBase = {
+  fieldName: string;
+  slotIndex: number;
+  templateType: 'req' | 'res';
+  resolverCode: string;
+};
+
+/**
+ * Slot types for Mutation Resolvers.
+ */
+export type MutationFunctionSlot = FunctionSlotBase & {
+  typeName: 'Mutation';
+  slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preUpdate' | 'postUpdate' | 'finish';
+};
+
+/**
+ * Slot types for Query Resolvers.
+ */
+export type QueryFunctionSlot = FunctionSlotBase & {
+  typeName: 'Query';
+  slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
+};
+
+/**
+ * Slot types for Subscription Resolvers.
+ */
+export type SubscriptionFunctionSlot = FunctionSlotBase & {
+  typeName: 'Subscription';
+  slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preSubscribe';
+};
+
+/**
+ * Input params to uniquely identify the slot which is being overridden.
+ */
+export type FunctionSlot =
+  | MutationFunctionSlot
+  | QueryFunctionSlot
+  | SubscriptionFunctionSlot;
+
+/**
  * Input props for the AmplifyGraphQLApi construct. Specifies what the input to transform into an API, and configurations for
  * the transformation process.
  */
-export type AmplifyGraphQlApiProps = {
+export type AmplifyGraphqlApiProps = {
   /**
    * The schema to transform in a full API.
    */
-  schema: AmplifyGraphQlApiSchema;
-
-  /**
-   * Override value if an env is provided for distinguishing between transformed apis.
-   * Default: NONE
-   */
-  envOverride?: string;
+  schema: AmplifyGraphqlApiSchema;
 
   /**
    * Name to be used for the appsync api.
@@ -147,15 +183,13 @@ export type AmplifyGraphQlApiProps = {
   /**
    * Overrides for a given slot in the generated resolver pipelines. For more information about what slots are available,
    * refer to https://docs.amplify.aws/cli/graphql/custom-business-logic/#override-amplify-generated-resolvers.
-   *
-   * Note: keys in this can be generated using the `slotName` utility method, exported from this library.
    */
-  slotOverrides?: Record<string, string>;
+  functionSlots?: FunctionSlot[];
 
   /**
-   * Provide a list of custom transformers which are injected into the transformer.
+   * Provide a list of additional custom transformers which are injected into the transform process.
    */
-  customTransformers?: TransformerPluginProvider[];
+  transformers?: TransformerPluginProvider[];
 
   /**
    * If using predictions, a bucket must be provided which will be used to search for assets.
@@ -169,7 +203,7 @@ export type AmplifyGraphQlApiProps = {
   transformParameters?: Partial<TransformParameters>
 };
 
-export type AmplifyGraphQlApiResources = {
+export type AmplifyGraphqlApiResources = {
   /**
    * The Generated AppSync API L1 Resource
    */

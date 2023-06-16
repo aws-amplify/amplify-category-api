@@ -11,7 +11,7 @@ import {
 import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnRole, CfnPolicy } from 'aws-cdk-lib/aws-iam';
 import { CfnInclude } from 'aws-cdk-lib/cloudformation-include';
-import { AmplifyGraphQlApiResources } from '../types';
+import { AmplifyGraphqlApiResources } from '../types';
 
 /**
  * Internal type for tracking which underlying nested stack (or root stack)
@@ -39,7 +39,7 @@ export const generateConstructExports = (
   rootStack: Template,
   stacks: Record<string, Template>,
   transformerStack: CfnInclude,
-): AmplifyGraphQlApiResources => {
+): AmplifyGraphqlApiResources => {
   const singletonReferenceMapping: Record<string, StackResourceMapping> = {};
   const cfnResolverResourceMapping: StackResourceMapping[] = [];
   const cfnAppSyncFunctionResourceMapping: StackResourceMapping[] = [];
