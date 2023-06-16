@@ -4,7 +4,8 @@
     "outDir": "lib",
     "rootDir": "src",
     "strict": true,
-    "allowJs": false
+    "allowJs": false,
+    "removeComments": false
   },
   "exclude": [
     "coverage",
