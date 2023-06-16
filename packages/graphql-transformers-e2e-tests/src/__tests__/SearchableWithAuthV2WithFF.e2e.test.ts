@@ -171,6 +171,9 @@ beforeAll(async () => {
       ],
     },
     transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
+    transformParameters: {
+      populateOwnerFieldForStaticGroupAuth: false
+    }
   });
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
   USER_POOL_ID = userPoolResponse.UserPool.Id;

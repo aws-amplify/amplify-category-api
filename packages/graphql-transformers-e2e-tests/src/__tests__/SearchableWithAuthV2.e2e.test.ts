@@ -173,6 +173,7 @@ beforeAll(async () => {
     transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
     transformParameters: {
       useSubUsernameForDefaultIdentityClaim: false,
+      populateOwnerFieldForStaticGroupAuth: false
     }
   });
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);

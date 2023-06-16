@@ -160,6 +160,12 @@ type ModelB @model {
         authTransformer,
       ],
       sandboxModeEnabled: true,
+      transformParameters: {
+        shouldDeepMergeDirectiveConfigDefaults: false,
+        populateOwnerFieldForStaticGroupAuth: false,
+        useSubUsernameForDefaultIdentityClaim: false,
+        respectPrimaryKeyAttributesOnConnectionField: false
+      }
     });
     out = transformer.transform(validSchema);
   } catch (e) {
