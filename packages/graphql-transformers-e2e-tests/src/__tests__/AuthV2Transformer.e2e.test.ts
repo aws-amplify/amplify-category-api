@@ -302,6 +302,7 @@ describe('@model with @auth', () => {
       ],
       transformParameters: {
         useSubUsernameForDefaultIdentityClaim: false,
+        populateOwnerFieldForStaticGroupAuth: false
       },
     });
     const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
