@@ -1,16 +1,16 @@
 import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito'
 import { Match, Template } from 'aws-cdk-lib/assertions';
-import { AmplifyGraphQlApi } from '../amplify-graphql-api';
+import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
 
-describe('AmplifyGraphQlApi', () => {
+describe('basic functionality', () => {
   it('renders an appsync api', () => {
     const stack = new cdk.Stack();
 
     const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
 
-    new AmplifyGraphQlApi(stack, 'TestApi', {
+    new AmplifyGraphqlApi(stack, 'TestApi', {
       apiName: 'MyApi',
       schema: /* GraphQL */ `
         type Todo @model @auth(rules: [{ allow: owner }]) {
@@ -46,7 +46,7 @@ describe('AmplifyGraphQlApi', () => {
 
     const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
 
-    new AmplifyGraphQlApi(stack, 'TestApi', {
+    new AmplifyGraphqlApi(stack, 'TestApi', {
       schema: /* GraphQL */ `
         type Todo @model @auth(rules: [{ allow: owner }]) {
           description: String!
@@ -95,7 +95,7 @@ describe('AmplifyGraphQlApi', () => {
 
     const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
 
-    new AmplifyGraphQlApi(stack, 'TestApi', {
+    new AmplifyGraphqlApi(stack, 'TestApi', {
       schema: /* GraphQL */ `
         type Todo @model @auth(rules: [{ allow: owner }]) {
           description: String!

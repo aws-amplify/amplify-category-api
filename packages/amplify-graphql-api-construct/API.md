@@ -26,30 +26,27 @@ import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-inte
 import { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
-export class AmplifyGraphQlApi extends Construct {
-    constructor(scope: Construct, id: string, props: AmplifyGraphQlApiProps);
+export class AmplifyGraphqlApi extends Construct {
+    constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps);
     // (undocumented)
-    readonly env: string;
-    // (undocumented)
-    readonly resources: AmplifyGraphQlApiResources;
+    readonly resources: AmplifyGraphqlApiResources;
 }
 
 // @public (undocumented)
-export type AmplifyGraphQlApiProps = {
-    schema: AmplifyGraphQlApiSchema;
-    envOverride?: string;
+export type AmplifyGraphqlApiProps = {
+    schema: AmplifyGraphqlApiSchema;
     apiName?: string;
     authorizationConfig: AuthorizationConfig;
     resolverConfig?: ResolverConfig;
     stackMappings?: Record<string, string>;
-    slotOverrides?: Record<string, string>;
-    customTransformers?: TransformerPluginProvider[];
+    functionSlots?: FunctionSlot[];
+    transformers?: TransformerPluginProvider[];
     predictionsBucket?: IBucket;
     transformParameters?: Partial<TransformParameters>;
 };
 
 // @public (undocumented)
-export type AmplifyGraphQlApiResources = {
+export type AmplifyGraphqlApiResources = {
     api: CfnGraphQLApi;
     schema: CfnGraphQLSchema;
     apiKey?: CfnApiKey;
@@ -63,7 +60,7 @@ export type AmplifyGraphQlApiResources = {
 };
 
 // @public (undocumented)
-export type AmplifyGraphQlApiSchema = SchemaFile | SchemaFile[] | string;
+export type AmplifyGraphqlApiSchema = SchemaFile | SchemaFile[] | string;
 
 // @public (undocumented)
 export type ApiKeyAuthorizationConfig = {
@@ -82,31 +79,14 @@ export type AuthorizationConfig = {
 };
 
 // @public (undocumented)
-export type CreateSlotOverrideBaseParams = {
+export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | SubscriptionFunctionSlot;
+
+// @public (undocumented)
+export type FunctionSlotBase = {
     fieldName: string;
     slotIndex: number;
     templateType: 'req' | 'res';
-};
-
-// @public (undocumented)
-export type CreateSlotOverrideMutationParams = CreateSlotOverrideBaseParams & {
-    typeName: 'Mutation';
-    slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preUpdate' | 'postUpdate' | 'finish';
-};
-
-// @public (undocumented)
-export type CreateSlotOverrideParams = CreateSlotOverrideMutationParams | CreateSlotOverrideQueryParams | CreateSlotOverrideSubscriptionParams;
-
-// @public (undocumented)
-export type CreateSlotOverrideQueryParams = CreateSlotOverrideBaseParams & {
-    typeName: 'Query';
-    slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
-};
-
-// @public (undocumented)
-export type CreateSlotOverrideSubscriptionParams = CreateSlotOverrideBaseParams & {
-    typeName: 'Subscription';
-    slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preSubscribe';
+    resolverCode: string;
 };
 
 // @public (undocumented)
@@ -124,6 +104,12 @@ export type LambdaAuthorizationConfig = {
 };
 
 // @public (undocumented)
+export type MutationFunctionSlot = FunctionSlotBase & {
+    typeName: 'Mutation';
+    slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preUpdate' | 'postUpdate' | 'finish';
+};
+
+// @public (undocumented)
 export type OIDCAuthorizationConfig = {
     oidcProviderName: string;
     oidcIssuerUrl: string;
@@ -133,7 +119,16 @@ export type OIDCAuthorizationConfig = {
 };
 
 // @public (undocumented)
-export const slotName: (params: CreateSlotOverrideParams) => string;
+export type QueryFunctionSlot = FunctionSlotBase & {
+    typeName: 'Query';
+    slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
+};
+
+// @public (undocumented)
+export type SubscriptionFunctionSlot = FunctionSlotBase & {
+    typeName: 'Subscription';
+    slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preSubscribe';
+};
 
 // @public (undocumented)
 export type UserPoolAuthorizationConfig = {

@@ -116,7 +116,7 @@ export interface AuthConfig {
  */
 export const convertAuthorizationModesToTransformerAuthConfig = (authConfig: AuthorizationConfig): AuthConfig => ({
   authConfig: convertAuthConfigToAppSyncAuth(authConfig),
-  adminRoles: authConfig.iamConfig?.adminRoles?.map((role) => role.roleArn) ?? [],
+  adminRoles: authConfig.iamConfig?.adminRoles?.map((role) => role.roleName) ?? [],
   identityPoolId: authConfig.iamConfig?.identityPoolId,
   cfnIncludeParameters: getAuthParameters(authConfig),
 });
@@ -130,5 +130,4 @@ const getAuthParameters = (authConfig: AuthorizationConfig): Record<string, any>
   ...(authConfig.userPoolConfig?.userPool ? { AuthCognitoUserPoolId: authConfig.userPoolConfig.userPool.userPoolId } : {}),
   ...(authConfig?.iamConfig?.authRole ? { authRoleName: authConfig.iamConfig.authRole.roleName } : {}),
   ...(authConfig?.iamConfig?.unauthRole ? { unauthRoleName: authConfig.iamConfig.unauthRole.roleName } : {}),
-  ...(authConfig.iamConfig?.adminRoles ? { adminRoleArn: authConfig.iamConfig.adminRoles.map((r) => r.roleArn).join(',') } : {}),
 });
