@@ -1,6 +1,6 @@
 {
   "name": "agqlac",
-  "version": "0.1.0-agqlac.3",
+  "version": "0.1.0-agqlac.4",
   "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer.",
   "repository": {
     "type": "git",

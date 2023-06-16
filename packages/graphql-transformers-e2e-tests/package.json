@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-graphql-transformers-e2e-tests",
-  "version": "8.4.7-agqlac.1",
+  "version": "8.4.7-agqlac.2",
   "description": "End to end functional tests for appsync supported transformers.",
   "private": true,
   "repository": {

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-agqlac.4](https://github.com/aws-amplify/amplify-category-api/compare/agqlac@0.1.0-agqlac.3...agqlac@0.1.0-agqlac.4) (2023-06-16)
+
+### Bug Fixes
+
+- trying to keep comments in generated types ([436932d](https://github.com/aws-amplify/amplify-category-api/commit/436932def22d04414ca2c295e01949774287737a))
+
 # [0.1.0-agqlac.3](https://github.com/aws-amplify/amplify-category-api/compare/agqlac@0.1.0-agqlac.2...agqlac@0.1.0-agqlac.3) (2023-06-14)
 
 ### Features
