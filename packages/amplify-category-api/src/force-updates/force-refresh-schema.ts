@@ -15,7 +15,7 @@ export const forceRefreshSchema = (): void => {
   const schemaDirectoryExists = fs.existsSync(schemaDirectoryPath);
 
   if (schemaFileExists) {
-    fs.appendFile(schemaFilePath, ' ');
+    fs.appendFileSync(schemaFilePath, ' ');
   } else if (schemaDirectoryExists) {
     modifyGraphQLSchemaDirectory(schemaDirectoryPath);
   }
@@ -45,7 +45,7 @@ const modifyGraphQLSchemaDirectory = (schemaDirectoryPath: string): boolean => {
     }
 
     if (stats.isFile()) {
-      fs.appendFile(fullPath, ' ');
+      fs.appendFileSync(fullPath, ' ');
       return true;
     }
   }
