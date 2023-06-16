@@ -5,16 +5,13 @@ export type {
   ApiKeyAuthorizationConfig,
   LambdaAuthorizationConfig,
   AuthorizationConfig,
-  AmplifyGraphQlApiSchema,
-  AmplifyGraphQlApiProps,
-  AmplifyGraphQlApiResources,
+  AmplifyGraphqlApiSchema,
+  AmplifyGraphqlApiProps,
+  AmplifyGraphqlApiResources,
+  FunctionSlotBase,
+  MutationFunctionSlot,
+  QueryFunctionSlot,
+  SubscriptionFunctionSlot,
+  FunctionSlot,
 } from './types';
-export { AmplifyGraphQlApi } from './amplify-graphql-api';
-export type {
-  CreateSlotOverrideBaseParams,
-  CreateSlotOverrideMutationParams,
-  CreateSlotOverrideQueryParams,
-  CreateSlotOverrideSubscriptionParams,
-  CreateSlotOverrideParams,
-} from './input-helpers';
-export { slotName } from './input-helpers';
+export { AmplifyGraphqlApi } from './amplify-graphql-api';
