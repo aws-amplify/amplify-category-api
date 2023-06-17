@@ -113,7 +113,7 @@ describe("RDS Tests", () => {
     expect(dbObjectType.directives.find(d => d.name.value === 'model')).toBeDefined();
 
     const updatedSchema = gql`
-      input Amplify {
+      input AMPLIFY {
         engine: String = "mysql"
         globalAuthRule: AuthRule = {allow: public}
       }
