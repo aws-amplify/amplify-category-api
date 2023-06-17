@@ -63,7 +63,7 @@ export const readRDSGlobalAmplifyInput = async (pathToSchemaFile: string): Promi
     (definition) =>
       definition.kind === 'InputObjectTypeDefinition' &&
       definition.name &&
-      definition.name.value === 'Amplify'
+      definition.name.value === 'AMPLIFY',
   );
 
   if (inputNode) {
