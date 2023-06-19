@@ -13,8 +13,6 @@ function authenticate {
     account_number=$1
     role_name=$2
     profile_name=$3
-    echo Authenticating terminal...
-    mwinit --aea
     echo Loading account credentials for Account $account_number with Role: $role_name...
     ada cred update --profile="${profile_name}" --account="${account_number}" --role=${role_name} --provider=isengard --once
     aws configure set region $REGION --profile $profile_name
