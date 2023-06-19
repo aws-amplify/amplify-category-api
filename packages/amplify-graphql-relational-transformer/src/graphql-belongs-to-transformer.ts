@@ -70,7 +70,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
       object: parent as ObjectTypeDefinitionNode,
       field: definition,
       directive,
-    } as BelongsToDirectiveConfiguration, generateGetArgumentsInput(context.featureFlags));
+    } as BelongsToDirectiveConfiguration, generateGetArgumentsInput(context.transformParameters));
 
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);
@@ -97,7 +97,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
           if (relationTypeName === 'hasOne') {
             const connectionAttributeName = getConnectionAttributeName(
-              context.featureFlags,
+              context.transformParameters,
               def.name.value,
               field.name.value,
               getObjectPrimaryKey(def as ObjectTypeDefinitionNode).name.value,
@@ -126,7 +126,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
       .forEach(config => {
         // a belongsTo with hasOne behaves the same as hasOne
         registerHasOneForeignKeyMappings({
-          featureFlags: context.featureFlags,
+          transformParameters: context.transformParameters,
           resourceHelper: context.resourceHelper,
           thisTypeName: config.object.name.value,
           thisFieldName: config.field.name.value,

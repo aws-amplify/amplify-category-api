@@ -5,7 +5,6 @@ import { HasManyTransformer, HasOneTransformer, BelongsToTransformer } from '@aw
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from '@aws-amplify/amplify-appsync-simulator';
-import { featureFlags } from '@aws-amplify/graphql-auth-transformer/src/__tests__/test-helpers';
 import { VelocityTemplateSimulator, getJWTToken, getIAMToken } from '../../velocity';
 
 jest.mock('@aws-amplify/amplify-prompts');
@@ -58,7 +57,6 @@ describe('relational tests', () => {
         new HasOneTransformer(),
         new BelongsToTransformer(),
       ],
-      featureFlags,
     });
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });
@@ -382,9 +380,8 @@ describe('with identity claim feature flag disabled', () => {
           new HasOneTransformer(),
           new BelongsToTransformer(),
         ],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: () => false },
+        transformParameters: {
+          useSubUsernameForDefaultIdentityClaim: false,
         },
       });
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });

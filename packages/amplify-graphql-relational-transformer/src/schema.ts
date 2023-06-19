@@ -138,7 +138,7 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
 
   const primaryKeyField = getObjectPrimaryKey(relatedType);
   const connectionAttributeName = getConnectionAttributeName(
-    ctx.featureFlags,
+    ctx.transformParameters,
     object.name.value,
     field.name.value,
     primaryKeyField.name.value,
@@ -228,7 +228,7 @@ export const ensureBelongsToConnectionField = (config: BelongsToDirectiveConfigu
     // hasMany
     const primaryKeyField = getObjectPrimaryKey(relatedType);
     config.connectionFields.push(
-      getConnectionAttributeName(ctx.featureFlags, relatedType.name.value, relatedField.name.value, primaryKeyField.name.value),
+      getConnectionAttributeName(ctx.transformParameters, relatedType.name.value, relatedField.name.value, primaryKeyField.name.value),
     );
     config.connectionFields.push(
       ...getSortKeyFieldNames(relatedType).map(
@@ -264,7 +264,7 @@ export const ensureHasManyConnectionField = (
   );
 
   const relatedTypeObject = ctx.output.getType(relatedType.name.value) as ObjectTypeDefinitionNode;
-  const connectionAttributeName = getConnectionAttributeName(ctx.featureFlags, object.name.value, field.name.value, connectionFieldName);
+  const connectionAttributeName = getConnectionAttributeName(ctx.transformParameters, object.name.value, field.name.value, connectionFieldName);
 
   // The nullabilty of connection fields for hasMany depends on the hasMany field
   // Whereas in update input, they are always optional
@@ -557,7 +557,7 @@ export const getSortKeyFieldsNoContext = (object: ObjectTypeDefinitionNode | Obj
 };
 
 const getPrimaryKeyConnectionFieldType = (ctx: TransformerContextProvider, primaryKeyField: FieldDefinitionNode): string => (
-  ctx.featureFlags.getBoolean('respectPrimaryKeyAttributesOnConnectionField') ? getBaseType(primaryKeyField.type) : 'ID'
+  ctx.transformParameters.respectPrimaryKeyAttributesOnConnectionField ? getBaseType(primaryKeyField.type) : 'ID'
 );
 
 const updateInputWithConnectionFields = (

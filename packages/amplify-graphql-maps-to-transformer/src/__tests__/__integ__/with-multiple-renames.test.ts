@@ -3,7 +3,6 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
 import { expectedResolversForModelWithRenamedField } from './common';
-import { featureFlags } from '../../../../amplify-graphql-auth-transformer/src/__tests__/test-helpers';
 
 const originalSchema = /* GraphQL */ `
   type Checklist @model {
@@ -55,7 +54,6 @@ const multipleForeignKeyRenames = /* GraphQL */ `
 
 const transformSchema = (schema: string, enableDataStore = false) => {
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new ModelTransformer(),
       new HasManyTransformer(),

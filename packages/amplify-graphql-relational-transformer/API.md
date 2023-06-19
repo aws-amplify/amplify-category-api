@@ -6,7 +6,6 @@
 
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode } from 'graphql';
 import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { InterfaceTypeDefinitionNode } from 'graphql';
@@ -20,6 +19,7 @@ import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-trans
 import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerValidationStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export class BelongsToTransformer extends TransformerPluginBase {
@@ -37,7 +37,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
 }
 
 // @public (undocumented)
-export function getConnectionAttributeName(featureFlags: FeatureFlagProvider, type: string, field: string, relatedTypeField: string): string;
+export function getConnectionAttributeName(transformParameters: TransformParameters, type: string, field: string, relatedTypeField: string): string;
 
 // @public (undocumented)
 export const getObjectPrimaryKey: (object: ObjectTypeDefinitionNode) => FieldDefinitionNode;

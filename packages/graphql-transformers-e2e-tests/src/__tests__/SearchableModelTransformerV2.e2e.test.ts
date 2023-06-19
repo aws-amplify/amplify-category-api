@@ -20,18 +20,6 @@ const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);
 const awsS3Client = new S3({ region: region });
 let GRAPHQL_CLIENT: GraphQLClient = undefined;
-const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'improvePluralization') {
-      return true;
-    }
-    return;
-  }),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
- 
-
-};
 
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `TestSearchableAggregatesv2-${BUILD_TIMESTAMP}`;
@@ -95,7 +83,6 @@ beforeAll(async () => {
     }
     `;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
     sandboxModeEnabled: true,
   });

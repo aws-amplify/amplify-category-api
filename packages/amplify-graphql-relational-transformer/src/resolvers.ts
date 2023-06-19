@@ -381,8 +381,8 @@ export function updateTableForConnection(config: HasManyDirectiveConfiguration, 
     return;
   }
 
-  const respectPrimaryKeyAttributesOnConnectionField: boolean = ctx.featureFlags.getBoolean('respectPrimaryKeyAttributesOnConnectionField');
-  const partitionKeyName = getConnectionAttributeName(ctx.featureFlags, mappedObjectName, field.name.value, getObjectPrimaryKey(object).name.value);
+  const respectPrimaryKeyAttributesOnConnectionField: boolean = ctx.transformParameters.respectPrimaryKeyAttributesOnConnectionField;
+  const partitionKeyName = getConnectionAttributeName(ctx.transformParameters, mappedObjectName, field.name.value, getObjectPrimaryKey(object).name.value);
   const partitionKeyType = respectPrimaryKeyAttributesOnConnectionField ? attributeTypeFromType(getObjectPrimaryKey(object).type, ctx) : 'S';
   const sortKeyAttributeDefinitions = respectPrimaryKeyAttributesOnConnectionField
     ? getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(ctx, object, field)
@@ -446,7 +446,7 @@ function getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(
   }
   const mappedObjectName = ctx.resourceHelper.getModelNameMapping(object.name.value);
   const connectedSortKeyFieldNames: string[] = sortKeyFields.map(sortKeyField =>
-    getConnectionAttributeName(ctx.featureFlags, mappedObjectName, hasManyField.name.value, sortKeyField.name.value));
+    getConnectionAttributeName(ctx.transformParameters, mappedObjectName, hasManyField.name.value, sortKeyField.name.value));
   if (connectedSortKeyFieldNames.length === 1) {
     return {
       sortKeyName: connectedSortKeyFieldNames[0],

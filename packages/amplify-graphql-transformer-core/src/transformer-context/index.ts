@@ -1,26 +1,25 @@
 import {
-  FeatureFlagProvider,
   GraphQLAPIProvider,
   StackManagerProvider,
   TransformerContextOutputProvider,
   TransformerContextProvider,
   TransformerDataSourceManagerProvider,
   AppSyncAuthConfiguration,
-  TransformerFilepathsProvider,
+  AmplifyApiGraphQlResourceStackTemplate,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { App } from 'aws-cdk-lib';
 import { DocumentNode } from 'graphql';
 import { DatasourceType } from '../config/project-config';
 import { ResolverConfig } from '../config/transformer-config';
 import { TransformerDataSourceManager } from './datasource';
-import { NoopFeatureFlagProvider } from './noop-feature-flag';
 import { TransformerOutput } from './output';
 import { TransformerContextProviderRegistry } from './provider-registry';
 import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
-import {RDSConnectionSecrets} from '../types';
+import { RDSConnectionSecrets } from '../types';
 
 export { TransformerResolver } from './resolver';
 export { StackManager } from './stack-manager';
@@ -50,10 +49,9 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly providerRegistry: TransformerContextProviderRegistry;
   public readonly stackManager: StackManagerProvider;
   public readonly resourceHelper: TransformerResourceHelper;
-  public readonly featureFlags: FeatureFlagProvider;
+  public readonly transformParameters: TransformParameters;
   public _api?: GraphQLAPIProvider;
   public readonly authConfig: AppSyncAuthConfiguration;
-  public readonly filepaths: TransformerFilepathsProvider;
   public readonly sandboxModeEnabled: boolean;
   private resolverConfig: ResolverConfig | undefined;
   public readonly modelToDatasourceMap: Map<string, DatasourceType>;
@@ -66,9 +64,8 @@ export class TransformerContext implements TransformerContextProvider {
     modelToDatasourceMap: Map<string, DatasourceType>,
     stackMapping: Record<string, string>,
     authConfig: AppSyncAuthConfiguration,
-    filepaths: TransformerFilepathsProvider,
+    transformParameters: TransformParameters,
     sandboxModeEnabled?: boolean,
-    featureFlags?: FeatureFlagProvider,
     resolverConfig?: ResolverConfig,
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
   ) {
@@ -79,10 +76,9 @@ export class TransformerContext implements TransformerContextProvider {
     const stackManager = new StackManager(app, stackMapping);
     this.stackManager = stackManager;
     this.authConfig = authConfig;
-    this.filepaths = filepaths;
     this.sandboxModeEnabled = sandboxModeEnabled ?? false;
     this.resourceHelper = new TransformerResourceHelper(stackManager);
-    this.featureFlags = featureFlags ?? new NoopFeatureFlagProvider();
+    this.transformParameters = transformParameters;
     this.resolverConfig = resolverConfig;
     this.metadata = new TransformerContextMetadata();
     this.modelToDatasourceMap = modelToDatasourceMap;

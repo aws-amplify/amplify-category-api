@@ -13,18 +13,12 @@ import {
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { getExistingConnectionSecrets, storeConnectionSecrets, getSecretsKey, getDatabaseName } from '../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 import { writeSchemaFile, generateRDSSchema } from '../../provider-utils/awscloudformation/utils/graphql-schema-utils';
-import { PREVIEW_BANNER } from '../../category-constants';
 
 const subcommand = 'generate-schema';
 
 export const name = subcommand;
 
 export const run = async (context: $TSContext) => {
-  printer.warn(PREVIEW_BANNER);
-
-  // Disable the command for now
-  throw new Error("This command has been disabled.");
-  
   const apiName = getAppSyncAPIName();
   const apiResourceDir = getAPIResourceDir(apiName);
 

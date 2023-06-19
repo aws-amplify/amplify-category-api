@@ -3655,7 +3655,7 @@ $util.qr($SkMap.put(\\"ByCreatedAt\\", [\\"status\\"]))
 ## [Start] Set query expression for @key **
 #set( $filterArgsMap = $ctx.args.filter.get(\\"and\\") )
 #set( $isLastSyncInDeltaTTLWindow = false )
-#set( $minLastSync = $util.time.nowEpochMilliSeconds() - 1800000 )
+#set( $minLastSync = $util.time.nowEpochMilliSeconds() - $ctx.stash.deltaSyncTableTtl * 60 * 1000 )
 #if( !$util.isNull($ctx.args.lastSync) && $ctx.args.lastSync != 0 && $minLastSync <= $ctx.args.lastSync )
   #set( $isLastSyncInDeltaTTLWindow = true )
 #end
@@ -3788,7 +3788,7 @@ $util.qr($SkMap.put(\\"dbTable\\", [\\"status\\", \\"createdAt\\"]))
 ## [Start] Set query expression for @key **
 #set( $filterArgsMap = $ctx.args.filter.get(\\"and\\") )
 #set( $isLastSyncInDeltaTTLWindow = false )
-#set( $minLastSync = $util.time.nowEpochMilliSeconds() - 1800000 )
+#set( $minLastSync = $util.time.nowEpochMilliSeconds() - $ctx.stash.deltaSyncTableTtl * 60 * 1000 )
 #if( !$util.isNull($ctx.args.lastSync) && $ctx.args.lastSync != 0 && $minLastSync <= $ctx.args.lastSync )
   #set( $isLastSyncInDeltaTTLWindow = true )
 #end
@@ -4583,7 +4583,7 @@ $util.qr($SkMap.put(\\"byGenre\\", []))
 ## [Start] Set query expression for @key **
 #set( $filterArgsMap = $ctx.args.filter.get(\\"and\\") )
 #set( $isLastSyncInDeltaTTLWindow = false )
-#set( $minLastSync = $util.time.nowEpochMilliSeconds() - 900000 )
+#set( $minLastSync = $util.time.nowEpochMilliSeconds() - $ctx.stash.deltaSyncTableTtl * 60 * 1000 )
 #if( !$util.isNull($ctx.args.lastSync) && $ctx.args.lastSync != 0 && $minLastSync <= $ctx.args.lastSync )
   #set( $isLastSyncInDeltaTTLWindow = true )
 #end
@@ -5378,7 +5378,7 @@ $util.qr($SkMap.put(\\"byGenre\\", []))
 ## [Start] Set query expression for @key **
 #set( $filterArgsMap = $ctx.args.filter.get(\\"and\\") )
 #set( $isLastSyncInDeltaTTLWindow = false )
-#set( $minLastSync = $util.time.nowEpochMilliSeconds() - 1800000 )
+#set( $minLastSync = $util.time.nowEpochMilliSeconds() - $ctx.stash.deltaSyncTableTtl * 60 * 1000 )
 #if( !$util.isNull($ctx.args.lastSync) && $ctx.args.lastSync != 0 && $minLastSync <= $ctx.args.lastSync )
   #set( $isLastSyncInDeltaTTLWindow = true )
 #end

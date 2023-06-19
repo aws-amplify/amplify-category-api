@@ -3,7 +3,7 @@ import {
   InvalidDirectiveError,
   generateGetArgumentsInput,
 } from '@aws-amplify/graphql-transformer-core';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthRule, ConfiguredAuthProviders } from './definitions';
 
 export const validateRuleAuthStrategy = (rule: AuthRule, configuredAuthProviders: ConfiguredAuthProviders) => {
@@ -108,11 +108,11 @@ export const validateFieldRules = (
   isParentTypeBuiltinType: boolean,
   parentHasModelDirective: boolean,
   fieldName: string,
-  featureFlags: FeatureFlagProvider,
+  transformParameters: TransformParameters,
 ) => {
   const rules = authDir.getArguments<{ rules: Array<AuthRule> }>(
     { rules: [] },
-    generateGetArgumentsInput(featureFlags),
+    generateGetArgumentsInput(transformParameters),
   ).rules;
 
   if (rules.length === 0) {
