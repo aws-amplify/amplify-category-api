@@ -29,8 +29,6 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-transformer-interfaces": "2.2.1",
-    "aws-cdk-lib": "~2.68.0",
-    "constructs": "^10.0.5",
     "fs-extra": "^8.1.0",
     "graphql": "^15.5.0",
     "graphql-transformer-common": "4.24.6",
@@ -47,6 +45,10 @@
     "@types/node": "^12.12.6",
     "@types/object-hash": "^2.2.1",
     "@types/uuid": "^9.0.1"
+  },
+  "peerDependencies": {
+    "aws-cdk-lib": "^2.68.0",
+    "constructs": "^10.0.5"
   },
   "jest": {
     "transform": {
