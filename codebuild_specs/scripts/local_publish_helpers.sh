@@ -14,14 +14,14 @@ function startLocalRegistry {
 
 function setNpmTag {
     if [ -z $NPM_TAG ]; then
-        if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
-            if [[ "$CIRCLE_BRANCH" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
-                export NPM_TAG="${CIRCLE_BRANCH/tagged-release-without-e2e-tests\//}"
-            elif [[ "$CIRCLE_BRANCH" =~ ^tagged-release\/.* ]]; then
-                export NPM_TAG="${CIRCLE_BRANCH/tagged-release\//}"
+        if [[ "$BRANCH_NAME" =~ ^tagged-release ]]; then
+            if [[ "$BRANCH_NAME" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
+                export NPM_TAG="${BRANCH_NAME/tagged-release-without-e2e-tests\//}"
+            elif [[ "$BRANCH_NAME" =~ ^tagged-release\/.* ]]; then
+                export NPM_TAG="${BRANCH_NAME/tagged-release\//}"
             fi
         fi
-        if [[ "$CIRCLE_BRANCH" == "beta" ]]; then
+        if [[ "$BRANCH_NAME" == "beta" ]]; then
             export NPM_TAG="beta"
         fi
     else
