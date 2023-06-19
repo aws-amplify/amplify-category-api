@@ -1,4 +1,0 @@
-type Blog @model {
-  id: ID! @primaryKey(sortKeyFields: ["name"])
-  name: String!
-}

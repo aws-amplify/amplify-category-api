@@ -9,3 +9,4 @@ export type {
   TransformConfig,
   ExecuteTransformConfig,
 } from './graphql-transformer';
+// Force Rebuild and Republish

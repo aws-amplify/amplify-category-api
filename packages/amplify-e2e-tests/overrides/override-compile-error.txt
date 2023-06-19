@@ -1,4 +1,0 @@
-export function override(props: any) {
-  // this is an intentional compilation error here
-  compilation error
-}

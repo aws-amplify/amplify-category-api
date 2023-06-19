@@ -15,3 +15,5 @@ export type {
   FunctionSlot,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';
+
+// Force Rebuild and Republish

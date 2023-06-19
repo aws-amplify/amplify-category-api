@@ -47,3 +47,4 @@ export {
   OpenSearchDirectiveStack,
 } from './amplify-api-resource-stack-types';
 export type { TransformParameters } from './transformer-context/transform-parameters';
+// Force Rebuild and Republish
