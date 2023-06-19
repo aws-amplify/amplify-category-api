@@ -25,14 +25,14 @@ import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 
-// @public (undocumented)
+// @public
 export class AmplifyGraphqlApi extends Construct {
     constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps);
     // (undocumented)
     readonly resources: AmplifyGraphqlApiResources;
 }
 
-// @public (undocumented)
+// @public
 export type AmplifyGraphqlApiProps = {
     schema: AmplifyGraphqlApiSchema;
     apiName?: string;
@@ -59,7 +59,7 @@ export type AmplifyGraphqlApiResources = {
     additionalResources: Record<string, CfnResource>;
 };
 
-// @public (undocumented)
+// @public
 export type AmplifyGraphqlApiSchema = SchemaFile | SchemaFile[] | string;
 
 // @public (undocumented)
@@ -68,7 +68,7 @@ export type ApiKeyAuthorizationConfig = {
     expires: Duration;
 };
 
-// @public (undocumented)
+// @public
 export type AuthorizationConfig = {
     defaultAuthMode?: 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
     iamConfig?: IAMAuthorizationConfig;
@@ -78,10 +78,10 @@ export type AuthorizationConfig = {
     lambdaConfig?: LambdaAuthorizationConfig;
 };
 
-// @public (undocumented)
+// @public
 export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | SubscriptionFunctionSlot;
 
-// @public (undocumented)
+// @public
 export type FunctionSlotBase = {
     fieldName: string;
     slotIndex: number;
@@ -103,7 +103,7 @@ export type LambdaAuthorizationConfig = {
     ttl: Duration;
 };
 
-// @public (undocumented)
+// @public
 export type MutationFunctionSlot = FunctionSlotBase & {
     typeName: 'Mutation';
     slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preUpdate' | 'postUpdate' | 'finish';
@@ -118,13 +118,13 @@ export type OIDCAuthorizationConfig = {
     tokenExpiryFromIssue: Duration;
 };
 
-// @public (undocumented)
+// @public
 export type QueryFunctionSlot = FunctionSlotBase & {
     typeName: 'Query';
     slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
 };
 
-// @public (undocumented)
+// @public
 export type SubscriptionFunctionSlot = FunctionSlotBase & {
     typeName: 'Subscription';
     slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preSubscribe';
