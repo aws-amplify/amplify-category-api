@@ -25,29 +25,30 @@ const SUPPORTED_REGIONS = [
 ];
 
 type LayerConfig = {
-  layerArn: string | undefined;
+  layerArn: string;
   region: string;
 };
 
 const getLatestVersion = async (layerName: string, region: string): Promise<LayerConfig> => {
   const client = new LambdaClient({ region });
   const versions = [];
-  let response: ListLayerVersionsCommandOutput | undefined;
+  let nextMarker;
   do {
-    const command = new ListLayerVersionsCommand({
+    const command: ListLayerVersionsCommand = new ListLayerVersionsCommand({
       LayerName: layerName,
       MaxItems: MAX_ITEMS,
-      Marker: response?.NextMarker,
+      Marker: nextMarker,
     });
     // eslint-disable-next-line no-await-in-loop
-    response = await client.send(command);
+    const response = await client.send(command);
     if (response.LayerVersions) {
       versions.push(...response.LayerVersions);
     }
-  } while (response?.NextMarker);
+    nextMarker = response?.NextMarker;
+  } while (nextMarker);
   const result = versions.sort((a, b) => b.Version! - a.Version!)[0];
   return {
-    layerArn: result.LayerVersionArn,
+    layerArn: result.LayerVersionArn!,
     region,
   };
 };

@@ -11,13 +11,13 @@
   "dependencies": {
     "@aws-sdk/client-sns": "3.352.0",
     "@aws-sdk/client-lambda": "3.352.0",
-    "bestzip": "2.2.1",
     "typescript": "5.1.3"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^20.3.1"
+    "@types/node": "^20.3.1",
+    "bestzip": "2.2.1"
   }
 }

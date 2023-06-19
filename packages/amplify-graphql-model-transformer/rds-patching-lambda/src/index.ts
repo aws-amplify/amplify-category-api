@@ -3,8 +3,8 @@ import { LambdaClient, UpdateFunctionConfigurationCommand, UpdateFunctionConfigu
 const snsEventSource = 'aws:sns';
 
 type LayerConfig = {
-  layerArn: string;
-  region: string;
+  layerArn?: string;
+  region?: string;
 };
 
 const getLayerConfig = (event: any): LayerConfig => {
