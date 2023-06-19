@@ -60,6 +60,13 @@
       "json",
       "node"
     ],
-    "collectCoverage": true
+    "collectCoverage": true,
+    "coverageThreshold": {
+      "global": {
+        "branches": 73,
+        "functions": 25,
+        "lines": 52
+      }
+    }
   }
 }
