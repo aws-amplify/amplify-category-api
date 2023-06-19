@@ -1,8 +1,8 @@
 #!/bin/bash
 source ./scripts/cloud-utils.sh
-export RELEASE_ROLE_NAME=CodebuildRelease
+export RELEASE_ROLE_NAME=CodebuildDeveloper
 export RELEASE_PROFILE_NAME=AmplifyAPIPluginRelease
-export RELEASE_PROJECT_NAME=Release
+export RELEASE_PROJECT_NAME=amplify-category-api-release-workflow
 
 function release {
   branch_name=$(git branch --show-current)

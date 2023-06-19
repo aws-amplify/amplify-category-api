@@ -414,10 +414,11 @@ function emitCanaryFailureMetric {
     fi
 }
 
-function deploy {
+function _deploy {
   echo "Deploy"
   loadCacheFromBuildJob
   echo "Authenticate with NPM"
-  echo "//registry.npmjs.org/:_authToken=$NPM_PUBLISH_TOKEN" > ~/.npmrc
+  PUBLISH_TOKEN=$(echo "$NPM_PUBLISH_TOKEN" | jq -r '.token')
+  echo "//registry.npmjs.org/:_authToken=$PUBLISH_TOKEN" > ~/.npmrc
   ./codebuild_specs/scripts/publish.sh
 }
