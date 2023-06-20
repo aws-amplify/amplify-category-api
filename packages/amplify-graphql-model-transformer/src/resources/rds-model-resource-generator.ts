@@ -16,8 +16,9 @@ import { Fn } from 'aws-cdk-lib';
 import { SubscriptionFilter } from 'aws-cdk-lib/aws-sns';
 
 export const RDS_STACK_NAME = 'RdsApiStack';
-// TODO: Need to change this to production SNS topic
-const RDS_PATCHING_SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:956468067974:AmplifyRDSLayerNotification';
+// Beta SNS topic - 'arn:aws:sns:us-east-1:956468067974:AmplifyRDSLayerNotification'
+// PROD SNS topic - 'arn:aws:sns:us-east-1:582037449441:AmplifyRDSLayerNotification'
+const RDS_PATCHING_SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:582037449441:AmplifyRDSLayerNotification';
 /**
  * An implementation of ModelResourceGenerator responsible for generated CloudFormation resources
  * for models backed by an RDS data source
