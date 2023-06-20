@@ -1,6 +1,5 @@
 import { FeatureFlags } from '@aws-amplify/amplify-cli-core';
 import { FeatureFlagProvider } from 'graphql-transformer-core';
-import { FeatureFlagProvider as NewTransformerFFProvider } from '@aws-amplify/graphql-transformer-interfaces'
 
 export class AmplifyCLIFeatureFlagAdapterBase implements FeatureFlagProvider {
   getBoolean(featureName: string, defaultValue?: boolean): boolean {
@@ -33,5 +32,4 @@ export class AmplifyCLIFeatureFlagAdapterBase implements FeatureFlagProvider {
 }
 
 // Mapping to new type to ensure the provider interface is implemented
-export class AmplifyCLIFeatureFlagAdapter
- extends AmplifyCLIFeatureFlagAdapterBase implements NewTransformerFFProvider {}
+export class AmplifyCLIFeatureFlagAdapter extends AmplifyCLIFeatureFlagAdapterBase {}

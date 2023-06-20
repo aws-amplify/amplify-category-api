@@ -68,7 +68,7 @@ export const validateNotOwnerAuth = (
   ctx: TransformerContextProvider,
 ): boolean => {
   const authDir = (object.directives || []).find(collectAuthDirectives);
-  const featureFlagEnabled = ctx.featureFlags.getBoolean('useSubUsernameForDefaultIdentityClaim');
+  const featureFlagEnabled = ctx.transformParameters.useSubUsernameForDefaultIdentityClaim;
 
   if (!authDir || !featureFlagEnabled) return true;
 

@@ -300,17 +300,9 @@ describe('@model with @auth', () => {
         new HasOneTransformer(),
         new AuthTransformer(),
       ],
-      featureFlags: {
-        getBoolean: (value: string, defaultValue?: boolean) => {
-          if (value === 'useSubUsernameForDefaultIdentityClaim') {
-            return false;
-          }
-          return defaultValue;
-        },
-       
-
-        getNumber: jest.fn(),
-        getObject: jest.fn(),
+      transformParameters: {
+        useSubUsernameForDefaultIdentityClaim: false,
+        populateOwnerFieldForStaticGroupAuth: false
       },
     });
     const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);

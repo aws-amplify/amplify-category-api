@@ -1,46 +1,36 @@
 import {
   $TSContext,
-  $TSMeta, 
+  $TSMeta,
   AmplifyCategories,
-  AmplifySupportedService, ApiCategoryFacade,
-  CloudformationProviderFacade, getGraphQLTransformerAuthDocLink,
+  AmplifySupportedService,
+  CloudformationProviderFacade,
+  getGraphQLTransformerAuthDocLink,
   JSONUtilities,
   pathManager,
   stateManager,
 } from '@aws-amplify/amplify-cli-core';
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  collectDirectivesByTypeNames,
-} from '@aws-amplify/graphql-transformer-core';
-import {
-  getSanityCheckRules,
-  loadProject,
-} from 'graphql-transformer-core';
+import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { collectDirectivesByTypeNames, OverrideConfig, StackManager } from '@aws-amplify/graphql-transformer-core';
+import { getSanityCheckRules, loadProject } from 'graphql-transformer-core';
 import path from 'path';
 import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import _ from 'lodash';
 import { printer } from '@aws-amplify/amplify-prompts';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
 import { getAdminRoles, getIdentityPoolId } from './utils';
-import {
-  schemaHasSandboxModeEnabled,
-  showGlobalSandboxModeWarning,
-  showSandboxModePrompts,
-} from './sandbox-mode-helpers';
-import { getTransformerFactory } from './transformer-factory';
+import { schemaHasSandboxModeEnabled, showGlobalSandboxModeWarning, showSandboxModePrompts } from './sandbox-mode-helpers';
+import { importTransformerModule } from './transformer-factory';
 import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import {
-  DESTRUCTIVE_UPDATES_FLAG,
-  PARAMETERS_FILENAME,
-  PROVIDER_NAME,
-  ROOT_APPSYNC_S3_KEY,
+  DESTRUCTIVE_UPDATES_FLAG, PARAMETERS_FILENAME, PROVIDER_NAME, ROOT_APPSYNC_S3_KEY,
 } from './constants';
-import {
-  TransformerFactoryArgs,
-  TransformerProjectOptions,
-} from './transformer-options-types';
+import { TransformerProjectOptions } from './transformer-options-types';
 import { contextUtil } from '../category-utils/context-util';
-import {searchablePushChecks} from "./api-utils";
+import { searchablePushChecks } from './api-utils';
+import { shouldEnableNodeToNodeEncryption } from '../provider-utils/awscloudformation/current-backend-state/searchable-node-to-node-encryption';
+import { parseUserDefinedSlots } from './user-defined-slots';
+import { applyFileBasedOverride } from './override';
 
 export const APPSYNC_RESOURCE_SERVICE = 'AppSync';
 
@@ -66,7 +56,7 @@ const warnOnAuth = (map: Record<string, any>, docLink: string): void => {
 export const generateTransformerOptions = async (
   context: $TSContext,
   options: any,
-): Promise<TransformerProjectOptions<TransformerFactoryArgs>> => {
+): Promise<TransformerProjectOptions> => {
   let resourceName: string;
   const backEndDir = pathManager.getBackendDirPath();
   const flags = context.parameters.options;
@@ -188,17 +178,14 @@ export const generateTransformerOptions = async (
   const lastDeployedProjectConfig = fs.existsSync(previouslyDeployedBackendDir)
     ? await loadProject(previouslyDeployedBackendDir)
     : undefined;
-  const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
-  const docLink = getGraphQLTransformerAuthDocLink(transformerVersion);
+  const docLink = getGraphQLTransformerAuthDocLink(2);
   const sandboxModeEnabled = schemaHasSandboxModeEnabled(project.schema, docLink);
   const directiveMap = collectDirectivesByTypeNames(project.schema);
   const hasApiKey = authConfig.defaultAuthentication.authenticationType === 'API_KEY'
-    || authConfig.additionalAuthenticationProviders.some(a => a.authenticationType === 'API_KEY');
+    || authConfig.additionalAuthenticationProviders.some((authProvider) => authProvider.authenticationType === 'API_KEY');
   const showSandboxModeMessage = sandboxModeEnabled && hasApiKey;
 
-  const transformerListFactory = await getTransformerFactory(context, resourceDir);
-
-  searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
+  await searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
 
   if (sandboxModeEnabled && options.promptApiKeyCreation) {
     const apiKeyConfig = await showSandboxModePrompts(context);
@@ -213,7 +200,7 @@ export const generateTransformerOptions = async (
 
   // construct sanityCheckRules
   const ff = new AmplifyCLIFeatureFlagAdapter();
-  const isNewAppSyncAPI: boolean = resourcesToBeCreated.some(resource => resource.service === 'AppSync');
+  const isNewAppSyncAPI: boolean = resourcesToBeCreated.some((resource) => resource.service === 'AppSync');
   const allowDestructiveUpdates = context?.input?.options?.[DESTRUCTIVE_UPDATES_FLAG] || context?.input?.options?.force;
   const sanityCheckRules = getSanityCheckRules(isNewAppSyncAPI, ff, allowDestructiveUpdates);
   let resolverConfig = {};
@@ -235,16 +222,36 @@ export const generateTransformerOptions = async (
     resolverConfig = project.config.ResolverConfig;
   }
 
-  const buildConfig: TransformerProjectOptions<TransformerFactoryArgs> = {
+  const resourceDirParts = resourceDir.split(path.sep);
+  const apiName = resourceDirParts[resourceDirParts.length - 1];
+
+  const enableNodeToNodeEncryption = shouldEnableNodeToNodeEncryption(
+    apiName,
+    pathManager.findProjectRoot(),
+    pathManager.getCurrentCloudBackendDirPath(),
+  );
+
+  const userDefinedSlots = {
+    ...parseUserDefinedSlots(project.pipelineFunctions),
+    ...parseUserDefinedSlots(project.resolvers),
+  };
+
+  const overrideConfig: OverrideConfig = {
+    applyOverride: (stackManager: StackManager) => applyFileBasedOverride(stackManager),
+    ...options.overrideConfig,
+  };
+
+  return {
     ...options,
     buildParameters,
     projectDirectory: resourceDir,
-    transformersFactory: transformerListFactory,
     transformersFactoryArgs: {
       storageConfig,
       authConfig,
       adminRoles,
       identityPoolId,
+      searchConfig: { enableNodeToNodeEncryption },
+      customTransformers: await loadCustomTransformersV2(resourceDir),
     },
     rootStackFileName: 'cloudformation-template.json',
     currentCloudBackendDirectory: previouslyDeployedBackendDir,
@@ -254,9 +261,63 @@ export const generateTransformerOptions = async (
     sandboxModeEnabled,
     sanityCheckRules,
     resolverConfig,
+    userDefinedSlots,
+    overrideConfig,
+    stacks: project.stacks,
+    stackMapping: project.config.StackMapping,
+    legacyApiKeyEnabled: legacyApiKeyEnabledFromParameters(parameters),
+    disableResolverDeduping: (project.config as any).DisableResolverDeduping,
+    transformParameters: generateTransformParameters(),
   };
+};
 
-  return buildConfig;
+/**
+ * Generate transform parameters from feature flags and other config sources.
+ * @returns a single set of params to configure the transform behavior.
+ */
+const generateTransformParameters = (): TransformParameters => {
+  const featureFlagProvider = new AmplifyCLIFeatureFlagAdapter();
+  return {
+    shouldDeepMergeDirectiveConfigDefaults: featureFlagProvider.getBoolean('shouldDeepMergeDirectiveConfigDefaults'),
+    useSubUsernameForDefaultIdentityClaim: featureFlagProvider.getBoolean('useSubUsernameForDefaultIdentityClaim'),
+    populateOwnerFieldForStaticGroupAuth: featureFlagProvider.getBoolean('populateOwnerFieldForStaticGroupAuth'),
+    secondaryKeyAsGSI: featureFlagProvider.getBoolean('secondaryKeyAsGSI'),
+    enableAutoIndexQueryNames: featureFlagProvider.getBoolean('enableAutoIndexQueryNames'),
+    respectPrimaryKeyAttributesOnConnectionField: featureFlagProvider.getBoolean('respectPrimaryKeyAttributesOnConnectionField'),
+  };
+};
+
+export const legacyApiKeyEnabledFromParameters = (parameters: any): boolean | undefined => {
+  if (!('CreateAPIKey' in parameters)) {
+    return undefined;
+  }
+  return parameters.CreateAPIKey === 1 || parameters.CreateAPIKey === '1';
+};
+
+/**
+ * Scan the project config for custom transformers, then attempt to load them from the various node paths which Amplify supports.
+ * @param resourceDir the directory to search for transformer configuration.
+ * @returns a list of custom plugins.
+ */
+export const loadCustomTransformersV2 = async (resourceDir: string): Promise<TransformerPluginProvider[]> => {
+  const customTransformersConfig = await loadProject(resourceDir);
+  const customTransformerList = customTransformersConfig?.config?.transformers;
+  return (Array.isArray(customTransformerList) ? customTransformerList : [])
+    .map(importTransformerModule)
+    .map((imported) => {
+      const CustomTransformer = imported.default;
+
+      if (typeof CustomTransformer === 'function') {
+        return new CustomTransformer();
+      } if (typeof CustomTransformer === 'object') {
+        // Todo: Use a shim to ensure that it adheres to TransformerProvider interface. For now throw error
+        // return CustomTransformer;
+        throw new Error("Custom Transformers' should implement TransformerProvider interface");
+      }
+
+      throw new Error("Custom Transformers' default export must be a function or an object");
+    })
+    .filter((customTransformer) => customTransformer);
 };
 
 const getBucketName = (s3ResourceName: string): { bucketName: string } => {
@@ -308,7 +369,7 @@ const s3ResourceAlreadyExists = (): string | undefined => {
     const amplifyMeta: $TSMeta = stateManager.getMeta(undefined, { throwIfNotExist: false });
     if (amplifyMeta?.[AmplifyCategories.STORAGE]) {
       const categoryResources = amplifyMeta[AmplifyCategories.STORAGE];
-      Object.keys(categoryResources).forEach(resource => {
+      Object.keys(categoryResources).forEach((resource) => {
         if (categoryResources[resource].service === AmplifySupportedService.S3) {
           resourceName = resource;
         }

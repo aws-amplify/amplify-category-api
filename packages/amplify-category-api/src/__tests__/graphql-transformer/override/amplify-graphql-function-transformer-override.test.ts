@@ -1,6 +1,6 @@
 import { GraphQLTransform, StackManager } from '@aws-amplify/graphql-transformer-core';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
-import { applyOverride } from '../../../graphql-transformer/override';
+import { applyFileBasedOverride } from '../../../graphql-transformer/override';
 import { parse } from 'graphql';
 import * as path from 'path';
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
@@ -18,9 +18,7 @@ test('it ovderrides the expected resources', () => {
   const transformer = new GraphQLTransform({
     transformers: [new FunctionTransformer()],
     overrideConfig: {
-      applyOverride: (stackManager: StackManager) => {
-        return applyOverride(stackManager, path.join(__dirname, 'function-overrides'))
-      },
+      applyOverride: (stackManager: StackManager) => applyFileBasedOverride(stackManager, path.join(__dirname, 'function-overrides')),
       overrideFlag: true,
     },
   });
@@ -43,9 +41,7 @@ test('it skips override if override file does not exist', () => {
   const transformer = new GraphQLTransform({
     transformers: [new FunctionTransformer()],
     overrideConfig: {
-      applyOverride: (stackManager: StackManager) => (
-        applyOverride(stackManager, path.join(__dirname, 'non-existing-override-directory'))
-      ),
+      applyOverride: (stackManager: StackManager) => applyFileBasedOverride(stackManager, path.join(__dirname, 'non-existing-override-directory')),
       overrideFlag: true,
     },
   });

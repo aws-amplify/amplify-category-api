@@ -4,21 +4,10 @@ import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as path from 'path';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
-import { applyOverride } from '../../../graphql-transformer/override';
+import { applyFileBasedOverride } from '../../../graphql-transformer/override';
 
 jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
 jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
-
-const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name): boolean => {
-    if (name === 'improvePluralization') {
-      return true;
-    }
-    return false;
-  }),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-};
 
 test('it overrides expected resources', () => {
   const validSchema = `
@@ -35,11 +24,8 @@ test('it overrides expected resources', () => {
  `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    featureFlags,
     overrideConfig: {
-      applyOverride: (stackManager: StackManager) => {
-        return applyOverride(stackManager, path.join(__dirname, 'searchable-overrides'))
-      },
+      applyOverride: (stackManager: StackManager) => applyFileBasedOverride(stackManager, path.join(__dirname, 'searchable-overrides')),
       overrideFlag: true,
     },
   });

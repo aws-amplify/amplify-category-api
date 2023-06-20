@@ -2,7 +2,6 @@
 import {
   AppSyncAuthConfiguration,
   DeploymentResources,
-  FeatureFlagProvider,
   GraphQLAPIProvider,
   Template,
   TransformerPluginProvider,
@@ -10,6 +9,7 @@ import {
   TransformerLog,
   VpcConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import {
   App, Aws, CfnOutput, Fn,
@@ -31,7 +31,7 @@ import {
   print,
 } from 'graphql';
 import _ from 'lodash';
-import { ResolverConfig, TransformConfig } from '../config/transformer-config';
+import { ResolverConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
 import { TransformerContext } from '../transformer-context';
@@ -55,6 +55,7 @@ import { validateAuthModes, validateModelSchema } from './validation';
 import { DocumentNode } from 'graphql/language';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { DatasourceType } from '../config/project-config';
+import { defaultTransformParameters } from '../transformer-context/transform-parameters';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
@@ -76,11 +77,9 @@ export interface GraphQLTransformOptions {
   // automatically.
   readonly stackMapping?: StackMapping;
   // transform config which can change the behavior of the transformer
-  readonly transformConfig?: TransformConfig;
   readonly authConfig?: AppSyncAuthConfiguration;
-  readonly buildParameters?: Record<string, any>;
   readonly stacks?: Record<string, Template>;
-  readonly featureFlags?: FeatureFlagProvider;
+  readonly transformParameters?: Partial<TransformParameters>;
   readonly host?: TransformHostProvider;
   readonly sandboxModeEnabled?: boolean;
   readonly disableResolverDeduping?: boolean;
@@ -88,19 +87,21 @@ export interface GraphQLTransformOptions {
   readonly resolverConfig?: ResolverConfig;
   readonly overrideConfig?: OverrideConfig;
   readonly sqlLambdaVpcConfig?: VpcConfig;
+  readonly legacyApiKeyEnabled?: boolean;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
   private transformers: TransformerPluginProvider[];
   private stackMappingOverrides: StackMapping;
   private app: App | undefined;
-  private transformConfig: TransformConfig;
   private readonly authConfig: AppSyncAuthConfiguration;
   private readonly resolverConfig?: ResolverConfig;
-  private readonly buildParameters: Record<string, any>;
   private readonly userDefinedSlots: Record<string, UserDefinedSlot[]>;
   private readonly overrideConfig?: OverrideConfig;
   private readonly sqlLambdaVpcConfig?: VpcConfig;
+  private readonly disableResolverDeduping?: boolean;
+  private readonly legacyApiKeyEnabled?: boolean;
+  private readonly transformParameters: TransformParameters;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
   // that specifies we have run already run a directive at a given location.
@@ -129,13 +130,19 @@ export class GraphQLTransform {
 
     validateAuthModes(this.authConfig);
 
-    this.buildParameters = options.buildParameters || {};
     this.stackMappingOverrides = options.stackMapping || {};
-    this.transformConfig = options.transformConfig || {};
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
     this.overrideConfig = options.overrideConfig;
     this.resolverConfig = options.resolverConfig || {};
     this.sqlLambdaVpcConfig = options.sqlLambdaVpcConfig;
+    this.legacyApiKeyEnabled = options.legacyApiKeyEnabled;
+    this.disableResolverDeduping = options.disableResolverDeduping;
+    this.sqlLambdaVpcConfig = options.sqlLambdaVpcConfig;
+    this.transformParameters = {
+      ...defaultTransformParameters,
+      ...(options.transformParameters ?? {}),
+    };
+
     this.logs = [];
   }
 
@@ -150,7 +157,7 @@ export class GraphQLTransform {
    * @param schema A parsed GraphQL DocumentNode
    */
   public preProcessSchema(schema: DocumentNode): DocumentNode {
-    const context = new TransformerPreProcessContext(schema, this?.options?.featureFlags);
+    const context = new TransformerPreProcessContext(schema, this.transformParameters);
 
     this.transformers
         .filter(transformer => isFunction(transformer.preMutateSchema))
@@ -181,18 +188,16 @@ export class GraphQLTransform {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
     this.app = new App();
-    const modelDeltaSyncTableTtlMap = new Map<string, number>();
     const context = new TransformerContext(
       this.app,
       parsedDocument,
       datasourceConfig?.modelToDatasourceMap ?? new Map<string, DatasourceType>(),
       this.stackMappingOverrides,
       this.authConfig,
+      this.transformParameters,
       this.options.sandboxModeEnabled,
-      this.options.featureFlags,
       this.resolverConfig,
       datasourceConfig?.datasourceSecretParameterLocations,
-      this.overrideConfig?.applyOverride,
       this.sqlLambdaVpcConfig,
     );
     const validDirectiveNameMap = this.transformers.reduce(
@@ -340,15 +345,13 @@ export class GraphQLTransform {
       host: this.options.host,
       sandboxModeEnabled: this.options.sandboxModeEnabled,
       environmentName: envName.valueAsString,
-      disableResolverDeduping: this.transformConfig.DisableResolverDeduping,
+      disableResolverDeduping: this.disableResolverDeduping,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
       mode => mode?.authorizationType,
     );
 
-    const hasLegacyAPIKeyConfigDisabled = 'CreateAPIKey' in this.buildParameters && this.buildParameters.CreateAPIKey !== 1;
-
-    if (authModes.includes(AuthorizationType.API_KEY) && !hasLegacyAPIKeyConfigDisabled) {
+    if (authModes.includes(AuthorizationType.API_KEY) && this.legacyApiKeyEnabled !== false) {
       const apiKeyConfig: AuthorizationMode | undefined = [
         authorizationConfig.defaultAuthorization,
         ...(authorizationConfig.additionalAuthorizationModes || []),

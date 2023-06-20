@@ -1,7 +1,4 @@
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  ObjectTypeDefinitionNode, FieldDefinitionNode, DocumentNode, Kind,
-} from 'graphql';
+import { ObjectTypeDefinitionNode, FieldDefinitionNode, DocumentNode, Kind } from 'graphql';
 
 /**
  * Gets a type from Doc Node
@@ -22,20 +19,3 @@ export const getField = (
   obj: ObjectTypeDefinitionNode,
   fieldName: string,
 ): FieldDefinitionNode | void => obj.fields?.find((f) => f.name.value === fieldName);
-
-/**
- * Merges passed in feature flags with default feature flags for tests
- */
-export const featureFlags: FeatureFlagProvider = {
-  getBoolean: (value: string): boolean => {
-    if (value === 'useSubUsernameForDefaultIdentityClaim') {
-      return true;
-    }
-    if (value === 'populateOwnerFieldForStaticGroupAuth') {
-      return true;
-    }
-    return false;
-  },
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-};

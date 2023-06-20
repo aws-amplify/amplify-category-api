@@ -6,8 +6,7 @@ import { TransformerContextOutputProvider } from './transformer-context-output-p
 import { StackManagerProvider } from './stack-manager-provider';
 import { AppSyncAuthConfiguration, GraphQLAPIProvider, VpcConfig } from '../graphql-api-provider';
 import { TransformerResourceHelperProvider } from './resource-resource-provider';
-import { FeatureFlagProvider } from '../feature-flag-provider';
-import { OverridesProvider } from './overrides-provider';
+import { TransformParameters } from './transform-parameters';
 
 export interface TransformerContextMetadataProvider {
   set<T>(key: string, value: T): void;
@@ -30,13 +29,12 @@ export interface TransformerContextProvider {
   stackManager: StackManagerProvider;
   api: GraphQLAPIProvider;
   resourceHelper: TransformerResourceHelperProvider;
-  featureFlags: FeatureFlagProvider;
   authConfig: AppSyncAuthConfiguration;
   sandboxModeEnabled: boolean;
+  transformParameters: TransformParameters;
 
   isProjectUsingDataStore(): boolean;
   getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
-  getResourceOverrides: OverridesProvider;
   readonly sqlLambdaVpcConfig?: VpcConfig;
 }
 
@@ -44,7 +42,7 @@ export type TransformerBeforeStepContextProvider = Pick<
   TransformerContextProvider,
   | 'inputDocument'
   | 'modelToDatasourceMap'
-  | 'featureFlags'
+  | 'transformParameters'
   | 'isProjectUsingDataStore'
   | 'getResolverConfig'
   | 'authConfig'
@@ -58,7 +56,7 @@ export type TransformerSchemaVisitStepContextProvider = Pick<
   | 'modelToDatasourceMap'
   | 'output'
   | 'providerRegistry'
-  | 'featureFlags'
+  | 'transformParameters'
   | 'isProjectUsingDataStore'
   | 'getResolverConfig'
   | 'metadata'
@@ -74,7 +72,7 @@ export type TransformerValidationStepContextProvider = Pick<
   | 'output'
   | 'providerRegistry'
   | 'dataSources'
-  | 'featureFlags'
+  | 'transformParameters'
   | 'isProjectUsingDataStore'
   | 'getResolverConfig'
   | 'metadata'

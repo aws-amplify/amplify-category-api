@@ -3,8 +3,9 @@ import { printer } from "@aws-amplify/amplify-prompts";
 import { ApiCategoryFacade } from "@aws-amplify/amplify-cli-core";
 import { transformGraphQLSchemaV2 } from "../../graphql-transformer/transform-graphql-schema-v2";
 import { generateTransformerOptions } from "../../graphql-transformer/transformer-options-v2";
-import { getTransformerFactory } from "../../graphql-transformer/transformer-factory";
 import { getAppSyncAPIName } from "../../provider-utils/awscloudformation/utils/amplify-meta-utils";
+import { constructTransformerChain } from "@aws-amplify/graphql-transformer";
+import { AmplifyCLIFeatureFlagAdapter } from "../../graphql-transformer/amplify-cli-feature-flag-adapter";
 
 jest.mock("@aws-amplify/amplify-cli-core");
 jest.mock("@aws-amplify/amplify-prompts");
@@ -61,7 +62,7 @@ describe("transformGraphQLSchemaV2", () => {
         `,
         config: { StackMapping: {} },
       },
-      transformersFactory: await getTransformerFactory(contextMock, "resourceDir"),
+      transformersFactory: constructTransformerChain(),
       transformersFactoryArgs: {},
       dryRun: true,
       projectDirectory: __dirname,
@@ -70,6 +71,14 @@ describe("transformGraphQLSchemaV2", () => {
         defaultAuthentication: {
           authenticationType: "AMAZON_COGNITO_USER_POOLS",
         },
+      },
+      transformParameters: {
+        shouldDeepMergeDirectiveConfigDefaults: false,
+        useSubUsernameForDefaultIdentityClaim: false,
+        populateOwnerFieldForStaticGroupAuth: false,
+        secondaryKeyAsGSI: false,
+        enableAutoIndexQueryNames: false,
+        respectPrimaryKeyAttributesOnConnectionField: false,
       },
     });
     getAppSyncAPINameMock.mockReturnValue(["testapi"]);
