@@ -1,4 +1,4 @@
-import { SLOT_NAMES, parseUserDefinedSlots } from '../../graphql-transformer';
+import { SLOT_NAMES, parseUserDefinedSlots } from '../../graphql-transformer/user-defined-slots';
 
 describe('user defined slots', () => {
   describe('const SLOT_NAMES', () => {

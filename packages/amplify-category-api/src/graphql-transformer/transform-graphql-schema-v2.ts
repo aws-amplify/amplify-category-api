@@ -1,49 +1,26 @@
-import {
-  $TSContext,
-  AmplifyCategories,
-  AmplifySupportedService,
-  JSONUtilities,
-  pathManager,
-} from '@aws-amplify/amplify-cli-core';
-import { printer } from '@aws-amplify/amplify-prompts';
-import {
-  GraphQLTransform,
-  ImportedRDSType,
-  MYSQL_DB_TYPE,
-  RDSConnectionSecrets,
-  StackManager,
-} from '@aws-amplify/graphql-transformer-core';
+import { RDSConnectionSecrets, MYSQL_DB_TYPE, ImportedRDSType, DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
   DeploymentResources,
+  TransformerLog,
   TransformerLogLevel,
+  VpcConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
-import {
-  DatasourceType,
-  sanityCheckProject,
-} from 'graphql-transformer-core';
+import { sanityCheckProject } from 'graphql-transformer-core';
 import _ from 'lodash';
 import path from 'path';
-/* eslint-disable-next-line import/no-cycle */
-import { VpcConfig, getHostVpc } from '@aws-amplify/graphql-schema-generator';
-import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import {
-  getConnectionSecrets,
-  getExistingConnectionSecretNames,
-  getSecretsKey,
-  testDatabaseConnection,
-} from '../provider-utils/awscloudformation/utils/rds-resources/database-resources';
-import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import { isAuthModeUpdated } from './auth-mode-compare';
-import { applyOverride } from './override';
-import { TransformerFactoryArgs, TransformerProjectOptions } from './transformer-options-types';
+import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 import { generateTransformerOptions } from './transformer-options-v2';
-import { parseUserDefinedSlots } from './user-defined-slots';
-import {
-  mergeUserConfigWithTransformOutput, writeDeploymentToDisk,
-} from './utils';
+import { TransformerProjectOptions } from './transformer-options-types';
+import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { executeTransform } from '@aws-amplify/graphql-transformer';
+import { getConnectionSecrets, testDatabaseConnection, getExistingConnectionSecretNames, getSecretsKey } from '../provider-utils/awscloudformation/utils/rds-resources/database-resources';
+import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
+import { getHostVpc } from '@aws-amplify/graphql-schema-generator';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
@@ -73,8 +50,8 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
   // cloud formation push will fail even if there is no changes in the GraphQL API
   // https://github.com/aws-amplify/amplify-console/issues/10
   const resourceNeedCompile = allResources
-    .filter(r => !resources.includes(r))
-    .filter(r => {
+    .filter((r) => !resources.includes(r))
+    .filter((r) => {
       const buildDir = path.normalize(path.join(backEndDir, AmplifyCategories.API, r.resourceName, 'build'));
       return !fs.existsSync(buildDir);
     });
@@ -83,7 +60,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
   if (forceCompile) {
     resources = resources.concat(allResources);
   }
-  resources = resources.filter(resource => resource.service === 'AppSync');
+  resources = resources.filter((resource) => resource.service === 'AppSync');
 
   if (!resourceDir) {
     // There can only be one appsync resource
@@ -167,7 +144,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
     fs.ensureDirSync(buildDir);
   }
 
-  const buildConfig: TransformerProjectOptions<TransformerFactoryArgs> = await generateTransformerOptions(context, options);
+  const buildConfig: TransformerProjectOptions = await generateTransformerOptions(context, options);
   if (!buildConfig) {
     return undefined;
   }
@@ -192,7 +169,7 @@ place .graphql files in a directory at ${schemaDirPath}`);
  */
 const buildAPIProject = async (
   context: $TSContext,
-  opts: TransformerProjectOptions<TransformerFactoryArgs>,
+  opts: TransformerProjectOptions,
 ): Promise<DeploymentResources|undefined> => {
   const schema = opts.projectConfig.schema.toString();
   // Skip building the project if the schema is blank
@@ -200,7 +177,24 @@ const buildAPIProject = async (
     return undefined;
   }
 
-  const builtProject = await _buildProject(context, opts);
+  const { modelToDatasourceMap } = opts.projectConfig;
+  const datasourceSecretMap = await getDatasourceSecretMap(context);
+  const datasourceMapValues: Array<DatasourceType> = modelToDatasourceMap ? Array.from(modelToDatasourceMap.values()) : [];
+  let sqlLambdaVpcConfig: VpcConfig | undefined;
+  if (datasourceMapValues.some((value) => value.dbType === MYSQL_DB_TYPE && !value.provisionDB)) {
+    sqlLambdaVpcConfig = await isSqlLambdaVpcConfigRequired(context, getSecretsKey(), ImportedRDSType.MYSQL);
+  }
+
+  const transformOutput = executeTransform({
+    ...opts,
+    schema,
+    modelToDatasourceMap: opts.projectConfig.modelToDatasourceMap,
+    datasourceSecretParameterLocations: datasourceSecretMap,
+    printTransformerLog,
+    sqlLambdaVpcConfig,
+  });
+
+  const builtProject = mergeUserConfigWithTransformOutput(opts.projectConfig, transformOutput, opts);
 
   const buildLocation = path.join(opts.projectDirectory, 'build');
   const currentCloudLocation = opts.currentCloudBackendDirectory ? path.join(opts.currentCloudBackendDirectory, 'build') : undefined;
@@ -216,62 +210,7 @@ const buildAPIProject = async (
     );
   }
 
-  // TODO: update local env on api compile
-  // await _updateCurrentMeta(opts);
-
   return builtProject;
-};
-
-// eslint-disable-next-line no-underscore-dangle
-const _buildProject = async (
-  context: $TSContext,
-  opts: TransformerProjectOptions<TransformerFactoryArgs>,
-): Promise<DeploymentResources> => {
-  const userProjectConfig = opts.projectConfig;
-  const stackMapping = userProjectConfig.config.StackMapping;
-  const userDefinedSlots = {
-    ...parseUserDefinedSlots(userProjectConfig.pipelineFunctions),
-    ...parseUserDefinedSlots(userProjectConfig.resolvers),
-  };
-  const { schema, modelToDatasourceMap } = userProjectConfig;
-  const datasourceSecretMap = await getDatasourceSecretMap(context);
-  const datasourceMapValues: Array<DatasourceType> = modelToDatasourceMap ? Array.from(modelToDatasourceMap.values()) : [];
-  let sqlLambdaVpcConfig: VpcConfig | undefined;
-  if (datasourceMapValues.some((value) => value.dbType === MYSQL_DB_TYPE && !value.provisionDB)) {
-    sqlLambdaVpcConfig = await isSqlLambdaVpcConfigRequired(context, getSecretsKey(), ImportedRDSType.MYSQL);
-  }
-
-  // Create the transformer instances, we've to make sure we're not reusing them within the same CLI command
-  // because the StackMapping feature already builds the project once.
-  const transformers = await opts.transformersFactory(opts.transformersFactoryArgs);
-  const transform = new GraphQLTransform({
-    transformers,
-    stackMapping,
-    transformConfig: userProjectConfig.config,
-    authConfig: opts.authConfig,
-    buildParameters: opts.buildParameters,
-    stacks: opts.projectConfig.stacks || {},
-    featureFlags: new AmplifyCLIFeatureFlagAdapter(),
-    sandboxModeEnabled: opts.sandboxModeEnabled,
-    userDefinedSlots,
-    resolverConfig: opts.resolverConfig,
-    overrideConfig: {
-      applyOverride: (stackManager: StackManager) => applyOverride(stackManager, path.join(pathManager.getBackendDirPath(), 'api', getAppSyncAPIName())),
-      ...opts.overrideConfig,
-    },
-    sqlLambdaVpcConfig,
-  });
-
-  try {
-    const transformOutput = transform.transform(schema.toString(), {
-      modelToDatasourceMap,
-      datasourceSecretParameterLocations: datasourceSecretMap,
-    });
-
-    return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput, opts);
-  } finally {
-    printTransformLogs(transform);
-  }
 };
 
 const isSqlLambdaVpcConfigRequired = async (
@@ -300,31 +239,29 @@ const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, 
   return outputMap;
 };
 
-const printTransformLogs = (transform: GraphQLTransform) => {
-  transform.getLogs().forEach((log) => {
-    switch (log.level) {
-      case TransformerLogLevel.ERROR:
-        printer.error(log.message);
-        break;
-      case TransformerLogLevel.WARN:
-        printer.warn(log.message);
-        break;
-      case TransformerLogLevel.INFO:
-        printer.info(log.message);
-        break;
-      case TransformerLogLevel.DEBUG:
-        printer.debug(log.message);
-        break;
-      default:
-        printer.error(log.message);
-    }
-  });
-};
-
 const getSQLLambdaVpcConfig = async (context: $TSContext): Promise<VpcConfig | undefined> => {
   const [secretsKey, engine] = [getSecretsKey(), ImportedRDSType.MYSQL];
   const { secrets } = await getConnectionSecrets(context, secretsKey, engine);
   const region = context.amplify.getProjectMeta().providers.awscloudformation.Region;
   const vpcConfig = getHostVpc(secrets.host, region);
   return vpcConfig;
+};
+
+const printTransformerLog = (log: TransformerLog): void => {
+  switch (log.level) {
+    case TransformerLogLevel.ERROR:
+      printer.error(log.message);
+      break;
+    case TransformerLogLevel.WARN:
+      printer.warn(log.message);
+      break;
+    case TransformerLogLevel.INFO:
+      printer.info(log.message);
+      break;
+    case TransformerLogLevel.DEBUG:
+      printer.debug(log.message);
+      break;
+    default:
+      printer.error(log.message);
+  }
 };

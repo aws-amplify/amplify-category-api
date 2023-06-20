@@ -204,11 +204,11 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         createdAt: undefined,
         updatedAt: undefined,
       },
-    }, generateGetArgumentsInput(ctx.featureFlags));
+    }, generateGetArgumentsInput(ctx.transformParameters));
 
     // This property override is specifically to address parity between V1 and V2 when the FF is disabled
     // If one subscription is defined, just let the others go to null without FF. But if public and none defined, default all subs
-    if (!ctx.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false)) {
+    if (!ctx.transformParameters.shouldDeepMergeDirectiveConfigDefaults) {
       const publicSubscriptionDefaults = {
         onCreate: [getFieldNameFor('onCreate', typeName)],
         onDelete: [getFieldNameFor('onDelete', typeName)],
@@ -222,7 +222,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             ...publicSubscriptionDefaults,
           },
         },
-        generateGetArgumentsInput(ctx.featureFlags),
+        generateGetArgumentsInput(ctx.transformParameters),
       );
       if (baseArgs?.subscriptions?.level === SubscriptionLevel.public
         && !(baseArgs?.subscriptions?.onCreate || baseArgs?.subscriptions?.onDelete || baseArgs?.subscriptions?.onUpdate)) {

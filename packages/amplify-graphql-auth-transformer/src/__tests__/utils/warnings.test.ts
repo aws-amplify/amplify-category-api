@@ -2,17 +2,17 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AuthTransformer } from '../../graphql-auth-transformer';
 import { defaultIdentityClaimWarning } from '../../utils/warnings';
+import { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 
 describe('defaultIdentityClaimWarning', () => {
   describe('owner based @auth', () => {
     describe('feature flag enabled w/o custom identity claim', () => {
       test('does not return message', () => {
         const context: any = {
-          featureFlags: {
-            getBoolean: () => true,
-            getNumber: jest.fn(),
-            getObject: jest.fn(),
-          },
+          transformParameters: {
+            useSubUsernameForDefaultIdentityClaim: true,
+            populateOwnerFieldForStaticGroupAuth: true,
+          } as TransformParameters,
         };
 
         expect(defaultIdentityClaimWarning(context, [{ allow: 'owner' }])).toBeUndefined();
@@ -23,11 +23,10 @@ describe('defaultIdentityClaimWarning', () => {
       describe('with default cognito identity claim', () => {
         test('does not return message', () => {
           const context: any = {
-            featureFlags: {
-              getBoolean: () => true,
-              getNumber: jest.fn(),
-              getObject: jest.fn(),
-            },
+            transformParameters: {
+              useSubUsernameForDefaultIdentityClaim: true,
+              populateOwnerFieldForStaticGroupAuth: true,
+            } as TransformParameters,
           };
           expect(defaultIdentityClaimWarning(context, [{ allow: 'owner', identityClaim: 'cognito:username' }])).toBeUndefined();
         });
@@ -36,11 +35,10 @@ describe('defaultIdentityClaimWarning', () => {
       describe('with default identity claim', () => {
         test('does not return message', () => {
           const context: any = {
-            featureFlags: {
-              getBoolean: () => true,
-              getNumber: jest.fn(),
-              getObject: jest.fn(),
-            },
+            transformParameters: {
+              useSubUsernameForDefaultIdentityClaim: true,
+              populateOwnerFieldForStaticGroupAuth: true,
+            } as TransformParameters,
           };
           expect(defaultIdentityClaimWarning(context, [{ allow: 'owner', identityClaim: 'username' }])).toBeUndefined();
         });
@@ -51,11 +49,10 @@ describe('defaultIdentityClaimWarning', () => {
       describe('with default cognito identity claim', () => {
         test('does not return message', () => {
           const context: any = {
-            featureFlags: {
-              getBoolean: () => false,
-              getNumber: jest.fn(),
-              getObject: jest.fn(),
-            },
+            transformParameters: {
+              useSubUsernameForDefaultIdentityClaim: false,
+              populateOwnerFieldForStaticGroupAuth: false,
+            } as TransformParameters,
           };
           expect(defaultIdentityClaimWarning(context, [{ allow: 'owner', identityClaim: 'cognito:username' }])).toBeUndefined();
         });
@@ -64,11 +61,10 @@ describe('defaultIdentityClaimWarning', () => {
       describe('with default identity claim', () => {
         test('does not return message', () => {
           const context: any = {
-            featureFlags: {
-              getBoolean: () => false,
-              getNumber: jest.fn(),
-              getObject: jest.fn(),
-            },
+            transformParameters: {
+              useSubUsernameForDefaultIdentityClaim: true,
+              populateOwnerFieldForStaticGroupAuth: true,
+            } as TransformParameters,
           };
           expect(defaultIdentityClaimWarning(context, [{ allow: 'owner', identityClaim: 'username' }])).toBeUndefined();
         });
@@ -78,11 +74,10 @@ describe('defaultIdentityClaimWarning', () => {
     describe('feature flag disabled w/o custom identity claim', () => {
       test('does return message', () => {
         const context: any = {
-          featureFlags: {
-            getBoolean: () => false,
-            getNumber: jest.fn(),
-            getObject: jest.fn(),
-          },
+          transformParameters: {
+            useSubUsernameForDefaultIdentityClaim: false,
+            populateOwnerFieldForStaticGroupAuth: false,
+          } as TransformParameters,
         };
         expect(defaultIdentityClaimWarning(context, [{ allow: 'owner' }])).toEqual(
           ' WARNING: Amplify CLI will change the default identity claim from \'username\' '
@@ -115,11 +110,9 @@ describe('ownerCanReassignWarning', () => {
         ],
       },
       transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags: {
-        getBoolean: jest.fn(),
-        getNumber: jest.fn(),
-        getObject: jest.fn(),
-      },
+      transformParameters: {
+        useSubUsernameForDefaultIdentityClaim: false,
+      }
     });
 
     transform.transform(schema);
@@ -250,10 +243,8 @@ describe('ownerFieldCaseWarning', () => {
         additionalAuthenticationProviders: [],
       },
       transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags: {
-        getBoolean: jest.fn(),
-        getNumber: jest.fn(),
-        getObject: jest.fn(),
+      transformParameters: {
+        useSubUsernameForDefaultIdentityClaim: false,
       },
     });
     transformer.transform(schema);

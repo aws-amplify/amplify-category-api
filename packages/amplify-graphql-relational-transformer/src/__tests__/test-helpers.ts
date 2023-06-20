@@ -1,25 +1,5 @@
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import {getBaseType} from "graphql-transformer-common";
-import {DirectiveNode, DocumentNode} from "graphql";
-
-/**
- * Merges passed in feature flags with default feature flags for tests
- */
-export const featureFlags: FeatureFlagProvider = {
-  getBoolean: (value: string, defaultValue: boolean): boolean => {
-    if (value === 'respectPrimaryKeyAttributesOnConnectionField') {
-      return false;
-    }
-    if (value === 'useSubUsernameForDefaultIdentityClaim') {
-      return true;
-    }
-    return defaultValue;
-  },
- 
-
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-};
+import { getBaseType } from "graphql-transformer-common";
+import { DirectiveNode, DocumentNode } from "graphql";
 
 export const hasGeneratedField = (doc: DocumentNode, objectType: string, fieldName: string, fieldType?: string, isList?: boolean): boolean => {
   let hasField = false;

@@ -3,7 +3,6 @@ import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
-import { featureFlags } from '../../../../amplify-graphql-auth-transformer/src/__tests__/test-helpers';
 
 const mappedSearchableSchema = /* GraphQL */ `
   type Agenda @model {
@@ -31,7 +30,6 @@ const mappedHasManyAndSearchableSchema = /* GraphQL */ `
 
 const transformSchema = (schema: string) => {
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new ModelTransformer(), new HasManyTransformer(), new SearchableModelTransformer(), new MapsToTransformer()],
     sandboxModeEnabled: true,
   });

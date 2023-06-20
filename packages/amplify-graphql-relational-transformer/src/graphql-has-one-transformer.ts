@@ -79,7 +79,7 @@ export class HasOneTransformer extends TransformerPluginBase {
       object: parent as ObjectTypeDefinitionNode,
       field: definition,
       directive,
-    } as HasOneDirectiveConfiguration, generateGetArgumentsInput(context.featureFlags));
+    } as HasOneDirectiveConfiguration, generateGetArgumentsInput(context.transformParameters));
 
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);
@@ -99,7 +99,7 @@ export class HasOneTransformer extends TransformerPluginBase {
         filteredFields?.forEach(field => {
           field?.directives?.forEach(dir => {
             const connectionAttributeName = getConnectionAttributeName(
-              context.featureFlags,
+              context.transformParameters,
               def.name.value,
               field.name.value,
               getObjectPrimaryKey(def as ObjectTypeDefinitionNode).name.value,
@@ -148,7 +148,7 @@ export class HasOneTransformer extends TransformerPluginBase {
   prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList.forEach(config => {
       registerHasOneForeignKeyMappings({
-        featureFlags: context.featureFlags,
+        transformParameters: context.transformParameters,
         resourceHelper: context.resourceHelper,
         thisTypeName: config.object.name.value,
         thisFieldName: config.field.name.value,

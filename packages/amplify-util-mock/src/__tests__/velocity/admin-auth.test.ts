@@ -6,7 +6,6 @@ import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionConte
 import {
   VelocityTemplateSimulator, AppSyncVTLContext, getIAMToken,
 } from '../../velocity';
-import { featureFlags } from './test-helper';
 
 jest.mock('@aws-amplify/amplify-prompts');
 
@@ -39,7 +38,6 @@ describe('admin roles query checks', () => {
           adminRoles: [ADMIN_UI_ROLE],
         }),
       ],
-      featureFlags,
     });
 
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
@@ -122,10 +120,6 @@ describe('identity claim feature flag disabled', () => {
             adminRoles: [ADMIN_UI_ROLE],
           }),
         ],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: () => false },
-        },
       });
 
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });

@@ -5,7 +5,6 @@
 ```ts
 
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { AmplifyApiGraphQlResourceStackTemplate } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
 import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
 import { Construct } from 'constructs';
@@ -15,8 +14,6 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { ResolverConfig } from 'graphql-transformer-core';
-import { StackManager } from '@aws-amplify/graphql-transformer-core';
-import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 
 // @public (undocumented)
 export function addAdminQueriesApi(context: $TSContext, apiProps: {
@@ -53,9 +50,6 @@ export type ApiResource = {
         port: number;
     };
 };
-
-// @public (undocumented)
-export function applyOverride(stackManager: StackManager, overrideDir: string): AmplifyApiGraphQlResourceStackTemplate;
 
 // @public (undocumented)
 export const checkForcedUpdates: (context: $TSContext) => Promise<void>;
@@ -152,9 +146,6 @@ export const migrate: (context: $TSContext, serviceName?: string) => Promise<voi
 export const NETWORK_STACK_LOGICAL_ID = "NetworkStack";
 
 // @public (undocumented)
-export function parseUserDefinedSlots(userDefinedTemplates: Record<string, string>): Record<string, UserDefinedSlot[]>;
-
-// @public (undocumented)
 export function processDockerConfig(context: $TSContext, resource: ApiResource, srcPath: string, askForExposedContainer?: boolean): Promise<{
     containersPorts: number[];
     containers: Container[];
@@ -172,9 +163,6 @@ export function promptToAddApiKey(context: $TSContext): Promise<any>;
 
 // @public (undocumented)
 export const showApiAuthAcm: (context: $TSContext, modelName: string) => Promise<void>;
-
-// @public (undocumented)
-export const SLOT_NAMES: Set<string>;
 
 // @public (undocumented)
 export const transformCategoryStack: (context: $TSContext, resource: Record<string, any>) => Promise<void>;

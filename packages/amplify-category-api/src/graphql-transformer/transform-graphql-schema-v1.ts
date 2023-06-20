@@ -32,7 +32,7 @@ import {
 } from 'graphql-transformer-core';
 import { exitOnNextTick } from '@aws-amplify/amplify-cli-core';
 import { searchablePushChecks } from './api-utils';
-import { getTransformerFactory } from './transformer-factory';
+import { getTransformerFactoryV1 } from './transformer-factory';
 
 const apiCategory = 'api';
 const parametersFileName = 'parameters.json';
@@ -361,7 +361,7 @@ export async function transformGraphQLSchemaV1(context, options) {
 
   await transformerVersionCheck(context, resourceDir, previouslyDeployedBackendDir, resourcesToBeUpdated, directiveMap.directives);
 
-  const transformerListFactory = await getTransformerFactory(context, resourceDir, authConfig);
+  const transformerListFactory = await getTransformerFactoryV1(context, resourceDir, authConfig);
 
   let searchableTransformerFlag = false;
 

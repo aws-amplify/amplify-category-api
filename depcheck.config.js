@@ -22,6 +22,7 @@ const GQL_V2_TRANSFORMER_PACKAGES = [
   'amplify-graphql-transformer-interfaces',
   'graphql-transformer-common',
   'graphql-mapping-template',
+  'amplify-graphql-transformer',
 ];
 
 const TRANSFORMER_RESTRICTED_IMPORTS = [
@@ -48,7 +49,7 @@ module.exports = {
     },
     project: ['tsconfig.base.json'],
   },
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'spellcheck', 'import', 'jsdoc', 'prefer-arrow'],
   settings: {
     'import/parsers': { '@typescript-eslint/parser': ['.ts', '.tsx'] },
     'import/resolver': { typescript: {} },
