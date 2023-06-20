@@ -13,7 +13,6 @@ import {
   ImportedDataSourceConfig,
   RDSConnectionSecrets,
 } from '@aws-amplify/graphql-transformer-core';
-import { PREVIEW_BANNER, category } from '../../../category-constants';
 import { storeConnectionSecrets, getSecretsKey, getExistingConnectionSecrets } from '../utils/rds-resources/database-resources';
 import { parseDatabaseUrl } from '../utils/database-url';
 import * as path from 'path';
@@ -25,7 +24,6 @@ import * as fs from 'fs-extra';
 const service = 'AppSync';
 
 export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<ImportAppSyncAPIInputs> => {
-  printer.warn(PREVIEW_BANNER);
   let apiName:string;
   const existingAPIs = getAppSyncAPINames();
   if (existingAPIs?.length > 0) {
