@@ -9,6 +9,7 @@ import {
   rewriteAndPersistAssets,
   convertToResolverConfig,
   defaultSchemaTranslationBehavior,
+  parseDataSourceMappings,
 } from './internal';
 import type { AmplifyGraphqlApiResources, AmplifyGraphqlApiProps, FunctionSlot } from './types';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
@@ -62,6 +63,8 @@ export class AmplifyGraphqlApi extends Construct {
       stackMappings,
       schemaTranslationBehavior,
       functionNameMap,
+      dataSourceMapping,
+      existingDataSources,
     } = props;
 
     const {
@@ -97,6 +100,7 @@ export class AmplifyGraphqlApi extends Construct {
         ...defaultSchemaTranslationBehavior,
         ...(schemaTranslationBehavior ?? {}),
       },
+      ...parseDataSourceMappings(dataSourceMapping, existingDataSources),
     });
 
     // Persist for the purposes of manifest generation.

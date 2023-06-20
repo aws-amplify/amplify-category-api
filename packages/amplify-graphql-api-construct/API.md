@@ -16,11 +16,13 @@ import { CfnResource } from 'aws-cdk-lib';
 import { CfnRole } from 'aws-cdk-lib/aws-iam';
 import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
+import { DBType } from '@aws-amplify/graphql-transformer-core';
 import { Duration } from 'aws-cdk-lib';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
+import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
@@ -43,6 +45,8 @@ export type AmplifyGraphqlApiProps = {
     transformers?: TransformerPluginProvider[];
     predictionsBucket?: IBucket;
     schemaTranslationBehavior?: Partial<SchemaTranslationBehavior>;
+    dataSourceMapping?: ConfigWithModelOverride<string>;
+    existingDataSources?: Record<string, ExistingDataSource>;
 };
 
 // @public
@@ -110,6 +114,15 @@ export type CustomConflictResolutionStrategy = ConflictResolutionStrategyBase & 
     conflictHandler: IFunction;
 };
 
+// @public (undocumented)
+export type ExistingDataSource = RDSExistingDataSource;
+
+// @public (undocumented)
+export type ExistingDataSourceBase = {
+    dbType: DBType;
+    provisionDB: boolean;
+};
+
 // @public
 export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | SubscriptionFunctionSlot;
 
@@ -163,6 +176,11 @@ export type QueryFunctionSlot = FunctionSlotBase & {
     slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
 };
 
+// @public (undocumented)
+export type RDSExistingDataSource = ExistingDataSourceBase & {
+    connection: RDSConnectionSecrets;
+};
+
 // @public
 export type SchemaTranslationBehavior = {
     shouldDeepMergeDirectiveConfigDefaults: boolean;
@@ -187,6 +205,10 @@ export type SubscriptionFunctionSlot = FunctionSlotBase & {
 export type UserPoolAuthorizationConfig = {
     userPool: IUserPool;
 };
+
+// Warnings were encountered during analysis:
+//
+// src/types.ts:382:3 - (ae-forgotten-export) The symbol "ConfigWithModelOverride" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

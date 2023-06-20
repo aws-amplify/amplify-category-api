@@ -15,6 +15,7 @@ import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DBType, RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 
 /**
  * Configuration for IAM Authorization on the Graphql API.
@@ -153,6 +154,17 @@ export type ConflictResolutionStrategy =
   | CustomConflictResolutionStrategy;
 
 /**
+ * Reused pattern across the AmplifyGraphqlApi construct, where
+ * a config may take place on the entire project, but can also be
+ * overridden on the per-model level. Examples include ConflictResolution,
+ * but are expected to extend to brownfield data source mapping.
+ */
+export type ConfigWithModelOverride<ConfigType> = {
+  project?: ConfigType;
+  models?: Record<string, ConfigType>;
+};
+
+/**
  * Project level configuration for conflict resolution.
  */
 export type ConflictResolution = {
@@ -286,6 +298,17 @@ export type SchemaTranslationBehavior = {
   enableSearchNodeToNodeEncryption: boolean;
 };
 
+export type ExistingDataSourceBase = {
+  dbType: DBType;
+  provisionDB: boolean;
+};
+
+export type RDSExistingDataSource = ExistingDataSourceBase & {
+  connection: RDSConnectionSecrets;
+};
+
+export type ExistingDataSource = RDSExistingDataSource;
+
 /**
  * Input props for the AmplifyGraphqlApi construct. Specifies what the input to transform into an API, and configurations for
  * the transformation process.
@@ -352,6 +375,16 @@ export type AmplifyGraphqlApiProps = {
    * refer to https://docs.amplify.aws/cli/reference/feature-flags/#graphQLTransformer
    */
   schemaTranslationBehavior?: Partial<SchemaTranslationBehavior>;
+
+  /**
+   * Config for brownfield and RDS data bases (all models default to Greenfield DDB).
+   */
+  dataSourceMapping?: ConfigWithModelOverride<string>;
+
+  /**
+   * List of existing datasources, and how to connect to them.
+   */
+  existingDataSources?: Record<string, ExistingDataSource>;
 };
 
 /**

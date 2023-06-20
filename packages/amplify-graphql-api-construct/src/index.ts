@@ -23,6 +23,9 @@ export type {
   ConflictResolutionStrategyBase,
   ConflictResolutionStrategy,
   SchemaTranslationBehavior,
+  ExistingDataSource,
+  RDSExistingDataSource,
+  ExistingDataSourceBase,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';
 // No-op change to trigger publish
