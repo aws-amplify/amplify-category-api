@@ -2,7 +2,6 @@ import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito'
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
-import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
 
 describe('basic functionality', () => {
   it('renders an appsync api', () => {
@@ -55,10 +54,10 @@ describe('basic functionality', () => {
       authorizationConfig: {
         userPoolConfig: { userPool },
       },
-      resolverConfig: {
+      conflictResolution: {
         project: {
-          ConflictDetection: 'VERSION',
-          ConflictHandler: ConflictHandlerType.OPTIMISTIC,
+          detectionType: 'VERSION',
+          handlerType: 'OPTIMISTIC_CONCURRENCY',
         },
       },
     });

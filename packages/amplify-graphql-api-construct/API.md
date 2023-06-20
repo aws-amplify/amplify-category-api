@@ -20,15 +20,12 @@ import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
-import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
 import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public
 export class AmplifyGraphqlApi extends Construct {
     constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps);
-    // (undocumented)
     readonly resources: AmplifyGraphqlApiResources;
 }
 
@@ -37,7 +34,7 @@ export type AmplifyGraphqlApiProps = {
     schema: AmplifyGraphqlApiSchema;
     apiName?: string;
     authorizationConfig: AuthorizationConfig;
-    resolverConfig?: ResolverConfig;
+    conflictResolution?: ProjectConflictResolution;
     stackMappings?: Record<string, string>;
     functionSlots?: FunctionSlot[];
     transformers?: TransformerPluginProvider[];
@@ -45,7 +42,7 @@ export type AmplifyGraphqlApiProps = {
     transformParameters?: Partial<TransformParameters>;
 };
 
-// @public (undocumented)
+// @public
 export type AmplifyGraphqlApiResources = {
     api: CfnGraphQLApi;
     schema: CfnGraphQLSchema;
@@ -62,7 +59,7 @@ export type AmplifyGraphqlApiResources = {
 // @public
 export type AmplifyGraphqlApiSchema = SchemaFile | SchemaFile[] | string;
 
-// @public (undocumented)
+// @public
 export type ApiKeyAuthorizationConfig = {
     description?: string;
     expires: Duration;
@@ -79,6 +76,32 @@ export type AuthorizationConfig = {
 };
 
 // @public
+export type AutomergeConflictResolutionStrategy = ConflictResolutionStrategyBase & {
+    handlerType: 'OPTIMISTIC_CONCURRENCY';
+};
+
+// @public
+export type ConflictDetectionType = 'VERSION' | 'NONE';
+
+// @public
+export type ConflictHandlerType = 'OPTIMISTIC_CONCURRENCY' | 'AUTOMERGE' | 'LAMBDA';
+
+// @public
+export type ConflictResolutionStrategy = AutomergeConflictResolutionStrategy | OptimisticConflictResolutionStrategy | CustomConflictResolutionStrategy;
+
+// @public
+export type ConflictResolutionStrategyBase = {
+    detectionType: ConflictDetectionType;
+    handlerType: ConflictHandlerType;
+};
+
+// @public
+export type CustomConflictResolutionStrategy = ConflictResolutionStrategyBase & {
+    handlerType: 'LAMBDA';
+    conflictHandler: IFunction;
+};
+
+// @public
 export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | SubscriptionFunctionSlot;
 
 // @public
@@ -89,7 +112,7 @@ export type FunctionSlotBase = {
     resolverCode: string;
 };
 
-// @public (undocumented)
+// @public
 export type IAMAuthorizationConfig = {
     identityPoolId?: string;
     authRole?: IRole;
@@ -97,7 +120,7 @@ export type IAMAuthorizationConfig = {
     adminRoles?: IRole[];
 };
 
-// @public (undocumented)
+// @public
 export type LambdaAuthorizationConfig = {
     function: IFunction;
     ttl: Duration;
@@ -109,13 +132,24 @@ export type MutationFunctionSlot = FunctionSlotBase & {
     slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preUpdate' | 'postUpdate' | 'finish';
 };
 
-// @public (undocumented)
+// @public
 export type OIDCAuthorizationConfig = {
     oidcProviderName: string;
     oidcIssuerUrl: string;
     clientId?: string;
     tokenExpiryFromAuth: Duration;
     tokenExpiryFromIssue: Duration;
+};
+
+// @public
+export type OptimisticConflictResolutionStrategy = ConflictResolutionStrategyBase & {
+    handlerType: 'AUTOMERGE';
+};
+
+// @public
+export type ProjectConflictResolution = {
+    project?: ConflictResolutionStrategy;
+    models?: Record<string, ConflictResolutionStrategy>;
 };
 
 // @public
@@ -130,7 +164,17 @@ export type SubscriptionFunctionSlot = FunctionSlotBase & {
     slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preSubscribe';
 };
 
-// @public (undocumented)
+// @public
+export type TransformParameters = {
+    shouldDeepMergeDirectiveConfigDefaults: boolean;
+    useSubUsernameForDefaultIdentityClaim: boolean;
+    populateOwnerFieldForStaticGroupAuth: boolean;
+    secondaryKeyAsGSI: boolean;
+    enableAutoIndexQueryNames: boolean;
+    respectPrimaryKeyAttributesOnConnectionField: boolean;
+};
+
+// @public
 export type UserPoolAuthorizationConfig = {
     userPool: IUserPool;
 };

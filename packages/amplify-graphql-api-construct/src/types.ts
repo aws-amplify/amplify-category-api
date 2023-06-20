@@ -13,9 +13,11 @@ import { IRole, CfnRole, CfnPolicy } from 'aws-cdk-lib/aws-iam';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
-import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
-import { TransformParameters, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
+/**
+ * Configuration for IAM Authorization on the GraphQL API.`
+ */
 export type IAMAuthorizationConfig = {
   identityPoolId?: string;
   authRole?: IRole;
@@ -23,10 +25,16 @@ export type IAMAuthorizationConfig = {
   adminRoles?: IRole[];
 };
 
+/**
+ * Configuration for Cognito UserPool Authorization on the GraphQL API.`
+ */
 export type UserPoolAuthorizationConfig = {
   userPool: IUserPool;
 };
 
+/**
+ * Configuration for OpenId Connect Authorization on the GraphQL API.`
+ */
 export type OIDCAuthorizationConfig = {
   oidcProviderName: string;
   oidcIssuerUrl: string;
@@ -35,11 +43,17 @@ export type OIDCAuthorizationConfig = {
   tokenExpiryFromIssue: Duration;
 };
 
+/**
+ * Configuration for API Keys on the GraphQL API.`
+ */
 export type ApiKeyAuthorizationConfig = {
   description?: string;
   expires: Duration;
 };
 
+/**
+ * Configuration for Custom Lambda authorization on the GraphQL API.`
+ */
 export type LambdaAuthorizationConfig = {
   function: IFunction;
   ttl: Duration;
@@ -94,6 +108,63 @@ export type AuthorizationConfig = {
 };
 
 /**
+ * Conflict Handler Type for the DataSource
+ * See https://docs.aws.amazon.com/appsync/latest/devguide/conflict-detection-and-sync.html#conflict-detection-and-resolution
+ */
+export type ConflictHandlerType = 'OPTIMISTIC_CONCURRENCY' | 'AUTOMERGE' | 'LAMBDA';
+
+/**
+ * Whether or not to use a version field to track conflict detection.
+ */
+export type ConflictDetectionType = 'VERSION' | 'NONE';
+
+/**
+ * Common parameters for conflict resolution.
+ */
+export type ConflictResolutionStrategyBase = {
+  detectionType: ConflictDetectionType;
+  handlerType: ConflictHandlerType;
+};
+
+/**
+ * Enable optimistic concurrency on the project.
+ */
+export type AutomergeConflictResolutionStrategy = ConflictResolutionStrategyBase & {
+  handlerType: 'OPTIMISTIC_CONCURRENCY';
+};
+
+/**
+ * Enable automerge on the project.
+ */
+export type OptimisticConflictResolutionStrategy = ConflictResolutionStrategyBase & {
+  handlerType: 'AUTOMERGE';
+};
+
+/**
+ * Enable custom sync on the project, powered by a lambda.
+ */
+export type CustomConflictResolutionStrategy = ConflictResolutionStrategyBase & {
+  handlerType: 'LAMBDA';
+  conflictHandler: IFunction;
+};
+
+/**
+ * Conflict Resolution Strategy to apply to the project or a particular model.
+ */
+export type ConflictResolutionStrategy =
+  | AutomergeConflictResolutionStrategy
+  | OptimisticConflictResolutionStrategy
+  | CustomConflictResolutionStrategy;
+
+/**
+ * Project level configuration for conflict resolution.
+ */
+export type ProjectConflictResolution = {
+  project?: ConflictResolutionStrategy;
+  models?: Record<string, ConflictResolutionStrategy>;
+};
+
+/**
  * Schema representation for transformation. Accepts either a raw string, single, or array of appsync SchemaFile objects.
  */
 export type AmplifyGraphqlApiSchema =
@@ -144,6 +215,28 @@ export type FunctionSlot =
   | SubscriptionFunctionSlot;
 
 /**
+ * Strongly typed set of shared parameters for all transformers, and core layer.
+ * This is intended to replace feature flags, to ensure param coercion happens in
+ * a single location, and isn't spread around the transformers, where they can
+ * have different default behaviors.
+ */
+export type TransformParameters = {
+  // General Model Params
+  shouldDeepMergeDirectiveConfigDefaults: boolean;
+
+  // Auth Params
+  useSubUsernameForDefaultIdentityClaim: boolean;
+  populateOwnerFieldForStaticGroupAuth: boolean;
+
+  // Index Params
+  secondaryKeyAsGSI: boolean;
+  enableAutoIndexQueryNames: boolean;
+
+  // Relational Params
+  respectPrimaryKeyAttributesOnConnectionField: boolean;
+};
+
+/**
  * Input props for the AmplifyGraphQLApi construct. Specifies what the input to transform into an API, and configurations for
  * the transformation process.
  */
@@ -166,10 +259,10 @@ export type AmplifyGraphqlApiProps = {
   authorizationConfig: AuthorizationConfig;
 
   /**
-   * ResolverConfig is used to set up conflict resolution on the API, which will enable DataStore API functionality.
+   * Configure conflict resolution on the API, which is required to enable DataStore API functionality.
    * For more information, refer to https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/
    */
-  resolverConfig?: ResolverConfig;
+  conflictResolution?: ProjectConflictResolution;
 
   /**
    * StackMappings override the assigned nested stack on a per-resource basis. Only applies to resolvers, and takes the form
@@ -203,6 +296,10 @@ export type AmplifyGraphqlApiProps = {
   transformParameters?: Partial<TransformParameters>
 };
 
+/**
+ * Accessible resources from the API which were generated as part of the transform.
+ * These are potentially stored under nested stacks, but presented organized by type instead.
+ */
 export type AmplifyGraphqlApiResources = {
   /**
    * The Generated AppSync API L1 Resource

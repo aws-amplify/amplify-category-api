@@ -8,6 +8,7 @@ import {
   generateConstructExports,
   rewriteAndPersistAssets,
   defaultTransformParameters,
+  convertToResolverConfig,
 } from './internal';
 import type { AmplifyGraphqlApiResources, AmplifyGraphqlApiProps } from './types';
 import { parseUserDefinedSlots } from './internal/user-defined-slots';
@@ -37,6 +38,9 @@ import { parseUserDefinedSlots } from './internal/user-defined-slots';
  * `resources.<ResourceType>.<ResourceName>` - you can then perform any CDK action on these resulting resoureces.
  */
 export class AmplifyGraphqlApi extends Construct {
+  /**
+   * Generated resources.
+   */
   public readonly resources: AmplifyGraphqlApiResources;
 
   constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps) {
@@ -45,7 +49,7 @@ export class AmplifyGraphqlApi extends Construct {
     const {
       schema: modelSchema,
       authorizationConfig,
-      resolverConfig,
+      conflictResolution,
       functionSlots,
       transformers,
       predictionsBucket,
@@ -68,11 +72,11 @@ export class AmplifyGraphqlApi extends Construct {
         identityPoolId,
         adminRoles,
         customTransformers: transformers ?? [],
-        ...(predictionsBucket ? { predictionsConfig: { bucketName: predictionsBucket.bucketName } } : {}),
+        ...(predictionsBucket ? { storageConfig: { bucketName: predictionsBucket.bucketName } } : {}),
       },
       authConfig,
       stackMapping: stackMappings ?? {},
-      resolverConfig,
+      resolverConfig: conflictResolution ? convertToResolverConfig(conflictResolution) : undefined,
       transformParameters: {
         ...defaultTransformParameters,
         ...(overriddenTransformParameters ?? {}),

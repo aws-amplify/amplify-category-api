@@ -22,12 +22,14 @@ export const getSlotName = (params: FunctionSlot): string => [
  * @param val the value to set.
  */
 const setIn = (obj: Record<any, any>, path: any[], val: any): void => {
-  if (path.length === 0) {
-    throw new Error('expected path length >=1 for setIn');
-  }
   if (path.length === 1) {
     // eslint-disable-next-line no-param-reassign
     obj[path[0]] = val;
+    return;
+  }
+  if (!obj[path[0]]) {
+    // eslint-disable-next-line no-param-reassign
+    obj[path[0]] = {};
   }
   setIn(obj[path[0]], path.slice(1), val);
 };
