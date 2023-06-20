@@ -5,6 +5,8 @@ if [ -z "$BRANCH_NAME" ]; then
   exit 1
 else
   git checkout $BRANCH_NAME
+  yarn install
+  git restore .
 fi
 
 if [ -z "$GITHUB_EMAIL" ]; then
