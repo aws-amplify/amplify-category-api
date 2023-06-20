@@ -387,9 +387,14 @@ export class ResourceConstants {
         OpenSearchStreamingLambdaFunctionLogicalID: string;
         OpenSearchDataSourceLogicalID: string;
         RDSLambdaIAMRoleLogicalID: string;
+        RDSLambdaLogAccessPolicy: string;
+        RDSPatchingLambdaIAMRoleLogicalID: string;
         RDSLambdaLogicalID: string;
+        RDSPatchingLambdaLogAccessPolicy: string;
+        RDSPatchingLambdaLogicalID: string;
         RDSLambdaDataSourceLogicalID: string;
         RDSLambdaDataSourceLogicalName: string;
+        RDSPatchingSubscriptionLogicalID: string;
         NoneDataSource: string;
         AuthCognitoUserPoolLogicalID: string;
         AuthCognitoUserPoolNativeClientLogicalID: string;

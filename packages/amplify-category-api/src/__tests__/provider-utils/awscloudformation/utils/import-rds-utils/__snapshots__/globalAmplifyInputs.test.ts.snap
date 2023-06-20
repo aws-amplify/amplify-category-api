@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Amplify Input read/write from schema constructs the global Amplify input from given config 1`] = `
-"input Amplify {
+"input AMPLIFY {
   engine: String = \\"mysql\\"
   globalAuthRule: AuthRule = {allow: public}
 }"
@@ -129,7 +129,7 @@ Object {
       "end": 13,
       "start": 6,
     },
-    "value": "Amplify",
+    "value": "AMPLIFY",
   },
 }
 `;

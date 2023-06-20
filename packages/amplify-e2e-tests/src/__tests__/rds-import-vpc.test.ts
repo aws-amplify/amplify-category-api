@@ -19,6 +19,13 @@ import gql from 'graphql-tag';
 import path from 'path';
 import { print } from 'graphql';
 
+const CDK_FUNCTION_TYPE = 'AWS::Lambda::Function';
+const CDK_SUBSCRIPTION_TYPE = 'AWS::SNS::Subscription';
+const APPSYNC_DATA_SOURCE_TYPE = 'AWS::AppSync::DataSource';
+
+const SNS_TOPIC_REGION = 'us-east-1';
+const SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:956468067974:AmplifyRDSLayerNotification';
+
 describe("RDS Tests", () => {
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
   
@@ -70,7 +77,7 @@ describe("RDS Tests", () => {
     await deleteDBInstance(identifier, region);
   };
 
-  it("import workflow of mysql relational database with public access", async () => {
+  it("import workflow of mysql relational database within vpc with no public access", async () => {
     const apiName = 'rdsapivpc';
     await initJSProjectWithProfile(projRoot, {
       disableAmplifyAppCreation: false,
@@ -106,7 +113,7 @@ describe("RDS Tests", () => {
     expect(dbObjectType.directives.find(d => d.name.value === 'model')).toBeDefined();
 
     const updatedSchema = gql`
-      input Amplify {
+      input AMPLIFY {
         engine: String = "mysql"
         globalAuthRule: AuthRule = {allow: public}
       }
@@ -120,15 +127,17 @@ describe("RDS Tests", () => {
     updateSchema(projRoot, apiName, print(updatedSchema), 'schema.rds.graphql');
     await apiGqlCompile(projRoot);
 
-    // Validate if the SQL lambda function has VPC configuration
+    // Validate the generated resources in the CloudFormation template
     const apisDirectory = path.join(projRoot, 'amplify', 'backend', 'api');
     const apiDirectory = path.join(apisDirectory, apiName);
     const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', `RdsApiStack.json`);
     const cfnTemplate = JSON.parse(readFileSync(cfnRDSTemplateFile, 'utf8'));
     console.log(JSON.stringify(cfnTemplate, null, 4));
     expect(cfnTemplate.Resources).toBeDefined();
-    const resources = Object.values(cfnTemplate.Resources);
-    const rdsLambdaFunction = resources.find((r: any) => r.Type === 'AWS::Lambda::Function') as any;
+    const resources = cfnTemplate.Resources;
+
+    // Validate if the SQL lambda function has VPC configuration
+    const rdsLambdaFunction = getResource(resources, 'RDSLambdaLogicalID', CDK_FUNCTION_TYPE);
     expect(rdsLambdaFunction).toBeDefined();
     expect(rdsLambdaFunction.Properties).toBeDefined();
     expect(rdsLambdaFunction.Properties.VpcConfig).toBeDefined();
@@ -137,6 +146,39 @@ describe("RDS Tests", () => {
     expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds).toBeDefined();
     expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds.length).toBeGreaterThan(0);
 
+    // Validate patching lambda and subscription
+    const rdsPatchingLambdaFunction = getResource(resources, 'RDSPatchingLambdaLogicalID', CDK_FUNCTION_TYPE);
+    expect(rdsPatchingLambdaFunction).toBeDefined();
+    expect(rdsPatchingLambdaFunction.Properties).toBeDefined();
+    expect(rdsPatchingLambdaFunction.Properties.Environment).toBeDefined();
+    expect(rdsPatchingLambdaFunction.Properties.Environment.Variables).toBeDefined();
+    expect(rdsPatchingLambdaFunction.Properties.Environment.Variables.LAMBDA_FUNCTION_ARN).toBeDefined();
+    const rdsDataSourceLambda = getResource(resources, 'RDSLambdaDataSource', APPSYNC_DATA_SOURCE_TYPE);
+    expect(rdsPatchingLambdaFunction.Properties.Environment.Variables.LAMBDA_FUNCTION_ARN).toEqual(rdsDataSourceLambda.Properties.LambdaConfig.LambdaFunctionArn);
+
+    // Validate subscription
+    const rdsPatchingSubscription = getResource(resources, 'RDSPatchingLambdaLogicalID', CDK_SUBSCRIPTION_TYPE);
+    expect(rdsPatchingSubscription).toBeDefined();
+    expect(rdsPatchingSubscription.Properties).toBeDefined();
+    expect(rdsPatchingSubscription.Properties.Protocol).toBeDefined();
+    expect(rdsPatchingSubscription.Properties.Protocol).toEqual('lambda');
+    expect(rdsPatchingSubscription.Properties.Endpoint).toBeDefined();
+    expect(rdsPatchingSubscription.Properties.TopicArn).toBeDefined();
+    expect(rdsPatchingSubscription.Properties.TopicArn).toEqual(SNS_TOPIC_ARN);
+    expect(rdsPatchingSubscription.Properties.Region).toEqual(SNS_TOPIC_REGION);
+    expect(rdsPatchingSubscription.Properties.FilterPolicy).toBeDefined();
+    expect(rdsPatchingSubscription.Properties.FilterPolicy.Region).toBeDefined();
+
     await amplifyPush(projRoot);
   });
 }); 
+
+const getResource = (resources: Map<string, any>, resourcePrefix: string, resourceType: string): any => {
+  const keys = Array.from(Object.keys(resources)).filter(key => key.startsWith(resourcePrefix));
+  for (const key of keys) {
+    const resource = resources[key];
+    if (resource.Type === resourceType) {
+      return resource;
+    }
+  }
+};

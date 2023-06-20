@@ -292,7 +292,7 @@ export const PARAMETERS_FILE_NAME = "parameters.json";
 export type ProjectRule = (diffs: Diff[], currentBuild: DiffableProject, nextBuild: DiffableProject) => void;
 
 // @public (undocumented)
-function readSchema(projectDirectory: string): Promise<{
+const readSchema: (projectDirectory: string) => Promise<{
     schema: string;
     modelToDatasourceMap: Map<string, DatasourceType>;
 }>;

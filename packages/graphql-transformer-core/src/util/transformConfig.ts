@@ -4,7 +4,7 @@ import { throwIfNotJSONExt } from './fileUtils';
 import { ProjectOptions } from './amplifyUtils';
 const fs = require('fs-extra');
 import _ from 'lodash';
-import { parse, Kind, ObjectTypeDefinitionNode } from 'graphql';
+import { parse, Kind, ObjectTypeDefinitionNode, print, DefinitionNode, InputObjectTypeDefinitionNode } from 'graphql';
 import { ApiCategorySchemaNotFoundError } from '../errors';
 
 export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
@@ -50,6 +50,12 @@ export type ResolverConfig = {
     [key: string]: SyncConfig;
   };
 };
+
+type SchemaReaderConfig = {
+  amplifyType: InputObjectTypeDefinitionNode;
+  schema: string;
+};
+
 /**
  * The transform config is specified in transform.conf.json within an Amplify
  * API project directory.
@@ -260,30 +266,39 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
  * Preference is given to the `schema.graphql` if provided.
  * @param projectDirectory The project directory.
  */
-export async function readSchema(projectDirectory: string): Promise<{schema: string, modelToDatasourceMap: Map<string, DatasourceType>}> {
+export const readSchema = async (
+  projectDirectory: string,
+): Promise<{schema: string, modelToDatasourceMap: Map<string, DatasourceType>}> => {
   let modelToDatasourceMap = new Map<string, DatasourceType>();
   const schemaFilePaths = [
     path.join(projectDirectory, 'schema.graphql'),
-    path.join(projectDirectory, 'schema.rds.graphql')
+    path.join(projectDirectory, 'schema.rds.graphql'),
   ];
 
-  const existingSchemaFiles = schemaFilePaths.filter( path => fs.existsSync(path));
+  const existingSchemaFiles = schemaFilePaths.filter((p) => fs.existsSync(p));
   const schemaDirectoryPath = path.join(projectDirectory, 'schema');
-
-  let schema = "";
+  let amplifyInputType;
+  let schema = '';
   if (!(_.isEmpty(existingSchemaFiles))) {
-    // Schema.graphql contains the models for DynamoDB datasource
-    // Schema.rds.graphql contains the models for imported 'MySQL' datasource 
-    // Intentionally using 'for ... of ...' instead of 'object.foreach' to process this in sequence 
+    // Schema.graphql contains the models for DynamoDB datasource.
+    // Schema.rds.graphql contains the models for imported 'MySQL' datasource.
+    // Intentionally using 'for ... of ...' instead of 'object.foreach' to process this in sequence.
     for (const file of existingSchemaFiles) {
-      const datasourceType = file.endsWith('.rds.graphql') ? constructDataSourceType("MySQL", false) : constructDataSourceType("DDB");
+      const datasourceType = file.endsWith('.rds.graphql') ? constructDataSourceType('MySQL', false) : constructDataSourceType('DDB');
       const fileSchema = (await fs.readFile(file)).toString();
+      const { amplifyType, schema: fileSchemaWithoutAmplifyInput } = removeAmplifyInput(fileSchema);
       modelToDatasourceMap = new Map([...modelToDatasourceMap.entries(), ...constructDataSourceMap(fileSchema, datasourceType).entries()]);
-      schema += fileSchema;
+      if (amplifyType) {
+        amplifyInputType = mergeTypeFields(amplifyInputType, amplifyType);
+      }
+      schema += fileSchemaWithoutAmplifyInput;
+    }
+    if (amplifyInputType) {
+      schema = print(amplifyInputType) + schema;
     }
   } else if (fs.existsSync(schemaDirectoryPath)) {
     // Schema folder is used only for DynamoDB datasource
-    const datasourceType = constructDataSourceType("DDB");
+    const datasourceType = constructDataSourceType('DDB');
     const schemaInDirectory = (await readSchemaDocuments(schemaDirectoryPath)).join('\n');
     modelToDatasourceMap = new Map([...modelToDatasourceMap.entries(), ...constructDataSourceMap(schemaInDirectory, datasourceType).entries()]);
     schema += schemaInDirectory;
@@ -294,7 +309,34 @@ export async function readSchema(projectDirectory: string): Promise<{schema: str
     schema,
     modelToDatasourceMap,
   };
-}
+};
+
+const removeAmplifyInput = (schema: string): SchemaReaderConfig => {
+  const parsedSchema = parse(schema);
+  const amplifyType = parsedSchema.definitions.find((obj) => obj.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && obj.name.value === 'AMPLIFY') as InputObjectTypeDefinitionNode;
+  const schemaWithoutAmplifyInput = parsedSchema.definitions.filter((obj) => obj.kind !== Kind.INPUT_OBJECT_TYPE_DEFINITION || obj.name.value !== 'AMPLIFY');
+  (parsedSchema as any).definitions = schemaWithoutAmplifyInput;
+  return {
+    amplifyType,
+    schema: print(parsedSchema),
+  };
+};
+
+const mergeTypeFields = (typeA: InputObjectTypeDefinitionNode, typeB: InputObjectTypeDefinitionNode): InputObjectTypeDefinitionNode => {
+  if (!typeA && !typeB) {
+    return undefined;
+  }
+  if (!typeA || !typeB) {
+    return typeA || typeB;
+  }
+  const type = typeA as any;
+  typeB.fields.forEach((field) => {
+    if (!type.fields.find((f) => f.name.value === field.name.value)) {
+      type.fields.push(field);
+    }
+  });
+  return type;
+};
 
 async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[]> {
   const files = await fs.readdir(schemaDirectoryPath);
