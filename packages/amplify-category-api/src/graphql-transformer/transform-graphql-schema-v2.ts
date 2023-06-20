@@ -1,4 +1,4 @@
-import { RDSConnectionSecrets, MYSQL_DB_TYPE, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { RDSConnectionSecrets, MYSQL_DB_TYPE, ImportedRDSType, DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
   DeploymentResources,
@@ -15,11 +15,10 @@ import { isAuthModeUpdated } from './auth-mode-compare';
 import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerProjectOptions } from './transformer-options-types';
-import { getExistingConnectionSecretNames, getSecretsKey } from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { executeTransform } from '@aws-amplify/graphql-transformer';
-import { getConnectionSecrets, testDatabaseConnection } from '../provider-utils/awscloudformation/utils/rds-resources/database-resources';
-import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { getConnectionSecrets, testDatabaseConnection, getExistingConnectionSecretNames, getSecretsKey } from '../provider-utils/awscloudformation/utils/rds-resources/database-resources';
+import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { getHostVpc } from '@aws-amplify/graphql-schema-generator';
 
