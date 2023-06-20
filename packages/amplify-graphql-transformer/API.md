@@ -16,6 +16,7 @@ import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
 import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
+import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export const constructTransform: (config: TransformConfig) => GraphQLTransform;
@@ -32,6 +33,7 @@ export type ExecuteTransformConfig = TransformConfig & {
     modelToDatasourceMap?: Map<string, DatasourceType>;
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
     printTransformerLog?: (log: TransformerLog) => void;
+    sqlLambdaVpcConfig?: VpcConfig;
 };
 
 // @public (undocumented)
@@ -47,6 +49,7 @@ export type TransformConfig = {
     userDefinedSlots?: Record<string, UserDefinedSlot[]>;
     stackMapping?: Record<string, string>;
     transformParameters: TransformParameters;
+    sqlLambdaVpcConfig?: VpcConfig;
 };
 
 // @public (undocumented)
@@ -61,7 +64,7 @@ export type TransformerFactoryArgs = {
 
 // Warnings were encountered during analysis:
 //
-// src/graphql-transformer.ts:47:3 - (ae-forgotten-export) The symbol "TransformerSearchConfig" needs to be exported by the entry point index.d.ts
+// src/graphql-transformer.ts:48:3 - (ae-forgotten-export) The symbol "TransformerSearchConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
