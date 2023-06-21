@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0-rds.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.4.2...@aws-amplify/amplify-category-api@5.5.0-rds.0) (2023-06-21)
+
+### Features
+
+- **api:** accept database url in import api command ([7d13f6c](https://github.com/aws-amplify/amplify-category-api/commit/7d13f6c7a348b0dc90c6f7ec0d9dae7770f9d8ee))
+- **graphql:** add vpc support for import workflow ([44170f9](https://github.com/aws-amplify/amplify-category-api/commit/44170f9f6ea4c7fe8b30604037067c4d36f71d2e))
+- **graphql:** vpc support for sql lambda ([9cc4407](https://github.com/aws-amplify/amplify-category-api/commit/9cc4407bdc4799fe548919808961911a3d5995c7))
+
 ## [5.4.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.4.1...@aws-amplify/amplify-category-api@5.4.2) (2023-06-20)
 
 ### Bug Fixes
