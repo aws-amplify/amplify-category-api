@@ -168,11 +168,15 @@ export type SubscriptionFunctionSlot = FunctionSlotBase & {
 // @public
 export type TransformParameters = {
     shouldDeepMergeDirectiveConfigDefaults: boolean;
+    disableResolverDeduping: boolean;
+    sandboxModeEnabled: boolean;
     useSubUsernameForDefaultIdentityClaim: boolean;
     populateOwnerFieldForStaticGroupAuth: boolean;
+    suppressApiKeyGeneration: boolean;
     secondaryKeyAsGSI: boolean;
     enableAutoIndexQueryNames: boolean;
     respectPrimaryKeyAttributesOnConnectionField: boolean;
+    enableSearchNodeToNodeEncryption: boolean;
 };
 
 // @public

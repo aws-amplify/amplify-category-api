@@ -31,7 +31,9 @@ const mappedHasManyAndSearchableSchema = /* GraphQL */ `
 const transformSchema = (schema: string) => {
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new HasManyTransformer(), new SearchableModelTransformer(), new MapsToTransformer()],
-    sandboxModeEnabled: true,
+    transformParameters: {
+      sandboxModeEnabled: true,
+    },
   });
   return transformer.transform(schema);
 };
