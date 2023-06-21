@@ -1,7 +1,7 @@
 version: 0.2
 env:
   shell: bash
-  compute-type: BUILD_GENERAL1_MEDIUM
+  compute-type: BUILD_GENERAL1_LARGE
 
 batch:
   fast-fail: false
