@@ -49,79 +49,79 @@ const RDSLayerMappingID = 'RDSLayerResourceMapping';
  */
 export const setRDSLayerMappings = (scope: Construct): CfnMapping => new CfnMapping(
   scope,
-  // For beta use account '956468067974', layer name 'AmplifyRDSLayerBeta' and layer version '11' as of 2023-06-20
-  // For prod use account '582037449441', layer name 'AmplifyRDSLayer' and layer version '2' as of 2023-06-20
+  // For beta use account '956468067974', layer name 'AmplifyRDSLayerBeta' and layer version '12' as of 2023-06-20
+  // For prod use account '582037449441', layer name 'AmplifyRDSLayer' and layer version '3' as of 2023-06-20
   RDSLayerMappingID,
   {
     mapping: {
       'ap-northeast-1': {
-        layerRegion: 'arn:aws:lambda:ap-northeast-1:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:ap-northeast-1:582037449441:layer:AmplifyRDSLayer:3',
       },
       'us-east-1': {
-        layerRegion: 'arn:aws:lambda:us-east-1:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:us-east-1:582037449441:layer:AmplifyRDSLayer:3',
       },
       'ap-southeast-1': {
-        layerRegion: 'arn:aws:lambda:ap-southeast-1:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:ap-southeast-1:582037449441:layer:AmplifyRDSLayer:3',
       },
       'eu-west-1': {
-        layerRegion: 'arn:aws:lambda:eu-west-1:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:eu-west-1:582037449441:layer:AmplifyRDSLayer:3',
       },
       'us-west-1': {
-        layerRegion: 'arn:aws:lambda:us-west-1:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:us-west-1:582037449441:layer:AmplifyRDSLayer:3',
       },
       'ap-east-1': {
-        layerRegion: 'arn:aws:lambda:ap-east-1:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:ap-east-1:582037449441:layer:AmplifyRDSLayer:3',
       },
       'ap-northeast-2': {
-        layerRegion: 'arn:aws:lambda:ap-northeast-2:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:ap-northeast-2:582037449441:layer:AmplifyRDSLayer:3',
       },
       'ap-northeast-3': {
-        layerRegion: 'arn:aws:lambda:ap-northeast-3:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:ap-northeast-3:582037449441:layer:AmplifyRDSLayer:3',
       },
       'ap-south-1': {
-        layerRegion: 'arn:aws:lambda:ap-south-1:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:ap-south-1:582037449441:layer:AmplifyRDSLayer:3',
       },
       'ap-southeast-2': {
-        layerRegion: 'arn:aws:lambda:ap-southeast-2:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:ap-southeast-2:582037449441:layer:AmplifyRDSLayer:3',
       },
       'ca-central-1': {
-        layerRegion: 'arn:aws:lambda:ca-central-1:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:ca-central-1:582037449441:layer:AmplifyRDSLayer:3',
       },
       'eu-central-1': {
-        layerRegion: 'arn:aws:lambda:eu-central-1:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:eu-central-1:582037449441:layer:AmplifyRDSLayer:3',
       },
       'eu-north-1': {
-        layerRegion: 'arn:aws:lambda:eu-north-1:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:eu-north-1:582037449441:layer:AmplifyRDSLayer:3',
       },
       'eu-west-2': {
-        layerRegion: 'arn:aws:lambda:eu-west-2:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:eu-west-2:582037449441:layer:AmplifyRDSLayer:3',
       },
       'eu-west-3': {
-        layerRegion: 'arn:aws:lambda:eu-west-3:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:eu-west-3:582037449441:layer:AmplifyRDSLayer:3',
       },
       'sa-east-1': {
-        layerRegion: 'arn:aws:lambda:sa-east-1:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:sa-east-1:582037449441:layer:AmplifyRDSLayer:3',
       },
       'us-east-2': {
-        layerRegion: 'arn:aws:lambda:us-east-2:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:us-east-2:582037449441:layer:AmplifyRDSLayer:3',
       },
       'us-west-2': {
-        layerRegion: 'arn:aws:lambda:us-west-2:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:us-west-2:582037449441:layer:AmplifyRDSLayer:3',
       },
       'cn-north-1': {
-        layerRegion: 'arn:aws:lambda:cn-north-1:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:cn-north-1:582037449441:layer:AmplifyRDSLayer:3',
       },
       'cn-northwest-1': {
-        layerRegion: 'arn:aws:lambda:cn-northwest-1:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:cn-northwest-1:582037449441:layer:AmplifyRDSLayer:3',
       },
       'us-gov-west-1': {
-        layerRegion: 'arn:aws:lambda:us-gov-west-1:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:us-gov-west-1:582037449441:layer:AmplifyRDSLayer:3',
       },
       'us-gov-east-1': {
-        layerRegion: 'arn:aws:lambda:us-gov-east-1:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:us-gov-east-1:582037449441:layer:AmplifyRDSLayer:3',
       },
       'me-south-1': {
-        layerRegion: 'arn:aws:lambda:me-south-1:582037449441:layer:AmplifyRDSLayer:2',
+        layerRegion: 'arn:aws:lambda:me-south-1:582037449441:layer:AmplifyRDSLayer:3',
       },
     },
   },
