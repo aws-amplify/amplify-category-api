@@ -233,7 +233,6 @@ jobs:
           name: Run GraphQL end-to-end tests
           command: |
             source .circleci/local_publish_helpers.sh
-            setNpmRegistryUrlToLocal
             cd packages/graphql-transformers-e2e-tests/
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
@@ -751,6 +750,7 @@ commands:
                 shell: bash.exe
                 command: |
                   source .circleci/local_publish_helpers.sh
+                  setNpmRegistryUrlToLocal
                   cd packages/amplify-e2e-tests
                   retry yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
                 no_output_timeout: 60m
@@ -764,6 +764,7 @@ commands:
                   echo "export PATH=$AMPLIFY_DIR:$PATH" >> $BASH_ENV
                   source $BASH_ENV
                   source .circleci/local_publish_helpers.sh
+                  setNpmRegistryUrlToLocal
                   amplify version
                   retry runE2eTest
                 no_output_timeout: 90m
