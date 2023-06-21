@@ -114,14 +114,16 @@ type CandidateJob = {
   os: OS_TYPE;
   tests: string[];
   useParentAccount: boolean;
+  runSolo: boolean;
 };
-const createJob = (os: OS_TYPE, jobIdx: number): CandidateJob => {
+const createJob = (os: OS_TYPE, jobIdx: number, runSolo: boolean = false): CandidateJob => {
   const region = AWS_REGIONS_TO_RUN_TESTS[jobIdx % AWS_REGIONS_TO_RUN_TESTS.length];
   return {
     region,
     os,
     tests: [],
     useParentAccount: false,
+    runSolo,
   };
 };
 const getTestNameFromPath = (testSuitePath: string): string => {
@@ -171,7 +173,7 @@ const splitTests = (
       const USE_PARENT = USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent));
 
       if (isMigration || RUN_SOLO.find((solo) => test === solo)) {
-        const newSoloJob = createJob(os, jobIdx);
+        const newSoloJob = createJob(os, jobIdx, true);
         jobIdx++;
         newSoloJob.tests.push(test);
         if (FORCE_REGION) {
@@ -223,6 +225,9 @@ const splitTests = (
       tmp.env.variables.CLI_REGION = j.region;
       if (j.useParentAccount) {
         tmp.env.variables.USE_PARENT_ACCOUNT = 1;
+      }
+      if (j.runSolo) {
+        tmp.env['compute-type'] = 'BUILD_GENERAL1_SMALL';
       }
       result.push(tmp);
     }
