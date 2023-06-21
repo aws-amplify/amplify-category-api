@@ -1056,30 +1056,26 @@ export const removeTransformConfigValue = (projRoot: string, apiName: string, ke
   setTransformConfig(projRoot, apiName, transformConfig);
 };
 
-export function importRDSDatabase(cwd: string, opts: ImportApiOptions & { apiExists?: boolean }) {
+export const importRDSDatabase = (cwd: string, opts: ImportApiOptions & { apiExists?: boolean }): Promise<void> => {
   const options = _.assign(defaultOptions, opts);
   const vpcLambdaDeploymentDelayMS = 1000 * 60 * 12; // 12 minutes;
-  const database = options.database;
+
   return new Promise<void>((resolve, reject) => {
-    const importCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['import', 'api', '--debug'], { 
-      cwd, 
-      stripColors: true, 
+    const importCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['import', 'api', '--debug'], {
+      cwd,
+      stripColors: true,
       noOutputTimeout: vpcLambdaDeploymentDelayMS,
     });
     if (!options.apiExists) {
       importCommands
-      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
-      .sendKeyUp(3)
-      .sendCarriageReturn()
-      .wait('Provide API name:')
-      .sendLine(options.apiName)
-      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
-      .sendCarriageReturn()
+        .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+        .sendKeyUp(3)
+        .sendCarriageReturn()
+        .wait('Provide API name:')
+        .sendLine(options.apiName)
+        .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+        .sendCarriageReturn();
     }
-    
-    importCommands
-      .wait('Enter the name of the MySQL database to import:')
-      .sendLine(database);
 
     promptDBInformation(importCommands, options);
 
@@ -1106,7 +1102,7 @@ export function apiUpdateSecrets(cwd: string, opts: ImportApiOptions) {
   return new Promise<void>((resolve, reject) => {
     const updateSecretsCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['update-secrets', 'api'], { cwd, stripColors: true });
     promptDBInformation(updateSecretsCommands, options);
-    updateSecretsCommands.wait(`Successfully updated the secrets for ${options.database} database.`);
+    updateSecretsCommands.wait('Successfully updated the secrets for the database.');
     updateSecretsCommands.run((err: Error) => {
         if (!err) {
           resolve();
@@ -1154,16 +1150,17 @@ export function removeApi(cwd: string) {
   });
 };
 
-const promptDBInformation = (executionContext: ExecutionContext, options: ImportApiOptions) => {
-  const database = options.database;
-  return executionContext
-    .wait(`Enter the host for ${database} database:`)
-    .sendLine(options.host)
-    .wait(`Enter the port for ${database} database:`)
-    .sendLine(JSON.stringify(options.port || 3306))
-    .wait(`Enter the username for ${database} database user:`)
-    .sendLine(options.username)
-    .wait(`Enter the password for ${database} database user:`)
-    .sendLine(options.password)
-};
-
+const promptDBInformation = (
+  executionContext: ExecutionContext,
+  options: ImportApiOptions,
+): ExecutionContext => executionContext
+  .wait('Enter the database url or host name:')
+  .sendLine(options.host)
+  .wait('Enter the port number:')
+  .sendLine(JSON.stringify(options.port || 3306))
+  .wait('Enter the username:')
+  .sendLine(options.username)
+  .wait('Enter the password:')
+  .sendLine(options.password)
+  .wait('Enter the database name:')
+  .sendLine(options.database);

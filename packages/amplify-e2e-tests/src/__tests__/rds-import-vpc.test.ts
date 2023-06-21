@@ -24,7 +24,7 @@ const CDK_SUBSCRIPTION_TYPE = 'AWS::SNS::Subscription';
 const APPSYNC_DATA_SOURCE_TYPE = 'AWS::AppSync::DataSource';
 
 const SNS_TOPIC_REGION = 'us-east-1';
-const SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:956468067974:AmplifyRDSLayerNotification';
+const SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:582037449441:AmplifyRDSLayerNotification';
 
 describe("RDS Tests", () => {
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);

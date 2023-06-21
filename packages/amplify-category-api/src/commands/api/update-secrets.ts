@@ -32,12 +32,11 @@ export const run = async (context: $TSContext) => {
 
   const engine = ImportedRDSType.MYSQL;
   const secretsKey = await getSecretsKey();
-  const database = await getDatabaseName(context, apiName, secretsKey);
-
+  
   // read and validate the RDS connection parameters
-  const databaseConfig: ImportedDataSourceConfig = await databaseConfigurationInputWalkthrough(engine, database);
+  const databaseConfig: ImportedDataSourceConfig = await databaseConfigurationInputWalkthrough(engine);
 
   await storeConnectionSecrets(context, databaseConfig, apiName, secretsKey);
 
-  printer.info(`Successfully updated the secrets for ${database} database.`);
+  printer.info('Successfully updated the secrets for the database.');
 };

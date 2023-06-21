@@ -73,6 +73,7 @@ $util.qr($ctx.stash.put(\\"keys\\", $keys))
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
+#set( $lambdaInput.args.condition = $util.defaultIfNull($context.arguments.condition, {}) )
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
@@ -120,6 +121,7 @@ $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.k
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
 $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments.input, {})))
+#set( $lambdaInput.args.condition = $util.defaultIfNull($context.arguments.condition, {}) )
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
@@ -342,6 +344,7 @@ $util.qr($ctx.stash.put(\\"keys\\", $keys))
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
+#set( $lambdaInput.args.condition = $util.defaultIfNull($context.arguments.condition, {}) )
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
@@ -388,6 +391,7 @@ $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.k
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
 $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments.input, {})))
+#set( $lambdaInput.args.condition = $util.defaultIfNull($context.arguments.condition, {}) )
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
@@ -606,6 +610,7 @@ $util.qr($ctx.stash.put(\\"keys\\", $keys))
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
+#set( $lambdaInput.args.condition = $util.defaultIfNull($context.arguments.condition, {}) )
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
@@ -651,6 +656,7 @@ $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.k
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
 $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments.input, {})))
+#set( $lambdaInput.args.condition = $util.defaultIfNull($context.arguments.condition, {}) )
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
@@ -870,6 +876,7 @@ $util.qr($ctx.stash.put(\\"keys\\", $keys))
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
+#set( $lambdaInput.args.condition = $util.defaultIfNull($context.arguments.condition, {}) )
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
@@ -916,6 +923,7 @@ $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.k
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
 $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments.input, {})))
+#set( $lambdaInput.args.condition = $util.defaultIfNull($context.arguments.condition, {}) )
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
@@ -1095,6 +1103,7 @@ $util.qr($ctx.stash.put(\\"keys\\", $keys))
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
+#set( $lambdaInput.args.condition = $util.defaultIfNull($context.arguments.condition, {}) )
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
@@ -1141,6 +1150,7 @@ $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.k
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
 $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments.input, {})))
+#set( $lambdaInput.args.condition = $util.defaultIfNull($context.arguments.condition, {}) )
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",

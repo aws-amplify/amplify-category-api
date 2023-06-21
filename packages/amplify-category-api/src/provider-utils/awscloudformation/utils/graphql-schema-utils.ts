@@ -63,7 +63,7 @@ const retryWithVpcLambda = async (context, databaseConfig, adapter): Promise<boo
   const { envName } = amplify.getEnvInfo();
 
   if (vpc) {
-    const shouldTryVpc = await prompter.confirmContinue(`Unable to connect to the database from this machine. Would you like to try from VPC '${vpc.vpcId}'?`);
+    const shouldTryVpc = await prompter.confirmContinue(`Unable to connect to the database from this machine. Would you like to try from VPC '${vpc.vpcId}'? (This will take several minutes):`);
     
     if (shouldTryVpc) {
       const schemaInspectorLambda = getVpcMetadataLambdaName(AmplifyAppId, envName);
