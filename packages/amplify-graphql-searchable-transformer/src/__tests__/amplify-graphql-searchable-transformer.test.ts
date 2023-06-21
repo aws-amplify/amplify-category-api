@@ -7,17 +7,6 @@ import { parse } from 'graphql';
 import { SearchableModelTransformer } from '..';
 import {ALLOWABLE_SEARCHABLE_INSTANCE_TYPES} from '../constants';
 
-const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name): boolean => {
-    if (name === 'improvePluralization') {
-      return true;
-    }
-    return false;
-  }),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-};
-
 test('SearchableModelTransformer validation happy case', () => {
   const validSchema = `
     type Post @model @searchable {
@@ -29,7 +18,6 @@ test('SearchableModelTransformer validation happy case', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -48,7 +36,6 @@ test('SearchableModelTransformer vtl', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    featureFlags,
   });
 
   const out = transformer.transform(validSchema);
@@ -69,7 +56,6 @@ test('SearchableModelTransformer with datastore enabled vtl', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    featureFlags,
     resolverConfig: {
       project: {
         ConflictHandler: ConflictHandlerType.AUTOMERGE,
@@ -97,7 +83,6 @@ test('SearchableModelTransformer with query overrides', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -115,7 +100,9 @@ test('SearchableModelTransformer with only create mutations', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    featureFlags,
+    transformParameters: {
+      shouldDeepMergeDirectiveConfigDefaults: false,
+    },
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -139,7 +126,6 @@ test('SearchableModelTransformer with multiple model searchable directives', () 
     `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -158,7 +144,6 @@ test('SearchableModelTransformer with sort fields', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -188,7 +173,6 @@ test('it generates expected resources', () => {
  `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -370,7 +354,6 @@ test('SearchableModelTransformer enum type generates StringFilterInput', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -388,7 +371,6 @@ describe('SearchableModelTransformer with datastore enabled and sort field defin
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-      featureFlags,
       resolverConfig: {
         project: {
           ConflictHandler: ConflictHandlerType.AUTOMERGE,

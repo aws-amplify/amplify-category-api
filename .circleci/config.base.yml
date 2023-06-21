@@ -117,7 +117,7 @@ jobs:
           name: Collect code coverage
           command: yarn coverage
     environment:
-      NODE_OPTIONS: --max-old-space-size=4096
+      NODE_OPTIONS: --max-old-space-size=5120
 
   validate_cdk_version:
     <<: *linux-e2e-executor
@@ -176,7 +176,7 @@ jobs:
           no_output_timeout: 60m
           environment:
             JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
-            NODE_OPTIONS: --max-old-space-size=4096
+            NODE_OPTIONS: --max-old-space-size=5120
       - store_test_results:
           path: packages/amplify-util-mock/
 

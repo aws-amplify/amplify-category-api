@@ -6,11 +6,22 @@
 
 import { BackedDataSource } from 'aws-cdk-lib/aws-appsync';
 import { BaseDataSource } from 'aws-cdk-lib/aws-appsync';
+import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
+import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
+import { CfnEventSourceMapping } from 'aws-cdk-lib/aws-lambda';
+import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
+import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
+import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
+import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
 import { CfnParameter } from 'aws-cdk-lib';
 import { CfnParameterProps } from 'aws-cdk-lib';
+import { CfnPolicy } from 'aws-cdk-lib/aws-iam';
 import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { CfnResource } from 'aws-cdk-lib';
+import { CfnRole } from 'aws-cdk-lib/aws-iam';
+import { CfnStack } from 'aws-cdk-lib';
+import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
@@ -49,6 +60,26 @@ import { TypeDefinitionNode } from 'graphql';
 import { TypeSystemDefinitionNode } from 'graphql';
 import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
+
+// @public (undocumented)
+export interface AmplifyApiGraphQlResourceStackTemplate {
+    // Warning: (ae-forgotten-export) The symbol "AppsyncApiStack" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    api?: Partial<AppsyncApiStack>;
+    // (undocumented)
+    function?: Partial<FunctionDirectiveStack & AppsyncStackCommon>;
+    // (undocumented)
+    http?: Partial<HttpsDirectiveStack & AppsyncStackCommon>;
+    // (undocumented)
+    models?: Partial<Record<string, ModelDirectiveStack>>;
+    // (undocumented)
+    opensearch?: Partial<OpenSearchDirectiveStack & AppsyncStackCommon>;
+    // Warning: (ae-forgotten-export) The symbol "PredictionsDirectiveStack" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    predictions?: Partial<PredictionsDirectiveStack & AppsyncStackCommon>;
+}
 
 // @public (undocumented)
 export interface APIIAMResourceProvider {
@@ -127,6 +158,12 @@ export interface AppSyncFunctionConfigurationProvider extends IConstruct {
     readonly functionId: string;
 }
 
+// @public (undocumented)
+export type AppsyncStackCommon = {
+    resolvers?: Record<string, CfnResolver>;
+    appsyncFunctions?: Record<string, CfnFunctionConfiguration>;
+};
+
 // Warning: (ae-forgotten-export) The symbol "NoneDataSourceProvider" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -157,20 +194,20 @@ export interface DynamoDbDataSourceOptions extends DataSourceOptions {
 }
 
 // @public (undocumented)
-export interface FeatureFlagProvider {
-    // (undocumented)
-    getBoolean(featureName: string, defaultValue?: boolean): boolean;
-    // (undocumented)
-    getNumber(featureName: string, defaultValue?: number): number;
-    // (undocumented)
-    getObject(featureName: string, defaultValue?: object): object;
-}
-
-// @public (undocumented)
 export type FieldMapEntry = {
     originalFieldName: string;
     currentFieldName: string;
 };
+
+// @public (undocumented)
+export interface FunctionDirectiveStack {
+    // (undocumented)
+    lambdaDataSource: Record<string, CfnDataSource>;
+    // (undocumented)
+    lambdaDataSourceRole: Record<string, CfnRole>;
+    // (undocumented)
+    lambdaDataSourceServiceRoleDefaultPolicy: Record<string, CfnPolicy>;
+}
 
 // @public (undocumented)
 export interface GraphQLAPIProvider extends IConstruct {
@@ -195,6 +232,16 @@ export interface GraphQLAPIProvider extends IConstruct {
 }
 
 // @public (undocumented)
+export interface HttpsDirectiveStack {
+    // (undocumented)
+    httpDataSourceServiceRole?: Record<string, CfnRole>;
+    // (undocumented)
+    httpDataSourceServiceRoleDefaultPolicy?: Record<string, CfnPolicy>;
+    // (undocumented)
+    httpsDataSource?: Record<string, CfnDataSource>;
+}
+
+// @public (undocumented)
 export interface InlineMappingTemplateProvider {
     // (undocumented)
     bind: (scope: Construct) => string;
@@ -214,6 +261,11 @@ export enum MappingTemplateType {
     // (undocumented)
     S3_LOCATION = "S3_LOCATION"
 }
+
+// Warning: (ae-forgotten-export) The symbol "DDBModelDirectiveStack" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type ModelDirectiveStack = AppsyncStackCommon & DDBModelDirectiveStack;
 
 // @public (undocumented)
 export type ModelFieldMap = {
@@ -241,6 +293,28 @@ export interface NestedStacks {
     stackMapping: Record<string, string>;
     // (undocumented)
     stacks: Record<string, Template>;
+}
+
+// @public (undocumented)
+export interface OpenSearchDirectiveStack {
+    // (undocumented)
+    CloudwatchLogsAccess?: CfnPolicy;
+    // (undocumented)
+    OpenSearchAccessIAMRole?: CfnRole;
+    // (undocumented)
+    OpenSearchAccessIAMRoleDefaultPolicy?: CfnPolicy;
+    // (undocumented)
+    OpenSearchDataSource?: CfnDataSource;
+    // (undocumented)
+    OpenSearchDomain?: CfnDomain;
+    // (undocumented)
+    OpenSearchModelLambdaMapping?: Record<string, CfnEventSourceMapping>;
+    // (undocumented)
+    OpenSearchStreamingLambdaFunction?: CfnFunction;
+    // (undocumented)
+    OpenSearchStreamingLambdaIAMRole?: CfnRole;
+    // (undocumented)
+    OpenSearchStreamingLambdaIAMRoleDefaultPolicy?: CfnPolicy;
 }
 
 // @public (undocumented)
@@ -366,7 +440,7 @@ export interface Template {
 export type TransformerAuthProvider = TransformerPluginProvider;
 
 // @public (undocumented)
-export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'sandboxModeEnabled'>;
+export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'sandboxModeEnabled'>;
 
 // @public (undocumented)
 export interface TransformerContextOutputProvider {
@@ -437,10 +511,6 @@ export interface TransformerContextProvider {
     // (undocumented)
     datasourceSecretParameterLocations: Map<string, TransformerSecrets>;
     // (undocumented)
-    featureFlags: FeatureFlagProvider;
-    // (undocumented)
-    filepaths: TransformerFilepathsProvider;
-    // (undocumented)
     getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
     // (undocumented)
     inputDocument: DocumentNode;
@@ -466,6 +536,8 @@ export interface TransformerContextProvider {
     sandboxModeEnabled: boolean;
     // (undocumented)
     stackManager: StackManagerProvider;
+    // (undocumented)
+    transformParameters: TransformParameters;
 }
 
 // @public (undocumented)
@@ -476,16 +548,6 @@ export interface TransformerDataSourceManagerProvider {
     get(type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): DataSourceInstance;
     // (undocumented)
     has(name: string): boolean;
-}
-
-// @public (undocumented)
-export interface TransformerFilepathsProvider {
-    // (undocumented)
-    findProjectRoot: () => string;
-    // (undocumented)
-    getBackendDirPath: () => string;
-    // (undocumented)
-    getCurrentCloudBackendDirPath: () => string;
 }
 
 // @public (undocumented)
@@ -633,11 +695,11 @@ export type TransformerPrepareStepContextProvider = TransformerValidationStepCon
 // @public (undocumented)
 export interface TransformerPreProcessContextProvider {
     // (undocumented)
-    featureFlags: FeatureFlagProvider;
-    // (undocumented)
     inputDocument: DocumentNode;
     // (undocumented)
     schemaHelper: TransformerSchemaHelperProvider;
+    // (undocumented)
+    transformParameters: TransformParameters;
 }
 
 // @public (undocumented)
@@ -717,7 +779,7 @@ export interface TransformerSchemaHelperProvider {
 }
 
 // @public (undocumented)
-export type TransformerSchemaVisitStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'sandboxModeEnabled'>;
+export type TransformerSchemaVisitStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'sandboxModeEnabled'>;
 
 // @public (undocumented)
 export type TransformerSecrets = {
@@ -728,7 +790,7 @@ export type TransformerSecrets = {
 export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;
 
 // @public (undocumented)
-export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'dataSources' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'sandboxModeEnabled' | 'resourceHelper' | 'resolvers' | 'stackManager'>;
+export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'dataSources' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'sandboxModeEnabled' | 'resourceHelper' | 'resolvers' | 'stackManager'>;
 
 // @public (undocumented)
 export interface TransformHostProvider {
@@ -761,6 +823,16 @@ export interface TransformHostProvider {
     // (undocumented)
     setAPI(api: GraphqlApiBase): void;
 }
+
+// @public (undocumented)
+export type TransformParameters = {
+    shouldDeepMergeDirectiveConfigDefaults: boolean;
+    useSubUsernameForDefaultIdentityClaim: boolean;
+    populateOwnerFieldForStaticGroupAuth: boolean;
+    secondaryKeyAsGSI: boolean;
+    enableAutoIndexQueryNames: boolean;
+    respectPrimaryKeyAttributesOnConnectionField: boolean;
+};
 
 // @public (undocumented)
 export interface UserPoolConfig {

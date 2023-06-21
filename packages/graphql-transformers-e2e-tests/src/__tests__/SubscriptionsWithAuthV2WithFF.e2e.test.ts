@@ -226,16 +226,6 @@ beforeAll(async () => {
       ],
     },
     transformers: [new ModelTransformer(), new AuthTransformer()],
-    featureFlags: {
-      getBoolean(value: string) {
-        if (value === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return false;
-      },
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-    }
   });
 
   try {

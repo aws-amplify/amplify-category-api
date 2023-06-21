@@ -200,7 +200,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     if (context.metadata.has('joinTypeList')) {
       isJoinType = context.metadata.get<Array<string>>('joinTypeList')!.includes(typeName);
     }
-    const getAuthRulesOptions = merge({ isField: false }, generateGetArgumentsInput(context.featureFlags));
+    const getAuthRulesOptions = merge({ isField: false }, generateGetArgumentsInput(context.transformParameters));
     this.rules = getAuthDirectiveRules(new DirectiveWrapper(directive), getAuthRulesOptions);
 
     // validate rules
@@ -219,7 +219,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     // turn rules into roles and add into acm and roleMap
     this.convertRulesToRoles(acm, this.rules, isJoinType, undefined, undefined, context);
     this.modelDirectiveConfig.set(typeName,
-      getModelConfig(modelDirective, typeName, context.featureFlags, context.isProjectUsingDataStore()));
+      getModelConfig(modelDirective, typeName, context.transformParameters, context.isProjectUsingDataStore()));
     this.authModelConfig.set(typeName, acm);
   };
 
@@ -263,10 +263,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const modelDirective = parent.directives?.find((dir) => dir.name.value === 'model');
     const typeName = parent.name.value;
     const fieldName = field.name.value;
-    const getAuthRulesOptions = merge({ isField: true }, generateGetArgumentsInput(context.featureFlags));
+    const getAuthRulesOptions = merge({ isField: true }, generateGetArgumentsInput(context.transformParameters));
     const rules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(directive), getAuthRulesOptions);
     validateFieldRules(new DirectiveWrapper(directive),
-      isParentTypeBuiltinType, modelDirective !== undefined, field.name.value, context.featureFlags);
+      isParentTypeBuiltinType, modelDirective !== undefined, field.name.value, context.transformParameters);
     validateRules(rules, this.configuredAuthProviders, field.name.value);
 
     // regardless if a model directive is used we generate the policy for iam auth
@@ -279,7 +279,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       let acm: AccessControlMatrix;
       // check if the parent is already in the model config if not add it
       if (!this.modelDirectiveConfig.has(typeName)) {
-        this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName, context.featureFlags,
+        this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName, context.transformParameters,
           context.isProjectUsingDataStore()));
         acm = new AccessControlMatrix({
           name: parent.name.value,
@@ -386,7 +386,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       // check if searchable if included in the typeName
       if (searchableDirective) {
         // protect search query
-        const config = getSearchableConfig(searchableDirective, modelName, context.featureFlags);
+        const config = getSearchableConfig(searchableDirective, modelName, context.transformParameters);
         this.protectSearchResolver(context, def, context.output.getQueryTypeName()!, config.queries.search, acm);
       }
       // get fields specified in the schema
@@ -440,7 +440,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         this.protectSubscriptionResolver(context, subscription.typeName, subscription.fieldName, subscriptionRoles);
       });
 
-      if (context.featureFlags.getBoolean('useSubUsernameForDefaultIdentityClaim')) {
+      if (context.transformParameters.useSubUsernameForDefaultIdentityClaim) {
         const roleDefinitions = acm.getRoles().map((role) => this.roleMap.get(role)!);
 
         roleDefinitions.forEach((role) => {
@@ -552,7 +552,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     }
     // @searchable
     if (searchableDirective) {
-      const config = getSearchableConfig(searchableDirective, def.name.value, ctx.featureFlags);
+      const config = getSearchableConfig(searchableDirective, def.name.value, ctx.transformParameters);
       addServiceDirective(ctx.output.getQueryTypeName(), 'search', config.queries.search);
     }
 
@@ -1006,7 +1006,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
               const ownerField = rule.ownerField || DEFAULT_OWNER_FIELD;
               const fieldType = (context.output.getType(acm.getName()) as any).fields.find((f) => f.name.value === ownerField);
               const isOwnerFieldList = fieldType ? isListType(fieldType.type) : false;
-              const useSub = context.featureFlags.getBoolean('useSubUsernameForDefaultIdentityClaim');
+              const useSub = context.transformParameters.useSubUsernameForDefaultIdentityClaim;
               const ownerClaim = rule.identityClaim || (useSub ? DEFAULT_UNIQUE_IDENTITY_CLAIM : DEFAULT_IDENTITY_CLAIM);
               roleName = `${rule.provider}:owner:${ownerField}:${ownerClaim}`;
               roleDefinition = {
@@ -1370,7 +1370,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     hasManyRelatedFields.forEach((relatedField) => {
       allowedFields.add(
         getConnectionAttributeName(
-          ctx.featureFlags,
+          ctx.transformParameters,
           relatedField.relatedType.name.value,
           relatedField.name.value,
           getObjectPrimaryKey(relatedField.relatedType).name.value,
@@ -1409,7 +1409,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         if (directive.name.value === 'hasOne'
            || (directive.name.value === 'belongsTo'
             && relatedType.fields.some((f) => getBaseType(f.type) === def.name.value && f.directives?.some((d) => d.name.value === 'hasOne')))) {
-          allowedFields.add(getConnectionAttributeName(ctx.featureFlags, def.name.value, field,
+          allowedFields.add(getConnectionAttributeName(ctx.transformParameters, def.name.value, field,
             getObjectPrimaryKey(relatedType).name.value));
           getSortKeyFieldNames(def).forEach((sortKeyFieldName) => {
             allowedFields.add(
