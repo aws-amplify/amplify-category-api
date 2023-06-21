@@ -1,6 +1,6 @@
 import { copySync, moveSync, readFile } from 'fs-extra';
 import * as path from 'path';
-import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
+import { nspawn as spawn, getCLIPath, getNpxPath, singleSelect, addCircleCITags } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
 import { EOL } from 'os';
@@ -495,7 +495,14 @@ export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLa
 
 export function initCDKProject(cwd: string, templatePath: string): Promise<string> {
   return new Promise<void>((resolve, reject) => {
-    spawn('npx', ['cdk', 'init', 'app', '--language', 'typescript'], { cwd, stripColors: true })
+    spawn(getNpxPath(), ['cdk', 'init', 'app', '--language', 'typescript'], {
+      cwd,
+      stripColors: true,
+      // npx cdk does not work on verdaccio
+      env: {
+        npm_config_registry: 'https://registry.npmjs.org/',
+      },
+    })
       .sendConfirmYes()
       .run((err: Error) => {
         if (!err) {
@@ -535,7 +542,14 @@ export function initCDKProject(cwd: string, templatePath: string): Promise<strin
 
 export function cdkDeploy(cwd: string, option: string): Promise<any> {
   return new Promise<void>((resolve, reject) => {
-    spawn('npx', ['cdk', 'deploy', '--outputs-file', 'outputs.json', option], { cwd, stripColors: true })
+    spawn(getNpxPath(), ['cdk', 'deploy', '--outputs-file', 'outputs.json', option], {
+      cwd,
+      stripColors: true,
+      // npx cdk does not work on verdaccio
+      env: {
+        npm_config_registry: 'https://registry.npmjs.org/',
+      },
+    })
       .run((err: Error) => {
         if (!err) {
           resolve();
