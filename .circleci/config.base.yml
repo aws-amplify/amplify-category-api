@@ -196,11 +196,16 @@ jobs:
             git config user.email not@used.com
             git config user.name "Doesnt Matter"
             setNpmTag
+            # publish private package to verdaccio for e2e tests
+            cat packages/amplify-graphql-api-construct/package.json > stash.json
+            jq 'del(.private)' packages/amplify-graphql-api-construct/package.json > tmp.json
+            mv tmp.json packages/amplify-graphql-api-construct/package.json
             if [ -z $NPM_TAG ]; then
               yarn publish-to-verdaccio
             else
               yarn lerna publish --exact --dist-tag=latest --preid=$NPM_TAG --conventional-commits --conventional-prerelease --no-verify-access --yes --no-commit-hooks --no-push --no-git-tag-version
             fi
+            mv stash.json packages/amplify-graphql-api-construct/package.json
             unsetNpmRegistryUrl
       - run:
           name: Generate unified changelog
