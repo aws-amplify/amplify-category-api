@@ -3,6 +3,7 @@ import {
   ApiKeyAuthorizationConfig,
   AuthorizationConfig,
   IAMAuthorizationConfig,
+  IdentityPool,
   LambdaAuthorizationConfig,
   OIDCAuthorizationConfig,
   UserPoolAuthorizationConfig,
@@ -117,9 +118,16 @@ export interface AuthConfig {
 export const convertAuthorizationModesToTransformerAuthConfig = (authConfig: AuthorizationConfig): AuthConfig => ({
   authConfig: convertAuthConfigToAppSyncAuth(authConfig),
   adminRoles: authConfig.iamConfig?.adminRoles?.map((role) => role.roleName) ?? [],
-  identityPoolId: authConfig.iamConfig?.identityPoolId,
+  identityPoolId: getIdentityPoolId(authConfig.iamConfig?.identityPool),
   cfnIncludeParameters: getAuthParameters(authConfig),
 });
+
+/**
+ * Given an identity pool reference, return the id.
+ * @param identityPool the relevant identity pool reference
+ * @returns the id of the identity pool.
+ */
+const getIdentityPoolId = (identityPool: IdentityPool | undefined): string | undefined => identityPool;
 
 /**
  * Hacky, but get the required auth-related params to wire into the CfnInclude statement.

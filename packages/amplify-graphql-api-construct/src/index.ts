@@ -13,7 +13,8 @@ export type {
   QueryFunctionSlot,
   SubscriptionFunctionSlot,
   FunctionSlot,
-  ProjectConflictResolution,
+  ConfigWithModelOverride,
+  ConflictResolution,
   ConflictDetectionType,
   ConflictHandlerType,
   OptimisticConflictResolutionStrategy,
@@ -22,5 +23,7 @@ export type {
   ConflictResolutionStrategyBase,
   ConflictResolutionStrategy,
   TransformParameters,
+  IdentityPool,
+  IdentityPoolId,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';

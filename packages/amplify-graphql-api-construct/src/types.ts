@@ -16,10 +16,21 @@ import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 /**
+ * Alias type for the IdentityPoolId.
+ */
+export type IdentityPoolId = string;
+
+/**
+ * Union type to represent either the identity pool id as a string, or an IIdentityPool interface once the Cognito
+ * identity pool cdk construct is out of alpha.
+ */
+export type IdentityPool = IdentityPoolId;
+
+/**
  * Configuration for IAM Authorization on the GraphQL API.`
  */
 export type IAMAuthorizationConfig = {
-  identityPoolId?: string;
+  identityPool?: IdentityPool;
   authRole?: IRole;
   unauthRole?: IRole;
   adminRoles?: IRole[];
@@ -157,12 +168,20 @@ export type ConflictResolutionStrategy =
   | CustomConflictResolutionStrategy;
 
 /**
+ * Reused pattern across the AmplifyGraphqlApi construct, where
+ * a config may take place on the entire project, but can also be
+ * overridden on the per-model level. Examples include ConflictResolution,
+ * but are expected to extend to brownfield data source mapping.
+ */
+export type ConfigWithModelOverride<ConfigType> = {
+  project: ConfigType;
+  models?: Record<string, ConfigType>;
+};
+
+/**
  * Project level configuration for conflict resolution.
  */
-export type ProjectConflictResolution = {
-  project?: ConflictResolutionStrategy;
-  models?: Record<string, ConflictResolutionStrategy>;
-};
+export type ConflictResolution = ConfigWithModelOverride<ConflictResolutionStrategy>;
 
 /**
  * Schema representation for transformation. Accepts either a raw string, single, or array of appsync SchemaFile objects.
@@ -302,10 +321,18 @@ export type AmplifyGraphqlApiProps = {
   authorizationConfig: AuthorizationConfig;
 
   /**
+   * Lambda functions referenced in the schema's @function directives. The keys of this object are expected to be the
+   * function name provided in the schema, and value is the function that name refers to. If a name is not found in this
+   * map, then it is interpreted as the `functionName`, and an arn will be constructed using the current aws account and region
+   * (or overridden values, if set in the directive).
+   */
+  referencedFunctions?: Record<string, IFunction>;
+
+  /**
    * Configure conflict resolution on the API, which is required to enable DataStore API functionality.
    * For more information, refer to https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/
    */
-  conflictResolution?: ProjectConflictResolution;
+  conflictResolution?: ConflictResolution;
 
   /**
    * StackMappings override the assigned nested stack on a per-resource basis. Only applies to resolvers, and takes the form
@@ -347,50 +374,50 @@ export type AmplifyGraphqlApiResources = {
   /**
    * The Generated AppSync API L1 Resource
    */
-  api: CfnGraphQLApi;
+  cfnGraphQLApi: CfnGraphQLApi;
 
   /**
    * The Generated AppSync Schema L1 Resource
    */
-  schema: CfnGraphQLSchema;
+  cfnGraphQLSchema: CfnGraphQLSchema;
 
   /**
    * The Generated AppSync API Key L1 Resource
    */
-  apiKey?: CfnApiKey;
+  cfnApiKey?: CfnApiKey;
 
   /**
    * The Generated AppSync Resolver L1 Resources
    */
-  resolvers: Record<string, CfnResolver>;
+  cfnResolvers: CfnResolver[];
 
   /**
    * The Generated AppSync Function L1 Resources
    */
-  appsyncFunctions: Record<string, CfnFunctionConfiguration>;
+  cfnFunctionConfigurations: CfnFunctionConfiguration[];
 
   /**
    * The Generated AppSync DataSource L1 Resources
    */
-  dataSources: Record<string, CfnDataSource>;
+  cfnDataSources: CfnDataSource[];
 
   /**
    * The Generated DynamoDB Table L1 Resources
    */
-  tables: Record<string, CfnTable>;
+  cfnTables: CfnTable[];
 
   /**
    * The Generated IAM Role L1 Resources
    */
-  roles: Record<string, CfnRole>;
+  cfnRoles: CfnRole[];
 
   /**
    * The Generated IAM Policy L1 Resources
    */
-  policies: Record<string, CfnPolicy>;
+  cfnPolicies: CfnPolicy[];
 
   /**
    * Remaining L1 resources generated, keyed by CFN Resource type.
    */
-  additionalResources: Record<string, CfnResource>;
+  additionalCfnResources: Record<string, CfnResource[]>;
 };

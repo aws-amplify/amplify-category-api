@@ -61,6 +61,7 @@ export class AmplifyGraphqlApi extends Construct {
       predictionsBucket,
       stackMappings,
       transformParameters: overriddenTransformParameters,
+      referencedFunctions,
     } = props;
 
     const {
@@ -69,6 +70,11 @@ export class AmplifyGraphqlApi extends Construct {
       adminRoles,
       cfnIncludeParameters: authCfnIncludeParameters,
     } = convertAuthorizationModesToTransformerAuthConfig(authorizationConfig);
+
+    // TODO: Wire referenced functions into the transform.
+    if (referencedFunctions && Object.keys(referencedFunctions).length > 0) {
+      throw new Error('Referenced Functions are not yet supported in this construct.');
+    }
 
     const transformedResources = executeTransform({
       schema: preprocessGraphqlSchema(modelSchema),

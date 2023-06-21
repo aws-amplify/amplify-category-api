@@ -1,10 +1,10 @@
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { convertToResolverConfig } from '../../internal/conflict-resolution';
-import { ProjectConflictResolution } from '../../types';
+import { ConflictResolution } from '../../types';
 
 describe('convertToResolverConfig', () => {
   it('converts a project-level config', () => {
-    const config: ProjectConflictResolution = {
+    const config: ConflictResolution = {
       project: {
         handlerType: 'AUTOMERGE',
         detectionType: 'VERSION',
@@ -19,7 +19,7 @@ describe('convertToResolverConfig', () => {
   });
 
   it('converts a model-level config', () => {
-    const config: ProjectConflictResolution = {
+    const config: ConflictResolution = {
       project: {
         handlerType: 'AUTOMERGE',
         detectionType: 'VERSION',
@@ -46,7 +46,7 @@ describe('convertToResolverConfig', () => {
   });
 
   it('converts custom conflict resolution config', () => {
-    const config: ProjectConflictResolution = {
+    const config: ConflictResolution = {
       project: {
         handlerType: 'LAMBDA',
         detectionType: 'VERSION',
