@@ -176,7 +176,7 @@ const dynamicRoleExpression = (ctx: TransformerContextProvider, roles: Array<Rol
           compoundExpression([
             generateOwnerMultiClaimExpression(role.claim!, `ownerClaim${idx}`),
             // If the user is already authorized, populate owner field with the owner claim
-            ...(ctx.featureFlags.getBoolean('populateOwnerFieldForStaticGroupAuth')
+            ...(ctx.transformParameters.populateOwnerFieldForStaticGroupAuth
               ? [generatePopulateOwnerField(`ownerClaim${idx}`, role.entity!, `ownerEntity${idx}`, entityIsList, true)]
               : []
             ),

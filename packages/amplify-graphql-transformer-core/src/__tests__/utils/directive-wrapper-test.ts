@@ -4,18 +4,8 @@ import {
   parse,
 } from 'graphql';
 import { cloneDeep } from 'lodash';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { getFieldNameFor } from '../../utils/operation-names';
 import { DirectiveWrapper } from '../../utils';
-
-const generateFeatureFlagWithBooleanOverrides = (overrides: Record<string, boolean>): FeatureFlagProvider => ({
-  getBoolean: (name: string, defaultValue?: boolean): boolean => {
-    const overrideValue = Object.entries(overrides).find(([overrideName]) => overrideName === name)?.[1];
-    return overrideValue ?? defaultValue ?? false;
-  },
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-});
 
 describe('Transformer Core Util Tests', () => {
   describe(': Directive Wrapper tests', () => {

@@ -2,7 +2,6 @@ import { ModelTransformer } from "@aws-amplify/graphql-model-transformer";
 import { HasManyTransformer, BelongsToTransformer, HasOneTransformer } from "@aws-amplify/graphql-relational-transformer";
 import { PrimaryKeyTransformer, IndexTransformer } from "@aws-amplify/graphql-index-transformer";
 import { GraphQLTransform } from "@aws-amplify/graphql-transformer-core";
-import { FeatureFlagProvider } from "@aws-amplify/graphql-transformer-interfaces";
 import { AuthTransformer } from "@aws-amplify/graphql-auth-transformer";
 import { AmplifyAppSyncSimulator } from "@aws-amplify/amplify-appsync-simulator";
 import { deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient } from "../__e2e__/utils";
@@ -73,21 +72,11 @@ describe("@model with relational transformers", () => {
           new HasOneTransformer(),
           new HasManyTransformer(),
           new BelongsToTransformer(),
-          new AuthTransformer()
+          new AuthTransformer(),
         ],
-        featureFlags: {
-          getBoolean: (featureName: string, defaultValue: boolean) => {
-            if (featureName === "improvePluralization") {
-              return true;
-            }
-
-            if (featureName === "respectPrimaryKeyAttributesOnConnectionField") {
-              return false;
-            }
-
-            return defaultValue;
-          }
-        } as FeatureFlagProvider
+        transformParameters: {
+          respectPrimaryKeyAttributesOnConnectionField: false,
+        },
       });
       const out = transformer.transform(validSchema);
 

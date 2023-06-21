@@ -4,25 +4,12 @@ import {
   GraphQLTransform,
   SyncConfig,
   validateModelSchema,
+  StackManager,
 } from '@aws-amplify/graphql-transformer-core';
-import {
-  FeatureFlagProvider,
-  Template,
-  TransformerFilepathsProvider,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { Template, AmplifyApiGraphQlResourceStackTemplate } from '@aws-amplify/graphql-transformer-interfaces';
 import { Template as AssertionTemplate } from 'aws-cdk-lib/assertions';
 import { DocumentNode, parse } from 'graphql';
 import { IndexTransformer, PrimaryKeyTransformer } from '..';
-import * as resolverUtils from '../resolvers/resolvers';
-
-const generateFeatureFlagWithBooleanOverrides = (overrides: Record<string, boolean>): FeatureFlagProvider => ({
-  getBoolean: (name: string, defaultValue?: boolean): boolean => {
-    const overrideValue = Object.entries(overrides).find(([overrideName]) => overrideName === name)?.[1];
-    return overrideValue ?? defaultValue ?? false;
-  },
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-});
 
 test('throws if @index is used in a non-@model type', () => {
   const schema = `
@@ -32,20 +19,6 @@ test('throws if @index is used in a non-@model type', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
 
   expect(() => {
@@ -62,20 +35,6 @@ test('throws if the same index name is defined multiple times on an object', () 
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
 
   expect(() => {
@@ -97,20 +56,6 @@ test('throws if an invalid LSI is created', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
 
   const sortKeyFieldsError = 'Invalid @index \'index1\'. You may not create an index where the partition key is the same as that of the primary key unless the primary key has a sort field. You cannot have a local secondary index without a sort key in the primary key.';
@@ -149,12 +94,9 @@ test('throws if an LSI is missing sort fields', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ secondaryKeyAsGSI: false, useSubUsernameForDefaultIdentityClaim: true }),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
+    transformParameters: {
+      secondaryKeyAsGSI: false,
+    },
   });
 
   const sortKeyFieldsError = 'Invalid @index \'index1\'. You may not create an index where the partition key is the same as that of the primary key unless the index has a sort field. You cannot have a local secondary index without a sort key in the index.';
@@ -191,20 +133,6 @@ test('throws if @index is used on a non-scalar field', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
 
   expect(() => {
@@ -221,20 +149,6 @@ test('throws if @index uses a sort key field that does not exist', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
 
   expect(() => {
@@ -255,20 +169,6 @@ test('throws if @index uses a sort key field that is a non-scalar', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
 
   expect(() => {
@@ -285,20 +185,6 @@ test('throws if @index refers to itself', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
 
   expect(() => {
@@ -315,20 +201,6 @@ test('throws if @index is specified on a list', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
 
   expect(() => {
@@ -346,20 +218,6 @@ test('throws if @index sort key fields are a list', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
 
   expect(() => {
@@ -376,20 +234,6 @@ test('@index with multiple sort keys adds a query field and GSI correctly', () =
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -476,20 +320,6 @@ test('@index with a single sort key adds a query field and GSI correctly', () =>
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -555,20 +385,6 @@ test('@index with no sort key field adds a query field and GSI correctly', () =>
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -629,20 +445,9 @@ test('@index with no queryField does not generate a query field', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
+    transformParameters: {
+      enableAutoIndexQueryNames: false,
+    }
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -666,21 +471,6 @@ test('creates a primary key and a secondary index', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: {
-      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-        if (name === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return defaultValue;
-      }),
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-    },
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -757,20 +547,6 @@ test('connection type is generated for custom query when queries is set to null'
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -794,20 +570,6 @@ test('does not remove default primary key when primary key is not overidden', ()
   `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -831,20 +593,6 @@ test('sort direction and filter input are generated if default list query does n
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -866,12 +614,9 @@ test('@index adds an LSI with secondaryKeyAsGSI FF set to false', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ secondaryKeyAsGSI: false, useSubUsernameForDefaultIdentityClaim: true }),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
+    transformParameters: {
+      secondaryKeyAsGSI: false,
+    },
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -917,12 +662,6 @@ test('@index adds a GSI with secondaryKeyAsGSI FF set to true', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ secondaryKeyAsGSI: true, useSubUsernameForDefaultIdentityClaim: true }),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -972,12 +711,6 @@ test('validate resolver code', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ secondaryKeyAsGSI: true, useSubUsernameForDefaultIdentityClaim: true }),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -1006,12 +739,6 @@ it('@model mutation with user defined null args', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -1045,12 +772,6 @@ it('@model mutation with user defined create args', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -1084,12 +805,6 @@ it('@model mutation with default', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -1131,12 +846,6 @@ it('@model mutation with queries', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -1178,12 +887,6 @@ it('id field should be optional in updateInputObjects when it is not a primary k
   `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -1214,12 +917,6 @@ test('GSI composite sort keys are wrapped in conditional to check presence in mu
   `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -1253,12 +950,6 @@ it('should support index/primary key with sync resolvers', () => {
     resolverConfig: {
       project: config,
     },
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
 
   const out = transformer.transform(validSchema);
@@ -1290,12 +981,6 @@ it('sync query resolver renders without overrides', () => {
     resolverConfig: {
       project: config,
     },
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
 
   const out = transformer.transform(validSchema);
@@ -1329,29 +1014,23 @@ it('sync query resolver renders with deltaSyncTableTTL override', () => {
     resolverConfig: {
       project: config,
     },
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
-  });
-
-  const mockResourceOverrides = {
-    models: {
-      Song: {
-        modelDatasource: {
-          dynamoDbConfig: {
-            deltaSyncConfig: {
-              deltaSyncTableTtl: 15
+    overrideConfig: {
+      overrideFlag: true,
+      applyOverride: (stackManager: StackManager) => ({
+        models: {
+          Song: {
+            modelDatasource: {
+              dynamoDbConfig: {
+                deltaSyncConfig: {
+                  deltaSyncTableTtl: 15
+                }
+              }
             }
           }
         }
-      }
+      } as unknown as AmplifyApiGraphQlResourceStackTemplate),
     }
-  };
-
-  jest.spyOn(resolverUtils, 'getResourceOverrides').mockReturnValue(mockResourceOverrides);
+  });
 
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -1374,12 +1053,6 @@ test('LSI creation regression test', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
 
   const out = transformer.transform(inputSchema);
@@ -1397,12 +1070,6 @@ test('it throws an understandable error on boolean sort keys', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ enableAutoIndexQueryNames: true }),
-    filepaths: {
-      getBackendDirPath: () => 'fake-backend-dir',
-      findProjectRoot: () => '.',
-      getCurrentCloudBackendDirPath: () => 'amplify/backend',
-    } as TransformerFilepathsProvider,
   });
 
   expect(() => {
@@ -1418,12 +1085,9 @@ describe('automatic name generation', () => {
   ): { schema: DocumentNode, stack: Template } => {
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer(), new IndexTransformer()],
-      featureFlags: generateFeatureFlagWithBooleanOverrides({ enableAutoIndexQueryNames }),
-      filepaths: {
-        getBackendDirPath: () => 'fake-backend-dir',
-        findProjectRoot: () => '.',
-        getCurrentCloudBackendDirPath: () => 'amplify/backend',
-      } as TransformerFilepathsProvider,
+      transformParameters: {
+        enableAutoIndexQueryNames,
+      }
     });
     const transformerOutput = transformer.transform(inputSchema);
     const schema = parse(transformerOutput.schema);

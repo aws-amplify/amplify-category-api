@@ -3,7 +3,6 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { CreateBucketRequest } from 'aws-sdk/clients/s3';
 import { CognitoIdentityServiceProvider as CognitoClient, S3 } from 'aws-sdk';
 import { default as moment } from 'moment';
 import * as fs from 'fs';
@@ -179,18 +178,6 @@ beforeAll(async () => {
       additionalAuthenticationProviders: [],
     },
     transformers: [new ModelTransformer(), new AuthTransformer()],
-    featureFlags: {
-      getBoolean(value: string) {
-        if (value === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return false;
-      },
-     
-
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-    },
   });
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
   USER_POOL_ID = userPoolResponse.UserPool.Id;

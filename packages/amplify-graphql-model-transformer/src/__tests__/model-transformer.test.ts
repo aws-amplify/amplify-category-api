@@ -15,12 +15,6 @@ import {
 } from './test-utils/helpers';
 import { Template } from 'aws-cdk-lib/assertions';
 
-const featureFlags = {
-  getBoolean: jest.fn(),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-};
-
 describe('ModelTransformer: ', () => {
   it('should successfully transform simple valid schema', async () => {
     const validSchema = `
@@ -32,7 +26,6 @@ describe('ModelTransformer: ', () => {
 
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -51,7 +44,6 @@ describe('ModelTransformer: ', () => {
       `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -81,7 +73,6 @@ describe('ModelTransformer: ', () => {
           ConflictHandler: ConflictHandlerType.AUTOMERGE
         }
       },
-      featureFlags,
     });
     const out = transformer.transform(alsoValidSchema);
     expect(out).toBeDefined();
@@ -103,7 +94,6 @@ describe('ModelTransformer: ', () => {
 
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
 
     const out = transformer.transform(validSchema);
@@ -147,7 +137,6 @@ describe('ModelTransformer: ', () => {
 
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
 
     const out = transformer.transform(validSchema);
@@ -171,7 +160,6 @@ describe('ModelTransformer: ', () => {
         `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -193,7 +181,6 @@ describe('ModelTransformer: ', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
 
     const out = transformer.transform(validSchema);
@@ -218,7 +205,6 @@ describe('ModelTransformer: ', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -244,7 +230,6 @@ describe('ModelTransformer: ', () => {
         `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -279,7 +264,6 @@ describe('ModelTransformer: ', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -315,7 +299,6 @@ describe('ModelTransformer: ', () => {
   `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -340,7 +323,6 @@ describe('ModelTransformer: ', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
     const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
@@ -374,7 +356,6 @@ describe('ModelTransformer: ', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -402,7 +383,6 @@ describe('ModelTransformer: ', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -445,7 +425,6 @@ describe('ModelTransformer: ', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
     const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
@@ -474,7 +453,9 @@ describe('ModelTransformer: ', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
+      transformParameters: {
+        shouldDeepMergeDirectiveConfigDefaults: false,
+      },
     });
 
     const out = transformer.transform(validSchema);
@@ -506,7 +487,6 @@ describe('ModelTransformer: ', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
 
     const out = transformer.transform(validSchema);
@@ -556,7 +536,6 @@ describe('ModelTransformer: ', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
 
     const out = transformer.transform(validSchema);
@@ -598,7 +577,6 @@ describe('ModelTransformer: ', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -639,7 +617,6 @@ describe('ModelTransformer: ', () => {
       }`;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -673,7 +650,6 @@ describe('ModelTransformer: ', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -701,7 +677,6 @@ describe('ModelTransformer: ', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -724,7 +699,9 @@ describe('ModelTransformer: ', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
+      transformParameters: {
+        shouldDeepMergeDirectiveConfigDefaults: false,
+      },
     });
     const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
@@ -749,7 +726,6 @@ describe('ModelTransformer: ', () => {
           ConflictHandler: ConflictHandlerType.AUTOMERGE
         }
       },
-      featureFlags,
     });
     const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
@@ -779,7 +755,6 @@ describe('ModelTransformer: ', () => {
           ConflictHandler: ConflictHandlerType.AUTOMERGE
         }
       },
-      featureFlags,
     });
     const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
@@ -809,7 +784,6 @@ describe('ModelTransformer: ', () => {
           ConflictHandler: ConflictHandlerType.AUTOMERGE
         }
       },
-      featureFlags,
     });
 
     const result = transformer.transform(validSchema);
@@ -838,7 +812,6 @@ describe('ModelTransformer: ', () => {
           ConflictHandler: ConflictHandlerType.AUTOMERGE
         }
       },
-      featureFlags,
     });
     const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
@@ -870,7 +843,6 @@ describe('ModelTransformer: ', () => {
           ConflictHandler: ConflictHandlerType.AUTOMERGE
         }
       },
-      featureFlags,
     });
 
     const result = transformer.transform(validSchema);
@@ -941,7 +913,6 @@ describe('ModelTransformer: ', () => {
           ConflictHandler: ConflictHandlerType.AUTOMERGE
         }
       },
-      featureFlags,
     });
     const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
@@ -974,7 +945,6 @@ describe('ModelTransformer: ', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -996,7 +966,6 @@ describe('ModelTransformer: ', () => {
 
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
       resolverConfig: {
         project: config,
       },
@@ -1031,7 +1000,6 @@ describe('ModelTransformer: ', () => {
 
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
       resolverConfig: {
         project: config,
       },
@@ -1063,7 +1031,6 @@ describe('ModelTransformer: ', () => {
 
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
       resolverConfig: {
         project: config,
       },
@@ -1093,7 +1060,6 @@ describe('ModelTransformer: ', () => {
 
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
       resolverConfig: {
         project: config,
       },
@@ -1187,7 +1153,6 @@ describe('ModelTransformer: ', () => {
     }`;
 
     const transformer = new GraphQLTransform({
-      transformConfig: {},
       resolverConfig: {
         project: {
           ConflictDetection: 'VERSION',
@@ -1266,7 +1231,6 @@ describe('ModelTransformer: ', () => {
     `;
 
     const transformer = new GraphQLTransform({
-      transformConfig: {},
       resolverConfig: {
         project: {
           ConflictDetection: "VERSION",
@@ -1501,7 +1465,6 @@ describe('ModelTransformer: ', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -1526,7 +1489,6 @@ describe('ModelTransformer: ', () => {
 
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();

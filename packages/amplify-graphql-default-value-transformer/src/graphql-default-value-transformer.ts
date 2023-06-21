@@ -109,7 +109,7 @@ export class DefaultValueTransformer extends TransformerPluginBase {
       object: parent as ObjectTypeDefinitionNode,
       field: definition,
       directive,
-    } as DefaultValueDirectiveConfiguration, generateGetArgumentsInput(ctx.featureFlags));
+    } as DefaultValueDirectiveConfiguration, generateGetArgumentsInput(ctx.transformParameters));
     validate(ctx, config);
 
     if (!this.directiveMap.has(parent.name.value)) {

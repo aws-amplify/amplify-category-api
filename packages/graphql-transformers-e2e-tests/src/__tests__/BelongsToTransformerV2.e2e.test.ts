@@ -9,17 +9,8 @@ jest.setTimeout(1000 * 60 * 10); // 10 minutes
 
 describe('@belongsTo transformer', () => {
   const transformerFactory = () => new GraphQLTransform({
-    featureFlags: {
-      getBoolean: (value: string, defaultValue: boolean): boolean => {
-        if (value === 'respectPrimaryKeyAttributesOnConnectionField') {
-          return false;
-        }
-        return defaultValue;
-      },
-     
-
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
+    transformParameters: {
+      respectPrimaryKeyAttributesOnConnectionField: false,
     },
     transformers: [new ModelTransformer(), new BelongsToTransformer(), new HasManyTransformer(), new HasOneTransformer()],
     sandboxModeEnabled: true,

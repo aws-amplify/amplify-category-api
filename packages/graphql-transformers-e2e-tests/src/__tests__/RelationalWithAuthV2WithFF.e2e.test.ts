@@ -137,18 +137,6 @@ beforeAll(async () => {
         new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
         authTransformer,
       ],
-      featureFlags: {
-        getBoolean(value: string) {
-          if (value === 'useSubUsernameForDefaultIdentityClaim') {
-            return true;
-          }
-          return false;
-        },
-       
-
-        getNumber: jest.fn(),
-        getObject: jest.fn(),
-      }
     });
     out = transformer.transform(validSchema);
   } catch (e) {

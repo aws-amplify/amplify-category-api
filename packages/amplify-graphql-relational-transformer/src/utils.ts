@@ -1,11 +1,11 @@
 import { getFieldNameFor, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import {
-  FeatureFlagProvider,
   FieldMapEntry,
   ResolverReferenceEntry,
   TransformerContextProvider,
   TransformerResourceHelperProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DirectiveNode, EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, StringValueNode,
 } from 'graphql';
@@ -179,13 +179,13 @@ function getIndexName(directive: DirectiveNode): string | undefined {
   }
 }
 
-export function getConnectionAttributeName(featureFlags: FeatureFlagProvider, type: string, field: string, relatedTypeField: string) {
-  const nameSuffix = featureFlags.getBoolean('respectPrimaryKeyAttributesOnConnectionField') ? relatedTypeField : 'id';
+export function getConnectionAttributeName(transformParameters: TransformParameters, type: string, field: string, relatedTypeField: string) {
+  const nameSuffix = transformParameters.respectPrimaryKeyAttributesOnConnectionField ? relatedTypeField : 'id';
   return toCamelCase([type, field, nameSuffix]);
 }
 
-export function getManyToManyConnectionAttributeName(featureFlags: FeatureFlagProvider, field: string, relatedTypeField: string) {
-  const nameSuffix = featureFlags.getBoolean('respectPrimaryKeyAttributesOnConnectionField') ? toPascalCase([relatedTypeField]) : 'ID';
+export function getManyToManyConnectionAttributeName(transformParameters: TransformParameters, field: string, relatedTypeField: string) {
+  const nameSuffix = transformParameters.respectPrimaryKeyAttributesOnConnectionField ? toPascalCase([relatedTypeField]) : 'ID';
   return `${toCamelCase([field])}${nameSuffix}`;
 }
 
@@ -194,13 +194,13 @@ export function getSortKeyConnectionAttributeName(type: string, field: string, r
 }
 
 export function getBackendConnectionAttributeName(
-  featureFlags: FeatureFlagProvider,
+  transformParameters: TransformParameters,
   resourceHelper: TransformerResourceHelperProvider,
   type: string,
   field: string,
   relatedTypeField: string,
 ) {
-  return getConnectionAttributeName(featureFlags, resourceHelper.getModelNameMapping(type), field, relatedTypeField);
+  return getConnectionAttributeName(transformParameters, resourceHelper.getModelNameMapping(type), field, relatedTypeField);
 }
 
 export function validateDisallowedDataStoreRelationships(
@@ -242,7 +242,7 @@ export function validateDisallowedDataStoreRelationships(
 }
 
 type RegisterForeignKeyMappingParams = {
-  featureFlags: FeatureFlagProvider;
+  transformParameters: TransformParameters;
   resourceHelper: TransformerResourceHelperProvider; // resourceHelper from the transformer context object
   thisTypeName: string; // the "source type" of the relation
   thisFieldName: string; // the field with the relational directive
@@ -253,15 +253,15 @@ type RegisterForeignKeyMappingParams = {
  * If thisTypeName maps to a different value, it registers the auto-generated foreign key fields to map to their original name
  */
 export function registerHasOneForeignKeyMappings({
-  featureFlags,
+  transformParameters,
   resourceHelper,
   thisTypeName,
   thisFieldName,
   relatedType,
 }: RegisterForeignKeyMappingParams) {
   if (resourceHelper.isModelRenamed(thisTypeName)) {
-    const currAttrName = getConnectionAttributeName(featureFlags, thisTypeName, thisFieldName, getObjectPrimaryKey(relatedType).name.value);
-    const origAttrName = getBackendConnectionAttributeName(featureFlags, resourceHelper, thisTypeName, thisFieldName, getObjectPrimaryKey(relatedType).name.value);
+    const currAttrName = getConnectionAttributeName(transformParameters, thisTypeName, thisFieldName, getObjectPrimaryKey(relatedType).name.value);
+    const origAttrName = getBackendConnectionAttributeName(transformParameters, resourceHelper, thisTypeName, thisFieldName, getObjectPrimaryKey(relatedType).name.value);
 
     const modelFieldMap = resourceHelper.getModelFieldMap(thisTypeName);
     modelFieldMap.addMappedField({ currentFieldName: currAttrName, originalFieldName: origAttrName });
@@ -288,7 +288,7 @@ export function registerHasOneForeignKeyMappings({
  * It attaches a resolver reference to the hasMany field so the renamed foreign key is mapped when fetching the related object through the hasMany field
  */
 export function registerHasManyForeignKeyMappings({
-  featureFlags,
+  transformParameters,
   resourceHelper,
   thisTypeName,
   thisFieldName,
@@ -298,8 +298,8 @@ export function registerHasManyForeignKeyMappings({
     return;
   }
 
-  const currAttrName = getConnectionAttributeName(featureFlags, thisTypeName, thisFieldName, getObjectPrimaryKey(relatedType).name.value);
-  const origAttrName = getBackendConnectionAttributeName(featureFlags, resourceHelper, thisTypeName, thisFieldName, getObjectPrimaryKey(relatedType).name.value);
+  const currAttrName = getConnectionAttributeName(transformParameters, thisTypeName, thisFieldName, getObjectPrimaryKey(relatedType).name.value);
+  const origAttrName = getBackendConnectionAttributeName(transformParameters, resourceHelper, thisTypeName, thisFieldName, getObjectPrimaryKey(relatedType).name.value);
 
   const modelFieldMap = resourceHelper.getModelFieldMap(relatedType.name.value);
   modelFieldMap

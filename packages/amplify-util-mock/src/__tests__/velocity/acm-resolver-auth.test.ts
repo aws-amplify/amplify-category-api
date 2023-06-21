@@ -11,7 +11,6 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AmplifyAppSyncSimulatorAuthenticationType } from '@aws-amplify/amplify-appsync-simulator';
 import { plurality } from 'graphql-transformer-common';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { featureFlags } from './test-helper';
 import {
   AppSyncVTLContext, getGenericToken, getIAMToken, getJWTToken, VelocityTemplateSimulator,
 } from '../../velocity';
@@ -249,7 +248,6 @@ const testResolverLogic = (
       new PrimaryKeyTransformer(),
       new AuthTransformer(),
     ],
-    featureFlags,
   });
 
   const out = transformer.transform(validSchema);

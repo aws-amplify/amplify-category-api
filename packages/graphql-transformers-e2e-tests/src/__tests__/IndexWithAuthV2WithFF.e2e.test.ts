@@ -101,21 +101,6 @@ beforeAll(async () => {
   const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
 
   const transformer = new GraphQLTransform({
-    featureFlags: {
-      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-        if (name === 'secondaryKeyAsGSI') {
-          return true;
-        }
-        if (name === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return defaultValue;
-      }),
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-     
-
-    },
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'AMAZON_COGNITO_USER_POOLS',

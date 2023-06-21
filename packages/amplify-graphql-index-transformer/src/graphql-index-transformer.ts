@@ -19,7 +19,7 @@ import {
   ObjectTypeDefinitionNode,
 } from 'graphql';
 import { isListType, isScalarOrEnum } from 'graphql-transformer-common';
-import { appendSecondaryIndex, constructSyncVTL, updateResolversForIndex, getResourceOverrides, getDeltaSyncTableTtl } from './resolvers';
+import { appendSecondaryIndex, constructSyncVTL, updateResolversForIndex } from './resolvers';
 import { addKeyConditionInputs, ensureQueryField, updateMutationConditionInput } from './schema';
 import { IndexDirectiveConfiguration } from './types';
 import { generateKeyAndQueryNameForConfig, validateNotSelfReferencing } from './utils';
@@ -51,7 +51,7 @@ export class IndexTransformer extends TransformerPluginBase {
       object: parent as ObjectTypeDefinitionNode,
       field: definition,
       directive,
-    } as IndexDirectiveConfiguration, generateGetArgumentsInput(context.featureFlags));
+    } as IndexDirectiveConfiguration, generateGetArgumentsInput(context.transformParameters));
 
     /**
      * Impute Optional Fields
@@ -69,12 +69,10 @@ export class IndexTransformer extends TransformerPluginBase {
   public after = (ctx: TransformerContextProvider): void => {
     if (!ctx.isProjectUsingDataStore()) return;
 
-    const overriddenResources = getResourceOverrides([this], ctx.filepaths.getBackendDirPath(), ctx.api.name, ctx.stackManager);
     // construct sync VTL code
     this.resolverMap.forEach((syncVTLContent, resource) => {
       if (syncVTLContent) {
-        const deltaSyncTableTtl = getDeltaSyncTableTtl(overriddenResources, resource);
-        constructSyncVTL(syncVTLContent, resource, deltaSyncTableTtl);
+        constructSyncVTL(syncVTLContent, resource);
       }
     });
   };
@@ -121,7 +119,7 @@ const getOrGenerateDefaultQueryField = (
   context: TransformerSchemaVisitStepContextProvider,
   config: IndexDirectiveConfiguration,
 ): string | null => {
-  const autoIndexQueryNamesIsEnabled = context.featureFlags.getBoolean('enableAutoIndexQueryNames', false);
+  const autoIndexQueryNamesIsEnabled = context.transformParameters.enableAutoIndexQueryNames;
   // Any explicit null will take effect, if enableAutoIndexQueryNames and no queryField is provide set to null for consistency
   if (config.queryField === null || (!autoIndexQueryNamesIsEnabled && !config.queryField)) {
     return null;
@@ -153,8 +151,6 @@ const validate = (config: IndexDirectiveConfiguration, ctx: TransformerContextPr
   const {
     name, object, field, sortKeyFields,
   } = config;
-  const defaultGSI = ctx.featureFlags.getBoolean('secondaryKeyAsGSI', true);
-
   validateNotSelfReferencing(config);
 
   const modelDirective = object.directives!.find(directive => directive.name.value === 'model');
@@ -201,7 +197,11 @@ const validate = (config: IndexDirectiveConfiguration, ctx: TransformerContextPr
     for (const peerDirective of objectField.directives!) {
       const hasSortFields = peerDirective.arguments!.some((arg: any) => arg.name.value === 'sortKeyFields' && arg.value.values?.length > 0);
 
-      if (!defaultGSI && !hasSortFields && objectField == config.primaryKeyField && objectField.name.value === field.name.value) {
+      if (!ctx.transformParameters.secondaryKeyAsGSI
+        && !hasSortFields
+        && objectField == config.primaryKeyField
+        && objectField.name.value === field.name.value
+      ) {
         throw new InvalidDirectiveError(
           `Invalid @index '${name}'. You may not create an index where the partition key `
             + 'is the same as that of the primary key unless the index has a sort field. '

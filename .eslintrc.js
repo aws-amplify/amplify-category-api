@@ -132,7 +132,7 @@ module.exports = {
     'max-classes-per-file': 'error',
     'no-lonely-if': 'error',
     'no-unneeded-ternary': 'error',
-    'no-use-before-define': 'error',
+    'no-use-before-define': 'off',
     'consistent-return': 'error',
     'no-bitwise': 'error',
     'yoda': 'error',
@@ -195,6 +195,7 @@ module.exports = {
     'dist',
     'build',
     '__mocks__',
+    '__tests__',
     'coverage',
 
     // Forked package
