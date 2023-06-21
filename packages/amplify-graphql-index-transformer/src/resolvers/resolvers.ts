@@ -528,7 +528,7 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
   resolver.addToSlot(
     'postAuth',
     MappingTemplate.s3MappingTemplateFromString(
-      generateAuthExpressionForSandboxMode(ctx.sandboxModeEnabled),
+      generateAuthExpressionForSandboxMode(ctx.transformParameters.sandboxModeEnabled),
       `${queryTypeName}.${queryField}.{slotName}.{slotIndex}.res.vtl`,
     ),
   );

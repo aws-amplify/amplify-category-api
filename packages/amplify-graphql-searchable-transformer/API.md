@@ -14,8 +14,7 @@ import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/grap
 
 // @public (undocumented)
 export class SearchableModelTransformer extends TransformerPluginBase {
-    // Warning: (ae-forgotten-export) The symbol "SearchableModelTransformerOptions" needs to be exported by the entry point index.d.ts
-    constructor(options?: SearchableModelTransformerOptions);
+    constructor();
     // (undocumented)
     generateResolvers: (context: TransformerContextProvider) => void;
     // (undocumented)

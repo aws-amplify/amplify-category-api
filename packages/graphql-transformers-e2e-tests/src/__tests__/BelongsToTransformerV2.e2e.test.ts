@@ -11,9 +11,9 @@ describe('@belongsTo transformer', () => {
   const transformerFactory = () => new GraphQLTransform({
     transformParameters: {
       respectPrimaryKeyAttributesOnConnectionField: false,
+      sandboxModeEnabled: true,
     },
     transformers: [new ModelTransformer(), new BelongsToTransformer(), new HasManyTransformer(), new HasOneTransformer()],
-    sandboxModeEnabled: true,
   });
   const validSchema = /* GraphQL */ `
     type Blog @model {

@@ -30,6 +30,7 @@ import {
   print,
 } from 'graphql';
 import _ from 'lodash';
+import { DocumentNode } from 'graphql/language';
 import { ResolverConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
@@ -39,7 +40,6 @@ import { StackManager } from '../transformer-context/stack-manager';
 import { adoptAuthModes, IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils/authType';
 import * as SyncUtils from './sync-utils';
 import { MappingTemplate } from '../cdk-compat';
-
 import { UserDefinedSlot, OverrideConfig, DatasourceTransformationConfig } from './types';
 import {
   makeSeenTransformationKey,
@@ -51,7 +51,6 @@ import {
   sortTransformerPlugins,
 } from './utils';
 import { validateAuthModes, validateModelSchema } from './validation';
-import { DocumentNode } from 'graphql/language';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { DatasourceType } from '../config/project-config';
 import { defaultTransformParameters } from '../transformer-context/transform-parameters';
@@ -80,12 +79,9 @@ export interface GraphQLTransformOptions {
   readonly stacks?: Record<string, Template>;
   readonly transformParameters?: Partial<TransformParameters>;
   readonly host?: TransformHostProvider;
-  readonly sandboxModeEnabled?: boolean;
-  readonly disableResolverDeduping?: boolean;
   readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   readonly resolverConfig?: ResolverConfig;
   readonly overrideConfig?: OverrideConfig;
-  readonly legacyApiKeyEnabled?: boolean;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
@@ -96,8 +92,6 @@ export class GraphQLTransform {
   private readonly resolverConfig?: ResolverConfig;
   private readonly userDefinedSlots: Record<string, UserDefinedSlot[]>;
   private readonly overrideConfig?: OverrideConfig;
-  private readonly disableResolverDeduping?: boolean;
-  private readonly legacyApiKeyEnabled?: boolean;
   private readonly transformParameters: TransformParameters;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
@@ -131,8 +125,6 @@ export class GraphQLTransform {
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
     this.overrideConfig = options.overrideConfig;
     this.resolverConfig = options.resolverConfig || {};
-    this.legacyApiKeyEnabled = options.legacyApiKeyEnabled;
-    this.disableResolverDeduping = options.disableResolverDeduping;
     this.transformParameters = {
       ...defaultTransformParameters,
       ...(options.transformParameters ?? {}),
@@ -190,7 +182,6 @@ export class GraphQLTransform {
       this.stackMappingOverrides,
       this.authConfig,
       this.transformParameters,
-      this.options.sandboxModeEnabled,
       this.resolverConfig,
       datasourceConfig?.datasourceSecretParameterLocations,
     );
@@ -337,15 +328,15 @@ export class GraphQLTransform {
       name: `${apiName}-${envName.valueAsString}`,
       authorizationConfig,
       host: this.options.host,
-      sandboxModeEnabled: this.options.sandboxModeEnabled,
+      sandboxModeEnabled: this.transformParameters.sandboxModeEnabled,
       environmentName: envName.valueAsString,
-      disableResolverDeduping: this.disableResolverDeduping,
+      disableResolverDeduping: this.transformParameters.disableResolverDeduping,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
       mode => mode?.authorizationType,
     );
 
-    if (authModes.includes(AuthorizationType.API_KEY) && this.legacyApiKeyEnabled !== false) {
+    if (authModes.includes(AuthorizationType.API_KEY) && !this.transformParameters.suppressApiKeyGeneration) {
       const apiKeyConfig: AuthorizationMode | undefined = [
         authorizationConfig.defaultAuthorization,
         ...(authorizationConfig.additionalAuthorizationModes || []),

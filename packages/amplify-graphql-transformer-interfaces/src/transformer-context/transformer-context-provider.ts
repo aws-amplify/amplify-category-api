@@ -30,7 +30,6 @@ export interface TransformerContextProvider {
   api: GraphQLAPIProvider;
   resourceHelper: TransformerResourceHelperProvider;
   authConfig: AppSyncAuthConfiguration;
-  sandboxModeEnabled: boolean;
   transformParameters: TransformParameters;
 
   isProjectUsingDataStore(): boolean;
@@ -46,7 +45,6 @@ export type TransformerBeforeStepContextProvider = Pick<
   | 'getResolverConfig'
   | 'authConfig'
   | 'stackManager'
-  | 'sandboxModeEnabled'
 >;
 
 export type TransformerSchemaVisitStepContextProvider = Pick<
@@ -61,7 +59,6 @@ export type TransformerSchemaVisitStepContextProvider = Pick<
   | 'metadata'
   | 'authConfig'
   | 'resourceHelper'
-  | 'sandboxModeEnabled'
 >;
 
 export type TransformerValidationStepContextProvider = Pick<
@@ -76,7 +73,6 @@ export type TransformerValidationStepContextProvider = Pick<
   | 'getResolverConfig'
   | 'metadata'
   | 'authConfig'
-  | 'sandboxModeEnabled'
   | 'resourceHelper'
   | 'resolvers'
   | 'stackManager'

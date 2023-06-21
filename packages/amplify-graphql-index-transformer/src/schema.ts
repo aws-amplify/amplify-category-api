@@ -333,7 +333,7 @@ export function ensureQueryField(config: IndexDirectiveConfiguration, ctx: Trans
   }
 
   args.push(makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')));
-  if (!hasAuth && ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+  if (!hasAuth && ctx.transformParameters.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
     directives.push(makeDirective('aws_api_key', []));
   }
   const queryFieldObj = makeConnectionField(queryField, object.name.value, args, directives);

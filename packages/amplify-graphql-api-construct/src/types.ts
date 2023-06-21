@@ -221,19 +221,62 @@ export type FunctionSlot =
  * have different default behaviors.
  */
 export type TransformParameters = {
-  // General Model Params
+  /**
+   * Restore parity w/ GQLv1 @model parameter behavior, where setting a single field doesn't implicitly set the other fields to null.
+   */
   shouldDeepMergeDirectiveConfigDefaults: boolean;
 
-  // Auth Params
+  /**
+   * Disable resolver deduping, this can sometimes cause problems because dedupe ordering isn't stable today, which can
+   * lead to circular dependencies across stacks if models are reordered.
+   */
+  disableResolverDeduping: boolean;
+
+  /**
+   * Enabling sandbox mode will enable api key auth on all models in the transformed schema.
+   */
+  sandboxModeEnabled: boolean;
+
+  /**
+   * Ensure that oidc and userPool auth use the `sub` field in the for the username field, which disallows new users with the same
+   * id to access data from a deleted user in the pool.
+   */
   useSubUsernameForDefaultIdentityClaim: boolean;
+
+  /**
+   * Ensure that the owner field is still populated even if a static iam or group authorization applies.
+   */
   populateOwnerFieldForStaticGroupAuth: boolean;
 
-  // Index Params
+  /**
+   * If enabled, disable api key resource generation even if specified as an auth rule on the construct.
+   * This is a legacy parameter from the GraphQL Transformer existing in Amplify CLI, not recommended to change.
+   */
+  suppressApiKeyGeneration: boolean;
+
+  /**
+   * If disabled, generated @index as an LSI instead of a GSI.
+   */
   secondaryKeyAsGSI: boolean;
+
+  /**
+   * Automate generation of query names, and as a result attaching all indexes as queries to the generated API.
+   * If enabled, @index can be provided a null name field to disable the generation of the query on the api.
+   */
   enableAutoIndexQueryNames: boolean;
 
-  // Relational Params
+  /**
+   * Enable custom primary key support, there's no good reason to disable this unless trying not to update a legacy app.
+   */
   respectPrimaryKeyAttributesOnConnectionField: boolean;
+
+  /**
+   * If enabled, set nodeToNodeEncryption on the searchable domain (if one exists). Not recommended for use, prefer
+   * to use `Object.values(resources.additionalResources['AWS::Elasticsearch::Domain']).forEach((domain: CfnDomain) => {
+   *   domain.NodeToNodeEncryptionOptions = { Enabled: True };
+   * });
+   */
+  enableSearchNodeToNodeEncryption: boolean;
 };
 
 /**
