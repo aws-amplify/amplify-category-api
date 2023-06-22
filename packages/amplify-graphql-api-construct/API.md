@@ -4,6 +4,7 @@
 
 ```ts
 
+import { AppsyncFunctionProps } from 'aws-cdk-lib/aws-appsync';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
@@ -35,7 +36,8 @@ export type AmplifyGraphqlApiProps = {
     schema: AmplifyGraphqlApiSchema;
     apiName?: string;
     authorizationConfig: AuthorizationConfig;
-    conflictResolution?: ProjectConflictResolution;
+    referencedFunctions?: Record<string, IFunction>;
+    conflictResolution?: ConflictResolution;
     stackMappings?: Record<string, string>;
     functionSlots?: FunctionSlot[];
     transformers?: TransformerPluginProvider[];
@@ -45,16 +47,16 @@ export type AmplifyGraphqlApiProps = {
 
 // @public
 export type AmplifyGraphqlApiResources = {
-    api: CfnGraphQLApi;
-    schema: CfnGraphQLSchema;
-    apiKey?: CfnApiKey;
-    resolvers: Record<string, CfnResolver>;
-    appsyncFunctions: Record<string, CfnFunctionConfiguration>;
-    dataSources: Record<string, CfnDataSource>;
-    tables: Record<string, CfnTable>;
-    roles: Record<string, CfnRole>;
-    policies: Record<string, CfnPolicy>;
-    additionalResources: Record<string, CfnResource>;
+    cfnGraphQLApi: CfnGraphQLApi;
+    cfnGraphQLSchema: CfnGraphQLSchema;
+    cfnApiKey?: CfnApiKey;
+    cfnResolvers: CfnResolver[];
+    cfnFunctionConfigurations: CfnFunctionConfiguration[];
+    cfnDataSources: CfnDataSource[];
+    cfnTables: CfnTable[];
+    cfnRoles: CfnRole[];
+    cfnPolicies: CfnPolicy[];
+    additionalCfnResources: CfnResource[];
 };
 
 // @public
@@ -82,10 +84,19 @@ export type AutomergeConflictResolutionStrategy = ConflictResolutionStrategyBase
 };
 
 // @public
+export type ConfigWithModelOverride<ConfigType> = {
+    project: ConfigType;
+    models?: Record<string, ConfigType>;
+};
+
+// @public
 export type ConflictDetectionType = 'VERSION' | 'NONE';
 
 // @public
 export type ConflictHandlerType = 'OPTIMISTIC_CONCURRENCY' | 'AUTOMERGE' | 'LAMBDA';
+
+// @public
+export type ConflictResolution = ConfigWithModelOverride<ConflictResolutionStrategy>;
 
 // @public
 export type ConflictResolutionStrategy = AutomergeConflictResolutionStrategy | OptimisticConflictResolutionStrategy | CustomConflictResolutionStrategy;
@@ -109,17 +120,25 @@ export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | Subscripti
 export type FunctionSlotBase = {
     fieldName: string;
     slotIndex: number;
-    templateType: 'req' | 'res';
-    resolverCode: string;
+    function: FunctionSlotOverride;
 };
 
 // @public
+export type FunctionSlotOverride = Partial<Pick<AppsyncFunctionProps, 'name' | 'description' | 'dataSource' | 'requestMappingTemplate' | 'responseMappingTemplate' | 'code' | 'runtime'>>;
+
+// @public
 export type IAMAuthorizationConfig = {
-    identityPoolId?: string;
+    identityPool?: IdentityPool;
     authRole?: IRole;
     unauthRole?: IRole;
     adminRoles?: IRole[];
 };
+
+// @public
+export type IdentityPool = IdentityPoolId;
+
+// @public
+export type IdentityPoolId = string;
 
 // @public
 export type LambdaAuthorizationConfig = {
@@ -145,12 +164,6 @@ export type OIDCAuthorizationConfig = {
 // @public
 export type OptimisticConflictResolutionStrategy = ConflictResolutionStrategyBase & {
     handlerType: 'AUTOMERGE';
-};
-
-// @public
-export type ProjectConflictResolution = {
-    project?: ConflictResolutionStrategy;
-    models?: Record<string, ConflictResolutionStrategy>;
 };
 
 // @public

@@ -24,8 +24,9 @@ describe('AmplifyGraphqlApi', () => {
           fieldName: 'createTodo',
           slotName: 'postAuth',
           slotIndex: 1,
-          templateType: 'req',
-          resolverCode: expect.any(String)
+          function: expect.objectContaining({
+            requestMappingTemplate: expect.any(String)
+          })
         }),
       ]));
     });
