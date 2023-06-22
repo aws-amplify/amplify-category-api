@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0-agqlac.1](https://github.com/aws-amplify/amplify-category-api/compare/agqlac@0.3.0-agqlac.0...agqlac@0.3.0-agqlac.1) (2023-06-22)
+
+### Features
+
+- add construct method to retrieve generated function slots ([3952f47](https://github.com/aws-amplify/amplify-category-api/commit/3952f478be08b93c87bc88f104cd80e9be5ae7cc))
+- support L2 AppSync function props for FunctionSlots ([e22d3ee](https://github.com/aws-amplify/amplify-category-api/commit/e22d3eee1fabcbfdd7256c35274058339c48ee20))
+
 # 0.3.0-agqlac.0 (2023-06-20)
 
 ### Bug Fixes
