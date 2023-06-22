@@ -3,7 +3,6 @@ import {
   ApiKeyAuthorizationConfig,
   AuthorizationConfig,
   IAMAuthorizationConfig,
-  IdentityPool,
   LambdaAuthorizationConfig,
   OIDCAuthorizationConfig,
   UserPoolAuthorizationConfig,
@@ -118,16 +117,9 @@ export interface AuthConfig {
 export const convertAuthorizationModesToTransformerAuthConfig = (authConfig: AuthorizationConfig): AuthConfig => ({
   authConfig: convertAuthConfigToAppSyncAuth(authConfig),
   adminRoles: authConfig.iamConfig?.adminRoles?.map((role) => role.roleName) ?? [],
-  identityPoolId: getIdentityPoolId(authConfig.iamConfig?.identityPool),
+  identityPoolId: authConfig.iamConfig?.identityPoolId,
   cfnIncludeParameters: getAuthParameters(authConfig),
 });
-
-/**
- * Given an identity pool reference, return the id.
- * @param identityPool the relevant identity pool reference
- * @returns the id of the identity pool.
- */
-const getIdentityPoolId = (identityPool: IdentityPool | undefined): string | undefined => identityPool;
 
 /**
  * Hacky, but get the required auth-related params to wire into the CfnInclude statement.
@@ -136,6 +128,6 @@ const getIdentityPoolId = (identityPool: IdentityPool | undefined): string | und
  */
 const getAuthParameters = (authConfig: AuthorizationConfig): Record<string, any> => ({
   ...(authConfig.userPoolConfig?.userPool ? { AuthCognitoUserPoolId: authConfig.userPoolConfig.userPool.userPoolId } : {}),
-  ...(authConfig?.iamConfig?.authRole ? { authRoleName: authConfig.iamConfig.authRole.roleName } : {}),
-  ...(authConfig?.iamConfig?.unauthRole ? { unauthRoleName: authConfig.iamConfig.unauthRole.roleName } : {}),
+  ...(authConfig?.iamConfig?.authenticatedUserRole ? { authRoleName: authConfig.iamConfig.authenticatedUserRole.roleName } : {}),
+  ...(authConfig?.iamConfig?.unauthenticatedUserRole ? { unauthRoleName: authConfig.iamConfig.unauthenticatedUserRole.roleName } : {}),
 });

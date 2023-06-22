@@ -35,8 +35,8 @@ describe('auth modes', () => {
     verifySynth((stack) => {
       const identityPool = new cognito.CfnIdentityPool(stack, 'TestIdentityPool', { allowUnauthenticatedIdentities: true });
       const appsync = new iam.ServicePrincipal('appsync.amazonaws.com');
-      const authRole = new iam.Role(stack, 'AuthRole', { assumedBy: appsync });
-      const unauthRole = new iam.Role(stack, 'UnauthRole', { assumedBy: appsync });
+      const authenticatedUserRole = new iam.Role(stack, 'AuthRole', { assumedBy: appsync });
+      const unauthenticatedUserRole = new iam.Role(stack, 'UnauthRole', { assumedBy: appsync });
 
       new AmplifyGraphqlApi(stack, 'TestApi', {
         schema: /* GraphQL */ `
@@ -49,9 +49,9 @@ describe('auth modes', () => {
         `,
         authorizationConfig: {
           iamConfig: {
-            identityPool: identityPool.logicalId,
-            authRole,
-            unauthRole,
+            identityPoolId: identityPool.logicalId,
+            authenticatedUserRole,
+            unauthenticatedUserRole,
           },
         },
       });
@@ -61,8 +61,8 @@ describe('auth modes', () => {
   it('renders with iam auth for admin roles', () => {
     verifySynth((stack) => {
       const appsync = new iam.ServicePrincipal('appsync.amazonaws.com');
-      const authRole = new iam.Role(stack, 'AuthRole', { assumedBy: appsync });
-      const unauthRole = new iam.Role(stack, 'UnauthRole', { assumedBy: appsync });
+      const authenticatedUserRole = new iam.Role(stack, 'AuthRole', { assumedBy: appsync });
+      const unauthenticatedUserRole = new iam.Role(stack, 'UnauthRole', { assumedBy: appsync });
 
       new AmplifyGraphqlApi(stack, 'TestApi', {
         schema: /* GraphQL */ `
@@ -72,9 +72,9 @@ describe('auth modes', () => {
         `,
         authorizationConfig: {
           iamConfig: {
-            authRole,
-            unauthRole,
-            adminRoles: [authRole],
+            authenticatedUserRole,
+            unauthenticatedUserRole,
+            adminRoles: [authenticatedUserRole],
           },
         },
       });

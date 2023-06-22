@@ -1,19 +1,19 @@
-import * as path from "path";
-import { createNewProjectDir, deleteProjectDir, initCDKProject, cdkDeploy, cdkDestroy } from "amplify-category-api-e2e-core";
-import { default as fetch, Request } from "node-fetch";
+import * as path from 'path';
+import { createNewProjectDir, deleteProjectDir, initCDKProject, cdkDeploy, cdkDestroy } from 'amplify-category-api-e2e-core';
+import { default as fetch, Request } from 'node-fetch';
 
-describe("CDK GraphQL Transformer", () => {
+describe('CDK GraphQL Transformer', () => {
   let projRoot: string;
   let projFolderName: string;
 
   beforeEach(async () => {
-    projFolderName = "cdktransformer";
+    projFolderName = 'cdktransformer';
     projRoot = await createNewProjectDir(projFolderName);
   });
 
   afterEach(async () => {
     try {
-      await cdkDestroy(projRoot, "--all");
+      await cdkDestroy(projRoot, '--all');
     } catch (_) {
       // No-op.
     }
@@ -21,10 +21,10 @@ describe("CDK GraphQL Transformer", () => {
     deleteProjectDir(projRoot);
   });
 
-  test("CDK base case", async () => {
-    const templatePath = path.resolve(path.join(__dirname, "backends", "base-cdk"));
+  test('CDK base case', async () => {
+    const templatePath = path.resolve(path.join(__dirname, 'backends', 'base-cdk'));
     const name = await initCDKProject(projRoot, templatePath);
-    const outputs = await cdkDeploy(projRoot, "--all");
+    const outputs = await cdkDeploy(projRoot, '--all');
     const { GraphQLAPIEndpointOutput: apiEndpoint, GraphQLAPIKeyOutput: apiKey } = outputs[name];
 
     const assertGraphQLQuerySnapshot = async (query: string, queryName: string) => {
@@ -46,7 +46,7 @@ describe("CDK GraphQL Transformer", () => {
       apiKey,
       /* GraphQL */ `
         mutation CREATE_TODO {
-          createTodo(input: { description: "todo desc" }) {
+          createTodo(input: { description: 'todo desc' }) {
             id
             description
           }
@@ -99,10 +99,10 @@ describe("CDK GraphQL Transformer", () => {
 
 async function graphql(apiEndpoint: string, apiKey: string, query: string) {
   const options = {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "x-api-key": apiKey,
-      "Content-Type": "application/json",
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({ query }),
   };
