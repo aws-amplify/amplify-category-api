@@ -431,7 +431,7 @@ export type AmplifyGraphqlApiResources = {
   cfnPolicies: CfnPolicy[];
 
   /**
-   * Remaining L1 resources generated, keyed by CFN Resource type.
+   * Remaining L1 resources generated.
    */
-  additionalCfnResources: Record<string, CfnResource[]>;
+  additionalCfnResources: CfnResource[];
 };

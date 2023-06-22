@@ -56,7 +56,7 @@ export type AmplifyGraphqlApiResources = {
     cfnTables: CfnTable[];
     cfnRoles: CfnRole[];
     cfnPolicies: CfnPolicy[];
-    additionalCfnResources: Record<string, CfnResource[]>;
+    additionalCfnResources: CfnResource[];
 };
 
 // @public
