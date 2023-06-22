@@ -4,6 +4,7 @@
 
 ```ts
 
+import { AppsyncFunctionProps } from 'aws-cdk-lib/aws-appsync';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
@@ -26,6 +27,7 @@ import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-inte
 // @public
 export class AmplifyGraphqlApi extends Construct {
     constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps);
+    getGeneratedFunctionSlots(): FunctionSlot[];
     readonly resources: AmplifyGraphqlApiResources;
 }
 
@@ -34,7 +36,8 @@ export type AmplifyGraphqlApiProps = {
     schema: AmplifyGraphqlApiSchema;
     apiName?: string;
     authorizationConfig: AuthorizationConfig;
-    conflictResolution?: ProjectConflictResolution;
+    referencedFunctions?: Record<string, IFunction>;
+    conflictResolution?: ConflictResolution;
     stackMappings?: Record<string, string>;
     functionSlots?: FunctionSlot[];
     transformers?: TransformerPluginProvider[];
@@ -44,16 +47,16 @@ export type AmplifyGraphqlApiProps = {
 
 // @public
 export type AmplifyGraphqlApiResources = {
-    api: CfnGraphQLApi;
-    schema: CfnGraphQLSchema;
-    apiKey?: CfnApiKey;
-    resolvers: Record<string, CfnResolver>;
-    appsyncFunctions: Record<string, CfnFunctionConfiguration>;
-    dataSources: Record<string, CfnDataSource>;
-    tables: Record<string, CfnTable>;
-    roles: Record<string, CfnRole>;
-    policies: Record<string, CfnPolicy>;
-    additionalResources: Record<string, CfnResource>;
+    cfnGraphQLApi: CfnGraphQLApi;
+    cfnGraphQLSchema: CfnGraphQLSchema;
+    cfnApiKey?: CfnApiKey;
+    cfnResolvers: CfnResolver[];
+    cfnFunctionConfigurations: CfnFunctionConfiguration[];
+    cfnDataSources: CfnDataSource[];
+    cfnTables: CfnTable[];
+    cfnRoles: CfnRole[];
+    cfnPolicies: CfnPolicy[];
+    additionalCfnResources: Record<string, CfnResource[]>;
 };
 
 // @public
@@ -81,10 +84,19 @@ export type AutomergeConflictResolutionStrategy = ConflictResolutionStrategyBase
 };
 
 // @public
+export type ConfigWithModelOverride<ConfigType> = {
+    project: ConfigType;
+    models?: Record<string, ConfigType>;
+};
+
+// @public
 export type ConflictDetectionType = 'VERSION' | 'NONE';
 
 // @public
 export type ConflictHandlerType = 'OPTIMISTIC_CONCURRENCY' | 'AUTOMERGE' | 'LAMBDA';
+
+// @public
+export type ConflictResolution = ConfigWithModelOverride<ConflictResolutionStrategy>;
 
 // @public
 export type ConflictResolutionStrategy = AutomergeConflictResolutionStrategy | OptimisticConflictResolutionStrategy | CustomConflictResolutionStrategy;
@@ -108,17 +120,25 @@ export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | Subscripti
 export type FunctionSlotBase = {
     fieldName: string;
     slotIndex: number;
-    templateType: 'req' | 'res';
-    resolverCode: string;
+    function: FunctionSlotOverride;
 };
 
 // @public
+export type FunctionSlotOverride = Partial<Pick<AppsyncFunctionProps, 'name' | 'description' | 'dataSource' | 'requestMappingTemplate' | 'responseMappingTemplate' | 'code' | 'runtime'>>;
+
+// @public
 export type IAMAuthorizationConfig = {
-    identityPoolId?: string;
+    identityPool?: IdentityPool;
     authRole?: IRole;
     unauthRole?: IRole;
     adminRoles?: IRole[];
 };
+
+// @public
+export type IdentityPool = IdentityPoolId;
+
+// @public
+export type IdentityPoolId = string;
 
 // @public
 export type LambdaAuthorizationConfig = {
@@ -147,12 +167,6 @@ export type OptimisticConflictResolutionStrategy = ConflictResolutionStrategyBas
 };
 
 // @public
-export type ProjectConflictResolution = {
-    project?: ConflictResolutionStrategy;
-    models?: Record<string, ConflictResolutionStrategy>;
-};
-
-// @public
 export type QueryFunctionSlot = FunctionSlotBase & {
     typeName: 'Query';
     slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
@@ -167,11 +181,15 @@ export type SubscriptionFunctionSlot = FunctionSlotBase & {
 // @public
 export type TransformParameters = {
     shouldDeepMergeDirectiveConfigDefaults: boolean;
+    disableResolverDeduping: boolean;
+    sandboxModeEnabled: boolean;
     useSubUsernameForDefaultIdentityClaim: boolean;
     populateOwnerFieldForStaticGroupAuth: boolean;
+    suppressApiKeyGeneration: boolean;
     secondaryKeyAsGSI: boolean;
     enableAutoIndexQueryNames: boolean;
     respectPrimaryKeyAttributesOnConnectionField: boolean;
+    enableSearchNodeToNodeEncryption: boolean;
 };
 
 // @public

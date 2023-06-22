@@ -97,28 +97,24 @@ describe('GraphQLTransform', () => {
       invokeAndVerifyIfAPIKeyIsDefined({ transform, isAPIKeyExpected: false });
     });
 
-    it('creates an api key for apps with API_KEY authorization if legacyApiKeyEnabled is set to true', () => {
+    it('creates an api key for apps with API_KEY authorization if suppressApiKeyGeneration is set to false', () => {
       const transform = new TestGraphQLTransform({
         transformers: [mockTransformer],
         authConfig: apiKeyAuthConfig,
-        legacyApiKeyEnabled: true,
+        transformParameters: {
+          suppressApiKeyGeneration: false,
+        }
       });
       invokeAndVerifyIfAPIKeyIsDefined({ transform, isAPIKeyExpected: true });
     });
 
-    it('does not create an api key for apps with API_KEY authorization if legacyApiKeyEnabled is undefined', () => {
+    it('does not create an api key for apps with API_KEY authorization if suppressApiKeyGeneration is set to true', () => {
       const transform = new TestGraphQLTransform({
         transformers: [mockTransformer],
         authConfig: apiKeyAuthConfig,
-      });
-      invokeAndVerifyIfAPIKeyIsDefined({ transform, isAPIKeyExpected: true });
-    });
-
-    it('does not create an api key for apps with API_KEY authorization if legacyApiKeyEnabled is set to false', () => {
-      const transform = new TestGraphQLTransform({
-        transformers: [mockTransformer],
-        authConfig: apiKeyAuthConfig,
-        legacyApiKeyEnabled: false,
+        transformParameters: {
+          suppressApiKeyGeneration: true,
+        },
       });
       invokeAndVerifyIfAPIKeyIsDefined({ transform, isAPIKeyExpected: false });
     });

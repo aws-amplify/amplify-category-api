@@ -257,15 +257,11 @@ const generateSearchableInputs = (ctx: TransformerSchemaVisitStepContextProvider
   }
 };
 
-export type SearchableModelTransformerOptions = {
-  enableNodeToNodeEncryption?: boolean;
-};
-
 export class SearchableModelTransformer extends TransformerPluginBase {
   searchableObjectTypeDefinitions: { node: ObjectTypeDefinitionNode; fieldName: string }[];
   searchableObjectNames: string[];
 
-  constructor(private options: SearchableModelTransformerOptions = {}) {
+  constructor() {
     super(
       'amplify-searchable-transformer',
       /* GraphQL */ `
@@ -313,7 +309,12 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     const parameterMap = createParametersInStack(context.stackManager.rootStack);
 
-    const domain = createSearchableDomain(stack, parameterMap, context.api.apiId, this.options?.enableNodeToNodeEncryption ?? false);
+    const domain = createSearchableDomain(
+      stack,
+      parameterMap,
+      context.api.apiId,
+      context.transformParameters.enableSearchNodeToNodeEncryption,
+    );
 
     const openSearchRole = createSearchableDomainRole(context, stack, parameterMap);
 
@@ -395,7 +396,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       resolver.addToSlot(
         'postAuth',
         MappingTemplate.s3MappingTemplateFromString(
-          sandboxMappingTemplate(context.sandboxModeEnabled, fields),
+          sandboxMappingTemplate(context.transformParameters.sandboxModeEnabled, fields),
           `${typeName}.${def.fieldName}.{slotName}.{slotIndex}.res.vtl`,
         ),
       );
@@ -437,7 +438,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       generateSearchableXConnectionType(ctx, definition);
       generateSearchableAggregateTypes(ctx);
       const directives = [];
-      if (!hasAuth && ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+      if (!hasAuth && ctx.transformParameters.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
         directives.push(makeDirective('aws_api_key', []));
       }
       const queryField = makeField(
@@ -473,7 +474,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       generateSearchableInputs(ctx, searchObject);
     }
     // add api key to aggregate types if sandbox mode is enabled
-    if (this.isSearchableConfigured() && ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+    if (this.isSearchableConfigured() && ctx.transformParameters.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
       for (const aggType of AGGREGATE_TYPES) {
         const aggObject = ctx.output.getObject(aggType)!;
         const hasApiKey = aggObject.directives?.some((dir) => dir.name.value === 'aws_api_key') ?? false;

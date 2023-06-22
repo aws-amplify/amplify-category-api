@@ -45,7 +45,9 @@ const biDiHasOneMapped = /* GraphQL */ `
 const transformSchema = (schema: string) => {
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer(), new MapsToTransformer()],
-    sandboxModeEnabled: true,
+    transformParameters: {
+      sandboxModeEnabled: true,
+    },
   });
   return transformer.transform(schema);
 };

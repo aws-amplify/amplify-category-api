@@ -1,5 +1,5 @@
 import { ResolverConfig, SyncConfig, ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
-import { ConflictResolutionStrategy, ProjectConflictResolution } from '../types';
+import { ConflictResolutionStrategy, ConflictResolution } from '../types';
 
 /**
  * Convert project conflict resolution config to transformer ResolverConfig object.
@@ -8,7 +8,7 @@ import { ConflictResolutionStrategy, ProjectConflictResolution } from '../types'
  * @param param0.models the model-specific override config
  * @returns the transformer representation
  */
-export const convertToResolverConfig = ({ project, models }: ProjectConflictResolution): ResolverConfig => ({
+export const convertToResolverConfig = ({ project, models }: ConflictResolution): ResolverConfig => ({
   project: project && convertToSyncConfig(project),
   models: models && Object.fromEntries(Object.entries(models).map(([modelName, strategy]) => [modelName, convertToSyncConfig(strategy)])),
 });
