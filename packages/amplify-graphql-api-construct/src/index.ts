@@ -14,7 +14,6 @@ export type {
   SubscriptionFunctionSlot,
   FunctionSlot,
   FunctionSlotOverride,
-  ConfigWithModelOverride,
   ConflictResolution,
   ConflictDetectionType,
   ConflictHandlerType,
@@ -23,8 +22,6 @@ export type {
   AutomergeConflictResolutionStrategy,
   ConflictResolutionStrategyBase,
   ConflictResolutionStrategy,
-  TransformParameters,
-  IdentityPool,
-  IdentityPoolId,
+  GraphqlBehavior,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';

@@ -106,13 +106,13 @@ export const generateConstructExports = (
     return referencedStack.getResource(id) as T;
   };
 
-  const getL1Resources = <T extends CfnResource>(
-    mappings: StackResourceMapping[],
-  ): T[] => mappings.map((stackResourceMapping) => getL1Resource<T>(stackResourceMapping));
+  const getL1Resources = <T extends CfnResource>(mappings: StackResourceMapping[]): Record<string, T> => Object.fromEntries(
+    mappings.map((stackResourceMapping) => [stackResourceMapping.id, getL1Resource<T>(stackResourceMapping)]),
+  );
 
   return {
-    cfnGraphQLApi: getL1Resource<CfnGraphQLApi>(apiResourceMapping),
-    cfnGraphQLSchema: getL1Resource<CfnGraphQLSchema>(schemaResourceMapping),
+    cfnGraphqlApi: getL1Resource<CfnGraphQLApi>(apiResourceMapping),
+    cfnGraphqlSchema: getL1Resource<CfnGraphQLSchema>(schemaResourceMapping),
     cfnApiKey: apiKeyResourceMapping && <CfnApiKey>getL1Resource(apiKeyResourceMapping),
     cfnResolvers: getL1Resources<CfnResolver>(cfnResolverResourceMapping),
     cfnFunctionConfigurations: getL1Resources<CfnFunctionConfiguration>(cfnAppSyncFunctionResourceMapping),

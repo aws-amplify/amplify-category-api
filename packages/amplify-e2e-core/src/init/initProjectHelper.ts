@@ -517,7 +517,7 @@ export function initCDKProject(cwd: string, templatePath: string): Promise<strin
     moveSync(path.join(binDir, 'app.ts'), path.join(binDir, `${path.basename(cwd)}.ts`), { overwrite: true });
   }).then(() => new Promise<void>((resolve, reject) => {
     // change to official package
-    spawn('npm', ['install', '--save-dev', '@aws-amplify/graphql-api-construct-alpha'], { cwd, stripColors: true })
+    spawn('npm', ['install', '--save-dev', '@aws-amplify/graphql-construct-alpha'], { cwd, stripColors: true })
       .run((err: Error) => {
         if (!err) {
           resolve();

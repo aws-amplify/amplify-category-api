@@ -1,9 +1,9 @@
-import { TransformParameters } from '../types';
+import { GraphqlBehavior } from '../types';
 
 /**
- * Defaults which will be used by the transformer if overrides are not provided in the construct parameters.
+ * Defaults which will be used by the construct if overrides are not provided.
  */
-export const defaultTransformParameters: TransformParameters = {
+export const defaultGraphqlBehavior: GraphqlBehavior = {
   shouldDeepMergeDirectiveConfigDefaults: true,
   disableResolverDeduping: false,
   sandboxModeEnabled: false,
