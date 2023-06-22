@@ -110,23 +110,6 @@ export const generateConstructExports = (
     mappings: StackResourceMapping[],
   ): T[] => mappings.map((stackResourceMapping) => getL1Resource<T>(stackResourceMapping));
 
-  /**
-   * Collect remaining resources by AWS Cloudformation resource type.
-   * @param resources the list of resources to partition
-   * @returns the resources keyed by cfnResourceType
-   */
-  const aggregateByType = (resources: CfnResource[]): Record<string, CfnResource[]> => {
-    const resourcesByType: Record<string, CfnResource[]> = {};
-    resources.forEach((resource) => {
-      const type = resource.cfnResourceType;
-      if (!(type in resourcesByType)) {
-        resourcesByType[type] = [];
-      }
-      resourcesByType[type].push(resource);
-    });
-    return resourcesByType;
-  };
-
   return {
     cfnGraphQLApi: getL1Resource<CfnGraphQLApi>(apiResourceMapping),
     cfnGraphQLSchema: getL1Resource<CfnGraphQLSchema>(schemaResourceMapping),
@@ -137,6 +120,6 @@ export const generateConstructExports = (
     cfnTables: getL1Resources<CfnTable>(cfnTableResourceMapping),
     cfnRoles: getL1Resources<CfnRole>(cfnRoleResourceMapping),
     cfnPolicies: getL1Resources<CfnPolicy>(cfnPolicyResourceMapping),
-    additionalCfnResources: aggregateByType(getL1Resources(additionalResourceMapping)),
+    additionalCfnResources: getL1Resources(additionalResourceMapping),
   };
 };
