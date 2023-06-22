@@ -49,7 +49,7 @@ describe('auth modes', () => {
         `,
         authorizationConfig: {
           iamConfig: {
-            identityPoolId: identityPool.logicalId,
+            identityPool: identityPool.logicalId,
             authRole,
             unauthRole,
           },

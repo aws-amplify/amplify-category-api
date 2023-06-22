@@ -1,3 +1,4 @@
+import { MappingTemplate } from 'aws-cdk-lib/aws-appsync';
 import { getSlotName, parseUserDefinedSlots } from '../../internal/user-defined-slots';
 import { FunctionSlot } from '../../types';
 
@@ -9,8 +10,9 @@ describe('user-defined-slots', () => {
         fieldName: 'createTodo',
         slotName: 'postUpdate',
         slotIndex: 1,
-        templateType: 'req',
-        resolverCode: '',
+        function: {
+          requestMappingTemplate: MappingTemplate.fromString(''),
+        },
       })).toEqual('Mutation.createTodo.postUpdate.1.req.vtl');
     });
 
@@ -20,8 +22,9 @@ describe('user-defined-slots', () => {
         fieldName: 'getTodo',
         slotName: 'preDataLoad',
         slotIndex: 2,
-        templateType: 'req',
-        resolverCode: '',
+        function: {
+          requestMappingTemplate: MappingTemplate.fromString(''),
+        },
       })).toEqual('Query.getTodo.preDataLoad.2.req.vtl');
     });
 
@@ -31,8 +34,9 @@ describe('user-defined-slots', () => {
         fieldName: 'onUpdateTodo',
         slotName: 'preSubscribe',
         slotIndex: 3,
-        templateType: 'res',
-        resolverCode: '',
+        function: {
+          responseMappingTemplate: MappingTemplate.fromString(''),
+        },
       })).toEqual('Subscription.onUpdateTodo.preSubscribe.3.res.vtl');
     });
   });
@@ -45,8 +49,9 @@ describe('user-defined-slots', () => {
         fieldName: 'createTodo',
         slotName: 'preAuth',
         slotIndex: 1,
-        templateType: 'req',
-        resolverCode: requestResolverVtl,
+        function: {
+          requestMappingTemplate: MappingTemplate.fromString(requestResolverVtl),
+        },
       };
       const parsedSlots = parseUserDefinedSlots([functionSlot]);
       expect(Object.keys(parsedSlots).length).toEqual(1);

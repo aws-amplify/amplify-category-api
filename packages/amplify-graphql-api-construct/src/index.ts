@@ -13,6 +13,7 @@ export type {
   QueryFunctionSlot,
   SubscriptionFunctionSlot,
   FunctionSlot,
+  FunctionSlotOverride,
   ConfigWithModelOverride,
   ConflictResolution,
   ConflictDetectionType,

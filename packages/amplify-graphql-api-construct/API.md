@@ -4,6 +4,7 @@
 
 ```ts
 
+import { AppsyncFunctionProps } from 'aws-cdk-lib/aws-appsync';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
@@ -119,9 +120,11 @@ export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | Subscripti
 export type FunctionSlotBase = {
     fieldName: string;
     slotIndex: number;
-    templateType: 'req' | 'res';
-    resolverCode: string;
+    function: FunctionSlotOverride;
 };
+
+// @public
+export type FunctionSlotOverride = Partial<Pick<AppsyncFunctionProps, 'name' | 'description' | 'dataSource' | 'requestMappingTemplate' | 'responseMappingTemplate' | 'code' | 'runtime'>>;
 
 // @public
 export type IAMAuthorizationConfig = {

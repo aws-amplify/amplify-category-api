@@ -11,7 +11,7 @@ import {
   convertToResolverConfig,
 } from './internal';
 import type { AmplifyGraphqlApiResources, AmplifyGraphqlApiProps, FunctionSlot } from './types';
-import { parseUserDefinedSlots } from './internal/user-defined-slots';
+import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input GraphQL Schema.
@@ -76,9 +76,13 @@ export class AmplifyGraphqlApi extends Construct {
       throw new Error('Referenced Functions are not yet supported in this construct.');
     }
 
+    // TODO: This needs to be removed, and exists just to bridge what we have today w/ what we want down the road.
+    validateFunctionSlots(functionSlots ?? []);
+    const separatedFunctionSlots = separateSlots(functionSlots ?? []);
+
     const transformedResources = executeTransform({
       schema: preprocessGraphqlSchema(modelSchema),
-      userDefinedSlots: functionSlots ? parseUserDefinedSlots(functionSlots) : {},
+      userDefinedSlots: parseUserDefinedSlots(separatedFunctionSlots),
       transformersFactoryArgs: {
         authConfig,
         identityPoolId,
@@ -143,8 +147,11 @@ export class AmplifyGraphqlApi extends Construct {
           fieldName,
           slotName,
           slotIndex: Number.parseInt(slotIndex, 10),
-          templateType,
-          resolverCode,
+          function: {
+            // TODO: this should consolidate req/req values back together
+            ...(templateType === 'req' ? { requestMappingTemplate: resolverCode } : {}),
+            ...(templateType === 'res' ? { responseMappingTemplate: resolverCode } : {}),
+          },
         } as FunctionSlot;
       });
   }

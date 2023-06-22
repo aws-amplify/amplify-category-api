@@ -7,6 +7,7 @@ import {
   CfnResolver,
   CfnFunctionConfiguration,
   CfnDataSource,
+  AppsyncFunctionProps,
 } from 'aws-cdk-lib/aws-appsync';
 import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole, CfnRole, CfnPolicy } from 'aws-cdk-lib/aws-iam';
@@ -192,13 +193,26 @@ export type AmplifyGraphqlApiSchema =
   | string;
 
 /**
+ * Params exposed to support configuring and overriding pipelined slots. This allows configuration of the underlying function,
+ * including the datasource, request/response mapping templates, or setting a JS resolver up instead.
+ */
+export type FunctionSlotOverride = Partial<Pick<AppsyncFunctionProps,
+  | 'name'
+  | 'description'
+  | 'dataSource'
+  | 'requestMappingTemplate'
+  | 'responseMappingTemplate'
+  | 'code'
+  | 'runtime'
+>>;
+
+/**
  * Common slot parameters.
  */
 export type FunctionSlotBase = {
   fieldName: string;
   slotIndex: number;
-  templateType: 'req' | 'res';
-  resolverCode: string;
+  function: FunctionSlotOverride;
 };
 
 /**
