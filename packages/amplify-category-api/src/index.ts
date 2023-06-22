@@ -197,8 +197,8 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
         rdsDatabaseName: answers.databaseName,
       });
     })
-    .then(() => {
-      context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { forceCompile: true });
+    .then(async () => {
+      await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { forceCompile: true });
     });
 };
 
@@ -376,7 +376,7 @@ export const transformCategoryStack = async (context: $TSContext, resource: Reco
     if (canResourceBeTransformed(resource.resourceName)) {
       // Rebuild CFN
       const apigwStack = new ApigwStackTransform(context, resource.resourceName);
-      apigwStack.transform();
+      await apigwStack.transform();
     }
   }
 };
