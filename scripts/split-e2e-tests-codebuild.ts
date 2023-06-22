@@ -43,13 +43,24 @@ const RUN_SOLO = [
   'src/__tests__/containers-api-2.test.ts',
   'src/__tests__/graphql-v2/searchable-datastore.test.ts',
   'src/__tests__/migration/api.key.migration1.test.ts',
+  'src/__tests__/migration/api.key.migration2.test.ts',
+  'src/__tests__/migration/api.key.migration3.test.ts',
+  'src/__tests__/migration/api.key.migration4.test.ts',
+  'src/__tests__/migration/api.key.migration5.test.ts',
   'src/__tests__/schema-searchable.test.ts',
   'src/__tests__/schema-auth-1.test.ts',
+  'src/__tests__/schema-auth-2.test.ts',
+  'src/__tests__/schema-auth-3.test.ts',
+  'src/__tests__/schema-auth-4.test.ts',
   'src/__tests__/schema-auth-5.test.ts',
   'src/__tests__/schema-auth-6.test.ts',
   'src/__tests__/schema-auth-7.test.ts',
+  'src/__tests__/schema-auth-8.test.ts',
   'src/__tests__/schema-auth-9.test.ts',
+  'src/__tests__/schema-auth-10.test.ts',
   'src/__tests__/schema-auth-11.test.ts',
+  'src/__tests__/schema-auth-12.test.ts',
+  'src/__tests__/schema-auth-13.test.ts',
   'src/__tests__/schema-auth-14.test.ts',
   'src/__tests__/schema-auth-15.test.ts',
   'src/__tests__/schema-iterative-update-4.test.ts',
@@ -107,14 +118,16 @@ type CandidateJob = {
   os: OS_TYPE;
   tests: string[];
   useParentAccount: boolean;
+  runSolo: boolean;
 };
-const createJob = (os: OS_TYPE, jobIdx: number): CandidateJob => {
+const createJob = (os: OS_TYPE, jobIdx: number, runSolo: boolean = false): CandidateJob => {
   const region = AWS_REGIONS_TO_RUN_TESTS[jobIdx % AWS_REGIONS_TO_RUN_TESTS.length];
   return {
     region,
     os,
     tests: [],
     useParentAccount: false,
+    runSolo,
   };
 };
 const getTestNameFromPath = (testSuitePath: string): string => {
@@ -164,7 +177,7 @@ const splitTests = (
       const USE_PARENT = USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent));
 
       if (isMigration || RUN_SOLO.find((solo) => test === solo)) {
-        const newSoloJob = createJob(os, jobIdx);
+        const newSoloJob = createJob(os, jobIdx, true);
         jobIdx++;
         newSoloJob.tests.push(test);
         if (FORCE_REGION) {
@@ -216,6 +229,9 @@ const splitTests = (
       tmp.env.variables.CLI_REGION = j.region;
       if (j.useParentAccount) {
         tmp.env.variables.USE_PARENT_ACCOUNT = 1;
+      }
+      if (j.runSolo) {
+        tmp.env['compute-type'] = 'BUILD_GENERAL1_SMALL';
       }
       result.push(tmp);
     }
