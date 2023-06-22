@@ -22,7 +22,7 @@ Object {
         "items": Array [
           Object {
             "description": "todo desc",
-            "id": "0cbe9520-df12-490a-9934-824de1227bd9",
+            "id": Any<String>,
           },
         ],
       },

@@ -65,34 +65,35 @@ describe("CDK GraphQL Transformer", () => {
 
     const todo = result.body.data.createTodo;
 
-    expect(
-      await graphql(
-        apiEndpoint,
-        apiKey,
-        /* GraphQL */ `
-          query LIST_TODOS {
-            listTodos {
-              items {
-                id
-                description
-              }
+    const listResult = await graphql(
+      apiEndpoint,
+      apiKey,
+      /* GraphQL */ `
+        query LIST_TODOS {
+          listTodos {
+            items {
+              id
+              description
             }
           }
-        `
-      )
-    ).toMatchSnapshot({
+        }
+      `
+    );
+    expect(listResult).toMatchSnapshot({
       body: {
         data: {
           listTodos: {
             items: [
               {
-                id: todo.id,
+                id: expect.any(String),
               },
             ],
           },
         },
       },
     });
+
+    expect(todo.id).toEqual(listResult.body.data.listTodos.items[0].id);
   });
 });
 
