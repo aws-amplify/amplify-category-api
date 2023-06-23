@@ -13,12 +13,12 @@ describe('convertAuthorizationModesToTransformerAuthConfig', () => {
   });
 
   it('generates auth and unauth role parameters', () => {
-    const authRole = { roleName: 'testAuthRole' } as IRole;
-    const unauthRole = { roleName: 'testUnauthRole' } as IRole;
+    const authenticatedUserRole = { roleName: 'testAuthRole' } as IRole;
+    const unauthenticatedUserRole = { roleName: 'testUnauthRole' } as IRole;
     const { cfnIncludeParameters } = convertAuthorizationModesToTransformerAuthConfig({
       iamConfig: {
-        authRole,
-        unauthRole,
+        authenticatedUserRole,
+        unauthenticatedUserRole,
       },
     });
     expect('authRoleName' in cfnIncludeParameters).toEqual(true);

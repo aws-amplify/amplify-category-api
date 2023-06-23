@@ -36,27 +36,27 @@ export type AmplifyGraphqlApiProps = {
     schema: AmplifyGraphqlApiSchema;
     apiName?: string;
     authorizationConfig: AuthorizationConfig;
-    referencedFunctions?: Record<string, IFunction>;
+    functionNameMap?: Record<string, IFunction>;
     conflictResolution?: ConflictResolution;
     stackMappings?: Record<string, string>;
     functionSlots?: FunctionSlot[];
     transformers?: TransformerPluginProvider[];
     predictionsBucket?: IBucket;
-    transformParameters?: Partial<TransformParameters>;
+    graphqlBehavior?: Partial<GraphqlBehavior>;
 };
 
 // @public
 export type AmplifyGraphqlApiResources = {
-    cfnGraphQLApi: CfnGraphQLApi;
-    cfnGraphQLSchema: CfnGraphQLSchema;
+    cfnGraphqlApi: CfnGraphQLApi;
+    cfnGraphqlSchema: CfnGraphQLSchema;
     cfnApiKey?: CfnApiKey;
-    cfnResolvers: CfnResolver[];
-    cfnFunctionConfigurations: CfnFunctionConfiguration[];
-    cfnDataSources: CfnDataSource[];
-    cfnTables: CfnTable[];
-    cfnRoles: CfnRole[];
-    cfnPolicies: CfnPolicy[];
-    additionalCfnResources: CfnResource[];
+    cfnResolvers: Record<string, CfnResolver>;
+    cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration>;
+    cfnDataSources: Record<string, CfnDataSource>;
+    cfnTables: Record<string, CfnTable>;
+    cfnRoles: Record<string, CfnRole>;
+    cfnPolicies: Record<string, CfnPolicy>;
+    additionalCfnResources: Record<string, CfnResource>;
 };
 
 // @public
@@ -80,13 +80,7 @@ export type AuthorizationConfig = {
 
 // @public
 export type AutomergeConflictResolutionStrategy = ConflictResolutionStrategyBase & {
-    handlerType: 'OPTIMISTIC_CONCURRENCY';
-};
-
-// @public
-export type ConfigWithModelOverride<ConfigType> = {
-    project: ConfigType;
-    models?: Record<string, ConfigType>;
+    handlerType: 'AUTOMERGE';
 };
 
 // @public
@@ -96,7 +90,10 @@ export type ConflictDetectionType = 'VERSION' | 'NONE';
 export type ConflictHandlerType = 'OPTIMISTIC_CONCURRENCY' | 'AUTOMERGE' | 'LAMBDA';
 
 // @public
-export type ConflictResolution = ConfigWithModelOverride<ConflictResolutionStrategy>;
+export type ConflictResolution = {
+    project?: ConflictResolutionStrategy;
+    models?: Record<string, ConflictResolutionStrategy>;
+};
 
 // @public
 export type ConflictResolutionStrategy = AutomergeConflictResolutionStrategy | OptimisticConflictResolutionStrategy | CustomConflictResolutionStrategy;
@@ -127,18 +124,26 @@ export type FunctionSlotBase = {
 export type FunctionSlotOverride = Partial<Pick<AppsyncFunctionProps, 'name' | 'description' | 'dataSource' | 'requestMappingTemplate' | 'responseMappingTemplate' | 'code' | 'runtime'>>;
 
 // @public
-export type IAMAuthorizationConfig = {
-    identityPool?: IdentityPool;
-    authRole?: IRole;
-    unauthRole?: IRole;
-    adminRoles?: IRole[];
+export type GraphqlBehavior = {
+    shouldDeepMergeDirectiveConfigDefaults: boolean;
+    disableResolverDeduping: boolean;
+    sandboxModeEnabled: boolean;
+    useSubUsernameForDefaultIdentityClaim: boolean;
+    populateOwnerFieldForStaticGroupAuth: boolean;
+    suppressApiKeyGeneration: boolean;
+    secondaryKeyAsGSI: boolean;
+    enableAutoIndexQueryNames: boolean;
+    respectPrimaryKeyAttributesOnConnectionField: boolean;
+    enableSearchNodeToNodeEncryption: boolean;
 };
 
 // @public
-export type IdentityPool = IdentityPoolId;
-
-// @public
-export type IdentityPoolId = string;
+export type IAMAuthorizationConfig = {
+    identityPoolId?: string;
+    authenticatedUserRole?: IRole;
+    unauthenticatedUserRole?: IRole;
+    adminRoles?: IRole[];
+};
 
 // @public
 export type LambdaAuthorizationConfig = {
@@ -163,7 +168,7 @@ export type OIDCAuthorizationConfig = {
 
 // @public
 export type OptimisticConflictResolutionStrategy = ConflictResolutionStrategyBase & {
-    handlerType: 'AUTOMERGE';
+    handlerType: 'OPTIMISTIC_CONCURRENCY';
 };
 
 // @public
@@ -176,20 +181,6 @@ export type QueryFunctionSlot = FunctionSlotBase & {
 export type SubscriptionFunctionSlot = FunctionSlotBase & {
     typeName: 'Subscription';
     slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preSubscribe';
-};
-
-// @public
-export type TransformParameters = {
-    shouldDeepMergeDirectiveConfigDefaults: boolean;
-    disableResolverDeduping: boolean;
-    sandboxModeEnabled: boolean;
-    useSubUsernameForDefaultIdentityClaim: boolean;
-    populateOwnerFieldForStaticGroupAuth: boolean;
-    suppressApiKeyGeneration: boolean;
-    secondaryKeyAsGSI: boolean;
-    enableAutoIndexQueryNames: boolean;
-    respectPrimaryKeyAttributesOnConnectionField: boolean;
-    enableSearchNodeToNodeEncryption: boolean;
 };
 
 // @public

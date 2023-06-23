@@ -139,7 +139,7 @@ export class ApigwInputState {
     return stateManager.getResourceInputsJson(this.projectRootPath, AmplifyCategories.API, this.resourceName);
   }
 
-  public isCLIInputsValid(cliInputs?: ApigwInputs) {
+  public async isCLIInputsValid(cliInputs?: ApigwInputs) {
     if (!cliInputs) {
       cliInputs = this.getCliInputPayload();
     }
@@ -150,7 +150,7 @@ export class ApigwInputState {
       AmplifyCategories.API,
       'APIGatewayCLIInputs',
     );
-    schemaValidator.validateInput(JSONUtilities.stringify(cliInputs));
+    await schemaValidator.validateInput(JSONUtilities.stringify(cliInputs));
   }
 
   private async createApigwArtifacts() {

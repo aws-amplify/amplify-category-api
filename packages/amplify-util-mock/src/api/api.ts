@@ -69,7 +69,7 @@ export class APITest {
   async stop(context) {
     this.ddbClient = null;
     if (this.watcher) {
-      this.watcher.close();
+      await this.watcher.close();
       this.watcher = null;
     }
     try {

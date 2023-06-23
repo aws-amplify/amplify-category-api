@@ -725,7 +725,7 @@ export const openConsole = async (context?: $TSContext) => {
       }
     }
 
-    open(url, { wait: false });
+    await open(url, { wait: false });
   } else {
     printer.error('There are no REST APIs pushed to the cloud');
   }

@@ -196,11 +196,16 @@ jobs:
             git config user.email not@used.com
             git config user.name "Doesnt Matter"
             setNpmTag
+            # publish private package to verdaccio for e2e tests
+            cat packages/amplify-graphql-api-construct/package.json > stash.json
+            jq 'del(.private)' packages/amplify-graphql-api-construct/package.json > tmp.json
+            mv tmp.json packages/amplify-graphql-api-construct/package.json
             if [ -z $NPM_TAG ]; then
               yarn publish-to-verdaccio
             else
               yarn lerna publish --exact --dist-tag=latest --preid=$NPM_TAG --conventional-commits --conventional-prerelease --no-verify-access --yes --no-commit-hooks --no-push --no-git-tag-version
             fi
+            mv stash.json packages/amplify-graphql-api-construct/package.json
             unsetNpmRegistryUrl
       - run:
           name: Generate unified changelog
@@ -745,8 +750,11 @@ commands:
                 shell: bash.exe
                 command: |
                   source .circleci/local_publish_helpers.sh
+                  startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+                  setNpmRegistryUrlToLocal
                   cd packages/amplify-e2e-tests
                   retry yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
+                  unsetNpmRegistryUrl
                 no_output_timeout: 60m
       - when:
           condition:
@@ -758,8 +766,11 @@ commands:
                   echo "export PATH=$AMPLIFY_DIR:$PATH" >> $BASH_ENV
                   source $BASH_ENV
                   source .circleci/local_publish_helpers.sh
+                  startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+                  setNpmRegistryUrlToLocal
                   amplify version
                   retry runE2eTest
+                  unsetNpmRegistryUrl
                 no_output_timeout: 90m
   scan_e2e_test_artifacts:
     description: "Scan And Cleanup E2E Test Artifacts"
