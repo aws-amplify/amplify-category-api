@@ -42,7 +42,7 @@ export type AmplifyGraphqlApiProps = {
     functionSlots?: FunctionSlot[];
     transformers?: TransformerPluginProvider[];
     predictionsBucket?: IBucket;
-    graphqlBehavior?: Partial<GraphqlBehavior>;
+    schemaTranslationBehavior?: Partial<SchemaTranslationBehavior>;
 };
 
 // @public
@@ -124,20 +124,6 @@ export type FunctionSlotBase = {
 export type FunctionSlotOverride = Partial<Pick<AppsyncFunctionProps, 'name' | 'description' | 'dataSource' | 'requestMappingTemplate' | 'responseMappingTemplate' | 'code' | 'runtime'>>;
 
 // @public
-export type GraphqlBehavior = {
-    shouldDeepMergeDirectiveConfigDefaults: boolean;
-    disableResolverDeduping: boolean;
-    sandboxModeEnabled: boolean;
-    useSubUsernameForDefaultIdentityClaim: boolean;
-    populateOwnerFieldForStaticGroupAuth: boolean;
-    suppressApiKeyGeneration: boolean;
-    secondaryKeyAsGSI: boolean;
-    enableAutoIndexQueryNames: boolean;
-    respectPrimaryKeyAttributesOnConnectionField: boolean;
-    enableSearchNodeToNodeEncryption: boolean;
-};
-
-// @public
 export type IAMAuthorizationConfig = {
     identityPoolId?: string;
     authenticatedUserRole?: IRole;
@@ -175,6 +161,20 @@ export type OptimisticConflictResolutionStrategy = ConflictResolutionStrategyBas
 export type QueryFunctionSlot = FunctionSlotBase & {
     typeName: 'Query';
     slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
+};
+
+// @public
+export type SchemaTranslationBehavior = {
+    shouldDeepMergeDirectiveConfigDefaults: boolean;
+    disableResolverDeduping: boolean;
+    sandboxModeEnabled: boolean;
+    useSubUsernameForDefaultIdentityClaim: boolean;
+    populateOwnerFieldForStaticGroupAuth: boolean;
+    suppressApiKeyGeneration: boolean;
+    secondaryKeyAsGSI: boolean;
+    enableAutoIndexQueryNames: boolean;
+    respectPrimaryKeyAttributesOnConnectionField: boolean;
+    enableSearchNodeToNodeEncryption: boolean;
 };
 
 // @public

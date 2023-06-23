@@ -241,7 +241,7 @@ export type FunctionSlot =
  * a single location, and isn't spread around the transformers, where they can
  * have different default behaviors.
  */
-export type GraphqlBehavior = {
+export type SchemaTranslationBehavior = {
   /**
    * Restore parity w/ GQLv1 @model parameter behavior, where setting a single field doesn't implicitly set the other fields to null.
    */
@@ -365,7 +365,7 @@ export type AmplifyGraphqlApiProps = {
    * This replaces feature flags from the API construct, for general information on what these parameters do,
    * refer to https://docs.amplify.aws/cli/reference/feature-flags/#graphQLTransformer
    */
-  graphqlBehavior?: Partial<GraphqlBehavior>
+  schemaTranslationBehavior?: Partial<SchemaTranslationBehavior>
 };
 
 /**

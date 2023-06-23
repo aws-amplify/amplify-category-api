@@ -1,9 +1,9 @@
-import { GraphqlBehavior } from '../types';
+import { SchemaTranslationBehavior } from '../types';
 
 /**
  * Defaults which will be used by the construct if overrides are not provided.
  */
-export const defaultGraphqlBehavior: GraphqlBehavior = {
+export const defaultSchemaTranslationBehavior: SchemaTranslationBehavior = {
   shouldDeepMergeDirectiveConfigDefaults: true,
   disableResolverDeduping: false,
   sandboxModeEnabled: false,

@@ -7,8 +7,8 @@ import {
   preprocessGraphqlSchema,
   generateConstructExports,
   rewriteAndPersistAssets,
-  defaultGraphqlBehavior,
   convertToResolverConfig,
+  defaultSchemaTranslationBehavior,
 } from './internal';
 import type { AmplifyGraphqlApiResources, AmplifyGraphqlApiProps, FunctionSlot } from './types';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
@@ -60,7 +60,7 @@ export class AmplifyGraphqlApi extends Construct {
       transformers,
       predictionsBucket,
       stackMappings,
-      graphqlBehavior: overriddenTransformParameters,
+      schemaTranslationBehavior,
       functionNameMap,
     } = props;
 
@@ -94,8 +94,8 @@ export class AmplifyGraphqlApi extends Construct {
       stackMapping: stackMappings ?? {},
       resolverConfig: conflictResolution ? convertToResolverConfig(conflictResolution) : undefined,
       transformParameters: {
-        ...defaultGraphqlBehavior,
-        ...(overriddenTransformParameters ?? {}),
+        ...defaultSchemaTranslationBehavior,
+        ...(schemaTranslationBehavior ?? {}),
       },
     });
 

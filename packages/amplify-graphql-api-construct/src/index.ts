@@ -22,6 +22,6 @@ export type {
   AutomergeConflictResolutionStrategy,
   ConflictResolutionStrategyBase,
   ConflictResolutionStrategy,
-  GraphqlBehavior,
+  SchemaTranslationBehavior,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';
