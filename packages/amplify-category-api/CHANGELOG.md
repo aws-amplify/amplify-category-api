@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.3-agqlac.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.4.3-agqlac.1...@aws-amplify/amplify-category-api@5.4.3-agqlac.2) (2023-06-23)
+
+### Bug Fixes
+
+- handling of all floating promises ([#1577](https://github.com/aws-amplify/amplify-category-api/issues/1577)) ([d5981b2](https://github.com/aws-amplify/amplify-category-api/commit/d5981b2f912d03b44e1269ca704816dd250ff501))
+
 ## [5.4.3-agqlac.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.4.3-agqlac.0...@aws-amplify/amplify-category-api@5.4.3-agqlac.1) (2023-06-22)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.4-agqlac.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@1.3.4-agqlac.1...@aws-amplify/graphql-model-transformer@1.3.4-agqlac.2) (2023-06-23)
+
+### Bug Fixes
+
+- handling of all floating promises ([#1577](https://github.com/aws-amplify/amplify-category-api/issues/1577)) ([d5981b2](https://github.com/aws-amplify/amplify-category-api/commit/d5981b2f912d03b44e1269ca704816dd250ff501))
+
 ## [1.3.4-agqlac.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@1.3.4-agqlac.0...@aws-amplify/graphql-model-transformer@1.3.4-agqlac.1) (2023-06-22)
 
 ### Bug Fixes

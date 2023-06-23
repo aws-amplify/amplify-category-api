@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-migration-tests",
-  "version": "5.0.26-agqlac.1",
+  "version": "5.0.26-agqlac.2",
   "description": "Test suites for migration scenarios",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
   "dependencies": {
     "@aws-amplify/amplify-cli-core": "4.0.4",
     "@aws-cdk/cloudformation-diff": "~2.68.0",
-    "amplify-category-api-e2e-core": "4.1.6-agqlac.1",
+    "amplify-category-api-e2e-core": "4.1.6-agqlac.2",
     "aws-cdk-lib": "~2.68.0",
     "fs-extra": "^8.1.0",
     "graphql-transformer-core": "8.1.4-agqlac.1",

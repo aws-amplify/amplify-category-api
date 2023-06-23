@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0-agqlac.3](https://github.com/aws-amplify/amplify-category-api/compare/agqlac@0.3.0-agqlac.2...agqlac@0.3.0-agqlac.3) (2023-06-23)
+
+**Note:** Version bump only for package agqlac
+
 # [0.3.0-agqlac.2](https://github.com/aws-amplify/amplify-category-api/compare/agqlac@0.3.0-agqlac.1...agqlac@0.3.0-agqlac.2) (2023-06-22)
 
 **Note:** Version bump only for package agqlac

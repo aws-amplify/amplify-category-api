@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.4.8-agqlac.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.4.8-agqlac.1...amplify-category-api-graphql-transformers-e2e-tests@8.4.8-agqlac.2) (2023-06-23)
+
+### Bug Fixes
+
+- handling of all floating promises ([#1577](https://github.com/aws-amplify/amplify-category-api/issues/1577)) ([d5981b2](https://github.com/aws-amplify/amplify-category-api/commit/d5981b2f912d03b44e1269ca704816dd250ff501))
+
 ## [8.4.8-agqlac.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.4.8-agqlac.0...amplify-category-api-graphql-transformers-e2e-tests@8.4.8-agqlac.1) (2023-06-22)
 
 **Note:** Version bump only for package amplify-category-api-graphql-transformers-e2e-tests
