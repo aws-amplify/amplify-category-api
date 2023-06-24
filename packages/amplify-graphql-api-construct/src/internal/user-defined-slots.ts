@@ -32,30 +32,27 @@ export const validateFunctionSlots = (functionSlots: FunctionSlot[]): void => {
  * @param functionSlots the possibly consolidated slots.
  * @returns no longer consolidated slots.
  */
-export const separateSlots = (functionSlots: FunctionSlot[]): FunctionSlot[] => {
-  const separatedSlots: FunctionSlot[] = [];
-  functionSlots.forEach((slot) => {
-    if (slot.function.requestMappingTemplate && slot.function.responseMappingTemplate) {
-      separatedSlots.push(
-        {
-          ...slot,
-          function: {
-            requestMappingTemplate: slot.function.requestMappingTemplate,
-          },
+export const separateSlots = (functionSlots: FunctionSlot[]): FunctionSlot[] => functionSlots.flatMap((slot) => {
+  if (slot.function.requestMappingTemplate && slot.function.responseMappingTemplate) {
+    return [
+      {
+        ...slot,
+        function: {
+          requestMappingTemplate: slot.function.requestMappingTemplate,
         },
-        {
-          ...slot,
-          function: {
-            responseMappingTemplate: slot.function.responseMappingTemplate,
-          },
+      },
+      {
+        ...slot,
+        function: {
+          responseMappingTemplate: slot.function.responseMappingTemplate,
         },
-      );
-    } else {
-      separatedSlots.push(slot);
-    }
-  });
-  return functionSlots;
-};
+      },
+    ];
+  }
+  return [
+    slot,
+  ];
+});
 
 /**
  * Given a set of strongly typed input params, generate a valid transformer slot name.
