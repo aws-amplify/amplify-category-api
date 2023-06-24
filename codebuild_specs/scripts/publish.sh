@@ -23,16 +23,16 @@ else
   git config --global user.name $GITHUB_USER
 fi
 
-if [[ "$BRANCH_NAME" =~ ^tagged-release ]]; then
-  if [[ "$BRANCH_NAME" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
+if [[ "$BRANCH_NAME" =~ ^cb-tagged-release ]]; then
+  if [[ "$BRANCH_NAME" =~ ^cb-tagged-release-without-e2e-tests\/.* ]]; then
       # Remove tagged-release-without-e2e-tests/
-    export NPM_TAG="${BRANCH_NAME/tagged-release-without-e2e-tests\//}"
-  elif [[ "$BRANCH_NAME" =~ ^tagged-release\/.* ]]; then
+    export NPM_TAG="${BRANCH_NAME/cb-tagged-release-without-e2e-tests\//}"
+  elif [[ "$BRANCH_NAME" =~ ^cb-tagged-release\/.* ]]; then
     # Remove tagged-release/
-    export NPM_TAG="${BRANCH_NAME/tagged-release\//}"
+    export NPM_TAG="${BRANCH_NAME/cb-tagged-release\//}"
   fi
   if [ -z "$NPM_TAG" ]; then
-    echo "Tag name is missing. Name your branch with either tagged-release/<tag-name> or tagged-release-without-e2e-tests/<tag-name>"
+    echo "Tag name is missing. Name your branch with either cb-tagged-release/<tag-name> or cb-tagged-release-without-e2e-tests/<tag-name>"
     exit 1
   fi
   echo "Publishing to NPM with tag $NPM_TAG"
