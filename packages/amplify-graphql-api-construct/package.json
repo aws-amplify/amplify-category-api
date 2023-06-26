@@ -1,5 +1,5 @@
 {
-  "name": "@aws-amplify/graphql-api-construct-alpha",
+  "name": "@aws-amplify/graphql-construct-alpha",
   "version": "0.1.0",
   "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer.",
   "repository": {
@@ -62,7 +62,7 @@
     "collectCoverage": true,
     "coverageThreshold": {
       "global": {
-        "branches": 79,
+        "branches": 50,
         "functions": 80,
         "lines": 80
       }

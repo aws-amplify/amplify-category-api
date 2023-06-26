@@ -241,7 +241,7 @@ async function updateContainerResource(context: $TSContext, category: string, se
 
   const updateWalkthroughPromise: Promise<ServiceConfiguration> = updateWalkthrough(context, apiType);
 
-  updateContainer(updateWalkthroughPromise, context, category);
+  await updateContainer(updateWalkthroughPromise, context, category);
 }
 
 async function updateNonContainerResource(context: $TSContext, service: string) {

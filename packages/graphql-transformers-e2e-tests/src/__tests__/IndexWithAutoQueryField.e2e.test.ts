@@ -105,7 +105,9 @@ beforeAll(async () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    sandboxModeEnabled: true,
+    transformParameters: {
+      sandboxModeEnabled: true,
+    },
   });
   const out = transformer.transform(validSchema);
   const finishedStack = await deploy(
