@@ -1,15 +1,26 @@
 import { LambdaClient, UpdateFunctionConfigurationCommand, UpdateFunctionConfigurationCommandOutput } from "@aws-sdk/client-lambda";
 
-const snsEventSource = 'aws:sns';
+const SNS_EVENT_SOURCE = 'aws:sns';
 
 type LayerConfig = {
   layerArn?: string;
   region?: string;
 };
 
+const MIN_WAIT_TIME_IN_MS = 0; // No wait time
+const MAX_WAIT_TIME_IN_MS = 5 * 60 * 1000; // 5 minutes
+
+const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+
+const waitRandomTime = (): Promise<void> => {
+  const waitTime = Math.floor(Math.random() * (MAX_WAIT_TIME_IN_MS - MIN_WAIT_TIME_IN_MS + 1) + MIN_WAIT_TIME_IN_MS);
+  console.log(`Waiting for ${waitTime} ms`);
+  return delay(waitTime);
+};
+
 const getLayerConfig = (event: any): LayerConfig => {
   // Check layerArn in the event
-  const { Sns } = event.Records.find((record: any) => record.EventSource === snsEventSource);
+  const { Sns } = event.Records.find((record: any) => record.EventSource === SNS_EVENT_SOURCE);
   if (!Sns) {
     throw new Error('No SNS notification found in the event');
   }
@@ -49,6 +60,10 @@ export const handler = async (event: any): Promise<void> => {
     console.log(`Region ${region} in notification is not same as the current region ${process.env.AWS_REGION}. Skipping update.`);
     return;
   }
+
+  // Wait for a random time up to 5 minutes.
+  // This is to avoid all the functions updating at the same time which may result in throttling errors.
+  await waitRandomTime();
 
   // Update the function configuration with the new layer version
   try {
