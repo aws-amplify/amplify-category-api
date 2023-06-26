@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Stack, StackProps, Duration } from 'aws-cdk-lib';
-import { AmplifyGraphqlApi } from '@aws-amplify/graphql-construct-alpha';
+import { AmplifyGraphqlApi } from 'agqlac';
 
 /**
  *
