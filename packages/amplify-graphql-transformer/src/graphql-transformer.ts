@@ -129,7 +129,7 @@ export type ExecuteTransformConfig = TransformConfig & {
  * By default, rely on console to print out the transformer logs.
  * @param log the log to print.
  */
-const defaultPrintTransformerLog = (log: TransformerLog): void => {
+export const defaultPrintTransformerLog = (log: TransformerLog): void => {
   switch (log.level) {
     case TransformerLogLevel.ERROR:
       console.error(log.message);
