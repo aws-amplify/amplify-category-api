@@ -148,6 +148,7 @@
     "**/aws-cdk-lib": "~2.68.0",
     "**/@aws-amplify/amplify-cli-core": "4.0.4",
     "ejs": "^3.1.7",
-    "json5": "^2.2.3"
+    "json5": "^2.2.3",
+    "fast-xml-parser": "^4.2.4"
   }
 }

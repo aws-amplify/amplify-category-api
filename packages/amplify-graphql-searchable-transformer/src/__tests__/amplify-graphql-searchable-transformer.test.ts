@@ -1,11 +1,9 @@
 import { ConflictHandlerType, GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import {
-  Match, Template,
-} from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { parse } from 'graphql';
 import { SearchableModelTransformer } from '..';
-import {ALLOWABLE_SEARCHABLE_INSTANCE_TYPES} from '../constants';
+import { ALLOWABLE_SEARCHABLE_INSTANCE_TYPES } from '../constants';
 
 test('SearchableModelTransformer validation happy case', () => {
   const validSchema = `
@@ -389,5 +387,42 @@ describe('SearchableModelTransformer with datastore enabled and sort field defin
 describe('Searchable Instance Type Validation Test', () => {
   it('Should include search instances', () => {
     expect(ALLOWABLE_SEARCHABLE_INSTANCE_TYPES).toContain('t3.medium.search');
+  });
+});
+
+describe('nodeToNodeEncryption transformParameter', () => {
+  const schema = /* GraphQL */ `
+    type Todo @model @searchable {
+      content: String!
+    }`;
+  it('synthesizes w/ nodeToNodeEncryption disabled by default', () => {
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    });
+    const out = transformer.transform(schema);
+    expect(out).toBeDefined();
+    const searchableStack = out.stacks.SearchableStack;
+    Template.fromJSON(searchableStack).hasResourceProperties('AWS::Elasticsearch::Domain', {
+      NodeToNodeEncryptionOptions: {
+        Enabled: false,
+      },
+    });
+  });
+
+  it('synthesizes w/ nodeToNodeEncryption enabled if specified', () => {
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+      transformParameters: {
+        enableSearchNodeToNodeEncryption: true,
+      }
+    });
+    const out = transformer.transform(schema);
+    expect(out).toBeDefined();
+    const searchableStack = out.stacks.SearchableStack;
+    Template.fromJSON(searchableStack).hasResourceProperties('AWS::Elasticsearch::Domain', {
+      NodeToNodeEncryptionOptions: {
+        Enabled: true,
+      },
+    });
   });
 });

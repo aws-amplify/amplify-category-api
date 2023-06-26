@@ -13,7 +13,8 @@ export type {
   QueryFunctionSlot,
   SubscriptionFunctionSlot,
   FunctionSlot,
-  ProjectConflictResolution,
+  FunctionSlotOverride,
+  ConflictResolution,
   ConflictDetectionType,
   ConflictHandlerType,
   OptimisticConflictResolutionStrategy,
@@ -21,6 +22,6 @@ export type {
   AutomergeConflictResolutionStrategy,
   ConflictResolutionStrategyBase,
   ConflictResolutionStrategy,
-  TransformParameters,
+  SchemaTranslationBehavior,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';

@@ -10,9 +10,9 @@ describe('@mapsTo transformer', () => {
     new GraphQLTransform({
       transformParameters: {
         respectPrimaryKeyAttributesOnConnectionField: false,
+        sandboxModeEnabled: true,
       },
       transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer(), new MapsToTransformer()],
-      sandboxModeEnabled: true,
     });
 
   const initialSchema = /* GraphQL */ `

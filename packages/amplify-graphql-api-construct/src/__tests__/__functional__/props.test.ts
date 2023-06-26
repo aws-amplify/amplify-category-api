@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
+import { MappingTemplate } from 'aws-cdk-lib/aws-appsync';
 
 /**
  * Utility to wrap construct creation a basic synth step to smoke test
@@ -31,16 +32,18 @@ describe('supports different props configurations', () => {
             fieldName: 'createTodo',
             slotName: 'preAuth',
             slotIndex: 1,
-            templateType: 'req',
-            resolverCode: '$utils.toJson({})',
+            function: {
+              requestMappingTemplate: MappingTemplate.fromString('$utils.toJson({})'),
+            }
           },
           {
             typeName: 'Mutation',
             fieldName: 'createTodo',
             slotName: 'postAuth',
             slotIndex: 1,
-            templateType: 'req',
-            resolverCode: '$utils.toJson({})',
+            function: {
+              requestMappingTemplate: MappingTemplate.fromString('$utils.toJson({})'),
+            }
           },
         ],
       });

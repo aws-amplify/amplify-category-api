@@ -225,12 +225,6 @@ export const generateTransformerOptions = async (
   const resourceDirParts = resourceDir.split(path.sep);
   const apiName = resourceDirParts[resourceDirParts.length - 1];
 
-  const enableNodeToNodeEncryption = shouldEnableNodeToNodeEncryption(
-    apiName,
-    pathManager.findProjectRoot(),
-    pathManager.getCurrentCloudBackendDirPath(),
-  );
-
   const userDefinedSlots = {
     ...parseUserDefinedSlots(project.pipelineFunctions),
     ...parseUserDefinedSlots(project.resolvers),
@@ -250,7 +244,6 @@ export const generateTransformerOptions = async (
       authConfig,
       adminRoles,
       identityPoolId,
-      searchConfig: { enableNodeToNodeEncryption },
       customTransformers: await loadCustomTransformersV2(resourceDir),
     },
     rootStackFileName: 'cloudformation-template.json',
@@ -265,17 +258,24 @@ export const generateTransformerOptions = async (
     overrideConfig,
     stacks: project.stacks,
     stackMapping: project.config.StackMapping,
-    legacyApiKeyEnabled: legacyApiKeyEnabledFromParameters(parameters),
-    disableResolverDeduping: (project.config as any).DisableResolverDeduping,
-    transformParameters: generateTransformParameters(),
+    transformParameters: generateTransformParameters(apiName, parameters, project.config, sandboxModeEnabled),
   };
 };
 
 /**
  * Generate transform parameters from feature flags and other config sources.
+ * @param apiName the api name (used for determining current nodeToNodeEncryption value)
+ * @param parameters invocation params, bag of bits, used for determining suppressApiKeyGeneration state
+ * @param projectConfig hydrated project config object, with additional metadata, bag of bits, determines if resolver deduping is disabled
+ * @param sandboxModeEnabled whether or not to enable sandbox mode on the transformed project
  * @returns a single set of params to configure the transform behavior.
  */
-const generateTransformParameters = (): TransformParameters => {
+const generateTransformParameters = (
+  apiName: string,
+  parameters: any,
+  projectConfig: any,
+  sandboxModeEnabled: boolean,
+): TransformParameters => {
   const featureFlagProvider = new AmplifyCLIFeatureFlagAdapter();
   return {
     shouldDeepMergeDirectiveConfigDefaults: featureFlagProvider.getBoolean('shouldDeepMergeDirectiveConfigDefaults'),
@@ -284,14 +284,22 @@ const generateTransformParameters = (): TransformParameters => {
     secondaryKeyAsGSI: featureFlagProvider.getBoolean('secondaryKeyAsGSI'),
     enableAutoIndexQueryNames: featureFlagProvider.getBoolean('enableAutoIndexQueryNames'),
     respectPrimaryKeyAttributesOnConnectionField: featureFlagProvider.getBoolean('respectPrimaryKeyAttributesOnConnectionField'),
+    suppressApiKeyGeneration: suppressApiKeyGeneration(parameters),
+    disableResolverDeduping: projectConfig.DisableResolverDeduping ?? false,
+    enableSearchNodeToNodeEncryption: shouldEnableNodeToNodeEncryption(
+      apiName,
+      pathManager.findProjectRoot(),
+      pathManager.getCurrentCloudBackendDirPath(),
+    ),
+    sandboxModeEnabled,
   };
 };
 
-export const legacyApiKeyEnabledFromParameters = (parameters: any): boolean | undefined => {
+export const suppressApiKeyGeneration = (parameters: any): boolean => {
   if (!('CreateAPIKey' in parameters)) {
-    return undefined;
+    return false;
   }
-  return parameters.CreateAPIKey === 1 || parameters.CreateAPIKey === '1';
+  return parameters.CreateAPIKey !== 1 && parameters.CreateAPIKey !== '1';
 };
 
 /**

@@ -1,4 +1,6 @@
-import { nspawn as spawn, getCLIPath, singleSelect, addCITags } from '..';
+import { nspawn as spawn, getCLIPath, getNpxPath, singleSelect, addCITags } from '..';
+import { copySync, moveSync, readFile } from 'fs-extra';
+import * as path from 'path';
 import { KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
 import { EOL } from 'os';
@@ -489,4 +491,73 @@ export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLa
         }
       });
   });
+}
+
+export function initCDKProject(cwd: string, templatePath: string): Promise<string> {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getNpxPath(), ['cdk', 'init', 'app', '--language', 'typescript'], {
+      cwd,
+      stripColors: true,
+      // npx cdk does not work on verdaccio
+      env: {
+        npm_config_registry: 'https://registry.npmjs.org/',
+      },
+    })
+      .sendConfirmYes()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  }).then(() => {
+    const binDir = path.join(cwd, 'bin');
+    copySync(templatePath, binDir, { overwrite: true });
+    moveSync(path.join(binDir, 'app.ts'), path.join(binDir, `${path.basename(cwd)}.ts`), { overwrite: true });
+  }).then(() => new Promise<void>((resolve, reject) => {
+    // change to official package
+    spawn('npm', ['install', '--save-dev', '@aws-amplify/graphql-construct-alpha'], { cwd, stripColors: true })
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  })).then(() => new Promise<void>((resolve, reject) => {
+    // override dep version from cdk init
+    spawn('npm', ['install', '--save', 'aws-cdk-lib@2.68.0'], { cwd, stripColors: true })
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  }))
+    .then(() => readFile(path.join(cwd, 'package.json'), 'utf8'))
+    .then(packageJson => JSON.parse(packageJson).name.replace(/_/g, '-'));
+}
+
+export function cdkDeploy(cwd: string, option: string): Promise<any> {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getNpxPath(), ['cdk', 'deploy', '--outputs-file', 'outputs.json', option], {
+      cwd,
+      stripColors: true,
+      // npx cdk does not work on verdaccio
+      env: {
+        npm_config_registry: 'https://registry.npmjs.org/',
+      },
+    })
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  })
+    .then(() => readFile(path.join(cwd, 'outputs.json'), 'utf8'))
+    .then(JSON.parse);
 }

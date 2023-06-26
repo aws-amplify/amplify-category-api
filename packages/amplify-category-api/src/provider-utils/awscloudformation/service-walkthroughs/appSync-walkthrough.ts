@@ -200,7 +200,7 @@ export const openConsole = async (context: $TSContext) => {
       }
     }
 
-    open(url, { wait: false });
+    await open(url, { wait: false });
   } else {
     printer.error('AppSync API is not pushed in the cloud.');
   }

@@ -128,6 +128,6 @@ export const convertAuthorizationModesToTransformerAuthConfig = (authConfig: Aut
  */
 const getAuthParameters = (authConfig: AuthorizationConfig): Record<string, any> => ({
   ...(authConfig.userPoolConfig?.userPool ? { AuthCognitoUserPoolId: authConfig.userPoolConfig.userPool.userPoolId } : {}),
-  ...(authConfig?.iamConfig?.authRole ? { authRoleName: authConfig.iamConfig.authRole.roleName } : {}),
-  ...(authConfig?.iamConfig?.unauthRole ? { unauthRoleName: authConfig.iamConfig.unauthRole.roleName } : {}),
+  ...(authConfig?.iamConfig?.authenticatedUserRole ? { authRoleName: authConfig.iamConfig.authenticatedUserRole.roleName } : {}),
+  ...(authConfig?.iamConfig?.unauthenticatedUserRole ? { unauthRoleName: authConfig.iamConfig.unauthenticatedUserRole.roleName } : {}),
 });

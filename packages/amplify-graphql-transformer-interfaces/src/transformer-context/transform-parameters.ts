@@ -7,10 +7,13 @@
 export type TransformParameters = {
   // General Model Params
   shouldDeepMergeDirectiveConfigDefaults: boolean;
+  disableResolverDeduping: boolean;
+  sandboxModeEnabled: boolean;
 
   // Auth Params
   useSubUsernameForDefaultIdentityClaim: boolean;
   populateOwnerFieldForStaticGroupAuth: boolean;
+  suppressApiKeyGeneration: boolean;
 
   // Index Params
   secondaryKeyAsGSI: boolean;
@@ -18,4 +21,7 @@ export type TransformParameters = {
 
   // Relational Params
   respectPrimaryKeyAttributesOnConnectionField: boolean;
+
+  // Search Params
+  enableSearchNodeToNodeEncryption: boolean;
 };

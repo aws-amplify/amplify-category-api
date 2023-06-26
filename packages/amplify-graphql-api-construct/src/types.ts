@@ -7,6 +7,7 @@ import {
   CfnResolver,
   CfnFunctionConfiguration,
   CfnDataSource,
+  AppsyncFunctionProps,
 } from 'aws-cdk-lib/aws-appsync';
 import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole, CfnRole, CfnPolicy } from 'aws-cdk-lib/aws-iam';
@@ -16,24 +17,24 @@ import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 /**
- * Configuration for IAM Authorization on the GraphQL API.`
+ * Configuration for IAM Authorization on the Graphql API.
  */
 export type IAMAuthorizationConfig = {
   identityPoolId?: string;
-  authRole?: IRole;
-  unauthRole?: IRole;
+  authenticatedUserRole?: IRole;
+  unauthenticatedUserRole?: IRole;
   adminRoles?: IRole[];
 };
 
 /**
- * Configuration for Cognito UserPool Authorization on the GraphQL API.`
+ * Configuration for Cognito UserPool Authorization on the Graphql API.
  */
 export type UserPoolAuthorizationConfig = {
   userPool: IUserPool;
 };
 
 /**
- * Configuration for OpenId Connect Authorization on the GraphQL API.`
+ * Configuration for OpenId Connect Authorization on the Graphql API.
  */
 export type OIDCAuthorizationConfig = {
   oidcProviderName: string;
@@ -44,7 +45,7 @@ export type OIDCAuthorizationConfig = {
 };
 
 /**
- * Configuration for API Keys on the GraphQL API.`
+ * Configuration for API Keys on the Graphql API.
  */
 export type ApiKeyAuthorizationConfig = {
   description?: string;
@@ -52,7 +53,7 @@ export type ApiKeyAuthorizationConfig = {
 };
 
 /**
- * Configuration for Custom Lambda authorization on the GraphQL API.`
+ * Configuration for Custom Lambda authorization on the Graphql API.
  */
 export type LambdaAuthorizationConfig = {
   function: IFunction;
@@ -130,14 +131,14 @@ export type ConflictResolutionStrategyBase = {
  * Enable optimistic concurrency on the project.
  */
 export type AutomergeConflictResolutionStrategy = ConflictResolutionStrategyBase & {
-  handlerType: 'OPTIMISTIC_CONCURRENCY';
+  handlerType: 'AUTOMERGE';
 };
 
 /**
  * Enable automerge on the project.
  */
 export type OptimisticConflictResolutionStrategy = ConflictResolutionStrategyBase & {
-  handlerType: 'AUTOMERGE';
+  handlerType: 'OPTIMISTIC_CONCURRENCY';
 };
 
 /**
@@ -159,8 +160,15 @@ export type ConflictResolutionStrategy =
 /**
  * Project level configuration for conflict resolution.
  */
-export type ProjectConflictResolution = {
+export type ConflictResolution = {
+  /**
+   * Project-wide config for conflict resolution. Applies to all non-overridden models.
+   */
   project?: ConflictResolutionStrategy;
+
+  /**
+   * Model-specific conflict resolution overrides.
+   */
   models?: Record<string, ConflictResolutionStrategy>;
 };
 
@@ -173,13 +181,26 @@ export type AmplifyGraphqlApiSchema =
   | string;
 
 /**
+ * Params exposed to support configuring and overriding pipelined slots. This allows configuration of the underlying function,
+ * including the datasource, request/response mapping templates, or setting a JS resolver up instead.
+ */
+export type FunctionSlotOverride = Partial<Pick<AppsyncFunctionProps,
+  | 'name'
+  | 'description'
+  | 'dataSource'
+  | 'requestMappingTemplate'
+  | 'responseMappingTemplate'
+  | 'code'
+  | 'runtime'
+>>;
+
+/**
  * Common slot parameters.
  */
 export type FunctionSlotBase = {
   fieldName: string;
   slotIndex: number;
-  templateType: 'req' | 'res';
-  resolverCode: string;
+  function: FunctionSlotOverride;
 };
 
 /**
@@ -220,24 +241,67 @@ export type FunctionSlot =
  * a single location, and isn't spread around the transformers, where they can
  * have different default behaviors.
  */
-export type TransformParameters = {
-  // General Model Params
+export type SchemaTranslationBehavior = {
+  /**
+   * Restore parity w/ GQLv1 @model parameter behavior, where setting a single field doesn't implicitly set the other fields to null.
+   */
   shouldDeepMergeDirectiveConfigDefaults: boolean;
 
-  // Auth Params
+  /**
+   * Disable resolver deduping, this can sometimes cause problems because dedupe ordering isn't stable today, which can
+   * lead to circular dependencies across stacks if models are reordered.
+   */
+  disableResolverDeduping: boolean;
+
+  /**
+   * Enabling sandbox mode will enable api key auth on all models in the transformed schema.
+   */
+  sandboxModeEnabled: boolean;
+
+  /**
+   * Ensure that oidc and userPool auth use the `sub` field in the for the username field, which disallows new users with the same
+   * id to access data from a deleted user in the pool.
+   */
   useSubUsernameForDefaultIdentityClaim: boolean;
+
+  /**
+   * Ensure that the owner field is still populated even if a static iam or group authorization applies.
+   */
   populateOwnerFieldForStaticGroupAuth: boolean;
 
-  // Index Params
+  /**
+   * If enabled, disable api key resource generation even if specified as an auth rule on the construct.
+   * This is a legacy parameter from the Graphql Transformer existing in Amplify CLI, not recommended to change.
+   */
+  suppressApiKeyGeneration: boolean;
+
+  /**
+   * If disabled, generated @index as an LSI instead of a GSI.
+   */
   secondaryKeyAsGSI: boolean;
+
+  /**
+   * Automate generation of query names, and as a result attaching all indexes as queries to the generated API.
+   * If enabled, @index can be provided a null name field to disable the generation of the query on the api.
+   */
   enableAutoIndexQueryNames: boolean;
 
-  // Relational Params
+  /**
+   * Enable custom primary key support, there's no good reason to disable this unless trying not to update a legacy app.
+   */
   respectPrimaryKeyAttributesOnConnectionField: boolean;
+
+  /**
+   * If enabled, set nodeToNodeEncryption on the searchable domain (if one exists). Not recommended for use, prefer
+   * to use `Object.values(resources.additionalResources['AWS::Elasticsearch::Domain']).forEach((domain: CfnDomain) => {
+   *   domain.NodeToNodeEncryptionOptions = { Enabled: True };
+   * });
+   */
+  enableSearchNodeToNodeEncryption: boolean;
 };
 
 /**
- * Input props for the AmplifyGraphQLApi construct. Specifies what the input to transform into an API, and configurations for
+ * Input props for the AmplifyGraphqlApi construct. Specifies what the input to transform into an API, and configurations for
  * the transformation process.
  */
 export type AmplifyGraphqlApiProps = {
@@ -259,10 +323,18 @@ export type AmplifyGraphqlApiProps = {
   authorizationConfig: AuthorizationConfig;
 
   /**
+   * Lambda functions referenced in the schema's @function directives. The keys of this object are expected to be the
+   * function name provided in the schema, and value is the function that name refers to. If a name is not found in this
+   * map, then it is interpreted as the `functionName`, and an arn will be constructed using the current aws account and region
+   * (or overridden values, if set in the directive).
+   */
+  functionNameMap?: Record<string, IFunction>;
+
+  /**
    * Configure conflict resolution on the API, which is required to enable DataStore API functionality.
    * For more information, refer to https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/
    */
-  conflictResolution?: ProjectConflictResolution;
+  conflictResolution?: ConflictResolution;
 
   /**
    * StackMappings override the assigned nested stack on a per-resource basis. Only applies to resolvers, and takes the form
@@ -293,7 +365,7 @@ export type AmplifyGraphqlApiProps = {
    * This replaces feature flags from the API construct, for general information on what these parameters do,
    * refer to https://docs.amplify.aws/cli/reference/feature-flags/#graphQLTransformer
    */
-  transformParameters?: Partial<TransformParameters>
+  schemaTranslationBehavior?: Partial<SchemaTranslationBehavior>
 };
 
 /**
@@ -304,50 +376,50 @@ export type AmplifyGraphqlApiResources = {
   /**
    * The Generated AppSync API L1 Resource
    */
-  api: CfnGraphQLApi;
+  cfnGraphqlApi: CfnGraphQLApi;
 
   /**
    * The Generated AppSync Schema L1 Resource
    */
-  schema: CfnGraphQLSchema;
+  cfnGraphqlSchema: CfnGraphQLSchema;
 
   /**
    * The Generated AppSync API Key L1 Resource
    */
-  apiKey?: CfnApiKey;
+  cfnApiKey?: CfnApiKey;
 
   /**
-   * The Generated AppSync Resolver L1 Resources
+   * The Generated AppSync Resolver L1 Resources, keyed by logicalId.
    */
-  resolvers: Record<string, CfnResolver>;
+  cfnResolvers: Record<string, CfnResolver>;
 
   /**
-   * The Generated AppSync Function L1 Resources
+   * The Generated AppSync Function L1 Resources, keyed by logicalId.
    */
-  appsyncFunctions: Record<string, CfnFunctionConfiguration>;
+  cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration>;
 
   /**
-   * The Generated AppSync DataSource L1 Resources
+   * The Generated AppSync DataSource L1 Resources, keyed by logicalId.
    */
-  dataSources: Record<string, CfnDataSource>;
+  cfnDataSources: Record<string, CfnDataSource>;
 
   /**
-   * The Generated DynamoDB Table L1 Resources
+   * The Generated DynamoDB Table L1 Resources, keyed by logicalId.
    */
-  tables: Record<string, CfnTable>;
+  cfnTables: Record<string, CfnTable>;
 
   /**
-   * The Generated IAM Role L1 Resources
+   * The Generated IAM Role L1 Resources, keyed by logicalId.
    */
-  roles: Record<string, CfnRole>;
+  cfnRoles: Record<string, CfnRole>;
 
   /**
-   * The Generated IAM Policy L1 Resources
+   * The Generated IAM Policy L1 Resources, keyed by logicalId.
    */
-  policies: Record<string, CfnPolicy>;
+  cfnPolicies: Record<string, CfnPolicy>;
 
   /**
-   * Remaining L1 resources generated, keyed by CFN Resource type.
+   * Remaining L1 resources generated, keyed by logicalId.
    */
-  additionalResources: Record<string, CfnResource>;
+  additionalCfnResources: Record<string, CfnResource>;
 };

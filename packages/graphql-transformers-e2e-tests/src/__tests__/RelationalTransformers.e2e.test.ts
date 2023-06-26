@@ -159,12 +159,12 @@ type ModelB @model {
         new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
         authTransformer,
       ],
-      sandboxModeEnabled: true,
       transformParameters: {
         shouldDeepMergeDirectiveConfigDefaults: false,
         populateOwnerFieldForStaticGroupAuth: false,
         useSubUsernameForDefaultIdentityClaim: false,
-        respectPrimaryKeyAttributesOnConnectionField: false
+        respectPrimaryKeyAttributesOnConnectionField: false,
+        sandboxModeEnabled: true,
       }
     });
     out = transformer.transform(validSchema);
