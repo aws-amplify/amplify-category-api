@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-api-construct-alpha",
-  "version": "0.1.1-rds.2",
+  "version": "0.1.1-rds.3",
   "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer.",
   "repository": {
     "type": "git",
@@ -30,7 +30,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer": "0.0.3-rds.2",
+    "@aws-amplify/graphql-transformer": "0.0.3-rds.3",
     "@aws-amplify/graphql-transformer-core": "1.4.0-rds.0",
     "@aws-amplify/graphql-transformer-interfaces": "2.3.0-rds.0",
     "fs-extra": "^8.1.0"
