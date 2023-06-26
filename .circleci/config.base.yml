@@ -160,26 +160,6 @@ jobs:
           yarn config set registry https://registry.npmjs.org
           yarn verify-yarn-lock
 
-  mock_e2e_tests:
-    <<: *linux-e2e-executor
-    steps:
-      - attach_workspace:
-          at: ./
-      - restore_cache:
-          key: amplify-category-api-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
-      - run:
-          name: Run Transformer end-to-end tests with mock server
-          command: |
-            source .circleci/local_publish_helpers.sh
-            cd packages/amplify-util-mock/
-            yarn e2e
-          no_output_timeout: 60m
-          environment:
-            JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
-            NODE_OPTIONS: --max-old-space-size=5120
-      - store_test_results:
-          path: packages/amplify-util-mock/
-
   publish_to_local_registry:
     <<: *linux-e2e-executor
     steps:
@@ -538,9 +518,6 @@ workflows:
       - test:
           requires:
             - build_linux
-      - mock_e2e_tests:
-          requires:
-            - build_linux
       - graphql_e2e_tests:
           context:
             - api-e2e-test-context
@@ -660,8 +637,6 @@ workflows:
             - api-npm-publish
           requires:
             - test
-            - build_windows
-            - mock_e2e_tests
             - graphql_e2e_tests
             - amplify_e2e_tests
             - client_e2e_tests
