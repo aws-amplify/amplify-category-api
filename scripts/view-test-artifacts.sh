@@ -6,7 +6,7 @@ function downloadS3Artifact {
   # Get temporary access for the account
   E2E_ROLE_NAME=CodebuildDeveloper
   E2E_PROFILE_NAME=AmplifyAPIE2EProd
-  authenticate $RELEASE_ACCOUNT_PROD $E2E_ROLE_NAME "$E2E_PROFILE_NAME"
+  authenticate $E2E_ACCOUNT_PROD $E2E_ROLE_NAME "$E2E_PROFILE_NAME"
 
   local s3_object_uri=$1
   local destination_dir=$2
