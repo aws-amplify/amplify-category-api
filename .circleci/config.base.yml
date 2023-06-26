@@ -636,13 +636,7 @@ workflows:
             - api-e2e-test-context
             - api-npm-publish
           requires:
-            - test
-            - graphql_e2e_tests
-            - amplify_e2e_tests
-            - client_e2e_tests
-            - amplify_migration_tests_v10
-            - amplify_migration_tests_v6
-            - amplify_migration_tests_v5
+            - build_linux
           filters:
             branches:
               only:
