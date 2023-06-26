@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0-rds.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@1.4.0-rds.0...@aws-amplify/graphql-model-transformer@1.4.0-rds.1) (2023-06-26)
+
+### Bug Fixes
+
+- **api:** add delay to rds patching ([3785b8e](https://github.com/aws-amplify/amplify-category-api/commit/3785b8e1ad22716c89e9ffdc375ae13a081c30c9))
+
 # [1.4.0-rds.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@1.3.3...@aws-amplify/graphql-model-transformer@1.4.0-rds.0) (2023-06-21)
 
 ### Features

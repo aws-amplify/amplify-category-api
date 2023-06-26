@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0-rds.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.5.0-rds.0...@aws-amplify/amplify-category-api@5.5.0-rds.1) (2023-06-26)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
 # [5.5.0-rds.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.4.2...@aws-amplify/amplify-category-api@5.5.0-rds.0) (2023-06-21)
 
 ### Features

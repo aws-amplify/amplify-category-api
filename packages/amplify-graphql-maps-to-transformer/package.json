@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-maps-to-transformer",
-  "version": "2.1.8-rds.0",
+  "version": "2.1.8-rds.1",
   "description": "Amplify GraphQL @mapsTo transformer",
   "repository": {
     "type": "git",
@@ -38,10 +38,10 @@
     "graphql-transformer-common": "4.25.0-rds.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-index-transformer": "1.2.4-rds.0",
-    "@aws-amplify/graphql-model-transformer": "1.4.0-rds.0",
-    "@aws-amplify/graphql-relational-transformer": "1.2.4-rds.0",
-    "@aws-amplify/graphql-searchable-transformer": "1.2.6-rds.0",
+    "@aws-amplify/graphql-index-transformer": "1.2.4-rds.1",
+    "@aws-amplify/graphql-model-transformer": "1.4.0-rds.1",
+    "@aws-amplify/graphql-relational-transformer": "1.2.4-rds.1",
+    "@aws-amplify/graphql-searchable-transformer": "1.2.6-rds.1",
     "graphql": "^15.5.0",
     "mkdirp": "^0.5.5"
   },
