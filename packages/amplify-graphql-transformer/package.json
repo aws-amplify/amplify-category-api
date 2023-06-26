@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-transformer",
-  "version": "0.0.3-rds.1",
+  "version": "0.0.3-rds.2",
   "description": "Amplify GraphQL Transformer Root Package",
   "repository": {
     "type": "git",
@@ -28,16 +28,16 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/graphql-auth-transformer": "2.1.8-rds.1",
-    "@aws-amplify/graphql-default-value-transformer": "1.1.8-rds.1",
+    "@aws-amplify/graphql-auth-transformer": "2.1.8-rds.2",
+    "@aws-amplify/graphql-default-value-transformer": "1.1.8-rds.2",
     "@aws-amplify/graphql-function-transformer": "1.2.6-rds.0",
     "@aws-amplify/graphql-http-transformer": "1.2.6-rds.0",
-    "@aws-amplify/graphql-index-transformer": "1.2.4-rds.1",
-    "@aws-amplify/graphql-maps-to-transformer": "2.1.8-rds.1",
-    "@aws-amplify/graphql-model-transformer": "1.4.0-rds.1",
+    "@aws-amplify/graphql-index-transformer": "1.2.4-rds.2",
+    "@aws-amplify/graphql-maps-to-transformer": "2.1.8-rds.2",
+    "@aws-amplify/graphql-model-transformer": "1.4.0-rds.2",
     "@aws-amplify/graphql-predictions-transformer": "1.2.6-rds.0",
-    "@aws-amplify/graphql-relational-transformer": "1.2.4-rds.1",
-    "@aws-amplify/graphql-searchable-transformer": "1.2.6-rds.1",
+    "@aws-amplify/graphql-relational-transformer": "1.2.4-rds.2",
+    "@aws-amplify/graphql-searchable-transformer": "1.2.6-rds.2",
     "@aws-amplify/graphql-transformer-core": "1.4.0-rds.0",
     "@aws-amplify/graphql-transformer-interfaces": "2.3.0-rds.0"
   },
