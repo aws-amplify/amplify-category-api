@@ -53,18 +53,6 @@
   "us-west-2": {
     "layerRegion": "arn:aws:lambda:us-west-2:582037449441:layer:AmplifyRDSLayer:5"
   },
-  "cn-north-1": {
-    "layerRegion": "arn:aws:lambda:cn-north-1:582037449441:layer:AmplifyRDSLayer:5"
-  },
-  "cn-northwest-1": {
-    "layerRegion": "arn:aws:lambda:cn-northwest-1:582037449441:layer:AmplifyRDSLayer:5"
-  },
-  "us-gov-west-1": {
-    "layerRegion": "arn:aws:lambda:us-gov-west-1:582037449441:layer:AmplifyRDSLayer:5"
-  },
-  "us-gov-east-1": {
-    "layerRegion": "arn:aws:lambda:us-gov-east-1:582037449441:layer:AmplifyRDSLayer:5"
-  },
   "me-south-1": {
     "layerRegion": "arn:aws:lambda:me-south-1:582037449441:layer:AmplifyRDSLayer:5"
   }
