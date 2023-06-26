@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-model-transformer",
-  "version": "1.4.0-rds.1",
+  "version": "1.4.0-rds.2",
   "description": "Amplify graphql @model transformer",
   "repository": {
     "type": "git",

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.1-rds.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct-alpha@0.1.1-rds.1...@aws-amplify/graphql-api-construct-alpha@0.1.1-rds.2) (2023-06-26)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct-alpha
+
 ## [0.1.1-rds.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct-alpha@0.1.1-rds.0...@aws-amplify/graphql-api-construct-alpha@0.1.1-rds.1) (2023-06-26)
 
 **Note:** Version bump only for package @aws-amplify/graphql-api-construct-alpha
