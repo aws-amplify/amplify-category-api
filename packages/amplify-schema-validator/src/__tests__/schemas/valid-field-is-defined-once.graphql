@@ -1,5 +1,0 @@
-type Test @model {
-  id: ID!
-  email: String
-  name: String
-}

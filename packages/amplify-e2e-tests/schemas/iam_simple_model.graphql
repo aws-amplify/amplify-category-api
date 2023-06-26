@@ -1,5 +1,0 @@
-type Todo @model @auth(rules: [{ allow: private, provider: iam }]) {
-  id: ID!
-  name: String!
-  description: String
-}
