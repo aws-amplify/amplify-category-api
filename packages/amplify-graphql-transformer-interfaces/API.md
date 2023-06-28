@@ -328,6 +328,13 @@ export enum QueryFieldType {
 }
 
 // @public (undocumented)
+export type RDSLayerMapping = {
+    [key: string]: {
+        layerRegion: string;
+    };
+};
+
+// @public (undocumented)
 type ReadonlyArray_2<T> = Readonly<Array<Readonly<T>>>;
 export { ReadonlyArray_2 as ReadonlyArray }
 
@@ -528,6 +535,8 @@ export interface TransformerContextProvider {
     output: TransformerContextOutputProvider;
     // (undocumented)
     providerRegistry: TransformerProviderRegistry;
+    // (undocumented)
+    readonly rdsLayerMapping?: RDSLayerMapping;
     // (undocumented)
     resolvers: TransformerResolversManagerProvider;
     // (undocumented)

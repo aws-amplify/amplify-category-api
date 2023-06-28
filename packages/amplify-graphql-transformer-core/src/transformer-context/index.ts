@@ -8,6 +8,7 @@ import {
   AppSyncAuthConfiguration,
   AmplifyApiGraphQlResourceStackTemplate,
   VpcConfig,
+  RDSLayerMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
@@ -22,7 +23,6 @@ import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
 import { RDSConnectionSecrets } from '../types';
-import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces/src/graphql-api-provider';
 
 export { TransformerResolver } from './resolver';
 export { StackManager } from './stack-manager';

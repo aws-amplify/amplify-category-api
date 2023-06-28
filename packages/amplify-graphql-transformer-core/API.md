@@ -56,6 +56,7 @@ import { NestedStackProps } from 'aws-cdk-lib';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeExtensionNode } from 'graphql';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
+import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { S3MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { SchemaDefinitionNode } from 'graphql';
 import { Stack } from 'aws-cdk-lib';
@@ -240,6 +241,8 @@ export interface GraphQLTransformOptions {
     readonly legacyApiKeyEnabled?: boolean;
     // (undocumented)
     readonly overrideConfig?: OverrideConfig;
+    // (undocumented)
+    readonly rdsLayerMapping?: RDSLayerMapping;
     // (undocumented)
     readonly resolverConfig?: ResolverConfig;
     // (undocumented)
