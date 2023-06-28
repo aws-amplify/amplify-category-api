@@ -22,6 +22,7 @@ import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
 import { RDSConnectionSecrets } from '../types';
+import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces/src/graphql-api-provider';
 
 export { TransformerResolver } from './resolver';
 export { StackManager } from './stack-manager';
@@ -59,6 +60,7 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly modelToDatasourceMap: Map<string, DatasourceType>;
   public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
   public readonly sqlLambdaVpcConfig?: VpcConfig;
+  public readonly rdsLayerMapping?: RDSLayerMapping;
 
   public metadata: TransformerContextMetadata;
   constructor(
@@ -72,6 +74,7 @@ export class TransformerContext implements TransformerContextProvider {
     resolverConfig?: ResolverConfig,
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
     sqlLambdaVpcConfig?: VpcConfig,
+    rdsLayerMapping?: RDSLayerMapping,
   ) {
     this.output = new TransformerOutput(inputDocument);
     this.resolvers = new ResolverManager();
@@ -88,6 +91,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.modelToDatasourceMap = modelToDatasourceMap;
     this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
     this.sqlLambdaVpcConfig = sqlLambdaVpcConfig;
+    this.rdsLayerMapping = rdsLayerMapping;
   }
 
   /**

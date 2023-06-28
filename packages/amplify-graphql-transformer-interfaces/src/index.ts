@@ -29,6 +29,7 @@ export {
   UserPoolConfig,
   VpcConfig,
   SearchableDataSourceOptions,
+  RDSLayerMapping,
 } from './graphql-api-provider';
 export { TransformHostProvider, DynamoDbDataSourceOptions } from './transform-host-provider';
 export {

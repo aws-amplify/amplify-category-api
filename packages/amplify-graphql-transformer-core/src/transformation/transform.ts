@@ -8,6 +8,7 @@ import {
   TransformHostProvider,
   TransformerLog,
   VpcConfig,
+  RDSLayerMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
@@ -102,6 +103,7 @@ export class GraphQLTransform {
   private readonly disableResolverDeduping?: boolean;
   private readonly legacyApiKeyEnabled?: boolean;
   private readonly transformParameters: TransformParameters;
+  private readonly rdsLayerMapping?: RDSLayerMapping;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
   // that specifies we have run already run a directive at a given location.
@@ -199,6 +201,7 @@ export class GraphQLTransform {
       this.resolverConfig,
       datasourceConfig?.datasourceSecretParameterLocations,
       this.sqlLambdaVpcConfig,
+      this.rdsLayerMapping,
     );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),

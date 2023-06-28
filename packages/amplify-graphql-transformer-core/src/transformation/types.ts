@@ -1,4 +1,4 @@
-import { AmplifyApiGraphQlResourceStackTemplate } from '@aws-amplify/graphql-transformer-interfaces';
+import { AmplifyApiGraphQlResourceStackTemplate, RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { DatasourceType } from '../config';
 import { RDSConnectionSecrets } from '../types';
 import { StackManager } from '../transformer-context/stack-manager';
@@ -24,4 +24,5 @@ export type OverrideConfig = {
 export type DatasourceTransformationConfig = {
   modelToDatasourceMap?: Map<string, DatasourceType>;
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
+  rdsLayerMapping?: RDSLayerMapping;
 };

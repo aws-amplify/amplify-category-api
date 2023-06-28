@@ -73,6 +73,12 @@ export type VpcConfig = {
   securityGroupIds: string[];
 };
 
+export type RDSLayerMapping = {
+  [key: string]: {
+    layerRegion: string;
+  }
+};
+
 export interface AppSyncFunctionConfigurationProvider extends IConstruct {
   readonly arn: string;
   readonly functionId: string;

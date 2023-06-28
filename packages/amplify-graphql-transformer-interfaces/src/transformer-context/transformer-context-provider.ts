@@ -4,7 +4,7 @@ import { TransformerProviderRegistry } from './transformer-provider-registry';
 import { DocumentNode } from 'graphql';
 import { TransformerContextOutputProvider } from './transformer-context-output-provider';
 import { StackManagerProvider } from './stack-manager-provider';
-import { AppSyncAuthConfiguration, GraphQLAPIProvider, VpcConfig } from '../graphql-api-provider';
+import { AppSyncAuthConfiguration, GraphQLAPIProvider, RDSLayerMapping, VpcConfig } from '../graphql-api-provider';
 import { TransformerResourceHelperProvider } from './resource-resource-provider';
 import { TransformParameters } from './transform-parameters';
 
@@ -36,6 +36,7 @@ export interface TransformerContextProvider {
   isProjectUsingDataStore(): boolean;
   getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
   readonly sqlLambdaVpcConfig?: VpcConfig;
+  readonly rdsLayerMapping?: RDSLayerMapping;
 }
 
 export type TransformerBeforeStepContextProvider = Pick<

@@ -21,6 +21,7 @@ import {
   TransformerLog,
   TransformerLogLevel,
   VpcConfig,
+  RDSLayerMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
 import {
@@ -65,6 +66,7 @@ export type TransformConfig = {
   stackMapping?: Record<string, string>;
   transformParameters: TransformParameters;
   sqlLambdaVpcConfig?: VpcConfig;
+  rdsLayerMapping?: RDSLayerMapping;
 };
 
 export const constructTransformerChain = (
@@ -116,6 +118,7 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
     stackMapping,
     transformParameters,
     sqlLambdaVpcConfig,
+    rdsLayerMapping,
   } = config;
 
   const transformers = constructTransformerChain(transformersFactoryArgs);
@@ -133,6 +136,7 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
     legacyApiKeyEnabled,
     disableResolverDeduping,
     sqlLambdaVpcConfig,
+    rdsLayerMapping,
   });
 };
 
@@ -142,6 +146,7 @@ export type ExecuteTransformConfig = TransformConfig & {
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
   printTransformerLog?: (log: TransformerLog) => void;
   sqlLambdaVpcConfig?: VpcConfig;
+  rdsLayerMapping?: RDSLayerMapping;
 };
 
 /**
@@ -178,6 +183,7 @@ export const executeTransform = (config: ExecuteTransformConfig): DeploymentReso
     modelToDatasourceMap,
     datasourceSecretParameterLocations,
     printTransformerLog,
+    rdsLayerMapping,
   } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
@@ -187,6 +193,7 @@ export const executeTransform = (config: ExecuteTransformConfig): DeploymentReso
     return transform.transform(schema, {
       modelToDatasourceMap,
       datasourceSecretParameterLocations,
+      rdsLayerMapping,
     });
   } finally {
     transform.getLogs().forEach(printLog);
