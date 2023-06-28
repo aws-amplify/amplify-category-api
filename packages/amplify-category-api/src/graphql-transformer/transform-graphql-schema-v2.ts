@@ -28,7 +28,7 @@ const SCHEMA_FILENAME = 'schema.graphql';
 const SCHEMA_DIR_NAME = 'schema';
 const PROVIDER_NAME = 'awscloudformation';
 
-const LAYER_MAPPING_URL = 'https://amplify-sundersc-layer-resources.s3.amazonaws.com/rds-layer-mapping.json';
+const LAYER_MAPPING_URL = 'https://amplify-rds-layer-resources.s3.amazonaws.com/rds-layer-mapping.json';
 
 /**
  * Transform GraphQL Schema
