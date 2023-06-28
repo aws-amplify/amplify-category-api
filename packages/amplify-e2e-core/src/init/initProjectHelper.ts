@@ -527,7 +527,7 @@ export function initCDKProject(cwd: string, templatePath: string): Promise<strin
       });
   })).then(() => new Promise<void>((resolve, reject) => {
     // override dep version from cdk init
-    spawn('npm', ['install', '--save', 'aws-cdk-lib@2.68.0'], { cwd, stripColors: true })
+    spawn('npm', ['install', '--save', 'aws-cdk-lib@2.80.0'], { cwd, stripColors: true })
       .run((err: Error) => {
         if (!err) {
           resolve();
