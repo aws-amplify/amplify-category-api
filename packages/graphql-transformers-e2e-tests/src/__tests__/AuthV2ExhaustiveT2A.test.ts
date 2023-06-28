@@ -16,11 +16,11 @@ const strategyProviders: Record<AuthStrategy, AuthProvider[]> = {
 const tests: { modelName: string, strategy: AuthStrategy, provider: AuthProvider, operation: ModelOperation }[] = [];
 
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `auth-exhaustive-tests-2-${BUILD_TIMESTAMP}`;
-const BUCKET_NAME = `auth-exhaustive-tests-bucket-2-${BUILD_TIMESTAMP}`;
+const STACK_NAME = `auth-exhaustive-tests-2a-${BUILD_TIMESTAMP}`;
+const BUCKET_NAME = `auth-exhaustive-tests-bucket-2a-${BUILD_TIMESTAMP}`;
 const AUTH_ROLE_NAME = `${STACK_NAME}-authRole`;
 const UNAUTH_ROLE_NAME = `${STACK_NAME}-unauthRole`;
-const LOCAL_FS_BUILD_DIR = `/tmp/auth_v2_exhaustive_tests_2_${BUILD_TIMESTAMP}/`;
+const LOCAL_FS_BUILD_DIR = `/tmp/auth_v2_exhaustive_tests_2a_${BUILD_TIMESTAMP}/`;
 
 let USER_POOL_ID: string;
 let IDENTITY_POOL_ID: string;

@@ -37,9 +37,9 @@ describe('@model with @auth', () => {
 
   // stack info
   const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-  const STACK_NAME = `AuthV2TransformerTests-${BUILD_TIMESTAMP}`;
-  const BUCKET_NAME = `appsync-auth-v2-transformer-test-bucket-${BUILD_TIMESTAMP}`;
-  const LOCAL_FS_BUILD_DIR = '/tmp/authv2_transformer_tests/';
+  const STACK_NAME = `AuthV2TransformerFFTests-${BUILD_TIMESTAMP}`;
+  const BUCKET_NAME = `appsync-auth-v2-transformer-ff-test-bucket-${BUILD_TIMESTAMP}`;
+  const LOCAL_FS_BUILD_DIR = '/tmp/authv2_transformer_ff_tests/';
   const S3_ROOT_DIR_KEY = 'deployments';
   let USER_POOL_ID: string;
   let GRAPHQL_ENDPOINT: string;

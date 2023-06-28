@@ -1,4 +1,4 @@
-import { addCircleCITags, getCLIPath, nspawn as spawn } from 'amplify-category-api-e2e-core';
+import { addCITags, getCLIPath, nspawn as spawn } from 'amplify-category-api-e2e-core';
 import { EOL } from 'os';
 
 const defaultSettings = {
@@ -28,7 +28,7 @@ export function initJSProjectWithProfileOldDX(cwd: string, settings: Object, tes
     };
   }
 
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['init'], { cwd, stripColors: true, env })
@@ -76,7 +76,7 @@ export function initJSProjectWithProfile(cwd: string, settings: Object, testingW
     };
   }
 
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['init'], { cwd, stripColors: true, env })

@@ -57,9 +57,9 @@ const awsS3Client = new S3({ region: AWS_REGION });
 
 // stack info
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `MultiAuthV2TransformerTests-${BUILD_TIMESTAMP}`;
-const BUCKET_NAME = `appsync-multi-auth-v2-transformer-test-bucket-${BUILD_TIMESTAMP}`;
-const LOCAL_FS_BUILD_DIR = '/tmp/multi_authv2_transformer_tests/';
+const STACK_NAME = `MultiAuthV2TransformerFFTests-${BUILD_TIMESTAMP}`;
+const BUCKET_NAME = `appsync-multi-auth-v2-transformer-ff-test-bucket-${BUILD_TIMESTAMP}`;
+const LOCAL_FS_BUILD_DIR = '/tmp/multi_authv2_transformer_ff_tests/';
 const S3_ROOT_DIR_KEY = 'deployments';
 const AUTH_ROLE_NAME = `${STACK_NAME}-authRole`;
 const UNAUTH_ROLE_NAME = `${STACK_NAME}-unauthRole`;
