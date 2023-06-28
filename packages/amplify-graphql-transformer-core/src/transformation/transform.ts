@@ -89,6 +89,7 @@ export interface GraphQLTransformOptions {
   readonly overrideConfig?: OverrideConfig;
   readonly sqlLambdaVpcConfig?: VpcConfig;
   readonly legacyApiKeyEnabled?: boolean;
+  readonly rdsLayerMapping?: RDSLayerMapping;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
