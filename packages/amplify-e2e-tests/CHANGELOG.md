@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.12.5...amplify-category-api-e2e-tests@3.12.6) (2023-06-29)
+
+### Bug Fixes
+
+- fixing bad quotes in e2e te ([85cba4d](https://github.com/aws-amplify/amplify-category-api/commit/85cba4d12f23f802e97a887c6f0aee9a50a00bc3))
+
 ## [3.12.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.12.4...amplify-category-api-e2e-tests@3.12.5) (2023-06-20)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests

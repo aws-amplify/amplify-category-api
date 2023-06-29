@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@1.3.3...@aws-amplify/graphql-model-transformer@1.3.4) (2023-06-29)
+
+### Bug Fixes
+
+- handling of all floating promises ([#1577](https://github.com/aws-amplify/amplify-category-api/issues/1577)) ([d5981b2](https://github.com/aws-amplify/amplify-category-api/commit/d5981b2f912d03b44e1269ca704816dd250ff501))
+- use addDependency instead of addDependsOn ([7fd1333](https://github.com/aws-amplify/amplify-category-api/commit/7fd13336732159ba560020e92eff90a9fc179098))
+
 ## [1.3.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@1.3.2...@aws-amplify/graphql-model-transformer@1.3.3) (2023-06-20)
 
 **Note:** Version bump only for package @aws-amplify/graphql-model-transformer

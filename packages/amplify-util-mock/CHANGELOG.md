@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.1.8](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.1.7...amplify-category-api-util-mock@6.1.8) (2023-06-29)
+
+### Bug Fixes
+
+- handling of all floating promises ([#1577](https://github.com/aws-amplify/amplify-category-api/issues/1577)) ([d5981b2](https://github.com/aws-amplify/amplify-category-api/commit/d5981b2f912d03b44e1269ca704816dd250ff501))
+
 ## [6.1.7](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.1.6...amplify-category-api-util-mock@6.1.7) (2023-06-20)
 
 **Note:** Version bump only for package amplify-category-api-util-mock
