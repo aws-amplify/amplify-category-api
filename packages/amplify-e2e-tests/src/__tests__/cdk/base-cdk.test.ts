@@ -46,7 +46,7 @@ describe('CDK GraphQL Transformer', () => {
       apiKey,
       /* GraphQL */ `
         mutation CREATE_TODO {
-          createTodo(input: { description: 'todo desc' }) {
+          createTodo(input: { description: "todo desc" }) {
             id
             description
           }
