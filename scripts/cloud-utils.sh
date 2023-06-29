@@ -71,17 +71,17 @@ function cloudE2E {
 function cleanupStaleResourcesBeta {
   echo Running Beta E2E resource stale resource cleanup
   CLEANUP_ROLE_NAME=CodebuildDeveloper
-  CLEANUP_PROFILE_NAME=AmplifyAPICleanupBeta
+  CLEANUP_PROFILE_NAME=AmplifyAPIE2EBeta
   CLEANUP_PROJECT_NAME=amplify-category-api-cleanup-workflow
   TARGET_BRANCH=$CURR_BRANCH
-  triggerProject $CLEANUP_ACCOUNT_PROD $CLEANUP_ROLE_NAME $CLEANUP_PROFILE_NAME $CLEANUP_PROJECT_NAME $TARGET_BRANCH
+  triggerProject $E2E_ACCOUNT_BETA $CLEANUP_ROLE_NAME $CLEANUP_PROFILE_NAME $CLEANUP_PROJECT_NAME $TARGET_BRANCH
 }
 
 function cleanupStaleResources {
   echo Running Prod E2E resource stale resource cleanup
   CLEANUP_ROLE_NAME=CodebuildDeveloper
-  CLEANUP_PROFILE_NAME=AmplifyAPICleanupProd
+  CLEANUP_PROFILE_NAME=AmplifyAPIE2EProd
   CLEANUP_PROJECT_NAME=amplify-category-api-cleanup-workflow
   TARGET_BRANCH=$CURR_BRANCH
-  triggerProject $CLEANUP_ACCOUNT_PROD $CLEANUP_ROLE_NAME $CLEANUP_PROFILE_NAME $CLEANUP_PROJECT_NAME $TARGET_BRANCH
+  triggerProject $E2E_ACCOUNT_PROD $CLEANUP_ROLE_NAME $CLEANUP_PROFILE_NAME $CLEANUP_PROJECT_NAME $TARGET_BRANCH
 }
