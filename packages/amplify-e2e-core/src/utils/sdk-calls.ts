@@ -250,7 +250,7 @@ export const getCloudWatchLogs = async (region: string, logGroupName: string, lo
 };
 
 export const describeCloudFormationStack = async (stackName: string, region: string, profileConfig?: any) => {
-  const service = profileConfig ? new CloudFormation(profileConfig) : new CloudFormation({ region });
+  const service = profileConfig ? new CloudFormation({ ...profileConfig, region }) : new CloudFormation({ region });
   return (await service.describeStacks({ StackName: stackName }).promise()).Stacks.find(
     stack => stack.StackName === stackName || stack.StackId === stackName,
   );

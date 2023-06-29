@@ -106,21 +106,20 @@ export const generateConstructExports = (
     return referencedStack.getResource(id) as T;
   };
 
-  // eslint-disable-next-line arrow-body-style
-  const getL1Resources = <T extends CfnResource>(mappings: StackResourceMapping[]): Record<string, T> => {
-    return Object.fromEntries(mappings.map((stackResourceMapping) => [stackResourceMapping.id, getL1Resource<T>(stackResourceMapping)]));
-  };
+  const getL1Resources = <T extends CfnResource>(mappings: StackResourceMapping[]): Record<string, T> => Object.fromEntries(
+    mappings.map((stackResourceMapping) => [stackResourceMapping.id, getL1Resource<T>(stackResourceMapping)]),
+  );
 
   return {
-    api: getL1Resource<CfnGraphQLApi>(apiResourceMapping),
-    schema: getL1Resource<CfnGraphQLSchema>(schemaResourceMapping),
-    apiKey: apiKeyResourceMapping && <CfnApiKey>getL1Resource(apiKeyResourceMapping),
-    resolvers: getL1Resources<CfnResolver>(cfnResolverResourceMapping),
-    appsyncFunctions: getL1Resources<CfnFunctionConfiguration>(cfnAppSyncFunctionResourceMapping),
-    dataSources: getL1Resources<CfnDataSource>(cfnDataSourceResourceMapping),
-    tables: getL1Resources<CfnTable>(cfnTableResourceMapping),
-    roles: getL1Resources<CfnRole>(cfnRoleResourceMapping),
-    policies: getL1Resources<CfnPolicy>(cfnPolicyResourceMapping),
-    additionalResources: getL1Resources(additionalResourceMapping),
+    cfnGraphqlApi: getL1Resource<CfnGraphQLApi>(apiResourceMapping),
+    cfnGraphqlSchema: getL1Resource<CfnGraphQLSchema>(schemaResourceMapping),
+    cfnApiKey: apiKeyResourceMapping && <CfnApiKey>getL1Resource(apiKeyResourceMapping),
+    cfnResolvers: getL1Resources<CfnResolver>(cfnResolverResourceMapping),
+    cfnFunctionConfigurations: getL1Resources<CfnFunctionConfiguration>(cfnAppSyncFunctionResourceMapping),
+    cfnDataSources: getL1Resources<CfnDataSource>(cfnDataSourceResourceMapping),
+    cfnTables: getL1Resources<CfnTable>(cfnTableResourceMapping),
+    cfnRoles: getL1Resources<CfnRole>(cfnRoleResourceMapping),
+    cfnPolicies: getL1Resources<CfnPolicy>(cfnPolicyResourceMapping),
+    additionalCfnResources: getL1Resources(additionalResourceMapping),
   };
 };

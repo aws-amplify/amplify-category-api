@@ -38,8 +38,8 @@ const transformSchema = (schema: string): DeploymentResources => {
     ],
     transformParameters: {
       respectPrimaryKeyAttributesOnConnectionField: false,
+      sandboxModeEnabled: true,
     },
-    sandboxModeEnabled: true,
   });
   return transformer.transform(schema);
 };

@@ -35,7 +35,7 @@ export class ApigwStackTransform {
     // Validate the cli-inputs.json for the resource
     this.cliInputsState = cliInputState ?? new ApigwInputState(context, resourceName);
     this.cliInputs = this.cliInputsState.getCliInputPayload();
-    this.cliInputsState.isCLIInputsValid();
+    void this.cliInputsState.isCLIInputsValid();
   }
 
   async transform() {

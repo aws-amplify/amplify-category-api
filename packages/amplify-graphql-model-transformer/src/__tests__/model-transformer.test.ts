@@ -1159,8 +1159,10 @@ describe('ModelTransformer: ', () => {
           ConflictHandler: ConflictHandlerType.AUTOMERGE,
         },
       },
-      sandboxModeEnabled: true,
       transformers: [new ModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -1250,8 +1252,10 @@ describe('ModelTransformer: ', () => {
           }
         }
       },
-      sandboxModeEnabled: true,
-      transformers: [new ModelTransformer()]
+      transformers: [new ModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -1337,8 +1341,10 @@ describe('ModelTransformer: ', () => {
       name: String
     }`;
     const transformer = new GraphQLTransform({
-      sandboxModeEnabled: true,
       transformers: [new ModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
     });
     const out = transformer.transform(validSchema);
 
@@ -1374,8 +1380,10 @@ describe('ModelTransformer: ', () => {
           },
         ],
       },
-      sandboxModeEnabled: true,
       transformers: [new ModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      }
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();

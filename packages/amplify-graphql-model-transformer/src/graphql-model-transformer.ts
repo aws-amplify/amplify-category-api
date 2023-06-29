@@ -291,7 +291,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         }
       }
       // global auth check
-      if (!hasAuth && ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+      if (!hasAuth && ctx.transformParameters.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
         const apiKeyDirArray = [makeDirective(API_KEY_DIRECTIVE, [])];
         extendTypeWithDirectives(ctx, def.name.value, apiKeyDirArray);
         propagateApiKeyToNestedTypes(ctx as TransformerContextProvider, def, new Set<string>());

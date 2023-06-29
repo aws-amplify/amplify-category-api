@@ -232,17 +232,11 @@ export interface GraphQLTransformOptions {
     // (undocumented)
     readonly authConfig?: AppSyncAuthConfiguration;
     // (undocumented)
-    readonly disableResolverDeduping?: boolean;
-    // (undocumented)
     readonly host?: TransformHostProvider;
-    // (undocumented)
-    readonly legacyApiKeyEnabled?: boolean;
     // (undocumented)
     readonly overrideConfig?: OverrideConfig;
     // (undocumented)
     readonly resolverConfig?: ResolverConfig;
-    // (undocumented)
-    readonly sandboxModeEnabled?: boolean;
     // Warning: (ae-forgotten-export) The symbol "StackMapping" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)

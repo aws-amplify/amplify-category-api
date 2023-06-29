@@ -13,5 +13,15 @@ export type {
   QueryFunctionSlot,
   SubscriptionFunctionSlot,
   FunctionSlot,
+  FunctionSlotOverride,
+  ConflictResolution,
+  ConflictDetectionType,
+  ConflictHandlerType,
+  OptimisticConflictResolutionStrategy,
+  CustomConflictResolutionStrategy,
+  AutomergeConflictResolutionStrategy,
+  ConflictResolutionStrategyBase,
+  ConflictResolutionStrategy,
+  SchemaTranslationBehavior,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';

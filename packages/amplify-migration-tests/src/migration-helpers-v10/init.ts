@@ -1,5 +1,5 @@
 
-import { addCircleCITags, getCLIPath, nspawn as spawn } from 'amplify-category-api-e2e-core';
+import { addCITags, getCLIPath, nspawn as spawn } from 'amplify-category-api-e2e-core';
 import { EOL } from 'os';
 
 const defaultSettings = {
@@ -33,7 +33,7 @@ export function initJSProjectWithProfileV10(cwd: string, settings?: Partial<type
       };
     }
   
-    addCircleCITags(cwd);
+    addCITags(cwd);
   
     const cliArgs = ['init'];
     const providerConfigSpecified = !!s.providerConfig && typeof s.providerConfig === 'object';

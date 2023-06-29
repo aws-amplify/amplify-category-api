@@ -29,8 +29,6 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-transformer-interfaces": "2.2.2",
-    "aws-cdk-lib": "~2.68.0",
-    "constructs": "^10.0.5",
     "fs-extra": "^8.1.0",
     "graphql": "^15.5.0",
     "graphql-transformer-common": "4.24.6",
@@ -39,6 +37,10 @@
     "md5": "^2.3.0",
     "object-hash": "^3.0.0",
     "ts-dedent": "^2.0.0"
+  },
+  "peerDependencies": {
+    "aws-cdk-lib": "^2.68.0",
+    "constructs": "^10.0.5"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
@@ -62,6 +64,13 @@
       "json",
       "node"
     ],
-    "collectCoverage": true
+    "collectCoverage": true,
+    "coverageThreshold": {
+      "global": {
+        "branches": 14,
+        "functions": 22,
+        "lines": 29
+      }
+    }
   }
 }

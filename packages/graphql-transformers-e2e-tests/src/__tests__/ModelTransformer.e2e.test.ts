@@ -88,7 +88,9 @@ beforeAll(async () => {
   `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer()],
-    sandboxModeEnabled: true,
+    transformParameters: {
+      sandboxModeEnabled: true,
+    },
   });
   const out = transformer.transform(validSchema);
 

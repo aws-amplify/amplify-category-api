@@ -149,7 +149,7 @@ export const run = async (context: $TSContext): Promise<void> => {
 
     fs.writeFileSync(writeToPath, cfn, 'utf8');
 
-    context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { forceCompile: true });
+    await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { forceCompile: true });
 
     printer.success(`Successfully added the ${datasource} datasource locally`);
     printer.blankLine();

@@ -61,7 +61,9 @@ const transformSchema = (schema: string, enableDataStore = false) => {
       new BelongsToTransformer(),
       new MapsToTransformer(),
     ],
-    sandboxModeEnabled: true,
+    transformParameters: {
+      sandboxModeEnabled: true,
+    },
     resolverConfig: enableDataStore
       ? {
         project: {

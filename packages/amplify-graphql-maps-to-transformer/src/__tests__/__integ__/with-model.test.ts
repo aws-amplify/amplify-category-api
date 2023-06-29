@@ -12,7 +12,9 @@ describe('@mapsTo directive on model type', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer(), new MapsToTransformer()],
-      sandboxModeEnabled: true,
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
     });
     const out = transformer.transform(basicSchema);
     expect(out.stacks.Task.Resources!.TaskTable!.Properties.TableName).toMatchInlineSnapshot(`
