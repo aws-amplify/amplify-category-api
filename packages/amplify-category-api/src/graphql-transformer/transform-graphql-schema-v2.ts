@@ -22,6 +22,7 @@ import { getConnectionSecrets, testDatabaseConnection, getExistingConnectionSecr
 import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { getHostVpc } from '@aws-amplify/graphql-schema-generator';
+import fetch from 'node-fetch';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
