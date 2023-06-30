@@ -88,7 +88,6 @@ const validateAwsEmail = (x: string): boolean => EMAIL_ADDRESS_REGEX.test(x);
 
 const validateAwsUrl = (x: string): boolean => {
   try {
-    // eslint-disable-next-line no-new
     new URL(x);
     return true;
   } catch (e) {

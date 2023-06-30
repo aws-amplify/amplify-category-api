@@ -29,7 +29,6 @@ const mockTransformer: TransformerPluginProvider = {
 describe('GraphQLTransform', () => {
   it('throws on construction with no transformers', () => {
     expect(() => {
-      // eslint-disable-next-line no-new
       new GraphQLTransform({
         transformers: [],
       });

@@ -22,7 +22,6 @@ type DeltaSyncConfig = {
 export function createSyncTable(context: TransformerContext) {
   const stack = context.stackManager.getStackFor(SyncResourceIDs.syncTableName);
   const tableName = context.resourceHelper.generateTableName(SyncResourceIDs.syncTableName);
-  // eslint-disable-next-line no-new
   new Table(stack, SyncResourceIDs.syncDataSourceID, {
     tableName,
     partitionKey: {

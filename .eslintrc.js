@@ -139,7 +139,7 @@ module.exports = {
     'no-var': 'error',
     'strict': 'error',
     'spaced-comment': ['error', 'always'],
-    'no-new': 'error',
+    'no-new': 'off',
     'no-underscore-dangle': 'error',
     'no-template-curly-in-string': 'error',
     'no-plusplus': 'off',

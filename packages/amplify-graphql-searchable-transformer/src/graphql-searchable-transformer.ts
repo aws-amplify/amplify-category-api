@@ -297,7 +297,6 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     const envParam = context.stackManager.getParameter(Env) as CfnParameter;
 
-    // eslint-disable-next-line no-new
     new CfnCondition(stack, HasEnvironmentParameter, {
       expression: Fn.conditionNot(Fn.conditionEquals(envParam, ResourceConstants.NONE)),
     });
