@@ -61,9 +61,13 @@
       "node"
     ],
     "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**",
+      "!src/__tests__/**"
+    ],
     "coverageThreshold": {
       "global": {
-        "branches": 58,
+        "branches": 80,
         "functions": 80,
         "lines": 80
       }
