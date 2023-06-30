@@ -26,10 +26,9 @@ import {
   TypeDefinitionNode,
   TypeExtensionNode,
   UnionTypeDefinitionNode,
-  print,
 } from 'graphql';
 import _ from 'lodash';
-import { DefinitionNode, DocumentNode } from 'graphql/language';
+import { DocumentNode } from 'graphql/language';
 import { ResolverConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
@@ -47,6 +46,7 @@ import {
   matchEnumValueDirective,
   matchFieldDirective,
   matchInputFieldDirective,
+  removeAmplifyInputDefinition,
   sortTransformerPlugins,
 } from './utils';
 import { validateAuthModes, validateModelSchema } from './validation';
@@ -755,20 +755,3 @@ export class GraphQLTransform {
     return this.logs;
   }
 }
-
-const removeAmplifyInputDefinition = (schema: string): string => {
-  if (_.isEmpty(schema)) {
-    return schema;
-  }
-
-  const parsedSchema: any = parse(schema);
-
-  parsedSchema.definitions = parsedSchema.definitions.filter((definition: DefinitionNode) => !(
-    definition.kind === 'InputObjectTypeDefinition'
-    && definition.name
-    && definition.name.value === 'Amplify'
-  ));
-
-  const sanitizedSchema = print(parsedSchema);
-  return sanitizedSchema;
-};
