@@ -3,6 +3,7 @@ import {
   FieldMapEntry,
   ModelFieldMap,
   TransformerContextProvider,
+  TransformerPreProcessContextProvider,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { MapsToTransformer } from '../graphql-maps-to-transformer';
@@ -27,6 +28,7 @@ describe('@mapsTo directive', () => {
   const getResolver_mock = jest.fn();
   const getModelFieldMapKeys_mock = jest.fn();
   const getModelFieldMap_mock = jest.fn();
+  const setTypeMapping_mock = jest.fn();
 
   const host_stub = 'host_stub';
 
@@ -41,6 +43,9 @@ describe('@mapsTo directive', () => {
     },
     api: {
       host: host_stub,
+    },
+    schemaHelper: {
+      setTypeMapping: setTypeMapping_mock,
     },
   };
 
@@ -273,5 +278,14 @@ describe('@mapsTo directive', () => {
     // assert
     expect(attachInputMappingSlot_mock).not.toBeCalled();
     expect(attachResponseMappingSlot_mock).not.toBeCalled();
+  });
+
+  it('pre-mutates the schema to reassign type mappings', () => {
+    mapsToTransformer.preMutateSchema({
+      ...stubTransformerContextBase as unknown as TransformerPreProcessContextProvider,
+      inputDocument: parse(simpleSchema),
+    });
+
+    expect(setTypeMapping_mock).toHaveBeenCalledWith('TestName', 'OriginalName');
   });
 });
