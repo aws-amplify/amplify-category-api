@@ -1,3 +1,5 @@
+/* eslint-disable class-methods-use-this */
+/* eslint-disable max-classes-per-file */
 import {
   AppSyncFunctionConfigurationProvider,
   DataSourceProvider,
@@ -9,11 +11,14 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
-import { isResolvableObject, Stack, CfnParameter, Lazy } from 'aws-cdk-lib';
+import {
+  isResolvableObject, Stack, CfnParameter, Lazy,
+} from 'aws-cdk-lib';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
 import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
 import { InvalidDirectiveError } from '../errors';
+// eslint-disable-next-line import/no-cycle
 import * as SyncUtils from '../transformation/sync-utils';
 import { IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils';
 import { StackManager } from './stack-manager';
@@ -94,7 +99,8 @@ export class ResolverManager implements TransformerResolversManagerProvider {
     return resolver;
   };
 
-  getResolver = (typeName: string, fieldName: string): TransformerResolverProvider | void => {
+  // eslint-disable-next-line consistent-return
+  getResolver = (typeName: string, fieldName: string): TransformerResolverProvider | undefined => {
     const key = `${typeName}.${fieldName}`;
     if (this.resolvers.has(key)) {
       return this.resolvers.get(key) as TransformerResolverProvider;
@@ -153,7 +159,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     this.slotNames = new Set([...requestSlots, ...responseSlots]);
   }
 
-  mapToStack = (stack: Stack) => {
+  mapToStack = (stack: Stack): void => {
     this.stack = stack;
   };
 
@@ -189,7 +195,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     slotName: string,
     requestMappingTemplate?: MappingTemplateProvider,
     responseMappingTemplate?: MappingTemplateProvider,
-  ): boolean => this.findSlot(slotName, requestMappingTemplate, responseMappingTemplate) !== undefined
+  ): boolean => this.findSlot(slotName, requestMappingTemplate, responseMappingTemplate) !== undefined;
 
   findSlot = (
     slotName: string,
@@ -210,11 +216,12 @@ export class TransformerResolver implements TransformerResolverProvider {
       const [slotEntryRequestMappingTemplate, slotEntryResponseMappingTemplate] = [
         (slotEntry.requestMappingTemplate as any)?.name ?? 'NOT-FOUND',
         (slotEntry.responseMappingTemplate as any)?.name ?? 'NOT-FOUND',
-      ]
-        .map(name => name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex));
+      // eslint-disable-next-line no-loop-func
+      ].map((name) => name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex));
 
       // If both request and response mapping templates are inline, skip check
       if (slotEntryRequestMappingTemplate === '' && slotEntryResponseMappingTemplate === '') {
+        // eslint-disable-next-line no-continue
         continue;
       }
 
@@ -223,11 +230,12 @@ export class TransformerResolver implements TransformerResolverProvider {
         slotEntryRequestMappingTemplate === requestMappingTemplateName
         || slotEntryResponseMappingTemplate === responseMappingTemplateName
       ) {
+        // eslint-disable-next-line consistent-return
         return slotEntry;
       }
       slotIndex++;
     }
-  }
+  };
 
   updateSlot = (
     slotName: string,
@@ -243,15 +251,15 @@ export class TransformerResolver implements TransformerResolverProvider {
         ? responseMappingTemplate
         : slot.responseMappingTemplate;
     }
-  }
+  };
 
   synthesize = (context: TransformerContextProvider, api: GraphQLAPIProvider): void => {
     const stack = this.stack || (context.stackManager as StackManager).rootStack;
     this.ensureNoneDataSource(api);
     const requestFns = this.synthesizeResolvers(stack, api, this.requestSlots);
     const responseFns = this.synthesizeResolvers(stack, api, this.responseSlots);
-    // substitue template name values
-    [this.requestMappingTemplate, this.requestMappingTemplate].map(template => this.substitueSlotInfo(template, 'main', 0));
+    // substitute template name values
+    [this.requestMappingTemplate, this.requestMappingTemplate].map((template) => this.substituteSlotInfo(template, 'main', 0));
 
     const dataSourceProviderFn = api.host.addAppSyncFunction(
       toPascalCase([this.typeName, this.fieldName, 'DataResolverFn']),
@@ -269,29 +277,33 @@ export class TransformerResolver implements TransformerResolverProvider {
         case 'AMAZON_DYNAMODB':
           if (this.datasource.ds.dynamoDbConfig && !isResolvableObject(this.datasource.ds.dynamoDbConfig)) {
             const tableName = this.datasource.ds.dynamoDbConfig?.tableName;
-            dataSource = `$util.qr($ctx.stash.put("tableName", "${tableName}"))`
-            if (this.datasource.ds.dynamoDbConfig?.deltaSyncConfig && !isResolvableObject(this.datasource.ds.dynamoDbConfig?.deltaSyncConfig)) { 
+            dataSource = `$util.qr($ctx.stash.put("tableName", "${tableName}"))`;
+            if (
+              this.datasource.ds.dynamoDbConfig?.deltaSyncConfig
+              && !isResolvableObject(this.datasource.ds.dynamoDbConfig?.deltaSyncConfig)
+            ) {
               const deltaSyncTableTtl = Lazy.string({
                 produce: (): string => {
-                  if (this.datasource
+                  if (
+                    this.datasource
                     && this.datasource.ds.dynamoDbConfig
-                    && !isResolvableObject(this.datasource.ds.dynamoDbConfig) 
+                    && !isResolvableObject(this.datasource.ds.dynamoDbConfig)
                     && this.datasource.ds.dynamoDbConfig.deltaSyncConfig
                     && !isResolvableObject(this.datasource.ds.dynamoDbConfig.deltaSyncConfig)
+                    && this.datasource.ds.dynamoDbConfig.deltaSyncConfig.deltaSyncTableTtl
                   ) {
-                    return this.datasource.ds.dynamoDbConfig.deltaSyncConfig.deltaSyncTableTtl || SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL.toString();
-                  } else {
-                    return SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL.toString();
+                    return this.datasource.ds.dynamoDbConfig.deltaSyncConfig.deltaSyncTableTtl;
                   }
-                }
+                  return SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL.toString();
+                },
               });
               dataSource += `\n$util.qr($ctx.stash.put("deltaSyncTableTtl", "${deltaSyncTableTtl}"))`;
             }
           }
 
           if (context.isProjectUsingDataStore()) {
-            //Remove the suffix "Table" from the datasource name
-            //The stack name cannot be retrieved as during the runtime it is tokenized and value not being revealed
+            // Remove the suffix "Table" from the datasource name
+            // The stack name cannot be retrieved as during the runtime it is tokenized and value not being revealed
             const modelName = this.datasource.name.slice(0, -5);
             const syncConfig = SyncUtils.getSyncConfig(context, modelName)!;
             const funcConf = dataSourceProviderFn.node.children.find(
@@ -347,21 +359,23 @@ export class TransformerResolver implements TransformerResolverProvider {
       }
     }
     let initResolver = dedent`
-    $util.qr($ctx.stash.put("typeName", "${this.typeName}"))
-    $util.qr($ctx.stash.put("fieldName", "${this.fieldName}"))
-    $util.qr($ctx.stash.put("conditions", []))
-    $util.qr($ctx.stash.put("metadata", {}))
-    $util.qr($ctx.stash.metadata.put("dataSourceType", "${dataSourceType}"))
-    $util.qr($ctx.stash.metadata.put("apiId", "${api.apiId}"))
-    $util.qr($ctx.stash.put("connectionAttributes", {}))
-    ${dataSource}
+      $util.qr($ctx.stash.put("typeName", "${this.typeName}"))
+      $util.qr($ctx.stash.put("fieldName", "${this.fieldName}"))
+      $util.qr($ctx.stash.put("conditions", []))
+      $util.qr($ctx.stash.put("metadata", {}))
+      $util.qr($ctx.stash.metadata.put("dataSourceType", "${dataSourceType}"))
+      $util.qr($ctx.stash.metadata.put("apiId", "${api.apiId}"))
+      $util.qr($ctx.stash.put("connectionAttributes", {}))
+      ${dataSource}
     `;
-    const authModes = [context.authConfig.defaultAuthentication, ...(context.authConfig.additionalAuthenticationProviders || [])].map(
-      mode => mode?.authenticationType,
-    );
-    if (authModes.includes(AuthorizationType.IAM)) {
+    const hasIamAuth = [
+      context.authConfig.defaultAuthentication,
+      ...(context.authConfig.additionalAuthenticationProviders || []),
+    ].some((mode) => mode?.authenticationType === AuthorizationType.IAM);
+    if (hasIamAuth) {
       const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
       const unauthRoleParameter = (context.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
+      /* eslint-disable indent */
       initResolver += dedent`\n
       $util.qr($ctx.stash.put("authRole", "arn:aws:sts::${
         Stack.of(context.stackManager.rootStack).account
@@ -370,6 +384,7 @@ export class TransformerResolver implements TransformerResolverProvider {
         Stack.of(context.stackManager.rootStack).account
       }:assumed-role/${unauthRoleParameter}/CognitoIdentityCredentials"))
       `;
+      /* eslint-enable indent */
     }
     initResolver += '\n$util.toJson({})';
     api.host.addResolver(
@@ -379,7 +394,7 @@ export class TransformerResolver implements TransformerResolverProvider {
       MappingTemplate.inlineTemplateFromString('$util.toJson($ctx.prev.result)'),
       this.resolverLogicalId,
       undefined,
-      [...requestFns, dataSourceProviderFn, ...responseFns].map(fn => fn.functionId),
+      [...requestFns, dataSourceProviderFn, ...responseFns].map((fn) => fn.functionId),
       stack,
     );
   };
@@ -396,9 +411,9 @@ export class TransformerResolver implements TransformerResolverProvider {
           const name = `${this.typeName}${this.fieldName}${slotName}${index++}Function`;
           const { requestMappingTemplate, responseMappingTemplate, dataSource } = slotItem;
           // eslint-disable-next-line no-unused-expressions
-          requestMappingTemplate && this.substitueSlotInfo(requestMappingTemplate, slotName, index);
+          requestMappingTemplate && this.substituteSlotInfo(requestMappingTemplate, slotName, index);
           // eslint-disable-next-line no-unused-expressions
-          responseMappingTemplate && this.substitueSlotInfo(responseMappingTemplate, slotName, index);
+          responseMappingTemplate && this.substituteSlotInfo(responseMappingTemplate, slotName, index);
           const fn = api.host.addAppSyncFunction(
             name,
             requestMappingTemplate || MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
@@ -414,21 +429,23 @@ export class TransformerResolver implements TransformerResolverProvider {
   };
 
   /**
-   * substitueSlotInfo
+   * substituteSlotInfo
    */
-  private substitueSlotInfo(template: MappingTemplateProvider, slotName: string, index: number) {
+  private substituteSlotInfo(template: MappingTemplateProvider, slotName: string, index: number): void {
     // Check the constructor name instead of using 'instanceof' because the latter does not work
     // with copies of the class, which happens with custom transformers.
     // See: https://github.com/aws-amplify/amplify-cli/issues/9362
     if (template.constructor.name === S3MappingTemplate.name) {
-      (template as S3MappingTemplate).substitueValues({ slotName, slotIndex: index, typeName: this.typeName, fieldName: this.fieldName });
+      (template as S3MappingTemplate).substituteValues({
+        slotName, slotIndex: index, typeName: this.typeName, fieldName: this.fieldName,
+      });
     }
   }
 
   /**
    * ensureNoneDataSource
    */
-  private ensureNoneDataSource(api: GraphQLAPIProvider) {
+  private ensureNoneDataSource(api: GraphQLAPIProvider): void {
     if (!api.host.hasDataSource(NONE_DATA_SOURCE_NAME)) {
       api.host.addNoneDataSource(NONE_DATA_SOURCE_NAME, {
         name: NONE_DATA_SOURCE_NAME,
