@@ -54,7 +54,6 @@
     "verify-yarn-lock": "./scripts/verify-yarn-lock.sh",
     "update-test-timing-data": "ts-node ./scripts/cci/get-test-timing-from-cci-job-metrics.ts",
     "format-staged": "git-format-staged -f 'prettier --ignore-unknown --stdin --stdin-filepath \"{}\"' .",
-    "lint-deps": "git diff --name-only --cached --diff-filter d | grep -E '\\.(js|jsx|ts|tsx)$' | xargs eslint --no-eslintrc --config depcheck.config.js",
     "split-codebuild-e2e-tests": "yarn ts-node ./scripts/split-e2e-tests-codebuild.ts && git add codebuild_specs/e2e_workflow.yml",
     "release-codebuild": "source ./scripts/cloud-release.sh && release",
     "view-test-artifact": "./scripts/view-test-artifacts.sh",
