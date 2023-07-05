@@ -11,7 +11,7 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
     writeJson: jest.fn(),
   },
   pathManager: {
-    getResourceDirectoryPath: jest.fn(_ => 'mock/backend/path'),
+    getResourceDirectoryPath: jest.fn((_) => 'mock/backend/path'),
   },
 }));
 

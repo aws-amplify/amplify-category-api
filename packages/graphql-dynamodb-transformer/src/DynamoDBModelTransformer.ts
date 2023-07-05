@@ -229,8 +229,8 @@ export class DynamoDBModelTransformer extends Transformer {
   private addTimestampFields(def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void {
     const createdAtField = getCreatedAtFieldName(directive);
     const updatedAtField = getUpdatedAtFieldName(directive);
-    const existingCreatedAtField = def.fields.find(f => f.name.value === createdAtField);
-    const existingUpdatedAtField = def.fields.find(f => f.name.value === updatedAtField);
+    const existingCreatedAtField = def.fields.find((f) => f.name.value === createdAtField);
+    const existingUpdatedAtField = def.fields.find((f) => f.name.value === updatedAtField);
     // Todo: Consolidate how warnings are shown. Instead of printing them here, the invoker of transformer should get
     // all the warnings together and decide how to render those warning
     if (!DynamoDBModelTransformer.isTimestampCompatibleField(existingCreatedAtField)) {
@@ -261,7 +261,7 @@ export class DynamoDBModelTransformer extends Transformer {
 
   // Add ID field to type when does not have id
   private addIdField(def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void {
-    const hasIdField = def.fields.find(f => f.name.value === 'id');
+    const hasIdField = def.fields.find((f) => f.name.value === 'id');
     if (!hasIdField) {
       const obj = ctx.getObject(def.name.value);
       const newObj: ObjectTypeDefinitionNode = {
@@ -298,8 +298,8 @@ export class DynamoDBModelTransformer extends Transformer {
     const createdAtField = getCreatedAtFieldName(directive);
     const updatedAtField = getUpdatedAtFieldName(directive);
 
-    const existingCreatedAtField = def.fields.find(f => f.name.value === createdAtField);
-    const existingUpdatedAtField = def.fields.find(f => f.name.value === updatedAtField);
+    const existingCreatedAtField = def.fields.find((f) => f.name.value === createdAtField);
+    const existingUpdatedAtField = def.fields.find((f) => f.name.value === updatedAtField);
 
     // auto populate the timestamp field only if they are of AWSDateTime type
     const timestampFields = {
@@ -363,7 +363,7 @@ export class DynamoDBModelTransformer extends Transformer {
     if (shouldMakeUpdate) {
       const updateInput = makeUpdateInputObject(def, nonModelArray, ctx, isSyncEnabled);
       const optionalNonNullableFields = getFieldsOptionalNonNullableField(
-        updateInput.fields.map(r => r),
+        updateInput.fields.map((r) => r),
         def,
       );
       if (!ctx.getType(updateInput.name.value)) {
@@ -728,7 +728,7 @@ export class DynamoDBModelTransformer extends Transformer {
       if (this.typeExist(tableXMutationConditionInputName, ctx)) {
         const tableXMutationConditionInput = <InputObjectTypeDefinitionNode>ctx.getType(tableXMutationConditionInputName);
 
-        const keyDirectives = type.directives.filter(d => d.name.value === 'key');
+        const keyDirectives = type.directives.filter((d) => d.name.value === 'key');
 
         // If there are @key directives defined we've nothing to do, it will handle everything
         if (keyDirectives && keyDirectives.length > 0) {
@@ -736,10 +736,10 @@ export class DynamoDBModelTransformer extends Transformer {
         }
 
         // Remove the field named 'id' from the condition if there is one
-        const idField = tableXMutationConditionInput.fields.find(f => f.name.value === 'id');
+        const idField = tableXMutationConditionInput.fields.find((f) => f.name.value === 'id');
 
         if (idField) {
-          const reducedFields = tableXMutationConditionInput.fields.filter(f => Boolean(f.name.value !== 'id'));
+          const reducedFields = tableXMutationConditionInput.fields.filter((f) => Boolean(f.name.value !== 'id'));
 
           const updatedInput = {
             ...tableXMutationConditionInput,

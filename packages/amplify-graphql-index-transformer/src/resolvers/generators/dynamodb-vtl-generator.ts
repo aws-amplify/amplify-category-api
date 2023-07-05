@@ -1,16 +1,7 @@
-import {
-  replaceDdbPrimaryKey,
-  updateResolvers,
-  setQuerySnippet,
-} from '../resolvers';
-import {
-  TransformerContextProvider,
-  TransformerResolverProvider
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { replaceDdbPrimaryKey, updateResolvers, setQuerySnippet } from '../resolvers';
+import { TransformerContextProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../../types';
-import {
-  IndexVTLGenerator,
-} from "./vtl-generator";
+import { IndexVTLGenerator } from './vtl-generator';
 import {
   bool,
   compoundExpression,
@@ -29,12 +20,17 @@ import {
   ref,
   RESOLVER_VERSION_ID,
   set,
-  str
+  str,
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
 
 export class DynamoDBIndexVTLGenerator implements IndexVTLGenerator {
-  generateIndexQueryRequestTemplate(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider, tableName: string, operationName: string): string {
+  generateIndexQueryRequestTemplate(
+    config: IndexDirectiveConfiguration,
+    ctx: TransformerContextProvider,
+    tableName: string,
+    operationName: string,
+  ): string {
     const { name, object, queryField } = config;
     if (!(name && queryField)) {
       throw new Error('Expected name and queryField to be defined while generating resolver.');
@@ -100,9 +96,13 @@ export class DynamoDBIndexVTLGenerator implements IndexVTLGenerator {
       ]),
     );
   }
-  
-  generatePrimaryKeyVTL = (config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, resolverMap: Map<TransformerResolverProvider, string>): void => {
+
+  generatePrimaryKeyVTL = (
+    config: PrimaryKeyDirectiveConfiguration,
+    ctx: TransformerContextProvider,
+    resolverMap: Map<TransformerResolverProvider, string>,
+  ): void => {
     replaceDdbPrimaryKey(config, ctx);
     updateResolvers(config, ctx, resolverMap);
   };
-};
+}

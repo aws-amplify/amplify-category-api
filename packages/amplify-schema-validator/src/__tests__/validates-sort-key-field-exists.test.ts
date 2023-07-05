@@ -4,7 +4,7 @@ import { readSchema } from './helpers/readSchema';
 describe('Validate Schema', () => {
   it('fails validation when sort key field does not exist in model', () => {
     const schema = readSchema('invalid-sort-key-field-exists.graphql');
-    const errorRegex = 'Can\'t find field \'createdAt\' in Test, but it was specified in index \'byName\'';
+    const errorRegex = "Can't find field 'createdAt' in Test, but it was specified in index 'byName'";
     expect(() => validateSchema(schema)).toThrow(errorRegex);
   });
 

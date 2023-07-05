@@ -12,10 +12,7 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
   stateManager: {
     resourceInputsJsonExists: jest.fn().mockReturnValue(true),
   },
-  buildOverrideDir: jest
-    .fn()
-    .mockRejectedValueOnce(new Error('mock build dir message'))
-    .mockResolvedValueOnce(true),
+  buildOverrideDir: jest.fn().mockRejectedValueOnce(new Error('mock build dir message')).mockResolvedValueOnce(true),
   AmplifySupportedService: {
     APPSYNC: 'AppSync',
   },
@@ -24,27 +21,31 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
   },
 }));
 
-const mockContext: $TSContext = ({
+const mockContext: $TSContext = {
   amplify: {
     invokePluginMethod: jest.fn().mockRejectedValue(new InvalidDirectiveError('mock invalid directive')),
   },
   input: {
     options: {},
   },
-} as unknown) as $TSContext;
+} as unknown as $TSContext;
 test('throws amplify exception when building overrides failed', async () => {
-  await expect(() => transformCategoryStack(mockContext, { service: 'AppSync' })).rejects.toThrowError(expect.objectContaining({
-    classification: 'ERROR',
-    name: 'InvalidOverrideError',
-    link: 'https://docs.amplify.aws/cli/graphql/override/',
-    message: 'mock build dir message',
-  }));
+  await expect(() => transformCategoryStack(mockContext, { service: 'AppSync' })).rejects.toThrowError(
+    expect.objectContaining({
+      classification: 'ERROR',
+      name: 'InvalidOverrideError',
+      link: 'https://docs.amplify.aws/cli/graphql/override/',
+      message: 'mock build dir message',
+    }),
+  );
 });
 
 test('throws amplify error when calling compile schema', async () => {
-  await expect(() => transformCategoryStack(mockContext, { service: 'AppSync' })).rejects.toThrowError(expect.objectContaining({
-    classification: 'ERROR',
-    name: 'InvalidDirectiveError',
-    message: 'mock invalid directive',
-  }));
+  await expect(() => transformCategoryStack(mockContext, { service: 'AppSync' })).rejects.toThrowError(
+    expect.objectContaining({
+      classification: 'ERROR',
+      name: 'InvalidDirectiveError',
+      message: 'mock invalid directive',
+    }),
+  );
 });

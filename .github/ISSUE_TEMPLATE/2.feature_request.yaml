@@ -1,6 +1,6 @@
 name: Feature request
 description: Suggest an idea for the Amplify API category
-labels: ["pending-triage"]
+labels: ['pending-triage']
 
 body:
   - type: markdown

@@ -1,8 +1,21 @@
 export type FieldType = DefaultType | CustomType | ListType | NonNullType | EnumType;
 
-export type FieldDataType = 'String' | 'ID' | 'Int' | 'Float' | 'AWSJSON' 
-| 'AWSDate' | 'AWSTime' | 'AWSDateTime' | 'AWSTimestamp' | 'ENUM'
-| 'Boolean' | 'AWSEmail' | 'AWSPhone' | 'AWSURL' | 'AWSIPAddress';
+export type FieldDataType =
+  | 'String'
+  | 'ID'
+  | 'Int'
+  | 'Float'
+  | 'AWSJSON'
+  | 'AWSDate'
+  | 'AWSTime'
+  | 'AWSDateTime'
+  | 'AWSTimestamp'
+  | 'ENUM'
+  | 'Boolean'
+  | 'AWSEmail'
+  | 'AWSPhone'
+  | 'AWSURL'
+  | 'AWSIPAddress';
 
 export interface DefaultType {
   readonly kind: 'Scalar';
@@ -38,14 +51,12 @@ export interface DefaultValue {
 export class Field {
   public default: DefaultValue | undefined = undefined;
   public length: number | null | undefined;
-  constructor(public name: string, public type: FieldType) {
-  }
+  constructor(public name: string, public type: FieldType) {}
 }
 
 export class Index {
   private fields: string[] = [];
-  constructor(public name: string) {
-  }
+  constructor(public name: string) {}
 
   public getFields(): string[] {
     return this.fields;
@@ -58,11 +69,10 @@ export class Index {
 
 export class Model {
   private fields: Field[] = [];
-  private primaryKey: Index | undefined = undefined; 
+  private primaryKey: Index | undefined = undefined;
   private indexes: Index[] = [];
 
-  constructor(private name: string) {
-  }
+  constructor(private name: string) {}
 
   public getName(): string {
     return this.name;
@@ -76,7 +86,7 @@ export class Model {
   }
 
   public hasField(name: string): boolean {
-    return this.fields.some(f => f.name === name);
+    return this.fields.some((f) => f.name === name);
   }
 
   public setPrimaryKey(fields: string[]): void {
@@ -103,7 +113,7 @@ export class Model {
   }
 
   public hasIndex(name: string): boolean {
-    return this.indexes.some(i => i.name === name);
+    return this.indexes.some((i) => i.name === name);
   }
 
   public getFields(): Field[] {

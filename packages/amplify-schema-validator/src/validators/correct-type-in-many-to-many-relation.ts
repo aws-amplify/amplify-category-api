@@ -1,9 +1,4 @@
-import {
-  DocumentNode,
-  Kind,
-  ObjectTypeDefinitionNode,
-  StringValueNode,
-} from 'graphql';
+import { DocumentNode, Kind, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
 import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
 
@@ -22,9 +17,9 @@ export const validateCorrectTypeInManyToManyRelation = (schema: DocumentNode): E
 
   const relationObjectNames = {} as { [relationName: string]: string[] };
   objectTypeDefinitions.forEach((objectTypeDefinition) => {
-    const directiveFields = objectTypeDefinition.fields?.filter((objectField) => objectField.directives?.find(
-      (directive) => directive.name.value === 'manyToMany',
-    ));
+    const directiveFields = objectTypeDefinition.fields?.filter((objectField) =>
+      objectField.directives?.find((directive) => directive.name.value === 'manyToMany'),
+    );
 
     const objectName = objectTypeDefinition.name.value;
 
@@ -51,9 +46,9 @@ export const validateCorrectTypeInManyToManyRelation = (schema: DocumentNode): E
   });
 
   objectTypeDefinitions.forEach((objectTypeDefinition) => {
-    const directiveFields = objectTypeDefinition.fields?.filter((objectField) => objectField.directives?.find(
-      (directive) => directive.name.value === 'manyToMany',
-    ));
+    const directiveFields = objectTypeDefinition.fields?.filter((objectField) =>
+      objectField.directives?.find((directive) => directive.name.value === 'manyToMany'),
+    );
     const objectName = objectTypeDefinition.name.value;
     directiveFields?.forEach((directiveField) => {
       const typeName = resolveFieldTypeName(directiveField.type);
@@ -76,9 +71,7 @@ export const validateCorrectTypeInManyToManyRelation = (schema: DocumentNode): E
               expectedName = name;
             }
           });
-          errors.push(new InvalidDirectiveError(
-            `@manyToMany relation ${relationName} expects ${expectedName} but got ${typeName}`,
-          ));
+          errors.push(new InvalidDirectiveError(`@manyToMany relation ${relationName} expects ${expectedName} but got ${typeName}`));
         }
       });
     });

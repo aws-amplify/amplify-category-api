@@ -1,11 +1,15 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
-import { constructDefaultGlobalAmplifyInput, readRDSGlobalAmplifyInput, constructRDSGlobalAmplifyInput } from '../../../../../provider-utils/awscloudformation/utils/rds-input-utils';
+import {
+  constructDefaultGlobalAmplifyInput,
+  readRDSGlobalAmplifyInput,
+  constructRDSGlobalAmplifyInput,
+} from '../../../../../provider-utils/awscloudformation/utils/rds-input-utils';
 import * as fs from 'fs-extra';
 
 jest.mock('fs-extra', () => ({
   readFileSync: jest.fn(),
-  existsSync: jest.fn()
+  existsSync: jest.fn(),
 }));
 const readFileSync_mock = fs.readFileSync as jest.MockedFunction<typeof fs.readFileSync>;
 const existsSync_mock = fs.existsSync as jest.MockedFunction<typeof fs.existsSync>;
@@ -41,7 +45,7 @@ describe('Amplify Input read/write from schema', () => {
       engine: 'mysql',
       host: 'mockdatabase.rds.amazonaws.com',
       port: '1010',
-      database: 'mockdatabase'
+      database: 'mockdatabase',
     };
 
     const mockInputSchema = `input Amplify {
@@ -61,7 +65,7 @@ describe('Amplify Input read/write from schema', () => {
       engine: 'mysql',
       host: 'mockdatabase.rds.amazonaws.com',
       port: '1010',
-      database: 'mockdatabase'
+      database: 'mockdatabase',
     };
 
     const mockInputSchema = `input Amplify {
@@ -75,7 +79,7 @@ describe('Amplify Input read/write from schema', () => {
     const userInputs = {
       host: 'mockdatabase.rds.amazonaws.com',
       port: 1010,
-      database: 'mockdatabase'
+      database: 'mockdatabase',
     };
 
     const constructedInputDefinition = await constructRDSGlobalAmplifyInput(mockContext, userInputs, '');

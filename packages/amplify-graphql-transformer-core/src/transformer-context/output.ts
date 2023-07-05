@@ -321,7 +321,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     // Filter out duplicate directives, do not add them
     if (obj.directives) {
       for (const newDir of obj.directives) {
-        if (Boolean(oldDirs.find(d => d.name.value === newDir.name.value)) === false) {
+        if (Boolean(oldDirs.find((d) => d.name.value === newDir.name.value)) === false) {
           newDirs.push(newDir);
         }
       }

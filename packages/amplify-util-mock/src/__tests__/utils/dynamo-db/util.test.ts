@@ -150,7 +150,7 @@ describe('DynamoDB Utils', () => {
           TableDescription: {
             TableName,
             AttributeDefinitions,
-            GlobalSecondaryIndexes: GlobalSecondaryIndexUpdates.filter(update => update.Create).map(gsi => gsi.Update),
+            GlobalSecondaryIndexes: GlobalSecondaryIndexUpdates.filter((update) => update.Create).map((gsi) => gsi.Update),
           },
         };
         cb(null, response);

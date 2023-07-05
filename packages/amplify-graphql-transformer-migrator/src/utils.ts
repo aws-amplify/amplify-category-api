@@ -38,7 +38,7 @@ export async function getDefaultAuth(): Promise<string> {
 }
 
 export function listContainsOnlySetString(list: Array<string>, set: Set<string>): Array<string> {
-  return list.filter(str => {
+  return list.filter((str) => {
     return !set.has(str);
   });
 }

@@ -4,13 +4,14 @@ import * as path from 'path';
 import fs from 'fs-extra';
 import _ from 'lodash';
 import { databaseConfigurationInputWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/import-appsync-api-walkthrough';
-import {
-  ImportedRDSType,
-  RDS_SCHEMA_FILE_NAME,
-  ImportedDataSourceConfig
-} from '@aws-amplify/graphql-transformer-core';
+import { ImportedRDSType, RDS_SCHEMA_FILE_NAME, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { storeConnectionSecrets, testDatabaseConnection, getSecretsKey, getDatabaseName } from '../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
+import {
+  storeConnectionSecrets,
+  testDatabaseConnection,
+  getSecretsKey,
+  getDatabaseName,
+} from '../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 
 const subcommand = 'update-secrets';
 
@@ -22,7 +23,7 @@ export const run = async (context: $TSContext) => {
 
   // proceed if there are any existing imported Relational Data Sources
   const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
-  if(!fs.existsSync(pathToSchemaFile)) {
+  if (!fs.existsSync(pathToSchemaFile)) {
     printer.info('No imported Data Sources to update the secrets.');
     return;
   }

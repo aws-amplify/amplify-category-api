@@ -1,18 +1,8 @@
 import * as fs from 'fs-extra';
 import path from 'path';
-import {
-  DocumentNode,
-  parse,
-} from 'graphql';
-import {
-  $TSContext,
-  AmplifyError,
-  ApiCategoryFacade,
-} from '@aws-amplify/amplify-cli-core';
-import {
-  SCHEMA_DIR_NAME,
-  SCHEMA_FILENAME,
-} from '../graphql-transformer/constants';
+import { DocumentNode, parse } from 'graphql';
+import { $TSContext, AmplifyError, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
+import { SCHEMA_DIR_NAME, SCHEMA_FILENAME } from '../graphql-transformer/constants';
 import { generateTransformerOptions } from '../graphql-transformer/transformer-options-v2';
 import { contextUtil } from './context-util';
 import { constructTransform } from '@aws-amplify/graphql-transformer';
@@ -28,9 +18,7 @@ export class SchemaReader {
   private schemaDocument: DocumentNode;
   private preProcessedSchemaDocument: DocumentNode;
 
-  getSchemaPath = async (
-    resourceDir: string,
-  ): Promise<string> => {
+  getSchemaPath = async (resourceDir: string): Promise<string> => {
     if (this.schemaPath) {
       return this.schemaPath;
     }
@@ -56,12 +44,8 @@ export class SchemaReader {
     this.preProcessedSchemaDocument = null;
   };
 
-  readSchema = async (
-    context: $TSContext,
-    options: any,
-    usePreProcessing = true,
-  ): Promise<DocumentNode> => {
-    const preProcessSchema = usePreProcessing && (await ApiCategoryFacade.getTransformerVersion(context) === 2);
+  readSchema = async (context: $TSContext, options: any, usePreProcessing = true): Promise<DocumentNode> => {
+    const preProcessSchema = usePreProcessing && (await ApiCategoryFacade.getTransformerVersion(context)) === 2;
     if (!this.schemaDocument) {
       const fileContentsList = new Array<Promise<Buffer>>();
       const resourceDir = await contextUtil.getResourceDir(context, options);

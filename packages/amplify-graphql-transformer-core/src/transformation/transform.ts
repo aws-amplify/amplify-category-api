@@ -9,9 +9,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
-import {
-  App, Aws, CfnOutput, Fn,
-} from 'aws-cdk-lib';
+import { App, Aws, CfnOutput, Fn } from 'aws-cdk-lib';
 import {
   EnumTypeDefinitionNode,
   EnumValueDefinitionNode,
@@ -155,9 +153,7 @@ export class GraphQLTransform {
     return this.transformers
       .filter((transformer) => isFunction(transformer.mutateSchema))
       .reduce((mutateContext, transformer) => {
-        const updatedInputDocument = transformer.mutateSchema
-          ? transformer.mutateSchema(mutateContext)
-          : mutateContext.inputDocument;
+        const updatedInputDocument = transformer.mutateSchema ? transformer.mutateSchema(mutateContext) : mutateContext.inputDocument;
         return {
           ...mutateContext,
           inputDocument: updatedInputDocument,

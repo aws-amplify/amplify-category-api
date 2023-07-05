@@ -57,7 +57,7 @@ const waitForESPropagate = async (initialWaitSeconds = 5, maxRetryCount = 5) => 
   let searchResponse;
 
   do {
-    await new Promise(r => setTimeout(r, waitInMilliseconds));
+    await new Promise((r) => setTimeout(r, waitInMilliseconds));
     searchResponse = await GRAPHQL_CLIENT.query(
       `query {
         searchTodos {
@@ -283,7 +283,7 @@ test('query searchable with eq filter', async () => {
       expect.objectContaining({
         id: expect.any(String),
         name: 'test1',
-        description: 'test1'
+        description: 'test1',
       }),
     ]),
   );
@@ -321,12 +321,12 @@ test('query searchable with ne filter', async () => {
       expect.objectContaining({
         id: expect.any(String),
         name: 'test2',
-        description: 'test2'
+        description: 'test2',
       }),
       expect.objectContaining({
         id: expect.any(String),
         name: 'test3',
-        description: 'test3'
+        description: 'test3',
       }),
     ]),
   );
@@ -364,12 +364,12 @@ test('query searchable with gt filter', async () => {
       expect.objectContaining({
         id: expect.any(String),
         name: 'test2',
-        description: 'test2'
+        description: 'test2',
       }),
       expect.objectContaining({
         id: expect.any(String),
         name: 'test3',
-        description: 'test3'
+        description: 'test3',
       }),
     ]),
   );
@@ -407,17 +407,17 @@ test('query searchable with gte filter', async () => {
       expect.objectContaining({
         id: expect.any(String),
         name: 'test1',
-        description: 'test1'
+        description: 'test1',
       }),
       expect.objectContaining({
         id: expect.any(String),
         name: 'test2',
-        description: 'test2'
+        description: 'test2',
       }),
       expect.objectContaining({
         id: expect.any(String),
         name: 'test3',
-        description: 'test3'
+        description: 'test3',
       }),
     ]),
   );
@@ -455,7 +455,7 @@ test('query searchable with lt filter', async () => {
       expect.objectContaining({
         id: expect.any(String),
         name: 'test1',
-        description: 'test1'
+        description: 'test1',
       }),
     ]),
   );
@@ -493,12 +493,12 @@ test('query searchable with lte filter', async () => {
       expect.objectContaining({
         id: expect.any(String),
         name: 'test1',
-        description: 'test1'
+        description: 'test1',
       }),
       expect.objectContaining({
         id: expect.any(String),
         name: 'test2',
-        description: 'test2'
+        description: 'test2',
       }),
     ]),
   );
@@ -541,7 +541,7 @@ test('query searchable with eq and lt filter', async () => {
       expect.objectContaining({
         id: expect.any(String),
         name: 'test1',
-        description: 'test1'
+        description: 'test1',
       }),
     ]),
   );
@@ -579,17 +579,17 @@ test('query searchable with wildcard filter', async () => {
       expect.objectContaining({
         id: expect.any(String),
         name: 'test1',
-        description: 'test1'
+        description: 'test1',
       }),
       expect.objectContaining({
         id: expect.any(String),
         name: 'test2',
-        description: 'test2'
+        description: 'test2',
       }),
       expect.objectContaining({
         id: expect.any(String),
         name: 'test3',
-        description: 'test3'
+        description: 'test3',
       }),
     ]),
   );
@@ -627,27 +627,23 @@ test('query searchable with matchPhrasePrefix filter', async () => {
       expect.objectContaining({
         id: expect.any(String),
         name: 'test1',
-        description: 'test1'
+        description: 'test1',
       }),
       expect.objectContaining({
         id: expect.any(String),
         name: 'test2',
-        description: 'test2'
+        description: 'test2',
       }),
       expect.objectContaining({
         id: expect.any(String),
         name: 'test3',
-        description: 'test3'
+        description: 'test3',
       }),
     ]),
   );
 });
 
-function getCreateTodosMutation(
-  name: string,
-  description: string,
-  count: number,
-): string {
+function getCreateTodosMutation(name: string, description: string, count: number): string {
   return `mutation {
         createTodo(input: {
             name: "${name}"

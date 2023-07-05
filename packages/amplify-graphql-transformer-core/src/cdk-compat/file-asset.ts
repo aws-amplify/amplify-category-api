@@ -26,10 +26,7 @@ export class FileAsset extends Construct implements cdk.IAsset {
     // See: https://github.com/aws-amplify/amplify-cli/issues/9362
     if (sythesizer.constructor.name === TransformerStackSythesizer.name) {
       (sythesizer as TransformerStackSythesizer).setMappingTemplates(props.fileName, props.fileContent);
-      this.assetHash = crypto
-        .createHash('sha256')
-        .update(props.fileContent)
-        .digest('hex');
+      this.assetHash = crypto.createHash('sha256').update(props.fileContent).digest('hex');
       const asset = sythesizer.addFileAsset({
         fileName: props.fileName,
         packaging: FileAssetPackaging.FILE,
@@ -51,11 +48,10 @@ function findRootStack(scope: Construct): Stack {
     throw new Error('Nested stacks cannot be defined as a root construct');
   }
 
-  const rootStack = scope.node.scopes.find(p => Stack.isStack(p));
+  const rootStack = scope.node.scopes.find((p) => Stack.isStack(p));
   if (!rootStack) {
     throw new Error('Nested stacks must be defined within scope of another non-nested stack');
   }
 
   return rootStack as Stack;
 }
-

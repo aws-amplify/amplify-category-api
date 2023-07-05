@@ -17,10 +17,10 @@ const getChangelogPaths = async (): Promise<string[]> => {
   }
   const changelogPaths = statusResult
     .split('\n')
-    .filter(item => item.startsWith(' M '))
-    .map(item => item.slice(3)) // get rid of ' M ' prefix
-    .filter(item => item.endsWith('CHANGELOG.md'))
-    .map(item => join(packageRoot, item));
+    .filter((item) => item.startsWith(' M '))
+    .map((item) => item.slice(3)) // get rid of ' M ' prefix
+    .filter((item) => item.endsWith('CHANGELOG.md'))
+    .map((item) => join(packageRoot, item));
   return changelogPaths;
 };
 
@@ -45,9 +45,7 @@ const extractChangelogInfo = async (changelogPath: string): Promise<ChangelogInf
 
   const latestChanges = changelog.slice(startIdx, endIdx).trim();
   // assumes CHANGELOG is in the root of the package directory and that the package directory is named after the package
-  const packageName = parse(changelogPath)
-    .dir.split(sep)
-    .reverse()[0];
+  const packageName = parse(changelogPath).dir.split(sep).reverse()[0];
   return {
     packageName,
     latestChanges,
@@ -57,10 +55,10 @@ const extractChangelogInfo = async (changelogPath: string): Promise<ChangelogInf
 const formatUnifiedChangelog = (infos: ChangelogInfo[]): string => {
   console.log('Formatting all changes into single changelog');
   const formattedChangelog = infos
-    .filter(info => info.latestChanges)
-    .filter(info => !info.latestChanges.includes('Version bump only for package'))
+    .filter((info) => info.latestChanges)
+    .filter((info) => !info.latestChanges.includes('Version bump only for package'))
     .sort((a, b) => a.packageName.localeCompare(b.packageName))
-    .map(info => {
+    .map((info) => {
       const latestChanges = info.latestChanges.replace(/^#+\s+/, ''); // strip off any leading markdown headers
       return `# ${info.packageName} ${latestChanges}`;
     })

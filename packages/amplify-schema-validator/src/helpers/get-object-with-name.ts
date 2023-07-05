@@ -11,7 +11,5 @@ export const getObjectWithName = (schema: DocumentNode, name: string): ObjectTyp
   const objectTypeDefinitions = schema.definitions.filter(
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,
   ) as ObjectTypeDefinitionNode[];
-  return objectTypeDefinitions.find(
-    (objectTypeDefinition) => objectTypeDefinition.name.value === name,
-  );
+  return objectTypeDefinitions.find((objectTypeDefinition) => objectTypeDefinition.name.value === name);
 };

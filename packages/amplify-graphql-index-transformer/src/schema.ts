@@ -76,7 +76,7 @@ export function addKeyConditionInputs(
 
 export function removeAutoCreatedPrimaryKey(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const { object } = config;
-  const schemaHasIdField = object?.fields?.some(f => f.name.value === 'id');
+  const schemaHasIdField = object?.fields?.some((f) => f.name.value === 'id');
 
   if (schemaHasIdField) {
     return;
@@ -105,7 +105,7 @@ export function updateGetField(config: PrimaryKeyDirectiveConfiguration, ctx: Tr
   if (resolverField) {
     const args = [
       makeInputValueDefinition(field.name.value, makeNonNullType(makeNamedType(getBaseType(field.type)))),
-      ...sortKey.map(keyField => {
+      ...sortKey.map((keyField) => {
         return makeInputValueDefinition(keyField.name.value, makeNonNullType(makeNamedType(getBaseType(keyField.type))));
       }),
     ];
@@ -194,7 +194,7 @@ export function updateMutationConditionInput(
   const fieldNames = new Set(indexName ? ['id'] : ['id', field.name.value, ...sortKeyFields]);
   const updatedInput = {
     ...tableXMutationConditionInput,
-    fields: tableXMutationConditionInput.fields!.filter(field => {
+    fields: tableXMutationConditionInput.fields!.filter((field) => {
       return !fieldNames.has(field.name.value);
     }),
   };
@@ -204,7 +204,7 @@ export function updateMutationConditionInput(
 
 export function createHashField(config: PrimaryKeyDirectiveConfiguration | IndexDirectiveConfiguration): InputValueDefinitionNode {
   const { field } = config;
-  const type = "queryField" in config ? makeNonNullType(makeNamedType(getBaseType(field.type))) : makeNamedType(getBaseType(field.type));
+  const type = 'queryField' in config ? makeNonNullType(makeNamedType(getBaseType(field.type))) : makeNamedType(getBaseType(field.type));
   return makeInputValueDefinition(field.name.value, type);
 }
 
@@ -263,14 +263,14 @@ export const tryAndCreateSortField = (
 };
 
 function replaceCreateInput(input: InputObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
-  return { ...input, fields: input.fields!.filter(f => f.name.value !== 'id') };
+  return { ...input, fields: input.fields!.filter((f) => f.name.value !== 'id') };
 }
 
 function replaceUpdateInput(config: PrimaryKeyDirectiveConfiguration, input: InputObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
   const { field, object, sortKey } = config;
-  const schemaHasIdField = object.fields!.some(f => f.name.value === 'id');
+  const schemaHasIdField = object.fields!.some((f) => f.name.value === 'id');
   const keyFields = [field, ...sortKey];
-  const inputFields = input.fields!.filter(f => {
+  const inputFields = input.fields!.filter((f) => {
     if (!schemaHasIdField && f.name.value === 'id') {
       return false;
     }
@@ -280,8 +280,8 @@ function replaceUpdateInput(config: PrimaryKeyDirectiveConfiguration, input: Inp
 
   return {
     ...input,
-    fields: inputFields.map(f => {
-      if (keyFields.find(k => k.name.value === f.name.value)) {
+    fields: inputFields.map((f) => {
+      if (keyFields.find((k) => k.name.value === f.name.value)) {
         return makeInputValueDefinition(f.name.value, wrapNonNull(withNamedNodeNamed(f.type, getBaseType(f.type))));
       }
 
@@ -300,7 +300,7 @@ function replaceDeleteInput(config: PrimaryKeyDirectiveConfiguration, input: Inp
     return makeInputValueDefinition(keyField.name.value, makeNonNullType(makeNamedType(getBaseType(keyField.type))));
   });
   const existingFields = input.fields!.filter(
-    f => !(primaryKeyFields.some(pf => pf.name.value === f.name.value) || (getBaseType(f.type) === 'ID' && f.name.value === 'id')),
+    (f) => !(primaryKeyFields.some((pf) => pf.name.value === f.name.value) || (getBaseType(f.type) === 'ID' && f.name.value === 'id')),
   );
 
   return { ...input, fields: [...primaryKeyFields, ...existingFields] };
@@ -308,7 +308,7 @@ function replaceDeleteInput(config: PrimaryKeyDirectiveConfiguration, input: Inp
 
 export function ensureQueryField(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const { name, object, queryField } = config;
-  const hasAuth = object.directives?.some(dir => dir.name.value === 'auth');
+  const hasAuth = object.directives?.some((dir) => dir.name.value === 'auth');
   const directives = [];
 
   if (!queryField) {

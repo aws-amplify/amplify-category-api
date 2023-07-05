@@ -70,9 +70,9 @@ const AWS_REGIONS_TO_RUN_TESTS = [
 // Some services (eg. amazon lex, containers) are not available in all regions
 // Tests added to this list will always run in the specified region
 const FORCE_REGION = {
-  'interactions': 'us-west-2',
-  'containers': 'us-east-1',
-}
+  interactions: 'us-west-2',
+  containers: 'us-east-1',
+};
 type FORCE_TESTS = 'interactions' | 'containers';
 
 const USE_PARENT_ACCOUNT = [
@@ -81,7 +81,7 @@ const USE_PARENT_ACCOUNT = [
   'api-key-migration4',
   'api-key-migration5',
   'searchable-migration',
-  'FunctionTransformerTestsV2'
+  'FunctionTransformerTestsV2',
 ];
 
 // This array needs to be update periodically when new tests suites get added
@@ -214,13 +214,13 @@ function splitTests(
   const jobs = { ...config.jobs };
   const job = jobs[jobName];
   let testSuites = getTestFiles(jobRootDir);
-  if(pickTests && typeof pickTests === 'function'){
+  if (pickTests && typeof pickTests === 'function') {
     testSuites = pickTests(testSuites);
   }
 
   const newJobs = testSuites.reduce((acc, suite, index) => {
     const newJobName = generateJobName(jobName, suite);
-    const forceRegion = Object.keys(FORCE_REGION).find(key => newJobName.startsWith(key));
+    const forceRegion = Object.keys(FORCE_REGION).find((key) => newJobName.startsWith(key));
     const testRegion = forceRegion
       ? FORCE_REGION[forceRegion as FORCE_TESTS]
       : AWS_REGIONS_TO_RUN_TESTS[index % AWS_REGIONS_TO_RUN_TESTS.length];
@@ -230,7 +230,7 @@ function splitTests(
         ...(job?.environment || {}),
         TEST_SUITE: suite,
         CLI_REGION: testRegion,
-        ...(USE_PARENT_ACCOUNT.some(job => newJobName.startsWith(job)) ? { USE_PARENT_ACCOUNT: 1 } : {}),
+        ...(USE_PARENT_ACCOUNT.some((job) => newJobName.startsWith(job)) ? { USE_PARENT_ACCOUNT: 1 } : {}),
       },
     };
     return { ...acc, [newJobName]: newJob };
@@ -249,7 +249,7 @@ function splitTests(
   if (workflows[workflowName]) {
     const workflow = workflows[workflowName];
 
-    const workflowJob = workflow.jobs.find(j => {
+    const workflowJob = workflow.jobs.find((j) => {
       if (typeof j === 'string') {
         return j === jobName;
       } else {
@@ -259,7 +259,7 @@ function splitTests(
     });
 
     if (workflowJob) {
-      Object.values(jobByRegion).forEach(regionJobs => {
+      Object.values(jobByRegion).forEach((regionJobs) => {
         const newJobNames = Object.keys(regionJobs as object);
         const jobs = newJobNames.map((newJobName, index) => {
           const requires = getRequiredJob(newJobNames, index, concurrency);
@@ -283,7 +283,7 @@ function splitTests(
       });
 
       const lastJobBatch = Object.values(jobByRegion)
-        .map(regionJobs => getLastBatchJobs(Object.keys(regionJobs as Object), concurrency))
+        .map((regionJobs) => getLastBatchJobs(Object.keys(regionJobs as Object), concurrency))
         .reduce((acc, val) => acc.concat(val), []);
       const filteredJobs = replaceWorkflowDependency(removeWorkflowJob(workflow.jobs, jobName), jobName, lastJobBatch);
       workflow.jobs = filteredJobs;
@@ -303,7 +303,7 @@ function splitTests(
  * @param jobName - job that needs to be removed from workflow
  */
 function removeWorkflowJob(jobs: WorkflowJob[], jobName: string): WorkflowJob[] {
-  return jobs.filter(j => {
+  return jobs.filter((j) => {
     if (typeof j === 'string') {
       return j !== jobName;
     } else {
@@ -332,12 +332,12 @@ function getLastBatchJobs(jobs: string[], concurrency: number): string[] {
  * @param jobsToReplaceWith - jobs to add to requires
  */
 function replaceWorkflowDependency(jobs: WorkflowJob[], jobName: string, jobsToReplaceWith: string[]): WorkflowJob[] {
-  return jobs.map(j => {
+  return jobs.map((j) => {
     if (typeof j === 'string') return j;
     const [currentJobName, jobObj] = Object.entries(j)[0];
     const requires = jobObj.requires || [];
     if (requires.includes(jobName)) {
-      jobObj.requires = [...requires.filter(r => r !== jobName), ...jobsToReplaceWith];
+      jobObj.requires = [...requires.filter((r) => r !== jobName), ...jobsToReplaceWith];
     }
     return {
       [currentJobName]: jobObj,
@@ -409,7 +409,7 @@ function main(): void {
     'build_test_deploy',
     join(repoRoot, 'packages', 'amplify-e2e-tests'),
     CONCURRENCY,
-    undefined
+    undefined,
   );
   const splitGqlTests = splitTests(
     splitPkgTests,
@@ -417,7 +417,7 @@ function main(): void {
     'build_test_deploy',
     join(repoRoot, 'packages', 'graphql-transformers-e2e-tests'),
     CONCURRENCY,
-    undefined
+    undefined,
   );
   const splitV5MigrationTests = splitTests(
     splitGqlTests,
@@ -426,8 +426,8 @@ function main(): void {
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
     (tests: string[]) => {
-      return tests.filter(testName => migrationFromV5Tests.find((t) => t === testName));
-    }
+      return tests.filter((testName) => migrationFromV5Tests.find((t) => t === testName));
+    },
   );
   const splitV6MigrationTests = splitTests(
     splitV5MigrationTests,
@@ -436,8 +436,8 @@ function main(): void {
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
     (tests: string[]) => {
-      return tests.filter(testName => migrationFromV6Tests.find((t) => t === testName));
-    }
+      return tests.filter((testName) => migrationFromV6Tests.find((t) => t === testName));
+    },
   );
   const splitV10MigrationTests = splitTests(
     splitV6MigrationTests,
@@ -446,8 +446,8 @@ function main(): void {
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
     (tests: string[]) => {
-      return tests.filter(testName => migrationFromV10Tests.find((t) => t === testName));
-    }
+      return tests.filter((testName) => migrationFromV10Tests.find((t) => t === testName));
+    },
   );
   saveConfig(splitV10MigrationTests);
   verifyConfig();

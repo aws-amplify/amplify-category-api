@@ -4,9 +4,7 @@ import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-in
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  DocumentNode, ObjectTypeDefinitionNode, Kind, parse,
-} from 'graphql';
+import { DocumentNode, ObjectTypeDefinitionNode, Kind, parse } from 'graphql';
 import { HasManyTransformer, BelongsToTransformer, HasOneTransformer } from '..';
 
 const iamDefaultConfig: AppSyncAuthConfiguration = {
@@ -129,16 +127,17 @@ test('ModelXConnection type is getting the directives added, when a field has @c
   expect((modelPostEditorConnectionType as any).directives.some((dir: any) => dir.name.value === 'aws_cognito_user_pools')).toBe(true);
 });
 
-const getTransformer = (authConfig: AppSyncAuthConfiguration) => new GraphQLTransform({
-  authConfig,
-  transformers: [
-    new ModelTransformer(),
-    new IndexTransformer(),
-    new HasManyTransformer(),
-    new BelongsToTransformer(),
-    new AuthTransformer(),
-  ],
-});
+const getTransformer = (authConfig: AppSyncAuthConfiguration) =>
+  new GraphQLTransform({
+    authConfig,
+    transformers: [
+      new ModelTransformer(),
+      new IndexTransformer(),
+      new HasManyTransformer(),
+      new BelongsToTransformer(),
+      new AuthTransformer(),
+    ],
+  });
 
 const withAuthModes = (authConfig: AppSyncAuthConfiguration, authModes: AppSyncAuthMode[]): AppSyncAuthConfiguration => {
   const newAuthConfig = {
@@ -157,7 +156,8 @@ const withAuthModes = (authConfig: AppSyncAuthConfiguration, authModes: AppSyncA
   return newAuthConfig;
 };
 
-const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined => doc.definitions.find(def => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
+const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined =>
+  doc.definitions.find((def) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
     | ObjectTypeDefinitionNode
     | undefined;
 

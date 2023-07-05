@@ -1,10 +1,10 @@
-import { ModelTransformer } from "@aws-amplify/graphql-model-transformer";
-import { HasManyTransformer, BelongsToTransformer, HasOneTransformer } from "@aws-amplify/graphql-relational-transformer";
-import { PrimaryKeyTransformer, IndexTransformer } from "@aws-amplify/graphql-index-transformer";
-import { GraphQLTransform } from "@aws-amplify/graphql-transformer-core";
-import { AuthTransformer } from "@aws-amplify/graphql-auth-transformer";
-import { AmplifyAppSyncSimulator } from "@aws-amplify/amplify-appsync-simulator";
-import { deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient } from "../__e2e__/utils";
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { HasManyTransformer, BelongsToTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
+import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-index-transformer';
+import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
+import { deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient } from '../__e2e__/utils';
 
 let GRAPHQL_CLIENT: GraphQLClient;
 let GRAPHQL_ENDPOINT: string;
@@ -14,7 +14,7 @@ let server: AmplifyAppSyncSimulator;
 
 jest.setTimeout(20000);
 
-describe("@model with relational transformers", () => {
+describe('@model with relational transformers', () => {
   beforeAll(async () => {
     const validSchema = `
       type AProject @model(subscriptions: null) @auth(rules: [{ allow: public }]) {
@@ -91,7 +91,7 @@ describe("@model with relational transformers", () => {
       const { apiKey } = result.config.appSync;
       logDebug(apiKey);
       GRAPHQL_CLIENT = new GraphQLClient(GRAPHQL_ENDPOINT, {
-        "x-api-key": apiKey
+        'x-api-key': apiKey,
       });
     } catch (e) {
       console.error(e);
@@ -115,7 +115,7 @@ describe("@model with relational transformers", () => {
    * Test queries below
    */
 
-  test("Unnamed connection 1 way navigation, with @primaryKey directive 1:1", async () => {
+  test('Unnamed connection 1 way navigation, with @primaryKey directive 1:1', async () => {
     await GRAPHQL_CLIENT.query(
       `
       mutation CreateATeam {
@@ -125,7 +125,7 @@ describe("@model with relational transformers", () => {
           }
       }
       `,
-      {}
+      {},
     );
 
     await GRAPHQL_CLIENT.query(
@@ -137,7 +137,7 @@ describe("@model with relational transformers", () => {
           }
       }
       `,
-      {}
+      {},
     );
 
     const queryResponse = await GRAPHQL_CLIENT.query(
@@ -155,17 +155,17 @@ describe("@model with relational transformers", () => {
           }
       }
       `,
-      {}
+      {},
     );
     expect(queryResponse.data.listAProjects).toBeDefined();
     const { items } = queryResponse.data.listAProjects;
     expect(items.length).toEqual(1);
-    expect(items[0].projectId).toEqual("P1");
+    expect(items[0].projectId).toEqual('P1');
     expect(items[0].team).toBeDefined();
-    expect(items[0].team.teamId).toEqual("T1");
+    expect(items[0].team.teamId).toEqual('T1');
   });
 
-  test("Unnamed connection 1 way navigation, with @primaryKey directive 1:M", async () => {
+  test('Unnamed connection 1 way navigation, with @primaryKey directive 1:M', async () => {
     await GRAPHQL_CLIENT.query(
       `
       mutation CreateBProject {
@@ -175,7 +175,7 @@ describe("@model with relational transformers", () => {
           }
       }
       `,
-      {}
+      {},
     );
 
     await GRAPHQL_CLIENT.query(
@@ -187,7 +187,7 @@ describe("@model with relational transformers", () => {
           }
       }
       `,
-      {}
+      {},
     );
 
     await GRAPHQL_CLIENT.query(
@@ -199,7 +199,7 @@ describe("@model with relational transformers", () => {
           }
       }
       `,
-      {}
+      {},
     );
 
     const queryResponse = await GRAPHQL_CLIENT.query(
@@ -219,20 +219,20 @@ describe("@model with relational transformers", () => {
           }
       }
       `,
-      {}
+      {},
     );
     expect(queryResponse.data.listBProjects).toBeDefined();
     const { items } = queryResponse.data.listBProjects;
     expect(items.length).toEqual(1);
-    expect(items[0].projectId).toEqual("P1");
+    expect(items[0].projectId).toEqual('P1');
     expect(items[0].teams).toBeDefined();
     expect(items[0].teams.items).toBeDefined();
     expect(items[0].teams.items.length).toEqual(2);
-    expect(items[0].teams.items[0].teamId).toEqual("T1");
-    expect(items[0].teams.items[1].teamId).toEqual("T2");
+    expect(items[0].teams.items[0].teamId).toEqual('T1');
+    expect(items[0].teams.items[1].teamId).toEqual('T2');
   });
 
-  test("Named connection 2 way navigation, with with custom @primaryKey fields 1:1", async () => {
+  test('Named connection 2 way navigation, with with custom @primaryKey fields 1:1', async () => {
     await GRAPHQL_CLIENT.query(
       `
       mutation CreateCTeam {
@@ -242,7 +242,7 @@ describe("@model with relational transformers", () => {
           }
       }
       `,
-      {}
+      {},
     );
 
     await GRAPHQL_CLIENT.query(
@@ -254,7 +254,7 @@ describe("@model with relational transformers", () => {
           }
       }
       `,
-      {}
+      {},
     );
 
     const queryResponse = await GRAPHQL_CLIENT.query(
@@ -276,19 +276,19 @@ describe("@model with relational transformers", () => {
           }
       }
       `,
-      {}
+      {},
     );
     expect(queryResponse.data.listCProjects).toBeDefined();
     const { items } = queryResponse.data.listCProjects;
     expect(items.length).toEqual(1);
-    expect(items[0].projectId).toEqual("P1");
+    expect(items[0].projectId).toEqual('P1');
     expect(items[0].team).toBeDefined();
-    expect(items[0].team.teamId).toEqual("T1");
+    expect(items[0].team.teamId).toEqual('T1');
     expect(items[0].team.project).toBeDefined();
-    expect(items[0].team.project.projectId).toEqual("P1");
+    expect(items[0].team.project.projectId).toEqual('P1');
   });
 
-  test("Named connection 2 way navigation, with with custom @key fields 1:M", async () => {
+  test('Named connection 2 way navigation, with with custom @key fields 1:M', async () => {
     await GRAPHQL_CLIENT.query(
       `
       mutation CreateDProject {
@@ -298,7 +298,7 @@ describe("@model with relational transformers", () => {
           }
       }
       `,
-      {}
+      {},
     );
 
     await GRAPHQL_CLIENT.query(
@@ -310,7 +310,7 @@ describe("@model with relational transformers", () => {
           }
       }
       `,
-      {}
+      {},
     );
 
     await GRAPHQL_CLIENT.query(
@@ -322,7 +322,7 @@ describe("@model with relational transformers", () => {
           }
       }
       `,
-      {}
+      {},
     );
 
     const queryResponse = await GRAPHQL_CLIENT.query(
@@ -346,20 +346,20 @@ describe("@model with relational transformers", () => {
           }
       }
       `,
-      {}
+      {},
     );
     expect(queryResponse.data.listDProjects).toBeDefined();
     const { items } = queryResponse.data.listDProjects;
     expect(items.length).toEqual(1);
-    expect(items[0].projectId).toEqual("P1");
+    expect(items[0].projectId).toEqual('P1');
     expect(items[0].teams).toBeDefined();
     expect(items[0].teams.items).toBeDefined();
     expect(items[0].teams.items.length).toEqual(2);
-    expect(items[0].teams.items[0].teamId).toEqual("T1");
+    expect(items[0].teams.items[0].teamId).toEqual('T1');
     expect(items[0].teams.items[0].project).toBeDefined();
-    expect(items[0].teams.items[0].project.projectId).toEqual("P1");
-    expect(items[0].teams.items[1].teamId).toEqual("T2");
+    expect(items[0].teams.items[0].project.projectId).toEqual('P1');
+    expect(items[0].teams.items[1].teamId).toEqual('T2');
     expect(items[0].teams.items[1].project).toBeDefined();
-    expect(items[0].teams.items[1].project.projectId).toEqual("P1");
+    expect(items[0].teams.items[1].project.projectId).toEqual('P1');
   });
 });

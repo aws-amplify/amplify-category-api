@@ -1,8 +1,4 @@
-import {
-  DocumentNode,
-  Kind,
-  ObjectTypeDefinitionNode,
-} from 'graphql';
+import { DocumentNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { ValidateSchemaProps } from '../helpers/schema-validator-props';
 import { transformerValidationErrors } from '../helpers/transformer-validation';
 
@@ -13,10 +9,7 @@ import { transformerValidationErrors } from '../helpers/transformer-validation';
  * @returns true if correct directives are used
  */
 
-
-export const validateDirectivesFromOlderTransformerVersionAreNotUsed = (
-  schema: DocumentNode, props: ValidateSchemaProps,
-): Error[] => {
+export const validateDirectivesFromOlderTransformerVersionAreNotUsed = (schema: DocumentNode, props: ValidateSchemaProps): Error[] => {
   if (props.graphqlTransformerVersion !== 2) {
     return [];
   }
@@ -28,9 +21,9 @@ export const validateDirectivesFromOlderTransformerVersionAreNotUsed = (
 
   objectTypeDefinitions.forEach((objectTypeDefinition) => {
     const objectDirectives = objectTypeDefinition.directives?.map((directive) => directive.name.value);
-    const directiveFields = objectTypeDefinition.fields?.filter((objectField) => objectField.directives?.find(
-      (directive) => directive.name.value === 'connection',
-    ));
+    const directiveFields = objectTypeDefinition.fields?.filter((objectField) =>
+      objectField.directives?.find((directive) => directive.name.value === 'connection'),
+    );
     if (objectDirectives?.includes('key')) {
       v1DirectivesInUse.add('@key');
     }

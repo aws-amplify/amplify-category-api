@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
-import * as cognito from 'aws-cdk-lib/aws-cognito'
-import * as iam from 'aws-cdk-lib/aws-iam'
-import * as lambda from 'aws-cdk-lib/aws-lambda'
+import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 
@@ -40,10 +40,7 @@ describe('auth modes', () => {
 
       new AmplifyGraphqlApi(stack, 'TestApi', {
         schema: /* GraphQL */ `
-          type Todo @model @auth(rules: [
-            { provider: iam, allow: public },
-            { provider: iam, allow: private },
-          ]) {
+          type Todo @model @auth(rules: [{ provider: iam, allow: public }, { provider: iam, allow: private }]) {
             description: String!
           }
         `,

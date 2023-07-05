@@ -13,22 +13,21 @@ declare global {
 export const addCITags = (projectPath: string): void => {
   if (process.env && process.env['CODEBUILD']) {
     addCodeBuildCITags(projectPath);
-  }
-  else if(process.env && process.env['CIRCLECI']) {
+  } else if (process.env && process.env['CIRCLECI']) {
     addCircleCITags(projectPath);
   }
-}
+};
 
 /**
  * Add CI tags for code build
  * Refer https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
- * @param projectPath 
+ * @param projectPath
  */
 export const addCodeBuildCITags = (projectPath: string): void => {
   const tags = stateManager.getProjectTags(projectPath);
 
   const addTagIfNotExist = (key: string, value: string): void => {
-    if (!tags.find(t => t.Key === key)) {
+    if (!tags.find((t) => t.Key === key)) {
       tags.push({
         Key: key,
         Value: value,
@@ -59,7 +58,7 @@ export const addCircleCITags = (projectPath: string): void => {
   const tags = stateManager.getProjectTags(projectPath);
 
   const addTagIfNotExist = (key: string, value: string): void => {
-    if (!tags.find(t => t.Key === key)) {
+    if (!tags.find((t) => t.Key === key)) {
       tags.push({
         Key: key,
         Value: value,

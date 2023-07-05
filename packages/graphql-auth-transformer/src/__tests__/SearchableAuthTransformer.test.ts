@@ -11,8 +11,6 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 
 test('test auth logic is enabled on owner/static rules in resposne es resolver', () => {

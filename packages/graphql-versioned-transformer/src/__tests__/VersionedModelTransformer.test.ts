@@ -2,12 +2,18 @@ import { ObjectTypeDefinitionNode, parse, DocumentNode, Kind, InputObjectTypeDef
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { VersionedModelTransformer } from '../VersionedModelTransformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-const getInputType = (schemaDoc: DocumentNode) => (name: string): InputObjectTypeDefinitionNode =>
-  schemaDoc.definitions.find(d => d.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && d.name.value === name) as InputObjectTypeDefinitionNode;
-const getInputField = (input: InputObjectTypeDefinitionNode, field: string) => input.fields.find(f => f.name.value === field);
-const getType = (schemaDoc: DocumentNode) => (name: string): ObjectTypeDefinitionNode =>
-  schemaDoc.definitions.find(d => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === name) as ObjectTypeDefinitionNode;
-const getField = (input: ObjectTypeDefinitionNode, field: string) => input.fields.find(f => f.name.value === field);
+const getInputType =
+  (schemaDoc: DocumentNode) =>
+  (name: string): InputObjectTypeDefinitionNode =>
+    schemaDoc.definitions.find(
+      (d) => d.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && d.name.value === name,
+    ) as InputObjectTypeDefinitionNode;
+const getInputField = (input: InputObjectTypeDefinitionNode, field: string) => input.fields.find((f) => f.name.value === field);
+const getType =
+  (schemaDoc: DocumentNode) =>
+  (name: string): ObjectTypeDefinitionNode =>
+    schemaDoc.definitions.find((d) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === name) as ObjectTypeDefinitionNode;
+const getField = (input: ObjectTypeDefinitionNode, field: string) => input.fields.find((f) => f.name.value === field);
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {

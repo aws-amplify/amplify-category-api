@@ -1,10 +1,4 @@
-import {
-  DocumentNode,
-  Kind,
-  ObjectTypeDefinitionNode,
-  FieldDefinitionNode,
-  EnumTypeDefinitionNode,
-} from 'graphql';
+import { DocumentNode, Kind, ObjectTypeDefinitionNode, FieldDefinitionNode, EnumTypeDefinitionNode } from 'graphql';
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
 import { isScalarOrEnum } from '../helpers/is-scalar-or-enum';
 import { getTypeDefinitionsOfKind } from '../helpers/get-type-definitions-of-kind';
@@ -26,26 +20,15 @@ export const validateIndexScalarTypes = (schema: DocumentNode): Error[] => {
     [] as FieldDefinitionNode[],
   );
 
-  const fieldsWithIndexDirectives = allObjectFields.filter((objectField) => objectField.directives?.find(
-    (directive) => directive.name.value === 'index',
-  ));
+  const fieldsWithIndexDirectives = allObjectFields.filter((objectField) =>
+    objectField.directives?.find((directive) => directive.name.value === 'index'),
+  );
 
-  const enums = getTypeDefinitionsOfKind(
-    schema,
-    Kind.ENUM_TYPE_DEFINITION,
-  ) as EnumTypeDefinitionNode[];
-  const fieldsWithNonScalarIndex = fieldsWithIndexDirectives.filter(
-    (field) => !isScalarOrEnum(field.type, enums),
-  );
-  const fieldNamesWithNonScalarIndex = fieldsWithNonScalarIndex.map(
-    (field) => field.name.value,
-  );
+  const enums = getTypeDefinitionsOfKind(schema, Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
+  const fieldsWithNonScalarIndex = fieldsWithIndexDirectives.filter((field) => !isScalarOrEnum(field.type, enums));
+  const fieldNamesWithNonScalarIndex = fieldsWithNonScalarIndex.map((field) => field.name.value);
   if (fieldsWithNonScalarIndex.length) {
-    errors.push(new InvalidDirectiveError(
-      `@index directive on '${fieldNamesWithNonScalarIndex.join(
-        ', ',
-      )}' cannot be a non-scalar`,
-    ));
+    errors.push(new InvalidDirectiveError(`@index directive on '${fieldNamesWithNonScalarIndex.join(', ')}' cannot be a non-scalar`));
   }
   return errors;
 };

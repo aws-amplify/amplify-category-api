@@ -1,4 +1,10 @@
-import { amplifyConfigureBeforeOrAtV10_7, amplifyConfigure as configure, isCI, installAmplifyCLI, injectSessionToken } from 'amplify-category-api-e2e-core';
+import {
+  amplifyConfigureBeforeOrAtV10_7,
+  amplifyConfigure as configure,
+  isCI,
+  installAmplifyCLI,
+  injectSessionToken,
+} from 'amplify-category-api-e2e-core';
 import { existsSync } from 'fs-extra';
 import semver from 'semver';
 
@@ -16,7 +22,7 @@ async function setupAmplify(version: string = 'latest') {
     await installAmplifyCLI(version);
   }
 
-  console.log("INSTALLED CLI:", version);
+  console.log('INSTALLED CLI:', version);
   if (isCI()) {
     const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
     const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;

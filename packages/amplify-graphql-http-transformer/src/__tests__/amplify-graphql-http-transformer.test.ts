@@ -50,112 +50,102 @@ test('it generates the expected resources', () => {
   expect(out.stacks).toBeDefined();
   parse(out.schema);
   const stack = out.stacks.HttpStack;
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Statement: [
-          {
-            Action: 'sts:AssumeRole',
-            Effect: 'Allow',
-            Principal: {
-              Service: 'appsync.amazonaws.com',
-            },
+  Template.fromJSON(stack).hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'appsync.amazonaws.com',
           },
-        ],
-        Version: '2012-10-17',
-      },
-    });
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
   Template.fromJSON(stack).resourceCountIs('AWS::AppSync::DataSource', 4);
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::AppSync::DataSource', {
-      ApiId: { Ref: Match.anyValue() },
-      Name: 'httpwwwapicomDataSource',
-      Type: 'HTTP',
-      HttpConfig: {
-        Endpoint: 'http://www.api.com',
-      },
-      ServiceRoleArn: {
-        'Fn::GetAtt': [Match.anyValue(), 'Arn'],
-      },
-    });
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::AppSync::DataSource', {
-      ApiId: { Ref: Match.anyValue() },
-      Name: 'httpapicomDataSource',
-      Type: 'HTTP',
-      HttpConfig: {
-        Endpoint: 'http://api.com',
-      },
-      ServiceRoleArn: {
-        'Fn::GetAtt': [Match.anyValue(), 'Arn'],
-      },
-    });
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::AppSync::DataSource', {
-      ApiId: { Ref: Match.anyValue() },
-      Name: 'httpwwwgooglecomDataSource',
-      Type: 'HTTP',
-      HttpConfig: {
-        Endpoint: 'http://www.google.com',
-      },
-      ServiceRoleArn: {
-        'Fn::GetAtt': [Match.anyValue(), 'Arn'],
-      },
-    });
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::AppSync::DataSource', {
-      ApiId: { Ref: Match.anyValue() },
-      Name: 'httpswwwapicomDataSource',
-      Type: 'HTTP',
-      HttpConfig: {
-        Endpoint: 'https://www.api.com',
-      },
-      ServiceRoleArn: {
-        'Fn::GetAtt': [Match.anyValue(), 'Arn'],
-      },
-    });
+  Template.fromJSON(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+    ApiId: { Ref: Match.anyValue() },
+    Name: 'httpwwwapicomDataSource',
+    Type: 'HTTP',
+    HttpConfig: {
+      Endpoint: 'http://www.api.com',
+    },
+    ServiceRoleArn: {
+      'Fn::GetAtt': [Match.anyValue(), 'Arn'],
+    },
+  });
+  Template.fromJSON(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+    ApiId: { Ref: Match.anyValue() },
+    Name: 'httpapicomDataSource',
+    Type: 'HTTP',
+    HttpConfig: {
+      Endpoint: 'http://api.com',
+    },
+    ServiceRoleArn: {
+      'Fn::GetAtt': [Match.anyValue(), 'Arn'],
+    },
+  });
+  Template.fromJSON(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+    ApiId: { Ref: Match.anyValue() },
+    Name: 'httpwwwgooglecomDataSource',
+    Type: 'HTTP',
+    HttpConfig: {
+      Endpoint: 'http://www.google.com',
+    },
+    ServiceRoleArn: {
+      'Fn::GetAtt': [Match.anyValue(), 'Arn'],
+    },
+  });
+  Template.fromJSON(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+    ApiId: { Ref: Match.anyValue() },
+    Name: 'httpswwwapicomDataSource',
+    Type: 'HTTP',
+    HttpConfig: {
+      Endpoint: 'https://www.api.com',
+    },
+    ServiceRoleArn: {
+      'Fn::GetAtt': [Match.anyValue(), 'Arn'],
+    },
+  });
   Template.fromJSON(stack).resourceCountIs('AWS::AppSync::Resolver', 5);
   Template.fromJSON(stack).resourceCountIs('AWS::AppSync::FunctionConfiguration', 5);
   expect(stack.Resources!.CommentcontentResolver).toBeTruthy();
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::AppSync::Resolver', {
-      ApiId: { Ref: Match.anyValue() },
-      FieldName: 'content',
-      TypeName: 'Comment',
-      Kind: 'PIPELINE',
-    });
+  Template.fromJSON(stack).hasResourceProperties('AWS::AppSync::Resolver', {
+    ApiId: { Ref: Match.anyValue() },
+    FieldName: 'content',
+    TypeName: 'Comment',
+    Kind: 'PIPELINE',
+  });
   expect(stack.Resources!.Commentcontent2Resolver).toBeTruthy();
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::AppSync::Resolver', {
-      ApiId: { Ref: Match.anyValue() },
-      FieldName: 'content2',
-      TypeName: 'Comment',
-      Kind: 'PIPELINE',
-    });
+  Template.fromJSON(stack).hasResourceProperties('AWS::AppSync::Resolver', {
+    ApiId: { Ref: Match.anyValue() },
+    FieldName: 'content2',
+    TypeName: 'Comment',
+    Kind: 'PIPELINE',
+  });
   expect(stack.Resources!.CommentmoreResolver).toBeTruthy();
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::AppSync::Resolver', {
-      ApiId: { Ref: Match.anyValue() },
-      FieldName: 'more',
-      TypeName: 'Comment',
-      Kind: 'PIPELINE',
-    });
+  Template.fromJSON(stack).hasResourceProperties('AWS::AppSync::Resolver', {
+    ApiId: { Ref: Match.anyValue() },
+    FieldName: 'more',
+    TypeName: 'Comment',
+    Kind: 'PIPELINE',
+  });
   expect(stack.Resources!.CommentevenMoreResolver).toBeTruthy();
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::AppSync::Resolver', {
-      ApiId: { Ref: Match.anyValue() },
-      FieldName: 'evenMore',
-      TypeName: 'Comment',
-      Kind: 'PIPELINE',
-    });
+  Template.fromJSON(stack).hasResourceProperties('AWS::AppSync::Resolver', {
+    ApiId: { Ref: Match.anyValue() },
+    FieldName: 'evenMore',
+    TypeName: 'Comment',
+    Kind: 'PIPELINE',
+  });
   expect(stack.Resources!.CommentstillMoreResolver).toBeTruthy();
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::AppSync::Resolver', {
-      ApiId: { Ref: Match.anyValue() },
-      FieldName: 'stillMore',
-      TypeName: 'Comment',
-      Kind: 'PIPELINE',
-    });
+  Template.fromJSON(stack).hasResourceProperties('AWS::AppSync::Resolver', {
+    ApiId: { Ref: Match.anyValue() },
+    FieldName: 'stillMore',
+    TypeName: 'Comment',
+    Kind: 'PIPELINE',
+  });
 });
 
 test('URL params happy path', () => {
@@ -271,74 +261,70 @@ test('env on the hostname', () => {
   parse(out.schema);
   const stack = out.stacks.HttpStack;
   Template.fromJSON(stack).resourceCountIs('AWS::AppSync::DataSource', 4);
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::AppSync::DataSource', {
-      Name: 'httpenvwwwapicomDataSource',
-      Type: 'HTTP',
-      HttpConfig: {
-        Endpoint: {
-          'Fn::Sub': [
-            'http://${env}www.api.com',
-            {
-              env: {
-                Ref: Match.anyValue(),
-              },
+  Template.fromJSON(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+    Name: 'httpenvwwwapicomDataSource',
+    Type: 'HTTP',
+    HttpConfig: {
+      Endpoint: {
+        'Fn::Sub': [
+          'http://${env}www.api.com',
+          {
+            env: {
+              Ref: Match.anyValue(),
             },
-          ],
-        },
+          },
+        ],
       },
-    });
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::AppSync::DataSource', {
-      Name: 'httpenvapicomDataSource',
-      Type: 'HTTP',
-      HttpConfig: {
-        Endpoint: {
-          'Fn::Sub': [
-            'http://${env}api.com',
-            {
-              env: {
-                Ref: Match.anyValue(),
-              },
+    },
+  });
+  Template.fromJSON(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+    Name: 'httpenvapicomDataSource',
+    Type: 'HTTP',
+    HttpConfig: {
+      Endpoint: {
+        'Fn::Sub': [
+          'http://${env}api.com',
+          {
+            env: {
+              Ref: Match.anyValue(),
             },
-          ],
-        },
+          },
+        ],
       },
-    });
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::AppSync::DataSource', {
-      Name: 'httpenvwwwgooglecomDataSource',
-      Type: 'HTTP',
-      HttpConfig: {
-        Endpoint: {
-          'Fn::Sub': [
-            'http://${env}www.google.com',
-            {
-              env: {
-                Ref: Match.anyValue(),
-              },
+    },
+  });
+  Template.fromJSON(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+    Name: 'httpenvwwwgooglecomDataSource',
+    Type: 'HTTP',
+    HttpConfig: {
+      Endpoint: {
+        'Fn::Sub': [
+          'http://${env}www.google.com',
+          {
+            env: {
+              Ref: Match.anyValue(),
             },
-          ],
-        },
+          },
+        ],
       },
-    });
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::AppSync::DataSource', {
-      Name: 'httpsenvwwwapicomDataSource',
-      Type: 'HTTP',
-      HttpConfig: {
-        Endpoint: {
-          'Fn::Sub': [
-            'https://${env}www.api.com',
-            {
-              env: {
-                Ref: Match.anyValue(),
-              },
+    },
+  });
+  Template.fromJSON(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+    Name: 'httpsenvwwwapicomDataSource',
+    Type: 'HTTP',
+    HttpConfig: {
+      Endpoint: {
+        'Fn::Sub': [
+          'https://${env}www.api.com',
+          {
+            env: {
+              Ref: Match.anyValue(),
             },
-          ],
-        },
+          },
+        ],
       },
-    });
+    },
+  });
 });
 
 test('aws_region on the URI path', () => {
@@ -383,72 +369,68 @@ test('aws_region on the hostname', () => {
   parse(out.schema);
   const stack = out.stacks.HttpStack;
   Template.fromJSON(stack).resourceCountIs('AWS::AppSync::DataSource', 4);
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::AppSync::DataSource', {
-      Name: 'httpaws_regionwwwapicomDataSource',
-      Type: 'HTTP',
-      HttpConfig: {
-        Endpoint: {
-          'Fn::Sub': [
-            'http://${aws_region}www.api.com',
-            {
-              aws_region: {
-                Ref: Match.anyValue(),
-              },
+  Template.fromJSON(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+    Name: 'httpaws_regionwwwapicomDataSource',
+    Type: 'HTTP',
+    HttpConfig: {
+      Endpoint: {
+        'Fn::Sub': [
+          'http://${aws_region}www.api.com',
+          {
+            aws_region: {
+              Ref: Match.anyValue(),
             },
-          ],
-        },
+          },
+        ],
       },
-    });
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::AppSync::DataSource', {
-      Name: 'httpaws_regionapicomDataSource',
-      Type: 'HTTP',
-      HttpConfig: {
-        Endpoint: {
-          'Fn::Sub': [
-            'http://${aws_region}api.com',
-            {
-              aws_region: {
-                Ref: Match.anyValue(),
-              },
+    },
+  });
+  Template.fromJSON(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+    Name: 'httpaws_regionapicomDataSource',
+    Type: 'HTTP',
+    HttpConfig: {
+      Endpoint: {
+        'Fn::Sub': [
+          'http://${aws_region}api.com',
+          {
+            aws_region: {
+              Ref: Match.anyValue(),
             },
-          ],
-        },
+          },
+        ],
       },
-    });
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::AppSync::DataSource', {
-      Name: 'httpaws_regionwwwgooglecomDataSource',
-      Type: 'HTTP',
-      HttpConfig: {
-        Endpoint: {
-          'Fn::Sub': [
-            'http://${aws_region}www.google.com',
-            {
-              aws_region: {
-                Ref: Match.anyValue(),
-              },
+    },
+  });
+  Template.fromJSON(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+    Name: 'httpaws_regionwwwgooglecomDataSource',
+    Type: 'HTTP',
+    HttpConfig: {
+      Endpoint: {
+        'Fn::Sub': [
+          'http://${aws_region}www.google.com',
+          {
+            aws_region: {
+              Ref: Match.anyValue(),
             },
-          ],
-        },
+          },
+        ],
       },
-    });
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::AppSync::DataSource', {
-      Name: 'httpsaws_regionwwwapicomDataSource',
-      Type: 'HTTP',
-      HttpConfig: {
-        Endpoint: {
-          'Fn::Sub': [
-            'https://${aws_region}www.api.com',
-            {
-              aws_region: {
-                Ref: Match.anyValue(),
-              },
+    },
+  });
+  Template.fromJSON(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+    Name: 'httpsaws_regionwwwapicomDataSource',
+    Type: 'HTTP',
+    HttpConfig: {
+      Endpoint: {
+        'Fn::Sub': [
+          'https://${aws_region}www.api.com',
+          {
+            aws_region: {
+              Ref: Match.anyValue(),
             },
-          ],
-        },
+          },
+        ],
       },
-    });
+    },
+  });
 });

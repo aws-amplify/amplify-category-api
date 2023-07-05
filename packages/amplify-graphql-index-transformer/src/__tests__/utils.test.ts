@@ -5,7 +5,11 @@ const generateIndexDirectiveConfiguration = ({
   modelName,
   fieldName,
   sortKeyFields,
-}: { modelName: string, fieldName: string, sortKeyFields: string[] }): IndexDirectiveConfiguration => ({
+}: {
+  modelName: string;
+  fieldName: string;
+  sortKeyFields: string[];
+}): IndexDirectiveConfiguration => ({
   object: {
     kind: 'ObjectTypeDefinition',
     name: { kind: 'Name', value: modelName },
@@ -42,26 +46,50 @@ const generateIndexDirectiveConfiguration = ({
 
 describe('generateKeyAndQueryNameForConfig', () => {
   it('generates for a model and field with model name included', () => {
-    expect(generateKeyAndQueryNameForConfig(generateIndexDirectiveConfiguration({
-      modelName: 'Employee', fieldName: 'manager', sortKeyFields: [],
-    }))).toEqual('employeesByManager');
+    expect(
+      generateKeyAndQueryNameForConfig(
+        generateIndexDirectiveConfiguration({
+          modelName: 'Employee',
+          fieldName: 'manager',
+          sortKeyFields: [],
+        }),
+      ),
+    ).toEqual('employeesByManager');
   });
 
   it('generates for a model, field, and single sort key with model name included', () => {
-    expect(generateKeyAndQueryNameForConfig(generateIndexDirectiveConfiguration({
-      modelName: 'Employee', fieldName: 'manager', sortKeyFields: ['level'],
-    }))).toEqual('employeesByManagerAndLevel');
+    expect(
+      generateKeyAndQueryNameForConfig(
+        generateIndexDirectiveConfiguration({
+          modelName: 'Employee',
+          fieldName: 'manager',
+          sortKeyFields: ['level'],
+        }),
+      ),
+    ).toEqual('employeesByManagerAndLevel');
   });
 
   it('generates for a model, field, and multiple sort keys with model name included', () => {
-    expect(generateKeyAndQueryNameForConfig(generateIndexDirectiveConfiguration({
-      modelName: 'Employee', fieldName: 'manager', sortKeyFields: ['level', 'tenure', 'role'],
-    }))).toEqual('employeesByManagerAndLevelAndTenureAndRole');
+    expect(
+      generateKeyAndQueryNameForConfig(
+        generateIndexDirectiveConfiguration({
+          modelName: 'Employee',
+          fieldName: 'manager',
+          sortKeyFields: ['level', 'tenure', 'role'],
+        }),
+      ),
+    ).toEqual('employeesByManagerAndLevelAndTenureAndRole');
   });
 
   it('handles model pluralization in a sane way', () => {
-    expect(generateKeyAndQueryNameForConfig(generateIndexDirectiveConfiguration({
-      modelName: 'Moss', fieldName: 'treeId', sortKeyFields: [],
-    }))).toEqual('mossesByTreeId');
+    expect(
+      generateKeyAndQueryNameForConfig(
+        generateIndexDirectiveConfiguration({
+          modelName: 'Moss',
+          fieldName: 'treeId',
+          sortKeyFields: [],
+        }),
+      ),
+    ).toEqual('mossesByTreeId');
   });
 });

@@ -36,7 +36,7 @@ export class PredictionsTransformer extends Transformer {
           convertTextToSpeech
           translateText
         }
-      `
+      `,
     );
     this.resources = new ResourceFactory();
     this.predictionsConfig = predictionsConfig;
@@ -52,20 +52,20 @@ export class PredictionsTransformer extends Transformer {
     // validate that that order the transformers are correct
     this.validateActions(actions);
     // validate storage is in the config
-    if ( !(this.predictionsConfig) || !(this.predictionsConfig.bucketName) ) {
+    if (!this.predictionsConfig || !this.predictionsConfig.bucketName) {
       throw new InvalidDirectiveError('Please configure storage in your project in order to use @predictions directive');
     }
 
     // make changes to the schema to create the input/output types
     // generate action datasources and add functions
     this.createResources(ctx, definition, actions, this.predictionsConfig.bucketName);
-  }
+  };
 
   private validateActions(actions: string[]) {
     // validate actions
     const supportedPredictions = allowedActions;
     const allowed = [];
-    actions.forEach(action => {
+    actions.forEach((action) => {
       if (supportedPredictions[action] && (allowed.includes(action) || allowed.length === 0)) {
         allowed.concat(supportedPredictions[action].next);
       } else {
@@ -117,7 +117,7 @@ export class PredictionsTransformer extends Transformer {
       if (!ctx.getResource(PredictionsResourceIDs.getPredictionFunctionName(action))) {
         ctx.setResource(
           PredictionsResourceIDs.getPredictionFunctionName(action),
-          this.resources.createActionFunction(action, actionDSConfig.id)
+          this.resources.createActionFunction(action, actionDSConfig.id),
         );
         ctx.mapResourceToStack(PREDICTIONS_DIRECTIVE_STACK, PredictionsResourceIDs.getPredictionFunctionName(action));
       }
@@ -140,9 +140,9 @@ export class PredictionsTransformer extends Transformer {
     // add arguments into operation
     const type = ctx.getType(ctx.getQueryTypeName()) as ObjectTypeDefinitionNode;
     if (type) {
-      const field = type.fields.find(f => f.name.value === fieldName);
+      const field = type.fields.find((f) => f.name.value === fieldName);
       if (field) {
-        const newFields = [...type.fields.filter(f => f.name.value !== field.name.value), addInputArgument(field, fieldName, isList)];
+        const newFields = [...type.fields.filter((f) => f.name.value !== field.name.value), addInputArgument(field, fieldName, isList)];
         const newMutation = {
           ...type,
           fields: newFields,

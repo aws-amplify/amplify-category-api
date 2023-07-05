@@ -12,11 +12,11 @@ const directiveName = 'mapsTo';
  */
 export function getTableNameForModel(sdl: string, modelName: string): string {
   const directivesByType = collectDirectivesByType(sdl);
-  const mapsToDirective = directivesByType?.[modelName]?.find(directive => directive.name.value === directiveName);
+  const mapsToDirective = directivesByType?.[modelName]?.find((directive) => directive.name.value === directiveName);
   if (!mapsToDirective) {
     return modelName;
   }
-  const originalName = mapsToDirective.arguments.find(arg => arg.name.value === 'name')?.value?.value;
+  const originalName = mapsToDirective.arguments.find((arg) => arg.name.value === 'name')?.value?.value;
   if (!originalName) {
     throw new InvalidDirectiveError(`@${directiveName} directive must specify a name`);
   }

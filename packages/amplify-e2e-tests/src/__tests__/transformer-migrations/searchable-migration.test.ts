@@ -7,13 +7,13 @@ import {
   createRandomName,
   addAuthWithDefault,
 } from 'amplify-category-api-e2e-core';
-import { 
-  addApiWithoutSchema, 
-  updateApiSchema, 
-  getProjectMeta, 
-  createNewProjectDir, 
-  deleteProjectDir, 
-  refreshCredentials 
+import {
+  addApiWithoutSchema,
+  updateApiSchema,
+  getProjectMeta,
+  createNewProjectDir,
+  deleteProjectDir,
+  refreshCredentials,
 } from 'amplify-category-api-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
@@ -55,7 +55,7 @@ describe('transformer model searchable migration test', () => {
     await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 2);
     await addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', true);
 
-    refreshCredentials()
+    refreshCredentials();
     await updateApiSchema(projRoot, projectName, v2Schema);
     await amplifyPushUpdate(projRoot);
 

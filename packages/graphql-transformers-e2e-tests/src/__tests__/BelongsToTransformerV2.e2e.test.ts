@@ -8,13 +8,14 @@ import { getSchemaDeployer, SchemaDeployer } from '../deploySchema';
 jest.setTimeout(1000 * 60 * 10); // 10 minutes
 
 describe('@belongsTo transformer', () => {
-  const transformerFactory = () => new GraphQLTransform({
-    transformParameters: {
-      respectPrimaryKeyAttributesOnConnectionField: false,
-      sandboxModeEnabled: true,
-    },
-    transformers: [new ModelTransformer(), new BelongsToTransformer(), new HasManyTransformer(), new HasOneTransformer()],
-  });
+  const transformerFactory = () =>
+    new GraphQLTransform({
+      transformParameters: {
+        respectPrimaryKeyAttributesOnConnectionField: false,
+        sandboxModeEnabled: true,
+      },
+      transformers: [new ModelTransformer(), new BelongsToTransformer(), new HasManyTransformer(), new HasOneTransformer()],
+    });
   const validSchema = /* GraphQL */ `
     type Blog @model {
       id: ID!

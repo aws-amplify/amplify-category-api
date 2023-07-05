@@ -9,7 +9,7 @@ export function lambdaArnResource(name: string, region?: string) {
   return Fn.If(
     ResourceConstants.CONDITIONS.HasEnvironmentParameter,
     Fn.Sub(lambdaArnKey(name, region), substitutions),
-    Fn.Sub(lambdaArnKey(removeEnvReference(name), region), {})
+    Fn.Sub(lambdaArnKey(removeEnvReference(name), region), {}),
   );
 }
 

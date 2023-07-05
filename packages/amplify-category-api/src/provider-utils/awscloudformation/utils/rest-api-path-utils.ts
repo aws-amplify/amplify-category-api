@@ -39,7 +39,7 @@ export const validatePathName = (name: string) => {
 // checkForPathOverlap assumes that all provided paths have previously been run through validatePathName().
 export const checkForPathOverlap = (name: string, paths: string[]) => {
   // Split name into an array of its components.
-  const split = name.split('/').filter(sub => sub !== ''); // Because name starts with a /, this filters out the first empty element
+  const split = name.split('/').filter((sub) => sub !== ''); // Because name starts with a /, this filters out the first empty element
 
   // Sort paths so that the prefix paths of name are checked with shorter paths first.
   paths.sort();
@@ -53,13 +53,13 @@ export const checkForPathOverlap = (name: string, paths: string[]) => {
   // are named "isbn" and "publication-year"; we're concerned about the fact that the subpaths after /book in both paths are parameters.
   let subpath = '';
   let overlappingPath = '';
-  const subMatch = split.some(sub => {
+  const subMatch = split.some((sub) => {
     // If the current subpath is a parameter, convert it to: '{}'.
     sub = sub.replace(/{[a-zA-Z0-9\-]+}/g, '{}');
     subpath = `${subpath}/${sub}`;
     // Explicitly check for the path / since it overlaps with any other valid path.
     // If the path isn't /, replace all of its parameters with '{}' when checking for overlap in find().
-    overlappingPath = paths.find(name => name === '/' || name.replace(/{[a-zA-Z0-9\-]+}/g, '{}') === subpath);
+    overlappingPath = paths.find((name) => name === '/' || name.replace(/{[a-zA-Z0-9\-]+}/g, '{}') === subpath);
     return overlappingPath !== undefined;
   });
   if (subMatch) {

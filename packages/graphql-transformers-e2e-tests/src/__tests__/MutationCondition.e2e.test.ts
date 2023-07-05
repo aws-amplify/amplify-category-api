@@ -46,8 +46,6 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 const transformAndParseSchema = (schema: string, version: number = TRANSFORM_CURRENT_VERSION): DocumentNode => {
   const transformer = new GraphQLTransform({
@@ -958,7 +956,7 @@ describe(`Deployed Mutation Condition tests`, () => {
 
       // Wait for any propagation to avoid random
       // "The security token included in the request is invalid" errors
-      await new Promise<void>(res => setTimeout(() => res(), 5000));
+      await new Promise<void>((res) => setTimeout(() => res(), 5000));
     } catch (e) {
       console.error(e);
       expect(true).toEqual(false);
@@ -1328,9 +1326,9 @@ describe(`Local V4-V5 Transformer tests`, () => {
     expect(mutation).toBeDefined();
 
     const checkMutation = (name: string) => {
-      const field = <FieldDefinitionNode>mutation.fields.find(f => f.name.value === `${name}Post`);
+      const field = <FieldDefinitionNode>mutation.fields.find((f) => f.name.value === `${name}Post`);
       expect(field).toBeDefined();
-      const conditionArg = field.arguments.find(a => a.name.value === 'condition');
+      const conditionArg = field.arguments.find((a) => a.name.value === 'condition');
       expect(conditionArg).toBeUndefined();
     };
 
@@ -1382,9 +1380,9 @@ describe(`Local V4-V5 Transformer tests`, () => {
     expect(mutation).toBeDefined();
 
     const checkMutation = (name: string) => {
-      const field = <FieldDefinitionNode>mutation.fields.find(f => f.name.value === `${name}Post`);
+      const field = <FieldDefinitionNode>mutation.fields.find((f) => f.name.value === `${name}Post`);
       expect(field).toBeDefined();
-      const conditionArg = field.arguments.find(a => a.name.value === 'condition');
+      const conditionArg = field.arguments.find((a) => a.name.value === 'condition');
       expect(conditionArg).toBeDefined();
     };
 
@@ -1435,9 +1433,9 @@ describe(`Local V4-V5 Transformer tests`, () => {
     expect(mutation).toBeDefined();
 
     const checkMutation = (name: string) => {
-      const field = <FieldDefinitionNode>mutation.fields.find(f => f.name.value === `${name}Post`);
+      const field = <FieldDefinitionNode>mutation.fields.find((f) => f.name.value === `${name}Post`);
       expect(field).toBeDefined();
-      const conditionArg = field.arguments.find(a => a.name.value === 'condition');
+      const conditionArg = field.arguments.find((a) => a.name.value === 'condition');
       expect(conditionArg).toBeDefined();
     };
 

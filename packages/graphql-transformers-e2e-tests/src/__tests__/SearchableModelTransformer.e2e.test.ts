@@ -32,8 +32,6 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
@@ -302,7 +300,7 @@ test('Test searchPosts with offset pagination', async () => {
   expect(secondLength).toEqual(firstLength - 2);
   const firstItem = firstQuery.data.searchPosts.items[0];
   const secondItems = secondQuery.data.searchPosts.items;
-  expect(secondItems.find(i => i.id === firstItem.id)).not.toBeDefined();
+  expect(secondItems.find((i) => i.id === firstItem.id)).not.toBeDefined();
 });
 
 test('Test searchPosts with sort on date type', async () => {
@@ -839,7 +837,7 @@ test('query using date range for createdAt', async () => {
   expect(searchResponse).toBeDefined();
   const items = searchResponse.data.searchUsers.items;
   expect(items.length).toEqual(expectLength);
-  expect(items.map(item => item.createdAt).sort()).toEqual(['2016-07-20', '2017-06-10', '2017-08-22']);
+  expect(items.map((item) => item.createdAt).sort()).toEqual(['2016-07-20', '2017-06-10', '2017-08-22']);
 });
 
 test('query for books by Agatha Christie with model using @key', async () => {

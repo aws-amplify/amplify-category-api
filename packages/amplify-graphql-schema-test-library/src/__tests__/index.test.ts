@@ -14,9 +14,7 @@ import {
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { ConflictHandlerType, GraphQLTransform, GraphQLTransformOptions } from '@aws-amplify/graphql-transformer-core';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  schemas, TransformerPlatform, TransformerSchema, TransformerVersion,
-} from '..';
+import { schemas, TransformerPlatform, TransformerSchema, TransformerVersion } from '..';
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 const defaultDataStoreConfig = {

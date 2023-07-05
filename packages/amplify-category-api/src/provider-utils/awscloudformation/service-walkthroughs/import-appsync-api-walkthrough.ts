@@ -24,7 +24,7 @@ const service = 'AppSync';
 
 export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<ImportAppSyncAPIInputs> => {
   printer.warn(PREVIEW_BANNER);
-  let apiName:string;
+  let apiName: string;
   const existingAPIs = getAppSyncAPINames();
   if (existingAPIs?.length > 0) {
     apiName = existingAPIs[0];
@@ -40,11 +40,11 @@ export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<
   const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
   const secretsKey = await getSecretsKey();
 
-  if(fs.existsSync(pathToSchemaFile)) {
+  if (fs.existsSync(pathToSchemaFile)) {
     printer.error(`Imported Database schema already exists. Use "amplify api generate-schema" to fetch the latest updates to schema.`);
     return {
-      apiName: apiName
-    }
+      apiName: apiName,
+    };
   }
 
   const databaseConfig: ImportedDataSourceConfig = await databaseConfigurationInputWalkthrough(engine);
@@ -59,24 +59,30 @@ export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<
   };
 };
 
-export const writeDefaultGraphQLSchema = async (context: $TSContext, pathToSchemaFile: string, databaseConfig: ImportedDataSourceConfig) => {
+export const writeDefaultGraphQLSchema = async (
+  context: $TSContext,
+  pathToSchemaFile: string,
+  databaseConfig: ImportedDataSourceConfig,
+) => {
   const dataSourceType = databaseConfig?.engine;
-  if(Object.values(ImportedRDSType).includes(dataSourceType)) {
+  if (Object.values(ImportedRDSType).includes(dataSourceType)) {
     const globalAmplifyInputTemplate = await constructDefaultGlobalAmplifyInput(context, databaseConfig.engine);
     writeSchemaFile(pathToSchemaFile, globalAmplifyInputTemplate);
-  }
-  else {
+  } else {
     throw new Error(`Data source type ${dataSourceType} is not supported.`);
   }
 };
 
-export const databaseConfigurationInputWalkthrough = async (engine: ImportedDataSourceType, database?: string): Promise<ImportedDataSourceConfig> => {
-  const databaseName = database || await prompter.input(`Enter the name of the ${formatEngineName(engine)} database to import:`);
+export const databaseConfigurationInputWalkthrough = async (
+  engine: ImportedDataSourceType,
+  database?: string,
+): Promise<ImportedDataSourceConfig> => {
+  const databaseName = database || (await prompter.input(`Enter the name of the ${formatEngineName(engine)} database to import:`));
   const host = await prompter.input(`Enter the host for ${databaseName} database:`);
   const port = await prompter.input<'one', number>(`Enter the port for ${databaseName} database:`, {
-    transform: input => Number.parseInt(input, 10),
+    transform: (input) => Number.parseInt(input, 10),
     validate: integer(),
-    initial: 3306
+    initial: 3306,
   });
   // Get the database user credentials
   const username = await prompter.input(`Enter the username for ${databaseName} database user:`);
@@ -88,16 +94,16 @@ export const databaseConfigurationInputWalkthrough = async (engine: ImportedData
     host: host,
     port: port,
     username: username,
-    password: password
+    password: password,
   };
 };
 
 export const formatEngineName = (engine: ImportedDataSourceType) => {
-  switch(engine) {
+  switch (engine) {
     case ImportedRDSType.MYSQL:
-      return "MySQL";
+      return 'MySQL';
     case ImportedRDSType.POSTGRESQL:
-      return "PostgreSQL";
+      return 'PostgreSQL';
     default:
       throw new Error(`Unsupported database engine: ${engine}`);
   }

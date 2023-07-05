@@ -10,7 +10,7 @@ import {
   getProjectMeta,
   createNewProjectDir,
   deleteProjectDir,
-  refreshCredentials
+  refreshCredentials,
 } from 'amplify-category-api-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
@@ -149,7 +149,7 @@ describe('transformer model searchable migration test', () => {
     let searchResponse;
 
     do {
-      await new Promise(r => setTimeout(r, waitInMilliseconds));
+      await new Promise((r) => setTimeout(r, waitInMilliseconds));
       searchResponse = await searchTodos();
       currentRetryCount += 1;
       waitInMilliseconds = waitInMilliseconds * 2;

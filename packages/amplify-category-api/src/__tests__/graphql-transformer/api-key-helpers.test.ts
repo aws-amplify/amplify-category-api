@@ -6,11 +6,14 @@ jest.mock('@aws-amplify/amplify-cli-core', () => {
   return {
     ...original,
     CloudformationProviderFacade: {
-      getApiKeyConfig: jest.fn(() => ({
-        apiKeyExpirationDays: 2,
-        apiKeyExpirationDate: new Date('2021-08-20T20:38:07.585Z'),
-        description: '',
-      } as ApiKeyConfig)),
+      getApiKeyConfig: jest.fn(
+        () =>
+          ({
+            apiKeyExpirationDays: 2,
+            apiKeyExpirationDate: new Date('2021-08-20T20:38:07.585Z'),
+            description: '',
+          } as ApiKeyConfig),
+      ),
     },
   };
 });

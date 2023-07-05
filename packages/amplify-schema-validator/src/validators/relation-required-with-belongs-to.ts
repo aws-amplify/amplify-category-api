@@ -1,8 +1,4 @@
-import {
-  DocumentNode,
-  Kind,
-  ObjectTypeDefinitionNode,
-} from 'graphql';
+import { DocumentNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
 import { getObjectWithName } from '../helpers/get-object-with-name';
 import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
@@ -21,20 +17,20 @@ export const validateRequireBelongsToRelation = (schema: DocumentNode): Error[] 
   ) as ObjectTypeDefinitionNode[];
   objectTypeDefinitions.forEach((objectTypeDefinition) => {
     const objectName = objectTypeDefinition.name.value;
-    const belongsToFields = objectTypeDefinition.fields?.filter((objectField) => objectField.directives?.find(
-      (directive) => directive.name.value === 'belongsTo',
-    ));
+    const belongsToFields = objectTypeDefinition.fields?.filter((objectField) =>
+      objectField.directives?.find((directive) => directive.name.value === 'belongsTo'),
+    );
     belongsToFields?.forEach((belongsToField) => {
       const typeName = resolveFieldTypeName(belongsToField.type);
       const objectOfType = getObjectWithName(schema, typeName);
-      const relationField = objectOfType?.fields?.find(
-        (field) => resolveFieldTypeName(field.type) === objectName,
-      );
+      const relationField = objectOfType?.fields?.find((field) => resolveFieldTypeName(field.type) === objectName);
       const relationDirective = relationField?.directives?.find((directive) => ['hasOne', 'hasMany'].includes(directive.name.value));
       if (!relationDirective) {
-        errors.push(new InvalidDirectiveError(
-          'Invalid @belongs directive in schema: @belongsTo directive requires that a @hasOne or @hasMany relationship already exists from parent to the related model.',
-        ));
+        errors.push(
+          new InvalidDirectiveError(
+            'Invalid @belongs directive in schema: @belongsTo directive requires that a @hasOne or @hasMany relationship already exists from parent to the related model.',
+          ),
+        );
       }
     });
   });

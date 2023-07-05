@@ -1,10 +1,10 @@
-const { execSync } = require("child_process");
-import _ from "lodash";
-import { writeFileSync, readFileSync } from "fs-extra";
+const { execSync } = require('child_process');
+import _ from 'lodash';
+import { writeFileSync, readFileSync } from 'fs-extra';
 import * as ini from 'ini';
-import { pathManager } from "@aws-amplify/amplify-cli-core";
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 
-export const refreshCredentials = (): AWSTempCredentials|undefined => {
+export const refreshCredentials = (): AWSTempCredentials | undefined => {
   // Early return if CI environment is not Codebuild
   if (!process.env.CI || !process.env.CODEBUILD) {
     return;
@@ -33,7 +33,7 @@ export const refreshTestProfileCredentials = (creds: AWSTempCredentials) => {
 };
 
 type AWSTempCredentials = {
-  accessKeyId: string,
-  secretAccessKey: string,
-  sessionToken: string
+  accessKeyId: string;
+  secretAccessKey: string;
+  sessionToken: string;
 };

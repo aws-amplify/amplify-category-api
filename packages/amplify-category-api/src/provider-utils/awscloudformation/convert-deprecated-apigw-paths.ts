@@ -88,5 +88,5 @@ function _convertDeprecatedPermissionArrayToCRUD(deprecatedPrivacyArray: string[
     '/PATCH': CrudOperation.UPDATE,
     '/DELETE': CrudOperation.DELETE,
   };
-  return Array.from(new Set(deprecatedPrivacyArray.map(op => opMap[op])));
+  return Array.from(new Set(deprecatedPrivacyArray.map((op) => opMap[op])));
 }

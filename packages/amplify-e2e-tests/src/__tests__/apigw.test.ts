@@ -101,7 +101,9 @@ describe('API Gateway e2e tests', () => {
     await amplifyPushAuth(projRoot);
     const responseAfterAddPath = await fetch(apiPath);
     expect(responseAfterAddPath.status).toEqual(403);
-    expect(responseAfterAddPath.headers.get('access-control-allow-headers')).toEqual('Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token');
+    expect(responseAfterAddPath.headers.get('access-control-allow-headers')).toEqual(
+      'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+    );
     expect(responseAfterAddPath.headers.get('access-control-allow-methods')).toEqual('DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT');
     expect(responseAfterAddPath.headers.get('access-control-allow-origin')).toEqual('*');
     expect(responseAfterAddPath.headers.get('access-control-expose-headers')).toEqual('Date,X-Amzn-ErrorType');

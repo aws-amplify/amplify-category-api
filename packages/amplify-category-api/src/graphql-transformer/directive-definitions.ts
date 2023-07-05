@@ -13,9 +13,8 @@ import { loadCustomTransformersV2 } from './transformer-options-v2';
  */
 export const getDirectiveDefinitions = async (context: $TSContext, resourceDir: string): Promise<string> => {
   const transformerVersion = await getTransformerVersion(context);
-  const transformList = transformerVersion === 2
-    ? await getTransformListV2(resourceDir)
-    : await getTransformerFactoryV1(context, resourceDir)(true);
+  const transformList =
+    transformerVersion === 2 ? await getTransformListV2(resourceDir) : await getTransformerFactoryV1(context, resourceDir)(true);
 
   const transformDirectives = transformList
     .map((transform) => [transform.directive, ...transform.typeDefinitions].map((node) => print(node)).join('\n'))
@@ -29,6 +28,7 @@ export const getDirectiveDefinitions = async (context: $TSContext, resourceDir: 
  * @param resourceDir directory to search for custom transformer config in.
  * @returns the list of transformers, including any defined custom transformers.
  */
-const getTransformListV2 = async (resourceDir: string): Promise<TransformerPluginProvider[]> => constructTransformerChain({
-  customTransformers: await loadCustomTransformersV2(resourceDir),
-});
+const getTransformListV2 = async (resourceDir: string): Promise<TransformerPluginProvider[]> =>
+  constructTransformerChain({
+    customTransformers: await loadCustomTransformersV2(resourceDir),
+  });

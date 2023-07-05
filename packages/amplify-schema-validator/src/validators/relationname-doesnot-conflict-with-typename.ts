@@ -1,9 +1,4 @@
-import {
-  DocumentNode,
-  Kind,
-  ObjectTypeDefinitionNode,
-  StringValueNode,
-} from 'graphql';
+import { DocumentNode, Kind, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
 import { getGraphqlName, toUpper } from '../helpers/util';
 
@@ -21,9 +16,9 @@ export const validateRelationNameDoesNotConflictWithTypeName = (schema: Document
   ) as ObjectTypeDefinitionNode[];
   const typeNames = objectTypeDefinitions.map((objectTypeDefinition) => objectTypeDefinition.name.value);
   objectTypeDefinitions.forEach((objectTypeDefinition) => {
-    const directiveFields = objectTypeDefinition.fields?.filter((objectField) => objectField.directives?.find(
-      (directive) => directive.name.value === 'manyToMany',
-    ));
+    const directiveFields = objectTypeDefinition.fields?.filter((objectField) =>
+      objectField.directives?.find((directive) => directive.name.value === 'manyToMany'),
+    );
 
     directiveFields?.forEach((directiveField) => {
       const directiveArgs = directiveField.directives?.filter((directive) => directive.arguments && directive.arguments.length > 0);
@@ -37,9 +32,11 @@ export const validateRelationNameDoesNotConflictWithTypeName = (schema: Document
         const val = (fieldArg.value as StringValueNode).value;
         const graphqlName = getGraphqlName(toUpper(val));
         if (typeNames.includes(graphqlName)) {
-          errors.push(new InvalidDirectiveError(
-            `@manyToMany relation name ${graphqlName} (derived from ${val}) already exists as a type in the schema.`,
-          ));
+          errors.push(
+            new InvalidDirectiveError(
+              `@manyToMany relation name ${graphqlName} (derived from ${val}) already exists as a type in the schema.`,
+            ),
+          );
         }
       });
     });
