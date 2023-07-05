@@ -10,6 +10,7 @@ import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { OverrideConfig } from '@aws-amplify/graphql-transformer-core';
 import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
+import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces';
@@ -34,6 +35,7 @@ export type ExecuteTransformConfig = TransformConfig & {
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
     printTransformerLog?: (log: TransformerLog) => void;
     sqlLambdaVpcConfig?: VpcConfig;
+    rdsLayerMapping?: RDSLayerMapping;
 };
 
 // @public (undocumented)
@@ -50,6 +52,7 @@ export type TransformConfig = {
     stackMapping?: Record<string, string>;
     transformParameters: TransformParameters;
     sqlLambdaVpcConfig?: VpcConfig;
+    rdsLayerMapping?: RDSLayerMapping;
 };
 
 // @public (undocumented)
@@ -64,7 +67,7 @@ export type TransformerFactoryArgs = {
 
 // Warnings were encountered during analysis:
 //
-// src/graphql-transformer.ts:48:3 - (ae-forgotten-export) The symbol "TransformerSearchConfig" needs to be exported by the entry point index.d.ts
+// src/graphql-transformer.ts:49:3 - (ae-forgotten-export) The symbol "TransformerSearchConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

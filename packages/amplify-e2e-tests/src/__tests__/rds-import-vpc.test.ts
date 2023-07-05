@@ -7,6 +7,7 @@ import {
   deleteDBInstance, 
   deleteProject, 
   deleteProjectDir, 
+  getAppSyncApi, 
   getProjectMeta, 
   importRDSDatabase, 
   initJSProjectWithProfile,
@@ -18,6 +19,10 @@ import { ObjectTypeDefinitionNode, parse } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';
 import { print } from 'graphql';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+
+// to deal with bug in cognito-identity-js
+(global as any).fetch = require('node-fetch');
 
 const CDK_FUNCTION_TYPE = 'AWS::Lambda::Function';
 const CDK_SUBSCRIPTION_TYPE = 'AWS::SNS::Subscription';
@@ -84,8 +89,8 @@ describe("RDS Tests", () => {
       name: projName,
     });
     
-    const meta = getProjectMeta(projRoot);
-    region = meta.providers.awscloudformation.Region;
+    const metaAfterInit = getProjectMeta(projRoot);
+    region = metaAfterInit.providers.awscloudformation.Region;
     await setupDatabase();
   
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
@@ -132,7 +137,6 @@ describe("RDS Tests", () => {
     const apiDirectory = path.join(apisDirectory, apiName);
     const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', `RdsApiStack.json`);
     const cfnTemplate = JSON.parse(readFileSync(cfnRDSTemplateFile, 'utf8'));
-    console.log(JSON.stringify(cfnTemplate, null, 4));
     expect(cfnTemplate.Resources).toBeDefined();
     const resources = cfnTemplate.Resources;
 
@@ -170,6 +174,42 @@ describe("RDS Tests", () => {
     expect(rdsPatchingSubscription.Properties.FilterPolicy.Region).toBeDefined();
 
     await amplifyPush(projRoot);
+
+    // Get the AppSync API details after deployment
+    const meta = getProjectMeta(projRoot);
+    const { output } = meta.api.rdsapivpc;
+    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, region);
+
+    expect(GraphQLAPIIdOutput).toBeDefined();
+    expect(GraphQLAPIEndpointOutput).toBeDefined();
+    expect(GraphQLAPIKeyOutput).toBeDefined();
+
+    expect(graphqlApi).toBeDefined();
+    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+
+    const apiEndPoint = GraphQLAPIEndpointOutput as string;
+    const apiKey = GraphQLAPIKeyOutput as string;
+
+    const appSyncClient = new AWSAppSyncClient({
+      url: apiEndPoint,
+      region,
+      disableOffline: true,
+      auth: {
+        type: AUTH_TYPE.API_KEY,
+        apiKey,
+      },
+    });
+
+    // VPC will not have VPC endpoints for SSM defined and the security group's inbound rule for port 443 is not defined.
+    // Expect the listComponents query to fail with an error.
+    expect(appSyncClient).toBeDefined();
+    try {
+      await listComponents(appSyncClient);
+      throw new Error('Expected listComponents to fail.');
+    } catch (err) {
+      expect(err.message).toEqual('GraphQL error: Unable to get the database credentials. Check the logs for more details.');
+    }
   });
 }); 
 
@@ -181,4 +221,24 @@ const getResource = (resources: Map<string, any>, resourcePrefix: string, resour
       return resource;
     }
   }
+};
+
+const listComponents = async (client) => {
+  const listComponents = /* GraphQL */ `
+      query listComponents {
+        listComponents {
+          items {
+            component_group_id
+            component_id
+            component_urn
+          }
+        }
+      }
+    `;
+  const listResult: any = await client.query({
+    query: gql(listComponents),
+    fetchPolicy: 'no-cache',
+  });
+
+  return listResult;
 };

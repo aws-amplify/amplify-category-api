@@ -5,6 +5,7 @@ import {
   TransformerLog,
   TransformerLogLevel,
   VpcConfig,
+  RDSLayerMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -21,11 +22,14 @@ import { getConnectionSecrets, testDatabaseConnection, getExistingConnectionSecr
 import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { getHostVpc } from '@aws-amplify/graphql-schema-generator';
+import fetch from 'node-fetch';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
 const SCHEMA_DIR_NAME = 'schema';
 const PROVIDER_NAME = 'awscloudformation';
+
+const LAYER_MAPPING_URL = 'https://amplify-rds-layer-resources.s3.amazonaws.com/rds-layer-mapping.json';
 
 /**
  * Transform GraphQL Schema
@@ -184,6 +188,7 @@ const buildAPIProject = async (
   if (datasourceMapValues.some((value) => value.dbType === MYSQL_DB_TYPE && !value.provisionDB)) {
     sqlLambdaVpcConfig = await isSqlLambdaVpcConfigRequired(context, getSecretsKey(), ImportedRDSType.MYSQL);
   }
+  const rdsLayerMapping = await getRDSLayerMapping();
 
   const transformOutput = executeTransform({
     ...opts,
@@ -192,6 +197,7 @@ const buildAPIProject = async (
     datasourceSecretParameterLocations: datasourceSecretMap,
     printTransformerLog,
     sqlLambdaVpcConfig,
+    rdsLayerMapping,
   });
 
   const builtProject = mergeUserConfigWithTransformOutput(opts.projectConfig, transformOutput, opts);
@@ -211,6 +217,20 @@ const buildAPIProject = async (
   }
 
   return builtProject;
+};
+
+const getRDSLayerMapping = async (): Promise<RDSLayerMapping> => {
+  try {
+    const response = await fetch(LAYER_MAPPING_URL);
+    if (response.status === 200) {
+      const result = await response.json();
+      return result as RDSLayerMapping;
+    }
+  } catch (err) {
+    // Ignore the error and return default layer mapping
+  }
+  printer.warn('Unable to load the latest RDS layer configuration, using local configuration.');
+  return {};
 };
 
 const isSqlLambdaVpcConfigRequired = async (

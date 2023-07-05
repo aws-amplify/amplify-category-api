@@ -20,7 +20,8 @@ import path from 'path';
 describe("RDS Tests", () => {
   let publicIpCidr = "0.0.0.0/0";
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
-  
+  const RDS_MAPPING_FILE = 'https://amplify-rds-layer-resources.s3.amazonaws.com/rds-layer-mapping.json';
+
   // Generate settings for RDS instance
   const username = db_user;
   const password = db_password;
@@ -146,5 +147,71 @@ describe("RDS Tests", () => {
 
     // PrimaryKey directive must be defined on Id field.
     expect(contactsIdFieldType.directives.find(d => d.name.value === 'primaryKey')).toBeDefined();
+  });
+
+  // This test must be updated if the rds layer mapping file is updated
+  test("check the rds layer mapping file on the service account is available", async () => {
+    const rdsMappingFile = await axios.get(RDS_MAPPING_FILE);
+    expect(rdsMappingFile).toBeDefined();
+    expect(rdsMappingFile.data).toBeDefined();
+    expect(rdsMappingFile.data).toMatchObject({
+      "ap-northeast-1": {
+        "layerRegion": "arn:aws:lambda:ap-northeast-1:582037449441:layer:AmplifyRDSLayer:5"
+      },
+      "us-east-1": {
+        "layerRegion": "arn:aws:lambda:us-east-1:582037449441:layer:AmplifyRDSLayer:5"
+      },
+      "ap-southeast-1": {
+        "layerRegion": "arn:aws:lambda:ap-southeast-1:582037449441:layer:AmplifyRDSLayer:5"
+      },
+      "eu-west-1": {
+        "layerRegion": "arn:aws:lambda:eu-west-1:582037449441:layer:AmplifyRDSLayer:5"
+      },
+      "us-west-1": {
+        "layerRegion": "arn:aws:lambda:us-west-1:582037449441:layer:AmplifyRDSLayer:5"
+      },
+      "ap-east-1": {
+        "layerRegion": "arn:aws:lambda:ap-east-1:582037449441:layer:AmplifyRDSLayer:5"
+      },
+      "ap-northeast-2": {
+        "layerRegion": "arn:aws:lambda:ap-northeast-2:582037449441:layer:AmplifyRDSLayer:5"
+      },
+      "ap-northeast-3": {
+        "layerRegion": "arn:aws:lambda:ap-northeast-3:582037449441:layer:AmplifyRDSLayer:5"
+      },
+      "ap-south-1": {
+        "layerRegion": "arn:aws:lambda:ap-south-1:582037449441:layer:AmplifyRDSLayer:5"
+      },
+      "ap-southeast-2": {
+        "layerRegion": "arn:aws:lambda:ap-southeast-2:582037449441:layer:AmplifyRDSLayer:5"
+      },
+      "ca-central-1": {
+        "layerRegion": "arn:aws:lambda:ca-central-1:582037449441:layer:AmplifyRDSLayer:5"
+      },
+      "eu-central-1": {
+        "layerRegion": "arn:aws:lambda:eu-central-1:582037449441:layer:AmplifyRDSLayer:5"
+      },
+      "eu-north-1": {
+        "layerRegion": "arn:aws:lambda:eu-north-1:582037449441:layer:AmplifyRDSLayer:5"
+      },
+      "eu-west-2": {
+        "layerRegion": "arn:aws:lambda:eu-west-2:582037449441:layer:AmplifyRDSLayer:5"
+      },
+      "eu-west-3": {
+        "layerRegion": "arn:aws:lambda:eu-west-3:582037449441:layer:AmplifyRDSLayer:5"
+      },
+      "sa-east-1": {
+        "layerRegion": "arn:aws:lambda:sa-east-1:582037449441:layer:AmplifyRDSLayer:5"
+      },
+      "us-east-2": {
+        "layerRegion": "arn:aws:lambda:us-east-2:582037449441:layer:AmplifyRDSLayer:5"
+      },
+      "us-west-2": {
+        "layerRegion": "arn:aws:lambda:us-west-2:582037449441:layer:AmplifyRDSLayer:5"
+      },
+      "me-south-1": {
+        "layerRegion": "arn:aws:lambda:me-south-1:582037449441:layer:AmplifyRDSLayer:5"
+      }
+    });
   });
 }); 

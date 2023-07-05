@@ -8,6 +8,7 @@ import {
   AppSyncAuthConfiguration,
   AmplifyApiGraphQlResourceStackTemplate,
   VpcConfig,
+  RDSLayerMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
@@ -59,6 +60,7 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly modelToDatasourceMap: Map<string, DatasourceType>;
   public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
   public readonly sqlLambdaVpcConfig?: VpcConfig;
+  public readonly rdsLayerMapping?: RDSLayerMapping;
 
   public metadata: TransformerContextMetadata;
   constructor(
@@ -72,6 +74,7 @@ export class TransformerContext implements TransformerContextProvider {
     resolverConfig?: ResolverConfig,
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
     sqlLambdaVpcConfig?: VpcConfig,
+    rdsLayerMapping?: RDSLayerMapping,
   ) {
     this.output = new TransformerOutput(inputDocument);
     this.resolvers = new ResolverManager();
@@ -88,6 +91,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.modelToDatasourceMap = modelToDatasourceMap;
     this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
     this.sqlLambdaVpcConfig = sqlLambdaVpcConfig;
+    this.rdsLayerMapping = rdsLayerMapping;
   }
 
   /**

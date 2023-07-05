@@ -39,7 +39,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       } = ResourceConstants.RESOURCES;
       const lambdaRoleStack = context.stackManager.getStackFor(RDSLambdaIAMRoleLogicalID, RDS_STACK_NAME);
       const lambdaStack = context.stackManager.getStackFor(RDSLambdaLogicalID, RDS_STACK_NAME);
-      setRDSLayerMappings(lambdaStack);
+      setRDSLayerMappings(lambdaStack, context.rdsLayerMapping);
       const role = createRdsLambdaRole(
         context.resourceHelper.generateIAMRoleName(RDSLambdaIAMRoleLogicalID),
         lambdaRoleStack,
