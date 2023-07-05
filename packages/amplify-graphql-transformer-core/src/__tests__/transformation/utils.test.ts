@@ -10,6 +10,7 @@ describe('removeAmplifyInputDefinition', () => {
         content: String!
       }
     `;
+    // prettier-ignore
     const expectedOutput = /* GraphQL */ `type Todo {
   id: ID!
   content: String!
@@ -29,6 +30,7 @@ describe('removeAmplifyInputDefinition', () => {
         content: String!
       }
     `;
+    // prettier-ignore
     const expectedOutput = /* GraphQL */ `type Amplify {
   id: ID!
 }
