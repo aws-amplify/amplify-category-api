@@ -844,7 +844,7 @@ export interface UserPoolConfig {
 
 // Warnings were encountered during analysis:
 //
-// src/graphql-api-provider.ts:38:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
+// src/graphql-api-provider.ts:34:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
