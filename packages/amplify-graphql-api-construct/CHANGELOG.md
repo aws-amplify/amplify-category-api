@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.2.0...@aws-amplify/graphql-construct-alpha@0.3.0) (2023-07-07)
+
+### Features
+
+- release alpha cdk construct ([a6dc337](https://github.com/aws-amplify/amplify-category-api/commit/a6dc3377eba66b9acc09b430a2c1239e9127c507))
+
 # 0.2.0 (2023-06-29)
 
 ### Bug Fixes
