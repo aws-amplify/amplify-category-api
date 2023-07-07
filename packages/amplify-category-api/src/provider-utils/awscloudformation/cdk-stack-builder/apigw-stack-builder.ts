@@ -1,5 +1,4 @@
 /* eslint-disable jsdoc/require-param-description */
-/* eslint-disable no-new */
 /* eslint-disable no-use-before-define */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable no-underscore-dangle */

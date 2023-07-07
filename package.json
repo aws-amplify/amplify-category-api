@@ -54,7 +54,8 @@
     "lint-deps": "git diff --name-only --cached --diff-filter d | grep -E '\\.(js|jsx|ts|tsx)$' | xargs eslint --no-eslintrc --config depcheck.config.js",
     "split-codebuild-e2e-tests": "yarn ts-node ./scripts/split-e2e-tests-codebuild.ts && git add codebuild_specs/e2e_workflow.yml",
     "release-codebuild": "source ./scripts/cloud-release.sh && release",
-    "view-test-artifact": "./scripts/view-test-artifacts.sh"
+    "view-test-artifact": "./scripts/view-test-artifacts.sh",
+    "cleanup-stale-resources": "source ./scripts/cloud-utils.sh && cleanupStaleResources"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-category-api/issues"

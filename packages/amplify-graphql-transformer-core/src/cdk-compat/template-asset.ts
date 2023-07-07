@@ -64,7 +64,7 @@ export class S3MappingTemplate implements S3MappingTemplateProvider {
     return crypto.createHash('sha256').update(this.content).digest('base64');
   }
 
-  substitueValues(values: Record<string, string | number>): void {
+  substituteValues(values: Record<string, string | number>): void {
     let { name } = this;
     Object.entries(values).forEach(([key, value]) => {
       const regex = new RegExp(`({${key}})`, 'g');

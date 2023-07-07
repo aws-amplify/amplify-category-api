@@ -1213,12 +1213,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         authPolicyDocuments.forEach((authPolicyDocument, i) => {
           const paddedIndex = `${i + 1}`.padStart(2, '0');
           const resourceName = `${ResourceConstants.RESOURCES.AuthRolePolicy}${paddedIndex}`;
-          /* eslint-disable no-new */
           new iam.ManagedPolicy(rootStack, resourceName, {
             document: iam.PolicyDocument.fromJson(authPolicyDocument),
             roles: [iamAuthRoleArn],
           });
-          /* eslint-enable */
         });
       }
     }
@@ -1238,12 +1236,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       unauthPolicyDocuments.forEach((unauthPolicyDocument, i) => {
         const paddedIndex = `${i + 1}`.padStart(2, '0');
         const resourceName = `${ResourceConstants.RESOURCES.UnauthRolePolicy}${paddedIndex}`;
-        /* eslint-disable no-new */
         new iam.ManagedPolicy(ctx.stackManager.rootStack, resourceName, {
           document: iam.PolicyDocument.fromJson(unauthPolicyDocument),
           roles: [iamUnauthRoleArn],
         });
-        /* eslint-enable */
       });
     }
   }

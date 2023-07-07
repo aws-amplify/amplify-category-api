@@ -128,7 +128,6 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     );
 
     // Add conditions.
-    // eslint-disable-next-line no-new
     new cdk.CfnCondition(stack, ResourceConstants.CONDITIONS.HasEnvironmentParameter, {
       expression: cdk.Fn.conditionNot(cdk.Fn.conditionEquals(env, ResourceConstants.NONE)),
     });
@@ -173,7 +172,6 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     };
 
     const streamArnOutputId = `GetAtt${ModelResourceIDs.ModelTableStreamArn(def!.name.value)}`;
-    // eslint-disable-next-line no-new
     new cdk.CfnOutput(stack, streamArnOutputId, {
       value: cdk.Fn.getAtt(tableLogicalName, 'StreamArn').toString(),
       description: 'Your DynamoDB table StreamArn.',
@@ -181,7 +179,6 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     });
 
     const tableNameOutputId = `GetAtt${tableLogicalName}Name`;
-    // eslint-disable-next-line no-new
     new cdk.CfnOutput(stack, tableNameOutputId, {
       value: cdk.Fn.ref(tableLogicalName),
       description: 'Your DynamoDB table name.',
@@ -224,7 +221,6 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     }
 
     const datasourceOutputId = `GetAtt${datasourceRoleLogicalID}Name`;
-    // eslint-disable-next-line no-new
     new cdk.CfnOutput(stack, datasourceOutputId, {
       value: dataSource.ds.attrName,
       description: 'Your model DataSource name.',
