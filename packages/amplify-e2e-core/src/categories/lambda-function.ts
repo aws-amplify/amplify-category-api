@@ -144,6 +144,10 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: Core
 export type CoreFunctionSettings = {
   testingWithLatestCodebase?: boolean;
   name?: string;
+  packageManager?: {
+    name: string;
+    command?: string;
+  };
   functionTemplate?: string;
   expectFailure?: boolean;
   additionalPermissions?: any;
@@ -254,6 +258,20 @@ const coreFunction = (
           }
           chain.sendConfirmYes();
           addSecretWalkthrough(chain, settings.secretsConfig);
+        }
+
+        if (runtime === 'nodejs') {
+          chain.wait('Choose the package manager that you want to use:');
+          if (settings.packageManager?.name) {
+            chain.sendLine(settings.packageManager.name);
+          } else {
+            chain.sendCarriageReturn(); // npm
+          }
+
+          if (settings.packageManager?.name.toLowerCase().includes('custom')) {
+            chain.wait('Enter command or script path to build your function:');
+            chain.sendLine(settings.packageManager.command);
+          }
         }
       } else {
         chain.sendConfirmNo();
