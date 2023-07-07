@@ -25,3 +25,4 @@ export type {
   SchemaTranslationBehavior,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';
+// No-op change to trigger publish
