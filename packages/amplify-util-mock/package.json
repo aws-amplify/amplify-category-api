@@ -32,7 +32,7 @@
   "dependencies": {
     "@aws-amplify/amplify-appsync-simulator": "^2.11.0",
     "@aws-amplify/amplify-category-function": "^5.2.0",
-    "@aws-amplify/amplify-provider-awscloudformation": "^8.1.0",
+    "@aws-amplify/amplify-provider-awscloudformation": "^8.3.0-aws-cdk-lib-2-28.0",
     "@hapi/topo": "^5.0.0",
     "amplify-category-api-dynamodb-simulator": "2.4.10",
     "amplify-codegen": "^3.4.3",
