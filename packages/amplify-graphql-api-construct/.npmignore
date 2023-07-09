@@ -3,3 +3,10 @@
 ./src
 tsconfig.json
 tsconfig.tsbuildinfo
+
+# Include .jsii and .jsii.gz
+!.jsii
+!.jsii.gz
+
+# Exclude jsii outdir
+dist

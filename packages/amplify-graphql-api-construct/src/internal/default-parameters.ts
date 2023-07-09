@@ -3,7 +3,7 @@ import { SchemaTranslationBehavior } from '../types';
 /**
  * Defaults which will be used by the construct if overrides are not provided.
  */
-export const defaultSchemaTranslationBehavior: SchemaTranslationBehavior = {
+export const defaultSchemaTranslationBehavior: Required<SchemaTranslationBehavior> = {
   shouldDeepMergeDirectiveConfigDefaults: true,
   disableResolverDeduping: false,
   sandboxModeEnabled: false,

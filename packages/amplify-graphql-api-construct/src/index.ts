@@ -16,7 +16,6 @@ export type {
   FunctionSlotOverride,
   ConflictResolution,
   ConflictDetectionType,
-  ConflictHandlerType,
   OptimisticConflictResolutionStrategy,
   CustomConflictResolutionStrategy,
   AutomergeConflictResolutionStrategy,

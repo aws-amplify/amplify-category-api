@@ -15,7 +15,7 @@ describe('AmplifyGraphqlApi', () => {
         },
       });
   
-      const generatedFunctionSlots = api.getGeneratedFunctionSlots();
+      const generatedFunctionSlots = api.generatedFunctionSlots();
   
       expect(generatedFunctionSlots.length).toEqual(20);
       expect(generatedFunctionSlots).toEqual(expect.arrayContaining([

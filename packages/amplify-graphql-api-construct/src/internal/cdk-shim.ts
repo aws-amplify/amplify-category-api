@@ -2,7 +2,7 @@ import { Template } from '@aws-amplify/graphql-transformer-interfaces';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { CfnIncludeProps } from 'aws-cdk-lib/cloudformation-include';
 import { Construct } from 'constructs';
-import * as fs from 'fs-extra';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 

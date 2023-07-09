@@ -29,7 +29,7 @@ describe('preprocessGraphqlSchema', () => {
   it('works with a single schemafile in an array', () => {
     const testFilePath = path.join(testSchemaDir, 'single-file-in-array.graphql')
     fs.writeFileSync(testFilePath, SCHEMA);
-    const schemaFile = new appsync.SchemaFile({ filePath: testFilePath });
+    new appsync.SchemaFile({ filePath: testFilePath });
     expect(preprocessGraphqlSchema([
       new appsync.SchemaFile({ filePath: testFilePath }),
     ])).toEqual(SCHEMA);
