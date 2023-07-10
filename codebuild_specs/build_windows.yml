@@ -2,15 +2,8 @@ version: 0.2
 env:
   shell: powershell.exe
 phases:
-  install:
-    runtime-versions:
-      nodejs: 16.x
   build:
     commands:
-      - node -v
-      - yarn --version
-      - npm install -g yarn
-      - yarn --version
       - yarn run production-build
       - yarn build-tests
 
