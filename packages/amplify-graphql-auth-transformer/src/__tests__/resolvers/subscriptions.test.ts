@@ -1,17 +1,18 @@
 import { generateAuthExpressionForSubscriptions } from '../../resolvers/subscriptions';
 import { AuthProvider, ConfiguredAuthProviders, RoleDefinition } from '../../utils';
 
-const configFromPartial = (partialConfig: Partial<ConfiguredAuthProviders>): ConfiguredAuthProviders => ({
-  hasApiKey: false,
-  hasUserPools: false,
-  hasOIDC: false,
-  hasIAM: false,
-  hasLambda: false,
-  hasAdminRolesEnabled: false,
-  adminRoles: ['TESTADMINROLE1', 'TESTADMINROLE2'],
-  identityPoolId: 'TESTIDENTIFYPOOLID',
-  ...partialConfig,
-} as unknown as ConfiguredAuthProviders);
+const configFromPartial = (partialConfig: Partial<ConfiguredAuthProviders>): ConfiguredAuthProviders =>
+  ({
+    hasApiKey: false,
+    hasUserPools: false,
+    hasOIDC: false,
+    hasIAM: false,
+    hasLambda: false,
+    hasAdminRolesEnabled: false,
+    adminRoles: ['TESTADMINROLE1', 'TESTADMINROLE2'],
+    identityPoolId: 'TESTIDENTIFYPOOLID',
+    ...partialConfig,
+  } as unknown as ConfiguredAuthProviders);
 
 const defaultRoleDefinitions: Record<AuthProvider, Array<RoleDefinition>> = {
   apiKey: [
@@ -92,17 +93,15 @@ describe('subscriptions', () => {
   describe('generateAuthExpressionForSubscriptions', () => {
     describe('apiKey', () => {
       it('renders for simple apiKey auth', () => {
-        expect(generateAuthExpressionForSubscriptions(
-          configFromPartial({ hasApiKey: true }), defaultRoleDefinitions.apiKey,
-        )).toMatchSnapshot();
+        expect(
+          generateAuthExpressionForSubscriptions(configFromPartial({ hasApiKey: true }), defaultRoleDefinitions.apiKey),
+        ).toMatchSnapshot();
       });
     });
 
     describe('iam', () => {
       it('renders for simple iam auth', () => {
-        expect(generateAuthExpressionForSubscriptions(
-          configFromPartial({ hasIAM: true }), defaultRoleDefinitions.iam,
-        )).toMatchSnapshot();
+        expect(generateAuthExpressionForSubscriptions(configFromPartial({ hasIAM: true }), defaultRoleDefinitions.iam)).toMatchSnapshot();
       });
 
       it('renders for iam auth with no admin roles', () => {
@@ -138,66 +137,63 @@ describe('subscriptions', () => {
 
     describe('userPools', () => {
       it('renders for simple userPool auth', () => {
-        expect(generateAuthExpressionForSubscriptions(
-          configFromPartial({ hasUserPools: true }), defaultRoleDefinitions.userPools,
-        )).toMatchSnapshot();
+        expect(
+          generateAuthExpressionForSubscriptions(configFromPartial({ hasUserPools: true }), defaultRoleDefinitions.userPools),
+        ).toMatchSnapshot();
       });
     });
 
     describe('oidc', () => {
       it('renders for simple oidc auth', () => {
-        expect(generateAuthExpressionForSubscriptions(
-          configFromPartial({ hasOIDC: true }), defaultRoleDefinitions.oidc,
-        )).toMatchSnapshot();
+        expect(generateAuthExpressionForSubscriptions(configFromPartial({ hasOIDC: true }), defaultRoleDefinitions.oidc)).toMatchSnapshot();
       });
     });
 
     describe('lambda', () => {
       it('renders for simple lambda auth', () => {
-        expect(generateAuthExpressionForSubscriptions(
-          configFromPartial({ hasLambda: true }), defaultRoleDefinitions.function,
-        )).toMatchSnapshot();
+        expect(
+          generateAuthExpressionForSubscriptions(configFromPartial({ hasLambda: true }), defaultRoleDefinitions.function),
+        ).toMatchSnapshot();
       });
     });
   });
 
   describe('multi-auth', () => {
     it('renders for apiKey + iam', () => {
-      expect(generateAuthExpressionForSubscriptions(
-        configFromPartial({
-          hasApiKey: true,
-          hasIAM: true,
-        }), [
-          ...defaultRoleDefinitions.apiKey,
-          ...defaultRoleDefinitions.iam,
-        ],
-      )).toMatchSnapshot();
+      expect(
+        generateAuthExpressionForSubscriptions(
+          configFromPartial({
+            hasApiKey: true,
+            hasIAM: true,
+          }),
+          [...defaultRoleDefinitions.apiKey, ...defaultRoleDefinitions.iam],
+        ),
+      ).toMatchSnapshot();
     });
 
     it('renders for apiKey + iam + userPools', () => {
-      expect(generateAuthExpressionForSubscriptions(
-        configFromPartial({
-          hasApiKey: true,
-          hasIAM: true,
-          hasUserPools: true,
-        }), [
-          ...defaultRoleDefinitions.apiKey,
-          ...defaultRoleDefinitions.iam,
-          ...defaultRoleDefinitions.userPools,
-        ],
-      )).toMatchSnapshot();
+      expect(
+        generateAuthExpressionForSubscriptions(
+          configFromPartial({
+            hasApiKey: true,
+            hasIAM: true,
+            hasUserPools: true,
+          }),
+          [...defaultRoleDefinitions.apiKey, ...defaultRoleDefinitions.iam, ...defaultRoleDefinitions.userPools],
+        ),
+      ).toMatchSnapshot();
     });
 
     it('renders for iam + userPools', () => {
-      expect(generateAuthExpressionForSubscriptions(
-        configFromPartial({
-          hasIAM: true,
-          hasUserPools: true,
-        }), [
-          ...defaultRoleDefinitions.iam,
-          ...defaultRoleDefinitions.userPools,
-        ],
-      )).toMatchSnapshot();
+      expect(
+        generateAuthExpressionForSubscriptions(
+          configFromPartial({
+            hasIAM: true,
+            hasUserPools: true,
+          }),
+          [...defaultRoleDefinitions.iam, ...defaultRoleDefinitions.userPools],
+        ),
+      ).toMatchSnapshot();
     });
   });
 });

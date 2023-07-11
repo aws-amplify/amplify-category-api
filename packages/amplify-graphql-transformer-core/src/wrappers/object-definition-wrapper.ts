@@ -35,7 +35,7 @@ export class GenericFieldWrapper {
     this.type = field.type;
     this.name = field.name.value;
     this.loc = field.loc;
-    this.directives = (field.directives || []).map(d => new DirectiveWrapper(d));
+    this.directives = (field.directives || []).map((d) => new DirectiveWrapper(d));
   }
   isList = (): boolean => {
     return this.isListType(this.type);
@@ -144,12 +144,16 @@ export class InputFieldWrapper extends GenericFieldWrapper {
       name: { kind: 'Name', value: this.name },
       type: this.type,
       description: this.description,
-      directives: this.directives?.map(d => d.serialize()),
+      directives: this.directives?.map((d) => d.serialize()),
     };
   };
 
-  static fromField = (name: string, field: FieldDefinitionNode, parent: ObjectTypeDefinitionNode,
-    document: DocumentNode): InputFieldWrapper => {
+  static fromField = (
+    name: string,
+    field: FieldDefinitionNode,
+    parent: ObjectTypeDefinitionNode,
+    document: DocumentNode,
+  ): InputFieldWrapper => {
     const autoGeneratableFieldsWithType: Record<string, string[]> = {
       id: ['ID'],
       createdAt: ['AWSDateTime', 'String'],
@@ -159,17 +163,18 @@ export class InputFieldWrapper extends GenericFieldWrapper {
     let type: TypeNode;
 
     if (
-      parent.directives?.some((directive) => directive.name.value === 'model')
-      && Object.keys(autoGeneratableFieldsWithType).indexOf(name) !== -1
-      && autoGeneratableFieldsWithType[name].indexOf(unwrapNonNull(field.type).name.value) !== -1
+      parent.directives?.some((directive) => directive.name.value === 'model') &&
+      Object.keys(autoGeneratableFieldsWithType).indexOf(name) !== -1 &&
+      autoGeneratableFieldsWithType[name].indexOf(unwrapNonNull(field.type).name.value) !== -1
     ) {
       // For @model types ids are always optional as they will be auto-filled (this isn't true for nested types with 'id' fields).
       // When provided the value is used; when not provided the value is not used.
       type = unwrapNonNull(field.type);
     } else {
-      type = isScalar(field.type) || isEnum(field.type, document)
-        ? field.type
-        : withNamedNodeNamed(field.type, ModelResourceIDs.NonModelInputObjectName(getBaseType(field.type)));
+      type =
+        isScalar(field.type) || isEnum(field.type, document)
+          ? field.type
+          : withNamedNodeNamed(field.type, ModelResourceIDs.NonModelInputObjectName(getBaseType(field.type)));
     }
 
     return new InputFieldWrapper({
@@ -223,7 +228,7 @@ export class FieldWrapper extends GenericFieldWrapper {
       type: this.type,
       arguments: this.argumenets,
       description: this.description,
-      directives: this.directives?.map(d => d.serialize()),
+      directives: this.directives?.map((d) => d.serialize()),
     };
   };
 
@@ -257,8 +262,8 @@ export class ObjectDefinitionWrapper {
   public readonly fields: FieldWrapper[];
   public readonly name: string;
   constructor(private node: ObjectTypeDefinitionNode) {
-    this.directives = (node.directives || []).map(d => new DirectiveWrapper(d));
-    this.fields = (node.fields || []).map(f => new FieldWrapper(f));
+    this.directives = (node.directives || []).map((d) => new DirectiveWrapper(d));
+    this.fields = (node.fields || []).map((f) => new FieldWrapper(f));
     this.name = node.name.value;
   }
 
@@ -269,18 +274,18 @@ export class ObjectDefinitionWrapper {
         kind: 'Name',
         value: this.name,
       },
-      fields: this.fields.map(f => f.serialize()),
-      directives: this.directives?.map(d => d.serialize()),
+      fields: this.fields.map((f) => f.serialize()),
+      directives: this.directives?.map((d) => d.serialize()),
     };
   };
 
   hasField = (name: string): boolean => {
-    const field = this.fields.find(f => f.name === name);
+    const field = this.fields.find((f) => f.name === name);
     return field ? true : false;
   };
 
   getField = (name: string): FieldWrapper => {
-    const field = this.fields.find(f => f.name === name);
+    const field = this.fields.find((f) => f.name === name);
     if (!field) {
       throw new Error(`Field ${name} missing in type ${this.name}`);
     }
@@ -321,25 +326,25 @@ export class InputObjectDefinitionWrapper {
   public readonly fields: InputFieldWrapper[];
   public readonly name: string;
   constructor(private node: InputObjectTypeDefinitionNode) {
-    this.directives = (node.directives || []).map(d => new DirectiveWrapper(d));
-    this.fields = (node.fields || []).map(f => new InputFieldWrapper(f));
+    this.directives = (node.directives || []).map((d) => new DirectiveWrapper(d));
+    this.fields = (node.fields || []).map((f) => new InputFieldWrapper(f));
     this.name = node.name.value;
   }
 
   public serialize = (): InputObjectTypeDefinitionNode => {
     return {
       ...this.node,
-      fields: this.fields.map(f => f.serialize()),
-      directives: this.directives?.map(d => d.serialize()),
+      fields: this.fields.map((f) => f.serialize()),
+      directives: this.directives?.map((d) => d.serialize()),
     };
   };
   hasField = (name: string): boolean => {
-    const field = this.fields.find(f => f.name === name);
+    const field = this.fields.find((f) => f.name === name);
     return field ? true : false;
   };
 
   getField = (name: string): InputFieldWrapper => {
-    const field = this.fields.find(f => f.name === name);
+    const field = this.fields.find((f) => f.name === name);
     if (!field) {
       throw new Error(`Field ${name} missing in type ${this.name}`);
     }
@@ -406,8 +411,8 @@ export class EnumWrapper {
   public directives: DirectiveWrapper[];
   constructor(private node: EnumTypeDefinitionNode) {
     this.name = node.name.value;
-    this.values = node.values?.map(v => v.name.value) || [];
-    this.directives = (node.directives || []).map(d => new DirectiveWrapper(d));
+    this.values = node.values?.map((v) => v.name.value) || [];
+    this.directives = (node.directives || []).map((d) => new DirectiveWrapper(d));
   }
 
   addValue = (value: string): void => {
@@ -421,8 +426,8 @@ export class EnumWrapper {
         kind: 'Name',
         value: this.name,
       },
-      directives: this.directives.map(d => d.serialize()),
-      values: this.values.map(value => ({
+      directives: this.directives.map((d) => d.serialize()),
+      values: this.values.map((value) => ({
         kind: 'EnumValueDefinition',
         name: {
           kind: 'Name',
@@ -440,7 +445,7 @@ export class EnumWrapper {
       },
       values: [],
     });
-    values.forEach(val => {
+    values.forEach((val) => {
       wrappedEnum.addValue(val);
     });
     return wrappedEnum;

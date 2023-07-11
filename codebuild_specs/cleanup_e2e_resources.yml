@@ -4,7 +4,7 @@ env:
   variables:
     CI: true
     CODEBUILD: true
-    
+
 phases:
   build:
     commands:

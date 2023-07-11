@@ -1,8 +1,4 @@
-import {
-  DocumentNode,
-  Kind,
-  ObjectTypeDefinitionNode,
-} from 'graphql';
+import { DocumentNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { ValidationError } from '../exceptions/validation-error';
 
 /**
@@ -24,9 +20,7 @@ export const validateReservedFieldNames = (schema: DocumentNode): Error[] => {
     fields?.forEach((field) => {
       const fieldName = field.name.value;
       if (reservedWords.includes(fieldName)) {
-        errors.push(new ValidationError(
-          `${fieldName} is a reserved word and cannnot be used as a field name.`,
-        ));
+        errors.push(new ValidationError(`${fieldName} is a reserved word and cannnot be used as a field name.`));
       }
     });
   });

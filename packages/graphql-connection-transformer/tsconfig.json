@@ -6,10 +6,10 @@
     "outDir": "lib"
   },
   "references": [
-    {"path": "../graphql-dynamodb-transformer"},
-    {"path": "../graphql-key-transformer"},
-    {"path": "../graphql-mapping-template"},
-    {"path": "../graphql-transformer-common"},
-    {"path": "../graphql-transformer-core"}
+    { "path": "../graphql-dynamodb-transformer" },
+    { "path": "../graphql-key-transformer" },
+    { "path": "../graphql-mapping-template" },
+    { "path": "../graphql-transformer-common" },
+    { "path": "../graphql-transformer-core" }
   ]
 }

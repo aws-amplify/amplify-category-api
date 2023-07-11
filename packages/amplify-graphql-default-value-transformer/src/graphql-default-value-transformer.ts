@@ -22,17 +22,8 @@ import {
   StringValueNode,
   TypeNode,
 } from 'graphql';
-import {
-  methodCall, printBlock, qref, raw, ref, str,
-} from 'graphql-mapping-template';
-import {
-  getBaseType,
-  isEnum,
-  isListType,
-  isScalarOrEnum,
-  ModelResourceIDs,
-  toCamelCase,
-} from 'graphql-transformer-common';
+import { methodCall, printBlock, qref, raw, ref, str } from 'graphql-mapping-template';
+import { getBaseType, isEnum, isListType, isScalarOrEnum, ModelResourceIDs, toCamelCase } from 'graphql-transformer-common';
 import { DefaultValueDirectiveConfiguration } from './types';
 import { TypeValidators } from './validators';
 
@@ -71,9 +62,9 @@ const validateDefaultValueType = (ctx: TransformerSchemaVisitStepContextProvider
   // if base field type is enum, may be an enum - validate that argument value in among field type enum's values
   const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
   if (
-    enums
-    && isEnum(config.field.type, ctx.inputDocument)
-    && !enums.find((it) => it.name.value === getBaseType(config.field.type))!.values!.find((v) => v.name.value === config.value)
+    enums &&
+    isEnum(config.field.type, ctx.inputDocument) &&
+    !enums.find((it) => it.name.value === getBaseType(config.field.type))!.values!.find((v) => v.name.value === config.value)
   ) {
     throw new InvalidDirectiveError(`Default value "${config.value}" is not a member of ${getBaseType(config.field.type)} enum.`);
   }
@@ -105,11 +96,14 @@ export class DefaultValueTransformer extends TransformerPluginBase {
     ctx: TransformerSchemaVisitStepContextProvider,
   ): void => {
     const directiveWrapped = new DirectiveWrapper(directive);
-    const config = directiveWrapped.getArguments({
-      object: parent as ObjectTypeDefinitionNode,
-      field: definition,
-      directive,
-    } as DefaultValueDirectiveConfiguration, generateGetArgumentsInput(ctx.transformParameters));
+    const config = directiveWrapped.getArguments(
+      {
+        object: parent as ObjectTypeDefinitionNode,
+        field: definition,
+        directive,
+      } as DefaultValueDirectiveConfiguration,
+      generateGetArgumentsInput(ctx.transformParameters),
+    );
     validate(ctx, config);
 
     if (!this.directiveMap.has(parent.name.value)) {
@@ -146,19 +140,16 @@ export class DefaultValueTransformer extends TransformerPluginBase {
     }
   };
 
-  private makeDefaultValueSnippet = (
-    fieldName: string,
-    defaultValue: string,
-    isString: boolean,
-  ): string => printBlock(`Setting "${fieldName}" to default value of "${defaultValue}"`)(
-    qref(
-      methodCall(
-        ref('context.args.input.put'),
-        str(fieldName),
-        methodCall(ref('util.defaultIfNull'), ref(`ctx.args.input.${fieldName}`), isString ? str(defaultValue) : raw(defaultValue)),
+  private makeDefaultValueSnippet = (fieldName: string, defaultValue: string, isString: boolean): string =>
+    printBlock(`Setting "${fieldName}" to default value of "${defaultValue}"`)(
+      qref(
+        methodCall(
+          ref('context.args.input.put'),
+          str(fieldName),
+          methodCall(ref('util.defaultIfNull'), ref(`ctx.args.input.${fieldName}`), isString ? str(defaultValue) : raw(defaultValue)),
+        ),
       ),
-    ),
-  );
+    );
 
   private updateResolverWithDefaultValues = (ctx: TransformerContextProvider, resolverLogicalId: string, snippets: string[]): void => {
     const resolver = this.getResolverObject(ctx, resolverLogicalId);

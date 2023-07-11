@@ -12,39 +12,39 @@ function imgToBase64(imgPath) {
   return undefined;
 }
 
-const filterBlock = blocks => blocks.filter(block => block.logs.length);
-const getLogs = blocks => filterBlock(blocks).reduce((sum, b) => [...sum, ...b.logs], []);
+const filterBlock = (blocks) => blocks.filter((block) => block.logs.length);
+const getLogs = (blocks) => filterBlock(blocks).reduce((sum, b) => [...sum, ...b.logs], []);
 const mergeCliLog = (result, logs, ancestorTitles = [], prefix = '') => {
   let before = [];
   let after = [];
   let children = [];
   if (ancestorTitles.length) {
     const describeBlockName = ancestorTitles[0];
-    const describeBlock = logs.find(l => l.type === 'describe' && l.name === describeBlockName);
+    const describeBlock = logs.find((l) => l.type === 'describe' && l.name === describeBlockName);
     if (describeBlock) {
       const prefixStr = prefix ? `${prefix} -> ${describeBlockName}` : describeBlockName;
       if (describeBlock.hooks.beforeAll) {
-        before = getLogs(describeBlock.hooks.beforeAll).map(bfa => ({ ...bfa, name: `${prefixStr} -> BeforeAll` }));
+        before = getLogs(describeBlock.hooks.beforeAll).map((bfa) => ({ ...bfa, name: `${prefixStr} -> BeforeAll` }));
       }
       children = mergeCliLog(result, describeBlock.children, ancestorTitles.slice(1), prefixStr);
       if (describeBlock.hooks.afterAll) {
-        after = getLogs(describeBlock.hooks.afterAll).map(afa => ({ ...afa, name: `${prefixStr} --> AfterAll` }));
+        after = getLogs(describeBlock.hooks.afterAll).map((afa) => ({ ...afa, name: `${prefixStr} --> AfterAll` }));
       }
     }
   } else {
-    const testBlock = logs.find(l => l.type === 'test' && l.name === result.title);
+    const testBlock = logs.find((l) => l.type === 'test' && l.name === result.title);
     if (testBlock) {
       const prefixStr = prefix ? `${prefix} -> ${testBlock.name}` : testBlock.name;
 
       if (testBlock.hooks.beforeEach) {
-        before = getLogs(testBlock.hooks.beforeEach).map(bfe => ({ ...bfe, name: `${prefixStr} -> BeforeEach` }));
+        before = getLogs(testBlock.hooks.beforeEach).map((bfe) => ({ ...bfe, name: `${prefixStr} -> BeforeEach` }));
       }
 
       if (filterBlock([testBlock]).length) {
-        children = testBlock.logs.map(log => ({ ...log, name: prefixStr }));
+        children = testBlock.logs.map((log) => ({ ...log, name: prefixStr }));
       }
       if (testBlock.hooks.afterEach) {
-        after = getLogs(testBlock.hooks.afterEach).map(afe => ({ ...afe, name: `${prefixStr} --> AfterEach` }));
+        after = getLogs(testBlock.hooks.afterEach).map((afe) => ({ ...afe, name: `${prefixStr} --> AfterEach` }));
       }
     }
   }
@@ -63,28 +63,28 @@ class AmplifyCLIExecutionReporter {
     const logoImg = logoImgPath ? imgToBase64(logoImgPath) : undefined;
     fs.ensureDirSync(publicPath);
 
-    const processedResults = results.testResults.map(result => {
+    const processedResults = results.testResults.map((result) => {
       // result is Array of TestResult: https://github.com/facebook/jest/blob/ac57282299c383320845fb9a026719de7ed3ee5e/packages/jest-test-result/src/types.ts#L90
       const resultCopy = { ...result };
       delete resultCopy.CLITestRunner;
       return {
         ...resultCopy,
         // each test result has an array of 'AssertionResult'
-        testResults: result.testResults.map(r => {
+        testResults: result.testResults.map((r) => {
           const recordings = mergeCliLog(r, result.CLITestRunner.logs.children, r.ancestorTitles);
 
           const recordingWithPath = recordings.map((r, index) => {
             // the first command is always 'amplify', but r.cmd is the full path to the cli.. so this is more readable
             const commandAndParams = ['amplify'];
-            if(r.params){
+            if (r.params) {
               commandAndParams.push(...r.params);
             }
             let sanitizedSections = [];
-            for(let section of commandAndParams){
+            for (let section of commandAndParams) {
               sanitizedSections.push(section.replace(/[^a-z0-9]/gi, '_').toLowerCase());
             }
             let suffix = sanitizedSections.join('_');
-            if(suffix.length > 30){
+            if (suffix.length > 30) {
               suffix = suffix.substring(0, 30);
             }
             const castFile = `${new Date().getTime()}_${index}_${suffix}.cast`;

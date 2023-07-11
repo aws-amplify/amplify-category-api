@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _ from 'lodash';
 
 export function isAuthModeUpdated(options): boolean {
   const { authConfig, previousAuthConfig } = getAuthConfigForCompare(options);
@@ -17,11 +17,15 @@ function getAuthConfigForCompare(options) {
   // Remove apiKeyExpirationDate key for comparision as this may change even if there are no auth mode changes
   if (authConfig) {
     authConfig.defaultAuthentication = removeApiKeyExpirationDate(authConfig.defaultAuthentication);
-    authConfig.additionalAuthenticationProviders = authConfig.additionalAuthenticationProviders?.map(mode => removeApiKeyExpirationDate(mode));
+    authConfig.additionalAuthenticationProviders = authConfig.additionalAuthenticationProviders?.map((mode) =>
+      removeApiKeyExpirationDate(mode),
+    );
   }
   if (previousAuthConfig) {
     previousAuthConfig.defaultAuthentication = removeApiKeyExpirationDate(previousAuthConfig.defaultAuthentication);
-    previousAuthConfig.additionalAuthenticationProviders = previousAuthConfig.additionalAuthenticationProviders?.map(mode => removeApiKeyExpirationDate(mode));
+    previousAuthConfig.additionalAuthenticationProviders = previousAuthConfig.additionalAuthenticationProviders?.map((mode) =>
+      removeApiKeyExpirationDate(mode),
+    );
   }
 
   return {

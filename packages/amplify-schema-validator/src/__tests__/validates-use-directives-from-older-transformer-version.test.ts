@@ -10,7 +10,8 @@ const schemaProps: ValidateSchemaProps = {
 describe('Validate Schema', () => {
   it('fails validation when schema uses old directives in new transformer version', () => {
     const schema = readSchema('invalid-use-directives-from-older-transformer-version.graphql');
-    const errorRegex = 'InvalidDirectiveError - Your GraphQL Schema is using @key, @connection, @versioned directives from an older version of the GraphQL Transformer. Visit https://docs.amplify.aws/cli/migration/transformer-migration/ to learn how to migrate your GraphQL schema.';
+    const errorRegex =
+      'InvalidDirectiveError - Your GraphQL Schema is using @key, @connection, @versioned directives from an older version of the GraphQL Transformer. Visit https://docs.amplify.aws/cli/migration/transformer-migration/ to learn how to migrate your GraphQL schema.';
     expect(() => validateSchemaWithContext(schema, schemaProps)).toThrow(errorRegex);
   });
 });

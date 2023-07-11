@@ -1,5 +1,3 @@
 export * from './generators';
 export * from './common';
-export {
-  generateApplyDefaultsToInputTemplate
-} from './dynamodb';
+export { generateApplyDefaultsToInputTemplate } from './dynamodb';

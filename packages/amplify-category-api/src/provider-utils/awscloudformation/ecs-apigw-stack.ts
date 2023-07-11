@@ -44,7 +44,7 @@ export class EcsStack extends ContainersStack {
       corsConfiguration: {
         allowHeaders: ['*'],
         allowOrigins: ['*'],
-        allowMethods: Object.values(apigw2alpha.HttpMethod).filter(m => m !== apigw2alpha.HttpMethod.ANY),
+        allowMethods: Object.values(apigw2alpha.HttpMethod).filter((m) => m !== apigw2alpha.HttpMethod.ANY),
       },
     });
 

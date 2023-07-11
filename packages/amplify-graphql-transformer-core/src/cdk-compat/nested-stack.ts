@@ -126,10 +126,7 @@ export class TransformerNestedStack extends TransformerRootStack {
     }
 
     const cfn = JSON.stringify((this as any)._toCloudFormation());
-    const templateHash = crypto
-      .createHash('sha256')
-      .update(cfn)
-      .digest('hex');
+    const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
 
     const templateLocation = this._rootStack.synthesizer.addFileAsset({
       packaging: FileAssetPackaging.FILE,
@@ -159,7 +156,7 @@ function findRootStack(scope: Construct): Stack {
     throw new Error('Nested stacks cannot be defined as a root construct');
   }
 
-  const rootStack = scope.node.scopes.find(p => Stack.isStack(p));
+  const rootStack = scope.node.scopes.find((p) => Stack.isStack(p));
   if (!rootStack) {
     throw new Error('Nested stacks must be defined within scope of another non-nested stack');
   }

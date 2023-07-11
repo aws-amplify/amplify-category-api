@@ -17,9 +17,9 @@ const AWS_REGIONS_TO_RUN_TESTS = [
 // Some services (eg. amazon lex, containers) are not available in all regions
 // Tests added to this list will always run in the specified region
 const FORCE_REGION_MAP = {
-  'interactions': 'us-west-2',
-  'containers': 'us-east-1',
-}
+  interactions: 'us-west-2',
+  containers: 'us-east-1',
+};
 type FORCE_TESTS = 'interactions' | 'containers';
 // some tests require additional time, the parent account can handle longer tests (up to 90 minutes)
 const USE_PARENT_ACCOUNT = [
@@ -30,7 +30,7 @@ const USE_PARENT_ACCOUNT = [
   'src/__tests__/migration/api.key.migration3.test.ts',
   'src/__tests__/migration/api.key.migration4.test.ts',
   'src/__tests__/migration/api.key.migration5.test.ts',
-  'src/__tests__/FunctionTransformerTestsV2.e2e.test.ts'
+  'src/__tests__/FunctionTransformerTestsV2.e2e.test.ts',
 ];
 const REPO_ROOT = join(__dirname, '..');
 const TEST_TIMINGS_PATH = join(REPO_ROOT, 'scripts', 'cci', 'test-timings.data.json');
@@ -70,7 +70,7 @@ const RUN_SOLO = [
   'src/__tests__/schema-connection.test.ts',
   'src/__tests__/transformer-migrations/function-migration.test.ts',
   'src/__tests__/transformer-migrations/searchable-migration.test.ts',
-  "src/__tests__/transformer-migrations/model-migration.test.ts",
+  'src/__tests__/transformer-migrations/model-migration.test.ts',
   'src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts',
   'src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-had-node-to-node.test.ts',
   // GrapQL E2E tests
@@ -133,19 +133,9 @@ const createJob = (os: OS_TYPE, jobIdx: number, runSolo: boolean = false): Candi
 const getTestNameFromPath = (testSuitePath: string): string => {
   const startIndex = testSuitePath.lastIndexOf('/') + 1;
   const endIndex = testSuitePath.lastIndexOf('.test');
-  return testSuitePath
-    .substring(startIndex, endIndex)
-    .split('.e2e')
-    .join('')
-    .split('.')
-    .join('-');
+  return testSuitePath.substring(startIndex, endIndex).split('.e2e').join('').split('.').join('-');
 };
-const splitTests = (
-  baseJobLinux: any,
-  testDirectory: string,
-  isMigration: boolean,
-  pickTests?: ((testSuites: string[]) => string[]),
-) => {
+const splitTests = (baseJobLinux: any, testDirectory: string, isMigration: boolean, pickTests?: (testSuites: string[]) => string[]) => {
   const output: any[] = [];
   let testSuites = getTestFiles(testDirectory);
   if (pickTests && typeof pickTests === 'function') {
@@ -157,8 +147,8 @@ const splitTests = (
   const testFileRunTimes = loadTestTimings().timingData;
 
   testSuites.sort((a, b) => {
-    const runtimeA = testFileRunTimes.find((t:any) => t.test === a)?.medianRuntime ?? 30;
-    const runtimeB = testFileRunTimes.find((t:any) => t.test === b)?.medianRuntime ?? 30;
+    const runtimeA = testFileRunTimes.find((t: any) => t.test === a)?.medianRuntime ?? 30;
+    const runtimeB = testFileRunTimes.find((t: any) => t.test === b)?.medianRuntime ?? 30;
     return runtimeA - runtimeB;
   });
   const generateJobsForOS = (os: OS_TYPE) => {
@@ -169,7 +159,7 @@ const splitTests = (
     for (let test of testSuites) {
       const currentJob = osJobs[osJobs.length - 1];
 
-      const FORCE_REGION = Object.keys(FORCE_REGION_MAP).find(key => {
+      const FORCE_REGION = Object.keys(FORCE_REGION_MAP).find((key) => {
         const testName = getTestNameFromPath(test);
         return testName.startsWith(key);
       });
@@ -251,7 +241,7 @@ function main(): void {
       'depend-on': ['publish_to_local_registry'],
     },
     join(REPO_ROOT, 'packages', 'amplify-e2e-tests'),
-    false
+    false,
   );
   const splitGqlTests = splitTests(
     {
@@ -263,7 +253,7 @@ function main(): void {
       'depend-on': ['publish_to_local_registry'],
     },
     join(REPO_ROOT, 'packages', 'graphql-transformers-e2e-tests'),
-    false
+    false,
   );
   const splitMigrationV5Tests = splitTests(
     {
@@ -310,16 +300,16 @@ function main(): void {
       return tests.filter((testName) => migrationFromV10Tests.find((t) => t === testName));
     },
   );
-  let allBuilds = [...splitE2ETests,...splitGqlTests, ...splitMigrationV5Tests, ...splitMigrationV6Tests, ...splitMigrationV10Tests];
+  let allBuilds = [...splitE2ETests, ...splitGqlTests, ...splitMigrationV5Tests, ...splitMigrationV6Tests, ...splitMigrationV10Tests];
   const cleanupResources = {
     identifier: 'cleanup_e2e_resources',
     buildspec: 'codebuild_specs/cleanup_e2e_resources.yml',
     env: {
-      'compute-type': 'BUILD_GENERAL1_SMALL'
+      'compute-type': 'BUILD_GENERAL1_SMALL',
     },
-    'depend-on': [allBuilds[0].identifier]
-  }
-  console.log(`Total number of splitted jobs: ${allBuilds.length}`)
+    'depend-on': [allBuilds[0].identifier],
+  };
+  console.log(`Total number of splitted jobs: ${allBuilds.length}`);
   let currentBatch = [...baseBuildGraph, ...allBuilds, cleanupResources];
   configBase.batch['build-graph'] = currentBatch;
   saveConfig(configBase);

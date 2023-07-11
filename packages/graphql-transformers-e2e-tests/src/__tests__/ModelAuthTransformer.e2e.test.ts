@@ -41,8 +41,6 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 describe(`ModelAuthTests`, () => {
   const cf = new CloudFormationClient(region);
@@ -295,7 +293,7 @@ describe(`ModelAuthTests`, () => {
 
       // Wait for any propagation to avoid random
       // "The security token included in the request is invalid" errors
-      await new Promise<void>(res => setTimeout(() => res(), 5000));
+      await new Promise<void>((res) => setTimeout(() => res(), 5000));
     } catch (e) {
       console.error(e);
       expect(true).toEqual(false);
@@ -2842,7 +2840,7 @@ describe(`ModelAuthTests`, () => {
       }`,
       {},
     );
-    const relevantPost = listResponse.data.listTestIdentities.items.find(p => p.id === getReq.data.getTestIdentity.id);
+    const relevantPost = listResponse.data.listTestIdentities.items.find((p) => p.id === getReq.data.getTestIdentity.id);
     expect(relevantPost).toBeTruthy();
     expect(relevantPost.title).toEqual('Test title update');
     expect(relevantPost.owner.slice(0, 19)).toEqual('https://cognito-idp');

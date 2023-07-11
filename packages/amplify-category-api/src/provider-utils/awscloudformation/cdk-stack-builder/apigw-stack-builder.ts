@@ -11,9 +11,7 @@ import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { ADMIN_QUERIES_NAME } from '../../../category-constants';
-import {
-  AmplifyApigwResourceTemplate, ApigwInputs, ApigwPathPolicy, Path, PermissionSetting,
-} from './types';
+import { AmplifyApigwResourceTemplate, ApigwInputs, ApigwPathPolicy, Path, PermissionSetting } from './types';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'API Gateway Resource for AWS Amplify CLI';
@@ -94,18 +92,22 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
   // eslint-disable-next-line class-methods-use-this
   private _craftPolicyDocument(apiResourceName: string, pathName: string, supportedOperations: string[]) {
     const paths = [pathName, appendToUrlPath(pathName, '*')];
-    const resources = paths.flatMap((path) => supportedOperations.map((op) => cdk.Fn.join('', [
-      'arn:aws:execute-api:',
-      cdk.Fn.ref('AWS::Region'),
-      ':',
-      cdk.Fn.ref('AWS::AccountId'),
-      ':',
-      cdk.Fn.ref(apiResourceName),
-      '/',
-      cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', cdk.Fn.ref('env')).toString(),
-      op,
-      path,
-    ])));
+    const resources = paths.flatMap((path) =>
+      supportedOperations.map((op) =>
+        cdk.Fn.join('', [
+          'arn:aws:execute-api:',
+          cdk.Fn.ref('AWS::Region'),
+          ':',
+          cdk.Fn.ref('AWS::AccountId'),
+          ':',
+          cdk.Fn.ref(apiResourceName),
+          '/',
+          cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', cdk.Fn.ref('env')).toString(),
+          op,
+          path,
+        ]),
+      ),
+    );
 
     return new iam.PolicyDocument({
       statements: [
@@ -308,7 +310,8 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
   };
 }
 
-const appendToUrlPath = (path: string, postfix: string) => (path.charAt(path.length - 1) === '/' ? `${path}${postfix}` : `${path}/${postfix}`);
+const appendToUrlPath = (path: string, postfix: string) =>
+  path.charAt(path.length - 1) === '/' ? `${path}${postfix}` : `${path}/${postfix}`;
 
 const getAdminQueriesPathObject = (lambdaFunctionName: string) => ({
   options: {

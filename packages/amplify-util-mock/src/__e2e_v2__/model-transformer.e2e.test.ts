@@ -100,7 +100,7 @@ describe('@model transformer', () => {
       );
       const rows = response.data.listPosts.items || [];
       const deletePromises = [];
-      rows.forEach(row => {
+      rows.forEach((row) => {
         deletePromises.push(
           GRAPHQL_CLIENT.query(
             `mutation delete {
@@ -548,7 +548,7 @@ describe('@model transformer', () => {
       expect(appearsInWithFilterResponseNonJedi.data.listPosts.items).toBeDefined();
       const appearsInNonJediItems = appearsInWithFilterResponseNonJedi.data.listPosts.items;
       expect(appearsInNonJediItems.length).toEqual(3);
-      appearsInNonJediItems.forEach(item => {
+      appearsInNonJediItems.forEach((item) => {
         expect(['Appears in Empire & JEDI', 'Appears in New Hope', 'Appears in Empire'].includes(item.title)).toBeTruthy();
       });
 
@@ -567,7 +567,7 @@ describe('@model transformer', () => {
       expect(appearsInContainingJedi.data.listPosts.items).toBeDefined();
       const appearsInWithJediItems = appearsInContainingJedi.data.listPosts.items;
       expect(appearsInWithJediItems.length).toEqual(2);
-      appearsInWithJediItems.forEach(item => {
+      appearsInWithJediItems.forEach((item) => {
         expect(['Appears in Empire & JEDI', 'Appears in Jedi'].includes(item.title)).toBeTruthy();
       });
 
@@ -586,7 +586,7 @@ describe('@model transformer', () => {
       expect(appearsInNotContainingJedi.data.listPosts.items).toBeDefined();
       const appearsInWithNonJediItems = appearsInNotContainingJedi.data.listPosts.items;
       expect(appearsInWithNonJediItems.length).toEqual(2);
-      appearsInWithNonJediItems.forEach(item => {
+      appearsInWithNonJediItems.forEach((item) => {
         expect(['Appears in New Hope', 'Appears in Empire'].includes(item.title)).toBeTruthy();
       });
 
@@ -622,7 +622,7 @@ describe('@model transformer', () => {
       expect(nonJediEpisode.data.listPosts.items).toBeDefined();
       const nonJediEpisodeItems = nonJediEpisode.data.listPosts.items;
       expect(nonJediEpisodeItems.length).toEqual(3);
-      nonJediEpisodeItems.forEach(item => {
+      nonJediEpisodeItems.forEach((item) => {
         expect(['Appears in New Hope', 'Appears in Empire', 'Appears in Empire & JEDI'].includes(item.title)).toBeTruthy();
       });
     } catch (e) {

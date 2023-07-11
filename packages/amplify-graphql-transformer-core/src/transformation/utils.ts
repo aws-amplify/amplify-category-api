@@ -196,7 +196,8 @@ export const removeAmplifyInputDefinition = (schema: string): string => {
 
   const { definitions, ...rest } = parse(schema);
 
-  const isAmplifyInputNode = (definition: DefinitionNode): boolean => definition.kind === 'InputObjectTypeDefinition' && definition.name.value === 'Amplify';
+  const isAmplifyInputNode = (definition: DefinitionNode): boolean =>
+    definition.kind === 'InputObjectTypeDefinition' && definition.name.value === 'Amplify';
 
   return print({
     definitions: definitions.filter((definition: DefinitionNode) => !isAmplifyInputNode(definition)),

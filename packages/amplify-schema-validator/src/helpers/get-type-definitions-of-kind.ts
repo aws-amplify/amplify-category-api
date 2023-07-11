@@ -7,12 +7,7 @@ import { DocumentNode, TypeDefinitionNode } from 'graphql';
  * @param kind graphql type defition kind
  * @returns TypeDefinitionNode[]
  */
-export const getTypeDefinitionsOfKind = (
-  schema: DocumentNode,
-  kind: string,
-): TypeDefinitionNode[] => {
-  const typeDefs = schema.definitions.filter(
-    (definition) => definition.kind === kind,
-  ) as TypeDefinitionNode[];
+export const getTypeDefinitionsOfKind = (schema: DocumentNode, kind: string): TypeDefinitionNode[] => {
+  const typeDefs = schema.definitions.filter((definition) => definition.kind === kind) as TypeDefinitionNode[];
   return typeDefs;
 };

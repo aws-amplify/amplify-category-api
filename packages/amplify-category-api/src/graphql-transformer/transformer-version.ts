@@ -1,15 +1,10 @@
-import {
-  $TSContext,
-  pathManager,
-  stateManager,
-  FeatureFlags,
-  AmplifyError,
-} from '@aws-amplify/amplify-cli-core';
+import { $TSContext, pathManager, stateManager, FeatureFlags, AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Shorthand for Feature flag retrieval.
  */
-const useExperimentalPipelinedTransformerFF = (): boolean => FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
+const useExperimentalPipelinedTransformerFF = (): boolean =>
+  FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
 const transformerVersionFF = (): number => FeatureFlags.getNumber('graphQLTransformer.transformerVersion');
 
 /**
@@ -57,5 +52,9 @@ const migrateToTransformerVersionFeatureFlag = async (context: $TSContext): Prom
   stateManager.setCLIJSON(projectPath, config);
   await FeatureFlags.reloadValues();
   // eslint-disable-next-line spellcheck/spell-checker
-  context.print.warning(`\nThe project is configured with 'transformerVersion': ${transformerVersionFF()}, but 'useExperimentalPipelinedTransformer': ${useExperimentalPipelinedTransformerFF()}. Setting the 'transformerVersion': ${config.features.graphqltransformer.transformerversion}. 'useExperimentalPipelinedTransformer' is deprecated.`);
+  context.print.warning(
+    `\nThe project is configured with 'transformerVersion': ${transformerVersionFF()}, but 'useExperimentalPipelinedTransformer': ${useExperimentalPipelinedTransformerFF()}. Setting the 'transformerVersion': ${
+      config.features.graphqltransformer.transformerversion
+    }. 'useExperimentalPipelinedTransformer' is deprecated.`,
+  );
 };

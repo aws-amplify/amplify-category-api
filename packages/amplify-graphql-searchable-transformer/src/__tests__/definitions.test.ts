@@ -1,7 +1,4 @@
-import {
-  makeSearchableScalarInputObject,
-  makeSearchableXFilterInputObject,
-} from '../definitions';
+import { makeSearchableScalarInputObject, makeSearchableXFilterInputObject } from '../definitions';
 
 describe('makeSearchableScalarInputObject', () => {
   ['ID', 'String', 'Boolean', 'Int', 'Float'].forEach((type: string) => {
@@ -12,7 +9,8 @@ describe('makeSearchableScalarInputObject', () => {
   });
 
   it('fails on unknown type', () => {
-    expect(() => makeSearchableScalarInputObject('CustomType'))
-      .toThrowErrorMatchingInlineSnapshot('"Valid types are String, ID, Int, Float, Boolean"');
+    expect(() => makeSearchableScalarInputObject('CustomType')).toThrowErrorMatchingInlineSnapshot(
+      '"Valid types are String, ID, Int, Float, Boolean"',
+    );
   });
 });

@@ -99,7 +99,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
       this.#modelFieldMaps
         .get(modelName)
         ?.getMappedFields()
-        .find(entry => entry.currentFieldName === fieldName)?.originalFieldName || fieldName
+        .find((entry) => entry.currentFieldName === fieldName)?.originalFieldName || fieldName
     );
   };
 
@@ -117,9 +117,10 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
    * @param directive the directive
    */
   addDirectiveConfigExclusion = (
-      object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
-      field: FieldNode | undefined,
-      directive: DirectiveNode): void => {
+    object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
+    field: FieldNode | undefined,
+    directive: DirectiveNode,
+  ): void => {
     this.exclusionSet.add(this.convertDirectiveConfigToKey(object, field, directive));
   };
 
@@ -131,9 +132,10 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
    * @return boolean true if the configuration has been excluded
    */
   isDirectiveConfigExcluded = (
-      object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
-      field: FieldNode | undefined,
-      directive: DirectiveNode): boolean => {
+    object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
+    field: FieldNode | undefined,
+    directive: DirectiveNode,
+  ): boolean => {
     return this.exclusionSet.has(this.convertDirectiveConfigToKey(object, field, directive));
   };
 
@@ -147,12 +149,19 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
   };
 
   private convertDirectiveConfigToKey = (
-      object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
-      field: FieldNode | undefined,
-      directive: DirectiveNode): string => {
-    const argString = directive?.arguments?.map(arg => {
-      return `${arg?.name?.value}|${arg?.value?.kind === 'StringValue' || arg?.value?.kind === 'IntValue' || arg?.value?.kind === 'FloatValue' ? arg.value.value : 'NullValue'}`
-    })?.join('-');
+    object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
+    field: FieldNode | undefined,
+    directive: DirectiveNode,
+  ): string => {
+    const argString = directive?.arguments
+      ?.map((arg) => {
+        return `${arg?.name?.value}|${
+          arg?.value?.kind === 'StringValue' || arg?.value?.kind === 'IntValue' || arg?.value?.kind === 'FloatValue'
+            ? arg.value.value
+            : 'NullValue'
+        }`;
+      })
+      ?.join('-');
     return `${object.name.value}/${field?.name?.value ?? 'NullField'}/${directive.name.value}/${argString}`;
-  }
+  };
 }

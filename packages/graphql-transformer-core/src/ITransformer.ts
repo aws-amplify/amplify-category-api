@@ -55,7 +55,7 @@ export interface ITransformer {
     parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
     definition: FieldDefinitionNode,
     directive: DirectiveNode,
-    acc: TransformerContext
+    acc: TransformerContext,
   ) => void;
 
   /**

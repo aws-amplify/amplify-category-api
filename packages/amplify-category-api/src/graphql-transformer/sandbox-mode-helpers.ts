@@ -65,7 +65,5 @@ export function schemaHasSandboxModeEnabled(schema: string, docLink: string): bo
   if (authScalarMatch && defaultValueNameMatch && defaultValueValueMatch) {
     return true;
   }
-  throw Error(
-    `There was a problem with your auth configuration. Learn more about auth here: ${docLink}`,
-  );
+  throw Error(`There was a problem with your auth configuration. Learn more about auth here: ${docLink}`);
 }

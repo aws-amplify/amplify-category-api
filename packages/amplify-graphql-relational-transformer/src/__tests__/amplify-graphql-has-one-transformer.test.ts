@@ -474,15 +474,19 @@ describe('Pre Processing Has One Tests', () => {
   let transformer: GraphQLTransform;
   const hasGeneratedFieldArgument = (doc: DocumentNode, objectType: string, fieldName: string, generatedFieldName: string): boolean => {
     let hasFieldArgument = false;
-    doc?.definitions?.forEach(def => {
+    doc?.definitions?.forEach((def) => {
       if ((def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') && def.name.value === objectType) {
-        def?.fields?.forEach(field => {
+        def?.fields?.forEach((field) => {
           if (field.name.value === fieldName) {
-            field?.directives?.forEach(dir => {
+            field?.directives?.forEach((dir) => {
               if (dir.name.value === 'hasOne') {
-                dir?.arguments?.forEach(arg => {
+                dir?.arguments?.forEach((arg) => {
                   if (arg.name.value === 'fields') {
-                    if (arg.value.kind === 'ListValue' && arg.value.values[0].kind === 'StringValue' && arg.value.values[0].value === generatedFieldName) {
+                    if (
+                      arg.value.kind === 'ListValue' &&
+                      arg.value.values[0].kind === 'StringValue' &&
+                      arg.value.values[0].value === generatedFieldName
+                    ) {
                       hasFieldArgument = true;
                     } else if (arg.value.kind === 'StringValue' && arg.value.value === generatedFieldName) {
                       hasFieldArgument = true;
@@ -500,7 +504,7 @@ describe('Pre Processing Has One Tests', () => {
 
   beforeEach(() => {
     transformer = new GraphQLTransform({
-        transformers: [new ModelTransformer(), new HasOneTransformer()],
+      transformers: [new ModelTransformer(), new HasOneTransformer()],
     });
   });
 
@@ -611,9 +615,9 @@ describe('@hasOne connection field nullability tests', () => {
       }
     `;
     const transformer = new GraphQLTransform({
-        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     });
-  
+
     const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
@@ -673,9 +677,9 @@ describe('@hasOne connection field nullability tests', () => {
       }
     `;
     const transformer = new GraphQLTransform({
-        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     });
-  
+
     const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);

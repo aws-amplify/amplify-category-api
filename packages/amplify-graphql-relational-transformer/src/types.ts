@@ -69,6 +69,6 @@ export type ManyToManyPreProcessContext = {
   modelAuthDirectives: WritableDraft<DirectiveNode>[];
   fieldAuthDirectives: WritableDraft<DirectiveNode>[];
   relationName: string;
-}
+};
 
 export type ObjectDefinition = ObjectTypeDefinitionNode | ObjectTypeExtensionNode;

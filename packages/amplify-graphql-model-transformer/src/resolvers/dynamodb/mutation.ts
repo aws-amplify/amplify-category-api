@@ -163,16 +163,18 @@ export const generateCreateRequestTemplate = (modelName: string, modelIndexField
     comment('set the typename'),
     qref(methodCall(ref('mergedValues.put'), str('__typename'), str(modelName))),
 
-    ...(modelIndexFields.length ? [
-      set(ref('nullIndexFields'), list([])),
-      set(ref('indexFields'), list(modelIndexFields.map(it => str(it)))),
+    ...(modelIndexFields.length
+      ? [
+          set(ref('nullIndexFields'), list([])),
+          set(ref('indexFields'), list(modelIndexFields.map((it) => str(it)))),
 
-      forEach(ref('entry'), ref('util.map.copyAndRetainAllKeys($mergedValues, $indexFields).entrySet()'), [
-        iff(raw('$util.isNull($entry.value)'), qref(methodCall(ref('nullIndexFields.add'), ref('entry.key')))),
-      ]),
+          forEach(ref('entry'), ref('util.map.copyAndRetainAllKeys($mergedValues, $indexFields).entrySet()'), [
+            iff(raw('$util.isNull($entry.value)'), qref(methodCall(ref('nullIndexFields.add'), ref('entry.key')))),
+          ]),
 
-      set(ref('mergedValues'), ref('util.map.copyAndRemoveAllKeys($mergedValues, $nullIndexFields)')),
-    ] : []),
+          set(ref('mergedValues'), ref('util.map.copyAndRemoveAllKeys($mergedValues, $nullIndexFields)')),
+        ]
+      : []),
 
     // Set PutObject
     set(
@@ -256,7 +258,7 @@ export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
  * Generates VTL template in delete mutation
  *
  */
-export const generateDeleteRequestTemplate = (modelName:string, isSyncEnabled: boolean): string => {
+export const generateDeleteRequestTemplate = (modelName: string, isSyncEnabled: boolean): string => {
   const statements: Expression[] = [
     setArgs,
     set(
@@ -328,10 +330,11 @@ export const generateUpdateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
 /**
  * generateApplyDefaultsToInputTemplate
  */
-export const generateApplyDefaultsToInputTemplate = (target: string): Expression => compoundExpression([
-  set(ref(target), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
-  qref(methodCall(ref(`${target}.putAll`), methodCall(ref('util.defaultIfNull'), ref('ctx.args.input'), obj({})))),
-]);
+export const generateApplyDefaultsToInputTemplate = (target: string): Expression =>
+  compoundExpression([
+    set(ref(target), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
+    qref(methodCall(ref(`${target}.putAll`), methodCall(ref('util.defaultIfNull'), ref('ctx.args.input'), obj({})))),
+  ]);
 
 const generateKeyConditionTemplate = (attributeExistsValue: boolean): Expression[] => {
   const statements: Expression[] = [

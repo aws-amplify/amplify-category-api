@@ -9,7 +9,7 @@ const BUCKET_STALE_DURATION_MS = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
  */
 const testBucketStalenessFilter = (bucket: S3.Bucket): boolean => {
   const isTestBucket = bucket.Name.match(TEST_BUCKET_REGEX);
-  const isStaleBucket = (Date.now() - bucket.CreationDate.getMilliseconds()) > BUCKET_STALE_DURATION_MS;
+  const isStaleBucket = Date.now() - bucket.CreationDate.getMilliseconds() > BUCKET_STALE_DURATION_MS;
   return isTestBucket && isStaleBucket;
 };
 
@@ -69,7 +69,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
   });
   try {
     const orgAccounts = await orgApi.listAccounts().promise();
-    const accountCredentialPromises = orgAccounts.Accounts.map(async account => {
+    const accountCredentialPromises = orgAccounts.Accounts.map(async (account) => {
       if (account.Id === parentAccountIdentity.Account) {
         return {
           accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -79,12 +79,14 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
       }
 
       const randomNumber = Math.floor(Math.random() * 100000);
-      const assumeRoleRes = await sts.assumeRole({
-        RoleArn: `arn:aws:iam::${account.Id}:role/OrganizationAccountAccessRole`,
-        RoleSessionName: `testSession${randomNumber}`,
-        // One hour
-        DurationSeconds: 1 * 60 * 60,
-      }).promise();
+      const assumeRoleRes = await sts
+        .assumeRole({
+          RoleArn: `arn:aws:iam::${account.Id}:role/OrganizationAccountAccessRole`,
+          RoleSessionName: `testSession${randomNumber}`,
+          // One hour
+          DurationSeconds: 1 * 60 * 60,
+        })
+        .promise();
       return {
         accessKeyId: assumeRoleRes.Credentials.AccessKeyId,
         secretAccessKey: assumeRoleRes.Credentials.SecretAccessKey,
@@ -94,18 +96,22 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
     return await Promise.all(accountCredentialPromises);
   } catch (e) {
     console.error(e);
-    console.log('Error assuming child account role. This could be because the script is already running from within a child account. Running on current AWS account only.');
-    return [{
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      sessionToken: process.env.AWS_SESSION_TOKEN,
-    }];
+    console.log(
+      'Error assuming child account role. This could be because the script is already running from within a child account. Running on current AWS account only.',
+    );
+    return [
+      {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        sessionToken: process.env.AWS_SESSION_TOKEN,
+      },
+    ];
   }
 };
 
 const deleteBucketsForAccount = async (account: AWSAccountInfo, accountIndex: number): Promise<void> => {
   const buckets = await getStaleS3TestBuckets(account);
-  await Promise.all(buckets.map(bucket => deleteBucket(account, accountIndex, bucket)));
+  await Promise.all(buckets.map((bucket) => deleteBucket(account, accountIndex, bucket)));
   console.log(`[ACCOUNT ${accountIndex}] Cleanup done!`);
 };
 

@@ -253,10 +253,10 @@ export class KeyTransformer extends Transformer {
   };
 
   private removeAutoCreatedPrimaryKey = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
-    const schemaHasIdField = definition.fields.find(f => f.name.value === 'id');
+    const schemaHasIdField = definition.fields.find((f) => f.name.value === 'id');
     if (!schemaHasIdField) {
       const obj = ctx.getObject(definition.name.value);
-      const fields = obj.fields.filter(f => f.name.value !== 'id');
+      const fields = obj.fields.filter((f) => f.name.value !== 'id');
       const newObj: ObjectTypeDefinitionNode = {
         ...obj,
         fields,
@@ -273,7 +273,7 @@ export class KeyTransformer extends Transformer {
       // as it is in the key field list
       const compositeKeyFields = [];
       for (const compositeKeyFieldName of compositeKeyFieldNames) {
-        const field = definition.fields.find(field => field.name.value === compositeKeyFieldName);
+        const field = definition.fields.find((field) => field.name.value === compositeKeyFieldName);
         if (!field) {
           throw new InvalidDirectiveError(
             `Can't find field: ${compositeKeyFieldName} in ${definition.name.value}, but it was specified in the @key definition.`,
@@ -293,7 +293,7 @@ export class KeyTransformer extends Transformer {
       }
     } else if (args.fields.length === 2) {
       const finalSortKeyFieldName = args.fields[1];
-      const finalSortKeyField = definition.fields.find(f => f.name.value === finalSortKeyFieldName);
+      const finalSortKeyField = definition.fields.find((f) => f.name.value === finalSortKeyFieldName);
       const typeResolver = (baseType: string) => {
         const resolvedEnumType = ctx.getType(baseType) as EnumTypeDefinitionNode;
         return resolvedEnumType ? 'String' : undefined;
@@ -333,16 +333,16 @@ export class KeyTransformer extends Transformer {
     if (getResolverResource && this.isPrimaryKey(directive)) {
       // By default takes a single argument named 'id'. Replace it with the updated primary key structure.
       let getField: FieldDefinitionNode = query.fields.find(
-        field => field.name.value === getResolverResource.Properties.FieldName,
+        (field) => field.name.value === getResolverResource.Properties.FieldName,
       ) as FieldDefinitionNode;
       const args: KeyArguments = getDirectiveArguments(directive);
-      const getArguments = args.fields.map(keyAttributeName => {
-        const keyField = definition.fields.find(field => field.name.value === keyAttributeName);
+      const getArguments = args.fields.map((keyAttributeName) => {
+        const keyField = definition.fields.find((field) => field.name.value === keyAttributeName);
         const keyArgument = makeInputValueDefinition(keyAttributeName, makeNonNullType(makeNamedType(getBaseType(keyField.type))));
         return keyArgument;
       });
       getField = { ...getField, arguments: getArguments };
-      query = { ...query, fields: query.fields.map(field => (field.name.value === getField.name.value ? getField : field)) };
+      query = { ...query, fields: query.fields.map((field) => (field.name.value === getField.name.value ? getField : field)) };
       ctx.putType(query);
     }
   };
@@ -355,7 +355,7 @@ export class KeyTransformer extends Transformer {
       // By default takes a single argument named 'id'. Replace it with the updated primary key structure.
       let query = ctx.getQuery();
       let listField: FieldDefinitionNode = query.fields.find(
-        field => field.name.value === listResolverResource.Properties.FieldName,
+        (field) => field.name.value === listResolverResource.Properties.FieldName,
       ) as FieldDefinitionNode;
       let listArguments: InputValueDefinitionNode[] = [...listField.arguments];
       const args: KeyArguments = getDirectiveArguments(directive);
@@ -370,7 +370,7 @@ export class KeyTransformer extends Transformer {
       }
       listArguments.push(makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')));
       listField = { ...listField, arguments: listArguments };
-      query = { ...query, fields: query.fields.map(field => (field.name.value === listField.name.value ? listField : field)) };
+      query = { ...query, fields: query.fields.map((field) => (field.name.value === listField.name.value ? listField : field)) };
       ctx.putType(query);
     }
   };
@@ -461,7 +461,7 @@ export class KeyTransformer extends Transformer {
       let shouldMakeDelete = true;
 
       if (ctx.featureFlags.getBoolean('skipOverrideMutationInputTypes', false)) {
-        const modelDirective = definition.directives.find(dir => dir.name.value === 'model');
+        const modelDirective = definition.directives.find((dir) => dir.name.value === 'model');
         const modelDirectiveArgs = getDirectiveArguments(modelDirective);
 
         if (!_.isEmpty(modelDirectiveArgs) && Object.keys(modelDirectiveArgs).includes('mutations')) {
@@ -471,7 +471,7 @@ export class KeyTransformer extends Transformer {
           shouldMakeDelete = !!modelDirectiveArgs?.mutations?.delete;
         }
       }
-      const hasIdField = definition.fields.find(f => f.name.value === 'id');
+      const hasIdField = definition.fields.find((f) => f.name.value === 'id');
       if (!hasIdField) {
         const createInput = ctx.getType(
           ModelResourceIDs.ModelCreateInputObjectName(definition.name.value),
@@ -511,7 +511,7 @@ export class KeyTransformer extends Transformer {
       return printBlock(`Validate ${keyOperation} mutation for @key '${directiveArgs.name}'`)(
         compoundExpression([
           set(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), bool(false)),
-          set(ref('keyFieldNames'), list(sortKeyFields.map(f => str(f)))),
+          set(ref('keyFieldNames'), list(sortKeyFields.map((f) => str(f)))),
           forEach(ref('keyFieldName'), ref('keyFieldNames'), [
             iff(
               raw(`$ctx.args.input.containsKey("$keyFieldName")`),
@@ -551,7 +551,7 @@ export class KeyTransformer extends Transformer {
     const directiveArgs = getDirectiveArguments(directive);
     if (!directiveArgs.name) {
       // 1. Make sure there are no more directives without a name.
-      for (const otherDirective of definition.directives.filter(d => d.name.value === 'key')) {
+      for (const otherDirective of definition.directives.filter((d) => d.name.value === 'key')) {
         const otherArgs = getDirectiveArguments(otherDirective);
         if (otherDirective !== directive && !otherArgs.name) {
           throw new InvalidDirectiveError(`You may only supply one primary @key on type '${definition.name.value}'.`);
@@ -579,7 +579,7 @@ export class KeyTransformer extends Transformer {
       }
     } else {
       // 2. Make sure there are no more directives with the same name.
-      for (const otherDirective of definition.directives.filter(d => d.name.value === 'key')) {
+      for (const otherDirective of definition.directives.filter((d) => d.name.value === 'key')) {
         const otherArgs = getDirectiveArguments(otherDirective);
         if (otherDirective !== directive && otherArgs.name === directiveArgs.name) {
           throw new InvalidDirectiveError(
@@ -636,11 +636,11 @@ export class KeyTransformer extends Transformer {
       throw new InvalidDirectiveError(`The @key directive may only be added to object definitions annotated with @model.`);
     } else {
       // First remove any attribute definitions in the current primary key.
-      const existingAttrDefSet = new Set(tableResource.Properties.AttributeDefinitions.map(ad => ad.AttributeName));
+      const existingAttrDefSet = new Set(tableResource.Properties.AttributeDefinitions.map((ad) => ad.AttributeName));
       for (const existingKey of tableResource.Properties.KeySchema) {
         if (existingAttrDefSet.has(existingKey.AttributeName)) {
           tableResource.Properties.AttributeDefinitions = tableResource.Properties.AttributeDefinitions.filter(
-            ad => ad.AttributeName !== existingKey.AttributeName,
+            (ad) => ad.AttributeName !== existingKey.AttributeName,
           );
           existingAttrDefSet.delete(existingKey.AttributeName);
         }
@@ -701,7 +701,7 @@ export class KeyTransformer extends Transformer {
           }),
         );
       }
-      const existingAttrDefSet = new Set(tableResource.Properties.AttributeDefinitions.map(ad => ad.AttributeName));
+      const existingAttrDefSet = new Set(tableResource.Properties.AttributeDefinitions.map((ad) => ad.AttributeName));
       for (const attr of attrDefs) {
         if (!existingAttrDefSet.has(attr.AttributeName)) {
           tableResource.Properties.AttributeDefinitions.push(attr);
@@ -727,14 +727,14 @@ export class KeyTransformer extends Transformer {
           const fieldsArg = <Array<string>>getDirectiveArgument(directive, 'fields');
 
           if (fieldsArg && fieldsArg.length && fieldsArg.length > 0) {
-            fields = type.fields.filter(f => fieldsArg.includes(f.name.value));
+            fields = type.fields.filter((f) => fieldsArg.includes(f.name.value));
           }
         }
 
         fieldNames.add('id');
 
         if (fields && fields.length > 0) {
-          fields.forEach(f => fieldNames.add(f.name.value));
+          fields.forEach((f) => fieldNames.add(f.name.value));
         } else {
           // Add default named key for exclusion from input type
           fieldNames.add('id');
@@ -744,7 +744,7 @@ export class KeyTransformer extends Transformer {
       getKeyFieldNames();
 
       if (fieldNames.size > 0) {
-        const reducedFields = tableXMutationConditionInput.fields.filter(field => !fieldNames.has(field.name.value));
+        const reducedFields = tableXMutationConditionInput.fields.filter((field) => !fieldNames.has(field.name.value));
 
         const updatedInput = {
           ...tableXMutationConditionInput,
@@ -834,8 +834,8 @@ function getPrimaryKey(obj: ObjectTypeDefinitionNode): DirectiveNode | undefined
 }
 
 function primaryIdFields(definition: ObjectTypeDefinitionNode, keyFields: string[]): InputValueDefinitionNode[] {
-  return keyFields.map(keyFieldName => {
-    const keyField: FieldDefinitionNode = definition.fields.find(field => field.name.value === keyFieldName);
+  return keyFields.map((keyFieldName) => {
+    const keyField: FieldDefinitionNode = definition.fields.find((field) => field.name.value === keyFieldName);
     return makeInputValueDefinition(keyFieldName, makeNonNullType(makeNamedType(getBaseType(keyField.type))));
   });
 }
@@ -846,8 +846,8 @@ function replaceUpdateInput(
   input: InputObjectTypeDefinitionNode,
   keyFields: string[],
 ): InputObjectTypeDefinitionNode {
-  const schemaHasIdField = definition.fields!.some(f => f.name.value === 'id');
-  const inputFields = input.fields!.filter(f => {
+  const schemaHasIdField = definition.fields!.some((f) => f.name.value === 'id');
+  const inputFields = input.fields!.filter((f) => {
     if (!schemaHasIdField && f.name.value === 'id') {
       return false;
     }
@@ -857,8 +857,8 @@ function replaceUpdateInput(
 
   return {
     ...input,
-    fields: inputFields.map(f => {
-      if (keyFields.find(k => k === f.name.value)) {
+    fields: inputFields.map((f) => {
+      if (keyFields.find((k) => k === f.name.value)) {
         return makeInputValueDefinition(f.name.value, wrapNonNull(withNamedNodeNamed(f.type, getBaseType(f.type))));
       }
 
@@ -879,7 +879,7 @@ function replaceCreateInput(
 ): InputObjectTypeDefinitionNode {
   return {
     ...input,
-    fields: input.fields.filter(f => f.name.value !== 'id'),
+    fields: input.fields.filter((f) => f.name.value !== 'id'),
   };
 }
 
@@ -895,7 +895,7 @@ function replaceDeleteInput(
   // field id of type ID is a special case that we need to filter as this is automatically inserted to input by dynamo db transformer
   // Todo: Find out a better way to handle input types
   const existingFields = input.fields.filter(
-    f => !(idFields.find(pf => pf.name.value === f.name.value) || (getBaseType(f.type) === 'ID' && f.name.value === 'id')),
+    (f) => !(idFields.find((pf) => pf.name.value === f.name.value) || (getBaseType(f.type) === 'ID' && f.name.value === 'id')),
   );
 
   return {
@@ -913,7 +913,7 @@ function modelObjectKey(args: KeyArguments, isMutation: boolean) {
   if (args.fields.length > 2) {
     const rangeKeyFields = args.fields.slice(1);
     const condensedSortKey = condenseRangeKey(rangeKeyFields);
-    const condensedSortKeyValue = condenseRangeKey(rangeKeyFields.map(keyField => `\${${argsPrefix}.${keyField}}`));
+    const condensedSortKeyValue = condenseRangeKey(rangeKeyFields.map((keyField) => `\${${argsPrefix}.${keyField}}`));
     return obj({
       [args.fields[0]]: ref(`util.dynamodb.toDynamoDB($${argsPrefix}.${args.fields[0]})`),
       [condensedSortKey]: ref(`util.dynamodb.toDynamoDB("${condensedSortKeyValue}")`),
@@ -941,8 +941,8 @@ function ensureCompositeKeySnippet(dir: DirectiveNode, conditionallySetSortKey: 
   if (args.fields.length > 2) {
     const rangeKeyFields = args.fields.slice(1);
     const condensedSortKey = condenseRangeKey(rangeKeyFields);
-    const dynamoDBFriendlySortKeyName = toCamelCase(rangeKeyFields.map(f => graphqlName(f)));
-    const condensedSortKeyValue = condenseRangeKey(rangeKeyFields.map(keyField => `\${${argsPrefix}.${keyField}}`));
+    const dynamoDBFriendlySortKeyName = toCamelCase(rangeKeyFields.map((f) => graphqlName(f)));
+    const condensedSortKeyValue = condenseRangeKey(rangeKeyFields.map((keyField) => `\${${argsPrefix}.${keyField}}`));
     return print(
       compoundExpression([
         ifElse(
@@ -1024,8 +1024,8 @@ function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: Dire
 function setQuerySnippet(definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext, isListResolver: boolean) {
   const args: KeyArguments = getDirectiveArguments(directive);
   const keys = args.fields;
-  const keyTypes = keys.map(k => {
-    const field = definition.fields.find(f => f.name.value === k);
+  const keyTypes = keys.map((k) => {
+    const field = definition.fields.find((f) => f.name.value === k);
     return attributeTypeFromType(field.type, ctx);
   });
 
@@ -1064,7 +1064,7 @@ function addHashField(
   elems: InputValueDefinitionNode[],
 ): InputValueDefinitionNode[] {
   let hashFieldName = args.fields[0];
-  const hashField = definition.fields.find(field => field.name.value === hashFieldName);
+  const hashField = definition.fields.find((field) => field.name.value === hashFieldName);
   const hashKey = makeInputValueDefinition(hashFieldName, makeNamedType(getBaseType(hashField.type)));
   return [hashKey, ...elems];
 }
@@ -1075,7 +1075,7 @@ function addSimpleSortKey(
   elems: InputValueDefinitionNode[],
 ): InputValueDefinitionNode[] {
   let sortKeyName = args.fields[1];
-  const sortField = definition.fields.find(field => field.name.value === sortKeyName);
+  const sortField = definition.fields.find((field) => field.name.value === sortKeyName);
   const baseType = getBaseType(sortField.type);
   const resolvedTypeIfEnum = (ctx.getType(baseType) as EnumTypeDefinitionNode) ? 'String' : undefined;
   const resolvedType = resolvedTypeIfEnum ? resolvedTypeIfEnum : baseType;

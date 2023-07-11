@@ -1,7 +1,4 @@
-import {
-  TransformerContextProvider,
-  TransformerResolverProvider
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerContextProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../../types';
 
@@ -17,4 +14,4 @@ export interface IndexVTLGenerator {
     tableName: string,
     operationName: string,
   ): string;
-};
+}

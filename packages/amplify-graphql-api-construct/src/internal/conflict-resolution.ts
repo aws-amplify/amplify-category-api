@@ -20,22 +20,26 @@ export const convertToResolverConfig = ({ project, models }: ConflictResolution)
  */
 const convertToSyncConfig = (strategy: ConflictResolutionStrategy): SyncConfig => {
   switch (strategy.handlerType) {
-    case 'OPTIMISTIC_CONCURRENCY': return {
-      ConflictHandler: ConflictHandlerType.OPTIMISTIC,
-      ConflictDetection: strategy.detectionType,
-    };
-    case 'AUTOMERGE': return {
-      ConflictHandler: ConflictHandlerType.AUTOMERGE,
-      ConflictDetection: strategy.detectionType,
-    };
-    case 'LAMBDA': return {
-      ConflictHandler: ConflictHandlerType.LAMBDA,
-      ConflictDetection: strategy.detectionType,
-      LambdaConflictHandler: {
-        name: strategy.conflictHandler.functionName,
-        lambdaArn: strategy.conflictHandler.functionArn,
-      },
-    };
-    default: throw new Error(`Encountered unexpected handlerType: ${(strategy as any).handlerType}`);
+    case 'OPTIMISTIC_CONCURRENCY':
+      return {
+        ConflictHandler: ConflictHandlerType.OPTIMISTIC,
+        ConflictDetection: strategy.detectionType,
+      };
+    case 'AUTOMERGE':
+      return {
+        ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        ConflictDetection: strategy.detectionType,
+      };
+    case 'LAMBDA':
+      return {
+        ConflictHandler: ConflictHandlerType.LAMBDA,
+        ConflictDetection: strategy.detectionType,
+        LambdaConflictHandler: {
+          name: strategy.conflictHandler.functionName,
+          lambdaArn: strategy.conflictHandler.functionArn,
+        },
+      };
+    default:
+      throw new Error(`Encountered unexpected handlerType: ${(strategy as any).handlerType}`);
   }
 };

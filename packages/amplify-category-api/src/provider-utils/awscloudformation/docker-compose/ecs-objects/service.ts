@@ -41,7 +41,7 @@ class Service implements IServiceDefinition {
     apiHealthcheck: ServiceHealthCheck = DEFAULT_API_HEALTHCHECK,
     dockerDeploymentConfig?: v38Types.DefinitionsDeployment2,
   ) {
-    containers.forEach(instance => {
+    containers.forEach((instance) => {
       this.containers.push(instance);
     });
 
@@ -58,7 +58,7 @@ class Service implements IServiceDefinition {
     /*CONTAINER-specific settings*/
     //ECS recommends 300-500 MiB as a starting point for web applications.
     dockerDeploymentConfig?.resources?.limits?.memory !== undefined &&
-      (this.containerResources.memory = (dockerDeploymentConfig?.resources?.limits?.memory.slice(0, -1) as unknown) as number);
+      (this.containerResources.memory = dockerDeploymentConfig?.resources?.limits?.memory.slice(0, -1) as unknown as number);
 
     //Note: when you don’t specify any CPU units for a container
     //ECS intrinsically enforces two Linux CPU shares for the cgroup (which is the minimum allowed).

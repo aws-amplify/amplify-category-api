@@ -6,109 +6,127 @@ describe('user-defined-slots', () => {
   describe('validateFunctionSlots', () => {
     it('throws on unexpected property', () => {
       expect(() => {
-        validateFunctionSlots([{
-          typeName: 'Mutation',
-          fieldName: 'createTodo',
-          slotName: 'postUpdate',
-          slotIndex: 1,
-          function: {
-            code: Code.fromInline('Hi there'),
-            runtime: FunctionRuntime.JS_1_0_0,
+        validateFunctionSlots([
+          {
+            typeName: 'Mutation',
+            fieldName: 'createTodo',
+            slotName: 'postUpdate',
+            slotIndex: 1,
+            function: {
+              code: Code.fromInline('Hi there'),
+              runtime: FunctionRuntime.JS_1_0_0,
+            },
           },
-        }]);
-      }).toThrowErrorMatchingInlineSnapshot('"Unexpected property found on function slot, only requestMappingTemplate and responseMappingTemplate supported"');
+        ]);
+      }).toThrowErrorMatchingInlineSnapshot(
+        '"Unexpected property found on function slot, only requestMappingTemplate and responseMappingTemplate supported"',
+      );
     });
 
     it('throws on missing properties', () => {
       expect(() => {
-        validateFunctionSlots([{
-          typeName: 'Mutation',
-          fieldName: 'createTodo',
-          slotName: 'postUpdate',
-          slotIndex: 1,
-          function: {},
-        }]);
+        validateFunctionSlots([
+          {
+            typeName: 'Mutation',
+            fieldName: 'createTodo',
+            slotName: 'postUpdate',
+            slotIndex: 1,
+            function: {},
+          },
+        ]);
       }).toThrowErrorMatchingInlineSnapshot('"Expected at least one of either requestMappingTemplate or responseMappingTemplate"');
     });
   });
 
   describe('separateSlots', () => {
     it('splits a slot into if both request and response mapping are defined', () => {
-      const potentiallySeparatedSlots = separateSlots([{
-        typeName: 'Mutation',
-        fieldName: 'createTodo',
-        slotName: 'postUpdate',
-        slotIndex: 1,
-        function: {
-          requestMappingTemplate: MappingTemplate.fromString('Request Template'),
-          responseMappingTemplate: MappingTemplate.fromString('Response Template'),
+      const potentiallySeparatedSlots = separateSlots([
+        {
+          typeName: 'Mutation',
+          fieldName: 'createTodo',
+          slotName: 'postUpdate',
+          slotIndex: 1,
+          function: {
+            requestMappingTemplate: MappingTemplate.fromString('Request Template'),
+            responseMappingTemplate: MappingTemplate.fromString('Response Template'),
+          },
         },
-      }]);
+      ]);
       expect(potentiallySeparatedSlots.length).toEqual(2);
     });
 
     it('does not split on just request mapping template', () => {
-      const potentiallySeparatedSlots = separateSlots([{
-        typeName: 'Mutation',
-        fieldName: 'createTodo',
-        slotName: 'postUpdate',
-        slotIndex: 1,
-        function: {
-          requestMappingTemplate: MappingTemplate.fromString('Request Template'),
+      const potentiallySeparatedSlots = separateSlots([
+        {
+          typeName: 'Mutation',
+          fieldName: 'createTodo',
+          slotName: 'postUpdate',
+          slotIndex: 1,
+          function: {
+            requestMappingTemplate: MappingTemplate.fromString('Request Template'),
+          },
         },
-      }]);
+      ]);
       expect(potentiallySeparatedSlots.length).toEqual(1);
     });
 
     it('does not split on just response mapping template', () => {
-      const potentiallySeparatedSlots = separateSlots([{
-        typeName: 'Mutation',
-        fieldName: 'createTodo',
-        slotName: 'postUpdate',
-        slotIndex: 1,
-        function: {
-          responseMappingTemplate: MappingTemplate.fromString('Response Template'),
+      const potentiallySeparatedSlots = separateSlots([
+        {
+          typeName: 'Mutation',
+          fieldName: 'createTodo',
+          slotName: 'postUpdate',
+          slotIndex: 1,
+          function: {
+            responseMappingTemplate: MappingTemplate.fromString('Response Template'),
+          },
         },
-      }]);
+      ]);
       expect(potentiallySeparatedSlots.length).toEqual(1);
     });
   });
 
   describe('getSlotName', () => {
     it('generates given the input params for a mutation slot', () => {
-      expect(getSlotName({
-        typeName: 'Mutation',
-        fieldName: 'createTodo',
-        slotName: 'postUpdate',
-        slotIndex: 1,
-        function: {
-          requestMappingTemplate: MappingTemplate.fromString(''),
-        },
-      })).toEqual('Mutation.createTodo.postUpdate.1.req.vtl');
+      expect(
+        getSlotName({
+          typeName: 'Mutation',
+          fieldName: 'createTodo',
+          slotName: 'postUpdate',
+          slotIndex: 1,
+          function: {
+            requestMappingTemplate: MappingTemplate.fromString(''),
+          },
+        }),
+      ).toEqual('Mutation.createTodo.postUpdate.1.req.vtl');
     });
 
     it('generates given the input params for a query slot', () => {
-      expect(getSlotName({
-        typeName: 'Query',
-        fieldName: 'getTodo',
-        slotName: 'preDataLoad',
-        slotIndex: 2,
-        function: {
-          requestMappingTemplate: MappingTemplate.fromString(''),
-        },
-      })).toEqual('Query.getTodo.preDataLoad.2.req.vtl');
+      expect(
+        getSlotName({
+          typeName: 'Query',
+          fieldName: 'getTodo',
+          slotName: 'preDataLoad',
+          slotIndex: 2,
+          function: {
+            requestMappingTemplate: MappingTemplate.fromString(''),
+          },
+        }),
+      ).toEqual('Query.getTodo.preDataLoad.2.req.vtl');
     });
 
     it('generates given the input params for a subscription slot', () => {
-      expect(getSlotName({
-        typeName: 'Subscription',
-        fieldName: 'onUpdateTodo',
-        slotName: 'preSubscribe',
-        slotIndex: 3,
-        function: {
-          responseMappingTemplate: MappingTemplate.fromString(''),
-        },
-      })).toEqual('Subscription.onUpdateTodo.preSubscribe.3.res.vtl');
+      expect(
+        getSlotName({
+          typeName: 'Subscription',
+          fieldName: 'onUpdateTodo',
+          slotName: 'preSubscribe',
+          slotIndex: 3,
+          function: {
+            responseMappingTemplate: MappingTemplate.fromString(''),
+          },
+        }),
+      ).toEqual('Subscription.onUpdateTodo.preSubscribe.3.res.vtl');
     });
   });
 
@@ -131,7 +149,7 @@ describe('user-defined-slots', () => {
         requestResolver: {
           fileName: 'Mutation.createTodo.preAuth.1.req.vtl',
           template: requestResolverVtl,
-        }
+        },
       });
     });
   });
@@ -154,7 +172,7 @@ describe('user-defined-slots', () => {
       responseResolver: {
         fileName: 'Mutation.createTodo.preAuth.1.res.vtl',
         template: vtl,
-      }
+      },
     });
   });
 
@@ -182,19 +200,21 @@ describe('user-defined-slots', () => {
     const parsedSlots = parseUserDefinedSlots([functionSlot, functionSlot2]);
     expect(Object.keys(parsedSlots).length).toEqual(1);
     expect(parsedSlots['Mutation.createTodo'].length).toEqual(2);
-    expect(parsedSlots['Mutation.createTodo']).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        responseResolver: {
-          fileName: 'Mutation.createTodo.preAuth.1.res.vtl',
-          template: vtl1,
-        }
-      }),
-      expect.objectContaining({
-        responseResolver: {
-          fileName: 'Mutation.createTodo.preAuth.2.res.vtl',
-          template: vtl2,
-        }
-      }),
-    ]));
+    expect(parsedSlots['Mutation.createTodo']).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          responseResolver: {
+            fileName: 'Mutation.createTodo.preAuth.1.res.vtl',
+            template: vtl1,
+          },
+        }),
+        expect.objectContaining({
+          responseResolver: {
+            fileName: 'Mutation.createTodo.preAuth.2.res.vtl',
+            template: vtl2,
+          },
+        }),
+      ]),
+    );
   });
 });

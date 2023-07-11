@@ -82,7 +82,9 @@ describe('user created resolvers', () => {
       // 1. postAuth slot appsync functions should be same
       // 2. list resolver auth slot should be different
 
-      const filterFunctions = listResolverAppsyncFunctions.filter(func1 => getResolverAppsyncFunctions.some(func2 => func1['Fn::GetAtt'][0] === func2['Fn::GetAtt'][0]));
+      const filterFunctions = listResolverAppsyncFunctions.filter((func1) =>
+        getResolverAppsyncFunctions.some((func2) => func1['Fn::GetAtt'][0] === func2['Fn::GetAtt'][0]),
+      );
       expect(filterFunctions).toMatchInlineSnapshot(`
         Array [
           Object {
@@ -93,7 +95,7 @@ describe('user created resolvers', () => {
           },
         ]
       `);
-      expect(listResolverAppsyncFunctions.filter(obj => obj["Fn::GetAtt"][0].includes("QuerylistTodosauth0Function")))
+      expect(listResolverAppsyncFunctions.filter((obj) => obj['Fn::GetAtt'][0].includes('QuerylistTodosauth0Function')))
         .toMatchInlineSnapshot(`
         Array [
           Object {
@@ -111,31 +113,35 @@ describe('user created resolvers', () => {
       updateApiSchema(projectDir, apiName, 'two_models_with_cognito_auth.graphql');
       await amplifyPushGraphQlWithCognitoPrompt(projectDir);
       await apiGqlCompile(projectDir);
-      
+
       // With default behavior, functions in Author stack will reference to functions to Todo stack
       const authorJsonPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'stacks', 'Author.json');
       const authorJsonBefore = JSON.parse(fs.readFileSync(authorJsonPath).toString());
-      expect(authorJsonBefore.Resources.GetAuthorResolver.Properties.PipelineConfig.Functions).toEqual(expect.arrayContaining([
-        { 'Ref': expect.stringContaining('getTodoauth0Function') },
-        { 'Ref': expect.stringContaining('getTodopostAuth0Function') },
-        { 'Fn::GetAtt': expect.arrayContaining([expect.stringContaining('GetAuthorDataResolverFn'), 'FunctionId']) },
-      ]));
-      
+      expect(authorJsonBefore.Resources.GetAuthorResolver.Properties.PipelineConfig.Functions).toEqual(
+        expect.arrayContaining([
+          { Ref: expect.stringContaining('getTodoauth0Function') },
+          { Ref: expect.stringContaining('getTodopostAuth0Function') },
+          { 'Fn::GetAtt': expect.arrayContaining([expect.stringContaining('GetAuthorDataResolverFn'), 'FunctionId']) },
+        ]),
+      );
+
       // Set 'DisableResolverDeduping' to true in transform.conf.json file
       updateConfig(projectDir, apiName, {
-        'Version': 5,
-        'DisableResolverDeduping': true,
+        Version: 5,
+        DisableResolverDeduping: true,
       });
       await apiGqlCompile(projectDir);
 
       // When 'DisableResolverDeduping' is set to true, all the functions in Author stack will have its own functions.
       // There shouldn't be any cross stack function references.
       const authorJsonAfter = JSON.parse(fs.readFileSync(authorJsonPath).toString());
-      expect(authorJsonAfter.Resources.GetAuthorResolver.Properties.PipelineConfig.Functions).toEqual(expect.arrayContaining([
-        { 'Fn::GetAtt': expect.arrayContaining([expect.stringContaining('getAuthorauth0Function'), 'FunctionId']) },
-        { 'Fn::GetAtt': expect.arrayContaining([expect.stringContaining('getAuthorpostAuth0Function'), 'FunctionId']) },
-        { 'Fn::GetAtt': expect.arrayContaining([expect.stringContaining('GetAuthorDataResolverFn'), 'FunctionId']) },
-      ]));
+      expect(authorJsonAfter.Resources.GetAuthorResolver.Properties.PipelineConfig.Functions).toEqual(
+        expect.arrayContaining([
+          { 'Fn::GetAtt': expect.arrayContaining([expect.stringContaining('getAuthorauth0Function'), 'FunctionId']) },
+          { 'Fn::GetAtt': expect.arrayContaining([expect.stringContaining('getAuthorpostAuth0Function'), 'FunctionId']) },
+          { 'Fn::GetAtt': expect.arrayContaining([expect.stringContaining('GetAuthorDataResolverFn'), 'FunctionId']) },
+        ]),
+      );
     });
   });
 

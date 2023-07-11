@@ -1,17 +1,10 @@
-import {
-  ArgumentNode,
-  DirectiveNode,
-  NameNode,
-  valueFromASTUntyped,
-  ValueNode,
-  Location,
-} from 'graphql';
+import { ArgumentNode, DirectiveNode, NameNode, valueFromASTUntyped, ValueNode, Location } from 'graphql';
 import _ from 'lodash';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 
 export type GetArgumentsOptions = {
   deepMergeArguments?: boolean;
-}
+};
 
 export class ArgumentWrapper {
   public readonly name: NameNode;
@@ -36,7 +29,7 @@ export class DirectiveWrapper {
   private location?: Location;
   constructor(node: DirectiveNode) {
     this.name = node.name;
-    this.arguments = (node.arguments ?? []).map(arg => new ArgumentWrapper(arg));
+    this.arguments = (node.arguments ?? []).map((arg) => new ArgumentWrapper(arg));
     this.location = this.location;
   }
 
@@ -44,7 +37,7 @@ export class DirectiveWrapper {
     return {
       kind: 'Directive',
       name: this.name,
-      arguments: this.arguments.map(arg => arg.serialize()),
+      arguments: this.arguments.map((arg) => arg.serialize()),
     };
   };
 

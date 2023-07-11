@@ -76,9 +76,9 @@ describe('@mapsTo directive', () => {
   const getTransformerInputsFromSchema = (schema: string) => {
     const ast = parse(schema);
     const stubDefinition = ast.definitions.find(
-      def => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === modelName,
+      (def) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === modelName,
     ) as ObjectTypeDefinitionNode;
-    const stubDirective = stubDefinition.directives?.find(directive => directive.name.value === 'mapsTo')!;
+    const stubDirective = stubDefinition.directives?.find((directive) => directive.name.value === 'mapsTo')!;
     return [
       stubDefinition as DeepWriteable<ObjectTypeDefinitionNode>,
       stubDirective as DeepWriteable<DirectiveNode>,
@@ -94,7 +94,7 @@ describe('@mapsTo directive', () => {
     const [stubDefinition, stubDirective, stubTransformerContext] = getTransformerInputsFromSchema(simpleSchema);
     stubDirective.arguments = [];
     expect(() =>
-      mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext)
+      mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
     ).toThrowErrorMatchingInlineSnapshot(`"name is required in @mapsTo directive"`);
   });
 
@@ -102,20 +102,20 @@ describe('@mapsTo directive', () => {
     const [stubDefinition, stubDirective, stubTransformerContext] = getTransformerInputsFromSchema(simpleSchema);
     stubDirective.arguments![0].value.kind = 'ListValue';
     expect(() =>
-      mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext)
+      mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
     ).toThrowErrorMatchingInlineSnapshot(`"A single string must be provided for \\"name\\" in @mapsTo directive"`);
   });
 
   it('registers the rename mapping', () => {
     const [stubDefinition, stubDirective, stubTransformerContext] = getTransformerInputsFromSchema(simpleSchema);
-    mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext)
+    mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext);
     expect(setModelNameMapping_mock.mock.calls[0]).toEqual(['TestName', 'OriginalName']);
   });
 
   it('throws if a conflicting model name is present in the schema', () => {
     const [stubDefinition, stubDirective, stubTransformerContext] = getTransformerInputsFromSchema(conflictingModelSchema);
     expect(() =>
-      mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext)
+      mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
     ).toThrowErrorMatchingInlineSnapshot(`"Type TestName cannot map to OriginalName because OriginalName is a model in the schema."`);
   });
 
@@ -282,7 +282,7 @@ describe('@mapsTo directive', () => {
 
   it('pre-mutates the schema to reassign type mappings', () => {
     mapsToTransformer.preMutateSchema({
-      ...stubTransformerContextBase as unknown as TransformerPreProcessContextProvider,
+      ...(stubTransformerContextBase as unknown as TransformerPreProcessContextProvider),
       inputDocument: parse(simpleSchema),
     });
 

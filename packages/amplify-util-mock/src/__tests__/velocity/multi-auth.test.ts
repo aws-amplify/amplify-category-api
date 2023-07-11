@@ -146,7 +146,7 @@ describe('with identity claim feature flag disabled', () => {
         transformers: [new ModelTransformer(), new AuthTransformer()],
         transformParameters: {
           useSubUsernameForDefaultIdentityClaim: false,
-        }
+        },
       });
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });
     });

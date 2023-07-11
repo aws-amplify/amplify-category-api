@@ -193,7 +193,7 @@ async function newContainer(context: $TSContext, resourceName: string, apiType: 
   }
 
   const meta = context.amplify.getProjectDetails().amplifyMeta;
-  const hasAccessableResources = ['storage', 'function'].some(categoryName => {
+  const hasAccessableResources = ['storage', 'function'].some((categoryName) => {
     return Object.keys(meta[categoryName] ?? {}).length > 0;
   });
   let rolePermissions: any = {};
@@ -238,10 +238,10 @@ export async function updateWalkthrough(context: $TSContext, apiType: API_TYPE) 
 
   const resources = allResources
     .filter(
-      resource =>
+      (resource) =>
         resource.category === category && resource.service === serviceName && !!resource.providerPlugin && resource.apiType === apiType,
     )
-    .map(resource => resource.resourceName);
+    .map((resource) => resource.resourceName);
 
   // There can only be one appsync resource
   if (resources.length === 0) {
@@ -264,7 +264,7 @@ export async function updateWalkthrough(context: $TSContext, apiType: API_TYPE) 
   const { resourceName } = await inquirer.prompt(question);
 
   const resourceSettings = allResources.find(
-    resource =>
+    (resource) =>
       resource.resourceName === resourceName &&
       resource.category === category &&
       resource.service === serviceName &&
@@ -298,7 +298,7 @@ export async function updateWalkthrough(context: $TSContext, apiType: API_TYPE) 
   const { environmentMap = {}, mutableParametersState = {} } = resourceSettings;
 
   const meta = context.amplify.getProjectDetails().amplifyMeta;
-  const hasAccessableResources = ['storage', 'function'].some(categoryName => {
+  const hasAccessableResources = ['storage', 'function'].some((categoryName) => {
     return Object.keys(meta[categoryName] ?? {}).length > 0;
   });
   let rolePermissions: any = {};

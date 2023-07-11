@@ -165,7 +165,7 @@ type ModelB @model {
         useSubUsernameForDefaultIdentityClaim: false,
         respectPrimaryKeyAttributesOnConnectionField: false,
         sandboxModeEnabled: true,
-      }
+      },
     });
     out = transformer.transform(validSchema);
   } catch (e) {

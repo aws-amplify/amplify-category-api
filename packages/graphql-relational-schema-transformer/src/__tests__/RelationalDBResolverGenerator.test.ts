@@ -52,7 +52,7 @@ test('Test Basic CRUDL Resolver Generation', () => {
   expect(resources).toHaveProperty('PetListResolver');
 
   // Verify for the GetResolver the elements are present
-  let resolverMap = Object.keys(resources).map(key => resources[key]);
+  let resolverMap = Object.keys(resources).map((key) => resources[key]);
   expect(resolverMap[1]).toHaveProperty('Type');
   expect(resolverMap[1]).toHaveProperty('Properties');
 
@@ -79,7 +79,7 @@ test('verify generated templates', () => {
   const generator = new RelationalDBResolverGenerator(context);
   generator.createRelationalResolvers('testFilePath', true);
   expect(writeFileSync_mock.mock.calls.length).toBe(10);
-  writeFileSync_mock.mock.calls.forEach(call => {
+  writeFileSync_mock.mock.calls.forEach((call) => {
     expect(call.length).toBe(3);
     expect(call[0]).toMatchSnapshot();
     expect(call[1]).toMatchSnapshot();
@@ -106,7 +106,7 @@ test('verify generated templates with non-id named primary key', () => {
   const generator = new RelationalDBResolverGenerator(context);
   generator.createRelationalResolvers('testFilePath', true);
   expect(writeFileSync_mock.mock.calls.length).toBe(10);
-  writeFileSync_mock.mock.calls.forEach(call => {
+  writeFileSync_mock.mock.calls.forEach((call) => {
     expect(call.length).toBe(3);
     expect(call[0]).toMatchSnapshot();
     expect(call[1]).toMatchSnapshot();
@@ -133,7 +133,7 @@ test('verify generated templates using a Int primary key', () => {
   const generator = new RelationalDBResolverGenerator(context);
   generator.createRelationalResolvers('testFilePath', true);
   expect(writeFileSync_mock.mock.calls.length).toBe(10);
-  writeFileSync_mock.mock.calls.forEach(call => {
+  writeFileSync_mock.mock.calls.forEach((call) => {
     expect(call.length).toBe(3);
     expect(call[0]).toMatchSnapshot();
     expect(call[1]).toMatchSnapshot();
@@ -160,7 +160,7 @@ test('verify generated templates with old pluralization', () => {
   const generator = new RelationalDBResolverGenerator(context);
   generator.createRelationalResolvers('testFilePath', false);
   expect(writeFileSync_mock.mock.calls.length).toBe(10);
-  writeFileSync_mock.mock.calls.forEach(call => {
+  writeFileSync_mock.mock.calls.forEach((call) => {
     expect(call.length).toBe(3);
     expect(call[0]).toMatchSnapshot();
     expect(call[1]).toMatchSnapshot();

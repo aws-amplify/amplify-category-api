@@ -57,9 +57,7 @@ export type TransformConfig = {
   transformParameters: TransformParameters;
 };
 
-export const constructTransformerChain = (
-  options?: TransformerFactoryArgs,
-): TransformerPluginProvider[] => {
+export const constructTransformerChain = (options?: TransformerFactoryArgs): TransformerPluginProvider[] => {
   const modelTransformer = new ModelTransformer();
   const authTransformer = new AuthTransformer({
     adminRoles: options?.adminRoles ?? [],
@@ -154,12 +152,7 @@ export const defaultPrintTransformerLog = (log: TransformerLog): void => {
  * @returns the transformed api deployment resources.
  */
 export const executeTransform = (config: ExecuteTransformConfig): DeploymentResources => {
-  const {
-    schema,
-    modelToDatasourceMap,
-    datasourceSecretParameterLocations,
-    printTransformerLog,
-  } = config;
+  const { schema, modelToDatasourceMap, datasourceSecretParameterLocations, printTransformerLog } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
   const transform = constructTransform(config);

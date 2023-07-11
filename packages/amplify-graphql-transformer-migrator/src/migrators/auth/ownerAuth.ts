@@ -41,7 +41,7 @@ export function migrateOwnerAuth(node: any, defaultAuthMode: any) {
     const operationsFieldIndex = rule.fields.findIndex((f: any) => f.name.value === 'operations');
 
     if (operationsFieldIndex === -1) {
-      ops.forEach(op => deniedOperations.add(op));
+      ops.forEach((op) => deniedOperations.add(op));
     } else {
       // remember denied operations
       rule.fields[operationsFieldIndex].value.values.forEach((op: any) => deniedOperations.add(op.value));
@@ -55,7 +55,7 @@ export function migrateOwnerAuth(node: any, defaultAuthMode: any) {
 
   if (hasAllImplicitOperations || privateRule) return;
 
-  const explicitOperations = ops.filter(x => !deniedOperations.has(x));
+  const explicitOperations = ops.filter((x) => !deniedOperations.has(x));
 
   authRules.push(createAuthRule('private', defaultAuthMode, explicitOperations));
 }

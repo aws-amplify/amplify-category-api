@@ -26,8 +26,6 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 
 test('Test DynamoDBModelTransformer validation happy case', () => {
@@ -68,7 +66,7 @@ test('Test DynamoDBModelTransformer with query overrides', () => {
   expectFieldsOnInputType(createPostInput, ['id', 'title', 'createdAt', 'updatedAt']);
   // This id should always be optional.
   // aka a named type node aka name.value would not be set if it were a non null node
-  const idField = createPostInput.fields.find(f => f.name.value === 'id');
+  const idField = createPostInput.fields.find((f) => f.name.value === 'id');
   expect((idField.type as NamedTypeNode).name.value).toEqual('ID');
   const queryType = getObjectType(parsed, 'Query');
   expect(queryType).toBeDefined();
@@ -77,7 +75,7 @@ test('Test DynamoDBModelTransformer with query overrides', () => {
   const subscriptionType = getObjectType(parsed, 'Subscription');
   expect(subscriptionType).toBeDefined();
   expectFields(subscriptionType, ['onCreatePost', 'onUpdatePost', 'onDeletePost']);
-  const subField = subscriptionType.fields.find(f => f.name.value === 'onCreatePost');
+  const subField = subscriptionType.fields.find((f) => f.name.value === 'onCreatePost');
   expect(subField.directives.length).toEqual(1);
   expect(subField.directives[0].name.value).toEqual('aws_subscribe');
 });
@@ -327,10 +325,10 @@ test('Test DynamoDBModelTransformer with advanced subscriptions', () => {
   const subscriptionType = getObjectType(parsed, 'Subscription');
   expect(subscriptionType).toBeDefined();
   expectFields(subscriptionType, ['onFeedUpdated', 'onCreatePost']);
-  const subField = subscriptionType.fields.find(f => f.name.value === 'onFeedUpdated');
+  const subField = subscriptionType.fields.find((f) => f.name.value === 'onFeedUpdated');
   expect(subField.directives.length).toEqual(1);
   expect(subField.directives[0].name.value).toEqual('aws_subscribe');
-  const mutationsList = subField.directives[0].arguments.find(a => a.name.value === 'mutations').value as ListValueNode;
+  const mutationsList = subField.directives[0].arguments.find((a) => a.name.value === 'mutations').value as ListValueNode;
   const mutList = mutationsList.values.map((v: any) => v.value);
   expect(mutList.length).toEqual(3);
   expect(mutList).toContain('createPost');
@@ -647,10 +645,10 @@ test('DynamoDB transformer should add default primary key when not defined', () 
   const schema = parse(result.schema);
 
   const createPostInput: InputObjectTypeDefinitionNode = schema.definitions.find(
-    d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreatePostInput',
+    (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreatePostInput',
   ) as InputObjectTypeDefinitionNode | undefined;
   expect(createPostInput).toBeDefined();
-  const defaultIdField: InputValueDefinitionNode = createPostInput.fields.find(f => f.name.value === 'id');
+  const defaultIdField: InputValueDefinitionNode = createPostInput.fields.find((f) => f.name.value === 'id');
   expect(defaultIdField).toBeDefined();
   expect(getBaseType(defaultIdField.type)).toEqual('ID');
 });
@@ -673,10 +671,10 @@ test('DynamoDB transformer should not add default primary key when ID is defined
   const schema = parse(result.schema);
 
   const createPostInput: InputObjectTypeDefinitionNode = schema.definitions.find(
-    d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreatePostInput',
+    (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreatePostInput',
   ) as InputObjectTypeDefinitionNode | undefined;
   expect(createPostInput).toBeDefined();
-  const defaultIdField: InputValueDefinitionNode = createPostInput.fields.find(f => f.name.value === 'id');
+  const defaultIdField: InputValueDefinitionNode = createPostInput.fields.find((f) => f.name.value === 'id');
   expect(defaultIdField).toBeDefined();
   expect(getBaseType(defaultIdField.type)).toEqual('Int');
   // It should not add default value for ctx.arg.id as id is of type Int
@@ -738,7 +736,7 @@ test('Should not validate reserved type names when validateTypeNameReservedWords
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
     featureFlags: {
-      getBoolean: jest.fn().mockImplementation(name => (name === 'validateTypeNameReservedWords' ? false : undefined)),
+      getBoolean: jest.fn().mockImplementation((name) => (name === 'validateTypeNameReservedWords' ? false : undefined)),
     } as unknown as FeatureFlagProvider,
   });
   const out = transformer.transform(schema);
@@ -839,7 +837,7 @@ function getInputType(doc: DocumentNode, type: string): InputObjectTypeDefinitio
 }
 
 function verifyInputCount(doc: DocumentNode, type: string, count: number): boolean {
-  return doc.definitions.filter(def => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && def.name.value === type).length == count;
+  return doc.definitions.filter((def) => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && def.name.value === type).length == count;
 }
 
 function verifyMatchingTypes(t1: TypeNode, t2: TypeNode): boolean {

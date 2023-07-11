@@ -14,7 +14,7 @@ export const deployJsonServer = () => {
   });
 
   if (yarnCdkResult.exitCode !== 0) {
-    throw new Error (`'yarn' failed with exit code: ${yarnCdkResult.exitCode}`);
+    throw new Error(`'yarn' failed with exit code: ${yarnCdkResult.exitCode}`);
   }
 
   const yarnServerResult = execa.sync('yarn', [], {
@@ -23,41 +23,29 @@ export const deployJsonServer = () => {
   });
 
   if (yarnServerResult.exitCode !== 0) {
-    throw new Error (`'yarn' failed with exit code: ${yarnServerResult.exitCode}`);
+    throw new Error(`'yarn' failed with exit code: ${yarnServerResult.exitCode}`);
   }
 
-  const cdkBootstrapResult = execa.sync('npx', [
-    'cdk',
-    'bootstrap',
-    '--require-approval',
-    'never',
-  ], {
+  const cdkBootstrapResult = execa.sync('npx', ['cdk', 'bootstrap', '--require-approval', 'never'], {
     cwd: jsonServerRootDirectory,
     stdio: 'inherit',
   });
 
   if (cdkBootstrapResult.exitCode !== 0) {
-    throw new Error (`CDK bootstrap failed with exit code: ${cdkBootstrapResult.exitCode}`);
+    throw new Error(`CDK bootstrap failed with exit code: ${cdkBootstrapResult.exitCode}`);
   }
 
-  const cdkDeployResult = execa.sync('npx', [
-    'cdk',
-    'deploy',
-    '--outputsFile',
-    outputValuesFile,
-    '--require-approval',
-    'never',
-  ], {
+  const cdkDeployResult = execa.sync('npx', ['cdk', 'deploy', '--outputsFile', outputValuesFile, '--require-approval', 'never'], {
     cwd: jsonServerRootDirectory,
     stdio: 'inherit',
   });
 
   if (cdkDeployResult.exitCode !== 0) {
-    throw new Error (`CDK deploy failed with exit code: ${cdkDeployResult.exitCode}`);
+    throw new Error(`CDK deploy failed with exit code: ${cdkDeployResult.exitCode}`);
   }
 
   if (!fs.existsSync(outputValuesFile)) {
-    throw new Error (`CDK deploy failed, output values file: ${outputValuesFile} does not exist`);
+    throw new Error(`CDK deploy failed, output values file: ${outputValuesFile} does not exist`);
   }
 
   const outputsContent = fs.readFileSync(outputValuesFile).toString();
@@ -67,21 +55,17 @@ export const deployJsonServer = () => {
   const apiUrl = stackOutputs[Object.keys(stackOutputs)[0]];
 
   return {
-    apiUrl
+    apiUrl,
   };
 };
 
 export const destroyJsonServer = () => {
-  const processResult = execa.sync('npx', [
-    'cdk',
-    'destroy',
-    '--force',
-  ], {
+  const processResult = execa.sync('npx', ['cdk', 'destroy', '--force'], {
     cwd: jsonServerRootDirectory,
     stdio: 'inherit',
   });
 
   if (processResult.exitCode !== 0) {
-    throw new Error (`CDK destroy failed with exit code: ${processResult.exitCode}`);
+    throw new Error(`CDK destroy failed with exit code: ${processResult.exitCode}`);
   }
 };

@@ -4,7 +4,8 @@ import { readSchema } from './helpers/readSchema';
 describe('Validate Schema', () => {
   it('fails validation when schema has unmatched @belongsTo', () => {
     const schema = readSchema('invalid-belongs-to.graphql');
-    const errorRegex = 'Invalid @belongs directive in schema: @belongsTo directive requires that a @hasOne or @hasMany relationship already exists from parent to the related model.';
+    const errorRegex =
+      'Invalid @belongs directive in schema: @belongsTo directive requires that a @hasOne or @hasMany relationship already exists from parent to the related model.';
     expect(() => validateSchema(schema)).toThrow(errorRegex);
   });
 

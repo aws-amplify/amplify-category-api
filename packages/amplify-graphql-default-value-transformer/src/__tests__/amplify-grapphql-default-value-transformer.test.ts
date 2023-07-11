@@ -320,8 +320,8 @@ describe('DefaultValueModelTransformer:', () => {
     const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     expect(out.resolvers).toBeDefined();
-    expect(out.resolvers["Mutation.createPost.init.2.req.vtl"]).toBeDefined();
-    expect(out.resolvers["Mutation.createPost.init.2.req.vtl"]).toMatchSnapshot();
+    expect(out.resolvers['Mutation.createPost.init.2.req.vtl']).toBeDefined();
+    expect(out.resolvers['Mutation.createPost.init.2.req.vtl']).toMatchSnapshot();
     const schema = parse(out.schema);
     validateModelSchema(schema);
   });

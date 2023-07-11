@@ -14,7 +14,7 @@ import {
 } from 'graphql';
 export function collectDirectiveNames(sdl: string): string[] {
   const dirs = collectDirectives(sdl);
-  return dirs.map(d => d.name.value);
+  return dirs.map((d) => d.name.value);
 }
 
 export function collectDirectives(sdl: string): DirectiveNode[] {
@@ -49,7 +49,7 @@ export function collectDirectives(sdl: string): DirectiveNode[] {
 export function collectDirectivesByTypeNames(sdl: string) {
   let types = collectDirectivesByType(sdl);
   const directives: Set<string> = new Set();
-  Object.keys(types).forEach(dir => {
+  Object.keys(types).forEach((dir) => {
     let set: Set<string> = new Set();
     types[dir].forEach((d: DirectiveNode) => {
       set.add(d.name.value);

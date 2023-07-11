@@ -66,7 +66,7 @@ const testApiName = 'testApiName';
 const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
 pathManagerMock.getResourceDirectoryPath = jest.fn().mockReturnValue(`${backendDirPathStub}/api/${testApiName}`);
 
-const fsMock = (fs as unknown) as jest.Mocked<typeof fs>;
+const fsMock = fs as unknown as jest.Mocked<typeof fs>;
 const writeTransformerConfigurationMock = writeTransformerConfiguration as jest.MockedFunction<typeof writeTransformerConfiguration>;
 const getAppSyncResourceNameMock = getAppSyncResourceName as jest.MockedFunction<typeof getAppSyncResourceName>;
 const getAppSyncAuthConfigMock = getAppSyncAuthConfig as jest.MockedFunction<typeof getAppSyncAuthConfig>;
@@ -103,7 +103,7 @@ describe('create artifacts', () => {
   });
   beforeEach(() => {
     jest.clearAllMocks();
-    cfnApiArtifactHandler = getCfnApiArtifactHandler((contextStub as unknown) as $TSContext);
+    cfnApiArtifactHandler = getCfnApiArtifactHandler(contextStub as unknown as $TSContext);
   });
 
   it('does not create a second API if one already exists', async () => {
@@ -233,7 +233,7 @@ describe('update artifacts', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     updateRequestStub = _.cloneDeep(updateRequestStubBase);
-    cfnApiArtifactHandler = getCfnApiArtifactHandler((contextStub as unknown) as $TSContext);
+    cfnApiArtifactHandler = getCfnApiArtifactHandler(contextStub as unknown as $TSContext);
   });
 
   it('throws error if no GQL API in project', () => {
