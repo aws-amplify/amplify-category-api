@@ -13,6 +13,7 @@ import {
   RoleDefinition,
   RolesByProvider,
 } from './definitions';
+import { Construct } from 'constructs';
 
 export * from './constants';
 export * from './definitions';
@@ -121,7 +122,7 @@ export const getStackForField = (
   obj: ObjectTypeDefinitionNode,
   fieldName: string,
   hasModelDirective: boolean,
-): Stack => {
+): Construct => {
   const fieldNode = obj.fields.find((f) => f.name.value === fieldName);
   const fieldDirectives = fieldNode.directives.map((d) => d.name.value);
   if (fieldDirectives.includes('function')) {

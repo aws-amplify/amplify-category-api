@@ -9,19 +9,12 @@ import {
   qref,
   ifElse,
   compoundExpression,
-  iff,
   toJson,
   printBlock,
-  and,
-  not,
-  equals,
-  int,
-  nul,
   set,
   list,
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
@@ -34,7 +27,7 @@ export type OPERATIONS = 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'SYNC
 const OPERATION_KEY = '__operation';
 
 export const createRdsLambda = (
-  stack: Stack,
+  scope: Construct,
   apiGraphql: GraphQLAPIProvider,
   lambdaRole: IRole,
   environment?: { [key: string]: string },
@@ -51,7 +44,7 @@ export const createRdsLambda = (
     lambdaRole,
     environment,
     undefined,
-    stack,
+    scope,
   );
 };
 
@@ -86,8 +79,8 @@ export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEn
   return role;
 };
 
-export const generateLambdaRequestTemplate = (tableName: string, operation: string, operationName: string): string => {
-  return printBlock('Invoke RDS Lambda data source')(
+export const generateLambdaRequestTemplate = (tableName: string, operation: string, operationName: string): string =>
+  printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
       set(ref('lambdaInput.args'), obj({})),
@@ -108,7 +101,6 @@ export const generateLambdaRequestTemplate = (tableName: string, operation: stri
       }),
     ]),
   );
-};
 
 export const generateGetLambdaResponseTemplate = (isSyncEnabled: boolean): string => {
   const statements: Expression[] = [];

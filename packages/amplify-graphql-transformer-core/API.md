@@ -13,7 +13,6 @@ import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfac
 import { AppSyncFunctionConfigurationProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationConfig } from 'aws-cdk-lib/aws-appsync';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
-import * as cdk from 'aws-cdk-lib';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnElement } from 'aws-cdk-lib';
 import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
@@ -114,7 +113,7 @@ export const enum ConflictHandlerType {
 }
 
 // @public (undocumented)
-function createSyncLambdaIAMPolicy(context: TransformerContextProvider, stack: cdk.Stack, name: string, region?: string): iam.Policy;
+function createSyncLambdaIAMPolicy(context: TransformerContextProvider, scope: Construct, name: string, region?: string): iam.Policy;
 
 // Warning: (ae-forgotten-export) The symbol "TransformerContext" needs to be exported by the entry point index.d.ts
 //
@@ -221,10 +220,12 @@ export class GraphQLTransform {
     getLogs(): TransformerLog[];
     // (undocumented)
     preProcessSchema(schema: DocumentNode): DocumentNode;
+    // (undocumented)
+    transform(schema: string, datasourceConfig?: DatasourceTransformationConfig): DeploymentResources;
     // Warning: (ae-forgotten-export) The symbol "DatasourceTransformationConfig" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    transform(schema: string, datasourceConfig?: DatasourceTransformationConfig): DeploymentResources;
+    transformWithoutSynthesis(schema: string, scope: Construct, datasourceConfig?: DatasourceTransformationConfig): any;
 }
 
 // @public (undocumented)
@@ -422,7 +423,7 @@ export class SchemaValidationError extends Error {
 // @public (undocumented)
 export class StackManager implements StackManagerProvider {
     // Warning: (ae-forgotten-export) The symbol "ResourceToStackMap" needs to be exported by the entry point index.d.ts
-    constructor(app: App, resourceMapping: ResourceToStackMap);
+    constructor(app: Construct, useInternalSynth: boolean, resourceMapping: ResourceToStackMap);
     // (undocumented)
     addParameter: (name: string, props: CfnParameterProps) => CfnParameter;
     // (undocumented)
@@ -436,13 +437,11 @@ export class StackManager implements StackManagerProvider {
     // (undocumented)
     getStack: (stackName: string) => Stack;
     // (undocumented)
-    getStackFor: (resourceId: string, defaultStackName?: string) => Stack;
+    getStackFor: (resourceId: string, defaultStackName?: string) => Construct;
     // (undocumented)
     hasStack: (stackName: string) => boolean;
-    // Warning: (ae-forgotten-export) The symbol "TransformerRootStack" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
-    readonly rootStack: TransformerRootStack;
+    readonly rootStack: Construct;
 }
 
 // @public (undocumented)
@@ -576,6 +575,8 @@ export abstract class TransformerModelEnhancerBase extends TransformerModelBase 
     constructor(name: string, doc: DocumentNode_2 | string, type?: TransformerPluginType);
 }
 
+// Warning: (ae-forgotten-export) The symbol "TransformerRootStack" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
 export class TransformerNestedStack extends TransformerRootStack {
     // Warning: (ae-forgotten-export) The symbol "TransformerNestedStackProps" needs to be exported by the entry point index.d.ts
@@ -645,13 +646,13 @@ export class TransformerResolver implements TransformerResolverProvider {
     // (undocumented)
     findSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider) => Slot | undefined;
     // (undocumented)
-    mapToStack: (stack: Stack) => void;
+    mapToStack: (scope: Construct) => void;
     // (undocumented)
     slotExists: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider) => boolean;
     // (undocumented)
     synthesize: (context: TransformerContextProvider, api: GraphQLAPIProvider) => void;
     // (undocumented)
-    synthesizeResolvers: (stack: Stack, api: GraphQLAPIProvider, slotsNames: string[]) => AppSyncFunctionConfigurationProvider[];
+    synthesizeResolvers: (scope: Construct, api: GraphQLAPIProvider, slotsNames: string[]) => AppSyncFunctionConfigurationProvider[];
     // (undocumented)
     updateSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider) => void;
 }

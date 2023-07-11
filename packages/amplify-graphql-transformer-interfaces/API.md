@@ -28,6 +28,7 @@ import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql';
 import { Duration } from 'aws-cdk-lib';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
+import { ElasticsearchDataSource } from 'aws-cdk-lib/aws-appsync';
 import { EnumTypeDefinitionNode } from 'graphql';
 import { EnumTypeExtensionNode } from 'graphql';
 import { EnumValueDefinitionNode } from 'graphql';
@@ -38,6 +39,7 @@ import { GraphqlApiBase } from 'aws-cdk-lib/aws-appsync';
 import { HttpDataSource } from 'aws-cdk-lib/aws-appsync';
 import { IAsset } from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
+import { IDomain } from 'aws-cdk-lib/aws-elasticsearch';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { IGrantable } from 'aws-cdk-lib/aws-iam';
 import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
@@ -387,11 +389,11 @@ export interface StackManagerProvider {
     // (undocumented)
     getStack: (stackName: string) => Stack;
     // (undocumented)
-    getStackFor: (resourceId: string, defaultStackName?: string) => Stack;
+    getStackFor: (resourceId: string, defaultStackName?: string) => Construct;
     // (undocumented)
     hasStack: (stackName: string) => boolean;
     // (undocumented)
-    readonly rootStack: Stack;
+    readonly rootStack: Construct;
 }
 
 // @public (undocumented)
@@ -719,7 +721,7 @@ export interface TransformerResolverProvider {
     // (undocumented)
     addToSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
     // (undocumented)
-    mapToStack: (stack: Stack) => void;
+    mapToStack: (scope: Construct) => void;
     // (undocumented)
     synthesize: (context: TransformerContextProvider, api: GraphQLAPIProvider) => void;
 }
@@ -793,23 +795,23 @@ export type TransformerValidationStepContextProvider = Pick<TransformerContextPr
 // @public (undocumented)
 export interface TransformHostProvider {
     // (undocumented)
-    addAppSyncFunction: (name: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, dataSourceName: string, stack?: Stack) => AppSyncFunctionConfigurationProvider;
+    addAppSyncFunction: (name: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, dataSourceName: string, scope?: Construct) => AppSyncFunctionConfigurationProvider;
     // (undocumented)
-    addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource;
+    addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, scope?: Construct): DynamoDbDataSource;
     // (undocumented)
-    addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, stack?: Stack): HttpDataSource;
+    addElasticSearchDataSource(name: string, domain: IDomain, options?: SearchableDataSourceOptions, scope?: Construct): ElasticsearchDataSource;
     // (undocumented)
-    addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource;
+    addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, scope?: Construct): HttpDataSource;
+    // (undocumented)
+    addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, scope?: Construct): LambdaDataSource;
     // (undocumented)
     addLambdaFunction: (functionName: string, functionKey: string, handlerName: string, filePath: string, runtime: Runtime, layers?: ILayerVersion[], role?: IRole, environment?: {
         [key: string]: string;
-    }, timeout?: Duration, stack?: Stack) => IFunction;
+    }, timeout?: Duration, scope?: Construct) => IFunction;
     // (undocumented)
-    addNoneDataSource(name: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource;
+    addNoneDataSource(name: string, options?: DataSourceOptions, scope?: Construct): NoneDataSource;
     // (undocumented)
-    addResolver: (typeName: string, fieldName: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, resolverLogicalId?: string, dataSourceName?: string, pipelineConfig?: string[], stack?: Stack) => CfnResolver;
-    // (undocumented)
-    addSearchableDataSource(name: string, endpoint: string, region: string, options?: SearchableDataSourceOptions, stack?: Stack): BaseDataSource;
+    addResolver: (typeName: string, fieldName: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, resolverLogicalId?: string, dataSourceName?: string, pipelineConfig?: string[], scope?: Construct) => CfnResolver;
     // (undocumented)
     getDataSource: (name: string) => BaseDataSource | void;
     // (undocumented)

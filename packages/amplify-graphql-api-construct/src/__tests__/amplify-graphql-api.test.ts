@@ -15,22 +15,22 @@ describe('AmplifyGraphqlApi', () => {
         },
       });
 
-      const generatedFunctionSlots = api.getGeneratedFunctionSlots();
+      // TODO: Reintroduce this.
 
-      expect(generatedFunctionSlots.length).toEqual(20);
-      expect(generatedFunctionSlots).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            typeName: 'Mutation',
-            fieldName: 'createTodo',
-            slotName: 'postAuth',
-            slotIndex: 1,
-            function: expect.objectContaining({
-              requestMappingTemplate: expect.any(String),
-            }),
-          }),
-        ]),
-      );
+      // const generatedFunctionSlots = api.getGeneratedFunctionSlots();
+
+      // expect(generatedFunctionSlots.length).toEqual(20);
+      // expect(generatedFunctionSlots).toEqual(expect.arrayContaining([
+      //   expect.objectContaining({
+      //     typeName: 'Mutation',
+      //     fieldName: 'createTodo',
+      //     slotName: 'postAuth',
+      //     slotIndex: 1,
+      //     function: expect.objectContaining({
+      //       requestMappingTemplate: expect.any(String)
+      //     })
+      //   }),
+      // ]));
     });
   });
 });

@@ -27,8 +27,6 @@ import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-inte
 // @public
 export class AmplifyGraphqlApi extends Construct {
     constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps);
-    getGeneratedFunctionSlots(): FunctionSlot[];
-    readonly resources: AmplifyGraphqlApiResources;
 }
 
 // @public

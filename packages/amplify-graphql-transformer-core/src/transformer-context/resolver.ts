@@ -14,6 +14,7 @@ import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { isResolvableObject, Stack, CfnParameter, Lazy } from 'aws-cdk-lib';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
+import { Construct } from 'constructs';
 import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
 import { InvalidDirectiveError } from '../errors';
 // eslint-disable-next-line import/no-cycle
@@ -131,7 +132,7 @@ export class ResolverManager implements TransformerResolversManagerProvider {
 export class TransformerResolver implements TransformerResolverProvider {
   private readonly slotMap: Map<string, Slot[]> = new Map();
   private readonly slotNames: Set<string>;
-  private stack?: Stack;
+  private stack?: Construct;
   constructor(
     private typeName: string,
     private fieldName: string,
@@ -160,8 +161,8 @@ export class TransformerResolver implements TransformerResolverProvider {
     this.slotNames = new Set([...requestSlots, ...responseSlots]);
   }
 
-  mapToStack = (stack: Stack): void => {
-    this.stack = stack;
+  mapToStack = (scope: Construct): void => {
+    this.stack = scope;
   };
 
   addToSlot = (
@@ -393,7 +394,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     );
   };
 
-  synthesizeResolvers = (stack: Stack, api: GraphQLAPIProvider, slotsNames: string[]): AppSyncFunctionConfigurationProvider[] => {
+  synthesizeResolvers = (scope: Construct, api: GraphQLAPIProvider, slotsNames: string[]): AppSyncFunctionConfigurationProvider[] => {
     const appSyncFunctions: AppSyncFunctionConfigurationProvider[] = [];
 
     for (const slotName of slotsNames) {
@@ -413,7 +414,7 @@ export class TransformerResolver implements TransformerResolverProvider {
             requestMappingTemplate || MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
             responseMappingTemplate || MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
             dataSource?.name || NONE_DATA_SOURCE_NAME,
-            stack,
+            scope,
           );
           appSyncFunctions.push(fn);
         }

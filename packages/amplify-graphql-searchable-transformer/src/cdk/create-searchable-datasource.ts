@@ -3,20 +3,18 @@ import { BaseDataSource } from 'aws-cdk-lib/aws-appsync';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { Stack } from 'aws-cdk-lib';
+import { IDomain } from 'aws-cdk-lib/aws-elasticsearch';
 
 export const createSearchableDataSource = (
   stack: Stack,
   graphqlApiProvider: GraphQLAPIProvider,
-  domainEndpoint: string,
+  domain: IDomain,
   role: IRole,
-  region: string,
 ): BaseDataSource => {
   const { OpenSearchDataSourceLogicalID } = ResourceConstants.RESOURCES;
-  const dsEndpoint = `https://${domainEndpoint}`;
-  return graphqlApiProvider.host.addSearchableDataSource(
+  return graphqlApiProvider.host.addElasticSearchDataSource(
     OpenSearchDataSourceLogicalID,
-    region,
-    dsEndpoint,
+    domain,
     {
       serviceRole: role,
       name: OpenSearchDataSourceLogicalID,

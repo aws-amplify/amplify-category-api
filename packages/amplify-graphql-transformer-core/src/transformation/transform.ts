@@ -27,6 +27,7 @@ import {
 } from 'graphql';
 import _ from 'lodash';
 import { DocumentNode } from 'graphql/language';
+import { Construct } from 'constructs';
 import { ResolverConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
@@ -51,6 +52,10 @@ import { validateAuthModes, validateModelSchema } from './validation';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { DatasourceType } from '../config/project-config';
 import { defaultTransformParameters } from '../transformer-context/transform-parameters';
+
+export type SynthState = {
+  managedAssets: Map<string, string>;
+};
 
 /**
  * Returns whether typeof the provided object is function.
@@ -83,11 +88,12 @@ export interface GraphQLTransformOptions {
   readonly resolverConfig?: ResolverConfig;
   readonly overrideConfig?: OverrideConfig;
 }
+
 export type StackMapping = { [resourceId: string]: string };
+
 export class GraphQLTransform {
   private transformers: TransformerPluginProvider[];
   private stackMappingOverrides: StackMapping;
-  private app: App | undefined;
   private readonly authConfig: AppSyncAuthConfiguration;
   private readonly resolverConfig?: ResolverConfig;
   private readonly userDefinedSlots: Record<string, UserDefinedSlot[]>;
@@ -167,14 +173,157 @@ export class GraphQLTransform {
    * on to the next transformer. At the end of the transformation a
    * cloudformation template is returned.
    * @param schema The model schema.
+   * @param scope the scope to transform into
+   * @param datasourceConfig Additional supporting configuration when additional datasources are added
+   */
+  public transformWithoutSynthesis(schema: string, scope: Construct, datasourceConfig?: DatasourceTransformationConfig): any {
+    this.seenTransformations = {};
+    const parsedDocument = parse(schema);
+    const context = new TransformerContext(
+      scope,
+      false,
+      parsedDocument,
+      datasourceConfig?.modelToDatasourceMap ?? new Map<string, DatasourceType>(),
+      this.stackMappingOverrides,
+      this.authConfig,
+      this.transformParameters,
+      this.resolverConfig,
+      datasourceConfig?.datasourceSecretParameterLocations,
+    );
+    const validDirectiveNameMap = this.transformers.reduce(
+      (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
+      {
+        aws_subscribe: true,
+        aws_auth: true,
+        aws_api_key: true,
+        aws_iam: true,
+        aws_oidc: true,
+        aws_lambda: true,
+        aws_cognito_user_pools: true,
+        deprecated: true,
+      },
+    );
+    let allModelDefinitions = [...context.inputDocument.definitions];
+    for (const transformer of this.transformers) {
+      allModelDefinitions = allModelDefinitions.concat(...transformer.typeDefinitions, transformer.directive);
+    }
+
+    const errors = validateModelSchema({
+      kind: Kind.DOCUMENT,
+      definitions: allModelDefinitions,
+    });
+    if (errors && errors.length) {
+      throw new SchemaValidationError(errors);
+    }
+
+    for (const transformer of this.transformers) {
+      if (isFunction(transformer.before)) {
+        transformer.before(context);
+      }
+    }
+
+    // Apply each transformer and accumulate the context.
+    for (const transformer of this.transformers) {
+      for (const def of context.inputDocument.definitions as TypeDefinitionOrExtension[]) {
+        switch (def.kind) {
+          case 'ObjectTypeDefinition':
+            this.transformObject(transformer, def, validDirectiveNameMap, context);
+            // Walk the fields and call field transformers.
+            break;
+          case 'InterfaceTypeDefinition':
+            this.transformInterface(transformer, def, validDirectiveNameMap, context);
+            // Walk the fields and call field transformers.
+            break;
+          case 'ScalarTypeDefinition':
+            this.transformScalar(transformer, def, validDirectiveNameMap, context);
+            break;
+          case 'UnionTypeDefinition':
+            this.transformUnion(transformer, def, validDirectiveNameMap, context);
+            break;
+          case 'EnumTypeDefinition':
+            this.transformEnum(transformer, def, validDirectiveNameMap, context);
+            break;
+          case 'InputObjectTypeDefinition':
+            this.transformInputObject(transformer, def, validDirectiveNameMap, context);
+            break;
+          default:
+            // eslint-disable-next-line no-continue
+            continue;
+        }
+      }
+    }
+
+    // Validate
+    for (const transformer of this.transformers) {
+      if (isFunction(transformer.validate)) {
+        transformer.validate(context);
+      }
+    }
+
+    // Prepare
+    for (const transformer of this.transformers) {
+      if (isFunction(transformer.prepare)) {
+        transformer.prepare(context);
+      }
+    }
+
+    // transform schema
+    for (const transformer of this.transformers) {
+      if (isFunction(transformer.transformSchema)) {
+        transformer.transformSchema(context);
+      }
+    }
+
+    // Synth the API and make it available to allow transformer plugins to manipulate the API
+    const stackManager = context.stackManager as StackManager;
+    const output: TransformerOutput = context.output as TransformerOutput;
+    const api = this.generateGraphQlApi(stackManager, output);
+
+    // generate resolvers
+    (context as TransformerContext).bind(api);
+    if (!_.isEmpty(this.resolverConfig)) {
+      SyncUtils.createSyncTable(context);
+    }
+    for (const transformer of this.transformers) {
+      if (isFunction(transformer.generateResolvers)) {
+        transformer.generateResolvers(context);
+      }
+    }
+
+    // .transform() is meant to behave like a composition so the
+    // after functions are called in the reverse order (as if they were popping off a stack)
+    let reverseThroughTransformers = this.transformers.length - 1;
+    while (reverseThroughTransformers >= 0) {
+      const transformer = this.transformers[reverseThroughTransformers];
+      if (isFunction(transformer.after)) {
+        transformer.after(context);
+      }
+      reverseThroughTransformers -= 1;
+    }
+    for (const transformer of this.transformers) {
+      if (isFunction(transformer.getLogs)) {
+        const logs = transformer.getLogs();
+        this.logs.push(...logs);
+      }
+    }
+    this.collectResolvers(context, context.api);
+  }
+
+  /**
+   * Reduces the final context by running the set of transformers on
+   * the schema. Each transformer returns a new context that is passed
+   * on to the next transformer. At the end of the transformation a
+   * cloudformation template is returned.
+   * @param schema The model schema.
    * @param datasourceConfig Additional supporting configuration when additional datasources are added
    */
   public transform(schema: string, datasourceConfig?: DatasourceTransformationConfig): DeploymentResources {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
-    this.app = new App();
+    const app = new App();
     const context = new TransformerContext(
-      this.app,
+      app,
+      true,
       parsedDocument,
       datasourceConfig?.modelToDatasourceMap ?? new Map<string, DatasourceType>(),
       this.stackMappingOverrides,
@@ -303,7 +452,7 @@ export class GraphQLTransform {
     if (this.overrideConfig?.overrideFlag) {
       this.overrideConfig?.applyOverride(stackManager);
     }
-    return this.synthesize(context);
+    return this.synthesize(context, app);
   }
 
   protected generateGraphQlApi(stackManager: StackManager, output: TransformerOutput): GraphQLApi {
@@ -372,10 +521,11 @@ export class GraphQLTransform {
     return api;
   }
 
-  private synthesize(context: TransformerContext): DeploymentResources {
+  private synthesize(context: TransformerContext, app: App): DeploymentResources {
     const stackManager: StackManager = context.stackManager as StackManager;
+
     // eslint-disable-next-line no-unused-expressions
-    this.app?.synth({ force: true, skipValidation: true });
+    app?.synth({ force: true, skipValidation: true });
 
     const templates = stackManager.getCloudFormationTemplates();
     const rootStackTemplate = templates.get('transformer-root-stack');

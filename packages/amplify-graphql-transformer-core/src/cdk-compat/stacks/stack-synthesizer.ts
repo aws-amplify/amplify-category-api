@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { ISynthesisSession, Stack, LegacyStackSynthesizer, FileAssetSource, FileAssetLocation, CfnParameter } from 'aws-cdk-lib';
 import { Template } from '@aws-amplify/graphql-transformer-interfaces';
 import * as crypto from 'crypto';
@@ -96,7 +97,7 @@ export class TransformerStackSythesizer extends LegacyStackSynthesizer {
   /**
    * ensureDeployementParameters
    */
-  private ensureDeployementParameters() {
+  private ensureDeployementParameters(): void {
     if (!this._deploymentBucket) {
       this._deploymentBucket = new CfnParameter(this.boundStack, 'S3DeploymentBucket', {
         type: 'String',
@@ -133,6 +134,7 @@ export class TransformerStackSythesizer extends LegacyStackSynthesizer {
 /**
  * assertNotNull
  */
+// eslint-disable-next-line func-style, prefer-arrow/prefer-arrow-functions
 export function assertNotNull<A>(x: A | undefined): asserts x is NonNullable<A> {
   if (x === null && x === undefined) {
     throw new Error('You must call bindStack() first');

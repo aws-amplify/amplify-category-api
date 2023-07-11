@@ -221,17 +221,7 @@ test('it generates expected resources', () => {
     Type: 'AMAZON_ELASTICSEARCH',
     ElasticsearchConfig: {
       AwsRegion: {
-        'Fn::Select': [
-          3,
-          {
-            'Fn::Split': [
-              ':',
-              {
-                'Fn::GetAtt': ['OpenSearchDomain', 'Arn'],
-              },
-            ],
-          },
-        ],
+        Ref: 'AWS::Region',
       },
       Endpoint: {
         'Fn::Join': [

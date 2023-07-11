@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle, max-classes-per-file */
 import {
   GraphQLAPIProvider,
   StackManagerProvider,
@@ -5,17 +6,18 @@ import {
   TransformerContextProvider,
   TransformerDataSourceManagerProvider,
   AppSyncAuthConfiguration,
-  AmplifyApiGraphQlResourceStackTemplate,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { App } from 'aws-cdk-lib';
 import { DocumentNode } from 'graphql';
+import { Construct } from 'constructs';
 import { DatasourceType } from '../config/project-config';
 import { ResolverConfig } from '../config/transformer-config';
 import { TransformerDataSourceManager } from './datasource';
 import { TransformerOutput } from './output';
 import { TransformerContextProviderRegistry } from './provider-registry';
+// eslint-disable-next-line import/no-cycle
 import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
@@ -37,7 +39,7 @@ export class TransformerContextMetadata implements TransformerContextMetadataPro
     this.metadata[key] = val;
   }
 
-  public has(key: string) {
+  public has(key: string): boolean {
     return this.metadata[key] !== undefined;
   }
 }
@@ -55,10 +57,12 @@ export class TransformerContext implements TransformerContextProvider {
   private resolverConfig: ResolverConfig | undefined;
   public readonly modelToDatasourceMap: Map<string, DatasourceType>;
   public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
+  public readonly useInternalSynth: boolean;
 
   public metadata: TransformerContextMetadata;
   constructor(
-    app: App,
+    app: App | Construct | undefined,
+    useInternalSynth: boolean,
     public readonly inputDocument: DocumentNode,
     modelToDatasourceMap: Map<string, DatasourceType>,
     stackMapping: Record<string, string>,
@@ -67,11 +71,13 @@ export class TransformerContext implements TransformerContextProvider {
     resolverConfig?: ResolverConfig,
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
   ) {
+    if (!app) throw new Error('Ahhh');
+    this.useInternalSynth = useInternalSynth;
     this.output = new TransformerOutput(inputDocument);
     this.resolvers = new ResolverManager();
     this.dataSources = new TransformerDataSourceManager();
     this.providerRegistry = new TransformerContextProviderRegistry();
-    const stackManager = new StackManager(app, stackMapping);
+    const stackManager = new StackManager(app, this.useInternalSynth, stackMapping);
     this.stackManager = stackManager;
     this.authConfig = authConfig;
     this.resourceHelper = new TransformerResourceHelper(stackManager);
@@ -87,10 +93,11 @@ export class TransformerContext implements TransformerContextProvider {
    * @param api API instance available publicaly when the transformation starts
    * @internal
    */
-  public bind(api: GraphQLAPIProvider) {
+  public bind(api: GraphQLAPIProvider): void {
     this._api = api;
     this.resourceHelper.bind(api);
   }
+
   public get api(): GraphQLAPIProvider {
     if (!this._api) {
       throw new Error('API is not initialized till generateResolver step');

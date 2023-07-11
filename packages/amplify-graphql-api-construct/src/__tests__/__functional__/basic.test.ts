@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
-import { Match, Template } from 'aws-cdk-lib/assertions';
+import { Template } from 'aws-cdk-lib/assertions';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 
 describe('basic functionality', () => {
@@ -26,9 +26,11 @@ describe('basic functionality', () => {
     template.resourceCountIs('AWS::AppSync::GraphQLApi', 1);
     template.hasResourceProperties('AWS::AppSync::GraphQLApi', {
       Name: {
-        'Fn::Join': ['', Match.arrayWith(['MyApi'])],
+        'Fn::Join': ['', [{ Ref: 'AppSyncApiName' }, '-', { Ref: 'env' }]],
       },
     });
+    template.hasParameter('AppSyncApiName', { Default: 'MyApi' });
+    template.hasParameter('env', { Default: 'NONE' });
 
     template.resourceCountIs('AWS::AppSync::DataSource', 1);
     template.hasResourceProperties('AWS::AppSync::DataSource', {
@@ -107,8 +109,10 @@ describe('basic functionality', () => {
     template.resourceCountIs('AWS::AppSync::GraphQLApi', 1);
     template.hasResourceProperties('AWS::AppSync::GraphQLApi', {
       Name: {
-        'Fn::Join': ['', Match.arrayWith(['TestApi'])],
+        'Fn::Join': ['', [{ Ref: 'AppSyncApiName' }, '-', { Ref: 'env' }]],
       },
     });
+    template.hasParameter('AppSyncApiName', { Default: 'TestApi' });
+    template.hasParameter('env', { Default: 'NONE' });
   });
 });

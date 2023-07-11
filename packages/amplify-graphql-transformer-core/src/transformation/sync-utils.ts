@@ -1,15 +1,19 @@
+/* eslint-disable prefer-arrow/prefer-arrow-functions, func-style */
 import { AttributeType, BillingMode, StreamViewType, Table } from 'aws-cdk-lib/aws-dynamodb';
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
-import { TransformerContext } from '../transformer-context';
-import { ResolverConfig, SyncConfig, SyncConfigLambda } from '../config/transformer-config';
 import {
   StackManagerProvider,
   TransformerContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { Construct } from 'constructs';
+// eslint-disable-next-line import/no-cycle
+import { TransformerContext } from '../transformer-context';
+import { ResolverConfig, SyncConfig, SyncConfigLambda } from '../config/transformer-config';
+import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 
 type DeltaSyncConfig = {
   DeltaSyncTableName: any;
@@ -17,7 +21,7 @@ type DeltaSyncConfig = {
   BaseTableTTL: number;
 };
 
-export function createSyncTable(context: TransformerContext) {
+export function createSyncTable(context: TransformerContext): void {
   const stack = context.stackManager.getStackFor(SyncResourceIDs.syncTableName);
   const tableName = context.resourceHelper.generateTableName(SyncResourceIDs.syncTableName);
   new Table(stack, SyncResourceIDs.syncDataSourceID, {
@@ -39,14 +43,14 @@ export function createSyncTable(context: TransformerContext) {
   createSyncIAMRole(context, stack, tableName);
 }
 
-function createSyncIAMRole(context: TransformerContext, stack: cdk.Stack, tableName: string) {
-  const role = new iam.Role(stack, SyncResourceIDs.syncIAMRoleName, {
+function createSyncIAMRole(context: TransformerContext, scope: Construct, tableName: string): void {
+  const role = new iam.Role(scope, SyncResourceIDs.syncIAMRoleName, {
     roleName: context.resourceHelper.generateIAMRoleName(SyncResourceIDs.syncIAMRoleName),
     assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
   });
 
   role.attachInlinePolicy(
-    new iam.Policy(stack, 'DynamoDBAccess', {
+    new iam.Policy(scope, 'DynamoDBAccess', {
       statements: [
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
@@ -118,21 +122,22 @@ export function getSyncConfig(ctx: TransformerTransformSchemaStepContextProvider
 export function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda {
   const lambdaConfigKey: keyof SyncConfigLambda = 'LambdaConflictHandler';
   if (syncConfig && syncConfig.ConflictHandler === 'LAMBDA') {
+    // eslint-disable-next-line no-prototype-builtins
     if (syncConfig.hasOwnProperty(lambdaConfigKey)) {
       return true;
     }
-    throw Error(`Invalid Lambda SyncConfig`);
+    throw Error('Invalid Lambda SyncConfig');
   }
   return false;
 }
 
 export function createSyncLambdaIAMPolicy(
   context: TransformerContextProvider,
-  stack: cdk.Stack,
+  scope: Construct,
   name: string,
   region?: string,
 ): iam.Policy {
-  return new iam.Policy(stack, 'InvokeLambdaFunction', {
+  return new iam.Policy(scope, 'InvokeLambdaFunction', {
     statements: [
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
@@ -171,7 +176,7 @@ function removeEnvReference(value: string): string {
   return value.replace(/(-\${env})/, '');
 }
 
-function joinWithEnv(separator: string, listToJoin: any[]) {
+function joinWithEnv(separator: string, listToJoin: any[]): cdk.ICfnRuleConditionExpression {
   return cdk.Fn.conditionIf(
     ResourceConstants.CONDITIONS.HasEnvironmentParameter,
     cdk.Fn.join(separator, [...listToJoin, cdk.Fn.ref(ResourceConstants.PARAMETERS.Env)]),

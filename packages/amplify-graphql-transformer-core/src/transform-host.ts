@@ -8,6 +8,7 @@ import {
   BaseDataSource,
   DataSourceOptions,
   DynamoDbDataSource,
+  ElasticsearchDataSource,
   HttpDataSource,
   HttpDataSourceOptions,
   LambdaDataSource,
@@ -17,12 +18,14 @@ import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { Duration, Stack, Token } from 'aws-cdk-lib';
+import { Duration, Token } from 'aws-cdk-lib';
 import { ResolverResourceIDs, resourceName, toCamelCase } from 'graphql-transformer-common';
 import hash from 'object-hash';
+import { IDomain } from 'aws-cdk-lib/aws-elasticsearch';
+import { Construct } from 'constructs';
+// eslint-disable-next-line import/no-cycle
 import { AppSyncFunctionConfiguration } from './appsync-function';
-import { SearchableDataSource } from './cdk-compat/searchable-datasource';
-import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat/template-asset';
+import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat';
 import { GraphQLApi } from './graphql-api';
 
 type Slot = {
@@ -67,53 +70,68 @@ export class DefaultTransformHost implements TransformHostProvider {
     }
   };
 
-  addSearchableDataSource(
+  addElasticSearchDataSource(
     name: string,
-    awsRegion: string,
-    endpoint: string,
+    domain: IDomain,
     options?: SearchableDataSourceOptions,
-    stack?: Stack,
-  ): SearchableDataSource {
+    scope?: Construct,
+  ): ElasticsearchDataSource {
     if (this.dataSources.has(name)) {
       throw new Error(`DataSource ${name} already exists in the API`);
     }
-    const data = this.doAddSearchableDataSource(name, endpoint, awsRegion, options, stack);
-    this.dataSources.set(options?.name || name, data);
-    return data;
+    const dataSource = new ElasticsearchDataSource(scope ?? this.api, name, {
+      api: this.api,
+      name: options?.name,
+      domain,
+      serviceRole: options?.serviceRole,
+    });
+
+    this.dataSources.set(options?.name || name, dataSource);
+    return dataSource;
   }
 
-  public addHttpDataSource = (name: string, endpoint: string, options?: DataSourceOptions, stack?: Stack): HttpDataSource => {
+  public addHttpDataSource = (name: string, endpoint: string, options?: DataSourceOptions, scope?: Construct): HttpDataSource => {
     if (this.dataSources.has(name)) {
       throw new Error(`DataSource ${name} already exists in the API`);
     }
-    const dataSource = this.doAddHttpDataSource(name, endpoint, options, stack);
+    const dataSource = this.doAddHttpDataSource(name, endpoint, options, scope);
     this.dataSources.set(name, dataSource);
     return dataSource;
   };
 
-  public addDynamoDbDataSource = (name: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource => {
+  public addDynamoDbDataSource = (
+    name: string,
+    table: ITable,
+    options?: DynamoDbDataSourceOptions,
+    scope?: Construct,
+  ): DynamoDbDataSource => {
     if (this.dataSources.has(name)) {
       throw new Error(`DataSource ${name} already exists in the API`);
     }
-    const dataSource = this.doAddDynamoDbDataSource(name, table, options, stack);
+    const dataSource = this.doAddDynamoDbDataSource(name, table, options, scope);
     this.dataSources.set(options?.name || name, dataSource);
     return dataSource;
   };
 
-  public addNoneDataSource = (name: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource => {
+  public addNoneDataSource = (name: string, options?: DataSourceOptions, scope?: Construct): NoneDataSource => {
     if (this.dataSources.has(name)) {
       throw new Error(`DataSource ${name} already exists in the API`);
     }
-    const dataSource = this.doAddNoneDataSource(name, options, stack);
+    const dataSource = this.doAddNoneDataSource(name, options, scope);
     this.dataSources.set(name, dataSource);
     return dataSource;
   };
 
-  public addLambdaDataSource = (name: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource => {
+  public addLambdaDataSource = (
+    name: string,
+    lambdaFunction: IFunction,
+    options?: DataSourceOptions,
+    scope?: Construct,
+  ): LambdaDataSource => {
     if (!Token.isUnresolved(name) && this.dataSources.has(name)) {
       throw new Error(`DataSource ${name} already exists in the API`);
     }
-    const dataSource = this.doAddLambdaDataSource(name, lambdaFunction, options, stack);
+    const dataSource = this.doAddLambdaDataSource(name, lambdaFunction, options, scope);
     this.dataSources.set(name, dataSource);
     return dataSource;
   };
@@ -123,7 +141,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
     dataSourceName: string,
-    stack?: Stack,
+    scope?: Construct,
   ): AppSyncFunctionConfiguration => {
     if (dataSourceName && !Token.isUnresolved(dataSourceName) && !this.dataSources.has(dataSourceName)) {
       throw new Error(`DataSource ${dataSourceName} is missing in the API`);
@@ -149,7 +167,7 @@ export class DefaultTransformHost implements TransformHostProvider {
       return appsyncFunction;
     }
 
-    const fn = new AppSyncFunctionConfiguration(stack || this.api, name, {
+    const fn = new AppSyncFunctionConfiguration(scope || this.api, name, {
       api: this.api,
       dataSource: dataSource || dataSourceName,
       requestMappingTemplate,
@@ -167,7 +185,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     resolverLogicalId?: string,
     dataSourceName?: string,
     pipelineConfig?: string[],
-    stack?: Stack,
+    scope?: Construct,
   ): CfnResolver => {
     if (dataSourceName && !Token.isUnresolved(dataSourceName) && !this.dataSources.has(dataSourceName)) {
       throw new Error(`DataSource ${dataSourceName} is missing in the API`);
@@ -180,7 +198,7 @@ export class DefaultTransformHost implements TransformHostProvider {
 
     if (dataSourceName) {
       const dataSource = this.dataSources.get(dataSourceName);
-      const resolver = new CfnResolver(stack || this.api, resolverName, {
+      const resolver = new CfnResolver(scope || this.api, resolverName, {
         apiId: this.api.apiId,
         fieldName,
         typeName,
@@ -198,7 +216,7 @@ export class DefaultTransformHost implements TransformHostProvider {
       return resolver;
     }
     if (pipelineConfig) {
-      const resolver = new CfnResolver(stack || this.api, resolverName, {
+      const resolver = new CfnResolver(scope || this.api, resolverName, {
         apiId: this.api.apiId,
         fieldName,
         typeName,
@@ -231,10 +249,10 @@ export class DefaultTransformHost implements TransformHostProvider {
     role?: IRole,
     environment?: { [key: string]: string },
     timeout?: Duration,
-    stack?: Stack,
+    scope?: Construct,
   ): IFunction => {
     const dummyCode = 'if __name__ == "__main__":'; // assing dummy code so as to be overriden later
-    const fn = new Function(stack || this.api, functionName, {
+    const fn = new Function(scope || this.api, functionName, {
       code: Code.fromInline(dummyCode),
       handler: handlerName,
       runtime,
@@ -252,14 +270,8 @@ export class DefaultTransformHost implements TransformHostProvider {
     return fn;
   };
 
-  /**
-   *
-   * @param id The data source's id
-   * @param options optional configuration for data source
-   * @param stack  Stack to which this datasource needs to mapped to
-   */
-  protected doAddNoneDataSource(id: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource {
-    return new NoneDataSource(stack ?? this.api, id, {
+  protected doAddNoneDataSource(id: string, options?: DataSourceOptions, scope?: Construct): NoneDataSource {
+    return new NoneDataSource(scope ?? this.api, id, {
       api: this.api,
       name: options?.name,
       description: options?.description,
@@ -272,10 +284,10 @@ export class DefaultTransformHost implements TransformHostProvider {
    * @param id The data source's id
    * @param table The DynamoDB table backing this data source
    * @param options The optional configuration for this data source
-   * @param stack  Stack to which this datasource needs to mapped to
+   * @param scope  Stack to which this datasource needs to mapped to
    */
-  protected doAddDynamoDbDataSource(id: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource {
-    const ds = new DynamoDbDataSource(stack ?? this.api, id, {
+  protected doAddDynamoDbDataSource(id: string, table: ITable, options?: DynamoDbDataSourceOptions, scope?: Construct): DynamoDbDataSource {
+    const ds = new DynamoDbDataSource(scope ?? this.api, id, {
       api: this.api,
       table,
       name: options?.name,
@@ -294,10 +306,10 @@ export class DefaultTransformHost implements TransformHostProvider {
    * @param id The data source's id
    * @param endpoint The http endpoint
    * @param options The optional configuration for this data source
-   * @param stack Stack to which the http datasource needs to be created in
+   * @param scope Stack to which the http datasource needs to be created in
    */
-  protected doAddHttpDataSource(id: string, endpoint: string, options?: HttpDataSourceOptions, stack?: Stack): HttpDataSource {
-    const ds = new HttpDataSource(stack ?? this.api, id, {
+  protected doAddHttpDataSource(id: string, endpoint: string, options?: HttpDataSourceOptions, scope?: Construct): HttpDataSource {
+    const ds = new HttpDataSource(scope ?? this.api, id, {
       api: this.api,
       endpoint,
       name: options?.name,
@@ -311,39 +323,14 @@ export class DefaultTransformHost implements TransformHostProvider {
   }
 
   /**
-   * add a new searchable data source to this API
-   *
-   * @param id The data source's id
-   * @param endpoint The searchable endpoint
-   * @param region The searchable datasource region
-   * @param options The optional configuration for this data source
-   * @param stack Stack to which the searchable datasource needs to be created in
-   */
-  protected doAddSearchableDataSource(
-    id: string,
-    endpoint: string,
-    region: string,
-    options?: SearchableDataSourceOptions,
-    stack?: Stack,
-  ): SearchableDataSource {
-    return new SearchableDataSource(stack ?? this.api, id, {
-      api: this.api,
-      name: options?.name,
-      endpoint,
-      region,
-      serviceRole: options?.serviceRole,
-    });
-  }
-
-  /**
    * add a new Lambda data source to this API
    *
    * @param id The data source's id
    * @param lambdaFunction The Lambda function to call to interact with this data source
    * @param options The optional configuration for this data source
    */
-  protected doAddLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource {
-    const ds = new LambdaDataSource(stack || this.api, id, {
+  protected doAddLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions, scope?: Construct): LambdaDataSource {
+    const ds = new LambdaDataSource(scope || this.api, id, {
       api: this.api,
       lambdaFunction,
       name: options?.name,

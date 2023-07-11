@@ -320,16 +320,16 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     domain.grantReadWrite(openSearchRole);
 
-    const { region } = stack.splitArn(domain.domainArn, ArnFormat.SLASH_RESOURCE_NAME);
-    if (!region) {
-      throw new Error('Could not access region from search domain');
-    }
-
-    const datasource = createSearchableDataSource(stack, context.api, domain.domainEndpoint, openSearchRole, region);
+    const datasource = createSearchableDataSource(stack, context.api, domain, openSearchRole);
 
     // streaming lambda role
     const lambdaRole = createLambdaRole(context, stack, parameterMap);
     domain.grantWrite(lambdaRole);
+
+    const { region } = stack.splitArn(domain.domainArn, ArnFormat.SLASH_RESOURCE_NAME);
+    if (!region) {
+      throw new Error('Could not access region from search domain');
+    }
 
     // creates streaming lambda
     const lambda = createLambda(stack, context.api, parameterMap, lambdaRole, domain.domainEndpoint, isProjectUsingDataStore, region);

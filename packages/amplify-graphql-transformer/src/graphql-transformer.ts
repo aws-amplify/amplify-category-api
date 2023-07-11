@@ -30,6 +30,7 @@ import {
   ResolverConfig,
   UserDefinedSlot,
 } from '@aws-amplify/graphql-transformer-core';
+import { Construct } from 'constructs';
 
 /**
  * Arguments passed into a TransformerFactory
@@ -159,6 +160,27 @@ export const executeTransform = (config: ExecuteTransformConfig): DeploymentReso
 
   try {
     return transform.transform(schema, {
+      modelToDatasourceMap,
+      datasourceSecretParameterLocations,
+    });
+  } finally {
+    transform.getLogs().forEach(printLog);
+  }
+};
+
+/**
+ * Construct a GraphQLTransform, and execute using the provided schema and optional datasource configuration.
+ * @param config the configuration for the transform.
+ * @returns the transformed api deployment resources.
+ */
+export const executeSynth = (config: ExecuteTransformConfig & { scope: Construct }): any => {
+  const { schema, scope, modelToDatasourceMap, datasourceSecretParameterLocations, printTransformerLog } = config;
+
+  const printLog = printTransformerLog ?? defaultPrintTransformerLog;
+  const transform = constructTransform(config);
+
+  try {
+    return transform.transformWithoutSynthesis(schema, scope, {
       modelToDatasourceMap,
       datasourceSecretParameterLocations,
     });

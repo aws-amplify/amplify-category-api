@@ -12,7 +12,7 @@ import {
 } from 'amplify-category-api-e2e-core';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { assertNotNull } from '@aws-amplify/graphql-transformer-core/lib/cdk-compat/stack-synthesizer';
+import { assertNotNull } from '@aws-amplify/graphql-transformer-core/lib/cdk-compat/stacks/stack-synthesizer';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
 

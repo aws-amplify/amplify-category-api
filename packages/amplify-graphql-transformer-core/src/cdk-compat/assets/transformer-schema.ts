@@ -1,14 +1,14 @@
 import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
 import { Lazy } from 'aws-cdk-lib';
-import { GraphQLApi } from '../graphql-api';
+import { GraphQLApi } from '../../graphql-api';
 import { FileAsset } from './file-asset';
 
 export class TransformerSchema {
   private asset?: FileAsset;
   private api?: GraphQLApi;
   private definition = '';
-
   private schemaConstruct?: CfnGraphQLSchema;
+
   bind = (api: GraphQLApi): CfnGraphQLSchema => {
     if (!this.schemaConstruct) {
       const schema = this;
@@ -35,6 +35,7 @@ export class TransformerSchema {
     }
     return this.asset;
   };
+
   addToSchema = (addition: string, delimiter: string): void => {
     const sep = delimiter ?? '';
     this.definition = `${this.definition}${sep}${addition}\n`;

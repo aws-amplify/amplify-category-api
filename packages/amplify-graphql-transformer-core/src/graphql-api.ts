@@ -12,10 +12,9 @@ import {
 } from 'aws-cdk-lib/aws-appsync';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
 import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib';
-import { ArnFormat, CfnResource, Duration, Stack } from 'aws-cdk-lib';
+import { ArnFormat, CfnResource, Duration, Stack, Aws } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { TransformerSchema } from './cdk-compat/schema-asset';
+import { TransformerSchema } from './cdk-compat';
 import { DefaultTransformHost } from './transform-host';
 
 export interface GraphqlApiProps {
@@ -370,7 +369,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   }
 
   private lambdaArnKey(name: string) {
-    return `arn:${cdk.Aws.PARTITION}:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:function:${name}-${this.environmentName}`;
+    return `arn:${Aws.PARTITION}:lambda:${Aws.REGION}:${Aws.ACCOUNT_ID}:function:${name}-${this.environmentName}`;
   }
 
   private setupAdditionalAuthorizationModes(modes?: Array<any>) {

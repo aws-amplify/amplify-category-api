@@ -1,4 +1,4 @@
-import { Stack } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { GraphQLAPIProvider, MappingTemplateProvider } from '../graphql-api-provider';
 import { DataSourceProvider } from './transformer-datasource-provider';
 import { TransformerContextProvider } from './transformer-context-provider';
@@ -11,7 +11,7 @@ export interface TransformerResolverProvider {
     dataSource?: DataSourceProvider,
   ) => void;
   synthesize: (context: TransformerContextProvider, api: GraphQLAPIProvider) => void;
-  mapToStack: (stack: Stack) => void;
+  mapToStack: (scope: Construct) => void;
 }
 
 export interface TransformerResolversManagerProvider {

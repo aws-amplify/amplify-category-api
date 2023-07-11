@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import {
   Aws,
   CfnResource,
@@ -15,6 +16,8 @@ import { Construct } from 'constructs';
 import * as crypto from 'crypto';
 import { TransformerRootStack } from './root-stack';
 import { TransformerStackSythesizer } from './stack-synthesizer';
+import { findRootStack } from './stack-utils';
+
 export type TransformerNestedStackProps = NestedStackProps & {
   synthesizer?: IStackSynthesizer;
 };
@@ -47,14 +50,8 @@ export class TransformerNestedStack extends TransformerRootStack {
     this.parameters = props.parameters || {};
 
     this.resource = new CfnStack(parentScope, `${id}.NestedStackResource`, {
-      templateUrl: Lazy.uncachedString({
-        produce: () => {
-          return this._templateUrl || '<unresolved>';
-        },
-      }),
-      parameters: Lazy.any({
-        produce: () => (Object.keys(this.parameters).length > 0 ? this.parameters : undefined),
-      }),
+      templateUrl: Lazy.uncachedString({ produce: () => this._templateUrl || '<unresolved>' }),
+      parameters: Lazy.any({ produce: () => (Object.keys(this.parameters).length > 0 ? this.parameters : undefined) }),
       notificationArns: props.notificationArns,
       timeoutInMinutes: props.timeout ? props.timeout.toMinutes() : undefined,
     });
@@ -79,7 +76,7 @@ export class TransformerNestedStack extends TransformerRootStack {
    * @attribute
    * @example mystack-mynestedstack-sggfrhxhum7w
    */
-  public get stackName() {
+  public get stackName(): string {
     return this._contextualStackName;
   }
 
@@ -93,7 +90,7 @@ export class TransformerNestedStack extends TransformerRootStack {
    * @attribute
    * @example "arn:aws:cloudformation:us-east-2:123456789012:stack/mystack-mynestedstack-sggfrhxhum7w/f449b250-b969-11e0-a185-5081d0136786"
    */
-  public get stackId() {
+  public get stackId(): string {
     return this._contextualStackId;
   }
 
@@ -102,7 +99,7 @@ export class TransformerNestedStack extends TransformerRootStack {
    * @param name The parameter name (ID)
    * @param value The value to assign
    */
-  public setParameter(name: string, value: string) {
+  public setParameter(name: string, value: string): void {
     this.parameters[name] = value;
   }
 
@@ -120,7 +117,7 @@ export class TransformerNestedStack extends TransformerRootStack {
    *
    * @internal
    */
-  public _prepareTemplateAsset() {
+  public _prepareTemplateAsset(): boolean {
     if (this._templateUrl) {
       return false;
     }
@@ -139,27 +136,7 @@ export class TransformerNestedStack extends TransformerRootStack {
     return true;
   }
 
-  private contextualAttribute(innerValue: string, outerValue: string) {
-    return Token.asString({
-      resolve: (context: IResolveContext) => {
-        if (Stack.of(context.scope) === this) {
-          return innerValue;
-        } else {
-          return outerValue;
-        }
-      },
-    });
+  private contextualAttribute(innerValue: string, outerValue: string): string {
+    return Token.asString({ resolve: (context: IResolveContext) => (Stack.of(context.scope) === this ? innerValue : outerValue) });
   }
-}
-function findRootStack(scope: Construct): Stack {
-  if (!scope) {
-    throw new Error('Nested stacks cannot be defined as a root construct');
-  }
-
-  const rootStack = scope.node.scopes.find((p) => Stack.isStack(p));
-  if (!rootStack) {
-    throw new Error('Nested stacks must be defined within scope of another non-nested stack');
-  }
-
-  return rootStack as Stack;
 }

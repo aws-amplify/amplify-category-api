@@ -9,6 +9,7 @@ import {
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { ResolverResourceIDs, toCamelCase } from 'graphql-transformer-common';
+import { Stack } from 'aws-cdk-lib';
 import { generateAuthExpressionForSandboxMode, generateResolverKey, ModelVTLGenerator } from '../resolvers';
 import { ModelDirectiveConfiguration, SubscriptionLevel } from '../directive';
 import { ModelTransformerOptions } from '../types';

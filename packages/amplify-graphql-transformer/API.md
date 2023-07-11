@@ -5,6 +5,7 @@
 ```ts
 
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { Construct } from 'constructs';
 import { DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
@@ -22,6 +23,11 @@ export const constructTransform: (config: TransformConfig) => GraphQLTransform;
 
 // @public (undocumented)
 export const constructTransformerChain: (options?: TransformerFactoryArgs) => TransformerPluginProvider[];
+
+// @public (undocumented)
+export const executeSynth: (config: ExecuteTransformConfig & {
+    scope: Construct;
+}) => any;
 
 // @public (undocumented)
 export const executeTransform: (config: ExecuteTransformConfig) => DeploymentResources;

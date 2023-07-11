@@ -530,7 +530,7 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
     ),
   );
 
-  resolver.mapToStack(ctx.stackManager.getStackFor(resolverResourceId, stackId));
+  resolver.mapToStack(ctx.stackManager.getStackFor(resolverResourceId, stackId) as cdk.Stack);
   ctx.resolvers.addResolver(object.name.value, queryField, resolver);
 }
 
