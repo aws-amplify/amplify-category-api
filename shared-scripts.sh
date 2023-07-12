@@ -235,6 +235,17 @@ function _runMigrationV10Test {
     /root/.amplify/bin/amplify -v
     retry yarn run migration_v10.5.1 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
 }
+function _runCanaryTest {
+    echo RUN Canary Test
+    loadCacheFromBuildJob
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    _installCLIFromLocalRegistry  
+    _loadTestAccountCredentials
+    _setShell
+    cd client-test-apps/js/api-model-relationship-app
+    yarn
+    retry yarn test:ci
+}
 function _scanArtifacts {
     if ! yarn ts-node codebuild_specs/scripts/scan_artifacts.ts; then
         echo "Cleaning the repository"
