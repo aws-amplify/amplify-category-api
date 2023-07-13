@@ -34,8 +34,11 @@ import { TransformerContext } from '../transformer-context';
 import { TransformerOutput } from '../transformer-context/output';
 import { StackManager } from '../transformer-context/stack-manager';
 import { adoptAuthModes, IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils/authType';
-import * as SyncUtils from './sync-utils';
 import { MappingTemplate } from '../cdk-compat';
+import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
+import { DatasourceType } from '../config/project-config';
+import { defaultTransformParameters } from '../transformer-context/transform-parameters';
+import * as SyncUtils from './sync-utils';
 import { UserDefinedSlot, OverrideConfig, DatasourceTransformationConfig } from './types';
 import {
   makeSeenTransformationKey,
@@ -48,9 +51,6 @@ import {
   sortTransformerPlugins,
 } from './utils';
 import { validateAuthModes, validateModelSchema } from './validation';
-import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
-import { DatasourceType } from '../config/project-config';
-import { defaultTransformParameters } from '../transformer-context/transform-parameters';
 
 /**
  * Returns whether typeof the provided object is function.

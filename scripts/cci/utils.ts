@@ -1,7 +1,7 @@
-import { CircleCIAPIClient, CircleCIClientDefaults } from './api';
+import { join } from 'path';
 import * as fs from 'fs-extra';
 import * as glob from 'glob';
-import { join } from 'path';
+import { CircleCIAPIClient, CircleCIClientDefaults } from './api';
 
 export const REPO_ROOT = join(__dirname, '..', '..');
 const JOB_METRICS_PATH = join(REPO_ROOT, 'scripts', 'cci', 'job.data.json');

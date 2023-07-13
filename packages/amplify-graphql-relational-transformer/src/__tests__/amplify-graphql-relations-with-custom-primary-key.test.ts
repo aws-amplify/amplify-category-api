@@ -2,8 +2,8 @@ import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-in
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
-import { BelongsToTransformer, HasManyTransformer, HasOneTransformer, ManyToManyTransformer } from '..';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { BelongsToTransformer, HasManyTransformer, HasOneTransformer, ManyToManyTransformer } from '..';
 
 describe('custom primary key and relational directives', () => {
   it('uses primary key name for hasOne relational connection field', () => {

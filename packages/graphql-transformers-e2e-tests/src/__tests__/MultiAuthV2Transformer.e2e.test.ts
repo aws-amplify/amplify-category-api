@@ -5,12 +5,13 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { CloudFormationClient } from '../CloudFormationClient';
-import { S3Client } from '../S3Client';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { CognitoIdentityServiceProvider as CognitoClient, S3, CognitoIdentity, IAM } from 'aws-sdk';
 import moment from 'moment';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { ResourceConstants } from 'graphql-transformer-common';
+import gql from 'graphql-tag';
+import AWS = require('aws-sdk');
+import { IAMHelper } from '../IAMHelper';
 import {
   createUserPool,
   createIdentityPool,
@@ -21,10 +22,9 @@ import {
   createGroup,
   addUserToGroup,
 } from '../cognitoUtils';
-import { IAMHelper } from '../IAMHelper';
-import { ResourceConstants } from 'graphql-transformer-common';
-import gql from 'graphql-tag';
-import AWS = require('aws-sdk');
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { S3Client } from '../S3Client';
+import { CloudFormationClient } from '../CloudFormationClient';
 import 'isomorphic-fetch';
 
 // to deal with bug in cognito-identity-js

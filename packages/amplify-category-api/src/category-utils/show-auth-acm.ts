@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {
   AccessControlMatrix,
   AuthRule,
@@ -14,7 +15,6 @@ import { printer } from '@aws-amplify/amplify-prompts';
 import { DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
 import { readProjectSchema } from 'graphql-transformer-core';
 import { getTransformerVersion } from '../graphql-transformer';
-import * as path from 'path';
 
 export const showApiAuthAcm = async (context: $TSContext, modelName: string): Promise<void> => {
   const providerPlugin = await import(context.amplify.getProviderPlugins(context)?.awscloudformation);

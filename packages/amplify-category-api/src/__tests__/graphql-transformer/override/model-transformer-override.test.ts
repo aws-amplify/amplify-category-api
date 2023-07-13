@@ -1,6 +1,6 @@
+import path from 'path';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, StackManager } from '@aws-amplify/graphql-transformer-core';
-import path from 'path';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { applyFileBasedOverride } from '../../../graphql-transformer/override';
 

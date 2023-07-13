@@ -19,17 +19,6 @@ import {
   or,
 } from 'graphql-mapping-template';
 import {
-  emptyPayload,
-  getIdentityClaimExp,
-  iamAdminRoleCheckExpression,
-  iamCheck,
-  setHasAuthExpression,
-  generateOwnerClaimExpression,
-  generateOwnerClaimListExpression,
-  generateOwnerMultiClaimExpression,
-  generateInvalidClaimsCondition,
-} from './helpers';
-import {
   API_KEY_AUTH_TYPE,
   COGNITO_AUTH_TYPE,
   LAMBDA_AUTH_TYPE,
@@ -41,6 +30,17 @@ import {
   RoleDefinition,
   splitRoles,
 } from '../utils';
+import {
+  emptyPayload,
+  getIdentityClaimExp,
+  iamAdminRoleCheckExpression,
+  iamCheck,
+  setHasAuthExpression,
+  generateOwnerClaimExpression,
+  generateOwnerClaimListExpression,
+  generateOwnerMultiClaimExpression,
+  generateInvalidClaimsCondition,
+} from './helpers';
 
 /**
  * There is only one role for ApiKey we can use the first index

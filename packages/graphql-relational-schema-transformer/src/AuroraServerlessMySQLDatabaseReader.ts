@@ -1,3 +1,4 @@
+import { toUpper } from 'graphql-transformer-common';
 import { TemplateContext, TableContext } from './RelationalDBSchemaTransformer';
 import {
   getNamedType,
@@ -10,7 +11,6 @@ import {
 } from './RelationalDBSchemaTransformerUtils';
 import { AuroraDataAPIClient } from './AuroraDataAPIClient';
 import { IRelationalDBReader } from './IRelationalDBReader';
-import { toUpper } from 'graphql-transformer-common';
 
 /**
  * A class to manage interactions with a Aurora Serverless MySQL Relational Databse

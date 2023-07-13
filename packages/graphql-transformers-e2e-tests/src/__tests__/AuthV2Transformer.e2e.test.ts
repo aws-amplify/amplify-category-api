@@ -5,12 +5,13 @@ import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { CloudFormationClient } from '../CloudFormationClient';
-import { S3Client } from '../S3Client';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { default as S3 } from 'aws-sdk/clients/s3';
 import moment from 'moment';
+import { ResourceConstants } from 'graphql-transformer-common';
+import { CloudFormationClient } from '../CloudFormationClient';
+import { S3Client } from '../S3Client';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import {
   createUserPool,
   createUserPoolClient,
@@ -20,7 +21,6 @@ import {
   createGroup,
   signupUser,
 } from '../cognitoUtils';
-import { ResourceConstants } from 'graphql-transformer-common';
 import { GraphQLClient } from '../GraphQLClient';
 import { resolveTestRegion } from '../testSetup';
 

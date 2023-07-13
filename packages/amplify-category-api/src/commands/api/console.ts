@@ -1,6 +1,6 @@
+import * as path from 'path';
 import { $TSContext, AmplifyCategories } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
-import * as path from 'path';
 
 const subcommand = 'console';
 

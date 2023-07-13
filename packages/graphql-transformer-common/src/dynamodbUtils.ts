@@ -1,15 +1,5 @@
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, Kind, TypeNode, FieldDefinitionNode } from 'graphql';
 import {
-  makeListType,
-  makeNamedType,
-  getBaseType,
-  makeInputValueDefinition,
-  DEFAULT_SCALARS,
-  makeInputObjectDefinition,
-  isScalar,
-} from './definition';
-import { ModelResourceIDs } from './ModelResourceIDs';
-import {
   compoundExpression,
   block,
   iff,
@@ -27,6 +17,16 @@ import {
   ReferenceNode,
   ifElse,
 } from 'graphql-mapping-template';
+import {
+  makeListType,
+  makeNamedType,
+  getBaseType,
+  makeInputValueDefinition,
+  DEFAULT_SCALARS,
+  makeInputObjectDefinition,
+  isScalar,
+} from './definition';
+import { ModelResourceIDs } from './ModelResourceIDs';
 import { toCamelCase } from './util';
 
 // Key conditions

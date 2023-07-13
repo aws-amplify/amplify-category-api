@@ -1,6 +1,6 @@
-import { getCLIPath, nspawn as spawn, generateRandomShortId } from '..';
 import path from 'path';
 import { readFileSync } from 'fs-extra';
+import { getCLIPath, nspawn as spawn, generateRandomShortId } from '..';
 
 export type GeoConfig = {
   isFirstGeoResource?: boolean;

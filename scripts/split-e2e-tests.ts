@@ -1,6 +1,6 @@
+import { join } from 'path';
 import * as yaml from 'js-yaml';
 import * as glob from 'glob';
-import { join } from 'path';
 import * as fs from 'fs-extra';
 import * as execa from 'execa';
 import { migrationFromV10Tests, migrationFromV5Tests, migrationFromV6Tests } from './split-e2e-test-filters';

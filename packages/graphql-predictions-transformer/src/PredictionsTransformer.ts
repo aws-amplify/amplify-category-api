@@ -1,3 +1,4 @@
+import path = require('path');
 import {
   ObjectTypeDefinitionNode,
   FieldDefinitionNode,
@@ -6,13 +7,12 @@ import {
   ArgumentNode,
   InputValueDefinitionNode,
 } from 'graphql';
-import { getActionInputType, makeActionInputObject, getActionInputName, addInputArgument, createInputValueAction } from './definitions';
 import { Transformer, gql, TransformerContext, InvalidDirectiveError } from 'graphql-transformer-core';
 import { ResolverResourceIDs, PredictionsResourceIDs } from 'graphql-transformer-common';
+import { Fn } from 'cloudform-types';
+import { getActionInputType, makeActionInputObject, getActionInputName, addInputArgument, createInputValueAction } from './definitions';
 import { ResourceFactory, ActionPolicyMap } from './resources';
 import { allowedActions } from './predictions_utils';
-import { Fn } from 'cloudform-types';
-import path = require('path');
 
 const PREDICTIONS_DIRECTIVE_STACK = 'PredictionsDirectiveStack';
 

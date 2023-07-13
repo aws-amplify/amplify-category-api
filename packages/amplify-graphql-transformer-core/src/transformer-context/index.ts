@@ -13,13 +13,13 @@ import { App } from 'aws-cdk-lib';
 import { DocumentNode } from 'graphql';
 import { DatasourceType } from '../config/project-config';
 import { ResolverConfig } from '../config/transformer-config';
+import { RDSConnectionSecrets } from '../types';
 import { TransformerDataSourceManager } from './datasource';
 import { TransformerOutput } from './output';
 import { TransformerContextProviderRegistry } from './provider-registry';
 import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
-import { RDSConnectionSecrets } from '../types';
 
 export { TransformerResolver } from './resolver';
 export { StackManager } from './stack-manager';

@@ -1,4 +1,5 @@
 /* eslint-disable max-classes-per-file */
+import * as crypto from 'crypto';
 import {
   InlineMappingTemplateProvider,
   MappingTemplateType,
@@ -6,7 +7,6 @@ import {
   S3MappingTemplateProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
-import * as crypto from 'crypto';
 import { FileAsset } from './file-asset';
 
 export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {

@@ -1,3 +1,5 @@
+import { existsSync } from 'fs';
+import { join } from 'path';
 import {
   amplifyPush,
   amplifyPushUpdate,
@@ -12,9 +14,7 @@ import {
   updateAPIWithResolutionStrategyWithModels,
   getProjectConfig,
 } from 'amplify-category-api-e2e-core';
-import { existsSync } from 'fs';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
-import { join } from 'path';
 import {
   initJSProjectWithProfile,
   versionCheck,

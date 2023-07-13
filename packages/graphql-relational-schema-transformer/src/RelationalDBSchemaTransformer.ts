@@ -1,4 +1,5 @@
 import { Kind, ObjectTypeDefinitionNode, SchemaDefinitionNode, InputObjectTypeDefinitionNode, DocumentNode } from 'graphql';
+import { plurality, toUpper } from 'graphql-transformer-common';
 import {
   getSingletonListTypeNode,
   getNamedType,
@@ -12,7 +13,6 @@ import {
 } from './RelationalDBSchemaTransformerUtils';
 import { RelationalDBParsingException } from './RelationalDBParsingException';
 import { IRelationalDBReader } from './IRelationalDBReader';
-import { plurality, toUpper } from 'graphql-transformer-common';
 
 /**
  * This class is used to transition all of the columns and key metadata from a table for use

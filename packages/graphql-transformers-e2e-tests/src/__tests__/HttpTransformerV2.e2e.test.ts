@@ -2,13 +2,13 @@ import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
-import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { GraphQLClient } from '../GraphQLClient';
 import { default as moment } from 'moment';
+import { default as S3 } from 'aws-sdk/clients/s3';
+import { CloudFormationClient } from '../CloudFormationClient';
+import { GraphQLClient } from '../GraphQLClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
-import { default as S3 } from 'aws-sdk/clients/s3';
 import { deployJsonServer, destroyJsonServer } from '../cdkUtils';
 import { resolveTestRegion } from '../testSetup';
 

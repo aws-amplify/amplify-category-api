@@ -3,8 +3,8 @@ import { GraphQLTransform, validateModelSchema, DatasourceType } from '@aws-ampl
 
 import { Template } from 'aws-cdk-lib/assertions';
 import { Kind, parse } from 'graphql';
-import { PrimaryKeyTransformer } from '..';
 import _ from 'lodash';
+import { PrimaryKeyTransformer } from '..';
 
 test('throws if multiple primary keys are defined on an object', () => {
   const schema = `

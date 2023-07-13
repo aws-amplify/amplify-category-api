@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
 import {
   ExecutionContext,
@@ -10,8 +12,6 @@ import {
   nspawn as spawn,
   permissionChoices,
 } from 'amplify-category-api-e2e-core';
-import * as fs from 'fs';
-import * as path from 'path';
 
 export function legacyAddLayer(
   cwd: string,

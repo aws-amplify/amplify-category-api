@@ -1,5 +1,5 @@
-import _ from 'lodash';
 import { join } from 'path';
+import _ from 'lodash';
 import * as fs from 'fs-extra';
 import { parse } from 'graphql';
 import axios from 'axios';

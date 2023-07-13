@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import {
   Aws,
   CfnResource,
@@ -12,7 +13,6 @@ import {
   Token,
 } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import * as crypto from 'crypto';
 import { TransformerRootStack } from './root-stack';
 import { TransformerStackSythesizer } from './stack-synthesizer';
 export type TransformerNestedStackProps = NestedStackProps & {

@@ -1,24 +1,24 @@
+import * as path from 'path';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { prompter, printer, integer } from '@aws-amplify/amplify-prompts';
-import { getAppSyncAPINames } from '../utils/amplify-meta-utils';
-import { serviceApiInputWalkthrough } from './appSync-walkthrough';
-import { serviceMetadataFor } from '../utils/dynamic-imports';
-import { getCfnApiArtifactHandler } from '../cfn-api-artifact-handler';
-import { serviceWalkthroughResultToAddApiRequest } from '../utils/service-walkthrough-result-to-add-api-request';
-import { writeSchemaFile } from '../utils/graphql-schema-utils';
 import {
   ImportAppSyncAPIInputs,
   ImportedDataSourceType,
   ImportedRDSType,
   ImportedDataSourceConfig,
 } from '@aws-amplify/graphql-transformer-core';
+import { RDS_SCHEMA_FILE_NAME } from '@aws-amplify/graphql-transformer-core';
+import * as fs from 'fs-extra';
+import { serviceMetadataFor } from '../utils/dynamic-imports';
+import { getCfnApiArtifactHandler } from '../cfn-api-artifact-handler';
+import { serviceWalkthroughResultToAddApiRequest } from '../utils/service-walkthrough-result-to-add-api-request';
+import { writeSchemaFile } from '../utils/graphql-schema-utils';
 import { PREVIEW_BANNER, category } from '../../../category-constants';
 import { storeConnectionSecrets, testDatabaseConnection, getSecretsKey } from '../utils/rds-secrets/database-secrets';
-import * as path from 'path';
-import { RDS_SCHEMA_FILE_NAME } from '@aws-amplify/graphql-transformer-core';
 import { constructDefaultGlobalAmplifyInput } from '../utils/rds-input-utils';
 import { getAPIResourceDir } from '../utils/amplify-meta-utils';
-import * as fs from 'fs-extra';
+import { getAppSyncAPINames } from '../utils/amplify-meta-utils';
+import { serviceApiInputWalkthrough } from './appSync-walkthrough';
 
 const service = 'AppSync';
 

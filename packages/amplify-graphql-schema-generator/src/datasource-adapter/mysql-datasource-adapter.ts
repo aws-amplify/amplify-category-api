@@ -1,7 +1,7 @@
-import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
-import { DataSourceAdapter } from './datasource-adapter';
 import { knex } from 'knex';
 import { printer } from '@aws-amplify/amplify-prompts';
+import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
+import { DataSourceAdapter } from './datasource-adapter';
 
 export interface MySQLDataSourceConfig {
   host: string;

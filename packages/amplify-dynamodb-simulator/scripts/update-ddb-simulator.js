@@ -1,11 +1,11 @@
+const { join } = require('path');
+const { pipeline, Readable } = require('stream');
+const { promisify } = require('util');
 const { ensureDir, readFile, writeFile } = require('fs-extra');
 const gunzip = require('gunzip-maybe');
 const hash = require('hash.js');
 const nodefetch = require('node-fetch');
-const { join } = require('path');
-const { pipeline, Readable } = require('stream');
 const tar = require('tar');
-const { promisify } = require('util');
 
 const main = async () => {
   const ddbSimulatorUrl = 'https://s3.us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.tar.gz';

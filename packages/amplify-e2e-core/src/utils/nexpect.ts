@@ -14,14 +14,14 @@ declare global {
 }
 
 import { types, format } from 'util';
-import { Recorder } from '../asciinema-recorder';
 import { AssertionError } from 'assert';
-import strip = require('strip-ansi');
 import { EOL } from 'os';
-import retimer = require('retimer');
 import { join, parse } from 'path';
-import * as fs from 'fs-extra';
 import * as os from 'os';
+import strip = require('strip-ansi');
+import retimer = require('retimer');
+import * as fs from 'fs-extra';
+import { Recorder } from '../asciinema-recorder';
 import { getScriptRunnerPath, isTestingWithLatestCodebase } from '..';
 export const RETURN = process.platform === 'win32' ? '\r' : EOL;
 const DEFAULT_NO_OUTPUT_TIMEOUT = process.env.AMPLIFY_TEST_TIMEOUT_SEC

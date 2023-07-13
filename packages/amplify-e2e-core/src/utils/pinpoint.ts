@@ -1,7 +1,7 @@
-import { Pinpoint } from 'aws-sdk';
-import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCITags, KEY_DOWN_ARROW } from '..';
-import _ from 'lodash';
 import { EOL } from 'os';
+import { Pinpoint } from 'aws-sdk';
+import _ from 'lodash';
+import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCITags, KEY_DOWN_ARROW } from '..';
 
 const settings = {
   name: EOL,

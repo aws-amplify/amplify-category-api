@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {
   initJSProjectWithProfile,
   deleteProject,
@@ -12,7 +13,6 @@ import { addApiWithoutSchema, updateApiSchema, getProjectMeta } from 'amplify-ca
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import * as path from 'path';
 import * as fs from 'fs-extra';
 
 (global as any).fetch = require('node-fetch');

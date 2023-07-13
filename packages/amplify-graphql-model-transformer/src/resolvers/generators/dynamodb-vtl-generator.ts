@@ -1,12 +1,4 @@
 import {
-  ModelCreateInitSlotConfig,
-  ModelCreateRequestConfig,
-  ModelDefaultResponseConfig,
-  ModelRequestConfig,
-  ModelUpdateRequestConfig,
-  ModelVTLGenerator,
-} from './vtl-generator';
-import {
   generateUpdateRequestTemplate,
   generateCreateRequestTemplate,
   generateCreateInitSlotTemplate,
@@ -20,6 +12,14 @@ import {
   generateSubscriptionResponseTemplate,
   generateDefaultResponseMappingTemplate,
 } from '../dynamodb';
+import {
+  ModelCreateInitSlotConfig,
+  ModelCreateRequestConfig,
+  ModelDefaultResponseConfig,
+  ModelRequestConfig,
+  ModelUpdateRequestConfig,
+  ModelVTLGenerator,
+} from './vtl-generator';
 
 export class DynamoDBModelVTLGenerator implements ModelVTLGenerator {
   generateUpdateRequestTemplate(config: ModelUpdateRequestConfig): string {

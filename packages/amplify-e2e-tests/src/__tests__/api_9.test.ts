@@ -1,3 +1,5 @@
+import path from 'path';
+import { existsSync } from 'fs';
 import {
   amplifyPush,
   deleteProject,
@@ -18,8 +20,6 @@ import {
   createRandomName,
   addV1RDSDataSource,
 } from 'amplify-category-api-e2e-core';
-import path from 'path';
-import { existsSync } from 'fs';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 
 describe('amplify add api (GraphQL)', () => {

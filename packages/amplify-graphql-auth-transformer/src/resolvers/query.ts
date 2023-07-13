@@ -23,6 +23,18 @@ import {
   parens,
   or,
 } from 'graphql-mapping-template';
+import { aws_dynamodb as dynamodb } from 'aws-cdk-lib';
+import {
+  COGNITO_AUTH_TYPE,
+  OIDC_AUTH_TYPE,
+  RoleDefinition,
+  splitRoles,
+  ConfiguredAuthProviders,
+  IS_AUTHORIZED_FLAG,
+  fieldIsList,
+  RelationalPrimaryMapConfig,
+  IDENTITY_CLAIM_DELIMITER,
+} from '../utils';
 import {
   getIdentityClaimExp,
   getOwnerClaim,
@@ -36,18 +48,6 @@ import {
   generateOwnerMultiClaimExpression,
   generateInvalidClaimsCondition,
 } from './helpers';
-import {
-  COGNITO_AUTH_TYPE,
-  OIDC_AUTH_TYPE,
-  RoleDefinition,
-  splitRoles,
-  ConfiguredAuthProviders,
-  IS_AUTHORIZED_FLAG,
-  fieldIsList,
-  RelationalPrimaryMapConfig,
-  IDENTITY_CLAIM_DELIMITER,
-} from '../utils';
-import { aws_dynamodb as dynamodb } from 'aws-cdk-lib';
 
 const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
   const staticRoleExpression: Array<Expression> = [];

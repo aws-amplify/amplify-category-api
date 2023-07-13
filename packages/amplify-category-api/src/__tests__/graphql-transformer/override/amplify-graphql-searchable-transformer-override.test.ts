@@ -1,7 +1,7 @@
+import * as path from 'path';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, StackManager } from '@aws-amplify/graphql-transformer-core';
 import { Match, Template } from 'aws-cdk-lib/assertions';
-import * as path from 'path';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { applyFileBasedOverride } from '../../../graphql-transformer/override';

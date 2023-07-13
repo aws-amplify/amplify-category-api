@@ -1,5 +1,5 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import { runTest, runAuthTest } from './common';
 import { runFunctionTest } from './functionTester';
 

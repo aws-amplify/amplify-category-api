@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { mergeTypeDefs } from '@graphql-tools/merge';
 import {
   $TSContext,
@@ -18,9 +19,8 @@ import {
 } from 'graphql-relational-schema-transformer';
 import inquirer from 'inquirer';
 import _ from 'lodash';
-import * as path from 'path';
-import { supportedDataSources } from '../../provider-utils/supported-datasources';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
+import { supportedDataSources } from '../../provider-utils/supported-datasources';
 
 const subcommand = 'add-graphql-datasource';
 const category = 'api';

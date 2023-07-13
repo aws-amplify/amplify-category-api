@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {
   config,
   DynamoDB,
@@ -16,7 +17,6 @@ import {
   SSM,
   Location,
 } from 'aws-sdk';
-import * as path from 'path';
 import _ from 'lodash';
 
 export const getDDBTable = async (tableName: string, region: string) => {

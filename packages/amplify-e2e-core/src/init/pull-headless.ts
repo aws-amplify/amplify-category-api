@@ -1,5 +1,5 @@
-import { nspawn as spawn, getCLIPath } from '..';
 import { EOL } from 'os';
+import { nspawn as spawn, getCLIPath } from '..';
 
 const defaultSettings = {
   name: EOL,

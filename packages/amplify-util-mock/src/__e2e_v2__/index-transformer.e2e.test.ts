@@ -1,9 +1,9 @@
-import { deploy, launchDDBLocal, logDebug, terminateDDB, GraphQLClient } from '../__e2e__/utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { deploy, launchDDBLocal, logDebug, terminateDDB, GraphQLClient } from '../__e2e__/utils';
 
 jest.setTimeout(2000000);
 

@@ -1,6 +1,6 @@
+import * as path from 'path';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import { ExecutionContext, getCLIPath, nspawn as spawn } from '..';
 import { getBackendAmplifyMeta } from '../utils';
 import { getLayerVersion, listVersions } from '../utils/sdk-calls';

@@ -1,3 +1,4 @@
+import { join } from 'path';
 import {
   initJSProjectWithProfile,
   deleteProject,
@@ -14,7 +15,6 @@ import {
   amplifyPushUpdate,
   updateConfig,
 } from 'amplify-category-api-e2e-core';
-import { join } from 'path';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 

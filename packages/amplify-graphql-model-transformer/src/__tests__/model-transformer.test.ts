@@ -2,6 +2,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ConflictHandlerType, GraphQLTransform, SyncConfig, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, ListValueNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
+import { Template } from 'aws-cdk-lib/assertions';
 import {
   doNotExpectFields,
   expectFields,
@@ -13,7 +14,6 @@ import {
   verifyInputCount,
   verifyMatchingTypes,
 } from './test-utils/helpers';
-import { Template } from 'aws-cdk-lib/assertions';
 
 describe('ModelTransformer: ', () => {
   it('should successfully transform simple valid schema', async () => {

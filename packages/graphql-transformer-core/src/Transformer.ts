@@ -1,5 +1,3 @@
-import { TransformerContext } from './TransformerContext';
-import { ITransformer } from './ITransformer';
 import {
   DirectiveDefinitionNode,
   parse,
@@ -17,6 +15,8 @@ import {
   TypeDefinitionNode,
   DocumentNode,
 } from 'graphql';
+import { TransformerContext } from './TransformerContext';
+import { ITransformer } from './ITransformer';
 import { InvalidTransformerError } from './errors';
 
 /**

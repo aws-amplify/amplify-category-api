@@ -1,8 +1,8 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
-import { nspawn as spawn, getCLIPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile, getNpxPath } from '..';
-import _ from 'lodash';
 import { spawnSync } from 'child_process';
+import * as fs from 'fs-extra';
+import _ from 'lodash';
+import { nspawn as spawn, getCLIPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile, getNpxPath } from '..';
 import { getBackendAmplifyMeta } from '../utils';
 
 export function addDEVHosting(cwd: string): Promise<void> {

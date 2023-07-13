@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {
   $TSContext,
   AmplifyCategories,
@@ -11,8 +12,8 @@ import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-paramete
 import { printer } from '@aws-amplify/amplify-prompts';
 import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import { RDS_SCHEMA_FILE_NAME, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import _ from 'lodash';
 import { run } from './commands/api/console';
 import { getAppSyncAuthConfig, getAppSyncResourceName } from './provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { provider } from './provider-utils/awscloudformation/aws-constants';
@@ -29,7 +30,6 @@ import {
   getSecretsKey,
   getDatabaseName,
 } from './provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
-import _ from 'lodash';
 import { AmplifyGraphQLTransformerErrorConverter } from './errors/amplify-error-converter';
 
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';

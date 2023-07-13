@@ -1,5 +1,5 @@
-import { IContainerDefinitions, PortMappings, IBuildConfig, ContainerHealthCheck, IContainerHealthCheckItem } from './types';
 import { ListOrDict } from '../compose-spec/v1';
+import { IContainerDefinitions, PortMappings, IBuildConfig, ContainerHealthCheck, IContainerHealthCheckItem } from './types';
 
 class Container implements IContainerDefinitions {
   readonly defaultLogConfiguration = {

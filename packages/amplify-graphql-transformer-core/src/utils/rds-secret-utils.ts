@@ -1,6 +1,6 @@
-import { APICategory } from '.';
-import _ from 'lodash';
 import path from 'path';
+import _ from 'lodash';
+import { APICategory } from '.';
 
 const getParameterNameForDBSecret = (secret: string, secretsKey: string): string => {
   return `${secretsKey}_${secret}`;

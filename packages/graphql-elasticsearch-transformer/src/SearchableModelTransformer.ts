@@ -1,13 +1,6 @@
+import path = require('path');
 import { Transformer, TransformerContext, getDirectiveArguments, gql, InvalidDirectiveError } from 'graphql-transformer-core';
 import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode } from 'graphql';
-import { ResourceFactory } from './resources';
-import {
-  makeSearchableScalarInputObject,
-  makeSearchableXFilterInputObject,
-  makeSearchableSortDirectionEnumObject,
-  makeSearchableXSortableFieldsEnumObject,
-  makeSearchableXSortInputObject,
-} from './definitions';
 import {
   makeNamedType,
   blankObjectExtension,
@@ -21,7 +14,14 @@ import {
 } from 'graphql-transformer-common';
 import { Expression, str } from 'graphql-mapping-template';
 import { ResolverResourceIDs, SearchableResourceIDs, ModelResourceIDs, getBaseType, ResourceConstants } from 'graphql-transformer-common';
-import path = require('path');
+import {
+  makeSearchableScalarInputObject,
+  makeSearchableXFilterInputObject,
+  makeSearchableSortDirectionEnumObject,
+  makeSearchableXSortableFieldsEnumObject,
+  makeSearchableXSortInputObject,
+} from './definitions';
+import { ResourceFactory } from './resources';
 
 const STACK_NAME = 'SearchableStack';
 const nonKeywordTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSDate', 'AWSDateTime'];

@@ -1,15 +1,15 @@
+import * as path from 'path';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
-import * as path from 'path';
 import fs from 'fs-extra';
 import _ from 'lodash';
-import { databaseConfigurationInputWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/import-appsync-api-walkthrough';
 import {
   ImportedRDSType,
   RDS_SCHEMA_FILE_NAME,
   ImportedDataSourceConfig,
   RDSConnectionSecrets,
 } from '@aws-amplify/graphql-transformer-core';
+import { databaseConfigurationInputWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/import-appsync-api-walkthrough';
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import {
   getExistingConnectionSecrets,
