@@ -11,8 +11,6 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 
 test('Test simple model with public auth rule and amplify admin app is present', () => {
@@ -184,7 +182,7 @@ test('Test model with public auth rule without all operations and amplify admin 
   expect(out.rootStack.Parameters.unauthRoleName).toBeUndefined();
 
   // No Resource extending Auth and UnAuth role
-  const policyResources = Object.values(out.rootStack.Resources).filter(r => r.Type === 'AWS::IAM::ManagedPolicy');
+  const policyResources = Object.values(out.rootStack.Resources).filter((r) => r.Type === 'AWS::IAM::ManagedPolicy');
   expect(policyResources).toHaveLength(0);
 });
 
@@ -228,7 +226,7 @@ test('Test simple model with private auth rule, few operations, and amplify admi
   expect(out.rootStack.Parameters.unauthRoleName).toBeUndefined();
 
   // No Resource extending Auth and UnAuth role
-  const policyResources = Object.values(out.rootStack.Resources).filter(r => r.Type === 'AWS::IAM::ManagedPolicy');
+  const policyResources = Object.values(out.rootStack.Resources).filter((r) => r.Type === 'AWS::IAM::ManagedPolicy');
   expect(policyResources).toHaveLength(0);
 });
 
@@ -308,10 +306,10 @@ test('Test simple model with AdminUI enabled should add IAM policy only for fiel
 
   expect(out.schema).toContain('getPost(id: ID!): Post @aws_iam');
   expect(out.schema).toContain('listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection @aws_iam');
-  const policyResources = _.filter(out.rootStack.Resources, r => r.Type === 'AWS::IAM::ManagedPolicy');
+  const policyResources = _.filter(out.rootStack.Resources, (r) => r.Type === 'AWS::IAM::ManagedPolicy');
   expect(policyResources).toHaveLength(1);
   const resources = _.get(policyResources, '[0].Properties.PolicyDocument.Statement[0].Resource');
-  const typeFieldList = _.map(resources, r => _.get(r, 'Fn::Sub[1]')).map(r => `${_.get(r, 'typeName')}.${_.get(r, 'fieldName', '*')}`);
+  const typeFieldList = _.map(resources, (r) => _.get(r, 'Fn::Sub[1]')).map((r) => `${_.get(r, 'typeName')}.${_.get(r, 'fieldName', '*')}`);
   expect(typeFieldList).toEqual([
     'Post.*',
     'Query.getPost',
@@ -321,5 +319,5 @@ test('Test simple model with AdminUI enabled should add IAM policy only for fiel
     'Subscription.onDeletePost',
   ]);
 
-  ['Mutation.createPost', 'Mutation.updatePost', 'Mutation.deletePost'].forEach(field => expect(typeFieldList).not.toContain(field));
+  ['Mutation.createPost', 'Mutation.updatePost', 'Mutation.deletePost'].forEach((field) => expect(typeFieldList).not.toContain(field));
 });

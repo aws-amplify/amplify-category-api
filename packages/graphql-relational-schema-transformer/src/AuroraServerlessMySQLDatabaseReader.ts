@@ -168,7 +168,7 @@ export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader 
       primaryKey,
       primaryKeyType,
       stringFieldList,
-      intFieldList
+      intFieldList,
     );
   };
 }

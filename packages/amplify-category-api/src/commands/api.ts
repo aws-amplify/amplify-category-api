@@ -55,7 +55,7 @@ export const run = async (context: $TSContext) => {
     {
       name: 'override',
       description: 'Generates overrides file to apply custom modifications to CloudFormation',
-    }
+    },
   ];
 
   context.amplify.showHelp(header, commands);

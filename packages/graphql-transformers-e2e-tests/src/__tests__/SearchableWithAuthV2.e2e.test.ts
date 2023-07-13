@@ -173,8 +173,8 @@ beforeAll(async () => {
     transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
     transformParameters: {
       useSubUsernameForDefaultIdentityClaim: false,
-      populateOwnerFieldForStaticGroupAuth: false
-    }
+      populateOwnerFieldForStaticGroupAuth: false,
+    },
   });
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
   USER_POOL_ID = userPoolResponse.UserPool.Id;
@@ -919,12 +919,12 @@ const createEntries = async () => {
     ups: 25,
     title: 'golfing',
   });
-  await createBlog(GRAPHQL_CLIENT_2, { 
-    groupsField: 'editor', 
-    owner: USERNAME4, 
-    secret: `${USERNAME4}secret`, 
-    ups: 10, 
-    title: 'cooking' 
+  await createBlog(GRAPHQL_CLIENT_2, {
+    groupsField: 'editor',
+    owner: USERNAME4,
+    secret: `${USERNAME4}secret`,
+    ups: 10,
+    title: 'cooking',
   });
   // Waiting for the ES Cluster + Streaming Lambda infra to be setup
   await cf.wait(120, () => Promise.resolve());

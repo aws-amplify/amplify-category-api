@@ -44,7 +44,7 @@ export function getLayerDirectoryName({ layerName, projName }: { layerName: stri
 export function validatePushedVersion(projRoot: string, layerProjName: LayerDirectoryType, permissions: LayerPermission[]) {
   const layerData = getLayerConfig(projRoot, getLayerDirectoryName(layerProjName));
   const storedPermissions: LayerPermission[] = layerData.permissions;
-  permissions.forEach(perm => expect(storedPermissions).toContainEqual(perm));
+  permissions.forEach((perm) => expect(storedPermissions).toContainEqual(perm));
 }
 
 export function expectEphemeralPermissions(
@@ -56,7 +56,7 @@ export function expectEphemeralPermissions(
 ) {
   const layerData = getLayerConfig(projRoot, getLayerDirectoryName(layerProjName));
   const storedPermissions: LayerPermission[] = layerData?.ephemeral?.layerVersionPermissionsToUpdate?.[envName]?.[version];
-  permissions.forEach(perm => expect(storedPermissions).toContainEqual(perm));
+  permissions.forEach((perm) => expect(storedPermissions).toContainEqual(perm));
 }
 
 export function expectEphemeralDataIsUndefined(projRoot: string, layerProjName: LayerDirectoryType) {
@@ -102,7 +102,7 @@ export async function validateLayerMetadata(
   expect(arn).toBeDefined();
   const cloudData = await getLayerVersion(arn, region);
   const { LayerVersions: Versions } = await listVersions(`${getLayerDirectoryName(layerProjName)}-${envName}`, region);
-  const cloudVersions = Versions.map(version => version.LayerVersionArn);
+  const cloudVersions = Versions.map((version) => version.LayerVersionArn);
   expect(cloudVersions.map(String).sort()).toEqual(arns.sort());
   expect(cloudData.LayerVersionArn).toEqual(arn);
   expect(cloudData.CompatibleRuntimes).toEqual(runtimeValues);
@@ -250,7 +250,7 @@ export function updateLayer(
   testingWithLatestCodebase: boolean = false,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    const chain: ExecutionContext = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'function'], { cwd, stripColors: true })
+    const chain: ExecutionContext = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'function'], { cwd, stripColors: true });
     if (settings.numLayers > 1) {
       chain.wait('Select the Lambda layer to update:').sendCarriageReturn();
     }
@@ -333,7 +333,7 @@ export interface LayerPermission {
 export function getLayerVersionArnFromCfn(projRoot: string, layerProjName: LayerDirectoryType): string[] {
   const directoryName = getLayerDirectoryName(layerProjName);
   const cfn = getLayerCfn(projRoot, directoryName);
-  const versionLogicalNames = Object.keys(cfn.Resources).filter(key => cfn.Resources[key].Type === 'AWS::Lambda::LayerVersion');
+  const versionLogicalNames = Object.keys(cfn.Resources).filter((key) => cfn.Resources[key].Type === 'AWS::Lambda::LayerVersion');
   return versionLogicalNames;
 }
 
@@ -355,7 +355,7 @@ function getLayerRuntimes(projRoot: string, layerName: string): any {
 }
 
 export function getRuntimeDisplayNames(runtimes: LayerRuntime[]) {
-  return runtimes.map(runtime => getLayerRuntimeInfo(runtime).displayName);
+  return runtimes.map((runtime) => getLayerRuntimeInfo(runtime).displayName);
 }
 
 function getLayerRuntimeInfo(runtime: LayerRuntime) {

@@ -92,7 +92,7 @@ function setTeamProviderInfo(projRoot: string, content: unknown) {
 function getS3StorageBucketName(projectRoot: string) {
   const meta = getProjectMeta(projectRoot);
   const storage = meta['storage'];
-  const s3 = Object.keys(storage).filter(r => storage[r].service === 'S3');
+  const s3 = Object.keys(storage).filter((r) => storage[r].service === 'S3');
   const fStorageName = s3[0];
   return storage[fStorageName].output.BucketName;
 }
@@ -132,16 +132,15 @@ function isDeploymentSecretForEnvExists(projRoot: string, envName: string): bool
   const rootStackId = teamproviderInfo[envName].awscloudformation.StackId.split('/')[2];
   const resource = _.first(Object.keys(teamproviderInfo[envName].categories.auth));
   const deploymentSecrets = getDeploymentSecrets();
-  const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, appSecret => appSecret.rootStackId === rootStackId);
+  const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, (appSecret) => appSecret.rootStackId === rootStackId);
   if (deploymentSecretByAppId) {
     const path = [envName, 'auth', resource, 'hostedUIProviderCreds'];
     return _.has(deploymentSecretByAppId.environments, path);
   }
   return false;
 }
-export const parametersExists = (
-  projectRoot: string, category: string, resourceName: string,
-): boolean => fs.existsSync(getParameterPath(projectRoot, category, resourceName));
+export const parametersExists = (projectRoot: string, category: string, resourceName: string): boolean =>
+  fs.existsSync(getParameterPath(projectRoot, category, resourceName));
 
 function getParameters(projRoot: string, category: string, resourceName: string): any {
   const parametersPath = getParameterPath(projRoot, category, resourceName);
@@ -149,7 +148,15 @@ function getParameters(projRoot: string, category: string, resourceName: string)
 }
 
 export const getCloudFormationTemplate = (projectRoot: string, category: string, resourceName: string): any => {
-  let templatePath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'build', `${resourceName}-cloudformation-template.json`);
+  let templatePath = path.join(
+    projectRoot,
+    'amplify',
+    'backend',
+    category,
+    resourceName,
+    'build',
+    `${resourceName}-cloudformation-template.json`,
+  );
   if (!fs.existsSync(templatePath)) {
     templatePath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'build', 'cloudformation-template.json');
   }

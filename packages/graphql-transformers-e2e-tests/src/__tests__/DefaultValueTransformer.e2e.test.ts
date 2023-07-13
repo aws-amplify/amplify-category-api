@@ -70,7 +70,7 @@ beforeAll(async () => {
     transformers: [new ModelTransformer(), new DefaultValueTransformer()],
     transformParameters: {
       sandboxModeEnabled: true,
-    }
+    },
   });
   const out = transformer.transform(validSchema);
   const finishedStack = await deploy(

@@ -7,4 +7,4 @@ export enum TransformerLogLevel {
 export type TransformerLog = {
   message: string;
   level: TransformerLogLevel;
-}
+};

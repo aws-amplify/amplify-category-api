@@ -12,7 +12,7 @@ const emptyBucket = async (bucket: string) => {
     .promise();
   while (true) {
     try {
-      const objectIds = listObjects.Contents.map(content => ({
+      const objectIds = listObjects.Contents.map((content) => ({
         Key: content.Key,
       }));
       const response = await awsS3Client

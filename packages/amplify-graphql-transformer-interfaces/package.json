@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-transformer-interfaces",
-  "version": "2.2.2",
+  "version": "2.2.4",
   "description": "Amplify GraphQL transformer interface definitions",
   "repository": {
     "type": "git",
@@ -30,7 +30,7 @@
     "graphql": "^15.5.0"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.68.0",
+    "aws-cdk-lib": "^2.80.0",
     "constructs": "^10.0.5"
   },
   "jest": {

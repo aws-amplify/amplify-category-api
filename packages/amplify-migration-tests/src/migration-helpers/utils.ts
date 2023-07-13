@@ -37,9 +37,10 @@ export type ExcludeFromParameterDiff = (
   currentCategory: string,
   currentResourceKey: string,
   parameters: {
-    project1: any,
-    project2: any,
-  }) => { project1: any, project2: any };
+    project1: any;
+    project2: any;
+  },
+) => { project1: any; project2: any };
 
 /**
  * Asserts that parameters between two project directories didn't drift.
@@ -48,7 +49,7 @@ export const assertNoParameterChangesBetweenProjects = (
   projectRoot1: string,
   projectRoot2: string,
   options?: {
-    excludeFromParameterDiff?: ExcludeFromParameterDiff
+    excludeFromParameterDiff?: ExcludeFromParameterDiff;
   },
 ): void => {
   const backendConfig1 = getBackendConfig(projectRoot1);
@@ -60,19 +61,20 @@ export const assertNoParameterChangesBetweenProjects = (
       if (cliInputsExists(projectRoot1, categoryKey, resourceKey)) {
         const cliInputs1 = getCLIInputs(projectRoot1, categoryKey, resourceKey);
         const cliInputs2 = getCLIInputs(projectRoot2, categoryKey, resourceKey);
-        expect(cliInputs1)
-          .toEqual(cliInputs2);
+        expect(cliInputs1).toEqual(cliInputs2);
       }
       if (parametersExists(projectRoot1, categoryKey, resourceKey)) {
         let parameters1 = getParameters(projectRoot1, categoryKey, resourceKey);
         let parameters2 = getParameters(projectRoot2, categoryKey, resourceKey);
         if (options && options.excludeFromParameterDiff) {
-          const afterExclusions = options.excludeFromParameterDiff(categoryKey, resourceKey, { project1: parameters1, project2: parameters2 });
+          const afterExclusions = options.excludeFromParameterDiff(categoryKey, resourceKey, {
+            project1: parameters1,
+            project2: parameters2,
+          });
           parameters1 = afterExclusions.project1;
           parameters2 = afterExclusions.project2;
         }
-        expect(parameters1)
-          .toEqual(parameters2);
+        expect(parameters1).toEqual(parameters2);
       }
     }
   }
@@ -81,7 +83,7 @@ export const assertNoParameterChangesBetweenProjects = (
 class InMemoryWritable extends Writable {
   private payload = '';
 
-  _write(chunk: any, _encoding: BufferEncoding, callback: (error?: (Error | null)) => void): void {
+  _write(chunk: any, _encoding: BufferEncoding, callback: (error?: Error | null) => void): void {
     if (chunk) {
       this.payload += chunk.toString();
     }
@@ -105,14 +107,19 @@ export type ExcludeFromCFNDiff = (
   currentCategory: string,
   currentResourceKey: string,
   cfnTemplates: {
-    project1: any,
-    project2: any,
-  }) => { project1: any, project2: any };
+    project1: any;
+    project2: any;
+  },
+) => { project1: any; project2: any };
 
 /**
  * Collects all differences between cloud formation templates into a single string.
  */
-export const collectCloudformationDiffBetweenProjects = (projectRoot1: string, projectRoot2: string, excludeFn?: ExcludeFromCFNDiff): string => {
+export const collectCloudformationDiffBetweenProjects = (
+  projectRoot1: string,
+  projectRoot2: string,
+  excludeFn?: ExcludeFromCFNDiff,
+): string => {
   const backendConfig1 = getBackendConfig(projectRoot1);
   const backendConfig2 = getBackendConfig(projectRoot2);
   expect(backendConfig2).toMatchObject(backendConfig1);
@@ -145,10 +152,7 @@ export const collectCloudformationDiffBetweenProjects = (projectRoot1: string, p
 /**
  * Pulls and pushes project with latest codebase. Validates parameter and cfn drift.
  */
-export const pullPushWithLatestCodebaseValidateParameterAndCfnDrift = async (
-  projRoot: string,
-  projName: string,
-): Promise<void> => {
+export const pullPushWithLatestCodebaseValidateParameterAndCfnDrift = async (projRoot: string, projName: string): Promise<void> => {
   const appId = getAppId(projRoot);
   expect(appId).toBeDefined();
   const projRoot2 = await createNewProjectDir(`${projName}2`);

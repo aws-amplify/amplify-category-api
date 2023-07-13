@@ -5,7 +5,9 @@ export class TransformerSchemaHelper implements TransformerSchemaHelperProvider 
 
   setTypeMapping = (newTypeName: string, originalTypeName: string) => {
     if (this.typeMap.has(newTypeName)) {
-      throw new Error(`Type ${newTypeName} has already been mapped to ${this.typeMap.get(newTypeName)}, and cannot be mapped to ${originalTypeName}`)
+      throw new Error(
+        `Type ${newTypeName} has already been mapped to ${this.typeMap.get(newTypeName)}, and cannot be mapped to ${originalTypeName}`,
+      );
     }
     this.typeMap.set(newTypeName, originalTypeName);
   };
@@ -13,5 +15,4 @@ export class TransformerSchemaHelper implements TransformerSchemaHelperProvider 
   getTypeMapping = (newTypeName: string) => {
     return this.typeMap.get(newTypeName) ?? newTypeName;
   };
-
 }

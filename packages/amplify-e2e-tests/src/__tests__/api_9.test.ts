@@ -56,16 +56,16 @@ describe('amplify add api (GraphQL)', () => {
     expect(graphqlApi.additionalAuthenticationProviders).toHaveLength(3);
     expect(graphqlApi.additionalAuthenticationProviders).toHaveLength(3);
 
-    const cognito = graphqlApi.additionalAuthenticationProviders.filter(a => a.authenticationType === 'AMAZON_COGNITO_USER_POOLS')[0];
+    const cognito = graphqlApi.additionalAuthenticationProviders.filter((a) => a.authenticationType === 'AMAZON_COGNITO_USER_POOLS')[0];
 
     expect(cognito).toBeDefined();
     expect(cognito.userPoolConfig).toBeDefined();
 
-    const iam = graphqlApi.additionalAuthenticationProviders.filter(a => a.authenticationType === 'AWS_IAM')[0];
+    const iam = graphqlApi.additionalAuthenticationProviders.filter((a) => a.authenticationType === 'AWS_IAM')[0];
 
     expect(iam).toBeDefined();
 
-    const oidc = graphqlApi.additionalAuthenticationProviders.filter(a => a.authenticationType === 'OPENID_CONNECT')[0];
+    const oidc = graphqlApi.additionalAuthenticationProviders.filter((a) => a.authenticationType === 'OPENID_CONNECT')[0];
 
     expect(oidc).toBeDefined();
     expect(oidc.openIDConnectConfig).toBeDefined();
@@ -89,15 +89,15 @@ describe('amplify add api (GraphQL)', () => {
     await updateApiSchema(projRoot, appName, 'simple_model.graphql');
     await updateApiWithMultiAuth(projRoot, {});
     await amplifyPush(projRoot);
-    
+
     const meta = getProjectMeta(projRoot);
     const { output } = meta.api[appName];
     const { GraphQLAPIIdOutput } = output;
     const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
-    
+
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
-    
+
     await expect(addV1RDSDataSource(projRoot)).resolves;
   });
 

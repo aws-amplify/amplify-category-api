@@ -1,4 +1,11 @@
-import { $TSContext, exitOnNextTick, ResourceCredentialsNotFoundError, ResourceDoesNotExistError, pathManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import {
+  $TSContext,
+  exitOnNextTick,
+  ResourceCredentialsNotFoundError,
+  ResourceDoesNotExistError,
+  pathManager,
+  JSONUtilities,
+} from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import { DataApiParams } from 'graphql-relational-schema-transformer';
@@ -45,7 +52,9 @@ export async function serviceWalkthrough(context: $TSContext, datasourceMetadata
   const { inputs, availableRegions } = datasourceMetadata;
 
   // FIXME: We should NOT be treating CloudFormation templates as inputs to prompts! This a temporary exception while we move team-provider-info to a service.
-  const cfnJson: any = JSONUtilities.readJson(path.join(pathManager.getCurrentCloudRootStackDirPath(pathManager.findProjectRoot()), rootStackFileName));
+  const cfnJson: any = JSONUtilities.readJson(
+    path.join(pathManager.getCurrentCloudRootStackDirPath(pathManager.findProjectRoot()), rootStackFileName),
+  );
   const cfnJsonParameters = cfnJson?.Resources[`api${appSyncApi}`]?.Properties?.Parameters || {};
   let selectedRegion = cfnJsonParameters?.rdsRegion;
   // Region Question
@@ -61,7 +70,7 @@ export async function serviceWalkthrough(context: $TSContext, datasourceMetadata
   });
 
   // RDS Cluster Question
-  let selectedClusterArn = cfnJsonParameters?.rdsClusterIdentifier
+  let selectedClusterArn = cfnJsonParameters?.rdsClusterIdentifier;
   let clusterResourceId = getRdsClusterResourceIdFromArn(selectedClusterArn, AWS);
   if (!selectedClusterArn || !clusterResourceId) {
     ({ selectedClusterArn, clusterResourceId } = await selectCluster(context, inputs, AWS));
@@ -88,7 +97,7 @@ export async function serviceWalkthrough(context: $TSContext, datasourceMetadata
   };
 }
 
-async function getRdsClusterResourceIdFromArn(arn: string|undefined, AWS) {
+async function getRdsClusterResourceIdFromArn(arn: string | undefined, AWS) {
   // If the arn was not already existing in cloudformation template, return undefined to prompt for input.
   if (!arn) {
     return;
@@ -97,7 +106,7 @@ async function getRdsClusterResourceIdFromArn(arn: string|undefined, AWS) {
   const RDS = new AWS.RDS();
   const describeDBClustersResult = await RDS.describeDBClusters().promise();
   const rawClusters = describeDBClustersResult.DBClusters;
-  const identifiedCluster = rawClusters.find(cluster => cluster.DBClusterArn === arn);
+  const identifiedCluster = rawClusters.find((cluster) => cluster.DBClusterArn === arn);
   return identifiedCluster.DBClusterIdentifier;
 }
 
@@ -112,7 +121,7 @@ async function selectCluster(context: $TSContext, inputs, AWS) {
   const rawClusters = describeDBClustersResult.DBClusters;
 
   const clusters = new Map();
-  const serverlessClusters = rawClusters.filter(cluster => cluster.EngineMode === 'serverless');
+  const serverlessClusters = rawClusters.filter((cluster) => cluster.EngineMode === 'serverless');
 
   if (serverlessClusters.length === 0) {
     const errMessage = 'No properly configured Aurora Serverless clusters found.';
@@ -174,7 +183,7 @@ async function getSecretStoreArn(context: $TSContext, inputs, clusterResourceId,
   }
 
   const secrets = new Map();
-  const secretsForCluster = rawSecrets.filter(secret => secret.Name.startsWith(`rds-db-credentials/${clusterResourceId}`));
+  const secretsForCluster = rawSecrets.filter((secret) => secret.Name.startsWith(`rds-db-credentials/${clusterResourceId}`));
 
   if (secretsForCluster.length === 0) {
     const errMessage = 'No RDS access credentials found in the AWS Secrect Manager.';
@@ -227,7 +236,7 @@ async function selectDatabase(context: $TSContext, inputs, clusterArn, secretArn
     const dataApiResult = await DataApi.executeStatement(params).promise();
     const excludedDatabases = ['information_schema', 'performance_schema', 'mysql', 'sys'];
 
-    databaseList.push(...dataApiResult.records.map(record => record[0].stringValue).filter(name => !excludedDatabases.includes(name)));
+    databaseList.push(...dataApiResult.records.map((record) => record[0].stringValue).filter((name) => !excludedDatabases.includes(name)));
 
     spinner.succeed('Fetched Aurora Serverless cluster.');
   } catch (err) {
@@ -268,12 +277,12 @@ async function selectDatabase(context: $TSContext, inputs, clusterArn, secretArn
  */
 async function promptWalkthroughQuestion(inputs, questionNumber, choicesList) {
   const question = {
-      type: inputs[questionNumber].type,
-      name: inputs[questionNumber].key,
-      message: inputs[questionNumber].question,
-      choices: choicesList,
-    };
-  return await prompter.pick(question.message, choicesList)
+    type: inputs[questionNumber].type,
+    name: inputs[questionNumber].key,
+    message: inputs[questionNumber].question,
+    choices: choicesList,
+  };
+  return await prompter.pick(question.message, choicesList);
 }
 
 async function getAwsClient(context: $TSContext, action: string) {

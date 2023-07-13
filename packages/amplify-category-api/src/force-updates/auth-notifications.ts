@@ -1,23 +1,7 @@
-import {
-  $TSContext,
-  exitOnNextTick,
-  FeatureFlags,
-  pathManager,
-  stateManager,
-} from '@aws-amplify/amplify-cli-core';
+import { $TSContext, exitOnNextTick, FeatureFlags, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
-import {
-  DirectiveNode,
-  DocumentNode,
-  FieldDefinitionNode,
-  FieldNode,
-  parse,
-} from 'graphql';
-import {
-  collectDirectivesByType,
-  collectDirectivesByTypeNames,
-  readProjectConfiguration,
-} from 'graphql-transformer-core';
+import { DirectiveNode, DocumentNode, FieldDefinitionNode, FieldNode, parse } from 'graphql';
+import { collectDirectivesByType, collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
 import path from 'path';
 import fs from 'fs-extra';
 import { getApiResourceDir } from './api-resource-paths';
@@ -70,7 +54,9 @@ export const displayAuthNotification = (directiveMap: any, fieldDirectives: Set<
     const subscriptionOff: boolean = (modelDirective?.arguments || []).some((arg: any) => {
       if (arg.name.value === 'subscriptions') {
         const subscriptionNull = arg.value.kind === 'NullValue';
-        const levelFieldOffOrNull = arg.value?.fields?.some(({ name, value }) => name.value === 'level' && (value.value === 'off' || value.kind === 'NullValue'));
+        const levelFieldOffOrNull = arg.value?.fields?.some(
+          ({ name, value }) => name.value === 'level' && (value.value === 'off' || value.kind === 'NullValue'),
+        );
 
         return levelFieldOffOrNull || subscriptionNull;
       }
@@ -128,8 +114,8 @@ export const notifyFieldAuthSecurityChange = async (context: $TSContext): Promis
   if (displayAuthNotification(directiveMap, fieldDirectives)) {
     printer.blankLine();
     const continueChange = await prompter.yesOrNo(
-      'This version of Amplify CLI introduces additional security enhancements for your GraphQL API. '
-        + 'The changes are applied automatically with this deployment. This change won\'t impact your client code. Continue?',
+      'This version of Amplify CLI introduces additional security enhancements for your GraphQL API. ' +
+        "The changes are applied automatically with this deployment. This change won't impact your client code. Continue?",
     );
 
     if (!continueChange) {
@@ -175,7 +161,8 @@ export const notifyListQuerySecurityChange = async (context: $TSContext): Promis
   const resolversToCheck = Object.entries(resolvers)
     .filter(([resolverFileName, _]) => resolverFileName.startsWith('Query.list') && resolverFileName.endsWith('.req.vtl'))
     .map(([_, resolverCode]) => resolverCode);
-  const listQueryPattern = /#set\( \$filterExpression = \$util\.parseJson\(\$util\.transform\.toDynamoDBFilterExpression\(\$filter\)\) \)\s*(?!\s*#if\( \$util\.isNullOrEmpty\(\$filterExpression\) \))/gm;
+  const listQueryPattern =
+    /#set\( \$filterExpression = \$util\.parseJson\(\$util\.transform\.toDynamoDBFilterExpression\(\$filter\)\) \)\s*(?!\s*#if\( \$util\.isNullOrEmpty\(\$filterExpression\) \))/gm;
   const resolversToSecure = resolversToCheck.filter((resolver) => listQueryPattern.test(resolver));
   if (resolversToSecure.length === 0) {
     return false;
@@ -187,8 +174,8 @@ export const notifyListQuerySecurityChange = async (context: $TSContext): Promis
   if (hasV2AuthDirectives(doc)) {
     printer.blankLine();
     const continueChange = await prompter.yesOrNo(
-      'This version of Amplify CLI introduces additional security enhancements for your GraphQL API. '
-        + 'The changes are applied automatically with this deployment. This change won\'t impact your client code. Continue?',
+      'This version of Amplify CLI introduces additional security enhancements for your GraphQL API. ' +
+        "The changes are applied automatically with this deployment. This change won't impact your client code. Continue?",
     );
 
     if (!continueChange) {
@@ -239,7 +226,7 @@ export const notifySecurityEnhancement = async (context: $TSContext): Promise<vo
     if (meta?.auth && notifyAuthWithKey) {
       printer.blankLine();
       const shouldContinue = await prompter.yesOrNo(
-        'This version of Amplify CLI introduces additional security enhancements for your GraphQL API. @auth authorization rules applied on primary keys and indexes are scoped down further. The changes are applied automatically with this deployment. This change won\'t impact your client code. Continue',
+        "This version of Amplify CLI introduces additional security enhancements for your GraphQL API. @auth authorization rules applied on primary keys and indexes are scoped down further. The changes are applied automatically with this deployment. This change won't impact your client code. Continue",
       );
 
       if (!shouldContinue) {

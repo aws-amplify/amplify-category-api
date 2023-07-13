@@ -137,33 +137,34 @@ batch:
           CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
-    - identifier: containers_api_secrets_schema_function_1_api_3_api_1
+    - identifier: containers_api_secrets_schema_function_1_api_3_base_cdk
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/containers-api-secrets.test.ts|src/__tests__/schema-function-1.test.ts|src/__tests__/api_3.test.ts|src/__tests__/api_1.test.ts
+            src/__tests__/containers-api-secrets.test.ts|src/__tests__/schema-function-1.test.ts|src/__tests__/api_3.test.ts|src/__tests__/cdk/base-cdk.test.ts
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: resolvers_sync_query_datastore_api_6_api_lambda_auth
+    - identifier: api_1_resolvers_sync_query_datastore_api_6
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts|src/__tests__/api_6.test.ts|src/__tests__/graphql-v2/api_lambda_auth.test.ts
-          CLI_REGION: eu-central-1
+            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts|src/__tests__/api_6.test.ts
+          CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
-    - identifier: api_9
+    - identifier: api_lambda_auth_api_9
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          TEST_SUITE: src/__tests__/api_9.test.ts
-          CLI_REGION: ap-northeast-1
+          TEST_SUITE: >-
+            src/__tests__/graphql-v2/api_lambda_auth.test.ts|src/__tests__/api_9.test.ts
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: function_migration

@@ -1,15 +1,15 @@
 function override(resource, amplifyProjectInfo) {
   resource.models.Test.modelDatasource.dynamoDbConfig.deltaSyncConfig = {
-    deltaSyncTableTtl: "25",
-    baseTableTtl: "20",
-    deltaSyncTableName: "TestTable"
+    deltaSyncTableTtl: '25',
+    baseTableTtl: '20',
+    deltaSyncTableName: 'TestTable',
   };
 
-  if (amplifyProjectInfo.envName != "testEnvName") {
+  if (amplifyProjectInfo.envName != 'testEnvName') {
     throw new Error(`Unexpected envName: ${amplifyProjectInfo.envName}`);
   }
 
-  if (amplifyProjectInfo.projectName != "testProjectName") {
+  if (amplifyProjectInfo.projectName != 'testProjectName') {
     throw new Error(`Unexpected envName: ${amplifyProjectInfo.envName}`);
   }
 }

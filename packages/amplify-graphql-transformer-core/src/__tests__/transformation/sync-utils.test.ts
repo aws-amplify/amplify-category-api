@@ -4,12 +4,13 @@ import { ConflictHandlerType, SyncConfigLambda, ResolverConfig } from '../../con
 import { getSyncConfig } from '../../transformation/sync-utils';
 
 describe('getSyncConfig', () => {
-  const createMockContext = (resolverConfig: ResolverConfig): TransformerTransformSchemaStepContextProvider => ({
-    getResolverConfig: () => resolverConfig,
-    stackManager: {
-      getParameter: (_: string) => jest.fn() as unknown as CfnParameter,
-    },
-  } as unknown as TransformerTransformSchemaStepContextProvider);
+  const createMockContext = (resolverConfig: ResolverConfig): TransformerTransformSchemaStepContextProvider =>
+    ({
+      getResolverConfig: () => resolverConfig,
+      stackManager: {
+        getParameter: (_: string) => jest.fn() as unknown as CfnParameter,
+      },
+    } as unknown as TransformerTransformSchemaStepContextProvider);
 
   describe('lambda sync handler', () => {
     test('handles explicit arn passed in for project-level config', () => {

@@ -8,10 +8,7 @@ export class TransformerPreProcessContext implements TransformerPreProcessContex
   transformParameters: TransformParameters;
   schemaHelper: TransformerSchemaHelperProvider;
 
-  constructor(
-    inputDocument: DocumentNode,
-    transformParameters: TransformParameters,
-  ) {
+  constructor(inputDocument: DocumentNode, transformParameters: TransformParameters) {
     this.inputDocument = inputDocument;
     this.transformParameters = transformParameters;
     this.schemaHelper = new TransformerSchemaHelper();

@@ -68,13 +68,13 @@ export async function reDeploy(
 
 async function configureLambdaDataSource(config) {
   config.dataSources
-    .filter(d => d.type === 'AWS_LAMBDA')
-    .forEach(d => {
+    .filter((d) => d.type === 'AWS_LAMBDA')
+    .forEach((d) => {
       const arn = d.LambdaFunctionArn;
       const arnParts = arn.split(':');
       let functionName = arnParts[arnParts.length - 1];
       const lambdaConfig = getFunctionDetails(functionName);
-      d.invoke = payload => {
+      d.invoke = (payload) => {
         logDebug('Invoking lambda with config', lambdaConfig);
         return invoke({
           srcRoot: lambdaConfig.packageFolder,

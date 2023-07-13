@@ -9,7 +9,8 @@ describe('Validate Schema', () => {
       isDataStoreEnabled: true,
     };
     const schema = readSchema('invalid-use-belongsto-when-datastore-inuse.graphql');
-    const errorRegex = 'InvalidDirectiveError - Post and Blog cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead. See https://docs.amplify.aws/cli/graphql/data-modeling/#belongs-to-relationship';
+    const errorRegex =
+      'InvalidDirectiveError - Post and Blog cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead. See https://docs.amplify.aws/cli/graphql/data-modeling/#belongs-to-relationship';
     expect(() => validateSchemaWithContext(schema, schemaProps)).toThrow(errorRegex);
   });
 

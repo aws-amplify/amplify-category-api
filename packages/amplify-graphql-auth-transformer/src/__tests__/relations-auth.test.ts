@@ -47,8 +47,14 @@ describe('@auth with custom primary keys', () => {
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
-    expect(out.resolvers['Mutation.createPostMetadata.auth.1.req.vtl']).toContain('#set( $ownerAllowedFields0 = ["postMetadataReference","title","post","postMetadataPostPostReference"] )');
-    expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain('#set( $ownerAllowedFields0 = ["postReference","title","comments","metadata","postMetadataPostMetadataReference"] )');
-    expect(out.resolvers['Mutation.createComment.auth.1.req.vtl']).toContain('#set( $ownerAllowedFields0 = ["commentReference","title","postCommentsPostReference"] )');
+    expect(out.resolvers['Mutation.createPostMetadata.auth.1.req.vtl']).toContain(
+      '#set( $ownerAllowedFields0 = ["postMetadataReference","title","post","postMetadataPostPostReference"] )',
+    );
+    expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain(
+      '#set( $ownerAllowedFields0 = ["postReference","title","comments","metadata","postMetadataPostMetadataReference"] )',
+    );
+    expect(out.resolvers['Mutation.createComment.auth.1.req.vtl']).toContain(
+      '#set( $ownerAllowedFields0 = ["commentReference","title","postCommentsPostReference"] )',
+    );
   });
 });

@@ -132,11 +132,11 @@ export const validateModelSchema = (doc: DocumentNode) => {
     definitions: [...EXTRA_DIRECTIVES_DOCUMENT.definitions, ...doc.definitions, ...EXTRA_SCALARS_DOCUMENT.definitions],
   };
 
-  const schemaDef = doc.definitions.find(d => d.kind === Kind.SCHEMA_DEFINITION) as SchemaDefinitionNode;
-  const queryOperation = schemaDef ? schemaDef.operationTypes.find(o => o.operation === 'query') : undefined;
+  const schemaDef = doc.definitions.find((d) => d.kind === Kind.SCHEMA_DEFINITION) as SchemaDefinitionNode;
+  const queryOperation = schemaDef ? schemaDef.operationTypes.find((o) => o.operation === 'query') : undefined;
   const queryName = queryOperation ? queryOperation.type.name.value : 'Query';
   const existingQueryType = doc.definitions.find(
-    d =>
+    (d) =>
       d.kind !== Kind.DIRECTIVE_DEFINITION && d.kind !== Kind.SCHEMA_DEFINITION && (d as any).name && (d as any).name.value === queryName,
   );
 
@@ -156,7 +156,7 @@ export const validateAuthModes = (authConfig: AppSyncAuthConfiguration) => {
   let additionalAuthModes: AppSyncAuthMode[] = [];
 
   if (authConfig.additionalAuthenticationProviders) {
-    additionalAuthModes = authConfig.additionalAuthenticationProviders.map(p => p.authenticationType).filter(t => !!t);
+    additionalAuthModes = authConfig.additionalAuthenticationProviders.map((p) => p.authenticationType).filter((t) => !!t);
   }
 
   const authModes: AppSyncAuthMode[] = [...additionalAuthModes, authConfig.defaultAuthentication.authenticationType];

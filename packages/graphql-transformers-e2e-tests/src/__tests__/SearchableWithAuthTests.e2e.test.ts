@@ -40,8 +40,6 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
   delete anyAWS.config.credentials;

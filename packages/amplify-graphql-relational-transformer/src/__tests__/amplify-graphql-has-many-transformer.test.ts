@@ -414,12 +414,18 @@ test('many to many query', () => {
         ConflictHandler: ConflictHandlerType.AUTOMERGE,
       },
     },
-    transformers: [new ModelTransformer(), new IndexTransformer(), new HasOneTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+    transformers: [
+      new ModelTransformer(),
+      new IndexTransformer(),
+      new HasOneTransformer(),
+      new HasManyTransformer(),
+      new BelongsToTransformer(),
+    ],
     transformParameters: {
       enableAutoIndexQueryNames: false,
       respectPrimaryKeyAttributesOnConnectionField: false,
       secondaryKeyAsGSI: false,
-    }
+    },
   });
 
   const out = transformer.transform(inputSchema);
@@ -490,7 +496,7 @@ test('has many with implicit index and fields and a user-defined primary key', (
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
-    transformParameters: { respectPrimaryKeyAttributesOnConnectionField: false }
+    transformParameters: { respectPrimaryKeyAttributesOnConnectionField: false },
   });
 
   const out = transformer.transform(inputSchema);
@@ -657,7 +663,7 @@ test('validates VTL of a complex schema', () => {
       respectPrimaryKeyAttributesOnConnectionField: false,
       enableAutoIndexQueryNames: false,
       secondaryKeyAsGSI: false,
-    }
+    },
   });
 
   const out = transformer.transform(inputSchema);
@@ -802,7 +808,7 @@ describe('Pre Processing Has Many Tests', () => {
 
   beforeEach(() => {
     transformer = new GraphQLTransform({
-        transformers: [new ModelTransformer(), new HasManyTransformer()],
+      transformers: [new ModelTransformer(), new HasManyTransformer()],
     });
   });
 
@@ -858,9 +864,9 @@ describe('@hasMany connection field nullability tests', () => {
       }
     `;
     const transformer = new GraphQLTransform({
-        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     });
-  
+
     const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);

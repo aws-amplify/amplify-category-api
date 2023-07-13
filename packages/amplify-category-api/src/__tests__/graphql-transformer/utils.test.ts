@@ -46,7 +46,7 @@ describe('graphql transformer utils', () => {
       prePushCfnTemplateModifier_mock.mockImplementation(async () => {
         hasTransformedTemplate = true;
       });
-      fs_mock.writeFileSync.mockImplementation(filepath => {
+      fs_mock.writeFileSync.mockImplementation((filepath) => {
         if (typeof filepath === 'string' && filepath.includes(`${path.sep}stacks${path.sep}`)) {
           if (hasTransformedTemplate) {
             hasWrittenTransformedTemplate = true;

@@ -1,6 +1,8 @@
 import {
   DynamoDbDataSourceOptions,
-  MappingTemplateProvider, SearchableDataSourceOptions, TransformHostProvider,
+  MappingTemplateProvider,
+  SearchableDataSourceOptions,
+  TransformHostProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   BaseDataSource,
@@ -14,9 +16,7 @@ import {
 import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole } from 'aws-cdk-lib/aws-iam';
-import {
-  CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime,
-} from 'aws-cdk-lib/aws-lambda';
+import { CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Duration, Stack, Token } from 'aws-cdk-lib';
 import { ResolverResourceIDs, resourceName, toCamelCase } from 'graphql-transformer-common';
 import hash from 'object-hash';
@@ -89,7 +89,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     const dataSource = this.doAddHttpDataSource(name, endpoint, options, stack);
     this.dataSources.set(name, dataSource);
     return dataSource;
-  }
+  };
 
   public addDynamoDbDataSource = (name: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource => {
     if (this.dataSources.has(name)) {
@@ -98,7 +98,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     const dataSource = this.doAddDynamoDbDataSource(name, table, options, stack);
     this.dataSources.set(options?.name || name, dataSource);
     return dataSource;
-  }
+  };
 
   public addNoneDataSource = (name: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource => {
     if (this.dataSources.has(name)) {
@@ -107,7 +107,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     const dataSource = this.doAddNoneDataSource(name, options, stack);
     this.dataSources.set(name, dataSource);
     return dataSource;
-  }
+  };
 
   public addLambdaDataSource = (name: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource => {
     if (!Token.isUnresolved(name) && this.dataSources.has(name)) {
@@ -116,7 +116,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     const dataSource = this.doAddLambdaDataSource(name, lambdaFunction, options, stack);
     this.dataSources.set(name, dataSource);
     return dataSource;
-  }
+  };
 
   public addAppSyncFunction = (
     name: string,
@@ -134,7 +134,7 @@ export class DefaultTransformHost implements TransformHostProvider {
 
     const dataSource = this.dataSources.get(dataSourceName);
 
-    const obj :Slot = {
+    const obj: Slot = {
       dataSource: dataSourceName,
       requestMappingTemplate: requestMappingTemplate.getTemplateHash(),
       responseMappingTemplate: responseMappingTemplate.getTemplateHash(),
@@ -157,7 +157,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     });
     this.appsyncFunctions.set(slotHash, fn);
     return fn;
-  }
+  };
 
   public addResolver = (
     typeName: string,
@@ -196,7 +196,8 @@ export class DefaultTransformHost implements TransformHostProvider {
       resolver.overrideLogicalId(resourceId);
       this.api.addSchemaDependency(resolver);
       return resolver;
-    } if (pipelineConfig) {
+    }
+    if (pipelineConfig) {
       const resolver = new CfnResolver(stack || this.api, resolverName, {
         apiId: this.api.apiId,
         fieldName,
@@ -218,7 +219,7 @@ export class DefaultTransformHost implements TransformHostProvider {
       return resolver;
     }
     throw new Error('Resolver needs either dataSourceName or pipelineConfig to be passed');
-  }
+  };
 
   addLambdaFunction = (
     functionName: string,
@@ -249,7 +250,7 @@ export class DefaultTransformHost implements TransformHostProvider {
       s3Bucket: functionCode.s3BucketName,
     };
     return fn;
-  }
+  };
 
   /**
    *

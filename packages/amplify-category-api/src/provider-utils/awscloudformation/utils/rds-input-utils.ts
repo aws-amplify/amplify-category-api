@@ -1,18 +1,14 @@
 import { parse, print, InputObjectTypeDefinitionNode } from 'graphql';
 import * as fs from 'fs-extra';
-import {
-  $TSContext,
-  ApiCategoryFacade,
-  getGraphQLTransformerAuthDocLink,
-} from '@aws-amplify/amplify-cli-core';
+import { $TSContext, ApiCategoryFacade, getGraphQLTransformerAuthDocLink } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { ImportedRDSType, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
 
 type AmplifyInputEntry = {
-  name: string,
-  type: string,
-  default: string|number,
-  comment?: string|undefined
+  name: string;
+  type: string;
+  default: string | number;
+  comment?: string | undefined;
 };
 
 const getGlobalAmplifyInputEntries = async (
@@ -25,26 +21,35 @@ const getGlobalAmplifyInputEntries = async (
       name: 'engine',
       type: 'String',
       default: dataSourceType,
-    }
+    },
   ];
 
-  if (includeAuthRule && (await ApiCategoryFacade.getTransformerVersion(context) === 2)) {
+  if (includeAuthRule && (await ApiCategoryFacade.getTransformerVersion(context)) === 2) {
     const authDocLink = getGraphQLTransformerAuthDocLink(2);
     inputs.push({
       name: 'globalAuthRule',
       type: 'AuthRule',
       default: '{ allow: public }',
-      comment: `This "input" configures a global authorization rule to enable public access to all models in this schema. Learn more about authorization rules here:${authDocLink}`
+      comment: `This "input" configures a global authorization rule to enable public access to all models in this schema. Learn more about authorization rules here:${authDocLink}`,
     });
-  };
+  }
   return inputs;
 };
 
-export const constructDefaultGlobalAmplifyInput = async (context: $TSContext, dataSourceType: ImportedRDSType, includeAuthRule: boolean = true) => {
+export const constructDefaultGlobalAmplifyInput = async (
+  context: $TSContext,
+  dataSourceType: ImportedRDSType,
+  includeAuthRule: boolean = true,
+) => {
   const inputs = await getGlobalAmplifyInputEntries(context, dataSourceType, includeAuthRule);
-  const inputsString = inputs.reduce((acc: string, input): string =>
-    acc + ` ${input.name}: ${input.type} = ${input.type === 'String' ? '"'+ input.default + '"' : input.default} ${input.comment ? '# ' + input.comment: ''} \n`
-  , '');
+  const inputsString = inputs.reduce(
+    (acc: string, input): string =>
+      acc +
+      ` ${input.name}: ${input.type} = ${input.type === 'String' ? '"' + input.default + '"' : input.default} ${
+        input.comment ? '# ' + input.comment : ''
+      } \n`,
+    '',
+  );
   return `input Amplify {\n${inputsString}}\n`;
 };
 
@@ -60,32 +65,26 @@ export const readRDSGlobalAmplifyInput = async (pathToSchemaFile: string): Promi
   const parsedSchema = parse(schemaContent);
 
   const inputNode = parsedSchema.definitions.find(
-    (definition) =>
-      definition.kind === 'InputObjectTypeDefinition' &&
-      definition.name &&
-      definition.name.value === 'Amplify'
+    (definition) => definition.kind === 'InputObjectTypeDefinition' && definition.name && definition.name.value === 'Amplify',
   );
 
   if (inputNode) {
-    return (inputNode as InputObjectTypeDefinitionNode);
+    return inputNode as InputObjectTypeDefinitionNode;
   }
 };
 
 export const constructRDSGlobalAmplifyInput = async (context: $TSContext, config: any, pathToSchemaFile: string): Promise<string> => {
-  const existingInputNode:any = await readRDSGlobalAmplifyInput(pathToSchemaFile) || {};
-  if ( existingInputNode?.fields && existingInputNode?.fields?.length > 0 ) {
-    const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL)).map(item => item.name);
+  const existingInputNode: any = (await readRDSGlobalAmplifyInput(pathToSchemaFile)) || {};
+  if (existingInputNode?.fields && existingInputNode?.fields?.length > 0) {
+    const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL)).map((item) => item.name);
     expectedInputs.forEach((input) => {
-      const inputNodeField = existingInputNode?.fields?.find(
-        (field: any) => field?.name?.value === input,
-      );
+      const inputNodeField = existingInputNode?.fields?.find((field: any) => field?.name?.value === input);
       if (inputNodeField && config[input]) {
         inputNodeField['defaultValue']['value'] = config[input];
       }
     });
     return print(existingInputNode);
-  }
-  else {
+  } else {
     const engine = config['engine'] || ImportedRDSType.MYSQL;
     return constructDefaultGlobalAmplifyInput(context, engine, false);
   }

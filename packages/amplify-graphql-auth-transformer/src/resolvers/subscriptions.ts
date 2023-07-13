@@ -19,16 +19,9 @@ import {
   qref,
   raw,
   parens,
-  int
+  int,
 } from 'graphql-mapping-template';
-import {
-  COGNITO_AUTH_TYPE,
-  ConfiguredAuthProviders,
-  IS_AUTHORIZED_FLAG,
-  OIDC_AUTH_TYPE,
-  RoleDefinition,
-  splitRoles,
-} from '../utils';
+import { COGNITO_AUTH_TYPE, ConfiguredAuthProviders, IS_AUTHORIZED_FLAG, OIDC_AUTH_TYPE, RoleDefinition, splitRoles } from '../utils';
 import {
   generateStaticRoleExpression,
   apiKeyExpression,
@@ -64,26 +57,22 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
           compoundExpression([
             generateOwnerMultiClaimExpression(role.claim!, `ownerClaim${idx}`),
             generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
-            qref(methodCall(ref('authOwnerRuntimeFilter.add'), raw(`{ "${role.entity}": { "${role.isEntityList ? 'contains' : 'eq'}": $${ownerClaimRef} } }`))),
-            set(
-              ref(`ownerEntity${idx}`),
-              methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}`), nul()),
+            qref(
+              methodCall(
+                ref('authOwnerRuntimeFilter.add'),
+                raw(`{ "${role.entity}": { "${role.isEntityList ? 'contains' : 'eq'}": $${ownerClaimRef} } }`),
+              ),
             ),
+            set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}`), nul())),
             iff(
-              and([
-                not(ref(IS_AUTHORIZED_FLAG)),
-                not(methodCall(ref('util.isNullOrEmpty'), ref(`ownerEntity${idx}`))),
-              ]),
+              and([not(ref(IS_AUTHORIZED_FLAG)), not(methodCall(ref('util.isNullOrEmpty'), ref(`ownerEntity${idx}`)))]),
               compoundExpression([
                 ifElse(
                   or([
                     equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
                     methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
                   ]),
-                  compoundExpression([
-                    set(ref(IS_AUTHORIZED_FLAG), bool(true)),
-                    set(ref(HAS_VALID_OWNER_ARGUMENT_FLAG), bool(true)),
-                  ]),
+                  compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), set(ref(HAS_VALID_OWNER_ARGUMENT_FLAG), bool(true))]),
                   methodCall(ref('util.unauthorized')),
                 ),
               ]),
@@ -105,15 +94,18 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
         ),
         iff(
           not(methodCall(ref('util.isNullOrEmpty'), ref(`groupClaim${idx}`))),
-          qref(methodCall(ref('authGroupRuntimeFilter.add'), raw(`{ "${role.entity}": { "${role.isEntityList ? 'containsAny' : 'in'}": $groupClaim${idx} } }`))),
+          qref(
+            methodCall(
+              ref('authGroupRuntimeFilter.add'),
+              raw(`{ "${role.entity}": { "${role.isEntityList ? 'containsAny' : 'in'}": $groupClaim${idx} } }`),
+            ),
+          ),
         ),
       );
     }
   });
 
-  dynamicExpression.push(
-    ...combineAuthExpressionAndFilter(ownerExpression, groupExpression),
-  );
+  dynamicExpression.push(...combineAuthExpressionAndFilter(ownerExpression, groupExpression));
 
   return dynamicExpression;
 };
@@ -126,24 +118,12 @@ const combineAuthExpressionAndFilter = (ownerExpression: Array<Expression>, grou
   ...(ownerExpression.length > 0 ? ownerExpression : []),
   ...(groupExpression.length > 0 ? groupExpression : []),
   comment('Apply dynamic roles auth if not previously authorized by static groups and owner argument'),
-  iff(
-    raw('$authOwnerRuntimeFilter.size() > 0'),
-    qref(methodCall(ref('authRuntimeFilter.addAll'), ref('authOwnerRuntimeFilter'))),
-  ),
-  iff(
-    raw('$authGroupRuntimeFilter.size() > 0'),
-    qref(methodCall(ref('authRuntimeFilter.addAll'), ref('authGroupRuntimeFilter'))),
-  ),
-  set(
-    ref(FILTER_ARGS_SIZE_FLAG),
-    int(0),
-  ),
+  iff(raw('$authOwnerRuntimeFilter.size() > 0'), qref(methodCall(ref('authRuntimeFilter.addAll'), ref('authOwnerRuntimeFilter')))),
+  iff(raw('$authGroupRuntimeFilter.size() > 0'), qref(methodCall(ref('authRuntimeFilter.addAll'), ref('authGroupRuntimeFilter')))),
+  set(ref(FILTER_ARGS_SIZE_FLAG), int(0)),
   iff(
     not(methodCall(ref('util.isNullOrEmpty'), ref('ctx.args.filter'))),
-    set(
-      ref(FILTER_ARGS_SIZE_FLAG),
-      methodCall(ref('ctx.args.filter.size')),
-    ),
+    set(ref(FILTER_ARGS_SIZE_FLAG), methodCall(ref('ctx.args.filter.size'))),
   ),
   // isOwnerAuthAuthorizedAndNoOtherFilter is defined as user authorized
   // with an owner param which we've verified matches their token claims,
@@ -161,19 +141,10 @@ const combineAuthExpressionAndFilter = (ownerExpression: Array<Expression>, grou
   ),
   set(
     ref(IS_OWNER_OR_DYNAMIC_AUTH_AUTHORIZED_WITH_FILTERS_FLAG),
-    and([
-      parens(or([
-        not(ref(IS_AUTHORIZED_FLAG)),
-        ref(HAS_VALID_OWNER_ARGUMENT_FLAG),
-      ])),
-      raw('$authRuntimeFilter.size() > 0'),
-    ]),
+    and([parens(or([not(ref(IS_AUTHORIZED_FLAG)), ref(HAS_VALID_OWNER_ARGUMENT_FLAG)])), raw('$authRuntimeFilter.size() > 0')]),
   ),
   iff(
-    and([
-      not(ref(IS_OWNER_AUTH_AUTHORIZED_AND_NO_OTHER_FILTERS_FLAG)),
-      ref(IS_OWNER_OR_DYNAMIC_AUTH_AUTHORIZED_WITH_FILTERS_FLAG),
-    ]),
+    and([not(ref(IS_OWNER_AUTH_AUTHORIZED_AND_NO_OTHER_FILTERS_FLAG)), ref(IS_OWNER_OR_DYNAMIC_AUTH_AUTHORIZED_WITH_FILTERS_FLAG)]),
     compoundExpression([
       ifElse(
         methodCall(ref('util.isNullOrEmpty'), ref('ctx.args.filter')),
@@ -189,9 +160,8 @@ const combineAuthExpressionAndFilter = (ownerExpression: Array<Expression>, grou
  * Generates auth expressions for each auth type for Subscription requests
  */
 export const generateAuthExpressionForSubscriptions = (providers: ConfiguredAuthProviders, roles: Array<RoleDefinition>): string => {
-  const {
-    cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, iamRoles, apiKeyRoles, lambdaRoles,
-  } = splitRoles(roles);
+  const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, iamRoles, apiKeyRoles, lambdaRoles } =
+    splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [setHasAuthExpression, set(ref(IS_AUTHORIZED_FLAG), bool(false))];
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));

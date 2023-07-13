@@ -11,8 +11,6 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 
 test('Test "read" auth operation', () => {

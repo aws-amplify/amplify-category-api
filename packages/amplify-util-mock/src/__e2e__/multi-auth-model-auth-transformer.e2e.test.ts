@@ -127,7 +127,7 @@ beforeAll(async () => {
       }),
     ],
     featureFlags: {
-      getBoolean: name => (name === 'improvePluralization' ? true : false),
+      getBoolean: (name) => (name === 'improvePluralization' ? true : false),
     } as FeatureFlagProvider,
   });
 
@@ -182,7 +182,7 @@ beforeAll(async () => {
 
     // Wait for any propagation to avoid random
     // "The security token included in the request is invalid" errors
-    await new Promise<void>(res => setTimeout(() => res(), 5000));
+    await new Promise<void>((res) => setTimeout(() => res(), 5000));
   } catch (e) {
     console.error(e);
     expect(true).toEqual(false);

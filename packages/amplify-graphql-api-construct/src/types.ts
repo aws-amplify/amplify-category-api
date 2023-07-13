@@ -70,12 +70,7 @@ export type AuthorizationConfig = {
   /**
    * Default auth mode to provide to the API, required if more than one config type is specified.
    */
-  defaultAuthMode?:
-    | 'AWS_IAM'
-    | 'AMAZON_COGNITO_USER_POOLS'
-    | 'OPENID_CONNECT'
-    | 'API_KEY'
-    | 'AWS_LAMBDA';
+  defaultAuthMode?: 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
 
   /**
    * IAM Auth config, required if an 'iam' auth provider is specified in the API.
@@ -175,24 +170,18 @@ export type ConflictResolution = {
 /**
  * Schema representation for transformation. Accepts either a raw string, single, or array of appsync SchemaFile objects.
  */
-export type AmplifyGraphqlApiSchema =
-  | SchemaFile
-  | SchemaFile[]
-  | string;
+export type AmplifyGraphqlApiSchema = SchemaFile | SchemaFile[] | string;
 
 /**
  * Params exposed to support configuring and overriding pipelined slots. This allows configuration of the underlying function,
  * including the datasource, request/response mapping templates, or setting a JS resolver up instead.
  */
-export type FunctionSlotOverride = Partial<Pick<AppsyncFunctionProps,
-  | 'name'
-  | 'description'
-  | 'dataSource'
-  | 'requestMappingTemplate'
-  | 'responseMappingTemplate'
-  | 'code'
-  | 'runtime'
->>;
+export type FunctionSlotOverride = Partial<
+  Pick<
+    AppsyncFunctionProps,
+    'name' | 'description' | 'dataSource' | 'requestMappingTemplate' | 'responseMappingTemplate' | 'code' | 'runtime'
+  >
+>;
 
 /**
  * Common slot parameters.
@@ -230,10 +219,7 @@ export type SubscriptionFunctionSlot = FunctionSlotBase & {
 /**
  * Input params to uniquely identify the slot which is being overridden.
  */
-export type FunctionSlot =
-  | MutationFunctionSlot
-  | QueryFunctionSlot
-  | SubscriptionFunctionSlot;
+export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | SubscriptionFunctionSlot;
 
 /**
  * Strongly typed set of shared parameters for all transformers, and core layer.
@@ -365,7 +351,7 @@ export type AmplifyGraphqlApiProps = {
    * This replaces feature flags from the API construct, for general information on what these parameters do,
    * refer to https://docs.amplify.aws/cli/reference/feature-flags/#graphQLTransformer
    */
-  schemaTranslationBehavior?: Partial<SchemaTranslationBehavior>
+  schemaTranslationBehavior?: Partial<SchemaTranslationBehavior>;
 };
 
 /**

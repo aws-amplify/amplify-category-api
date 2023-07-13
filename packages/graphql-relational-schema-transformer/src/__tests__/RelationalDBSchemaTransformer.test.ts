@@ -54,7 +54,7 @@ function getTableContext(tableName: string): TableContext {
     primaryKey,
     primaryKeyType,
     stringFieldList,
-    []
+    [],
   );
 }
 

@@ -41,13 +41,11 @@ export const DEFAULT_SCALARS: ScalarMap = {
  * @param enums enums to consider as scalars
  * @returns boolean
  */
-export const isScalarOrEnum = (
-  type: TypeNode,
-  enums: EnumTypeDefinitionNode[],
-): boolean => {
+export const isScalarOrEnum = (type: TypeNode, enums: EnumTypeDefinitionNode[]): boolean => {
   if (type.kind === Kind.NON_NULL_TYPE) {
     return isScalarOrEnum(type.type, enums);
-  } if (type.kind === Kind.LIST_TYPE) {
+  }
+  if (type.kind === Kind.LIST_TYPE) {
     /* istanbul ignore next */
     return false;
   }

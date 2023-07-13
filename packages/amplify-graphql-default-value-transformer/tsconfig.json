@@ -4,8 +4,5 @@
     "rootDir": "src",
     "outDir": "lib"
   },
-  "references": [
-    {"path": "../amplify-graphql-transformer-interfaces"},
-    {"path": "../graphql-mapping-template"}
-  ]
+  "references": [{ "path": "../amplify-graphql-transformer-interfaces" }, { "path": "../graphql-mapping-template" }]
 }

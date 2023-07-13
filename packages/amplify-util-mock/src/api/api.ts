@@ -36,7 +36,7 @@ export class APITest {
 
   async start(context, port: number = MOCK_API_PORT, wsPort: number = 20003) {
     try {
-      context.amplify.addCleanUpTask(async context => {
+      context.amplify.addCleanUpTask(async (context) => {
         await this.stop(context);
       });
       this.configOverrideManager = await ConfigOverrideManager.getInstance(context);
@@ -181,19 +181,19 @@ export class APITest {
   }
 
   private async ensureDDBTables(config) {
-    const tables = config.tables.map(t => t.Properties);
+    const tables = config.tables.map((t) => t.Properties);
     await createAndUpdateTable(this.ddbClient, config);
   }
 
   private async configureLambdaDataSource(context, config) {
-    const lambdaDataSources = config.dataSources.filter(d => d.type === 'AWS_LAMBDA');
+    const lambdaDataSources = config.dataSources.filter((d) => d.type === 'AWS_LAMBDA');
     if (lambdaDataSources.length === 0) {
       return config;
     }
     return {
       ...config,
       dataSources: await Promise.all(
-        config.dataSources.map(async d => {
+        config.dataSources.map(async (d) => {
           if (d.type !== 'AWS_LAMBDA') {
             return d;
           }
@@ -205,7 +205,7 @@ export class APITest {
           });
           return {
             ...d,
-            invoke: payload => {
+            invoke: (payload) => {
               return timeConstrainedInvoker(
                 invoker({
                   event: payload,
@@ -222,13 +222,13 @@ export class APITest {
   private async watch(context) {
     this.watcher = await this.registerWatcher(context);
     this.watcher
-      .on('add', path => {
+      .on('add', (path) => {
         this.reload(context, path, 'add');
       })
-      .on('change', path => {
+      .on('change', (path) => {
         this.reload(context, path, 'change');
       })
-      .on('unlink', path => {
+      .on('unlink', (path) => {
         this.reload(context, path, 'unlink');
       });
   }

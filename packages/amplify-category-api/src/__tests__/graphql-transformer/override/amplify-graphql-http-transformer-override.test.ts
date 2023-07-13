@@ -48,7 +48,8 @@ test('it skips override if file does not exist', () => {
   const transformer = new GraphQLTransform({
     transformers: [new HttpTransformer()],
     overrideConfig: {
-      applyOverride: (stackManager: StackManager) => applyFileBasedOverride(stackManager, path.join(__dirname, 'non-existing-override-dir')),
+      applyOverride: (stackManager: StackManager) =>
+        applyFileBasedOverride(stackManager, path.join(__dirname, 'non-existing-override-dir')),
       overrideFlag: true,
     },
   });

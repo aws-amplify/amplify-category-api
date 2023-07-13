@@ -7,8 +7,12 @@ import {
   DirectiveDefinitionNode,
   TypeSystemDefinitionNode,
   Kind,
+  parse,
+  print,
+  DefinitionNode,
 } from 'graphql';
 import { TransformerPluginProvider, TransformerPluginType } from '@aws-amplify/graphql-transformer-interfaces';
+import _ from 'lodash';
 
 export function makeSeenTransformationKey(
   directive: DirectiveNode,
@@ -179,3 +183,24 @@ export function sortTransformerPlugins(plugins: TransformerPluginProvider[]): Tr
     return aIdx - bIdx;
   });
 }
+
+/**
+ * Return the input schema with the `Amplify` input node stripped.
+ * @param schema the input schema to scrub
+ * @returns the input shema without the `Amplify` input node
+ */
+export const removeAmplifyInputDefinition = (schema: string): string => {
+  if (_.isEmpty(schema)) {
+    return schema;
+  }
+
+  const { definitions, ...rest } = parse(schema);
+
+  const isAmplifyInputNode = (definition: DefinitionNode): boolean =>
+    definition.kind === 'InputObjectTypeDefinition' && definition.name.value === 'Amplify';
+
+  return print({
+    definitions: definitions.filter((definition: DefinitionNode) => !isAmplifyInputNode(definition)),
+    ...rest,
+  });
+};

@@ -47,7 +47,7 @@ import {
   generateOwnerClaimExpression,
   generateOwnerClaimListExpression,
   generateOwnerMultiClaimExpression,
-  generateInvalidClaimsCondition
+  generateInvalidClaimsCondition,
 } from './helpers';
 
 /**
@@ -101,7 +101,7 @@ const iamExpression = (
     expression.push(iamAdminRoleCheckExpression(adminRoles));
   }
   if (roles.length > 0) {
-    roles.forEach(role => {
+    roles.forEach((role) => {
       if (role.areAllFieldsAllowed && role.areAllFieldsNullAllowed) {
         expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), identityPoolId));
       } else {
@@ -125,7 +125,7 @@ const iamExpression = (
 
 const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Expression[] => {
   const staticRoleExpression: Array<Expression> = [];
-  const privateRoleIdx = roles.findIndex(r => r.strategy === 'private');
+  const privateRoleIdx = roles.findIndex((r) => r.strategy === 'private');
   if (privateRoleIdx > -1) {
     const privateRole = roles[privateRoleIdx];
     if (privateRole.areAllFieldsAllowed && privateRole.areAllFieldsNullAllowed) {
@@ -147,7 +147,7 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Expression[
             ref('staticGroupRoles'),
             raw(
               JSON.stringify(
-                roles.map(r => ({
+                roles.map((r) => ({
                   claim: r.claim,
                   entity: r.entity,
                   allowedFields: r.allowedFields,
@@ -195,30 +195,30 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
                 set(ref(`isAuthorizedOnAllFields${idx}`), bool(role.areAllFieldsAllowed && role.areAllFieldsNullAllowed)),
                 ...(entityIsList
                   ? [
-                    forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
+                      forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
+                        iff(
+                          or([
+                            equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                            methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
+                          ]),
+                          addAllowedFieldsIfElse(
+                            `ownerAllowedFields${idx}`,
+                            `ownerNullAllowedFields${idx}`,
+                            `isAuthorizedOnAllFields${idx}`,
+                            true,
+                          ),
+                        ),
+                      ]),
+                    ]
+                  : [
                       iff(
                         or([
-                          equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
-                          methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
+                          equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
+                          methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
                         ]),
-                        addAllowedFieldsIfElse(
-                          `ownerAllowedFields${idx}`,
-                          `ownerNullAllowedFields${idx}`,
-                          `isAuthorizedOnAllFields${idx}`,
-                          true,
-                        ),
+                        addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `ownerNullAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
                       ),
                     ]),
-                  ]
-                  : [
-                    iff(
-                      or([
-                        equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
-                        methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
-                      ]),
-                      addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `ownerNullAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
-                    ),
-                  ]),
               ]),
             ),
           ]),
@@ -274,9 +274,8 @@ export const generateAuthExpressionForUpdate = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ): string => {
-  const {
-    cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles,
-  } = splitRoles(roles);
+  const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } =
+    splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [
     setHasAuthExpression,
     responseCheckForErrors(),
@@ -342,16 +341,12 @@ export const generateAuthExpressionForUpdate = (
   return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, toJson(obj({}))]));
 };
 
-const addAllowedFieldsIfElse = (
-  allowedFieldsKey: string,
-  nullAllowedFieldsKey: string,
-  condition: string,
-  breakLoop = false,
-): Expression => ifElse(
-  ref(condition),
-  compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), ...(breakLoop ? [raw('#break')] : [])]),
-  compoundExpression([
-    qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(allowedFieldsKey))),
-    qref(methodCall(ref(`${NULL_ALLOWED_FIELDS}.addAll`), ref(nullAllowedFieldsKey))),
-  ]),
-);
+const addAllowedFieldsIfElse = (allowedFieldsKey: string, nullAllowedFieldsKey: string, condition: string, breakLoop = false): Expression =>
+  ifElse(
+    ref(condition),
+    compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), ...(breakLoop ? [raw('#break')] : [])]),
+    compoundExpression([
+      qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(allowedFieldsKey))),
+      qref(methodCall(ref(`${NULL_ALLOWED_FIELDS}.addAll`), ref(nullAllowedFieldsKey))),
+    ]),
+  );

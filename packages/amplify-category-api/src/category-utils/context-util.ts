@@ -1,8 +1,4 @@
-import {
-  $TSContext,
-  AmplifyCategories,
-  pathManager,
-} from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyCategories, pathManager } from '@aws-amplify/amplify-cli-core';
 
 import fs from 'fs-extra';
 import path from 'path';
@@ -24,10 +20,7 @@ export class ContextUtil {
    * @param context the context from the CLI
    * @param options the options from the CLI
    */
-  getResourceDir = async (
-    context: $TSContext,
-    options: any,
-  ): Promise<string> => {
+  getResourceDir = async (context: $TSContext, options: any): Promise<string> => {
     if (this.resourceDir) {
       return this.resourceDir;
     }
@@ -71,7 +64,7 @@ export class ContextUtil {
     }
     this.resourceDir = resourceDir;
     return resourceDir;
-  }
+  };
 }
 
 export const contextUtil = new ContextUtil();

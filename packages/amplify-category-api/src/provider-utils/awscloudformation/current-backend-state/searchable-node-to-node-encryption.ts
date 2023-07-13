@@ -15,14 +15,12 @@ import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
  * @param apiName the name of the api to attempt and pull the flag from.
  * @returns whether or not NodeToNodeEncryption should be enabled on a searchable instance as well as any warning message.
  */
-export const shouldEnableNodeToNodeEncryption = (
-  apiName: string,
-  projectRoot: string,
-  currentCloudBackendDir: string,
-): boolean => {
+export const shouldEnableNodeToNodeEncryption = (apiName: string, projectRoot: string, currentCloudBackendDir: string): boolean => {
   try {
     const nodeToNodeEncryptionParameter = getNodeToNodeEncryptionConfigValue(projectRoot, apiName);
-    const doesExistingBackendHaveNodeToNodeEncryption = getCurrentCloudBackendStackFiles(currentCloudBackendDir, apiName).some(definition => hasNodeToNodeEncryptionOptions(definition));
+    const doesExistingBackendHaveNodeToNodeEncryption = getCurrentCloudBackendStackFiles(currentCloudBackendDir, apiName).some(
+      (definition) => hasNodeToNodeEncryptionOptions(definition),
+    );
 
     warnOnExistingNodeToNodeEncryption(doesExistingBackendHaveNodeToNodeEncryption);
 

@@ -1,13 +1,12 @@
 {
   "name": "@aws-amplify/graphql-construct-alpha",
-  "version": "0.1.0",
+  "version": "0.3.2",
   "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer.",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",
     "directory": "packages/amplify-graphql-api-construct"
   },
-  "private": true,
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "main": "lib/index.js",
@@ -30,9 +29,9 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer": "0.0.2",
-    "@aws-amplify/graphql-transformer-core": "1.3.3",
-    "@aws-amplify/graphql-transformer-interfaces": "2.2.2",
+    "@aws-amplify/graphql-transformer": "0.0.6",
+    "@aws-amplify/graphql-transformer-core": "1.3.7",
+    "@aws-amplify/graphql-transformer-interfaces": "2.2.4",
     "fs-extra": "^8.1.0"
   },
   "devDependencies": {
@@ -42,7 +41,7 @@
     "ts-jest": "^26.4.4"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.68.0",
+    "aws-cdk-lib": "^2.80.0",
     "constructs": "^10.0.5"
   },
   "jest": {

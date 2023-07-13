@@ -32,7 +32,7 @@ import {
   generatePopulateOwnerField,
   addAllowedFieldsIfElse,
   generateOwnerMultiClaimExpression,
-  generateInvalidClaimsCondition
+  generateInvalidClaimsCondition,
 } from './helpers';
 import {
   API_KEY_AUTH_TYPE,
@@ -81,7 +81,7 @@ const iamExpression = (
     expression.push(iamAdminRoleCheckExpression(adminRoles));
   }
   if (roles.length > 0) {
-    roles.forEach(role => {
+    roles.forEach((role) => {
       if (role.areAllFieldsAllowed) {
         expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), identityPoolId));
       } else {
@@ -115,7 +115,7 @@ const lambdaExpression = (roles: Array<RoleDefinition>): Expression | null => {
 
 const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
   const staticRoleExpression: Array<Expression> = [];
-  const privateRoleIdx = roles.findIndex(r => r.strategy === 'private');
+  const privateRoleIdx = roles.findIndex((r) => r.strategy === 'private');
   if (privateRoleIdx > -1) {
     const privateRole = roles[privateRoleIdx];
     if (privateRole.areAllFieldsAllowed) {
@@ -134,7 +134,7 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expre
             ref('staticGroupRoles'),
             raw(
               JSON.stringify(
-                roles.map(r => ({
+                roles.map((r) => ({
                   claim: r.claim,
                   entity: r.entity,
                   allowedFields: r.allowedFields ?? [],
@@ -157,7 +157,11 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expre
   return staticRoleExpression;
 };
 
-const dynamicRoleExpression = (ctx: TransformerContextProvider, roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>): Array<Expression> => {
+const dynamicRoleExpression = (
+  ctx: TransformerContextProvider,
+  roles: Array<RoleDefinition>,
+  fields: ReadonlyArray<FieldDefinitionNode>,
+): Array<Expression> => {
   const ownerExpression = new Array<Expression>();
   const dynamicGroupExpression = new Array<Expression>();
   roles.forEach((role, idx) => {
@@ -165,7 +169,9 @@ const dynamicRoleExpression = (ctx: TransformerContextProvider, roles: Array<Rol
     if (role.strategy === 'owner') {
       const ownerEntityClaimExpressions = new Array<Expression>();
       // get current owner entity
-      ownerEntityClaimExpressions.push(set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.input.${role.entity!}`), nul())));
+      ownerEntityClaimExpressions.push(
+        set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.input.${role.entity!}`), nul())),
+      );
       // get current owner claim
       ownerEntityClaimExpressions.push(generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`));
 
@@ -178,8 +184,7 @@ const dynamicRoleExpression = (ctx: TransformerContextProvider, roles: Array<Rol
             // If the user is already authorized, populate owner field with the owner claim
             ...(ctx.transformParameters.populateOwnerFieldForStaticGroupAuth
               ? [generatePopulateOwnerField(`ownerClaim${idx}`, role.entity!, `ownerEntity${idx}`, entityIsList, true)]
-              : []
-            ),
+              : []),
             iff(
               not(ref(IS_AUTHORIZED_FLAG)),
               compoundExpression([
@@ -188,25 +193,25 @@ const dynamicRoleExpression = (ctx: TransformerContextProvider, roles: Array<Rol
                 set(ref(`isAuthorizedOnAllFields${idx}`), bool(role.areAllFieldsAllowed)),
                 ...(entityIsList
                   ? [
-                    forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
+                      forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
+                        iff(
+                          or([
+                            equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                            methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
+                          ]),
+                          addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`, true),
+                        ),
+                      ]),
+                    ]
+                  : [
                       iff(
                         or([
-                          equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
-                          methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
+                          equals(ref(`ownerClaim${idx}`), ref(`ownerEntity${idx}`)),
+                          methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
                         ]),
-                        addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`, true),
+                        addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
                       ),
                     ]),
-                  ]
-                  : [
-                    iff(
-                      or([
-                        equals(ref(`ownerClaim${idx}`), ref(`ownerEntity${idx}`)),
-                        methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
-                      ]),
-                      addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
-                    ),
-                  ]),
                 generatePopulateOwnerField(
                   `ownerClaim${idx}`,
                   role.entity!,
@@ -219,7 +224,7 @@ const dynamicRoleExpression = (ctx: TransformerContextProvider, roles: Array<Rol
               ]),
             ),
           ]),
-        )
+        ),
       );
     }
     if (role.strategy === 'groups') {
@@ -270,9 +275,8 @@ export const generateAuthExpressionForCreate = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ): string => {
-  const {
-    cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles,
-  } = splitRoles(roles);
+  const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } =
+    splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [
     setHasAuthExpression,
     getInputFields(),
@@ -292,7 +296,10 @@ export const generateAuthExpressionForCreate = (
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
-        compoundExpression([...generateStaticRoleExpression(cognitoStaticRoles), ...dynamicRoleExpression(ctx, cognitoDynamicRoles, fields)]),
+        compoundExpression([
+          ...generateStaticRoleExpression(cognitoStaticRoles),
+          ...dynamicRoleExpression(ctx, cognitoDynamicRoles, fields),
+        ]),
       ),
     );
   }
@@ -319,4 +326,3 @@ export const generateAuthExpressionForCreate = (
   );
   return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
 };
-

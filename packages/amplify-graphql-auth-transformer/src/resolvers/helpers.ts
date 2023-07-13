@@ -21,7 +21,7 @@ import {
   and,
   parens,
   notEquals,
-  nul
+  nul,
 } from 'graphql-mapping-template';
 import {
   DEFAULT_COGNITO_IDENTITY_CLAIM,
@@ -31,7 +31,7 @@ import {
   LAMBDA_AUTH_TYPE,
   IAM_AUTH_TYPE,
   IDENTITY_CLAIM_DELIMITER,
-  ALLOWED_FIELDS
+  ALLOWED_FIELDS,
 } from '../utils';
 
 // note in the resolver that operation is protected by auth
@@ -41,12 +41,14 @@ export const setHasAuthExpression: Expression = qref(methodCall(ref('ctx.stash.p
 /**
  * Creates get input fields helper
  */
-export const getInputFields = (): Expression => set(ref('inputFields'), methodCall(ref('util.parseJson'), methodCall(ref('util.toJson'), ref('ctx.args.input.keySet()'))));
+export const getInputFields = (): Expression =>
+  set(ref('inputFields'), methodCall(ref('util.parseJson'), methodCall(ref('util.toJson'), ref('ctx.args.input.keySet()'))));
 
 /**
  * Creates get identity claim helper
  */
-export const getIdentityClaimExp = (value: Expression, defaultValueExp: Expression): Expression => methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.identity.claims.get'), value), defaultValueExp);
+export const getIdentityClaimExp = (value: Expression, defaultValueExp: Expression): Expression =>
+  methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.identity.claims.get'), value), defaultValueExp);
 
 /**
  * Creates iam check helper
@@ -90,7 +92,8 @@ export const getOwnerClaim = (ownerClaim: string): Expression => {
 /**
  * Creates response check for errors helper
  */
-export const responseCheckForErrors = (): Expression => iff(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')));
+export const responseCheckForErrors = (): Expression =>
+  iff(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')));
 
 // Common Expressions
 
@@ -99,7 +102,7 @@ export const responseCheckForErrors = (): Expression => iff(ref('ctx.error'), me
  */
 export const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
   const staticRoleExpression: Array<Expression> = [];
-  const privateRoleIdx = roles.findIndex(r => r.strategy === 'private');
+  const privateRoleIdx = roles.findIndex((r) => r.strategy === 'private');
   if (privateRoleIdx > -1) {
     staticRoleExpression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
     roles.splice(privateRoleIdx, 1);
@@ -109,7 +112,7 @@ export const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Arra
       iff(
         not(ref(IS_AUTHORIZED_FLAG)),
         compoundExpression([
-          set(ref('staticGroupRoles'), raw(JSON.stringify(roles.map(r => ({ claim: r.claim, entity: r.entity }))))),
+          set(ref('staticGroupRoles'), raw(JSON.stringify(roles.map((r) => ({ claim: r.claim, entity: r.entity }))))),
           forEach(ref('groupRole'), ref('staticGroupRoles'), [
             set(ref('groupsInToken'), getIdentityClaimExp(ref('groupRole.claim'), list([]))),
             iff(
@@ -127,18 +130,20 @@ export const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Arra
 /**
  * Creates api key expression helper
  */
-export const apiKeyExpression = (roles: Array<RoleDefinition>): Expression => iff(
-  equals(ref('util.authType()'), str(API_KEY_AUTH_TYPE)),
-  compoundExpression([...(roles.length > 0 ? [set(ref(IS_AUTHORIZED_FLAG), bool(true))] : [])]),
-);
+export const apiKeyExpression = (roles: Array<RoleDefinition>): Expression =>
+  iff(
+    equals(ref('util.authType()'), str(API_KEY_AUTH_TYPE)),
+    compoundExpression([...(roles.length > 0 ? [set(ref(IS_AUTHORIZED_FLAG), bool(true))] : [])]),
+  );
 
 /**
  * Creates lambda expression helper
  */
-export const lambdaExpression = (roles: Array<RoleDefinition>): Expression => iff(
-  equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)),
-  compoundExpression([...(roles.length > 0 ? [set(ref(IS_AUTHORIZED_FLAG), bool(true))] : [])]),
-);
+export const lambdaExpression = (roles: Array<RoleDefinition>): Expression =>
+  iff(
+    equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)),
+    compoundExpression([...(roles.length > 0 ? [set(ref(IS_AUTHORIZED_FLAG), bool(true))] : [])]),
+  );
 
 /**
  * Creates iam expression helper
@@ -156,7 +161,7 @@ export const iamExpression = (
     expression.push(iamAdminRoleCheckExpression(adminRoles, fieldName));
   }
   if (roles.length > 0) {
-    roles.forEach(role => {
+    roles.forEach((role) => {
       expression.push(iff(not(ref(IS_AUTHORIZED_FLAG)), iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), identityPoolId)));
     });
   } else {
@@ -168,9 +173,13 @@ export const iamExpression = (
 /**
  * Creates iam admin role check helper
  */
-export const iamAdminRoleCheckExpression = (adminRoles: Array<string>, fieldName?: string, adminCheckExpression?: Expression): Expression => {
+export const iamAdminRoleCheckExpression = (
+  adminRoles: Array<string>,
+  fieldName?: string,
+  adminCheckExpression?: Expression,
+): Expression => {
   const returnStatement = fieldName ? raw(`#return($context.source.${fieldName})`) : raw('#return($util.toJson({}))');
-  const fullReturnExpression = adminCheckExpression ? compoundExpression([ adminCheckExpression, returnStatement ]) : returnStatement;
+  const fullReturnExpression = adminCheckExpression ? compoundExpression([adminCheckExpression, returnStatement]) : returnStatement;
   return compoundExpression([
     set(ref('adminRoles'), raw(JSON.stringify(adminRoles))),
     forEach(/* for */ ref('adminRole'), /* in */ ref('adminRoles'), [
@@ -180,10 +189,10 @@ export const iamAdminRoleCheckExpression = (adminRoles: Array<string>, fieldName
           notEquals(ref('ctx.identity.userArn'), ref('ctx.stash.authRole')),
           notEquals(ref('ctx.identity.userArn'), ref('ctx.stash.unauthRole')),
         ]),
-        fullReturnExpression
+        fullReturnExpression,
       ),
     ]),
-  ])
+  ]);
 };
 
 /**
@@ -218,9 +227,7 @@ export const generateOwnerClaimListExpression = (claim: string, refName: string)
 
   return compoundExpression([
     set(ref(refName), list([])),
-    compoundExpression(
-      claims.map(c => qref(methodCall(ref(`${refName}.add`), getOwnerClaim(c)))),
-    ),
+    compoundExpression(claims.map((c) => qref(methodCall(ref(`${refName}.add`), getOwnerClaim(c))))),
   ]);
 };
 
@@ -238,15 +245,11 @@ export const generateOwnerClaimExpression = (ownerClaim: string, refName: string
       if (idx === 0) {
         expressions.push(set(ref(refName), getOwnerClaim(claim)));
       } else {
-        expressions.push(
-          set(ref(`currentClaim${idx}`), getOwnerClaim(claim)),
-        );
+        expressions.push(set(ref(`currentClaim${idx}`), getOwnerClaim(claim)));
       }
     });
   } else {
-    expressions.push(
-      set(ref(refName), getOwnerClaim(ownerClaim)),
-    );
+    expressions.push(set(ref(refName), getOwnerClaim(ownerClaim)));
   }
 
   return compoundExpression(expressions);
@@ -261,10 +264,7 @@ export const generateOwnerMultiClaimExpression = (ownerClaim: string, refName: s
 
   if (hasMultiIdentityClaims) {
     const additionalClaims = [...Array(identityClaims.length).keys()].splice(1).map((idx) => `$currentClaim${idx}`);
-    return set(
-      ref(refName), 
-      raw(`"$${[refName, ...additionalClaims].join(IDENTITY_CLAIM_DELIMITER)}"`)
-    );
+    return set(ref(refName), raw(`"$${[refName, ...additionalClaims].join(IDENTITY_CLAIM_DELIMITER)}"`));
   }
 };
 
@@ -280,7 +280,9 @@ export const generateInvalidClaimsCondition = (ownerClaim: string, refName: stri
     return ownerClaimCheck;
   }
 
-  const additionalClaimsChecks = [...Array(identityClaims.length).keys()].splice(1).map((idx) => not(methodCall(ref('util.isNull'), ref(`currentClaim${idx}`))));
+  const additionalClaimsChecks = [...Array(identityClaims.length).keys()]
+    .splice(1)
+    .map((idx) => not(methodCall(ref('util.isNull'), ref(`currentClaim${idx}`))));
   return and([ownerClaimCheck, ...additionalClaimsChecks]);
 };
 
@@ -288,14 +290,14 @@ export const generateInvalidClaimsCondition = (ownerClaim: string, refName: stri
  * Sets the value of owner field if the user is already Authorized
  */
 export const generatePopulateOwnerField = (
-   claimRef: string, 
-   ownerEntity: string, 
-   entityRef: string, 
-   entityIsList: boolean,
-   checkIfAuthorized: boolean,
-   allowedFieldsKey?: string,
-   allowedFieldsCondition?: string): Expression => {
-
+  claimRef: string,
+  ownerEntity: string,
+  entityRef: string,
+  entityIsList: boolean,
+  checkIfAuthorized: boolean,
+  allowedFieldsKey?: string,
+  allowedFieldsCondition?: string,
+): Expression => {
   const conditionsToCheck = new Array<Expression>();
   if (checkIfAuthorized) {
     conditionsToCheck.push(ref(IS_AUTHORIZED_FLAG));
@@ -305,26 +307,21 @@ export const generatePopulateOwnerField = (
 
   const populateOwnerFieldExprs = new Array<Expression>();
   populateOwnerFieldExprs.push(
-    qref(
-      methodCall(
-        ref('ctx.args.input.put'),
-        str(ownerEntity),
-        entityIsList ? list([ref(claimRef)]) : ref(claimRef)
-      ),
-    )
+    qref(methodCall(ref('ctx.args.input.put'), str(ownerEntity), entityIsList ? list([ref(claimRef)]) : ref(claimRef))),
   );
   if (allowedFieldsKey && allowedFieldsCondition) {
     populateOwnerFieldExprs.push(addAllowedFieldsIfElse(allowedFieldsKey, allowedFieldsCondition));
   }
 
-  return(compoundExpression([iff(and(conditionsToCheck), compoundExpression(populateOwnerFieldExprs))]));
+  return compoundExpression([iff(and(conditionsToCheck), compoundExpression(populateOwnerFieldExprs))]);
 };
 
-export const addAllowedFieldsIfElse = (allowedFieldsKey: string, condition: string, breakLoop = false): Expression => ifElse(
-  ref(condition),
-  compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), ...(breakLoop ? [raw('#break')] : [])]),
-  qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(allowedFieldsKey))),
-);
+export const addAllowedFieldsIfElse = (allowedFieldsKey: string, condition: string, breakLoop = false): Expression =>
+  ifElse(
+    ref(condition),
+    compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), ...(breakLoop ? [raw('#break')] : [])]),
+    qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(allowedFieldsKey))),
+  );
 
 export const getOwnerClaimReference = (ownerClaim: string, refName: string): string => {
   const expressions: Expression[] = [];

@@ -8,7 +8,7 @@ export class IAMHelper {
   constructor(region: string = REGION, credentials?: Credentials) {
     this.client = new IAM({
       region,
-      credentials
+      credentials,
     });
   }
 

@@ -29,7 +29,6 @@ const mockTransformer: TransformerPluginProvider = {
 describe('GraphQLTransform', () => {
   it('throws on construction with no transformers', () => {
     expect(() => {
-      // eslint-disable-next-line no-new
       new GraphQLTransform({
         transformers: [],
       });
@@ -44,9 +43,13 @@ describe('GraphQLTransform', () => {
   });
 
   describe('generateGraphQlApi', () => {
-    const invokeAndVerifyIfAPIKeyIsDefined = (
-      { transform, isAPIKeyExpected }: { transform: TestGraphQLTransform, isAPIKeyExpected: boolean },
-    ): void => {
+    const invokeAndVerifyIfAPIKeyIsDefined = ({
+      transform,
+      isAPIKeyExpected,
+    }: {
+      transform: TestGraphQLTransform;
+      isAPIKeyExpected: boolean;
+    }): void => {
       const stackManager = new StackManager(new App(), {});
       const transformerOutput = {
         buildSchema: jest.fn(() => ''),
@@ -103,7 +106,7 @@ describe('GraphQLTransform', () => {
         authConfig: apiKeyAuthConfig,
         transformParameters: {
           suppressApiKeyGeneration: false,
-        }
+        },
       });
       invokeAndVerifyIfAPIKeyIsDefined({ transform, isAPIKeyExpected: true });
     });

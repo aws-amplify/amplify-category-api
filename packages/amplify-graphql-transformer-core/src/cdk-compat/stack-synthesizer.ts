@@ -1,6 +1,4 @@
-import {
-  ISynthesisSession, Stack, LegacyStackSynthesizer, FileAssetSource, FileAssetLocation, CfnParameter,
-} from 'aws-cdk-lib';
+import { ISynthesisSession, Stack, LegacyStackSynthesizer, FileAssetSource, FileAssetLocation, CfnParameter } from 'aws-cdk-lib';
 import { Template } from '@aws-amplify/graphql-transformer-interfaces';
 import * as crypto from 'crypto';
 import { TransformerRootStack } from './root-stack';
@@ -88,7 +86,10 @@ export class TransformerStackSythesizer extends LegacyStackSynthesizer {
     const s3ObjectUrl = `s3://${bucketName}/${rootKey}/${asset.fileName}`;
 
     return {
-      bucketName, objectKey, httpUrl, s3ObjectUrl,
+      bucketName,
+      objectKey,
+      httpUrl,
+      s3ObjectUrl,
     };
   }
 

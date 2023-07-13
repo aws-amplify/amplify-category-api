@@ -219,7 +219,8 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Object): Pr
     chain
       .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
       .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -282,7 +283,8 @@ export function initProjectWithAccessKey(
     chain
       .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
       .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -511,33 +513,40 @@ export function initCDKProject(cwd: string, templatePath: string): Promise<strin
           reject(err);
         }
       });
-  }).then(() => {
-    const binDir = path.join(cwd, 'bin');
-    copySync(templatePath, binDir, { overwrite: true });
-    moveSync(path.join(binDir, 'app.ts'), path.join(binDir, `${path.basename(cwd)}.ts`), { overwrite: true });
-  }).then(() => new Promise<void>((resolve, reject) => {
-    // change to official package
-    spawn('npm', ['install', '--save-dev', '@aws-amplify/graphql-construct-alpha'], { cwd, stripColors: true })
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  })).then(() => new Promise<void>((resolve, reject) => {
-    // override dep version from cdk init
-    spawn('npm', ['install', '--save', 'aws-cdk-lib@2.80.0'], { cwd, stripColors: true })
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  }))
+  })
+    .then(() => {
+      const binDir = path.join(cwd, 'bin');
+      copySync(templatePath, binDir, { overwrite: true });
+      moveSync(path.join(binDir, 'app.ts'), path.join(binDir, `${path.basename(cwd)}.ts`), { overwrite: true });
+    })
+    .then(
+      () =>
+        new Promise<void>((resolve, reject) => {
+          // change to official package
+          spawn('npm', ['install', '--save-dev', '@aws-amplify/graphql-construct-alpha'], { cwd, stripColors: true }).run((err: Error) => {
+            if (!err) {
+              resolve();
+            } else {
+              reject(err);
+            }
+          });
+        }),
+    )
+    .then(
+      () =>
+        new Promise<void>((resolve, reject) => {
+          // override dep version from cdk init
+          spawn('npm', ['install', '--save', 'aws-cdk-lib@2.80.0'], { cwd, stripColors: true }).run((err: Error) => {
+            if (!err) {
+              resolve();
+            } else {
+              reject(err);
+            }
+          });
+        }),
+    )
     .then(() => readFile(path.join(cwd, 'package.json'), 'utf8'))
-    .then(packageJson => JSON.parse(packageJson).name.replace(/_/g, '-'));
+    .then((packageJson) => JSON.parse(packageJson).name.replace(/_/g, '-'));
 }
 
 export function cdkDeploy(cwd: string, option: string): Promise<any> {
@@ -549,14 +558,13 @@ export function cdkDeploy(cwd: string, option: string): Promise<any> {
       env: {
         npm_config_registry: 'https://registry.npmjs.org/',
       },
-    })
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+    }).run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   })
     .then(() => readFile(path.join(cwd, 'outputs.json'), 'utf8'))
     .then(JSON.parse);

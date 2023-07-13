@@ -24,7 +24,7 @@ export function processApiResources(
   transformResult: any,
   appSyncConfig: AmplifyAppSyncSimulatorConfig,
 ): void {
-  Object.values(resources).forEach(resource => {
+  Object.values(resources).forEach((resource) => {
     const { Type: resourceType } = resource;
     const result: any = resource.result;
 

@@ -1,15 +1,4 @@
-import {
-  iff,
-  ref,
-  notEquals,
-  methodCall,
-  compoundExpression,
-  obj,
-  printBlock,
-  toJson,
-  str,
-  not,
-} from 'graphql-mapping-template';
+import { iff, ref, notEquals, methodCall, compoundExpression, obj, printBlock, toJson, str, not } from 'graphql-mapping-template';
 
 const API_KEY = 'API Key Authorization';
 /**

@@ -1,7 +1,4 @@
-import {
-  NestedStacks,
-  Template,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { NestedStacks, Template } from '@aws-amplify/graphql-transformer-interfaces';
 import { Fn, CloudFormation, StringParameter } from 'cloudform-types';
 import { getTemplateReferences } from './getTemplateReferences';
 import getIn from './getIn';
@@ -85,7 +82,7 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
     template: Template,
     resourceToStackMap: { [k: string]: string },
     outputToStackMap: { [k: string]: string },
-    mappingsToStackMap: { [k: string]: string }
+    mappingsToStackMap: { [k: string]: string },
   ) {
     const resourceIds = Object.keys(resourceToStackMap);
     const templateMap = {};
@@ -105,7 +102,7 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
       // Remove any dependsOn that will no longer be in the same template.
       let depends: string | string[] = resource.DependsOn as any;
       if (depends && Array.isArray(depends)) {
-        resource.DependsOn = depends.filter(id => {
+        resource.DependsOn = depends.filter((id) => {
           return resourceToStackMap[id] === stackName;
         });
       } else if (depends && typeof depends === 'string') {
@@ -183,7 +180,7 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
               }
               referencedStack.Outputs[exportLogicalId] = outputForInput;
             }
-            if (stackDependsOnMap[thisStackName] && !stackDependsOnMap[thisStackName].find(s => s === referencedStackName)) {
+            if (stackDependsOnMap[thisStackName] && !stackDependsOnMap[thisStackName].find((s) => s === referencedStackName)) {
               stackDependsOnMap[thisStackName].push(referencedStackName);
             }
           } else if (getAttNeedsReplacing && isChildReferencingRoot) {
@@ -213,7 +210,7 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
               }
               referencedStack.Outputs[exportLogicalId] = outputForInput;
             }
-            if (stackDependsOnMap[thisStackName] && !stackDependsOnMap[thisStackName].find(s => s === referencedStackName)) {
+            if (stackDependsOnMap[thisStackName] && !stackDependsOnMap[thisStackName].find((s) => s === referencedStackName)) {
               stackDependsOnMap[thisStackName].push(referencedStackName);
             }
           }
@@ -285,7 +282,7 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
         ...acc,
         [name]: Fn.Ref(name),
       }),
-      defaultParameterValues
+      defaultParameterValues,
     );
     // Also forward the API id of the top level API.
     // allParamValues[ResourceConstants.RESOURCES.GraphQLAPILogicalID] = Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')

@@ -21,8 +21,6 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 
 test('Test ModelConnectionTransformer simple one to many happy case', () => {
@@ -49,7 +47,7 @@ test('Test ModelConnectionTransformer simple one to many happy case', () => {
   // Post.comments field
   const postType = getObjectType(schemaDoc, 'Post');
   expectFields(postType, ['comments']);
-  const commentField = postType.fields.find(f => f.name.value === 'comments');
+  const commentField = postType.fields.find((f) => f.name.value === 'comments');
   expect(commentField.arguments.length).toEqual(4);
   expectArguments(commentField, ['filter', 'limit', 'nextToken', 'sortDirection']);
   expect(commentField.type.kind).toEqual(Kind.NAMED_TYPE);
@@ -58,11 +56,11 @@ test('Test ModelConnectionTransformer simple one to many happy case', () => {
   // Check the Comment.commentPostId
   // Check the Comment.commentPostId inputs
   const commentCreateInput = getInputType(schemaDoc, ModelResourceIDs.ModelCreateInputObjectName('Comment'));
-  const connectionId = commentCreateInput.fields.find(f => f.name.value === 'postCommentsId');
+  const connectionId = commentCreateInput.fields.find((f) => f.name.value === 'postCommentsId');
   expect(connectionId).toBeTruthy();
 
   const commentUpdateInput = getInputType(schemaDoc, ModelResourceIDs.ModelUpdateInputObjectName('Comment'));
-  const connectionUpdateId = commentUpdateInput.fields.find(f => f.name.value === 'postCommentsId');
+  const connectionUpdateId = commentUpdateInput.fields.find((f) => f.name.value === 'postCommentsId');
   expect(connectionUpdateId).toBeTruthy();
 });
 
@@ -90,7 +88,7 @@ test('Test ModelConnectionTransformer simple one to many happy case with custom 
   // Post.comments field
   const postType = getObjectType(schemaDoc, 'Post');
   expectFields(postType, ['comments']);
-  const commentField = postType.fields.find(f => f.name.value === 'comments');
+  const commentField = postType.fields.find((f) => f.name.value === 'comments');
   expect(commentField.arguments.length).toEqual(4);
   expectArguments(commentField, ['filter', 'limit', 'nextToken', 'sortDirection']);
   expect(commentField.type.kind).toEqual(Kind.NAMED_TYPE);
@@ -99,11 +97,11 @@ test('Test ModelConnectionTransformer simple one to many happy case with custom 
   // Check the Comment.commentPostId
   // Check the Comment.commentPostId inputs
   const commentCreateInput = getInputType(schemaDoc, ModelResourceIDs.ModelCreateInputObjectName('Comment'));
-  const connectionId = commentCreateInput.fields.find(f => f.name.value === 'postId');
+  const connectionId = commentCreateInput.fields.find((f) => f.name.value === 'postId');
   expect(connectionId).toBeTruthy();
 
   const commentUpdateInput = getInputType(schemaDoc, ModelResourceIDs.ModelUpdateInputObjectName('Comment'));
-  const connectionUpdateId = commentUpdateInput.fields.find(f => f.name.value === 'postId');
+  const connectionUpdateId = commentUpdateInput.fields.find((f) => f.name.value === 'postId');
   expect(connectionUpdateId).toBeTruthy();
 });
 
@@ -160,7 +158,7 @@ test('Test ModelConnectionTransformer simple one to many happy case with custom 
   // Post.comments field
   const postType = getObjectType(schemaDoc, 'Post');
   expectFields(postType, ['comments']);
-  const commentField = postType.fields.find(f => f.name.value === 'comments');
+  const commentField = postType.fields.find((f) => f.name.value === 'comments');
   expect(commentField.arguments.length).toEqual(4);
   expectArguments(commentField, ['filter', 'limit', 'nextToken', 'sortDirection']);
   expect(commentField.type.kind).toEqual(Kind.NAMED_TYPE);
@@ -169,12 +167,12 @@ test('Test ModelConnectionTransformer simple one to many happy case with custom 
   // Check the Comment.commentPostId
   // Check the Comment.commentPostId inputs
   const commentCreateInput = getInputType(schemaDoc, ModelResourceIDs.ModelCreateInputObjectName('Comment'));
-  const connectionId = commentCreateInput.fields.find(f => f.name.value === 'postId');
+  const connectionId = commentCreateInput.fields.find((f) => f.name.value === 'postId');
   expect(connectionId).toBeTruthy();
   expect(connectionId.type.kind).toEqual(Kind.NON_NULL_TYPE);
 
   const commentUpdateInput = getInputType(schemaDoc, ModelResourceIDs.ModelUpdateInputObjectName('Comment'));
-  const connectionUpdateId = commentUpdateInput.fields.find(f => f.name.value === 'postId');
+  const connectionUpdateId = commentUpdateInput.fields.find((f) => f.name.value === 'postId');
   expect(connectionUpdateId).toBeTruthy();
   expect(connectionUpdateId.type.kind).toEqual(Kind.NAMED_TYPE);
 });
@@ -206,7 +204,7 @@ test('Test ModelConnectionTransformer complex one to many happy case', () => {
 
   // Check Post.comments field
   expectFields(postType, ['comments']);
-  const commentField = postType.fields.find(f => f.name.value === 'comments');
+  const commentField = postType.fields.find((f) => f.name.value === 'comments');
   expect(commentField.arguments.length).toEqual(4);
   expectArguments(commentField, ['filter', 'limit', 'nextToken', 'sortDirection']);
   expect(commentField.type.kind).toEqual(Kind.NAMED_TYPE);
@@ -214,15 +212,15 @@ test('Test ModelConnectionTransformer complex one to many happy case', () => {
 
   // Check the Comment.commentPostId inputs
   const commentCreateInput = getInputType(schemaDoc, ModelResourceIDs.ModelCreateInputObjectName('Comment'));
-  const connectionId = commentCreateInput.fields.find(f => f.name.value === 'commentPostId');
+  const connectionId = commentCreateInput.fields.find((f) => f.name.value === 'commentPostId');
   expect(connectionId).toBeTruthy();
 
   const commentUpdateInput = getInputType(schemaDoc, ModelResourceIDs.ModelUpdateInputObjectName('Comment'));
-  const connectionUpdateId = commentUpdateInput.fields.find(f => f.name.value === 'commentPostId');
+  const connectionUpdateId = commentUpdateInput.fields.find((f) => f.name.value === 'commentPostId');
   expect(connectionUpdateId).toBeTruthy();
 
   // Check Comment.post field
-  const postField = commentType.fields.find(f => f.name.value === 'post');
+  const postField = commentType.fields.find((f) => f.name.value === 'post');
   expect(postField.arguments.length).toEqual(0);
   expect(postField.type.kind).toEqual(Kind.NAMED_TYPE);
   expect((postField.type as any).name.value).toEqual('Post');
@@ -350,7 +348,7 @@ test('Test ModelConnectionTransformer with non null @connections', () => {
   // Post.comments field
   const postType = getObjectType(schemaDoc, 'Post');
   expectFields(postType, ['comments']);
-  const commentField = postType.fields.find(f => f.name.value === 'comments');
+  const commentField = postType.fields.find((f) => f.name.value === 'comments');
   expect(commentField.arguments.length).toEqual(4);
   expectArguments(commentField, ['filter', 'limit', 'nextToken', 'sortDirection']);
   expect(commentField.type.kind).toEqual(Kind.NAMED_TYPE);
@@ -359,22 +357,22 @@ test('Test ModelConnectionTransformer with non null @connections', () => {
   // Check the Comment.commentPostId
   // Check the Comment.commentPostId inputs
   const commentCreateInput = getInputType(schemaDoc, ModelResourceIDs.ModelCreateInputObjectName('Comment'));
-  const connectionId = commentCreateInput.fields.find(f => f.name.value === 'postId');
+  const connectionId = commentCreateInput.fields.find((f) => f.name.value === 'postId');
   expect(connectionId).toBeTruthy();
   expect(connectionId.type.kind).toEqual(Kind.NON_NULL_TYPE);
 
-  const manyCommentId = commentCreateInput.fields.find(f => f.name.value === 'postManyCommentsId');
+  const manyCommentId = commentCreateInput.fields.find((f) => f.name.value === 'postManyCommentsId');
   expect(manyCommentId).toBeTruthy();
   expect(manyCommentId.type.kind).toEqual(Kind.NAMED_TYPE);
 
   const commentUpdateInput = getInputType(schemaDoc, ModelResourceIDs.ModelUpdateInputObjectName('Comment'));
-  const connectionUpdateId = commentUpdateInput.fields.find(f => f.name.value === 'postId');
+  const connectionUpdateId = commentUpdateInput.fields.find((f) => f.name.value === 'postId');
   expect(connectionUpdateId).toBeTruthy();
   expect(connectionUpdateId.type.kind).toEqual(Kind.NAMED_TYPE);
 
   // Check the post create type
   const postCreateInput = getInputType(schemaDoc, ModelResourceIDs.ModelCreateInputObjectName('Post'));
-  const postConnectionId = postCreateInput.fields.find(f => f.name.value === 'postSingleCommentId');
+  const postConnectionId = postCreateInput.fields.find((f) => f.name.value === 'postSingleCommentId');
   expect(postConnectionId).toBeTruthy();
   expect(postConnectionId.type.kind).toEqual(Kind.NON_NULL_TYPE);
 });
@@ -427,7 +425,7 @@ test('Test ModelConnectionTransformer with sortField creates a connection resolv
   // Post.comments field
   const postType = getObjectType(schemaDoc, 'Post');
   expectFields(postType, ['comments']);
-  const commentField = postType.fields.find(f => f.name.value === 'comments');
+  const commentField = postType.fields.find((f) => f.name.value === 'comments');
   expect(commentField.arguments.length).toEqual(5);
   expectArguments(commentField, ['createdAt', 'filter', 'limit', 'nextToken', 'sortDirection']);
 });
@@ -772,5 +770,5 @@ function getInputType(doc: DocumentNode, type: string): InputObjectTypeDefinitio
 }
 
 function verifyInputCount(doc: DocumentNode, type: string, count: number): boolean {
-  return doc.definitions.filter(def => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && def.name.value === type).length === count;
+  return doc.definitions.filter((def) => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && def.name.value === type).length === count;
 }

@@ -1,4 +1,3 @@
-/* eslint-disable no-new */
 import { CfnOutput, Fn } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { ResourceConstants } from 'graphql-transformer-common';

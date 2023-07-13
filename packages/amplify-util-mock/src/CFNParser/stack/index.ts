@@ -69,7 +69,7 @@ export function mergeParameters(templateParameters: CloudFormationParameters, in
 
 export function processConditions(conditions: CloudFormationConditions, processedParams: Record<string, any>): Record<string, boolean> {
   const processedConditions: Record<string, boolean> = {};
-  Object.keys(conditions).forEach(conditionName => {
+  Object.keys(conditions).forEach((conditionName) => {
     const condition = conditions[conditionName];
     processedConditions[conditionName] = parseValue(condition, {
       params: processedParams,
@@ -111,12 +111,12 @@ export function getDependencyResources(node: object | any[], params: Record<stri
 
 export function sortResources(resources: CloudFormationResources, params: Record<string, any>): string[] {
   const resourceSorter: Sorter<string> = new Sorter();
-  Object.keys(resources).forEach(resourceName => {
+  Object.keys(resources).forEach((resourceName) => {
     const resource = resources[resourceName];
     let dependsOn: string[] = [];
     // intrinsic dependency
     const intrinsicDependency = Object.values(resource.Properties)
-      .map(propValue => getDependencyResources(propValue, params))
+      .map((propValue) => getDependencyResources(propValue, params))
       .reduce((sum, val) => [...sum, ...val], []);
 
     // Todo: enable this once e2e test invoke transformer the same way as
@@ -134,7 +134,7 @@ export function sortResources(resources: CloudFormationResources, params: Record
     if (resource.DependsOn) {
       if (Array.isArray(resource.DependsOn) || typeof resource.DependsOn === 'string') {
         dependsOn = typeof resource.DependsOn === 'string' ? [resource.DependsOn] : resource.DependsOn;
-        if (dependsOn.some(dependsOnResource => !(dependsOnResource in resources))) {
+        if (dependsOn.some((dependsOnResource) => !(dependsOnResource in resources))) {
           throw new Error(`Resource ${resourceName} DependsOn a non-existent resource`);
         }
       } else {
@@ -188,7 +188,7 @@ export function processResources(
   const filteredResources = filterResourcesBasedOnConditions(resources, conditions);
   const sortedResourceNames = sortResources(filteredResources, parameters);
   const processedResources = {};
-  sortedResourceNames.forEach(resourceName => {
+  sortedResourceNames.forEach((resourceName) => {
     const resource = filteredResources[resourceName];
     const resourceType = resource.Type;
     const cfnContext: CloudFormationParseContext = {
@@ -231,7 +231,7 @@ export function processExports(
 ): Record<string, any> {
   const stackExports = {};
   const cfnContext = { params: parameters, conditions, resources, exports: cfnExports };
-  Object.values(output).forEach(output => {
+  Object.values(output).forEach((output) => {
     if (output.Export && output.Export.Name) {
       const exportName = parseValue(output.Export.Name, cfnContext);
       let exportValue;

@@ -84,7 +84,7 @@ export async function generateContainersArtifacts(
   const existingEcrRepositories: Set<string> = new Set(
     repositories
       .map(({ repositoryName }) => repositoryName)
-      .filter(repositoryName => repositoryName.startsWith(`${envName}-${categoryName}-${resourceName}-`)),
+      .filter((repositoryName) => repositoryName.startsWith(`${envName}-${categoryName}-${resourceName}-`)),
   );
 
   const stack = new EcsStack(undefined, 'ContainersStack', {
@@ -210,11 +210,11 @@ export async function processDockerConfig(
   let isInitialDeploy = Object.keys(output ?? {}).length === 0;
   const currentContainersSet = new Set(output?.ContainerNames?.split(','));
   // Service require all containers to exists
-  isInitialDeploy = isInitialDeploy || newContainersName.some(newContainer => !currentContainersSet.has(newContainer));
+  isInitialDeploy = isInitialDeploy || newContainersName.some((newContainer) => !currentContainersSet.has(newContainer));
 
   let exposedContainer: { name: string; port: number };
 
-  const containersExposed = containers.filter(container => container.portMappings.length > 0);
+  const containersExposed = containers.filter((container) => container.portMappings.length > 0);
 
   if (containersPorts.length === 0) {
     throw new Error('Service requires at least one exposed port');
@@ -291,15 +291,8 @@ export async function processDockerConfig(
         version: uuid(),
       });
 
-      const [prefix,] = secretArn.toString().split(ssmSecretName);
-      const secretArnRef = cdk.Fn.join('', [
-        prefix,
-        cdk.Fn.ref('rootStackName'),
-        '-',
-        resourceName,
-        '-',
-        secretName,
-      ]);
+      const [prefix] = secretArn.toString().split(ssmSecretName);
+      const secretArnRef = cdk.Fn.join('', [prefix, cdk.Fn.ref('rootStackName'), '-', resourceName, '-', secretName]);
 
       secretsArns.set(secretName, secretArnRef);
     }
@@ -342,12 +335,15 @@ async function checkContainerExposed(
   exposedContainerFromMeta: { name: string; port: number } = { name: '', port: 0 },
   askForExposedContainer: boolean = false,
 ): Promise<{ name: string; port: number }> {
-  const containerExposed = containersExposed.find(container => container.name === exposedContainerFromMeta.name);
+  const containerExposed = containersExposed.find((container) => container.name === exposedContainerFromMeta.name);
 
-  if (!askForExposedContainer && containerExposed?.portMappings.find(port => port.containerPort === exposedContainerFromMeta.port)) {
+  if (!askForExposedContainer && containerExposed?.portMappings.find((port) => port.containerPort === exposedContainerFromMeta.port)) {
     return { ...exposedContainerFromMeta };
   } else {
-    const choices: { name: string; value: Container }[] = containersExposed.map(container => ({ name: container.name, value: container }));
+    const choices: { name: string; value: Container }[] = containersExposed.map((container) => ({
+      name: container.name,
+      value: container,
+    }));
 
     const { containerToExpose } = await inquirer.prompt({
       message: 'Select which container is the entrypoint',

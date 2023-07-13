@@ -36,7 +36,9 @@ export const showApiAuthAcm = async (context: $TSContext, modelName: string): Pr
 
   if (apiNames.length > 1) {
     // this condition should never hit as we only allow a single GraphQL API per project.
-    printer.error('You have multiple GraphQL APIs in the project. Only one GraphQL API is allowed per project. Run `amplify remove api` to remove an API.');
+    printer.error(
+      'You have multiple GraphQL APIs in the project. Only one GraphQL API is allowed per project. Run `amplify remove api` to remove an API.',
+    );
     return;
   }
 

@@ -7,7 +7,7 @@ env:
     CI: true
     CODEBUILD: true
     NODE_OPTIONS: --max-old-space-size=8096
-    AMPLIFY_CLI_DISABLE_LOGGING: "true"
+    AMPLIFY_CLI_DISABLE_LOGGING: 'true'
 phases:
   build:
     commands:
