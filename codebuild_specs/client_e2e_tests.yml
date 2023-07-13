@@ -18,7 +18,7 @@ phases:
 
 artifacts:
   files:
-    - $CODEBUILD_SRC_DIR/client-test-apps/js/api-model-relationship-app/test-results
-    - $CODEBUILD_SRC_DIR/client-test-apps/js/api-model-relationship-app/cypress/screenshots
-    - $CODEBUILD_SRC_DIR/client-test-apps/js/api-model-relationship-app/cypress/videos
+    - $CODEBUILD_SRC_DIR/client-test-apps/js/api-model-relationship-app/test-results/*
+    - $CODEBUILD_SRC_DIR/client-test-apps/js/api-model-relationship-app/cypress/screenshots/*
+    - $CODEBUILD_SRC_DIR/client-test-apps/js/api-model-relationship-app/cypress/videos/*
   discard-paths: yes
