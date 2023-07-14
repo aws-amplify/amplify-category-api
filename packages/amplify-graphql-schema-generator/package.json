@@ -30,9 +30,6 @@
     "knex": "~2.4.0",
     "mysql2": "~2.3.3"
   },
-  "peerDependencies": {
-    "@aws-amplify/amplify-prompts": "^2.6.8"
-  },
   "jest": {
     "transform": {
       "^.+\\.tsx?$": "ts-jest"

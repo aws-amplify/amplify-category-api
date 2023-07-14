@@ -1,7 +1,6 @@
 import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
 import { DataSourceAdapter } from './datasource-adapter';
 import { knex } from 'knex';
-import { printer } from '@aws-amplify/amplify-prompts';
 
 export interface MySQLDataSourceConfig {
   host: string;
@@ -73,7 +72,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
         debug: false,
       });
     } catch (err) {
-      printer.info(err);
+      console.info(err);
       throw err;
     }
   }
