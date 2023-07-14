@@ -551,7 +551,7 @@ function jsonPolicyToCdkPolicyStatement(policy: Record<string, any>): iam.Policy
   return new iam.PolicyStatement({
     effect: policy.Effect,
     actions: policy.Action,
-    resources: Array.isArray(policy.Resource) ? policy.Resource.map(r => cdk.Token.asString(r)) : [cdk.Token.asString(policy.Resource)],
+    resources: Array.isArray(policy.Resource) ? policy.Resource.map((r) => cdk.Token.asString(r)) : [cdk.Token.asString(policy.Resource)],
   });
 }
 

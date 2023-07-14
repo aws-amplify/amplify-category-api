@@ -17,14 +17,10 @@ describe('ecs stack', () => {
       ],
       currentStackName: 'testStack',
       dependsOn: [
-       {
-          "attributes": [
-            "Name",
-            "Arn",
-            "StreamArn"
-          ],
-          "category": "storage",
-          "resourceName": "posts"
+        {
+          attributes: ['Name', 'Arn', 'StreamArn'],
+          category: 'storage',
+          resourceName: 'posts',
         },
         {
           category: '',
@@ -44,32 +40,25 @@ describe('ecs stack', () => {
       taskPorts: [],
       policies: [
         {
-          Effect: "Allow",
-          Action: [
-            "dynamodb:Get*",
-            "dynamodb:BatchGetItem",
-            "dynamodb:List*",
-            "dynamodb:Describe*",
-            "dynamodb:Scan",
-            "dynamodb:Query"
-          ],
+          Effect: 'Allow',
+          Action: ['dynamodb:Get*', 'dynamodb:BatchGetItem', 'dynamodb:List*', 'dynamodb:Describe*', 'dynamodb:Scan', 'dynamodb:Query'],
           Resource: [
             {
-              Ref: "storagepostsArn"
+              Ref: 'storagepostsArn',
             },
             {
-              "Fn::Join": [
-                "/",
+              'Fn::Join': [
+                '/',
                 [
                   {
-                    Ref: "storagepostsArn"
+                    Ref: 'storagepostsArn',
                   },
-                  "index/*"
-                ]
-              ]
-            }
-          ]
-        }
+                  'index/*',
+                ],
+              ],
+            },
+          ],
+        },
       ],
     });
 
