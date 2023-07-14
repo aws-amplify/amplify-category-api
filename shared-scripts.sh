@@ -83,6 +83,8 @@ function _setShell {
 function _buildLinux {
   _setShell
   echo "Linux Build"
+  echo $CODEBUILD_WEBHOOK_TRIGGER
+  echo $CODEBUILD_WEBHOOK_BASE_REF
   yarn run production-build
   yarn build-tests
   storeCacheForBuildJob
@@ -123,11 +125,17 @@ function _publishToLocalRegistry {
     echo "Publish To Local Registry"
     loadCacheFromBuildJob
     if [ -z "$BRANCH_NAME" ]; then
-      export BRANCH_NAME="$(git symbolic-ref HEAD --short 2>/dev/null)"
-      if [ "$BRANCH_NAME" = "" ] ; then
-        BRANCH_NAME="$(git rev-parse HEAD | xargs git name-rev | cut -d' ' -f2 | sed 's/remotes\/origin\///g')";
+      if [ -z "$CODEBUILD_WEBHOOK_TRIGGER" ]; then
+        export BRANCH_NAME="$(git symbolic-ref HEAD --short 2>/dev/null)"
+        if [ "$BRANCH_NAME" = "" ] ; then
+          BRANCH_NAME="$(git rev-parse HEAD | xargs git name-rev | cut -d' ' -f2 | sed 's/remotes\/origin\///g')";
+        fi
+      elif [[ "$CODEBUILD_WEBHOOK_TRIGGER" == "pr/"* ]]; then
+        echo $CODEBUILD_WEBHOOK_BASE_REF
+        export BRANCH_NAME=$CODEBUILD_WEBHOOK_BASE_REF
       fi
     fi
+    echo $BRANCH_NAME
     git checkout $BRANCH_NAME
   
     # Fetching git tags from upstream
