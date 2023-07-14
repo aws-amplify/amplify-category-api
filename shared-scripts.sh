@@ -83,10 +83,6 @@ function _setShell {
 function _buildLinux {
   _setShell
   echo "Linux Build"
-  echo $CODEBUILD_WEBHOOK_TRIGGER
-  echo $CODEBUILD_WEBHOOK_BASE_REF
-  TEST_BRANCH=${CODEBUILD_WEBHOOK_BASE_REF##*/}
-  echo $TEST_BRANCH
   yarn run production-build
   yarn build-tests
   storeCacheForBuildJob
@@ -133,7 +129,6 @@ function _publishToLocalRegistry {
           BRANCH_NAME="$(git rev-parse HEAD | xargs git name-rev | cut -d' ' -f2 | sed 's/remotes\/origin\///g')";
         fi
       elif [[ "$CODEBUILD_WEBHOOK_TRIGGER" == "pr/"* ]]; then
-        echo $CODEBUILD_WEBHOOK_BASE_REF
         export BRANCH_NAME=${CODEBUILD_WEBHOOK_BASE_REF##*/}
       fi
     fi
