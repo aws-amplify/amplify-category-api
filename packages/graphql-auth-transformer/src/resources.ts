@@ -1021,7 +1021,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     const createPolicy = (newPolicyResources) =>
       new IAM.ManagedPolicy({
         Roles: [
-          //HACK double casting needed because it cannot except Ref
+          // HACK double casting needed because it cannot except Ref
           { Ref: `${authPiece}RoleName` } as unknown as Value<string>,
         ],
         PolicyDocument: {

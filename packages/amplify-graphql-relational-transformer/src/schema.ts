@@ -165,7 +165,7 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
   const createInput = ctx.output.getType(createInputName) as InputObjectTypeDefinitionNode;
 
   if (createInput) {
-    //HasOne connenction fields in create input should respect the nullability of the relational field
+    // HasOne connenction fields in create input should respect the nullability of the relational field
     updateInputWithConnectionFields(
       ctx,
       createInput,
@@ -181,7 +181,7 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
   const updateInputName = ModelResourceIDs.ModelUpdateInputObjectName(object.name.value);
   const updateInput = ctx.output.getType(updateInputName) as InputObjectTypeDefinitionNode;
   if (updateInput) {
-    //Connection fields in update input should be always nullable which stays consistent with other fields
+    // Connection fields in update input should be always nullable which stays consistent with other fields
     updateInputWithConnectionFields(
       ctx,
       updateInput,
@@ -301,7 +301,7 @@ export const ensureHasManyConnectionField = (
   const createInput = ctx.output.getType(createInputName) as InputObjectTypeDefinitionNode;
 
   if (createInput) {
-    //HasMany connenction fields in create input should respect the nullability of the belongsTo field of connected model
+    // HasMany connenction fields in create input should respect the nullability of the belongsTo field of connected model
     updateInputWithConnectionFields(
       ctx,
       createInput,
@@ -318,7 +318,7 @@ export const ensureHasManyConnectionField = (
   const updateInput = ctx.output.getType(updateInputName) as InputObjectTypeDefinitionNode;
 
   if (updateInput) {
-    //Connection fields in update input should be always nullable which stays consistent with other fields
+    // Connection fields in update input should be always nullable which stays consistent with other fields
     updateInputWithConnectionFields(
       ctx,
       updateInput,

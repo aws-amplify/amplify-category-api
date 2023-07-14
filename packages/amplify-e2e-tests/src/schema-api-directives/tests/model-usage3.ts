@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Post @model(timestamps:{createdAt: "createdOn", updatedAt: "updatedOn"}) {
   id: ID!
@@ -7,7 +7,7 @@ type Post @model(timestamps:{createdAt: "createdOn", updatedAt: "updatedOn"}) {
 }
 
 ##model/usage3`;
-//mutations
+// mutations
 export const mutation1 = `
 mutation CreatePost(
     $input: CreatePostInput!
@@ -72,7 +72,7 @@ export const expected_result_mutation2 = {
   },
 };
 
-//queries
+// queries
 export const query = `
 query GetPost{
     getPost(id: "1") {

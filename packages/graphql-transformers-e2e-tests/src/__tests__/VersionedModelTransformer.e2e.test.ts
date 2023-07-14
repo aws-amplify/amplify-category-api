@@ -92,7 +92,7 @@ beforeAll(async () => {
     expect(finishedStack).toBeDefined();
 
     // Arbitrary wait to make sure everything is ready.
-    //await cf.wait(10, () => Promise.resolve())
+    // await cf.wait(10, () => Promise.resolve())
     expect(finishedStack).toBeDefined();
     const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
     const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput);

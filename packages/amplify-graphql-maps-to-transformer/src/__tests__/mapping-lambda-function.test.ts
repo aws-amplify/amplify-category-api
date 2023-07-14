@@ -1,4 +1,4 @@
-//@ts-ignore
+// @ts-ignore
 import { handler } from '../../resources/mapping-lambda-function';
 
 describe('lambda mapping function', () => {

@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Item
   @model
@@ -17,7 +17,7 @@ enum Status {
 }
 
 ##key/howTo3`;
-//mutations
+// mutations
 export const mutation1 = `
  mutation CreateItem{
     createItem(input: {
@@ -82,7 +82,7 @@ export const mutation4 = `
     }
 }`;
 
-//queries
+// queries
 export const query1 = `
 query ListInTransitItemsForOrder {
   listItems(orderId: "order1", statusCreatedAt: { beginsWith: { status: IN_TRANSIT, createdAt: "2019" } }) {

@@ -126,9 +126,9 @@ export function importGeofencesWithDefault(cwd: string, settings: GeoConfig = {}
     .sendLine(getGeoJSONFilePath(config.geoJSONFileName))
     .wait('Select the property to use as the Geofence feature identifier:');
   if (config.isRootLevelID) {
-    chain.sendCarriageReturn(); //root level ID
+    chain.sendCarriageReturn(); // root level ID
   } else {
-    chain.sendKeyDown().sendCarriageReturn(); //custom property
+    chain.sendKeyDown().sendCarriageReturn(); // custom property
   }
   return chain.runAsync();
 }

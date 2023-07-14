@@ -88,9 +88,9 @@ const USE_PARENT_ACCOUNT = [
 // or when a test suite changes drastically
 
 const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
-  //<10m
+  // <10m
   'src/__tests__/datastore-modelgen.test.ts',
-  //<15m
+  // <15m
   'src/__tests__/schema-versioned.test.ts',
   'src/__tests__/schema-data-access-patterns.test.ts',
   'src/__tests__/schema-predictions.test.ts',
@@ -98,14 +98,14 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/schema-iterative-update-2.test.ts',
   'src/__tests__/containers-api-1.test.ts',
   'src/__tests__/containers-api-2.test.ts',
-  //<25m
+  // <25m
   'src/__tests__/schema-auth-10.test.ts',
   'src/__tests__/schema-key.test.ts',
   'src/__tests__/schema-iterative-update-1.test.ts',
-  //<30m
+  // <30m
   'src/__tests__/schema-auth-3.test.ts',
   'src/__tests__/layer.test.ts',
-  //<35m
+  // <35m
   'src/__tests__/migration/api.key.migration1.test.ts',
   'src/__tests__/schema-auth-7.test.ts',
   'src/__tests__/schema-auth-8.test.ts',
@@ -113,7 +113,7 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/schema-auth-4.test.ts',
   'src/__tests__/api_3.test.ts',
   'src/__tests__/schema-iterative-rollback-1.test.ts',
-  //<40m
+  // <40m
   'src/__tests__/schema-iterative-rollback-2.test.ts',
   'src/__tests__/auth_2.test.ts',
   'src/__tests__/schema-auth-9.test.ts',
@@ -121,17 +121,17 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/migration/api.key.migration2.test.ts',
   'src/__tests__/migration/api.key.migration3.test.ts',
   'src/__tests__/schema-auth-1.test.ts',
-  //<45m
+  // <45m
   'src/__tests__/schema-function.test.ts',
   'src/__tests__/schema-model.test.ts',
   'src/__tests__/migration/api.connection.migration.test.ts',
   'src/__tests__/schema-connection.test.ts',
   'src/__tests__/schema-auth-6.test.ts',
   'src/__tests__/schema-iterative-update-3.test.ts',
-  //<50m
+  // <50m
   'src/__tests__/schema-auth-2.test.ts',
   'src/__tests__/schema-auth-5.test.ts',
-  //<55m
+  // <55m
   'src/__tests__/api_5.test.ts',
   'src/__tests__/api_6.test.ts',
   'src/__tests__/schema-iterative-update-4.test.ts',

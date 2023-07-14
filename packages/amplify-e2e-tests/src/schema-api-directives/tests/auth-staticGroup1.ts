@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Salary @model @auth(rules: [{allow: groups, groups: ["Admin"]}]) {
   id: ID!
@@ -7,7 +7,7 @@ type Salary @model @auth(rules: [{allow: groups, groups: ["Admin"]}]) {
 }
 
 ##staticGroup1`;
-//mutations
+// mutations
 export const mutation1 = `
  mutation CreateSalary(
     $input: CreateSalaryInput!
