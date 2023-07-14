@@ -1,8 +1,4 @@
-import {
-  DocumentNode,
-  Kind,
-  ObjectTypeDefinitionNode,
-} from 'graphql';
+import { DocumentNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { ValidationError } from '../exceptions/validation-error';
 
 /**
@@ -31,9 +27,7 @@ export const validateFieldIsDefinedOnce = (schema: DocumentNode): Error[] => {
       if (!uniquefields.includes(val)) {
         uniquefields.push(val);
       } else {
-        errors.push(new ValidationError(
-          `Schema validation failed. Field ${objectName}.${val} can only be defined once.`,
-        ));
+        errors.push(new ValidationError(`Schema validation failed. Field ${objectName}.${val} can only be defined once.`));
       }
     });
   });

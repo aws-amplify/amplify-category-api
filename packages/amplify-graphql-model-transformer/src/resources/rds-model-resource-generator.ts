@@ -17,11 +17,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
   generateResources(context: TransformerContextProvider): void {
     if (this.isEnabled()) {
       const secretEntry = context.datasourceSecretParameterLocations.get(MYSQL_DB_TYPE);
-      const {
-        RDSLambdaIAMRoleLogicalID,
-        RDSLambdaLogicalID,
-        RDSLambdaDataSourceLogicalID,
-      } = ResourceConstants.RESOURCES;
+      const { RDSLambdaIAMRoleLogicalID, RDSLambdaLogicalID, RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
       const lambdaRoleStack = context.stackManager.getStackFor(RDSLambdaIAMRoleLogicalID, RDS_STACK_NAME);
       const lambdaStack = context.stackManager.getStackFor(RDSLambdaLogicalID, RDS_STACK_NAME);
       const role = createRdsLambdaRole(
@@ -29,26 +25,16 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
         lambdaRoleStack,
         secretEntry as RDSConnectionSecrets,
       );
-      const lambda = createRdsLambda(
-        lambdaStack,
-        context.api,
-        role,
-        {
-          username: secretEntry?.username ?? '',
-          password: secretEntry?.password ?? '',
-          host: secretEntry?.host ?? '',
-          port: secretEntry?.port ?? '',
-          database: secretEntry?.database ?? '',
-        },
-      );
+      const lambda = createRdsLambda(lambdaStack, context.api, role, {
+        username: secretEntry?.username ?? '',
+        password: secretEntry?.password ?? '',
+        host: secretEntry?.host ?? '',
+        port: secretEntry?.port ?? '',
+        database: secretEntry?.database ?? '',
+      });
 
       const lambdaDataSourceStack = context.stackManager.getStackFor(RDSLambdaDataSourceLogicalID, RDS_STACK_NAME);
-      const rdsDatasource = context.api.host.addLambdaDataSource(
-        `${RDSLambdaDataSourceLogicalID}`,
-        lambda,
-        {},
-        lambdaDataSourceStack,
-      );
+      const rdsDatasource = context.api.host.addLambdaDataSource(`${RDSLambdaDataSourceLogicalID}`, lambda, {}, lambdaDataSourceStack);
       this.models.forEach((model) => {
         context.dataSources.add(model, rdsDatasource);
         this.datasourceMap[model.name.value] = rdsDatasource;

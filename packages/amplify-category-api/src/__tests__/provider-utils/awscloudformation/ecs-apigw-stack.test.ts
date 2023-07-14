@@ -11,19 +11,9 @@ describe('ecs stack', () => {
       apiType: API_TYPE.REST,
       categoryName: 'testCategory',
       containers: [
-        new Container(
-          undefined,
-          'testContainer',
-          [],
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          'testImage',
-          {
-            command: 'foo',
-          },
-        ),
+        new Container(undefined, 'testContainer', [], undefined, undefined, undefined, undefined, 'testImage', {
+          command: 'foo',
+        }),
       ],
       currentStackName: 'testStack',
       dependsOn: [
@@ -39,14 +29,7 @@ describe('ecs stack', () => {
         {
           category: '',
           resourceName: 'NetworkStack',
-          attributes: [
-            'ClusterName',
-            'VpcId',
-            'VpcCidrBlock',
-            'SubnetIds',
-            'VpcLinkId',
-            'CloudMapNamespaceId',
-          ],
+          attributes: ['ClusterName', 'VpcId', 'VpcCidrBlock', 'SubnetIds', 'VpcLinkId', 'CloudMapNamespaceId'],
         },
       ],
       deploymentMechanism: undefined,

@@ -1,6 +1,9 @@
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
-  $TSContext, AmplifyCategories, ApiCategoryFacade, getGraphQLTransformerOpenSearchProductionDocLink,
+  $TSContext,
+  AmplifyCategories,
+  ApiCategoryFacade,
+  getGraphQLTransformerOpenSearchProductionDocLink,
 } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -10,9 +13,10 @@ export async function searchablePushChecks(context: $TSContext, map: Record<stri
   if (searchableModelTypes.length) {
     const apiParameterManager = (await ensureEnvParamManager()).instance.getResourceParamManager(AmplifyCategories.API, apiName);
     const getInstanceType = (instanceTypeParam: string) => apiParameterManager.getParam(instanceTypeParam);
-    const instanceType = getInstanceType(ResourceConstants.PARAMETERS.OpenSearchInstanceType)
-      ?? getInstanceType(ResourceConstants.PARAMETERS.ElasticsearchInstanceType)
-      ?? 't2.small.elasticsearch';
+    const instanceType =
+      getInstanceType(ResourceConstants.PARAMETERS.OpenSearchInstanceType) ??
+      getInstanceType(ResourceConstants.PARAMETERS.ElasticsearchInstanceType) ??
+      't2.small.elasticsearch';
     if (instanceType === 't2.small.elasticsearch' || instanceType === 't3.small.elasticsearch') {
       const version = await ApiCategoryFacade.getTransformerVersion(context);
       const docLink = getGraphQLTransformerOpenSearchProductionDocLink(version);

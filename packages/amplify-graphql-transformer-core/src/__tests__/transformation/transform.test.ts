@@ -29,7 +29,6 @@ const mockTransformer: TransformerPluginProvider = {
 describe('GraphQLTransform', () => {
   it('throws on construction with no transformers', () => {
     expect(() => {
-      // eslint-disable-next-line no-new
       new GraphQLTransform({
         transformers: [],
       });
@@ -44,9 +43,13 @@ describe('GraphQLTransform', () => {
   });
 
   describe('generateGraphQlApi', () => {
-    const invokeAndVerifyIfAPIKeyIsDefined = (
-      { transform, isAPIKeyExpected }: { transform: TestGraphQLTransform, isAPIKeyExpected: boolean },
-    ): void => {
+    const invokeAndVerifyIfAPIKeyIsDefined = ({
+      transform,
+      isAPIKeyExpected,
+    }: {
+      transform: TestGraphQLTransform;
+      isAPIKeyExpected: boolean;
+    }): void => {
       const stackManager = new StackManager(new App(), {});
       const transformerOutput = {
         buildSchema: jest.fn(() => ''),
@@ -97,28 +100,24 @@ describe('GraphQLTransform', () => {
       invokeAndVerifyIfAPIKeyIsDefined({ transform, isAPIKeyExpected: false });
     });
 
-    it('creates an api key for apps with API_KEY authorization if legacyApiKeyEnabled is set to true', () => {
+    it('creates an api key for apps with API_KEY authorization if suppressApiKeyGeneration is set to false', () => {
       const transform = new TestGraphQLTransform({
         transformers: [mockTransformer],
         authConfig: apiKeyAuthConfig,
-        legacyApiKeyEnabled: true,
+        transformParameters: {
+          suppressApiKeyGeneration: false,
+        },
       });
       invokeAndVerifyIfAPIKeyIsDefined({ transform, isAPIKeyExpected: true });
     });
 
-    it('does not create an api key for apps with API_KEY authorization if legacyApiKeyEnabled is undefined', () => {
+    it('does not create an api key for apps with API_KEY authorization if suppressApiKeyGeneration is set to true', () => {
       const transform = new TestGraphQLTransform({
         transformers: [mockTransformer],
         authConfig: apiKeyAuthConfig,
-      });
-      invokeAndVerifyIfAPIKeyIsDefined({ transform, isAPIKeyExpected: true });
-    });
-
-    it('does not create an api key for apps with API_KEY authorization if legacyApiKeyEnabled is set to false', () => {
-      const transform = new TestGraphQLTransform({
-        transformers: [mockTransformer],
-        authConfig: apiKeyAuthConfig,
-        legacyApiKeyEnabled: false,
+        transformParameters: {
+          suppressApiKeyGeneration: true,
+        },
       });
       invokeAndVerifyIfAPIKeyIsDefined({ transform, isAPIKeyExpected: false });
     });

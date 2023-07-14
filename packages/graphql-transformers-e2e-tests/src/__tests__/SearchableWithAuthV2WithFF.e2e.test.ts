@@ -47,9 +47,9 @@ const identityClient = new CognitoIdentity({ apiVersion: '2014-06-30', region: A
 const iamHelper = new IAMHelper(AWS_REGION);
 
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `SearchableAuthV2Tests-${BUILD_TIMESTAMP}`;
-const BUCKET_NAME = `searchable-authv2-tests-bucket-${BUILD_TIMESTAMP}`;
-const LOCAL_FS_BUILD_DIR = '/tmp/searchable_authv2_tests/';
+const STACK_NAME = `SearchableAuthV2FFTests-${BUILD_TIMESTAMP}`;
+const BUCKET_NAME = `searchable-authv2-ff-tests-bucket-${BUILD_TIMESTAMP}`;
+const LOCAL_FS_BUILD_DIR = '/tmp/searchable_authv2_ff_tests/';
 const S3_ROOT_DIR_KEY = 'deployments';
 const AUTH_ROLE_NAME = `${STACK_NAME}-authRole`;
 const UNAUTH_ROLE_NAME = `${STACK_NAME}-unauthRole`;
@@ -171,17 +171,8 @@ beforeAll(async () => {
       ],
     },
     transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
-    featureFlags: {
-      getBoolean(value: string) {
-        if (value === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return false;
-      },
-     
-
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
+    transformParameters: {
+      populateOwnerFieldForStaticGroupAuth: false,
     },
   });
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
@@ -931,7 +922,11 @@ const createEntries = async () => {
     title: 'golfing',
   });
   await createBlog(GRAPHQL_CLIENT_2, {
-    groupsField: 'editor', owner: USERNAME4, secret: `${USERNAME4}secret`, ups: 10, title: 'cooking',
+    groupsField: 'editor',
+    owner: USERNAME4,
+    secret: `${USERNAME4}secret`,
+    ups: 10,
+    title: 'cooking',
   });
   // Waiting for the ES Cluster + Streaming Lambda infra to be setup
   await cf.wait(120, () => Promise.resolve());

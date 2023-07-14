@@ -120,28 +120,30 @@ export const makeSearchableXFilterInputObject = (obj: ObjectTypeDefinitionNode, 
   const fields: InputValueDefinitionNode[] = obj.fields
     .filter((field: FieldDefinitionNode) => isScalar(field.type))
     .map(
-      (field: FieldDefinitionNode) => ({
-        kind: Kind.INPUT_VALUE_DEFINITION,
-        name: field.name,
-        type: makeNamedType(SearchableResourceIDs.SearchableFilterInputTypeName(getBaseType(field.type))),
-        // TODO: Service does not support new style descriptions so wait.
-        // description: field.description,
-        directives: [],
-      } as InputValueDefinitionNode),
+      (field: FieldDefinitionNode) =>
+        ({
+          kind: Kind.INPUT_VALUE_DEFINITION,
+          name: field.name,
+          type: makeNamedType(SearchableResourceIDs.SearchableFilterInputTypeName(getBaseType(field.type))),
+          // TODO: Service does not support new style descriptions so wait.
+          // description: field.description,
+          directives: [],
+        } as InputValueDefinitionNode),
     );
 
   fields.push(
     ...obj.fields
       .filter((field: FieldDefinitionNode) => isEnum(field.type, document))
       .map(
-        (field: FieldDefinitionNode) => ({
-          kind: Kind.INPUT_VALUE_DEFINITION,
-          name: field.name,
-          type: makeNamedType(SearchableResourceIDs.SearchableFilterInputTypeName('String')),
-          // TODO: Service does not support new style descriptions so wait.
-          // description: field.description,
-          directives: [],
-        } as InputValueDefinitionNode),
+        (field: FieldDefinitionNode) =>
+          ({
+            kind: Kind.INPUT_VALUE_DEFINITION,
+            name: field.name,
+            type: makeNamedType(SearchableResourceIDs.SearchableFilterInputTypeName('String')),
+            // TODO: Service does not support new style descriptions so wait.
+            // description: field.description,
+            directives: [],
+          } as InputValueDefinitionNode),
       ),
   );
 

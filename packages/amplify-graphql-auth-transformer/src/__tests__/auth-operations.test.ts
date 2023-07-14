@@ -11,9 +11,11 @@ test('invalid granular read operation at the field level', () => {
     defaultAuthentication: {
       authenticationType: 'AMAZON_COGNITO_USER_POOLS',
     },
-    additionalAuthenticationProviders: [{
-      authenticationType: 'API_KEY',
-    }],
+    additionalAuthenticationProviders: [
+      {
+        authenticationType: 'API_KEY',
+      },
+    ],
   };
   const invalidSchema = `
     type Test @model @auth(rules: [{ allow: public, operations: [ list, create ]}]) {
@@ -24,9 +26,7 @@ test('invalid granular read operation at the field level', () => {
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
   });
-  expect(() => transformer.transform(invalidSchema)).toThrowError(
-    '\'get\' operation is not allowed at the field level.',
-  );
+  expect(() => transformer.transform(invalidSchema)).toThrowError("'get' operation is not allowed at the field level.");
 });
 
 test('renamed subscriptions should generate auth resolver', () => {
@@ -34,9 +34,11 @@ test('renamed subscriptions should generate auth resolver', () => {
     defaultAuthentication: {
       authenticationType: 'AMAZON_COGNITO_USER_POOLS',
     },
-    additionalAuthenticationProviders: [{
-      authenticationType: 'API_KEY',
-    }],
+    additionalAuthenticationProviders: [
+      {
+        authenticationType: 'API_KEY',
+      },
+    ],
   };
   const validSchema = `
     type Note
@@ -51,16 +53,6 @@ test('renamed subscriptions should generate auth resolver', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
-    featureFlags: {
-      getBoolean: (value: string) => {
-        if (value === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return false;
-      },
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-    },
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -89,7 +81,7 @@ test('invalid read list operation combination', () => {
     transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   expect(() => transformer.transform(invalidSchema)).toThrowError(
-    '\'list\' operations are specified in addition to \'read\'. Either remove \'read\' to limit access only to \'list\' or only keep \'read\' to grant all get,list,search,listen,sync access.',
+    "'list' operations are specified in addition to 'read'. Either remove 'read' to limit access only to 'list' or only keep 'read' to grant all get,list,search,listen,sync access.",
   );
 });
 
@@ -110,7 +102,7 @@ test('invalid read get operation combination', () => {
     transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   expect(() => transformer.transform(invalidSchema)).toThrowError(
-    '\'get\' operations are specified in addition to \'read\'. Either remove \'read\' to limit access only to \'get\' or only keep \'read\' to grant all get,list,search,listen,sync access.',
+    "'get' operations are specified in addition to 'read'. Either remove 'read' to limit access only to 'get' or only keep 'read' to grant all get,list,search,listen,sync access.",
   );
 });
 
@@ -245,16 +237,6 @@ test('read get list auth operations', () => {
     transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
     resolverConfig: {
       project: config,
-    },
-    featureFlags: {
-      getBoolean: (value: string) => {
-        if (value === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return false;
-      },
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
     },
   });
 

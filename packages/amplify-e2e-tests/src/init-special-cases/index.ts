@@ -1,5 +1,5 @@
 import path from 'path';
-import { nspawn as spawn, getCLIPath, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from 'amplify-category-api-e2e-core';
+import { nspawn as spawn, getCLIPath, singleSelect, amplifyRegions, addCITags, KEY_DOWN_ARROW } from 'amplify-category-api-e2e-core';
 import fs from 'fs-extra';
 import os from 'os';
 
@@ -43,7 +43,7 @@ export async function initWithoutCredentialFileAndNoNewUserSetup(projRoot) {
 }
 
 async function initWorkflow(cwd: string, settings: { accessKeyId: string; secretAccessKey: string; region: string }): Promise<void> {
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['init'], {
@@ -90,7 +90,8 @@ async function initWorkflow(cwd: string, settings: { accessKeyId: string; secret
     chain
       .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
       .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {

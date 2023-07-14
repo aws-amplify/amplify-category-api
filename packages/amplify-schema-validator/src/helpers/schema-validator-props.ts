@@ -1,4 +1,4 @@
 export type ValidateSchemaProps = {
-    graphqlTransformerVersion: number;
-    isDataStoreEnabled: boolean;
+  graphqlTransformerVersion: number;
+  isDataStoreEnabled: boolean;
 };

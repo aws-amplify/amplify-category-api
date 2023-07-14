@@ -174,7 +174,7 @@ const getResourceDependencies = async ({
     }
 
     // get auth dependency if exists to avoid duplication
-    const authDependency = updatedDependsOn.find(dependency => dependency.category === 'auth');
+    const authDependency = updatedDependsOn.find((dependency) => dependency.category === 'auth');
 
     if (authDependency === undefined) {
       updatedDependsOn.push({

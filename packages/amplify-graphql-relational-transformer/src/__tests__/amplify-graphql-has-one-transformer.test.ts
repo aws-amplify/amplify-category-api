@@ -3,8 +3,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { DocumentNode, Kind, parse } from 'graphql';
 import { HasManyTransformer, HasOneTransformer } from '..';
-import {featureFlags, hasGeneratedField} from './test-helpers';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { hasGeneratedField } from './test-helpers';
 
 test('fails if @hasOne was used on an object that is not a model type', () => {
   const inputSchema = `
@@ -19,7 +18,6 @@ test('fails if @hasOne was used on an object that is not a model type', () => {
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new ModelTransformer(), new HasOneTransformer()],
   });
 
@@ -39,7 +37,6 @@ test('fails if @hasOne was used with a related type that is not a model', () => 
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new ModelTransformer(), new HasOneTransformer()],
   });
 
@@ -59,7 +56,6 @@ test('fails if the related type does not exist', () => {
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new ModelTransformer(), new HasOneTransformer()],
   });
 
@@ -80,7 +76,6 @@ test('fails if an empty list of fields is passed in', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new HasOneTransformer()],
-    featureFlags,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('No fields passed to @hasOne directive.');
@@ -101,7 +96,6 @@ test('fails if any of the fields passed in are not in the parent model', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
-    featureFlags,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('name is not a field in Test');
@@ -122,7 +116,6 @@ test('fails if @hasOne field does not match related type primary key', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new HasOneTransformer()],
-    featureFlags,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('email field is not of type ID');
@@ -143,7 +136,6 @@ test('fails if sort key type does not match related type sort key', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
-    featureFlags,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError('email field is not of type ID');
@@ -164,7 +156,6 @@ test('fails if partial sort key is provided', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
-    featureFlags,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError(
@@ -189,7 +180,6 @@ test('accepts @hasOne without a sort key', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
-    featureFlags,
   });
 
   expect(() => transformer.transform(inputSchema)).not.toThrowError();
@@ -208,7 +198,6 @@ test('fails if used as a has many relation', () => {
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
   });
 
@@ -228,7 +217,6 @@ test('fails if object type fields are provided', () => {
       name: String!
     }`;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
   });
 
@@ -249,7 +237,6 @@ test('creates has one relationship with explicit fields', () => {
       email: String!
     }`;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
   });
 
@@ -291,7 +278,6 @@ test('creates has one relationship with implicit fields', () => {
       email: String!
     }`;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
   });
 
@@ -340,7 +326,6 @@ test('creates has one relationship with composite sort key.', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
-    featureFlags,
   });
 
   const out = transformer.transform(inputSchema);
@@ -381,7 +366,6 @@ test('@hasOne and @hasMany can point at each other if DataStore is not enabled',
       blog: Blog @hasOne
     }`;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
   });
 
@@ -403,7 +387,6 @@ test('@hasOne and @hasOne can point at each other if DataStore is not enabled', 
       blog: Blog @hasOne
     }`;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new ModelTransformer(), new HasOneTransformer()],
   });
 
@@ -432,7 +415,6 @@ test('@hasOne and @hasMany cannot point at each other if DataStore is enabled', 
       },
     },
     transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
-    featureFlags,
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError(
@@ -473,7 +455,6 @@ test('recursive @hasOne relationships are supported if DataStore is enabled', ()
       posts: Blog @hasOne
     }`;
   const transformer = new GraphQLTransform({
-    featureFlags,
     resolverConfig: {
       project: {
         ConflictDetection: 'VERSION',
@@ -493,15 +474,19 @@ describe('Pre Processing Has One Tests', () => {
   let transformer: GraphQLTransform;
   const hasGeneratedFieldArgument = (doc: DocumentNode, objectType: string, fieldName: string, generatedFieldName: string): boolean => {
     let hasFieldArgument = false;
-    doc?.definitions?.forEach(def => {
+    doc?.definitions?.forEach((def) => {
       if ((def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') && def.name.value === objectType) {
-        def?.fields?.forEach(field => {
+        def?.fields?.forEach((field) => {
           if (field.name.value === fieldName) {
-            field?.directives?.forEach(dir => {
+            field?.directives?.forEach((dir) => {
               if (dir.name.value === 'hasOne') {
-                dir?.arguments?.forEach(arg => {
+                dir?.arguments?.forEach((arg) => {
                   if (arg.name.value === 'fields') {
-                    if (arg.value.kind === 'ListValue' && arg.value.values[0].kind === 'StringValue' && arg.value.values[0].value === generatedFieldName) {
+                    if (
+                      arg.value.kind === 'ListValue' &&
+                      arg.value.values[0].kind === 'StringValue' &&
+                      arg.value.values[0].value === generatedFieldName
+                    ) {
                       hasFieldArgument = true;
                     } else if (arg.value.kind === 'StringValue' && arg.value.value === generatedFieldName) {
                       hasFieldArgument = true;
@@ -519,7 +504,6 @@ describe('Pre Processing Has One Tests', () => {
 
   beforeEach(() => {
     transformer = new GraphQLTransform({
-      featureFlags,
       transformers: [new ModelTransformer(), new HasOneTransformer()],
     });
   });
@@ -615,17 +599,6 @@ describe('Pre Processing Has One Tests', () => {
 });
 
 describe('@hasOne connection field nullability tests', () => {
-  const featureFlags: FeatureFlagProvider = {
-    getBoolean: (value: string, defaultValue: boolean): boolean => {
-      if (value === 'respectPrimaryKeyAttributesOnConnectionField') {
-        return true;
-      }
-      return defaultValue;
-    },
-    getNumber: jest.fn(),
-    getObject: jest.fn(),
-  };
-
   test('Should generate nullable connection fields in type definition and create/update input when hasOne field is nullable', () => {
     const inputSchema = `
       type Todo @model {
@@ -642,10 +615,9 @@ describe('@hasOne connection field nullability tests', () => {
       }
     `;
     const transformer = new GraphQLTransform({
-      featureFlags,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     });
-  
+
     const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
@@ -705,10 +677,9 @@ describe('@hasOne connection field nullability tests', () => {
       }
     `;
     const transformer = new GraphQLTransform({
-      featureFlags,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     });
-  
+
     const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);

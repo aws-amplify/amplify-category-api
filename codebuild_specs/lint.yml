@@ -1,0 +1,9 @@
+version: 0.2
+env:
+  shell: bash
+phases:
+  build:
+    commands:
+      - source ./shared-scripts.sh && _lint
+      - yarn prettier-check
+      - yarn depcheck

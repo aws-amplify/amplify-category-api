@@ -3,7 +3,6 @@ import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
 import { expectedResolversForModelWithRenamedField } from './common';
-import { featureFlags } from '../../../../amplify-graphql-auth-transformer/src/__tests__/test-helpers';
 
 const mappedHasMany = /* GraphQL */ `
   type Employee @model @mapsTo(name: "Person") {
@@ -19,9 +18,10 @@ const mappedHasMany = /* GraphQL */ `
 
 const transformSchema = (schema: string) => {
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer(), new MapsToTransformer()],
-    sandboxModeEnabled: true,
+    transformParameters: {
+      sandboxModeEnabled: true,
+    },
   });
   return transformer.transform(schema);
 };
@@ -30,7 +30,7 @@ describe('@mapsTo with @hasMany', () => {
   it('adds CRUD input and output mappings on related type and maps related type in hasMany field resolver', () => {
     const out = transformSchema(mappedHasMany);
     const expectedResolvers: string[] = expectedResolversForModelWithRenamedField('Task').concat('Employee.tasks.postDataLoad.1.res.vtl');
-    expectedResolvers.forEach(resolver => {
+    expectedResolvers.forEach((resolver) => {
       expect(out.resolvers[resolver]).toMatchSnapshot();
     });
   });

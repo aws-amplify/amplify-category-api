@@ -3,10 +3,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from '@aws-amplify/amplify-appsync-simulator';
-import {
-  VelocityTemplateSimulator, AppSyncVTLContext, getIAMToken,
-} from '../../velocity';
-import { featureFlags } from './test-helper';
+import { VelocityTemplateSimulator, AppSyncVTLContext, getIAMToken } from '../../velocity';
 
 jest.mock('@aws-amplify/amplify-prompts');
 
@@ -39,7 +36,6 @@ describe('admin roles query checks', () => {
           adminRoles: [ADMIN_UI_ROLE],
         }),
       ],
-      featureFlags,
     });
 
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
@@ -122,10 +118,6 @@ describe('identity claim feature flag disabled', () => {
             adminRoles: [ADMIN_UI_ROLE],
           }),
         ],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: () => false },
-        },
       });
 
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });

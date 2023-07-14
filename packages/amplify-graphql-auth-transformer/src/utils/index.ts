@@ -24,13 +24,13 @@ export * from './iam';
  * Splits roles into key value pairs by auth type
  */
 export const splitRoles = (roles: Array<RoleDefinition>): RolesByProvider => ({
-  cognitoStaticRoles: roles.filter(r => r.static && r.provider === 'userPools'),
-  cognitoDynamicRoles: roles.filter(r => !r.static && r.provider === 'userPools'),
-  oidcStaticRoles: roles.filter(r => r.static && r.provider === 'oidc'),
-  oidcDynamicRoles: roles.filter(r => !r.static && r.provider === 'oidc'),
-  iamRoles: roles.filter(r => r.provider === 'iam'),
-  apiKeyRoles: roles.filter(r => r.provider === 'apiKey'),
-  lambdaRoles: roles.filter(r => r.provider === 'function'),
+  cognitoStaticRoles: roles.filter((r) => r.static && r.provider === 'userPools'),
+  cognitoDynamicRoles: roles.filter((r) => !r.static && r.provider === 'userPools'),
+  oidcStaticRoles: roles.filter((r) => r.static && r.provider === 'oidc'),
+  oidcDynamicRoles: roles.filter((r) => !r.static && r.provider === 'oidc'),
+  iamRoles: roles.filter((r) => r.provider === 'iam'),
+  apiKeyRoles: roles.filter((r) => r.provider === 'apiKey'),
+  lambdaRoles: roles.filter((r) => r.provider === 'function'),
 });
 
 /**
@@ -62,15 +62,17 @@ export const getAuthDirectiveRules = (authDir: DirectiveWrapper, options?: GetAu
       rule.groups = [rule.groups];
     }
 
-    if (options?.isField && rule.operations && (rule.operations.some((operation: ModelOperation | 'read') => operation !== 'read' && READ_MODEL_OPERATIONS.includes(operation)))) {
-      const offendingOperation = operations.filter(operation => operation !== 'read' && READ_MODEL_OPERATIONS.includes(operation));
-      throw new InvalidDirectiveError(
-        `'${offendingOperation}' operation is not allowed at the field level.`,
-      );
+    if (
+      options?.isField &&
+      rule.operations &&
+      rule.operations.some((operation: ModelOperation | 'read') => operation !== 'read' && READ_MODEL_OPERATIONS.includes(operation))
+    ) {
+      const offendingOperation = operations.filter((operation) => operation !== 'read' && READ_MODEL_OPERATIONS.includes(operation));
+      throw new InvalidDirectiveError(`'${offendingOperation}' operation is not allowed at the field level.`);
     }
 
-    if (operations.includes('read') && (operations.some(operation => operation !== 'read' && READ_MODEL_OPERATIONS.includes(operation)))) {
-      const offendingOperation = operations.filter(operation => operation !== 'read' && READ_MODEL_OPERATIONS.includes(operation));
+    if (operations.includes('read') && operations.some((operation) => operation !== 'read' && READ_MODEL_OPERATIONS.includes(operation))) {
+      const offendingOperation = operations.filter((operation) => operation !== 'read' && READ_MODEL_OPERATIONS.includes(operation));
       throw new InvalidDirectiveError(
         `'${offendingOperation}' operations are specified in addition to 'read'. Either remove 'read' to limit access only to '${offendingOperation}' or only keep 'read' to grant all ${READ_MODEL_OPERATIONS} access.`,
       );
@@ -120,13 +122,15 @@ export const getStackForField = (
   fieldName: string,
   hasModelDirective: boolean,
 ): Stack => {
-  const fieldNode = obj.fields.find(f => f.name.value === fieldName);
-  const fieldDirectives = fieldNode.directives.map(d => d.name.value);
+  const fieldNode = obj.fields.find((f) => f.name.value === fieldName);
+  const fieldDirectives = fieldNode.directives.map((d) => d.name.value);
   if (fieldDirectives.includes('function')) {
     return ctx.stackManager.getStack('FunctionDirectiveStack');
-  } if (fieldDirectives.includes('predictions')) {
+  }
+  if (fieldDirectives.includes('predictions')) {
     return ctx.stackManager.getStack('PredictionsDirectiveStack');
-  } if (hasModelDirective) {
+  }
+  if (hasModelDirective) {
     return ctx.stackManager.getStack(obj.name.value);
   }
   return ctx.stackManager.rootStack;
@@ -138,7 +142,7 @@ export const getStackForField = (
 export const getConfiguredAuthProviders = (config: AuthTransformerConfig): ConfiguredAuthProviders => {
   const providers = [
     config.authConfig.defaultAuthentication.authenticationType,
-    ...config.authConfig.additionalAuthenticationProviders.map(p => p.authenticationType),
+    ...config.authConfig.additionalAuthenticationProviders.map((p) => p.authenticationType),
   ];
   const getAuthProvider = (authType: AppSyncAuthMode): AuthProvider => {
     switch (authType) {
@@ -156,17 +160,17 @@ export const getConfiguredAuthProviders = (config: AuthTransformerConfig): Confi
         return 'apiKey';
     }
   };
-  const hasIAM = providers.some(p => p === 'AWS_IAM');
+  const hasIAM = providers.some((p) => p === 'AWS_IAM');
   const configuredProviders: ConfiguredAuthProviders = {
     default: getAuthProvider(config.authConfig.defaultAuthentication.authenticationType),
     onlyDefaultAuthProviderConfigured: config.authConfig.additionalAuthenticationProviders.length === 0,
     hasAdminRolesEnabled: hasIAM && config.adminRoles?.length > 0,
     adminRoles: config.adminRoles,
     identityPoolId: config.identityPoolId,
-    hasApiKey: providers.some(p => p === 'API_KEY'),
-    hasUserPools: providers.some(p => p === 'AMAZON_COGNITO_USER_POOLS'),
-    hasOIDC: providers.some(p => p === 'OPENID_CONNECT'),
-    hasLambda: providers.some(p => p === 'AWS_LAMBDA'),
+    hasApiKey: providers.some((p) => p === 'API_KEY'),
+    hasUserPools: providers.some((p) => p === 'AMAZON_COGNITO_USER_POOLS'),
+    hasOIDC: providers.some((p) => p === 'OPENID_CONNECT'),
+    hasLambda: providers.some((p) => p === 'AWS_LAMBDA'),
     hasIAM,
   };
   return configuredProviders;

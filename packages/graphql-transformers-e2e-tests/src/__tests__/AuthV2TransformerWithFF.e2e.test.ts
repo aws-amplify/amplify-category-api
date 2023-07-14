@@ -37,9 +37,9 @@ describe('@model with @auth', () => {
 
   // stack info
   const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-  const STACK_NAME = `AuthV2TransformerTests-${BUILD_TIMESTAMP}`;
-  const BUCKET_NAME = `appsync-auth-v2-transformer-test-bucket-${BUILD_TIMESTAMP}`;
-  const LOCAL_FS_BUILD_DIR = '/tmp/authv2_transformer_tests/';
+  const STACK_NAME = `AuthV2TransformerFFTests-${BUILD_TIMESTAMP}`;
+  const BUCKET_NAME = `appsync-auth-v2-transformer-ff-test-bucket-${BUILD_TIMESTAMP}`;
+  const LOCAL_FS_BUILD_DIR = '/tmp/authv2_transformer_ff_tests/';
   const S3_ROOT_DIR_KEY = 'deployments';
   let USER_POOL_ID: string;
   let GRAPHQL_ENDPOINT: string;
@@ -344,21 +344,6 @@ describe('@model with @auth', () => {
         new HasOneTransformer(),
         new AuthTransformer(),
       ],
-      featureFlags: {
-        getBoolean(value: string) {
-          if (value === 'useSubUsernameForDefaultIdentityClaim') {
-            return true;
-          }
-          if (value === 'populateOwnerFieldForStaticGroupAuth') {
-            return true;
-          }
-          return false;
-        },
-       
-
-        getNumber: jest.fn(),
-        getObject: jest.fn(),
-      },
     });
     const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
     USER_POOL_ID = userPoolResponse.UserPool.Id;
@@ -379,7 +364,7 @@ describe('@model with @auth', () => {
       );
       // Wait for any propagation to avoid random
       // "The security token included in the request is invalid" errors
-      await new Promise<void>(res => setTimeout(() => res(), 5000));
+      await new Promise<void>((res) => setTimeout(() => res(), 5000));
 
       expect(finishedStack).toBeDefined();
       const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
@@ -858,7 +843,7 @@ describe('@model with @auth', () => {
     expect(req2.data.updateSalary.owner).toEqual(USERNAME2);
   });
 
-  test('updating someone else\'s salary as an admin', async () => {
+  test("updating someone else's salary as an admin", async () => {
     const req = await GRAPHQL_CLIENT_2.query(
       `
       mutation {
@@ -889,7 +874,7 @@ describe('@model with @auth', () => {
     expect(req2.data.updateSalary.wage).toEqual(12);
   });
 
-  test('updating someone else\'s salary when I am not admin.', async () => {
+  test("updating someone else's salary when I am not admin.", async () => {
     const req = await GRAPHQL_CLIENT_1.query(
       `
       mutation {
@@ -2993,7 +2978,7 @@ describe('@model with @auth', () => {
       }`,
       {},
     );
-    const relevantPost = listResponse.data.listTestIdentities.items.find(p => p.id === getReq.data.getTestIdentity.id);
+    const relevantPost = listResponse.data.listTestIdentities.items.find((p) => p.id === getReq.data.getTestIdentity.id);
     expect(relevantPost).toBeTruthy();
     expect(relevantPost.title).toEqual('Test title update');
     expect(relevantPost.owner.slice(0, 19)).toEqual('https://cognito-idp');
@@ -3750,13 +3735,7 @@ describe('@model with @auth', () => {
           {},
         );
 
-        expect(createResponse.data.createOwnerSet.owners).toEqual(
-          expect.arrayContaining([
-            USERNAME1,
-            USERNAME2,
-            USERNAME3,
-          ]),
-        );
+        expect(createResponse.data.createOwnerSet.owners).toEqual(expect.arrayContaining([USERNAME1, USERNAME2, USERNAME3]));
 
         let getResponse = await GRAPHQL_CLIENT_2.query(
           `query {
@@ -3767,13 +3746,7 @@ describe('@model with @auth', () => {
           {},
         );
 
-        expect(getResponse.data.getOwnerSet.owners).toEqual(
-          expect.arrayContaining([
-            USERNAME1,
-            USERNAME2,
-            USERNAME3,
-          ]),
-        );
+        expect(getResponse.data.getOwnerSet.owners).toEqual(expect.arrayContaining([USERNAME1, USERNAME2, USERNAME3]));
 
         createResponse = await GRAPHQL_CLIENT_2.query(
           `mutation {
@@ -3791,13 +3764,7 @@ describe('@model with @auth', () => {
           {},
         );
 
-        expect(createResponse.data.createOwnerSet.owners).toEqual(
-          expect.arrayContaining([
-            USERNAME1,
-            USERNAME2,
-            USERNAME3,
-          ]),
-        );
+        expect(createResponse.data.createOwnerSet.owners).toEqual(expect.arrayContaining([USERNAME1, USERNAME2, USERNAME3]));
 
         getResponse = await GRAPHQL_CLIENT_3.query(
           `query {
@@ -3808,13 +3775,7 @@ describe('@model with @auth', () => {
           {},
         );
 
-        expect(getResponse.data.getOwnerSet.owners).toEqual(
-          expect.arrayContaining([
-            USERNAME1,
-            USERNAME2,
-            USERNAME3,
-          ]),
-        );
+        expect(getResponse.data.getOwnerSet.owners).toEqual(expect.arrayContaining([USERNAME1, USERNAME2, USERNAME3]));
 
         createResponse = await GRAPHQL_CLIENT_3.query(
           `mutation {
@@ -3832,13 +3793,7 @@ describe('@model with @auth', () => {
           {},
         );
 
-        expect(createResponse.data.createOwnerSet.owners).toEqual(
-          expect.arrayContaining([
-            USERNAME1,
-            USERNAME2,
-            USERNAME3,
-          ]),
-        );
+        expect(createResponse.data.createOwnerSet.owners).toEqual(expect.arrayContaining([USERNAME1, USERNAME2, USERNAME3]));
 
         getResponse = await GRAPHQL_CLIENT_1.query(
           `query {
@@ -3849,13 +3804,7 @@ describe('@model with @auth', () => {
           {},
         );
 
-        expect(getResponse.data.getOwnerSet.owners).toEqual(
-          expect.arrayContaining([
-            USERNAME1,
-            USERNAME2,
-            USERNAME3,
-          ]),
-        );
+        expect(getResponse.data.getOwnerSet.owners).toEqual(expect.arrayContaining([USERNAME1, USERNAME2, USERNAME3]));
       });
     });
 
@@ -4096,10 +4045,10 @@ describe('@model with @auth', () => {
       );
 
       expect(listResponse.data.listGroupDynamicUserPools.items).toHaveLength(2);
-      expect(listResponse.data.listGroupDynamicUserPools.items.map(i => i.id)).toContain(
+      expect(listResponse.data.listGroupDynamicUserPools.items.map((i) => i.id)).toContain(
         createResponse2.data.createGroupDynamicUserPool.id,
       );
-      expect(listResponse.data.listGroupDynamicUserPools.items.map(i => i.id)).toContain(
+      expect(listResponse.data.listGroupDynamicUserPools.items.map((i) => i.id)).toContain(
         createResponse3.data.createGroupDynamicUserPool.id,
       );
 
@@ -4133,7 +4082,7 @@ describe('@model with @auth', () => {
       );
 
       expect(listResponse2.data.listGroupDynamicUserPools.items).toHaveLength(1);
-      expect(listResponse2.data.listGroupDynamicUserPools.items.map(i => i.id)).toContain(
+      expect(listResponse2.data.listGroupDynamicUserPools.items.map((i) => i.id)).toContain(
         createResponse.data.createGroupDynamicUserPool.id,
       );
 
@@ -4445,7 +4394,6 @@ describe('@model with @auth', () => {
         expect(deleteRes2.data.deleteOwnerGroupExplicitOps.content).toEqual('Bye, World!');
       });
     });
-
   });
 
   describe('Test invalid owner auth claims checks', () => {
@@ -4466,7 +4414,7 @@ describe('@model with @auth', () => {
         expect(createRes.errors.length).toEqual(1);
         expect((createRes.errors[0] as any).data).toBeNull();
         expect((createRes.errors[0] as any).errorType).toEqual('Unauthorized');
-      })
+      });
 
       test('owner with invalid claims cannot update a record', async () => {
         // create a record as admin with testuser as owner
@@ -4504,7 +4452,7 @@ describe('@model with @auth', () => {
         expect(updateRes.errors.length).toEqual(1);
         expect((updateRes.errors[0] as any).data).toBeNull();
         expect((updateRes.errors[0] as any).errorType).toEqual('Unauthorized');
-      })
+      });
 
       test('owner with invalid claims cannot delete a record', async () => {
         // create a record as admin with testuser as owner
@@ -4541,7 +4489,7 @@ describe('@model with @auth', () => {
         expect(deleteRes.errors.length).toEqual(1);
         expect((deleteRes.errors[0] as any).data).toBeNull();
         expect((deleteRes.errors[0] as any).errorType).toEqual('Unauthorized');
-      })
+      });
 
       test('owner with invalid claims cannot query a record', async () => {
         // create a record as admin with testuser as owner
@@ -4592,7 +4540,7 @@ describe('@model with @auth', () => {
         );
 
         expect(listRes.data.listOwnerInvalidClaims.items.length).toEqual(0);
-      })
+      });
     });
 
     describe('owner auth together with private access', () => {
@@ -4697,7 +4645,7 @@ describe('@model with @auth', () => {
         expect(deleteRes.data.deleteOwnerClaimWithPrivateAccess.description).toEqual('update allowed');
         expect(deleteRes.data.deleteOwnerClaimWithPrivateAccess.owner).toEqual(null);
         expect(deleteRes.data.deleteOwnerClaimWithPrivateAccess.owners).toEqual([USERNAME2]);
-      })
+      });
     });
 
     describe('owner field auth with invalid claims', () => {
@@ -4844,7 +4792,7 @@ describe('@model with @auth', () => {
         expect(deleteRes.errors.length).toEqual(1);
         expect((deleteRes.errors[0] as any).data).toBeNull();
         expect((deleteRes.errors[0] as any).errorType).toEqual('Unauthorized');
-      })
+      });
     });
   });
 });

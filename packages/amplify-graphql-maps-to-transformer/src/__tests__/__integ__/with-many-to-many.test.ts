@@ -5,16 +5,9 @@ import { HasOneTransformer, ManyToManyTransformer } from '@aws-amplify/graphql-r
 import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
-import { DeploymentResources, FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
 import { expectedResolversForModelWithRenamedField } from './common';
-
-
-const featureFlags: FeatureFlagProvider = {
-  getBoolean: (_: string): boolean => false,
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-};
 
 const manyToManyMapped = /* GraphQL */ `
   type Employee @model @mapsTo(name: "Person") {
@@ -35,7 +28,6 @@ const transformSchema = (schema: string): DeploymentResources => {
   const hasOneTransformer = new HasOneTransformer();
   const authTransformer = new AuthTransformer();
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       modelTransformer,
       indexTransformer,
@@ -44,7 +36,10 @@ const transformSchema = (schema: string): DeploymentResources => {
       new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
       new MapsToTransformer(),
     ],
-    sandboxModeEnabled: true,
+    transformParameters: {
+      respectPrimaryKeyAttributesOnConnectionField: false,
+      sandboxModeEnabled: true,
+    },
   });
   return transformer.transform(schema);
 };

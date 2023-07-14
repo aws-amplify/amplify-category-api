@@ -52,9 +52,7 @@ export class AccessControlMatrix {
    * set role to acm
    */
   public setRole(input: SetRoleInput): void {
-    const {
-      role, resource, operations, allowRoleOverwrite = false,
-    } = input;
+    const { role, resource, operations, allowRoleOverwrite = false } = input;
     this.validate({ resource, operations });
     let allowedVector: Array<Array<boolean>>;
     if (!this.roles.includes(role)) {
@@ -186,7 +184,7 @@ export class AccessControlMatrix {
       throw new TransformerContractError(`Role: ${input.role} does not exist in ACM.`);
     }
     if (input.operations) {
-      input.operations.forEach(operation => {
+      input.operations.forEach((operation) => {
         if (this.operations.indexOf(operation) === -1) {
           throw new TransformerContractError(`Operation: ${operation} does not exist in the ACM.`);
         }
@@ -228,7 +226,7 @@ export class AccessControlMatrix {
 
   private getOperationList(operations: Array<string>): Array<boolean> {
     const operationList: Array<boolean> = [];
-    this.operations.forEach(operation => {
+    this.operations.forEach((operation) => {
       operationList.push(operations.includes(operation));
     });
     return operationList;

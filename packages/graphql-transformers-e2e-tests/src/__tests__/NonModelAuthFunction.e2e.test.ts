@@ -37,8 +37,6 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 // To overcome of the way of how AmplifyJS picks up currentUserCredentials
 const anyAWS = AWS as any;
@@ -54,8 +52,8 @@ const customS3Client = new S3Client(REGION);
 const awsS3Client = new S3({ region: REGION });
 
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `FunctionTransformerTests-${BUILD_TIMESTAMP}`;
-const BUCKET_NAME = `appsync-function-transformer-test-bucket-${BUILD_TIMESTAMP}`;
+const STACK_NAME = `NonModelAuthFunctionTransformerTests-${BUILD_TIMESTAMP}`;
+const BUCKET_NAME = `non-model-auth-function-transformer-test-bucket-${BUILD_TIMESTAMP}`;
 const LOCAL_FS_BUILD_DIR = '/tmp/nonmodel_auth_function_transformer_tests/';
 const S3_ROOT_DIR_KEY = 'deployments';
 const ECHO_FUNCTION_NAME = `long-prefix-e2e-test-functions-echo-dev-${BUILD_TIMESTAMP}`;

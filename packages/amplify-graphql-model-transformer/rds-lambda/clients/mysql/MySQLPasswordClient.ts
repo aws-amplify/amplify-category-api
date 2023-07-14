@@ -11,7 +11,7 @@ export class MySQLPasswordClient extends MySQLClient {
   constructor() {
     super();
     this.clientPromise = this.getClient();
-    this.clientPromise.then((value) => this.client = value);
+    this.clientPromise.then((value) => { this.client = value; }).catch((e) => { throw (e); });
   }
 
   getClient = async (): Promise<any> => {

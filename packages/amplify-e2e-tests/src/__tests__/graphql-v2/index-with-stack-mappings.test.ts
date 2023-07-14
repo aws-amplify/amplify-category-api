@@ -25,7 +25,8 @@ const projectName = 'indexmap';
 const mappedResolverStack = 'MappedResolvers';
 const providerName = 'awscloudformation';
 
-const getMappedStackPath = (projRoot: string): string => path.join(projRoot, 'amplify', 'backend', 'api', projectName, 'build', 'stacks', `${mappedResolverStack}.json`);
+const getMappedStackPath = (projRoot: string): string =>
+  path.join(projRoot, 'amplify', 'backend', 'api', projectName, 'build', 'stacks', `${mappedResolverStack}.json`);
 
 const validateThatSongsCanBeCreatedAndQueriedByIndex = async (projRoot: string): Promise<void> => {
   const meta = getProjectMeta(projRoot);
@@ -48,7 +49,9 @@ const validateThatSongsCanBeCreatedAndQueriedByIndex = async (projRoot: string):
   await api.mutate({
     mutation: gql(/* GraphQL */ `
       mutation CreateSong($input: CreateSongInput!) {
-        createSong(input: $input) { id }
+        createSong(input: $input) {
+          id
+        }
       }
     `),
     fetchPolicy,
@@ -59,7 +62,9 @@ const validateThatSongsCanBeCreatedAndQueriedByIndex = async (projRoot: string):
     query: gql(/* GraphQL */ `
       query SongInfoByGenre($genre: String!) {
         songInfoByGenre(genre: $genre) {
-          items { id }
+          items {
+            id
+          }
         }
       }
     `),
@@ -71,7 +76,9 @@ const validateThatSongsCanBeCreatedAndQueriedByIndex = async (projRoot: string):
   await api.mutate({
     mutation: gql(/* GraphQL */ `
       mutation CreateSongWithSortKey($input: CreateSongWithSortKeyInput!) {
-        createSongWithSortKey(input: $input) { id }
+        createSongWithSortKey(input: $input) {
+          id
+        }
       }
     `),
     fetchPolicy,
@@ -80,9 +87,11 @@ const validateThatSongsCanBeCreatedAndQueriedByIndex = async (projRoot: string):
 
   const songWithSortKeysByNameAndGenreResponse = await api.query({
     query: gql(/* GraphQL */ `
-      query SongWithSortKeysByNameAndGenre($name: String! $genre: ModelStringKeyConditionInput) {
+      query SongWithSortKeysByNameAndGenre($name: String!, $genre: ModelStringKeyConditionInput) {
         songWithSortKeysByNameAndGenre(name: $name, genre: $genre) {
-          items { id }
+          items {
+            id
+          }
         }
       }
     `),

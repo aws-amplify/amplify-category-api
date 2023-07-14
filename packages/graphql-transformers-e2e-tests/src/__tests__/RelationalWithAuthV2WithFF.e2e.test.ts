@@ -38,9 +38,9 @@ const customS3Client = new S3Client(region);
 const awsS3Client = new S3({ region: region });
 const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: region });
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `RelationalAuthV2TransformersTest-${BUILD_TIMESTAMP}`;
-const BUCKET_NAME = `appsync-relational-auth-transformer-test-${BUILD_TIMESTAMP}`;
-const LOCAL_FS_BUILD_DIR = '/tmp/relational_auth_transformer_tests/';
+const STACK_NAME = `RelationalAuthV2TransformersFFTest-${BUILD_TIMESTAMP}`;
+const BUCKET_NAME = `appsync-relational-auth-transformer-ff-test-${BUILD_TIMESTAMP}`;
+const LOCAL_FS_BUILD_DIR = '/tmp/relational_auth_transformer_ff_tests/';
 const S3_ROOT_DIR_KEY = 'deployments';
 
 let GRAPHQL_ENDPOINT = undefined;
@@ -137,18 +137,6 @@ beforeAll(async () => {
         new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
         authTransformer,
       ],
-      featureFlags: {
-        getBoolean(value: string) {
-          if (value === 'useSubUsernameForDefaultIdentityClaim') {
-            return true;
-          }
-          return false;
-        },
-       
-
-        getNumber: jest.fn(),
-        getObject: jest.fn(),
-      }
     });
     out = transformer.transform(validSchema);
   } catch (e) {
@@ -223,7 +211,7 @@ beforeAll(async () => {
 
     // Wait for any propagation to avoid random
     // "The security token included in the request is invalid" errors
-    await new Promise<void>(res => setTimeout(() => res(), 5000));
+    await new Promise<void>((res) => setTimeout(() => res(), 5000));
   } catch (e) {
     console.error(e);
     expect(true).toEqual(false);

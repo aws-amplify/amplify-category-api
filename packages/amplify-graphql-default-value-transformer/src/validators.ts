@@ -3,8 +3,10 @@ import * as net from 'net';
 
 const TIME_REGEX = /^([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(\.\d{1,})?(([Z])|([+|-]([01][0-9]|2[0-3]):[0-5][0-9]))$/;
 const RFC_3339_REGEX_DATE = /^(\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01]))$/;
-const RFC_3339_REGEX_DATE_TIME = /^(\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]|60))(\.\d{1,})?(([Z])|([+|-]([01][0-9]|2[0-3]):[0-5][0-9]))$/;
-const EMAIL_ADDRESS_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+const RFC_3339_REGEX_DATE_TIME =
+  /^(\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]|60))(\.\d{1,})?(([Z])|([+|-]([01][0-9]|2[0-3]):[0-5][0-9]))$/;
+const EMAIL_ADDRESS_REGEX =
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 const BOOL_REGEX = /^(true|false)$/i;
 
 const leapYear = (year: number): boolean => (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
@@ -17,8 +19,8 @@ const validateDate = (date: string): boolean => {
   // Verify the correct number of days for
   // the month contained in the date-string
   const year = Number(date.slice(0, 4));
-  const month = Number(date.slice(5, 2));
-  const day = Number(date.slice(8, 2));
+  const month = Number(date.slice(5, 7));
+  const day = Number(date.slice(8, 10));
 
   switch (month) {
     case 2: // February
@@ -88,7 +90,6 @@ const validateAwsEmail = (x: string): boolean => EMAIL_ADDRESS_REGEX.test(x);
 
 const validateAwsUrl = (x: string): boolean => {
   try {
-    // eslint-disable-next-line no-new
     new URL(x);
     return true;
   } catch (e) {

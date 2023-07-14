@@ -10,6 +10,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-      - name : cloud-e2e
+      - name: cloud-e2e
         run: |
           yarn cloud-e2e

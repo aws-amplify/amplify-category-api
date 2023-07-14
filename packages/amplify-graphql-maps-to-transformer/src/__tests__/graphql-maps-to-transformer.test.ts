@@ -3,6 +3,7 @@ import {
   FieldMapEntry,
   ModelFieldMap,
   TransformerContextProvider,
+  TransformerPreProcessContextProvider,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { MapsToTransformer } from '../graphql-maps-to-transformer';
@@ -27,6 +28,7 @@ describe('@mapsTo directive', () => {
   const getResolver_mock = jest.fn();
   const getModelFieldMapKeys_mock = jest.fn();
   const getModelFieldMap_mock = jest.fn();
+  const setTypeMapping_mock = jest.fn();
 
   const host_stub = 'host_stub';
 
@@ -41,6 +43,9 @@ describe('@mapsTo directive', () => {
     },
     api: {
       host: host_stub,
+    },
+    schemaHelper: {
+      setTypeMapping: setTypeMapping_mock,
     },
   };
 
@@ -71,9 +76,9 @@ describe('@mapsTo directive', () => {
   const getTransformerInputsFromSchema = (schema: string) => {
     const ast = parse(schema);
     const stubDefinition = ast.definitions.find(
-      def => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === modelName,
+      (def) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === modelName,
     ) as ObjectTypeDefinitionNode;
-    const stubDirective = stubDefinition.directives?.find(directive => directive.name.value === 'mapsTo')!;
+    const stubDirective = stubDefinition.directives?.find((directive) => directive.name.value === 'mapsTo')!;
     return [
       stubDefinition as DeepWriteable<ObjectTypeDefinitionNode>,
       stubDirective as DeepWriteable<DirectiveNode>,
@@ -89,7 +94,7 @@ describe('@mapsTo directive', () => {
     const [stubDefinition, stubDirective, stubTransformerContext] = getTransformerInputsFromSchema(simpleSchema);
     stubDirective.arguments = [];
     expect(() =>
-      mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext)
+      mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
     ).toThrowErrorMatchingInlineSnapshot(`"name is required in @mapsTo directive"`);
   });
 
@@ -97,20 +102,20 @@ describe('@mapsTo directive', () => {
     const [stubDefinition, stubDirective, stubTransformerContext] = getTransformerInputsFromSchema(simpleSchema);
     stubDirective.arguments![0].value.kind = 'ListValue';
     expect(() =>
-      mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext)
+      mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
     ).toThrowErrorMatchingInlineSnapshot(`"A single string must be provided for \\"name\\" in @mapsTo directive"`);
   });
 
   it('registers the rename mapping', () => {
     const [stubDefinition, stubDirective, stubTransformerContext] = getTransformerInputsFromSchema(simpleSchema);
-    mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext)
+    mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext);
     expect(setModelNameMapping_mock.mock.calls[0]).toEqual(['TestName', 'OriginalName']);
   });
 
   it('throws if a conflicting model name is present in the schema', () => {
     const [stubDefinition, stubDirective, stubTransformerContext] = getTransformerInputsFromSchema(conflictingModelSchema);
     expect(() =>
-      mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext)
+      mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
     ).toThrowErrorMatchingInlineSnapshot(`"Type TestName cannot map to OriginalName because OriginalName is a model in the schema."`);
   });
 
@@ -273,5 +278,14 @@ describe('@mapsTo directive', () => {
     // assert
     expect(attachInputMappingSlot_mock).not.toBeCalled();
     expect(attachResponseMappingSlot_mock).not.toBeCalled();
+  });
+
+  it('pre-mutates the schema to reassign type mappings', () => {
+    mapsToTransformer.preMutateSchema({
+      ...(stubTransformerContextBase as unknown as TransformerPreProcessContextProvider),
+      inputDocument: parse(simpleSchema),
+    });
+
+    expect(setTypeMapping_mock).toHaveBeenCalledWith('TestName', 'OriginalName');
   });
 });

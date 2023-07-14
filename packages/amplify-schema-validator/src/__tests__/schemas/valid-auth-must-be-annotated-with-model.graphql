@@ -1,7 +1,7 @@
-type Post @model @auth(rules: [{allow: groups, groupsField: "groups"}]) {
-    id: ID!
-    title: String!
-    group: String
-    createdAt: String
-    updatedAt: String
+type Post @model @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
+  id: ID!
+  title: String!
+  group: String
+  createdAt: String
+  updatedAt: String
 }

@@ -3,7 +3,7 @@ import {
   generateGetArgumentsInput,
   InvalidDirectiveError,
   TransformerPluginBase,
-  DatasourceType
+  DatasourceType,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -19,18 +19,8 @@ import {
   Kind,
   ObjectTypeDefinitionNode,
 } from 'graphql';
-import { 
-  isListType, 
-  isNonNullType, 
-  isScalarOrEnum,
-  makeInputValueDefinition,
-  makeNamedType
-} from 'graphql-transformer-common';
-import {
-  constructSyncVTL,
-  getDeltaSyncTableTtl,
-  getVTLGenerator,
-} from './resolvers/resolvers';
+import { isListType, isNonNullType, isScalarOrEnum, makeInputValueDefinition, makeNamedType } from 'graphql-transformer-common';
+import { constructSyncVTL, getVTLGenerator } from './resolvers/resolvers';
 import {
   addKeyConditionInputs,
   removeAutoCreatedPrimaryKey,
@@ -39,14 +29,10 @@ import {
   updateMutationConditionInput,
   createHashField,
   ensureModelSortDirectionEnum,
-  tryAndCreateSortField
+  tryAndCreateSortField,
 } from './schema';
 import { PrimaryKeyDirectiveConfiguration } from './types';
-import {
-  validateNotSelfReferencing,
-  validateNotOwnerAuth,
-  lookupResolverName
-} from './utils';
+import { validateNotSelfReferencing, validateNotOwnerAuth, lookupResolverName } from './utils';
 
 const directiveName = 'primaryKey';
 const directiveDefinition = `
@@ -68,11 +54,14 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
     context: TransformerSchemaVisitStepContextProvider,
   ): void => {
     const directiveWrapped = new DirectiveWrapper(directive);
-    const args = directiveWrapped.getArguments({
-      object: parent as ObjectTypeDefinitionNode,
-      field: definition,
-      directive,
-    } as PrimaryKeyDirectiveConfiguration, generateGetArgumentsInput(context.featureFlags));
+    const args = directiveWrapped.getArguments(
+      {
+        object: parent as ObjectTypeDefinitionNode,
+        field: definition,
+        directive,
+      } as PrimaryKeyDirectiveConfiguration,
+      generateGetArgumentsInput(context.transformParameters),
+    );
 
     if (!args.sortKeyFields) {
       args.sortKeyFields = [];
@@ -89,12 +78,10 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
   public after = (ctx: TransformerContextProvider): void => {
     if (!ctx.isProjectUsingDataStore()) return;
 
-    const overriddenResources = ctx.getResourceOverrides();
     // construct sync VTL code
     this.resolverMap.forEach((syncVTLContent, resource) => {
       if (syncVTLContent) {
-        const deltaSyncTableTtl = getDeltaSyncTableTtl(overriddenResources, resource);
-        constructSyncVTL(syncVTLContent, resource, deltaSyncTableTtl);
+        constructSyncVTL(syncVTLContent, resource);
       }
     });
   };
@@ -126,7 +113,7 @@ function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
 
   validateNotSelfReferencing(config);
 
-  const modelDirective = object.directives!.find(directive => {
+  const modelDirective = object.directives!.find((directive) => {
     return directive.name.value === 'model';
   });
 
@@ -183,7 +170,7 @@ function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
 
     if (!validateNotOwnerAuth(sortKeyFieldName, config, ctx)) {
       throw new InvalidDirectiveError(
-        `The primary key's sort key type '${sortKeyFieldName}' cannot be used as an owner @auth field too. Please use another field for the sort key.`
+        `The primary key's sort key type '${sortKeyFieldName}' cannot be used as an owner @auth field too. Please use another field for the sort key.`,
       );
     }
 

@@ -6,7 +6,7 @@ import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-tran
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { HasOneTransformer, ManyToManyTransformer } from '..';
-import { featureFlags, hasGeneratedDirective, hasGeneratedField } from './test-helpers';
+import { hasGeneratedDirective, hasGeneratedField } from './test-helpers';
 
 test('fails if @manyToMany was used on an object that is not a model type', () => {
   const inputSchema = `
@@ -195,7 +195,7 @@ test('one of the models with sort key', () => {
   validateModelSchema(schema);
 
   expect(out.schema).toMatchSnapshot();
-  expectObjectAndFields(schema, "ModelAModelB", ["modelAID", "modelAsortId", "modelBID"]);
+  expectObjectAndFields(schema, 'ModelAModelB', ['modelAID', 'modelAsortId', 'modelBID']);
 });
 
 test('both models with sort key', () => {
@@ -218,7 +218,7 @@ test('both models with sort key', () => {
   validateModelSchema(schema);
 
   expect(out.schema).toMatchSnapshot();
-  expectObjectAndFields(schema, "ModelAModelB", ["modelAID", "modelAsortId", "modelBID", "modelBsortId"]);
+  expectObjectAndFields(schema, 'ModelAModelB', ['modelAID', 'modelAsortId', 'modelBID', 'modelBsortId']);
   expect(out.resolvers).toMatchSnapshot();
 });
 
@@ -243,7 +243,7 @@ test('models with multiple sort keys', () => {
   validateModelSchema(schema);
 
   expect(out.schema).toMatchSnapshot();
-  expectObjectAndFields(schema, "ModelAModelB", ["modelAID", "modelAsortId", "modelAsecondSortId", "modelBID", "modelBsortId"]);
+  expectObjectAndFields(schema, 'ModelAModelB', ['modelAID', 'modelAsortId', 'modelAsecondSortId', 'modelBID', 'modelBsortId']);
 });
 
 test('join table inherits auth from first table', () => {
@@ -432,7 +432,7 @@ describe('Pre Processing Many To Many Tests', () => {
   let transformer: GraphQLTransform;
 
   beforeEach(() => {
-    transformer = createTransformer()
+    transformer = createTransformer();
   });
 
   test('Should generate intermediate model in standard case with all fields', () => {
@@ -475,15 +475,15 @@ describe('Pre Processing Many To Many Tests', () => {
 
     const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
     const hasManyIngredientsMap = new Map<string, string | Array<string>>([
-      ["indexName", "byRecipe"],
-      ["fields", ["id"]],
+      ['indexName', 'byRecipe'],
+      ['fields', ['id']],
     ]);
     const hasManyRecipesMap = new Map<string, string | Array<string>>([
-      ["indexName", "byIngredient"],
-      ["fields", ["id"]],
+      ['indexName', 'byIngredient'],
+      ['fields', ['id']],
     ]);
-    expect(hasGeneratedDirective(updatedSchemaDoc, "Recipe", "ingredients", "hasMany", hasManyIngredientsMap)).toBeTruthy();
-    expect(hasGeneratedDirective(updatedSchemaDoc, "Ingredient", "recipes", "hasMany", hasManyRecipesMap)).toBeTruthy();
+    expect(hasGeneratedDirective(updatedSchemaDoc, 'Recipe', 'ingredients', 'hasMany', hasManyIngredientsMap)).toBeTruthy();
+    expect(hasGeneratedDirective(updatedSchemaDoc, 'Ingredient', 'recipes', 'hasMany', hasManyRecipesMap)).toBeTruthy();
   });
 
   test('Should generate correct hasMany directives for sort keys', () => {
@@ -503,15 +503,15 @@ describe('Pre Processing Many To Many Tests', () => {
 
     const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
     const hasManyIngredientsMap = new Map<string, string | Array<string>>([
-      ["indexName", "byRecipe"],
-      ["fields", ["id", "recipeName"]],
+      ['indexName', 'byRecipe'],
+      ['fields', ['id', 'recipeName']],
     ]);
     const hasManyRecipesMap = new Map<string, string | Array<string>>([
-      ["indexName", "byIngredient"],
-      ["fields", ["id", "ingredientName"]],
+      ['indexName', 'byIngredient'],
+      ['fields', ['id', 'ingredientName']],
     ]);
-    expect(hasGeneratedDirective(updatedSchemaDoc, "Recipe", "ingredients", "hasMany", hasManyIngredientsMap)).toBeTruthy();
-    expect(hasGeneratedDirective(updatedSchemaDoc, "Ingredient", "recipes", "hasMany", hasManyRecipesMap)).toBeTruthy();
+    expect(hasGeneratedDirective(updatedSchemaDoc, 'Recipe', 'ingredients', 'hasMany', hasManyIngredientsMap)).toBeTruthy();
+    expect(hasGeneratedDirective(updatedSchemaDoc, 'Ingredient', 'recipes', 'hasMany', hasManyRecipesMap)).toBeTruthy();
   });
 
   test('Should generate correct index directives for sort keys', () => {
@@ -531,17 +531,17 @@ describe('Pre Processing Many To Many Tests', () => {
 
     const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
     const recipeIndexArgsMap = new Map<string, string | Array<string>>([
-      ["name", "byRecipe"],
-      ["sortKeyFields", ["reciperecipeName"]],
+      ['name', 'byRecipe'],
+      ['sortKeyFields', ['reciperecipeName']],
     ]);
     const ingredientIndexArgsMap = new Map<string, string | Array<string>>([
-      ["name", "byIngredient"],
-      ["sortKeyFields", ["ingredientingredientName"]],
+      ['name', 'byIngredient'],
+      ['sortKeyFields', ['ingredientingredientName']],
     ]);
-    expect(hasGeneratedDirective(updatedSchemaDoc, "RecipeIngredients", "recipeID", "index", recipeIndexArgsMap)).toBeTruthy();
-    expect(hasGeneratedDirective(updatedSchemaDoc, "RecipeIngredients", "ingredientID", "index", ingredientIndexArgsMap)).toBeTruthy();
-    expect(hasGeneratedField(updatedSchemaDoc, "RecipeIngredients", "reciperecipeName", "String"))
-    expect(hasGeneratedField(updatedSchemaDoc, "RecipeIngredients", "ingredientingredientName", "String"))
+    expect(hasGeneratedDirective(updatedSchemaDoc, 'RecipeIngredients', 'recipeID', 'index', recipeIndexArgsMap)).toBeTruthy();
+    expect(hasGeneratedDirective(updatedSchemaDoc, 'RecipeIngredients', 'ingredientID', 'index', ingredientIndexArgsMap)).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, 'RecipeIngredients', 'reciperecipeName', 'String'));
+    expect(hasGeneratedField(updatedSchemaDoc, 'RecipeIngredients', 'ingredientingredientName', 'String'));
   });
 
   test('Should generate correct hasOne directives', () => {
@@ -560,14 +560,10 @@ describe('Pre Processing Many To Many Tests', () => {
     `;
 
     const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
-    const recipeBelongsToArgsMap = new Map<string, string | Array<string>>([
-      ["fields", ["recipeID"]],
-    ]);
-    const ingredientBelongsToArgsMap = new Map<string, string | Array<string>>([
-      ["fields", ["ingredientID"]],
-    ]);
-    expect(hasGeneratedDirective(updatedSchemaDoc, "RecipeIngredients", "recipe", "hasOne", recipeBelongsToArgsMap)).toBeTruthy();
-    expect(hasGeneratedDirective(updatedSchemaDoc, "RecipeIngredients", "ingredient", "hasOne", ingredientBelongsToArgsMap)).toBeTruthy();
+    const recipeBelongsToArgsMap = new Map<string, string | Array<string>>([['fields', ['recipeID']]]);
+    const ingredientBelongsToArgsMap = new Map<string, string | Array<string>>([['fields', ['ingredientID']]]);
+    expect(hasGeneratedDirective(updatedSchemaDoc, 'RecipeIngredients', 'recipe', 'hasOne', recipeBelongsToArgsMap)).toBeTruthy();
+    expect(hasGeneratedDirective(updatedSchemaDoc, 'RecipeIngredients', 'ingredient', 'hasOne', ingredientBelongsToArgsMap)).toBeTruthy();
   });
 
   test('Should generate correct hasOne directives for sort key fields', () => {
@@ -586,14 +582,10 @@ describe('Pre Processing Many To Many Tests', () => {
     `;
 
     const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
-    const recipeBelongsToArgsMap = new Map<string, string | Array<string>>([
-      ["fields", ["recipeID", "recipemealName"]],
-    ]);
-    const ingredientBelongsToArgsMap = new Map<string, string | Array<string>>([
-      ["fields", ["ingredientID", "ingredientcomponentName"]],
-    ]);
-    expect(hasGeneratedDirective(updatedSchemaDoc, "RecipeIngredients", "recipe", "hasOne", recipeBelongsToArgsMap)).toBeTruthy();
-    expect(hasGeneratedDirective(updatedSchemaDoc, "RecipeIngredients", "ingredient", "hasOne", ingredientBelongsToArgsMap)).toBeTruthy();
+    const recipeBelongsToArgsMap = new Map<string, string | Array<string>>([['fields', ['recipeID', 'recipemealName']]]);
+    const ingredientBelongsToArgsMap = new Map<string, string | Array<string>>([['fields', ['ingredientID', 'ingredientcomponentName']]]);
+    expect(hasGeneratedDirective(updatedSchemaDoc, 'RecipeIngredients', 'recipe', 'hasOne', recipeBelongsToArgsMap)).toBeTruthy();
+    expect(hasGeneratedDirective(updatedSchemaDoc, 'RecipeIngredients', 'ingredient', 'hasOne', ingredientBelongsToArgsMap)).toBeTruthy();
   });
 
   test('Should update field type on the source models', () => {
@@ -613,8 +605,8 @@ describe('Pre Processing Many To Many Tests', () => {
 
     const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
 
-    expect(hasGeneratedField(updatedSchemaDoc, "Recipe", "ingredients", "RecipeIngredients", true)).toBeTruthy();
-    expect(hasGeneratedField(updatedSchemaDoc, "Ingredient", "recipes", "RecipeIngredients", true)).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, 'Recipe', 'ingredients', 'RecipeIngredients', true)).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, 'Ingredient', 'recipes', 'RecipeIngredients', true)).toBeTruthy();
   });
 
   test('Should correctly name fields based on mapsTo', () => {
@@ -634,15 +626,15 @@ describe('Pre Processing Many To Many Tests', () => {
 
     const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
 
-    expect(hasGeneratedField(updatedSchemaDoc, "Foo", "ingredients", "RecipeIngredients", true)).toBeTruthy();
-    expect(hasGeneratedField(updatedSchemaDoc, "Bar", "recipes", "RecipeIngredients", true)).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, 'Foo', 'ingredients', 'RecipeIngredients', true)).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, 'Bar', 'recipes', 'RecipeIngredients', true)).toBeTruthy();
 
-    expect(hasGeneratedField(updatedSchemaDoc, "RecipeIngredients", "foo", "Foo")).toBeTruthy();
-    expect(hasGeneratedField(updatedSchemaDoc, "RecipeIngredients", "fooID", "ID")).toBeTruthy();
-    expect(hasGeneratedField(updatedSchemaDoc, "RecipeIngredients", "bar", "Foo")).toBeTruthy();
-    expect(hasGeneratedField(updatedSchemaDoc, "RecipeIngredients", "barID", "ID")).toBeTruthy();
-    expect(hasGeneratedField(updatedSchemaDoc, "RecipeIngredients", "foomealName", "ID")).toBeTruthy();
-    expect(hasGeneratedField(updatedSchemaDoc, "RecipeIngredients", "barcomponentName", "ID")).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, 'RecipeIngredients', 'foo', 'Foo')).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, 'RecipeIngredients', 'fooID', 'ID')).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, 'RecipeIngredients', 'bar', 'Foo')).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, 'RecipeIngredients', 'barID', 'ID')).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, 'RecipeIngredients', 'foomealName', 'ID')).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, 'RecipeIngredients', 'barcomponentName', 'ID')).toBeTruthy();
   });
 });
 
@@ -668,17 +660,24 @@ function createTransformer(authConfig?: AppSyncAuthConfiguration) {
       new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
       authTransformer,
     ],
-    featureFlags,
+    transformParameters: {
+      shouldDeepMergeDirectiveConfigDefaults: false,
+      enableAutoIndexQueryNames: false,
+      respectPrimaryKeyAttributesOnConnectionField: false,
+      populateOwnerFieldForStaticGroupAuth: false,
+    },
   });
 
   return transformer;
 }
 
 function expectObjectAndFields(schema: DocumentNode, type: String, fields: String[]) {
-  const relationModel = schema.definitions.find(def => def.kind === "ObjectTypeDefinition" && def.name.value === type) as ObjectTypeDefinitionNode;
+  const relationModel = schema.definitions.find(
+    (def) => def.kind === 'ObjectTypeDefinition' && def.name.value === type,
+  ) as ObjectTypeDefinitionNode;
   expect(relationModel).toBeDefined();
-  fields.forEach(field => {
-    expect(relationModel.fields?.find(f => f.name.value === field)).toBeDefined();
+  fields.forEach((field) => {
+    expect(relationModel.fields?.find((f) => f.name.value === field)).toBeDefined();
   });
 }
 /* eslint-enable */

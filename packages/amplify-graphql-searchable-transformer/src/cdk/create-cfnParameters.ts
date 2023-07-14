@@ -1,6 +1,6 @@
 import { ResourceConstants } from 'graphql-transformer-common';
 import { CfnParameter, Stack } from 'aws-cdk-lib';
-import {ALLOWABLE_SEARCHABLE_INSTANCE_TYPES} from '../constants';
+import { ALLOWABLE_SEARCHABLE_INSTANCE_TYPES } from '../constants';
 
 export const createParametersStack = (stack: Stack): Map<string, CfnParameter> => {
   const {
@@ -38,7 +38,8 @@ export const createParametersStack = (stack: Stack): Map<string, CfnParameter> =
       OpenSearchStreamingLambdaRuntime,
       new CfnParameter(stack, OpenSearchStreamingLambdaRuntime, {
         // eslint-disable-next-line no-multi-str
-        description: 'The lambda runtime \
+        description:
+          'The lambda runtime \
                 (https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime)',
         default: 'python3.6',
       }),

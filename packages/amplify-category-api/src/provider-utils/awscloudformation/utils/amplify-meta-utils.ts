@@ -9,9 +9,9 @@ export const authConfigHasApiKey = (authConfig?: any) => {
   return (
     Array.of(authConfig.defaultAuthentication)
       .concat(authConfig.additionalAuthenticationProviders)
-      .filter(auth => !!auth) // filter out undefined elements which can happen if there are no addtl auth providers
-      .map(auth => auth.authenticationType)
-      .findIndex(authType => authType === 'API_KEY') > -1
+      .filter((auth) => !!auth) // filter out undefined elements which can happen if there are no addtl auth providers
+      .map((auth) => auth.authenticationType)
+      .findIndex((authType) => authType === 'API_KEY') > -1
   );
 };
 
@@ -23,7 +23,7 @@ export const checkIfAuthExists = () => {
 
   if (amplifyMeta[authCategoryName] && Object.keys(amplifyMeta[authCategoryName]).length > 0) {
     const categoryResources = amplifyMeta[authCategoryName];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].service === authServiceName) {
         authResourceName = resource;
       }
@@ -43,9 +43,11 @@ export const ensureNoAppSyncAPIExists = () => {
   const apiNames = getAppSyncAPINames();
   // This restriction of having a single AppSync API might change in future.
   if (apiNames?.length > 0) {
-    throw new Error(`You already have an AppSync API named ${apiNames[0]} in your project. Use the "amplify update api" command to update your existing AppSync API.`);
+    throw new Error(
+      `You already have an AppSync API named ${apiNames[0]} in your project. Use the "amplify update api" command to update your existing AppSync API.`,
+    );
   }
-}
+};
 
 export const getAppSyncAPIName = () => {
   const apiNames = getAppSyncAPINames();

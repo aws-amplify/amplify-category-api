@@ -1,10 +1,4 @@
-import {
-  DocumentNode,
-  Kind,
-  ObjectTypeDefinitionNode,
-  ListValueNode,
-  StringValueNode,
-} from 'graphql';
+import { DocumentNode, Kind, ObjectTypeDefinitionNode, ListValueNode, StringValueNode } from 'graphql';
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
 
 /**
@@ -20,9 +14,9 @@ export const verifyIndexSortKeyFieldsExistInModel = (schema: DocumentNode): Erro
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,
   ) as ObjectTypeDefinitionNode[];
   objectTypeDefinitions.forEach((objectTypeDefinition) => {
-    const directiveFields = objectTypeDefinition.fields?.filter((objectField) => objectField.directives?.find(
-      (directive) => directive.name.value === 'index',
-    ));
+    const directiveFields = objectTypeDefinition.fields?.filter((objectField) =>
+      objectField.directives?.find((directive) => directive.name.value === 'index'),
+    );
 
     directiveFields?.forEach((directiveField) => {
       const fieldVals = objectTypeDefinition.fields?.map((field) => field.name.value);
@@ -40,9 +34,11 @@ export const verifyIndexSortKeyFieldsExistInModel = (schema: DocumentNode): Erro
           if (!fieldVals?.includes(val)) {
             const nameFieldArg = directiveArg?.arguments?.find((arg) => arg.name.value === 'name');
             const nameVal = (nameFieldArg?.value as StringValueNode).value;
-            errors.push(new InvalidDirectiveError(
-              `Can't find field '${val}' in ${objectTypeDefinition.name.value}, but it was specified in index '${nameVal}'`,
-            ));
+            errors.push(
+              new InvalidDirectiveError(
+                `Can't find field '${val}' in ${objectTypeDefinition.name.value}, but it was specified in index '${nameVal}'`,
+              ),
+            );
           }
         });
       });

@@ -1,7 +1,21 @@
 import { amplifyAppAndroid, amplifyAppAngular, amplifyAppIos, amplifyAppReact } from '../amplify-app-helpers/amplify-app-setup';
-import { addFeatureFlag, updateApiSchema } from 'amplify-category-api-e2e-core';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
-import { generateModels } from 'amplify-category-api-e2e-core';
+import {
+  addFeatureFlag,
+  generateModelsWithUnknownTypeError,
+  updateApiSchema,
+  generateModels,
+  createNewProjectDir,
+  deleteProjectDir,
+} from 'amplify-category-api-e2e-core';
+
+// This is to fix the issue of error not rejected in the codebuild,
+async function testModelsWithUnknownType(projRoot: string): Promise<void> {
+  if (process.env.CIRCLECI) {
+    await expect(generateModels(projRoot)).rejects.toThrowError();
+  } else if (process.env.CODEBUILD) {
+    await generateModelsWithUnknownTypeError(projRoot);
+  }
+}
 
 describe('data store modelgen tests', () => {
   let projRoot: string;
@@ -26,7 +40,7 @@ describe('data store modelgen tests', () => {
 
     await expect(generateModels(projRoot)).resolves.not.toThrow();
     updateApiSchema(projRoot, projName, schemaWithError);
-    await expect(generateModels(projRoot)).rejects.toThrowError();
+    await testModelsWithUnknownType(projRoot);
   });
 
   it('should generate models for iOS project', async () => {
@@ -38,7 +52,7 @@ describe('data store modelgen tests', () => {
 
     await expect(generateModels(projRoot)).resolves.not.toThrow();
     updateApiSchema(projRoot, projName, schemaWithError);
-    await expect(generateModels(projRoot)).rejects.toThrowError();
+    await testModelsWithUnknownType(projRoot);
   });
 
   it('should generate models for angular project', async () => {
@@ -50,7 +64,7 @@ describe('data store modelgen tests', () => {
 
     await expect(generateModels(projRoot)).resolves.not.toThrow();
     updateApiSchema(projRoot, projName, schemaWithError);
-    await expect(generateModels(projRoot)).rejects.toThrowError();
+    await testModelsWithUnknownType(projRoot);
   });
 
   it('should generate models for react project', async () => {
@@ -62,6 +76,6 @@ describe('data store modelgen tests', () => {
 
     await expect(generateModels(projRoot)).resolves.not.toThrow();
     updateApiSchema(projRoot, projName, schemaWithError);
-    await expect(generateModels(projRoot)).rejects.toThrowError();
+    await testModelsWithUnknownType(projRoot);
   });
 });

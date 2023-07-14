@@ -4,6 +4,6 @@
     "rootDir": "src",
     "outDir": "lib",
     "composite": true,
-    "strict": false,
-  },
+    "strict": false
+  }
 }

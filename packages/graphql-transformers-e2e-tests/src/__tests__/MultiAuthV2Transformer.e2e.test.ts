@@ -298,17 +298,8 @@ beforeAll(async () => {
       new HasManyTransformer(),
       new AuthTransformer({ identityPoolId: IDENTITY_POOL_ID }),
     ],
-    featureFlags: {
-      getBoolean: (value: string, defaultValue?: boolean) => {
-        if (value === 'useSubUsernameForDefaultIdentityClaim') {
-          return false;
-        }
-        return defaultValue;
-      },
-
-
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
+    transformParameters: {
+      useSubUsernameForDefaultIdentityClaim: false,
     },
   });
   const out = transformer.transform(validSchema);
@@ -325,7 +316,7 @@ beforeAll(async () => {
   );
   // Wait for any propagation to avoid random
   // "The security token included in the request is invalid" errors
-  await new Promise<void>(res => setTimeout(() => res(), 5000));
+  await new Promise<void>((res) => setTimeout(() => res(), 5000));
 
   expect(finishedStack).toBeDefined();
   const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);

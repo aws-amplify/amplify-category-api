@@ -2,19 +2,8 @@ import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { AppSyncAuthConfiguration, FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '../graphql-auth-transformer';
-
-const featureFlags: FeatureFlagProvider = {
-  getBoolean: (value: string): boolean => {
-    if (value === 'respectPrimaryKeyAttributesOnConnectionField') {
-      return true;
-    }
-    return false;
-  },
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-};
 
 describe('@auth with custom primary keys', () => {
   it('generates correct allowed fields', () => {
@@ -54,13 +43,18 @@ describe('@auth with custom primary keys', () => {
         new BelongsToTransformer(),
         new AuthTransformer(),
       ],
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
-    expect(out.resolvers['Mutation.createPostMetadata.auth.1.req.vtl']).toContain('#set( $ownerAllowedFields0 = ["postMetadataReference","title","post","postMetadataPostPostReference"] )');
-    expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain('#set( $ownerAllowedFields0 = ["postReference","title","comments","metadata","postMetadataPostMetadataReference"] )');
-    expect(out.resolvers['Mutation.createComment.auth.1.req.vtl']).toContain('#set( $ownerAllowedFields0 = ["commentReference","title","postCommentsPostReference"] )');
+    expect(out.resolvers['Mutation.createPostMetadata.auth.1.req.vtl']).toContain(
+      '#set( $ownerAllowedFields0 = ["postMetadataReference","title","post","postMetadataPostPostReference"] )',
+    );
+    expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain(
+      '#set( $ownerAllowedFields0 = ["postReference","title","comments","metadata","postMetadataPostMetadataReference"] )',
+    );
+    expect(out.resolvers['Mutation.createComment.auth.1.req.vtl']).toContain(
+      '#set( $ownerAllowedFields0 = ["commentReference","title","postCommentsPostReference"] )',
+    );
   });
 });

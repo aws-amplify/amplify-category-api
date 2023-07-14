@@ -1,8 +1,8 @@
-type Todo @model @auth(rules: [{allow: private, provider: userPools}]) {
+type Todo @model @auth(rules: [{ allow: private, provider: userPools }]) {
   id: ID!
   content: String
 }
-type Author @model @auth(rules: [{allow: private, provider: userPools}]) {
+type Author @model @auth(rules: [{ allow: private, provider: userPools }]) {
   id: ID!
   name: String
 }

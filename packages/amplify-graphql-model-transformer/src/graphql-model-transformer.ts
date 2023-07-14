@@ -28,12 +28,7 @@ import {
   TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  ITable,
-  StreamViewType,
-  Table,
-  TableEncryption,
-} from 'aws-cdk-lib/aws-dynamodb';
+import { ITable, StreamViewType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import {
@@ -128,7 +123,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   private resolverMap: Record<string, TransformerResolverProvider> = {};
   private typesWithModelDirective: Set<string> = new Set();
   private resourceGeneratorMap: Map<string, ModelResourceGenerator> = new Map<string, ModelResourceGenerator>();
-  private modelToDatasourceMap: Map<string, DatasourceType> = new Map<string, DatasourceType>()
+  private modelToDatasourceMap: Map<string, DatasourceType> = new Map<string, DatasourceType>();
   /**
    * A Map to hold the directive configuration
    */
@@ -162,9 +157,10 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   };
 
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider): void => {
-    const isTypeNameReserved = definition.name.value === ctx.output.getQueryTypeName()
-      || definition.name.value === ctx.output.getMutationTypeName()
-      || definition.name.value === ctx.output.getSubscriptionTypeName();
+    const isTypeNameReserved =
+      definition.name.value === ctx.output.getQueryTypeName() ||
+      definition.name.value === ctx.output.getMutationTypeName() ||
+      definition.name.value === ctx.output.getSubscriptionTypeName();
 
     const isDynamoDB = (ctx.modelToDatasourceMap.get(definition.name.value) ?? DDB_DATASOURCE_TYPE).dbType === DDB_DB_TYPE;
     if (isTypeNameReserved) {
@@ -180,35 +176,40 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     }
 
     const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
-    const options = directiveWrapped.getArguments({
-      queries: {
-        get: getFieldNameFor('get', typeName),
-        list: getFieldNameFor('list', typeName),
-        ...(ctx.isProjectUsingDataStore() ? { sync: getFieldNameFor('sync', typeName) } : undefined),
+    const options = directiveWrapped.getArguments(
+      {
+        queries: {
+          get: getFieldNameFor('get', typeName),
+          list: getFieldNameFor('list', typeName),
+          ...(ctx.isProjectUsingDataStore() ? { sync: getFieldNameFor('sync', typeName) } : undefined),
+        },
+        mutations: {
+          create: getFieldNameFor('create', typeName),
+          update: getFieldNameFor('update', typeName),
+          delete: getFieldNameFor('delete', typeName),
+        },
+        subscriptions: {
+          level: SubscriptionLevel.on,
+          onCreate: [getFieldNameFor('onCreate', typeName)],
+          onDelete: [getFieldNameFor('onDelete', typeName)],
+          onUpdate: [getFieldNameFor('onUpdate', typeName)],
+        },
+        timestamps: isDynamoDB
+          ? {
+              createdAt: 'createdAt',
+              updatedAt: 'updatedAt',
+            }
+          : {
+              createdAt: undefined,
+              updatedAt: undefined,
+            },
       },
-      mutations: {
-        create: getFieldNameFor('create', typeName),
-        update: getFieldNameFor('update', typeName),
-        delete: getFieldNameFor('delete', typeName),
-      },
-      subscriptions: {
-        level: SubscriptionLevel.on,
-        onCreate: [getFieldNameFor('onCreate', typeName)],
-        onDelete: [getFieldNameFor('onDelete', typeName)],
-        onUpdate: [getFieldNameFor('onUpdate', typeName)],
-      },
-      timestamps: isDynamoDB ? {
-        createdAt: 'createdAt',
-        updatedAt: 'updatedAt',
-      } : {
-        createdAt: undefined,
-        updatedAt: undefined,
-      },
-    }, generateGetArgumentsInput(ctx.featureFlags));
+      generateGetArgumentsInput(ctx.transformParameters),
+    );
 
     // This property override is specifically to address parity between V1 and V2 when the FF is disabled
     // If one subscription is defined, just let the others go to null without FF. But if public and none defined, default all subs
-    if (!ctx.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false)) {
+    if (!ctx.transformParameters.shouldDeepMergeDirectiveConfigDefaults) {
       const publicSubscriptionDefaults = {
         onCreate: [getFieldNameFor('onCreate', typeName)],
         onDelete: [getFieldNameFor('onDelete', typeName)],
@@ -222,10 +223,12 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             ...publicSubscriptionDefaults,
           },
         },
-        generateGetArgumentsInput(ctx.featureFlags),
+        generateGetArgumentsInput(ctx.transformParameters),
       );
-      if (baseArgs?.subscriptions?.level === SubscriptionLevel.public
-        && !(baseArgs?.subscriptions?.onCreate || baseArgs?.subscriptions?.onDelete || baseArgs?.subscriptions?.onUpdate)) {
+      if (
+        baseArgs?.subscriptions?.level === SubscriptionLevel.public &&
+        !(baseArgs?.subscriptions?.onCreate || baseArgs?.subscriptions?.onDelete || baseArgs?.subscriptions?.onUpdate)
+      ) {
         options.subscriptions = { level: SubscriptionLevel.public, ...publicSubscriptionDefaults };
       }
     }
@@ -255,7 +258,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   };
 
   prepare = (context: TransformerPrepareStepContextProvider): void => {
-    this.typesWithModelDirective.forEach(modelTypeName => {
+    this.typesWithModelDirective.forEach((modelTypeName) => {
       const type = context.output.getObject(modelTypeName);
       context.providerRegistry.registerDataSourceProvider(type!, this);
     });
@@ -266,9 +269,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     addModelConditionInputs(ctx);
 
     this.ensureModelSortDirectionEnum(ctx);
-    this.typesWithModelDirective.forEach(type => {
+    this.typesWithModelDirective.forEach((type) => {
       const def = ctx.output.getObject(type)!;
-      const hasAuth = def.directives!.some(dir => dir.name.value === 'auth');
+      const hasAuth = def.directives!.some((dir) => dir.name.value === 'auth');
 
       // add Non Model type inputs
       this.createNonModelInputs(ctx, def);
@@ -291,19 +294,19 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         }
       }
       // global auth check
-      if (!hasAuth && ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+      if (!hasAuth && ctx.transformParameters.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
         const apiKeyDirArray = [makeDirective(API_KEY_DIRECTIVE, [])];
         extendTypeWithDirectives(ctx, def.name.value, apiKeyDirArray);
         propagateApiKeyToNestedTypes(ctx as TransformerContextProvider, def, new Set<string>());
-        queryFields.forEach(operationField => {
+        queryFields.forEach((operationField) => {
           const operationName = operationField.name.value;
           addDirectivesToOperation(ctx, ctx.output.getQueryTypeName()!, operationName, apiKeyDirArray);
         });
-        mutationFields.forEach(operationField => {
+        mutationFields.forEach((operationField) => {
           const operationName = operationField.name.value;
           addDirectivesToOperation(ctx, ctx.output.getMutationTypeName()!, operationName, apiKeyDirArray);
         });
-        subscriptionsFields.forEach(operationField => {
+        subscriptionsFields.forEach((operationField) => {
           const operationName = operationField.name.value;
           addDirectivesToOperation(ctx, ctx.output.getSubscriptionTypeName()!, operationName, apiKeyDirArray);
         });
@@ -373,14 +376,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const dbInfo = ctx.modelToDatasourceMap.get(type.name.value) ?? DDB_DATASOURCE_TYPE;
     if (dbInfo?.dbType && this.resourceGeneratorMap.has(dbInfo.dbType)) {
       // Coercing this into being defined as we're running a check on it first
-      return this.resourceGeneratorMap.get(dbInfo.dbType)!.generateUpdateResolver(
-        ctx,
-        type,
-        modelDirectiveConfig,
-        typeName,
-        fieldName,
-        resolverLogicalId,
-      );
+      return this.resourceGeneratorMap
+        .get(dbInfo.dbType)!
+        .generateUpdateResolver(ctx, type, modelDirectiveConfig, typeName, fieldName, resolverLogicalId);
     }
     throw new Error(`DB Type undefined or resource generator not provided for ${type.name.value}`);
   };
@@ -468,7 +466,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       [SubscriptionFieldType.ON_UPDATE]: MutationFieldType.UPDATE,
       [SubscriptionFieldType.ON_DELETE]: MutationFieldType.DELETE,
     };
-    const mutation = Array.from(mutationMap).find(m => m.type === mutationToSubscriptionTypeMap[subscriptionType]);
+    const mutation = Array.from(mutationMap).find((m) => m.type === mutationToSubscriptionTypeMap[subscriptionType]);
     if (mutation) {
       return mutation.fieldName;
     }
@@ -478,7 +476,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   private createQueryFields = (ctx: TransformerValidationStepContextProvider, def: ObjectTypeDefinitionNode): FieldDefinitionNode[] => {
     const queryFields: FieldDefinitionNode[] = [];
     const queryFieldNames = this.getQueryFieldNames(def!);
-    queryFieldNames.forEach(queryField => {
+    queryFieldNames.forEach((queryField) => {
       const outputType = this.getOutputType(ctx, def, queryField);
       const args = this.getInputs(ctx, def!, {
         fieldName: queryField.fieldName,
@@ -494,7 +492,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   private createMutationFields = (ctx: TransformerValidationStepContextProvider, def: ObjectTypeDefinitionNode): FieldDefinitionNode[] => {
     const mutationFields: FieldDefinitionNode[] = [];
     const mutationFieldNames = this.getMutationFieldNames(def!);
-    mutationFieldNames.forEach(mutationField => {
+    mutationFieldNames.forEach((mutationField) => {
       const args = this.getInputs(ctx, def!, {
         fieldName: mutationField.fieldName,
         typeName: mutationField.typeName,
@@ -516,19 +514,21 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
     const subscriptionFields: FieldDefinitionNode[] = [];
 
-    Object.keys(subscriptionToMutationsMap).forEach(subscriptionFieldName => {
+    Object.keys(subscriptionToMutationsMap).forEach((subscriptionFieldName) => {
       const maps = subscriptionToMutationsMap[subscriptionFieldName];
 
       const args: InputValueDefinitionNode[] = [];
-      maps.map(it => args.push(
-        ...this.getInputs(ctx, def!, {
-          fieldName: it.fieldName,
-          typeName: it.typeName,
-          type: it.type,
-        }),
-      ));
+      maps.map((it) =>
+        args.push(
+          ...this.getInputs(ctx, def!, {
+            fieldName: it.fieldName,
+            typeName: it.typeName,
+            type: it.type,
+          }),
+        ),
+      );
 
-      const mutationNames = maps.map(it => this.getMutationName(it.type, mutationFields));
+      const mutationNames = maps.map((it) => this.getMutationName(it.type, mutationFields));
 
       // Todo use directive wrapper to build the directive node
       const directive = makeDirective('aws_subscribe', [makeArgument('mutations', makeValueNode(mutationNames))]);
@@ -601,7 +601,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       const filterInputs = createEnumModelFilters(ctx, type);
       conditionInput = makeMutationConditionInput(ctx, conditionTypeName, type);
       filterInputs.push(conditionInput);
-      filterInputs.forEach(input => {
+      filterInputs.forEach((input) => {
         const conditionInputName = input.name.value;
         if (!ctx.output.getType(conditionInputName)) {
           ctx.output.addInput(input);
@@ -616,7 +616,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         const filterInputName = toPascalCase(['Model', type.name.value, 'FilterInput']);
         const filterInputs = createEnumModelFilters(ctx, type);
         filterInputs.push(makeListQueryFilterInput(ctx, filterInputName, type));
-        filterInputs.forEach(input => {
+        filterInputs.forEach((input) => {
           const conditionInputName = input.name.value;
           if (!ctx.output.getType(conditionInputName)) {
             ctx.output.addInput(input);
@@ -694,16 +694,14 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         const filterInputName = toPascalCase(['ModelSubscription', type.name.value, 'FilterInput']);
         const filterInputs = createEnumModelFilters(ctx, type);
         filterInputs.push(makeSubscriptionQueryFilterInput(ctx, filterInputName, type));
-        filterInputs.forEach(input => {
+        filterInputs.forEach((input) => {
           const conditionInputName = input.name.value;
           if (!ctx.output.getType(conditionInputName)) {
             ctx.output.addInput(input);
           }
         });
 
-        return [
-          makeInputValueDefinition('filter', makeNamedType(filterInputName)),
-        ];
+        return [makeInputValueDefinition('filter', makeNamedType(filterInputName))];
 
       default:
         throw new Error('Unknown operation type');
@@ -752,10 +750,10 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   createIAMRole = (context: TransformerContextProvider, def: ObjectTypeDefinitionNode, stack: cdk.Stack, tableName: string): iam.Role => {
     const ddbGenerator = this.resourceGeneratorMap.get(DDB_DB_TYPE) as DynamoModelResourceGenerator;
     return ddbGenerator.createIAMRole(context, def, stack, tableName);
-  }
+  };
 
   private createNonModelInputs = (ctx: TransformerTransformSchemaStepContextProvider, obj: ObjectTypeDefinitionNode): void => {
-    (obj.fields ?? []).forEach(field => {
+    (obj.fields ?? []).forEach((field) => {
       if (!isScalar(field.type)) {
         const def = ctx.output.getType(getBaseType(field.type));
         if (def && def.kind === 'ObjectTypeDefinition' && !this.isModelField(def.name.value)) {
@@ -770,7 +768,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     });
   };
 
-  private isModelField = (name: string): boolean => (!!this.typesWithModelDirective.has(name));
+  private isModelField = (name: string): boolean => !!this.typesWithModelDirective.has(name);
 
   private getNonModelInputObjectName = (name: string): string => `${toUpper(name)}Input`;
 
@@ -803,7 +801,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       }
     }
 
-    timestamps.forEach(fieldName => {
+    timestamps.forEach((fieldName) => {
       if (typeWrapper.hasField(fieldName)) {
         const field = typeWrapper.getField(fieldName);
         if (!['String', 'AWSDateTime'].includes(field.getTypeName())) {
@@ -838,7 +836,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const subscriptionToMutationsMap: { [subField: string]: { fieldName: string; typeName: string; type: SubscriptionFieldType }[] } = {};
     const subscriptionFieldNames = this.getSubscriptionFieldNames(def);
 
-    subscriptionFieldNames.forEach(subscriptionFieldName => {
+    subscriptionFieldNames.forEach((subscriptionFieldName) => {
       if (!subscriptionToMutationsMap[subscriptionFieldName.fieldName]) {
         subscriptionToMutationsMap[subscriptionFieldName.fieldName] = [];
       }
@@ -854,7 +852,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
       ctx.output.addEnum(modelSortDirection);
     }
-  }
+  };
 
   private getOptions = (options: ModelTransformerOptions): ModelTransformerOptions => ({
     EnableDeletionProtection: false,

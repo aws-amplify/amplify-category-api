@@ -7,12 +7,6 @@ import { applyFileBasedOverride } from '../../../graphql-transformer/override';
 jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
 jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
 
-const featureFlags = {
-  getBoolean: jest.fn(),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-};
-
 describe('ModelTransformer: ', () => {
   it('should override  model objects when given override config', () => {
     const validSchema = `
@@ -31,7 +25,6 @@ describe('ModelTransformer: ', () => {
         applyOverride: (stackManager: StackManager) => applyFileBasedOverride(stackManager, path.join(__dirname, 'model-overrides')),
         overrideFlag: true,
       },
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -56,10 +49,10 @@ describe('ModelTransformer: ', () => {
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
       overrideConfig: {
-        applyOverride: (stackManager: StackManager) => applyFileBasedOverride(stackManager, path.join(__dirname, 'non-existing-override-directory')),
+        applyOverride: (stackManager: StackManager) =>
+          applyFileBasedOverride(stackManager, path.join(__dirname, 'non-existing-override-directory')),
         overrideFlag: true,
       },
-      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();

@@ -1,30 +1,30 @@
-import {TransformerSecrets} from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerSecrets } from '@aws-amplify/graphql-transformer-interfaces';
 
 export enum ImportedRDSType {
   MYSQL = 'mysql',
-  POSTGRESQL= 'postgresql'
-};
+  POSTGRESQL = 'postgresql',
+}
 
 export type ImportedDataSourceType = ImportedRDSType;
 
 export type ImportedDataSourceConfig = RDSDataSourceConfig;
 export type RDSDataSourceConfig = RDSConnectionSecrets & {
-  engine: ImportedRDSType
+  engine: ImportedRDSType;
 };
 
 export type ImportAppSyncAPIInputs = {
-  apiName: string,
-  dataSourceConfig?: ImportedDataSourceConfig
+  apiName: string;
+  dataSourceConfig?: ImportedDataSourceConfig;
 };
 
 export const RDS_SCHEMA_FILE_NAME = 'schema.rds.graphql';
 
 export type RDSConnectionSecrets = TransformerSecrets & {
-  username: string,
-  password: string,
-  host: string,
-  database: string,
-  port: number,
+  username: string;
+  password: string;
+  host: string;
+  database: string;
+  port: number;
 };
 
 export const MYSQL_DB_TYPE = 'MySQL';

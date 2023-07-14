@@ -12,8 +12,10 @@ class FailedTestNameReporter {
 
   onRunComplete(contexts, results) {
     const failedTests = this.getFailedTestRegEx(results);
-    const result = failedTests.map(title => escapeRegex(title)).join('|');
-    const failedTestReportPath = this._options.reportPath || './amplify-e2e-reports/amplify-e2e-failed-test.txt';
+    const result = failedTests.map((title) => escapeRegex(title)).join('|');
+    const { reportPath, publicPath = process.cwd() } = this._options;
+    const failedTestReportPath = reportPath || './amplify-e2e-reports/amplify-e2e-failed-test.txt';
+    fs.ensureDirSync(publicPath);
     fs.writeFileSync(path.resolve(failedTestReportPath), result);
   }
 

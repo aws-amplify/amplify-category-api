@@ -1,6 +1,4 @@
-import {
-  compoundExpression, Expression, obj, printBlock, str, toJson, nul, iff, not, isNullOrEmpty, ref,
-} from 'graphql-mapping-template';
+import { compoundExpression, Expression, obj, printBlock, str, toJson, nul, iff, not, isNullOrEmpty, ref } from 'graphql-mapping-template';
 /**
  * Generates subscription request template
  */

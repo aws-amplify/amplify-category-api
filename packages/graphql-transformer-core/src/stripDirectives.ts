@@ -40,7 +40,7 @@ export function stripDirectives(doc: DocumentNode, except: string[] = []): Docum
   }
 
   function excepted(dir: DirectiveNode) {
-    return Boolean(except.find(f => dir.name.value === f));
+    return Boolean(except.find((f) => dir.name.value === f));
   }
 
   function stripObjectDirectives(node: ObjectTypeDefinitionNode): ObjectTypeDefinitionNode {

@@ -32,5 +32,4 @@ describe('api directives @auth batch 4', () => {
     const testresult = await testSchema(projectDir, 'auth', 'private2');
     expect(testresult).toBeTruthy();
   });
-
 });

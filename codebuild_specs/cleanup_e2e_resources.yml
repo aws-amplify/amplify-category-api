@@ -1,0 +1,11 @@
+version: 0.2
+env:
+  shell: bash
+  variables:
+    CI: true
+    CODEBUILD: true
+
+phases:
+  build:
+    commands:
+      - source ./shared-scripts.sh && _cleanupE2EResources

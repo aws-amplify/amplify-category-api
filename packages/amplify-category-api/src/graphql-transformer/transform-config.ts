@@ -47,13 +47,13 @@ export async function writeConfig(projectDir: string, config: TransformConfig): 
 export function throwIfNotJSONExt(stackFile: string): void {
   const extension = path.extname(stackFile);
   if (extension === '.yaml' || extension === '.yml') {
-    throw new AmplifyError('CloudFormationTemplateError' ,{
+    throw new AmplifyError('CloudFormationTemplateError', {
       message: 'Yaml is not yet supported',
       resolution: `Please convert the CloudFormation stack ${stackFile} to json.`,
     });
   }
   if (extension !== '.json') {
-    throw new AmplifyError('CloudFormationTemplateError' ,{
+    throw new AmplifyError('CloudFormationTemplateError', {
       message: `Invalid extension ${extension} for stack ${stackFile}`,
       resolution: `Convert the CloudFormation stack ${stackFile} to json.`,
     });

@@ -36,12 +36,12 @@ export function stripDirectives(doc: DocumentNode, except: string[] = []): Docum
         definitions.push(stripScalarDirectives(def));
         break;
       default:
-        // left blank
+      // left blank
     }
   }
 
   function excepted(dir: DirectiveNode) {
-    return Boolean(except.find(f => dir.name.value === f));
+    return Boolean(except.find((f) => dir.name.value === f));
   }
 
   function stripObjectDirectives(node: ObjectTypeDefinitionNode): ObjectTypeDefinitionNode {

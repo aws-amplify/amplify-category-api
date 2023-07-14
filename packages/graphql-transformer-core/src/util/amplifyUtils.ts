@@ -52,12 +52,7 @@ export async function buildProject(opts: ProjectOptions) {
   const builtProject = await _buildProject(opts);
 
   if (opts.projectDirectory && !opts.dryRun) {
-    await writeDeploymentToDisk(
-      builtProject,
-      path.join(opts.projectDirectory, 'build'),
-      opts.rootStackFileName,
-      opts.buildParameters
-    );
+    await writeDeploymentToDisk(builtProject, path.join(opts.projectDirectory, 'build'), opts.rootStackFileName, opts.buildParameters);
 
     const lastBuildPath =
       opts.currentCloudBackendDirectory !== undefined ? path.join(opts.currentCloudBackendDirectory, 'build') : undefined;
@@ -167,7 +162,7 @@ async function ensureMissingStackMappings(config: ProjectOptions) {
     if (copyOfCloudBackend && copyOfCloudBackend.build && copyOfCloudBackend.build.stacks) {
       // leave the custom stack alone. Don't split them into separate stacks
       const customStacks = Object.keys(copyOfCloudBackend.stacks || {});
-      const stackNames = Object.keys(copyOfCloudBackend.build.stacks).filter(stack => !customStacks.includes(stack));
+      const stackNames = Object.keys(copyOfCloudBackend.build.stacks).filter((stack) => !customStacks.includes(stack));
 
       // We walk through each of the stacks that were deployed in the most recent deployment.
       // If we find a resource that was deployed into a different stack than it should have
@@ -368,7 +363,7 @@ export async function uploadDeployment(opts: UploadOptions) {
     nodir: true,
   });
 
-  const uploadPromises = fileNames.map(async fileName => {
+  const uploadPromises = fileNames.map(async (fileName) => {
     const resourceContent = fs.createReadStream(path.join(directory, fileName));
 
     await handleFile(upload, fileName, resourceContent);
@@ -384,7 +379,7 @@ async function writeDeploymentToDisk(
   deployment: DeploymentResources,
   directory: string,
   rootStackFileName: string = 'rootStack.json',
-  buildParameters: Object
+  buildParameters: Object,
 ) {
   // Delete the last deployments resources.
   await emptyDirectory(directory);
@@ -426,9 +421,7 @@ async function writeDeploymentToDisk(
     const fullStackPath = path.normalize(stackRootPath + '/' + fullFileName);
     let stackString: any = deployment.stacks[stackFileName];
     stackString =
-      typeof stackString === 'string'
-        ? deployment.stacks[stackFileName]
-        : JSON.stringify(deployment.stacks[stackFileName], null, 4);
+      typeof stackString === 'string' ? deployment.stacks[stackFileName] : JSON.stringify(deployment.stacks[stackFileName], null, 4);
     fs.writeFileSync(fullStackPath, stackString);
   }
 

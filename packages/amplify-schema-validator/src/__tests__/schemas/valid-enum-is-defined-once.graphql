@@ -7,8 +7,8 @@ enum NotificationType {
 
 type Notification @model {
   id: ID!
-  type: NotificationType! 
-  recipient: String! 
-  sender: String! 
+  type: NotificationType!
+  recipient: String!
+  sender: String!
   status: Boolean!
 }

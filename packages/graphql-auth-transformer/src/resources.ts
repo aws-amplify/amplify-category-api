@@ -267,7 +267,7 @@ export class ResourceFactory {
         groupAuthorizationExpressions = groupAuthorizationExpressions.concat(
           comment(`Authorization rule: { allow: groups, groups: ${JSON.stringify(groups)}, groupClaim: "${groupClaimAttribute}" }`),
           this.setUserGroups(rule.groupClaim),
-          set(ref('allowedGroups'), list(groups.map(s => str(s)))),
+          set(ref('allowedGroups'), list(groups.map((s) => str(s)))),
           forEach(ref('userGroup'), ref('userGroups'), [
             iff(raw(`$allowedGroups.contains($userGroup)`), compoundExpression([set(ref(variableToSet), raw('true')), raw('#break')])),
           ]),
@@ -324,7 +324,7 @@ export class ResourceFactory {
       rules,
       variableToCheck,
       variableToSet,
-      rule => `Authorization rule on field "${fieldToCheck}": { allow: ${rule.allow}, \
+      (rule) => `Authorization rule on field "${fieldToCheck}": { allow: ${rule.allow}, \
 groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}", groupClaim: "${rule.groupClaim || DEFAULT_GROUP_CLAIM}" }`,
     );
     return block(`Dynamic group authorization rules for field "${fieldToCheck}"`, [groupAuthorizationExpression]);
@@ -464,7 +464,7 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}", groupClaim: "${rule.
         fieldIsList,
         variableToCheck,
         variableToSet,
-        rule => `Authorization rule: { allow: ${rule.allow}, \
+        (rule) => `Authorization rule: { allow: ${rule.allow}, \
 ownerField: "${rule.ownerField || DEFAULT_OWNER_FIELD}", \
 identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_FIELD}" }`,
       ),
@@ -919,7 +919,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
 
   public operationCheckExpression(operation: string, field: FieldDefinitionNode) {
     // check if the field has @connection
-    const connectionDirective = field.directives.find(dir => dir.name.value === 'connection');
+    const connectionDirective = field.directives.find((dir) => dir.name.value === 'connection');
     const returnValue: Expression = connectionDirective ? toJson(ref(`context.result`)) : toJson(ref(`context.source.${field.name.value}`));
     return block('Checking for allowed operations which can return this field', [
       set(ref('operation'), raw('$util.defaultIfNull($context.source.operation, "null")')),
@@ -1018,7 +1018,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     // 89 + 11 extra = 100
     const RESOURCE_OVERHEAD = 100;
 
-    const createPolicy = newPolicyResources =>
+    const createPolicy = (newPolicyResources) =>
       new IAM.ManagedPolicy({
         Roles: [
           //HACK double casting needed because it cannot except Ref

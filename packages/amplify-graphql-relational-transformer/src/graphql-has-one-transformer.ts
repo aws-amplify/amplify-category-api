@@ -37,11 +37,12 @@ import {
   addFieldsToDefinition,
   convertSortKeyFieldsToSortKeyConnectionFields,
   ensureHasOneConnectionField,
-  getSortKeyFieldsNoContext
+  getSortKeyFieldsNoContext,
 } from './schema';
 import { HasOneDirectiveConfiguration, ObjectDefinition } from './types';
 import {
-  ensureFieldsArray, getConnectionAttributeName,
+  ensureFieldsArray,
+  getConnectionAttributeName,
   getFieldsNodes,
   getObjectPrimaryKey,
   getRelatedType,
@@ -74,12 +75,15 @@ export class HasOneTransformer extends TransformerPluginBase {
     context: TransformerSchemaVisitStepContextProvider,
   ): void => {
     const directiveWrapped = new DirectiveWrapper(directive);
-    const args = directiveWrapped.getArguments({
-      directiveName,
-      object: parent as ObjectTypeDefinitionNode,
-      field: definition,
-      directive,
-    } as HasOneDirectiveConfiguration, generateGetArgumentsInput(context.featureFlags));
+    const args = directiveWrapped.getArguments(
+      {
+        directiveName,
+        object: parent as ObjectTypeDefinitionNode,
+        field: definition,
+        directive,
+      } as HasOneDirectiveConfiguration,
+      generateGetArgumentsInput(context.transformParameters),
+    );
 
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);
@@ -89,17 +93,20 @@ export class HasOneTransformer extends TransformerPluginBase {
    * so that it represents any schema modifications the plugin needs
    */
   mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
-    const document: DocumentNode = produce(context.inputDocument, draftDoc => {
-      const filteredDefs = draftDoc?.definitions?.filter(def => def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension');
-      const objectDefs = new Map<string, WritableDraft<ObjectDefinition>>((filteredDefs as Array<WritableDraft<ObjectDefinition>>)
-        .map(def => [def.name.value, def]));
+    const document: DocumentNode = produce(context.inputDocument, (draftDoc) => {
+      const filteredDefs = draftDoc?.definitions?.filter(
+        (def) => def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension',
+      );
+      const objectDefs = new Map<string, WritableDraft<ObjectDefinition>>(
+        (filteredDefs as Array<WritableDraft<ObjectDefinition>>).map((def) => [def.name.value, def]),
+      );
 
-      objectDefs?.forEach(def => {
-        const filteredFields = def?.fields?.filter(field => field?.directives?.some(dir => dir.name.value === directiveName));
-        filteredFields?.forEach(field => {
-          field?.directives?.forEach(dir => {
+      objectDefs?.forEach((def) => {
+        const filteredFields = def?.fields?.filter((field) => field?.directives?.some((dir) => dir.name.value === directiveName));
+        filteredFields?.forEach((field) => {
+          field?.directives?.forEach((dir) => {
             const connectionAttributeName = getConnectionAttributeName(
-              context.featureFlags,
+              context.transformParameters,
               def.name.value,
               field.name.value,
               getObjectPrimaryKey(def as ObjectTypeDefinitionNode).name.value,
@@ -108,7 +115,10 @@ export class HasOneTransformer extends TransformerPluginBase {
             let removalIndex = -1;
             dir?.arguments?.forEach((arg, idx) => {
               if (arg.name.value === 'fields') {
-                if ((arg.value.kind === 'StringValue' && arg.value.value) || (arg.value.kind === 'ListValue' && arg.value.values && arg.value.values.length > 0)) {
+                if (
+                  (arg.value.kind === 'StringValue' && arg.value.value) ||
+                  (arg.value.kind === 'ListValue' && arg.value.values && arg.value.values.length > 0)
+                ) {
                   hasFieldsDefined = true;
                 } else {
                   removalIndex = idx;
@@ -120,19 +130,20 @@ export class HasOneTransformer extends TransformerPluginBase {
             }
             const relatedType = objectDefs.get(getBaseType(field.type));
             if (!hasFieldsDefined && relatedType) {
-              const sortKeyFields = convertSortKeyFieldsToSortKeyConnectionFields(
-                getSortKeyFieldsNoContext(relatedType),
-                def,
-                field,
-              );
+              const sortKeyFields = convertSortKeyFieldsToSortKeyConnectionFields(getSortKeyFieldsNoContext(relatedType), def, field);
               const connField = makeField(
-                connectionAttributeName, [], isNonNullType(field.type)
-                  ? makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), [],
+                connectionAttributeName,
+                [],
+                isNonNullType(field.type) ? makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'),
+                [],
               ) as WritableDraft<FieldDefinitionNode>;
               // eslint-disable-next-line no-param-reassign
-              dir.arguments = [makeArgument('fields', makeValueNode(
-                [connectionAttributeName, ...sortKeyFields.map(skf => skf.name.value)],
-              )) as WritableDraft<ArgumentNode>];
+              dir.arguments = [
+                makeArgument(
+                  'fields',
+                  makeValueNode([connectionAttributeName, ...sortKeyFields.map((skf) => skf.name.value)]),
+                ) as WritableDraft<ArgumentNode>,
+              ];
               addFieldsToDefinition(def, [connField, ...sortKeyFields]);
             }
           });
@@ -140,15 +151,15 @@ export class HasOneTransformer extends TransformerPluginBase {
       });
     });
     return document;
-  }
+  };
 
   /**
    * During the prepare step, register any foreign keys that are renamed due to a model rename
    */
   prepare = (context: TransformerPrepareStepContextProvider): void => {
-    this.directiveList.forEach(config => {
+    this.directiveList.forEach((config) => {
       registerHasOneForeignKeyMappings({
-        featureFlags: context.featureFlags,
+        transformParameters: context.transformParameters,
         resourceHelper: context.resourceHelper,
         thisTypeName: config.object.name.value,
         thisFieldName: config.field.name.value,

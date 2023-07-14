@@ -12,10 +12,11 @@ const createPartialMock = <T>(mockFields?: Partial<T>): T => (mockFields || {}) 
 
 describe('get key field helpers', () => {
   const OBJECT_NAME = 'objectName';
-  const createObjectDefinitionWithName = (objectName: string): ObjectTypeDefinitionNode => createPartialMock<ObjectTypeDefinitionNode>({
-    name: createPartialMock<NameNode>({ value: objectName }),
-    fields: [],
-  });
+  const createObjectDefinitionWithName = (objectName: string): ObjectTypeDefinitionNode =>
+    createPartialMock<ObjectTypeDefinitionNode>({
+      name: createPartialMock<NameNode>({ value: objectName }),
+      fields: [],
+    });
   const MOCK_CONTEXT = createPartialMock<TransformerContextProvider>({
     output: createPartialMock<TransformerContextOutputProvider>({
       getType: jest.fn((name: string) => {
@@ -33,33 +34,25 @@ describe('get key field helpers', () => {
 
   describe('getPartitionKeyField', () => {
     it('looks up the type by the object definition name', () => {
-      expect(getPartitionKeyField(
-        MOCK_CONTEXT,
-        createObjectDefinitionWithName(OBJECT_NAME),
-      )).toBeDefined();
+      expect(getPartitionKeyField(MOCK_CONTEXT, createObjectDefinitionWithName(OBJECT_NAME))).toBeDefined();
     });
 
     it('throws when the output type is not defined on the context', () => {
-      expect(() => getPartitionKeyField(
-        MOCK_CONTEXT,
-        createObjectDefinitionWithName('unexpectedName'),
-      )).toThrowErrorMatchingInlineSnapshot('"Expected to find output object defined for unexpectedName, but did not."');
+      expect(() => getPartitionKeyField(MOCK_CONTEXT, createObjectDefinitionWithName('unexpectedName'))).toThrowErrorMatchingInlineSnapshot(
+        '"Expected to find output object defined for unexpectedName, but did not."',
+      );
     });
   });
 
   describe('getSortKeyFields', () => {
     it('looks up the type by the object definition name', () => {
-      expect(getSortKeyFields(
-        MOCK_CONTEXT,
-        createObjectDefinitionWithName(OBJECT_NAME),
-      )).toBeDefined();
+      expect(getSortKeyFields(MOCK_CONTEXT, createObjectDefinitionWithName(OBJECT_NAME))).toBeDefined();
     });
 
     it('throws when the output type is not defined on the context', () => {
-      expect(() => getSortKeyFields(
-        MOCK_CONTEXT,
-        createObjectDefinitionWithName('unexpectedName'),
-      )).toThrowErrorMatchingInlineSnapshot('"Expected to find output object defined for unexpectedName, but did not."');
+      expect(() => getSortKeyFields(MOCK_CONTEXT, createObjectDefinitionWithName('unexpectedName'))).toThrowErrorMatchingInlineSnapshot(
+        '"Expected to find output object defined for unexpectedName, but did not."',
+      );
     });
   });
 });

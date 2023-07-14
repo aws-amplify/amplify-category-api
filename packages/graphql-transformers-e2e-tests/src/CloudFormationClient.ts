@@ -3,7 +3,7 @@ import { DescribeStacksOutput, StackStatus } from 'aws-sdk/clients/cloudformatio
 import { ResourceConstants } from 'graphql-transformer-common';
 
 async function promisify<I, O>(fun: (arg: I, cb: (e: Error, d: O) => void) => void, args: I, that: any): Promise<O> {
-  return await new Promise<O>((resolve, reject) => {
+  return new Promise<O>((resolve, reject) => {
     fun.apply(that, [
       args,
       (err: Error, data: O) => {
@@ -46,7 +46,7 @@ export class CloudFormationClient {
 
     const templateURL = `https://s3.amazonaws.com/${defParams.S3DeploymentBucket}/${defParams.S3DeploymentRootKey}/rootStack.json`;
 
-    return await promisify<CloudFormation.Types.CreateStackInput, CloudFormation.Types.CreateStackOutput>(
+    return promisify<CloudFormation.Types.CreateStackInput, CloudFormation.Types.CreateStackOutput>(
       isUpdate ? this.client.updateStack : this.client.createStack,
       {
         StackName: name,
@@ -59,11 +59,11 @@ export class CloudFormationClient {
   }
 
   async deleteStack(name: string) {
-    return await promisify<CloudFormation.Types.DeleteStackInput, {}>(this.client.deleteStack, { StackName: name }, this.client);
+    return promisify<CloudFormation.Types.DeleteStackInput, {}>(this.client.deleteStack, { StackName: name }, this.client);
   }
 
   async describeStack(name: string): Promise<CloudFormation.Stack> {
-    return await new Promise<CloudFormation.Stack>((resolve, reject) => {
+    return new Promise<CloudFormation.Stack>((resolve, reject) => {
       this.client.describeStacks(
         {
           StackName: name,
@@ -73,7 +73,7 @@ export class CloudFormationClient {
             return reject(err);
           }
           if (data.Stacks.length !== 1) {
-            return reject(`No stack named: ${name}`);
+            return reject(new Error(`No stack named: ${name}`));
           }
           resolve(data.Stacks[0]);
         },
@@ -119,16 +119,7 @@ export class CloudFormationClient {
       if (maxPolls === 0) {
         return Promise.reject(new Error('Stack did not finish before hitting the max poll count.'));
       }
-      return await this.wait<CloudFormation.Stack>(
-        pollInterval,
-        this.waitForStack,
-        name,
-        success,
-        failure,
-        poll,
-        maxPolls - 1,
-        pollInterval,
-      );
+      return this.wait<CloudFormation.Stack>(pollInterval, this.waitForStack, name, success, failure, poll, maxPolls - 1, pollInterval);
     }
     return Promise.reject(new Error(`Invalid stack status: ${stack.StackStatus}`));
   }
@@ -140,7 +131,7 @@ export class CloudFormationClient {
    * @param args The arguments to pass to the function after the wait.
    */
   public async wait<T>(secs: number, fun: (...args: any[]) => Promise<T>, ...args: any[]): Promise<T> {
-    return new Promise<T>(resolve => {
+    return new Promise<T>((resolve) => {
       setTimeout(() => {
         resolve(fun.apply(this, args));
       }, 1000 * secs);

@@ -9,7 +9,9 @@
     "test-ci": "lerna run test --concurrency 1 -- --ci -i",
     "e2e": "lerna run e2e",
     "cloud-e2e": "CURR_BRANCH=$(git branch | awk '/\\*/{printf \"%s\", $2}') && UPSTREAM_BRANCH=run-e2e/$USER/$CURR_BRANCH && git push $(git remote -v | grep aws-amplify/amplify-category-api | head -n1 | awk '{print $1;}') $CURR_BRANCH:$UPSTREAM_BRANCH --no-verify --force-with-lease && echo \"\n\n 🏃 E2E test are running at:\nhttps://app.circleci.com/pipelines/github/aws-amplify/amplify-category-api?branch=$UPSTREAM_BRANCH\"",
-    "lint-fix": "git diff --name-only --cached --diff-filter d | grep -E '\\.(js|jsx|ts|tsx)$' | xargs eslint --fix --quiet",
+    "cloud-e2e-cb": "source scripts/cloud-utils.sh && cloudE2E",
+    "cloud-e2e-cb-beta": "source scripts/cloud-utils.sh && cloudE2EBeta",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "clean": "lerna run clean && lerna exec yarn rimraf tsconfig.tsbuildinfo && lerna clean --yes && yarn rimraf node_modules",
     "check-version-conflicts:beta": "yarn ts-node ./scripts/check-version.ts beta",
     "check-version-conflicts:release": "yarn ts-node ./scripts/check-version.ts",
@@ -27,8 +29,11 @@
     "verify-commit": "yarn ts-node ./scripts/verify-commit.ts",
     "publish:beta": "lerna publish --exact --dist-tag=beta --preid=beta --conventional-commits --conventional-prerelease --message 'chore(release): Publish [ci skip]' --no-verify-access --yes",
     "publish:tag": "lerna publish --exact --dist-tag=$NPM_TAG --preid=$NPM_TAG --conventional-commits --conventional-prerelease --message 'chore(release): Publish tagged release $NPM_TAG [ci skip]' --no-verify-access --yes",
+    "publish:main": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --no-verify-access --yes",
     "publish:release": "lerna publish --conventional-commits --conventional-graduate --exact --yes --message 'chore(release): Publish [ci skip]' --no-verify-access",
     "postpublish:release": "git fetch . release:main && git push origin main",
+    "prettier-check": "yarn prettier --check .",
+    "prettier-write": "yarn prettier --write .",
     "yarn-use-bash": "yarn config set script-shell /bin/bash",
     "verdaccio-start": "source .circleci/local_publish_helpers.sh && startLocalRegistry \"$(pwd)/.circleci/verdaccio.yaml\"",
     "verdaccio-clean": "rimraf ../verdaccio-cache",
@@ -39,16 +44,20 @@
     "update-versions": "lerna version --yes --no-commit-hooks --no-push --exact --conventional-commits --no-git-tag-version",
     "commit": "git-cz",
     "coverage": "codecov || exit 0",
-    "add-cli-no-save": "yarn add @aws-amplify/cli-internal -W --pure-lockfile && git checkout -- package.json",
+    "add-cli-no-save": "yarn add @aws-amplify/cli-internal@12.2.0-aws-cdk-lib-2-28.0 -W --pure-lockfile && git checkout -- package.json",
     "hoist-cli": "rm -rf node_modules/amplify-cli-internal && mkdir node_modules/amplify-cli-internal && cp -r node_modules/@aws-amplify/cli-internal/* node_modules/amplify-cli-internal",
     "hoist-cli-win": "rimraf node_modules/amplify-cli-internal && mkdir node_modules\\amplify-cli-internal && xcopy /e /q node_modules\\@aws-amplify\\cli-internal node_modules\\amplify-cli-internal\\",
-    "publish:main": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --no-verify-access --yes",
     "refresh-lockfile": "rimraf yarn.lock && yarn",
     "update-cli-packages": "./scripts/update-cli-dependencies.sh && yarn",
     "extract-api": "lerna run extract-api",
     "verify-api-extract": "yarn extract-api && ./scripts/verify-extract-api.sh",
     "verify-yarn-lock": "./scripts/verify-yarn-lock.sh",
-    "lint-deps": "git diff --name-only --cached --diff-filter d | grep -E '\\.(js|jsx|ts|tsx)$' | xargs eslint --no-eslintrc --config depcheck.config.js"
+    "update-test-timing-data": "ts-node ./scripts/cci/get-test-timing-from-cci-job-metrics.ts",
+    "split-codebuild-e2e-tests": "yarn ts-node ./scripts/split-e2e-tests-codebuild.ts && git add codebuild_specs/e2e_workflow.yml",
+    "release-codebuild": "source ./scripts/cloud-release.sh && release",
+    "view-test-artifact": "./scripts/view-test-artifacts.sh",
+    "cleanup-stale-resources": "source ./scripts/cloud-utils.sh && cleanupStaleResources",
+    "depcheck": "eslint --no-eslintrc --config depcheck.config.js"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-category-api/issues"
@@ -63,8 +72,15 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "yarn verify-commit && yarn lint-fix && yarn lint-deps"
+      "pre-commit": "yarn verify-commit && yarn split-codebuild-e2e-tests && lint-staged"
     }
+  },
+  "lint-staged": {
+    "*.{md,yml,yaml,json,graphql}": "prettier --write",
+    "*.{js,ts,jsx,tsx}": [
+      "prettier --write",
+      "yarn depcheck"
+    ]
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
@@ -104,7 +120,7 @@
     "codecov": "^3.7.0",
     "copyfiles": "^2.2.0",
     "eslint": "^8.40.0",
-    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-prettier": "^8.8.0",
     "eslint-import-resolver-typescript": "^2.0.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^26.1.1",
@@ -120,8 +136,10 @@
     "jest-circus": "^26.6.3",
     "jest-junit": "^12.0.0",
     "js-yaml": "^4.0.0",
+    "lint-staged": "^13.2.2",
     "lnk": "1.1.0",
     "pkg": "^5.4.1",
+    "prettier": "^2.8.8",
     "rimraf": "^3.0.0",
     "ts-jest": "^26.4.4",
     "ts-node": "^8.10.1",
@@ -140,9 +158,11 @@
     "parse-path": "^5.0.0",
     "parse-url": "^8.1.0",
     "moment-timezone": "^0.5.35",
-    "**/aws-cdk-lib": "~2.68.0",
-    "**/@aws-amplify/amplify-cli-core": "4.0.4",
+    "**/aws-cdk-lib": "~2.80.0",
+    "**/@aws-amplify/amplify-cli-core": "4.2.0-aws-cdk-lib-2-28.0",
     "ejs": "^3.1.7",
-    "json5": "^2.2.3"
+    "json5": "^2.2.3",
+    "fast-xml-parser": "^4.2.4",
+    "semver": "^7.5.2"
   }
 }

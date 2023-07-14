@@ -1,12 +1,6 @@
 import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  ListValueNode,
-  ObjectValueNode,
-  StringValueNode,
-  ValueNode,
-  DirectiveNode,
-} from 'graphql';
+import { ListValueNode, ObjectValueNode, StringValueNode, ValueNode, DirectiveNode } from 'graphql';
 import { plurality, toLower, toUpper } from 'graphql-transformer-common';
 import pluralize from 'pluralize';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
@@ -68,11 +62,11 @@ export const validateNotOwnerAuth = (
   ctx: TransformerContextProvider,
 ): boolean => {
   const authDir = (object.directives || []).find(collectAuthDirectives);
-  const featureFlagEnabled = ctx.featureFlags.getBoolean('useSubUsernameForDefaultIdentityClaim');
+  const featureFlagEnabled = ctx.transformParameters.useSubUsernameForDefaultIdentityClaim;
 
   if (!authDir || !featureFlagEnabled) return true;
 
-  const authDirRules = (authDir.arguments?.find(arg => arg.name.value === 'rules')?.value as ListValueNode | undefined)?.values || [];
+  const authDirRules = (authDir.arguments?.find((arg) => arg.name.value === 'rules')?.value as ListValueNode | undefined)?.values || [];
 
   return !authDirRules.map(ownerFieldsFromOwnerRule).includes(sortKeyField);
 };
@@ -85,7 +79,7 @@ const ownerFieldsFromOwnerRule = (rule: ValueNode): string => {
     identityClaim: 'sub::username', // default identity claim
   };
 
-  ((rule as ObjectValueNode).fields || []).forEach(field => {
+  ((rule as ObjectValueNode).fields || []).forEach((field) => {
     const name: string = field.name.value;
     const value: string = (field?.value as StringValueNode | undefined)?.value || '';
 
@@ -97,7 +91,7 @@ const ownerFieldsFromOwnerRule = (rule: ValueNode): string => {
   }
 
   return '';
-}
+};
 
 /*
  * Accepts a model and field name, and potentially empty list of sortKeyFields to generate a unique index name.

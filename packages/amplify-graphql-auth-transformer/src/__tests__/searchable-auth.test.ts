@@ -2,25 +2,15 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse,
-} from 'graphql';
+import { DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse } from 'graphql';
 import { AuthTransformer, SEARCHABLE_AGGREGATE_TYPES } from '..';
-import { featureFlags } from './test-helpers';
 
-const getObjectType = (
-  doc: DocumentNode,
-  type: string,
-):
-  ObjectTypeDefinitionNode
-  | undefined => doc.definitions.find((def) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
+const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined =>
+  doc.definitions.find((def) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
     | ObjectTypeDefinitionNode
     | undefined;
 
-const expectMultiple = (
-  fieldOrType: ObjectTypeDefinitionNode | FieldDefinitionNode,
-  directiveNames: string[],
-): void => {
+const expectMultiple = (fieldOrType: ObjectTypeDefinitionNode | FieldDefinitionNode, directiveNames: string[]): void => {
   expect(directiveNames).toBeDefined();
   expect(directiveNames).toHaveLength(directiveNames.length);
   expect(fieldOrType?.directives?.length).toEqual(directiveNames.length);
@@ -57,17 +47,12 @@ test('auth logic is enabled on owner/static rules in os request', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   // expect response resolver to contain auth logic for owner rule
   expect(out).toBeDefined();
-  expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
-    '$util.qr($ownerClaimsList0.add($ownerClaim0))',
-  );
-  expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
-    '"terms": $ownerClaimsList0,',
-  );
+  expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain('$util.qr($ownerClaimsList0.add($ownerClaim0))');
+  expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain('"terms": $ownerClaimsList0,');
   // expect response resolver to contain auth logic for group rule
   expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
     '#set( $staticGroupRoles = [{"claim":"cognito:groups","entity":"writer"}] )',
@@ -108,7 +93,6 @@ test('auth logic is enabled for iam/apiKey auth rules', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -151,15 +135,12 @@ test('aggregate items are added to stash for iam public auth rule', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.schema).toBeDefined();
   // expect to set allowed agg fields in stash before return
-  expect(out.resolvers['Query.searchTodos.auth.1.req.vtl']).toContain(
-    '$util.qr($ctx.stash.put("allowedAggFields", $allowedAggFields))'
-  );
+  expect(out.resolvers['Query.searchTodos.auth.1.req.vtl']).toContain('$util.qr($ctx.stash.put("allowedAggFields", $allowedAggFields))');
 });
 
 describe('identity flag feature flag disabled', () => {
@@ -185,20 +166,12 @@ describe('identity flag feature flag disabled', () => {
     const transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
-      featureFlags: {
-        ...featureFlags,
-        ...{ getBoolean: () => false },
-      },
     });
     const out = transformer.transform(validSchema);
     // expect response resolver to contain auth logic for owner rule
     expect(out).toBeDefined();
-    expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
-      '$util.qr($ownerClaimsList0.add($ownerClaim0))',
-    );
-    expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
-      '"terms": $ownerClaimsList0,',
-    );
+    expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain('$util.qr($ownerClaimsList0.add($ownerClaim0))');
+    expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain('"terms": $ownerClaimsList0,');
     // expect response resolver to contain auth logic for group rule
     expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
       '#set( $staticGroupRoles = [{"claim":"cognito:groups","entity":"writer"}] )',

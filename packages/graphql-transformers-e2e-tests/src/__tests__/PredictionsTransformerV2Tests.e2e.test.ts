@@ -52,7 +52,9 @@ beforeAll(async () => {
   }
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PredictionsTransformer({ bucketName: BUCKET_NAME })],
-    sandboxModeEnabled: true,
+    transformParameters: {
+      sandboxModeEnabled: true,
+    },
   });
   const out = transformer.transform(validSchema);
   const finishedStack = await deploy(

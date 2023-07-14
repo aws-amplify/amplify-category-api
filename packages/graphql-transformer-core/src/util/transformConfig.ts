@@ -260,32 +260,32 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
  * Preference is given to the `schema.graphql` if provided.
  * @param projectDirectory The project directory.
  */
-export async function readSchema(projectDirectory: string): Promise<{schema: string, modelToDatasourceMap: Map<string, DatasourceType>}> {
+export async function readSchema(projectDirectory: string): Promise<{ schema: string; modelToDatasourceMap: Map<string, DatasourceType> }> {
   let modelToDatasourceMap = new Map<string, DatasourceType>();
-  const schemaFilePaths = [
-    path.join(projectDirectory, 'schema.graphql'),
-    path.join(projectDirectory, 'schema.rds.graphql')
-  ];
+  const schemaFilePaths = [path.join(projectDirectory, 'schema.graphql'), path.join(projectDirectory, 'schema.rds.graphql')];
 
-  const existingSchemaFiles = schemaFilePaths.filter( path => fs.existsSync(path));
+  const existingSchemaFiles = schemaFilePaths.filter((path) => fs.existsSync(path));
   const schemaDirectoryPath = path.join(projectDirectory, 'schema');
 
-  let schema = "";
-  if (!(_.isEmpty(existingSchemaFiles))) {
+  let schema = '';
+  if (!_.isEmpty(existingSchemaFiles)) {
     // Schema.graphql contains the models for DynamoDB datasource
-    // Schema.rds.graphql contains the models for imported 'MySQL' datasource 
-    // Intentionally using 'for ... of ...' instead of 'object.foreach' to process this in sequence 
+    // Schema.rds.graphql contains the models for imported 'MySQL' datasource
+    // Intentionally using 'for ... of ...' instead of 'object.foreach' to process this in sequence
     for (const file of existingSchemaFiles) {
-      const datasourceType = file.endsWith('.rds.graphql') ? constructDataSourceType("MySQL", false) : constructDataSourceType("DDB");
+      const datasourceType = file.endsWith('.rds.graphql') ? constructDataSourceType('MySQL', false) : constructDataSourceType('DDB');
       const fileSchema = (await fs.readFile(file)).toString();
       modelToDatasourceMap = new Map([...modelToDatasourceMap.entries(), ...constructDataSourceMap(fileSchema, datasourceType).entries()]);
       schema += fileSchema;
     }
   } else if (fs.existsSync(schemaDirectoryPath)) {
     // Schema folder is used only for DynamoDB datasource
-    const datasourceType = constructDataSourceType("DDB");
+    const datasourceType = constructDataSourceType('DDB');
     const schemaInDirectory = (await readSchemaDocuments(schemaDirectoryPath)).join('\n');
-    modelToDatasourceMap = new Map([...modelToDatasourceMap.entries(), ...constructDataSourceMap(schemaInDirectory, datasourceType).entries()]);
+    modelToDatasourceMap = new Map([
+      ...modelToDatasourceMap.entries(),
+      ...constructDataSourceMap(schemaInDirectory, datasourceType).entries(),
+    ]);
     schema += schemaInDirectory;
   } else {
     throw new ApiCategorySchemaNotFoundError(schemaFilePaths[0]);
@@ -328,19 +328,16 @@ function constructDataSourceType(dbType: DBType, provisionDB: boolean = true): D
   return {
     dbType,
     provisionDB,
-  }
+  };
 }
 
 function constructDataSourceMap(schema: string, datasourceType: DatasourceType): Map<string, DatasourceType> {
   const parsedSchema = parse(schema);
   const result = new Map<string, DatasourceType>();
   parsedSchema.definitions
-    .filter(obj => obj.kind === Kind.OBJECT_TYPE_DEFINITION && obj.directives.some(dir => dir.name.value === MODEL_DIRECTIVE_NAME))
-    .forEach(type => {
-      result.set(
-        (type as ObjectTypeDefinitionNode).name.value,
-        datasourceType,
-      );
+    .filter((obj) => obj.kind === Kind.OBJECT_TYPE_DEFINITION && obj.directives.some((dir) => dir.name.value === MODEL_DIRECTIVE_NAME))
+    .forEach((type) => {
+      result.set((type as ObjectTypeDefinitionNode).name.value, datasourceType);
     });
   return result;
 }

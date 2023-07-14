@@ -1,19 +1,15 @@
 import {
-  DataSourceProvider, MutationFieldType, QueryFieldType, SubscriptionFieldType,
+  DataSourceProvider,
+  MutationFieldType,
+  QueryFieldType,
+  SubscriptionFieldType,
   TransformerContextProvider,
   TransformerResolverProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
-import {
-  ResolverResourceIDs,
-  toCamelCase,
-} from 'graphql-transformer-common';
-import {
-  generateAuthExpressionForSandboxMode,
-  generateResolverKey,
-  ModelVTLGenerator,
-} from '../resolvers';
+import { ResolverResourceIDs, toCamelCase } from 'graphql-transformer-common';
+import { generateAuthExpressionForSandboxMode, generateResolverKey, ModelVTLGenerator } from '../resolvers';
 import { ModelDirectiveConfiguration, SubscriptionLevel } from '../directive';
 import { ModelTransformerOptions } from '../types';
 
@@ -103,7 +99,6 @@ export abstract class ModelResourceGenerator {
 
   protected generateResolvers(context: TransformerContextProvider): void {
     this.models.forEach((def) => {
-
       const queryFields = this.getQueryFieldNames(def);
       queryFields.forEach((query) => {
         let resolver;
@@ -125,7 +120,7 @@ export abstract class ModelResourceGenerator {
         resolver.addToSlot(
           'postAuth',
           MappingTemplate.s3MappingTemplateFromString(
-            generateAuthExpressionForSandboxMode(context.sandboxModeEnabled),
+            generateAuthExpressionForSandboxMode(context.transformParameters.sandboxModeEnabled),
             `${query.typeName}.${query.fieldName}.{slotName}.{slotIndex}.req.vtl`,
           ),
         );
@@ -159,7 +154,7 @@ export abstract class ModelResourceGenerator {
         resolver.addToSlot(
           'postAuth',
           MappingTemplate.s3MappingTemplateFromString(
-            generateAuthExpressionForSandboxMode(context.sandboxModeEnabled),
+            generateAuthExpressionForSandboxMode(context.transformParameters.sandboxModeEnabled),
             `${mutation.typeName}.${mutation.fieldName}.{slotName}.{slotIndex}.req.vtl`,
           ),
         );
@@ -205,7 +200,7 @@ export abstract class ModelResourceGenerator {
             resolver.addToSlot(
               'postAuth',
               MappingTemplate.s3MappingTemplateFromString(
-                generateAuthExpressionForSandboxMode(context.sandboxModeEnabled),
+                generateAuthExpressionForSandboxMode(context.transformParameters.sandboxModeEnabled),
                 `${subscription.typeName}.${subscription.fieldName}.{slotName}.{slotIndex}.req.vtl`,
               ),
             );
@@ -228,7 +223,9 @@ export abstract class ModelResourceGenerator {
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Get${generateResolverKey(typeName, fieldName)}`;
     const vtlGenerator = this.getVTLGenerator();
-    const modelIndexFields = type.fields!.filter((field) => field.directives?.some((it) => it.name.value === 'index')).map((it) => it.name.value);
+    const modelIndexFields = type
+      .fields!.filter((field) => field.directives?.some((it) => it.name.value === 'index'))
+      .map((it) => it.name.value);
     const requestConfig = {
       operation: 'GET',
       operationName: fieldName,
@@ -246,8 +243,14 @@ export abstract class ModelResourceGenerator {
         fieldName,
         resolverLogicalId,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateGetRequestTemplate(requestConfig), `${typeName}.${fieldName}.req.vtl`),
-        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateGetResponseTemplate(responseConfig), `${typeName}.${fieldName}.res.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(
+          vtlGenerator.generateGetRequestTemplate(requestConfig),
+          `${typeName}.${fieldName}.req.vtl`,
+        ),
+        MappingTemplate.s3MappingTemplateFromString(
+          vtlGenerator.generateGetResponseTemplate(responseConfig),
+          `${typeName}.${fieldName}.res.vtl`,
+        ),
       );
     }
     return this.resolverMap[resolverKey];
@@ -280,7 +283,10 @@ export abstract class ModelResourceGenerator {
         fieldName,
         resolverLogicalId,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateListRequestTemplate(requestConfig), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(
+          vtlGenerator.generateListRequestTemplate(requestConfig),
+          `${typeName}.${fieldName}.req.vtl`,
+        ),
         MappingTemplate.s3MappingTemplateFromString(
           vtlGenerator.generateDefaultResponseMappingTemplate(responseConfig),
           `${typeName}.${fieldName}.res.vtl`,
@@ -301,7 +307,9 @@ export abstract class ModelResourceGenerator {
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Create${generateResolverKey(typeName, fieldName)}`;
     const vtlGenerator = this.getVTLGenerator();
-    const modelIndexFields = type.fields!.filter((field) => field.directives?.some((it) => it.name.value === 'index')).map((it) => it.name.value);
+    const modelIndexFields = type
+      .fields!.filter((field) => field.directives?.some((it) => it.name.value === 'index'))
+      .map((it) => it.name.value);
     const requestConfig = {
       operation: 'CREATE',
       operationName: fieldName,
@@ -321,7 +329,10 @@ export abstract class ModelResourceGenerator {
         fieldName,
         resolverLogicalId,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateCreateRequestTemplate(requestConfig), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(
+          vtlGenerator.generateCreateRequestTemplate(requestConfig),
+          `${typeName}.${fieldName}.req.vtl`,
+        ),
         MappingTemplate.s3MappingTemplateFromString(
           vtlGenerator.generateDefaultResponseMappingTemplate(responseConfig),
           `${typeName}.${fieldName}.res.vtl`,
@@ -356,7 +367,9 @@ export abstract class ModelResourceGenerator {
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Update${generateResolverKey(typeName, fieldName)}`;
     const vtlGenerator = this.getVTLGenerator();
-    const modelIndexFields = type.fields!.filter((field) => field.directives?.some((it) => it.name.value === 'index')).map((it) => it.name.value);
+    const modelIndexFields = type
+      .fields!.filter((field) => field.directives?.some((it) => it.name.value === 'index'))
+      .map((it) => it.name.value);
     const requestConfig = {
       operation: 'UPDATE',
       operationName: fieldName,
@@ -415,7 +428,9 @@ export abstract class ModelResourceGenerator {
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `delete${generateResolverKey(typeName, fieldName)}`;
     const vtlGenerator = this.getVTLGenerator();
-    const modelIndexFields = type.fields!.filter((field) => field.directives?.some((it) => it.name.value === 'index')).map((it) => it.name.value);
+    const modelIndexFields = type
+      .fields!.filter((field) => field.directives?.some((it) => it.name.value === 'index'))
+      .map((it) => it.name.value);
     const requestConfig = {
       operation: 'DELETE',
       operationName: fieldName,
@@ -436,7 +451,10 @@ export abstract class ModelResourceGenerator {
         fieldName,
         resolverLogicalId,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateDeleteRequestTemplate(requestConfig), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(
+          vtlGenerator.generateDeleteRequestTemplate(requestConfig),
+          `${typeName}.${fieldName}.req.vtl`,
+        ),
         MappingTemplate.s3MappingTemplateFromString(
           vtlGenerator.generateDefaultResponseMappingTemplate(responseConfig),
           `${typeName}.${fieldName}.res.vtl`,
@@ -460,7 +478,10 @@ export abstract class ModelResourceGenerator {
         fieldName,
         resolverLogicalId,
         MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateSubscriptionRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
-        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateSubscriptionResponseTemplate(), `${typeName}.${fieldName}.res.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(
+          vtlGenerator.generateSubscriptionResponseTemplate(),
+          `${typeName}.${fieldName}.res.vtl`,
+        ),
       );
     }
     return this.resolverMap[resolverKey];
@@ -480,7 +501,10 @@ export abstract class ModelResourceGenerator {
         fieldName,
         resolverLogicalId,
         MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateSubscriptionRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
-        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateSubscriptionResponseTemplate(), `${typeName}.${fieldName}.res.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(
+          vtlGenerator.generateSubscriptionResponseTemplate(),
+          `${typeName}.${fieldName}.res.vtl`,
+        ),
       );
     }
     return this.resolverMap[resolverKey];
@@ -500,7 +524,10 @@ export abstract class ModelResourceGenerator {
         fieldName,
         resolverLogicalId,
         MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateSubscriptionRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
-        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateSubscriptionResponseTemplate(), `${typeName}.${fieldName}.res.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(
+          vtlGenerator.generateSubscriptionResponseTemplate(),
+          `${typeName}.${fieldName}.res.vtl`,
+        ),
       );
     }
     return this.resolverMap[resolverKey];
@@ -534,7 +561,10 @@ export abstract class ModelResourceGenerator {
         fieldName,
         resolverLogicalId,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(vtlGenerator.generateSyncRequestTemplate(requestConfig), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(
+          vtlGenerator.generateSyncRequestTemplate(requestConfig),
+          `${typeName}.${fieldName}.req.vtl`,
+        ),
         MappingTemplate.s3MappingTemplateFromString(
           vtlGenerator.generateDefaultResponseMappingTemplate(responseConfig),
           `${typeName}.${fieldName}.res.vtl`,

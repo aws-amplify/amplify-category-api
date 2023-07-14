@@ -1,4 +1,9 @@
-import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import {
+  DirectiveWrapper,
+  InvalidDirectiveError,
+  TransformerPluginBase,
+  generateGetArgumentsInput,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   FieldMapEntry,
   TransformerAuthProvider,
@@ -36,7 +41,12 @@ import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
 import { ManyToManyDirectiveConfiguration, ManyToManyPreProcessContext, ManyToManyRelation } from './types';
-import { getManyToManyConnectionAttributeName, getObjectPrimaryKey, registerManyToManyForeignKeyMappings, validateModelDirective } from './utils';
+import {
+  getManyToManyConnectionAttributeName,
+  getObjectPrimaryKey,
+  registerManyToManyForeignKeyMappings,
+  validateModelDirective,
+} from './utils';
 import { makeQueryConnectionWithKeyResolver, updateTableForConnection } from './resolvers';
 import {
   ensureHasManyConnectionField,
@@ -89,13 +99,16 @@ export class ManyToManyTransformer extends TransformerPluginBase {
     context: TransformerSchemaVisitStepContextProvider,
   ): void => {
     const directiveWrapped = new DirectiveWrapper(directive);
-    const args = directiveWrapped.getArguments({
-      directiveName,
-      object: parent as ObjectTypeDefinitionNode,
-      field: definition,
-      directive,
-      limit: defaultLimit,
-    } as ManyToManyDirectiveConfiguration, { deepMergeArguments: context.featureFlags.getBoolean('shouldDeepMergeDirectiveConfigDefaults', false) });
+    const args = directiveWrapped.getArguments(
+      {
+        directiveName,
+        object: parent as ObjectTypeDefinitionNode,
+        field: definition,
+        directive,
+        limit: defaultLimit,
+      } as ManyToManyDirectiveConfiguration,
+      generateGetArgumentsInput(context.transformParameters),
+    );
 
     validateModelDirective(args);
     args.connectionFields = [];
@@ -113,30 +126,34 @@ export class ManyToManyTransformer extends TransformerPluginBase {
    */
   mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
     const manyToManyMap = new Map<string, ManyToManyPreProcessContext[]>(); // Relation name is the key, each array should be length 2 (two models being connected)
-    const newDocument: DocumentNode = produce(context.inputDocument, draftDoc => {
-      const filteredDefs = draftDoc?.definitions?.filter(def => def.kind === 'ObjectTypeExtension' || def.kind === 'ObjectTypeDefinition');
+    const newDocument: DocumentNode = produce(context.inputDocument, (draftDoc) => {
+      const filteredDefs = draftDoc?.definitions?.filter(
+        (def) => def.kind === 'ObjectTypeExtension' || def.kind === 'ObjectTypeDefinition',
+      );
       const objectDefs = filteredDefs as Array<WritableDraft<ObjectTypeDefinitionNode | ObjectTypeExtensionNode>>;
       // First iteration builds the map
-      objectDefs?.forEach(def => {
-        def?.fields?.forEach(field => {
-          field?.directives?.filter(dir => dir.name.value === directiveName)?.forEach(dir => {
-            const relationArg = dir?.arguments?.find(arg => arg.name.value === 'relationName');
-            if (relationArg?.value?.kind === 'StringValue') {
-              const relationName = relationArg.value.value;
-              const manyToManyContext: ManyToManyPreProcessContext = {
-                model: def,
-                field,
-                directive: dir,
-                modelAuthDirectives: def?.directives?.filter(authDir => authDir.name.value === 'auth') ?? [],
-                fieldAuthDirectives: def?.directives?.filter(authDir => authDir.name.value === 'auth') ?? [],
-                relationName,
-              };
-              if (!manyToManyMap.has(relationName)) {
-                manyToManyMap.set(relationName, []);
+      objectDefs?.forEach((def) => {
+        def?.fields?.forEach((field) => {
+          field?.directives
+            ?.filter((dir) => dir.name.value === directiveName)
+            ?.forEach((dir) => {
+              const relationArg = dir?.arguments?.find((arg) => arg.name.value === 'relationName');
+              if (relationArg?.value?.kind === 'StringValue') {
+                const relationName = relationArg.value.value;
+                const manyToManyContext: ManyToManyPreProcessContext = {
+                  model: def,
+                  field,
+                  directive: dir,
+                  modelAuthDirectives: def?.directives?.filter((authDir) => authDir.name.value === 'auth') ?? [],
+                  fieldAuthDirectives: def?.directives?.filter((authDir) => authDir.name.value === 'auth') ?? [],
+                  relationName,
+                };
+                if (!manyToManyMap.has(relationName)) {
+                  manyToManyMap.set(relationName, []);
+                }
+                manyToManyMap.get(relationName)?.push(manyToManyContext);
               }
-              manyToManyMap.get(relationName)?.push(manyToManyContext);
-            }
-          });
+            });
         });
       });
 
@@ -165,10 +182,18 @@ export class ManyToManyTransformer extends TransformerPluginBase {
         const d2SortKeys = getSortKeyFieldsNoContext(manyToManyTwo.model);
         const d1IndexName = `by${d1origTypeName}`;
         const d2IndexName = `by${d2origTypeName}`;
-        const d1FieldNameId = getManyToManyConnectionAttributeName(context.featureFlags, d1FieldName, getObjectPrimaryKey(manyToManyOne.model as ObjectTypeDefinitionNode).name.value);
-        const d1SortFieldNames = d1SortKeys.map(node => `${d1FieldNameOrig}${node.name.value}`);
-        const d2FieldNameId = getManyToManyConnectionAttributeName(context.featureFlags, d2FieldName, getObjectPrimaryKey(manyToManyTwo.model as ObjectTypeDefinitionNode).name.value);
-        const d2SortFieldNames = d2SortKeys.map(node => `${d2FieldNameOrig}${node.name.value}`);
+        const d1FieldNameId = getManyToManyConnectionAttributeName(
+          context.transformParameters,
+          d1FieldName,
+          getObjectPrimaryKey(manyToManyOne.model as ObjectTypeDefinitionNode).name.value,
+        );
+        const d1SortFieldNames = d1SortKeys.map((node) => `${d1FieldNameOrig}${node.name.value}`);
+        const d2FieldNameId = getManyToManyConnectionAttributeName(
+          context.transformParameters,
+          d2FieldName,
+          getObjectPrimaryKey(manyToManyTwo.model as ObjectTypeDefinitionNode).name.value,
+        );
+        const d2SortFieldNames = d2SortKeys.map((node) => `${d2FieldNameOrig}${node.name.value}`);
         const joinModelDirective = makeDirective('model', []);
         const d1IndexDirective = makeDirective('index', [
           makeArgument('name', makeValueNode(d1IndexName)),
@@ -180,10 +205,18 @@ export class ManyToManyTransformer extends TransformerPluginBase {
         ]);
         const d1HasOneDirective = makeDirective('hasOne', [makeArgument('fields', makeValueNode([d1FieldNameId, ...d1SortFieldNames]))]);
         const d2HasOneDirective = makeDirective('hasOne', [makeArgument('fields', makeValueNode([d2FieldNameId, ...d2SortFieldNames]))]);
-        const d1RelatedField = makeField(d1FieldNameId, [], wrapNonNull(makeNamedType(getBaseType(d1PartitionKey.type))), [d1IndexDirective]);
-        const d1RelatedSortKeyFields = d1SortKeys.map(node => makeField(`${d1FieldName}${node.name.value}`, [], wrapNonNull(makeNamedType(getBaseType(node.type)))));
-        const d2RelatedField = makeField(d2FieldNameId, [], wrapNonNull(makeNamedType(getBaseType(d2PartitionKey.type))), [d2IndexDirective]);
-        const d2RelatedSortKeyFields = d2SortKeys.map(node => makeField(`${d2FieldName}${node.name.value}`, [], wrapNonNull(makeNamedType(getBaseType(node.type)))));
+        const d1RelatedField = makeField(d1FieldNameId, [], wrapNonNull(makeNamedType(getBaseType(d1PartitionKey.type))), [
+          d1IndexDirective,
+        ]);
+        const d1RelatedSortKeyFields = d1SortKeys.map((node) =>
+          makeField(`${d1FieldName}${node.name.value}`, [], wrapNonNull(makeNamedType(getBaseType(node.type)))),
+        );
+        const d2RelatedField = makeField(d2FieldNameId, [], wrapNonNull(makeNamedType(getBaseType(d2PartitionKey.type))), [
+          d2IndexDirective,
+        ]);
+        const d2RelatedSortKeyFields = d2SortKeys.map((node) =>
+          makeField(`${d2FieldName}${node.name.value}`, [], wrapNonNull(makeNamedType(getBaseType(node.type)))),
+        );
         const d1Field = makeField(d1FieldName, [], wrapNonNull(makeNamedType(d1TypeName)), [d1HasOneDirective]);
         const d2Field = makeField(d2FieldName, [], wrapNonNull(makeNamedType(d2TypeName)), [d2HasOneDirective]);
         const joinTableDirectives = [joinModelDirective];
@@ -195,15 +228,29 @@ export class ManyToManyTransformer extends TransformerPluginBase {
 
         const joinType = {
           ...blankObject(manyToManyOne.relationName),
-          fields: [makeField('id', [], wrapNonNull(makeNamedType('ID'))), d1RelatedField, ...d1RelatedSortKeyFields, d2RelatedField, ...d2RelatedSortKeyFields, d1Field, d2Field],
+          fields: [
+            makeField('id', [], wrapNonNull(makeNamedType('ID'))),
+            d1RelatedField,
+            ...d1RelatedSortKeyFields,
+            d2RelatedField,
+            ...d2RelatedSortKeyFields,
+            d1Field,
+            d2Field,
+          ],
           directives: joinTableDirectives,
         };
 
-        const d1SortKeyNames = d1SortKeys.map(field => field.name.value);
-        const d2SortKeyNames = d2SortKeys.map(field => field.name.value);
+        const d1SortKeyNames = d1SortKeys.map((field) => field.name.value);
+        const d2SortKeyNames = d2SortKeys.map((field) => field.name.value);
 
-        const hasManyOne = makeDirective('hasMany', [makeArgument('indexName', makeValueNode(d1IndexName)), makeArgument('fields', makeValueNode([d1PartitionKey.name.value, ...d1SortKeyNames]))]);
-        const hasManyTwo = makeDirective('hasMany', [makeArgument('indexName', makeValueNode(d2IndexName)), makeArgument('fields', makeValueNode([d2PartitionKey.name.value, ...d2SortKeyNames]))]);
+        const hasManyOne = makeDirective('hasMany', [
+          makeArgument('indexName', makeValueNode(d1IndexName)),
+          makeArgument('fields', makeValueNode([d1PartitionKey.name.value, ...d1SortKeyNames])),
+        ]);
+        const hasManyTwo = makeDirective('hasMany', [
+          makeArgument('indexName', makeValueNode(d2IndexName)),
+          makeArgument('fields', makeValueNode([d2PartitionKey.name.value, ...d2SortKeyNames])),
+        ]);
 
         manyToManyOne?.field?.directives?.push(hasManyOne as WritableDraft<DirectiveNode>);
         manyToManyTwo?.field?.directives?.push(hasManyTwo as WritableDraft<DirectiveNode>);
@@ -223,10 +270,10 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       });
     });
     return newDocument;
-  }
+  };
 
   validate = (ctx: TransformerValidationStepContextProvider): void => {
-    this.relationMap.forEach(relation => {
+    this.relationMap.forEach((relation) => {
       const { directive1, directive2, name } = relation;
 
       if (!directive2) {
@@ -265,7 +312,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
 
     // variables with 'orig' in their name in this loop refer to their original value as specified by the @mapsTo directive
     // this code desperately needs to be refactored to reduce the duplication
-    this.relationMap.forEach(relation => {
+    this.relationMap.forEach((relation) => {
       const { directive1, directive2, name } = relation;
       ctx.metadata.get<Array<string>>('joinTypeList')!.push(name);
       const d1origTypeName = ctx.resourceHelper.getModelNameMapping(directive1.object.name.value);
@@ -282,12 +329,28 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       const d2SortKeys = getSortKeyFields(context, directive2.object);
       const d1IndexName = `by${d1origTypeName}`;
       const d2IndexName = `by${d2origTypeName}`;
-      const d1FieldNameId = getManyToManyConnectionAttributeName(ctx.featureFlags, d1FieldName, getObjectPrimaryKey(directive1.object).name.value);
-      const d1SortFieldNames = d1SortKeys.map(node => `${d1FieldNameOrig}${node.name.value}`);
-      const d2FieldNameId = getManyToManyConnectionAttributeName(ctx.featureFlags, d2FieldName, getObjectPrimaryKey(directive2.object).name.value);
-      const d1FieldNameIdOrig = getManyToManyConnectionAttributeName(ctx.featureFlags, d1FieldNameOrig, getObjectPrimaryKey(directive1.object).name.value);
-      const d2FieldNameIdOrig = getManyToManyConnectionAttributeName(ctx.featureFlags, d2FieldNameOrig, getObjectPrimaryKey(directive2.object).name.value);
-      const d2SortFieldNames = d2SortKeys.map(node => `${d2FieldNameOrig}${node.name.value}`);
+      const d1FieldNameId = getManyToManyConnectionAttributeName(
+        ctx.transformParameters,
+        d1FieldName,
+        getObjectPrimaryKey(directive1.object).name.value,
+      );
+      const d1SortFieldNames = d1SortKeys.map((node) => `${d1FieldNameOrig}${node.name.value}`);
+      const d2FieldNameId = getManyToManyConnectionAttributeName(
+        ctx.transformParameters,
+        d2FieldName,
+        getObjectPrimaryKey(directive2.object).name.value,
+      );
+      const d1FieldNameIdOrig = getManyToManyConnectionAttributeName(
+        ctx.transformParameters,
+        d1FieldNameOrig,
+        getObjectPrimaryKey(directive1.object).name.value,
+      );
+      const d2FieldNameIdOrig = getManyToManyConnectionAttributeName(
+        ctx.transformParameters,
+        d2FieldNameOrig,
+        getObjectPrimaryKey(directive2.object).name.value,
+      );
+      const d2SortFieldNames = d2SortKeys.map((node) => `${d2FieldNameOrig}${node.name.value}`);
       const joinModelDirective = makeDirective('model', []);
       const d1IndexDirective = makeDirective('index', [
         makeArgument('name', makeValueNode(d1IndexName)),
@@ -300,9 +363,13 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       const d1HasOneDirective = makeDirective('hasOne', [makeArgument('fields', makeValueNode([d1FieldNameId, ...d1SortFieldNames]))]);
       const d2HasOneDirective = makeDirective('hasOne', [makeArgument('fields', makeValueNode([d2FieldNameId, ...d2SortFieldNames]))]);
       const d1RelatedField = makeField(d1FieldNameId, [], wrapNonNull(makeNamedType(getBaseType(d1PartitionKey.type))), [d1IndexDirective]);
-      const d1RelatedSortKeyFields = d1SortKeys.map(node => makeField(`${d1FieldName}${node.name.value}`, [], wrapNonNull(makeNamedType(getBaseType(node.type)))));
+      const d1RelatedSortKeyFields = d1SortKeys.map((node) =>
+        makeField(`${d1FieldName}${node.name.value}`, [], wrapNonNull(makeNamedType(getBaseType(node.type)))),
+      );
       const d2RelatedField = makeField(d2FieldNameId, [], wrapNonNull(makeNamedType(getBaseType(d2PartitionKey.type))), [d2IndexDirective]);
-      const d2RelatedSortKeyFields = d2SortKeys.map(node => makeField(`${d2FieldName}${node.name.value}`, [], wrapNonNull(makeNamedType(getBaseType(node.type)))));
+      const d2RelatedSortKeyFields = d2SortKeys.map((node) =>
+        makeField(`${d2FieldName}${node.name.value}`, [], wrapNonNull(makeNamedType(getBaseType(node.type)))),
+      );
       const d1Field = makeField(d1FieldName, [], wrapNonNull(makeNamedType(d1TypeName)), [d1HasOneDirective]);
       const d2Field = makeField(d2FieldName, [], wrapNonNull(makeNamedType(d2TypeName)), [d2HasOneDirective]);
       const joinTableDirectives = [joinModelDirective];
@@ -314,7 +381,15 @@ export class ManyToManyTransformer extends TransformerPluginBase {
 
       const joinType = {
         ...blankObject(name),
-        fields: [makeField('id', [], wrapNonNull(makeNamedType('ID'))), d1RelatedField, ...d1RelatedSortKeyFields, d2RelatedField, ...d2RelatedSortKeyFields, d1Field, d2Field],
+        fields: [
+          makeField('id', [], wrapNonNull(makeNamedType('ID'))),
+          d1RelatedField,
+          ...d1RelatedSortKeyFields,
+          d2RelatedField,
+          ...d2RelatedSortKeyFields,
+          d1Field,
+          d2Field,
+        ],
         directives: joinTableDirectives,
       };
 
@@ -322,8 +397,8 @@ export class ManyToManyTransformer extends TransformerPluginBase {
 
       directive1.indexName = d1IndexName;
       directive2.indexName = d2IndexName;
-      directive1.fields = [d1PartitionKey.name.value, ...d1SortKeys.map(node => `${node.name.value}`)];
-      directive2.fields = [d2PartitionKey.name.value, ...d2SortKeys.map(node => `${node.name.value}`)];
+      directive1.fields = [d1PartitionKey.name.value, ...d1SortKeys.map((node) => `${node.name.value}`)];
+      directive2.fields = [d2PartitionKey.name.value, ...d2SortKeys.map((node) => `${node.name.value}`)];
       directive1.fieldNodes = [d1PartitionKey, ...d1SortKeys];
       directive2.fieldNodes = [d2PartitionKey, ...d2SortKeys];
       directive1.relatedType = joinType;
@@ -358,7 +433,15 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       ]);
       const joinTypeOrig = {
         ...blankObject(name),
-        fields: [makeField('id', [], wrapNonNull(makeNamedType('ID'))), d1RelatedFieldOrig, ...d1RelatedSortKeyFields, d2RelatedFieldOrig, ...d2RelatedSortKeyFields, d1Field, d2Field],
+        fields: [
+          makeField('id', [], wrapNonNull(makeNamedType('ID'))),
+          d1RelatedFieldOrig,
+          ...d1RelatedSortKeyFields,
+          d2RelatedFieldOrig,
+          ...d2RelatedSortKeyFields,
+          d1Field,
+          d2Field,
+        ],
         directives: joinTableDirectives,
       };
       this.indexTransformer.field(joinTypeOrig, d1RelatedFieldOrig, d1IndexDirectiveOrig, context);
@@ -432,11 +515,14 @@ function getGraphqlRelationName(name: string): string {
   return graphqlName(toUpper(name));
 }
 
-function createJoinTableAuthDirective(table1: ObjectTypeDefinitionNode | ObjectTypeExtensionNode, table2: ObjectTypeDefinitionNode | ObjectTypeExtensionNode) {
-  const t1Auth = table1.directives!.find(directive => directive.name.value === 'auth');
-  const t2Auth = table2.directives!.find(directive => directive.name.value === 'auth');
-  const t1Rules = ((t1Auth?.arguments ?? []).find(arg => arg.name.value === 'rules')?.value as any)?.values ?? [];
-  const t2Rules = ((t2Auth?.arguments ?? []).find(arg => arg.name.value === 'rules')?.value as any)?.values ?? [];
+function createJoinTableAuthDirective(
+  table1: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
+  table2: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
+) {
+  const t1Auth = table1.directives!.find((directive) => directive.name.value === 'auth');
+  const t2Auth = table2.directives!.find((directive) => directive.name.value === 'auth');
+  const t1Rules = ((t1Auth?.arguments ?? []).find((arg) => arg.name.value === 'rules')?.value as any)?.values ?? [];
+  const t2Rules = ((t2Auth?.arguments ?? []).find((arg) => arg.name.value === 'rules')?.value as any)?.values ?? [];
   const rules = [...t1Rules, ...t2Rules];
 
   if (rules.length === 0) {

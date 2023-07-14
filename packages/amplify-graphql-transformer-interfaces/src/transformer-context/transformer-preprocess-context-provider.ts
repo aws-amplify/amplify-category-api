@@ -1,9 +1,9 @@
 import { DocumentNode } from 'graphql';
-import { FeatureFlagProvider } from '../feature-flag-provider';
 import { TransformerSchemaHelperProvider } from './schema-helper-provider';
+import { TransformParameters } from './transform-parameters';
 
 export interface TransformerPreProcessContextProvider {
   inputDocument: DocumentNode;
-  featureFlags: FeatureFlagProvider;
+  transformParameters: TransformParameters;
   schemaHelper: TransformerSchemaHelperProvider;
 }

@@ -5,7 +5,7 @@ export class SyncResourceIDs {
   public static syncTableName: string = 'AmplifyDataStore';
   public static syncPrimaryKey: string = 'ds_pk';
   public static syncRangeKey: string = 'ds_sk';
-  public static syncIAMRoleID: string = 'DataStoreIAMRole'
+  public static syncIAMRoleID: string = 'DataStoreIAMRole';
   public static syncIAMRoleName: string = 'AmplifyDataStoreIAMRole';
   public static syncFunctionRoleName: string = 'DataStoreLambdaRole';
   public static syncFunctionID(name: string, region?: string): string {

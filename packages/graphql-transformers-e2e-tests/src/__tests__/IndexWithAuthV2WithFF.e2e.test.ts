@@ -30,9 +30,9 @@ const customS3Client = new S3Client(AWS_REGION);
 const awsS3Client = new S3({ region: AWS_REGION });
 const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: AWS_REGION });
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `IndexAuthTransformerTests-${BUILD_TIMESTAMP}`;
-const BUCKET_NAME = `appsync-auth-index-transformer-test-bucket-${BUILD_TIMESTAMP}`;
-const LOCAL_FS_BUILD_DIR = '/tmp/index_with_auth_transformer_tests/';
+const STACK_NAME = `IndexAuthTransformerFFTests-${BUILD_TIMESTAMP}`;
+const BUCKET_NAME = `appsync-auth-index-transformer-ff-test-bucket-${BUILD_TIMESTAMP}`;
+const LOCAL_FS_BUILD_DIR = '/tmp/index_with_auth_transformer_ff_tests/';
 const S3_ROOT_DIR_KEY = 'deployments';
 
 let GRAPHQL_ENDPOINT = undefined;
@@ -101,21 +101,6 @@ beforeAll(async () => {
   const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
 
   const transformer = new GraphQLTransform({
-    featureFlags: {
-      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-        if (name === 'secondaryKeyAsGSI') {
-          return true;
-        }
-        if (name === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return defaultValue;
-      }),
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-     
-
-    },
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'AMAZON_COGNITO_USER_POOLS',

@@ -80,7 +80,7 @@ export class SearchableModelTransformer extends Transformer {
    * @param ctx The accumulated context for the transform.
    */
   public object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
-    const modelDirective = def.directives.find(dir => dir.name.value === 'model');
+    const modelDirective = def.directives.find((dir) => dir.name.value === 'model');
     if (!modelDirective) {
       throw new InvalidDirectiveError('Types annotated with @searchable must also be annotated with @model.');
     }
@@ -107,7 +107,7 @@ export class SearchableModelTransformer extends Transformer {
     // SearchablePostSortableFields
     const queryFields = [];
     const nonKeywordFields: Expression[] = [];
-    def.fields.forEach(field => {
+    def.fields.forEach((field) => {
       if (nonKeywordTypes.includes(getBaseType(field.type))) {
         nonKeywordFields.push(str(field.name.value));
       }

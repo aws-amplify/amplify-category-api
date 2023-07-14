@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.4.5...@aws-amplify/amplify-category-api@5.4.6) (2023-07-07)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+## [5.4.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.4.4...@aws-amplify/amplify-category-api@5.4.5) (2023-07-07)
+
+### Bug Fixes
+
+- trigger republish of dependencies that failed in https://app.circleci.com/pipelines/github/aws-amplify/amplify-category-api/7981/workflows/e7366f04-6f0a-4ee4-9cc2-1772089e8005/jobs/163571 ([f2c7151](https://github.com/aws-amplify/amplify-category-api/commit/f2c7151005e4a9fd29d91ac1af1f3e482a06a5cc))
+
+## [5.4.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.4.3...@aws-amplify/amplify-category-api@5.4.4) (2023-07-07)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+## [5.4.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.4.2...@aws-amplify/amplify-category-api@5.4.3) (2023-06-29)
+
+### Bug Fixes
+
+- handling of all floating promises ([#1577](https://github.com/aws-amplify/amplify-category-api/issues/1577)) ([d5981b2](https://github.com/aws-amplify/amplify-category-api/commit/d5981b2f912d03b44e1269ca704816dd250ff501))
+
+## [5.4.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.4.1...@aws-amplify/amplify-category-api@5.4.2) (2023-06-20)
+
+### Bug Fixes
+
+- remove unsupported errors for rds cmands ([11d8305](https://github.com/aws-amplify/amplify-category-api/commit/11d8305abddfe5ba82d9fcf2d009575e8d3c77c7))
+
 ## [5.4.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.4.0...@aws-amplify/amplify-category-api@5.4.1) (2023-06-05)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

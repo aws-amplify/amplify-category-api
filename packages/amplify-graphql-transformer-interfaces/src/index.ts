@@ -8,8 +8,6 @@ export {
   TransformerModelEnhancementProvider,
   TransformerAuthProvider,
 } from './transformer-model-provider';
-export { FeatureFlagProvider } from './feature-flag-provider';
-
 export {
   GraphQLAPIProvider,
   AppSyncFunctionConfigurationProvider,
@@ -31,17 +29,8 @@ export {
   UserPoolConfig,
   SearchableDataSourceOptions,
 } from './graphql-api-provider';
-
 export { TransformHostProvider, DynamoDbDataSourceOptions } from './transform-host-provider';
-
-export {
-  DeploymentResources,
-  NestedStacks,
-  ResolversFunctionsAndSchema,
-  StackMapping,
-  Template,
-} from './deployment-resources';
-
+export { DeploymentResources, NestedStacks, ResolversFunctionsAndSchema, StackMapping, Template } from './deployment-resources';
 export { TransformerLog, TransformerLogLevel } from './transformer-log';
 export {
   AmplifyApiGraphQlResourceStackTemplate,
@@ -51,3 +40,4 @@ export {
   ModelDirectiveStack,
   OpenSearchDirectiveStack,
 } from './amplify-api-resource-stack-types';
+export type { TransformParameters } from './transformer-context/transform-parameters';

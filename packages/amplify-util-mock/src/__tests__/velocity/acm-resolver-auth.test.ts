@@ -1,9 +1,4 @@
-import {
-  AuthProvider,
-  AuthStrategy,
-  AuthTransformer,
-  ModelOperation,
-} from '@aws-amplify/graphql-auth-transformer';
+import { AuthProvider, AuthStrategy, AuthTransformer, ModelOperation } from '@aws-amplify/graphql-auth-transformer';
 import { AppSyncGraphQLExecutionContext } from '@aws-amplify/amplify-appsync-simulator/lib/utils/graphql-runner';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
@@ -11,10 +6,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AmplifyAppSyncSimulatorAuthenticationType } from '@aws-amplify/amplify-appsync-simulator';
 import { plurality } from 'graphql-transformer-common';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { featureFlags } from './test-helper';
-import {
-  AppSyncVTLContext, getGenericToken, getIAMToken, getJWTToken, VelocityTemplateSimulator,
-} from '../../velocity';
+import { AppSyncVTLContext, getGenericToken, getIAMToken, getJWTToken, VelocityTemplateSimulator } from '../../velocity';
 
 const USER_POOL_ID = 'us-fake-1ID';
 
@@ -52,10 +44,14 @@ const strategyProviders: Record<AuthStrategy, AuthProvider[]> = {
 
 const generateUser = (provider: AuthProvider, strategy: AuthStrategy): AppSyncGraphQLExecutionContext => {
   switch (provider) {
-    case 'apiKey': return generateAPIKeyContext();
-    case 'iam': return generateIAMContext(strategy);
-    case 'oidc': return generateOIDCContext();
-    case 'userPools': return generateUserPoolsContext();
+    case 'apiKey':
+      return generateAPIKeyContext();
+    case 'iam':
+      return generateIAMContext(strategy);
+    case 'oidc':
+      return generateOIDCContext();
+    case 'userPools':
+      return generateUserPoolsContext();
     default:
       throw new Error(`'${provider}' auth provider not supported for this test`);
   }
@@ -91,7 +87,7 @@ const generateUserPoolsContext = (): AppSyncGraphQLExecutionContext => ({
 });
 
 const generateInvalidUserPoolsContext = (context: AppSyncGraphQLExecutionContext): AppSyncGraphQLExecutionContext => {
-  const invalidMode = Object.values(AmplifyAppSyncSimulatorAuthenticationType).find(it => it !== context.requestAuthorizationMode);
+  const invalidMode = Object.values(AmplifyAppSyncSimulatorAuthenticationType).find((it) => it !== context.requestAuthorizationMode);
   return {
     requestAuthorizationMode: invalidMode,
     headers: {},
@@ -126,11 +122,7 @@ const generateAuthDirective = (authStrategy: AuthStrategy, authProvider: AuthPro
     ]
   )`;
 
-const getInputContext = (
-  operation: ModelOperation,
-  authStrategy: AuthStrategy,
-  authProvider: AuthProvider,
-): AppSyncVTLContext => {
+const getInputContext = (operation: ModelOperation, authStrategy: AuthStrategy, authProvider: AuthProvider): AppSyncVTLContext => {
   const context: AppSyncVTLContext = {};
   switch (operation) {
     case 'create': {
@@ -175,13 +167,17 @@ const getInputContext = (
     case 'list':
     case 'get':
       break;
-    default: throw new Error(`'${operation}' operation is not supported for this test case`);
+    default:
+      throw new Error(`'${operation}' operation is not supported for this test case`);
   }
 
   if (authProvider === 'iam') {
-    Object.assign(context, authStrategy === 'private'
-      ? { stash: { authRole: 'arn:aws:sts::123456789012:assumed-role/authRole/CognitoIdentityCredentials' } }
-      : { stash: { unauthRole: 'arn:aws:sts::123456789012:assumed-role/unauthRole/CognitoIdentityCredentials' } });
+    Object.assign(
+      context,
+      authStrategy === 'private'
+        ? { stash: { authRole: 'arn:aws:sts::123456789012:assumed-role/authRole/CognitoIdentityCredentials' } }
+        : { stash: { unauthRole: 'arn:aws:sts::123456789012:assumed-role/unauthRole/CognitoIdentityCredentials' } },
+    );
   }
 
   return context;
@@ -244,18 +240,13 @@ const testResolverLogic = (
 
   const transformer: GraphQLTransform = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new PrimaryKeyTransformer(),
-      new AuthTransformer(),
-    ],
-    featureFlags,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer()],
   });
 
   const out = transformer.transform(validSchema);
   const templates = getOperationRelatedTemplates(operation, 'Profile');
 
-  templates.forEach(templateName => {
+  templates.forEach((templateName) => {
     const template = out.resolvers[templateName];
     validateRenderTemplate(template, context, operation, authStrategy, authProvider, hasPartialAccess);
   });
@@ -263,13 +254,13 @@ const testResolverLogic = (
 
 describe('acm resolver tests', () => {
   const authStrategies: AuthStrategy[] = ['owner', 'groups', 'public', 'private'];
-  authStrategies.forEach(authStrategy => {
+  authStrategies.forEach((authStrategy) => {
     const providers = strategyProviders[authStrategy];
 
-    providers.forEach(provider => {
+    providers.forEach((provider) => {
       const userContext = generateUser(provider, authStrategy);
       const operations: ModelOperation[] = ['create', 'get', 'list', 'update', 'delete'];
-      operations.forEach(operation => {
+      operations.forEach((operation) => {
         it(`should generate auth resolver logic that passes as expected for '${authStrategy}' strategy using '${provider}' provider running '${operation}' operation`, () => {
           testResolverLogic(authStrategy, provider, userContext, operation);
         });

@@ -15,7 +15,7 @@ export const updateTransformerVersion = async (env?: string): Promise<void> => {
   await mutateCliJsonFile(mutation, env);
 };
 
-export const backupCliJson = async (resourceDir: string, env? :string): Promise<void> => {
+export const backupCliJson = async (resourceDir: string, env?: string): Promise<void> => {
   const cliJson = getCliJsonFile(env);
   const backupPath = path.join(backupLocation(resourceDir), 'cli.json');
   JSONUtilities.writeJson(backupPath, cliJson);
@@ -26,7 +26,7 @@ export const revertTransformerVersion = async (resourceDir: string, env?: string
   const backupJson: any = JSONUtilities.readJson(backupPath);
   const mutation = (cliJson: any) => {
     _.set(cliJson, ['features'], backupJson['features']);
-  }
+  };
   await mutateCliJsonFile(mutation, env);
   fs.removeSync(backupLocation(resourceDir));
 };
@@ -54,4 +54,4 @@ const getCliJsonFile = (env?: string): Promise<any> => {
     cliJSON = stateManager.getCLIJSON(projectPath, env, { throwIfNotExist: false });
   }
   return cliJSON ?? stateManager.getCLIJSON(projectPath);
-}
+};

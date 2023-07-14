@@ -86,7 +86,7 @@ beforeAll(async () => {
       createdAt: AWSDateTime
       updatedAt: AWSDateTime
     }
-    type Application @model @auth(rules: [{allow: groups, groupsField: "projectId"}, {allow: private, operations: [create]}]) {
+    type Application @model @auth(rules: [{ allow: groups, groupsField: "projectId" }, { allow: private, operations: [create] }]) {
       id: ID!
       projectId: ID! @index(name: "byProjectId", queryField: "applicationsByProjectId")
       applicationName: String!
@@ -104,20 +104,8 @@ beforeAll(async () => {
   const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
 
   const transformer = new GraphQLTransform({
-    featureFlags: {
-      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-        if (name === 'secondaryKeyAsGSI') {
-          return true;
-        }
-        if (name === 'useSubUsernameForDefaultIdentityClaim') {
-          return false;
-        }
-        return defaultValue;
-      }),
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-     
-
+    transformParameters: {
+      useSubUsernameForDefaultIdentityClaim: false,
     },
     authConfig: {
       defaultAuthentication: {

@@ -19,7 +19,7 @@ import {
   ObjectTypeDefinitionNode,
 } from 'graphql';
 import { isListType, isScalarOrEnum } from 'graphql-transformer-common';
-import { appendSecondaryIndex, constructSyncVTL, updateResolversForIndex, getDeltaSyncTableTtl } from './resolvers';
+import { appendSecondaryIndex, constructSyncVTL, updateResolversForIndex } from './resolvers';
 import { addKeyConditionInputs, ensureQueryField, updateMutationConditionInput } from './schema';
 import { IndexDirectiveConfiguration } from './types';
 import { generateKeyAndQueryNameForConfig, validateNotSelfReferencing } from './utils';
@@ -47,11 +47,14 @@ export class IndexTransformer extends TransformerPluginBase {
     context: TransformerSchemaVisitStepContextProvider,
   ): void => {
     const directiveWrapped = new DirectiveWrapper(directive);
-    const args = directiveWrapped.getArguments({
-      object: parent as ObjectTypeDefinitionNode,
-      field: definition,
-      directive,
-    } as IndexDirectiveConfiguration, generateGetArgumentsInput(context.featureFlags));
+    const args = directiveWrapped.getArguments(
+      {
+        object: parent as ObjectTypeDefinitionNode,
+        field: definition,
+        directive,
+      } as IndexDirectiveConfiguration,
+      generateGetArgumentsInput(context.transformParameters),
+    );
 
     /**
      * Impute Optional Fields
@@ -69,12 +72,10 @@ export class IndexTransformer extends TransformerPluginBase {
   public after = (ctx: TransformerContextProvider): void => {
     if (!ctx.isProjectUsingDataStore()) return;
 
-    const overriddenResources = ctx.getResourceOverrides();
     // construct sync VTL code
     this.resolverMap.forEach((syncVTLContent, resource) => {
       if (syncVTLContent) {
-        const deltaSyncTableTtl = getDeltaSyncTableTtl(overriddenResources, resource);
-        constructSyncVTL(syncVTLContent, resource, deltaSyncTableTtl);
+        constructSyncVTL(syncVTLContent, resource);
       }
     });
   };
@@ -121,7 +122,7 @@ const getOrGenerateDefaultQueryField = (
   context: TransformerSchemaVisitStepContextProvider,
   config: IndexDirectiveConfiguration,
 ): string | null => {
-  const autoIndexQueryNamesIsEnabled = context.featureFlags.getBoolean('enableAutoIndexQueryNames', false);
+  const autoIndexQueryNamesIsEnabled = context.transformParameters.enableAutoIndexQueryNames;
   // Any explicit null will take effect, if enableAutoIndexQueryNames and no queryField is provide set to null for consistency
   if (config.queryField === null || (!autoIndexQueryNamesIsEnabled && !config.queryField)) {
     return null;
@@ -150,14 +151,10 @@ const getOrGenerateDefaultSortKeyFields = (config: IndexDirectiveConfiguration):
 };
 
 const validate = (config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-  const {
-    name, object, field, sortKeyFields,
-  } = config;
-  const defaultGSI = ctx.featureFlags.getBoolean('secondaryKeyAsGSI', true);
-
+  const { name, object, field, sortKeyFields } = config;
   validateNotSelfReferencing(config);
 
-  const modelDirective = object.directives!.find(directive => directive.name.value === 'model');
+  const modelDirective = object.directives!.find((directive) => directive.name.value === 'model');
 
   if (!modelDirective) {
     throw new InvalidDirectiveError(`The @${directiveName} directive may only be added to object definitions annotated with @model.`);
@@ -176,21 +173,23 @@ const validate = (config: IndexDirectiveConfiguration, ctx: TransformerContextPr
       }
 
       if (peerDirective.name.value === 'primaryKey') {
-        const hasSortFields = peerDirective.arguments!.some((arg: any) => arg.name.value === 'sortKeyFields' && arg.value.values?.length > 0);
+        const hasSortFields = peerDirective.arguments!.some(
+          (arg: any) => arg.name.value === 'sortKeyFields' && arg.value.values?.length > 0,
+        );
         config.primaryKeyField = objectField;
 
         if (!hasSortFields && objectField.name.value === field.name.value) {
           throw new InvalidDirectiveError(
-            `Invalid @index '${name}'. You may not create an index where the partition key `
-              + 'is the same as that of the primary key unless the primary key has a sort field. '
-              + 'You cannot have a local secondary index without a sort key in the primary key.',
+            `Invalid @index '${name}'. You may not create an index where the partition key ` +
+              'is the same as that of the primary key unless the primary key has a sort field. ' +
+              'You cannot have a local secondary index without a sort key in the primary key.',
           );
         }
       }
 
       if (
-        peerDirective.name.value === directiveName
-        && peerDirective.arguments!.some((arg: any) => arg.name.value === 'name' && arg.value.value === name)
+        peerDirective.name.value === directiveName &&
+        peerDirective.arguments!.some((arg: any) => arg.name.value === 'name' && arg.value.value === name)
       ) {
         throw new InvalidDirectiveError(
           `You may only supply one @${directiveName} with the name '${name}' on type '${object.name.value}'.`,
@@ -201,11 +200,16 @@ const validate = (config: IndexDirectiveConfiguration, ctx: TransformerContextPr
     for (const peerDirective of objectField.directives!) {
       const hasSortFields = peerDirective.arguments!.some((arg: any) => arg.name.value === 'sortKeyFields' && arg.value.values?.length > 0);
 
-      if (!defaultGSI && !hasSortFields && objectField == config.primaryKeyField && objectField.name.value === field.name.value) {
+      if (
+        !ctx.transformParameters.secondaryKeyAsGSI &&
+        !hasSortFields &&
+        objectField == config.primaryKeyField &&
+        objectField.name.value === field.name.value
+      ) {
         throw new InvalidDirectiveError(
-          `Invalid @index '${name}'. You may not create an index where the partition key `
-            + 'is the same as that of the primary key unless the index has a sort field. '
-            + 'You cannot have a local secondary index without a sort key in the index.',
+          `Invalid @index '${name}'. You may not create an index where the partition key ` +
+            'is the same as that of the primary key unless the index has a sort field. ' +
+            'You cannot have a local secondary index without a sort key in the index.',
         );
       }
     }

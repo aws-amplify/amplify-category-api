@@ -1,9 +1,9 @@
 const AWS = require('aws-sdk');
-exports.handler = function(event, context, callback) {
+exports.handler = function (event, context, callback) {
   if (event && event.action === 'convertTextToSpeech') {
     convertTextToSpeech(event, callback);
   } else {
-    callback(Error("Action not configured."))
+    callback(Error('Action not configured.'));
   }
 };
 /**
@@ -23,12 +23,12 @@ function convertTextToSpeech(event, callback) {
   };
   const polly = new AWS.Polly();
   const signer = new AWS.Polly.Presigner(pollyParams, polly);
-  signer.getSynthesizeSpeechUrl(pollyParams, function(err, url) {
+  signer.getSynthesizeSpeechUrl(pollyParams, function (err, url) {
     if (err) {
       console.log(err, err.stack);
       callback(Error(err));
     } else {
-      callback(null, { url: url })
+      callback(null, { url: url });
     }
   });
 }

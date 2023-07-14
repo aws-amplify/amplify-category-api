@@ -1,9 +1,4 @@
-import {
-  DocumentNode,
-  Kind,
-  ObjectTypeDefinitionNode,
-  StringValueNode,
-} from 'graphql';
+import { DocumentNode, Kind, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
 import { getObjectWithName } from '../helpers/get-object-with-name';
 import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
@@ -21,9 +16,9 @@ export const validateIndexExistsInRelatedModel = (schema: DocumentNode): Error[]
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,
   ) as ObjectTypeDefinitionNode[];
   objectTypeDefinitions.forEach((objectTypeDefinition) => {
-    const hasManyDirectiveFields = objectTypeDefinition.fields?.filter((objectField) => objectField.directives?.find(
-      (directive) => directive.name.value === 'hasMany',
-    ));
+    const hasManyDirectiveFields = objectTypeDefinition.fields?.filter((objectField) =>
+      objectField.directives?.find((directive) => directive.name.value === 'hasMany'),
+    );
 
     hasManyDirectiveFields?.forEach((hasManyDirectiveField) => {
       const hasManyDirectiveArgs = hasManyDirectiveField.directives?.filter(
@@ -40,9 +35,9 @@ export const validateIndexExistsInRelatedModel = (schema: DocumentNode): Error[]
 
         const typeName = resolveFieldTypeName(hasManyDirectiveField.type);
         const objectOfType = getObjectWithName(schema, typeName);
-        const indexDirectiveFields = objectOfType?.fields?.filter((objectField) => objectField.directives?.find(
-          (directive) => directive.name.value === 'index',
-        ));
+        const indexDirectiveFields = objectOfType?.fields?.filter((objectField) =>
+          objectField.directives?.find((directive) => directive.name.value === 'index'),
+        );
 
         const indexNameInRelatedModel: string[] = [];
         indexDirectiveFields?.forEach((indexDirectiveField) => {
@@ -61,9 +56,7 @@ export const validateIndexExistsInRelatedModel = (schema: DocumentNode): Error[]
         });
 
         if (!indexNameInRelatedModel.includes(indexName)) {
-          errors.push(new InvalidDirectiveError(
-            `Index ${indexName} does not exist for model ${objectOfType?.name.value}`,
-          ));
+          errors.push(new InvalidDirectiveError(`Index ${indexName} does not exist for model ${objectOfType?.name.value}`));
         }
       });
     });

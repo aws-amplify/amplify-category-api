@@ -1,8 +1,4 @@
-import {
-  DocumentNode,
-  Kind,
-  ObjectTypeDefinitionNode,
-} from 'graphql';
+import { DocumentNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { ValidateSchemaProps } from '../helpers/schema-validator-props';
 import { transformerValidationErrors } from '../helpers/transformer-validation';
 
@@ -14,9 +10,7 @@ import { transformerValidationErrors } from '../helpers/transformer-validation';
  */
 
 const GRAPHQL_TRANSFORMER_V2_DIRECTIVES = ['hasOne', 'index', 'primaryKey', 'belongsTo', 'manyToMany', 'hasMany', 'default'];
-export const validateDirectivesFromNewerTransformerVersionAreNotUsed = (
-  schema: DocumentNode, props: ValidateSchemaProps,
-): Error[] => {
+export const validateDirectivesFromNewerTransformerVersionAreNotUsed = (schema: DocumentNode, props: ValidateSchemaProps): Error[] => {
   if (props.graphqlTransformerVersion !== 1) {
     return [];
   }
@@ -27,9 +21,9 @@ export const validateDirectivesFromNewerTransformerVersionAreNotUsed = (
   const v2DirectivesInUse = new Set<string>();
 
   objectTypeDefinitions.forEach((objectTypeDefinition) => {
-    const directiveFields = objectTypeDefinition.fields?.filter((objectField) => objectField.directives?.find(
-      (directive) => GRAPHQL_TRANSFORMER_V2_DIRECTIVES.includes(directive.name.value),
-    ));
+    const directiveFields = objectTypeDefinition.fields?.filter((objectField) =>
+      objectField.directives?.find((directive) => GRAPHQL_TRANSFORMER_V2_DIRECTIVES.includes(directive.name.value)),
+    );
 
     directiveFields?.forEach((directiveField) => {
       const { directives } = directiveField;

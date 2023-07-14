@@ -4,10 +4,7 @@ describe('filterToRdsExpression', () => {
   // QueryGroup - and, or
   it('should convert and: QueryGroup', () => {
     const filter = {
-      and: [
-        { id: { eq: '123' } },
-        { name: { eq: 'Amplify' } },
-      ],
+      and: [{ id: { eq: '123' } }, { name: { eq: 'Amplify' } }],
     };
     const queryExpression = toRDSQueryExpression(filter);
     expect(queryExpression.rawSql).toEqual('((id = ?) AND (name = ?))');
@@ -15,10 +12,7 @@ describe('filterToRdsExpression', () => {
   });
   it('should convert or: QueryGroup', () => {
     const filter = {
-      or: [
-        { id: { eq: '123' } },
-        { name: { eq: 'Amplify' } },
-      ],
+      or: [{ id: { eq: '123' } }, { name: { eq: 'Amplify' } }],
     };
     const queryExpression = toRDSQueryExpression(filter);
     expect(queryExpression.rawSql).toEqual('((id = ?) OR (name = ?))');
@@ -133,13 +127,15 @@ describe('filterToRdsExpression', () => {
     expect(queryExpression.queryParams).toEqual(['123', '18', '60', 'AWS']);
   });
 
-  test('filterToRdsExpression > should throw error if between: doesn\'t have 2 values', () => {
+  test("filterToRdsExpression > should throw error if between: doesn't have 2 values", () => {
     const filter = {
       id: { eq: '123' },
       age: { between: ['18'] },
       org: { ne: 'AWS' },
     };
-    expect(() => { toRDSQueryExpression(filter); }).toThrowError(/between condition must have two values/);
+    expect(() => {
+      toRDSQueryExpression(filter);
+    }).toThrowError(/between condition must have two values/);
   });
 
   // nested QueryGroup & Operators
@@ -148,10 +144,7 @@ describe('filterToRdsExpression', () => {
       and: [
         { id: { eq: '123' } },
         {
-          or: [
-            { name: { eq: 'Amplify' } },
-            { org: { eq: 'AWS' } },
-          ],
+          or: [{ name: { eq: 'Amplify' } }, { org: { eq: 'AWS' } }],
         },
       ],
     };
@@ -165,10 +158,7 @@ describe('filterToRdsExpression', () => {
       or: [
         { id: { eq: '123' } },
         {
-          and: [
-            { name: { eq: 'Amplify' } },
-            { org: { eq: 'AWS' } },
-          ],
+          and: [{ name: { eq: 'Amplify' } }, { org: { eq: 'AWS' } }],
         },
       ],
     };
@@ -181,10 +171,7 @@ describe('filterToRdsExpression', () => {
       and: [
         { id: { eq: '123' } },
         {
-          and: [
-            { name: { eq: 'Amplify' } },
-            { org: { eq: 'AWS' } },
-          ],
+          and: [{ name: { eq: 'Amplify' } }, { org: { eq: 'AWS' } }],
         },
       ],
     };
@@ -201,10 +188,7 @@ describe('filterToRdsExpression', () => {
           or: [
             { name: { eq: 'Amplify' } },
             {
-              and: [
-                { org: { eq: 'AWS' } },
-                { age: { between: ['18', '60'] } },
-              ],
+              and: [{ org: { eq: 'AWS' } }, { age: { between: ['18', '60'] } }],
             },
           ],
         },
@@ -223,11 +207,7 @@ describe('filterToRdsExpression', () => {
           or: [
             { name: { eq: 'Amplify' } },
             {
-              and: [
-                { org: { eq: 'AWS' } },
-                { age: { between: ['18', '60'] } },
-                { name: { beginsWith: 'Amplify' } },
-              ],
+              and: [{ org: { eq: 'AWS' } }, { age: { between: ['18', '60'] } }, { name: { beginsWith: 'Amplify' } }],
             },
           ],
         },
@@ -246,22 +226,17 @@ describe('filterToRdsExpression', () => {
           or: [
             { name: { eq: 'Amplify' } },
             {
-              and: [
-                { org: { ne: 'AWS' } },
-                { age: { between: ['18', '60'] } },
-                { name: { beginsWith: 'Amplify' } },
-              ],
+              and: [{ org: { ne: 'AWS' } }, { age: { between: ['18', '60'] } }, { name: { beginsWith: 'Amplify' } }],
             },
           ],
         },
       ],
-      or: [
-        { name: { eq: 'Amplify' } },
-        { org: { eq: 'AWS' } },
-      ],
+      or: [{ name: { eq: 'Amplify' } }, { org: { eq: 'AWS' } }],
     };
     const queryExpression = toRDSQueryExpression(filter);
-    expect(queryExpression.rawSql).toEqual("(id != ? AND ((name = ?) OR ((org != ?) AND (age BETWEEN ? AND ?) AND (name LIKE '?%'))) AND (name = ?) OR (org = ?))");
+    expect(queryExpression.rawSql).toEqual(
+      "(id != ? AND ((name = ?) OR ((org != ?) AND (age BETWEEN ? AND ?) AND (name LIKE '?%'))) AND (name = ?) OR (org = ?))",
+    );
     expect(queryExpression.queryParams).toEqual(['123', 'Amplify', 'AWS', '18', '60', 'Amplify', 'Amplify', 'AWS']);
   });
 
@@ -271,20 +246,15 @@ describe('filterToRdsExpression', () => {
       or: [
         { name: { eq: 'Amplify' } },
         {
-          and: [
-            { org: { eq: 'AWS' } },
-            { age: { between: ['18', '60'] } },
-            { name: { eq: 'Amplify' } },
-          ],
+          and: [{ org: { eq: 'AWS' } }, { age: { between: ['18', '60'] } }, { name: { eq: 'Amplify' } }],
         },
       ],
-      and: [
-        { name: { eq: 'Amplify' } },
-        { org: { eq: 'AWS' } },
-      ],
+      and: [{ name: { eq: 'Amplify' } }, { org: { eq: 'AWS' } }],
     };
     const queryExpression = toRDSQueryExpression(filter);
-    expect(queryExpression.rawSql).toEqual("(name LIKE '?%' AND (name = ?) OR ((org = ?) AND (age BETWEEN ? AND ?) AND (name = ?)) AND (name = ?) AND (org = ?))");
+    expect(queryExpression.rawSql).toEqual(
+      "(name LIKE '?%' AND (name = ?) OR ((org = ?) AND (age BETWEEN ? AND ?) AND (name = ?)) AND (name = ?) AND (org = ?))",
+    );
     expect(queryExpression.queryParams).toEqual(['A', 'Amplify', 'AWS', '18', '60', 'Amplify', 'Amplify', 'AWS']);
   });
 
@@ -327,9 +297,7 @@ describe('filterToRdsExpression', () => {
 
   it('should work on size: eq: operator along with and: QueryGroup', () => {
     const filter = {
-      and: [
-        { id: { eq: '123', size: { eq: 1 } } },
-      ],
+      and: [{ id: { eq: '123', size: { eq: 1 } } }],
     };
     const queryExpression = toRDSQueryExpression(filter);
     expect(queryExpression.rawSql).toEqual('((id = ? AND LENGTH (id) = ?))');
@@ -338,12 +306,8 @@ describe('filterToRdsExpression', () => {
 
   it('should work on size: eq: operator along with or: QueryGroup', () => {
     const filter = {
-      or: [
-        { id: { eq: '123', size: { eq: 2 } } },
-      ],
-      and: [
-        { age: { eq: '30', size: { eq: 3 } } },
-      ],
+      or: [{ id: { eq: '123', size: { eq: 2 } } }],
+      and: [{ age: { eq: '30', size: { eq: 3 } } }],
     };
     const queryExpression = toRDSQueryExpression(filter);
     expect(queryExpression.rawSql).toEqual('((id = ? AND LENGTH (id) = ?) AND (age = ? AND LENGTH (age) = ?))');
@@ -355,18 +319,15 @@ describe('filterToRdsExpression', () => {
       or: [
         { id: { eq: '123', size: { eq: 2 } } },
         {
-          and: [
-            { age: { eq: '30', size: { eq: 3 } } },
-          ],
+          and: [{ age: { eq: '30', size: { eq: 3 } } }],
         },
       ],
-      and: [
-        { age: { eq: '20', size: { eq: 3 } } },
-        { org: { eq: 'AWS', size: { eq: 3 } } },
-      ],
+      and: [{ age: { eq: '20', size: { eq: 3 } } }, { org: { eq: 'AWS', size: { eq: 3 } } }],
     };
     const queryExpression = toRDSQueryExpression(filter);
-    expect(queryExpression.rawSql).toEqual('((id = ? AND LENGTH (id) = ?) OR ((age = ? AND LENGTH (age) = ?)) AND (age = ? AND LENGTH (age) = ?) AND (org = ? AND LENGTH (org) = ?))');
+    expect(queryExpression.rawSql).toEqual(
+      '((id = ? AND LENGTH (id) = ?) OR ((age = ? AND LENGTH (age) = ?)) AND (age = ? AND LENGTH (age) = ?) AND (org = ? AND LENGTH (org) = ?))',
+    );
     expect(queryExpression.queryParams).toEqual(['123', 2, '30', 3, '20', 3, 'AWS', 3]);
   });
 });

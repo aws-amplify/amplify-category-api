@@ -1,29 +1,11 @@
 import { TransformerContextProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  Expression,
-  printBlock,
-  compoundExpression,
-  set,
-  ref,
-  list,
-  qref,
-  methodCall,
-  str,
-  obj,
-} from 'graphql-mapping-template';
+import { Expression, printBlock, compoundExpression, set, ref, list, qref, methodCall, str, obj } from 'graphql-mapping-template';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../../types';
 import _ from 'lodash';
-import {
-  addIndexToResolverSlot,
-  getResolverObject,
-  validateSortDirectionInput
-} from '../resolvers';
-import {
-  IndexVTLGenerator,
-} from "./vtl-generator";
+import { addIndexToResolverSlot, getResolverObject, validateSortDirectionInput } from '../resolvers';
+import { IndexVTLGenerator } from './vtl-generator';
 
 export class RDSIndexVTLGenerator implements IndexVTLGenerator {
-
   generateIndexQueryRequestTemplate(
     config: IndexDirectiveConfiguration,
     ctx: TransformerContextProvider,
@@ -39,7 +21,9 @@ export class RDSIndexVTLGenerator implements IndexVTLGenerator {
         set(ref('lambdaInput.operationName'), str(operationName)),
         set(ref('lambdaInput.args.metadata'), obj({})),
         set(ref('lambdaInput.args.metadata.keys'), list([])),
-        qref(methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([])))),
+        qref(
+          methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
+        ),
         set(ref('lambdaInput.args.input'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
         qref(methodCall(ref('lambdaInput.args.input.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
         obj({
@@ -51,11 +35,19 @@ export class RDSIndexVTLGenerator implements IndexVTLGenerator {
     );
   }
 
-  generatePrimaryKeyVTL = (config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, resolverMap: Map<TransformerResolverProvider, string>): void => {
+  generatePrimaryKeyVTL = (
+    config: PrimaryKeyDirectiveConfiguration,
+    ctx: TransformerContextProvider,
+    resolverMap: Map<TransformerResolverProvider, string>,
+  ): void => {
     this.updateResolvers(config, ctx, resolverMap);
   };
 
-  updateResolvers = (config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, resolverMap: Map<TransformerResolverProvider, string>): void => {
+  updateResolvers = (
+    config: PrimaryKeyDirectiveConfiguration,
+    ctx: TransformerContextProvider,
+    resolverMap: Map<TransformerResolverProvider, string>,
+  ): void => {
     const getResolver = getResolverObject(config, ctx, 'get');
     const listResolver = getResolverObject(config, ctx, 'list');
     const createResolver = getResolverObject(config, ctx, 'create');
@@ -69,11 +61,10 @@ export class RDSIndexVTLGenerator implements IndexVTLGenerator {
     }
 
     if (listResolver) {
-      const sortDirectionValidation = printBlock('Validate the sort direction input')(compoundExpression(validateSortDirectionInput(config, true)));
-      addIndexToResolverSlot(listResolver, [
-        primaryKeySnippet,
-        sortDirectionValidation
-      ]);
+      const sortDirectionValidation = printBlock('Validate the sort direction input')(
+        compoundExpression(validateSortDirectionInput(config, true)),
+      );
+      addIndexToResolverSlot(listResolver, [primaryKeySnippet, sortDirectionValidation]);
     }
 
     if (createResolver) {
@@ -90,19 +81,14 @@ export class RDSIndexVTLGenerator implements IndexVTLGenerator {
   };
 
   setPrimaryKeySnippet = (config: PrimaryKeyDirectiveConfiguration): string => {
-    const expressions: Expression[] = [
-      set(ref('keys'), list([])),
-      qref(methodCall(ref('keys.add'), str(config.field.name.value)))
-    ];
+    const expressions: Expression[] = [set(ref('keys'), list([])), qref(methodCall(ref('keys.add'), str(config.field.name.value)))];
 
-    config.sortKeyFields.map( field => {
-      expressions.push(
-        qref(methodCall(ref('keys.add'), str(field)))
-      );
+    config.sortKeyFields.map((field) => {
+      expressions.push(qref(methodCall(ref('keys.add'), str(field))));
     });
 
-    expressions.push(qref(methodCall(ref('ctx.stash.put'), str('keys'), ref('keys'))),);
+    expressions.push(qref(methodCall(ref('ctx.stash.put'), str('keys'), ref('keys'))));
 
     return printBlock('Set the primary key information in metadata')(compoundExpression(expressions));
   };
-};
+}

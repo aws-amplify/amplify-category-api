@@ -1,21 +1,7 @@
-import {
-  DirectiveNode,
-  ObjectTypeDefinitionNode,
-  parse,
-} from 'graphql';
+import { DirectiveNode, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { cloneDeep } from 'lodash';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { getFieldNameFor } from '../../utils/operation-names';
 import { DirectiveWrapper } from '../../utils';
-
-const generateFeatureFlagWithBooleanOverrides = (overrides: Record<string, boolean>): FeatureFlagProvider => ({
-  getBoolean: (name: string, defaultValue?: boolean): boolean => {
-    const overrideValue = Object.entries(overrides).find(([overrideName]) => overrideName === name)?.[1];
-    return overrideValue ?? defaultValue ?? false;
-  },
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-});
 
 describe('Transformer Core Util Tests', () => {
   describe(': Directive Wrapper tests', () => {
@@ -66,10 +52,7 @@ describe('Transformer Core Util Tests', () => {
       const modelDir = objNode?.directives?.[0] as DirectiveNode;
       const wrappedDir = new DirectiveWrapper(modelDir);
 
-      const newArgs = wrappedDir.getArguments(
-        cloneDeep(defaultArgs),
-        { deepMergeArguments: true },
-      );
+      const newArgs = wrappedDir.getArguments(cloneDeep(defaultArgs), { deepMergeArguments: true });
       expect(newArgs.subscriptions).toEqual({
         level: 'public',
         onCreate: [getFieldNameFor('onCreate', typeName)],

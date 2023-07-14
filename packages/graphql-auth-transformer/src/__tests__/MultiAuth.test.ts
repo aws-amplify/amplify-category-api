@@ -13,8 +13,6 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 
 const noAuthModeDefaultConfig: AppSyncAuthConfiguration = {
@@ -202,33 +200,33 @@ const getTransformer = (authConfig: AppSyncAuthConfiguration) =>
   });
 
 const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined => {
-  return doc.definitions.find(def => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
+  return doc.definitions.find((def) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
     | ObjectTypeDefinitionNode
     | undefined;
 };
 
-const expectNone = fieldOrType => {
+const expectNone = (fieldOrType) => {
   expect(fieldOrType.directives.length === 0);
 };
 
 const expectOne = (fieldOrType, directiveName) => {
   expect(fieldOrType.directives.length).toBe(1);
-  expect(fieldOrType.directives.find(d => d.name.value === directiveName)).toBeDefined();
+  expect(fieldOrType.directives.find((d) => d.name.value === directiveName)).toBeDefined();
 };
 
 const expectTwo = (fieldOrType, directiveNames) => {
   expect(directiveNames).toBeDefined();
   expect(directiveNames).toHaveLength(2);
   expect(fieldOrType.directives.length === 2);
-  expect(fieldOrType.directives.find(d => d.name.value === directiveNames[0])).toBeDefined();
-  expect(fieldOrType.directives.find(d => d.name.value === directiveNames[1])).toBeDefined();
+  expect(fieldOrType.directives.find((d) => d.name.value === directiveNames[0])).toBeDefined();
+  expect(fieldOrType.directives.find((d) => d.name.value === directiveNames[1])).toBeDefined();
 };
 
 const expectMultiple = (fieldOrType: ObjectTypeDefinitionNode | FieldDefinitionNode, directiveNames: string[]) => {
   expect(directiveNames).toBeDefined();
   expect(directiveNames).toHaveLength(directiveNames.length);
   expect(fieldOrType.directives.length).toEqual(directiveNames.length);
-  directiveNames.forEach(directiveName => {
+  directiveNames.forEach((directiveName) => {
     expect(fieldOrType.directives).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -239,7 +237,7 @@ const expectMultiple = (fieldOrType: ObjectTypeDefinitionNode | FieldDefinitionN
   });
 };
 
-const getField = (type, name) => type.fields.find(f => f.name.value === name);
+const getField = (type, name) => type.fields.find((f) => f.name.value === name);
 
 describe('Validation tests', () => {
   const validationTest = (authDirective, authConfig, expectedError) => {
@@ -341,7 +339,7 @@ describe('Type directive transformation tests', () => {
       let expectedDireciveNameCount = 0;
 
       for (const expectedDirectiveName of expectedDirectiveNames) {
-        expect(postType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
+        expect(postType.directives.find((d) => d.name.value === expectedDirectiveName)).toBeDefined();
         expectedDireciveNameCount++;
       }
 
@@ -387,7 +385,7 @@ describe('Type directive transformation tests', () => {
 
     for (const field of fields) {
       expect(field.directives.length === 1);
-      expect(field.directives.find(d => d.name.value === userPoolsDirectiveName)).toBeDefined();
+      expect(field.directives.find((d) => d.name.value === userPoolsDirectiveName)).toBeDefined();
     }
 
     // Check that owner is required when only using owner auth rules
@@ -538,7 +536,7 @@ describe('Type directive transformation tests', () => {
       let expectedDireciveNameCount = 0;
 
       for (const expectedDirectiveName of expectedDirectiveNames) {
-        expect(locationType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
+        expect(locationType.directives.find((d) => d.name.value === expectedDirectiveName)).toBeDefined();
         expectedDireciveNameCount++;
       }
 
@@ -547,7 +545,7 @@ describe('Type directive transformation tests', () => {
       expectedDireciveNameCount = 0;
 
       for (const expectedDirectiveName of expectedDirectiveNames) {
-        expect(addressType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
+        expect(addressType.directives.find((d) => d.name.value === expectedDirectiveName)).toBeDefined();
         expectedDireciveNameCount++;
       }
 
@@ -596,7 +594,7 @@ describe('Type directive transformation tests', () => {
       let expectedDireciveNameCount = 0;
 
       for (const expectedDirectiveName of expectedDirectiveNames) {
-        expect(locationType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
+        expect(locationType.directives.find((d) => d.name.value === expectedDirectiveName)).toBeDefined();
         expectedDireciveNameCount++;
       }
 
@@ -605,7 +603,7 @@ describe('Type directive transformation tests', () => {
       expectedDireciveNameCount = 0;
 
       for (const expectedDirectiveName of expectedDirectiveNames) {
-        expect(addressType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
+        expect(addressType.directives.find((d) => d.name.value === expectedDirectiveName)).toBeDefined();
         expectedDireciveNameCount++;
       }
 
@@ -614,7 +612,7 @@ describe('Type directive transformation tests', () => {
       expect(out.rootStack.Resources.AuthRolePolicy01).toBeDefined();
 
       const locationPolicy = out.rootStack.Resources.AuthRolePolicy01.Properties.PolicyDocument.Statement[0].Resource.filter(
-        r =>
+        (r) =>
           r['Fn::Sub'] &&
           r['Fn::Sub'].length &&
           r['Fn::Sub'].length === 2 &&
@@ -624,7 +622,7 @@ describe('Type directive transformation tests', () => {
       expect(locationPolicy).toBeDefined();
 
       const addressPolicy = out.rootStack.Resources.AuthRolePolicy01.Properties.PolicyDocument.Statement[0].Resource.filter(
-        r =>
+        (r) =>
           r['Fn::Sub'] &&
           r['Fn::Sub'].length &&
           r['Fn::Sub'].length === 2 &&
@@ -667,7 +665,7 @@ describe('Type directive transformation tests', () => {
     expect(out.rootStack.Resources.AuthRolePolicy01).toBeDefined();
 
     const locationPolicy = out.rootStack.Resources.AuthRolePolicy01.Properties.PolicyDocument.Statement[0].Resource.filter(
-      r =>
+      (r) =>
         r['Fn::Sub'] &&
         r['Fn::Sub'].length &&
         r['Fn::Sub'].length === 2 &&
@@ -677,7 +675,7 @@ describe('Type directive transformation tests', () => {
     expect(locationPolicy).toBeDefined();
 
     const addressPolicy = out.rootStack.Resources.AuthRolePolicy01.Properties.PolicyDocument.Statement[0].Resource.filter(
-      r =>
+      (r) =>
         r['Fn::Sub'] &&
         r['Fn::Sub'].length &&
         r['Fn::Sub'].length === 2 &&

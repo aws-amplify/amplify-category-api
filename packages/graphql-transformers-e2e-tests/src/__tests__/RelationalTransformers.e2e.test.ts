@@ -26,15 +26,6 @@ jest.setTimeout(2000000);
 const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);
 const awsS3Client = new S3({ region: region });
-const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-
-  }),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
- 
-
-};
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `RelationalTransformersTest-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-relational-transformers-test-${BUILD_TIMESTAMP}`;
@@ -158,7 +149,6 @@ type ModelB @model {
     const hasOneTransformer = new HasOneTransformer();
     const transformer = new GraphQLTransform({
       authConfig,
-      featureFlags,
       transformers: [
         modelTransformer,
         new PrimaryKeyTransformer(),
@@ -169,7 +159,13 @@ type ModelB @model {
         new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
         authTransformer,
       ],
-      sandboxModeEnabled: true,
+      transformParameters: {
+        shouldDeepMergeDirectiveConfigDefaults: false,
+        populateOwnerFieldForStaticGroupAuth: false,
+        useSubUsernameForDefaultIdentityClaim: false,
+        respectPrimaryKeyAttributesOnConnectionField: false,
+        sandboxModeEnabled: true,
+      },
     });
     out = transformer.transform(validSchema);
   } catch (e) {

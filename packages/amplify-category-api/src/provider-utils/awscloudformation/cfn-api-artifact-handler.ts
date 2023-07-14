@@ -1,5 +1,11 @@
 import {
-  $TSContext, AmplifyError, AmplifySupportedService, isResourceNameUnique, JSONUtilities, pathManager, stateManager,
+  $TSContext,
+  AmplifyError,
+  AmplifySupportedService,
+  isResourceNameUnique,
+  JSONUtilities,
+  pathManager,
+  stateManager,
 } from '@aws-amplify/amplify-cli-core';
 import {
   AddApiRequest,
@@ -18,13 +24,9 @@ import { v4 as uuid } from 'uuid';
 import { category } from '../../category-constants';
 import { ApiArtifactHandler, ApiArtifactHandlerOptions } from '../api-artifact-handler';
 import { AppsyncApiInputState } from './api-input-manager/appsync-api-input-state';
-import {
-  cfnParametersFilename, gqlSchemaFilename, provider, rootAssetDir,
-} from './aws-constants';
+import { cfnParametersFilename, gqlSchemaFilename, provider, rootAssetDir } from './aws-constants';
 import { AppSyncCLIInputs, AppSyncServiceConfig } from './service-walkthrough-types/appsync-user-input-types';
-import {
-  authConfigHasApiKey, checkIfAuthExists, getAppSyncAuthConfig, getAppSyncResourceName,
-} from './utils/amplify-meta-utils';
+import { authConfigHasApiKey, checkIfAuthExists, getAppSyncAuthConfig, getAppSyncResourceName } from './utils/amplify-meta-utils';
 import { appSyncAuthTypeToAuthConfig } from './utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { printApiKeyWarnings } from './utils/print-api-key-warnings';
 import { conflictResolutionToResolverConfig } from './utils/resolver-config-to-conflict-resolution-bi-di-mapper';
@@ -103,7 +105,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     this.ensureCfnParametersExist(resourceDir, apiParameters);
     this.context.amplify.updateamplifyMetaAfterResourceAdd(category, serviceConfig.apiName, this.createAmplifyMeta(authConfig, dependsOn));
 
-    if(serviceConfig?.transformSchema) {
+    if (serviceConfig?.transformSchema) {
       // write the template buffer to the project folder
       this.writeSchema(path.join(resourceDir, gqlSchemaFilename), serviceConfig.transformSchema);
 
@@ -125,7 +127,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     if (!apiName) {
       throw new AmplifyError('NotImplementedError', {
         message: `${AmplifySupportedService.APPSYNC} API does not exist`,
-        resolution: 'To add an api, use \'amplify add api\'',
+        resolution: "To add an api, use 'amplify add api'",
       });
     }
     const resourceDir = this.getResourceDir(apiName);
@@ -217,7 +219,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     await generateLambdaIfNew(newConflictResolution.defaultResolutionStrategy);
     await Promise.all(
       (newConflictResolution.perModelResolutionStrategy || [])
-        .map(perModelStrategy => perModelStrategy.resolutionStrategy)
+        .map((perModelStrategy) => perModelStrategy.resolutionStrategy)
         .map(generateLambdaIfNew),
     );
     return newConflictResolution;
@@ -237,7 +239,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
   private getCognitoUserPool = (authConfig: AuthConfig): Record<string, unknown> | undefined => {
     const additionalUserPoolProvider = (authConfig.additionalAuthenticationProviders || []).find(
-      aap => aap.authenticationType === 'AMAZON_COGNITO_USER_POOLS',
+      (aap) => aap.authenticationType === 'AMAZON_COGNITO_USER_POOLS',
     );
     const defaultAuth = authConfig.defaultAuthentication;
     if (!(defaultAuth?.authenticationType === 'AMAZON_COGNITO_USER_POOLS') && !additionalUserPoolProvider) {
@@ -358,7 +360,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
   private ensureCfnParametersExist = (resourceDir: string, parameters: Record<string, unknown>) => {
     const parametersFilePath = path.join(resourceDir, cfnParametersFilename);
-    if(!fs.existsSync(parametersFilePath)) {
+    if (!fs.existsSync(parametersFilePath)) {
       JSONUtilities.writeJson(parametersFilePath, parameters);
     }
   };
@@ -383,10 +385,9 @@ const amendDependsOnForAuthConfig = (currentDependsOn: DependsOnEntry[], authCon
   return ensureNoDependsOnAuth(currentDependsOn);
 };
 
-const hasCognitoAuthMode = (authConfig: AuthConfig): boolean => (
-  authConfig?.defaultAuthentication?.authenticationType === 'AMAZON_COGNITO_USER_POOLS'
-    || authConfig?.additionalAuthenticationProviders?.find(aap => aap.authenticationType === 'AMAZON_COGNITO_USER_POOLS') !== undefined
-);
+const hasCognitoAuthMode = (authConfig: AuthConfig): boolean =>
+  authConfig?.defaultAuthentication?.authenticationType === 'AMAZON_COGNITO_USER_POOLS' ||
+  authConfig?.additionalAuthenticationProviders?.find((aap) => aap.authenticationType === 'AMAZON_COGNITO_USER_POOLS') !== undefined;
 
 // returns a new dependsOn array that has a single depends on auth block
 const ensureDependsOnAuth = (currentDependsOn: DependsOnEntry[]): DependsOnEntry[] => {
@@ -395,7 +396,7 @@ const ensureDependsOnAuth = (currentDependsOn: DependsOnEntry[]): DependsOnEntry
     return [];
   }
   // if dependency already exists, don't add it again
-  if (currentDependsOn.find(dep => dep.category === 'auth' && dep.resourceName === authResourceName)) {
+  if (currentDependsOn.find((dep) => dep.category === 'auth' && dep.resourceName === authResourceName)) {
     return currentDependsOn;
   }
   return currentDependsOn.concat({
@@ -411,7 +412,7 @@ const ensureNoDependsOnAuth = (currentDependsOn: DependsOnEntry[]): DependsOnEnt
   if (!authResourceName) {
     return currentDependsOn;
   }
-  const authIdx = currentDependsOn.findIndex(dep => dep.category === 'auth' && dep.resourceName === authResourceName);
+  const authIdx = currentDependsOn.findIndex((dep) => dep.category === 'auth' && dep.resourceName === authResourceName);
   if (authIdx < 0) {
     return currentDependsOn;
   }
@@ -429,14 +430,14 @@ type DependsOnEntry = {
 type AuthConfig = {
   defaultAuthentication?: AuthType;
   additionalAuthenticationProviders?: (AuthType & UserPoolConfig)[];
-} & UserPoolConfig
+} & UserPoolConfig;
 
 type UserPoolConfig = {
   userPoolConfig?: {
-    userPoolId: string
-  }
-}
+    userPoolId: string;
+  };
+};
 
 type AuthType = {
   authenticationType: string;
-}
+};

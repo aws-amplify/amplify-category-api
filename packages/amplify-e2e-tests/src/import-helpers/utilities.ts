@@ -25,8 +25,8 @@ export const getAuthProjectDetails = (projectRoot: string): AuthProjectDetails =
   const meta = getBackendAmplifyMeta(projectRoot);
   const team = getTeamProviderInfo(projectRoot);
   const authMetaKey = Object.keys(meta.auth)
-    .filter(key => meta.auth[key].service === 'Cognito')
-    .map(key => key)[0];
+    .filter((key) => meta.auth[key].service === 'Cognito')
+    .map((key) => key)[0];
 
   const authMeta = meta.auth[authMetaKey];
   const authTeam = _.get(team, ['integtest', 'categories', 'auth', authMetaKey]);
@@ -90,8 +90,8 @@ export const getOGAuthProjectDetails = (projectRoot: string): AuthProjectDetails
   const team = getTeamProviderInfo(projectRoot);
 
   const authMetaKey = Object.keys(meta.auth)
-    .filter(key => meta.auth[key].service === 'Cognito')
-    .map(key => key)[0];
+    .filter((key) => meta.auth[key].service === 'Cognito')
+    .map((key) => key)[0];
 
   const authMeta = meta.auth[authMetaKey];
   const authTeam = _.get(team, ['integtest', 'categories', 'auth', authMetaKey]);
@@ -148,8 +148,8 @@ export const getOGStorageProjectDetails = (projectRoot: string): StorageProjectD
   const meta = getBackendAmplifyMeta(projectRoot);
 
   const storageMetaKey = Object.keys(meta.storage)
-    .filter(key => meta.storage[key].service === 'S3')
-    .map(key => key)[0];
+    .filter((key) => meta.storage[key].service === 'S3')
+    .map((key) => key)[0];
 
   const storageMeta = meta.storage[storageMetaKey];
   const parameters = readResourceParametersJson(projectRoot, 'storage', storageMetaKey);
@@ -171,8 +171,8 @@ export const getStorageProjectDetails = (projectRoot: string): StorageProjectDet
   const team = getTeamProviderInfo(projectRoot);
 
   const storageMetaKey = Object.keys(meta.storage)
-    .filter(key => meta.storage[key].service === 'S3')
-    .map(key => key)[0];
+    .filter((key) => meta.storage[key].service === 'S3')
+    .map((key) => key)[0];
 
   const stoargeMeta = meta.storage[storageMetaKey];
   const storageTeam = _.get(team, ['integtest', 'categories', 'storage', storageMetaKey]);
@@ -208,8 +208,8 @@ export const getOGDynamoDBProjectDetails = (projectRoot: string): DynamoDBProjec
   const meta = getBackendAmplifyMeta(projectRoot);
 
   const storageMetaKey = Object.keys(meta.storage)
-    .filter(key => meta.storage[key].service === 'DynamoDB')
-    .map(key => key)[0];
+    .filter((key) => meta.storage[key].service === 'DynamoDB')
+    .map((key) => key)[0];
 
   const storageMeta = meta.storage[storageMetaKey];
   const parameters = readResourceParametersJson(projectRoot, 'storage', storageMetaKey);
@@ -237,8 +237,8 @@ export const getDynamoDBProjectDetails = (projectRoot: string): DynamoDBProjectD
   const team = getTeamProviderInfo(projectRoot);
 
   const storageMetaKey = Object.keys(meta.storage)
-    .filter(key => meta.storage[key].service === 'DynamoDB')
-    .map(key => key)[0];
+    .filter((key) => meta.storage[key].service === 'DynamoDB')
+    .map((key) => key)[0];
 
   const dynamodbMeta = meta.storage[storageMetaKey];
   const storageTeam = _.get(team, ['integtest', 'categories', 'storage', storageMetaKey]);

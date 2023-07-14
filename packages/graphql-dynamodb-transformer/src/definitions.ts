@@ -65,7 +65,7 @@ export function getNonModelObjectArray(
       if (
         def &&
         def.kind === Kind.OBJECT_TYPE_DEFINITION &&
-        !def.directives.find(e => e.name.value === 'model') &&
+        !def.directives.find((e) => e.name.value === 'model') &&
         pMap.get(def.name.value) === undefined
       ) {
         // recursively find any non @model types referenced by the current
@@ -90,7 +90,7 @@ export function makeNonModelInputObject(
       const fieldType = ctx.getType(getBaseType(field.type));
       if (
         isScalar(field.type) ||
-        nonModelTypes.find(e => e.name.value === getBaseType(field.type)) ||
+        nonModelTypes.find((e) => e.name.value === getBaseType(field.type)) ||
         (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)
       ) {
         return true;
@@ -98,7 +98,7 @@ export function makeNonModelInputObject(
       return false;
     })
     .map((field: FieldDefinitionNode) => {
-      const type = nonModelTypes.find(e => e.name.value === getBaseType(field.type))
+      const type = nonModelTypes.find((e) => e.name.value === getBaseType(field.type))
         ? withNamedNodeNamed(field.type, ModelResourceIDs.NonModelInputObjectName(getBaseType(field.type)))
         : field.type;
       return {
@@ -144,13 +144,13 @@ export function makeCreateInputObject(
     [updatedAtField]: ['AWSDateTime', 'String'],
   };
 
-  const hasIdField = obj.fields.find(f => f.name.value === 'id');
+  const hasIdField = obj.fields.find((f) => f.name.value === 'id');
   const fields: InputValueDefinitionNode[] = obj.fields
     .filter((field: FieldDefinitionNode) => {
       const fieldType = ctx.getType(getBaseType(field.type));
       if (
         isScalar(field.type) ||
-        nonModelTypes.find(e => e.name.value === getBaseType(field.type)) ||
+        nonModelTypes.find((e) => e.name.value === getBaseType(field.type)) ||
         (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)
       ) {
         return true;
@@ -168,7 +168,7 @@ export function makeCreateInputObject(
         // when not provided the value is not used.
         type = unwrapNonNull(field.type);
       } else {
-        type = nonModelTypes.find(e => e.name.value === getBaseType(field.type))
+        type = nonModelTypes.find((e) => e.name.value === getBaseType(field.type))
           ? withNamedNodeNamed(field.type, ModelResourceIDs.NonModelInputObjectName(getBaseType(field.type)))
           : field.type;
       }
@@ -212,12 +212,12 @@ export function getFieldsOptionalNonNullableField(fields: InputValueDefinitionNo
 
   return obj.fields
     .filter(
-      r =>
+      (r) =>
         fieldMap.has(r.name.value) && //field exists in the model
         isNonNullType(r.type) && // field was non null type in model
         fieldMap.get(r.name.value).type.kind !== Kind.NON_NULL_TYPE, // field is not nullable type in update mutation model
     )
-    .map(r => r.name.value);
+    .map((r) => r.name.value);
 }
 
 export function makeUpdateInputObject(
@@ -227,13 +227,13 @@ export function makeUpdateInputObject(
   isSync: boolean = false,
 ): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelUpdateInputObjectName(obj.name.value);
-  const hasIdField = obj.fields.find(f => f.name.value === 'id');
+  const hasIdField = obj.fields.find((f) => f.name.value === 'id');
   const fields: InputValueDefinitionNode[] = obj.fields
-    .filter(f => {
+    .filter((f) => {
       const fieldType = ctx.getType(getBaseType(f.type));
       if (
         isScalar(f.type) ||
-        nonModelTypes.find(e => e.name.value === getBaseType(f.type)) ||
+        nonModelTypes.find((e) => e.name.value === getBaseType(f.type)) ||
         (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)
       ) {
         return true;
@@ -247,7 +247,7 @@ export function makeUpdateInputObject(
       } else {
         type = unwrapNonNull(field.type);
       }
-      type = nonModelTypes.find(e => e.name.value === getBaseType(field.type))
+      type = nonModelTypes.find((e) => e.name.value === getBaseType(field.type))
         ? withNamedNodeNamed(type, ModelResourceIDs.NonModelInputObjectName(getBaseType(field.type)))
         : type;
       return {
@@ -735,7 +735,7 @@ export function makeAttributeTypeEnum(): EnumTypeDefinitionNode {
   return {
     kind: Kind.ENUM_TYPE_DEFINITION,
     name: { kind: 'Name' as const, value: ModelResourceIDs.ModelAttributeTypesName() },
-    values: ATTRIBUTE_TYPES.map(t => makeEnumValue(t)),
+    values: ATTRIBUTE_TYPES.map((t) => makeEnumValue(t)),
     directives: [],
   };
 }

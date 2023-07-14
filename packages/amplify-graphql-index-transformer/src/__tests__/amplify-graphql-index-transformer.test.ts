@@ -6,23 +6,10 @@ import {
   validateModelSchema,
   StackManager,
 } from '@aws-amplify/graphql-transformer-core';
-import {
-  FeatureFlagProvider,
-  Template,
-  AmplifyApiGraphQlResourceStackTemplate,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { Template, AmplifyApiGraphQlResourceStackTemplate } from '@aws-amplify/graphql-transformer-interfaces';
 import { Template as AssertionTemplate } from 'aws-cdk-lib/assertions';
 import { DocumentNode, parse } from 'graphql';
 import { IndexTransformer, PrimaryKeyTransformer } from '..';
-
-const generateFeatureFlagWithBooleanOverrides = (overrides: Record<string, boolean>): FeatureFlagProvider => ({
-  getBoolean: (name: string, defaultValue?: boolean): boolean => {
-    const overrideValue = Object.entries(overrides).find(([overrideName]) => overrideName === name)?.[1];
-    return overrideValue ?? defaultValue ?? false;
-  },
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-});
 
 test('throws if @index is used in a non-@model type', () => {
   const schema = `
@@ -32,15 +19,6 @@ test('throws if @index is used in a non-@model type', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
   expect(() => {
@@ -57,20 +35,11 @@ test('throws if the same index name is defined multiple times on an object', () 
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
   expect(() => {
     transformer.transform(schema);
-  }).toThrow('You may only supply one @index with the name \'index1\' on type \'Test\'.');
+  }).toThrow("You may only supply one @index with the name 'index1' on type 'Test'.");
 });
 
 test('throws if an invalid LSI is created', () => {
@@ -87,30 +56,18 @@ test('throws if an invalid LSI is created', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
-  const sortKeyFieldsError = 'Invalid @index \'index1\'. You may not create an index where the partition key is the same as that of the primary key unless the primary key has a sort field. You cannot have a local secondary index without a sort key in the primary key.';
+  const sortKeyFieldsError =
+    "Invalid @index 'index1'. You may not create an index where the partition key is the same as that of the primary key unless the primary key has a sort field. You cannot have a local secondary index without a sort key in the primary key.";
 
   expect(() => {
     transformer.transform(schema);
-  }).toThrow(
-    sortKeyFieldsError,
-  );
+  }).toThrow(sortKeyFieldsError);
 
   expect(() => {
     transformer.transform(schemaEmptySortKeyFields);
-  }).toThrow(
-    sortKeyFieldsError,
-  );
+  }).toThrow(sortKeyFieldsError);
 });
 
 test('throws if an LSI is missing sort fields', () => {
@@ -134,28 +91,25 @@ test('throws if an LSI is missing sort fields', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ secondaryKeyAsGSI: false, useSubUsernameForDefaultIdentityClaim: true }),
+    transformParameters: {
+      secondaryKeyAsGSI: false,
+    },
   });
 
-  const sortKeyFieldsError = 'Invalid @index \'index1\'. You may not create an index where the partition key is the same as that of the primary key unless the index has a sort field. You cannot have a local secondary index without a sort key in the index.';
+  const sortKeyFieldsError =
+    "Invalid @index 'index1'. You may not create an index where the partition key is the same as that of the primary key unless the index has a sort field. You cannot have a local secondary index without a sort key in the index.";
 
   expect(() => {
     transformer.transform(schema);
-  }).toThrow(
-    sortKeyFieldsError,
-  );
+  }).toThrow(sortKeyFieldsError);
 
   expect(() => {
     transformer.transform(schemaInverted);
-  }).toThrow(
-    sortKeyFieldsError,
-  );
+  }).toThrow(sortKeyFieldsError);
 
   expect(() => {
     transformer.transform(schemaEmptySortKeyFields);
-  }).toThrow(
-    sortKeyFieldsError,
-  );
+  }).toThrow(sortKeyFieldsError);
 });
 
 test('throws if @index is used on a non-scalar field', () => {
@@ -171,20 +125,11 @@ test('throws if @index is used on a non-scalar field', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
   expect(() => {
     transformer.transform(schema);
-  }).toThrow('Index \'wontwork\' on type \'Test.id\' cannot be a non-scalar.');
+  }).toThrow("Index 'wontwork' on type 'Test.id' cannot be a non-scalar.");
 });
 
 test('throws if @index uses a sort key field that does not exist', () => {
@@ -196,20 +141,11 @@ test('throws if @index uses a sort key field that does not exist', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
   expect(() => {
     transformer.transform(schema);
-  }).toThrow('Can\'t find field \'doesnotexist\' in Test, but it was specified in index \'wontwork\'.');
+  }).toThrow("Can't find field 'doesnotexist' in Test, but it was specified in index 'wontwork'.");
 });
 
 test('throws if @index uses a sort key field that is a non-scalar', () => {
@@ -225,20 +161,11 @@ test('throws if @index uses a sort key field that is a non-scalar', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
   expect(() => {
     transformer.transform(schema);
-  }).toThrow('The sort key of index \'wontwork\' on type \'Test.email\' cannot be a non-scalar.');
+  }).toThrow("The sort key of index 'wontwork' on type 'Test.email' cannot be a non-scalar.");
 });
 
 test('throws if @index refers to itself', () => {
@@ -250,20 +177,11 @@ test('throws if @index refers to itself', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
   expect(() => {
     transformer.transform(schema);
-  }).toThrow('@index field \'id\' cannot reference itself.');
+  }).toThrow("@index field 'id' cannot reference itself.");
 });
 
 test('throws if @index is specified on a list', () => {
@@ -275,20 +193,11 @@ test('throws if @index is specified on a list', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
   expect(() => {
     transformer.transform(schema);
-  }).toThrow('Index \'GSI\' on type \'Test.strings\' cannot be a non-scalar.');
+  }).toThrow("Index 'GSI' on type 'Test.strings' cannot be a non-scalar.");
 });
 
 test('throws if @index sort key fields are a list', () => {
@@ -301,20 +210,11 @@ test('throws if @index sort key fields are a list', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
 
   expect(() => {
     transformer.transform(schema);
-  }).toThrow('The sort key of index \'GSI\' on type \'Test.strings\' cannot be a non-scalar.');
+  }).toThrow("The sort key of index 'GSI' on type 'Test.strings' cannot be a non-scalar.");
 });
 
 test('@index with multiple sort keys adds a query field and GSI correctly', () => {
@@ -326,56 +226,45 @@ test('@index with multiple sort keys adds a query field and GSI correctly', () =
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  AssertionTemplate.fromJSON(stack)
-    .hasResourceProperties('AWS::DynamoDB::Table', {
-      KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
-      AttributeDefinitions: [
-        { AttributeName: 'id', AttributeType: 'S' },
-        { AttributeName: 'email', AttributeType: 'S' },
-        { AttributeName: 'kind#date', AttributeType: 'S' },
-      ],
-      GlobalSecondaryIndexes: [
-        {
-          IndexName: 'GSI',
-          KeySchema: [
-            { AttributeName: 'email', KeyType: 'HASH' },
-            { AttributeName: 'kind#date', KeyType: 'RANGE' },
+  AssertionTemplate.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
+    AttributeDefinitions: [
+      { AttributeName: 'id', AttributeType: 'S' },
+      { AttributeName: 'email', AttributeType: 'S' },
+      { AttributeName: 'kind#date', AttributeType: 'S' },
+    ],
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'GSI',
+        KeySchema: [
+          { AttributeName: 'email', KeyType: 'HASH' },
+          { AttributeName: 'kind#date', KeyType: 'RANGE' },
+        ],
+        Projection: { ProjectionType: 'ALL' },
+        ProvisionedThroughput: {
+          'Fn::If': [
+            'ShouldUsePayPerRequestBilling',
+            { Ref: 'AWS::NoValue' },
+            {
+              ReadCapacityUnits: { Ref: 'DynamoDBModelTableReadIOPS' },
+              WriteCapacityUnits: { Ref: 'DynamoDBModelTableWriteIOPS' },
+            },
           ],
-          Projection: { ProjectionType: 'ALL' },
-          ProvisionedThroughput: {
-            'Fn::If': [
-              'ShouldUsePayPerRequestBilling',
-              { Ref: 'AWS::NoValue' },
-              {
-                ReadCapacityUnits: { Ref: 'DynamoDBModelTableReadIOPS' },
-                WriteCapacityUnits: { Ref: 'DynamoDBModelTableWriteIOPS' },
-              },
-            ],
-          },
         },
-      ],
-    });
+      },
+    ],
+  });
 
-  AssertionTemplate.fromJSON(stack)
-    .hasResourceProperties('AWS::AppSync::Resolver', {
-      FieldName: 'listByEmailKindDate',
-      TypeName: 'Query',
-    });
+  AssertionTemplate.fromJSON(stack).hasResourceProperties('AWS::AppSync::Resolver', {
+    FieldName: 'listByEmailKindDate',
+    TypeName: 'Query',
+  });
 
   expect(out.resolvers).toMatchSnapshot();
 
@@ -421,39 +310,29 @@ test('@index with a single sort key adds a query field and GSI correctly', () =>
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  AssertionTemplate.fromJSON(stack)
-    .hasResourceProperties('AWS::DynamoDB::Table', {
-      KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
-      AttributeDefinitions: [
-        { AttributeName: 'id', AttributeType: 'S' },
-        { AttributeName: 'category', AttributeType: 'S' },
-        { AttributeName: 'createdAt', AttributeType: 'S' },
-      ],
-      GlobalSecondaryIndexes: [
-        {
-          IndexName: 'CategoryGSI',
-          KeySchema: [
-            { AttributeName: 'category', KeyType: 'HASH' },
-            { AttributeName: 'createdAt', KeyType: 'RANGE' },
-          ],
-        },
-      ],
-    });
+  AssertionTemplate.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
+    AttributeDefinitions: [
+      { AttributeName: 'id', AttributeType: 'S' },
+      { AttributeName: 'category', AttributeType: 'S' },
+      { AttributeName: 'createdAt', AttributeType: 'S' },
+    ],
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'CategoryGSI',
+        KeySchema: [
+          { AttributeName: 'category', KeyType: 'HASH' },
+          { AttributeName: 'createdAt', KeyType: 'RANGE' },
+        ],
+      },
+    ],
+  });
 
   expect(out.resolvers).toMatchSnapshot();
 
@@ -495,35 +374,25 @@ test('@index with no sort key field adds a query field and GSI correctly', () =>
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  AssertionTemplate.fromJSON(stack)
-    .hasResourceProperties('AWS::DynamoDB::Table', {
-      KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
-      AttributeDefinitions: [
-        { AttributeName: 'id', AttributeType: 'S' },
-        { AttributeName: 'email', AttributeType: 'S' },
-      ],
-      GlobalSecondaryIndexes: [
-        {
-          IndexName: 'GSI_Email',
-          KeySchema: [{ AttributeName: 'email', KeyType: 'HASH' }],
-        },
-      ],
-    });
+  AssertionTemplate.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
+    AttributeDefinitions: [
+      { AttributeName: 'id', AttributeType: 'S' },
+      { AttributeName: 'email', AttributeType: 'S' },
+    ],
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'GSI_Email',
+        KeySchema: [{ AttributeName: 'email', KeyType: 'HASH' }],
+      },
+    ],
+  });
 
   expect(out.resolvers).toMatchSnapshot();
 
@@ -564,15 +433,9 @@ test('@index with no queryField does not generate a query field', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
+    transformParameters: {
+      enableAutoIndexQueryNames: false,
+    },
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -596,43 +459,32 @@ test('creates a primary key and a secondary index', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: {
-      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-        if (name === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-        return defaultValue;
-      }),
-      getNumber: jest.fn(),
-      getObject: jest.fn(),
-    },
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  AssertionTemplate.fromJSON(stack)
-    .hasResourceProperties('AWS::DynamoDB::Table', {
-      KeySchema: [
-        { AttributeName: 'email', KeyType: 'HASH' },
-        { AttributeName: 'createdAt', KeyType: 'RANGE' },
-      ],
-      AttributeDefinitions: [
-        { AttributeName: 'email', AttributeType: 'S' },
-        { AttributeName: 'createdAt', AttributeType: 'S' },
-        { AttributeName: 'category', AttributeType: 'S' },
-      ],
-      GlobalSecondaryIndexes: [
-        {
-          IndexName: 'CategoryGSI',
-          KeySchema: [
-            { AttributeName: 'category', KeyType: 'HASH' },
-            { AttributeName: 'createdAt', KeyType: 'RANGE' },
-          ],
-        },
-      ],
-    });
+  AssertionTemplate.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    KeySchema: [
+      { AttributeName: 'email', KeyType: 'HASH' },
+      { AttributeName: 'createdAt', KeyType: 'RANGE' },
+    ],
+    AttributeDefinitions: [
+      { AttributeName: 'email', AttributeType: 'S' },
+      { AttributeName: 'createdAt', AttributeType: 'S' },
+      { AttributeName: 'category', AttributeType: 'S' },
+    ],
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'CategoryGSI',
+        KeySchema: [
+          { AttributeName: 'category', KeyType: 'HASH' },
+          { AttributeName: 'createdAt', KeyType: 'RANGE' },
+        ],
+      },
+    ],
+  });
 
   expect(out.resolvers).toMatchSnapshot();
 
@@ -682,15 +534,6 @@ test('connection type is generated for custom query when queries is set to null'
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -714,15 +557,6 @@ test('does not remove default primary key when primary key is not overidden', ()
   `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -746,15 +580,6 @@ test('sort direction and filter input are generated if default list query does n
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'useSubUsernameForDefaultIdentityClaim') {
-          return true;
-        }
-
-        return defaultValue;
-      },
-    } as FeatureFlagProvider),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
@@ -776,34 +601,35 @@ test('@index adds an LSI with secondaryKeyAsGSI FF set to false', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ secondaryKeyAsGSI: false, useSubUsernameForDefaultIdentityClaim: true }),
+    transformParameters: {
+      secondaryKeyAsGSI: false,
+    },
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  AssertionTemplate.fromJSON(stack)
-    .hasResourceProperties('AWS::DynamoDB::Table', {
-      KeySchema: [
-        { AttributeName: 'email', KeyType: 'HASH' },
-        { AttributeName: 'createdAt', KeyType: 'RANGE' },
-      ],
-      AttributeDefinitions: [
-        { AttributeName: 'email', AttributeType: 'S' },
-        { AttributeName: 'createdAt', AttributeType: 'S' },
-        { AttributeName: 'updatedAt', AttributeType: 'S' },
-      ],
-      LocalSecondaryIndexes: [
-        {
-          IndexName: 'LSI_Email_UpdatedAt',
-          KeySchema: [
-            { AttributeName: 'email', KeyType: 'HASH' },
-            { AttributeName: 'updatedAt', KeyType: 'RANGE' },
-          ],
-        },
-      ],
-    });
+  AssertionTemplate.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    KeySchema: [
+      { AttributeName: 'email', KeyType: 'HASH' },
+      { AttributeName: 'createdAt', KeyType: 'RANGE' },
+    ],
+    AttributeDefinitions: [
+      { AttributeName: 'email', AttributeType: 'S' },
+      { AttributeName: 'createdAt', AttributeType: 'S' },
+      { AttributeName: 'updatedAt', AttributeType: 'S' },
+    ],
+    LocalSecondaryIndexes: [
+      {
+        IndexName: 'LSI_Email_UpdatedAt',
+        KeySchema: [
+          { AttributeName: 'email', KeyType: 'HASH' },
+          { AttributeName: 'updatedAt', KeyType: 'RANGE' },
+        ],
+      },
+    ],
+  });
 
   const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as any;
   const queryIndexField = queryType.fields.find((f: any) => f.name && f.name.value === 'testsByEmailByUpdatedAt');
@@ -822,34 +648,32 @@ test('@index adds a GSI with secondaryKeyAsGSI FF set to true', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ secondaryKeyAsGSI: true, useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  AssertionTemplate.fromJSON(stack)
-    .hasResourceProperties('AWS::DynamoDB::Table', {
-      KeySchema: [
-        { AttributeName: 'email', KeyType: 'HASH' },
-        { AttributeName: 'createdAt', KeyType: 'RANGE' },
-      ],
-      AttributeDefinitions: [
-        { AttributeName: 'email', AttributeType: 'S' },
-        { AttributeName: 'createdAt', AttributeType: 'S' },
-        { AttributeName: 'updatedAt', AttributeType: 'S' },
-      ],
-      GlobalSecondaryIndexes: [
-        {
-          IndexName: 'GSI_Email_UpdatedAt',
-          KeySchema: [
-            { AttributeName: 'email', KeyType: 'HASH' },
-            { AttributeName: 'updatedAt', KeyType: 'RANGE' },
-          ],
-        },
-      ],
-    });
+  AssertionTemplate.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    KeySchema: [
+      { AttributeName: 'email', KeyType: 'HASH' },
+      { AttributeName: 'createdAt', KeyType: 'RANGE' },
+    ],
+    AttributeDefinitions: [
+      { AttributeName: 'email', AttributeType: 'S' },
+      { AttributeName: 'createdAt', AttributeType: 'S' },
+      { AttributeName: 'updatedAt', AttributeType: 'S' },
+    ],
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'GSI_Email_UpdatedAt',
+        KeySchema: [
+          { AttributeName: 'email', KeyType: 'HASH' },
+          { AttributeName: 'updatedAt', KeyType: 'RANGE' },
+        ],
+      },
+    ],
+  });
 
   const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as any;
   const queryIndexField = queryType.fields.find((f: any) => f.name && f.name.value === 'testsByEmailByUpdatedAt');
@@ -872,7 +696,6 @@ test('validate resolver code', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ secondaryKeyAsGSI: true, useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -901,7 +724,6 @@ it('@model mutation with user defined null args', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -909,7 +731,9 @@ it('@model mutation with user defined null args', () => {
 
   validateModelSchema(schema);
 
-  const DeleteCallInput = schema.definitions.find(d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput') as any;
+  const DeleteCallInput = schema.definitions.find(
+    (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput',
+  ) as any;
   expect(DeleteCallInput).toBeDefined();
   const receiverIdField = DeleteCallInput.fields.find((f: any) => f.name.value === 'receiverId');
   expect(receiverIdField).toBeDefined();
@@ -935,7 +759,6 @@ it('@model mutation with user defined create args', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -943,7 +766,9 @@ it('@model mutation with user defined create args', () => {
 
   validateModelSchema(schema);
 
-  const DeleteCallInput = schema.definitions.find(d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput') as any;
+  const DeleteCallInput = schema.definitions.find(
+    (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput',
+  ) as any;
   expect(DeleteCallInput).toBeDefined();
   const receiverIdField = DeleteCallInput.fields.find((f: any) => f.name.value === 'receiverId');
   expect(receiverIdField).toBeDefined();
@@ -969,7 +794,6 @@ it('@model mutation with default', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -977,7 +801,9 @@ it('@model mutation with default', () => {
 
   validateModelSchema(schema);
 
-  const DeleteCallInput = schema.definitions.find(d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput') as any;
+  const DeleteCallInput = schema.definitions.find(
+    (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput',
+  ) as any;
   expect(DeleteCallInput).toBeDefined();
   const receiverIdField = DeleteCallInput.fields.find((f: any) => f.name.value === 'receiverId');
   expect(receiverIdField).toBeDefined();
@@ -986,7 +812,9 @@ it('@model mutation with default', () => {
   expect(senderIdField).toBeDefined();
   expect(senderIdField.type.kind).toBe('NonNullType');
 
-  const CreateCallInput = schema.definitions.find(d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreateCallInput') as any;
+  const CreateCallInput = schema.definitions.find(
+    (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreateCallInput',
+  ) as any;
   expect(CreateCallInput).toBeDefined();
   const receiverIdFieldCreate = CreateCallInput.fields.find((f: any) => f.name.value === 'receiverId');
   expect(receiverIdFieldCreate).toBeDefined();
@@ -1011,7 +839,6 @@ it('@model mutation with queries', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -1019,7 +846,9 @@ it('@model mutation with queries', () => {
 
   validateModelSchema(schema);
 
-  const DeleteCallInput = schema.definitions.find(d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput') as any;
+  const DeleteCallInput = schema.definitions.find(
+    (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput',
+  ) as any;
   expect(DeleteCallInput).toBeDefined();
   const receiverIdField = DeleteCallInput.fields.find((f: any) => f.name.value === 'receiverId');
   expect(receiverIdField).toBeDefined();
@@ -1028,7 +857,9 @@ it('@model mutation with queries', () => {
   expect(senderIdField).toBeDefined();
   expect(senderIdField.type.kind).toBe('NonNullType');
 
-  const CreateCallInput = schema.definitions.find(d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreateCallInput') as any;
+  const CreateCallInput = schema.definitions.find(
+    (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreateCallInput',
+  ) as any;
   expect(CreateCallInput).toBeDefined();
   const receiverIdFieldCreate = CreateCallInput.fields.find((f: any) => f.name.value === 'receiverId');
   expect(receiverIdFieldCreate).toBeDefined();
@@ -1053,7 +884,6 @@ it('id field should be optional in updateInputObjects when it is not a primary k
   `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -1062,7 +892,7 @@ it('id field should be optional in updateInputObjects when it is not a primary k
   validateModelSchema(schema);
 
   const UpdateReviewInput = schema.definitions.find(
-    d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'UpdateReviewInput',
+    (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'UpdateReviewInput',
   ) as any;
   expect(UpdateReviewInput).toBeDefined();
   const idField = UpdateReviewInput.fields.find((f: any) => f.name.value === 'id');
@@ -1084,7 +914,6 @@ test('GSI composite sort keys are wrapped in conditional to check presence in mu
   `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
@@ -1118,7 +947,6 @@ it('should support index/primary key with sync resolvers', () => {
     resolverConfig: {
       project: config,
     },
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
 
   const out = transformer.transform(validSchema);
@@ -1150,7 +978,6 @@ it('sync query resolver renders without overrides', () => {
     resolverConfig: {
       project: config,
     },
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
 
   const out = transformer.transform(validSchema);
@@ -1184,23 +1011,23 @@ it('sync query resolver renders with deltaSyncTableTTL override', () => {
     resolverConfig: {
       project: config,
     },
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
     overrideConfig: {
       overrideFlag: true,
-      applyOverride: (stackManager: StackManager) => ({
-        models: {
-          Song: {
-            modelDatasource: {
-              dynamoDbConfig: {
-                deltaSyncConfig: {
-                  deltaSyncTableTtl: 15
-                }
-              }
-            }
-          }
-        }
-      } as unknown as AmplifyApiGraphQlResourceStackTemplate),
-    }
+      applyOverride: (stackManager: StackManager) =>
+        ({
+          models: {
+            Song: {
+              modelDatasource: {
+                dynamoDbConfig: {
+                  deltaSyncConfig: {
+                    deltaSyncTableTtl: 15,
+                  },
+                },
+              },
+            },
+          },
+        } as unknown as AmplifyApiGraphQlResourceStackTemplate),
+    },
   });
 
   const out = transformer.transform(validSchema);
@@ -1224,7 +1051,6 @@ test('LSI creation regression test', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ useSubUsernameForDefaultIdentityClaim: true }),
   });
 
   const out = transformer.transform(inputSchema);
@@ -1242,7 +1068,6 @@ test('it throws an understandable error on boolean sort keys', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer()],
-    featureFlags: generateFeatureFlagWithBooleanOverrides({ enableAutoIndexQueryNames: true }),
   });
 
   expect(() => {
@@ -1255,46 +1080,53 @@ describe('automatic name generation', () => {
     enableAutoIndexQueryNames: boolean,
     modelName: string,
     inputSchema: string,
-  ): { schema: DocumentNode, stack: Template } => {
+  ): { schema: DocumentNode; stack: Template } => {
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer(), new IndexTransformer()],
-      featureFlags: generateFeatureFlagWithBooleanOverrides({ enableAutoIndexQueryNames }),
+      transformParameters: {
+        enableAutoIndexQueryNames,
+      },
     });
     const transformerOutput = transformer.transform(inputSchema);
     const schema = parse(transformerOutput.schema);
     validateModelSchema(schema);
     return { schema, stack: transformerOutput.stacks[modelName] };
   };
-  const expectGSILike = (
-    {
-      stack,
-      indexName,
-      hashKeyName,
-      sortKeyName,
-    }: { stack: Template, indexName: string, hashKeyName: string, sortKeyName?: string },
-  ): void => {
+  const expectGSILike = ({
+    stack,
+    indexName,
+    hashKeyName,
+    sortKeyName,
+  }: {
+    stack: Template;
+    indexName: string;
+    hashKeyName: string;
+    sortKeyName?: string;
+  }): void => {
     const keySchema = [{ AttributeName: hashKeyName, KeyType: 'HASH' }];
     if (sortKeyName) {
       keySchema.push({ AttributeName: sortKeyName, KeyType: 'RANGE' });
     }
-    AssertionTemplate.fromJSON(stack)
-      .hasResourceProperties('AWS::DynamoDB::Table', {
-        GlobalSecondaryIndexes: [
-          {
-            IndexName: indexName,
-            KeySchema: keySchema,
-          },
-        ],
-      });
+    AssertionTemplate.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: indexName,
+          KeySchema: keySchema,
+        },
+      ],
+    });
   };
-  const expectGeneratedQueryLike = (
-    {
-      schema,
-      queryFieldName,
-      hashKeyFieldName,
-      sortKeyFieldName,
-    }: { schema: DocumentNode, queryFieldName: string, hashKeyFieldName: string, sortKeyFieldName?: string },
-  ): void => {
+  const expectGeneratedQueryLike = ({
+    schema,
+    queryFieldName,
+    hashKeyFieldName,
+    sortKeyFieldName,
+  }: {
+    schema: DocumentNode;
+    queryFieldName: string;
+    hashKeyFieldName: string;
+    sortKeyFieldName?: string;
+  }): void => {
     const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as any;
     expect(queryType).toBeDefined();
     const queryField = queryType.fields.find((f: any) => f.name && f.name.value === queryFieldName);
@@ -1306,93 +1138,145 @@ describe('automatic name generation', () => {
   };
 
   it('generates an index name and queryField if neither is provided', () => {
-    const { schema, stack } = transform(true, 'Test', `
+    const { schema, stack } = transform(
+      true,
+      'Test',
+      `
       type Test @model {
         category: String! @index
       }
-    `);
+    `,
+    );
     expectGSILike({ stack, indexName: 'testsByCategory', hashKeyName: 'category' });
     expectGeneratedQueryLike({ schema, queryFieldName: 'testsByCategory', hashKeyFieldName: 'category' });
   });
 
   it('generates an index name and queryField if neither are provided with sort key field', () => {
-    const { schema, stack } = transform(true, 'Test', `
+    const { schema, stack } = transform(
+      true,
+      'Test',
+      `
       type Test @model {
         category: String! @index(sortKeyFields: ["priority"])
         priority: String!
       }
-    `);
+    `,
+    );
     expectGSILike({
-      stack, indexName: 'testsByCategoryAndPriority', hashKeyName: 'category', sortKeyName: 'priority',
+      stack,
+      indexName: 'testsByCategoryAndPriority',
+      hashKeyName: 'category',
+      sortKeyName: 'priority',
     });
     expectGeneratedQueryLike({
-      schema, queryFieldName: 'testsByCategoryAndPriority', hashKeyFieldName: 'category', sortKeyFieldName: 'priority',
+      schema,
+      queryFieldName: 'testsByCategoryAndPriority',
+      hashKeyFieldName: 'category',
+      sortKeyFieldName: 'priority',
     });
   });
 
   it('generates an index name and queryField if neither are provided with multiple sort key fields', () => {
-    const { schema, stack } = transform(true, 'Test', `
+    const { schema, stack } = transform(
+      true,
+      'Test',
+      `
       type Test @model {
         category: String! @index(sortKeyFields: ["priority", "severity"])
         priority: String!
         severity: String!
       }
-    `);
+    `,
+    );
     expectGSILike({
-      stack, indexName: 'testsByCategoryAndPriorityAndSeverity', hashKeyName: 'category', sortKeyName: 'priority#severity',
+      stack,
+      indexName: 'testsByCategoryAndPriorityAndSeverity',
+      hashKeyName: 'category',
+      sortKeyName: 'priority#severity',
     });
     expectGeneratedQueryLike({
-      schema, queryFieldName: 'testsByCategoryAndPriorityAndSeverity', hashKeyFieldName: 'category', sortKeyFieldName: 'prioritySeverity',
+      schema,
+      queryFieldName: 'testsByCategoryAndPriorityAndSeverity',
+      hashKeyFieldName: 'category',
+      sortKeyFieldName: 'prioritySeverity',
     });
   });
 
   it('generates an queryField if none is provided', () => {
-    const { schema, stack } = transform(true, 'Test', `
+    const { schema, stack } = transform(
+      true,
+      'Test',
+      `
       type Test @model {
         category: String! @index(name: "overrideByCategory")
       }
-    `);
+    `,
+    );
     expectGSILike({ stack, indexName: 'overrideByCategory', hashKeyName: 'category' });
     expectGeneratedQueryLike({ schema, queryFieldName: 'testsByCategory', hashKeyFieldName: 'category' });
   });
 
   it('generates an queryField if none is provided with sort key field', () => {
-    const { schema, stack } = transform(true, 'Test', `
+    const { schema, stack } = transform(
+      true,
+      'Test',
+      `
       type Test @model {
         category: String! @index(name: "overrideByCategory", sortKeyFields: ["priority"])
         priority: String!
       }
-    `);
+    `,
+    );
     expectGSILike({
-      stack, indexName: 'overrideByCategory', hashKeyName: 'category', sortKeyName: 'priority',
+      stack,
+      indexName: 'overrideByCategory',
+      hashKeyName: 'category',
+      sortKeyName: 'priority',
     });
     expectGeneratedQueryLike({
-      schema, queryFieldName: 'testsByCategoryAndPriority', hashKeyFieldName: 'category', sortKeyFieldName: 'priority',
+      schema,
+      queryFieldName: 'testsByCategoryAndPriority',
+      hashKeyFieldName: 'category',
+      sortKeyFieldName: 'priority',
     });
   });
 
   it('generates an queryField if none is provided with multiple sort key fields', () => {
-    const { schema, stack } = transform(true, 'Test', `
+    const { schema, stack } = transform(
+      true,
+      'Test',
+      `
       type Test @model {
         category: String! @index(name: "overrideByCategory", sortKeyFields: ["priority", "severity"])
         priority: String!
         severity: String!
       }
-    `);
+    `,
+    );
     expectGSILike({
-      stack, indexName: 'overrideByCategory', hashKeyName: 'category', sortKeyName: 'priority#severity',
+      stack,
+      indexName: 'overrideByCategory',
+      hashKeyName: 'category',
+      sortKeyName: 'priority#severity',
     });
     expectGeneratedQueryLike({
-      schema, queryFieldName: 'testsByCategoryAndPriorityAndSeverity', hashKeyFieldName: 'category', sortKeyFieldName: 'prioritySeverity',
+      schema,
+      queryFieldName: 'testsByCategoryAndPriorityAndSeverity',
+      hashKeyFieldName: 'category',
+      sortKeyFieldName: 'prioritySeverity',
     });
   });
 
   it('does not generates a queryField if a null is provided', () => {
-    const { schema, stack } = transform(true, 'Test', `
+    const { schema, stack } = transform(
+      true,
+      'Test',
+      `
       type Test @model {
         category: String! @index(queryField: null)
       }
-    `);
+    `,
+    );
     expectGSILike({ stack, indexName: 'testsByCategory', hashKeyName: 'category' });
     const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as any;
     expect(queryType).toBeDefined();
@@ -1400,11 +1284,15 @@ describe('automatic name generation', () => {
   });
 
   it('does not generate a queryField if no input is provided, and feature flag is disabled', () => {
-    const { schema, stack } = transform(false, 'Test', `
+    const { schema, stack } = transform(
+      false,
+      'Test',
+      `
       type Test @model {
         category: String! @index
       }
-    `);
+    `,
+    );
     expectGSILike({ stack, indexName: 'testsByCategory', hashKeyName: 'category' });
     const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as any;
     expect(queryType).toBeDefined();

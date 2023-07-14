@@ -173,13 +173,7 @@ export const generateSyncRequestTemplate = (): string => {
       set(ref('queryFilterContainsAuthField'), bool(false)),
       set(ref('authFilterContainsSortKey'), bool(false)),
       set(ref('useScan'), bool(true)),
-      iff(
-        and([
-          isNullOrEmpty(authFilter),
-          ref('ctx.stash.QueryRequest'),
-        ]),
-        set(ref('useScan'), bool(false)),
-      ),
+      iff(and([isNullOrEmpty(authFilter), ref('ctx.stash.QueryRequest')]), set(ref('useScan'), bool(false))),
       ifElse(
         not(isNullOrEmpty(authFilter)),
         compoundExpression([
@@ -202,10 +196,7 @@ export const generateSyncRequestTemplate = (): string => {
                 compoundExpression([
                   forEach(ref('filterItem'), ref('ctx.stash.authFilter.or'), [
                     forEach(ref('sortKey'), ref('ctx.stash.QueryRequestVariables.sortKeys'), [
-                      iff(
-                        raw('$filterItem.get($sortKey)'),
-                        set(ref('authFilterContainsSortKey'), bool(true)),
-                      ),
+                      iff(raw('$filterItem.get($sortKey)'), set(ref('authFilterContainsSortKey'), bool(true))),
                     ]),
                   ]),
                   iff(
@@ -261,7 +252,10 @@ export const generateSyncRequestTemplate = (): string => {
             ref(`${requestVariable}.filter`),
             set(
               ref(`${requestVariable}.filter`),
-              methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref(`${requestVariable}.filter`))),
+              methodCall(
+                ref('util.parseJson'),
+                methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref(`${requestVariable}.filter`)),
+              ),
             ),
           ),
           raw(`$util.toJson($${requestVariable})`),

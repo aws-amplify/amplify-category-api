@@ -1,7 +1,13 @@
 import {
-  addApiWithBlankSchema, addFunction,
+  addApiWithBlankSchema,
+  addFunction,
   amplifyPush,
-  amplifyPushFunction, createNewProjectDir, deleteProject, deleteProjectDir, initJSProjectWithProfile, updateApiSchema,
+  amplifyPushFunction,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  initJSProjectWithProfile,
+  updateApiSchema,
 } from 'amplify-category-api-e2e-core';
 
 describe('test function deploy when other resources are present', () => {
@@ -26,11 +32,14 @@ describe('test function deploy when other resources are present', () => {
     await amplifyPush(projectRoot);
     const random = Math.floor(Math.random() * 10000);
     const fnName = `integtestFn${random}`;
-    await addFunction(projectRoot, {
-      name: fnName,
-      functionTemplate: 'Hello World',
-    },
-    'nodejs');
+    await addFunction(
+      projectRoot,
+      {
+        name: fnName,
+        functionTemplate: 'Hello World',
+      },
+      'nodejs',
+    );
     await amplifyPushFunction(projectRoot);
   });
 });
