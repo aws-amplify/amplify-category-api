@@ -85,6 +85,8 @@ function _buildLinux {
   echo "Linux Build"
   echo $CODEBUILD_WEBHOOK_TRIGGER
   echo $CODEBUILD_WEBHOOK_BASE_REF
+  TEST_BRANCH=${CODEBUILD_WEBHOOK_BASE_REF##*/}
+  echo $TEST_BRANCH
   yarn run production-build
   yarn build-tests
   storeCacheForBuildJob
@@ -132,7 +134,7 @@ function _publishToLocalRegistry {
         fi
       elif [[ "$CODEBUILD_WEBHOOK_TRIGGER" == "pr/"* ]]; then
         echo $CODEBUILD_WEBHOOK_BASE_REF
-        export BRANCH_NAME=$CODEBUILD_WEBHOOK_BASE_REF
+        export BRANCH_NAME=${CODEBUILD_WEBHOOK_BASE_REF##*/}
       fi
     fi
     echo $BRANCH_NAME
