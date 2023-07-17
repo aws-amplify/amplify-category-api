@@ -34,7 +34,7 @@ describe('supports different props configurations', () => {
             slotIndex: 1,
             function: {
               requestMappingTemplate: MappingTemplate.fromString('$utils.toJson({})'),
-            }
+            },
           },
           {
             typeName: 'Mutation',
@@ -43,7 +43,7 @@ describe('supports different props configurations', () => {
             slotIndex: 1,
             function: {
               requestMappingTemplate: MappingTemplate.fromString('$utils.toJson({})'),
-            }
+            },
           },
         ],
       });
@@ -83,7 +83,7 @@ describe('supports different props configurations', () => {
           project: {
             handlerType: 'AUTOMERGE',
             detectionType: 'VERSION',
-          }
+          },
         },
       });
     });
@@ -104,7 +104,7 @@ describe('supports different props configurations', () => {
           project: {
             handlerType: 'OPTIMISTIC_CONCURRENCY',
             detectionType: 'VERSION',
-          }
+          },
         },
       });
     });
@@ -128,7 +128,7 @@ describe('supports different props configurations', () => {
             handlerType: 'LAMBDA',
             detectionType: 'VERSION',
             conflictHandler,
-          }
+          },
         },
       });
     });

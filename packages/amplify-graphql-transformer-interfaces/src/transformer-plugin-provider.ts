@@ -10,7 +10,8 @@ import {
   InputValueDefinitionNode,
   EnumValueDefinitionNode,
   DirectiveDefinitionNode,
-  TypeDefinitionNode, DocumentNode,
+  TypeDefinitionNode,
+  DocumentNode,
 } from 'graphql';
 import {
   TransformerBeforeStepContextProvider,

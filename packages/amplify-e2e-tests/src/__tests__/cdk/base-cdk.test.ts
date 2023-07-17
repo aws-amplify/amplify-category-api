@@ -51,7 +51,7 @@ describe('CDK GraphQL Transformer', () => {
             description
           }
         }
-      `
+      `,
     );
     expect(result).toMatchSnapshot({
       body: {
@@ -77,7 +77,7 @@ describe('CDK GraphQL Transformer', () => {
             }
           }
         }
-      `
+      `,
     );
     expect(listResult).toMatchSnapshot({
       body: {

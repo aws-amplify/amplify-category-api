@@ -38,7 +38,7 @@ This section should get you running with **Amplify API Category** and get you fa
    ```
 
    > If you are using Yarn v2, run `yarn set version classic` to change to Yarn Classic.
-   > 
+   >
    > Note: Ensure that the version of Node installed is < 17.0.0 and >= 14.17.0. During the installation process, some modules may not be compatible with other versions of Node.
 
 1. Ensure you are using the npm registry, even with yarn by running `yarn config set registry https://registry.npmjs.org`
@@ -317,4 +317,4 @@ We may ask you to sign a [Contributor License Agreement (CLA)](http://en.wikiped
 
 ## Common Tasks
 
-* [How to write a transformer](https://docs.amplify.aws/cli/plugins/authoring/#authoring-custom-graphql-transformers--directives)
+- [How to write a transformer](https://docs.amplify.aws/cli/plugins/authoring/#authoring-custom-graphql-transformers--directives)

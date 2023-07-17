@@ -67,9 +67,9 @@ export const copyCfnTemplate = (context: $TSContext, category: string, options, 
   return context.amplify.copyBatch(context, copyJobs, options, true, false);
 };
 
-export const addPolicyResourceNameToPaths = paths => {
+export const addPolicyResourceNameToPaths = (paths) => {
   if (Array.isArray(paths)) {
-    paths.forEach(p => {
+    paths.forEach((p) => {
       const pathName = p.name;
       if (typeof pathName === 'string') {
         p.policyResourceName = pathName.replace(/{[a-zA-Z0-9\-]+}/g, '*');

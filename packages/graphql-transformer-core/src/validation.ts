@@ -129,11 +129,11 @@ export const validateModelSchema = (doc: DocumentNode) => {
     definitions: [...EXTRA_DIRECTIVES_DOCUMENT.definitions, ...doc.definitions, ...EXTRA_SCALARS_DOCUMENT.definitions],
   };
 
-  const schemaDef = doc.definitions.find(d => d.kind === Kind.SCHEMA_DEFINITION) as SchemaDefinitionNode;
-  const queryOperation = schemaDef ? schemaDef.operationTypes.find(o => o.operation === 'query') : undefined;
+  const schemaDef = doc.definitions.find((d) => d.kind === Kind.SCHEMA_DEFINITION) as SchemaDefinitionNode;
+  const queryOperation = schemaDef ? schemaDef.operationTypes.find((o) => o.operation === 'query') : undefined;
   const queryName = queryOperation ? queryOperation.type.name.value : 'Query';
   const existingQueryType = doc.definitions.find(
-    d =>
+    (d) =>
       d.kind !== Kind.DIRECTIVE_DEFINITION && d.kind !== Kind.SCHEMA_DEFINITION && (d as any).name && (d as any).name.value === queryName,
   );
 
@@ -141,10 +141,10 @@ export const validateModelSchema = (doc: DocumentNode) => {
     fullDocument.definitions.push(...NOOP_QUERY.definitions);
   }
 
-const errors = validateSDL(fullDocument);
-if (errors.length > 0) {
-  return errors;
-}
+  const errors = validateSDL(fullDocument);
+  if (errors.length > 0) {
+    return errors;
+  }
   const schema = buildASTSchema(fullDocument, { assumeValid: true });
   return validate(schema, fullDocument, specifiedRules);
 };

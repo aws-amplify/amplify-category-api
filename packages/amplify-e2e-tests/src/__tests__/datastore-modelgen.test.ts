@@ -1,20 +1,21 @@
 import { amplifyAppAndroid, amplifyAppAngular, amplifyAppIos, amplifyAppReact } from '../amplify-app-helpers/amplify-app-setup';
-import { 
+import {
   addFeatureFlag,
   generateModelsWithUnknownTypeError,
-  updateApiSchema, generateModels,
+  updateApiSchema,
+  generateModels,
   createNewProjectDir,
-  deleteProjectDir
+  deleteProjectDir,
 } from 'amplify-category-api-e2e-core';
 
 // This is to fix the issue of error not rejected in the codebuild,
 async function testModelsWithUnknownType(projRoot: string): Promise<void> {
   if (process.env.CIRCLECI) {
     await expect(generateModels(projRoot)).rejects.toThrowError();
-  } else if(process.env.CODEBUILD) {
+  } else if (process.env.CODEBUILD) {
     await generateModelsWithUnknownTypeError(projRoot);
   }
-};
+}
 
 describe('data store modelgen tests', () => {
   let projRoot: string;

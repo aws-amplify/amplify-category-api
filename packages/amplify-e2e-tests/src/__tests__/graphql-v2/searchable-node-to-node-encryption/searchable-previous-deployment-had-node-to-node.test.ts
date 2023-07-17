@@ -171,7 +171,7 @@ describe('searchable deployment when previous deployed state had node to node en
     let searchResponse;
 
     do {
-      await new Promise(r => setTimeout(r, waitInMilliseconds));
+      await new Promise((r) => setTimeout(r, waitInMilliseconds));
       searchResponse = await searchTodos();
       currentRetryCount += 1;
       waitInMilliseconds = waitInMilliseconds * 2;

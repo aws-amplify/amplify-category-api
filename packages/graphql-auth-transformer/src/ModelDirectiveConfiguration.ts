@@ -129,21 +129,21 @@ export class ModelDirectiveConfiguration {
       if (!directiveArguments.subscriptions.onCreate) {
         shouldHaveOnCreate = false;
       } else {
-        directiveArguments.subscriptions.onCreate.forEach(name => {
+        directiveArguments.subscriptions.onCreate.forEach((name) => {
           onCreateNames.push(makeName('onCreate', name));
         });
       }
       if (!directiveArguments.subscriptions.onUpdate) {
         shouldHaveOnUpdate = false;
       } else {
-        directiveArguments.subscriptions.onUpdate.forEach(name => {
+        directiveArguments.subscriptions.onUpdate.forEach((name) => {
           onUpdateNames.push(makeName('onUpdate', name));
         });
       }
       if (!directiveArguments.subscriptions.onDelete) {
         shouldHaveOnDelete = false;
       } else {
-        directiveArguments.subscriptions.onDelete.forEach(name => {
+        directiveArguments.subscriptions.onDelete.forEach((name) => {
           onDeleteNames.push(makeName('onDelete', name));
         });
       }

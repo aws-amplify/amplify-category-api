@@ -1,10 +1,8 @@
 import { CfnMapping } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
-export const setMappings = (scope: Construct): CfnMapping => new CfnMapping(
-  scope,
-  'LayerResourceMapping',
-  {
+export const setMappings = (scope: Construct): CfnMapping =>
+  new CfnMapping(scope, 'LayerResourceMapping', {
     mapping: {
       'ap-northeast-1': {
         layerRegion: 'arn:aws:lambda:ap-northeast-1:249908578461:layer:AWSLambda-Python-AWS-SDK:1',
@@ -76,5 +74,4 @@ export const setMappings = (scope: Construct): CfnMapping => new CfnMapping(
         layerRegion: 'arn:aws:lambda:me-south-1:507411403535:layer:AWSLambda-Python-AWS-SDK:1',
       },
     },
-  },
-);
+  });

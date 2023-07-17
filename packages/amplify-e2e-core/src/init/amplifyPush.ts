@@ -154,11 +154,7 @@ export function cancelIterativeAmplifyPush(
 /**
  * Function to test amplify push without codegen prompt
  */
-export function amplifyPushWithoutCodegen(
-  cwd: string,
-  testingWithLatestCodebase = false,
-  allowDestructiveUpdates = false,
-): Promise<void> {
+export function amplifyPushWithoutCodegen(cwd: string, testingWithLatestCodebase = false, allowDestructiveUpdates = false): Promise<void> {
   const args = ['push'];
   if (allowDestructiveUpdates) {
     args.push('--allow-destructive-graphql-schema-updates');
@@ -180,10 +176,7 @@ export function amplifyPushWithoutCodegen(
 /**
  * Function to test amplify push with function secrets without codegen prompt
  */
-export function amplifyPushSecretsWithoutCodegen(
-  cwd: string,
-  testingWithLatestCodebase = false,
-): Promise<void> {
+export function amplifyPushSecretsWithoutCodegen(cwd: string, testingWithLatestCodebase = false): Promise<void> {
   const args = ['push'];
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
@@ -383,7 +376,7 @@ export function amplifyPushMissingEnvVar(cwd: string, newEnvVarValue: string) {
       .sendLine(newEnvVarValue)
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
-      .run(err => (err ? reject(err) : resolve()));
+      .run((err) => (err ? reject(err) : resolve()));
   });
 }
 
@@ -397,7 +390,7 @@ export function amplifyPushMissingFuncSecret(cwd: string, newSecretValue: string
       .sendLine(newSecretValue)
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
-      .run(err => (err ? reject(err) : resolve()));
+      .run((err) => (err ? reject(err) : resolve()));
   });
 }
 
@@ -423,9 +416,9 @@ export function amplifyPushDestructiveApiUpdate(cwd: string, includeForce: boole
     }
     const chain = spawn(getCLIPath(), args, { cwd, stripColors: true });
     if (includeForce) {
-      chain.run(err => (err ? reject(err) : resolve()));
+      chain.run((err) => (err ? reject(err) : resolve()));
     } else {
-      chain.wait('If this is intended, rerun the command with').run(err => (err ? resolve(err) : reject())); // in this case, we expect the CLI to error out
+      chain.wait('If this is intended, rerun the command with').run((err) => (err ? resolve(err) : reject())); // in this case, we expect the CLI to error out
     }
   });
 }

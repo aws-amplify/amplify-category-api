@@ -1,7 +1,8 @@
 import { TransformerPluginBase, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
-  TransformerPluginType, TransformerPreProcessContextProvider,
+  TransformerPluginType,
+  TransformerPreProcessContextProvider,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode, DirectiveNode, Kind, DefinitionNode, DocumentNode, ObjectTypeExtensionNode } from 'graphql';
@@ -31,23 +32,23 @@ export class MapsToTransformer extends TransformerPluginBase {
    * @param context The pre-processing context for the transformer, used to store type mappings
    */
   preMutateSchema = (context: TransformerPreProcessContextProvider) => {
-    context.inputDocument?.definitions?.forEach(def => {
+    context.inputDocument?.definitions?.forEach((def) => {
       if (def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') {
-        def?.directives?.forEach(dir => {
+        def?.directives?.forEach((dir) => {
           if (dir.name.value === directiveName) {
             updateTypeMapping(def, dir, context.inputDocument, context.schemaHelper.setTypeMapping);
           }
         });
       }
     });
-  }
+  };
 
   /**
    * During the generateResolvers step, the mapsTo transformer reads all of the model field mappings from the resourceHelper and generates
    * VTL to map the current field names to the original field names
    */
   after = (context: TransformerContextProvider) => {
-    context.resourceHelper.getModelFieldMapKeys().forEach(modelName => {
+    context.resourceHelper.getModelFieldMapKeys().forEach((modelName) => {
       const modelFieldMap = context.resourceHelper.getModelFieldMap(modelName);
       if (!modelFieldMap.getMappedFields().length) {
         return;
@@ -105,15 +106,15 @@ export class MapsToTransformer extends TransformerPluginBase {
 }
 
 const updateTypeMapping = (
-    definition: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
-    directive: DirectiveNode,
-    inputDocument: DocumentNode,
-    updateFunction: (newTypeName: string, originalTypeName:string) => void,
-  ) => {
+  definition: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
+  directive: DirectiveNode,
+  inputDocument: DocumentNode,
+  updateFunction: (newTypeName: string, originalTypeName: string) => void,
+) => {
   const modelName = definition.name.value;
-  const prevNameNode = directive.arguments?.find(arg => arg.name.value === 'name');
+  const prevNameNode = directive.arguments?.find((arg) => arg.name.value === 'name');
 
-  const hasModelDirective = !!definition.directives?.find(directive => directive.name.value === 'model');
+  const hasModelDirective = !!definition.directives?.find((directive) => directive.name.value === 'model');
   if (!hasModelDirective) {
     throw new InvalidDirectiveError(`@mapsTo can only be used on an @model type`);
   }
@@ -134,8 +135,8 @@ const updateTypeMapping = (
     throw new InvalidDirectiveError(`Type ${modelName} cannot map to ${originalName} because ${originalName} is a model in the schema.`);
   }
   updateFunction(modelName, originalName);
-}
+};
 
 // returns a predicate for determining if a DefinitionNode is an model object with the given name
 const hasModelWithNamePredicate = (name: string) => (node: DefinitionNode) =>
-  node.kind === Kind.OBJECT_TYPE_DEFINITION && !!node.directives?.find(dir => dir.name.value === 'model') && node.name.value === name;
+  node.kind === Kind.OBJECT_TYPE_DEFINITION && !!node.directives?.find((dir) => dir.name.value === 'model') && node.name.value === name;

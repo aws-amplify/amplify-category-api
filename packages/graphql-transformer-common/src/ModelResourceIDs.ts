@@ -31,7 +31,7 @@ export class ModelResourceIDs {
     }
     return `Model${name}FilterInput`;
   }
-  static ModelFilterScalarInputTypeName(name: string, includeFilter: Boolean, isSubscriptionFilter:boolean = false): string {
+  static ModelFilterScalarInputTypeName(name: string, includeFilter: Boolean, isSubscriptionFilter: boolean = false): string {
     const nameOverride = DEFAULT_SCALARS[name];
     if (nameOverride) {
       return `Model${isSubscriptionFilter ? 'Subscription' : ''}${nameOverride}${includeFilter ? 'Filter' : ''}Input`;
@@ -53,7 +53,7 @@ export class ModelResourceIDs {
     return `Model${name}KeyConditionInput`;
   }
   static ModelCompositeKeyArgumentName(keyFieldNames: string[]) {
-    return toCamelCase(keyFieldNames.map(n => graphqlName(n)));
+    return toCamelCase(keyFieldNames.map((n) => graphqlName(n)));
   }
   static ModelCompositeKeySeparator() {
     return '#';

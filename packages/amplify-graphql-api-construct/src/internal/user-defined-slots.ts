@@ -6,24 +6,16 @@ import { FunctionSlot } from '../types';
  * @param functionSlots the slot inputs to validate.
  */
 export const validateFunctionSlots = (functionSlots: FunctionSlot[]): void => {
-  functionSlots.forEach(({
-    function: {
-      code,
-      runtime,
-      dataSource,
-      name,
-      description,
-      responseMappingTemplate,
-      requestMappingTemplate,
+  functionSlots.forEach(
+    ({ function: { code, runtime, dataSource, name, description, responseMappingTemplate, requestMappingTemplate } }) => {
+      if (code || runtime || dataSource || name || description) {
+        throw new Error('Unexpected property found on function slot, only requestMappingTemplate and responseMappingTemplate supported');
+      }
+      if (!requestMappingTemplate && !responseMappingTemplate) {
+        throw new Error('Expected at least one of either requestMappingTemplate or responseMappingTemplate');
+      }
     },
-  }) => {
-    if (code || runtime || dataSource || name || description) {
-      throw new Error('Unexpected property found on function slot, only requestMappingTemplate and responseMappingTemplate supported');
-    }
-    if (!requestMappingTemplate && !responseMappingTemplate) {
-      throw new Error('Expected at least one of either requestMappingTemplate or responseMappingTemplate');
-    }
-  });
+  );
 };
 
 /**
@@ -32,41 +24,41 @@ export const validateFunctionSlots = (functionSlots: FunctionSlot[]): void => {
  * @param functionSlots the possibly consolidated slots.
  * @returns no longer consolidated slots.
  */
-export const separateSlots = (functionSlots: FunctionSlot[]): FunctionSlot[] => functionSlots.flatMap((slot) => {
-  if (slot.function.requestMappingTemplate && slot.function.responseMappingTemplate) {
-    return [
-      {
-        ...slot,
-        function: {
-          requestMappingTemplate: slot.function.requestMappingTemplate,
+export const separateSlots = (functionSlots: FunctionSlot[]): FunctionSlot[] =>
+  functionSlots.flatMap((slot) => {
+    if (slot.function.requestMappingTemplate && slot.function.responseMappingTemplate) {
+      return [
+        {
+          ...slot,
+          function: {
+            requestMappingTemplate: slot.function.requestMappingTemplate,
+          },
         },
-      },
-      {
-        ...slot,
-        function: {
-          responseMappingTemplate: slot.function.responseMappingTemplate,
+        {
+          ...slot,
+          function: {
+            responseMappingTemplate: slot.function.responseMappingTemplate,
+          },
         },
-      },
-    ];
-  }
-  return [
-    slot,
-  ];
-});
+      ];
+    }
+    return [slot];
+  });
 
 /**
  * Given a set of strongly typed input params, generate a valid transformer slot name.
  * @param params the slot configuration
  * @returns the slot id
  */
-export const getSlotName = (params: FunctionSlot): string => [
-  params.typeName,
-  params.fieldName,
-  params.slotName,
-  params.slotIndex,
-  params.function.requestMappingTemplate ? 'req' : 'res',
-  'vtl',
-].join('.');
+export const getSlotName = (params: FunctionSlot): string =>
+  [
+    params.typeName,
+    params.fieldName,
+    params.slotName,
+    params.slotIndex,
+    params.function.requestMappingTemplate ? 'req' : 'res',
+    'vtl',
+  ].join('.');
 
 /**
  * Utility to avoid using lodash.

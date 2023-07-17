@@ -36,15 +36,8 @@ const verifyFunctionDefined = (meta: any): void => {
   expect(meta.function).toBeDefined();
   expect(Object.keys(meta.function).length).toBeGreaterThanOrEqual(1);
   for (const key of Object.keys(meta.function)) {
-    const {
-      service,
-      build,
-      lastBuildTimeStamp,
-      lastPackageTimeStamp,
-      distZipFilename,
-      lastPushTimeStamp,
-      lastPushDirHash,
-    } = meta.function[key];
+    const { service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash } =
+      meta.function[key];
     expect(service).toBe('Lambda');
     expect(build).toBeTruthy();
     expect(lastBuildTimeStamp).toBeDefined();
@@ -84,9 +77,9 @@ describe('amplify api (GraphQL) - Customer Lambda Conflict Handler', () => {
     const { GraphQLAPIIdOutput } = meta.api[projName]['output'];
     const { functions } = await listAppSyncFunctions(GraphQLAPIIdOutput, region);
     expect(functions).toBeDefined();
-    const lambdaArn = Object.values(meta.function)[0]['output']['Arn']
-    const todoFunctions = functions.filter(f => f.dataSourceName === 'TodoTable');
-    todoFunctions.forEach(func => {
+    const lambdaArn = Object.values(meta.function)[0]['output']['Arn'];
+    const todoFunctions = functions.filter((f) => f.dataSourceName === 'TodoTable');
+    todoFunctions.forEach((func) => {
       expect(func.syncConfig.conflictHandler).toBe('LAMBDA');
       expect(func.syncConfig.conflictDetection).toBe('VERSION');
       expect(func.syncConfig.lambdaConflictHandlerConfig.lambdaConflictHandlerArn).toBe(lambdaArn);
@@ -111,9 +104,9 @@ describe('amplify api (GraphQL) - Customer Lambda Conflict Handler', () => {
     const { GraphQLAPIIdOutput } = meta.api[projName]['output'];
     const { functions } = await listAppSyncFunctions(GraphQLAPIIdOutput, region);
     expect(functions).toBeDefined();
-    const lambdaArn = Object.values(meta.function)[0]['output']['Arn']
-    const todoFunctions = functions.filter(f => f.dataSourceName === 'TodoTable');
-    todoFunctions.forEach(func => {
+    const lambdaArn = Object.values(meta.function)[0]['output']['Arn'];
+    const todoFunctions = functions.filter((f) => f.dataSourceName === 'TodoTable');
+    todoFunctions.forEach((func) => {
       expect(func.syncConfig.conflictHandler).toBe('LAMBDA');
       expect(func.syncConfig.conflictDetection).toBe('VERSION');
       expect(func.syncConfig.lambdaConflictHandlerConfig.lambdaConflictHandlerArn).toBe(lambdaArn);
@@ -138,18 +131,18 @@ describe('amplify api (GraphQL) - Customer Lambda Conflict Handler', () => {
     const { GraphQLAPIIdOutput } = meta.api[projName]['output'];
     const { functions } = await listAppSyncFunctions(GraphQLAPIIdOutput, region);
     expect(functions).toBeDefined();
-    const lambdaArn = Object.values(meta.function)[0]['output']['Arn']
-    const todoFunctions = functions.filter(f => f.dataSourceName === 'TodoTable');
-    todoFunctions.forEach(func => {
+    const lambdaArn = Object.values(meta.function)[0]['output']['Arn'];
+    const todoFunctions = functions.filter((f) => f.dataSourceName === 'TodoTable');
+    todoFunctions.forEach((func) => {
       expect(func.syncConfig.conflictHandler).toBe('LAMBDA');
       expect(func.syncConfig.conflictDetection).toBe('VERSION');
       expect(func.syncConfig.lambdaConflictHandlerConfig.lambdaConflictHandlerArn).toBe(lambdaArn);
-    })
-    const authorFunctions = functions.filter(f => f.dataSourceName === 'AuthorTable');
-    authorFunctions.forEach(func => {
+    });
+    const authorFunctions = functions.filter((f) => f.dataSourceName === 'AuthorTable');
+    authorFunctions.forEach((func) => {
       expect(func.syncConfig.conflictHandler).toBe('AUTOMERGE');
       expect(func.syncConfig.conflictDetection).toBe('VERSION');
       expect(func.syncConfig.lambdaConflictHandlerConfig).not.toBeDefined();
-    })
-  })
+    });
+  });
 });

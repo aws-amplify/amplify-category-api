@@ -119,16 +119,7 @@ export class CloudFormationClient {
       if (maxPolls === 0) {
         return Promise.reject(new Error('Stack did not finish before hitting the max poll count.'));
       }
-      return this.wait<CloudFormation.Stack>(
-        pollInterval,
-        this.waitForStack,
-        name,
-        success,
-        failure,
-        poll,
-        maxPolls - 1,
-        pollInterval,
-      );
+      return this.wait<CloudFormation.Stack>(pollInterval, this.waitForStack, name, success, failure, poll, maxPolls - 1, pollInterval);
     }
     return Promise.reject(new Error(`Invalid stack status: ${stack.StackStatus}`));
   }
@@ -140,7 +131,7 @@ export class CloudFormationClient {
    * @param args The arguments to pass to the function after the wait.
    */
   public async wait<T>(secs: number, fun: (...args: any[]) => Promise<T>, ...args: any[]): Promise<T> {
-    return new Promise<T>(resolve => {
+    return new Promise<T>((resolve) => {
       setTimeout(() => {
         resolve(fun.apply(this, args));
       }, 1000 * secs);

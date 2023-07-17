@@ -1,6 +1,4 @@
-import {
-  AmplifyError, AmplifyErrorType,
-} from '@aws-amplify/amplify-cli-core';
+import { AmplifyError, AmplifyErrorType } from '@aws-amplify/amplify-cli-core';
 
 const amplifyGraphQLErrorCodes = new Set([
   'InvalidDirectiveError',
@@ -22,7 +20,7 @@ const amplifyGraphQLErrorCodes = new Set([
 export abstract class AmplifyGraphQLTransformerErrorConverter {
   /**
    * create
-  * @param error : default error to be thrown if not present in list : amplifyErrorList
+   * @param error : default error to be thrown if not present in list : amplifyErrorList
    */
   static convert = (error: any): any => {
     if (error instanceof Error && error?.name && amplifyGraphQLErrorCodes.has(error.name)) {
@@ -37,5 +35,5 @@ export abstract class AmplifyGraphQLTransformerErrorConverter {
       );
     }
     return error;
-  }
+  };
 }

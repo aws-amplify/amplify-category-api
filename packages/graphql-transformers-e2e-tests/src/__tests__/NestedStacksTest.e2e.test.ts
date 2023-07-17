@@ -23,8 +23,6 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 test('Test custom root types with additional fields.', () => {
   const validSchema = `
@@ -92,7 +90,7 @@ function getInputType(doc: DocumentNode, type: string): InputObjectTypeDefinitio
 }
 
 function verifyInputCount(doc: DocumentNode, type: string, count: number): boolean {
-  return doc.definitions.filter(def => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && def.name.value === type).length == count;
+  return doc.definitions.filter((def) => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && def.name.value === type).length == count;
 }
 
 function cleanUpFiles(directory: string) {

@@ -3,13 +3,16 @@ import { removeAmplifyInputDefinition } from '../../transformation/utils';
 describe('removeAmplifyInputDefinition', () => {
   it('strips input Amplify objects', () => {
     const input = /* GraphQL */ `
-      input Amplify { globalAuthRule: AuthRule = { allow: public } }
-    
+      input Amplify {
+        globalAuthRule: AuthRule = { allow: public }
+      }
+
       type Todo {
         id: ID!
         content: String!
       }
     `;
+    // prettier-ignore
     const expectedOutput = /* GraphQL */ `type Todo {
   id: ID!
   content: String!
@@ -23,12 +26,13 @@ describe('removeAmplifyInputDefinition', () => {
       type Amplify {
         id: ID!
       }
-    
+
       type Todo {
         id: ID!
         content: String!
       }
     `;
+    // prettier-ignore
     const expectedOutput = /* GraphQL */ `type Amplify {
   id: ID!
 }

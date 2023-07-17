@@ -1,20 +1,28 @@
-import { IndexTransformer, PrimaryKeyTransformer } from "@aws-amplify/graphql-index-transformer";
-import { ModelTransformer } from "@aws-amplify/graphql-model-transformer";
-import { AuthTransformer } from "@aws-amplify/graphql-auth-transformer";
-import { GraphQLTransform } from "@aws-amplify/graphql-transformer-core";
-import { ResourceConstants } from "graphql-transformer-common";
-import { CloudFormationClient } from "../CloudFormationClient";
-import { Output } from "aws-sdk/clients/cloudformation";
-import { cleanupStackAfterTest, deploy } from "../deployNestedStacks";
-import { S3Client } from "../S3Client";
-import { S3, CognitoIdentityServiceProvider as CognitoClient } from "aws-sdk";
-import { default as moment } from "moment";
-import { addUserToGroup, authenticateUser, configureAmplify, createGroup, createUserPool, createUserPoolClient, signupUser } from "../cognitoUtils";
+import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { ResourceConstants } from 'graphql-transformer-common';
+import { CloudFormationClient } from '../CloudFormationClient';
+import { Output } from 'aws-sdk/clients/cloudformation';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { S3Client } from '../S3Client';
+import { S3, CognitoIdentityServiceProvider as CognitoClient } from 'aws-sdk';
+import { default as moment } from 'moment';
+import {
+  addUserToGroup,
+  authenticateUser,
+  configureAmplify,
+  createGroup,
+  createUserPool,
+  createUserPoolClient,
+  signupUser,
+} from '../cognitoUtils';
 // to deal with bug in cognito-identity-js
-(global as any).fetch = require("node-fetch");
-import { resolveTestRegion } from "../testSetup";
-import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
-import gql from "graphql-tag";
+(global as any).fetch = require('node-fetch');
+import { resolveTestRegion } from '../testSetup';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import gql from 'graphql-tag';
 
 const region = resolveTestRegion();
 
@@ -23,12 +31,12 @@ jest.setTimeout(2000000);
 const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);
 const awsS3Client = new S3({ region: region });
-const cognitoClient = new CognitoClient({ apiVersion: "2016-04-19", region: region });
-const BUILD_TIMESTAMP = moment().format("YYYYMMDDHHmmss");
+const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: region });
+const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `IndexWithClaimFieldAsSortKeyAuthTest-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-index-with-claim-field-as-sk-test-${BUILD_TIMESTAMP}`;
-const LOCAL_FS_BUILD_DIR = "/tmp/index_sortkey_auth_transformer_tests/";
-const S3_ROOT_DIR_KEY = "deployments";
+const LOCAL_FS_BUILD_DIR = '/tmp/index_sortkey_auth_transformer_tests/';
+const S3_ROOT_DIR_KEY = 'deployments';
 
 let GRAPHQL_ENDPOINT: string;
 
@@ -40,10 +48,10 @@ let USER_POOL_ID: string;
 let USER_1_SUB: string;
 let USER_2_SUB: string;
 
-const USERNAME1 = "user1@test.com";
-const USERNAME2 = "user2@test.com";
-const TMP_PASSWORD = "Password123!";
-const REAL_PASSWORD = "Password1234!";
+const USERNAME1 = 'user1@test.com';
+const USERNAME2 = 'user2@test.com';
+const TMP_PASSWORD = 'Password123!';
+const REAL_PASSWORD = 'Password1234!';
 
 const ADMIN_GROUP_NAME = 'Admin';
 const DEVS_GROUP_NAME = 'Devs';
@@ -88,9 +96,9 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
       authConfig: {
         defaultAuthentication: {
-          authenticationType: "AMAZON_COGNITO_USER_POOLS"
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
         },
-        additionalAuthenticationProviders: []
+        additionalAuthenticationProviders: [],
       },
       transformers: [modelTransformer, primaryKeyTransformer, indexTransformer, authTransformer],
     });
@@ -102,7 +110,7 @@ beforeAll(async () => {
   try {
     await awsS3Client
       .createBucket({
-        Bucket: BUCKET_NAME
+        Bucket: BUCKET_NAME,
       })
       .promise();
   } catch (e) {
@@ -123,7 +131,7 @@ beforeAll(async () => {
       LOCAL_FS_BUILD_DIR,
       BUCKET_NAME,
       S3_ROOT_DIR_KEY,
-      BUILD_TIMESTAMP
+      BUILD_TIMESTAMP,
     );
     expect(finishedStack).toBeDefined();
     const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
@@ -152,9 +160,9 @@ beforeAll(async () => {
       region,
       auth: {
         type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
-        jwtToken: () => idToken1
+        jwtToken: () => idToken1,
       },
-      disableOffline: true
+      disableOffline: true,
     });
     await signupUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD);
     await addUserToGroup(DEVS_GROUP_NAME, USERNAME2, USER_POOL_ID);
@@ -166,9 +174,9 @@ beforeAll(async () => {
       region,
       auth: {
         type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
-        jwtToken: () => idToken2
+        jwtToken: () => idToken2,
       },
-      disableOffline: true
+      disableOffline: true,
     });
   } catch (e) {
     console.error(e);
@@ -184,140 +192,134 @@ afterAll(async () => {
  * Test queries below
  */
 
-test("when identity claim is sub::username, user1 should not access user2 records when logging in with user1 and querying with GSI ", async () => {
-  await createNote1(USER_POOL_AUTH_CLIENT_1, { noteId: "i1-u1", noteType: "t1" });
-  await createNote1(USER_POOL_AUTH_CLIENT_1, { noteId: "i2-u1", noteType: "t1" });
-  await createNote1(USER_POOL_AUTH_CLIENT_1, { noteId: "i3-u1", noteType: "t1" });
-  await createNote1(USER_POOL_AUTH_CLIENT_2, { noteId: "i1-u2", noteType: "t1" });
+test('when identity claim is sub::username, user1 should not access user2 records when logging in with user1 and querying with GSI ', async () => {
+  await createNote1(USER_POOL_AUTH_CLIENT_1, { noteId: 'i1-u1', noteType: 't1' });
+  await createNote1(USER_POOL_AUTH_CLIENT_1, { noteId: 'i2-u1', noteType: 't1' });
+  await createNote1(USER_POOL_AUTH_CLIENT_1, { noteId: 'i3-u1', noteType: 't1' });
+  await createNote1(USER_POOL_AUTH_CLIENT_2, { noteId: 'i1-u2', noteType: 't1' });
 
   let resultItems;
   // query without sk
   const note1IndexQueryResponse = await note1ByNoteTypeAndOwner(USER_POOL_AUTH_CLIENT_1, { noteType: 't1' });
   resultItems = note1IndexQueryResponse.data.note1sByNoteTypeAndOwner.items;
   expect(resultItems).toBeDefined();
-  expect(resultItems.filter(item => item.owner === USERNAME1).length).toBe(3);
-  expect(resultItems.filter(item => item.owner === USERNAME2).length).toBe(0);
+  expect(resultItems.filter((item) => item.owner === USERNAME1).length).toBe(3);
+  expect(resultItems.filter((item) => item.owner === USERNAME2).length).toBe(0);
   // query with sk
-  const note1IndexQueryWithSortKeyResponse = await note1ByNoteTypeAndOwner(
-    USER_POOL_AUTH_CLIENT_1, { noteType: 't1', owner: { eq: `${USER_1_SUB}::${USERNAME1}` } }
-    );
+  const note1IndexQueryWithSortKeyResponse = await note1ByNoteTypeAndOwner(USER_POOL_AUTH_CLIENT_1, {
+    noteType: 't1',
+    owner: { eq: `${USER_1_SUB}::${USERNAME1}` },
+  });
   resultItems = note1IndexQueryWithSortKeyResponse.data.note1sByNoteTypeAndOwner.items;
   expect(resultItems).toBeDefined();
-  expect(resultItems.filter(item => item.owner === USERNAME1).length).toBe(3);
-  expect(resultItems.filter(item => item.owner === USERNAME2).length).toBe(0);
+  expect(resultItems.filter((item) => item.owner === USERNAME1).length).toBe(3);
+  expect(resultItems.filter((item) => item.owner === USERNAME2).length).toBe(0);
 });
 
-test("when identity claim is username, user1 should not access user2 records when logging in with user1 and querying with GSI ", async () => {
-  await createNote2(USER_POOL_AUTH_CLIENT_1, { noteId: "i1-u1", noteType: "t1", owner: USERNAME1 });
-  await createNote2(USER_POOL_AUTH_CLIENT_1, { noteId: "i2-u1", noteType: "t1", owner: USERNAME1 });
-  await createNote2(USER_POOL_AUTH_CLIENT_1, { noteId: "i3-u1", noteType: "t1", owner: USERNAME1 });
-  await createNote2(USER_POOL_AUTH_CLIENT_2, { noteId: "i1-u2", noteType: "t1", owner: USERNAME2 });
-  
+test('when identity claim is username, user1 should not access user2 records when logging in with user1 and querying with GSI ', async () => {
+  await createNote2(USER_POOL_AUTH_CLIENT_1, { noteId: 'i1-u1', noteType: 't1', owner: USERNAME1 });
+  await createNote2(USER_POOL_AUTH_CLIENT_1, { noteId: 'i2-u1', noteType: 't1', owner: USERNAME1 });
+  await createNote2(USER_POOL_AUTH_CLIENT_1, { noteId: 'i3-u1', noteType: 't1', owner: USERNAME1 });
+  await createNote2(USER_POOL_AUTH_CLIENT_2, { noteId: 'i1-u2', noteType: 't1', owner: USERNAME2 });
+
   let resultItems;
   const note2IndexQueryResponse = await note2ByNoteTypeAndOwner(USER_POOL_AUTH_CLIENT_1, { noteType: 't1' });
   resultItems = note2IndexQueryResponse.data.note2sByNoteTypeAndOwner.items;
   expect(resultItems).toBeDefined();
-  expect(resultItems.filter(item => item.owner === USERNAME1).length).toBe(3);
-  expect(resultItems.filter(item => item.owner === USERNAME2).length).toBe(0);
-  const note2IndexQueryWithSortKeyResponse = await note2ByNoteTypeAndOwner(
-    USER_POOL_AUTH_CLIENT_1, { noteType: 't1', owner: { eq: USERNAME1 } }
-    );
+  expect(resultItems.filter((item) => item.owner === USERNAME1).length).toBe(3);
+  expect(resultItems.filter((item) => item.owner === USERNAME2).length).toBe(0);
+  const note2IndexQueryWithSortKeyResponse = await note2ByNoteTypeAndOwner(USER_POOL_AUTH_CLIENT_1, {
+    noteType: 't1',
+    owner: { eq: USERNAME1 },
+  });
   resultItems = note2IndexQueryWithSortKeyResponse.data.note2sByNoteTypeAndOwner.items;
   expect(resultItems).toBeDefined();
-  expect(resultItems.filter(item => item.owner === USERNAME1).length).toBe(3);
-  expect(resultItems.filter(item => item.owner === USERNAME2).length).toBe(0);
+  expect(resultItems.filter((item) => item.owner === USERNAME1).length).toBe(3);
+  expect(resultItems.filter((item) => item.owner === USERNAME2).length).toBe(0);
 });
 
-test("when dynamic group auth is applied, user1 should not access user2 records when logging in with user1 and querying with GSI ", async () => {
-  await createNote3(USER_POOL_AUTH_CLIENT_1, { noteId: "i1-u1", noteType: "t1", group: ADMIN_GROUP_NAME });
-  await createNote3(USER_POOL_AUTH_CLIENT_1, { noteId: "i2-u1", noteType: "t1", group: ADMIN_GROUP_NAME });
-  await createNote3(USER_POOL_AUTH_CLIENT_1, { noteId: "i3-u1", noteType: "t1", group: ADMIN_GROUP_NAME });
-  await createNote3(USER_POOL_AUTH_CLIENT_2, { noteId: "i1-u2", noteType: "t1", group: DEVS_GROUP_NAME });
-  
+test('when dynamic group auth is applied, user1 should not access user2 records when logging in with user1 and querying with GSI ', async () => {
+  await createNote3(USER_POOL_AUTH_CLIENT_1, { noteId: 'i1-u1', noteType: 't1', group: ADMIN_GROUP_NAME });
+  await createNote3(USER_POOL_AUTH_CLIENT_1, { noteId: 'i2-u1', noteType: 't1', group: ADMIN_GROUP_NAME });
+  await createNote3(USER_POOL_AUTH_CLIENT_1, { noteId: 'i3-u1', noteType: 't1', group: ADMIN_GROUP_NAME });
+  await createNote3(USER_POOL_AUTH_CLIENT_2, { noteId: 'i1-u2', noteType: 't1', group: DEVS_GROUP_NAME });
+
   let resultItems;
   const note3IndexQueryResponse = await note3ByNoteTypeAndGroup(USER_POOL_AUTH_CLIENT_1, { noteType: 't1' });
   resultItems = note3IndexQueryResponse.data.note3sByNoteTypeAndGroup.items;
   expect(resultItems).toBeDefined();
-  expect(resultItems.filter(item => item.group === ADMIN_GROUP_NAME).length).toBe(3);
-  expect(resultItems.filter(item => item.group === DEVS_GROUP_NAME).length).toBe(0);
-  const note3IndexQueryWithSortKeyResponse = await note3ByNoteTypeAndGroup(
-    USER_POOL_AUTH_CLIENT_1, { noteType: 't1', group: { eq: ADMIN_GROUP_NAME } }
-    );
+  expect(resultItems.filter((item) => item.group === ADMIN_GROUP_NAME).length).toBe(3);
+  expect(resultItems.filter((item) => item.group === DEVS_GROUP_NAME).length).toBe(0);
+  const note3IndexQueryWithSortKeyResponse = await note3ByNoteTypeAndGroup(USER_POOL_AUTH_CLIENT_1, {
+    noteType: 't1',
+    group: { eq: ADMIN_GROUP_NAME },
+  });
   resultItems = note3IndexQueryWithSortKeyResponse.data.note3sByNoteTypeAndGroup.items;
   expect(resultItems).toBeDefined();
-  expect(resultItems.filter(item => item.group === ADMIN_GROUP_NAME).length).toBe(3);
-  expect(resultItems.filter(item => item.group === DEVS_GROUP_NAME).length).toBe(0);
+  expect(resultItems.filter((item) => item.group === ADMIN_GROUP_NAME).length).toBe(3);
+  expect(resultItems.filter((item) => item.group === DEVS_GROUP_NAME).length).toBe(0);
 });
 
 /**
  * Helper function
  */
-const createNote1 = async (
-  client: AWSAppSyncClient<any>, 
-  variables: { noteId: string, noteType: string },
-  ): Promise<any> => {
+const createNote1 = async (client: AWSAppSyncClient<any>, variables: { noteId: string; noteType: string }): Promise<any> => {
   const result = await client.mutate<any>({
     mutation: gql`
-      mutation CreateNote1($input: CreateNote1Input!){
+      mutation CreateNote1($input: CreateNote1Input!) {
         createNote1(input: $input) {
-            noteId
-            noteType
-            owner
+          noteId
+          noteType
+          owner
         }
       }
     `,
     variables: {
-      input: variables
+      input: variables,
     },
-    fetchPolicy: "no-cache"
+    fetchPolicy: 'no-cache',
   });
   return result;
-}
-const createNote2 = async (
-  client: AWSAppSyncClient<any>, 
-  variables: { noteId: string, noteType: string, owner: string },
-  ): Promise<any> => {
+};
+const createNote2 = async (client: AWSAppSyncClient<any>, variables: { noteId: string; noteType: string; owner: string }): Promise<any> => {
   const result = await client.mutate<any>({
     mutation: gql`
-      mutation CreateNote2($input: CreateNote2Input!){
+      mutation CreateNote2($input: CreateNote2Input!) {
         createNote2(input: $input) {
-            noteId
-            noteType
-            owner
+          noteId
+          noteType
+          owner
         }
       }
     `,
     variables: {
-      input: variables
+      input: variables,
     },
-    fetchPolicy: "no-cache"
+    fetchPolicy: 'no-cache',
   });
   return result;
-}
-const createNote3 = async (
-  client: AWSAppSyncClient<any>, 
-  variables: { noteId: string, noteType: string, group: string },
-  ): Promise<any> => {
+};
+const createNote3 = async (client: AWSAppSyncClient<any>, variables: { noteId: string; noteType: string; group: string }): Promise<any> => {
   const result = await client.mutate<any>({
     mutation: gql`
-      mutation CreateNote3($input: CreateNote3Input!){
+      mutation CreateNote3($input: CreateNote3Input!) {
         createNote3(input: $input) {
-            noteId
-            noteType
-            group
+          noteId
+          noteType
+          group
         }
       }
     `,
     variables: {
-      input: variables
+      input: variables,
     },
-    fetchPolicy: "no-cache"
+    fetchPolicy: 'no-cache',
   });
   return result;
-}
+};
 const note1ByNoteTypeAndOwner = async (
   client: AWSAppSyncClient<any>,
-  variables: { noteType: string, owner?: { eq?: string } },
+  variables: { noteType: string; owner?: { eq?: string } },
 ): Promise<any> => {
   const result = await client.query<any>({
     query: gql`
@@ -334,10 +336,10 @@ const note1ByNoteTypeAndOwner = async (
     variables,
   });
   return result;
-}
+};
 const note2ByNoteTypeAndOwner = async (
   client: AWSAppSyncClient<any>,
-  variables: { noteType: string, owner?: { eq?: string } },
+  variables: { noteType: string; owner?: { eq?: string } },
 ): Promise<any> => {
   const result = await client.query<any>({
     query: gql`
@@ -354,10 +356,10 @@ const note2ByNoteTypeAndOwner = async (
     variables,
   });
   return result;
-}
+};
 const note3ByNoteTypeAndGroup = async (
   client: AWSAppSyncClient<any>,
-  variables: { noteType: string, group?: { eq?: string } },
+  variables: { noteType: string; group?: { eq?: string } },
 ): Promise<any> => {
   const result = await client.query<any>({
     query: gql`
@@ -374,4 +376,4 @@ const note3ByNoteTypeAndGroup = async (
     variables,
   });
   return result;
-}
+};

@@ -4,7 +4,12 @@ import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces
 import { TransformerProjectConfig } from '@aws-amplify/graphql-transformer-core';
 import rimraf from 'rimraf';
 import {
-  $TSContext, AmplifyCategories, CloudformationProviderFacade, JSONUtilities, pathManager, stateManager,
+  $TSContext,
+  AmplifyCategories,
+  CloudformationProviderFacade,
+  JSONUtilities,
+  pathManager,
+  stateManager,
 } from '@aws-amplify/amplify-cli-core';
 import { CloudFormation, Fn } from 'cloudform-types';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -101,8 +106,8 @@ export function mergeUserConfigWithTransformOutput(
 
     if (pipelineFunctionKeys.length > 0) {
       printer.warn(
-        ' You are using the "pipelineFunctions" directory for overridden and custom resolvers. '
-          + 'Please use the "resolvers" directory as "pipelineFunctions" will be deprecated.\n',
+        ' You are using the "pipelineFunctions" directory for overridden and custom resolvers. ' +
+          'Please use the "resolvers" directory as "pipelineFunctions" will be deprecated.\n',
       );
     }
 

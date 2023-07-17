@@ -13,11 +13,7 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  DataSourceOptions,
-  HttpDataSource,
-  LambdaDataSource,
-} from 'aws-cdk-lib/aws-appsync';
+import { DataSourceOptions, HttpDataSource, LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
 import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -99,10 +95,13 @@ export class PredictionsTransformer extends TransformerPluginBase {
     }
 
     const directiveWrapped = new DirectiveWrapper(directive);
-    const args = directiveWrapped.getArguments({
-      resolverTypeName: parent.name.value,
-      resolverFieldName: definition.name.value,
-    } as PredictionsDirectiveConfiguration, generateGetArgumentsInput(context.transformParameters));
+    const args = directiveWrapped.getArguments(
+      {
+        resolverTypeName: parent.name.value,
+        resolverFieldName: definition.name.value,
+      } as PredictionsDirectiveConfiguration,
+      generateGetArgumentsInput(context.transformParameters),
+    );
 
     if (!Array.isArray(args.actions)) {
       args.actions = [args.actions as unknown as string];
@@ -113,7 +112,7 @@ export class PredictionsTransformer extends TransformerPluginBase {
   };
 
   transformSchema = (context: TransformerTransformSchemaStepContextProvider): void => {
-    this.directiveList.forEach(directive => {
+    this.directiveList.forEach((directive) => {
       const actionInputObjectFields: InputValueDefinitionNode[] = [];
       let isList = false;
 
@@ -138,11 +137,11 @@ export class PredictionsTransformer extends TransformerPluginBase {
 
       if (queryTypeName && type) {
         const fields = type.fields ?? [];
-        const field = fields.find(f => f.name.value === directive.resolverFieldName);
+        const field = fields.find((f) => f.name.value === directive.resolverFieldName);
 
         if (field) {
           const newFields = [
-            ...fields.filter(f => f.name.value !== field.name.value),
+            ...fields.filter((f) => f.name.value !== field.name.value),
             addInputArgument(field, directive.resolverFieldName, isList),
           ];
           const newMutation = {
@@ -185,10 +184,10 @@ export class PredictionsTransformer extends TransformerPluginBase {
       expression: cdk.Fn.conditionNot(cdk.Fn.conditionEquals(env, ResourceConstants.NONE)),
     });
 
-    this.directiveList.forEach(directive => {
+    this.directiveList.forEach((directive) => {
       const predictionFunctions: any[] = [];
 
-      directive.actions!.forEach(action => {
+      directive.actions!.forEach((action) => {
         const datasourceName = actionToDataSourceMap.get(action) as string;
         const functionName = PredictionsResourceIDs.getPredictionFunctionName(action);
         const roleAction = actionToRoleAction.get(action);
@@ -346,7 +345,7 @@ function createResolver(
   ];
   // TODO: predictions should use resolver manager
   const authModes = [context.authConfig.defaultAuthentication, ...(context.authConfig.additionalAuthenticationProviders || [])].map(
-    mode => mode?.authenticationType,
+    (mode) => mode?.authenticationType,
   );
   if (authModes.includes(AuthorizationType.IAM)) {
     const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;

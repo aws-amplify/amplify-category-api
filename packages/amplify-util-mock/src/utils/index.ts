@@ -11,7 +11,7 @@ import * as semver from 'semver';
 
 const minJavaVersion = '>=1.8 <= 2.0 ||  >=8.0';
 
-export const checkJavaVersion = async context => {
+export const checkJavaVersion = async (context) => {
   const executablePath = which.sync('java', {
     nothrow: true,
   });
@@ -35,7 +35,7 @@ export const checkJavaVersion = async context => {
 function isUnsupportedJavaVersion(stderr: string | null): boolean {
   const regex = /version "(\d+)(\.(\d+\.)(\d))?/g;
   const versionStrings: Array<string> = stderr ? stderr.split(/\r?\n/) : [''];
-  const mayVersion = versionStrings.map(line => line.match(regex)).find(v => v != null);
+  const mayVersion = versionStrings.map((line) => line.match(regex)).find((v) => v != null);
   if (mayVersion === undefined) {
     return true;
   }

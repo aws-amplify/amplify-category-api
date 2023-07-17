@@ -14,21 +14,23 @@ describe('AmplifyGraphqlApi', () => {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
       });
-  
+
       const generatedFunctionSlots = api.getGeneratedFunctionSlots();
-  
+
       expect(generatedFunctionSlots.length).toEqual(20);
-      expect(generatedFunctionSlots).toEqual(expect.arrayContaining([
-        expect.objectContaining({
-          typeName: 'Mutation',
-          fieldName: 'createTodo',
-          slotName: 'postAuth',
-          slotIndex: 1,
-          function: expect.objectContaining({
-            requestMappingTemplate: expect.any(String)
-          })
-        }),
-      ]));
+      expect(generatedFunctionSlots).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            typeName: 'Mutation',
+            fieldName: 'createTodo',
+            slotName: 'postAuth',
+            slotIndex: 1,
+            function: expect.objectContaining({
+              requestMappingTemplate: expect.any(String),
+            }),
+          }),
+        ]),
+      );
     });
   });
 });

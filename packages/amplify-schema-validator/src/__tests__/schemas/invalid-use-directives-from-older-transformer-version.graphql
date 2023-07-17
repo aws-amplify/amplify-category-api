@@ -1,11 +1,11 @@
 type Post @key {
-    id: ID!
-    title: String!
-    blog: Blog! @connection
+  id: ID!
+  title: String!
+  blog: Blog! @connection
 }
 
 type Blog @versioned {
-    id: ID!
-    name: String!
-    posts: [Post]! @connection
+  id: ID!
+  name: String!
+  posts: [Post]! @connection
 }

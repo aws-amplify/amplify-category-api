@@ -1,9 +1,7 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationOIDCEntry, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse, InputValueDefinitionNode,
-} from 'graphql';
+import { DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse, InputValueDefinitionNode } from 'graphql';
 import { AuthTransformer } from '../graphql-auth-transformer';
 
 const userPoolsDefaultConfig: AppSyncAuthConfiguration = {
@@ -50,7 +48,8 @@ const userPoolsDirectiveName = 'aws_cognito_user_pools';
 const iamDirectiveName = 'aws_iam';
 const openIdDirectiveName = 'aws_oidc';
 
-const multiAuthDirective = '@auth(rules: [{allow: private}, {allow: public}, {allow: private, provider: iam }, {allow: owner, provider: oidc }])';
+const multiAuthDirective =
+  '@auth(rules: [{allow: private}, {allow: public}, {allow: private, provider: iam }, {allow: owner, provider: oidc }])';
 const ownerAuthDirective = '@auth(rules: [{allow: owner}])';
 const ownerWithIAMAuthDirective = '@auth(rules: [{allow: owner, provider: iam }])';
 const ownerRestrictedPublicAuthDirective = '@auth(rules: [{allow: owner},{allow: public, operations: [read]}])';
@@ -153,17 +152,14 @@ const getRecursiveSchemaWithDiffModesOnParentType = (authDir1: string, authDir2:
   }
   `;
 
-const getTransformer = (authConfig: AppSyncAuthConfiguration): GraphQLTransform => new GraphQLTransform({
-  authConfig,
-  transformers: [new ModelTransformer(), new AuthTransformer()],
-});
+const getTransformer = (authConfig: AppSyncAuthConfiguration): GraphQLTransform =>
+  new GraphQLTransform({
+    authConfig,
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+  });
 
-const getObjectType = (
-  doc: DocumentNode,
-  type: string,
-):
-  ObjectTypeDefinitionNode
-  | undefined => doc.definitions.find((def) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
+const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined =>
+  doc.definitions.find((def) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
     | ObjectTypeDefinitionNode
     | undefined;
 
@@ -338,7 +334,7 @@ describe('schema generation directive tests', () => {
     });
 
     // Check that owner argument is present when only using owner auth rules
-    subscriptionType?.fields?.forEach(field => {
+    subscriptionType?.fields?.forEach((field) => {
       expect(field.arguments).toHaveLength(2);
       const ownerArg: InputValueDefinitionNode = field?.arguments![1];
       expect(ownerArg.name.value).toEqual('owner');
@@ -510,20 +506,22 @@ describe('schema generation directive tests', () => {
     const authRolePolicy = resources![authPolicyIdx!];
 
     const locationPolicy = authRolePolicy.Properties.PolicyDocument.Statement[0].Resource.filter(
-      (r) => r['Fn::Sub']
-        && r['Fn::Sub'].length
-        && r['Fn::Sub'].length === 2
-        && r['Fn::Sub'][1].typeName
-        && r['Fn::Sub'][1].typeName === 'Location',
+      (r) =>
+        r['Fn::Sub'] &&
+        r['Fn::Sub'].length &&
+        r['Fn::Sub'].length === 2 &&
+        r['Fn::Sub'][1].typeName &&
+        r['Fn::Sub'][1].typeName === 'Location',
     );
     expect(locationPolicy).toHaveLength(1);
 
     const addressPolicy = authRolePolicy.Properties.PolicyDocument.Statement[0].Resource.filter(
-      (r) => r['Fn::Sub']
-        && r['Fn::Sub'].length
-        && r['Fn::Sub'].length === 2
-        && r['Fn::Sub'][1].typeName
-        && r['Fn::Sub'][1].typeName === 'Address',
+      (r) =>
+        r['Fn::Sub'] &&
+        r['Fn::Sub'].length &&
+        r['Fn::Sub'].length === 2 &&
+        r['Fn::Sub'][1].typeName &&
+        r['Fn::Sub'][1].typeName === 'Address',
     );
     expect(addressPolicy).toHaveLength(1);
   });
@@ -557,7 +555,8 @@ describe('schema generation directive tests', () => {
   });
 
   test('OIDC works with private', () => {
-    const cognitoUserPoolAndOidcAuthRules = '@auth(rules: [ { allow: private, provider: oidc, operations: [read] } { allow: owner, ownerField: "editors" } { allow: groups, groupsField: "groups"} ])';
+    const cognitoUserPoolAndOidcAuthRules =
+      '@auth(rules: [ { allow: private, provider: oidc, operations: [read] } { allow: owner, ownerField: "editors" } { allow: groups, groupsField: "groups"} ])';
     const authConfig = withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS', 'OPENID_CONNECT']);
 
     (authConfig.additionalAuthenticationProviders[1] as AppSyncAuthConfigurationOIDCEntry).openIDConnectConfig = {

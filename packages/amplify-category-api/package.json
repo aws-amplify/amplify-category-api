@@ -38,11 +38,9 @@
     "@aws-cdk/aws-apigatewayv2-alpha": "~2.80.0-alpha.0",
     "@graphql-tools/merge": "^6.0.18",
     "@octokit/rest": "^18.0.9",
-    "aws-cdk-lib": "~2.80.0",
     "aws-sdk": "^2.1113.0",
     "chalk": "^4.1.1",
     "cloudform-types": "^4.2.0",
-    "constructs": "^10.0.5",
     "fs-extra": "^8.1.0",
     "graphql": "^15.5.0",
     "graphql-auth-transformer": "7.2.61",
@@ -73,7 +71,9 @@
     "@aws-amplify/amplify-prompts": "^2.6.8",
     "@aws-amplify/amplify-provider-awscloudformation": "^8.1.0",
     "amplify-headless-interface": "^1.17.3",
-    "amplify-util-headless-input": "^1.9.12"
+    "amplify-util-headless-input": "^1.9.12",
+    "aws-cdk-lib": "^2.80.0",
+    "constructs": "^10.0.5"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.0",

@@ -1,7 +1,5 @@
 import { StackManagerProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  Stack, App, CfnParameter, CfnParameterProps,
-} from 'aws-cdk-lib';
+import { Stack, App, CfnParameter, CfnParameterProps } from 'aws-cdk-lib';
 import { TransformerNestedStack, TransformerRootStack, TransformerStackSythesizer } from '../cdk-compat';
 
 export type ResourceToStackMap = Record<string, string>;
@@ -64,7 +62,7 @@ export class StackManager implements StackManagerProvider {
       stacks = new Map([...stacks.entries(), ...synthesizer.collectStacks()]);
     });
     return stacks;
-  }
+  };
 
   getMappingTemplates = () => this.stackSynthesizer.collectMappingTemplates();
 

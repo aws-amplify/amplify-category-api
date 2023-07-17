@@ -64,11 +64,11 @@ export const makeConditionFilterInput = (
   object: ObjectTypeDefinitionNode,
 ): InputObjectDefinitionWrapper => {
   const input = InputObjectDefinitionWrapper.create(name);
-  
-  addSimpleFieldsConditionsForListing(input, object, ctx)
+
+  addSimpleFieldsConditionsForListing(input, object, ctx);
   addListTypeConditions(input, name);
-  addNonListTypeConditions(input, name)
-  addDatastoreConditions(input, ctx)
+  addNonListTypeConditions(input, name);
+  addDatastoreConditions(input, ctx);
 
   return input;
 };
@@ -91,7 +91,7 @@ export const makeSubscriptionFilterInput = (
       const conditionTypeName = ModelResourceIDs.ModelFilterScalarInputTypeName(
         isEnumType ? 'String' : field.getTypeName(),
         !supportsConditions,
-        true
+        true,
       );
       const inputField = InputFieldWrapper.create(field.name, conditionTypeName, true);
       input.addField(inputField);
@@ -99,7 +99,7 @@ export const makeSubscriptionFilterInput = (
   }
 
   addListTypeConditions(input, name);
-  addDatastoreConditions(input, ctx)
+  addDatastoreConditions(input, ctx);
 
   return input;
 };
@@ -113,7 +113,7 @@ export const makeSubscriptionFilterInput = (
 const addSimpleFieldsConditionsForListing = (
   input: InputObjectDefinitionWrapper,
   object: ObjectTypeDefinitionNode,
-  ctx: TransformerTransformSchemaStepContextProvider
+  ctx: TransformerTransformSchemaStepContextProvider,
 ) => {
   const supportsConditions = true;
   const wrappedObject = new ObjectDefinitionWrapper(object);
@@ -121,16 +121,17 @@ const addSimpleFieldsConditionsForListing = (
   for (const field of wrappedObject.fields) {
     const fieldType = ctx.output.getType(field.getTypeName());
     const isEnumType = fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION;
-    
+
     if (field.isScalar() || isEnumType) {
-      const conditionTypeName = isEnumType && field.isList()
-        ? ModelResourceIDs.ModelFilterListInputTypeName(field.getTypeName(), !supportsConditions)
-        : ModelResourceIDs.ModelFilterScalarInputTypeName(field.getTypeName(), !supportsConditions);
+      const conditionTypeName =
+        isEnumType && field.isList()
+          ? ModelResourceIDs.ModelFilterListInputTypeName(field.getTypeName(), !supportsConditions)
+          : ModelResourceIDs.ModelFilterScalarInputTypeName(field.getTypeName(), !supportsConditions);
       const inputField = InputFieldWrapper.create(field.name, conditionTypeName, true);
       input.addField(inputField);
     }
   }
-}
+};
 
 /**
  * Make additional conditions of non-list type
@@ -139,10 +140,10 @@ const addSimpleFieldsConditionsForListing = (
  */
 const addNonListTypeConditions = (input: InputObjectDefinitionWrapper, name: string) => {
   for (const additionalField of ['not']) {
-    const inputField = InputFieldWrapper.create(additionalField, name, true, false);	
-    input.addField(inputField);	
+    const inputField = InputFieldWrapper.create(additionalField, name, true, false);
+    input.addField(inputField);
   }
-}
+};
 
 /**
  * Make additional conditions of list type
@@ -154,29 +155,24 @@ const addListTypeConditions = (input: InputObjectDefinitionWrapper, name: string
     const inputField = InputFieldWrapper.create(additionalField, name, true, true);
     input.addField(inputField);
   }
-}
+};
 
 /**
  * Make additional conditions for datastore-enabled apps
  * @param input output object
  * @param ctx TransformerContext
  */
-const addDatastoreConditions = (
-  input: InputObjectDefinitionWrapper,
-  ctx: TransformerTransformSchemaStepContextProvider
-) => {
+const addDatastoreConditions = (input: InputObjectDefinitionWrapper, ctx: TransformerTransformSchemaStepContextProvider) => {
   if (ctx.isProjectUsingDataStore()) {
-    const datastoreFields = [
-      {fieldName: '_deleted', typeName: STANDARD_SCALARS.Boolean}
-    ]
+    const datastoreFields = [{ fieldName: '_deleted', typeName: STANDARD_SCALARS.Boolean }];
 
-    for (const {fieldName, typeName} of datastoreFields) {
-      const type = ModelResourceIDs.ModelScalarFilterInputTypeName(typeName, false)
+    for (const { fieldName, typeName } of datastoreFields) {
+      const type = ModelResourceIDs.ModelScalarFilterInputTypeName(typeName, false);
       const inputField = InputFieldWrapper.create(fieldName, type, true, false);
       input.addField(inputField);
     }
   }
-}
+};
 
 /**
  * Generates the Subscription filter input type name
@@ -198,7 +194,7 @@ export const removeSubscriptionFilterInputAttribute = (
   }
   const newFilterType: InputObjectTypeDefinitionNode = {
     ...filterType,
-    fields: filterType.fields?.filter(field => field.name.value !== fieldName),
+    fields: filterType.fields?.filter((field) => field.name.value !== fieldName),
   };
   ctx.output.putType(newFilterType);
 };
@@ -207,11 +203,15 @@ export const removeSubscriptionFilterInputAttribute = (
  * Generates model condition input type
  */
 export const addModelConditionInputs = (ctx: TransformerTransformSchemaStepContextProvider): void => {
-  const conditionsInput: TypeDefinitionNode[] = ['String', 'Int', 'Float', 'Boolean', 'ID'].map(scalarName => makeModelScalarFilterInputObject(scalarName, true));
-  ['String', 'Int', 'Float', 'Boolean', 'ID'].map(scalarName => conditionsInput.push(makeModelScalarFilterInputObject(scalarName, true, true)));
+  const conditionsInput: TypeDefinitionNode[] = ['String', 'Int', 'Float', 'Boolean', 'ID'].map((scalarName) =>
+    makeModelScalarFilterInputObject(scalarName, true),
+  );
+  ['String', 'Int', 'Float', 'Boolean', 'ID'].map((scalarName) =>
+    conditionsInput.push(makeModelScalarFilterInputObject(scalarName, true, true)),
+  );
   conditionsInput.push(makeAttributeTypeEnum());
   conditionsInput.push(makeSizeInputType());
-  conditionsInput.forEach(input => {
+  conditionsInput.forEach((input) => {
     const inputName = input.name.value;
     if (!ctx.output.getType(inputName)) {
       ctx.output.addType(input);
@@ -241,13 +241,13 @@ export const createEnumModelFilters = (
 ): InputObjectTypeDefinitionNode[] => {
   // add enum type if present
   const typeWrapper = new ObjectDefinitionWrapper(type);
-  const enumFields = typeWrapper.fields.filter(field => {
+  const enumFields = typeWrapper.fields.filter((field) => {
     const typeName = field.getTypeName();
     const typeObj = ctx.output.getType(typeName);
     return typeObj && typeObj.kind === 'EnumTypeDefinition';
   });
 
-  return enumFields.map(field => makeEnumFilterInput(field));
+  return enumFields.map((field) => makeEnumFilterInput(field));
 };
 
 /**
@@ -281,7 +281,7 @@ export function makeModelScalarFilterInputObject(
   }
 
   if (!isSubscriptionFilter) {
-    makeFunctionInputFields(type).map(f => scalarConditionInput.addField(f));
+    makeFunctionInputFields(type).map((f) => scalarConditionInput.addField(f));
   }
 
   return scalarConditionInput.serialize();
@@ -398,13 +398,13 @@ export function makeEnumFilterInput(fieldWrapper: FieldWrapper): InputObjectType
     : ModelResourceIDs.ModelFilterScalarInputTypeName(fieldWrapper.getTypeName(), !supportsConditions);
 
   const input = InputObjectDefinitionWrapper.create(conditionTypeName);
-  ['eq', 'ne'].forEach(fieldName => {
+  ['eq', 'ne'].forEach((fieldName) => {
     const field = InputFieldWrapper.create(fieldName, fieldWrapper.getTypeName(), true, fieldWrapper.isList());
     input.addField(field);
   });
 
   if (fieldWrapper.isList()) {
-    ['contains', 'notContains'].forEach(fieldName => {
+    ['contains', 'notContains'].forEach((fieldName) => {
       const field = InputFieldWrapper.create(fieldName, fieldWrapper.getTypeName(), true);
       input.addField(field);
     });
@@ -423,9 +423,9 @@ export const addDirectivesToField = (
 ): void => {
   const type = ctx.output.getType(typeName) as ObjectTypeDefinitionNode;
   if (type) {
-    const field = type.fields?.find(f => f.name.value === fieldName);
+    const field = type.fields?.find((f) => f.name.value === fieldName);
     if (field) {
-      const newFields = [...type.fields!.filter(f => f.name.value !== field.name.value), extendFieldWithDirectives(field, directives)];
+      const newFields = [...type.fields!.filter((f) => f.name.value !== field.name.value), extendFieldWithDirectives(field, directives)];
 
       const newType = {
         ...type,
@@ -452,7 +452,7 @@ export const addDirectivesToOperation = (
   // add the directives to the result type of the operation
   const type = ctx.output.getType(typeName) as ObjectTypeDefinitionNode;
   if (type) {
-    const field = type.fields!.find(f => f.name.value === operationName);
+    const field = type.fields!.find((f) => f.name.value === operationName);
 
     if (field) {
       const returnFieldType = field.type as NamedTypeNode;
@@ -501,18 +501,18 @@ export const propagateApiKeyToNestedTypes = (
       if (fieldType.kind !== 'ObjectTypeDefinition') {
         return undefined;
       }
-      const typeModel = fieldType.directives!.find(dir => dir.name.value === 'model');
+      const typeModel = fieldType.directives!.find((dir) => dir.name.value === 'model');
       return typeModel !== undefined ? undefined : fieldType;
     }
     return fieldType;
   };
   const nonModelFieldTypes = def
-    .fields!.map(f => ctx.output.getType(getBaseType(f.type)) as TypeDefinitionNode)
+    .fields!.map((f) => ctx.output.getType(getBaseType(f.type)) as TypeDefinitionNode)
     .filter(nonModelTypePredicate);
   for (const nonModelFieldType of nonModelFieldTypes) {
     const nonModelName = nonModelFieldType.name.value;
     const hasSeenType = seenNonModelTypes.has(nonModelName);
-    const hasApiKey = nonModelFieldType.directives?.some(dir => dir.name.value === API_KEY_DIRECTIVE) ?? false;
+    const hasApiKey = nonModelFieldType.directives?.some((dir) => dir.name.value === API_KEY_DIRECTIVE) ?? false;
     if (!hasSeenType && !hasApiKey) {
       seenNonModelTypes.add(nonModelName);
       extendTypeWithDirectives(ctx, nonModelName, [makeDirective(API_KEY_DIRECTIVE, [])]);

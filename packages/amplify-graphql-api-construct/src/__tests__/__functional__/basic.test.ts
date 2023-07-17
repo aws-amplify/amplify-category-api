@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import * as cognito from 'aws-cdk-lib/aws-cognito'
+import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 
@@ -26,10 +26,7 @@ describe('basic functionality', () => {
     template.resourceCountIs('AWS::AppSync::GraphQLApi', 1);
     template.hasResourceProperties('AWS::AppSync::GraphQLApi', {
       Name: {
-        'Fn::Join': [
-          '',
-          Match.arrayWith(['MyApi']),
-        ],
+        'Fn::Join': ['', Match.arrayWith(['MyApi'])],
       },
     });
 
@@ -78,17 +75,17 @@ describe('basic functionality', () => {
       ],
       AttributeDefinitions: [
         {
-          AttributeName: "ds_pk",
-          AttributeType: "S"
+          AttributeName: 'ds_pk',
+          AttributeType: 'S',
         },
         {
-          AttributeName: "ds_sk",
-          AttributeType: "S"
-        }
+          AttributeName: 'ds_sk',
+          AttributeType: 'S',
+        },
       ],
     });
   });
-  
+
   it('uses the id in place of apiName when not specified', () => {
     const stack = new cdk.Stack();
 
@@ -110,10 +107,7 @@ describe('basic functionality', () => {
     template.resourceCountIs('AWS::AppSync::GraphQLApi', 1);
     template.hasResourceProperties('AWS::AppSync::GraphQLApi', {
       Name: {
-        'Fn::Join': [
-          '',
-          Match.arrayWith(['TestApi']),
-        ],
+        'Fn::Join': ['', Match.arrayWith(['TestApi'])],
       },
     });
   });

@@ -1,8 +1,4 @@
-import {
-  DocumentNode,
-  Kind,
-  ObjectTypeDefinitionNode,
-} from 'graphql';
+import { DocumentNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
 import { getObjectWithName } from '../helpers/get-object-with-name';
 import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
@@ -15,9 +11,7 @@ import { ValidateSchemaProps } from '../helpers/schema-validator-props';
  * @returns true if models do not refer each other with @hasMany/@hasOne relation when dataStore is enabled
  */
 
-export const validateBelongsToIsUsedWhenDatastoreInUse = (
-  schema: DocumentNode, props: ValidateSchemaProps,
-): Error[] => {
+export const validateBelongsToIsUsedWhenDatastoreInUse = (schema: DocumentNode, props: ValidateSchemaProps): Error[] => {
   if (!props.isDataStoreEnabled) {
     return [];
   }
@@ -28,9 +22,9 @@ export const validateBelongsToIsUsedWhenDatastoreInUse = (
   ) as ObjectTypeDefinitionNode[];
   for (let i = 0; i < objectTypeDefinitions.length; i++) {
     const objectTypeDefinition = objectTypeDefinitions[i];
-    const directiveFields = objectTypeDefinition.fields?.filter((objectField) => objectField.directives?.find(
-      (directive) => directive.name.value === 'hasOne' || directive.name.value === 'hasMany',
-    ));
+    const directiveFields = objectTypeDefinition.fields?.filter((objectField) =>
+      objectField.directives?.find((directive) => directive.name.value === 'hasOne' || directive.name.value === 'hasMany'),
+    );
 
     const objectName = objectTypeDefinition.name.value;
     directiveFields?.forEach((directiveField) => {
@@ -42,9 +36,9 @@ export const validateBelongsToIsUsedWhenDatastoreInUse = (
         return;
       }
 
-      const relatedObjectdirectiveFields = relatedObject?.fields?.filter((objectField) => objectField.directives?.find(
-        (directive) => directive.name.value === 'hasOne' || directive.name.value === 'hasMany',
-      ));
+      const relatedObjectdirectiveFields = relatedObject?.fields?.filter((objectField) =>
+        objectField.directives?.find((directive) => directive.name.value === 'hasOne' || directive.name.value === 'hasMany'),
+      );
 
       if (!relatedObjectdirectiveFields) {
         /* istanbul ignore next */
@@ -56,9 +50,11 @@ export const validateBelongsToIsUsedWhenDatastoreInUse = (
         const typeName1 = resolveFieldTypeName(relatedObjectdirectiveField.type);
         const relatedObject1 = getObjectWithName(schema, typeName1);
         if (relatedObject1?.name.value === objectName) {
-          errors.push(new InvalidDirectiveError(
-            `${relatedObject?.name.value} and ${objectName} cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead. See https://docs.amplify.aws/cli/graphql/data-modeling/#belongs-to-relationship`,
-          ));
+          errors.push(
+            new InvalidDirectiveError(
+              `${relatedObject?.name.value} and ${objectName} cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead. See https://docs.amplify.aws/cli/graphql/data-modeling/#belongs-to-relationship`,
+            ),
+          );
           break;
         }
       }

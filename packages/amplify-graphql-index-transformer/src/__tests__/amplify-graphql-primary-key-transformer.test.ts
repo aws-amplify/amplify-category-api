@@ -209,11 +209,10 @@ test('a primary key with no sort key is properly configured', () => {
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::DynamoDB::Table', {
-      KeySchema: [{ AttributeName: 'email', KeyType: 'HASH' }],
-      AttributeDefinitions: [{ AttributeName: 'email', AttributeType: 'S' }],
-    });
+  Template.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    KeySchema: [{ AttributeName: 'email', KeyType: 'HASH' }],
+    AttributeDefinitions: [{ AttributeName: 'email', AttributeType: 'S' }],
+  });
 
   expect(out.resolvers).toMatchSnapshot();
 
@@ -252,17 +251,16 @@ test('a primary key with a single sort key field is properly configured', () => 
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::DynamoDB::Table', {
-      KeySchema: [
-        { AttributeName: 'email', KeyType: 'HASH' },
-        { AttributeName: 'kind', KeyType: 'RANGE' },
-      ],
-      AttributeDefinitions: [
-        { AttributeName: 'email', AttributeType: 'S' },
-        { AttributeName: 'kind', AttributeType: 'N' },
-      ],
-    });
+  Template.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    KeySchema: [
+      { AttributeName: 'email', KeyType: 'HASH' },
+      { AttributeName: 'kind', KeyType: 'RANGE' },
+    ],
+    AttributeDefinitions: [
+      { AttributeName: 'email', AttributeType: 'S' },
+      { AttributeName: 'kind', AttributeType: 'N' },
+    ],
+  });
 
   expect(out.resolvers).toMatchSnapshot();
 
@@ -291,17 +289,16 @@ test('a primary key with a composite sort key is properly configured', () => {
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::DynamoDB::Table', {
-      KeySchema: [
-        { AttributeName: 'email', KeyType: 'HASH' },
-        { AttributeName: 'kind#other', KeyType: 'RANGE' },
-      ],
-      AttributeDefinitions: [
-        { AttributeName: 'email', AttributeType: 'S' },
-        { AttributeName: 'kind#other', AttributeType: 'S' },
-      ],
-    });
+  Template.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    KeySchema: [
+      { AttributeName: 'email', KeyType: 'HASH' },
+      { AttributeName: 'kind#other', KeyType: 'RANGE' },
+    ],
+    AttributeDefinitions: [
+      { AttributeName: 'email', AttributeType: 'S' },
+      { AttributeName: 'kind#other', AttributeType: 'S' },
+    ],
+  });
 
   expect(out.resolvers).toMatchSnapshot();
 
@@ -366,17 +363,16 @@ test('enums are supported in keys', () => {
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::DynamoDB::Table', {
-      KeySchema: [
-        { AttributeName: 'status', KeyType: 'HASH' },
-        { AttributeName: 'lastStatus', KeyType: 'RANGE' },
-      ],
-      AttributeDefinitions: [
-        { AttributeName: 'status', AttributeType: 'S' },
-        { AttributeName: 'lastStatus', AttributeType: 'S' },
-      ],
-    });
+  Template.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    KeySchema: [
+      { AttributeName: 'status', KeyType: 'HASH' },
+      { AttributeName: 'lastStatus', KeyType: 'RANGE' },
+    ],
+    AttributeDefinitions: [
+      { AttributeName: 'status', AttributeType: 'S' },
+      { AttributeName: 'lastStatus', AttributeType: 'S' },
+    ],
+  });
 
   expect(out.resolvers).toMatchSnapshot();
 
@@ -402,11 +398,10 @@ test('user provided id fields are not removed', () => {
   const stack = out.stacks.Test;
 
   validateModelSchema(schema);
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::DynamoDB::Table', {
-      KeySchema: [{ AttributeName: 'email', KeyType: 'HASH' }],
-      AttributeDefinitions: [{ AttributeName: 'email', AttributeType: 'S' }],
-    });
+  Template.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    KeySchema: [{ AttributeName: 'email', KeyType: 'HASH' }],
+    AttributeDefinitions: [{ AttributeName: 'email', AttributeType: 'S' }],
+  });
 
   const createInput: any = schema.definitions.find((d: any) => {
     return d.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && d.name.value === 'CreateTestInput';
@@ -749,7 +744,7 @@ describe('RDS primary key transformer tests', () => {
   const modelToDatasourceMap = new Map<string, DatasourceType>();
   modelToDatasourceMap.set('Test', {
     dbType: 'MySQL',
-    provisionDB: false
+    provisionDB: false,
   });
 
   it('a primary key with a single sort key field is properly configured', () => {
@@ -1031,7 +1026,9 @@ const getDDBTableResources = (stack: any): string[] => {
   if (!allResources || Object.keys(allResources)?.length === 0) {
     return ddbTables;
   }
-  return Object.keys(_.pickBy(allResources, function(value, key) {
-    return value?.Type === "AWS::DynamoDB::Table";
-  }));
-} ;
+  return Object.keys(
+    _.pickBy(allResources, function (value, key) {
+      return value?.Type === 'AWS::DynamoDB::Table';
+    }),
+  );
+};

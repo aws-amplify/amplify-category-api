@@ -1,5 +1,13 @@
 import { join } from 'path';
-import { REPO_ROOT, getCCIClient, getTestFiles, getTestNameFromPath, getTimingsFromJobsData, saveJobMetrics, saveTestTimings } from './utils';
+import {
+  REPO_ROOT,
+  getCCIClient,
+  getTestFiles,
+  getTestNameFromPath,
+  getTimingsFromJobsData,
+  saveJobMetrics,
+  saveTestTimings,
+} from './utils';
 
 async function main(): Promise<void> {
   const client = getCCIClient();
@@ -8,13 +16,14 @@ async function main(): Promise<void> {
   saveJobMetrics(data);
 
   let testSuites = getTestFiles(join(REPO_ROOT, 'packages', 'amplify-e2e-tests'));
-  testSuites.push(...getTestFiles(
-    join(REPO_ROOT, 'packages', 'amplify-migration-tests'))
-    .filter(testSuite => testSuite !== 'src/__tests__/update_tests/api_migration_update.test.ts')
+  testSuites.push(
+    ...getTestFiles(join(REPO_ROOT, 'packages', 'amplify-migration-tests')).filter(
+      (testSuite) => testSuite !== 'src/__tests__/update_tests/api_migration_update.test.ts',
+    ),
   );
-  testSuites.push(...getTestFiles(join(REPO_ROOT, 'packages', 'graphql-transformers-e2e-tests')))
+  testSuites.push(...getTestFiles(join(REPO_ROOT, 'packages', 'graphql-transformers-e2e-tests')));
   const jobTimings = getTimingsFromJobsData();
-  const testRuntimes = testSuites.map(t => {
+  const testRuntimes = testSuites.map((t) => {
     const oldName = getTestNameFromPath(t);
     if (jobTimings.has(oldName)) {
       return {

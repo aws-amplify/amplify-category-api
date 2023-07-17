@@ -1,8 +1,4 @@
-import {
-  DirectiveNode,
-  ObjectTypeDefinitionNode,
-  parse,
-} from 'graphql';
+import { DirectiveNode, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { cloneDeep } from 'lodash';
 import { getFieldNameFor } from '../../utils/operation-names';
 import { DirectiveWrapper } from '../../utils';
@@ -56,10 +52,7 @@ describe('Transformer Core Util Tests', () => {
       const modelDir = objNode?.directives?.[0] as DirectiveNode;
       const wrappedDir = new DirectiveWrapper(modelDir);
 
-      const newArgs = wrappedDir.getArguments(
-        cloneDeep(defaultArgs),
-        { deepMergeArguments: true },
-      );
+      const newArgs = wrappedDir.getArguments(cloneDeep(defaultArgs), { deepMergeArguments: true });
       expect(newArgs.subscriptions).toEqual({
         level: 'public',
         onCreate: [getFieldNameFor('onCreate', typeName)],

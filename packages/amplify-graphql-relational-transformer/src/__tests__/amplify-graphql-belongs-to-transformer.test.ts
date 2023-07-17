@@ -359,7 +359,9 @@ test('support for belongs to with Int fields', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
-  expect(out.resolvers['ExamItem.owningBank.req.vtl']).toContain('#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("owningBankId"), $ctx.source.owningBankId) )')
+  expect(out.resolvers['ExamItem.owningBank.req.vtl']).toContain(
+    '#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("owningBankId"), $ctx.source.owningBankId) )',
+  );
   expect(out.resolvers['ExamItem.owningBank.req.vtl']).toContain('$util.defaultIfNull($partitionKeyValue, "___xamznone____"))');
   expect(out.resolvers['ExamItem.owningBank.req.vtl']).not.toContain(
     '$util.defaultIfNullOrBlank($ctx.source.owningBankId, "___xamznone____"))',
@@ -371,9 +373,9 @@ describe('Pre Processing Belongs To Tests', () => {
   const hasGeneratedField = (doc: DocumentNode, objectType: string, fieldName: string): boolean => {
     let hasField = false;
     let doubleHasField = false;
-    doc?.definitions?.forEach(def => {
+    doc?.definitions?.forEach((def) => {
       if ((def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') && def.name.value === objectType) {
-        def?.fields?.forEach(field => {
+        def?.fields?.forEach((field) => {
           if (hasField && field.name.value === fieldName) {
             doubleHasField = true;
           } else if (field.name.value === fieldName) {
@@ -387,7 +389,7 @@ describe('Pre Processing Belongs To Tests', () => {
 
   beforeEach(() => {
     transformer = new GraphQLTransform({
-        transformers: [new ModelTransformer(), new HasManyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+      transformers: [new ModelTransformer(), new HasManyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     });
   });
 
@@ -408,7 +410,7 @@ describe('Pre Processing Belongs To Tests', () => {
     expect(hasGeneratedField(updatedSchemaDoc, 'Post', 'postBlogFieldId')).toBeTruthy();
   });
 
-  test('Should not generate extra connecting field for a has many, there\'s already a route back to parent', () => {
+  test("Should not generate extra connecting field for a has many, there's already a route back to parent", () => {
     const schema = `
     type Blog @model {
       id: ID!
@@ -475,9 +477,9 @@ describe('@belongsTo connection field nullability tests', () => {
         }
       `;
       const transformer = new GraphQLTransform({
-            transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
       });
-    
+
       const out = transformer.transform(inputSchema);
       expect(out).toBeDefined();
       const schema = parse(out.schema);
@@ -520,7 +522,7 @@ describe('@belongsTo connection field nullability tests', () => {
       expect(updateInputConnectedField2.type.kind).toBe(Kind.NAMED_TYPE);
       expect(updateInputConnectedField2.type.name.value).toBe('String');
     });
-  
+
     test('Should generate non-nullable connection fields in type definition and create input while keeping nullable in update input when belongsTo field is non-nullable', () => {
       const inputSchema = `
         type Todo @model {
@@ -538,9 +540,9 @@ describe('@belongsTo connection field nullability tests', () => {
         }
       `;
       const transformer = new GraphQLTransform({
-            transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
       });
-    
+
       const out = transformer.transform(inputSchema);
       expect(out).toBeDefined();
       const schema = parse(out.schema);
@@ -603,9 +605,9 @@ describe('@belongsTo connection field nullability tests', () => {
         }
       `;
       const transformer = new GraphQLTransform({
-            transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
       });
-    
+
       const out = transformer.transform(inputSchema);
       expect(out).toBeDefined();
       const schema = parse(out.schema);
@@ -648,7 +650,7 @@ describe('@belongsTo connection field nullability tests', () => {
       expect(updateInputConnectedField2.type.kind).toBe(Kind.NAMED_TYPE);
       expect(updateInputConnectedField2.type.name.value).toBe('String');
     });
-  
+
     test('Should generate non-nullable connection fields in type definition and create input while keeping nullable in update input when hasMany field is non-nullable', () => {
       const inputSchema = `
         type Todo @model {
@@ -666,9 +668,9 @@ describe('@belongsTo connection field nullability tests', () => {
         }
       `;
       const transformer = new GraphQLTransform({
-            transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
       });
-    
+
       const out = transformer.transform(inputSchema);
       expect(out).toBeDefined();
       const schema = parse(out.schema);

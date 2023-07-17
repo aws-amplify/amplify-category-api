@@ -1,10 +1,4 @@
-import {
-  AmplifyCategories,
-  JSONUtilities,
-  pathManager,
-  ResourceDoesNotExistError,
-  stateManager,
-} from '@aws-amplify/amplify-cli-core';
+import { AmplifyCategories, JSONUtilities, pathManager, ResourceDoesNotExistError, stateManager } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import { ResolverConfig } from 'graphql-transformer-core';

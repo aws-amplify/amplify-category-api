@@ -20,7 +20,7 @@ export const getCCIClient = () => {
     throw new Error('CIRCLECI_TOKEN is not set. Export it to your terminal, then try again.');
   }
   return new CircleCIAPIClient(process.env.CIRCLECI_TOKEN, ClientDefaults);
-}
+};
 
 export function saveJobMetrics(data: any): any {
   console.log(`saving job metrics to ${JOB_METRICS_PATH}`);
@@ -61,12 +61,7 @@ function getTestNameFromJobName(jobName: string) {
 export const getTestNameFromPath = (testSuitePath: string): string => {
   const startIndex = testSuitePath.lastIndexOf('/') + 1;
   const endIndex = testSuitePath.lastIndexOf('.test');
-  return testSuitePath
-    .substring(startIndex, endIndex)
-    .split('.e2e')
-    .join('')
-    .split('.')
-    .join('-');
+  return testSuitePath.substring(startIndex, endIndex).split('.e2e').join('').split('.').join('-');
 };
 
 export function saveTestTimings(data: any): any {

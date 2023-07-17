@@ -1,6 +1,20 @@
 import * as fs from 'fs-extra';
 
-import { compoundExpression, forEach, iff, list, methodCall, obj, print, ref, ret, set, str, ReferenceNode, StringNode } from 'graphql-mapping-template';
+import {
+  compoundExpression,
+  forEach,
+  iff,
+  list,
+  methodCall,
+  obj,
+  print,
+  ref,
+  ret,
+  set,
+  str,
+  ReferenceNode,
+  StringNode,
+} from 'graphql-mapping-template';
 import { graphqlName, plurality, toUpper } from 'graphql-transformer-common';
 
 import AppSync from 'cloudform-types/types/appSync';
@@ -38,7 +52,7 @@ export class RelationalDBResolverGenerator {
     this.stringFieldMap = context.stringFieldMap;
     this.intFieldMap = context.intFieldMap;
     this.typePrimaryKeyTypeMap = context.typePrimaryKeyTypeMap;
-    this.variableMapRefName = 'variableMap'
+    this.variableMapRefName = 'variableMap';
   }
 
   /**
@@ -93,19 +107,15 @@ export class RelationalDBResolverGenerator {
           set(ref('discard'), ref(`cols.add($entry)`)),
           set(ref('discard'), ref(`vals.add(":$entry")`)),
           methodCall(
-            ref('util.qr'), 
-            methodCall(
-              ref(`${this.variableMapRefName}.put`), 
-              str(':$entry'),
-              ref(`ctx.args.create${tableName}Input[$entry]`)
-            )
+            ref('util.qr'),
+            methodCall(ref(`${this.variableMapRefName}.put`), str(':$entry'), ref(`ctx.args.create${tableName}Input[$entry]`)),
           ),
         ]),
         set(ref('valStr'), ref('vals.toString().replace("[","(").replace("]",")")')),
         set(ref('colStr'), ref('cols.toString().replace("[","(").replace("]",")")')),
         RelationalDBMappingTemplate.rdsQuery({
           statements: list([str(createSql), str(selectSql)]),
-          variableMapRefName: this.variableMapRefName
+          variableMapRefName: this.variableMapRefName,
         }),
       ]),
     );
@@ -156,7 +166,7 @@ export class RelationalDBResolverGenerator {
         methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(`:${primaryKey}`), primaryKeyRef)),
         RelationalDBMappingTemplate.rdsQuery({
           statements: list([str(selectSql)]),
-          variableMapRefName: this.variableMapRefName
+          variableMapRefName: this.variableMapRefName,
         }),
       ]),
     );
@@ -217,19 +227,15 @@ export class RelationalDBResolverGenerator {
         set(ref(this.variableMapRefName), obj({})),
         forEach(ref('entry'), ref(`ctx.args.update${tableName}Input.keySet()`), [
           methodCall(
-            ref('util.qr'), 
-            methodCall(
-              ref(`${this.variableMapRefName}.put`), 
-              str(':$entry'),
-              ref(`ctx.args.update${tableName}Input[$entry]`)
-            )
+            ref('util.qr'),
+            methodCall(ref(`${this.variableMapRefName}.put`), str(':$entry'), ref(`ctx.args.update${tableName}Input[$entry]`)),
           ),
           set(ref('discard'), ref(`updateList.put($entry, ":$entry")`)),
         ]),
         set(ref('update'), ref(`updateList.toString().replace("{","").replace("}","")`)),
         RelationalDBMappingTemplate.rdsQuery({
           statements: list([str(updateSql), str(selectSql)]),
-          variableMapRefName: this.variableMapRefName
+          variableMapRefName: this.variableMapRefName,
         }),
       ]),
     );
@@ -292,7 +298,7 @@ export class RelationalDBResolverGenerator {
         methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(`:${primaryKey}`), primaryKeyRef)),
         RelationalDBMappingTemplate.rdsQuery({
           statements: list([str(selectSql), str(deleteSql)]),
-          variableMapRefName: this.variableMapRefName
+          variableMapRefName: this.variableMapRefName,
         }),
       ]),
     );
@@ -441,7 +447,7 @@ export class RelationalDBResolverGenerator {
     return `SELECT * FROM ${tableName} WHERE ${primaryKey}=:${primaryKey}`;
   }
 
-  private getPrimaryKeyRef(type: string, operationType: GRAPHQL_RESOLVER_OPERATION): ReferenceNode|StringNode {
+  private getPrimaryKeyRef(type: string, operationType: GRAPHQL_RESOLVER_OPERATION): ReferenceNode | StringNode {
     const tableName = this.getTableName(type);
     const primaryKey = this.getTablePrimaryKey(type);
     const hasToAppendOperationInput = ![GRAPHQL_RESOLVER_OPERATION.Get, GRAPHQL_RESOLVER_OPERATION.Delete].includes(operationType);

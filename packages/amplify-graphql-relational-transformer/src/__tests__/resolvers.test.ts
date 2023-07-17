@@ -10,21 +10,22 @@ const createPartialMock = <T>(mockFields?: Partial<T>): T => (mockFields || {}) 
 
 describe('makeGetItemConnectionWithKeyResolver', () => {
   test('it throws on empty related type index field', () => {
-    expect(() => makeGetItemConnectionWithKeyResolver(
-      createPartialMock<HasOneDirectiveConfiguration>({ relatedTypeIndex: [] }),
-      createPartialMock(),
-    )).toThrowErrorMatchingInlineSnapshot('"Expected relatedType index fields to be set for connection."');
+    expect(() =>
+      makeGetItemConnectionWithKeyResolver(createPartialMock<HasOneDirectiveConfiguration>({ relatedTypeIndex: [] }), createPartialMock()),
+    ).toThrowErrorMatchingInlineSnapshot('"Expected relatedType index fields to be set for connection."');
   });
 });
 
 describe('makeQueryConnectionWithKeyResolver', () => {
   test('it requires either fields or connection fields to be populated with values', () => {
-    expect(() => makeQueryConnectionWithKeyResolver(
-      createPartialMock<HasManyDirectiveConfiguration>({
-        fields: [],
-        connectionFields: [],
-      }),
-      createPartialMock(),
-    )).toThrowErrorMatchingInlineSnapshot('"Either connection fields or local fields should be populated."');
+    expect(() =>
+      makeQueryConnectionWithKeyResolver(
+        createPartialMock<HasManyDirectiveConfiguration>({
+          fields: [],
+          connectionFields: [],
+        }),
+        createPartialMock(),
+      ),
+    ).toThrowErrorMatchingInlineSnapshot('"Either connection fields or local fields should be populated."');
   });
 });

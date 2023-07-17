@@ -19,7 +19,7 @@ export class VersionedModelTransformer extends Transformer {
       // TODO: Allow version attribute selection. Could be `@version on FIELD_DEFINITION`
       gql`
         directive @versioned(versionField: String = "version", versionInput: String = "expectedVersion") on OBJECT
-      `
+      `,
     );
   }
 
@@ -42,7 +42,7 @@ export class VersionedModelTransformer extends Transformer {
    */
   public object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
     // @versioned may only be used on types that are also @model
-    const modelDirective = def.directives.find(dir => dir.name.value === 'model');
+    const modelDirective = def.directives.find((dir) => dir.name.value === 'model');
     if (!modelDirective) {
       throw new InvalidDirectiveError('Types annotated with @versioned must also be annotated with @model.');
     }
@@ -104,10 +104,10 @@ export class VersionedModelTransformer extends Transformer {
             expressionNames: obj({
               [`#${versionField}`]: str(`${versionField}`),
             }),
-          })
+          }),
         ),
         qref(`$ctx.args.input.remove("${versionInput}")`),
-      ])
+      ]),
     );
     const resolver = ctx.getResource(mutationResolverLogicalId);
     if (resolver) {
@@ -130,12 +130,12 @@ export class VersionedModelTransformer extends Transformer {
             expressionNames: obj({
               [`#${versionField}`]: str(`${versionField}`),
             }),
-          })
+          }),
         ),
         set(ref('newVersion'), raw(`$ctx.args.input.${versionInput} + 1`)),
         qref(`$ctx.args.input.put("${versionField}", $newVersion)`),
         qref(`$ctx.args.input.remove("${versionInput}")`),
-      ])
+      ]),
     );
     const resolver = ctx.getResource(mutationResolverLogicalId);
     if (resolver) {
@@ -148,12 +148,12 @@ export class VersionedModelTransformer extends Transformer {
     const createInputName = ModelResourceIDs.ModelCreateInputObjectName(typeName);
     const input = ctx.getType(createInputName);
     if (input && input.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION) {
-      const updatedFields = input.fields.filter(f => f.name.value !== versionField);
+      const updatedFields = input.fields.filter((f) => f.name.value !== versionField);
       if (updatedFields.length === 0) {
         throw new InvalidDirectiveError(
           `After stripping away version field "${versionField}", \
                     the create input for type "${typeName}" cannot be created \
-                    with 0 fields. Add another field to type "${typeName}" to continue.`
+                    with 0 fields. Add another field to type "${typeName}" to continue.`,
         );
       }
       const updatedInput = {
@@ -188,7 +188,7 @@ export class VersionedModelTransformer extends Transformer {
     const type = ctx.getType(typeName);
     if (type && type.kind === Kind.OBJECT_TYPE_DEFINITION) {
       let updatedFields = type.fields;
-      const versionFieldImpl = type.fields.find(f => f.name.value === versionField);
+      const versionFieldImpl = type.fields.find((f) => f.name.value === versionField);
       let updatedField = versionFieldImpl;
       if (versionFieldImpl) {
         const baseType = getBaseType(versionFieldImpl.type);
@@ -199,7 +199,7 @@ export class VersionedModelTransformer extends Transformer {
               ...updatedField,
               type: makeNonNullType(versionFieldImpl.type),
             };
-            updatedFields = updatedFields.map(f => (f.name.value === versionField ? updatedField : f));
+            updatedFields = updatedFields.map((f) => (f.name.value === versionField ? updatedField : f));
           }
         } else {
           throw new TransformerContractError(`The versionField "${versionField}" is required to be of type "Int" or "BigInt".`);

@@ -1,11 +1,17 @@
-import { getBaseType } from "graphql-transformer-common";
-import { DirectiveNode, DocumentNode } from "graphql";
+import { getBaseType } from 'graphql-transformer-common';
+import { DirectiveNode, DocumentNode } from 'graphql';
 
-export const hasGeneratedField = (doc: DocumentNode, objectType: string, fieldName: string, fieldType?: string, isList?: boolean): boolean => {
+export const hasGeneratedField = (
+  doc: DocumentNode,
+  objectType: string,
+  fieldName: string,
+  fieldType?: string,
+  isList?: boolean,
+): boolean => {
   let hasField = false;
-  doc?.definitions?.forEach(def => {
+  doc?.definitions?.forEach((def) => {
     if ((def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') && def.name.value === objectType) {
-      def?.fields?.forEach(field => {
+      def?.fields?.forEach((field) => {
         if (field.name.value === fieldName) {
           hasField = true;
           const listTypeTrue = field.type.kind === 'ListType' || (field.type.kind === 'NonNullType' && field.type.type.kind === 'ListType');
@@ -30,23 +36,22 @@ export const hasGeneratedDirective = (
   objectType: string,
   fieldName: string | undefined,
   dirName: string,
-  args: Map<string, string | Array<string>> | undefined
+  args: Map<string, string | Array<string>> | undefined,
 ): boolean => {
   let matchesExpected = false;
 
-  doc?.definitions?.forEach(def => {
+  doc?.definitions?.forEach((def) => {
     if ((def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') && def.name.value === objectType) {
       if (fieldName) {
-        def?.fields?.forEach(field => {
-          field?.directives?.forEach(dir => {
+        def?.fields?.forEach((field) => {
+          field?.directives?.forEach((dir) => {
             if (dir.name.value === dirName) {
               matchesExpected = matchesExpected ? true : checkDirective(dir, args);
             }
           });
         });
-      }
-      else {
-        def?.directives?.forEach(dir => {
+      } else {
+        def?.directives?.forEach((dir) => {
           if (dir.name.value === dirName) {
             matchesExpected = matchesExpected ? true : checkDirective(dir, args);
           }
@@ -62,13 +67,12 @@ const checkDirective = (dir: DirectiveNode, expectedArgs: Map<string, string | A
   if (!expectedArgs && !dir.arguments) {
     return true;
   }
-  dir?.arguments?.forEach(arg => {
+  dir?.arguments?.forEach((arg) => {
     if (arg.value.kind === 'StringValue') {
       if (expectedArgs?.get(arg.name.value) === arg.value.value) {
         expectedArgs?.delete(arg.name.value);
       }
-    }
-    else if (arg.value.kind === 'ListValue') {
+    } else if (arg.value.kind === 'ListValue') {
       const stringValues = expectedArgs?.get(arg.name.value);
       let fullMatch = true;
       arg.value.values.forEach((val, idx) => {

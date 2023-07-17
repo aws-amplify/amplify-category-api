@@ -11,9 +11,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
-import {
-  isResolvableObject, Stack, CfnParameter, Lazy,
-} from 'aws-cdk-lib';
+import { isResolvableObject, Stack, CfnParameter, Lazy } from 'aws-cdk-lib';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
 import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
@@ -45,16 +43,17 @@ export class ResolverManager implements TransformerResolversManagerProvider {
     dataSource: DataSourceProvider,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
-  ): TransformerResolver => new TransformerResolver(
-    typeName,
-    fieldName,
-    resolverLogicalId,
-    requestMappingTemplate,
-    responseMappingTemplate,
-    ['init', 'preAuth', 'auth', 'postAuth', 'preDataLoad'],
-    ['postDataLoad', 'finish'],
-    dataSource,
-  );
+  ): TransformerResolver =>
+    new TransformerResolver(
+      typeName,
+      fieldName,
+      resolverLogicalId,
+      requestMappingTemplate,
+      responseMappingTemplate,
+      ['init', 'preAuth', 'auth', 'postAuth', 'preDataLoad'],
+      ['postDataLoad', 'finish'],
+      dataSource,
+    );
 
   generateMutationResolver = (
     typeName: string,
@@ -63,16 +62,17 @@ export class ResolverManager implements TransformerResolversManagerProvider {
     dataSource: DataSourceProvider,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
-  ): TransformerResolver => new TransformerResolver(
-    typeName,
-    fieldName,
-    resolverLogicalId,
-    requestMappingTemplate,
-    responseMappingTemplate,
-    ['init', 'preAuth', 'auth', 'postAuth', 'preUpdate'],
-    ['postUpdate', 'finish'],
-    dataSource,
-  );
+  ): TransformerResolver =>
+    new TransformerResolver(
+      typeName,
+      fieldName,
+      resolverLogicalId,
+      requestMappingTemplate,
+      responseMappingTemplate,
+      ['init', 'preAuth', 'auth', 'postAuth', 'preUpdate'],
+      ['postUpdate', 'finish'],
+      dataSource,
+    );
 
   generateSubscriptionResolver = (
     typeName: string,
@@ -80,15 +80,16 @@ export class ResolverManager implements TransformerResolversManagerProvider {
     resolverLogicalId: string,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
-  ): TransformerResolver => new TransformerResolver(
-    typeName,
-    fieldName,
-    resolverLogicalId,
-    requestMappingTemplate,
-    responseMappingTemplate,
-    ['init', 'preAuth', 'auth', 'postAuth', 'preSubscribe'],
-    [],
-  );
+  ): TransformerResolver =>
+    new TransformerResolver(
+      typeName,
+      fieldName,
+      resolverLogicalId,
+      requestMappingTemplate,
+      responseMappingTemplate,
+      ['init', 'preAuth', 'auth', 'postAuth', 'preSubscribe'],
+      [],
+    );
 
   addResolver = (typeName: string, fieldName: string, resolver: TransformerResolverProvider): TransformerResolverProvider => {
     const key = `${typeName}.${fieldName}`;
@@ -205,9 +206,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     const slotEntries = this.slotMap.get(slotName);
     const requestMappingTemplateName = (requestMappingTemplate as any)?.name ?? '';
     const responseMappingTemplateName = (responseMappingTemplate as any)?.name ?? '';
-    if (!slotEntries
-      || requestMappingTemplateName.includes('{slotIndex}')
-      || responseMappingTemplateName.includes('{slotIndex}')) {
+    if (!slotEntries || requestMappingTemplateName.includes('{slotIndex}') || responseMappingTemplateName.includes('{slotIndex}')) {
       return;
     }
 
@@ -216,7 +215,7 @@ export class TransformerResolver implements TransformerResolverProvider {
       const [slotEntryRequestMappingTemplate, slotEntryResponseMappingTemplate] = [
         (slotEntry.requestMappingTemplate as any)?.name ?? 'NOT-FOUND',
         (slotEntry.responseMappingTemplate as any)?.name ?? 'NOT-FOUND',
-      // eslint-disable-next-line no-loop-func
+        // eslint-disable-next-line no-loop-func
       ].map((name) => name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex));
 
       // If both request and response mapping templates are inline, skip check
@@ -227,8 +226,8 @@ export class TransformerResolver implements TransformerResolverProvider {
 
       // If name matches, then it is an overridden resolver
       if (
-        slotEntryRequestMappingTemplate === requestMappingTemplateName
-        || slotEntryResponseMappingTemplate === responseMappingTemplateName
+        slotEntryRequestMappingTemplate === requestMappingTemplateName ||
+        slotEntryResponseMappingTemplate === responseMappingTemplateName
       ) {
         // eslint-disable-next-line consistent-return
         return slotEntry;
@@ -244,12 +243,8 @@ export class TransformerResolver implements TransformerResolverProvider {
   ): void => {
     const slot = this.findSlot(slotName, requestMappingTemplate, responseMappingTemplate);
     if (slot) {
-      slot.requestMappingTemplate = (requestMappingTemplate as any)?.name
-        ? requestMappingTemplate
-        : slot.requestMappingTemplate;
-      slot.responseMappingTemplate = (responseMappingTemplate as any)?.name
-        ? responseMappingTemplate
-        : slot.responseMappingTemplate;
+      slot.requestMappingTemplate = (requestMappingTemplate as any)?.name ? requestMappingTemplate : slot.requestMappingTemplate;
+      slot.responseMappingTemplate = (responseMappingTemplate as any)?.name ? responseMappingTemplate : slot.responseMappingTemplate;
     }
   };
 
@@ -279,18 +274,18 @@ export class TransformerResolver implements TransformerResolverProvider {
             const tableName = this.datasource.ds.dynamoDbConfig?.tableName;
             dataSource = `$util.qr($ctx.stash.put("tableName", "${tableName}"))`;
             if (
-              this.datasource.ds.dynamoDbConfig?.deltaSyncConfig
-              && !isResolvableObject(this.datasource.ds.dynamoDbConfig?.deltaSyncConfig)
+              this.datasource.ds.dynamoDbConfig?.deltaSyncConfig &&
+              !isResolvableObject(this.datasource.ds.dynamoDbConfig?.deltaSyncConfig)
             ) {
               const deltaSyncTableTtl = Lazy.string({
                 produce: (): string => {
                   if (
-                    this.datasource
-                    && this.datasource.ds.dynamoDbConfig
-                    && !isResolvableObject(this.datasource.ds.dynamoDbConfig)
-                    && this.datasource.ds.dynamoDbConfig.deltaSyncConfig
-                    && !isResolvableObject(this.datasource.ds.dynamoDbConfig.deltaSyncConfig)
-                    && this.datasource.ds.dynamoDbConfig.deltaSyncConfig.deltaSyncTableTtl
+                    this.datasource &&
+                    this.datasource.ds.dynamoDbConfig &&
+                    !isResolvableObject(this.datasource.ds.dynamoDbConfig) &&
+                    this.datasource.ds.dynamoDbConfig.deltaSyncConfig &&
+                    !isResolvableObject(this.datasource.ds.dynamoDbConfig.deltaSyncConfig) &&
+                    this.datasource.ds.dynamoDbConfig.deltaSyncConfig.deltaSyncTableTtl
                   ) {
                     return this.datasource.ds.dynamoDbConfig.deltaSyncConfig.deltaSyncTableTtl;
                   }
@@ -316,10 +311,10 @@ export class TransformerResolver implements TransformerResolverProvider {
                 conflictHandler: syncConfig.ConflictHandler,
                 ...(SyncUtils.isLambdaSyncConfig(syncConfig)
                   ? {
-                    lambdaConflictHandlerConfig: {
-                      lambdaConflictHandlerArn: syncConfig.LambdaConflictHandler.lambdaArn,
-                    },
-                  }
+                      lambdaConflictHandlerConfig: {
+                        lambdaConflictHandlerArn: syncConfig.LambdaConflictHandler.lambdaArn,
+                      },
+                    }
                   : {}),
               };
             }
@@ -346,9 +341,9 @@ export class TransformerResolver implements TransformerResolverProvider {
           break;
         case 'RELATIONAL_DATABASE':
           if (
-            this.datasource.ds.relationalDatabaseConfig
-            && !isResolvableObject(this.datasource.ds.relationalDatabaseConfig)
-            && !isResolvableObject(this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig)
+            this.datasource.ds.relationalDatabaseConfig &&
+            !isResolvableObject(this.datasource.ds.relationalDatabaseConfig) &&
+            !isResolvableObject(this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig)
           ) {
             const databaseName = this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig!.databaseName;
             dataSource = `$util.qr($ctx.stash.metadata.put("databaseName", "${databaseName}"))`;
@@ -368,10 +363,9 @@ export class TransformerResolver implements TransformerResolverProvider {
       $util.qr($ctx.stash.put("connectionAttributes", {}))
       ${dataSource}
     `;
-    const hasIamAuth = [
-      context.authConfig.defaultAuthentication,
-      ...(context.authConfig.additionalAuthenticationProviders || []),
-    ].some((mode) => mode?.authenticationType === AuthorizationType.IAM);
+    const hasIamAuth = [context.authConfig.defaultAuthentication, ...(context.authConfig.additionalAuthenticationProviders || [])].some(
+      (mode) => mode?.authenticationType === AuthorizationType.IAM,
+    );
     if (hasIamAuth) {
       const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
       const unauthRoleParameter = (context.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
@@ -437,7 +431,10 @@ export class TransformerResolver implements TransformerResolverProvider {
     // See: https://github.com/aws-amplify/amplify-cli/issues/9362
     if (template.constructor.name === S3MappingTemplate.name) {
       (template as S3MappingTemplate).substituteValues({
-        slotName, slotIndex: index, typeName: this.typeName, fieldName: this.fieldName,
+        slotName,
+        slotIndex: index,
+        typeName: this.typeName,
+        fieldName: this.fieldName,
       });
     }
   }

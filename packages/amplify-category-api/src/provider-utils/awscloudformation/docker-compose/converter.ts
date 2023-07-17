@@ -33,7 +33,7 @@ const mapComposeEntriesToContainer = (record: [string, v1Types.DefinitionsServic
   }
 
   let portArray: PortMappings = [];
-  ports?.forEach(item => {
+  ports?.forEach((item) => {
     //For task definitions that use the awsvpc network mode, you should only specify the containerPort.
     //The hostPort can be left blank or it must be the same value as the containerPort.
     const [containerPort, hostPort = containerPort] = item.toString().split(':');
@@ -47,7 +47,7 @@ const mapComposeEntriesToContainer = (record: [string, v1Types.DefinitionsServic
 
   const secrets = new Set<string>();
   if (isV38Service(v)) {
-    v.secrets.filter(s => typeof s === 'string').forEach(s => secrets.add(<string>s));
+    v.secrets.filter((s) => typeof s === 'string').forEach((s) => secrets.add(<string>s));
   }
 
   return new Container(
@@ -131,7 +131,7 @@ export function getContainers(composeContents?: string, dockerfileContents?: str
 
   //Step 3: Populate Build mapping for creation of the buildpsec
   const buildmapping: BuildHashMap = {};
-  containers.forEach(res => {
+  containers.forEach((res) => {
     if (typeof res.build === 'object') {
       //console.log(res.build.args);
     }

@@ -3,13 +3,13 @@ orbs:
   aws-ecr: circleci/aws-ecr@6.15.3
 machine:
   environment:
-    PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
+    PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
 
 executors:
   w: &windows-e2e-executor
     machine:
-      image: "windows-server-2022-gui:current"
-      resource_class: "windows.medium"
+      image: 'windows-server-2022-gui:current'
+      resource_class: 'windows.medium'
       shell: bash.exe
     working_directory: ~/repo
     environment:
@@ -175,7 +175,7 @@ jobs:
             yarn e2e
           no_output_timeout: 60m
           environment:
-            JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
+            JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
             NODE_OPTIONS: --max-old-space-size=5120
       - store_test_results:
           path: packages/amplify-util-mock/
@@ -231,7 +231,7 @@ jobs:
             cd packages/graphql-transformers-e2e-tests/
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
-            AMPLIFY_CLI_DISABLE_LOGGING: "true"
+            AMPLIFY_CLI_DISABLE_LOGGING: 'true'
           no_output_timeout: 60m
       - store_test_results:
           path: packages/graphql-transformers-e2e-tests/
@@ -305,8 +305,8 @@ jobs:
       - run:
           name: Emit Canary Failure Metric
           command: |
-              source .circleci/local_publish_helpers.sh
-              emitCanaryFailureMetric
+            source .circleci/local_publish_helpers.sh
+            emitCanaryFailureMetric
           when: on_fail
 
   amplify_migration_tests_v5:
@@ -424,13 +424,13 @@ jobs:
       - restore_cache:
           key: amplify-category-api-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
       - run:
-          name: "Run cleanup script"
+          name: 'Run cleanup script'
           command: |
             cd packages/amplify-e2e-tests
             yarn clean-e2e-resources
           no_output_timeout: 60m
       - run:
-          name: "Cleanup Stale Buckets"
+          name: 'Cleanup Stale Buckets'
           command: |
             cd packages/amplify-e2e-tests
             yarn cleanup-stale-test-buckets
@@ -448,7 +448,7 @@ jobs:
       - restore_cache:
           key: amplify-category-api-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
       - run:
-          name: "Run cleanup script"
+          name: 'Run cleanup script'
           command: |
             cd packages/amplify-e2e-tests
             yarn clean-e2e-resources workflow ${CIRCLE_WORKFLOW_ID}
@@ -464,10 +464,10 @@ jobs:
       - run:
           name: 'Wait for all required jobs to finish'
           command: |
-              while [[ $(curl --location --request GET "https://circleci.com/api/v2/workflow/$CIRCLE_WORKFLOW_ID/job" --header "Circle-Token: $CIRCLECI_TOKEN"| jq -r '.items[]|select(.name != "wait_for_all")|.status' | grep -c "running") -gt 0 ]]
-                do
-                  sleep 60
-                done
+            while [[ $(curl --location --request GET "https://circleci.com/api/v2/workflow/$CIRCLE_WORKFLOW_ID/job" --header "Circle-Token: $CIRCLECI_TOKEN"| jq -r '.items[]|select(.name != "wait_for_all")|.status' | grep -c "running") -gt 0 ]]
+              do
+                sleep 60
+              done
           no_output_timeout: 180m
     working_directory: ~/repo
 
@@ -476,7 +476,7 @@ workflows:
   e2e_resource_cleanup:
     triggers:
       - schedule:
-          cron: "45 0,12 * * *"
+          cron: '45 0,12 * * *'
           filters:
             branches:
               only:
@@ -492,7 +492,7 @@ workflows:
   canary:
     triggers:
       - schedule:
-          cron: "13 0,6,12,18 * * *" # Run 4 times daily, on the 13th minute of the hour
+          cron: '13 0,6,12,18 * * *' # Run 4 times daily, on the 13th minute of the hour
           filters:
             branches:
               only:
@@ -680,7 +680,7 @@ workflows:
                 - release
 commands:
   install_yarn:
-    description: "Install yarn dependency for windows"
+    description: 'Install yarn dependency for windows'
     parameters:
       os:
         type: executor
@@ -693,7 +693,7 @@ commands:
             - run: yarn --cache-folder ~/.cache/yarn
 
   install_java:
-    description: "Install Java on Linux and Docker images"
+    description: 'Install Java on Linux and Docker images'
     parameters:
       os:
         type: executor
@@ -709,7 +709,7 @@ commands:
                   sudo apt-get update && sudo apt-get install default-jdk
 
   install_github_cli:
-    description: "Install Github CLI tool"
+    description: 'Install Github CLI tool'
     parameters:
       os:
         type: executor
@@ -730,7 +730,7 @@ commands:
                   && sudo apt install gh -y
 
   run_e2e_tests:
-    description: "Run Amplify E2E tests"
+    description: 'Run Amplify E2E tests'
     parameters:
       os:
         type: executor
@@ -768,7 +768,7 @@ commands:
                   unsetNpmRegistryUrl
                 no_output_timeout: 90m
   scan_e2e_test_artifacts:
-    description: "Scan And Cleanup E2E Test Artifacts"
+    description: 'Scan And Cleanup E2E Test Artifacts'
     parameters:
       os:
         type: executor
@@ -785,7 +785,7 @@ commands:
             fi
           when: always
   run_client_tests:
-    description: "Run Amplify Client tests"
+    description: 'Run Amplify Client tests'
     parameters:
       os:
         type: executor

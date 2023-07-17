@@ -27,8 +27,6 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `DynamoDBModelTransformerTest-${BUILD_TIMESTAMP}`;
@@ -160,7 +158,7 @@ afterEach(async () => {
   );
   const rows = response.data.listPosts.items || [];
   const deletePromises = [];
-  rows.forEach(row => {
+  rows.forEach((row) => {
     deletePromises.push(
       GRAPHQL_CLIENT.query(`mutation delete{
       deletePost(input: {id: "${row.id}"}) { id }
@@ -225,7 +223,7 @@ test('Test updateComment mutation with null and empty', async () => {
   const notRequiredFieldValue = 'thisisnotrequired';
   const response = await GRAPHQL_CLIENT.query(
     /* GraphQL */ `
-      mutation($input: CreateRequireInput!) {
+      mutation ($input: CreateRequireInput!) {
         createRequire(input: $input) {
           id
           requiredField
@@ -244,7 +242,7 @@ test('Test updateComment mutation with null and empty', async () => {
   const id = response.data.createRequire.id;
   const updateResponse = await GRAPHQL_CLIENT.query(
     /* GraphQL */ `
-      mutation($input: UpdateRequireInput!) {
+      mutation ($input: UpdateRequireInput!) {
         updateRequire(input: $input) {
           id
           requiredField
@@ -262,7 +260,7 @@ test('Test updateComment mutation with null and empty', async () => {
   expect(updateResponse.data.updateRequire.notRequiredField).toEqual(notRequiredFieldValue);
   const update2Response = await GRAPHQL_CLIENT.query(
     /* GraphQL */ `
-      mutation($input: UpdateRequireInput!) {
+      mutation ($input: UpdateRequireInput!) {
         updateRequire(input: $input) {
           id
           requiredField
@@ -576,7 +574,7 @@ test('Test enum filters List', async () => {
   expect(appearsInWithFilterResponseNonJedi.data.listPosts.items).toBeDefined();
   const appearsInNonJediItems = appearsInWithFilterResponseNonJedi.data.listPosts.items;
   expect(appearsInNonJediItems.length).toEqual(3);
-  appearsInNonJediItems.forEach(item => {
+  appearsInNonJediItems.forEach((item) => {
     expect(['Appears in Empire & JEDI', 'Appears in New Hope', 'Appears in Empire'].includes(item.title)).toBeTruthy();
   });
 
@@ -595,7 +593,7 @@ test('Test enum filters List', async () => {
   expect(appearsInContainingJedi.data.listPosts.items).toBeDefined();
   const appearsInWithJediItems = appearsInContainingJedi.data.listPosts.items;
   expect(appearsInWithJediItems.length).toEqual(2);
-  appearsInWithJediItems.forEach(item => {
+  appearsInWithJediItems.forEach((item) => {
     expect(['Appears in Empire & JEDI', 'Appears in Jedi'].includes(item.title)).toBeTruthy();
   });
 
@@ -614,7 +612,7 @@ test('Test enum filters List', async () => {
   expect(appearsInNotContainingJedi.data.listPosts.items).toBeDefined();
   const appearsInWithNonJediItems = appearsInNotContainingJedi.data.listPosts.items;
   expect(appearsInWithNonJediItems.length).toEqual(2);
-  appearsInWithNonJediItems.forEach(item => {
+  appearsInWithNonJediItems.forEach((item) => {
     expect(['Appears in New Hope', 'Appears in Empire'].includes(item.title)).toBeTruthy();
   });
 
@@ -651,7 +649,7 @@ test('Test enum filters List', async () => {
   expect(nonJediEpisode.data.listPosts.items).toBeDefined();
   const nonJediEpisodeItems = nonJediEpisode.data.listPosts.items;
   expect(nonJediEpisodeItems.length).toEqual(3);
-  nonJediEpisodeItems.forEach(item => {
+  nonJediEpisodeItems.forEach((item) => {
     expect(['Appears in New Hope', 'Appears in Empire', 'Appears in Empire & JEDI'].includes(item.title)).toBeTruthy();
   });
 });

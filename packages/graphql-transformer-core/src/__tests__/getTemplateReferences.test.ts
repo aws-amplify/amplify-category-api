@@ -61,13 +61,13 @@ test('Test getTemplateReferences', () => {
       ['Resources', 'PostTableDataSource', 'Properties', 'ApiId'],
       ['Resources', 'CreatePostResolver', 'Properties', 'ApiId'],
       ['Resources', 'UpdatePostResolver', 'Properties', 'ApiId'],
-    ].sort()
+    ].sort(),
   );
   expect(referenceMap.PostTableDataSource.sort()).toEqual(
     [
       ['Resources', 'CreatePostResolver', 'Properties', 'DataSourceName'],
       ['Resources', 'UpdatePostResolver', 'Properties', 'DataSourceName', 'Fn::Join', '1', '1', 'Fn::Join', '1', '0'],
-    ].sort()
+    ].sort(),
   );
   expect(referenceMap.PostTable.sort()).toEqual(
     [
@@ -75,6 +75,6 @@ test('Test getTemplateReferences', () => {
       ['Resources', 'UpdatePostResolver', 'Properties', 'FieldName', 'Fn::Split', '1'],
       ['Resources', 'UpdatePostResolver', 'Properties', 'TypeName', 'Fn::Sub', '1', 't'],
       ['Resources', 'UpdatePostResolver', 'Properties', 'RequestMappingTemplate', 'Fn::Select', '1', '0'],
-    ].sort()
+    ].sort(),
   );
 });

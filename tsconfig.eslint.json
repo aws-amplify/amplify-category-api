@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "types": ["@types/node"],
+    "noEmit": true,
+    "allowJs": true
+  },
+  "extends": "./tsconfig.base.json",
+  "include": ["**/__tests__/**/*", "**/scripts/**/*", ".eslintrc.js", "depcheck.config.js", "commitlint.config.js", "jest.config.js"],
+  "exclude": ["**/__mocks__/**/*", "**/lib/**/*"]
+}

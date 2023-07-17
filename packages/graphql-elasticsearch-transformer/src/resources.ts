@@ -2,9 +2,7 @@ import Output from 'cloudform-types/types/output';
 import AppSync from 'cloudform-types/types/appSync';
 import IAM from 'cloudform-types/types/iam';
 import Template from 'cloudform-types/types/template';
-import {
-  Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs,
-} from 'cloudform-types';
+import { Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs } from 'cloudform-types';
 import {
   ElasticsearchMappingTemplate,
   print,
@@ -25,9 +23,7 @@ import {
   bool,
   methodCall,
 } from 'graphql-mapping-template';
-import {
-  toUpper, plurality, graphqlName, ResourceConstants, ModelResourceIDs,
-} from 'graphql-transformer-common';
+import { toUpper, plurality, graphqlName, ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common';
 import { MappingParameters } from 'graphql-transformer-core';
 
 /**
@@ -48,7 +44,8 @@ export class ResourceFactory {
         Default: 'python_streaming_function.lambda_handler',
       }),
       [ResourceConstants.PARAMETERS.ElasticsearchStreamingLambdaRuntime]: new StringParameter({
-        Description: 'The lambda runtime \
+        Description:
+          'The lambda runtime \
                 (https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime)',
         Default: 'python3.9',
       }),

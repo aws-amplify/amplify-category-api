@@ -120,7 +120,7 @@ const validateAuthModes = (authConfig: AppSyncAuthConfiguration) => {
   let additionalAuthModes = [];
 
   if (authConfig.additionalAuthenticationProviders) {
-    additionalAuthModes = authConfig.additionalAuthenticationProviders.map(p => p.authenticationType).filter(t => !!t);
+    additionalAuthModes = authConfig.additionalAuthenticationProviders.map((p) => p.authenticationType).filter((t) => !!t);
   }
 
   const authModes: AppSyncAuthMode[] = [...additionalAuthModes, authConfig.defaultAuthentication.authenticationType];
@@ -128,7 +128,13 @@ const validateAuthModes = (authConfig: AppSyncAuthConfiguration) => {
   for (let i = 0; i < authModes.length; i++) {
     const mode = authModes[i];
 
-    if (mode !== 'API_KEY' && mode !== 'AMAZON_COGNITO_USER_POOLS' && mode !== 'AWS_IAM' && mode !== 'OPENID_CONNECT' && mode !== 'AWS_LAMBDA') {
+    if (
+      mode !== 'API_KEY' &&
+      mode !== 'AMAZON_COGNITO_USER_POOLS' &&
+      mode !== 'AWS_IAM' &&
+      mode !== 'OPENID_CONNECT' &&
+      mode !== 'AWS_LAMBDA'
+    ) {
       throw new Error(`Invalid auth mode ${mode}`);
     }
   }
@@ -332,12 +338,12 @@ export class ModelAuthTransformer extends Transformer {
     let authProviders = [];
 
     if (this.config.authConfig.additionalAuthenticationProviders) {
-      authProviders = authProviders.concat(this.config.authConfig.additionalAuthenticationProviders.filter(p => !!p.authenticationType));
+      authProviders = authProviders.concat(this.config.authConfig.additionalAuthenticationProviders.filter((p) => !!p.authenticationType));
     }
 
     authProviders.push(this.config.authConfig.defaultAuthentication);
 
-    const apiKeyAuthProvider = authProviders.find(p => p.authenticationType === 'API_KEY');
+    const apiKeyAuthProvider = authProviders.find((p) => p.authenticationType === 'API_KEY');
 
     // Return the found instance or a default instance with 7 days of API key expiration
     return apiKeyAuthProvider ? apiKeyAuthProvider.apiKeyConfig : { apiKeyExpirationDays: 7 };
@@ -347,13 +353,13 @@ export class ModelAuthTransformer extends Transformer {
    * Implement the transform for an object type. Depending on which operations are to be protected
    */
   public object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
-    const modelDirective = def.directives.find(dir => dir.name.value === 'model');
+    const modelDirective = def.directives.find((dir) => dir.name.value === 'model');
     if (!modelDirective) {
       throw new InvalidDirectiveError('Types annotated with @auth must also be annotated with @model.');
     }
 
     // check if searchable is enabled on the type
-    const searchableDirective = def.directives.find(dir => dir.name.value === 'searchable');
+    const searchableDirective = def.directives.find((dir) => dir.name.value === 'searchable');
 
     // Get and validate the auth rules.
     const rules = this.extendAuthRulesForAdminUI(this.getAuthRulesFromDirective(directive));
@@ -462,7 +468,7 @@ export class ModelAuthTransformer extends Transformer {
         `The @auth directive cannot be placed on an interface's field. See ${parent.name.value}${definition.name.value}`,
       );
     }
-    const modelDirective = parent.directives.find(dir => dir.name.value === 'model');
+    const modelDirective = parent.directives.find((dir) => dir.name.value === 'model');
     const isParentTypeBuiltinType =
       parent.name.value === ctx.getQueryTypeName() ||
       parent.name.value === ctx.getMutationTypeName() ||
@@ -505,7 +511,7 @@ Static group authorization should perform as expected.`,
 
     const isOpRule = (op: ModelOperation) => (rule: AuthRule) => {
       if (rule.operations) {
-        const matchesOp = rule.operations.find(o => o === op);
+        const matchesOp = rule.operations.find((o) => o === op);
         return Boolean(matchesOp);
       }
       if (rule.operations === null) {
@@ -562,7 +568,7 @@ Static group authorization should perform as expected.`,
       const directives = this.getDirectivesForRules(rules, true);
       if (seenNonModelTypes.has(nonModelName)) {
         const nonModelDirectives: Set<string> = seenNonModelTypes.get(nonModelName);
-        return { current: directives.filter(directive => !nonModelDirectives.has(directive.name.value)), old: nonModelDirectives };
+        return { current: directives.filter((directive) => !nonModelDirectives.has(directive.name.value)), old: nonModelDirectives };
       }
       return { current: directives };
     };
@@ -572,24 +578,24 @@ Static group authorization should perform as expected.`,
         if (fieldType.kind !== 'ObjectTypeDefinition') {
           return undefined;
         }
-        const typeModel = fieldType.directives.find(dir => dir.name.value === 'model');
+        const typeModel = fieldType.directives.find((dir) => dir.name.value === 'model');
         return typeModel !== undefined ? undefined : fieldType;
       }
       return fieldType;
     };
-    const nonModelFieldTypes = type.fields.map(f => ctx.getType(getBaseType(f.type)) as TypeDefinitionNode).filter(nonModelTypePredicate);
+    const nonModelFieldTypes = type.fields.map((f) => ctx.getType(getBaseType(f.type)) as TypeDefinitionNode).filter(nonModelTypePredicate);
     for (const nonModelFieldType of nonModelFieldTypes) {
       const directives = getDirectivesToAdd(nonModelFieldType.name.value);
       if (directives.current.length > 0) {
         // merge back the newly added auth directives with what already exists in the set
         const totalDirectives = new Set<string>([
-          ...directives.current.map(dir => dir.name.value),
+          ...directives.current.map((dir) => dir.name.value),
           ...(directives.old ? directives.old : []),
         ]);
         seenNonModelTypes.set(nonModelFieldType.name.value, totalDirectives);
         this.extendTypeWithDirectives(ctx, nonModelFieldType.name.value, directives.current);
         const hasIAM =
-          directives.current.filter(directive => directive.name.value === 'aws_iam') || this.configuredAuthProviders.default === 'iam';
+          directives.current.filter((directive) => directive.name.value === 'aws_iam') || this.configuredAuthProviders.default === 'iam';
         if (hasIAM) {
           this.unauthPolicyResources.add(`${nonModelFieldType.name.value}/null`);
           this.authPolicyResources.add(`${nonModelFieldType.name.value}/null`);
@@ -622,10 +628,10 @@ Static group authorization should perform as expected.`,
       // to the start of the resolver
       const authModesToCheck = new Set<AuthProvider>();
       const expressions: Array<Expression> = new Array();
-      if (staticGroupAuthorizationRules.find(r => r.provider === 'userPools')) {
+      if (staticGroupAuthorizationRules.find((r) => r.provider === 'userPools')) {
         authModesToCheck.add('userPools');
       }
-      if (staticGroupAuthorizationRules.find(r => r.provider === 'oidc')) {
+      if (staticGroupAuthorizationRules.find((r) => r.provider === 'oidc')) {
         authModesToCheck.add('oidc');
       }
       if (authModesToCheck.size > 0) {
@@ -813,7 +819,7 @@ Either make the field optional, set auth on the object and not the field, or dis
           field.name.value,
         );
         const fieldIsList = (fieldName: string) => {
-          const field = parent.fields.find(field => field.name.value === fieldName);
+          const field = parent.fields.find((field) => field.name.value === fieldName);
           if (field) {
             return isListType(field.type);
           }
@@ -832,16 +838,16 @@ Either make the field optional, set auth on the object and not the field, or dis
         const expressions: Array<Expression> = new Array();
 
         if (
-          ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-          staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
-          dynamicGroupAuthorizationRules.find(r => r.provider === 'userPools')
+          ownerAuthorizationRules.find((r) => r.provider === 'userPools') ||
+          staticGroupAuthorizationRules.find((r) => r.provider === 'userPools') ||
+          dynamicGroupAuthorizationRules.find((r) => r.provider === 'userPools')
         ) {
           authModesToCheck.add('userPools');
         }
         if (
-          ownerAuthorizationRules.find(r => r.provider === 'oidc') ||
-          staticGroupAuthorizationRules.find(r => r.provider === 'oidc') ||
-          dynamicGroupAuthorizationRules.find(r => r.provider === 'oidc')
+          ownerAuthorizationRules.find((r) => r.provider === 'oidc') ||
+          staticGroupAuthorizationRules.find((r) => r.provider === 'oidc') ||
+          dynamicGroupAuthorizationRules.find((r) => r.provider === 'oidc')
         ) {
           authModesToCheck.add('oidc');
         }
@@ -907,7 +913,7 @@ Either make the field optional, set auth on the object and not the field, or dis
     };
     const matchQuery = (op: ModelQuery) => (rule: AuthRule) => {
       if (rule.queries) {
-        const matchesOp = rule.queries.find(o => o === op);
+        const matchesOp = rule.queries.find((o) => o === op);
         return Boolean(matchesOp);
       } else if (rule.queries === null) {
         return false;
@@ -916,7 +922,7 @@ Either make the field optional, set auth on the object and not the field, or dis
     };
     const matchMutation = (op: ModelMutation) => (rule: AuthRule) => {
       if (rule.mutations) {
-        const matchesOp = rule.mutations.find(o => o === op);
+        const matchesOp = rule.mutations.find((o) => o === op);
         return Boolean(matchesOp);
       } else if (rule.mutations === null) {
         return false;
@@ -925,7 +931,7 @@ Either make the field optional, set auth on the object and not the field, or dis
     };
     const matchOperation = (op: ModelOperation) => (rule: AuthRule) => {
       if (rule.operations) {
-        const matchesOp = rule.operations.find(o => o === op);
+        const matchesOp = rule.operations.find((o) => o === op);
         return Boolean(matchesOp);
       } else if (rule.operations === null) {
         return false;
@@ -1149,16 +1155,16 @@ operations will be generated by the CLI.`,
       const expressions: Array<Expression> = new Array();
       expressions.push(this.resources.returnIfEmpty(objectPath));
       if (
-        ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-        staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
-        dynamicGroupAuthorizationRules.find(r => r.provider === 'userPools')
+        ownerAuthorizationRules.find((r) => r.provider === 'userPools') ||
+        staticGroupAuthorizationRules.find((r) => r.provider === 'userPools') ||
+        dynamicGroupAuthorizationRules.find((r) => r.provider === 'userPools')
       ) {
         authModesToCheck.add('userPools');
       }
       if (
-        ownerAuthorizationRules.find(r => r.provider === 'oidc') ||
-        staticGroupAuthorizationRules.find(r => r.provider === 'oidc') ||
-        dynamicGroupAuthorizationRules.find(r => r.provider === 'oidc')
+        ownerAuthorizationRules.find((r) => r.provider === 'oidc') ||
+        staticGroupAuthorizationRules.find((r) => r.provider === 'oidc') ||
+        dynamicGroupAuthorizationRules.find((r) => r.provider === 'oidc')
       ) {
         authModesToCheck.add('oidc');
       }
@@ -1303,16 +1309,16 @@ operations will be generated by the CLI.`,
       const expressions: Array<Expression> = new Array();
 
       if (
-        ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-        staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
-        dynamicGroupAuthorizationRules.find(r => r.provider === 'userPools')
+        ownerAuthorizationRules.find((r) => r.provider === 'userPools') ||
+        staticGroupAuthorizationRules.find((r) => r.provider === 'userPools') ||
+        dynamicGroupAuthorizationRules.find((r) => r.provider === 'userPools')
       ) {
         authModesToCheck.add('userPools');
       }
       if (
-        ownerAuthorizationRules.find(r => r.provider === 'oidc') ||
-        staticGroupAuthorizationRules.find(r => r.provider === 'oidc') ||
-        dynamicGroupAuthorizationRules.find(r => r.provider === 'oidc')
+        ownerAuthorizationRules.find((r) => r.provider === 'oidc') ||
+        staticGroupAuthorizationRules.find((r) => r.provider === 'oidc') ||
+        dynamicGroupAuthorizationRules.find((r) => r.provider === 'oidc')
       ) {
         authModesToCheck.add('oidc');
       }
@@ -1396,7 +1402,7 @@ operations will be generated by the CLI.`,
         const dynamicGroupAuthorizationExpression =
           this.resources.dynamicGroupAuthorizationExpressionForCreateOperations(dynamicGroupAuthorizationRules);
         const fieldIsList = (fieldName: string) => {
-          const field = parent.fields.find(field => field.name.value === fieldName);
+          const field = parent.fields.find((field) => field.name.value === fieldName);
           if (field) {
             return isListType(field.type);
           }
@@ -1415,16 +1421,16 @@ operations will be generated by the CLI.`,
         const expressions: Array<Expression> = new Array();
 
         if (
-          ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-          staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
-          dynamicGroupAuthorizationRules.find(r => r.provider === 'userPools')
+          ownerAuthorizationRules.find((r) => r.provider === 'userPools') ||
+          staticGroupAuthorizationRules.find((r) => r.provider === 'userPools') ||
+          dynamicGroupAuthorizationRules.find((r) => r.provider === 'userPools')
         ) {
           authModesToCheck.add('userPools');
         }
         if (
-          ownerAuthorizationRules.find(r => r.provider === 'oidc') ||
-          staticGroupAuthorizationRules.find(r => r.provider === 'oidc') ||
-          dynamicGroupAuthorizationRules.find(r => r.provider === 'oidc')
+          ownerAuthorizationRules.find((r) => r.provider === 'oidc') ||
+          staticGroupAuthorizationRules.find((r) => r.provider === 'oidc') ||
+          dynamicGroupAuthorizationRules.find((r) => r.provider === 'oidc')
         ) {
           authModesToCheck.add('oidc');
         }
@@ -1518,7 +1524,7 @@ operations will be generated by the CLI.`,
         const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules, field);
 
         const fieldIsList = (fieldName: string) => {
-          const field = parent.fields.find(field => field.name.value === fieldName);
+          const field = parent.fields.find((field) => field.name.value === fieldName);
           if (field) {
             return isListType(field.type);
           }
@@ -1561,16 +1567,16 @@ operations will be generated by the CLI.`,
         const expressions: Array<Expression> = new Array();
 
         if (
-          ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-          staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
-          dynamicGroupAuthorizationRules.find(r => r.provider === 'userPools')
+          ownerAuthorizationRules.find((r) => r.provider === 'userPools') ||
+          staticGroupAuthorizationRules.find((r) => r.provider === 'userPools') ||
+          dynamicGroupAuthorizationRules.find((r) => r.provider === 'userPools')
         ) {
           authModesToCheck.add('userPools');
         }
         if (
-          ownerAuthorizationRules.find(r => r.provider === 'oidc') ||
-          staticGroupAuthorizationRules.find(r => r.provider === 'oidc') ||
-          dynamicGroupAuthorizationRules.find(r => r.provider === 'oidc')
+          ownerAuthorizationRules.find((r) => r.provider === 'oidc') ||
+          staticGroupAuthorizationRules.find((r) => r.provider === 'oidc') ||
+          dynamicGroupAuthorizationRules.find((r) => r.provider === 'oidc')
         ) {
           authModesToCheck.add('oidc');
         }
@@ -1734,7 +1740,7 @@ operations will be generated by the CLI.`,
     rules: AuthRule[],
     modelConfiguration: ModelDirectiveConfiguration,
   ) {
-    const secondaryKeyDirectivesWithQueries = (def.directives || []).filter(d => {
+    const secondaryKeyDirectivesWithQueries = (def.directives || []).filter((d) => {
       const isKey = d.name.value === 'key';
       const args = getDirectiveArguments(d);
       // @key with a name is a secondary key.
@@ -1806,7 +1812,7 @@ operations will be generated by the CLI.`,
     const names = modelConfiguration.getNames('onCreate');
     const level = modelConfiguration.getName('level') as ModelSubscriptionLevel;
     if (names) {
-      names.forEach(name => {
+      names.forEach((name) => {
         this.addSubscriptionResolvers(ctx, rules, parent, level, name);
       });
     }
@@ -1822,7 +1828,7 @@ operations will be generated by the CLI.`,
     const names = modelConfiguration.getNames('onUpdate');
     const level = modelConfiguration.getName('level') as ModelSubscriptionLevel;
     if (names) {
-      names.forEach(name => {
+      names.forEach((name) => {
         this.addSubscriptionResolvers(ctx, rules, parent, level, name);
       });
     }
@@ -1838,7 +1844,7 @@ operations will be generated by the CLI.`,
     const names = modelConfiguration.getNames('onDelete');
     const level = modelConfiguration.getName('level') as ModelSubscriptionLevel;
     if (names) {
-      names.forEach(name => {
+      names.forEach((name) => {
         this.addSubscriptionResolvers(ctx, rules, parent, level, name);
       });
     }
@@ -1890,12 +1896,15 @@ operations will be generated by the CLI.`,
         const expressions: Array<Expression> = new Array();
 
         if (
-          ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-          staticGroupAuthorizationRules.find(r => r.provider === 'userPools')
+          ownerAuthorizationRules.find((r) => r.provider === 'userPools') ||
+          staticGroupAuthorizationRules.find((r) => r.provider === 'userPools')
         ) {
           authModesToCheck.add('userPools');
         }
-        if (ownerAuthorizationRules.find(r => r.provider === 'oidc') || staticGroupAuthorizationRules.find(r => r.provider === 'oidc')) {
+        if (
+          ownerAuthorizationRules.find((r) => r.provider === 'oidc') ||
+          staticGroupAuthorizationRules.find((r) => r.provider === 'oidc')
+        ) {
           authModesToCheck.add('oidc');
         }
 
@@ -1923,8 +1932,8 @@ operations will be generated by the CLI.`,
         ctx.setResource(resolverResourceId, resolver);
 
         // check if owner is enabled in auth
-        const ownerRules = rules.filter(rule => rule.allow === OWNER_AUTH_STRATEGY);
-        const needsDefaultOwnerField = ownerRules.find(rule => !rule.ownerField);
+        const ownerRules = rules.filter((rule) => rule.allow === OWNER_AUTH_STRATEGY);
+        const needsDefaultOwnerField = ownerRules.find((rule) => !rule.ownerField);
 
         if (ownerRules) {
           // if there is an owner rule without ownerField add the owner field in the type
@@ -1946,7 +1955,7 @@ operations will be generated by the CLI.`,
   }
 
   private isSubscriptionOwnerArgumentOptional(rules: AuthRule[]): Boolean {
-    const ownerRules = rules.filter(rule => rule.allow === OWNER_AUTH_STRATEGY);
+    const ownerRules = rules.filter((rule) => rule.allow === OWNER_AUTH_STRATEGY);
 
     // if there are multiple owner rules then the owner argument is optional
     if (ownerRules.length > 1) {
@@ -1955,7 +1964,7 @@ operations will be generated by the CLI.`,
 
     // if there are any public, private, and/or static group rules then the owner argument is optional
     return rules.find(
-      rule => (rule.allow === GROUPS_AUTH_STRATEGY && !rule.groupsField) || rule.allow === 'private' || rule.allow === 'public',
+      (rule) => (rule.allow === GROUPS_AUTH_STRATEGY && !rule.groupsField) || rule.allow === 'private' || rule.allow === 'public',
     )
       ? true
       : false;
@@ -1964,11 +1973,11 @@ operations will be generated by the CLI.`,
   private addSubscriptionOwnerArgument(ctx: TransformerContext, resolver: Resolver, ownerRules: AuthRule[], makeNonNull: boolean = false) {
     let subscription = ctx.getSubscription();
     let createField: FieldDefinitionNode = subscription.fields.find(
-      field => field.name.value === resolver.Properties.FieldName,
+      (field) => field.name.value === resolver.Properties.FieldName,
     ) as FieldDefinitionNode;
     const nameNode: any = makeNonNull ? makeNonNullType(makeNamedType('String')) : makeNamedType('String');
     // const createArguments = [makeInputValueDefinition(DEFAULT_OWNER_FIELD, nameNode)];
-    const ownerArgumentList = ownerRules.map(rule => {
+    const ownerArgumentList = ownerRules.map((rule) => {
       return makeInputValueDefinition(rule.ownerField || DEFAULT_OWNER_FIELD, nameNode);
     });
     createField = {
@@ -1977,7 +1986,7 @@ operations will be generated by the CLI.`,
     };
     subscription = {
       ...subscription,
-      fields: subscription.fields.map(field => (field.name.value === resolver.Properties.FieldName ? createField : field)),
+      fields: subscription.fields.map((field) => (field.name.value === resolver.Properties.FieldName ? createField : field)),
     };
     ctx.putType(subscription);
   }
@@ -1991,10 +2000,10 @@ operations will be generated by the CLI.`,
   private addOwnerFieldsToObject(ctx: TransformerContext, typeName: string, rules: AuthRule[]): void {
     if (ctx.featureFlags.getBoolean('addMissingOwnerFields', true)) {
       const object = ctx.getObject(typeName);
-      const ownerRules = rules.filter(rule => rule.allow === 'owner');
+      const ownerRules = rules.filter((rule) => rule.allow === 'owner');
       const existingFields = Object.keys(getFieldArguments(object));
-      const ownerFields = Array.from(new Set(ownerRules.map(rule => rule.ownerField || DEFAULT_OWNER_FIELD)).values());
-      const fieldsToAdd = ownerFields.filter(field => !existingFields.includes(field));
+      const ownerFields = Array.from(new Set(ownerRules.map((rule) => rule.ownerField || DEFAULT_OWNER_FIELD)).values());
+      const fieldsToAdd = ownerFields.filter((field) => !existingFields.includes(field));
       const modelType: any = ctx.getType(object.name.value);
       if (fieldsToAdd.length) {
         for (let ownerField of fieldsToAdd) {
@@ -2019,19 +2028,19 @@ operations will be generated by the CLI.`,
   }
 
   private getOwnerRules(rules: AuthRule[]): AuthRule[] {
-    return rules.filter(rule => rule.allow === 'owner');
+    return rules.filter((rule) => rule.allow === 'owner');
   }
 
   private getStaticGroupRules(rules: AuthRule[]): AuthRule[] {
-    return rules.filter(rule => rule.allow === 'groups' && Boolean(rule.groups));
+    return rules.filter((rule) => rule.allow === 'groups' && Boolean(rule.groups));
   }
 
   private getDynamicGroupRules(rules: AuthRule[]): AuthRule[] {
-    return rules.filter(rule => rule.allow === 'groups' && !Boolean(rule.groups));
+    return rules.filter((rule) => rule.allow === 'groups' && !Boolean(rule.groups));
   }
 
   public hasProviderAuthRules(rules: AuthRule[]): Boolean {
-    return rules.filter(rule => rule.provider === 'userPools' && (rule.allow === 'public' || rule.allow === 'private')).length > 0;
+    return rules.filter((rule) => rule.provider === 'userPools' && (rule.allow === 'public' || rule.allow === 'private')).length > 0;
   }
 
   private extendTypeWithDirectives(ctx: TransformerContext, typeName: string, directives: DirectiveNode[]) {
@@ -2050,7 +2059,7 @@ operations will be generated by the CLI.`,
     const type = ctx.getType(typeName) as ObjectTypeDefinitionNode;
 
     if (type) {
-      const field = type.fields.find(f => f.name.value === operationName);
+      const field = type.fields.find((f) => f.name.value === operationName);
 
       if (field) {
         const returnFieldType = field.type as NamedTypeNode;
@@ -2068,10 +2077,10 @@ operations will be generated by the CLI.`,
     const type = ctx.getType(typeName) as ObjectTypeDefinitionNode;
 
     if (type) {
-      const field = type.fields.find(f => f.name.value === fieldName);
+      const field = type.fields.find((f) => f.name.value === fieldName);
 
       if (field) {
-        const newFields = [...type.fields.filter(f => f.name.value !== field.name.value), extendFieldWithDirectives(field, directives)];
+        const newFields = [...type.fields.filter((f) => f.name.value !== field.name.value), extendFieldWithDirectives(field, directives)];
 
         const newMutation = {
           ...type,
@@ -2108,9 +2117,9 @@ operations will be generated by the CLI.`,
 
     const addDirectiveIfNeeded = (provider: AuthProvider, directiveName: string) => {
       if (
-        (this.configuredAuthProviders.default !== provider && Boolean(rules.find(r => r.provider === provider))) ||
+        (this.configuredAuthProviders.default !== provider && Boolean(rules.find((r) => r.provider === provider))) ||
         (this.configuredAuthProviders.default === provider &&
-          Boolean(rules.find(r => r.provider !== provider && addDefaultIfNeeded === true)))
+          Boolean(rules.find((r) => r.provider !== provider && addDefaultIfNeeded === true)))
       ) {
         directives.push(makeDirective(directiveName, []));
       }
@@ -2142,10 +2151,10 @@ operations will be generated by the CLI.`,
     //
 
     if (
-      Boolean(rules.find(r => r.provider === this.configuredAuthProviders.default)) &&
+      Boolean(rules.find((r) => r.provider === this.configuredAuthProviders.default)) &&
       Boolean(
-        rules.find(r => r.provider !== this.configuredAuthProviders.default) &&
-          !Boolean(directives.find(d => d.name.value === authProviderDirectiveMap.get(this.configuredAuthProviders.default))),
+        rules.find((r) => r.provider !== this.configuredAuthProviders.default) &&
+          !Boolean(directives.find((d) => d.name.value === authProviderDirectiveMap.get(this.configuredAuthProviders.default))),
       )
     ) {
       directives.push(makeDirective(authProviderDirectiveMap.get(this.configuredAuthProviders.default), []));
@@ -2253,7 +2262,7 @@ found '${rule.provider}' assigned.`,
   private getConfiguredAuthProviders(): ConfiguredAuthProviders {
     const providers = [
       this.config.authConfig.defaultAuthentication.authenticationType,
-      ...this.config.authConfig.additionalAuthenticationProviders.map(p => p.authenticationType),
+      ...this.config.authConfig.additionalAuthenticationProviders.map((p) => p.authenticationType),
     ];
 
     const getAuthProvider = (authType: AppSyncAuthMode): AuthProvider => {
@@ -2272,10 +2281,10 @@ found '${rule.provider}' assigned.`,
     return {
       default: getAuthProvider(this.config.authConfig.defaultAuthentication.authenticationType),
       onlyDefaultAuthProviderConfigured: this.config.authConfig.additionalAuthenticationProviders.length === 0,
-      hasApiKey: providers.find(p => p === 'API_KEY') ? true : false,
-      hasUserPools: providers.find(p => p === 'AMAZON_COGNITO_USER_POOLS') ? true : false,
-      hasOIDC: providers.find(p => p === 'OPENID_CONNECT') ? true : false,
-      hasIAM: providers.find(p => p === 'AWS_IAM') ? true : false,
+      hasApiKey: providers.find((p) => p === 'API_KEY') ? true : false,
+      hasUserPools: providers.find((p) => p === 'AMAZON_COGNITO_USER_POOLS') ? true : false,
+      hasOIDC: providers.find((p) => p === 'OPENID_CONNECT') ? true : false,
+      hasIAM: providers.find((p) => p === 'AWS_IAM') ? true : false,
     };
   }
 
@@ -2316,11 +2325,11 @@ found '${rule.provider}' assigned.`,
     const authRules = getArg('rules', []) as AuthRule[];
 
     // All the IAM auth rules that are added using @auth directive need IAM policy to be generated. AuthRules added for AdminUI don't
-    return authRules.map(rule => (rule.provider === 'iam' ? { ...rule, generateIAMPolicy: true } : rule));
+    return authRules.map((rule) => (rule.provider === 'iam' ? { ...rule, generateIAMPolicy: true } : rule));
   }
 
   private isTypeNeedsDefaultProviderAccess(def: ObjectTypeDefinitionNode): boolean {
-    const authDirective = def.directives.find(dir => dir.name.value === 'auth');
+    const authDirective = def.directives.find((dir) => dir.name.value === 'auth');
     if (!authDirective) {
       return true;
     }
@@ -2330,11 +2339,11 @@ found '${rule.provider}' assigned.`,
     // Assign default providers to rules where no provider was explicitly defined
     this.ensureDefaultAuthProviderAssigned(rules);
 
-    return Boolean(rules.find(r => r.provider === this.configuredAuthProviders.default));
+    return Boolean(rules.find((r) => r.provider === this.configuredAuthProviders.default));
   }
 
   private doesTypeHaveRulesForOperation(def: ObjectTypeDefinitionNode, operation: ModelDirectiveOperationType): boolean {
-    const authDirective = def.directives.find(dir => dir.name.value === 'auth');
+    const authDirective = def.directives.find((dir) => dir.name.value === 'auth');
     if (!authDirective) {
       return this.shouldAddDefaultAuthDirective();
     }
@@ -2347,7 +2356,7 @@ found '${rule.provider}' assigned.`,
     const { operationRules, queryRules } = this.splitRules(rules);
 
     const hasRulesForDefaultProvider = (operationRules: AuthRule[]) => {
-      return Boolean(operationRules.find(r => r.provider === this.configuredAuthProviders.default));
+      return Boolean(operationRules.find((r) => r.provider === this.configuredAuthProviders.default));
     };
 
     switch (operation) {
@@ -2381,8 +2390,8 @@ found '${rule.provider}' assigned.`,
   }
 
   private addTypeToResourceReferences(typeName: string, rules: AuthRule[]): void {
-    const iamPublicRules = rules.filter(r => r.allow === 'public' && r.provider === 'iam' && r.generateIAMPolicy);
-    const iamPrivateRules = rules.filter(r => r.allow === 'private' && r.provider === 'iam' && r.generateIAMPolicy);
+    const iamPublicRules = rules.filter((r) => r.allow === 'public' && r.provider === 'iam' && r.generateIAMPolicy);
+    const iamPrivateRules = rules.filter((r) => r.allow === 'private' && r.provider === 'iam' && r.generateIAMPolicy);
 
     if (iamPublicRules.length > 0) {
       this.unauthPolicyResources.add(`${typeName}/null`);
@@ -2394,8 +2403,8 @@ found '${rule.provider}' assigned.`,
   }
 
   private addFieldToResourceReferences(typeName: string, fieldName: string, rules: AuthRule[]): void {
-    const iamPublicRules = rules.filter(r => r.allow === 'public' && r.provider === 'iam' && r.generateIAMPolicy);
-    const iamPrivateRules = rules.filter(r => r.allow === 'private' && r.provider === 'iam' && r.generateIAMPolicy);
+    const iamPublicRules = rules.filter((r) => r.allow === 'public' && r.provider === 'iam' && r.generateIAMPolicy);
+    const iamPrivateRules = rules.filter((r) => r.allow === 'private' && r.provider === 'iam' && r.generateIAMPolicy);
 
     if (iamPublicRules.length > 0) {
       this.unauthPolicyResources.add(`${typeName}/${fieldName}`);
@@ -2424,23 +2433,23 @@ found '${rule.provider}' assigned.`,
         if (rules.length > 0) {
           // Process owner rules
           const ownerRules = this.getOwnerRules(rules);
-          const ownerFieldNameArgs = ownerRules.filter(rule => !!rule.ownerField).map(rule => rule.ownerField);
+          const ownerFieldNameArgs = ownerRules.filter((rule) => !!rule.ownerField).map((rule) => rule.ownerField);
 
           ownerFieldNameArgs.forEach((f: string) => fieldNames.add(f));
 
           // Add 'owner' to field list if we've owner rules without ownerField argument
-          if (ownerRules.find(rule => !rule.ownerField)) {
+          if (ownerRules.find((rule) => !rule.ownerField)) {
             fieldNames.add('owner');
           }
 
           // Process owner rules
-          const groupsRules = rules.filter(rule => rule.allow === 'groups');
-          const groupFieldNameArgs = groupsRules.filter(rule => !!rule.groupsField).map(rule => rule.groupsField);
+          const groupsRules = rules.filter((rule) => rule.allow === 'groups');
+          const groupFieldNameArgs = groupsRules.filter((rule) => !!rule.groupsField).map((rule) => rule.groupsField);
 
           groupFieldNameArgs.forEach((f: string) => fieldNames.add(f));
 
           // Add 'groups' to field list if we've groups rules without groupsField argument
-          if (groupsRules.find(rule => !rule.groupsField)) {
+          if (groupsRules.find((rule) => !rule.groupsField)) {
             fieldNames.add('groups');
           }
         }
@@ -2449,7 +2458,7 @@ found '${rule.provider}' assigned.`,
       getAuthFieldNames();
 
       if (fieldNames.size > 0) {
-        const reducedFields = tableXMutationConditionInput.fields.filter(field => !fieldNames.has(field.name.value));
+        const reducedFields = tableXMutationConditionInput.fields.filter((field) => !fieldNames.has(field.name.value));
 
         const updatedInput = {
           ...tableXMutationConditionInput,

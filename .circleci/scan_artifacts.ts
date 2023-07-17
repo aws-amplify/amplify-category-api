@@ -20,8 +20,8 @@ export const hasMatchingContentInFolder = (
 };
 
 const main = () => {
-  const envVarNameWithCredentialValues = (process.env.ENV_VAR_WITH_SECRETS || '').split(',').map(v => v.trim());
-  const values = envVarNameWithCredentialValues.map(v => process.env[v]).filter(Boolean);
+  const envVarNameWithCredentialValues = (process.env.ENV_VAR_WITH_SECRETS || '').split(',').map((v) => v.trim());
+  const values = envVarNameWithCredentialValues.map((v) => process.env[v]).filter(Boolean);
   if (values.length) {
     const hasContent = hasMatchingContentInFolder(values);
     if (hasContent) {

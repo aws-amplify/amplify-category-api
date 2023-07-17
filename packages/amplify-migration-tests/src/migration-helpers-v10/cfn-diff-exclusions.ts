@@ -8,18 +8,20 @@ import { ExcludeFromCFNDiff } from '../migration-helpers/utils';
  *
  * AWS::ApiGateway::GatewayResponse is also excluded
  */
-export const cfnDiffExclusions: ExcludeFromCFNDiff = (currentCategory: string, currentResourceKey: string, cfnTemplates: {
+export const cfnDiffExclusions: ExcludeFromCFNDiff = (
+  currentCategory: string,
+  currentResourceKey: string,
+  cfnTemplates: {
     project1: any;
     project2: any;
-  }) => {
+  },
+) => {
   const excludeAPIGateWayDeploymentResource = (cfnTemplate: any): any => {
     const resources = cfnTemplate.Resources ?? {};
     const resourceKeys = Object.keys(resources);
     for (const key of resourceKeys) {
       const resource = resources[key];
-      if (resource.Type === 'AWS::ApiGateway::Deployment'
-        || resource.Type === 'AWS::ApiGateway::GatewayResponse'
-      ) {
+      if (resource.Type === 'AWS::ApiGateway::Deployment' || resource.Type === 'AWS::ApiGateway::GatewayResponse') {
         delete resources[key];
       }
       if (resource.Type === 'AWS::AppSync::ApiKey' && resource.Properties) {

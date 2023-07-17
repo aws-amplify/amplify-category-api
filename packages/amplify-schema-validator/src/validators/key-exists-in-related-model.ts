@@ -1,19 +1,14 @@
-import {
-  DocumentNode,
-  Kind,
-  ObjectTypeDefinitionNode,
-  StringValueNode,
-} from 'graphql';
+import { DocumentNode, Kind, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
 import { getObjectWithName } from '../helpers/get-object-with-name';
 import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
 
 /**
-   * Validates that key exists in the related model
-   *
-   * @param schema graphql schema
-   * @returns true if key exists in the related model
-   */
+ * Validates that key exists in the related model
+ *
+ * @param schema graphql schema
+ * @returns true if key exists in the related model
+ */
 
 export const validateKeyExistsInRelatedModel = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
@@ -21,9 +16,9 @@ export const validateKeyExistsInRelatedModel = (schema: DocumentNode): Error[] =
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,
   ) as ObjectTypeDefinitionNode[];
   objectTypeDefinitions.forEach((objectTypeDefinition) => {
-    const connectionDirectiveFields = objectTypeDefinition.fields?.filter((objectField) => objectField.directives?.find(
-      (directive) => directive.name.value === 'connection',
-    ));
+    const connectionDirectiveFields = objectTypeDefinition.fields?.filter((objectField) =>
+      objectField.directives?.find((directive) => directive.name.value === 'connection'),
+    );
 
     connectionDirectiveFields?.forEach((connectionDirectiveField) => {
       const connectionDirectiveArgs = connectionDirectiveField.directives?.filter(
@@ -41,16 +36,12 @@ export const validateKeyExistsInRelatedModel = (schema: DocumentNode): Error[] =
         const objectOfType = getObjectWithName(schema, typeName);
         const keyDirective = objectOfType?.directives?.find((directive) => directive.name.value === 'key');
         if (!keyDirective) {
-          errors.push(new InvalidDirectiveError(
-            `Key ${keyName} does not exist for model ${objectOfType?.name.value}`,
-          ));
+          errors.push(new InvalidDirectiveError(`Key ${keyName} does not exist for model ${objectOfType?.name.value}`));
         }
 
         keyDirective?.arguments?.forEach((keyDirectiveArg) => {
           if (keyDirectiveArg.name.value === 'name' && (keyDirectiveArg.value as StringValueNode).value !== keyName) {
-            errors.push(new InvalidDirectiveError(
-              `Key ${keyName} does not exist for model ${objectOfType?.name.value}`,
-            ));
+            errors.push(new InvalidDirectiveError(`Key ${keyName} does not exist for model ${objectOfType?.name.value}`));
           }
         });
       });

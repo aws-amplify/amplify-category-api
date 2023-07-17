@@ -11,7 +11,5 @@ export const preprocessGraphqlSchema = (schema: AmplifyGraphqlApiSchema): string
   if (Array.isArray(schema)) {
     return schema.map((schemaFile) => schemaFile.definition).join(os.EOL);
   }
-  return schema instanceof appsync.SchemaFile
-    ? schema.definition
-    : schema;
+  return schema instanceof appsync.SchemaFile ? schema.definition : schema;
 };

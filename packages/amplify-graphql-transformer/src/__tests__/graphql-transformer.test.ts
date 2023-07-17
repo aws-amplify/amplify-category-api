@@ -1,5 +1,11 @@
 import { AppSyncAuthConfiguration, TransformerLogLevel, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { constructTransformerChain, constructTransform, executeTransform, TransformConfig, defaultPrintTransformerLog } from '../graphql-transformer';
+import {
+  constructTransformerChain,
+  constructTransform,
+  executeTransform,
+  TransformConfig,
+  defaultPrintTransformerLog,
+} from '../graphql-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces/src';
 
@@ -9,16 +15,19 @@ describe('constructTransformerChain', () => {
   });
 
   it('returns 16 transformers when 2 custom transformers are provided', () => {
-    expect(constructTransformerChain({ customTransformers: [
-      {} as unknown as TransformerPluginProvider,
-      {} as unknown as TransformerPluginProvider,
-    ] }).length).toEqual(16);
+    expect(
+      constructTransformerChain({
+        customTransformers: [{} as unknown as TransformerPluginProvider, {} as unknown as TransformerPluginProvider],
+      }).length,
+    ).toEqual(16);
   });
 
   it('succeeds on admin roles', () => {
-    expect(constructTransformerChain({
-      adminRoles: ['testRole'],
-    }).length).toEqual(14);
+    expect(
+      constructTransformerChain({
+        adminRoles: ['testRole'],
+      }).length,
+    ).toEqual(14);
   });
 });
 
@@ -48,14 +57,16 @@ describe('constructTransform', () => {
 
 describe('executeTransform', () => {
   it('executes a transform', () => {
-    expect(executeTransform({
-      ...defaultTransformConfig,
-      schema: /* GraphQL */ `
-        type Todo @model {
-          content: String!
-        }
-      `,
-    })).toBeDefined();
+    expect(
+      executeTransform({
+        ...defaultTransformConfig,
+        schema: /* GraphQL */ `
+          type Todo @model {
+            content: String!
+          }
+        `,
+      }),
+    ).toBeDefined();
   });
 
   it('writes logs to provided printer', () => {
@@ -78,7 +89,9 @@ describe('executeTransform', () => {
       `,
       transformersFactoryArgs: { authConfig: userPoolAuthConfig },
       authConfig: userPoolAuthConfig,
-      printTransformerLog: (): void => { didLog = true },
+      printTransformerLog: (): void => {
+        didLog = true;
+      },
     });
     expect(didLog).toEqual(true);
   });
@@ -100,31 +113,31 @@ describe('executeTransform', () => {
 
 describe('defaultPrintTransformerLog', () => {
   it('writes error messages', () => {
-    const error = jest.spyOn(console, 'error')
+    const error = jest.spyOn(console, 'error');
     defaultPrintTransformerLog({ message: 'test error message', level: TransformerLogLevel.ERROR });
     expect(error).toHaveBeenCalledWith('test error message');
   });
 
   it('writes warning messages', () => {
-    const warn = jest.spyOn(console, 'warn')
+    const warn = jest.spyOn(console, 'warn');
     defaultPrintTransformerLog({ message: 'test warn message', level: TransformerLogLevel.WARN });
     expect(warn).toHaveBeenCalledWith('test warn message');
   });
 
   it('writes info messages', () => {
-    const info = jest.spyOn(console, 'info')
+    const info = jest.spyOn(console, 'info');
     defaultPrintTransformerLog({ message: 'test info message', level: TransformerLogLevel.INFO });
     expect(info).toHaveBeenCalledWith('test info message');
   });
 
   it('writes debug message', () => {
-    const debug = jest.spyOn(console, 'debug')
+    const debug = jest.spyOn(console, 'debug');
     defaultPrintTransformerLog({ message: 'test debug message', level: TransformerLogLevel.DEBUG });
     expect(debug).toHaveBeenCalledWith('test debug message');
   });
 
   it('writes unexpected log levels to error', () => {
-    const error = jest.spyOn(console, 'error')
+    const error = jest.spyOn(console, 'error');
     defaultPrintTransformerLog({ message: 'unexpected message', level: 'bad' as TransformerLogLevel });
     expect(error).toHaveBeenCalledWith('unexpected message');
   });

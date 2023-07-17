@@ -222,6 +222,15 @@ Object {
     "rootStackName": Object {
       "Type": "String",
     },
+    "storagepostsArn": Object {
+      "Type": "String",
+    },
+    "storagepostsName": Object {
+      "Type": "String",
+    },
+    "storagepostsStreamArn": Object {
+      "Type": "String",
+    },
   },
   "Resources": Object {
     "ANYIntegration": Object {
@@ -2487,6 +2496,49 @@ exports.handler = async function({ 'CodePipeline.job': { id: jobId } }) {
         "Roles": Array [
           Object {
             "Ref": "TaskDefinitionExecutionRole8D61C2FB",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "TaskDefinitionTaskRoleDefaultPolicy282E8624": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:Get*",
+                "dynamodb:BatchGetItem",
+                "dynamodb:List*",
+                "dynamodb:Describe*",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Ref": "storagepostsArn",
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "/",
+                    Array [
+                      Object {
+                        "Ref": "storagepostsArn",
+                      },
+                      "index/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "TaskDefinitionTaskRoleDefaultPolicy282E8624",
+        "Roles": Array [
+          Object {
+            "Ref": "TaskDefinitionTaskRoleFD40A61D",
           },
         ],
       },

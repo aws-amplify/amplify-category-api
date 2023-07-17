@@ -37,7 +37,7 @@ export const run = async (context: $TSContext) => {
     return;
   }
   const transformerVersion = FeatureFlags.getNumber('graphqltransformer.transformerversion');
-  const improvePluralization = FeatureFlags.getBoolean('graphqltransformer.improvepluralization')
+  const improvePluralization = FeatureFlags.getBoolean('graphqltransformer.improvepluralization');
   await attemptV2TransformerMigration(
     apiResourceDir,
     apiName,

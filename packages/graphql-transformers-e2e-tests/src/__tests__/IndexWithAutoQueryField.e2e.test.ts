@@ -31,7 +31,7 @@ let GRAPHQL_CLIENT;
 
 const outputValueSelector = (key: string) => (outputs: Output[]) => {
   // eslint-disable-next-line react/destructuring-assignment
-  const output = outputs.find(o => o.OutputKey === key);
+  const output = outputs.find((o) => o.OutputKey === key);
   return output ? output.OutputValue : null;
 };
 
@@ -352,7 +352,10 @@ test('create/update mutation validation with three part secondary key.', async (
   expect(createResponseMissingFirstSortKey.errors).toHaveLength(1);
 
   await createShippingUpdate({
-    orderId: 'order1', itemId: 'item1', status: 'PENDING', name: 'name1',
+    orderId: 'order1',
+    itemId: 'item1',
+    status: 'PENDING',
+    name: 'name1',
   });
   const items = await getShippingUpdates('order1');
   expect(items.data.shippingUpdates.items).toHaveLength(1);
@@ -368,7 +371,10 @@ test('create/update mutation validation with three part secondary key.', async (
   expect(itemsWithUnknownFilter.data.shippingUpdates.items).toHaveLength(0);
 
   const updateResponseMissingLastSortKey = await updateShippingUpdate({
-    id: item.id, orderId: 'order1', itemId: 'item1', name: 'name2',
+    id: item.id,
+    orderId: 'order1',
+    itemId: 'item1',
+    name: 'name2',
   });
   expect(updateResponseMissingLastSortKey.data.updateShippingUpdate).toBeNull();
   expect(updateResponseMissingLastSortKey.errors).toHaveLength(1);
@@ -434,16 +440,28 @@ test('@primaryKey directive with customer sortDirection', async () => {
 // (orderId: string, itemId: string, sortDirection: string)
 test('@index directive with sortDirection on GSI', async () => {
   await createShippingUpdate({
-    orderId: 'order99', itemId: 'product1', status: 'PENDING', name: 'order1Name1',
+    orderId: 'order99',
+    itemId: 'product1',
+    status: 'PENDING',
+    name: 'order1Name1',
   });
   await createShippingUpdate({
-    orderId: 'order99', itemId: 'product2', status: 'IN_TRANSIT', name: 'order1Name2',
+    orderId: 'order99',
+    itemId: 'product2',
+    status: 'IN_TRANSIT',
+    name: 'order1Name2',
   });
   await createShippingUpdate({
-    orderId: 'order99', itemId: 'product3', status: 'DELIVERED', name: 'order1Name3',
+    orderId: 'order99',
+    itemId: 'product3',
+    status: 'DELIVERED',
+    name: 'order1Name3',
   });
   await createShippingUpdate({
-    orderId: 'order99', itemId: 'product4', status: 'DELIVERED', name: 'order1Name4',
+    orderId: 'order99',
+    itemId: 'product4',
+    status: 'DELIVERED',
+    name: 'order1Name4',
   });
   const newShippingUpdates = await listGSIShippingUpdate('order99', { beginsWith: { itemId: 'product' } }, 'DESC');
   const oldShippingUpdates = await listGSIShippingUpdate('order99', { beginsWith: { itemId: 'product' } }, 'ASC');
@@ -693,7 +711,7 @@ const deleteOrder = async (customerEmail: string, createdAt: string): Promise<an
   return result;
 };
 
-const getOrder = async (customerEmail: string, createdAt: string) : Promise<any> => {
+const getOrder = async (customerEmail: string, createdAt: string): Promise<any> => {
   const result = await GRAPHQL_CLIENT.query(
     `query GetOrder($customerEmail: String!, $createdAt: AWSDateTime!) {
         getOrder(customerEmail: $customerEmail, createdAt: $createdAt) {
@@ -737,7 +755,10 @@ const listOrders = async (customerEmail: string, createdAt: ModelStringKeyCondit
 
 const createItem = async (orderId: string, status: string, name: string, createdAt: string = new Date().toISOString()): Promise<any> => {
   const input = {
-    status, orderId, name, createdAt,
+    status,
+    orderId,
+    name,
+    createdAt,
   };
   const result = await GRAPHQL_CLIENT.query(
     `mutation CreateItem($input: CreateItemInput!) {
@@ -757,7 +778,10 @@ const createItem = async (orderId: string, status: string, name: string, created
 
 const updateItem = async (orderId: string, status: string, createdAt: string, name: string): Promise<any> => {
   const input = {
-    status, orderId, createdAt, name,
+    status,
+    orderId,
+    createdAt,
+    name,
   };
   const result = await GRAPHQL_CLIENT.query(
     `mutation UpdateItem($input: UpdateItemInput!) {
@@ -851,7 +875,10 @@ const listItem = async (
         }
     }`,
     {
-      orderId, statusCreatedAt, limit, nextToken,
+      orderId,
+      statusCreatedAt,
+      limit,
+      nextToken,
     },
   );
   return result;
@@ -872,18 +899,16 @@ const itemsByStatus = async (status: string, createdAt?: StringKeyConditionInput
         }
     }`,
     {
-      status, createdAt, limit, nextToken,
+      status,
+      createdAt,
+      limit,
+      nextToken,
     },
   );
   return result;
 };
 
-const itemsByCreatedAt = async (
-  createdAt: string,
-  status?: StringKeyConditionInput,
-  limit?: number,
-  nextToken?: string,
-): Promise<any> => {
+const itemsByCreatedAt = async (createdAt: string, status?: StringKeyConditionInput, limit?: number, nextToken?: string): Promise<any> => {
   const result = await GRAPHQL_CLIENT.query(
     `query ListByCreatedAt(
         $createdAt: AWSDateTime!, $status: ModelStringKeyConditionInput, $limit: Int, $nextToken: String) {
@@ -898,7 +923,10 @@ const itemsByCreatedAt = async (
         }
     }`,
     {
-      createdAt, status, limit, nextToken,
+      createdAt,
+      status,
+      limit,
+      nextToken,
     },
   );
   return result;

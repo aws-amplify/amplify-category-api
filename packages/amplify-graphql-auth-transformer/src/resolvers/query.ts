@@ -34,7 +34,7 @@ import {
   generateOwnerClaimExpression,
   generateOwnerClaimListExpression,
   generateOwnerMultiClaimExpression,
-  generateInvalidClaimsCondition
+  generateInvalidClaimsCondition,
 } from './helpers';
 import {
   COGNITO_AUTH_TYPE,
@@ -51,7 +51,7 @@ import { aws_dynamodb as dynamodb } from 'aws-cdk-lib';
 
 const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
   const staticRoleExpression: Array<Expression> = [];
-  const privateRoleIdx = roles.findIndex(r => r.strategy === 'private');
+  const privateRoleIdx = roles.findIndex((r) => r.strategy === 'private');
   if (privateRoleIdx > -1) {
     staticRoleExpression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
     roles.splice(privateRoleIdx, 1);
@@ -61,7 +61,7 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expre
       iff(
         not(ref(IS_AUTHORIZED_FLAG)),
         compoundExpression([
-          set(ref('staticGroupRoles'), raw(JSON.stringify(roles.map(r => ({ claim: r.claim, entity: r.entity }))))),
+          set(ref('staticGroupRoles'), raw(JSON.stringify(roles.map((r) => ({ claim: r.claim, entity: r.entity }))))),
           forEach(ref('groupRole'), ref('staticGroupRoles'), [
             set(ref('groupsInToken'), getIdentityClaimExp(ref('groupRole.claim'), list([]))),
             iff(
@@ -81,7 +81,7 @@ const generateAuthOnRelationalModelQueryExpression = (
   primaryFieldMap: RelationalPrimaryMapConfig,
 ): Array<Expression> => {
   const modelQueryExpression = new Array<Expression>();
-  const primaryRoles = roles.filter(r => primaryFieldMap.has(r.entity));
+  const primaryRoles = roles.filter((r) => primaryFieldMap.has(r.entity));
   if (primaryRoles.length > 0) {
     primaryRoles.forEach((role, idx) => {
       const { claim, field } = primaryFieldMap.get(role.entity);
@@ -102,17 +102,20 @@ const generateAuthOnRelationalModelQueryExpression = (
                   ]),
                 ),
               ]),
-              compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), qref(methodCall(ref('ctx.stash.put'), str('authFilter'), nul()))]),
+              compoundExpression([
+                set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                qref(methodCall(ref('ctx.stash.put'), str('authFilter'), nul())),
+              ]),
               iff(
                 and([not(ref(IS_AUTHORIZED_FLAG)), methodCall(ref('util.isNull'), ref('ctx.stash.authFilter'))]),
                 compoundExpression([
                   qref(
-                    methodCall(claim === 'source' 
-                      ? ref(`ctx.stash.connectionAttributes.put`)
-                      : ref(`ctx.${claim}.put`), 
-                    str(field),
-                    ref(`primaryRole${idx}`)
-                    )),
+                    methodCall(
+                      claim === 'source' ? ref(`ctx.stash.connectionAttributes.put`) : ref(`ctx.${claim}.put`),
+                      str(field),
+                      ref(`primaryRole${idx}`),
+                    ),
+                  ),
                   set(ref(IS_AUTHORIZED_FLAG), bool(true)),
                 ]),
               ),
@@ -139,7 +142,7 @@ const generateAuthOnModelQueryExpression = (
   sortKeyFields: Array<string>,
 ): Array<Expression> => {
   const modelQueryExpression: Expression[] = new Array<Expression>();
-  const primaryRoles = roles.filter(r => primaryFields.includes(r.entity));
+  const primaryRoles = roles.filter((r) => primaryFields.includes(r.entity));
   if (primaryRoles.length > 0) {
     if (isIndexQuery) {
       primaryRoles.forEach((role, idx) => {
@@ -173,7 +176,7 @@ const generateAuthOnModelQueryExpression = (
                           parens(equals(ref(`${role.entity}Claim`), ref(`ctx.args.${role.entity}`))),
                           methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ctx.args.${role.entity}`)),
                         ]),
-                      )
+                      ),
                     ),
                     compoundExpression([
                       set(
@@ -204,10 +207,10 @@ const generateAuthOnModelQueryExpression = (
                           iff(
                             equals(ref('entityValues'), ref(`ctx.args.${role.entity}.get("eq").size()`)),
                             set(ref(`${role.entity}Condition`), bool(true)),
-                          )
+                          ),
                         ]),
                       ),
-                    ])
+                    ]),
                   ),
                   iff(
                     ref(`${role.entity}Condition`),
@@ -217,13 +220,9 @@ const generateAuthOnModelQueryExpression = (
                     ]),
                   ),
                 ]),
-                (
-                  hasMultiClaims ?
-                  qref(
-                    methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`ownerClaimsList${idx}`))) :
-                  qref(
-                    methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`${role.entity}Claim`)))
-                ),
+                hasMultiClaims
+                  ? qref(methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`ownerClaimsList${idx}`)))
+                  : qref(methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`${role.entity}Claim`))),
               ),
             ]),
           ),
@@ -243,7 +242,7 @@ const generateAuthOnModelQueryExpression = (
            * This restricts the records of other users returned from the query in such scenario
            */
           compoundExpression([
-            set(ref('sortKeyFields'), list(sortKeyFields.map(sk => str(sk)))),
+            set(ref('sortKeyFields'), list(sortKeyFields.map((sk) => str(sk)))),
             forEach(ref('entry'), ref('primaryFieldMap.entrySet()'), [
               ifElse(
                 methodCall(ref('sortKeyFields.contains'), ref('entry.key')),
@@ -251,13 +250,13 @@ const generateAuthOnModelQueryExpression = (
                   set(ref('entryVal'), ref('entry.value')),
                   set(ref('lastIdx'), ref('entryVal.size() - 1')),
                   set(ref('lastItem'), ref('entryVal.get($lastIdx)')),
-                  qref(methodCall(ref('ctx.args.put'),  ref('entry.key'), obj({ eq: ref('lastItem') }))),
+                  qref(methodCall(ref('ctx.args.put'), ref('entry.key'), obj({ eq: ref('lastItem') }))),
                 ]),
                 qref(methodCall(ref('ctx.args.put'), ref('entry.key'), ref('entry.value'))),
               ),
               set(ref(IS_AUTHORIZED_FLAG), bool(true)),
             ]),
-          ])
+          ]),
         ),
       );
     } else {
@@ -292,7 +291,7 @@ const generateAuthOnModelQueryExpression = (
                           parens(equals(ref(`${role.entity}Claim`), ref(`ctx.args.${role.entity}`))),
                           methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ctx.args.${role.entity}`)),
                         ]),
-                      )
+                      ),
                     ),
                     // this type is mainly applied on list queries with primaryKeys therefore we can use the get "eq" key
                     // to check if the dynamic role condition is met
@@ -325,10 +324,10 @@ const generateAuthOnModelQueryExpression = (
                           iff(
                             equals(ref('entityValues'), ref(`ctx.args.${role.entity}.get("eq").size()`)),
                             set(ref(`${role.entity}Condition`), bool(true)),
-                          )
+                          ),
                         ]),
                       ),
-                    ])
+                    ]),
                   ),
                   iff(
                     ref(`${role.entity}Condition`),
@@ -338,13 +337,9 @@ const generateAuthOnModelQueryExpression = (
                     ]),
                   ),
                 ]),
-                (
-                  hasMultiClaims ?
-                  qref(
-                    methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`ownerClaimsList${idx}`))) :
-                  qref(
-                    methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`${role.entity}Claim`)))
-                ),
+                hasMultiClaims
+                  ? qref(methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`ownerClaimsList${idx}`)))
+                  : qref(methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`${role.entity}Claim`))),
               ),
             ]),
           ),
@@ -384,7 +379,11 @@ const generateAuthOnModelQueryExpression = (
                     methodCall(ref('util.isList'), ref('entry.value')),
                     compoundExpression([
                       set(ref('lastClaim'), raw('$entry.value.size() - 1')),
-                      qref(ref('modelQueryExpression.expressionValues.put(":${entry.key}", $util.dynamodb.toDynamoDB($entry.value[$lastClaim]))')),
+                      qref(
+                        ref(
+                          'modelQueryExpression.expressionValues.put(":${entry.key}", $util.dynamodb.toDynamoDB($entry.value[$lastClaim]))',
+                        ),
+                      ),
                     ]),
                     qref(ref('modelQueryExpression.expressionValues.put(":${entry.key}", $util.dynamodb.toDynamoDB($entry.value))')),
                   ),
@@ -500,7 +499,9 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
       forEach(
         ref('group'),
         ref(`util.defaultIfNull($ctx.identity.claims.get("${groupClaim}"), [])`),
-        fieldList.map(field => iff(not(methodCall(ref('group.isEmpty'))), qref(methodCall(ref('authFilter.add'), raw(`{"${field}": { "contains": $group }}`))))),
+        fieldList.map((field) =>
+          iff(not(methodCall(ref('group.isEmpty'))), qref(methodCall(ref('authFilter.add'), raw(`{"${field}": { "contains": $group }}`)))),
+        ),
       ),
     );
   });
@@ -531,14 +532,12 @@ export const generateAuthExpressionForQueries = (
   isIndexQuery = false,
   primaryKey: string | undefined = undefined,
 ): string => {
-  const {
-    cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles,
-  } = splitRoles(roles);
+  const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } =
+    splitRoles(roles);
   const primaryFields = keySchema.map((att) => att.attributeName);
   const sortKeyFields = keySchema.filter((att) => att.keyType === 'RANGE').map((att) => att.attributeName);
-  const getNonPrimaryFieldRoles = (
-    rolesToFilter: RoleDefinition[],
-  ): RoleDefinition[] => rolesToFilter.filter(role => !primaryFields.includes(role.entity));
+  const getNonPrimaryFieldRoles = (rolesToFilter: RoleDefinition[]): RoleDefinition[] =>
+    rolesToFilter.filter((role) => !primaryFields.includes(role.entity));
   const totalAuthExpressions: Array<Expression> = [
     setHasAuthExpression,
     set(ref(IS_AUTHORIZED_FLAG), bool(false)),
@@ -592,12 +591,10 @@ export const generateAuthExpressionForRelationQuery = (
   fields: ReadonlyArray<FieldDefinitionNode>,
   primaryFieldMap: RelationalPrimaryMapConfig,
 ): string => {
-  const {
-    cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles,
-  } = splitRoles(roles);
-  const getNonPrimaryFieldRoles = (
-    rolesToFilter: RoleDefinition[],
-  ): RoleDefinition[] => rolesToFilter.filter(role => !primaryFieldMap.has(role.entity));
+  const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } =
+    splitRoles(roles);
+  const getNonPrimaryFieldRoles = (rolesToFilter: RoleDefinition[]): RoleDefinition[] =>
+    rolesToFilter.filter((role) => !primaryFieldMap.has(role.entity));
   const totalAuthExpressions: Array<Expression> = [setHasAuthExpression, set(ref(IS_AUTHORIZED_FLAG), bool(false))];
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));

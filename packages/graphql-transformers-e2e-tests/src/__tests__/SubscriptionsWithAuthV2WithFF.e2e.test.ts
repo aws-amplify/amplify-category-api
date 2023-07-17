@@ -328,7 +328,7 @@ beforeAll(async () => {
   });
   // Wait for any propagation to avoid random
   // "The security token included in the request is invalid" errors
-  await new Promise(res => setTimeout(res, PROPAGATION_DELAY));
+  await new Promise((res) => setTimeout(res, PROPAGATION_DELAY));
 });
 
 afterAll(async () => {
@@ -379,7 +379,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   await createStudent(GRAPHQL_CLIENT_1, {
     name: 'student1',
@@ -423,7 +423,7 @@ test('Test a subscription on update', async () => {
       resolve(undefined);
     });
   });
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   const student3 = await createStudent(GRAPHQL_CLIENT_1, {
     name: 'student3',
@@ -468,7 +468,7 @@ test('Test a subscription on delete', async () => {
   let subscription: ZenObservable.Subscription;
   const subscriptionPromise = new Promise((resolve, reject) => {
     subscription = observer.subscribe({
-      next: event => {
+      next: (event) => {
         const student = event.value.data.onDeleteStudent;
         subscription.unsubscribe();
         expect(student.id).toEqual(student4ID);
@@ -477,7 +477,7 @@ test('Test a subscription on delete', async () => {
         expect(student.ssn).toBeNull();
         resolve(undefined);
       },
-      error: err => {
+      error: (err) => {
         reject(err);
       },
     });
@@ -492,7 +492,7 @@ test('Test a subscription on delete', async () => {
   expect(student4.data.createStudent.email).toEqual('plsDelete@domain.com');
   expect(student4.data.createStudent.ssn).toBeNull();
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   await deleteStudent(GRAPHQL_CLIENT_1, { id: student4ID });
 
@@ -540,7 +540,7 @@ test('test that group is only allowed to listen to subscriptions and listen to o
       resolve(undefined);
     });
   });
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
   // user that is authorized creates the update the mutation
   const createMemberResponse = await createMember(GRAPHQL_CLIENT_1, { id: memberID, name: memberName });
   expect(createMemberResponse.data.createMember.id).toEqual(memberID);
@@ -576,7 +576,7 @@ test('authorized group is allowed to listen to onUpdate', async () => {
 
   const subscriptionPromise = new Promise((resolve, reject) => {
     subscription = observer.subscribe({
-      next: event => {
+      next: (event) => {
         const subResponse = event.value.data.onUpdateMember;
         subscription.unsubscribe();
         expect(subResponse).toBeDefined();
@@ -585,7 +585,7 @@ test('authorized group is allowed to listen to onUpdate', async () => {
         resolve(undefined);
       },
       complete: () => {},
-      error: err => {
+      error: (err) => {
         reject(err);
       },
     });
@@ -593,7 +593,7 @@ test('authorized group is allowed to listen to onUpdate', async () => {
   const createMemberResponse = await createMember(GRAPHQL_CLIENT_1, { id: memberID, name: oldMemberName });
   expect(createMemberResponse.data.createMember.id).toEqual(memberID);
   expect(createMemberResponse.data.createMember.name).toEqual(oldMemberName);
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
   // user that is authorized creates the update the mutation
   const updateMemberResponse = await updateMember(GRAPHQL_CLIENT_1, { id: memberID, name: newMemberName });
   expect(updateMemberResponse.data.updateMember.id).toEqual(memberID);
@@ -627,7 +627,7 @@ test('authorized group is allowed to listen to onDelete', async () => {
 
   const subscriptionPromise = new Promise((resolve, reject) => {
     subscription = observer.subscribe({
-      next: event => {
+      next: (event) => {
         subscription.unsubscribe();
         const subResponse = event.value.data.onDeleteMember;
         subscription.unsubscribe();
@@ -636,7 +636,7 @@ test('authorized group is allowed to listen to onDelete', async () => {
         expect(subResponse.name).toEqual(memberName);
         resolve(undefined);
       },
-      error: err => {
+      error: (err) => {
         reject(err);
       },
     });
@@ -645,7 +645,7 @@ test('authorized group is allowed to listen to onDelete', async () => {
   const createMemberResponse = await createMember(GRAPHQL_CLIENT_1, { id: memberID, name: memberName });
   expect(createMemberResponse.data.createMember.id).toEqual(memberID);
   expect(createMemberResponse.data.createMember.name).toEqual(memberName);
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
   // user that is authorized creates the update the mutation
   const deleteMemberResponse = await deleteMember(GRAPHQL_CLIENT_1, { id: memberID });
   expect(deleteMemberResponse.data.deleteMember.id).toEqual(memberID);
@@ -681,7 +681,7 @@ test('Test subscription onCreatePost with ownerField', async () => {
       resolve(undefined);
     });
   });
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   const createPostResponse = await createPost(GRAPHQL_CLIENT_1, {
     title: 'someTitle',
@@ -714,8 +714,8 @@ test('Test onCreatePost with incorrect owner argument should throw an error', as
   let subscription: ZenObservable.Subscription;
   const subscriptionPromise = new Promise((resolve, _) => {
     subscription = failedObserver.subscribe(
-      event => {},
-      err => {
+      (event) => {},
+      (err) => {
         expect(err.error.errors[0].message).toEqual(
           'Connection failed: {"errors":[{"errorType":"Unauthorized","message":"Not Authorized to access onCreatePost on type Subscription"}]}',
         );
@@ -762,18 +762,18 @@ test('Test that IAM can listen and read to onCreatePost', async () => {
         expect(post.postOwner).toEqual(USERNAME1);
         resolve(undefined);
       },
-      err => {
+      (err) => {
         reject(err);
       },
     );
   });
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   const createPostResponse = await createPost(GRAPHQL_CLIENT_1, { id: postID, title: postTitle, postOwner: USERNAME1 });
   expect(createPostResponse.data.createPost.id).toEqual(postID);
   expect(createPostResponse.data.createPost.title).toEqual(postTitle);
   expect(createPostResponse.data.createPost.postOwner).toEqual(USERNAME1);
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
   await subscriptionPromise;
 });
 
@@ -805,7 +805,7 @@ test('test that subcsription with apiKey', async () => {
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   const createTodoResponse = await createTodo(GRAPHQL_IAM_AUTH_CLIENT, {
     description: 'someDescription',
@@ -846,12 +846,12 @@ test('test that subscription with apiKey onUpdate', async () => {
         expect(todo.name).toBeNull();
         resolve(undefined);
       },
-      err => {
+      (err) => {
         reject(undefined);
       },
     );
   });
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   const todo2 = await createTodo(GRAPHQL_IAM_AUTH_CLIENT, {
     description: 'updateTodoDesc',
@@ -902,7 +902,7 @@ test('test that subscription with apiKey onDelete', async () => {
       resolve(undefined);
     });
   });
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   const todo3 = await createTodo(GRAPHQL_IAM_AUTH_CLIENT, {
     description: 'deleteTodoDesc',

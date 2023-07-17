@@ -24,4 +24,4 @@ export type OverrideConfig = {
 export type DatasourceTransformationConfig = {
   modelToDatasourceMap?: Map<string, DatasourceType>;
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
-}
+};
