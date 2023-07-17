@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.4.6...@aws-amplify/amplify-category-api@5.4.7) (2023-07-17)
+
+### Bug Fixes
+
+- make iam.PolicyStatement from IAM policy JSON object ([#1556](https://github.com/aws-amplify/amplify-category-api/issues/1556)) ([41219c3](https://github.com/aws-amplify/amplify-category-api/commit/41219c3295352c10871232d7bd6aad5f85b9b486)), closes [#1445](https://github.com/aws-amplify/amplify-category-api/issues/1445)
+
 ## [5.4.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.4.5...@aws-amplify/amplify-category-api@5.4.6) (2023-07-07)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api
