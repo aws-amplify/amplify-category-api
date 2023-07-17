@@ -42,6 +42,7 @@ export class AppSyncFunctionConfiguration extends Construct {
    * the ARN of the resolver
    */
   public readonly arn: string;
+
   public readonly functionId: string;
 
   private function: CfnFunctionConfiguration;

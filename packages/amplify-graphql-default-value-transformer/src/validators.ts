@@ -105,18 +105,32 @@ interface Indexable {
 
 export class TypeValidators implements Indexable {
   [key: string]: any;
+
   ID = validateString;
+
   String = validateString;
+
   Int = validateInt;
+
   Float = validateFloat;
+
   Boolean = validateBoolean;
+
   AWSJSON = validateJson;
+
   AWSDate = validateAwsDate;
+
   AWSTime = validateAwsTime;
+
   AWSDateTime = validateAwsDateTime;
+
   AWSTimestamp = validateAwsTimestamp;
+
   AWSEmail = validateAwsEmail;
+
   AWSURL = validateAwsUrl;
+
   AWSPhone = validateAwsPhone;
+
   AWSIPAddress = validateAwsIpAddress;
 }

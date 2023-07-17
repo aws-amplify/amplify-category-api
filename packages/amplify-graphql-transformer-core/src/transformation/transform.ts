@@ -86,12 +86,19 @@ export interface GraphQLTransformOptions {
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
   private transformers: TransformerPluginProvider[];
+
   private stackMappingOverrides: StackMapping;
+
   private app: App | undefined;
+
   private readonly authConfig: AppSyncAuthConfiguration;
+
   private readonly resolverConfig?: ResolverConfig;
+
   private readonly userDefinedSlots: Record<string, UserDefinedSlot[]>;
+
   private readonly overrideConfig?: OverrideConfig;
+
   private readonly transformParameters: TransformParameters;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true

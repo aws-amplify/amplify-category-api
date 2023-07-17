@@ -30,10 +30,15 @@ const DEFAULT_CONTAINER_MEMORY_CPU = {
 
 class Service implements IServiceDefinition {
   containers: Container[] = [];
+
   apiHealthcheck?: ServiceHealthCheck;
+
   taskResources: TaskConfig = DEFAULT_TASK_MEMORY_CPU;
+
   containerResources: ContainerConfig = DEFAULT_CONTAINER_MEMORY_CPU;
+
   deploymentConfiguration: DeploymentConfiguration = DEFAULT_SERVICE_DEPLYMENT_CONFIG;
+
   desiredCount: number = DEFAULT_DESIRED_COUNT;
 
   constructor(

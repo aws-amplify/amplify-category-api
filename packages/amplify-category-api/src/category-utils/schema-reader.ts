@@ -15,7 +15,9 @@ import { constructTransform } from '@aws-amplify/graphql-transformer';
  */
 export class SchemaReader {
   private schemaPath: string;
+
   private schemaDocument: DocumentNode;
+
   private preProcessedSchemaDocument: DocumentNode;
 
   getSchemaPath = async (resourceDir: string): Promise<string> => {

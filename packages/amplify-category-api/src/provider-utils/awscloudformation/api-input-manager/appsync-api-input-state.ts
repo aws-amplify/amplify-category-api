@@ -12,9 +12,13 @@ import { AppSyncCLIInputs } from '../service-walkthrough-types/appsync-user-inpu
 
 export class AppsyncApiInputState {
   #cliInputsFilePath: string; //cli-inputs.json (output) filepath
+
   #resourceName: string; //user friendly name provided by user
+
   #category: string; //category of the resource
+
   #service: string; //AWS service for the resource
+
   #buildFilePath: string;
 
   constructor(private readonly context: $TSContext, resourceName: string) {

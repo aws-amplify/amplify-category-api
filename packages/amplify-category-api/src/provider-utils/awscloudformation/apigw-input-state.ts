@@ -19,7 +19,9 @@ import { ApigwWalkthroughReturnPromise } from './service-walkthrough-types/apigw
 
 export class ApigwInputState {
   projectRootPath: string;
+
   resourceName: string;
+
   paths: { [pathName: string]: Path };
 
   constructor(private readonly context: $TSContext, resourceName?: string) {

@@ -8,8 +8,11 @@ import { TransformerRootStack } from './root-stack';
  */
 export class TransformerStackSythesizer extends LegacyStackSynthesizer {
   private readonly stackAssets: Map<string, Template> = new Map();
+
   private readonly mapingTemplateAssets: Map<string, string> = new Map();
+
   private _deploymentBucket?: CfnParameter;
+
   private _deploymentRootKey?: CfnParameter;
 
   /**

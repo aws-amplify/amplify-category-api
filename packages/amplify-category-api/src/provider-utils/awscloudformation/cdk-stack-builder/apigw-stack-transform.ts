@@ -21,11 +21,17 @@ import { ApigwInputState } from '../apigw-input-state';
 import { ADMIN_QUERIES_NAME } from '../../../category-constants';
 export class ApigwStackTransform {
   cliInputs: ApigwInputs;
+
   resourceTemplateObj: AmplifyApigwResourceStack | undefined;
+
   cliInputsState: ApigwInputState;
+
   cfn: Template;
+
   cfnInputParams: Record<string, any>;
+
   resourceName: string;
+
   private _app: cdk.App;
 
   constructor(context: $TSContext, resourceName: string, cliInputState?: ApigwInputState) {

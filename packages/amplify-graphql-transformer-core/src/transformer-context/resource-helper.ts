@@ -11,6 +11,7 @@ import { DirectiveNode, FieldNode, ObjectTypeDefinitionNode, ObjectTypeExtension
  */
 export class TransformerResourceHelper implements TransformerResourceHelperProvider {
   private api?: GraphQLAPIProvider;
+
   private exclusionSet = new Set<string>();
 
   // a mapping of models that have been renamed with @mapsTo

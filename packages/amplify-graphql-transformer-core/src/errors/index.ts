@@ -76,7 +76,9 @@ export class TransformerContractError extends Error {
  */
 export class InvalidMigrationError extends Error {
   fix: string;
+
   causedBy: string;
+
   constructor(message: string, causedBy: string, fix: string) {
     super(message);
     Object.setPrototypeOf(this, InvalidMigrationError.prototype);

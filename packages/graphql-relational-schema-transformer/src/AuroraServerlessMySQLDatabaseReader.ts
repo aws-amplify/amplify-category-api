@@ -18,9 +18,13 @@ import { toUpper } from 'graphql-transformer-common';
  */
 export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader {
   auroraClient: AuroraDataAPIClient;
+
   dbRegion: string;
+
   awsSecretStoreArn: string;
+
   dbClusterOrInstanceArn: string;
+
   database: string;
 
   setAuroraClient(auroraClient: AuroraDataAPIClient) {

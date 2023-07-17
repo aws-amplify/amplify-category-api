@@ -30,9 +30,13 @@ async function invokeS3GetUserInputs(context, s3ResourceName) {
 
 export class StorageTest {
   private storageName: string;
+
   private storageSimulator: AmplifyStorageSimulator;
+
   private configOverrideManager: ConfigOverrideManager;
+
   private storageRegion: string;
+
   private bucketName: string;
 
   async start(context) {

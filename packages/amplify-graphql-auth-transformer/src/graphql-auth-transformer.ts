@@ -161,20 +161,31 @@ const getReadRolesForField = (acm: AccessControlMatrix, readRoles: Array<string>
  */
 export class AuthTransformer extends TransformerAuthBase implements TransformerAuthProvider {
   private config: AuthTransformerConfig;
+
   private configuredAuthProviders: ConfiguredAuthProviders;
+
   private rules: AuthRule[];
+
   // access control
   private roleMap: Map<string, RoleDefinition>;
+
   private authModelConfig: Map<string, AccessControlMatrix>;
+
   private authNonModelConfig: Map<string, AccessControlMatrix>;
+
   // model config
   private modelDirectiveConfig: Map<string, ModelDirectiveConfiguration>;
+
   // schema generation
   private seenNonModelTypes: Map<string, Set<string>>;
+
   // iam policy generation
   private generateIAMPolicyForUnauthRole: boolean;
+
   private generateIAMPolicyForAuthRole: boolean;
+
   private authPolicyResources = new Set<string>();
+
   private unauthPolicyResources = new Set<string>();
 
   /**

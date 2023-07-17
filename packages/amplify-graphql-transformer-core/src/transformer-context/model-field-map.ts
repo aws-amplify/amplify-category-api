@@ -6,6 +6,7 @@ import _ from 'lodash';
  */
 export class ModelFieldMapImpl implements ModelFieldMap {
   readonly #fieldMapping: FieldMapEntry[] = [];
+
   readonly #resolverReferences: ResolverReferenceEntry[] = [];
 
   /**

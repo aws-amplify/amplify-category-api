@@ -35,9 +35,13 @@ type ResourceOperationInput = {
  */
 export class AccessControlMatrix {
   private name: string;
+
   private roles: Array<string>;
+
   private operations: Array<ModelOperation>;
+
   private resources: Array<string>;
+
   private matrix: Array<Array<Array<boolean>>>;
 
   constructor(config: ACMConfig) {

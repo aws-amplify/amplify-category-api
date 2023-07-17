@@ -5,6 +5,7 @@ const REGION = resolveTestRegion();
 
 export class IAMHelper {
   client: IAM;
+
   constructor(region: string = REGION, credentials?: Credentials) {
     this.client = new IAM({
       region,
@@ -53,6 +54,7 @@ export class IAMHelper {
 
     return { authRole: authRole.Role, unauthRole: unauthRole.Role };
   }
+
   async createRoleForCognitoGroup(name: string): Promise<IAM.Role> {
     const role = await this.client
       .createRole({

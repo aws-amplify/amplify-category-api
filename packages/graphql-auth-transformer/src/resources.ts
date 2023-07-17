@@ -396,6 +396,7 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}", groupClaim: "${rule.
       this.ownershipAuthorizationExpressionForSubscriptions(rules, variableToCheck, variableToSet),
     ]);
   }
+
   public ownershipAuthorizationExpressionForSubscriptions(
     rules: AuthRule[],
     variableToCheck: string = 'ctx.args',

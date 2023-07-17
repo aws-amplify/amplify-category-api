@@ -94,7 +94,9 @@ export function applyFileBasedOverride(stackManager: StackManager, overrideDirPa
  */
 export class InvalidOverrideError extends Error {
   details: string;
+
   resolution: string;
+
   constructor(error: Error) {
     super('Executing overrides failed.');
     this.name = 'InvalidOverrideError';

@@ -197,8 +197,11 @@ export interface GraphQLTransformOptions {
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
   private transformers: ITransformer[];
+
   private stackMappingOverrides: StackMapping;
+
   private transformConfig: TransformConfig;
+
   private featureFlags: FeatureFlagProvider;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true

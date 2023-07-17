@@ -156,11 +156,17 @@ export type ConfiguredAuthProviders = {
 
 export class ModelAuthTransformer extends Transformer {
   resources: ResourceFactory;
+
   config: ModelAuthTransformerConfig;
+
   configuredAuthProviders: ConfiguredAuthProviders;
+
   generateIAMPolicyforUnauthRole: boolean;
+
   generateIAMPolicyforAuthRole: boolean;
+
   authPolicyResources: Set<string>;
+
   unauthPolicyResources: Set<string>;
 
   constructor(config?: ModelAuthTransformerConfig) {

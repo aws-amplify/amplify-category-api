@@ -34,6 +34,7 @@ const directiveDefinition = `
  */
 export class IndexTransformer extends TransformerPluginBase {
   private directiveList: IndexDirectiveConfiguration[] = [];
+
   private resolverMap: Map<TransformerResolverProvider, string> = new Map();
 
   constructor() {

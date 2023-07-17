@@ -13,6 +13,7 @@ import * as e2eCore from '.';
  */
 class CLIVersionController {
   #getCLIPathSpy: jest.SpyInstance<string>;
+
   /**
    * All CLI calls (that use getCLIVersion) will use the specified CLI version
    */
