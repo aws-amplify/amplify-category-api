@@ -1,4 +1,7 @@
 import { AppSyncAuthConfiguration, TransformerLogLevel, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces/src';
+import { Stack } from 'aws-cdk-lib';
 import {
   constructTransformerChain,
   constructTransform,
@@ -6,8 +9,6 @@ import {
   TransformConfig,
   defaultPrintTransformerLog,
 } from '../graphql-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces/src';
 
 describe('constructTransformerChain', () => {
   it('returns 14 transformers when no custom transformers are provided', () => {
@@ -60,6 +61,7 @@ describe('executeTransform', () => {
     expect(
       executeTransform({
         ...defaultTransformConfig,
+        scope: new Stack(),
         schema: /* GraphQL */ `
           type Todo @model {
             content: String!
@@ -82,6 +84,7 @@ describe('executeTransform', () => {
     let didLog = false;
     executeTransform({
       ...defaultTransformConfig,
+      scope: new Stack(),
       schema: /* GraphQL */ `
         type Todo @model @auth(rules: [{ allow: owner }]) {
           content: String!
@@ -99,6 +102,7 @@ describe('executeTransform', () => {
   it('does not log warnings on simple schema', () => {
     executeTransform({
       ...defaultTransformConfig,
+      scope: new Stack(),
       schema: /* GraphQL */ `
         type Todo @model {
           content: String!

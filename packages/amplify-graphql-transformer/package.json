@@ -44,7 +44,11 @@
   "devDependencies": {
     "@types/node": "^12.12.6",
     "rimraf": "^3.0.0",
-    "ts-jest": "26.4.4"
+    "ts-jest": "26.4.4",
+    "aws-cdk-lib": "^2.80.0"
+  },
+  "peerDependencies": {
+    "constructs": "^10.0.5"
   },
   "jest": {
     "testURL": "http://localhost",

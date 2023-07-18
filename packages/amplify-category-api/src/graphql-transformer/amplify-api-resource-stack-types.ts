@@ -1,11 +1,17 @@
 // Amplify generated Types for API - override.ts
 
+import { App } from 'aws-cdk-lib';
 import { CfnApiKey, CfnDataSource, CfnFunctionConfiguration, CfnGraphQLApi, CfnGraphQLSchema, CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnPolicy, CfnRole } from 'aws-cdk-lib/aws-iam';
 import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
 import { CfnFunction, CfnEventSourceMapping } from 'aws-cdk-lib/aws-lambda';
 import { CfnStack } from 'aws-cdk-lib';
+
+export type OverrideConfig = {
+  overrideFlag: boolean;
+  applyOverride: (app: App) => AmplifyApiGraphQlResourceStackTemplate;
+};
 
 // Base template
 // Customer can use these params to mutate the Cloudformation for the resource

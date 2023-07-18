@@ -1,14 +1,7 @@
 import { CfnResource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import _ from 'lodash';
-import {
-  AmplifyApiGraphQlResourceStackTemplate,
-  AppsyncStackCommon,
-  FunctionDirectiveStack,
-  HttpsDirectiveStack,
-  ModelDirectiveStack,
-  OpenSearchDirectiveStack,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { AmplifyApiGraphQlResourceStackTemplate, FunctionDirectiveStack, AppsyncStackCommon, HttpsDirectiveStack, OpenSearchDirectiveStack, ModelDirectiveStack } from '../amplify-api-resource-stack-types';
 import { ConstructResourceMeta } from './types';
 
 export const stacksTypes: Record<string, string> = {

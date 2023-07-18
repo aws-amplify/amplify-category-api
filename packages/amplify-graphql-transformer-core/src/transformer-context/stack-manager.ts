@@ -1,9 +1,15 @@
-import { StackManagerProvider, Template } from '@aws-amplify/graphql-transformer-interfaces';
-import { Stack, CfnParameter, CfnParameterProps, NestedStack } from 'aws-cdk-lib';
+import { StackManagerProvider, Template, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { App, Stack, CfnParameter, CfnParameterProps, NestedStack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { TransformerNestedStack, TransformerRootStack, TransformerStackSythesizer } from '../cdk-compat';
 
 export type ResourceToStackMap = Record<string, string>;
+
+export type TransformResourceProvider = {
+  getCloudFormationTemplates: () => Map<string, Template>;
+  getMappingTemplates: () => Map<string, string>;
+  getResolvers: () => Map<string, TransformerResolverProvider>;
+};
 
 /**
  * StackManager
@@ -17,13 +23,13 @@ export class StackManager implements StackManagerProvider {
   private paramMap: Map<string, CfnParameter> = new Map();
   private useInternalSynth: boolean;
 
-  constructor(app: Construct, useInternalSynth: boolean, resourceMapping: ResourceToStackMap) {
-    this.useInternalSynth = useInternalSynth;
+  constructor(scope: Construct, resourceMapping: ResourceToStackMap) {
+    this.useInternalSynth = App.isApp(scope);
     this.rootStack = this.useInternalSynth
-      ? new TransformerRootStack(app, 'transformer-root-stack', {
+      ? new TransformerRootStack(scope, 'transformer-root-stack', {
           synthesizer: this.stackSynthesizer,
         })
-      : app; // TK: Can we use our own synthesizer here, is that helpful?
+      : scope; // TK: Can we use our own synthesizer here, is that helpful?
     // add Env Parameter to ensure to adhere to contract
     this.resourceToStackMap = new Map(Object.entries(resourceMapping));
     this.addParameter('env', {

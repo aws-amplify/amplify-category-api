@@ -50,7 +50,7 @@ describe('GraphQLTransform', () => {
       transform: TestGraphQLTransform;
       isAPIKeyExpected: boolean;
     }): void => {
-      const stackManager = new StackManager(new App(), true, {});
+      const stackManager = new StackManager(new App(), {});
       const transformerOutput = {
         buildSchema: jest.fn(() => ''),
       } as unknown as TransformerOutput;
@@ -77,7 +77,7 @@ describe('GraphQLTransform', () => {
 
     it('can be invoked', () => {
       const transform = new TestGraphQLTransform({ transformers: [mockTransformer] });
-      const stackManager = new StackManager(new App(), true, {});
+      const stackManager = new StackManager(new App(), {});
       const transformerOutput = {
         buildSchema: jest.fn(() => ''),
       } as unknown as TransformerOutput;

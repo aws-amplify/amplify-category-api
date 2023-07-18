@@ -1,11 +1,11 @@
-import { RDSConnectionSecrets, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
+import { RDSConnectionSecrets, MYSQL_DB_TYPE, StackManager, TransformResourceProvider, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
   DeploymentResources,
   TransformerLog,
   TransformerLogLevel,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, Template, pathManager } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -19,6 +19,7 @@ import { TransformerProjectOptions } from './transformer-options-types';
 import { getExistingConnectionSecretNames, getSecretsKey } from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { executeTransform } from '@aws-amplify/graphql-transformer';
+import { App } from 'aws-cdk-lib';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
@@ -173,13 +174,25 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
     return undefined;
   }
 
-  const transformOutput = executeTransform({
+  const app = new App();
+
+  const transformResourceProvider = executeTransform({
+    scope: app,
     ...opts,
     schema,
     modelToDatasourceMap: opts.projectConfig.modelToDatasourceMap,
     datasourceSecretParameterLocations: await getDatasourceSecretMap(context),
     printTransformerLog,
   });
+
+  if (opts.overrideConfig?.overrideFlag) {
+    opts.overrideConfig?.applyOverride(app);
+  }
+
+  // N.B. this must happen befor the resource provider can be used I guess.
+  app.synth({ force: true, skipValidation: true });
+
+  const transformOutput = synthesize(transformResourceProvider, opts.userDefinedSlots ?? {});
 
   const builtProject = mergeUserConfigWithTransformOutput(opts.projectConfig, transformOutput, opts);
 
@@ -199,6 +212,58 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
 
   return builtProject;
 };
+const synthesize = (
+  resourceProvider: TransformResourceProvider,
+  userDefinedSlots: Record<string, UserDefinedSlot[]>,
+): DeploymentResources => {
+  const templates = resourceProvider.getCloudFormationTemplates();
+  const rootStackTemplate = templates.get('transformer-root-stack');
+  const childStacks: Record<string, Template> = {};
+  for (const [templateName, template] of templates.entries()) {
+    if (templateName !== 'transformer-root-stack') {
+      childStacks[templateName] = template;
+    }
+  }
+
+  const fileAssets = resourceProvider.getMappingTemplates();
+  const pipelineFunctions: Record<string, string> = {};
+  const resolvers: Record<string, string> = {};
+  const functions: Record<string, string> = {};
+  for (const [templateName, template] of fileAssets) {
+    if (templateName.startsWith('pipelineFunctions/')) {
+      pipelineFunctions[templateName.replace('pipelineFunctions/', '')] = template;
+    } else if (templateName.startsWith('resolvers/')) {
+      resolvers[templateName.replace('resolvers/', '')] = template;
+    } else if (templateName.startsWith('functions/')) {
+      functions[templateName.replace('functions/', '')] = template;
+    }
+  }
+  const schema = fileAssets.get('schema.graphql') || '';
+
+  const resolverEntries = resourceProvider.getResolvers();
+  const userOverriddenSlots: string[] = [];
+  for (const [resolverName] of resolverEntries) {
+    const userSlots = userDefinedSlots[resolverName] || [];
+
+    userSlots.forEach((slot) => {
+      const fileName = slot.requestResolver?.fileName;
+      if (fileName && fileName in resolvers) {
+        userOverriddenSlots.push(fileName);
+      }
+    });
+  }
+
+  return {
+    userOverriddenSlots,
+    functions,
+    pipelineFunctions,
+    stackMapping: {},
+    resolvers,
+    schema,
+    stacks: childStacks,
+    rootStack: rootStackTemplate!,
+  };
+}
 
 const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, RDSConnectionSecrets>> => {
   const outputMap = new Map<string, RDSConnectionSecrets>();

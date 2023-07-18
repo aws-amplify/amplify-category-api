@@ -1,21 +1,26 @@
-import { CfnResource } from 'aws-cdk-lib';
+import * as path from 'path';
+import { App, CfnResource } from 'aws-cdk-lib';
 import * as fs from 'fs-extra';
 import * as vm from 'vm2';
-import * as path from 'path';
 import _ from 'lodash';
 import { pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
-import { StackManager } from '@aws-amplify/graphql-transformer-core';
-import { AmplifyApiGraphQlResourceStackTemplate } from '@aws-amplify/graphql-transformer-interfaces';
+import { Construct } from 'constructs';
+import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { ConstructResourceMeta } from './types/types';
 import { convertToAppsyncResourceObj, getStackMeta } from './types/utils';
-import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { AmplifyApiGraphQlResourceStackTemplate } from './amplify-api-resource-stack-types';
+
+export const getRootStackForApp = (app: App): Construct => {
+  return app; // TODO: support real root stack
+};
 
 /**
- *
- * @param stackManager
- * @param overrideDir
+ * Apply Amplify overrides for rendered app.
+ * @param app the app to apply overrides against
+ * @param overrideDirPath the directory to search for an override.js file within, only used for testing.
  */
-export function applyFileBasedOverride(stackManager: StackManager, overrideDirPath?: string): AmplifyApiGraphQlResourceStackTemplate {
+export const applyFileBasedOverride = (app: App, overrideDirPath?: string): AmplifyApiGraphQlResourceStackTemplate => {
+  const rootStack = getRootStackForApp(app);
   const overrideDir = overrideDirPath ?? path.join(pathManager.getBackendDirPath(), 'api', getAppSyncAPIName());
   const overrideFilePath = path.join(overrideDir, 'build', 'override.js');
   if (!fs.existsSync(overrideFilePath)) {
@@ -24,14 +29,14 @@ export function applyFileBasedOverride(stackManager: StackManager, overrideDirPa
 
   const stacks: string[] = [];
   const amplifyApiObj: any = {};
-  stackManager.rootStack.node.findAll().forEach((node) => {
+  rootStack.node.findAll().forEach((node) => {
     const resource = node as CfnResource;
     if (resource.cfnResourceType === 'AWS::CloudFormation::Stack') {
       stacks.push(node.node.id.split('.')[0]);
     }
   });
 
-  stackManager.rootStack.node.findAll().forEach((node) => {
+  rootStack.node.findAll().forEach((node) => {
     const resource = node as CfnResource;
     let pathArr;
     if (node.node.id === 'Resource') {
@@ -87,11 +92,8 @@ export function applyFileBasedOverride(stackManager: StackManager, overrideDirPa
     throw new InvalidOverrideError(err);
   }
   return appsyncResourceObj;
-}
+};
 
-/**
- *
- */
 export class InvalidOverrideError extends Error {
   details: string;
   resolution: string;

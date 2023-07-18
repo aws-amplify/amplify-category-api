@@ -1,6 +1,5 @@
 import {
   AppSyncAuthConfiguration,
-  DeploymentResources,
   GraphQLAPIProvider,
   Template,
   TransformerPluginProvider,
@@ -9,7 +8,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
-import { App, Aws, CfnOutput, Fn } from 'aws-cdk-lib';
+import { Aws, CfnOutput, Fn } from 'aws-cdk-lib';
 import {
   EnumTypeDefinitionNode,
   EnumValueDefinitionNode,
@@ -33,11 +32,14 @@ import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError }
 import { GraphQLApi } from '../graphql-api';
 import { TransformerContext } from '../transformer-context';
 import { TransformerOutput } from '../transformer-context/output';
-import { StackManager } from '../transformer-context/stack-manager';
+import { StackManager, TransformResourceProvider } from '../transformer-context/stack-manager';
 import { adoptAuthModes, IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils/authType';
-import * as SyncUtils from './sync-utils';
 import { MappingTemplate } from '../cdk-compat';
-import { UserDefinedSlot, OverrideConfig, DatasourceTransformationConfig } from './types';
+import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
+import { DatasourceType } from '../config/project-config';
+import { defaultTransformParameters } from '../transformer-context/transform-parameters';
+import * as SyncUtils from './sync-utils';
+import { UserDefinedSlot, DatasourceTransformationConfig } from './types';
 import {
   makeSeenTransformationKey,
   matchArgumentDirective,
@@ -45,13 +47,9 @@ import {
   matchEnumValueDirective,
   matchFieldDirective,
   matchInputFieldDirective,
-  removeAmplifyInputDefinition,
   sortTransformerPlugins,
 } from './utils';
 import { validateAuthModes, validateModelSchema } from './validation';
-import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
-import { DatasourceType } from '../config/project-config';
-import { defaultTransformParameters } from '../transformer-context/transform-parameters';
 
 export type SynthState = {
   managedAssets: Map<string, string>;
@@ -86,7 +84,6 @@ export interface GraphQLTransformOptions {
   readonly host?: TransformHostProvider;
   readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   readonly resolverConfig?: ResolverConfig;
-  readonly overrideConfig?: OverrideConfig;
 }
 
 export type StackMapping = { [resourceId: string]: string };
@@ -97,7 +94,6 @@ export class GraphQLTransform {
   private readonly authConfig: AppSyncAuthConfiguration;
   private readonly resolverConfig?: ResolverConfig;
   private readonly userDefinedSlots: Record<string, UserDefinedSlot[]>;
-  private readonly overrideConfig?: OverrideConfig;
   private readonly transformParameters: TransformParameters;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
@@ -129,7 +125,6 @@ export class GraphQLTransform {
 
     this.stackMappingOverrides = options.stackMapping || {};
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
-    this.overrideConfig = options.overrideConfig;
     this.resolverConfig = options.resolverConfig || {};
     this.transformParameters = {
       ...defaultTransformParameters,
@@ -172,16 +167,15 @@ export class GraphQLTransform {
    * the schema. Each transformer returns a new context that is passed
    * on to the next transformer. At the end of the transformation a
    * cloudformation template is returned.
+   * @param scope the cdk construct to generate this app under
    * @param schema The model schema.
-   * @param scope the scope to transform into
    * @param datasourceConfig Additional supporting configuration when additional datasources are added
    */
-  public transformWithoutSynthesis(schema: string, scope: Construct, datasourceConfig?: DatasourceTransformationConfig): any {
+  public transform(scope: Construct, schema: string, datasourceConfig?: DatasourceTransformationConfig): TransformResourceProvider {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
     const context = new TransformerContext(
       scope,
-      false,
       parsedDocument,
       datasourceConfig?.modelToDatasourceMap ?? new Map<string, DatasourceType>(),
       this.stackMappingOverrides,
@@ -307,152 +301,11 @@ export class GraphQLTransform {
       }
     }
     this.collectResolvers(context, context.api);
-  }
-
-  /**
-   * Reduces the final context by running the set of transformers on
-   * the schema. Each transformer returns a new context that is passed
-   * on to the next transformer. At the end of the transformation a
-   * cloudformation template is returned.
-   * @param schema The model schema.
-   * @param datasourceConfig Additional supporting configuration when additional datasources are added
-   */
-  public transform(schema: string, datasourceConfig?: DatasourceTransformationConfig): DeploymentResources {
-    this.seenTransformations = {};
-    const parsedDocument = parse(schema);
-    const app = new App();
-    const context = new TransformerContext(
-      app,
-      true,
-      parsedDocument,
-      datasourceConfig?.modelToDatasourceMap ?? new Map<string, DatasourceType>(),
-      this.stackMappingOverrides,
-      this.authConfig,
-      this.transformParameters,
-      this.resolverConfig,
-      datasourceConfig?.datasourceSecretParameterLocations,
-    );
-    const validDirectiveNameMap = this.transformers.reduce(
-      (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
-      {
-        aws_subscribe: true,
-        aws_auth: true,
-        aws_api_key: true,
-        aws_iam: true,
-        aws_oidc: true,
-        aws_lambda: true,
-        aws_cognito_user_pools: true,
-        deprecated: true,
-      },
-    );
-    let allModelDefinitions = [...context.inputDocument.definitions];
-    for (const transformer of this.transformers) {
-      allModelDefinitions = allModelDefinitions.concat(...transformer.typeDefinitions, transformer.directive);
-    }
-
-    const errors = validateModelSchema({
-      kind: Kind.DOCUMENT,
-      definitions: allModelDefinitions,
-    });
-    if (errors && errors.length) {
-      throw new SchemaValidationError(errors);
-    }
-
-    for (const transformer of this.transformers) {
-      if (isFunction(transformer.before)) {
-        transformer.before(context);
-      }
-    }
-
-    // Apply each transformer and accumulate the context.
-    for (const transformer of this.transformers) {
-      for (const def of context.inputDocument.definitions as TypeDefinitionOrExtension[]) {
-        switch (def.kind) {
-          case 'ObjectTypeDefinition':
-            this.transformObject(transformer, def, validDirectiveNameMap, context);
-            // Walk the fields and call field transformers.
-            break;
-          case 'InterfaceTypeDefinition':
-            this.transformInterface(transformer, def, validDirectiveNameMap, context);
-            // Walk the fields and call field transformers.
-            break;
-          case 'ScalarTypeDefinition':
-            this.transformScalar(transformer, def, validDirectiveNameMap, context);
-            break;
-          case 'UnionTypeDefinition':
-            this.transformUnion(transformer, def, validDirectiveNameMap, context);
-            break;
-          case 'EnumTypeDefinition':
-            this.transformEnum(transformer, def, validDirectiveNameMap, context);
-            break;
-          case 'InputObjectTypeDefinition':
-            this.transformInputObject(transformer, def, validDirectiveNameMap, context);
-            break;
-          default:
-            // eslint-disable-next-line no-continue
-            continue;
-        }
-      }
-    }
-
-    // Validate
-    for (const transformer of this.transformers) {
-      if (isFunction(transformer.validate)) {
-        transformer.validate(context);
-      }
-    }
-
-    // Prepare
-    for (const transformer of this.transformers) {
-      if (isFunction(transformer.prepare)) {
-        transformer.prepare(context);
-      }
-    }
-
-    // transform schema
-    for (const transformer of this.transformers) {
-      if (isFunction(transformer.transformSchema)) {
-        transformer.transformSchema(context);
-      }
-    }
-
-    // Synth the API and make it available to allow transformer plugins to manipulate the API
-    const stackManager = context.stackManager as StackManager;
-    const output: TransformerOutput = context.output as TransformerOutput;
-    const api = this.generateGraphQlApi(stackManager, output);
-
-    // generate resolvers
-    (context as TransformerContext).bind(api);
-    if (!_.isEmpty(this.resolverConfig)) {
-      SyncUtils.createSyncTable(context);
-    }
-    for (const transformer of this.transformers) {
-      if (isFunction(transformer.generateResolvers)) {
-        transformer.generateResolvers(context);
-      }
-    }
-
-    // .transform() is meant to behave like a composition so the
-    // after functions are called in the reverse order (as if they were popping off a stack)
-    let reverseThroughTransformers = this.transformers.length - 1;
-    while (reverseThroughTransformers >= 0) {
-      const transformer = this.transformers[reverseThroughTransformers];
-      if (isFunction(transformer.after)) {
-        transformer.after(context);
-      }
-      reverseThroughTransformers -= 1;
-    }
-    for (const transformer of this.transformers) {
-      if (isFunction(transformer.getLogs)) {
-        const logs = transformer.getLogs();
-        this.logs.push(...logs);
-      }
-    }
-    this.collectResolvers(context, context.api);
-    if (this.overrideConfig?.overrideFlag) {
-      this.overrideConfig?.applyOverride(stackManager);
-    }
-    return this.synthesize(context, app);
+    return {
+      getCloudFormationTemplates: (context.stackManager as StackManager).getCloudFormationTemplates,
+      getMappingTemplates: (context.stackManager as StackManager).getMappingTemplates,
+      getResolvers: context.resolvers.collectResolvers,
+    };
   }
 
   protected generateGraphQlApi(stackManager: StackManager, output: TransformerOutput): GraphQLApi {
@@ -519,62 +372,6 @@ export class GraphQLTransform {
     });
     api.addToSchema(output.buildSchema());
     return api;
-  }
-
-  private synthesize(context: TransformerContext, app: App): DeploymentResources {
-    const stackManager: StackManager = context.stackManager as StackManager;
-
-    // eslint-disable-next-line no-unused-expressions
-    app?.synth({ force: true, skipValidation: true });
-
-    const templates = stackManager.getCloudFormationTemplates();
-    const rootStackTemplate = templates.get('transformer-root-stack');
-    const childStacks: Record<string, Template> = {};
-    for (const [templateName, template] of templates.entries()) {
-      if (templateName !== 'transformer-root-stack') {
-        childStacks[templateName] = template;
-      }
-    }
-
-    const fileAssets = stackManager.getMappingTemplates();
-    const pipelineFunctions: Record<string, string> = {};
-    const resolvers: Record<string, string> = {};
-    const functions: Record<string, string> = {};
-    for (const [templateName, template] of fileAssets) {
-      if (templateName.startsWith('pipelineFunctions/')) {
-        pipelineFunctions[templateName.replace('pipelineFunctions/', '')] = template;
-      } else if (templateName.startsWith('resolvers/')) {
-        resolvers[templateName.replace('resolvers/', '')] = template;
-      } else if (templateName.startsWith('functions/')) {
-        functions[templateName.replace('functions/', '')] = template;
-      }
-    }
-    const compiledSchema = fileAssets.get('schema.graphql') || '';
-    const schema = removeAmplifyInputDefinition(compiledSchema);
-
-    const resolverEntries = context.resolvers.collectResolvers();
-    const userOverriddenSlots: string[] = [];
-    for (const [resolverName] of resolverEntries) {
-      const userSlots = this.userDefinedSlots[resolverName] || [];
-
-      userSlots.forEach((slot) => {
-        const fileName = slot.requestResolver?.fileName;
-        if (fileName && fileName in resolvers) {
-          userOverriddenSlots.push(fileName);
-        }
-      });
-    }
-
-    return {
-      userOverriddenSlots,
-      functions,
-      pipelineFunctions,
-      stackMapping: {},
-      resolvers,
-      schema,
-      stacks: childStacks,
-      rootStack: rootStackTemplate!,
-    };
   }
 
   private collectResolvers(context: TransformerContext, api: GraphQLAPIProvider): void {

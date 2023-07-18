@@ -9,11 +9,11 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
-import { App } from 'aws-cdk-lib';
 import { DocumentNode } from 'graphql';
 import { Construct } from 'constructs';
 import { DatasourceType } from '../config/project-config';
 import { ResolverConfig } from '../config/transformer-config';
+import { RDSConnectionSecrets } from '../types';
 import { TransformerDataSourceManager } from './datasource';
 import { TransformerOutput } from './output';
 import { TransformerContextProviderRegistry } from './provider-registry';
@@ -21,10 +21,9 @@ import { TransformerContextProviderRegistry } from './provider-registry';
 import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
-import { RDSConnectionSecrets } from '../types';
 
 export { TransformerResolver } from './resolver';
-export { StackManager } from './stack-manager';
+export { StackManager, TransformResourceProvider } from './stack-manager';
 export class TransformerContextMetadata implements TransformerContextMetadataProvider {
   /**
    * Used by transformers to pass information between one another.
@@ -57,12 +56,10 @@ export class TransformerContext implements TransformerContextProvider {
   private resolverConfig: ResolverConfig | undefined;
   public readonly modelToDatasourceMap: Map<string, DatasourceType>;
   public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
-  public readonly useInternalSynth: boolean;
 
   public metadata: TransformerContextMetadata;
   constructor(
-    app: App | Construct | undefined,
-    useInternalSynth: boolean,
+    scope: Construct,
     public readonly inputDocument: DocumentNode,
     modelToDatasourceMap: Map<string, DatasourceType>,
     stackMapping: Record<string, string>,
@@ -71,13 +68,11 @@ export class TransformerContext implements TransformerContextProvider {
     resolverConfig?: ResolverConfig,
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
   ) {
-    if (!app) throw new Error('Ahhh');
-    this.useInternalSynth = useInternalSynth;
     this.output = new TransformerOutput(inputDocument);
     this.resolvers = new ResolverManager();
     this.dataSources = new TransformerDataSourceManager();
     this.providerRegistry = new TransformerContextProviderRegistry();
-    const stackManager = new StackManager(app, this.useInternalSynth, stackMapping);
+    const stackManager = new StackManager(scope, stackMapping);
     this.stackManager = stackManager;
     this.authConfig = authConfig;
     this.resourceHelper = new TransformerResourceHelper(stackManager);

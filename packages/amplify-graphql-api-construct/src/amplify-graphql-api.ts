@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { executeSynth } from '@aws-amplify/graphql-transformer';
+import { executeTransform } from '@aws-amplify/graphql-transformer';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
   preprocessGraphqlSchema,
@@ -72,9 +72,9 @@ export class AmplifyGraphqlApi extends Construct {
 
     overwriteStackDescriptionWithAmplifyMetadata(this);
 
-    executeSynth({
-      schema: preprocessGraphqlSchema(modelSchema),
+    executeTransform({
       scope,
+      schema: preprocessGraphqlSchema(modelSchema),
       userDefinedSlots: parseUserDefinedSlots(separatedFunctionSlots),
       transformersFactoryArgs: {
         authConfig,

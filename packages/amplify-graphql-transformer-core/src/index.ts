@@ -2,7 +2,7 @@ import { print } from 'graphql';
 import { EXTRA_DIRECTIVES_DOCUMENT } from './transformation/validation';
 
 export { GraphQLTransform, GraphQLTransformOptions, SyncUtils } from './transformation';
-export { OverrideConfig, UserDefinedSlot, UserDefinedResolver } from './transformation/types';
+export { UserDefinedSlot, UserDefinedResolver } from './transformation/types';
 export { validateModelSchema } from './transformation/validation';
 export {
   ConflictDetectionType,
@@ -39,7 +39,7 @@ export {
   TransformerPluginBase,
   TransformerAuthBase,
 } from './transformation/transformer-plugin-base';
-export { TransformerResolver, StackManager } from './transformer-context';
+export { TransformerResolver, StackManager, TransformResourceProvider } from './transformer-context';
 export {
   DDB_DB_TYPE,
   ImportAppSyncAPIInputs,
