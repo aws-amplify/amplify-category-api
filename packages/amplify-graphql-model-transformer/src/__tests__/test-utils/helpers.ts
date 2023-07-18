@@ -43,7 +43,7 @@ export function doNotExpectFields(type: ObjectTypeDefinitionNode, fields: string
 }
 
 export function verifyInputCount(doc: DocumentNode, type: string, count: number): boolean {
-  return doc.definitions.filter(def => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && def.name.value === type).length == count;
+  return doc.definitions.filter((def) => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && def.name.value === type).length == count;
 }
 
 export function getFieldOnInputType(type: InputObjectTypeDefinitionNode, field: string): InputValueDefinitionNode {

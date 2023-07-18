@@ -182,20 +182,19 @@ export function addApiWithBlankSchema(cwd: string, opts: Partial<AddApiOptions &
 
 function selectConflictHandlerType(
   chain: ExecutionContext,
-  { conflictHandlerType, isUpdate }: { conflictHandlerType: ConflictHandlerType, isUpdate: boolean },
+  { conflictHandlerType, isUpdate }: { conflictHandlerType: ConflictHandlerType; isUpdate: boolean },
 ) {
   switch (conflictHandlerType) {
-    case (ConflictHandlerType.AUTOMERGE):
-      chain
-        .sendCarriageReturn(); // Select Automerge Handler
+    case ConflictHandlerType.AUTOMERGE:
+      chain.sendCarriageReturn(); // Select Automerge Handler
       break;
-    case (ConflictHandlerType.OPTIMISTIC):
-      chain
-        .sendKeyDown().sendCarriageReturn(); // Select Optimistic Handler
+    case ConflictHandlerType.OPTIMISTIC:
+      chain.sendKeyDown().sendCarriageReturn(); // Select Optimistic Handler
       break;
-    case (ConflictHandlerType.LAMBDA):
+    case ConflictHandlerType.LAMBDA:
       chain
-        .sendKeyDown(2).sendCarriageReturn() // Select Lambda Handler
+        .sendKeyDown(2)
+        .sendCarriageReturn() // Select Lambda Handler
         .wait(/.*Select from the options below.*/)
         .sendCarriageReturn(); // Create a new Lambda
       break;
@@ -203,15 +202,13 @@ function selectConflictHandlerType(
       throw new Error(`Unexpected ConflictHandlerType received: ${conflictHandlerType}`);
   }
   if (isUpdate) {
-    chain
-      .wait(/.*Do you want to override default per model settings*/)
-      .sendCarriageReturn();
+    chain.wait(/.*Do you want to override default per model settings*/).sendCarriageReturn();
   }
 }
 
 export function addApiWithBlankSchemaAndConflictDetection(
   cwd: string,
-  opts: Partial<AddApiOptions & { apiKeyExpirationDays: number, conflictHandlerType: ConflictHandlerType }> = {},
+  opts: Partial<AddApiOptions & { apiKeyExpirationDays: number; conflictHandlerType: ConflictHandlerType }> = {},
 ) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
@@ -390,10 +387,7 @@ export function updateApiWithMultiAuth(cwd: string, settings?: { testingWithLate
   });
 }
 
-export function updateApiConflictHandlerType(
-  cwd: string,
-  opts: Partial<AddApiOptions> & { conflictHandlerType: ConflictHandlerType },
-) {
+export function updateApiConflictHandlerType(cwd: string, opts: Partial<AddApiOptions> & { conflictHandlerType: ConflictHandlerType }) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
     const chain = spawn(getCLIPath(options.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
@@ -406,22 +400,17 @@ export function updateApiConflictHandlerType(
 
     selectConflictHandlerType(chain, { conflictHandlerType: opts.conflictHandlerType, isUpdate: true });
 
-    chain
-      .wait(/.*Successfully updated resource*/)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+    chain.wait(/.*Successfully updated resource*/).run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
-export function updateApiConflictHandlerTypePerModel(
-  cwd: string,
-  opts?: Partial<AddApiOptions>
-) {
+export function updateApiConflictHandlerTypePerModel(cwd: string, opts?: Partial<AddApiOptions>) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
     const chain = spawn(getCLIPath(options.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
@@ -438,7 +427,8 @@ export function updateApiConflictHandlerTypePerModel(
       .send('a')
       .sendCarriageReturn()
       .wait('Select the resolution strategy for') //First model
-      .sendKeyDown(2).sendCarriageReturn() // Select Lambda Handler
+      .sendKeyDown(2)
+      .sendCarriageReturn() // Select Lambda Handler
       .wait(/.*Select from the options below.*/)
       .sendCarriageReturn() // Create a new Lambda
       .wait('Select the resolution strategy for') //Second model
@@ -750,7 +740,7 @@ export function addApi(projectDir: string, settings?: any) {
 
         chain.wait('Configure additional auth types?').sendConfirmYes();
 
-        authTypesToSelectFrom = authTypesToSelectFrom.filter(x => x !== defaultType);
+        authTypesToSelectFrom = authTypesToSelectFrom.filter((x) => x !== defaultType);
 
         multiSelect(
           chain.wait('Choose the additional authorization types you want to configure for the API'),
@@ -758,7 +748,7 @@ export function addApi(projectDir: string, settings?: any) {
           authTypesToSelectFrom,
         );
 
-        authTypesToAdd.forEach(authType => {
+        authTypesToAdd.forEach((authType) => {
           setupAuthType(authType, chain, settings);
         });
       } else {
@@ -806,7 +796,7 @@ export function addV1RDSDataSource(projectDir: string) {
           resolve();
         }
       });
- });
+  });
 }
 
 function setupAuthType(authType: string, chain: any, settings?: any) {
@@ -943,7 +933,7 @@ export function rebuildApi(projDir: string, apiName: string) {
     spawn(getCLIPath(), ['rebuild', 'api'], { cwd: projDir, stripColors: true })
       .wait('Type the name of the API to confirm you want to continue')
       .sendLine(apiName)
-      .run(err => (err ? reject(err) : resolve()));
+      .run((err) => (err ? reject(err) : resolve()));
   });
 }
 
@@ -1085,17 +1075,15 @@ export const importRDSDatabase = (cwd: string, opts: ImportApiOptions & { apiExi
         .sendConfirmYes();
     }
 
-    importCommands
-      .wait(/.*Successfully imported the database schema into.*/)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+    importCommands.wait(/.*Successfully imported the database schema into.*/).run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
-};
+}
 
 export function apiUpdateSecrets(cwd: string, opts: ImportApiOptions) {
   const options = _.assign(defaultOptions, opts);
@@ -1104,31 +1092,34 @@ export function apiUpdateSecrets(cwd: string, opts: ImportApiOptions) {
     promptDBInformation(updateSecretsCommands, options);
     updateSecretsCommands.wait('Successfully updated the secrets for the database.');
     updateSecretsCommands.run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
-};
+}
 
 export function apiGenerateSchema(cwd: string, opts: ImportApiOptions & { validCredentials: boolean }) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
-    const generateSchemaCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['generate-schema', 'api'], { cwd, stripColors: true });
+    const generateSchemaCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['generate-schema', 'api'], {
+      cwd,
+      stripColors: true,
+    });
     if (!options?.validCredentials) {
       promptDBInformation(generateSchemaCommands, options);
     }
     generateSchemaCommands.run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
     });
   });
-};
+}
 
 export function removeApi(cwd: string) {
   return new Promise<void>((resolve, reject) => {
@@ -1148,7 +1139,7 @@ export function removeApi(cwd: string) {
         }
       });
   });
-};
+}
 
 const promptDBInformation = (
   executionContext: ExecutionContext,

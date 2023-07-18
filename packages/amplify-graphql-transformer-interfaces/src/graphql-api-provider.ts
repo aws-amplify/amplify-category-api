@@ -1,9 +1,5 @@
-import {
-  CfnResource, IAsset,
-} from 'aws-cdk-lib';
-import {
-  Construct, IConstruct,
-} from 'constructs';
+import { CfnResource, IAsset } from 'aws-cdk-lib';
+import { Construct, IConstruct } from 'constructs';
 import { Grant, IGrantable, IRole } from 'aws-cdk-lib/aws-iam';
 import { TransformHostProvider } from './transform-host-provider';
 

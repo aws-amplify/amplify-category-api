@@ -5,7 +5,7 @@ import { getCreatedAtFieldName, getUpdatedAtFieldName } from '../ModelDirectiveA
 function getDirective(doc: string, typeName: string): DirectiveNode {
   const schema = buildASTSchema(concatAST([directiveDefinition, parse(doc)]));
   const selectedType = schema.getTypeMap()[typeName];
-  return selectedType.astNode.directives.find(d => d.name.value === 'model');
+  return selectedType.astNode.directives.find((d) => d.name.value === 'model');
 }
 describe('getCreatedAtField', () => {
   it('should return createdAt when there is no timestamps configuration', () => {

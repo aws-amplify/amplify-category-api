@@ -40,13 +40,10 @@ export type ExecuteTransformConfig = TransformConfig & {
 
 // @public (undocumented)
 export type TransformConfig = {
-    legacyApiKeyEnabled?: boolean;
-    disableResolverDeduping?: boolean;
     transformersFactoryArgs: TransformerFactoryArgs;
     resolverConfig?: ResolverConfig;
     authConfig?: AppSyncAuthConfiguration;
     stacks?: Record<string, Template>;
-    sandboxModeEnabled?: boolean;
     overrideConfig?: OverrideConfig;
     userDefinedSlots?: Record<string, UserDefinedSlot[]>;
     stackMapping?: Record<string, string>;
@@ -61,7 +58,6 @@ export type TransformerFactoryArgs = {
     storageConfig?: any;
     adminRoles?: Array<string>;
     identityPoolId?: string;
-    searchConfig?: TransformerSearchConfig;
     customTransformers?: TransformerPluginProvider[];
 };
 

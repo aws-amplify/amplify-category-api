@@ -31,9 +31,7 @@ describe('owner based @auth', () => {
     expect(out).toBeDefined();
     const resources = out.rootStack.Resources;
     expect(resources).toBeDefined();
-    expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
-      'AMAZON_COGNITO_USER_POOLS',
-    );
+    expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual('AMAZON_COGNITO_USER_POOLS');
   });
 
   test('owner field where the field is a list', () => {
@@ -59,9 +57,7 @@ describe('owner based @auth', () => {
     expect(out).toBeDefined();
     const resources = out.rootStack.Resources;
     expect(resources).toBeDefined();
-    expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
-      'AMAZON_COGNITO_USER_POOLS',
-    );
+    expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual('AMAZON_COGNITO_USER_POOLS');
     expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Mutation.updatePost.auth.1.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Mutation.deletePost.auth.1.req.vtl']).toMatchSnapshot();
@@ -91,9 +87,7 @@ describe('owner based @auth', () => {
     expect(out).toBeDefined();
     const resources = out.rootStack.Resources;
     expect(resources).toBeDefined();
-    expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
-      'AMAZON_COGNITO_USER_POOLS',
-    );
+    expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual('AMAZON_COGNITO_USER_POOLS');
     expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Mutation.updatePost.auth.1.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Mutation.deletePost.auth.1.req.vtl']).toMatchSnapshot();
@@ -454,9 +448,7 @@ describe('owner based @auth', () => {
     expect(out).toBeDefined();
     const resources = out.rootStack.Resources;
     expect(resources).toBeDefined();
-    expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
-      'AMAZON_COGNITO_USER_POOLS',
-    );
+    expect(resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual('AMAZON_COGNITO_USER_POOLS');
     expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Mutation.updatePost.auth.1.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Mutation.deletePost.auth.1.req.vtl']).toMatchSnapshot();
@@ -511,8 +503,8 @@ describe('owner based @auth', () => {
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
         transformParameters: {
-          useSubUsernameForDefaultIdentityClaim: false
-        }
+          useSubUsernameForDefaultIdentityClaim: false,
+        },
       });
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
@@ -895,11 +887,7 @@ describe('owner based @auth', () => {
 
       const transformer = new GraphQLTransform({
         authConfig,
-        transformers: [
-          new ModelTransformer(),
-          new PrimaryKeyTransformer(),
-          new AuthTransformer(),
-        ],
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer()],
       });
 
       expect(() => {
@@ -918,11 +906,7 @@ describe('owner based @auth', () => {
 
       const transformer = new GraphQLTransform({
         authConfig,
-        transformers: [
-          new ModelTransformer(),
-          new PrimaryKeyTransformer(),
-          new AuthTransformer(),
-        ],
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer()],
         transformParameters: {
           useSubUsernameForDefaultIdentityClaim: false,
         },
@@ -941,11 +925,7 @@ describe('owner based @auth', () => {
 
       const transformer = new GraphQLTransform({
         authConfig,
-        transformers: [
-          new ModelTransformer(),
-          new PrimaryKeyTransformer(),
-          new AuthTransformer(),
-        ],
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer()],
       });
 
       const out = transformer.transform(schema);
@@ -961,14 +941,10 @@ describe('owner based @auth', () => {
 
       const transformer = new GraphQLTransform({
         authConfig,
-        transformers: [
-          new ModelTransformer(),
-          new PrimaryKeyTransformer(),
-          new AuthTransformer(),
-        ],
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer()],
         transformParameters: {
           useSubUsernameForDefaultIdentityClaim: false,
-        }
+        },
       });
 
       const out = transformer.transform(schema);
@@ -984,11 +960,7 @@ describe('owner based @auth', () => {
 
       const transformer = new GraphQLTransform({
         authConfig,
-        transformers: [
-          new ModelTransformer(),
-          new PrimaryKeyTransformer(),
-          new AuthTransformer(),
-        ],
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer()],
       });
 
       expect(() => {
@@ -1012,12 +984,7 @@ describe('owner based @auth', () => {
 
         const transformer = new GraphQLTransform({
           authConfig,
-          transformers: [
-            new ModelTransformer(),
-            new PrimaryKeyTransformer(),
-            new AuthTransformer(),
-            new IndexTransformer(),
-          ],
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer(), new IndexTransformer()],
         });
 
         const out = transformer.transform(schema);
@@ -1036,12 +1003,7 @@ describe('owner based @auth', () => {
 
         const transformer = new GraphQLTransform({
           authConfig,
-          transformers: [
-            new ModelTransformer(),
-            new PrimaryKeyTransformer(),
-            new AuthTransformer(),
-            new IndexTransformer(),
-          ],
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer(), new IndexTransformer()],
         });
 
         const out = transformer.transform(schema);
@@ -1060,12 +1022,7 @@ describe('owner based @auth', () => {
 
         const transformer = new GraphQLTransform({
           authConfig,
-          transformers: [
-            new ModelTransformer(),
-            new PrimaryKeyTransformer(),
-            new AuthTransformer(),
-            new IndexTransformer(),
-          ],
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer(), new IndexTransformer()],
         });
 
         const out = transformer.transform(schema);
@@ -1084,18 +1041,13 @@ describe('owner based @auth', () => {
 
         const transformer = new GraphQLTransform({
           authConfig,
-          transformers: [
-            new ModelTransformer(),
-            new PrimaryKeyTransformer(),
-            new AuthTransformer(),
-            new IndexTransformer(),
-          ],
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer(), new IndexTransformer()],
         });
 
         const out = transformer.transform(schema);
         expect(out.resolvers['Note.notesByOwner.auth.1.req.vtl']).toMatchSnapshot();
       });
-    })
+    });
   });
 
   describe('with populateOwnerFieldForStaticGroupAuth feature flag disabled', () => {
@@ -1118,7 +1070,7 @@ describe('owner based @auth', () => {
         transformers: [new ModelTransformer(), new AuthTransformer()],
         transformParameters: {
           populateOwnerFieldForStaticGroupAuth: false,
-        }
+        },
       });
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
@@ -1149,7 +1101,7 @@ describe('owner based @auth', () => {
         transformers: [new ModelTransformer(), new AuthTransformer()],
         transformParameters: {
           populateOwnerFieldForStaticGroupAuth: false,
-        }
+        },
       });
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
@@ -1180,7 +1132,7 @@ describe('owner based @auth', () => {
         transformers: [new ModelTransformer(), new AuthTransformer()],
         transformParameters: {
           populateOwnerFieldForStaticGroupAuth: false,
-        }
+        },
       });
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();

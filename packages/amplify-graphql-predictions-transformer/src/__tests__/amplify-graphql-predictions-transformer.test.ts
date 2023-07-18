@@ -43,103 +43,98 @@ test('lambda function is added to pipeline when lambda dependent action is added
   Template.fromJSON(stack).resourceCountIs('AWS::Lambda::Function', 1);
   Template.fromJSON(stack).resourceCountIs('AWS::AppSync::Resolver', 1);
   expect(out.schema).toContain('speakTranslatedText(input: SpeakTranslatedTextInput!): String');
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Statement: [
-          {
-            Action: 'sts:AssumeRole',
-            Effect: 'Allow',
-            Principal: {
-              Service: 'appsync.amazonaws.com',
-            },
+  Template.fromJSON(stack).hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'appsync.amazonaws.com',
           },
-        ],
-        Version: '2012-10-17',
-      },
-    });
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+  Template.fromJSON(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 's3:GetObject',
+          Effect: 'Allow',
+          Resource: Match.anyValue(),
+        },
+      ],
+    },
+  });
+  Template.fromJSON(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'translate:TranslateText',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ],
+    },
+  });
+  Template.fromJSON(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'lambda:InvokeFunction',
+          Effect: 'Allow',
+          Resource: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
+        },
+      ],
+    },
+  });
+  Template.fromJSON(stack).hasResourceProperties('AWS::AppSync::Resolver', {
+    ApiId: { Ref: Match.anyValue() },
+    FieldName: 'speakTranslatedText',
+    TypeName: 'Query',
+    Kind: 'PIPELINE',
+    PipelineConfig: {
+      Functions: [{ 'Fn::GetAtt': [Match.anyValue(), 'FunctionId'] }, { 'Fn::GetAtt': [Match.anyValue(), 'FunctionId'] }],
+    },
+    RequestMappingTemplate: {
+      'Fn::Join': [
+        '\n',
+        [
           {
-            Action: 's3:GetObject',
-            Effect: 'Allow',
-            Resource: Match.anyValue(),
-          },
-        ],
-      },
-    });
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'translate:TranslateText',
-            Effect: 'Allow',
-            Resource: '*',
-          },
-        ],
-      },
-    });
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'lambda:InvokeFunction',
-            Effect: 'Allow',
-            Resource: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
-          },
-        ],
-      },
-    });
-  Template.fromJSON(stack)
-    .hasResourceProperties('AWS::AppSync::Resolver', {
-      ApiId: { Ref: Match.anyValue() },
-      FieldName: 'speakTranslatedText',
-      TypeName: 'Query',
-      Kind: 'PIPELINE',
-      PipelineConfig: {
-        Functions: [{ 'Fn::GetAtt': [Match.anyValue(), 'FunctionId'] }, { 'Fn::GetAtt': [Match.anyValue(), 'FunctionId'] }],
-      },
-      RequestMappingTemplate: {
-        'Fn::Join': [
-          '\n',
-          [
-            {
-              'Fn::If': [
-                'HasEnvironmentParameter',
-                {
-                  'Fn::Sub': [
-                    '$util.qr($ctx.stash.put("s3Bucket", "myStorage${hash}-${env}"))',
-                    {
-                      hash: {
-                        'Fn::Select': [3, { 'Fn::Split': ['-', { Ref: 'AWS::StackName' }] }],
-                      },
-                      env: { Ref: Match.anyValue() },
+            'Fn::If': [
+              'HasEnvironmentParameter',
+              {
+                'Fn::Sub': [
+                  '$util.qr($ctx.stash.put("s3Bucket", "myStorage${hash}-${env}"))',
+                  {
+                    hash: {
+                      'Fn::Select': [3, { 'Fn::Split': ['-', { Ref: 'AWS::StackName' }] }],
                     },
-                  ],
-                },
-                {
-                  'Fn::Sub': [
-                    '$util.qr($ctx.stash.put("s3Bucket", "myStorage${hash}"))',
-                    {
-                      hash: {
-                        'Fn::Select': [3, { 'Fn::Split': ['-', { Ref: 'AWS::StackName' }] }],
-                      },
+                    env: { Ref: Match.anyValue() },
+                  },
+                ],
+              },
+              {
+                'Fn::Sub': [
+                  '$util.qr($ctx.stash.put("s3Bucket", "myStorage${hash}"))',
+                  {
+                    hash: {
+                      'Fn::Select': [3, { 'Fn::Split': ['-', { Ref: 'AWS::StackName' }] }],
                     },
-                  ],
-                },
-              ],
-            },
-            '$util.qr($ctx.stash.put("isList", false))\n{}',
-          ],
+                  },
+                ],
+              },
+            ],
+          },
+          '$util.qr($ctx.stash.put("isList", false))\n{}',
         ],
-      },
-      ResponseMappingTemplate:
-        '## If the result is a list return the result as a list **\n#if( $ctx.stash.get("isList") )\n  #set( $result = $ctx.result.split("[ ,]+") )\n  $util.toJson($result)\n#else\n  $util.toJson($ctx.result)\n#end',
-    });
+      ],
+    },
+    ResponseMappingTemplate:
+      '## If the result is a list return the result as a list **\n#if( $ctx.stash.get("isList") )\n  #set( $result = $ctx.result.split("[ ,]+") )\n  $util.toJson($result)\n#else\n  $util.toJson($ctx.result)\n#end',
+  });
 });
 
 test('return type is a list based on the action', () => {

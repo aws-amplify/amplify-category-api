@@ -12,10 +12,7 @@ import {
 } from 'amplify-category-api-e2e-core';
 import { cfnDiffExclusions } from '../../migration-helpers-v10/cfn-diff-exclusions';
 import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
-import {
-  assertNoParameterChangesBetweenProjects,
-  collectCloudformationDiffBetweenProjects,
-} from '../../migration-helpers/utils';
+import { assertNoParameterChangesBetweenProjects, collectCloudformationDiffBetweenProjects } from '../../migration-helpers/utils';
 
 describe('api serverless migration tests', () => {
   let projRoot: string;

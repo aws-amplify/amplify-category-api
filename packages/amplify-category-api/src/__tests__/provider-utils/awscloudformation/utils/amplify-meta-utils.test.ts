@@ -1,4 +1,9 @@
-import { authConfigHasApiKey, getAppSyncAPINames, getAppSyncAPIName, ensureNoAppSyncAPIExists } from '../../../../provider-utils/awscloudformation/utils/amplify-meta-utils';
+import {
+  authConfigHasApiKey,
+  getAppSyncAPINames,
+  getAppSyncAPIName,
+  ensureNoAppSyncAPIExists,
+} from '../../../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
 
 jest.mock('@aws-amplify/amplify-cli-core');
@@ -56,12 +61,12 @@ describe('API resource information utils', () => {
   const metaWithMultipleAPIs = {
     api: {
       api1: {
-        service: 'AppSync'
+        service: 'AppSync',
       },
       api2: {
-        service: 'AppSync'
-      }
-    }
+        service: 'AppSync',
+      },
+    },
   };
 
   const metaWithNoAPI = {};
@@ -78,12 +83,16 @@ describe('API resource information utils', () => {
 
   it('getAppSyncAPIName throws when there is no API added', () => {
     stateManager_mock.getMeta = jest.fn().mockReturnValueOnce(metaWithNoAPI);
-    expect( () => getAppSyncAPIName()).toThrowError('You do not have AppSync API added. Use "amplify add api" or "amplify import api" to add one to your project.');
+    expect(() => getAppSyncAPIName()).toThrowError(
+      'You do not have AppSync API added. Use "amplify add api" or "amplify import api" to add one to your project.',
+    );
   });
 
   it('ensureNoAppSyncAPIExists throws when there is an API added', () => {
     stateManager_mock.getMeta = jest.fn().mockReturnValueOnce(metaWithMultipleAPIs);
-    expect( () => ensureNoAppSyncAPIExists()).toThrowError('You already have an AppSync API named api1 in your project. Use the "amplify update api" command to update your existing AppSync API.');
+    expect(() => ensureNoAppSyncAPIExists()).toThrowError(
+      'You already have an AppSync API named api1 in your project. Use the "amplify update api" command to update your existing AppSync API.',
+    );
   });
 
   it('ensureNoAppSyncAPIExists does not throw when there is no API added', () => {

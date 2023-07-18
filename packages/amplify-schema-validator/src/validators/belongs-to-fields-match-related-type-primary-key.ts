@@ -1,10 +1,4 @@
-import {
-  DocumentNode,
-  Kind,
-  ListValueNode,
-  ObjectTypeDefinitionNode,
-  StringValueNode,
-} from 'graphql';
+import { DocumentNode, Kind, ListValueNode, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
 import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
 import { getObjectWithName } from '../helpers/get-object-with-name';
@@ -23,9 +17,9 @@ export const validateBelongsToFieldsMatchRelatedTypePrimaryKey = (schema: Docume
   ) as ObjectTypeDefinitionNode[];
 
   objectTypeDefinitions.forEach((objectTypeDefinition) => {
-    const belongsToDirectiveFields = objectTypeDefinition.fields?.filter((objectField) => objectField.directives?.find(
-      (directive) => directive.name.value === 'belongsTo',
-    ));
+    const belongsToDirectiveFields = objectTypeDefinition.fields?.filter((objectField) =>
+      objectField.directives?.find((directive) => directive.name.value === 'belongsTo'),
+    );
 
     const fieldTypes = {} as { [fieldName: string]: string };
     objectTypeDefinition.fields?.forEach((field) => {
@@ -48,16 +42,14 @@ export const validateBelongsToFieldsMatchRelatedTypePrimaryKey = (schema: Docume
         const typeName = resolveFieldTypeName(belongsToDirectiveField.type);
         const objectOfType = getObjectWithName(schema, typeName);
 
-        const primaryKeyDirectiveFields = objectOfType?.fields?.filter((objectField) => objectField.directives?.find(
-          (directive) => directive.name.value === 'primaryKey',
-        ));
+        const primaryKeyDirectiveFields = objectOfType?.fields?.filter((objectField) =>
+          objectField.directives?.find((directive) => directive.name.value === 'primaryKey'),
+        );
 
         if (primaryKeyDirectiveFields?.length === 0 && fieldsVals.length === 1) {
           const fieldVal = (fieldsVals[0] as StringValueNode).value;
           if (fieldTypes[fieldVal] !== 'ID') {
-            errors.push(new InvalidDirectiveError(
-              `${fieldVal} field is not of type ID`,
-            ));
+            errors.push(new InvalidDirectiveError(`${fieldVal} field is not of type ID`));
           }
         }
 
@@ -76,9 +68,7 @@ export const validateBelongsToFieldsMatchRelatedTypePrimaryKey = (schema: Docume
             const fieldVal = (fieldsVals[0] as StringValueNode).value;
             const primaryKeyType = relatedModelFieldTypes[primaryKeyDirectiveField.name.value];
             if (fieldTypes[fieldVal] !== primaryKeyType) {
-              errors.push(new InvalidDirectiveError(
-                `${fieldVal} field is not of type ${primaryKeyType}`,
-              ));
+              errors.push(new InvalidDirectiveError(`${fieldVal} field is not of type ${primaryKeyType}`));
             }
           }
           primaryKeydirectiveArgs?.forEach((primaryKeydirectiveArg) => {
@@ -88,9 +78,7 @@ export const validateBelongsToFieldsMatchRelatedTypePrimaryKey = (schema: Docume
                 const fieldVal = (fieldsVals[0] as StringValueNode).value;
                 const primaryKeyType = relatedModelFieldTypes[primaryKeyDirectiveField.name.value];
                 if (fieldTypes[fieldVal] !== primaryKeyType) {
-                  errors.push(new InvalidDirectiveError(
-                    `${fieldVal} field is not of type ${primaryKeyType}`,
-                  ));
+                  errors.push(new InvalidDirectiveError(`${fieldVal} field is not of type ${primaryKeyType}`));
                   return errors;
                 }
               }
@@ -103,9 +91,7 @@ export const validateBelongsToFieldsMatchRelatedTypePrimaryKey = (schema: Docume
                 const fieldVal = (fieldsVals[i] as StringValueNode).value;
                 const sortKeyFieldVal = (sortKeyFieldsVals[i - 1] as StringValueNode).value;
                 if (fieldTypes[fieldVal] !== relatedModelFieldTypes[sortKeyFieldVal]) {
-                  errors.push(new InvalidDirectiveError(
-                    `${fieldVal} field is not of type ${relatedModelFieldTypes[sortKeyFieldVal]}`,
-                  ));
+                  errors.push(new InvalidDirectiveError(`${fieldVal} field is not of type ${relatedModelFieldTypes[sortKeyFieldVal]}`));
                 }
               }
             }

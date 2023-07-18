@@ -40,11 +40,11 @@ export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<
   const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
   const secretsKey = await getSecretsKey();
 
-  if(fs.existsSync(pathToSchemaFile)) {
+  if (fs.existsSync(pathToSchemaFile)) {
     printer.error(`Imported Database schema already exists. Use "amplify api generate-schema" to fetch the latest updates to schema.`);
     return {
-      apiName: apiName
-    }
+      apiName: apiName,
+    };
   }
 
   const databaseConfig: ImportedDataSourceConfig = await databaseConfigurationInputWalkthrough(engine);

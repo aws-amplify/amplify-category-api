@@ -37,7 +37,7 @@
  *    }
  *  }
  */
-exports.handler = async event => {
+exports.handler = async (event) => {
   console.log('Processing input mapping event');
   const { args, fieldMap } = event;
   if (!args) {
@@ -72,7 +72,7 @@ exports.handler = async event => {
    * @param {field: string} entry a sort of aggregates entry
    * @returns the entry with renamed fields
    */
-  const mapEnumValue = entry => {
+  const mapEnumValue = (entry) => {
     if (fieldMapKeySet.includes(entry.field)) {
       entry.field = fieldMap[entry.field];
     }

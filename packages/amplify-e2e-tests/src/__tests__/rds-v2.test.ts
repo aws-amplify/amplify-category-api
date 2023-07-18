@@ -17,8 +17,8 @@ import generator from 'generate-password';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
 import path from 'path';
 
-describe("RDS Tests", () => {
-  let publicIpCidr = "0.0.0.0/0";
+describe('RDS Tests', () => {
+  let publicIpCidr = '0.0.0.0/0';
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
   const RDS_MAPPING_FILE = 'https://amplify-rds-layer-resources.s3.amazonaws.com/rds-layer-mapping.json';
 
@@ -35,7 +35,7 @@ describe("RDS Tests", () => {
 
   beforeAll(async () => {
     // Get the public IP of the machine running the test
-    const url = "http://api.ipify.org/";
+    const url = 'http://api.ipify.org/';
     const response = await axios(url);
     publicIpCidr = `${response.data.trim()}/32`;
     await setupDatabase();
@@ -87,9 +87,9 @@ describe("RDS Tests", () => {
       database: db.dbName,
     });
     await dbAdapter.runQuery([
-      "CREATE TABLE Contacts (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))",
-      "CREATE TABLE Person (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))",
-      "CREATE TABLE Employee (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))",
+      'CREATE TABLE Contacts (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
+      'CREATE TABLE Person (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
+      'CREATE TABLE Employee (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
     ]);
     dbAdapter.cleanup();
   };
@@ -214,4 +214,4 @@ describe("RDS Tests", () => {
       }
     });
   });
-}); 
+});

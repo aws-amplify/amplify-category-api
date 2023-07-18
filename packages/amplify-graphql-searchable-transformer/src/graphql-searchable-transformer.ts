@@ -14,9 +14,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
-import {
-  ArnFormat, CfnCondition, CfnParameter, Fn,
-} from 'aws-cdk-lib';
+import { ArnFormat, CfnCondition, CfnParameter, Fn } from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
 import { DirectiveNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { Expression, str } from 'graphql-mapping-template';
@@ -73,8 +71,11 @@ const getTable = (context: TransformerContextProvider, definition: ObjectTypeDef
 
 const getNonKeywordFields = (def: ObjectTypeDefinitionNode): Expression[] => {
   const nonKeywordTypeSet = new Set(nonKeywordTypes);
-  return def.fields?.filter((field) => nonKeywordTypeSet.has(getBaseType(field.type))
-    && !DATASTORE_SYNC_FIELDS.includes(field.name.value)).map((field) => str(field.name.value)) || [];
+  return (
+    def.fields
+      ?.filter((field) => nonKeywordTypeSet.has(getBaseType(field.type)) && !DATASTORE_SYNC_FIELDS.includes(field.name.value))
+      .map((field) => str(field.name.value)) || []
+  );
 };
 
 /**
@@ -257,15 +258,11 @@ const generateSearchableInputs = (ctx: TransformerSchemaVisitStepContextProvider
   }
 };
 
-export type SearchableModelTransformerOptions = {
-  enableNodeToNodeEncryption?: boolean;
-};
-
 export class SearchableModelTransformer extends TransformerPluginBase {
   searchableObjectTypeDefinitions: { node: ObjectTypeDefinitionNode; fieldName: string }[];
   searchableObjectNames: string[];
 
-  constructor(private options: SearchableModelTransformerOptions = {}) {
+  constructor() {
     super(
       'amplify-searchable-transformer',
       /* GraphQL */ `
@@ -301,7 +298,6 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     const envParam = context.stackManager.getParameter(Env) as CfnParameter;
 
-    // eslint-disable-next-line no-new
     new CfnCondition(stack, HasEnvironmentParameter, {
       expression: Fn.conditionNot(Fn.conditionEquals(envParam, ResourceConstants.NONE)),
     });
@@ -313,7 +309,12 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     const parameterMap = createParametersInStack(context.stackManager.rootStack);
 
-    const domain = createSearchableDomain(stack, parameterMap, context.api.apiId, this.options?.enableNodeToNodeEncryption ?? false);
+    const domain = createSearchableDomain(
+      stack,
+      parameterMap,
+      context.api.apiId,
+      context.transformParameters.enableSearchNodeToNodeEncryption,
+    );
 
     const openSearchRole = createSearchableDomainRole(context, stack, parameterMap);
 
@@ -324,28 +325,14 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       throw new Error('Could not access region from search domain');
     }
 
-    const datasource = createSearchableDataSource(
-      stack,
-      context.api,
-      domain.domainEndpoint,
-      openSearchRole,
-      region,
-    );
+    const datasource = createSearchableDataSource(stack, context.api, domain.domainEndpoint, openSearchRole, region);
 
     // streaming lambda role
     const lambdaRole = createLambdaRole(context, stack, parameterMap);
     domain.grantWrite(lambdaRole);
 
     // creates streaming lambda
-    const lambda = createLambda(
-      stack,
-      context.api,
-      parameterMap,
-      lambdaRole,
-      domain.domainEndpoint,
-      isProjectUsingDataStore,
-      region,
-    );
+    const lambda = createLambda(stack, context.api, parameterMap, lambdaRole, domain.domainEndpoint, isProjectUsingDataStore, region);
 
     for (const def of this.searchableObjectTypeDefinitions) {
       const type = def.node.name.value;
@@ -380,7 +367,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         MappingTemplate.s3MappingTemplateFromString(
           requestTemplate(
             attributeName,
-            getNonKeywordFields((context.output.getObject(type))as ObjectTypeDefinitionNode),
+            getNonKeywordFields(context.output.getObject(type) as ObjectTypeDefinitionNode),
             context.isProjectUsingDataStore(),
             openSearchIndexName,
             keyFields,
@@ -395,7 +382,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       resolver.addToSlot(
         'postAuth',
         MappingTemplate.s3MappingTemplateFromString(
-          sandboxMappingTemplate(context.sandboxModeEnabled, fields),
+          sandboxMappingTemplate(context.transformParameters.sandboxModeEnabled, fields),
           `${typeName}.${def.fieldName}.{slotName}.{slotIndex}.res.vtl`,
         ),
       );
@@ -437,7 +424,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       generateSearchableXConnectionType(ctx, definition);
       generateSearchableAggregateTypes(ctx);
       const directives = [];
-      if (!hasAuth && ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+      if (!hasAuth && ctx.transformParameters.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
         directives.push(makeDirective('aws_api_key', []));
       }
       const queryField = makeField(
@@ -473,7 +460,11 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       generateSearchableInputs(ctx, searchObject);
     }
     // add api key to aggregate types if sandbox mode is enabled
-    if (this.isSearchableConfigured() && ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+    if (
+      this.isSearchableConfigured() &&
+      ctx.transformParameters.sandboxModeEnabled &&
+      ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY'
+    ) {
       for (const aggType of AGGREGATE_TYPES) {
         const aggObject = ctx.output.getObject(aggType)!;
         const hasApiKey = aggObject.directives?.some((dir) => dir.name.value === 'aws_api_key') ?? false;

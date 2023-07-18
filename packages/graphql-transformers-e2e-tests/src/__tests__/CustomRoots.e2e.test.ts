@@ -23,8 +23,6 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 
 test('Test custom root types with additional fields.', () => {
@@ -98,7 +96,7 @@ test('Test custom root query, mutation, and subscriptions.', () => {
   const parsed = parse(definition);
   const queryType = getObjectType(parsed, 'Query2');
   expectFields(queryType, ['getPost', 'listPosts', 'additionalQueryField', 'authedField']);
-  const authedField = queryType.fields.find(f => f.name.value === 'authedField');
+  const authedField = queryType.fields.find((f) => f.name.value === 'authedField');
   expect(authedField.directives.length).toEqual(1);
   expect(authedField.directives[0].name.value).toEqual('aws_auth');
   const mutationType = getObjectType(parsed, 'Mutation2');
@@ -171,7 +169,7 @@ function getInputType(doc: DocumentNode, type: string): InputObjectTypeDefinitio
 }
 
 function verifyInputCount(doc: DocumentNode, type: string, count: number): boolean {
-  return doc.definitions.filter(def => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && def.name.value === type).length == count;
+  return doc.definitions.filter((def) => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && def.name.value === type).length == count;
 }
 
 function cleanUpFiles(directory: string) {

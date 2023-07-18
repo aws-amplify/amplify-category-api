@@ -100,8 +100,9 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
 
       // OpenSearch Instance type support for x.y.search types
       if (parameters[ResourceConstants.PARAMETERS.OpenSearchInstanceType]) {
-        parameters[ResourceConstants.PARAMETERS.OpenSearchInstanceType] = parameters[ResourceConstants.PARAMETERS.OpenSearchInstanceType]
-          .replace('.search', '.elasticsearch');
+        parameters[ResourceConstants.PARAMETERS.OpenSearchInstanceType] = parameters[
+          ResourceConstants.PARAMETERS.OpenSearchInstanceType
+        ].replace('.search', '.elasticsearch');
       }
     } catch (e) {
       parameters = {};
@@ -171,10 +172,7 @@ place .graphql files in a directory at ${schemaDirPath}`);
 /**
  * buildAPIProject
  */
-const buildAPIProject = async (
-  context: $TSContext,
-  opts: TransformerProjectOptions,
-): Promise<DeploymentResources|undefined> => {
+const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOptions): Promise<DeploymentResources | undefined> => {
   const schema = opts.projectConfig.schema.toString();
   // Skip building the project if the schema is blank
   if (!schema) {

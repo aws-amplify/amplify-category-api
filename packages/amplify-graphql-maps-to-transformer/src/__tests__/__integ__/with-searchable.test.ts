@@ -31,7 +31,9 @@ const mappedHasManyAndSearchableSchema = /* GraphQL */ `
 const transformSchema = (schema: string) => {
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new HasManyTransformer(), new SearchableModelTransformer(), new MapsToTransformer()],
-    sandboxModeEnabled: true,
+    transformParameters: {
+      sandboxModeEnabled: true,
+    },
   });
   return transformer.transform(schema);
 };
@@ -47,8 +49,8 @@ describe('mapsTo with searchable', () => {
   it('references original table in sreaming function', () => {
     const out = transformSchema(mappedSearchableSchema);
     expect(
-      Object.values(out.stacks.SearchableStack.Resources!).find(resource => resource.Type === 'AWS::Lambda::EventSourceMapping').Properties
-        .EventSourceArn.Ref,
+      Object.values(out.stacks.SearchableStack.Resources!).find((resource) => resource.Type === 'AWS::Lambda::EventSourceMapping')
+        .Properties.EventSourceArn.Ref,
     ).toMatchInlineSnapshot(
       '"referencetotransformerrootstackTaskNestedStackTaskNestedStackResource8AC104EFOutputstransformerrootstackTaskTaskTableD1773550StreamArn"',
     );
@@ -62,6 +64,6 @@ describe('mapsTo with searchable', () => {
       `Query.search${modelName}s.postDataLoad.1.res.vtl`,
     ];
     const expectedSyncResolvers = ['Todo'].flatMap(expectedSearchResolverNames);
-    expectedSyncResolvers.forEach(resolver => expect(out.resolvers[resolver]).toMatchSnapshot());
+    expectedSyncResolvers.forEach((resolver) => expect(out.resolvers[resolver]).toMatchSnapshot());
   });
 });

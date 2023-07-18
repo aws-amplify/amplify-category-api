@@ -11,7 +11,7 @@ export const run = async (context: $TSContext) => {
   const servicesMetadata = (await import(path.join('..', '..', 'provider-utils', 'supported-services'))).supportedServices;
   return context.amplify
     .serviceSelectionPrompt(context, category, servicesMetadata)
-    .then(async result => {
+    .then(async (result) => {
       const options = {
         service: result.service,
         providerPlugin: result.providerName,
@@ -38,7 +38,7 @@ export const run = async (context: $TSContext) => {
       );
       printer.blankLine();
     })
-    .catch(async err => {
+    .catch(async (err) => {
       printer.error('There was an error adding the API resource');
       throw err;
     });

@@ -13,8 +13,6 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 test('Test that subscriptions are only generated if the respective mutation operation exists', () => {
   const validSchema = `

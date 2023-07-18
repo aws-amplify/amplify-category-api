@@ -10,9 +10,9 @@ describe('@mapsTo transformer', () => {
     new GraphQLTransform({
       transformParameters: {
         respectPrimaryKeyAttributesOnConnectionField: false,
+        sandboxModeEnabled: true,
       },
       transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer(), new MapsToTransformer()],
-      sandboxModeEnabled: true,
     });
 
   const initialSchema = /* GraphQL */ `
@@ -188,7 +188,7 @@ describe('@mapsTo transformer', () => {
 
     const getPost1CommentsResponse = await graphqlClient.query(getPost1Comments);
     expect(getPost1CommentsResponse.errors).toBeUndefined();
-    expect((getPost1CommentsResponse.data.getArticle.comments.items as any[]).map(item => item.id).includes('comment3'));
+    expect((getPost1CommentsResponse.data.getArticle.comments.items as any[]).map((item) => item.id).includes('comment3'));
 
     // expect updating comment with unsatisfied condition expression to fail
     const updateCommentUnsatisfiedCondition = /* GraphQL */ `

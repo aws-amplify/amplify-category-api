@@ -1,4 +1,6 @@
-import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
+import { nspawn as spawn, getCLIPath, getNpxPath, singleSelect, addCITags } from '..';
+import { copySync, moveSync, readFile } from 'fs-extra';
+import * as path from 'path';
 import { KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
 import { EOL } from 'os';
@@ -34,7 +36,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
     };
   }
 
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   const cliArgs = ['init'];
   const providerConfigSpecified = !!s.providerConfig && typeof s.providerConfig === 'object';
@@ -97,7 +99,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
 export function initAndroidProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
@@ -128,7 +130,7 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object): Pr
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
-          addCircleCITags(cwd);
+          addCITags(cwd);
 
           resolve();
         } else {
@@ -147,7 +149,7 @@ export function createRandomName() {
 export function initIosProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
@@ -177,7 +179,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Object): Promis
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
-          addCircleCITags(cwd);
+          addCITags(cwd);
 
           resolve();
         } else {
@@ -190,7 +192,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Object): Promis
 export function initFlutterProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
@@ -217,7 +219,8 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Object): Pr
     chain
       .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
       .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -233,7 +236,7 @@ export function initProjectWithAccessKey(
 ): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['init'], {
@@ -280,7 +283,8 @@ export function initProjectWithAccessKey(
     chain
       .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
       .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -291,7 +295,7 @@ export function initProjectWithAccessKey(
 }
 
 export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; accessKeyId: string; secretAccessKey: string }): Promise<void> {
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['init'], {
@@ -330,7 +334,7 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
 }
 
 export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
@@ -361,7 +365,7 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Prom
 }
 
 export function updatedInitNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
@@ -400,7 +404,7 @@ export function amplifyInitSandbox(cwd: string, settings: {}): Promise<void> {
     };
   }
 
-  addCircleCITags(cwd);
+  addCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], { cwd, stripColors: true, env })
@@ -489,4 +493,79 @@ export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLa
         }
       });
   });
+}
+
+export function initCDKProject(cwd: string, templatePath: string): Promise<string> {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getNpxPath(), ['cdk', 'init', 'app', '--language', 'typescript'], {
+      cwd,
+      stripColors: true,
+      // npx cdk does not work on verdaccio
+      env: {
+        npm_config_registry: 'https://registry.npmjs.org/',
+      },
+    })
+      .sendConfirmYes()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  })
+    .then(() => {
+      const binDir = path.join(cwd, 'bin');
+      copySync(templatePath, binDir, { overwrite: true });
+      moveSync(path.join(binDir, 'app.ts'), path.join(binDir, `${path.basename(cwd)}.ts`), { overwrite: true });
+    })
+    .then(
+      () =>
+        new Promise<void>((resolve, reject) => {
+          // change to official package
+          spawn('npm', ['install', '--save-dev', '@aws-amplify/graphql-construct-alpha'], { cwd, stripColors: true }).run((err: Error) => {
+            if (!err) {
+              resolve();
+            } else {
+              reject(err);
+            }
+          });
+        }),
+    )
+    .then(
+      () =>
+        new Promise<void>((resolve, reject) => {
+          // override dep version from cdk init
+          spawn('npm', ['install', '--save', 'aws-cdk-lib@2.80.0'], { cwd, stripColors: true }).run((err: Error) => {
+            if (!err) {
+              resolve();
+            } else {
+              reject(err);
+            }
+          });
+        }),
+    )
+    .then(() => readFile(path.join(cwd, 'package.json'), 'utf8'))
+    .then((packageJson) => JSON.parse(packageJson).name.replace(/_/g, '-'));
+}
+
+export function cdkDeploy(cwd: string, option: string): Promise<any> {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getNpxPath(), ['cdk', 'deploy', '--outputs-file', 'outputs.json', option], {
+      cwd,
+      stripColors: true,
+      // npx cdk does not work on verdaccio
+      env: {
+        npm_config_registry: 'https://registry.npmjs.org/',
+      },
+    }).run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
+  })
+    .then(() => readFile(path.join(cwd, 'outputs.json'), 'utf8'))
+    .then(JSON.parse);
 }

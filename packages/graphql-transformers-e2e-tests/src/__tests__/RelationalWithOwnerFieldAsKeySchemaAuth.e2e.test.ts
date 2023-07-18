@@ -1,21 +1,21 @@
-import { PrimaryKeyTransformer } from "@aws-amplify/graphql-index-transformer";
-import { ModelTransformer } from "@aws-amplify/graphql-model-transformer";
-import { HasManyTransformer } from "@aws-amplify/graphql-relational-transformer";
-import { AuthTransformer } from "@aws-amplify/graphql-auth-transformer";
-import { GraphQLTransform } from "@aws-amplify/graphql-transformer-core";
-import { ResourceConstants } from "graphql-transformer-common";
-import { CloudFormationClient } from "../CloudFormationClient";
-import { Output } from "aws-sdk/clients/cloudformation";
-import { cleanupStackAfterTest, deploy } from "../deployNestedStacks";
-import { S3Client } from "../S3Client";
-import { S3, CognitoIdentityServiceProvider as CognitoClient } from "aws-sdk";
-import { default as moment } from "moment";
-import { authenticateUser, configureAmplify, createUserPool, createUserPoolClient, signupUser } from "../cognitoUtils";
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
+import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { ResourceConstants } from 'graphql-transformer-common';
+import { CloudFormationClient } from '../CloudFormationClient';
+import { Output } from 'aws-sdk/clients/cloudformation';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { S3Client } from '../S3Client';
+import { S3, CognitoIdentityServiceProvider as CognitoClient } from 'aws-sdk';
+import { default as moment } from 'moment';
+import { authenticateUser, configureAmplify, createUserPool, createUserPoolClient, signupUser } from '../cognitoUtils';
 // to deal with bug in cognito-identity-js
-(global as any).fetch = require("node-fetch");
-import { resolveTestRegion } from "../testSetup";
-import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
-import gql from "graphql-tag";
+(global as any).fetch = require('node-fetch');
+import { resolveTestRegion } from '../testSetup';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import gql from 'graphql-tag';
 
 const region = resolveTestRegion();
 
@@ -24,12 +24,12 @@ jest.setTimeout(2000000);
 const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);
 const awsS3Client = new S3({ region: region });
-const cognitoClient = new CognitoClient({ apiVersion: "2016-04-19", region: region });
-const BUILD_TIMESTAMP = moment().format("YYYYMMDDHHmmss");
+const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: region });
+const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `RelationalOwnerAuthTransformersTest-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-relational-owner-auth-transformer-test-${BUILD_TIMESTAMP}`;
-const LOCAL_FS_BUILD_DIR = "/tmp/relational_owner_auth_transformer_tests/";
-const S3_ROOT_DIR_KEY = "deployments";
+const LOCAL_FS_BUILD_DIR = '/tmp/relational_owner_auth_transformer_tests/';
+const S3_ROOT_DIR_KEY = 'deployments';
 
 let GRAPHQL_ENDPOINT: string;
 
@@ -38,10 +38,10 @@ let USER_POOL_AUTH_CLIENT_2: AWSAppSyncClient<any>;
 
 let USER_POOL_ID: string;
 
-const USERNAME1 = "user1@test.com";
-const USERNAME2 = "user2@test.com";
-const TMP_PASSWORD = "Password123!";
-const REAL_PASSWORD = "Password1234!";
+const USERNAME1 = 'user1@test.com';
+const USERNAME2 = 'user2@test.com';
+const TMP_PASSWORD = 'Password123!';
+const REAL_PASSWORD = 'Password1234!';
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {
@@ -85,9 +85,9 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
       authConfig: {
         defaultAuthentication: {
-          authenticationType: "AMAZON_COGNITO_USER_POOLS"
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
         },
-        additionalAuthenticationProviders: []
+        additionalAuthenticationProviders: [],
       },
       transformers: [modelTransformer, primaryKeyTransformer, hasManyTransformer, authTransformer],
     });
@@ -99,7 +99,7 @@ beforeAll(async () => {
   try {
     await awsS3Client
       .createBucket({
-        Bucket: BUCKET_NAME
+        Bucket: BUCKET_NAME,
       })
       .promise();
   } catch (e) {
@@ -120,7 +120,7 @@ beforeAll(async () => {
       LOCAL_FS_BUILD_DIR,
       BUCKET_NAME,
       S3_ROOT_DIR_KEY,
-      BUILD_TIMESTAMP
+      BUILD_TIMESTAMP,
     );
     expect(finishedStack).toBeDefined();
     const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
@@ -144,9 +144,9 @@ beforeAll(async () => {
       region,
       auth: {
         type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
-        jwtToken: () => idToken1
+        jwtToken: () => idToken1,
       },
-      disableOffline: true
+      disableOffline: true,
     });
     await signupUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD);
     const authRes2 = await authenticateUser(USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
@@ -156,9 +156,9 @@ beforeAll(async () => {
       region,
       auth: {
         type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
-        jwtToken: () => idToken2
+        jwtToken: () => idToken2,
       },
-      disableOffline: true
+      disableOffline: true,
     });
   } catch (e) {
     console.error(e);
@@ -173,7 +173,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test("user2 should not access user1 restricted fields when query including relational fields", async () => {
+test('user2 should not access user1 restricted fields when query including relational fields', async () => {
   const createUser1Mutation = gql`
     mutation {
       createUser(input: { userID:"${USERNAME1}", displayName:"d1", firstname: "f1", lastname: "l1", birth: "2023-04-07" }) {
@@ -183,7 +183,7 @@ test("user2 should not access user1 restricted fields when query including relat
   `;
   const createUser1 = await USER_POOL_AUTH_CLIENT_1.mutate<any>({
     mutation: createUser1Mutation,
-    fetchPolicy: "no-cache"
+    fetchPolicy: 'no-cache',
   });
   expect(createUser1.data.createUser.userID).toEqual(USERNAME1);
 
@@ -195,12 +195,12 @@ test("user2 should not access user1 restricted fields when query including relat
         }
       }
     `,
-    fetchPolicy: "no-cache"
+    fetchPolicy: 'no-cache',
   });
   expect(createCreditCard1.data.createCreditCard.userID).toEqual(USERNAME1);
 
   const getUserQueryWithCreditCard = gql`
-    query($userID: String!) {
+    query ($userID: String!) {
       getUser(userID: $userID) {
         creditCards {
           items {
@@ -223,28 +223,28 @@ test("user2 should not access user1 restricted fields when query including relat
   const getResponse = await USER_POOL_AUTH_CLIENT_1.query<any>({
     query: getUserQueryWithCreditCard,
     variables: {
-      userID: USERNAME1
-    }
+      userID: USERNAME1,
+    },
   });
-  expect(getResponse.data.getUser.creditCards.items[0].number).toEqual("10000");
-  expect(getResponse.data.getUser.creditCards.items[0].name).toEqual("platimum");
-  expect(getResponse.data.getUser.creditCards.items[0].issuer).toEqual("amex");
+  expect(getResponse.data.getUser.creditCards.items[0].number).toEqual('10000');
+  expect(getResponse.data.getUser.creditCards.items[0].name).toEqual('platimum');
+  expect(getResponse.data.getUser.creditCards.items[0].issuer).toEqual('amex');
   expect(getResponse.data.getUser.creditCards.items[0].userID).toEqual(USERNAME1);
-  expect(getResponse.data.getUser.creditCards.items[0].expYear).toEqual("2027");
-  expect(getResponse.data.getUser.creditCards.items[0].expMonth).toEqual("07");
+  expect(getResponse.data.getUser.creditCards.items[0].expYear).toEqual('2027');
+  expect(getResponse.data.getUser.creditCards.items[0].expMonth).toEqual('07');
 
-  expect(getResponse.data.getUser.firstname).toEqual("f1");
-  expect(getResponse.data.getUser.lastname).toEqual("l1");
-  expect(getResponse.data.getUser.birth).toEqual("2023-04-07");
-  expect(getResponse.data.getUser.displayName).toEqual("d1");
+  expect(getResponse.data.getUser.firstname).toEqual('f1');
+  expect(getResponse.data.getUser.lastname).toEqual('l1');
+  expect(getResponse.data.getUser.birth).toEqual('2023-04-07');
+  expect(getResponse.data.getUser.displayName).toEqual('d1');
   expect(getResponse.data.getUser.userID).toEqual(USERNAME1);
   //Run query with user2 login and use user1 as parameter
   await expect(
     USER_POOL_AUTH_CLIENT_2.query<any>({
       query: getUserQueryWithCreditCard,
       variables: {
-        userID: USERNAME1
-      }
-    })
-  ).rejects.toThrow("GraphQL error: Not Authorized to access");
+        userID: USERNAME1,
+      },
+    }),
+  ).rejects.toThrow('GraphQL error: Not Authorized to access');
 });

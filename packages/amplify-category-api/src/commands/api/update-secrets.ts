@@ -4,11 +4,7 @@ import * as path from 'path';
 import fs from 'fs-extra';
 import _ from 'lodash';
 import { databaseConfigurationInputWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/import-appsync-api-walkthrough';
-import {
-  ImportedRDSType,
-  RDS_SCHEMA_FILE_NAME,
-  ImportedDataSourceConfig
-} from '@aws-amplify/graphql-transformer-core';
+import { ImportedRDSType, RDS_SCHEMA_FILE_NAME, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { storeConnectionSecrets, getSecretsKey, getDatabaseName } from '../../provider-utils/awscloudformation/utils/rds-resources/database-resources';
 import { PREVIEW_BANNER } from '../../category-constants';

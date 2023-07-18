@@ -1,8 +1,4 @@
-import {
-  DocumentNode,
-  Kind,
-  EnumTypeDefinitionNode,
-} from 'graphql';
+import { DocumentNode, Kind, EnumTypeDefinitionNode } from 'graphql';
 import { ValidationError } from '../exceptions/validation-error';
 
 /**
@@ -32,9 +28,7 @@ export const validateEnumIsDefinedOnce = (schema: DocumentNode): Error[] => {
       if (!uniqueEnums.includes(val)) {
         uniqueEnums.push(val);
       } else {
-        errors.push(new ValidationError(
-          `Schema validation failed. Enum value ${enumName}.${val} can only be defined once.`,
-        ));
+        errors.push(new ValidationError(`Schema validation failed. Enum value ${enumName}.${val} can only be defined once.`));
       }
     });
   });

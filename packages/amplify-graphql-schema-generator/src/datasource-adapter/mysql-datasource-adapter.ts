@@ -1,5 +1,5 @@
-import { EnumType, Field, FieldDataType, FieldType, Index } from "../schema-representation";
-import { DataSourceAdapter } from "./datasource-adapter";
+import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
+import { DataSourceAdapter } from './datasource-adapter';
 import { knex } from 'knex';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { invokeSchemaInspectorLambda } from "../utils/vpc-helper";
@@ -75,7 +75,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
       port: this.config.port,
       user: this.config.username,
       password: this.config.password,
-      ssl: { rejectUnauthorized: false},
+      ssl: { rejectUnauthorized: false },
     };
     try {
       this.dbBuilder = knex({
@@ -88,12 +88,11 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
           acquireTimeoutMillis: 30000,
           idleTimeoutMillis: 30000,
           reapIntervalMillis: 1000,
-          createRetryIntervalMillis: 100
+          createRetryIntervalMillis: 100,
         },
         debug: false,
       });
-    }
-    catch(err) {
+    } catch (err) {
       printer.info(err);
       throw err;
     }
@@ -114,22 +113,27 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
   }
 
   public async getFields(tableName: string): Promise<Field[]> {
-    const fieldsName: string[] = [...new Set(this.fields
-      .filter(f => f.tableName === tableName)
-      .sort((a,b) => a.sequence - b.sequence)
-      .map(f => f.columnName))];
+    const fieldsName: string[] = [
+      ...new Set(
+        this.fields
+          .filter((f) => f.tableName === tableName)
+          .sort((a, b) => a.sequence - b.sequence)
+          .map((f) => f.columnName),
+      ),
+    ];
 
-    const modelFields = fieldsName.map(columnName => {
-      const dbField = this.fields
-        .find(field => field.tableName === tableName && field.columnName === columnName)!;
+    const modelFields = fieldsName.map((columnName) => {
+      const dbField = this.fields.find((field) => field.tableName === tableName && field.columnName === columnName)!;
       const field: Field = {
         name: dbField.columnName,
         type: this.mapDataType(dbField.datatype, dbField.nullable, tableName, dbField.columnName, dbField.columnType),
         length: dbField.length,
-        default: dbField.default ? {
-          kind: 'DB_GENERATED',
-          value: dbField.default,
-        } : undefined,
+        default: dbField.default
+          ? {
+              kind: 'DB_GENERATED',
+              value: dbField.default,
+            }
+          : undefined,
       };
       return field;
     });
@@ -183,29 +187,32 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
 
   public async getPrimaryKey(tableName: string): Promise<Index | null> {
     const key = this.indexes
-      .filter(index => index.tableName === tableName && index.indexName === this.PRIMARY_KEY_INDEX_NAME)
-      .sort((a,b) => a.sequence - b.sequence);
+      .filter((index) => index.tableName === tableName && index.indexName === this.PRIMARY_KEY_INDEX_NAME)
+      .sort((a, b) => a.sequence - b.sequence);
 
     if (!key || key.length == 0) {
       return null;
     }
 
     const index: Index = new Index(key[0].indexName);
-    index.setFields(key.map(k => k.columnName));
+    index.setFields(key.map((k) => k.columnName));
 
     return index;
   }
 
   public async getIndexes(tableName: string): Promise<Index[]> {
-    const indexNames: string[] = [...new Set(this.indexes
-      .filter(i => i.tableName === tableName && i.indexName !== this.PRIMARY_KEY_INDEX_NAME).map(i => i.indexName))];
+    const indexNames: string[] = [
+      ...new Set(
+        this.indexes.filter((i) => i.tableName === tableName && i.indexName !== this.PRIMARY_KEY_INDEX_NAME).map((i) => i.indexName),
+      ),
+    ];
 
     const tableIndexes = indexNames.map((indexName: string) => {
       const key = this.indexes
-        .filter(index => index.tableName == tableName && index.indexName === indexName)
-        .sort((a,b) => a.sequence - b.sequence);
+        .filter((index) => index.tableName == tableName && index.indexName === indexName)
+        .sort((a, b) => a.sequence - b.sequence);
       const index: Index = new Index(indexName);
-      index.setFields(key.map(k => k.columnName));
+      index.setFields(key.map((k) => k.columnName));
       return index;
     });
 
@@ -216,7 +223,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     this.dbBuilder && this.dbBuilder.destroy();
   }
 
-  public mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName:string, columntype: string): FieldType {
+  public mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columntype: string): FieldType {
     let fieldDatatype: FieldDataType = 'String';
     let listtype = false;
 
@@ -290,8 +297,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
         name: this.generateEnumName(tableName, fieldName),
       };
       this.enums.set(enumName, result);
-    }
-    else {
+    } else {
       result = {
         kind: 'Scalar',
         name: fieldDatatype,
@@ -312,15 +318,15 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     // RegEx matches strings with quotes 'match' or "match"
     const regex = /(["'])(?:(?=(\\?))\2.)*?\1/g;
     // Remove the first and last character from the matched string which contains the quote
-    return value.match(regex).map(a => a.slice(1, -1));
+    return value.match(regex).map((a) => a.slice(1, -1));
   }
 
   private generateEnumName(tableName: string, fieldName: string) {
-    const enumNamePrefix = [tableName, fieldName].join("_");
+    const enumNamePrefix = [tableName, fieldName].join('_');
     let enumName = enumNamePrefix;
     let counter = 0;
     while (this.enums.has(enumName)) {
-      enumName = [enumNamePrefix, counter.toString()].join("_");
+      enumName = [enumNamePrefix, counter.toString()].join('_');
       counter++;
     }
     return enumName;

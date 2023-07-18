@@ -3,10 +3,13 @@ import type { TransformParameters } from '@aws-amplify/graphql-transformer-inter
 export const defaultTransformParameters: TransformParameters = {
   // General Model Params
   shouldDeepMergeDirectiveConfigDefaults: true,
+  disableResolverDeduping: false,
+  sandboxModeEnabled: false,
 
   // Auth Params
   useSubUsernameForDefaultIdentityClaim: true,
   populateOwnerFieldForStaticGroupAuth: true,
+  suppressApiKeyGeneration: false,
 
   // Index Params
   secondaryKeyAsGSI: true,
@@ -14,4 +17,7 @@ export const defaultTransformParameters: TransformParameters = {
 
   // Relational Params
   respectPrimaryKeyAttributesOnConnectionField: true,
+
+  // Search Params
+  enableSearchNodeToNodeEncryption: false,
 };

@@ -30,9 +30,9 @@ jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient(region);
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `PerFieldAuthV2Tests-${BUILD_TIMESTAMP}`;
-const BUCKET_NAME = `per-field-authv2-tests-bucket-${BUILD_TIMESTAMP}`;
-const LOCAL_BUILD_ROOT = '/tmp/per_field_authv2_tests/';
+const STACK_NAME = `PerFieldAuthV2FFTests-${BUILD_TIMESTAMP}`;
+const BUCKET_NAME = `per-field-authv2-ff-tests-bucket-${BUILD_TIMESTAMP}`;
+const LOCAL_BUILD_ROOT = '/tmp/per_field_authv2_ff_tests/';
 const DEPLOYMENT_ROOT_KEY = 'deployments';
 
 let GRAPHQL_ENDPOINT;
@@ -239,7 +239,7 @@ beforeAll(async () => {
 
     // Wait for any propagation to avoid random
     // "The security token included in the request is invalid" errors
-    await new Promise<void>(res => setTimeout(() => res(), 5000));
+    await new Promise<void>((res) => setTimeout(() => res(), 5000));
   } catch (e) {
     console.error(e);
     expect(true).toEqual(false);

@@ -2,8 +2,8 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import aws from 'aws-sdk';
 
 export type Secret = {
-  secretName: string,
-  secretValue: string
+  secretName: string;
+  secretValue: string;
 };
 
 /**
@@ -42,7 +42,7 @@ export class SSMClient {
    * Returns all secret names under a path. Does NOT decrypt any secrets
    */
   getSecretNamesByPath = async (secretPath: string): Promise<string[]> => {
-    let nextToken: string|undefined;
+    let nextToken: string | undefined;
     const secretNames: string[] = [];
     do {
       const result = await this.ssmClient
@@ -56,10 +56,10 @@ export class SSMClient {
               Values: ['SecureString'],
             },
           ],
-          NextToken: nextToken
+          NextToken: nextToken,
         })
         .promise();
-      secretNames.push(...result?.Parameters?.map(param => param?.Name));
+      secretNames.push(...result?.Parameters?.map((param) => param?.Name));
       nextToken = result?.NextToken;
     } while (nextToken);
     return secretNames;
@@ -110,8 +110,8 @@ export class SSMClient {
 
 // The Provider plugin holds all the configured service clients. Fetch from there.
 const getSSMClient = async (context: $TSContext): Promise<aws.SSM> => {
-  const { client } = await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getConfiguredSSMClient', [
+  const { client } = (await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getConfiguredSSMClient', [
     context,
-  ]) as any;
+  ])) as any;
   return client as aws.SSM;
 };

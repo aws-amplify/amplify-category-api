@@ -4,7 +4,7 @@ import { CloudFormationParseContext } from '../types';
 
 export function dynamoDBResourceHandler(resourceName, resource, cfnContext: CloudFormationParseContext) {
   const tableName = resourceName;
-  const gsis = (resource.Properties.GlobalSecondaryIndexes || []).map(gsi => {
+  const gsis = (resource.Properties.GlobalSecondaryIndexes || []).map((gsi) => {
     const p = { ...gsi };
     delete p.ProvisionedThroughput;
     return p;
@@ -122,7 +122,7 @@ export function appSyncAPIResourceHandler(resourceName, resource, cfnContext: Cl
     GraphQLUrl: 'http://localhost:20002/',
     ...(resource.Properties.AdditionalAuthenticationProviders
       ? {
-          additionalAuthenticationProviders: resource.Properties.AdditionalAuthenticationProviders.map(p => {
+          additionalAuthenticationProviders: resource.Properties.AdditionalAuthenticationProviders.map((p) => {
             return {
               authenticationType: p.AuthenticationType,
               ...(p.OpenIDConnectConfig ? { openIDConnectConfig: p.OpenIDConnectConfig } : {}),
@@ -208,7 +208,7 @@ export function appSyncResolverHandler(resourceName, resource, cfnContext: Cloud
     if (typeof properties.PipelineConfig === 'undefined') {
       throw new Error('Pipeline DataSource config is missing required property PipelineConfig');
     }
-    functions = (properties.PipelineConfig.Functions || []).map(f => parseValue(f, cfnContext));
+    functions = (properties.PipelineConfig.Functions || []).map((f) => parseValue(f, cfnContext));
   } else {
     dataSourceName = parseValue(properties.DataSourceName, cfnContext);
   }

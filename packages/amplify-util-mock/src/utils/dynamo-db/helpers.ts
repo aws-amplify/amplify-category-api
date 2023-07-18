@@ -6,7 +6,7 @@ export async function waitTillTableStateIsActive(
   tableName: string,
   maximumWait: number = 15 * MILLI_SECONDS,
 ): Promise<void> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     let intervalHandle;
     let timeoutHandle;
     const checkStatus = async () => {
@@ -24,6 +24,6 @@ export async function waitTillTableStateIsActive(
       reject(new Error('Waiting for table status to turn ACTIVE timed out'));
     }, maximumWait);
 
-    checkStatus();
+    await checkStatus();
   });
 }

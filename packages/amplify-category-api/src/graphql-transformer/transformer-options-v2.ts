@@ -22,9 +22,7 @@ import { getAdminRoles, getIdentityPoolId } from './utils';
 import { schemaHasSandboxModeEnabled, showGlobalSandboxModeWarning, showSandboxModePrompts } from './sandbox-mode-helpers';
 import { importTransformerModule } from './transformer-factory';
 import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
-import {
-  DESTRUCTIVE_UPDATES_FLAG, PARAMETERS_FILENAME, PROVIDER_NAME, ROOT_APPSYNC_S3_KEY,
-} from './constants';
+import { DESTRUCTIVE_UPDATES_FLAG, PARAMETERS_FILENAME, PROVIDER_NAME, ROOT_APPSYNC_S3_KEY } from './constants';
 import { TransformerProjectOptions } from './transformer-options-types';
 import { contextUtil } from '../category-utils/context-util';
 import { searchablePushChecks } from './api-utils';
@@ -53,10 +51,7 @@ const warnOnAuth = (map: Record<string, any>, docLink: string): void => {
  * @param context The $TSContext from the Amplify CLI
  * @param options The any options config coming from the Amplify CLI
  */
-export const generateTransformerOptions = async (
-  context: $TSContext,
-  options: any,
-): Promise<TransformerProjectOptions> => {
+export const generateTransformerOptions = async (context: $TSContext, options: any): Promise<TransformerProjectOptions> => {
   let resourceName: string;
   const backEndDir = pathManager.getBackendDirPath();
   const flags = context.parameters.options;
@@ -114,8 +109,9 @@ export const generateTransformerOptions = async (
 
       // OpenSearch Instance type support for x.y.search types
       if (parameters[ResourceConstants.PARAMETERS.OpenSearchInstanceType]) {
-        parameters[ResourceConstants.PARAMETERS.OpenSearchInstanceType] = parameters[ResourceConstants.PARAMETERS.OpenSearchInstanceType]
-          .replace('.search', '.elasticsearch');
+        parameters[ResourceConstants.PARAMETERS.OpenSearchInstanceType] = parameters[
+          ResourceConstants.PARAMETERS.OpenSearchInstanceType
+        ].replace('.search', '.elasticsearch');
       }
     } catch (e) {
       parameters = {};
@@ -181,8 +177,9 @@ export const generateTransformerOptions = async (
   const docLink = getGraphQLTransformerAuthDocLink(2);
   const sandboxModeEnabled = schemaHasSandboxModeEnabled(project.schema, docLink);
   const directiveMap = collectDirectivesByTypeNames(project.schema);
-  const hasApiKey = authConfig.defaultAuthentication.authenticationType === 'API_KEY'
-    || authConfig.additionalAuthenticationProviders.some((authProvider) => authProvider.authenticationType === 'API_KEY');
+  const hasApiKey =
+    authConfig.defaultAuthentication.authenticationType === 'API_KEY' ||
+    authConfig.additionalAuthenticationProviders.some((authProvider) => authProvider.authenticationType === 'API_KEY');
   const showSandboxModeMessage = sandboxModeEnabled && hasApiKey;
 
   await searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
@@ -225,12 +222,6 @@ export const generateTransformerOptions = async (
   const resourceDirParts = resourceDir.split(path.sep);
   const apiName = resourceDirParts[resourceDirParts.length - 1];
 
-  const enableNodeToNodeEncryption = shouldEnableNodeToNodeEncryption(
-    apiName,
-    pathManager.findProjectRoot(),
-    pathManager.getCurrentCloudBackendDirPath(),
-  );
-
   const userDefinedSlots = {
     ...parseUserDefinedSlots(project.pipelineFunctions),
     ...parseUserDefinedSlots(project.resolvers),
@@ -250,7 +241,6 @@ export const generateTransformerOptions = async (
       authConfig,
       adminRoles,
       identityPoolId,
-      searchConfig: { enableNodeToNodeEncryption },
       customTransformers: await loadCustomTransformersV2(resourceDir),
     },
     rootStackFileName: 'cloudformation-template.json',
@@ -265,17 +255,24 @@ export const generateTransformerOptions = async (
     overrideConfig,
     stacks: project.stacks,
     stackMapping: project.config.StackMapping,
-    legacyApiKeyEnabled: legacyApiKeyEnabledFromParameters(parameters),
-    disableResolverDeduping: (project.config as any).DisableResolverDeduping,
-    transformParameters: generateTransformParameters(),
+    transformParameters: generateTransformParameters(apiName, parameters, project.config, sandboxModeEnabled),
   };
 };
 
 /**
  * Generate transform parameters from feature flags and other config sources.
+ * @param apiName the api name (used for determining current nodeToNodeEncryption value)
+ * @param parameters invocation params, bag of bits, used for determining suppressApiKeyGeneration state
+ * @param projectConfig hydrated project config object, with additional metadata, bag of bits, determines if resolver deduping is disabled
+ * @param sandboxModeEnabled whether or not to enable sandbox mode on the transformed project
  * @returns a single set of params to configure the transform behavior.
  */
-const generateTransformParameters = (): TransformParameters => {
+const generateTransformParameters = (
+  apiName: string,
+  parameters: any,
+  projectConfig: any,
+  sandboxModeEnabled: boolean,
+): TransformParameters => {
   const featureFlagProvider = new AmplifyCLIFeatureFlagAdapter();
   return {
     shouldDeepMergeDirectiveConfigDefaults: featureFlagProvider.getBoolean('shouldDeepMergeDirectiveConfigDefaults'),
@@ -284,14 +281,22 @@ const generateTransformParameters = (): TransformParameters => {
     secondaryKeyAsGSI: featureFlagProvider.getBoolean('secondaryKeyAsGSI'),
     enableAutoIndexQueryNames: featureFlagProvider.getBoolean('enableAutoIndexQueryNames'),
     respectPrimaryKeyAttributesOnConnectionField: featureFlagProvider.getBoolean('respectPrimaryKeyAttributesOnConnectionField'),
+    suppressApiKeyGeneration: suppressApiKeyGeneration(parameters),
+    disableResolverDeduping: projectConfig.DisableResolverDeduping ?? false,
+    enableSearchNodeToNodeEncryption: shouldEnableNodeToNodeEncryption(
+      apiName,
+      pathManager.findProjectRoot(),
+      pathManager.getCurrentCloudBackendDirPath(),
+    ),
+    sandboxModeEnabled,
   };
 };
 
-export const legacyApiKeyEnabledFromParameters = (parameters: any): boolean | undefined => {
+export const suppressApiKeyGeneration = (parameters: any): boolean => {
   if (!('CreateAPIKey' in parameters)) {
-    return undefined;
+    return false;
   }
-  return parameters.CreateAPIKey === 1 || parameters.CreateAPIKey === '1';
+  return parameters.CreateAPIKey !== 1 && parameters.CreateAPIKey !== '1';
 };
 
 /**
@@ -309,7 +314,8 @@ export const loadCustomTransformersV2 = async (resourceDir: string): Promise<Tra
 
       if (typeof CustomTransformer === 'function') {
         return new CustomTransformer();
-      } if (typeof CustomTransformer === 'object') {
+      }
+      if (typeof CustomTransformer === 'object') {
         // Todo: Use a shim to ensure that it adheres to TransformerProvider interface. For now throw error
         // return CustomTransformer;
         throw new Error("Custom Transformers' should implement TransformerProvider interface");
@@ -338,7 +344,7 @@ const getBucketName = (s3ResourceName: string): { bucketName: string } => {
   return { bucketName };
 };
 
-const getPreviousDeploymentRootKey = async (previouslyDeployedBackendDir: string): Promise<string|undefined> => {
+const getPreviousDeploymentRootKey = async (previouslyDeployedBackendDir: string): Promise<string | undefined> => {
   // this is the function
   let parameters;
   try {

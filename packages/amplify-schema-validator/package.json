@@ -3,7 +3,7 @@
   "main": "./dist/index.js",
   "private": true,
   "types": "./dist/index.d.ts",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "files": [
     "dist",
     "!**/__tests__/**/*"
@@ -11,10 +11,8 @@
   "scripts": {
     "build": "tsc && yarn size",
     "clean": "rimraf -rf build node_modules dist coverage",
-    "prettier": "prettier --write '**/*.{js,ts,json,md}'",
     "test": "jest --coverage",
-    "size": "size-limit",
-    "lint-staged": "lint-staged"
+    "size": "size-limit"
   },
   "devDependencies": {
     "@size-limit/preset-small-lib": "6.0.4",
@@ -30,15 +28,6 @@
   },
   "dependencies": {
     "graphql": "^15.5.0"
-  },
-  "lint-staged": {
-    "*.{js,ts,json,md,scss,html}": [
-      "prettier --write",
-      "git add"
-    ],
-    "*.{js,ts}": [
-      "eslint --fix"
-    ]
   },
   "size-limit": [
     {

@@ -1,4 +1,3 @@
-/* eslint-disable no-new */
 import {
   AppSyncAuthConfiguration,
   DeploymentResources,
@@ -12,9 +11,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
-import {
-  App, Aws, CfnOutput, Fn,
-} from 'aws-cdk-lib';
+import { App, Aws, CfnOutput, Fn } from 'aws-cdk-lib';
 import {
   EnumTypeDefinitionNode,
   EnumValueDefinitionNode,
@@ -29,9 +26,9 @@ import {
   TypeDefinitionNode,
   TypeExtensionNode,
   UnionTypeDefinitionNode,
-  print,
 } from 'graphql';
 import _ from 'lodash';
+import { DocumentNode } from 'graphql/language';
 import { ResolverConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
@@ -41,7 +38,6 @@ import { StackManager } from '../transformer-context/stack-manager';
 import { adoptAuthModes, IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils/authType';
 import * as SyncUtils from './sync-utils';
 import { MappingTemplate } from '../cdk-compat';
-
 import { UserDefinedSlot, OverrideConfig, DatasourceTransformationConfig } from './types';
 import {
   makeSeenTransformationKey,
@@ -50,18 +46,21 @@ import {
   matchEnumValueDirective,
   matchFieldDirective,
   matchInputFieldDirective,
+  removeAmplifyInputDefinition,
   sortTransformerPlugins,
 } from './utils';
 import { validateAuthModes, validateModelSchema } from './validation';
-import { DocumentNode } from 'graphql/language';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { DatasourceType } from '../config/project-config';
 import { defaultTransformParameters } from '../transformer-context/transform-parameters';
 
+/**
+ * Returns whether typeof the provided object is function.
+ * @param obj the object to test
+ * @returns whether or not it passes a 'function' test.
+ */
 // eslint-disable-next-line @typescript-eslint/ban-types
-function isFunction(obj: any): obj is Function {
-  return obj && typeof obj === 'function';
-}
+const isFunction = (obj: any): obj is Function => obj && typeof obj === 'function';
 
 type TypeDefinitionOrExtension = TypeDefinitionNode | TypeExtensionNode;
 
@@ -82,8 +81,6 @@ export interface GraphQLTransformOptions {
   readonly stacks?: Record<string, Template>;
   readonly transformParameters?: Partial<TransformParameters>;
   readonly host?: TransformHostProvider;
-  readonly sandboxModeEnabled?: boolean;
-  readonly disableResolverDeduping?: boolean;
   readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   readonly resolverConfig?: ResolverConfig;
   readonly overrideConfig?: OverrideConfig;
@@ -163,18 +160,16 @@ export class GraphQLTransform {
     const context = new TransformerPreProcessContext(schema, this.transformParameters);
 
     this.transformers
-        .filter(transformer => isFunction(transformer.preMutateSchema))
-        .map(transformer => transformer.preMutateSchema as Function)
-        .forEach(preMutateSchema => preMutateSchema(context));
+      .filter((transformer) => isFunction(transformer.preMutateSchema))
+      .forEach((transformer) => transformer.preMutateSchema && transformer.preMutateSchema(context));
 
     return this.transformers
-      .filter(transformer => isFunction(transformer.mutateSchema))
-      .map(transformer => transformer.mutateSchema as Function)
-      .reduce((mutateContext, mutateSchema) => {
-        const updatedSchema = mutateSchema(mutateContext);
+      .filter((transformer) => isFunction(transformer.mutateSchema))
+      .reduce((mutateContext, transformer) => {
+        const updatedInputDocument = transformer.mutateSchema ? transformer.mutateSchema(mutateContext) : mutateContext.inputDocument;
         return {
           ...mutateContext,
-          inputDocument: updatedSchema,
+          inputDocument: updatedInputDocument,
         };
       }, context).inputDocument;
   }
@@ -198,7 +193,6 @@ export class GraphQLTransform {
       this.stackMappingOverrides,
       this.authConfig,
       this.transformParameters,
-      this.options.sandboxModeEnabled,
       this.resolverConfig,
       datasourceConfig?.datasourceSecretParameterLocations,
       this.sqlLambdaVpcConfig,
@@ -235,9 +229,6 @@ export class GraphQLTransform {
         transformer.before(context);
       }
     }
-    // TODO: Validate that the transformer supports all the methods
-    // required for the directive definition. Also verify that
-    // directives are not used where they are not allowed.
 
     // Apply each transformer and accumulate the context.
     for (const transformer of this.transformers) {
@@ -264,6 +255,7 @@ export class GraphQLTransform {
             this.transformInputObject(transformer, def, validDirectiveNameMap, context);
             break;
           default:
+            // eslint-disable-next-line no-continue
             continue;
         }
       }
@@ -347,19 +339,19 @@ export class GraphQLTransform {
       name: `${apiName}-${envName.valueAsString}`,
       authorizationConfig,
       host: this.options.host,
-      sandboxModeEnabled: this.options.sandboxModeEnabled,
+      sandboxModeEnabled: this.transformParameters.sandboxModeEnabled,
       environmentName: envName.valueAsString,
-      disableResolverDeduping: this.disableResolverDeduping,
+      disableResolverDeduping: this.transformParameters.disableResolverDeduping,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
-      mode => mode?.authorizationType,
+      (mode) => mode?.authorizationType,
     );
 
-    if (authModes.includes(AuthorizationType.API_KEY) && this.legacyApiKeyEnabled !== false) {
+    if (authModes.includes(AuthorizationType.API_KEY) && !this.transformParameters.suppressApiKeyGeneration) {
       const apiKeyConfig: AuthorizationMode | undefined = [
         authorizationConfig.defaultAuthorization,
         ...(authorizationConfig.additionalAuthorizationModes || []),
-      ].find(auth => auth?.authorizationType == AuthorizationType.API_KEY);
+      ].find((auth) => auth?.authorizationType === AuthorizationType.API_KEY);
       const apiKeyDescription = apiKeyConfig!.apiKeyConfig?.description;
       const apiKeyExpirationDays = apiKeyConfig!.apiKeyConfig?.expires;
 
@@ -430,7 +422,7 @@ export class GraphQLTransform {
     for (const [resolverName] of resolverEntries) {
       const userSlots = this.userDefinedSlots[resolverName] || [];
 
-      userSlots.forEach(slot => {
+      userSlots.forEach((slot) => {
         const fileName = slot.requestResolver?.fileName;
         if (fileName && fileName in resolvers) {
           userOverriddenSlots.push(fileName);
@@ -456,7 +448,7 @@ export class GraphQLTransform {
     for (const [resolverName, resolver] of resolverEntries) {
       const userSlots = this.userDefinedSlots[resolverName] || [];
 
-      userSlots.forEach(slot => {
+      userSlots.forEach((slot) => {
         const requestTemplate = slot.requestResolver
           ? MappingTemplate.s3MappingTemplateFromString(slot.requestResolver.template, slot.requestResolver.fileName)
           : undefined;
@@ -475,7 +467,7 @@ export class GraphQLTransform {
     def: ObjectTypeDefinitionNode,
     validDirectiveNameMap: { [k: string]: boolean },
     context: TransformerContext,
-  ) {
+  ): void {
     let index = 0;
     for (const dir of def.directives ?? []) {
       if (!validDirectiveNameMap[dir.name.value]) {
@@ -507,7 +499,7 @@ export class GraphQLTransform {
     def: FieldDefinitionNode,
     validDirectiveNameMap: { [k: string]: boolean },
     context: TransformerContext,
-  ) {
+  ): void {
     let index = 0;
     for (const dir of def.directives ?? []) {
       if (!validDirectiveNameMap[dir.name.value]) {
@@ -540,7 +532,7 @@ export class GraphQLTransform {
     arg: InputValueDefinitionNode,
     validDirectiveNameMap: { [k: string]: boolean },
     context: TransformerContext,
-  ) {
+  ): void {
     let index = 0;
     for (const dir of arg.directives ?? []) {
       if (!validDirectiveNameMap[dir.name.value]) {
@@ -568,7 +560,7 @@ export class GraphQLTransform {
     def: InterfaceTypeDefinitionNode,
     validDirectiveNameMap: { [k: string]: boolean },
     context: TransformerContext,
-  ) {
+  ): void {
     let index = 0;
     for (const dir of def.directives ?? []) {
       if (!validDirectiveNameMap[dir.name.value]) {
@@ -599,7 +591,7 @@ export class GraphQLTransform {
     def: ScalarTypeDefinitionNode,
     validDirectiveNameMap: { [k: string]: boolean },
     context: TransformerContext,
-  ) {
+  ): void {
     let index = 0;
     for (const dir of def.directives ?? []) {
       if (!validDirectiveNameMap[dir.name.value]) {
@@ -627,7 +619,7 @@ export class GraphQLTransform {
     def: UnionTypeDefinitionNode,
     validDirectiveNameMap: { [k: string]: boolean },
     context: TransformerContext,
-  ) {
+  ): void {
     let index = 0;
     for (const dir of def.directives ?? []) {
       if (!validDirectiveNameMap[dir.name.value]) {
@@ -655,7 +647,7 @@ export class GraphQLTransform {
     def: EnumTypeDefinitionNode,
     validDirectiveNameMap: { [k: string]: boolean },
     context: TransformerContext,
-  ) {
+  ): void {
     let index = 0;
     for (const dir of def.directives ?? []) {
       if (!validDirectiveNameMap[dir.name.value]) {
@@ -687,7 +679,7 @@ export class GraphQLTransform {
     def: EnumValueDefinitionNode,
     validDirectiveNameMap: { [k: string]: boolean },
     context: TransformerContext,
-  ) {
+  ): void {
     let index = 0;
     for (const dir of def.directives ?? []) {
       if (!validDirectiveNameMap[dir.name.value]) {
@@ -715,7 +707,7 @@ export class GraphQLTransform {
     def: InputObjectTypeDefinitionNode,
     validDirectiveNameMap: { [k: string]: boolean },
     context: TransformerContext,
-  ) {
+  ): void {
     let index = 0;
     for (const dir of def.directives ?? []) {
       if (!validDirectiveNameMap[dir.name.value]) {
@@ -747,7 +739,7 @@ export class GraphQLTransform {
     def: InputValueDefinitionNode,
     validDirectiveNameMap: { [k: string]: boolean },
     context: TransformerContext,
-  ) {
+  ): void {
     let index = 0;
     for (const dir of def.directives ?? []) {
       if (!validDirectiveNameMap[dir.name.value]) {
@@ -774,21 +766,3 @@ export class GraphQLTransform {
     return this.logs;
   }
 }
-
-const removeAmplifyInputDefinition = (schema: string): string => {
-  if (_.isEmpty(schema)) {
-    return schema;
-  }
-
-  const parsedSchema: any = parse(schema);
-
-  parsedSchema.definitions = parsedSchema?.definitions?.filter(
-    (definition: any) =>
-      !(definition?.kind === 'InputObjectTypeDefinition' &&
-      definition?.name &&
-      definition?.name?.value === 'Amplify')
-  );
-
-  const sanitizedSchema = print(parsedSchema);
-  return sanitizedSchema;
-};

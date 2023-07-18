@@ -66,25 +66,25 @@ const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields:
                 generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
                 ...(entityIsList
                   ? [
-                    forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
+                      forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
+                        iff(
+                          or([
+                            equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                            methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
+                          ]),
+                          compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
+                        ),
+                      ]),
+                    ]
+                  : [
                       iff(
                         or([
-                          equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
-                          methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
+                          equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
+                          methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
                         ]),
-                        compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
+                        set(ref(IS_AUTHORIZED_FLAG), bool(true)),
                       ),
                     ]),
-                  ]
-                  : [
-                    iff(
-                      or([
-                        equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
-                        methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
-                      ]),
-                      set(ref(IS_AUTHORIZED_FLAG), bool(true)),
-                    ),
-                  ]),
               ]),
             ),
           ]),
@@ -108,11 +108,11 @@ const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields:
             ),
             entityIsList
               ? forEach(ref('userGroup'), ref(`groupClaim${idx}`), [
-                iff(
-                  methodCall(ref(`groupEntity${idx}.contains`), ref('userGroup')),
-                  compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
-                ),
-              ])
+                  iff(
+                    methodCall(ref(`groupEntity${idx}.contains`), ref('userGroup')),
+                    compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
+                  ),
+                ])
               : iff(ref(`groupClaim${idx}.contains($groupEntity${idx})`), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
           ]),
         ),
@@ -131,9 +131,8 @@ export const generateAuthExpressionForField = (
   fields: ReadonlyArray<FieldDefinitionNode>,
   fieldName: string = undefined,
 ): string => {
-  const {
-    cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, iamRoles, apiKeyRoles, lambdaRoles,
-  } = splitRoles(roles);
+  const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, iamRoles, apiKeyRoles, lambdaRoles } =
+    splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [set(ref(IS_AUTHORIZED_FLAG), bool(false))];
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));

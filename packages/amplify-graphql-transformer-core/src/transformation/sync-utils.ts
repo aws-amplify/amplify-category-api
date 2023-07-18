@@ -1,6 +1,4 @@
-import {
-  AttributeType, BillingMode, StreamViewType, Table,
-} from 'aws-cdk-lib/aws-dynamodb';
+import { AttributeType, BillingMode, StreamViewType, Table } from 'aws-cdk-lib/aws-dynamodb';
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
@@ -22,7 +20,6 @@ type DeltaSyncConfig = {
 export function createSyncTable(context: TransformerContext) {
   const stack = context.stackManager.getStackFor(SyncResourceIDs.syncTableName);
   const tableName = context.resourceHelper.generateTableName(SyncResourceIDs.syncTableName);
-  // eslint-disable-next-line no-new
   new Table(stack, SyncResourceIDs.syncDataSourceID, {
     tableName,
     partitionKey: {
@@ -129,7 +126,12 @@ export function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncCo
   return false;
 }
 
-export function createSyncLambdaIAMPolicy(context: TransformerContextProvider, stack: cdk.Stack, name: string, region?: string): iam.Policy {
+export function createSyncLambdaIAMPolicy(
+  context: TransformerContextProvider,
+  stack: cdk.Stack,
+  name: string,
+  region?: string,
+): iam.Policy {
   return new iam.Policy(stack, 'InvokeLambdaFunction', {
     statements: [
       new iam.PolicyStatement({

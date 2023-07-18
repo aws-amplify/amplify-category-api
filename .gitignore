@@ -32,6 +32,7 @@ packages/amplify-e2e-tests/lib
 packages/amplify-category-api/lib
 packages/amplify-e2e-tests/amplify-e2e-reports
 packages/amplify-migration-tests/amplify-migration-reports
+packages/graphql-transformers-e2e-tests/amplify-e2e-reports
 packages/amplify-migration-tests/lib
 packages/amplify-schema-validator/dist/
 packages/*/node_modules
@@ -45,3 +46,4 @@ test.out.log
 *.tsbuildinfo
 packages/amplify-graphiql-explorer/.eslintcache
 !packages/amplify-graphql-model-transformer/src/__tests__/overrides/build/override.js
+scripts/cci/job.data.json

@@ -6,9 +6,5 @@
     "strict": true,
     "allowJs": false
   },
-  "exclude": [
-    "coverage",
-    "lib",
-    "src/__tests__"
-  ]
+  "exclude": ["coverage", "lib", "src/__tests__"]
 }

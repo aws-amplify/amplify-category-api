@@ -38,8 +38,8 @@ export async function updateWalkthrough(context: $TSContext) {
   const { allResources } = await context.amplify.getResourceStatus();
   const allDefaultValues = getAllDefaults(context.amplify.getProjectDetails());
   const resources = allResources
-    .filter(resource => resource.service === serviceName && resource.mobileHubMigrated !== true)
-    .map(resource => resource.resourceName);
+    .filter((resource) => resource.service === serviceName && resource.mobileHubMigrated !== true)
+    .map((resource) => resource.resourceName);
 
   if (resources.length === 0) {
     const errMessage = 'No REST API resource to update. Use "amplify add api" command to create a new REST API';
@@ -180,7 +180,13 @@ async function askPermissions(
   context: $TSContext,
   answers: Record<string, any>,
   currentPath?: ApigwPath,
-): Promise<{ setting?: PermissionSetting; auth?: CrudOperation[]; open?: boolean; userPoolGroups?: Record<string, any>; guest?: CrudOperation[] }> {
+): Promise<{
+  setting?: PermissionSetting;
+  auth?: CrudOperation[];
+  open?: boolean;
+  userPoolGroups?: Record<string, any>;
+  guest?: CrudOperation[];
+}> {
   while (true) {
     const apiAccess = await prompter.yesOrNo('Restrict API access?', currentPath?.permissions?.setting !== PermissionSetting.OPEN);
 
@@ -425,7 +431,7 @@ async function findDependsOn(paths: Record<string, any>[]) {
 
   for (const path of Object.values(paths)) {
     if (path.lambdaFunction && !path.lambdaArn) {
-      if (!dependsOn.find(func => func.resourceName === path.lambdaFunction)) {
+      if (!dependsOn.find((func) => func.resourceName === path.lambdaFunction)) {
         dependsOn.push({
           category: 'function',
           resourceName: path.lambdaFunction,
@@ -434,7 +440,7 @@ async function findDependsOn(paths: Record<string, any>[]) {
       }
     }
 
-    if (!functionArns.find(func => func.lambdaFunction === path.lambdaFunction)) {
+    if (!functionArns.find((func) => func.lambdaFunction === path.lambdaFunction)) {
       functionArns.push({
         lambdaFunction: path.lambdaFunction,
         lambdaArn: path.lambdaArn,
@@ -448,7 +454,7 @@ async function findDependsOn(paths: Record<string, any>[]) {
 
         const authResourceName = getAuthResourceName();
 
-        if (!dependsOn.find(resource => resource.resourceName === authResourceName)) {
+        if (!dependsOn.find((resource) => resource.resourceName === authResourceName)) {
           dependsOn.push({
             category: 'auth',
             resourceName: authResourceName,
@@ -456,8 +462,8 @@ async function findDependsOn(paths: Record<string, any>[]) {
           });
         }
 
-        userPoolGroups.forEach(group => {
-          if (!dependsOn.find(resource => resource.attributes[0] === `${group}GroupRole`)) {
+        userPoolGroups.forEach((group) => {
+          if (!dependsOn.find((resource) => resource.attributes[0] === `${group}GroupRole`)) {
             dependsOn.push({
               category: 'auth',
               resourceName: 'userPoolGroups',
@@ -492,7 +498,7 @@ function functionsExist() {
 
   const functionResources = meta.function;
   const lambdaFunctions = [];
-  Object.keys(functionResources).forEach(resourceName => {
+  Object.keys(functionResources).forEach((resourceName) => {
     if (functionResources[resourceName].service === AmplifySupportedService.LAMBDA) {
       lambdaFunctions.push(resourceName);
     }
@@ -543,7 +549,7 @@ async function newLambdaFunction(context: $TSContext, path: string) {
 async function askLambdaFromProject(currentPath?: ApigwPath) {
   const meta = stateManager.getMeta();
   const lambdaFunctions = [];
-  Object.keys(meta?.function || {}).forEach(resourceName => {
+  Object.keys(meta?.function || {}).forEach((resourceName) => {
     if (meta.function[resourceName].service === AmplifySupportedService.LAMBDA) {
       lambdaFunctions.push(resourceName);
     }
@@ -559,7 +565,7 @@ async function askLambdaFromProject(currentPath?: ApigwPath) {
 async function askLambdaArn(context: $TSContext, currentPath?: ApigwPath) {
   const lambdaFunctions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getLambdaFunctions');
 
-  const lambdaOptions = lambdaFunctions.map(lambdaFunction => ({
+  const lambdaOptions = lambdaFunctions.map((lambdaFunction) => ({
     value: lambdaFunction.FunctionArn,
     name: `${lambdaFunction.FunctionName} (${lambdaFunction.FunctionArn})`,
   }));
@@ -586,7 +592,7 @@ async function askLambdaArn(context: $TSContext, currentPath?: ApigwPath) {
     }
   }
 
-  const lambdaCloudOptionAnswer = lambdaFunctions.find(lambda => lambda.FunctionArn === lambdaOption.lambdaChoice);
+  const lambdaCloudOptionAnswer = lambdaFunctions.find((lambda) => lambda.FunctionArn === lambdaOption.lambdaChoice);
 
   return {
     lambdaArn: lambdaCloudOptionAnswer.FunctionArn,
@@ -605,7 +611,8 @@ export async function migrate(context: $TSContext, projectPath: string, resource
       throw new Error('Failed to migrate Admin Queries API. Could not find expected information in amplify-meta.json.');
     }
 
-    const functionName = adminQueriesDependsOn.filter(dependency => dependency.category === AmplifyCategories.FUNCTION)?.[0]?.resourceName;
+    const functionName = adminQueriesDependsOn.filter((dependency) => dependency.category === AmplifyCategories.FUNCTION)?.[0]
+      ?.resourceName;
 
     const adminQueriesProps = {
       apiName: resourceName,
@@ -624,7 +631,7 @@ export function getIAMPolicies(resourceName: string, crudOptions: string[]) {
   let policy = {};
   const actions = [];
 
-  crudOptions.forEach(crudOption => {
+  crudOptions.forEach((crudOption) => {
     switch (crudOption) {
       case CrudOperation.CREATE:
         actions.push('apigateway:POST', 'apigateway:PUT');
@@ -676,7 +683,7 @@ export const openConsole = async (context?: $TSContext) => {
   const categoryAmplifyMeta = amplifyMeta[category];
   const { Region } = amplifyMeta.providers.awscloudformation;
 
-  const restApis = Object.keys(categoryAmplifyMeta).filter(resourceName => {
+  const restApis = Object.keys(categoryAmplifyMeta).filter((resourceName) => {
     const resource = categoryAmplifyMeta[resourceName];
     return (
       resource.output &&
@@ -725,7 +732,7 @@ export const openConsole = async (context?: $TSContext) => {
       }
     }
 
-    open(url, { wait: false });
+    await open(url, { wait: false });
   } else {
     printer.error('There are no REST APIs pushed to the cloud');
   }

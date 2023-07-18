@@ -14,7 +14,7 @@ export interface TransformerContextMetadataProvider {
   has(key: string): boolean;
 }
 
-export type TransformerSecrets = {[key: string]: any};
+export type TransformerSecrets = { [key: string]: any };
 
 export interface TransformerContextProvider {
   metadata: TransformerContextMetadataProvider;
@@ -24,13 +24,12 @@ export interface TransformerContextProvider {
 
   inputDocument: DocumentNode;
   modelToDatasourceMap: Map<string, DatasourceType>;
-  datasourceSecretParameterLocations: Map<string, TransformerSecrets>,
+  datasourceSecretParameterLocations: Map<string, TransformerSecrets>;
   output: TransformerContextOutputProvider;
   stackManager: StackManagerProvider;
   api: GraphQLAPIProvider;
   resourceHelper: TransformerResourceHelperProvider;
   authConfig: AppSyncAuthConfiguration;
-  sandboxModeEnabled: boolean;
   transformParameters: TransformParameters;
 
   isProjectUsingDataStore(): boolean;
@@ -48,7 +47,6 @@ export type TransformerBeforeStepContextProvider = Pick<
   | 'getResolverConfig'
   | 'authConfig'
   | 'stackManager'
-  | 'sandboxModeEnabled'
 >;
 
 export type TransformerSchemaVisitStepContextProvider = Pick<
@@ -63,7 +61,6 @@ export type TransformerSchemaVisitStepContextProvider = Pick<
   | 'metadata'
   | 'authConfig'
   | 'resourceHelper'
-  | 'sandboxModeEnabled'
 >;
 
 export type TransformerValidationStepContextProvider = Pick<
@@ -78,7 +75,6 @@ export type TransformerValidationStepContextProvider = Pick<
   | 'getResolverConfig'
   | 'metadata'
   | 'authConfig'
-  | 'sandboxModeEnabled'
   | 'resourceHelper'
   | 'resolvers'
   | 'stackManager'

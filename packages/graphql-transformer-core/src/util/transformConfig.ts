@@ -300,7 +300,10 @@ export const readSchema = async (
     // Schema folder is used only for DynamoDB datasource
     const datasourceType = constructDataSourceType('DDB');
     const schemaInDirectory = (await readSchemaDocuments(schemaDirectoryPath)).join('\n');
-    modelToDatasourceMap = new Map([...modelToDatasourceMap.entries(), ...constructDataSourceMap(schemaInDirectory, datasourceType).entries()]);
+    modelToDatasourceMap = new Map([
+      ...modelToDatasourceMap.entries(),
+      ...constructDataSourceMap(schemaInDirectory, datasourceType).entries(),
+    ]);
     schema += schemaInDirectory;
   } else {
     throw new ApiCategorySchemaNotFoundError(schemaFilePaths[0]);
@@ -370,19 +373,16 @@ function constructDataSourceType(dbType: DBType, provisionDB: boolean = true): D
   return {
     dbType,
     provisionDB,
-  }
+  };
 }
 
 function constructDataSourceMap(schema: string, datasourceType: DatasourceType): Map<string, DatasourceType> {
   const parsedSchema = parse(schema);
   const result = new Map<string, DatasourceType>();
   parsedSchema.definitions
-    .filter(obj => obj.kind === Kind.OBJECT_TYPE_DEFINITION && obj.directives.some(dir => dir.name.value === MODEL_DIRECTIVE_NAME))
-    .forEach(type => {
-      result.set(
-        (type as ObjectTypeDefinitionNode).name.value,
-        datasourceType,
-      );
+    .filter((obj) => obj.kind === Kind.OBJECT_TYPE_DEFINITION && obj.directives.some((dir) => dir.name.value === MODEL_DIRECTIVE_NAME))
+    .forEach((type) => {
+      result.set((type as ObjectTypeDefinitionNode).name.value, datasourceType);
     });
   return result;
 }

@@ -6,7 +6,7 @@ import execa from 'execa';
 import { getLayerDirectoryName, LayerDirectoryType } from '..';
 import { v4 as uuid } from 'uuid';
 
-export * from './add-circleci-tags';
+export * from './add-ci-tags';
 export * from './api';
 export * from './appsync';
 export * from './envVars';
@@ -27,6 +27,7 @@ export * from './admin-ui';
 export * from './hooks';
 export * from './transform-current-project-to-git-pulled-project';
 export * from './rds';
+export * from './refresh-credentials';
 
 // run dotenv config to update env variable
 config();

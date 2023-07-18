@@ -48,13 +48,14 @@ const persistStackAssets = (assetDir: string, { rootStack, stacks }: RewriteAndP
   const templateFile = path.join(stackDir, ROOT_STACK_FILE_NAME);
   fs.writeFileSync(templateFile, JSON.stringify(rootStack));
 
-  const loadNestedStacks = Object.fromEntries(Object.entries(stacks)
-    .map(([stackName, stack]) => {
+  const loadNestedStacks = Object.fromEntries(
+    Object.entries(stacks).map(([stackName, stack]) => {
       cleanupGeneratedCDKMetadata(stack);
       const nestedPath = path.join(stackDir, stackName);
       fs.writeFileSync(nestedPath, JSON.stringify(stack));
       return [stackName, { templateFile: nestedPath }];
-    }));
+    }),
+  );
 
   return { templateFile, loadNestedStacks };
 };
@@ -65,23 +66,17 @@ const persistStackAssets = (assetDir: string, { rootStack, stacks }: RewriteAndP
  * @param assetDir the temp directory we're storing assets in.
  * @param params list of internal state needed to perform the rewrite.
  */
-const rewriteAssets = (
-  scope: Construct, assetDir: string, params: RewriteAndPersistAssetParams,
-): void => {
-  const {
-    schema,
-    resolvers,
-    functions,
-    rootStack,
-    stacks,
-  } = params;
+const rewriteAssets = (scope: Construct, assetDir: string, params: RewriteAndPersistAssetParams): void => {
+  const { schema, resolvers, functions, rootStack, stacks } = params;
 
   const resolverDir = fs.mkdtempSync(path.join(assetDir, RESOLVERS_DIRECTORY));
 
   const schemaPath = path.join(assetDir, SCHEMA_FILE_NAME);
   fs.writeFileSync(schemaPath, schema);
   const schemaAsset = new Asset(scope, 'schema-asset', { path: schemaPath });
-  const schemaResourceKey = Object.entries(rootStack.Resources ?? {}).find(([_, resource]) => resource.Type === 'AWS::AppSync::GraphQLSchema')?.[0];
+  const schemaResourceKey = Object.entries(rootStack.Resources ?? {}).find(
+    ([_, resource]) => resource.Type === 'AWS::AppSync::GraphQLSchema',
+  )?.[0];
   const definitionLocation = ['s3:/', schemaAsset.s3BucketName, schemaAsset.s3ObjectKey].join('/');
   rootStack.Resources![schemaResourceKey!].Properties.DefinitionS3Location = definitionLocation;
 
@@ -94,22 +89,32 @@ const rewriteAssets = (
     const currDefinitionLocation = ['s3:/', currSchemaAsset.s3BucketName, currSchemaAsset.s3ObjectKey].join('/');
     Object.keys(stacks).forEach((stackName) => {
       /* eslint-disable max-len */
-      const requestResponseMappingResourceKey = Object.entries(stacks[stackName].Resources ?? {}).find(([_, resource]) => resource?.Properties?.RequestMappingTemplateS3Location && JSON.stringify(resource.Properties.RequestMappingTemplateS3Location).includes(resolverName))?.[0];
-      const responseResponseMappingResourceKey = Object.entries(stacks[stackName].Resources ?? {}).find(([_, resource]) => resource?.Properties?.ResponseMappingTemplateS3Location && JSON.stringify(resource.Properties.ResponseMappingTemplateS3Location).includes(resolverName))?.[0];
-      const codeResourceKey = Object.entries(stacks[stackName].Resources ?? {}).find(([_, resource]) => resource?.Properties?.CodeS3Location && JSON.stringify(resource.Properties.CodeS3Location).includes(resolverName))?.[0];
+      const requestResponseMappingResourceKey = Object.entries(stacks[stackName].Resources ?? {}).find(
+        ([_, resource]) =>
+          resource?.Properties?.RequestMappingTemplateS3Location &&
+          JSON.stringify(resource.Properties.RequestMappingTemplateS3Location).includes(resolverName),
+      )?.[0];
+      const responseResponseMappingResourceKey = Object.entries(stacks[stackName].Resources ?? {}).find(
+        ([_, resource]) =>
+          resource?.Properties?.ResponseMappingTemplateS3Location &&
+          JSON.stringify(resource.Properties.ResponseMappingTemplateS3Location).includes(resolverName),
+      )?.[0];
+      const codeResourceKey = Object.entries(stacks[stackName].Resources ?? {}).find(
+        ([_, resource]) =>
+          resource?.Properties?.CodeS3Location && JSON.stringify(resource.Properties.CodeS3Location).includes(resolverName),
+      )?.[0];
       /* eslint-enable max-len */
 
       if (requestResponseMappingResourceKey) {
-        stacks[stackName].Resources![requestResponseMappingResourceKey!].Properties
-          .RequestMappingTemplateS3Location = currDefinitionLocation;
+        stacks[stackName].Resources![requestResponseMappingResourceKey!].Properties.RequestMappingTemplateS3Location =
+          currDefinitionLocation;
       }
       if (responseResponseMappingResourceKey) {
-        stacks[stackName].Resources![responseResponseMappingResourceKey!].Properties
-          .ResponseMappingTemplateS3Location = currDefinitionLocation;
+        stacks[stackName].Resources![responseResponseMappingResourceKey!].Properties.ResponseMappingTemplateS3Location =
+          currDefinitionLocation;
       }
       if (codeResourceKey) {
-        stacks[stackName].Resources![codeResourceKey!].Properties
-          .CodeS3Location = currDefinitionLocation;
+        stacks[stackName].Resources![codeResourceKey!].Properties.CodeS3Location = currDefinitionLocation;
       }
     });
   });
@@ -118,7 +123,16 @@ const rewriteAssets = (
   // This is just terrible.
   Object.entries(functions).forEach(([functionName, functionPath]) => {
     [rootStack, ...Object.values(stacks)].forEach((s) => {
-      const foundLambdas = s.Resources ? Object.values(s.Resources).filter((r) => r.Type === 'AWS::Lambda::Function' && r.Properties && r.Properties.Code && r.Properties.Code.S3Key && JSON.stringify(r.Properties.Code.S3Key).replace(/\./, '').includes(functionName.replace(/\./, ''))) : [];
+      const foundLambdas = s.Resources
+        ? Object.values(s.Resources).filter(
+            (r) =>
+              r.Type === 'AWS::Lambda::Function' &&
+              r.Properties &&
+              r.Properties.Code &&
+              r.Properties.Code.S3Key &&
+              JSON.stringify(r.Properties.Code.S3Key).replace(/\./, '').includes(functionName.replace(/\./, '')),
+          )
+        : [];
       if (foundLambdas.length > 1) {
         throw new Error(`Expected to find exactly one lambda with key ${functionName}, but did not. Had ${foundLambdas.length} matches`);
       }

@@ -1,8 +1,6 @@
 import { ObjectTypeDefinitionNode, DirectiveDefinitionNode, InputValueDefinitionNode } from 'graphql';
 import { TransformerPluginProvider } from '.';
-import {
-  TransformerResolverProvider, TransformerContextProvider, AppSyncDataSourceType, DataSourceInstance,
-} from './transformer-context';
+import { TransformerResolverProvider, TransformerContextProvider, AppSyncDataSourceType, DataSourceInstance } from './transformer-context';
 
 /**
  * QueryFieldType
@@ -149,9 +147,9 @@ export interface TransformerModelProvider extends TransformerPluginProvider {
 /**
  * TransformerAuthProvider
  */
-export type TransformerAuthProvider = TransformerPluginProvider
+export type TransformerAuthProvider = TransformerPluginProvider;
 
 /**
  * TransformerModelEnhancementProvider
  */
-export type TransformerModelEnhancementProvider = Partial<TransformerModelProvider>
+export type TransformerModelEnhancementProvider = Partial<TransformerModelProvider>;

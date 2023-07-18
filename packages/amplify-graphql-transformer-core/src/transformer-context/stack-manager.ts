@@ -67,7 +67,7 @@ export class StackManager implements StackManagerProvider {
       stacks = new Map([...stacks.entries(), ...synthesizer.collectStacks()]);
     });
     return stacks;
-  }
+  };
 
   getMappingTemplates = () => this.stackSynthesizer.collectMappingTemplates();
 

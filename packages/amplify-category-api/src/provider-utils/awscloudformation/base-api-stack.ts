@@ -122,7 +122,7 @@ export abstract class ContainersStack extends cdk.Stack {
     const { pipelineWithAwaiter } = this.pipeline({
       skipWait,
       service,
-      containersInfo: containersInfo.filter(container => container.repository),
+      containersInfo: containersInfo.filter((container) => container.repository),
       gitHubSourceActionInfo,
     });
 
@@ -171,7 +171,7 @@ export abstract class ContainersStack extends cdk.Stack {
     };
 
     dependsOn.forEach(({ category, resourceName, attributes }) => {
-      attributes.forEach(attrib => {
+      attributes.forEach((attrib) => {
         const paramName = [category, resourceName, attrib].join('');
 
         const type = paramTypes[paramName] ?? 'String';
@@ -272,9 +272,8 @@ export abstract class ContainersStack extends cdk.Stack {
       family: `${this.envName}-${apiName}`,
     });
     (task.node.defaultChild as ecs.CfnTaskDefinition).overrideLogicalId('TaskDefinition');
-    policies.forEach(policy => {
-      const statement = isPolicyStatement(policy) ? policy : wrapJsonPoliciesInCdkPolicies(policy);
-
+    policies.forEach((policy) => {
+      const statement = isPolicyStatement(policy) ? policy : jsonPolicyToCdkPolicyStatement(policy);
       task.addToTaskRolePolicy(statement);
     });
 
@@ -402,7 +401,7 @@ export abstract class ContainersStack extends cdk.Stack {
           ipProtocol: '-1',
         },
       ],
-      securityGroupIngress: taskPorts.map(servicePort => ({
+      securityGroupIngress: taskPorts.map((servicePort) => ({
         ipProtocol: 'tcp',
         fromPort: servicePort,
         toPort: servicePort,
@@ -519,9 +518,9 @@ export abstract class ContainersStack extends cdk.Stack {
   toCloudFormation() {
     this.node
       .findAll()
-      .filter(construct => construct instanceof CfnFunction)
-      .map(construct => construct as CfnFunction)
-      .forEach(lambdaFunction => {
+      .filter((construct) => construct instanceof CfnFunction)
+      .map((construct) => construct as CfnFunction)
+      .forEach((lambdaFunction) => {
         if (lambdaFunction.logicalId.includes('AwaiterMyProvider')) {
           lambdaFunction.code = {
             s3Bucket: this.deploymentBucketName,
@@ -532,7 +531,7 @@ export abstract class ContainersStack extends cdk.Stack {
 
     const cfn = this.renderCfnTemplate();
 
-    Object.keys(cfn.Parameters).forEach(k => {
+    Object.keys(cfn.Parameters).forEach((k) => {
       if (k.startsWith('AssetParameters')) {
         delete cfn.Parameters[k];
       }
@@ -542,20 +541,18 @@ export abstract class ContainersStack extends cdk.Stack {
 }
 
 /**
- * Wraps an array of JSON IAM statements in a {iam.PolicyStatement} array.
+ * Return a {iam.PolicyStatement} from JSON IAM policy.
  * This allow us tu pass the statements in a way that CDK can use when synthesizing
  *
- * CDK looks for a toStatementJson function
- *
- * @param policy JSON object with IAM statements
- * @returns {iam.PolicyStatement} CDK compatible policy statement
+ * @param policy JSON object of IAM policy
+ * @returns {iam.PolicyStatement} CDK policy statement
  */
-function wrapJsonPoliciesInCdkPolicies(policy: Record<string, any>): iam.PolicyStatement {
-  return {
-    toStatementJson() {
-      return policy;
-    },
-  } as iam.PolicyStatement;
+function jsonPolicyToCdkPolicyStatement(policy: Record<string, any>): iam.PolicyStatement {
+  return new iam.PolicyStatement({
+    effect: policy.Effect,
+    actions: policy.Action,
+    resources: Array.isArray(policy.Resource) ? policy.Resource.map((r) => cdk.Token.asString(r)) : [cdk.Token.asString(policy.Resource)],
+  });
 }
 
 function isPolicyStatement(obj: any): obj is iam.PolicyStatement {

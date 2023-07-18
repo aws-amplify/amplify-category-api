@@ -34,7 +34,7 @@ const MIGRATION_DOCS_URL = 'https://docs.amplify.aws/cli/migration/transformer-m
 export async function attemptV2TransformerMigration(
   resourceDir: string,
   apiName: string,
-  featureFlags: { transformerVersion: number, improvePluralization: boolean },
+  featureFlags: { transformerVersion: number; improvePluralization: boolean },
   envName?: string,
 ): Promise<void> {
   const schemaDocs = await getSchemaDocs(resourceDir);
@@ -100,7 +100,7 @@ export async function revertV2Migration(resourceDir: string, envName: string) {
 }
 
 export async function runMigration(schemas: SchemaDocument[], authMode: string): Promise<void> {
-  const schemaList = schemas.map(doc => doc.schema);
+  const schemaList = schemas.map((doc) => doc.schema);
 
   const fullSchema = schemaList.join('\n');
   const fullSchemaNode = parse(fullSchema);
@@ -112,7 +112,7 @@ export async function runMigration(schemas: SchemaDocument[], authMode: string):
     newSchemaList.push({ schema: newSchema, filePath: doc.filePath });
   }
 
-  await Promise.all(newSchemaList.map(doc => replaceFile(doc.schema, doc.filePath)));
+  await Promise.all(newSchemaList.map((doc) => replaceFile(doc.schema, doc.filePath)));
 }
 
 /**
@@ -162,8 +162,8 @@ async function getSchemaDocs(resourceDir: string): Promise<SchemaDocument[]> {
   if (schemaFileExists) {
     return [{ schema: await fs.readFile(schemaFilePath, 'utf8'), filePath: schemaFilePath }];
   } else if (schemaDirectoryExists) {
-    const schemaFiles = glob.sync('**/*.graphql', { cwd: schemaDirectoryPath }).map(fileName => path.join(schemaDirectoryPath, fileName));
-    return await Promise.all(schemaFiles.map(async fileName => ({ schema: await fs.readFile(fileName, 'utf8'), filePath: fileName })));
+    const schemaFiles = glob.sync('**/*.graphql', { cwd: schemaDirectoryPath }).map((fileName) => path.join(schemaDirectoryPath, fileName));
+    return await Promise.all(schemaFiles.map(async (fileName) => ({ schema: await fs.readFile(fileName, 'utf8'), filePath: fileName })));
   }
   return [];
 }
@@ -173,7 +173,12 @@ function schemaHasComments(fullSchema: string): boolean {
 }
 
 // returns true if the project can be auto-migrated to v2, or a message explaining why the project cannot be auto-migrated
-async function canAutoMigrate(fullSchema: string, apiName: string, resourceDir: string, transformerVersion: number): Promise<true | string> {
+async function canAutoMigrate(
+  fullSchema: string,
+  apiName: string,
+  resourceDir: string,
+  transformerVersion: number,
+): Promise<true | string> {
   if (graphQLUsingSQL(apiName)) {
     return 'GraphQL APIs using Aurora RDS cannot be migrated.';
   }

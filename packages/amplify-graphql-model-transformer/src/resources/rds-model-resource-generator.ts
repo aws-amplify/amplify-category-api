@@ -91,12 +91,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       snsTopic.addSubscription(subscription);
 
       const lambdaDataSourceStack = context.stackManager.getStackFor(RDSLambdaDataSourceLogicalID, RDS_STACK_NAME);
-      const rdsDatasource = context.api.host.addLambdaDataSource(
-        `${RDSLambdaDataSourceLogicalID}`,
-        lambda,
-        {},
-        lambdaDataSourceStack,
-      );
+      const rdsDatasource = context.api.host.addLambdaDataSource(`${RDSLambdaDataSourceLogicalID}`, lambda, {}, lambdaDataSourceStack);
       this.models.forEach((model) => {
         context.dataSources.add(model, rdsDatasource);
         this.datasourceMap[model.name.value] = rdsDatasource;

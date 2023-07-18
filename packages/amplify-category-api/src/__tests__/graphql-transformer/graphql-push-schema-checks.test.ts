@@ -1,6 +1,11 @@
 const getParamMock = jest.fn();
 
-import { $TSContext, stateManager, getGraphQLTransformerOpenSearchProductionDocLink, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
+import {
+  $TSContext,
+  stateManager,
+  getGraphQLTransformerOpenSearchProductionDocLink,
+  ApiCategoryFacade,
+} from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { searchablePushChecks } from '../../graphql-transformer/api-utils';
 
@@ -19,15 +24,16 @@ jest.mock('@aws-amplify/amplify-environment-parameters', () => ({
 
 const printerMock = printer as jest.Mocked<typeof printer>;
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
-const getTransformerVersionMock = ApiCategoryFacade
-  .getTransformerVersion as jest.MockedFunction<typeof ApiCategoryFacade.getTransformerVersion>;
+const getTransformerVersionMock = ApiCategoryFacade.getTransformerVersion as jest.MockedFunction<
+  typeof ApiCategoryFacade.getTransformerVersion
+>;
 const getGraphQLTransformerOpenSearchProductionDocLinkMock = getGraphQLTransformerOpenSearchProductionDocLink as jest.MockedFunction<
   typeof getGraphQLTransformerOpenSearchProductionDocLink
 >;
 printerMock.warn.mockImplementation(jest.fn());
 getGraphQLTransformerOpenSearchProductionDocLinkMock.mockReturnValue('mockDocsLink');
 // use transformer v2 for tests
-getTransformerVersionMock.mockReturnValue(new Promise(resolve => resolve(2)));
+getTransformerVersionMock.mockReturnValue(new Promise((resolve) => resolve(2)));
 
 describe('graphql schema checks', () => {
   const contextMock = {
@@ -36,8 +42,9 @@ describe('graphql schema checks', () => {
     },
   } as unknown as $TSContext;
 
-  const printerWarning = 'Your instance type for OpenSearch is t2.small.elasticsearch, you may experience performance issues or data loss.'
-    + ' Consider reconfiguring with the instructions here mockDocsLink';
+  const printerWarning =
+    'Your instance type for OpenSearch is t2.small.elasticsearch, you may experience performance issues or data loss.' +
+    ' Consider reconfiguring with the instructions here mockDocsLink';
 
   beforeEach(() => {
     jest.clearAllMocks();

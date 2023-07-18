@@ -10,7 +10,7 @@ import glob from 'glob';
 export const transformCurrentProjectToGitPulledProject = (projRoot: string) => {
   const gitIgnoreFilePath = pathManager.getGitIgnoreFilePath(projRoot);
   const regexrArray = fs.readFileSync(gitIgnoreFilePath, 'utf-8').split('\n');
-  regexrArray.forEach(str => {
+  regexrArray.forEach((str) => {
     if (str.endsWith('/')) {
       str = str.split('/')[0];
     }
@@ -19,7 +19,7 @@ export const transformCurrentProjectToGitPulledProject = (projRoot: string) => {
       absolute: true,
       matchBase: true,
     });
-    dirPath.forEach(file => {
+    dirPath.forEach((file) => {
       try {
         if (fs.existsSync(file)) {
           if (fs.lstatSync(file).isDirectory()) {

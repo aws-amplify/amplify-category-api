@@ -16,7 +16,7 @@ export const dockerComposeToObject = (yamlFileContents: string): v2Types.ConfigS
 
 export const dockerfileToObject = (dockerfileContents: string): v2Types.ConfigSchemaV24Json | v1Types.ConfigSchemaV1Json => {
   const lines = dockerfileContents?.split('\n') ?? [];
-  const ports = lines.filter(line => /^\s*EXPOSE\s+/.test(line)).map(line => line.match(/\s+(\d+)/)[1]);
+  const ports = lines.filter((line) => /^\s*EXPOSE\s+/.test(line)).map((line) => line.match(/\s+(\d+)/)[1]);
 
   const composeContents = `version: "3"
 services:
@@ -26,7 +26,7 @@ services:
         ? `
     ports: ${ports
       .map(
-        port => `
+        (port) => `
       - '${port}:${port}'`,
       )
       .join('')}`
@@ -57,7 +57,7 @@ phases:
       - echo Build started on \`date\`
       - echo Building the Docker image...${Object.keys(containerMap)
         .map(
-          item => `
+          (item) => `
       - docker build -t $${item}_REPOSITORY_URI:latest ./${containerMap[item]}
       - docker tag $${item}_REPOSITORY_URI:latest $${item}_REPOSITORY_URI:$IMAGE_TAG`,
         )
@@ -67,13 +67,13 @@ phases:
       - echo Build completed on \`date\`
       - echo Pushing the Docker images..${Object.keys(containerMap)
         .map(
-          item => `
+          (item) => `
       - docker push $${item}_REPOSITORY_URI:latest
       - docker push $${item}_REPOSITORY_URI:$IMAGE_TAG`,
         )
         .join('\n')}
       - "echo \\"[${Object.keys(containerMap)
-        .map(name => `{\\\\\\\"name\\\\\\\":\\\\\\\"${name}\\\\\\\", \\\\\\\"imageUri\\\\\\\":\\\\\\\"$${name}_REPOSITORY_URI\\\\\\\"}`)
+        .map((name) => `{\\\\\\\"name\\\\\\\":\\\\\\\"${name}\\\\\\\", \\\\\\\"imageUri\\\\\\\":\\\\\\\"$${name}_REPOSITORY_URI\\\\\\\"}`)
         .join(',')}]\\" > imagedefinitions.json"
 artifacts:
   files: imagedefinitions.json

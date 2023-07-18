@@ -33,10 +33,6 @@ import {
   UserDefinedSlot,
 } from '@aws-amplify/graphql-transformer-core';
 
-export type TransformerSearchConfig = {
-  enableNodeToNodeEncryption?: boolean;
-};
-
 /**
  * Arguments passed into a TransformerFactory
  * Used to determine how to create a new GraphQLTransform
@@ -46,7 +42,6 @@ export type TransformerFactoryArgs = {
   storageConfig?: any;
   adminRoles?: Array<string>;
   identityPoolId?: string;
-  searchConfig?: TransformerSearchConfig;
   customTransformers?: TransformerPluginProvider[];
 };
 
@@ -54,13 +49,10 @@ export type TransformerFactoryArgs = {
  * Transformer Options used to create a GraphQL Transform and compile a GQL API
  */
 export type TransformConfig = {
-  legacyApiKeyEnabled?: boolean;
-  disableResolverDeduping?: boolean;
   transformersFactoryArgs: TransformerFactoryArgs;
   resolverConfig?: ResolverConfig;
   authConfig?: AppSyncAuthConfiguration;
   stacks?: Record<string, Template>;
-  sandboxModeEnabled?: boolean;
   overrideConfig?: OverrideConfig;
   userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   stackMapping?: Record<string, string>;
@@ -69,9 +61,7 @@ export type TransformConfig = {
   rdsLayerMapping?: RDSLayerMapping;
 };
 
-export const constructTransformerChain = (
-  options?: TransformerFactoryArgs,
-): TransformerPluginProvider[] => {
+export const constructTransformerChain = (options?: TransformerFactoryArgs): TransformerPluginProvider[] => {
   const modelTransformer = new ModelTransformer();
   const authTransformer = new AuthTransformer({
     adminRoles: options?.adminRoles ?? [],
@@ -94,7 +84,7 @@ export const constructTransformerChain = (
     new DefaultValueTransformer(),
     authTransformer,
     new MapsToTransformer(),
-    new SearchableModelTransformer({ enableNodeToNodeEncryption: options?.searchConfig?.enableNodeToNodeEncryption }),
+    new SearchableModelTransformer(),
     ...(options?.customTransformers ?? []),
   ];
 };
@@ -108,12 +98,9 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
   const {
     transformersFactoryArgs,
     authConfig,
-    sandboxModeEnabled,
     resolverConfig,
     overrideConfig,
     userDefinedSlots,
-    legacyApiKeyEnabled,
-    disableResolverDeduping,
     stacks,
     stackMapping,
     transformParameters,
@@ -129,7 +116,6 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
     authConfig,
     stacks,
     transformParameters,
-    sandboxModeEnabled,
     userDefinedSlots,
     resolverConfig,
     overrideConfig,
@@ -153,7 +139,7 @@ export type ExecuteTransformConfig = TransformConfig & {
  * By default, rely on console to print out the transformer logs.
  * @param log the log to print.
  */
-const defaultPrintTransformerLog = (log: TransformerLog): void => {
+export const defaultPrintTransformerLog = (log: TransformerLog): void => {
   switch (log.level) {
     case TransformerLogLevel.ERROR:
       console.error(log.message);

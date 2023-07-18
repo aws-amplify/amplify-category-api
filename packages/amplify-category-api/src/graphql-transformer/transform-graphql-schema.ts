@@ -14,9 +14,7 @@ export const transformGraphQLSchema = async (
 ): Promise<DeploymentResourcesV2 | DeploymentResourcesV1 | undefined> => {
   try {
     const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
-    return transformerVersion === 2
-      ? await transformGraphQLSchemaV2(context, options)
-      : await transformGraphQLSchemaV1(context, options);
+    return transformerVersion === 2 ? await transformGraphQLSchemaV2(context, options) : await transformGraphQLSchemaV1(context, options);
   } catch (error) {
     throw AmplifyGraphQLTransformerErrorConverter.convert(error);
   }

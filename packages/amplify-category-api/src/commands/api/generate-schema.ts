@@ -25,7 +25,7 @@ export const run = async (context: $TSContext) => {
   // proceed if there are any existing imported Relational Data Sources
   const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
 
-  if(!fs.existsSync(pathToSchemaFile)) {
+  if (!fs.existsSync(pathToSchemaFile)) {
     printer.info('No imported Data Sources to Generate GraphQL Schema.');
     return;
   }
@@ -34,10 +34,12 @@ export const run = async (context: $TSContext) => {
   const secretsKey = getSecretsKey();
   const database = await getDatabaseName(context, apiName, secretsKey);
   if (!database) {
-    printer.error(`Cannot fetch the imported database name to generate the schema. Use "amplify api update-secrets" to update the database information.`);
+    printer.error(
+      `Cannot fetch the imported database name to generate the schema. Use "amplify api update-secrets" to update the database information.`,
+    );
     return;
   }
-  
+
   // read and validate the RDS connection secrets
   const { secrets, storeSecrets } = await getConnectionSecrets(context, secretsKey, engine);
   const databaseConfig: ImportedDataSourceConfig = {
@@ -47,12 +49,12 @@ export const run = async (context: $TSContext) => {
 
   const schemaString = await generateRDSSchema(context, databaseConfig, pathToSchemaFile);
   // If connection is successful, store the secrets in parameter store
-  if(storeSecrets) {
+  if (storeSecrets) {
     await storeConnectionSecrets(context, secrets, apiName, secretsKey);
   }
   writeSchemaFile(pathToSchemaFile, schemaString);
 
-  if(_.isEmpty(schemaString)) {
+  if (_.isEmpty(schemaString)) {
     printer.warn('If your schema file is empty, it is likely that your database has no tables.');
   }
   printer.info(`Successfully imported the schema definition for ${databaseConfig.database} database into ${pathToSchemaFile}`);

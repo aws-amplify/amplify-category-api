@@ -20,7 +20,7 @@ type FunctionDirectiveConfiguration = {
   accountId: string | undefined;
   resolverTypeName: string;
   resolverFieldName: string;
-}
+};
 
 const FUNCTION_DIRECTIVE_STACK = 'FunctionDirectiveStack';
 const directiveDefinition = /* GraphQL */ `
@@ -41,10 +41,13 @@ export class FunctionTransformer extends TransformerPluginBase {
     acc: TransformerSchemaVisitStepContextProvider,
   ): void => {
     const directiveWrapped = new DirectiveWrapper(directive);
-    const args = directiveWrapped.getArguments({
-      resolverTypeName: parent.name.value,
-      resolverFieldName: definition.name.value,
-    } as FunctionDirectiveConfiguration, generateGetArgumentsInput(acc.transformParameters));
+    const args = directiveWrapped.getArguments(
+      {
+        resolverTypeName: parent.name.value,
+        resolverFieldName: definition.name.value,
+      } as FunctionDirectiveConfiguration,
+      generateGetArgumentsInput(acc.transformParameters),
+    );
     let resolver = this.resolverGroups.get(definition);
 
     if (resolver === undefined) {
@@ -72,7 +75,7 @@ export class FunctionTransformer extends TransformerPluginBase {
     });
 
     this.resolverGroups.forEach((resolverFns, fieldDefinition) => {
-      resolverFns.forEach(config => {
+      resolverFns.forEach((config) => {
         // Create data sources that register Lambdas and IAM roles.
         const dataSourceId = FunctionResourceIDs.FunctionDataSourceID(config.name, config.region, config.accountId);
 
@@ -140,7 +143,7 @@ export class FunctionTransformer extends TransformerPluginBase {
           qref(`$ctx.stash.put("fieldName", "${config.resolverFieldName}")`),
         ];
         const authModes = [context.authConfig.defaultAuthentication, ...(context.authConfig.additionalAuthenticationProviders || [])].map(
-          mode => mode?.authenticationType,
+          (mode) => mode?.authenticationType,
         );
         if (authModes.includes(AuthorizationType.IAM)) {
           const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;

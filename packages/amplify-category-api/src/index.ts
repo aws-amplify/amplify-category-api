@@ -148,7 +148,7 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   // proceed if there are any existing imported Relational Data Sources
   const apiResourceDir = getAPIResourceDir(resourceName);
   const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
-  if(fs.existsSync(pathToSchemaFile)) {
+  if (fs.existsSync(pathToSchemaFile)) {
     // read and validate the RDS connection parameters
     const secretsKey = await getSecretsKey();
 
@@ -156,8 +156,8 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
       isNewEnv: context.exeInfo?.isNewEnv,
       sourceEnv: context.exeInfo?.sourceEnvName,
       yesFlagSet: _.get(context, ['parameters', 'options', 'yes'], false),
-      envName: envName
-    }
+      envName: envName,
+    };
     await configureMultiEnvDBSecrets(context, secretsKey, resourceName, envInfo);
   }
 
@@ -178,15 +178,15 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
    */
   const envParamManager = (await ensureEnvParamManager()).instance;
   if (
-    envParamManager.hasResourceParamManager(category, resourceName)
-    && envParamManager.getResourceParamManager(category, resourceName).getParam('rdsRegion')
+    envParamManager.hasResourceParamManager(category, resourceName) &&
+    envParamManager.getResourceParamManager(category, resourceName).getParam('rdsRegion')
   ) {
     return;
   }
   // execute the walkthrough
   await providerController
     .addDatasource(context, category, datasource)
-    .then(answers => {
+    .then((answers) => {
       /**
        * Update environment parameter manager with answers
        */
@@ -197,8 +197,8 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
         rdsDatabaseName: answers.databaseName,
       });
     })
-    .then(() => {
-      context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { forceCompile: true });
+    .then(async () => {
+      await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { forceCompile: true });
     });
 };
 
@@ -208,13 +208,13 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
 export const getPermissionPolicies = async (
   context: $TSContext,
   resourceOpsMapping: Record<string, any>,
-): Promise<{ permissionPolicies: any[]; resourceAttributes: any[]; }> => {
+): Promise<{ permissionPolicies: any[]; resourceAttributes: any[] }> => {
   const amplifyMeta = stateManager.getMeta();
   const permissionPolicies = [];
   const resourceAttributes = [];
 
   await Promise.all(
-    Object.keys(resourceOpsMapping).map(async resourceName => {
+    Object.keys(resourceOpsMapping).map(async (resourceName) => {
       try {
         const providerName = amplifyMeta[category][resourceName].providerPlugin;
         if (providerName) {
@@ -305,7 +305,7 @@ export const handleAmplifyEvent = async (context: $TSContext, args: any): Promis
       await removeVpcSchemaInspectorLambda(context);
       break;
     default:
-      // other event handlers not implemented
+    // other event handlers not implemented
   }
 };
 
@@ -351,7 +351,7 @@ export const transformCategoryStack = async (context: $TSContext, resource: Reco
     if (canResourceBeTransformed(resource.resourceName)) {
       const backendDir = pathManager.getBackendDirPath();
       const overrideDir = path.join(backendDir, resource.category, resource.resourceName);
-      const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
+      const isBuild = await buildOverrideDir(backendDir, overrideDir).catch((error) => {
         throw new AmplifyError('InvalidOverrideError', {
           message: error.message,
           link: 'https://docs.amplify.aws/cli/graphql/override/',
@@ -377,14 +377,13 @@ export const transformCategoryStack = async (context: $TSContext, resource: Reco
     if (canResourceBeTransformed(resource.resourceName)) {
       // Rebuild CFN
       const apigwStack = new ApigwStackTransform(context, resource.resourceName);
-      apigwStack.transform();
+      await apigwStack.transform();
     }
   }
 };
 
-const canResourceBeTransformed = (
-  resourceName: string,
-): boolean => stateManager.resourceInputsJsonExists(undefined, AmplifyCategories.API, resourceName);
+const canResourceBeTransformed = (resourceName: string): boolean =>
+  stateManager.resourceInputsJsonExists(undefined, AmplifyCategories.API, resourceName);
 
 /**
  * Disable the CDK deprecation warning in production but not in CI/debug mode
@@ -395,3 +394,4 @@ const disableCDKDeprecationWarning = () => {
     process.env.JSII_DEPRECATED = 'quiet';
   }
 };
+// No-op change to trigger publish

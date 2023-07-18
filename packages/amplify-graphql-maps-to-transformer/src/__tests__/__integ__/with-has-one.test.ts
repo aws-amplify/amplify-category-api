@@ -45,7 +45,9 @@ const biDiHasOneMapped = /* GraphQL */ `
 const transformSchema = (schema: string) => {
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer(), new MapsToTransformer()],
-    sandboxModeEnabled: true,
+    transformParameters: {
+      sandboxModeEnabled: true,
+    },
   });
   return transformer.transform(schema);
 };
@@ -54,7 +56,7 @@ describe('@mapsTo with @hasOne', () => {
   it('adds CRUD input and output mappings on hasOne type', () => {
     const out = transformSchema(mappedHasOne);
     const expectedResolvers: string[] = expectedResolversForModelWithRenamedField('Employee');
-    expectedResolvers.forEach(resolver => {
+    expectedResolvers.forEach((resolver) => {
       expect(out.resolvers[resolver]).toMatchSnapshot();
     });
   });

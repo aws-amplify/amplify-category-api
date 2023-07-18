@@ -1,0 +1,12 @@
+version: 0.2
+env:
+  shell: bash
+  variables:
+    CI: true
+    CODEBUILD: true
+
+phases:
+  build:
+    commands:
+      - yarn production-build
+      - cd packages/amplify-e2e-tests && yarn clean-cb-e2e-resources

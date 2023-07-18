@@ -11,33 +11,21 @@ describe('ecs stack', () => {
       apiType: API_TYPE.REST,
       categoryName: 'testCategory',
       containers: [
-        new Container(
-          undefined,
-          'testContainer',
-          [],
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          'testImage',
-          {
-            command: 'foo',
-          },
-        ),
+        new Container(undefined, 'testContainer', [], undefined, undefined, undefined, undefined, 'testImage', {
+          command: 'foo',
+        }),
       ],
       currentStackName: 'testStack',
       dependsOn: [
         {
+          attributes: ['Name', 'Arn', 'StreamArn'],
+          category: 'storage',
+          resourceName: 'posts',
+        },
+        {
           category: '',
           resourceName: 'NetworkStack',
-          attributes: [
-            'ClusterName',
-            'VpcId',
-            'VpcCidrBlock',
-            'SubnetIds',
-            'VpcLinkId',
-            'CloudMapNamespaceId',
-          ],
+          attributes: ['ClusterName', 'VpcId', 'VpcCidrBlock', 'SubnetIds', 'VpcLinkId', 'CloudMapNamespaceId'],
         },
       ],
       deploymentMechanism: undefined,
@@ -50,7 +38,28 @@ describe('ecs stack', () => {
       isInitialDeploy: false,
       restrictAccess: false,
       taskPorts: [],
-      policies: [],
+      policies: [
+        {
+          Effect: 'Allow',
+          Action: ['dynamodb:Get*', 'dynamodb:BatchGetItem', 'dynamodb:List*', 'dynamodb:Describe*', 'dynamodb:Scan', 'dynamodb:Query'],
+          Resource: [
+            {
+              Ref: 'storagepostsArn',
+            },
+            {
+              'Fn::Join': [
+                '/',
+                [
+                  {
+                    Ref: 'storagepostsArn',
+                  },
+                  'index/*',
+                ],
+              ],
+            },
+          ],
+        },
+      ],
     });
 
     const cfn = ecsStack.toCloudFormation();

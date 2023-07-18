@@ -70,7 +70,7 @@ export class ResourceFactory {
     const connectionGSIName = `gsi-${connectionName}`;
 
     // If the GSI does not exist yet then add it.
-    const existingGSI = gsis.find(gsi => gsi.IndexName === connectionGSIName);
+    const existingGSI = gsis.find((gsi) => gsi.IndexName === connectionGSIName);
     if (!existingGSI) {
       const keySchema = [new KeySchema({ AttributeName: connectionAttributeName, KeyType: 'HASH' })];
       if (sortField) {
@@ -93,7 +93,7 @@ export class ResourceFactory {
 
     // If the attribute definition does not exist yet, add it.
     const attributeDefinitions = table.Properties.AttributeDefinitions as AttributeDefinition[];
-    const existingAttribute = attributeDefinitions.find(attr => attr.AttributeName === connectionAttributeName);
+    const existingAttribute = attributeDefinitions.find((attr) => attr.AttributeName === connectionAttributeName);
     if (!existingAttribute) {
       attributeDefinitions.push(
         new AttributeDefinition({
@@ -105,7 +105,7 @@ export class ResourceFactory {
 
     // If the attribute definition does not exist yet, add it.
     if (sortField) {
-      const existingSortAttribute = attributeDefinitions.find(attr => attr.AttributeName === sortField.name);
+      const existingSortAttribute = attributeDefinitions.find((attr) => attr.AttributeName === sortField.name);
       if (!existingSortAttribute) {
         const scalarType = DEFAULT_SCALARS[sortField.type];
         const attributeType = scalarType === 'String' ? 'S' : 'N';
@@ -276,7 +276,7 @@ export class ResourceFactory {
     if (connectionAttributes.length > 2) {
       const rangeKeyFields = connectionAttributes.slice(1);
       const sortKeyName = keySchema[1].AttributeName as string;
-      const condensedSortKeyValue = this.condenseRangeKey(rangeKeyFields.map(keyField => `\${ctx.source.${keyField}}`));
+      const condensedSortKeyValue = this.condenseRangeKey(rangeKeyFields.map((keyField) => `\${ctx.source.${keyField}}`));
 
       keyObj.attributes.push([
         sortKeyName,
@@ -297,7 +297,7 @@ export class ResourceFactory {
       TypeName: type,
       RequestMappingTemplate: print(
         ifElse(
-          or(connectionAttributes.map(ca => raw(`$util.isNull($ctx.source.${ca})`))),
+          or(connectionAttributes.map((ca) => raw(`$util.isNull($ctx.source.${ca})`))),
           raw('#return'),
           compoundExpression([
             DynamoDBMappingTemplate.getItem({
@@ -337,7 +337,7 @@ export class ResourceFactory {
     // If the key schema has a sort key but one is not provided for the query, let a sort key be
     // passed in via $ctx.args.
     if (keySchema[1] && !connectionAttributes[1]) {
-      const sortKeyField = relatedType.fields.find(f => f.name.value === keySchema[1].AttributeName);
+      const sortKeyField = relatedType.fields.find((f) => f.name.value === keySchema[1].AttributeName);
 
       if (sortKeyField) {
         setup.push(applyKeyConditionExpression(String(keySchema[1].AttributeName), attributeTypeFromScalar(sortKeyField.type), 'query'));
@@ -405,7 +405,7 @@ export class ResourceFactory {
       let condensedSortKeyValue: string = undefined;
       if (connectionAttributes.length > 2) {
         const rangeKeyFields = connectionAttributes.slice(1);
-        condensedSortKeyValue = this.condenseRangeKey(rangeKeyFields.map(keyField => `\${context.source.${keyField}}`));
+        condensedSortKeyValue = this.condenseRangeKey(rangeKeyFields.map((keyField) => `\${context.source.${keyField}}`));
       }
 
       return obj({

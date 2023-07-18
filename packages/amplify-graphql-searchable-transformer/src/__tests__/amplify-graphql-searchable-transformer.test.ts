@@ -1,11 +1,9 @@
 import { ConflictHandlerType, GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import {
-  Match, Template,
-} from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { parse } from 'graphql';
 import { SearchableModelTransformer } from '..';
-import {ALLOWABLE_SEARCHABLE_INSTANCE_TYPES} from '../constants';
+import { ALLOWABLE_SEARCHABLE_INSTANCE_TYPES } from '../constants';
 
 test('SearchableModelTransformer validation happy case', () => {
   const validSchema = `
@@ -177,165 +175,158 @@ test('it generates expected resources', () => {
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   const searchableStack = out.stacks.SearchableStack;
-  Template.fromJSON(searchableStack)
-    .hasResourceProperties('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Statement: [
-          {
-            Action: 'sts:AssumeRole',
-            Effect: 'Allow',
-            Principal: {
-              Service: 'lambda.amazonaws.com',
-            },
+  Template.fromJSON(searchableStack).hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'lambda.amazonaws.com',
           },
-        ],
-        Version: '2012-10-17',
-      },
-    });
-  Template.fromJSON(searchableStack)
-    .hasResourceProperties('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Statement: [
-          {
-            Action: 'sts:AssumeRole',
-            Effect: 'Allow',
-            Principal: {
-              Service: 'appsync.amazonaws.com',
-            },
-          },
-        ],
-        Version: '2012-10-17',
-      },
-    });
-  Template.fromJSON(searchableStack)
-    .hasResourceProperties('AWS::Elasticsearch::Domain', {
-      DomainName: Match.anyValue(),
-      EBSOptions: Match.anyValue(),
-      ElasticsearchClusterConfig: Match.anyValue(),
-      ElasticsearchVersion: '7.10',
-    });
-  Template.fromJSON(searchableStack)
-    .hasResource('AWS::Elasticsearch::Domain', {
-      UpdateReplacePolicy: 'Delete',
-      DeletionPolicy: 'Delete',
-    });
-  Template.fromJSON(searchableStack)
-    .hasResourceProperties('AWS::AppSync::DataSource', {
-      ApiId: {
-        Ref: Match.anyValue(),
-      },
-      Name: 'OpenSearchDataSource',
-      Type: 'AMAZON_ELASTICSEARCH',
-      ElasticsearchConfig: {
-        AwsRegion: {
-          'Fn::Select': [
-            3,
-            {
-              'Fn::Split': [
-                ':',
-                {
-                  'Fn::GetAtt': ['OpenSearchDomain', 'Arn'],
-                },
-              ],
-            },
-          ],
         },
-        Endpoint: {
-          'Fn::Join': [
-            '',
-            [
-              'https://',
+      ],
+      Version: '2012-10-17',
+    },
+  });
+  Template.fromJSON(searchableStack).hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'appsync.amazonaws.com',
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+  Template.fromJSON(searchableStack).hasResourceProperties('AWS::Elasticsearch::Domain', {
+    DomainName: Match.anyValue(),
+    EBSOptions: Match.anyValue(),
+    ElasticsearchClusterConfig: Match.anyValue(),
+    ElasticsearchVersion: '7.10',
+  });
+  Template.fromJSON(searchableStack).hasResource('AWS::Elasticsearch::Domain', {
+    UpdateReplacePolicy: 'Delete',
+    DeletionPolicy: 'Delete',
+  });
+  Template.fromJSON(searchableStack).hasResourceProperties('AWS::AppSync::DataSource', {
+    ApiId: {
+      Ref: Match.anyValue(),
+    },
+    Name: 'OpenSearchDataSource',
+    Type: 'AMAZON_ELASTICSEARCH',
+    ElasticsearchConfig: {
+      AwsRegion: {
+        'Fn::Select': [
+          3,
+          {
+            'Fn::Split': [
+              ':',
               {
-                'Fn::GetAtt': ['OpenSearchDomain', 'DomainEndpoint'],
+                'Fn::GetAtt': ['OpenSearchDomain', 'Arn'],
               },
             ],
-          ],
-        },
-      },
-      ServiceRoleArn: {
-        'Fn::GetAtt': ['OpenSearchAccessIAMRole6A1D9CC5', 'Arn'],
-      },
-    });
-  Template.fromJSON(searchableStack).resourceCountIs('AWS::AppSync::Resolver', 2);
-  Template.fromJSON(searchableStack)
-    .hasResourceProperties('AWS::AppSync::Resolver', {
-      ApiId: {
-        Ref: Match.anyValue(),
-      },
-      FieldName: Match.anyValue(),
-      TypeName: 'Query',
-      Kind: 'PIPELINE',
-      PipelineConfig: {
-        Functions: [
-          {
-            Ref: Match.anyValue(),
-          },
-          {
-            'Fn::GetAtt': [Match.anyValue(), 'FunctionId'],
           },
         ],
       },
-      RequestMappingTemplate: {
+      Endpoint: {
         'Fn::Join': [
           '',
           [
-            Match.anyValue(),
-            {
-              Ref: Match.anyValue(),
-            },
-            '"))\n$util.qr($ctx.stash.put("connectionAttributes", {}))\n$util.qr($ctx.stash.put("endpoint", "https://',
+            'https://',
             {
               'Fn::GetAtt': ['OpenSearchDomain', 'DomainEndpoint'],
             },
-            '"))\n$util.toJson({})',
           ],
         ],
       },
-      ResponseMappingTemplate: '$util.toJson($ctx.prev.result)',
-    });
-  Template.fromJSON(searchableStack)
-    .hasResourceProperties('AWS::AppSync::FunctionConfiguration', {
-      ApiId: {
-        Ref: Match.anyValue(),
-      },
-      DataSourceName: {
-        'Fn::GetAtt': [Match.anyValue(), 'Name'],
-      },
-      FunctionVersion: '2018-05-29',
-      Name: Match.anyValue(),
-      RequestMappingTemplateS3Location: {
-        'Fn::Join': [
-          '',
-          [
-            's3://',
-            {
-              Ref: Match.anyValue(),
-            },
-            '/',
-            {
-              Ref: Match.anyValue(),
-            },
-            Match.anyValue(),
-          ],
+    },
+    ServiceRoleArn: {
+      'Fn::GetAtt': ['OpenSearchAccessIAMRole6A1D9CC5', 'Arn'],
+    },
+  });
+  Template.fromJSON(searchableStack).resourceCountIs('AWS::AppSync::Resolver', 2);
+  Template.fromJSON(searchableStack).hasResourceProperties('AWS::AppSync::Resolver', {
+    ApiId: {
+      Ref: Match.anyValue(),
+    },
+    FieldName: Match.anyValue(),
+    TypeName: 'Query',
+    Kind: 'PIPELINE',
+    PipelineConfig: {
+      Functions: [
+        {
+          Ref: Match.anyValue(),
+        },
+        {
+          'Fn::GetAtt': [Match.anyValue(), 'FunctionId'],
+        },
+      ],
+    },
+    RequestMappingTemplate: {
+      'Fn::Join': [
+        '',
+        [
+          Match.anyValue(),
+          {
+            Ref: Match.anyValue(),
+          },
+          '"))\n$util.qr($ctx.stash.put("connectionAttributes", {}))\n$util.qr($ctx.stash.put("endpoint", "https://',
+          {
+            'Fn::GetAtt': ['OpenSearchDomain', 'DomainEndpoint'],
+          },
+          '"))\n$util.toJson({})',
         ],
-      },
-      ResponseMappingTemplateS3Location: {
-        'Fn::Join': [
-          '',
-          [
-            's3://',
-            {
-              Ref: Match.anyValue(),
-            },
-            '/',
-            {
-              Ref: Match.anyValue(),
-            },
-            Match.anyValue(),
-          ],
+      ],
+    },
+    ResponseMappingTemplate: '$util.toJson($ctx.prev.result)',
+  });
+  Template.fromJSON(searchableStack).hasResourceProperties('AWS::AppSync::FunctionConfiguration', {
+    ApiId: {
+      Ref: Match.anyValue(),
+    },
+    DataSourceName: {
+      'Fn::GetAtt': [Match.anyValue(), 'Name'],
+    },
+    FunctionVersion: '2018-05-29',
+    Name: Match.anyValue(),
+    RequestMappingTemplateS3Location: {
+      'Fn::Join': [
+        '',
+        [
+          's3://',
+          {
+            Ref: Match.anyValue(),
+          },
+          '/',
+          {
+            Ref: Match.anyValue(),
+          },
+          Match.anyValue(),
         ],
-      },
-    });
+      ],
+    },
+    ResponseMappingTemplateS3Location: {
+      'Fn::Join': [
+        '',
+        [
+          's3://',
+          {
+            Ref: Match.anyValue(),
+          },
+          '/',
+          {
+            Ref: Match.anyValue(),
+          },
+          Match.anyValue(),
+        ],
+      ],
+    },
+  });
 });
 
 test('SearchableModelTransformer enum type generates StringFilterInput', () => {
@@ -389,5 +380,43 @@ describe('SearchableModelTransformer with datastore enabled and sort field defin
 describe('Searchable Instance Type Validation Test', () => {
   it('Should include search instances', () => {
     expect(ALLOWABLE_SEARCHABLE_INSTANCE_TYPES).toContain('t3.medium.search');
+  });
+});
+
+describe('nodeToNodeEncryption transformParameter', () => {
+  const schema = /* GraphQL */ `
+    type Todo @model @searchable {
+      content: String!
+    }
+  `;
+  it('synthesizes w/ nodeToNodeEncryption disabled by default', () => {
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    });
+    const out = transformer.transform(schema);
+    expect(out).toBeDefined();
+    const searchableStack = out.stacks.SearchableStack;
+    Template.fromJSON(searchableStack).hasResourceProperties('AWS::Elasticsearch::Domain', {
+      NodeToNodeEncryptionOptions: {
+        Enabled: false,
+      },
+    });
+  });
+
+  it('synthesizes w/ nodeToNodeEncryption enabled if specified', () => {
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+      transformParameters: {
+        enableSearchNodeToNodeEncryption: true,
+      },
+    });
+    const out = transformer.transform(schema);
+    expect(out).toBeDefined();
+    const searchableStack = out.stacks.SearchableStack;
+    Template.fromJSON(searchableStack).hasResourceProperties('AWS::Elasticsearch::Domain', {
+      NodeToNodeEncryptionOptions: {
+        Enabled: true,
+      },
+    });
   });
 });

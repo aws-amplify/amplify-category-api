@@ -1,9 +1,5 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import {
-  notifySecurityEnhancement,
-  notifyFieldAuthSecurityChange,
-  notifyListQuerySecurityChange,
-} from './auth-notifications';
+import { notifySecurityEnhancement, notifyFieldAuthSecurityChange, notifyListQuerySecurityChange } from './auth-notifications';
 
 /**
  * Extracted data force update logic from the `push` command in CLI.

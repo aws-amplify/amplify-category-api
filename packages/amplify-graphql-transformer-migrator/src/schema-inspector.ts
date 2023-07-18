@@ -31,7 +31,7 @@ export function detectOverriddenResolvers(apiName: string): boolean {
   if (!fs.existsSync(resolversDir)) {
     return false;
   }
-  const vtlFiles = fs.readdirSync(resolversDir).filter(file => file.endsWith('.vtl'));
+  const vtlFiles = fs.readdirSync(resolversDir).filter((file) => file.endsWith('.vtl'));
   return !!vtlFiles.length;
 }
 
@@ -51,9 +51,9 @@ export async function detectPassthroughDirectives(schema: string): Promise<Array
 export function detectDeprecatedConnectionUsage(schema: string): boolean {
   const directives = collectDirectives(schema);
   const deprecatedConnectionArgs = ['name', 'keyField', 'sortField', 'limit'];
-  const connectionDirectives = directives.filter(directive => directive.name.value === 'connection');
+  const connectionDirectives = directives.filter((directive) => directive.name.value === 'connection');
   for (const connDir of connectionDirectives) {
-    if (connDir.arguments?.some(arg => deprecatedConnectionArgs.includes(arg.name.value))) {
+    if (connDir.arguments?.some((arg) => deprecatedConnectionArgs.includes(arg.name.value))) {
       return true;
     }
   }
@@ -61,12 +61,13 @@ export function detectDeprecatedConnectionUsage(schema: string): boolean {
 }
 
 export function authRuleUsesQueriesOrMutations(schema: string): boolean {
-  const authDirectives = collectDirectives(schema).filter(directive => directive.name.value === 'auth');
+  const authDirectives = collectDirectives(schema).filter((directive) => directive.name.value === 'auth');
 
   for (const authDir of authDirectives) {
     const rulesArg =
-      authDir.arguments?.filter(arg => arg.name.value === 'rules' && arg.value.kind === 'ListValue').map((arg: any) => arg.value.values) ??
-      [];
+      authDir.arguments
+        ?.filter((arg) => arg.name.value === 'rules' && arg.value.kind === 'ListValue')
+        .map((arg: any) => arg.value.values) ?? [];
 
     for (const rules of rulesArg) {
       for (const rule of rules) {

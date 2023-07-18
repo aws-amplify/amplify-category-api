@@ -20,7 +20,5 @@
   "commandAliases": {
     "configure": "update"
   },
-  "eventHandlers": [
-    "InternalOnlyPostEnvRemove"
-  ]
+  "eventHandlers": ["InternalOnlyPostEnvRemove"]
 }

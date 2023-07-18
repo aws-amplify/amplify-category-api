@@ -49,9 +49,10 @@ export const generateRDSSchema = async (
 
   const models = await adapter.getModels();
   adapter.cleanup();
-  models.forEach(m => schema.addModel(m));
+  models.forEach((m) => schema.addModel(m));
 
-  const schemaString = await constructRDSGlobalAmplifyInput(context, databaseConfig, pathToSchemaFile) + os.EOL + os.EOL + generateGraphQLSchema(schema);
+  const schemaString =
+    (await constructRDSGlobalAmplifyInput(context, databaseConfig, pathToSchemaFile)) + os.EOL + os.EOL + generateGraphQLSchema(schema);
   return schemaString;
 };
 

@@ -55,7 +55,6 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly transformParameters: TransformParameters;
   public _api?: GraphQLAPIProvider;
   public readonly authConfig: AppSyncAuthConfiguration;
-  public readonly sandboxModeEnabled: boolean;
   private resolverConfig: ResolverConfig | undefined;
   public readonly modelToDatasourceMap: Map<string, DatasourceType>;
   public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
@@ -70,7 +69,6 @@ export class TransformerContext implements TransformerContextProvider {
     stackMapping: Record<string, string>,
     authConfig: AppSyncAuthConfiguration,
     transformParameters: TransformParameters,
-    sandboxModeEnabled?: boolean,
     resolverConfig?: ResolverConfig,
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
     sqlLambdaVpcConfig?: VpcConfig,
@@ -83,7 +81,6 @@ export class TransformerContext implements TransformerContextProvider {
     const stackManager = new StackManager(app, stackMapping);
     this.stackManager = stackManager;
     this.authConfig = authConfig;
-    this.sandboxModeEnabled = sandboxModeEnabled ?? false;
     this.resourceHelper = new TransformerResourceHelper(stackManager);
     this.transformParameters = transformParameters;
     this.resolverConfig = resolverConfig;

@@ -26,64 +26,72 @@ export const getExistingConnectionSecrets = async (context: $TSContext, secretsK
 
     const ssmClient = await SSMClient.getInstance(context);
     const secrets = await ssmClient.getSecrets(
-      secretNames.map( secret => getParameterStoreSecretPath(secret, secretsKey, apiName, environmentName, appId))
+      secretNames.map((secret) => getParameterStoreSecretPath(secret, secretsKey, apiName, environmentName, appId)),
     );
 
-    if(_.isEmpty(secrets)) {
+    if (_.isEmpty(secrets)) {
       return;
     }
 
-    const existingSecrets = secretNames.map( secretName => {
-      const secretPath = getParameterStoreSecretPath(secretName, secretsKey, apiName, environmentName, appId);
-      const matchingSecret = secrets?.find( secret => (secret?.secretName === secretPath) && !_.isEmpty(secret?.secretValue) );
-      const result = {};
-      if(matchingSecret) {
-        result[secretName] = matchingSecret.secretValue;
-      }
-      return result;
-    }).reduce((result, current) => {
-      if(!_.isEmpty(current)) {
-        return Object.assign(result, current);
-      }
-    }, {});
+    const existingSecrets = secretNames
+      .map((secretName) => {
+        const secretPath = getParameterStoreSecretPath(secretName, secretsKey, apiName, environmentName, appId);
+        const matchingSecret = secrets?.find((secret) => secret?.secretName === secretPath && !_.isEmpty(secret?.secretValue));
+        const result = {};
+        if (matchingSecret) {
+          result[secretName] = matchingSecret.secretValue;
+        }
+        return result;
+      })
+      .reduce((result, current) => {
+        if (!_.isEmpty(current)) {
+          return Object.assign(result, current);
+        }
+      }, {});
 
-    if(existingSecrets && (Object.keys(existingSecrets)?.length === secretNames?.length)) {
+    if (existingSecrets && Object.keys(existingSecrets)?.length === secretNames?.length) {
       return existingSecrets;
     }
-  }
-  catch (error) {
+  } catch (error) {
     return;
   }
 };
 
-export const getExistingConnectionSecretNames = async (context: $TSContext, apiName: string, secretsKey: string, envName?: string): Promise<RDSConnectionSecrets|undefined> => {
+export const getExistingConnectionSecretNames = async (
+  context: $TSContext,
+  apiName: string,
+  secretsKey: string,
+  envName?: string,
+): Promise<RDSConnectionSecrets | undefined> => {
   try {
     const environmentName = envName || stateManager.getCurrentEnvName();
     const appId = stateManager.getAppID();
     const ssmClient = await SSMClient.getInstance(context);
     const secrets = await ssmClient.getSecrets(
-      secretNames.map( secret => getParameterStoreSecretPath(secret, secretsKey, apiName, environmentName, appId))
+      secretNames.map((secret) => getParameterStoreSecretPath(secret, secretsKey, apiName, environmentName, appId)),
     );
 
-    if(_.isEmpty(secrets)) {
+    if (_.isEmpty(secrets)) {
       return;
     }
 
-    const existingSecrets = secretNames.map((secretName) => {
-      const secretPath = getParameterStoreSecretPath(secretName, secretsKey, apiName, environmentName, appId);
-      const matchingSecret = secrets?.find((secret) => (secret?.secretName === secretPath) && !_.isEmpty(secret?.secretValue));
-      const result = {};
-      if (matchingSecret) {
-        result[secretName] = secretPath;
-      }
-      return result;
-    }).reduce((result, current) => {
-      if (!_.isEmpty(current)) {
-        return Object.assign(result, current);
-      }
-    }, {});
+    const existingSecrets = secretNames
+      .map((secretName) => {
+        const secretPath = getParameterStoreSecretPath(secretName, secretsKey, apiName, environmentName, appId);
+        const matchingSecret = secrets?.find((secret) => secret?.secretName === secretPath && !_.isEmpty(secret?.secretValue));
+        const result = {};
+        if (matchingSecret) {
+          result[secretName] = secretPath;
+        }
+        return result;
+      })
+      .reduce((result, current) => {
+        if (!_.isEmpty(current)) {
+          return Object.assign(result, current);
+        }
+      }, {});
 
-    if (existingSecrets && (Object.keys(existingSecrets)?.length === secretNames?.length)) {
+    if (existingSecrets && Object.keys(existingSecrets)?.length === secretNames?.length) {
       return existingSecrets;
     }
   } catch (error) {
@@ -96,7 +104,7 @@ export const storeConnectionSecrets = async (context: $TSContext, secrets: RDSCo
   const appId = stateManager.getAppID();
 
   const ssmClient = await SSMClient.getInstance(context);
-  secretNames.map( async (secret) => {
+  secretNames.map(async (secret) => {
     const parameterPath = getParameterStoreSecretPath(secret, secretsKey, apiName, environmentName, appId);
     await ssmClient.setSecret(parameterPath, secrets[secret]?.toString());
   });
@@ -148,11 +156,9 @@ export const getDatabaseName = async (context: $TSContext, apiName: string, secr
   const appId = stateManager.getAppID();
   const ssmClient = await SSMClient.getInstance(context);
 
-  const secrets = await ssmClient.getSecrets(
-    [getParameterStoreSecretPath('database', secretsKey, apiName, environmentName, appId)]
-  );
+  const secrets = await ssmClient.getSecrets([getParameterStoreSecretPath('database', secretsKey, apiName, environmentName, appId)]);
 
-  if(_.isEmpty(secrets)) {
+  if (_.isEmpty(secrets)) {
     return;
   }
 

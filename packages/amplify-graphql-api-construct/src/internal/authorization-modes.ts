@@ -9,11 +9,11 @@ import {
 } from '../types';
 
 type AuthorizationConfigMode =
-  | IAMAuthorizationConfig & { type: 'AWS_IAM' }
-  | UserPoolAuthorizationConfig & { type: 'AMAZON_COGNITO_USER_POOLS' }
-  | OIDCAuthorizationConfig & { type: 'OPENID_CONNECT' }
-  | ApiKeyAuthorizationConfig & { type: 'API_KEY' }
-  | LambdaAuthorizationConfig & { type: 'AWS_LAMBDA' };
+  | (IAMAuthorizationConfig & { type: 'AWS_IAM' })
+  | (UserPoolAuthorizationConfig & { type: 'AMAZON_COGNITO_USER_POOLS' })
+  | (OIDCAuthorizationConfig & { type: 'OPENID_CONNECT' })
+  | (ApiKeyAuthorizationConfig & { type: 'API_KEY' })
+  | (LambdaAuthorizationConfig & { type: 'AWS_LAMBDA' });
 
 /**
  * Converts a single auth mode config into the amplify-internal representation.
@@ -22,38 +22,44 @@ type AuthorizationConfigMode =
 const convertAuthModeToAuthProvider = (authMode: AuthorizationConfigMode): AppSyncAuthConfigurationEntry => {
   const authenticationType = authMode.type;
   switch (authMode.type) {
-    case 'API_KEY': return {
-      authenticationType,
-      apiKeyConfig: {
-        description: authMode.description,
-        apiKeyExpirationDays: authMode.expires.toDays(),
-      },
-    };
-    case 'AWS_IAM': return { authenticationType };
-    case 'AMAZON_COGNITO_USER_POOLS': return {
-      authenticationType,
-      userPoolConfig: {
-        userPoolId: authMode.userPool.userPoolId,
-      },
-    };
-    case 'OPENID_CONNECT': return {
-      authenticationType,
-      openIDConnectConfig: {
-        name: authMode.oidcProviderName,
-        issuerUrl: authMode.oidcIssuerUrl,
-        clientId: authMode.clientId,
-        iatTTL: authMode.tokenExpiryFromIssue.toSeconds(),
-        authTTL: authMode.tokenExpiryFromAuth.toSeconds(),
-      },
-    };
-    case 'AWS_LAMBDA': return {
-      authenticationType,
-      lambdaAuthorizerConfig: {
-        lambdaFunction: authMode.function.functionName,
-        ttlSeconds: authMode.ttl.toSeconds(),
-      },
-    };
-    default: throw new Error(`Unexpected AuthMode type ${authenticationType} encountered.`);
+    case 'API_KEY':
+      return {
+        authenticationType,
+        apiKeyConfig: {
+          description: authMode.description,
+          apiKeyExpirationDays: authMode.expires.toDays(),
+        },
+      };
+    case 'AWS_IAM':
+      return { authenticationType };
+    case 'AMAZON_COGNITO_USER_POOLS':
+      return {
+        authenticationType,
+        userPoolConfig: {
+          userPoolId: authMode.userPool.userPoolId,
+        },
+      };
+    case 'OPENID_CONNECT':
+      return {
+        authenticationType,
+        openIDConnectConfig: {
+          name: authMode.oidcProviderName,
+          issuerUrl: authMode.oidcIssuerUrl,
+          clientId: authMode.clientId,
+          iatTTL: authMode.tokenExpiryFromIssue.toSeconds(),
+          authTTL: authMode.tokenExpiryFromAuth.toSeconds(),
+        },
+      };
+    case 'AWS_LAMBDA':
+      return {
+        authenticationType,
+        lambdaAuthorizerConfig: {
+          lambdaFunction: authMode.function.functionName,
+          ttlSeconds: authMode.ttl.toSeconds(),
+        },
+      };
+    default:
+      throw new Error(`Unexpected AuthMode type ${authenticationType} encountered.`);
   }
 };
 
@@ -128,6 +134,6 @@ export const convertAuthorizationModesToTransformerAuthConfig = (authConfig: Aut
  */
 const getAuthParameters = (authConfig: AuthorizationConfig): Record<string, any> => ({
   ...(authConfig.userPoolConfig?.userPool ? { AuthCognitoUserPoolId: authConfig.userPoolConfig.userPool.userPoolId } : {}),
-  ...(authConfig?.iamConfig?.authRole ? { authRoleName: authConfig.iamConfig.authRole.roleName } : {}),
-  ...(authConfig?.iamConfig?.unauthRole ? { unauthRoleName: authConfig.iamConfig.unauthRole.roleName } : {}),
+  ...(authConfig?.iamConfig?.authenticatedUserRole ? { authRoleName: authConfig.iamConfig.authenticatedUserRole.roleName } : {}),
+  ...(authConfig?.iamConfig?.unauthenticatedUserRole ? { unauthRoleName: authConfig.iamConfig.unauthenticatedUserRole.roleName } : {}),
 });

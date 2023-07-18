@@ -9,10 +9,7 @@ import {
   generateLambdaDeleteRequestTemplate,
   generateLambdaListRequestTemplate,
 } from '../rds';
-import {
-  generateSubscriptionRequestTemplate,
-  generateSubscriptionResponseTemplate,
-} from '../dynamodb';
+import { generateSubscriptionRequestTemplate, generateSubscriptionResponseTemplate } from '../dynamodb';
 import {
   ModelCreateInitSlotConfig,
   ModelCreateRequestConfig,

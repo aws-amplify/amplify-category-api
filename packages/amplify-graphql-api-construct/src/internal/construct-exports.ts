@@ -1,13 +1,6 @@
 import { Template } from '@aws-amplify/graphql-transformer-interfaces';
 import { CfnResource } from 'aws-cdk-lib';
-import {
-  CfnGraphQLApi,
-  CfnGraphQLSchema,
-  CfnApiKey,
-  CfnResolver,
-  CfnFunctionConfiguration,
-  CfnDataSource,
-} from 'aws-cdk-lib/aws-appsync';
+import { CfnGraphQLApi, CfnGraphQLSchema, CfnApiKey, CfnResolver, CfnFunctionConfiguration, CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnRole, CfnPolicy } from 'aws-cdk-lib/aws-iam';
 import { CfnInclude } from 'aws-cdk-lib/cloudformation-include';
@@ -49,15 +42,9 @@ export const generateConstructExports = (
   const cfnPolicyResourceMapping: StackResourceMapping[] = [];
   const additionalResourceMapping: StackResourceMapping[] = [];
 
-  const unreportedResourceTypes = new Set([
-    'AWS::CloudFormation::Stack',
-  ]);
+  const unreportedResourceTypes = new Set(['AWS::CloudFormation::Stack']);
 
-  const singletonReferenceTypes = new Set([
-    'AWS::AppSync::GraphQLApi',
-    'AWS::AppSync::GraphQLSchema',
-    'AWS::AppSync::ApiKey',
-  ]);
+  const singletonReferenceTypes = new Set(['AWS::AppSync::GraphQLApi', 'AWS::AppSync::GraphQLSchema', 'AWS::AppSync::ApiKey']);
 
   const collectionResourceMapping: { [key: string]: any } = {
     'AWS::AppSync::DataSource': cfnDataSourceResourceMapping,
@@ -85,10 +72,10 @@ export const generateConstructExports = (
     additionalResourceMapping.push(resourceMapping);
   };
 
-  Object.entries((rootStack.Resources ?? {})).forEach(([id, definition]) => addResourceToMappedResources(null, id, definition));
+  Object.entries(rootStack.Resources ?? {}).forEach(([id, definition]) => addResourceToMappedResources(null, id, definition));
 
   Object.entries(stacks).forEach(([stackName, nestedStack]) => {
-    Object.entries((nestedStack.Resources ?? {})).forEach(([id, definition]) => addResourceToMappedResources(stackName, id, definition));
+    Object.entries(nestedStack.Resources ?? {}).forEach(([id, definition]) => addResourceToMappedResources(stackName, id, definition));
   });
 
   const apiResourceMapping = singletonReferenceMapping['AWS::AppSync::GraphQLApi'];
@@ -100,27 +87,23 @@ export const generateConstructExports = (
   }
 
   const getL1Resource = <T extends CfnResource>({ stackName, id }: StackResourceMapping): T => {
-    const referencedStack = stackName
-      ? transformerStack.getNestedStack(stackName).includedTemplate
-      : transformerStack;
+    const referencedStack = stackName ? transformerStack.getNestedStack(stackName).includedTemplate : transformerStack;
     return referencedStack.getResource(id) as T;
   };
 
-  // eslint-disable-next-line arrow-body-style
-  const getL1Resources = <T extends CfnResource>(mappings: StackResourceMapping[]): Record<string, T> => {
-    return Object.fromEntries(mappings.map((stackResourceMapping) => [stackResourceMapping.id, getL1Resource<T>(stackResourceMapping)]));
-  };
+  const getL1Resources = <T extends CfnResource>(mappings: StackResourceMapping[]): Record<string, T> =>
+    Object.fromEntries(mappings.map((stackResourceMapping) => [stackResourceMapping.id, getL1Resource<T>(stackResourceMapping)]));
 
   return {
-    api: getL1Resource<CfnGraphQLApi>(apiResourceMapping),
-    schema: getL1Resource<CfnGraphQLSchema>(schemaResourceMapping),
-    apiKey: apiKeyResourceMapping && <CfnApiKey>getL1Resource(apiKeyResourceMapping),
-    resolvers: getL1Resources<CfnResolver>(cfnResolverResourceMapping),
-    appsyncFunctions: getL1Resources<CfnFunctionConfiguration>(cfnAppSyncFunctionResourceMapping),
-    dataSources: getL1Resources<CfnDataSource>(cfnDataSourceResourceMapping),
-    tables: getL1Resources<CfnTable>(cfnTableResourceMapping),
-    roles: getL1Resources<CfnRole>(cfnRoleResourceMapping),
-    policies: getL1Resources<CfnPolicy>(cfnPolicyResourceMapping),
-    additionalResources: getL1Resources(additionalResourceMapping),
+    cfnGraphqlApi: getL1Resource<CfnGraphQLApi>(apiResourceMapping),
+    cfnGraphqlSchema: getL1Resource<CfnGraphQLSchema>(schemaResourceMapping),
+    cfnApiKey: apiKeyResourceMapping && <CfnApiKey>getL1Resource(apiKeyResourceMapping),
+    cfnResolvers: getL1Resources<CfnResolver>(cfnResolverResourceMapping),
+    cfnFunctionConfigurations: getL1Resources<CfnFunctionConfiguration>(cfnAppSyncFunctionResourceMapping),
+    cfnDataSources: getL1Resources<CfnDataSource>(cfnDataSourceResourceMapping),
+    cfnTables: getL1Resources<CfnTable>(cfnTableResourceMapping),
+    cfnRoles: getL1Resources<CfnRole>(cfnRoleResourceMapping),
+    cfnPolicies: getL1Resources<CfnPolicy>(cfnPolicyResourceMapping),
+    additionalCfnResources: getL1Resources(additionalResourceMapping),
   };
 };

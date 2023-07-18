@@ -200,14 +200,14 @@ export async function updateResource(context: $TSContext, category: string, serv
 
 async function describeApiResourcesBySubCategory(context: $TSContext) {
   const { allResources } = await context.amplify.getResourceStatus();
-  const resources = allResources.filter(resource => resource.category === category && resource.mobileHubMigrated !== true);
+  const resources = allResources.filter((resource) => resource.category === category && resource.mobileHubMigrated !== true);
 
   let hasAPIGatewayContainerResource = false;
   let hasAPIGatewayLambdaResource = false;
   let hasGraphQLAppSyncResource = false;
   let hasGraphqlContainerResource = false;
 
-  resources.forEach(resource => {
+  resources.forEach((resource) => {
     hasAPIGatewayContainerResource =
       hasAPIGatewayContainerResource || (resource.service === 'ElasticContainer' && resource.apiType === API_TYPE.REST);
 
@@ -241,7 +241,7 @@ async function updateContainerResource(context: $TSContext, category: string, se
 
   const updateWalkthroughPromise: Promise<ServiceConfiguration> = updateWalkthrough(context, apiType);
 
-  updateContainer(updateWalkthroughPromise, context, category);
+  await updateContainer(updateWalkthroughPromise, context, category);
 }
 
 async function updateNonContainerResource(context: $TSContext, service: string) {

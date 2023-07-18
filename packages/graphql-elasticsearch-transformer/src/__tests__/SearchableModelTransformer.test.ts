@@ -10,8 +10,6 @@ const featureFlags = {
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
- 
-
 };
 
 test('Test SearchableModelTransformer validation happy case', () => {

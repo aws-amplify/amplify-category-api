@@ -11,7 +11,7 @@ export type AcmTest = {
     name: string;
     validations: {
       roleType: string;
-      operations: Record<ModelOperation, string[]>
+      operations: Record<ModelOperation, string[]>;
     }[];
   }[];
 };

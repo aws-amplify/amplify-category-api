@@ -9,9 +9,9 @@ jest.mock('../../../../../provider-utils/awscloudformation/utils/rds-resources/s
   SSMClient: {
     getInstance: jest.fn().mockResolvedValue({
       getSecrets: jest.fn(),
-      setSecret: jest.fn()
-    })
-  }
+      setSecret: jest.fn(),
+    }),
+  },
 }));
 
 jest.mock('@aws-amplify/amplify-cli-core', () => {
@@ -20,7 +20,7 @@ jest.mock('@aws-amplify/amplify-cli-core', () => {
     ...original,
     stateManager: {
       getAppID: jest.fn().mockReturnValue('fake-app-id'),
-      getCurrentEnvName: jest.fn().mockReturnValue('test')
+      getCurrentEnvName: jest.fn().mockReturnValue('test'),
     },
   };
 });

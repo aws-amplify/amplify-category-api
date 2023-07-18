@@ -43,7 +43,7 @@ const MANDATORY_PARAMS = ['accessKeyId', 'secretAccessKey', 'region'];
 
 export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> {
   const s = { ...defaultSettings, ...settings };
-  const missingParam = MANDATORY_PARAMS.filter(p => !Object.keys(s).includes(p));
+  const missingParam = MANDATORY_PARAMS.filter((p) => !Object.keys(s).includes(p));
   if (missingParam.length) {
     throw new Error(`mandatory params ${missingParam.join(' ')} are missing`);
   }

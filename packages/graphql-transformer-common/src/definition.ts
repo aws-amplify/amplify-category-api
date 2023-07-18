@@ -114,7 +114,7 @@ export function isScalarOrEnum(type: TypeNode, enums: EnumTypeDefinitionNode[]) 
 
 export function isEnum(type: TypeNode, document: DocumentNode) {
   const baseType = getBaseType(type);
-  return document.definitions.find(def => {
+  return document.definitions.find((def) => {
     return def.kind === Kind.ENUM_TYPE_DEFINITION && def.name.value === baseType;
   });
 }
@@ -144,7 +144,7 @@ export function isNonNullType(type: TypeNode): boolean {
 }
 
 export function getDirectiveArgument(directive: DirectiveNode, arg: string, dflt?: any) {
-  const argument = directive.arguments.find(a => a.name.value === arg);
+  const argument = directive.arguments.find((a) => a.name.value === arg);
   return argument ? valueFromASTUntyped(argument.value) : dflt;
 }
 
@@ -222,7 +222,7 @@ export function extensionWithDirectives(object: ObjectTypeExtensionNode, directi
     const newDirectives = [];
 
     for (const directive of directives) {
-      if (!object.directives.find(d => d.name.value === directive.name.value)) {
+      if (!object.directives.find((d) => d.name.value === directive.name.value)) {
         newDirectives.push(directive);
       }
     }
@@ -243,7 +243,7 @@ export function extendFieldWithDirectives(field: FieldDefinitionNode, directives
     const newDirectives = [];
 
     for (const directive of directives) {
-      if (!field.directives.find(d => d.name.value === directive.name.value)) {
+      if (!field.directives.find((d) => d.name.value === directive.name.value)) {
         newDirectives.push(directive);
       }
     }
@@ -348,7 +348,7 @@ export function makeValueNode(value: any): ValueNode {
   } else if (Array.isArray(value)) {
     return {
       kind: Kind.LIST,
-      values: value.map(v => makeValueNode(v)),
+      values: value.map((v) => makeValueNode(v)),
     };
   } else if (typeof value === 'object') {
     return {

@@ -1,21 +1,10 @@
 /**
  * ProjectOptions Type Definition
  */
-import {
-  AppSyncAuthConfiguration,
-  Template,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthConfiguration, Template } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  OverrideConfig,
-  ResolverConfig,
-  TransformerProjectConfig,
-  UserDefinedSlot,
-} from '@aws-amplify/graphql-transformer-core';
-import {
-  DiffRule,
-  ProjectRule,
-} from 'graphql-transformer-core';
+import { OverrideConfig, ResolverConfig, TransformerProjectConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
+import { DiffRule, ProjectRule } from 'graphql-transformer-core';
 import { TransformerFactoryArgs } from '@aws-amplify/graphql-transformer';
 
 /**
@@ -36,12 +25,9 @@ export type TransformerProjectOptions = {
   dryRun?: boolean;
   authConfig?: AppSyncAuthConfiguration;
   stacks: Record<string, Template>;
-  sandboxModeEnabled?: boolean;
   sanityCheckRules: SanityCheckRules;
   overrideConfig: OverrideConfig;
   userDefinedSlots: Record<string, UserDefinedSlot[]>;
-  legacyApiKeyEnabled?: boolean;
-  disableResolverDeduping?: boolean;
   stackMapping: Record<string, string>;
   transformParameters: TransformParameters;
 };
