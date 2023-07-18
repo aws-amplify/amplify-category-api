@@ -15,6 +15,7 @@
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "test": "jest",
+    "test-watch": "jest --watch",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "keywords": [

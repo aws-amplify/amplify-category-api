@@ -1,0 +1,12 @@
+version: 0.2
+env:
+  shell: powershell.exe
+phases:
+  build:
+    commands:
+      - yarn run production-build
+      - yarn build-tests
+
+artifacts:
+  files:
+    - 'shared-scripts.sh'

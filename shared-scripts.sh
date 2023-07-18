@@ -240,6 +240,17 @@ function _runMigrationV10Test {
     /root/.amplify/bin/amplify -v
     retry yarn run migration_v10.5.1 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
 }
+function _runCanaryTest {
+    echo RUN Canary Test
+    loadCacheFromBuildJob
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    _installCLIFromLocalRegistry  
+    _loadTestAccountCredentials
+    _setShell
+    cd client-test-apps/js/api-model-relationship-app
+    yarn
+    retry yarn test:ci
+}
 function _scanArtifacts {
     if ! yarn ts-node codebuild_specs/scripts/scan_artifacts.ts; then
         echo "Cleaning the repository"
@@ -387,38 +398,6 @@ function runGraphQLE2eTest {
     fi
 }
 
-# Accepts the value as an input parameter, i.e. 1 for success, 0 for failure.
-# Only executes if IS_CANARY env variable is set
-function emitCanarySuccessMetric {
-    if [[ "$CIRCLE_BRANCH" = main ]]; then
-        USE_PARENT_ACCOUNT=1
-        setAwsAccountCredentials
-        aws cloudwatch \
-            put-metric-data \
-            --metric-name CanarySuccessRate \
-            --namespace amplify-category-api-e2e-tests \
-            --unit Count \
-            --value 1 \
-            --dimensions branch=main \
-            --region us-west-2
-    fi
-}
-
-function emitCanaryFailureMetric {
-    if [[ "$CIRCLE_BRANCH" = main ]]; then
-        USE_PARENT_ACCOUNT=1
-        setAwsAccountCredentials
-        aws cloudwatch \
-            put-metric-data \
-            --metric-name CanarySuccessRate \
-            --namespace amplify-category-api-e2e-tests \
-            --unit Count \
-            --value 0 \
-            --dimensions branch=main \
-            --region us-west-2
-    fi
-}
-
 function _deploy {
   echo "Deploy"
   loadCacheFromBuildJob
@@ -426,4 +405,16 @@ function _deploy {
   PUBLISH_TOKEN=$(echo "$NPM_PUBLISH_TOKEN" | jq -r '.token')
   echo "//registry.npmjs.org/:_authToken=$PUBLISH_TOKEN" > ~/.npmrc
   ./codebuild_specs/scripts/publish.sh
+}
+
+# Accepts the value as an input parameter, i.e. 1 for success, 0 for failure.
+function _emitCanaryMetric {
+  aws cloudwatch \
+    put-metric-data \
+    --metric-name CanarySuccessRate \
+    --namespace amplify-category-api-e2e-tests \
+    --unit Count \
+    --value $CODEBUILD_BUILD_SUCCEEDING \
+    --dimensions branch=main \
+    --region us-west-2
 }
