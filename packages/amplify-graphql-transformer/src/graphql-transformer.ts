@@ -119,8 +119,6 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
     userDefinedSlots,
     resolverConfig,
     overrideConfig,
-    legacyApiKeyEnabled,
-    disableResolverDeduping,
     sqlLambdaVpcConfig,
     rdsLayerMapping,
   });
