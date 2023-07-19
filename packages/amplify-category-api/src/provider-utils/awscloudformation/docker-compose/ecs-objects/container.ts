@@ -10,18 +10,29 @@ class Container implements IContainerDefinitions {
   };
 
   build: string | IBuildConfig | undefined;
+
   name: string;
+
   portMappings: PortMappings;
+
   logConfiguration = this.defaultLogConfiguration;
 
   command?: string[];
+
   entrypoint?: string[];
+
   env_file?: string[];
+
   environment?: Record<string, string>;
+
   image?: string;
+
   healthcheck?: ContainerHealthCheck;
+
   working_dir?: string;
+
   user?: string;
+
   secrets: Set<string>;
 
   constructor(

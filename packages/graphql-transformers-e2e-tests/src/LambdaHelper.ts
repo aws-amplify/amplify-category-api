@@ -7,6 +7,7 @@ const REGION = resolveTestRegion();
 
 export class LambdaHelper {
   client: Lambda;
+
   constructor(region: string = REGION, credentials?: Credentials) {
     this.client = new Lambda({
       region,

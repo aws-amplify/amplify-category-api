@@ -260,6 +260,7 @@ const generateSearchableInputs = (ctx: TransformerSchemaVisitStepContextProvider
 
 export class SearchableModelTransformer extends TransformerPluginBase {
   searchableObjectTypeDefinitions: { node: ObjectTypeDefinitionNode; fieldName: string }[];
+
   searchableObjectNames: string[];
 
   constructor() {

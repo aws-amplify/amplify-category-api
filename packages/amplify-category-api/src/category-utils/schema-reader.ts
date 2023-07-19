@@ -15,7 +15,9 @@ import { contextUtil } from './context-util';
  */
 export class SchemaReader {
   private schemaPath: string;
+
   private schemaDocument: DocumentNode;
+
   private preProcessedSchemaDocument: DocumentNode;
 
   getSchemaPath = async (resourceDir: string): Promise<string> => {

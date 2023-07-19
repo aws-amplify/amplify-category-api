@@ -8,7 +8,9 @@ export type GetArgumentsOptions = {
 
 export class ArgumentWrapper {
   public readonly name: NameNode;
+
   public readonly value: ValueNode;
+
   constructor(argument: ArgumentNode) {
     this.name = argument.name;
     this.value = argument.value;
@@ -25,8 +27,11 @@ export class ArgumentWrapper {
 
 export class DirectiveWrapper {
   private arguments: ArgumentWrapper[] = [];
+
   private name: NameNode;
+
   private location?: Location;
+
   constructor(node: DirectiveNode) {
     this.name = node.name;
     this.arguments = (node.arguments ?? []).map((arg) => new ArgumentWrapper(arg));

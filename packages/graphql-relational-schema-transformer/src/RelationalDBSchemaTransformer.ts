@@ -21,13 +21,20 @@ import { IRelationalDBReader } from './IRelationalDBReader';
  */
 export class TableContext {
   tableTypeDefinition: ObjectTypeDefinitionNode;
+
   createTypeDefinition: InputObjectTypeDefinitionNode;
+
   updateTypeDefinition: InputObjectTypeDefinitionNode;
+
   // Table primary key metadata, to help properly key queries and mutations.
   tableKeyField: string;
+
   tableKeyFieldType: string;
+
   stringFieldList: string[];
+
   intFieldList: string[];
+
   constructor(
     typeDefinition: ObjectTypeDefinitionNode,
     createDefinition: InputObjectTypeDefinitionNode,
@@ -56,14 +63,23 @@ export class TableContext {
  */
 export class TemplateContext {
   schemaDoc: DocumentNode;
+
   typePrimaryKeyMap: Map<string, string>;
+
   typePrimaryKeyTypeMap: Map<string, string>;
+
   stringFieldMap: Map<string, string[]>;
+
   intFieldMap: Map<string, string[]>;
+
   secretStoreArn: string;
+
   rdsClusterIdentifier: string;
+
   databaseName: string;
+
   databaseSchema: string;
+
   region: string;
 
   constructor(
@@ -83,7 +99,9 @@ export class TemplateContext {
 
 export class RelationalDBSchemaTransformer {
   dbReader: IRelationalDBReader;
+
   database: string;
+
   improvePluralization: boolean;
 
   constructor(dbReader: IRelationalDBReader, database: string, improvePluralization: boolean) {

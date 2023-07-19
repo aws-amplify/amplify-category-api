@@ -127,6 +127,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
       }
     }
   }
+
   public getTypeDefinitionsOfKind(kind: string) {
     const typeDefs: TypeDefinitionNode[] = [];
     for (const key of Object.keys(this.nodeMap)) {
@@ -141,9 +142,11 @@ export class TransformerOutput implements TransformerContextOutputProvider {
   public putSchema(obj: SchemaDefinitionNode) {
     this.nodeMap.__schema = obj;
   }
+
   public getSchema(): SchemaDefinitionNode {
     return this.nodeMap.__schema as SchemaDefinitionNode;
   }
+
   public getQueryTypeName(): string | undefined {
     const schemaNode = this.getSchema();
     const queryTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'query');
@@ -151,6 +154,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
       return queryTypeName.type.name.value;
     }
   }
+
   public getQuery(): ObjectTypeDefinitionNode | undefined {
     const queryTypeName = this.getQueryTypeName();
     if (queryTypeName) {
@@ -198,6 +202,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     }
     this.nodeMap[obj.name.value] = obj;
   }
+
   public putType(obj: TypeDefinitionNode) {
     this.nodeMap[obj.name.value] = obj;
   }
@@ -609,6 +614,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
       },
     };
   }
+
   private static makeSchema(operationTypes: OperationTypeDefinitionNode[]): SchemaDefinitionNode {
     return {
       kind: Kind.SCHEMA_DEFINITION,

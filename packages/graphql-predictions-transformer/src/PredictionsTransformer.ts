@@ -22,6 +22,7 @@ export type PredictionsConfig = {
 
 export class PredictionsTransformer extends Transformer {
   resources: ResourceFactory;
+
   predictionsConfig: PredictionsConfig;
 
   constructor(predictionsConfig?: PredictionsConfig) {

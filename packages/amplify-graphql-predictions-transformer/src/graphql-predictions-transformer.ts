@@ -73,6 +73,7 @@ export type PredictionsConfig = {
 
 export class PredictionsTransformer extends TransformerPluginBase {
   private directiveList: PredictionsDirectiveConfiguration[] = [];
+
   private bucketName: string;
 
   constructor(predictionsConfig?: PredictionsConfig) {

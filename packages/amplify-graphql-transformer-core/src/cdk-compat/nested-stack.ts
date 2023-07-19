@@ -21,13 +21,19 @@ export type TransformerNestedStackProps = NestedStackProps & {
 };
 export class TransformerNestedStack extends TransformerRootStack {
   public readonly templateFile: string;
+
   public readonly nestedStackResource?: CfnResource;
 
   private readonly parameters: { [name: string]: string };
+
   private readonly resource: CfnStack;
+
   private readonly _contextualStackId: string;
+
   private readonly _contextualStackName: string;
+
   private _templateUrl?: string;
+
   private _rootStack: Stack;
 
   constructor(scope: Construct, id: string, props: TransformerNestedStackProps = {}) {

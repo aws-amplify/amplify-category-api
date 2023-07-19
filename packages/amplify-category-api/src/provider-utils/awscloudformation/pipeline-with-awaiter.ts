@@ -92,6 +92,7 @@ class PipelineAwaiter extends Construct {
 
 export class PipelineWithAwaiter extends Construct {
   pipelineName: string;
+
   constructor(
     scope: Construct,
     id: string,
@@ -251,11 +252,17 @@ export class PipelineWithAwaiter extends Construct {
                 clusterName: service.cluster,
                 env: {},
               } as ecs.ICluster;
+
               serviceArn = cdk.Fn.ref(service.attrServiceArn);
+
               serviceName = service.serviceName;
+
               stack = cdk.Stack.of(this);
+
               env = {} as any;
+
               node = service.node;
+
               public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
                 // TODO: This is added for CDK upgrade. Modify the behavior if required.
               }

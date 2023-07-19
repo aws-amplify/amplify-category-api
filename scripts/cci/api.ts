@@ -10,8 +10,11 @@ export type CircleCIClientDefaults = {
 };
 export class CircleCIAPIClient {
   private headers;
+
   private options: CircleCIClientDefaults;
+
   private slug: string;
+
   constructor(token: string, options: CircleCIClientDefaults) {
     this.headers = {
       'Circle-Token': token,
@@ -32,6 +35,7 @@ export class CircleCIAPIClient {
     });
     return result.data;
   };
+
   /**
    * Returns a job's details.
    *
@@ -45,6 +49,7 @@ export class CircleCIAPIClient {
     });
     return result.data;
   };
+
   /**
    * Returns a single job's artifacts.
    *
@@ -58,6 +63,7 @@ export class CircleCIAPIClient {
     });
     return result.data;
   };
+
   /**
    * Get test metadata for a single job
    *
@@ -71,6 +77,7 @@ export class CircleCIAPIClient {
     });
     return result.data;
   };
+
   /**
    * Get summary metrics for a project workflow's jobs.
    *

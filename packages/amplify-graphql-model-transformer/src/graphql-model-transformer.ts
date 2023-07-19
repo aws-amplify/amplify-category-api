@@ -118,16 +118,24 @@ const DDB_DATASOURCE_TYPE = { dbType: DDB_DB_TYPE, provisioned: true };
  */
 export class ModelTransformer extends TransformerModelBase implements TransformerModelProvider {
   private options: ModelTransformerOptions;
+
   private datasourceMap: Record<string, DataSourceProvider> = {};
+
   private ddbTableMap: Record<string, ITable> = {};
+
   private resolverMap: Record<string, TransformerResolverProvider> = {};
+
   private typesWithModelDirective: Set<string> = new Set();
+
   private resourceGeneratorMap: Map<string, ModelResourceGenerator> = new Map<string, ModelResourceGenerator>();
+
   private modelToDatasourceMap: Map<string, DatasourceType> = new Map<string, DatasourceType>();
+
   /**
    * A Map to hold the directive configuration
    */
   private modelDirectiveConfig: Map<string, ModelDirectiveConfiguration> = new Map();
+
   constructor(options: ModelTransformerOptions = {}) {
     super('amplify-model-transformer', directiveDefinition);
     this.options = this.getOptions(options);

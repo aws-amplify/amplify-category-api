@@ -44,19 +44,31 @@ export class TransformerContextMetadata implements TransformerContextMetadataPro
 
 export class TransformerContext implements TransformerContextProvider {
   public readonly output: TransformerContextOutputProvider;
+
   public readonly resolvers: ResolverManager;
+
   public readonly dataSources: TransformerDataSourceManagerProvider;
+
   public readonly providerRegistry: TransformerContextProviderRegistry;
+
   public readonly stackManager: StackManagerProvider;
+
   public readonly resourceHelper: TransformerResourceHelper;
+
   public readonly transformParameters: TransformParameters;
+
   public _api?: GraphQLAPIProvider;
+
   public readonly authConfig: AppSyncAuthConfiguration;
+
   private resolverConfig: ResolverConfig | undefined;
+
   public readonly modelToDatasourceMap: Map<string, DatasourceType>;
+
   public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
 
   public metadata: TransformerContextMetadata;
+
   constructor(
     app: App,
     public readonly inputDocument: DocumentNode,
@@ -91,6 +103,7 @@ export class TransformerContext implements TransformerContextProvider {
     this._api = api;
     this.resourceHelper.bind(api);
   }
+
   public get api(): GraphQLAPIProvider {
     if (!this._api) {
       throw new Error('API is not initialized till generateResolver step');

@@ -58,22 +58,39 @@ export type ContainersStackProps = Readonly<{
 }>;
 export abstract class ContainersStack extends cdk.Stack {
   protected readonly vpcId: string;
+
   private readonly vpcCidrBlock: string;
+
   protected readonly subnets: ReadonlyArray<string>;
+
   private readonly clusterName: string;
+
   private readonly zipPath: string;
+
   private readonly cloudMapNamespaceId: string;
+
   protected readonly vpcLinkId: string;
+
   private readonly pipelineWithAwaiter: PipelineWithAwaiter;
+
   protected readonly cloudMapService: cloudmap.CfnService | undefined;
+
   protected readonly ecsService: ecs.CfnService;
+
   protected readonly isAuthCondition: cdk.CfnCondition;
+
   protected readonly appClientId: string | undefined;
+
   protected readonly userPoolId: string | undefined;
+
   protected readonly ecsServiceSecurityGroup: ec2.CfnSecurityGroup;
+
   protected readonly parameters: ReadonlyMap<string, cdk.CfnParameter>;
+
   protected readonly envName: string;
+
   protected readonly deploymentBucketName: string;
+
   protected readonly awaiterS3Key: string;
 
   constructor(scope: Construct, id: string, private readonly props: ContainersStackProps) {

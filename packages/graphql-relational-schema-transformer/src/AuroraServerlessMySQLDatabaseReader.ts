@@ -18,9 +18,13 @@ import { IRelationalDBReader } from './IRelationalDBReader';
  */
 export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader {
   auroraClient: AuroraDataAPIClient;
+
   dbRegion: string;
+
   awsSecretStoreArn: string;
+
   dbClusterOrInstanceArn: string;
+
   database: string;
 
   setAuroraClient(auroraClient: AuroraDataAPIClient) {
