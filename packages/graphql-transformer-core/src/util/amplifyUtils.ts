@@ -190,13 +190,13 @@ async function ensureMissingStackMappings(config: ProjectOptions) {
       const lastDeployedStack = JSON.parse(copyOfCloudBackend.build[config.rootStackFileName]);
       const resourceIdsInStack = Object.keys(lastDeployedStack.Resources);
       for (const resourceId of resourceIdsInStack) {
-        if (stackMapping[resourceId] && 'root' !== stackMapping[resourceId]) {
+        if (stackMapping[resourceId] && stackMapping[resourceId] !== 'root') {
           missingStackMappings[resourceId] = 'root';
         }
       }
       const outputIdsInStack = Object.keys(lastDeployedStack.Outputs || {});
       for (const outputId of outputIdsInStack) {
-        if (stackMapping[outputId] && 'root' !== stackMapping[outputId]) {
+        if (stackMapping[outputId] && stackMapping[outputId] !== 'root') {
           missingStackMappings[outputId] = 'root';
         }
       }
