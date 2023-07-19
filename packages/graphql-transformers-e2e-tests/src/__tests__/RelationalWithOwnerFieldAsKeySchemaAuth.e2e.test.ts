@@ -238,7 +238,7 @@ test('user2 should not access user1 restricted fields when query including relat
   expect(getResponse.data.getUser.birth).toEqual('2023-04-07');
   expect(getResponse.data.getUser.displayName).toEqual('d1');
   expect(getResponse.data.getUser.userID).toEqual(USERNAME1);
-  //Run query with user2 login and use user1 as parameter
+  // Run query with user2 login and use user1 as parameter
   await expect(
     USER_POOL_AUTH_CLIENT_2.query<any>({
       query: getUserQueryWithCreditCard,

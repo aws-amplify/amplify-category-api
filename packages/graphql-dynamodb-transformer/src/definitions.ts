@@ -213,7 +213,7 @@ export function getFieldsOptionalNonNullableField(fields: InputValueDefinitionNo
   return obj.fields
     .filter(
       (r) =>
-        fieldMap.has(r.name.value) && //field exists in the model
+        fieldMap.has(r.name.value) && // field exists in the model
         isNonNullType(r.type) && // field was non null type in model
         fieldMap.get(r.name.value).type.kind !== Kind.NON_NULL_TYPE, // field is not nullable type in update mutation model
     )

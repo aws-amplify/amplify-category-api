@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Post @model {
   id: ID!
@@ -15,7 +15,7 @@ enum Category {
 
 ##model/genreates
 `;
-//mutations
+// mutations
 export const mutation1 = `
 mutation CreatePost(
     $input: CreatePostInput!
@@ -93,7 +93,7 @@ export const expected_result_mutation2 = {
   },
 };
 
-//queries
+// queries
 export const query = `
 query GetPost{
     getPost(id: "1") {

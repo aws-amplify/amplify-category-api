@@ -25,7 +25,7 @@ class Container implements IContainerDefinitions {
   secrets: Set<string>;
 
   constructor(
-    build: string | IBuildConfig | undefined, //Really for CodeBuild. Do we need in this class?
+    build: string | IBuildConfig | undefined, // Really for CodeBuild. Do we need in this class?
     name: string,
     portMappings: PortMappings,
     command?: string | string[] | undefined,

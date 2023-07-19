@@ -124,7 +124,7 @@ describe('api migration update test', () => {
     expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
     expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
 
-    //update and push with codebase
+    // update and push with codebase
     await updateAPIWithResolutionStrategyWithModels(projRoot, { testingWithLatestCodebase: true });
 
     transformConfig = getTransformConfig(projRoot, name);

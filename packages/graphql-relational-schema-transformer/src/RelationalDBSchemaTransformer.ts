@@ -130,7 +130,7 @@ export class RelationalDBSchemaTransformer {
         // Generate the 'connection' type for each table type definition
         // TODO: Determine if Connection is needed as Data API doesn't provide pagination
         // TODO: As we add different db sources, we should conditionally do this even if we don't for Aurora serverless.
-        //types.push(this.getConnectionType(tableName))
+        // types.push(this.getConnectionType(tableName))
         // Generate the create operation input for each table type definition
         types.push(type.createTypeDefinition);
         // Generate the default shape for the table's structure

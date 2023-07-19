@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Post @model {
   id: ID!

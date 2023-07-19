@@ -1,4 +1,4 @@
-//schema
+// schema
 const env = '${env}';
 export const schema = `
 #change: inserted "<function-name>" placeholder, the test will replace it with the actual function name
@@ -6,14 +6,14 @@ type Query {
   echo(msg: String): String @function(name: "<function-name>-${env}")
 }
 `;
-//functions
+// functions
 export const func = `
 //#error: context.done is deprecated, use async and return
 exports.handler = async event => {
   return event.arguments.msg;
 };
 `;
-//queries
+// queries
 export const query = `
 #extra
 query Echo {
