@@ -1,11 +1,11 @@
 /* eslint-disable spellcheck/spell-checker, camelcase, jsdoc/require-jsdoc, @typescript-eslint/no-explicit-any */
+import path from 'path';
 import { CircleCI, GitType, CircleCIOptions } from 'circleci-api';
 import { config } from 'dotenv';
 import yargs from 'yargs';
 import * as aws from 'aws-sdk';
 import _ from 'lodash';
 import fs from 'fs-extra';
-import path from 'path';
 import { deleteS3Bucket, sleep } from 'amplify-category-api-e2e-core';
 
 // Ensure to update scripts/split-e2e-tests.ts is also updated this gets updated

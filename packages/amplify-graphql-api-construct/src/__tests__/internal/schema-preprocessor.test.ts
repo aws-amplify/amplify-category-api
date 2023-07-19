@@ -2,8 +2,8 @@ import * as path from 'path';
 import * as os from 'os';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 import * as fs from 'fs-extra';
-import { preprocessSchema } from '../../internal/schema-preprocessors';
 import { AmplifyApiSchemaPreprocessor } from '../../types';
+import { preprocessSchema } from '../../internal/schema-preprocessors';
 
 const SCHEMA = 'this is a schema, i promise';
 const TEST_PATH = path.join(os.tmpdir(), 'preprocessGraphqlSchemaTests');

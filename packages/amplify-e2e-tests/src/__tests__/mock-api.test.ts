@@ -1,3 +1,5 @@
+import { existsSync } from 'fs';
+import path from 'path';
 import {
   addApiWithBlankSchema,
   addCustomResolver,
@@ -8,10 +10,8 @@ import {
   updateApiSchema,
   cancelAmplifyMockApi,
 } from 'amplify-category-api-e2e-core';
-import { existsSync } from 'fs';
-import path from 'path';
-import { addCodegen } from '../codegen/add';
 import * as fs from 'fs-extra';
+import { addCodegen } from '../codegen/add';
 
 describe('amplify mock api (GraphQL)', () => {
   let projRoot: string;

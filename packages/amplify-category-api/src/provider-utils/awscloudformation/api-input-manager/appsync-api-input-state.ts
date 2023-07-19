@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {
   $TSContext,
   AmplifyCategories,
@@ -7,7 +8,6 @@ import {
   pathManager,
 } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import { AppSyncCLIInputs } from '../service-walkthrough-types/appsync-user-input-types';
 
 export class AppsyncApiInputState {

@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import { AuthProvider, AuthStrategy, AuthTransformer, ModelOperation } from '@aws-amplify/graphql-auth-transformer';
 import { JWTToken } from '@aws-amplify/amplify-appsync-simulator';
 import { Auth } from 'aws-amplify';
@@ -5,7 +6,6 @@ import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { CognitoIdentity, S3 } from 'aws-sdk';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import * as crypto from 'crypto';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import gql from 'graphql-tag';
 import { plurality, ResourceConstants } from 'graphql-transformer-common';

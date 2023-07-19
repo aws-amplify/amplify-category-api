@@ -16,6 +16,7 @@ import {
   UnionTypeDefinitionNode,
 } from 'graphql';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
+import { SyncResourceIDs } from 'graphql-transformer-common';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from './errors';
 import { TransformerContext } from './TransformerContext';
 import { Transformer } from './Transformer';
@@ -23,7 +24,6 @@ import { ITransformer } from './ITransformer';
 import { validateModelSchema } from './validation';
 import { TransformFormatter } from './TransformFormatter';
 import { TransformConfig, SyncUtils } from './util';
-import { SyncResourceIDs } from 'graphql-transformer-common';
 import { FeatureFlagProvider, NoopFeatureFlagProvider } from './FeatureFlags';
 
 function isFunction(obj: any) {

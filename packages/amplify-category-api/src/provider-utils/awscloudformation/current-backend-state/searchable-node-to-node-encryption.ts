@@ -1,5 +1,5 @@
-import { ResourceConstants } from 'graphql-transformer-common';
 import * as path from 'path';
+import { ResourceConstants } from 'graphql-transformer-common';
 import * as fs from 'fs-extra';
 import { TransformConfig } from '@aws-amplify/graphql-transformer-core/lib';
 import { TRANSFORM_CONFIG_FILE_NAME } from 'graphql-transformer-core';

@@ -1,10 +1,10 @@
-import { JSONUtilities, pathManager, $TSContext } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
+import { JSONUtilities, pathManager, $TSContext } from '@aws-amplify/amplify-cli-core';
 import detect from 'detect-port';
 import { lambdaFunctionHandler } from '../../CFNParser/resource-processors/lambda';
-import { populateCfnParams } from './populate-cfn-params';
 import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';
 import { MOCK_API_PORT } from '../../api/api';
+import { populateCfnParams } from './populate-cfn-params';
 import { populateLambdaMockEnvVars } from './populate-lambda-mock-env-vars';
 
 const CFN_DEFAULT_CONDITIONS = {

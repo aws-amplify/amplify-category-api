@@ -1,3 +1,4 @@
+import path from 'path';
 import {
   addApiWithoutSchema,
   amplifyOverrideApi,
@@ -14,7 +15,6 @@ import {
   updateApiSchema,
 } from 'amplify-category-api-e2e-core';
 import * as fs from 'fs-extra';
-import path from 'path';
 
 describe('amplify add api (GraphQL)', () => {
   let projRoot: string;

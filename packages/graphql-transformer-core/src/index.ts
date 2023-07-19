@@ -1,12 +1,12 @@
 import './polyfills/Object.assign';
 import { print } from 'graphql';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContext, MappingParameters } from './TransformerContext';
 import { Transformer } from './Transformer';
 import { ITransformer } from './ITransformer';
 import { GraphQLTransform } from './GraphQLTransform';
 import { collectDirectiveNames, collectDirectivesByType, collectDirectivesByTypeNames } from './collectDirectives';
 import { stripDirectives } from './stripDirectives';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   buildProject as buildAPIProject,
   uploadDeployment as uploadAPIProject,

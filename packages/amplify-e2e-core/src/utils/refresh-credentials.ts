@@ -1,8 +1,8 @@
-const { execSync } = require('child_process');
 import _ from 'lodash';
 import { writeFileSync, readFileSync } from 'fs-extra';
 import * as ini from 'ini';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
+const { execSync } = require('child_process');
 
 export const refreshCredentials = (): AWSTempCredentials | undefined => {
   // Early return if CI environment is not Codebuild

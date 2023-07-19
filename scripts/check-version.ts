@@ -1,6 +1,6 @@
+import * as path from 'path';
 import execa = require('execa');
 import versionCommand = require('@lerna/version');
-import * as path from 'path';
 
 const main = async () => {
   const errors: string[] = [];

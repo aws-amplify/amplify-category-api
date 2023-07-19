@@ -1,9 +1,9 @@
+import * as path from 'path';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
-import * as path from 'path';
 import fs from 'fs-extra';
-import { importAppSyncAPIWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/import-appsync-api-walkthrough';
 import { RDS_SCHEMA_FILE_NAME } from '@aws-amplify/graphql-transformer-core';
+import { importAppSyncAPIWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/import-appsync-api-walkthrough';
 import { getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { writeSchemaFile, generateRDSSchema } from '../../provider-utils/awscloudformation/utils/graphql-schema-utils';
 

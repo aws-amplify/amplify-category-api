@@ -1,11 +1,11 @@
-import { AmplifyStorageSimulator } from 'amplify-storage-simulator';
 import * as path from 'path';
+import { AmplifyStorageSimulator } from 'amplify-storage-simulator';
 import * as fs from 'fs-extra';
+import { getInvoker } from '@aws-amplify/amplify-category-function';
+import { $TSContext, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { getAmplifyMeta, getMockDataDirectory } from '../utils';
 import { ConfigOverrideManager } from '../utils/config-override';
-import { getInvoker } from '@aws-amplify/amplify-category-function';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
-import { $TSContext, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 const port = 20005; // port for S3
 

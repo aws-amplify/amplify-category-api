@@ -9,13 +9,13 @@ import {
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
+import { S3, CognitoIdentityServiceProvider as CognitoClient } from 'aws-sdk';
+import { default as moment } from 'moment';
+import { CloudFormationClient } from '../CloudFormationClient';
 import { GraphQLClient } from '../GraphQLClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
-import { S3, CognitoIdentityServiceProvider as CognitoClient } from 'aws-sdk';
-import { default as moment } from 'moment';
 import {
   addUserToGroup,
   authenticateUser,

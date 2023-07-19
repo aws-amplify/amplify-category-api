@@ -1,3 +1,4 @@
+import os from 'os';
 import {
   $TSContext,
   AmplifyCategories,
@@ -12,7 +13,6 @@ import {
 import { byValues, printer, prompter } from '@aws-amplify/amplify-prompts';
 import inquirer from 'inquirer';
 import _ from 'lodash';
-import os from 'os';
 import { v4 as uuid } from 'uuid';
 import { ADMIN_QUERIES_NAME } from '../../../category-constants';
 import { ApigwInputState } from '../apigw-input-state';

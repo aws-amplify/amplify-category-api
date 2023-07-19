@@ -1,7 +1,7 @@
 import { TransformerContextProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Expression, printBlock, compoundExpression, set, ref, list, qref, methodCall, str, obj } from 'graphql-mapping-template';
-import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../../types';
 import _ from 'lodash';
+import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../../types';
 import { addIndexToResolverSlot, getResolverObject, validateSortDirectionInput } from '../resolvers';
 import { IndexVTLGenerator } from './vtl-generator';
 

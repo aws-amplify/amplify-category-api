@@ -1,6 +1,6 @@
+import * as crypto from 'crypto';
 import { ISynthesisSession, Stack, LegacyStackSynthesizer, FileAssetSource, FileAssetLocation, CfnParameter } from 'aws-cdk-lib';
 import { Template } from '@aws-amplify/graphql-transformer-interfaces';
-import * as crypto from 'crypto';
 import { TransformerRootStack } from './root-stack';
 
 /**

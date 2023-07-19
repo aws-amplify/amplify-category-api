@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {
   $TSContext,
   exitOnNextTick,
@@ -11,7 +12,6 @@ import chalk from 'chalk';
 import { DataApiParams } from 'graphql-relational-schema-transformer';
 import ora from 'ora';
 import { rootStackFileName } from '@aws-amplify/amplify-provider-awscloudformation';
-import * as path from 'path';
 
 const spinner = ora('');
 const category = 'api';

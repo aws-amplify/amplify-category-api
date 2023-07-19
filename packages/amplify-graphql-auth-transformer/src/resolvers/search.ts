@@ -21,17 +21,6 @@ import {
   ifElse,
 } from 'graphql-mapping-template';
 import {
-  getIdentityClaimExp,
-  emptyPayload,
-  setHasAuthExpression,
-  iamCheck,
-  iamAdminRoleCheckExpression,
-  generateOwnerClaimExpression,
-  generateOwnerClaimListExpression,
-  generateOwnerMultiClaimExpression,
-  generateInvalidClaimsCondition,
-} from './helpers';
-import {
   COGNITO_AUTH_TYPE,
   OIDC_AUTH_TYPE,
   LAMBDA_AUTH_TYPE,
@@ -43,6 +32,17 @@ import {
   API_KEY_AUTH_TYPE,
   IAM_AUTH_TYPE,
 } from '../utils';
+import {
+  getIdentityClaimExp,
+  emptyPayload,
+  setHasAuthExpression,
+  iamCheck,
+  iamAdminRoleCheckExpression,
+  generateOwnerClaimExpression,
+  generateOwnerClaimListExpression,
+  generateOwnerMultiClaimExpression,
+  generateInvalidClaimsCondition,
+} from './helpers';
 
 const allowedAggFieldsList = 'allowedAggFields';
 const aggFieldsFilterMap = 'aggFieldsFilterMap';

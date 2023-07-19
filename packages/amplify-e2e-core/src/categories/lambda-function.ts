@@ -1,9 +1,9 @@
-import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath, getProjectMeta, getBackendAmplifyMeta, invokeFunction } from '..';
-import { Lambda } from 'aws-sdk';
-import { singleSelect, multiSelect, moveUp, moveDown } from '../utils/selectors';
-import * as glob from 'glob';
 import * as path from 'path';
+import { Lambda } from 'aws-sdk';
+import * as glob from 'glob';
 import _ from 'lodash';
+import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath, getProjectMeta, getBackendAmplifyMeta, invokeFunction } from '..';
+import { singleSelect, multiSelect, moveUp, moveDown } from '../utils/selectors';
 import { loadFeatureFlags } from '../utils/feature-flags';
 type FunctionActions = 'create' | 'update';
 

@@ -1,5 +1,6 @@
 // TODO: Split this file into seperated query, mutations and subscriptions files.
 
+import path from 'path';
 import {
   str,
   Expression,
@@ -26,7 +27,6 @@ import { Construct } from 'constructs';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import path from 'path';
 import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 
 export type OPERATIONS = 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'SYNC';

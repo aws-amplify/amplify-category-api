@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
 import {
   MappingTemplate,
@@ -60,10 +61,9 @@ import {
   ResourceConstants,
   toCamelCase,
 } from 'graphql-transformer-common';
+import _ from 'lodash';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../types';
 import { lookupResolverName } from '../utils';
-import * as path from 'path';
-import _ from 'lodash';
 import { RDSIndexVTLGenerator, DynamoDBIndexVTLGenerator } from './generators';
 
 const API_KEY = 'API Key Authorization';

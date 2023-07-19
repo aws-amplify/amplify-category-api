@@ -1,7 +1,7 @@
-import * as ddbUtils from '../../../utils/dynamo-db/utils';
 import * as AWSMock from 'aws-sdk-mock';
 import * as AWS from 'aws-sdk';
 import { DescribeTableOutput, CreateTableInput, UpdateTableInput, UpdateTableOutput, TableDescription } from 'aws-sdk/clients/dynamodb';
+import * as ddbUtils from '../../../utils/dynamo-db/utils';
 import { waitTillTableStateIsActive } from '../../../utils/dynamo-db/helpers';
 
 jest.mock('../../../utils/dynamo-db/helpers');

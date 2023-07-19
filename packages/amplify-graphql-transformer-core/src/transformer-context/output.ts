@@ -22,9 +22,9 @@ import {
   UnionTypeDefinitionNode,
   UnionTypeExtensionNode,
 } from 'graphql';
+import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { stripDirectives } from '../utils/strip-directives';
 import { DEFAULT_SCHEMA_DEFINITION } from '../utils/defaultSchema';
-import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 const AMPLIFY = 'AMPLIFY';
 

@@ -1,6 +1,6 @@
+import { join } from 'path';
 import * as glob from 'glob';
 import * as fs from 'fs-extra';
-import { join } from 'path';
 import * as yaml from 'js-yaml';
 import { migrationFromV10Tests, migrationFromV5Tests, migrationFromV6Tests } from './split-e2e-test-filters';
 // Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated

@@ -1,6 +1,6 @@
+import * as path from 'path';
 import { $TSContext, AmplifyCategories, AmplifySupportedService } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
-import * as path from 'path';
 
 const subcommand = 'add';
 const category = AmplifyCategories.API;

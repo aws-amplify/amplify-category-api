@@ -3,8 +3,8 @@ import * as fs from 'fs-extra';
 import * as rimraf from 'rimraf';
 import { config } from 'dotenv';
 import execa from 'execa';
-import { getLayerDirectoryName, LayerDirectoryType } from '..';
 import { v4 as uuid } from 'uuid';
+import { getLayerDirectoryName, LayerDirectoryType } from '..';
 
 export * from './add-ci-tags';
 export * from './api';

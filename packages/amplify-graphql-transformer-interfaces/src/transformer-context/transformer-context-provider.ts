@@ -1,10 +1,10 @@
+import { DocumentNode } from 'graphql';
+import { AppSyncAuthConfiguration, GraphQLAPIProvider } from '../graphql-api-provider';
 import { TransformerResolversManagerProvider } from './transformer-resolver-provider';
 import { TransformerDataSourceManagerProvider, DatasourceType } from './transformer-datasource-provider';
 import { TransformerProviderRegistry } from './transformer-provider-registry';
-import { DocumentNode } from 'graphql';
 import { TransformerContextOutputProvider } from './transformer-context-output-provider';
 import { StackManagerProvider } from './stack-manager-provider';
-import { AppSyncAuthConfiguration, GraphQLAPIProvider } from '../graphql-api-provider';
 import { TransformerResourceHelperProvider } from './resource-resource-provider';
 import { TransformParameters } from './transform-parameters';
 

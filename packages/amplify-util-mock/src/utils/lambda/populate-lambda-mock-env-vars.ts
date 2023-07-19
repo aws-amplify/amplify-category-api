@@ -1,6 +1,6 @@
+import * as path from 'path';
 import { $TSContext, AmplifyCategories, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
-import * as path from 'path';
 import * as dotenv from 'dotenv';
 import { loadConfigurationForEnv, resolveAppId } from '@aws-amplify/amplify-provider-awscloudformation';
 import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';

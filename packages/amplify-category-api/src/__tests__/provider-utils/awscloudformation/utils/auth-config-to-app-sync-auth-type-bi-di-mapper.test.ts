@@ -1,13 +1,13 @@
 import {
-  authConfigToAppSyncAuthType,
-  appSyncAuthTypeToAuthConfig,
-} from '../../../../provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
-import {
   AppSyncAPIKeyAuthType,
   AppSyncAWSIAMAuthType,
   AppSyncCognitoUserPoolsAuthType,
   AppSyncOpenIDConnectAuthType,
 } from 'amplify-headless-interface';
+import {
+  authConfigToAppSyncAuthType,
+  appSyncAuthTypeToAuthConfig,
+} from '../../../../provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 
 describe('authConfig to AppSyncAuthType', () => {
   it('maps API_KEY auth correctly', () => {

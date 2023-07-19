@@ -1,3 +1,5 @@
+import path from 'path';
+import { existsSync } from 'fs';
 import {
   amplifyPush,
   amplifyPushUpdate,
@@ -17,8 +19,6 @@ import {
   getAmplifyIOSConfig,
   amplifyPushWithoutCodegen,
 } from 'amplify-category-api-e2e-core';
-import path from 'path';
-import { existsSync } from 'fs';
 
 describe('amplify add api (GraphQL)', () => {
   let projRoot: string;

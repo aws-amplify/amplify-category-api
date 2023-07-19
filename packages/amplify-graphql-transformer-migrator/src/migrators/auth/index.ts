@@ -1,7 +1,7 @@
 import { isModelType } from '../model';
+import { createArgumentNode, createDirectiveNode, createListValueNode } from '../generators';
 import { migrateDefaultAuthMode } from './defaultAuth';
 import { migrateOwnerAuth } from './ownerAuth';
-import { createArgumentNode, createDirectiveNode, createListValueNode } from '../generators';
 
 export function hasAuthDirectives(node: any) {
   return node.directives.some((dir: any) => dir.name.value === 'auth');

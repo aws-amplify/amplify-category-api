@@ -1,21 +1,21 @@
+import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as dynamoEmulator from 'amplify-category-api-dynamodb-simulator';
 import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorConfig } from '@aws-amplify/amplify-appsync-simulator';
 import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-codegen';
-import * as path from 'path';
 import * as chokidar from 'chokidar';
 
+import { getInvoker } from '@aws-amplify/amplify-category-function';
 import { getAmplifyMeta, getMockDataDirectory } from '../utils';
 import { checkJavaVersion } from '../utils/index';
-import { runTransformer } from './run-graphql-transformer';
 import { processAppSyncResources } from '../CFNParser';
-import { ResolverOverrides } from './resolver-overrides';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { configureDDBDataSource, createAndUpdateTable } from '../utils/dynamo-db';
 import { getMockConfig } from '../utils/mock-config-file';
-import { getInvoker } from '@aws-amplify/amplify-category-function';
-import { lambdaArnToConfig } from './lambda-arn-to-config';
 import { timeConstrainedInvoker } from '../func';
+import { lambdaArnToConfig } from './lambda-arn-to-config';
+import { ResolverOverrides } from './resolver-overrides';
+import { runTransformer } from './run-graphql-transformer';
 
 export const GRAPHQL_API_ENDPOINT_OUTPUT = 'GraphQLAPIEndpointOutput';
 export const GRAPHQL_API_KEY_OUTPUT = 'GraphQLAPIKeyOutput';

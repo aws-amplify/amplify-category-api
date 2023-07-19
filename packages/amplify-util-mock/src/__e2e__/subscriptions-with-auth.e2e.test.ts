@@ -1,11 +1,11 @@
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
-import { deploy, launchDDBLocal, terminateDDB } from './utils/index';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import AWS = require('aws-sdk');
 import gql from 'graphql-tag';
+import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
+import { deploy, launchDDBLocal, terminateDDB } from './utils/index';
 import 'isomorphic-fetch';
 import { GraphQLClient } from './utils/graphql-client';
 

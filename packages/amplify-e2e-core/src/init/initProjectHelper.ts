@@ -1,10 +1,10 @@
-import { nspawn as spawn, getCLIPath, getNpxPath, singleSelect, addCITags } from '..';
-import { copySync, moveSync, readFile } from 'fs-extra';
 import * as path from 'path';
+import { EOL } from 'os';
+import { copySync, moveSync, readFile } from 'fs-extra';
+import { v4 as uuid } from 'uuid';
+import { nspawn as spawn, getCLIPath, getNpxPath, singleSelect, addCITags } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
-import { EOL } from 'os';
-import { v4 as uuid } from 'uuid';
 
 const defaultSettings = {
   name: EOL,

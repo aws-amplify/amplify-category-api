@@ -4,13 +4,13 @@ import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
-import { CloudFormationClient } from '../CloudFormationClient';
-import { S3Client } from '../S3Client';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { GraphQLClient } from '../GraphQLClient';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { default as moment } from 'moment';
 import { default as S3 } from 'aws-sdk/clients/s3';
+import { CloudFormationClient } from '../CloudFormationClient';
+import { S3Client } from '../S3Client';
+import { GraphQLClient } from '../GraphQLClient';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import addStringSets from '../stringSetMutations';
 import { resolveTestRegion } from '../testSetup';
 
