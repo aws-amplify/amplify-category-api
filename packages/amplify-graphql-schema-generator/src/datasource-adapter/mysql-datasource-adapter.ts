@@ -1,7 +1,9 @@
 import { knex } from 'knex';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { invokeSchemaInspectorLambda } from "../utils/vpc-helper";
+import { invokeSchemaInspectorLambda } from '../utils/vpc-helper';
 import ora from 'ora';
+import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
+import { DataSourceAdapter } from './datasource-adapter';
 
 const spinner = ora();
 export interface MySQLDataSourceConfig {

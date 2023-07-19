@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { prompter, printer, integer } from '@aws-amplify/amplify-prompts';
 import {
@@ -6,16 +7,19 @@ import {
   ImportedDataSourceType,
   ImportedRDSType,
   ImportedDataSourceConfig,
-  RDSConnectionSecrets,
 } from '@aws-amplify/graphql-transformer-core';
 import { storeConnectionSecrets, getSecretsKey, getExistingConnectionSecrets } from '../utils/rds-resources/database-resources';
 import { parseDatabaseUrl } from '../utils/database-url';
-import * as path from 'path';
 import { RDS_SCHEMA_FILE_NAME } from '@aws-amplify/graphql-transformer-core';
 import { constructDefaultGlobalAmplifyInput } from '../utils/rds-input-utils';
 import { getAPIResourceDir } from '../utils/amplify-meta-utils';
 import { getAppSyncAPINames } from '../utils/amplify-meta-utils';
+import { writeSchemaFile } from '../utils/graphql-schema-utils';
 import { serviceApiInputWalkthrough } from './appSync-walkthrough';
+import { serviceMetadataFor } from '../utils/dynamic-imports';
+import { serviceWalkthroughResultToAddApiRequest } from '../utils/service-walkthrough-result-to-add-api-request';
+import { getCfnApiArtifactHandler } from '../cfn-api-artifact-handler';
+
 
 const service = 'AppSync';
 

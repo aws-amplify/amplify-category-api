@@ -14,9 +14,13 @@ export abstract class DataSourceAdapter {
   public abstract initialize(): Promise<void>;
 
   public abstract cleanup(): void;
+
   public abstract test(): Promise<boolean>;
-  public useVPC: boolean = false;
+
+  public useVPC = false;
+
   public vpcSchemaInspectorLambda: string | undefined = undefined;
+
   public vpcLambdaRegion: string | undefined = undefined;
 
   public async getModels(): Promise<Model[]> {

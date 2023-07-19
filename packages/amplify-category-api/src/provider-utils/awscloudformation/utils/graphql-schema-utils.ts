@@ -2,7 +2,6 @@ import * as os from 'os';
 import { ImportedRDSType, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 import { MySQLDataSourceAdapter, generateGraphQLSchema, Schema, Engine, DataSourceAdapter, MySQLDataSourceConfig, getHostVpc, provisionSchemaInspectorLambda } from '@aws-amplify/graphql-schema-generator';
-import * as os from 'os';
 import { constructRDSGlobalAmplifyInput } from './rds-input-utils';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { $TSContext, AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';

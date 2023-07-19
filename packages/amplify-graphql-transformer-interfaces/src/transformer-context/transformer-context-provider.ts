@@ -1,13 +1,12 @@
 import { DocumentNode } from 'graphql';
-import { AppSyncAuthConfiguration, GraphQLAPIProvider } from '../graphql-api-provider';
-import { TransformerResolversManagerProvider } from './transformer-resolver-provider';
+import { AppSyncAuthConfiguration, GraphQLAPIProvider, RDSLayerMapping, VpcConfig } from '../graphql-api-provider';
 import { TransformerDataSourceManagerProvider, DatasourceType } from './transformer-datasource-provider';
 import { TransformerProviderRegistry } from './transformer-provider-registry';
 import { TransformerContextOutputProvider } from './transformer-context-output-provider';
 import { StackManagerProvider } from './stack-manager-provider';
-import { AppSyncAuthConfiguration, GraphQLAPIProvider, RDSLayerMapping, VpcConfig } from '../graphql-api-provider';
 import { TransformerResourceHelperProvider } from './resource-resource-provider';
 import { TransformParameters } from './transform-parameters';
+import { TransformerResolversManagerProvider } from './transformer-resolver-provider';
 
 export interface TransformerContextMetadataProvider {
   set<T>(key: string, value: T): void;

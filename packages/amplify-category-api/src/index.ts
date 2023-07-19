@@ -26,7 +26,6 @@ import { getAppSyncApiResourceName } from './provider-utils/awscloudformation/ut
 import { getAPIResourceDir } from './provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { configureMultiEnvDBSecrets } from './provider-utils/awscloudformation/utils/rds-resources/multi-env-database-secrets';
 import { deleteConnectionSecrets, getSecretsKey, getDatabaseName, removeVpcSchemaInspectorLambda } from './provider-utils/awscloudformation/utils/rds-resources/database-resources';
-import _ from 'lodash';
 import { AmplifyGraphQLTransformerErrorConverter } from './errors/amplify-error-converter';
 
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';

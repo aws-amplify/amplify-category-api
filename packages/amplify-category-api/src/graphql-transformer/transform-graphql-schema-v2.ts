@@ -1,3 +1,4 @@
+import path from 'path';
 import { RDSConnectionSecrets, MYSQL_DB_TYPE, ImportedRDSType, DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
@@ -11,9 +12,6 @@ import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { sanityCheckProject } from 'graphql-transformer-core';
 import _ from 'lodash';
-import { executeTransform } from '@aws-amplify/graphql-transformer';
-import { getExistingConnectionSecretNames, getSecretsKey } from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
-import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { isAuthModeUpdated } from './auth-mode-compare';
 import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 import { generateTransformerOptions } from './transformer-options-v2';
