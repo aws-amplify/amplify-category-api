@@ -61,10 +61,6 @@ export type TransformerFactoryArgs = {
     customTransformers?: TransformerPluginProvider[];
 };
 
-// Warnings were encountered during analysis:
-//
-// src/graphql-transformer.ts:49:3 - (ae-forgotten-export) The symbol "TransformerSearchConfig" needs to be exported by the entry point index.d.ts
-
 // (No @packageDocumentation comment for this package)
 
 ```

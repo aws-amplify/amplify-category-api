@@ -542,8 +542,6 @@ export interface TransformerContextProvider {
     // (undocumented)
     resourceHelper: TransformerResourceHelperProvider;
     // (undocumented)
-    sandboxModeEnabled: boolean;
-    // (undocumented)
     readonly sqlLambdaVpcConfig?: VpcConfig;
     // (undocumented)
     stackManager: StackManagerProvider;

@@ -234,15 +234,17 @@ export interface GraphQLTransformOptions {
     // (undocumented)
     readonly authConfig?: AppSyncAuthConfiguration;
     // (undocumented)
+    readonly disableResolverDeduping?: boolean;
+    // (undocumented)
     readonly host?: TransformHostProvider;
+    // (undocumented)
+    readonly legacyApiKeyEnabled?: boolean;
     // (undocumented)
     readonly overrideConfig?: OverrideConfig;
     // (undocumented)
     readonly rdsLayerMapping?: RDSLayerMapping;
     // (undocumented)
     readonly resolverConfig?: ResolverConfig;
-    // (undocumented)
-    readonly sandboxModeEnabled?: boolean;
     // (undocumented)
     readonly sqlLambdaVpcConfig?: VpcConfig;
     // Warning: (ae-forgotten-export) The symbol "StackMapping" needs to be exported by the entry point index.d.ts
