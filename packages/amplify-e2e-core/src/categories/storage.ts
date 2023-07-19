@@ -602,7 +602,7 @@ export function updateS3AddTriggerNewFunctionWithFunctionExisting(cwd: string, s
       .sendConfirmYes()
       .wait('Select from the following options')
       .sendKeyDown()
-      .sendCarriageReturn() //Create a new function
+      .sendCarriageReturn() // Create a new function
       .wait('Do you want to edit the local')
       .sendConfirmNo()
       .sendEof()
@@ -620,7 +620,7 @@ export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
 
-    chain.wait('Select from one of the below mentioned services:').sendCarriageReturn(); //select - Content (Images, audio, video, etc.)
+    chain.wait('Select from one of the below mentioned services:').sendCarriageReturn(); // select - Content (Images, audio, video, etc.)
 
     chain
       .wait('Provide a friendly name for your resource that will be used to label this category in the project:')
@@ -634,11 +634,11 @@ export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
 
     chain
       .wait('What kind of access do you want for Authenticated users?')
-      .send(' ') //'create/update'
+      .send(' ') // 'create/update'
       .sendKeyDown()
-      .send(' ') //'read'
+      .send(' ') // 'read'
       .sendKeyDown()
-      .send(' ') //'delete'
+      .send(' ') // 'delete'
       .sendCarriageReturn();
 
     chain.wait('Do you want to add a Lambda Trigger for your S3 Bucket?').sendConfirmNo();
@@ -657,7 +657,7 @@ export function addS3Storage(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
     chain
-      .wait('Select from one of the below mentioned services:') //'Content (Images, audio, video, etc.)'
+      .wait('Select from one of the below mentioned services:') // 'Content (Images, audio, video, etc.)'
       .sendCarriageReturn()
       .wait('Provide a friendly name for your resource that will be used to label this category in the project:')
       .sendCarriageReturn()
@@ -665,12 +665,12 @@ export function addS3Storage(projectDir: string): Promise<void> {
       .sendCarriageReturn()
       .wait('Who should have access:')
       .sendKeyDown()
-      .send(' ') //Auth and guest
+      .send(' ') // Auth and guest
       .sendCarriageReturn()
-      .wait('What kind of access do you want for Authenticated users?') //Auth
+      .wait('What kind of access do you want for Authenticated users?') // Auth
       .sendCtrlA()
       .sendCarriageReturn()
-      .wait('What kind of access do you want for Guest users?') //Guest
+      .wait('What kind of access do you want for Guest users?') // Guest
       .sendCtrlA()
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket?')
@@ -689,15 +689,15 @@ export function addS3StorageWithAuthOnly(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
     chain
-      .wait('Select from one of the below mentioned services:') //'Content (Images, audio, video, etc.)'
+      .wait('Select from one of the below mentioned services:') // 'Content (Images, audio, video, etc.)'
       .sendCarriageReturn()
       .wait('Provide a friendly name for your resource that will be used to label this category in the project:')
       .sendCarriageReturn()
       .wait('Provide bucket name:')
       .sendCarriageReturn()
       .wait('Who should have access:')
-      .sendCarriageReturn() //Auth users only
-      .wait('What kind of access do you want for Authenticated users?') //Auth
+      .sendCarriageReturn() // Auth users only
+      .wait('What kind of access do you want for Authenticated users?') // Auth
       .sendCtrlA()
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket?')
@@ -735,7 +735,7 @@ export function addS3StorageWithSettings(projectDir: string, settings: AddStorag
 
     chain
       .wait('Select from one of the below mentioned services:')
-      .send(' ') //'Content (Images, audio, video, etc.)'
+      .send(' ') // 'Content (Images, audio, video, etc.)'
       .sendCarriageReturn();
 
     chain

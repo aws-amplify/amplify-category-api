@@ -40,7 +40,7 @@ export function updateTriggerHandler(projectDir: string) {
   fs.writeFileSync(triggerHandlerFilePath, func);
 }
 
-//schema
+// schema
 export const schema = `
 #error: two @model on type Post
 #change: removed on @model

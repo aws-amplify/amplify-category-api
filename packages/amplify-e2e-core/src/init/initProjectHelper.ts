@@ -460,7 +460,7 @@ export function amplifyVersion(cwd: string, expectedVersion: string, testingWith
   });
 }
 
-//Can be called only if detects teamprovider change
+// Can be called only if detects teamprovider change
 export function amplifyStatusWithMigrate(cwd: string, expectedStatus: string, testingWithLatestCodebase): Promise<void> {
   return new Promise((resolve, reject) => {
     let regex = new RegExp(`.*${expectedStatus}*`);

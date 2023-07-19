@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 # The simplest case
 type Post @model @auth(rules: [{allow: private}]) {
@@ -7,7 +7,7 @@ type Post @model @auth(rules: [{allow: private}]) {
 }
 
 #private1`;
-//mutations
+// mutations
 export const mutation1 = `
 mutation CreatePost(
     $input: CreatePostInput!

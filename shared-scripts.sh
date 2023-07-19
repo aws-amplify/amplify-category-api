@@ -123,11 +123,16 @@ function _publishToLocalRegistry {
     echo "Publish To Local Registry"
     loadCacheFromBuildJob
     if [ -z "$BRANCH_NAME" ]; then
-      export BRANCH_NAME="$(git symbolic-ref HEAD --short 2>/dev/null)"
-      if [ "$BRANCH_NAME" = "" ] ; then
-        BRANCH_NAME="$(git rev-parse HEAD | xargs git name-rev | cut -d' ' -f2 | sed 's/remotes\/origin\///g')";
+      if [ -z "$CODEBUILD_WEBHOOK_TRIGGER" ]; then
+        export BRANCH_NAME="$(git symbolic-ref HEAD --short 2>/dev/null)"
+        if [ "$BRANCH_NAME" = "" ] ; then
+          BRANCH_NAME="$(git rev-parse HEAD | xargs git name-rev | cut -d' ' -f2 | sed 's/remotes\/origin\///g')";
+        fi
+      elif [[ "$CODEBUILD_WEBHOOK_TRIGGER" == "pr/"* ]]; then
+        export BRANCH_NAME=${CODEBUILD_WEBHOOK_BASE_REF##*/}
       fi
     fi
+    echo $BRANCH_NAME
     git checkout $BRANCH_NAME
   
     # Fetching git tags from upstream
@@ -234,6 +239,17 @@ function _runMigrationV10Test {
     npm i -g @aws-amplify/cli@10.5.1
     /root/.amplify/bin/amplify -v
     retry yarn run migration_v10.5.1 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
+}
+function _runCanaryTest {
+    echo RUN Canary Test
+    loadCacheFromBuildJob
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    _installCLIFromLocalRegistry  
+    _loadTestAccountCredentials
+    _setShell
+    cd client-test-apps/js/api-model-relationship-app
+    yarn
+    retry yarn test:ci
 }
 function _scanArtifacts {
     if ! yarn ts-node codebuild_specs/scripts/scan_artifacts.ts; then
@@ -382,38 +398,6 @@ function runGraphQLE2eTest {
     fi
 }
 
-# Accepts the value as an input parameter, i.e. 1 for success, 0 for failure.
-# Only executes if IS_CANARY env variable is set
-function emitCanarySuccessMetric {
-    if [[ "$CIRCLE_BRANCH" = main ]]; then
-        USE_PARENT_ACCOUNT=1
-        setAwsAccountCredentials
-        aws cloudwatch \
-            put-metric-data \
-            --metric-name CanarySuccessRate \
-            --namespace amplify-category-api-e2e-tests \
-            --unit Count \
-            --value 1 \
-            --dimensions branch=main \
-            --region us-west-2
-    fi
-}
-
-function emitCanaryFailureMetric {
-    if [[ "$CIRCLE_BRANCH" = main ]]; then
-        USE_PARENT_ACCOUNT=1
-        setAwsAccountCredentials
-        aws cloudwatch \
-            put-metric-data \
-            --metric-name CanarySuccessRate \
-            --namespace amplify-category-api-e2e-tests \
-            --unit Count \
-            --value 0 \
-            --dimensions branch=main \
-            --region us-west-2
-    fi
-}
-
 function _deploy {
   echo "Deploy"
   loadCacheFromBuildJob
@@ -421,4 +405,16 @@ function _deploy {
   PUBLISH_TOKEN=$(echo "$NPM_PUBLISH_TOKEN" | jq -r '.token')
   echo "//registry.npmjs.org/:_authToken=$PUBLISH_TOKEN" > ~/.npmrc
   ./codebuild_specs/scripts/publish.sh
+}
+
+# Accepts the value as an input parameter, i.e. 1 for success, 0 for failure.
+function _emitCanaryMetric {
+  aws cloudwatch \
+    put-metric-data \
+    --metric-name CanarySuccessRate \
+    --namespace amplify-category-api-e2e-tests \
+    --unit Count \
+    --value $CODEBUILD_BUILD_SUCCEEDING \
+    --dimensions branch=main \
+    --region us-west-2
 }

@@ -3396,7 +3396,7 @@ describe('@model with @auth', () => {
     expect(response2.data.g1.description).toEqual('desc');
     expect(response2.data.g1.stage).toBeNull();
 
-    //create stage and then add it to perf should show stage in perf
+    // create stage and then add it to perf should show stage in perf
     await GRAPHQL_CLIENT_1.query(createStage, {});
     const response3 = await GRAPHQL_CLIENT_1.query(updatePerf, {});
     expect(response3).toBeDefined();

@@ -425,12 +425,12 @@ export function updateApiConflictHandlerTypePerModel(cwd: string, opts?: Partial
       .wait('Select the models from below:')
       .send('a')
       .sendCarriageReturn()
-      .wait('Select the resolution strategy for') //First model
+      .wait('Select the resolution strategy for') // First model
       .sendKeyDown(2)
       .sendCarriageReturn() // Select Lambda Handler
       .wait(/.*Select from the options below.*/)
       .sendCarriageReturn() // Create a new Lambda
-      .wait('Select the resolution strategy for') //Second model
+      .wait('Select the resolution strategy for') // Second model
       .sendCarriageReturn() // Select Automerge Handler
       .wait(/.*Successfully updated resource*/)
       .run((err: Error) => {
@@ -834,7 +834,7 @@ function setupCognitoUserPool(chain: any) {
 }
 
 function setupIAM(chain: any) {
-  //no need to do anything
+  // no need to do anything
 }
 
 function setupOIDC(chain: any, settings?: any) {

@@ -64,7 +64,7 @@ export function or(expressions: Expression[]): OrNode {
   };
 }
 
-/**Node
+/** Node
  * WrapsNodeNode an expression in (...) for order of operations.
  */
 export interface ParensNode {

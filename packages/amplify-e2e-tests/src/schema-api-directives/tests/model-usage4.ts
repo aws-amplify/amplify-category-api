@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Post @model {
   id: ID!
@@ -9,7 +9,7 @@ type Post @model {
 }
 
 ##model/usage4`;
-//mutations
+// mutations
 export const mutation1 = `
 mutation CreatePost(
     $input: CreatePostInput!
@@ -78,7 +78,7 @@ export const expected_result_mutation2 = {
   },
 };
 
-//queries
+// queries
 export const query = `
  query GetPost {
     getPost(id: "1") {

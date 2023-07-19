@@ -220,7 +220,7 @@ const coreFunction = (
           chain.sendConfirmNo();
         }
 
-        //scheduling questions
+        // scheduling questions
         chain.wait('Do you want to invoke this function on a recurring schedule?');
 
         if (settings.schedulePermissions === undefined) {

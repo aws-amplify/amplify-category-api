@@ -286,7 +286,7 @@ async function askPermissions(
         pickAtLeast: 1,
       });
 
-      //if single user pool group is selected, convert to array
+      // if single user pool group is selected, convert to array
       if (selectedUserPoolGroupList && !Array.isArray(selectedUserPoolGroupList)) {
         selectedUserPoolGroupList = [selectedUserPoolGroupList];
       }

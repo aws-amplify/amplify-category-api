@@ -93,7 +93,7 @@ export class StorageTest {
       const lambdaConfig =
         storageParams.Resources.S3Bucket.Properties.NotificationConfiguration &&
         storageParams.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations;
-      //no trigger case
+      // no trigger case
       if (lambdaConfig === undefined) {
         return;
       }

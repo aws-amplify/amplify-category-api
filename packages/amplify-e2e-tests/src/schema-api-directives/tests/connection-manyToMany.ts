@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Post @model {
   id: ID!
@@ -26,7 +26,7 @@ type User @model {
 }
 
 ##connection/manyToMany`;
-//mutations
+// mutations
 export const mutation1 = `
 mutation CreateData {
   p1: createPost(input: { id: "P1", title: "Post 1" }) {
@@ -58,7 +58,7 @@ mutation CreateLinks {
 }
 `;
 
-//queries
+// queries
 export const query1 = `
 query GetUserWithPosts {
   getUser(id: "U1") {

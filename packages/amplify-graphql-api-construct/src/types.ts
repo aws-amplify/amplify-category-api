@@ -168,9 +168,30 @@ export type ConflictResolution = {
 };
 
 /**
- * Schema representation for transformation. Accepts either a raw string, single, or array of appsync SchemaFile objects.
+ * Type representing Graphql representation of an amplify schema.
  */
-export type AmplifyGraphqlApiSchema = SchemaFile | SchemaFile[] | string;
+export type AmplifyApiGraphqlSchema = SchemaFile | SchemaFile[] | string;
+
+/**
+ * Custom type representing a processed schema output.
+ */
+export type AmplifyApiSchemaPreprocessorOutput = {
+  /**
+   * Schema generated as an output of the preprocessing step.
+   */
+  processedSchema: string;
+
+  /**
+   * Custom functions extracted during preprocessing.
+   */
+  processedFunctionSlots?: FunctionSlot[];
+};
+
+/**
+ * Custom preprocessor which will allow for custom schema representations that compile down to graphql
+ * and custom resources (if necessary).
+ */
+export type AmplifyApiSchemaPreprocessor<SchemaType> = (schema: SchemaType) => AmplifyApiSchemaPreprocessorOutput;
 
 /**
  * Params exposed to support configuring and overriding pipelined slots. This allows configuration of the underlying function,
@@ -290,11 +311,16 @@ export type SchemaTranslationBehavior = {
  * Input props for the AmplifyGraphqlApi construct. Specifies what the input to transform into an API, and configurations for
  * the transformation process.
  */
-export type AmplifyGraphqlApiProps = {
+export type AmplifyGraphqlApiProps<SchemaType = AmplifyApiGraphqlSchema> = {
   /**
    * The schema to transform in a full API.
    */
-  schema: AmplifyGraphqlApiSchema;
+  schema: SchemaType;
+
+  /**
+   * Optional Preprocessor for the input schema, passes through a schema type to the
+   */
+  schemaPreprocessor?: AmplifyApiSchemaPreprocessor<SchemaType>;
 
   /**
    * Name to be used for the appsync api.

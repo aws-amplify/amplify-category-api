@@ -4,7 +4,7 @@ import * as cfninclude from 'aws-cdk-lib/cloudformation-include';
 import { executeTransform } from '@aws-amplify/graphql-transformer';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
-  preprocessGraphqlSchema,
+  preprocessSchema,
   generateConstructExports,
   rewriteAndPersistAssets,
   convertToResolverConfig,
@@ -37,7 +37,7 @@ import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './i
  * ```
  * `resources.<ResourceType>.<ResourceName>` - you can then perform any CDK action on these resulting resoureces.
  */
-export class AmplifyGraphqlApi extends Construct {
+export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends Construct {
   /**
    * Generated resources.
    */
@@ -49,11 +49,12 @@ export class AmplifyGraphqlApi extends Construct {
    */
   private readonly transformerGeneratedResolvers: Record<string, string>;
 
-  constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps) {
+  constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps<SchemaType>) {
     super(scope, id);
 
     const {
-      schema: modelSchema,
+      schema: unprocessedSchema,
+      schemaPreprocessor,
       authorizationConfig,
       conflictResolution,
       functionSlots,
@@ -71,6 +72,8 @@ export class AmplifyGraphqlApi extends Construct {
       cfnIncludeParameters: authCfnIncludeParameters,
     } = convertAuthorizationModesToTransformerAuthConfig(authorizationConfig);
 
+    const { processedSchema, processedFunctionSlots } = preprocessSchema(unprocessedSchema, schemaPreprocessor);
+
     // TODO: Wire referenced functions into the transform.
     if (functionNameMap && Object.keys(functionNameMap).length > 0) {
       throw new Error('functionNameMap not yet supported in this revision.');
@@ -78,10 +81,10 @@ export class AmplifyGraphqlApi extends Construct {
 
     // TODO: This needs to be removed, and exists just to bridge what we have today w/ what we want down the road.
     validateFunctionSlots(functionSlots ?? []);
-    const separatedFunctionSlots = separateSlots(functionSlots ?? []);
+    const separatedFunctionSlots = separateSlots([...(functionSlots ?? []), ...(processedFunctionSlots ?? [])]);
 
     const transformedResources = executeTransform({
-      schema: preprocessGraphqlSchema(modelSchema),
+      schema: processedSchema,
       userDefinedSlots: parseUserDefinedSlots(separatedFunctionSlots),
       transformersFactoryArgs: {
         authConfig,

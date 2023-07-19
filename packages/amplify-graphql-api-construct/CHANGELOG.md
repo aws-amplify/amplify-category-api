@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.3.3...@aws-amplify/graphql-construct-alpha@0.4.0) (2023-07-18)
+
+### Features
+
+- support custom preprocessors for different schema shapes ([37a2814](https://github.com/aws-amplify/amplify-category-api/commit/37a28148f1666172e04d2830346bed2fe51ee58e))
+
+## [0.3.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.3.2...@aws-amplify/graphql-construct-alpha@0.3.3) (2023-07-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-construct-alpha
+
 ## [0.3.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.3.1...@aws-amplify/graphql-construct-alpha@0.3.2) (2023-07-07)
 
 **Note:** Version bump only for package @aws-amplify/graphql-construct-alpha
