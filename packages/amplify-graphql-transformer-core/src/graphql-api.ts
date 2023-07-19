@@ -180,8 +180,11 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   public readonly environmentName?: string;
 
   private schemaResource: CfnGraphQLSchema;
+
   private api: CfnGraphQLApi;
+
   private apiKeyResource?: CfnApiKey;
+
   private authorizationConfig?: Required<any>;
 
   constructor(scope: Construct, id: string, props: TransformerAPIProps) {

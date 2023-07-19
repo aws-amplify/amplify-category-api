@@ -12,6 +12,7 @@ import {
   parse,
   Kind,
 } from 'graphql';
+
 export function collectDirectiveNames(sdl: string): string[] {
   const dirs = collectDirectives(sdl);
   return dirs.map((d) => d.name.value);

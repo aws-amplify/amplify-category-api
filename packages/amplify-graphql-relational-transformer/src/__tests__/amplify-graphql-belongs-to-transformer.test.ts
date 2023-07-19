@@ -486,7 +486,7 @@ describe('@belongsTo connection field nullability tests', () => {
       validateModelSchema(schema);
       const connectionFieldName1 = 'taskTodoTodoid';
       const connectionFieldName2 = 'taskTodoName';
-      //Type definition
+      // Type definition
       const objType = schema.definitions.find((def: any) => def.name && def.name.value === 'Task') as any;
       expect(objType).toBeDefined();
       const relatedField1 = objType.fields.find((f: any) => f.name.value === connectionFieldName1);
@@ -497,7 +497,7 @@ describe('@belongsTo connection field nullability tests', () => {
       expect(relatedField2).toBeDefined();
       expect(relatedField2.type.kind).toBe(Kind.NAMED_TYPE);
       expect(relatedField2.type.name.value).toBe('String');
-      //Create Input
+      // Create Input
       const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTaskInput') as any;
       expect(createInput).toBeDefined();
       expect(createInput.fields.length).toEqual(5);
@@ -509,7 +509,7 @@ describe('@belongsTo connection field nullability tests', () => {
       expect(createInputConnectedField2).toBeDefined();
       expect(createInputConnectedField2.type.kind).toBe(Kind.NAMED_TYPE);
       expect(createInputConnectedField2.type.name.value).toBe('String');
-      //Update Input
+      // Update Input
       const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTaskInput') as any;
       expect(updateInput).toBeDefined();
       expect(updateInput.fields.length).toEqual(5);
@@ -549,7 +549,7 @@ describe('@belongsTo connection field nullability tests', () => {
       validateModelSchema(schema);
       const connectionFieldName1 = 'taskTodoTodoid';
       const connectionFieldName2 = 'taskTodoName';
-      //Type definition
+      // Type definition
       const objType = schema.definitions.find((def: any) => def.name && def.name.value === 'Task') as any;
       expect(objType).toBeDefined();
       const relatedField1 = objType.fields.find((f: any) => f.name.value === connectionFieldName1);
@@ -560,7 +560,7 @@ describe('@belongsTo connection field nullability tests', () => {
       expect(relatedField2).toBeDefined();
       expect(relatedField2.type.kind).toBe(Kind.NON_NULL_TYPE);
       expect(relatedField2.type.type.name.value).toBe('String');
-      //Create Input
+      // Create Input
       const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTaskInput') as any;
       expect(createInput).toBeDefined();
       expect(createInput.fields.length).toEqual(5);
@@ -572,7 +572,7 @@ describe('@belongsTo connection field nullability tests', () => {
       expect(createInputConnectedField2).toBeDefined();
       expect(createInputConnectedField2.type.kind).toBe(Kind.NON_NULL_TYPE);
       expect(createInputConnectedField2.type.type.name.value).toBe('String');
-      //Update Input
+      // Update Input
       const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTaskInput') as any;
       expect(updateInput).toBeDefined();
       expect(updateInput.fields.length).toEqual(5);
@@ -614,7 +614,7 @@ describe('@belongsTo connection field nullability tests', () => {
       validateModelSchema(schema);
       const connectionFieldName1 = 'todoTasksTodoid';
       const connectionFieldName2 = 'todoTasksName';
-      //Type definition
+      // Type definition
       const objType = schema.definitions.find((def: any) => def.name && def.name.value === 'Task') as any;
       expect(objType).toBeDefined();
       const relatedField1 = objType.fields.find((f: any) => f.name.value === connectionFieldName1);
@@ -625,7 +625,7 @@ describe('@belongsTo connection field nullability tests', () => {
       expect(relatedField2).toBeDefined();
       expect(relatedField2.type.kind).toBe(Kind.NAMED_TYPE);
       expect(relatedField2.type.name.value).toBe('String');
-      //Create Input
+      // Create Input
       const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTaskInput') as any;
       expect(createInput).toBeDefined();
       expect(createInput.fields.length).toEqual(5);
@@ -637,7 +637,7 @@ describe('@belongsTo connection field nullability tests', () => {
       expect(createInputConnectedField2).toBeDefined();
       expect(createInputConnectedField2.type.kind).toBe(Kind.NAMED_TYPE);
       expect(createInputConnectedField2.type.name.value).toBe('String');
-      //Update Input
+      // Update Input
       const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTaskInput') as any;
       expect(updateInput).toBeDefined();
       expect(updateInput.fields.length).toEqual(5);
@@ -677,7 +677,7 @@ describe('@belongsTo connection field nullability tests', () => {
       validateModelSchema(schema);
       const connectionFieldName1 = 'todoTasksTodoid';
       const connectionFieldName2 = 'todoTasksName';
-      //Type definition
+      // Type definition
       const objType = schema.definitions.find((def: any) => def.name && def.name.value === 'Task') as any;
       expect(objType).toBeDefined();
       const relatedField1 = objType.fields.find((f: any) => f.name.value === connectionFieldName1);
@@ -688,7 +688,7 @@ describe('@belongsTo connection field nullability tests', () => {
       expect(relatedField2).toBeDefined();
       expect(relatedField2.type.kind).toBe(Kind.NON_NULL_TYPE);
       expect(relatedField2.type.type.name.value).toBe('String');
-      //Create Input
+      // Create Input
       const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTaskInput') as any;
       expect(createInput).toBeDefined();
       expect(createInput.fields.length).toEqual(5);
@@ -700,7 +700,7 @@ describe('@belongsTo connection field nullability tests', () => {
       expect(createInputConnectedField2).toBeDefined();
       expect(createInputConnectedField2.type.kind).toBe(Kind.NON_NULL_TYPE);
       expect(createInputConnectedField2.type.type.name.value).toBe('String');
-      //Update Input
+      // Update Input
       const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTaskInput') as any;
       expect(updateInput).toBeDefined();
       expect(updateInput.fields.length).toEqual(5);

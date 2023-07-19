@@ -8,7 +8,6 @@ import {
   InputObjectTypeDefinitionNode,
   EnumTypeDefinitionNode,
 } from 'graphql';
-import { ResourceFactory } from './resources';
 import {
   makeModelConnectionType,
   makeModelConnectionField,
@@ -35,8 +34,9 @@ import {
   makeNamedType,
 } from 'graphql-transformer-common';
 import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common';
-import { updateInputWithConnectionField } from './definitions';
 import Table, { KeySchema, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
+import { updateInputWithConnectionField } from './definitions';
+import { ResourceFactory } from './resources';
 
 const CONNECTION_STACK_NAME = 'ConnectionStack';
 

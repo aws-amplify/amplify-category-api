@@ -2,9 +2,9 @@ import { getAppSyncServiceExtraDirectives } from '@aws-amplify/graphql-transform
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { print } from 'graphql';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { constructTransformerChain } from '@aws-amplify/graphql-transformer';
 import { getTransformerFactoryV1 } from './transformer-factory';
 import { getTransformerVersion } from './transformer-version';
-import { constructTransformerChain } from '@aws-amplify/graphql-transformer';
 import { loadCustomTransformersV2 } from './transformer-options-v2';
 
 /**

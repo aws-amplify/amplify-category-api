@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {
   addApiWithoutSchema,
   amplifyOverrideApi,
@@ -14,7 +15,6 @@ import {
   updateApiSchema,
 } from 'amplify-category-api-e2e-core';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
 import { assertNoParameterChangesBetweenProjects, collectCloudformationDiffBetweenProjects } from '../../migration-helpers/utils';
 import { cfnDiffExclusions } from '../../migration-helpers-v10/cfn-diff-exclusions';

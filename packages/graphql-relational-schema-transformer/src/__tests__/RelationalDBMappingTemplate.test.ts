@@ -1,5 +1,5 @@
-import { RelationalDBMappingTemplate } from '../RelationalDBMappingTemplate';
 import { list, str, ObjectNode, print } from 'graphql-mapping-template';
+import { RelationalDBMappingTemplate } from '../RelationalDBMappingTemplate';
 
 const sql = 'SELECT * FROM Pets';
 

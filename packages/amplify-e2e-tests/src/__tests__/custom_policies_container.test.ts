@@ -1,3 +1,4 @@
+import path from 'path';
 import {
   initJSProjectWithProfile,
   deleteProject,
@@ -12,7 +13,6 @@ import {
 import _ from 'lodash';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import AWS from 'aws-sdk';
-import path from 'path';
 
 const customIAMPolicy: CustomIAMPolicy = {
   Effect: 'Allow',

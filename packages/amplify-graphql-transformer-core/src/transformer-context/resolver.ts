@@ -130,8 +130,11 @@ export class ResolverManager implements TransformerResolversManagerProvider {
  */
 export class TransformerResolver implements TransformerResolverProvider {
   private readonly slotMap: Map<string, Slot[]> = new Map();
+
   private readonly slotNames: Set<string>;
+
   private stack?: Stack;
+
   constructor(
     private typeName: string,
     private fieldName: string,

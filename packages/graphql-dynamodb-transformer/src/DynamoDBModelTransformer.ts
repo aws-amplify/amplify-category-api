@@ -97,6 +97,7 @@ export const directiveDefinition = gql`
 
 export class DynamoDBModelTransformer extends Transformer {
   resources: ResourceFactory;
+
   opts: DynamoDBModelTransformerOptions;
 
   constructor(opts: DynamoDBModelTransformerOptions = {}) {

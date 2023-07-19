@@ -4,6 +4,7 @@ import { ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode } from 'graphql';
 
 export class TransformerDataSourceManager implements TransformerDataSourceManagerProvider {
   private dataSourceMap: Map<string, BackedDataSource> = new Map();
+
   add = (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: BackedDataSource) => {
     const key = type.name.value;
     if (this.dataSourceMap.has(key)) {

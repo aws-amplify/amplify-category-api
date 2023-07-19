@@ -1,6 +1,6 @@
 import { TransformerContextProvider, TransformerLog, TransformerLogLevel } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthRule } from '.';
 import { AccessControlMatrix } from '../accesscontrol';
+import { AuthRule } from '.';
 
 /**
  * Displays a warning when a default owner field is used and the feature flag is

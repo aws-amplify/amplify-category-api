@@ -1,21 +1,21 @@
+import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as dynamoEmulator from 'amplify-category-api-dynamodb-simulator';
 import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorConfig } from '@aws-amplify/amplify-appsync-simulator';
 import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-codegen';
-import * as path from 'path';
 import * as chokidar from 'chokidar';
 
+import { getInvoker } from '@aws-amplify/amplify-category-function';
 import { getAmplifyMeta, getMockDataDirectory } from '../utils';
 import { checkJavaVersion } from '../utils/index';
-import { runTransformer } from './run-graphql-transformer';
 import { processAppSyncResources } from '../CFNParser';
-import { ResolverOverrides } from './resolver-overrides';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { configureDDBDataSource, createAndUpdateTable } from '../utils/dynamo-db';
 import { getMockConfig } from '../utils/mock-config-file';
-import { getInvoker } from '@aws-amplify/amplify-category-function';
-import { lambdaArnToConfig } from './lambda-arn-to-config';
 import { timeConstrainedInvoker } from '../func';
+import { lambdaArnToConfig } from './lambda-arn-to-config';
+import { ResolverOverrides } from './resolver-overrides';
+import { runTransformer } from './run-graphql-transformer';
 
 export const GRAPHQL_API_ENDPOINT_OUTPUT = 'GraphQLAPIEndpointOutput';
 export const GRAPHQL_API_KEY_OUTPUT = 'GraphQLAPIKeyOutput';
@@ -24,14 +24,23 @@ export const MOCK_API_PORT = 20002;
 
 export class APITest {
   private apiName: string;
+
   private transformerResult: any;
+
   private ddbClient;
+
   private appSyncSimulator: AmplifyAppSyncSimulator;
+
   private resolverOverrideManager: ResolverOverrides;
+
   private watcher: chokidar.FSWatcher;
+
   private ddbEmulator;
+
   private configOverrideManager: ConfigOverrideManager;
+
   private apiParameters: object = {};
+
   private userOverriddenSlots: string[] = [];
 
   async start(context, port: number = MOCK_API_PORT, wsPort: number = 20003) {
@@ -237,6 +246,7 @@ export class APITest {
     const ddbConfig = this.ddbClient.config;
     return configureDDBDataSource(config, ddbConfig);
   }
+
   private async getAppSyncAPI(context) {
     const currentMeta = await getAmplifyMeta(context);
     const { api: apis = {} } = currentMeta;
@@ -294,6 +304,7 @@ export class APITest {
     const apiDirectory = await this.getAPIBackendDirectory(context);
     return apiDirectory;
   }
+
   private async registerWatcher(context: any): Promise<chokidar.FSWatcher> {
     const watchDir = await this.getAPIBackendDirectory(context);
     return chokidar.watch(watchDir, {
@@ -304,6 +315,7 @@ export class APITest {
       awaitWriteFinish: true,
     });
   }
+
   private async generateFrontendExports(
     context: any,
     localAppSyncDetails: {

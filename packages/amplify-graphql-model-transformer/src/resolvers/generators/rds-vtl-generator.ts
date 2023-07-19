@@ -24,36 +24,46 @@ export class RDSModelVTLGenerator implements ModelVTLGenerator {
   generateUpdateRequestTemplate(config: ModelUpdateRequestConfig): string {
     return generateLambdaUpdateRequestTemplate(config.modelName, config.operationName, config.modelIndexFields ?? ['id']);
   }
+
   generateCreateRequestTemplate(config: ModelCreateRequestConfig): string {
     return generateLambdaCreateRequestTemplate(config.modelName, config.operationName);
   }
   generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig, initializeIdField: boolean): string {
     return generateCreateInitSlotTemplate(config.modelConfig, initializeIdField);
   }
+
   generateDeleteRequestTemplate(config: ModelUpdateRequestConfig): string {
     return generateLambdaDeleteRequestTemplate(config.modelName, config.operationName, config.modelIndexFields ?? ['id']);
   }
+
   generateUpdateInitSlotTemplate(config: ModelCreateInitSlotConfig): string {
     return generateUpdateInitSlotTemplate(config.modelConfig);
   }
+
   generateGetRequestTemplate(config: ModelRequestConfig): string {
     return generateLambdaRequestTemplate(config.modelName, config.operation, config.operationName);
   }
+
   generateGetResponseTemplate(config: ModelUpdateRequestConfig): string {
     return generateGetLambdaResponseTemplate(false);
   }
+
   generateListRequestTemplate(config: ModelRequestConfig): string {
     return generateLambdaListRequestTemplate(config.modelName, config.operation, config.operationName);
   }
+
   generateSyncRequestTemplate(config: ModelRequestConfig): string {
     return generateDefaultLambdaResponseMappingTemplate(false);
   }
+
   generateSubscriptionRequestTemplate(): string {
     return generateSubscriptionRequestTemplate();
   }
+
   generateSubscriptionResponseTemplate(): string {
     return generateSubscriptionResponseTemplate();
   }
+
   generateDefaultResponseMappingTemplate(config: ModelDefaultResponseConfig): string {
     return generateDefaultLambdaResponseMappingTemplate(false);
   }

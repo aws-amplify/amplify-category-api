@@ -1,11 +1,11 @@
-import { AmplifyStorageSimulator } from 'amplify-storage-simulator';
 import * as path from 'path';
+import { AmplifyStorageSimulator } from 'amplify-storage-simulator';
 import * as fs from 'fs-extra';
+import { getInvoker } from '@aws-amplify/amplify-category-function';
+import { $TSContext, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { getAmplifyMeta, getMockDataDirectory } from '../utils';
 import { ConfigOverrideManager } from '../utils/config-override';
-import { getInvoker } from '@aws-amplify/amplify-category-function';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
-import { $TSContext, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 const port = 20005; // port for S3
 
@@ -30,9 +30,13 @@ async function invokeS3GetUserInputs(context, s3ResourceName) {
 
 export class StorageTest {
   private storageName: string;
+
   private storageSimulator: AmplifyStorageSimulator;
+
   private configOverrideManager: ConfigOverrideManager;
+
   private storageRegion: string;
+
   private bucketName: string;
 
   async start(context) {
@@ -89,7 +93,7 @@ export class StorageTest {
       const lambdaConfig =
         storageParams.Resources.S3Bucket.Properties.NotificationConfiguration &&
         storageParams.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations;
-      //no trigger case
+      // no trigger case
       if (lambdaConfig === undefined) {
         return;
       }

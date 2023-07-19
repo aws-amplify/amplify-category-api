@@ -1,8 +1,7 @@
-import fs from 'fs-extra';
 import path from 'path';
+import fs from 'fs-extra';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
-import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import {
   $TSContext,
   AmplifyCategories,
@@ -16,7 +15,6 @@ import {
   stateManager,
 } from '@aws-amplify/amplify-cli-core';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { isAuthModeUpdated } from './auth-mode-compare';
 import {
   collectDirectivesByTypeNames,
   readTransformerConfiguration,
@@ -31,6 +29,8 @@ import {
   getSanityCheckRules,
 } from 'graphql-transformer-core';
 import { exitOnNextTick } from '@aws-amplify/amplify-cli-core';
+import { isAuthModeUpdated } from './auth-mode-compare';
+import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import { searchablePushChecks } from './api-utils';
 import { getTransformerFactoryV1 } from './transformer-factory';
 

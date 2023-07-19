@@ -1,7 +1,7 @@
 import path from 'path';
+import os from 'os';
 import { nspawn as spawn, getCLIPath, singleSelect, amplifyRegions, addCITags, KEY_DOWN_ARROW } from 'amplify-category-api-e2e-core';
 import fs from 'fs-extra';
-import os from 'os';
 
 export async function initWithoutCredentialFileAndNoNewUserSetup(projRoot) {
   const settings = {

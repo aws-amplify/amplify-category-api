@@ -1,7 +1,6 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { CloudFormationClient } from '../CloudFormationClient';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { CognitoIdentityServiceProvider as CognitoClient, S3, CognitoIdentity } from 'aws-sdk';
@@ -9,9 +8,13 @@ import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { AWS } from '@aws-amplify/core';
 import { Auth } from 'aws-amplify';
 import gql from 'graphql-tag';
+import { default as moment } from 'moment';
+import 'isomorphic-fetch';
+import { API } from 'aws-amplify';
+import * as Observable from 'zen-observable';
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { S3Client } from '../S3Client';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
-import { default as moment } from 'moment';
 import {
   createUserPool,
   createUserPoolClient,
@@ -22,12 +25,9 @@ import {
   authenticateUser,
   createIdentityPool,
 } from '../cognitoUtils';
-import 'isomorphic-fetch';
-import { API } from 'aws-amplify';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { withTimeOut } from '../promiseWithTimeout';
 import { IAMHelper } from '../IAMHelper';
-import * as Observable from 'zen-observable';
+import { CloudFormationClient } from '../CloudFormationClient';
 
 // tslint:disable: no-use-before-declare
 // to deal with bug in cognito-identity-js

@@ -1,5 +1,5 @@
-import { GraphQLTransform, StackManager } from '@aws-amplify/graphql-transformer-core';
 import * as path from 'path';
+import { GraphQLTransform, StackManager } from '@aws-amplify/graphql-transformer-core';
 import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { applyFileBasedOverride } from '../../../graphql-transformer/override';

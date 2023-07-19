@@ -1,28 +1,35 @@
 import { DataSourceAdapter, MySQLDataSourceAdapter } from '../datasource-adapter';
 import { Engine, Field, FieldType, Index, Model, Schema } from '../schema-representation';
 import { generateGraphQLSchema, isComputeExpression } from '../schema-generator';
+
 class TestDataSourceAdapter extends DataSourceAdapter {
   public async initialize(): Promise<void> {
     // Do Nothing
   }
+
   public mapDataType(type: string, nullable: boolean): FieldType {
     return {
       kind: 'Scalar',
       name: 'String',
     };
   }
+
   public async getTablesList(): Promise<string[]> {
     return ['Test'];
   }
+
   public async getFields(tableName: string): Promise<Field[]> {
     return [];
   }
+
   public async getPrimaryKey(tableName: string): Promise<Index | null> {
     return null;
   }
+
   public async getIndexes(tableName: string): Promise<Index[]> {
     return [];
   }
+
   public cleanup(): void {
     // Do Nothing
   }

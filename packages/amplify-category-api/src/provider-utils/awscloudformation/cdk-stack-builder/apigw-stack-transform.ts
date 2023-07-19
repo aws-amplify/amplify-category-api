@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import {
   $TSContext,
@@ -14,18 +15,24 @@ import {
 } from '@aws-amplify/amplify-cli-core';
 import { formatter, printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import * as vm from 'vm2';
-import { AmplifyApigwResourceStack, ApigwInputs, CrudOperation, Path } from '.';
 import { ApigwInputState } from '../apigw-input-state';
 import { ADMIN_QUERIES_NAME } from '../../../category-constants';
+import { AmplifyApigwResourceStack, ApigwInputs, CrudOperation, Path } from '.';
+
 export class ApigwStackTransform {
   cliInputs: ApigwInputs;
+
   resourceTemplateObj: AmplifyApigwResourceStack | undefined;
+
   cliInputsState: ApigwInputState;
+
   cfn: Template;
+
   cfnInputParams: Record<string, any>;
+
   resourceName: string;
+
   private _app: cdk.App;
 
   constructor(context: $TSContext, resourceName: string, cliInputState?: ApigwInputState) {

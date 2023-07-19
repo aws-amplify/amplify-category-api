@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Post @model {
   id: ID!
@@ -15,7 +15,7 @@ type Comment @model
 }
 
 ##connection/belongsTo`;
-//mutations
+// mutations
 export const mutation1 = `
 mutation CreatePost {
   createPost(input: { id: "a-post-id", title: "Post Title" }) {
@@ -65,7 +65,7 @@ export const expected_result_mutation3 = {
   },
 };
 
-//queries
+// queries
 export const query = `
 query GetCommentWithPostAndComments {
   getComment(id: "a-comment-id-1") {

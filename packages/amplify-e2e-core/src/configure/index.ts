@@ -1,5 +1,5 @@
-import { nspawn as spawn, getCLIPath, singleSelect } from '..';
 import { EOL } from 'os';
+import { nspawn as spawn, getCLIPath, singleSelect } from '..';
 
 type AmplifyConfiguration = {
   accessKeyId: string;

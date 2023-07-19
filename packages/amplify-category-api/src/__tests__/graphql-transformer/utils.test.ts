@@ -1,9 +1,9 @@
-import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from '../../graphql-transformer/utils';
+import * as path from 'path';
 import { TransformerProjectConfig, DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import { $TSContext, CloudformationProviderFacade } from '@aws-amplify/amplify-cli-core';
+import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from '../../graphql-transformer/utils';
 
 jest.mock('fs-extra');
 jest.mock('@aws-amplify/amplify-cli-core');

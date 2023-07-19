@@ -1,13 +1,13 @@
-import { TransformerContext } from './TransformerContext';
 import { Fn, StringParameter } from 'cloudform-types';
 import Resource from 'cloudform-types/types/resource';
 import { makeOperationType, makeSchema } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode, print } from 'graphql';
+import { DeploymentResources, ResolversFunctionsAndSchema } from '@aws-amplify/graphql-transformer-interfaces';
+import { ResourceConstants } from 'graphql-transformer-common';
 import { stripDirectives } from './stripDirectives';
 import { SchemaResourceUtil } from './util/SchemaResourceUtil';
 import splitStack from './util/splitStack';
-import { DeploymentResources, ResolversFunctionsAndSchema } from '@aws-amplify/graphql-transformer-interfaces';
-import { ResourceConstants } from 'graphql-transformer-common';
+import { TransformerContext } from './TransformerContext';
 
 export class TransformFormatter {
   private schemaResourceUtil = new SchemaResourceUtil();

@@ -1,6 +1,6 @@
+import * as path from 'path';
 import { $TSMeta, AmplifyCategories, AmplifySupportedService, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
-import * as path from 'path';
 
 export const authConfigHasApiKey = (authConfig?: any) => {
   if (!authConfig) {

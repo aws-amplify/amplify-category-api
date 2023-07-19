@@ -1,9 +1,9 @@
+import * as path from 'path';
 import { AmplifyCategories, JSONUtilities, pathManager, ResourceDoesNotExistError, stateManager } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import { ResolverConfig } from 'graphql-transformer-core';
 import _ from 'lodash';
-import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { AppSyncCLIInputs } from '../service-walkthrough-types/appsync-user-input-types';
 import { authConfigToAppSyncAuthType } from './auth-config-to-app-sync-auth-type-bi-di-mapper';

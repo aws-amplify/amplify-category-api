@@ -8,6 +8,12 @@ batch:
   build-graph:
     - identifier: build_linux
       buildspec: codebuild_specs/build_linux.yml
+    - identifier: build_windows
+      buildspec: codebuild_specs/build_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
     - identifier: test
       buildspec: codebuild_specs/test.yml
       depend-on:
@@ -37,3 +43,4 @@ batch:
       depend-on:
         - test
         - mock_e2e_tests
+        - build_windows

@@ -4,16 +4,16 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { CloudFormationClient } from '../CloudFormationClient';
-import { S3Client } from '../S3Client';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import moment from 'moment';
 import { S3, CognitoIdentityServiceProvider as CognitoClient, CognitoIdentity } from 'aws-sdk';
 import { AWS } from '@aws-amplify/core';
 import { Auth } from 'aws-amplify';
-import { IAMHelper } from '../IAMHelper';
 import gql from 'graphql-tag';
+import { IAMHelper } from '../IAMHelper';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { S3Client } from '../S3Client';
+import { CloudFormationClient } from '../CloudFormationClient';
 import {
   addUserToGroup,
   authenticateUser,
@@ -26,6 +26,7 @@ import {
 } from '../cognitoUtils';
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+
 import { resolveTestRegion } from '../testSetup';
 
 const AWS_REGION = resolveTestRegion();

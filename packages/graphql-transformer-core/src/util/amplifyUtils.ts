@@ -1,13 +1,13 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import glob from 'glob';
 import { CloudFormation, Fn, Template } from 'cloudform-types';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
-import { GraphQLTransform, StackMapping } from '../GraphQLTransform';
 import { ResourceConstants } from 'graphql-transformer-common';
+import { GraphQLTransform, StackMapping } from '../GraphQLTransform';
+import { FeatureFlagProvider } from '../FeatureFlags';
 import { readFromPath, writeToPath, throwIfNotJSONExt, emptyDirectory, handleFile, FileHandler } from './fileUtils';
 import { writeConfig, TransformConfig, TransformMigrationConfig, loadProject, readSchema, loadConfig } from './transformConfig';
-import { FeatureFlagProvider } from '../FeatureFlags';
 import {
   cantAddAndRemoveGSIAtSameTimeRule,
   getCantAddLSILaterRule,
@@ -190,13 +190,13 @@ async function ensureMissingStackMappings(config: ProjectOptions) {
       const lastDeployedStack = JSON.parse(copyOfCloudBackend.build[config.rootStackFileName]);
       const resourceIdsInStack = Object.keys(lastDeployedStack.Resources);
       for (const resourceId of resourceIdsInStack) {
-        if (stackMapping[resourceId] && 'root' !== stackMapping[resourceId]) {
+        if (stackMapping[resourceId] && stackMapping[resourceId] !== 'root') {
           missingStackMappings[resourceId] = 'root';
         }
       }
       const outputIdsInStack = Object.keys(lastDeployedStack.Outputs || {});
       for (const outputId of outputIdsInStack) {
-        if (stackMapping[outputId] && 'root' !== stackMapping[outputId]) {
+        if (stackMapping[outputId] && stackMapping[outputId] !== 'root') {
           missingStackMappings[outputId] = 'root';
         }
       }

@@ -1,7 +1,8 @@
 import { parse, InputObjectTypeDefinitionNode, DefinitionNode, DocumentNode, Kind } from 'graphql';
 import { GraphQLTransform, InvalidDirectiveError, SyncConfig, ConflictHandlerType, FeatureFlagProvider } from 'graphql-transformer-core';
-import { KeyTransformer } from '../KeyTransformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { KeyTransformer } from '../KeyTransformer';
+
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {

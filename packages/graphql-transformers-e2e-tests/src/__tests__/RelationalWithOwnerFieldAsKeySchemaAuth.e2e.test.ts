@@ -4,18 +4,19 @@ import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer'
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
-import { S3Client } from '../S3Client';
 import { S3, CognitoIdentityServiceProvider as CognitoClient } from 'aws-sdk';
 import { default as moment } from 'moment';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import gql from 'graphql-tag';
+import { CloudFormationClient } from '../CloudFormationClient';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { S3Client } from '../S3Client';
 import { authenticateUser, configureAmplify, createUserPool, createUserPoolClient, signupUser } from '../cognitoUtils';
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+
 import { resolveTestRegion } from '../testSetup';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import gql from 'graphql-tag';
 
 const region = resolveTestRegion();
 
@@ -238,7 +239,7 @@ test('user2 should not access user1 restricted fields when query including relat
   expect(getResponse.data.getUser.birth).toEqual('2023-04-07');
   expect(getResponse.data.getUser.displayName).toEqual('d1');
   expect(getResponse.data.getUser.userID).toEqual(USERNAME1);
-  //Run query with user2 login and use user1 as parameter
+  // Run query with user2 login and use user1 as parameter
   await expect(
     USER_POOL_AUTH_CLIENT_2.query<any>({
       query: getUserQueryWithCreditCard,

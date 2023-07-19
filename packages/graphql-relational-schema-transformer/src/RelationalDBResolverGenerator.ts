@@ -39,11 +39,17 @@ const rdsResponseErrorType = 'InvalidResponse';
  */
 export class RelationalDBResolverGenerator {
   document: DocumentNode;
+
   typePrimaryKeyMap: Map<string, string>;
+
   stringFieldMap: Map<string, string[]>;
+
   intFieldMap: Map<string, string[]>;
+
   resolverFilePath: string;
+
   typePrimaryKeyTypeMap: Map<string, string>;
+
   variableMapRefName: string;
 
   constructor(context: TemplateContext) {

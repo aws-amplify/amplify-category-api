@@ -1,5 +1,5 @@
-import * as cdk from 'aws-cdk-lib';
 import * as crypto from 'crypto';
+import * as cdk from 'aws-cdk-lib';
 import { FileAssetPackaging, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { TransformerStackSythesizer } from './stack-synthesizer';
@@ -11,10 +11,15 @@ export interface TemplateProps {
 
 export class FileAsset extends Construct implements cdk.IAsset {
   public readonly assetHash: string;
+
   public readonly httpUrl: string;
+
   public readonly s3BucketName: string;
+
   public readonly s3ObjectKey: string;
+
   public readonly s3Url: string;
+
   constructor(scope: Construct, id: string, props: TemplateProps) {
     super(scope, id);
 

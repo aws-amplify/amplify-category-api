@@ -1,14 +1,14 @@
+import * as path from 'path';
 import { CfnResource } from 'aws-cdk-lib';
 import * as fs from 'fs-extra';
 import * as vm from 'vm2';
-import * as path from 'path';
 import _ from 'lodash';
 import { pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { StackManager } from '@aws-amplify/graphql-transformer-core';
 import { AmplifyApiGraphQlResourceStackTemplate } from '@aws-amplify/graphql-transformer-interfaces';
+import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { ConstructResourceMeta } from './types/types';
 import { convertToAppsyncResourceObj, getStackMeta } from './types/utils';
-import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 
 /**
  *
@@ -94,7 +94,9 @@ export function applyFileBasedOverride(stackManager: StackManager, overrideDirPa
  */
 export class InvalidOverrideError extends Error {
   details: string;
+
   resolution: string;
+
   constructor(error: Error) {
     super('Executing overrides failed.');
     this.name = 'InvalidOverrideError';

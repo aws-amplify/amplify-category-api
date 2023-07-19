@@ -1,7 +1,4 @@
-import { replaceDdbPrimaryKey, updateResolvers, setQuerySnippet } from '../resolvers';
 import { TransformerContextProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../../types';
-import { IndexVTLGenerator } from './vtl-generator';
 import {
   bool,
   compoundExpression,
@@ -23,6 +20,9 @@ import {
   str,
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
+import { replaceDdbPrimaryKey, updateResolvers, setQuerySnippet } from '../resolvers';
+import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../../types';
+import { IndexVTLGenerator } from './vtl-generator';
 
 export class DynamoDBIndexVTLGenerator implements IndexVTLGenerator {
   generateIndexQueryRequestTemplate(

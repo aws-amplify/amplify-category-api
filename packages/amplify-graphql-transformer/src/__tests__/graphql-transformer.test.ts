@@ -1,4 +1,6 @@
 import { AppSyncAuthConfiguration, TransformerLogLevel, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces/src';
 import {
   constructTransformerChain,
   constructTransform,
@@ -6,8 +8,6 @@ import {
   TransformConfig,
   defaultPrintTransformerLog,
 } from '../graphql-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces/src';
 
 describe('constructTransformerChain', () => {
   it('returns 14 transformers when no custom transformers are provided', () => {

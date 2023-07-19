@@ -1,5 +1,3 @@
-import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
-import { DataSourceAdapter } from './datasource-adapter';
 import { knex } from 'knex';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { invokeSchemaInspectorLambda } from "../utils/vpc-helper";
@@ -36,9 +34,13 @@ interface MySQLColumn {
 
 export class MySQLDataSourceAdapter extends DataSourceAdapter {
   private dbBuilder: any;
+
   private indexes: MySQLIndex[] = [];
+
   private fields: MySQLColumn[] = [];
+
   private enums: Map<string, EnumType> = new Map<string, EnumType>();
+
   private readonly PRIMARY_KEY_INDEX_NAME = 'PRIMARY';
 
   constructor(private config: MySQLDataSourceConfig) {

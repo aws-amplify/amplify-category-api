@@ -5,8 +5,10 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 
 import { ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode } from 'graphql';
+
 export class TransformerContextProviderRegistry implements TransformerProviderRegistry {
   private dataSourceProviderRegistry: Map<string, TransformerModelProvider> = new Map();
+
   private dataSourceEnhancerRegistry: Map<string, Set<TransformerModelEnhancementProvider>> = new Map();
 
   registerDataSourceProvider = (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, provider: TransformerModelProvider) => {
@@ -16,6 +18,7 @@ export class TransformerContextProviderRegistry implements TransformerProviderRe
     }
     this.dataSourceProviderRegistry.set(typeName, provider);
   };
+
   getDataSourceProvider = (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): TransformerModelProvider => {
     const typeName = type.name.value;
     if (this.dataSourceProviderRegistry.has(typeName)) {
@@ -23,6 +26,7 @@ export class TransformerContextProviderRegistry implements TransformerProviderRe
     }
     throw new Error(`No data source provider has been registered for type ${typeName}`);
   };
+
   hasDataSourceProvider = (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): boolean => {
     const typeName = type.name.value;
     return this.dataSourceProviderRegistry.has(typeName);

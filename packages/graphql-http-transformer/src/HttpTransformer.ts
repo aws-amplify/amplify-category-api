@@ -8,9 +8,9 @@ import {
   InputValueDefinitionNode,
   print,
 } from 'graphql';
-import { ResourceFactory } from './resources';
 import { getDirectiveArgument, isScalar } from 'graphql-transformer-common';
 import { ResolverResourceIDs, HttpResourceIDs } from 'graphql-transformer-common';
+import { ResourceFactory } from './resources';
 import { makeUrlParamInputObject, makeHttpArgument, makeHttpQueryInputObject, makeHttpBodyInputObject } from './definitions';
 
 const HTTP_STACK_NAME = 'HttpStack';

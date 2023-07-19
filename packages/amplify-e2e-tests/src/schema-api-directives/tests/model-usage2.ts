@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Post @model(queries: { get: "post" }, mutations: null, subscriptions: null) {
   id: ID!
@@ -7,7 +7,7 @@ type Post @model(queries: { get: "post" }, mutations: null, subscriptions: null)
 }
 
 ##model/usage2`;
-//mutations
+// mutations
 export const mutation = `
 mutation CreatePost {
     createPost(input: {

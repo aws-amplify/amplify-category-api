@@ -1,6 +1,6 @@
+import * as crypto from 'crypto';
 import { ISynthesisSession, Stack, LegacyStackSynthesizer, FileAssetSource, FileAssetLocation, CfnParameter } from 'aws-cdk-lib';
 import { Template } from '@aws-amplify/graphql-transformer-interfaces';
-import * as crypto from 'crypto';
 import { TransformerRootStack } from './root-stack';
 
 /**
@@ -8,8 +8,11 @@ import { TransformerRootStack } from './root-stack';
  */
 export class TransformerStackSythesizer extends LegacyStackSynthesizer {
   private readonly stackAssets: Map<string, Template> = new Map();
+
   private readonly mapingTemplateAssets: Map<string, string> = new Map();
+
   private _deploymentBucket?: CfnParameter;
+
   private _deploymentRootKey?: CfnParameter;
 
   /**

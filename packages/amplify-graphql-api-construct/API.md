@@ -25,15 +25,28 @@ import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public
-export class AmplifyGraphqlApi extends Construct {
-    constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps);
+export type AmplifyApiGraphqlSchema = SchemaFile | SchemaFile[] | string;
+
+// @public
+export type AmplifyApiSchemaPreprocessor<SchemaType> = (schema: SchemaType) => AmplifyApiSchemaPreprocessorOutput;
+
+// @public
+export type AmplifyApiSchemaPreprocessorOutput = {
+    processedSchema: string;
+    processedFunctionSlots?: FunctionSlot[];
+};
+
+// @public
+export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends Construct {
+    constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps<SchemaType>);
     getGeneratedFunctionSlots(): FunctionSlot[];
     readonly resources: AmplifyGraphqlApiResources;
 }
 
 // @public
-export type AmplifyGraphqlApiProps = {
-    schema: AmplifyGraphqlApiSchema;
+export type AmplifyGraphqlApiProps<SchemaType = AmplifyApiGraphqlSchema> = {
+    schema: SchemaType;
+    schemaPreprocessor?: AmplifyApiSchemaPreprocessor<SchemaType>;
     apiName?: string;
     authorizationConfig: AuthorizationConfig;
     functionNameMap?: Record<string, IFunction>;
@@ -58,9 +71,6 @@ export type AmplifyGraphqlApiResources = {
     cfnPolicies: Record<string, CfnPolicy>;
     additionalCfnResources: Record<string, CfnResource>;
 };
-
-// @public
-export type AmplifyGraphqlApiSchema = SchemaFile | SchemaFile[] | string;
 
 // @public
 export type ApiKeyAuthorizationConfig = {

@@ -1,10 +1,10 @@
-import { nspawn as spawn, getCLIPath, getNpxPath, singleSelect, addCITags } from '..';
-import { copySync, moveSync, readFile } from 'fs-extra';
 import * as path from 'path';
+import { EOL } from 'os';
+import { copySync, moveSync, readFile } from 'fs-extra';
+import { v4 as uuid } from 'uuid';
+import { nspawn as spawn, getCLIPath, getNpxPath, singleSelect, addCITags } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
-import { EOL } from 'os';
-import { v4 as uuid } from 'uuid';
 
 const defaultSettings = {
   name: EOL,
@@ -460,7 +460,7 @@ export function amplifyVersion(cwd: string, expectedVersion: string, testingWith
   });
 }
 
-//Can be called only if detects teamprovider change
+// Can be called only if detects teamprovider change
 export function amplifyStatusWithMigrate(cwd: string, expectedStatus: string, testingWithLatestCodebase): Promise<void> {
   return new Promise((resolve, reject) => {
     let regex = new RegExp(`.*${expectedStatus}*`);

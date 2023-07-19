@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {
   config,
   DynamoDB,
@@ -16,7 +17,6 @@ import {
   SSM,
   Location,
 } from 'aws-sdk';
-import * as path from 'path';
 import _ from 'lodash';
 
 export const getDDBTable = async (tableName: string, region: string) => {
@@ -363,7 +363,7 @@ export const getSSMParameters = async (region: string, appId: string, envName: s
     })
     .promise();
 };
-//Amazon location service calls
+// Amazon location service calls
 export const getMap = async (mapName: string, region: string) => {
   const service = new Location({ region });
   return await service

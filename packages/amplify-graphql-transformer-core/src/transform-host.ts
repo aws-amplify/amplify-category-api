@@ -39,8 +39,11 @@ export interface DefaultTransformHostOptions {
 
 export class DefaultTransformHost implements TransformHostProvider {
   private dataSources: Map<string, BaseDataSource> = new Map();
+
   private resolvers: Map<string, CfnResolver> = new Map();
+
   private appsyncFunctions: Map<string, AppSyncFunctionConfiguration> = new Map();
+
   private api: GraphQLApi;
 
   public constructor(options: DefaultTransformHostOptions) {

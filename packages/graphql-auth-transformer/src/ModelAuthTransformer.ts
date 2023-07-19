@@ -9,8 +9,6 @@ import {
 import GraphQLAPI from 'cloudform-types/types/appSync/graphQlApi';
 import Resolver from 'cloudform-types/types/appSync/resolver';
 import { StringParameter } from 'cloudform-types';
-import { ResourceFactory } from './resources';
-import { AuthRule, ModelQuery, ModelMutation, ModelOperation, AuthProvider } from './AuthRule';
 import {
   ObjectTypeDefinitionNode,
   DirectiveNode,
@@ -39,6 +37,8 @@ import {
   ModelResourceIDs,
 } from 'graphql-transformer-common';
 import { Expression, print, raw, iff, forEach, set, ref, list, compoundExpression, newline, comment, not } from 'graphql-mapping-template';
+import { AuthRule, ModelQuery, ModelMutation, ModelOperation, AuthProvider } from './AuthRule';
+import { ResourceFactory } from './resources';
 import { ModelDirectiveConfiguration, ModelDirectiveOperationType, ModelSubscriptionLevel } from './ModelDirectiveConfiguration';
 
 import { OWNER_AUTH_STRATEGY, GROUPS_AUTH_STRATEGY, DEFAULT_OWNER_FIELD, AUTH_NON_MODEL_TYPES } from './constants';
@@ -156,11 +156,17 @@ export type ConfiguredAuthProviders = {
 
 export class ModelAuthTransformer extends Transformer {
   resources: ResourceFactory;
+
   config: ModelAuthTransformerConfig;
+
   configuredAuthProviders: ConfiguredAuthProviders;
+
   generateIAMPolicyforUnauthRole: boolean;
+
   generateIAMPolicyforAuthRole: boolean;
+
   authPolicyResources: Set<string>;
+
   unauthPolicyResources: Set<string>;
 
   constructor(config?: ModelAuthTransformerConfig) {

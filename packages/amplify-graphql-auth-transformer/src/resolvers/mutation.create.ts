@@ -20,20 +20,7 @@ import {
   ifElse,
   or,
 } from 'graphql-mapping-template';
-import {
-  getIdentityClaimExp,
-  getInputFields,
-  emptyPayload,
-  setHasAuthExpression,
-  iamCheck,
-  iamAdminRoleCheckExpression,
-  generateOwnerClaimExpression,
-  generateOwnerClaimListExpression,
-  generatePopulateOwnerField,
-  addAllowedFieldsIfElse,
-  generateOwnerMultiClaimExpression,
-  generateInvalidClaimsCondition,
-} from './helpers';
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   API_KEY_AUTH_TYPE,
   LAMBDA_AUTH_TYPE,
@@ -48,7 +35,20 @@ import {
   ALLOWED_FIELDS,
   DENIED_FIELDS,
 } from '../utils';
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  getIdentityClaimExp,
+  getInputFields,
+  emptyPayload,
+  setHasAuthExpression,
+  iamCheck,
+  iamAdminRoleCheckExpression,
+  generateOwnerClaimExpression,
+  generateOwnerClaimListExpression,
+  generatePopulateOwnerField,
+  addAllowedFieldsIfElse,
+  generateOwnerMultiClaimExpression,
+  generateInvalidClaimsCondition,
+} from './helpers';
 
 /**
  * There is only one role for ApiKey we can use the first index

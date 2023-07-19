@@ -1,4 +1,5 @@
 import { TransformConfig } from './transformer-config';
+
 export type Template = {
   Parameters: Record<string, any>;
   Resources: Record<string, any>;

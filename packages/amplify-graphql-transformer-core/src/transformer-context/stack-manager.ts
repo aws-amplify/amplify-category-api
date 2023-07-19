@@ -14,11 +14,17 @@ export type ResourceToStackMap = Record<string, string>;
  */
 export class StackManager implements StackManagerProvider {
   private stacks: Map<string, Stack> = new Map();
+
   private childStackSynthesizers: Map<string, TransformerStackSythesizer> = new Map();
+
   private stackSynthesizer = new TransformerStackSythesizer();
+
   public readonly rootStack: TransformerRootStack;
+
   private resourceToStackMap: Map<string, string>;
+
   private paramMap: Map<string, CfnParameter> = new Map();
+
   constructor(app: App, resourceMapping: ResourceToStackMap) {
     this.rootStack = new TransformerRootStack(app, 'transformer-root-stack', {
       synthesizer: this.stackSynthesizer,

@@ -1,6 +1,5 @@
-import { S3 } from 'aws-sdk';
-
 import fs = require('fs');
+import { S3 } from 'aws-sdk';
 
 async function promisify<I, O>(fun: (arg: I, cb: (e: Error, d: O) => void) => void, args: I, that: any): Promise<O> {
   return await new Promise<O>((resolve, reject) => {

@@ -1,3 +1,4 @@
+import path from 'path';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
@@ -12,7 +13,6 @@ import { printer } from '@aws-amplify/amplify-prompts';
 import { readTransformerConfiguration, TRANSFORM_CONFIG_FILE_NAME, ITransformer, TransformConfig } from 'graphql-transformer-core';
 import importFrom from 'import-from';
 import importGlobal from 'import-global';
-import path from 'path';
 
 const PROVIDER_NAME = 'awscloudformation';
 

@@ -2,14 +2,14 @@ import { AttributeType, BillingMode, StreamViewType, Table } from 'aws-cdk-lib/a
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
-import { TransformerContext } from '../transformer-context';
-import { ResolverConfig, SyncConfig, SyncConfigLambda } from '../config/transformer-config';
 import {
   StackManagerProvider,
   TransformerContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerContext } from '../transformer-context';
+import { ResolverConfig, SyncConfig, SyncConfigLambda } from '../config/transformer-config';
 
 type DeltaSyncConfig = {
   DeltaSyncTableName: any;

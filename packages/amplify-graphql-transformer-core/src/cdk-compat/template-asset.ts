@@ -1,4 +1,5 @@
 /* eslint-disable max-classes-per-file */
+import * as crypto from 'crypto';
 import {
   InlineMappingTemplateProvider,
   MappingTemplateType,
@@ -6,13 +7,15 @@ import {
   S3MappingTemplateProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
-import * as crypto from 'crypto';
 import { FileAsset } from './file-asset';
 
 export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
   public readonly type = MappingTemplateType.S3_LOCATION;
+
   private asset?: FileAsset;
+
   private fileName: string;
+
   private filePath: string;
 
   constructor(fileName: string, filePath: string) {
@@ -32,8 +35,11 @@ export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
 }
 export class S3MappingTemplate implements S3MappingTemplateProvider {
   private content: string;
+
   private name: string;
+
   private asset?: FileAsset;
+
   public readonly type = MappingTemplateType.S3_LOCATION;
 
   static fromInlineTemplate(code: string, templateName?: string): S3MappingTemplate {
@@ -80,6 +86,7 @@ export class InlineTemplate implements InlineMappingTemplateProvider {
 
   // eslint-disable-next-line no-useless-constructor
   constructor(private content: string) {}
+
   bind(): string {
     return this.content;
   }

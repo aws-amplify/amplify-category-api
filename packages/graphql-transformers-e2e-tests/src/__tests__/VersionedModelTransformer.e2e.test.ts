@@ -3,11 +3,11 @@ import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { VersionedModelTransformer } from 'graphql-versioned-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
-import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { GraphQLClient } from '../GraphQLClient';
 import { default as moment } from 'moment';
 import { default as S3 } from 'aws-sdk/clients/s3';
+import { GraphQLClient } from '../GraphQLClient';
+import { CloudFormationClient } from '../CloudFormationClient';
 import { S3Client } from '../S3Client';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { resolveTestRegion } from '../testSetup';
@@ -92,7 +92,7 @@ beforeAll(async () => {
     expect(finishedStack).toBeDefined();
 
     // Arbitrary wait to make sure everything is ready.
-    //await cf.wait(10, () => Promise.resolve())
+    // await cf.wait(10, () => Promise.resolve())
     expect(finishedStack).toBeDefined();
     const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
     const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput);

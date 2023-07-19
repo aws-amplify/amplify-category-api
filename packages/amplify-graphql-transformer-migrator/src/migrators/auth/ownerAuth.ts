@@ -1,5 +1,5 @@
-import { getAuthRules } from '.';
 import { createAuthRule } from '../generators';
+import { getAuthRules } from '.';
 
 function getPrivateAuthRule(rules: any, provider: any) {
   return rules.find((rule: any) => {

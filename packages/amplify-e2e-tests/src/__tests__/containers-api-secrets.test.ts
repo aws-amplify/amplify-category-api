@@ -1,3 +1,4 @@
+import path from 'path';
 import {
   addRestContainerApi,
   amplifyConfigureProject,
@@ -10,7 +11,6 @@ import {
 } from 'amplify-category-api-e2e-core';
 import fetch from 'node-fetch';
 import * as fs from 'fs-extra';
-import path from 'path';
 import { getAWSExports } from '../aws-exports/awsExports';
 
 async function setupAmplifyProject(cwd: string) {

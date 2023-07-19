@@ -1,9 +1,9 @@
+import * as path from 'path';
 import { StackManagerProvider, TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
-import * as path from 'path';
 
 export const createMappingLambda = (host: TransformHostProvider, stackManager: StackManagerProvider) => {
   const baseName = 'MapsToFieldMapping';

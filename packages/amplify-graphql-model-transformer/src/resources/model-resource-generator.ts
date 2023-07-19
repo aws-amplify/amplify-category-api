@@ -20,13 +20,21 @@ import { ModelTransformerOptions } from '../types';
  */
 export abstract class ModelResourceGenerator {
   protected datasourceMap: Record<string, DataSourceProvider> = {};
+
   private resolverMap: Record<string, TransformerResolverProvider> = {};
+
   protected generatorType = 'ModelResourceGenerator';
+
   private enabled = false;
+
   private provisioned = false;
+
   private unprovisioned = false;
+
   protected models: Array<ObjectTypeDefinitionNode> = new Array<ObjectTypeDefinitionNode>();
+
   protected modelDirectiveMap: Map<string, ModelDirectiveConfiguration> = new Map<string, ModelDirectiveConfiguration>();
+
   protected options: ModelTransformerOptions;
 
   constructor(options: ModelTransformerOptions = {}) {

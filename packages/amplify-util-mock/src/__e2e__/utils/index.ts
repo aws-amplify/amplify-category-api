@@ -1,13 +1,13 @@
+import * as path from 'path';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
 import * as dynamoEmulator from 'amplify-category-api-dynamodb-simulator';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import { v4 } from 'uuid';
+import { DynamoDB } from 'aws-sdk';
+import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
 import { processTransformerStacks } from '../../CFNParser/appsync-resource-processor';
 import { configureDDBDataSource, createAndUpdateTable } from '../../utils/dynamo-db';
 import { getFunctionDetails } from './lambda-helper';
-import { DynamoDB } from 'aws-sdk';
-import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
 
 const invoke = functionRuntimeContributorFactory({}).invoke;
 

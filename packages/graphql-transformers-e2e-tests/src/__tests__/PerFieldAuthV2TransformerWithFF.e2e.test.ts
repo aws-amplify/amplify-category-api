@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
@@ -5,7 +6,6 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { CognitoIdentityServiceProvider as CognitoClient, S3 } from 'aws-sdk';
 import { default as moment } from 'moment';
-import * as fs from 'fs';
 import { GraphQLClient } from '../GraphQLClient';
 import { S3Client } from '../S3Client';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
@@ -23,6 +23,7 @@ import 'isomorphic-fetch';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+
 import { resolveTestRegion } from '../testSetup';
 
 const region = resolveTestRegion();

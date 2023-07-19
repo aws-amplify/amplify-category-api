@@ -1,3 +1,4 @@
+import * as os from 'os';
 import { ImportedRDSType, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 import { MySQLDataSourceAdapter, generateGraphQLSchema, Schema, Engine, DataSourceAdapter, MySQLDataSourceConfig, getHostVpc, provisionSchemaInspectorLambda } from '@aws-amplify/graphql-schema-generator';

@@ -1,8 +1,8 @@
+const path = require('path');
+const childProcess = require('child_process');
 const lnk = require('lnk');
 const cmdShim = require('@zkochan/cmd-shim');
-const path = require('path');
 const fs = require('fs-extra');
-const childProcess = require('child_process');
 
 if (process.argv.length < 4) {
   console.log('requires 2 arguments. source and command name');

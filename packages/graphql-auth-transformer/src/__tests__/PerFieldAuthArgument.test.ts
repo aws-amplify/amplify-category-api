@@ -4,6 +4,7 @@ import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { ModelAuthTransformer } from '../ModelAuthTransformer';
+
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {

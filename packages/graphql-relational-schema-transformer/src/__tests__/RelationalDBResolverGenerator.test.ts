@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
+import { parse } from 'graphql';
 import { RelationalDBResolverGenerator } from '../RelationalDBResolverGenerator';
 import { TemplateContext } from '../RelationalDBSchemaTransformer';
-import { parse } from 'graphql';
 
 jest.mock('fs-extra', () => ({
   writeFileSync: jest.fn(),

@@ -1,6 +1,6 @@
-import { lambdaEventSourceHandler, lambdaFunctionHandler } from './lambda';
 import { CloudFormationResource, ProcessedLambdaFunction } from '../stack/types';
 import { CloudFormationParseContext } from '../types';
+import { lambdaEventSourceHandler, lambdaFunctionHandler } from './lambda';
 import {
   appSyncAPIKeyResourceHandler,
   appSyncAPIResourceHandler,

@@ -19,8 +19,6 @@ import {
   OperationTypeDefinitionNode,
   InterfaceTypeDefinitionNode,
 } from 'graphql';
-import blankTemplate from './util/blankTemplate';
-import DefaultSchemaDefinition from './defaultSchema';
 import {
   InterfaceTypeExtensionNode,
   UnionTypeExtensionNode,
@@ -30,9 +28,12 @@ import {
   InputObjectTypeExtensionNode,
   InputValueDefinitionNode,
 } from 'graphql/language/ast';
-import { ResolverConfig } from './util';
 import { makeOperationType } from 'graphql-transformer-common';
+import blankTemplate from './util/blankTemplate';
+import DefaultSchemaDefinition from './defaultSchema';
+import { ResolverConfig } from './util';
 import { FeatureFlagProvider } from './FeatureFlags';
+
 export interface MappingParameters {
   [key: string]: {
     [key: string]: {

@@ -1,6 +1,7 @@
+import { ServiceName as FunctionServiceName } from '@aws-amplify/amplify-category-function';
 import { start as startAppSyncServer } from './api';
 import { start as startS3Server } from './storage';
-import { ServiceName as FunctionServiceName } from '@aws-amplify/amplify-category-function';
+
 const MOCK_SUPPORTED_CATEGORY = ['AppSync', 'S3', FunctionServiceName.LambdaFunction];
 
 export async function mockAllCategories(context: any) {
