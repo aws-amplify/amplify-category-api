@@ -1,5 +1,6 @@
 import md5 from 'md5';
 import pluralize from 'pluralize';
+
 export function plurality(val: string, improvePluralization: boolean): string {
   if (!val.trim()) {
     return '';

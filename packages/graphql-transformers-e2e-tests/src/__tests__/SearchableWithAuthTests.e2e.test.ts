@@ -47,6 +47,7 @@ if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+
 import { resolveTestRegion } from '../testSetup';
 
 const AWS_REGION = resolveTestRegion();

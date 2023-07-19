@@ -27,6 +27,7 @@ import 'isomorphic-fetch';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+
 import { resolveTestRegion } from '../testSetup';
 
 const region = resolveTestRegion();

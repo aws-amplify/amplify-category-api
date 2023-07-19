@@ -17,6 +17,7 @@ import {
 } from 'amplify-category-api-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+
 (global as any).fetch = require('node-fetch');
 
 jest.setTimeout(120 * 60 * 1000); // Set timeout to 2 hour because of creating/deleting searchable instance

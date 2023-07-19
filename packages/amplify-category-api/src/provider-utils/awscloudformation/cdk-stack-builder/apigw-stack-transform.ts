@@ -19,6 +19,7 @@ import * as vm from 'vm2';
 import { ApigwInputState } from '../apigw-input-state';
 import { ADMIN_QUERIES_NAME } from '../../../category-constants';
 import { AmplifyApigwResourceStack, ApigwInputs, CrudOperation, Path } from '.';
+
 export class ApigwStackTransform {
   cliInputs: ApigwInputs;
   resourceTemplateObj: AmplifyApigwResourceStack | undefined;

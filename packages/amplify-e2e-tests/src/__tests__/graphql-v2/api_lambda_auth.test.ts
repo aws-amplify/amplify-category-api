@@ -14,6 +14,7 @@ import {
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { addEnvironment, checkoutEnvironment, listEnvironment } from '../../environment/env';
+
 const providerName = 'awscloudformation';
 
 // to deal with bug in cognito-identity-js

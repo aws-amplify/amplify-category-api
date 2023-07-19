@@ -13,6 +13,7 @@ import { ResolverResourceIDs } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { ModelConnectionTransformer } from '../ModelConnectionTransformer';
+
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {

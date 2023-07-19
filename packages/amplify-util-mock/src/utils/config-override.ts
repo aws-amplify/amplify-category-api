@@ -1,4 +1,5 @@
 import { getAmplifyMeta } from './index';
+
 export class ConfigOverrideManager {
   private static instance: ConfigOverrideManager = null;
   private overrides: {};

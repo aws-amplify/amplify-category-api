@@ -33,6 +33,7 @@ import blankTemplate from './util/blankTemplate';
 import DefaultSchemaDefinition from './defaultSchema';
 import { ResolverConfig } from './util';
 import { FeatureFlagProvider } from './FeatureFlags';
+
 export interface MappingParameters {
   [key: string]: {
     [key: string]: {

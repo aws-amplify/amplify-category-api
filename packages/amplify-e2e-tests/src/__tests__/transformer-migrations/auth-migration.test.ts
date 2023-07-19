@@ -13,7 +13,9 @@ import {
   updateAuthAddUserGroups,
 } from 'amplify-category-api-e2e-core';
 import gql from 'graphql-tag';
+
 (global as any).fetch = require('node-fetch');
+
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { Auth } from 'aws-amplify';
 import moment from 'moment';

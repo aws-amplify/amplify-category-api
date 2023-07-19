@@ -1,6 +1,7 @@
 import { DataSourceAdapter, MySQLDataSourceAdapter } from '../datasource-adapter';
 import { Engine, Field, FieldType, Index, Model, Schema } from '../schema-representation';
 import { generateGraphQLSchema, isComputeExpression } from '../schema-generator';
+
 class TestDataSourceAdapter extends DataSourceAdapter {
   public async initialize(): Promise<void> {
     // Do Nothing
