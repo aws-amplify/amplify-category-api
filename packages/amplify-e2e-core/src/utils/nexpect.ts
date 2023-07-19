@@ -23,6 +23,7 @@ import retimer = require('retimer');
 import * as fs from 'fs-extra';
 import { Recorder } from '../asciinema-recorder';
 import { getScriptRunnerPath, isTestingWithLatestCodebase } from '..';
+
 export const RETURN = process.platform === 'win32' ? '\r' : EOL;
 const DEFAULT_NO_OUTPUT_TIMEOUT = process.env.AMPLIFY_TEST_TIMEOUT_SEC
   ? Number.parseInt(process.env.AMPLIFY_TEST_TIMEOUT_SEC, 10) * 1000

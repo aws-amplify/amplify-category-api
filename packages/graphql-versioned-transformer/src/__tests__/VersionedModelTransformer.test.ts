@@ -2,6 +2,7 @@ import { ObjectTypeDefinitionNode, parse, DocumentNode, Kind, InputObjectTypeDef
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { VersionedModelTransformer } from '../VersionedModelTransformer';
+
 const getInputType =
   (schemaDoc: DocumentNode) =>
   (name: string): InputObjectTypeDefinitionNode =>

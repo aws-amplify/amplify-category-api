@@ -1,4 +1,5 @@
 import { SchemaDefinitionNode, Kind } from 'graphql';
+
 const DEFAULT_SCHEMA_DEFINITION: SchemaDefinitionNode = {
   kind: Kind.SCHEMA_DEFINITION,
   directives: [],

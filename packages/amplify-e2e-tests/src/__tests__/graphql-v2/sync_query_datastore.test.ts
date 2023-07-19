@@ -3,6 +3,7 @@ import { addApiWithBlankSchemaAndConflictDetection, updateApiSchema, getProjectM
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+
 (global as any).fetch = require('node-fetch');
 
 const projectName = 'syncquerytest';

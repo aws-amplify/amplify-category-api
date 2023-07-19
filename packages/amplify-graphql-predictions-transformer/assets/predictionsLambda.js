@@ -1,4 +1,5 @@
 const AWS = require('aws-sdk');
+
 exports.handler = function (event, context, callback) {
   if (event && event.action === 'convertTextToSpeech') {
     convertTextToSpeech(event, callback);

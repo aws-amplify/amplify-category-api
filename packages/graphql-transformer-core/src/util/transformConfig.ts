@@ -5,6 +5,7 @@ import { parse, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { ApiCategorySchemaNotFoundError } from '../errors';
 import { throwIfNotJSONExt } from './fileUtils';
 import { ProjectOptions } from './amplifyUtils';
+
 const fs = require('fs-extra');
 
 export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;

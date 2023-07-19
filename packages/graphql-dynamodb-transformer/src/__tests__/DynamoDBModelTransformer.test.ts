@@ -14,6 +14,7 @@ import {
 import { FeatureFlagProvider, GraphQLTransform, TRANSFORM_BASE_VERSION, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { getBaseType } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from '../DynamoDBModelTransformer';
+
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {

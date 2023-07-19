@@ -12,6 +12,7 @@ import { addApiWithoutSchema, updateApiSchema, getProjectMeta } from 'amplify-ca
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
+
 (global as any).fetch = require('node-fetch');
 
 describe('transformer predictions migration test', () => {
