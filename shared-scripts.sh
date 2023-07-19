@@ -172,6 +172,9 @@ function _installCLIFromLocalRegistry {
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
+    # set longer timeout to avoid socket timeout error
+    npm config set fetch-retry-mintimeout 20000
+    npm config set fetch-retry-maxtimeout 120000
     npm install -g @aws-amplify/cli-internal@12.2.0-aws-cdk-lib-2-28.0
     echo "using Amplify CLI version: "$(amplify --version)
     npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'
