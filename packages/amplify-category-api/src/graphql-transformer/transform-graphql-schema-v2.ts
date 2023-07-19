@@ -1,4 +1,6 @@
-import { RDSConnectionSecrets, MYSQL_DB_TYPE, StackManager, TransformResourceProvider, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
+/* eslint-disable no-underscore-dangle */
+import path from 'path';
+import { RDSConnectionSecrets, MYSQL_DB_TYPE, NestedStackProvider, FileAssetProvider, FileAsset, TemplateProps } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
   DeploymentResources,
@@ -11,15 +13,17 @@ import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { sanityCheckProject } from 'graphql-transformer-core';
 import _ from 'lodash';
-import path from 'path';
+import { getExistingConnectionSecretNames, getSecretsKey } from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
+import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { isAuthModeUpdated } from './auth-mode-compare';
 import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerProjectOptions } from './transformer-options-types';
-import { getExistingConnectionSecretNames, getSecretsKey } from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
-import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { executeTransform } from '@aws-amplify/graphql-transformer';
-import { App } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
+import { TransformerNestedStack, TransformerRootStack, TransformerStackSythesizer } from './cdk-compat';
+import { Construct } from 'constructs';
+import { AmplifyFileAsset } from './cdk-compat/file-asset';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
@@ -174,10 +178,83 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
     return undefined;
   }
 
-  const app = new App();
+  const rootStackName = 'transformer-root-stack';
 
-  const transformResourceProvider = executeTransform({
-    scope: app,
+  const app = new App();
+  const stackSynthesizer = new TransformerStackSythesizer();
+  const rootStack = new TransformerRootStack(app, rootStackName, {
+    synthesizer: stackSynthesizer,
+  });
+  const childStackSynthesizers = new Map<string, TransformerStackSythesizer>();
+
+  const nestedStackProvider: NestedStackProvider = {
+    generateNestedStack: (scope: Construct, stackName: string): Stack => {
+      const synthesizer = new TransformerStackSythesizer();
+      const newStack = new TransformerNestedStack(scope, stackName, { synthesizer });
+      childStackSynthesizers.set(stackName, synthesizer);
+      return newStack;
+    },
+  };
+
+  const fileAssetProvider: FileAssetProvider = {
+    generateAsset: (scope: Construct, id: string, props: TemplateProps): FileAsset => {
+      return new AmplifyFileAsset(scope, id, props);
+    },
+  };
+
+  const getCloudFormationTemplates = (): Map<string, Template> => {
+    let stacks = stackSynthesizer.collectStacks();
+    childStackSynthesizers.forEach((synthesizer) => {
+      stacks = new Map([...stacks.entries(), ...synthesizer.collectStacks()]);
+    });
+    return stacks;
+  };
+  
+  const getMappingTemplates = (): Map<string, string> => {
+    return stackSynthesizer.collectMappingTemplates();
+  };
+
+  const getDeploymentResources = (): DeploymentResources => {
+    const cloudformationTemplates = getCloudFormationTemplates();
+    const _rootStack = cloudformationTemplates.get(rootStackName);
+    const stacks: Record<string, Template> = {};
+    for (const [templateName, template] of cloudformationTemplates.entries()) {
+      if (templateName !== rootStackName) {
+        stacks[templateName] = template;
+      }
+    }
+    const fileAssets = getMappingTemplates();
+    const _schema =  fileAssets.get('schema.graphql');
+    const resolvers: Record<string, string> = {};
+    const pipelineFunctions: Record<string, string> = {};
+    const functions: Record<string, string> = {};
+    for (const [templateName, template] of fileAssets) {
+      if (templateName.startsWith('resolvers/')) {
+        resolvers[templateName.replace('resolvers/', '')] = template;
+      }
+      if (templateName.startsWith('pipelineFunctions/')) {
+        pipelineFunctions[templateName.replace('pipelineFunctions/', '')] = template;
+      }
+      if (templateName.startsWith('functions/')) {
+        functions[templateName.replace('functions/', '')] = template;
+      }
+    }
+    return {
+      rootStack: _rootStack,
+      stacks,
+      schema: _schema,
+      resolvers,
+      pipelineFunctions,
+      functions,
+      stackMapping: {},
+      userOverriddenSlots: [],
+    };
+  };
+
+  executeTransform({
+    scope: rootStack,
+    fileAssetProvider,
+    nestedStackProvider,
     ...opts,
     schema,
     modelToDatasourceMap: opts.projectConfig.modelToDatasourceMap,
@@ -189,12 +266,11 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
     opts.overrideConfig?.applyOverride(app);
   }
 
-  // N.B. this must happen befor the resource provider can be used I guess.
   app.synth({ force: true, skipValidation: true });
 
-  const transformOutput = synthesize(transformResourceProvider, opts.userDefinedSlots ?? {});
+  const deploymentResources = getDeploymentResources();
 
-  const builtProject = mergeUserConfigWithTransformOutput(opts.projectConfig, transformOutput, opts);
+  const builtProject = mergeUserConfigWithTransformOutput(opts.projectConfig, deploymentResources, opts);
 
   const buildLocation = path.join(opts.projectDirectory, 'build');
   const currentCloudLocation = opts.currentCloudBackendDirectory ? path.join(opts.currentCloudBackendDirectory, 'build') : undefined;
@@ -212,58 +288,6 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
 
   return builtProject;
 };
-const synthesize = (
-  resourceProvider: TransformResourceProvider,
-  userDefinedSlots: Record<string, UserDefinedSlot[]>,
-): DeploymentResources => {
-  const templates = resourceProvider.getCloudFormationTemplates();
-  const rootStackTemplate = templates.get('transformer-root-stack');
-  const childStacks: Record<string, Template> = {};
-  for (const [templateName, template] of templates.entries()) {
-    if (templateName !== 'transformer-root-stack') {
-      childStacks[templateName] = template;
-    }
-  }
-
-  const fileAssets = resourceProvider.getMappingTemplates();
-  const pipelineFunctions: Record<string, string> = {};
-  const resolvers: Record<string, string> = {};
-  const functions: Record<string, string> = {};
-  for (const [templateName, template] of fileAssets) {
-    if (templateName.startsWith('pipelineFunctions/')) {
-      pipelineFunctions[templateName.replace('pipelineFunctions/', '')] = template;
-    } else if (templateName.startsWith('resolvers/')) {
-      resolvers[templateName.replace('resolvers/', '')] = template;
-    } else if (templateName.startsWith('functions/')) {
-      functions[templateName.replace('functions/', '')] = template;
-    }
-  }
-  const schema = fileAssets.get('schema.graphql') || '';
-
-  const resolverEntries = resourceProvider.getResolvers();
-  const userOverriddenSlots: string[] = [];
-  for (const [resolverName] of resolverEntries) {
-    const userSlots = userDefinedSlots[resolverName] || [];
-
-    userSlots.forEach((slot) => {
-      const fileName = slot.requestResolver?.fileName;
-      if (fileName && fileName in resolvers) {
-        userOverriddenSlots.push(fileName);
-      }
-    });
-  }
-
-  return {
-    userOverriddenSlots,
-    functions,
-    pipelineFunctions,
-    stackMapping: {},
-    resolvers,
-    schema,
-    stacks: childStacks,
-    rootStack: rootStackTemplate!,
-  };
-}
 
 const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, RDSConnectionSecrets>> => {
   const outputMap = new Map<string, RDSConnectionSecrets>();

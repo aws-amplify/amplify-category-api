@@ -29,9 +29,6 @@ const directiveDefinition = `
   directive @${directiveName}(name: String, sortKeyFields: [String], queryField: String) repeatable on FIELD_DEFINITION
 `;
 
-/**
- *
- */
 export class IndexTransformer extends TransformerPluginBase {
   private directiveList: IndexDirectiveConfiguration[] = [];
   private resolverMap: Map<TransformerResolverProvider, string> = new Map();

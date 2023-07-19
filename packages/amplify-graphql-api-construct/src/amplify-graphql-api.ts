@@ -11,6 +11,7 @@ import {
 } from './internal';
 import type { AmplifyGraphqlApiProps } from './types';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
+import { fileAssetProvider, nestedStackProvider } from './internal/cdk-compat';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -90,6 +91,8 @@ export class AmplifyGraphqlApi extends Construct {
         ...defaultSchemaTranslationBehavior,
         ...(schemaTranslationBehavior ?? {}),
       },
+      fileAssetProvider,
+      nestedStackProvider,
     });
 
     const env = this.node.tryGetContext('env') ?? 'NONE';

@@ -24,10 +24,11 @@ import type { TransformParameters } from '@aws-amplify/graphql-transformer-inter
 import {
   DatasourceType,
   GraphQLTransform,
+  NestedStackProvider,
   RDSConnectionSecrets,
   ResolverConfig,
   UserDefinedSlot,
-  TransformResourceProvider,
+  FileAssetProvider,
 } from '@aws-amplify/graphql-transformer-core';
 import { Construct } from 'constructs';
 
@@ -115,6 +116,8 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
 
 export type ExecuteTransformConfig = TransformConfig & {
   scope: Construct;
+  fileAssetProvider: FileAssetProvider;
+  nestedStackProvider: NestedStackProvider;
   schema: string;
   modelToDatasourceMap?: Map<string, DatasourceType>;
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
@@ -149,16 +152,30 @@ export const defaultPrintTransformerLog = (log: TransformerLog): void => {
  * @param config the configuration for the transform.
  * @returns the transformed api deployment resources.
  */
-export const executeTransform = (config: ExecuteTransformConfig): TransformResourceProvider => {
-  const { scope, schema, modelToDatasourceMap, datasourceSecretParameterLocations, printTransformerLog } = config;
+export const executeTransform = (config: ExecuteTransformConfig): void => {
+  const {
+    scope,
+    fileAssetProvider,
+    nestedStackProvider,
+    schema,
+    modelToDatasourceMap,
+    datasourceSecretParameterLocations,
+    printTransformerLog,
+  } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
   const transform = constructTransform(config);
 
   try {
-    return transform.transform(scope, schema, {
-      modelToDatasourceMap,
-      datasourceSecretParameterLocations,
+    return transform.transform({
+      scope,
+      fileAssetProvider,
+      nestedStackProvider,
+      schema,
+      datasourceConfig: {
+        modelToDatasourceMap,
+        datasourceSecretParameterLocations,
+      },
     });
   } finally {
     transform.getLogs().forEach(printLog);

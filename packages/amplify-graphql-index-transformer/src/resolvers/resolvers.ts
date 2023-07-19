@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable func-style */
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
 import {
   MappingTemplate,
-  GraphQLTransform,
-  SyncUtils,
-  StackManager,
   DatasourceType,
   MYSQL_DB_TYPE,
   DDB_DB_TYPE,
@@ -11,11 +11,8 @@ import {
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
-  StackManagerProvider,
   TransformerContextProvider,
-  TransformerPluginProvider,
   TransformerResolverProvider,
-  AmplifyApiGraphQlResourceStackTemplate,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
@@ -60,10 +57,9 @@ import {
   ResourceConstants,
   toCamelCase,
 } from 'graphql-transformer-common';
+import _ from 'lodash';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../types';
 import { lookupResolverName } from '../utils';
-import * as path from 'path';
-import _ from 'lodash';
 import { RDSIndexVTLGenerator, DynamoDBIndexVTLGenerator } from './generators';
 
 const API_KEY = 'API Key Authorization';

@@ -1,6 +1,6 @@
-import fs from 'fs-extra';
 import * as path from 'path';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
+import fs from 'fs-extra';
+import { DeploymentResources, Template } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerProjectConfig } from '@aws-amplify/graphql-transformer-core';
 import rimraf from 'rimraf';
 import {
@@ -83,11 +83,11 @@ export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string | u
   return adminRoles;
 };
 
-export function mergeUserConfigWithTransformOutput(
+export const mergeUserConfigWithTransformOutput = (
   userConfig: TransformerProjectConfig,
   transformOutput: DeploymentResources,
   opts?: any,
-): DeploymentResources {
+): DeploymentResources => {
   const userFunctions = userConfig.functions || {};
   const userResolvers = userConfig.resolvers || {};
   const userPipelineFunctions = userConfig.pipelineFunctions || {};
@@ -131,9 +131,12 @@ export function mergeUserConfigWithTransformOutput(
     pipelineFunctions,
     stacks,
   };
-}
+};
 
-function overrideUserDefinedStacks(userConfig: TransformerProjectConfig, transformOutput: DeploymentResources) {
+const overrideUserDefinedStacks = (
+  userConfig: TransformerProjectConfig,
+  transformOutput: DeploymentResources,
+): Record<string, Template> => {
   const userStacks = userConfig.stacks || {};
   const { stacks, rootStack } = transformOutput;
 
@@ -204,18 +207,18 @@ function overrideUserDefinedStacks(userConfig: TransformerProjectConfig, transfo
   rootStack.Parameters = updatedParameters;
 
   return stacks;
-}
+};
 
 /**
  * Writes a deployment to disk at a path.
  */
-export async function writeDeploymentToDisk(
+export const writeDeploymentToDisk = async (
   context: $TSContext,
   deployment: DeploymentResources,
   directory: string,
   rootStackFileName = 'rootStack.json',
   buildParameters: Object,
-) {
+): Promise<void> => {
   fs.ensureDirSync(directory);
   // Delete the last deployments resources except for tsconfig if present
   emptyBuildDirPreserveTsconfig(directory);
@@ -283,7 +286,7 @@ export async function writeDeploymentToDisk(
   const jsonString = JSON.stringify(buildParameters, null, 4);
   const parametersOutputFilePath = path.join(directory, PARAMETERS_FILE_NAME);
   fs.writeFileSync(parametersOutputFilePath, jsonString);
-}
+};
 
 function initStacksAndResolversDirectories(directory: string) {
   const resolverRootPath = resolverDirectoryPath(directory);
