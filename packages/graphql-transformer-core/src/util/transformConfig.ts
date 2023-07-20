@@ -315,7 +315,7 @@ export const readSchema = async (
   };
 };
 
-const removeAmplifyInput = (schema: string): SchemaReaderConfig => {
+export const removeAmplifyInput = (schema: string): SchemaReaderConfig => {
   const parsedSchema = parse(schema);
   const amplifyType = parsedSchema.definitions.find((obj) => obj.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && obj.name.value === 'AMPLIFY') as InputObjectTypeDefinitionNode;
   const schemaWithoutAmplifyInput = parsedSchema.definitions.filter((obj) => obj.kind !== Kind.INPUT_OBJECT_TYPE_DEFINITION || obj.name.value !== 'AMPLIFY');
