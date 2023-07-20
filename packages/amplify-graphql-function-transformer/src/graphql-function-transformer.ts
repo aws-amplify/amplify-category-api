@@ -74,20 +74,20 @@ export class FunctionTransformer extends TransformerPluginBase {
       expression: cdk.Fn.conditionNot(cdk.Fn.conditionEquals(env, ResourceConstants.NONE)),
     });
 
-    this.resolverGroups.forEach((resolverFns, fieldDefinition) => {
+    this.resolverGroups.forEach((resolverFns) => {
       resolverFns.forEach((config) => {
         // Create data sources that register Lambdas and IAM roles.
         const dataSourceId = FunctionResourceIDs.FunctionDataSourceID(config.name, config.region, config.accountId);
 
         if (!createdResources.has(dataSourceId)) {
-          const dataSourceStack = context.stackManager.getStackFor(dataSourceId, FUNCTION_DIRECTIVE_STACK);
+          const dataSourceScope = context.stackManager.getScopeFor(dataSourceId, FUNCTION_DIRECTIVE_STACK);
           const dataSource = context.api.host.addLambdaDataSource(
             dataSourceId,
             lambda.Function.fromFunctionAttributes(stack, `${dataSourceId}Function`, {
               functionArn: lambdaArnResource(env, config.name, config.region, config.accountId),
             }),
             {},
-            dataSourceStack,
+            dataSourceScope,
           );
           createdResources.set(dataSourceId, dataSource);
         }
@@ -97,7 +97,7 @@ export class FunctionTransformer extends TransformerPluginBase {
         let func = createdResources.get(functionId);
 
         if (func === undefined) {
-          const funcStack = context.stackManager.getStackFor(functionId, FUNCTION_DIRECTIVE_STACK);
+          const funcScope = context.stackManager.getScopeFor(functionId, FUNCTION_DIRECTIVE_STACK);
           func = context.api.host.addAppSyncFunction(
             functionId,
             MappingTemplate.s3MappingTemplateFromString(
@@ -128,7 +128,7 @@ export class FunctionTransformer extends TransformerPluginBase {
               `${functionId}.res.vtl`,
             ),
             dataSourceId,
-            funcStack,
+            funcScope,
           );
 
           createdResources.set(functionId, func);
@@ -151,12 +151,12 @@ export class FunctionTransformer extends TransformerPluginBase {
           requestTemplate.push(
             qref(
               `$ctx.stash.put("authRole", "arn:aws:sts::${
-                cdk.Stack.of(context.stackManager.rootStack).account
+                cdk.Stack.of(context.stackManager.scope).account
               }:assumed-role/${authRoleParameter}/CognitoIdentityCredentials")`,
             ),
             qref(
               `$ctx.stash.put("unauthRole", "arn:aws:sts::${
-                cdk.Stack.of(context.stackManager.rootStack).account
+                cdk.Stack.of(context.stackManager.scope).account
               }:assumed-role/${unauthRoleParameter}/CognitoIdentityCredentials")`,
             ),
           );
@@ -165,7 +165,7 @@ export class FunctionTransformer extends TransformerPluginBase {
 
         if (resolver === undefined) {
           // TODO: update function to use resolver manager.
-          const resolverStack = context.stackManager.getStackFor(resolverId, FUNCTION_DIRECTIVE_STACK);
+          const resolverScope = context.stackManager.getScopeFor(resolverId, FUNCTION_DIRECTIVE_STACK);
           resolver = context.api.host.addResolver(
             config.resolverTypeName,
             config.resolverFieldName,
@@ -177,7 +177,7 @@ export class FunctionTransformer extends TransformerPluginBase {
             resolverId,
             undefined,
             [],
-            resolverStack,
+            resolverScope,
           );
           createdResources.set(resolverId, resolver);
         }

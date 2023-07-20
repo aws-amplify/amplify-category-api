@@ -24,14 +24,14 @@ export function applyFileBasedOverride(stackManager: StackManager, overrideDirPa
 
   const stacks: string[] = [];
   const amplifyApiObj: any = {};
-  stackManager.rootStack.node.findAll().forEach((node) => {
+  stackManager.scope.node.findAll().forEach((node) => {
     const resource = node as CfnResource;
     if (resource.cfnResourceType === 'AWS::CloudFormation::Stack') {
       stacks.push(node.node.id.split('.')[0]);
     }
   });
 
-  stackManager.rootStack.node.findAll().forEach((node) => {
+  stackManager.scope.node.findAll().forEach((node) => {
     const resource = node as CfnResource;
     let pathArr;
     if (node.node.id === 'Resource') {

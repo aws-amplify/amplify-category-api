@@ -317,7 +317,7 @@ export class GraphQLTransform {
     // Todo: Move this to its own transformer plugin to support modifying the API
     // Like setting the auth mode and enabling logging and such
 
-    const { rootStack } = stackManager;
+    const { scope } = stackManager;
     const authorizationConfig = adoptAuthModes(stackManager, this.authConfig);
     const apiName = stackManager.addParameter('AppSyncApiName', {
       default: 'AppSyncSimpleTransform',
@@ -327,7 +327,7 @@ export class GraphQLTransform {
     if (!envName) {
       throw new Error('Parameter `env` not configured properly.');
     }
-    const api = new GraphQLApi(rootStack, 'GraphQLAPI', {
+    const api = new GraphQLApi(scope, 'GraphQLAPI', {
       name: `${apiName}-${envName.valueAsString}`,
       authorizationConfig,
       host: this.options.host,
@@ -352,7 +352,7 @@ export class GraphQLTransform {
         expires: apiKeyExpirationDays,
       });
 
-      new CfnOutput(rootStack, 'GraphQLAPIKeyOutput', {
+      new CfnOutput(scope, 'GraphQLAPIKeyOutput', {
         value: apiKey.attrApiKey,
         description: 'Your GraphQL API ID.',
         exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiKey']),
@@ -364,13 +364,13 @@ export class GraphQLTransform {
       stackManager.addParameter(IAM_UNAUTH_ROLE_PARAMETER, { type: 'String' });
     }
 
-    new CfnOutput(rootStack, 'GraphQLAPIIdOutput', {
+    new CfnOutput(scope, 'GraphQLAPIIdOutput', {
       value: api.apiId,
       description: 'Your GraphQL API ID.',
       exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiId']),
     });
 
-    new CfnOutput(rootStack, 'GraphQLAPIEndpointOutput', {
+    new CfnOutput(scope, 'GraphQLAPIEndpointOutput', {
       value: api.graphqlUrl,
       description: 'Your GraphQL API endpoint.',
       exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiEndpoint']),

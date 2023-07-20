@@ -295,12 +295,12 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
     requestTemplate.push(
       qref(
         `$ctx.stash.put("authRole", "arn:aws:sts::${
-          cdk.Stack.of(context.stackManager.rootStack).account
+          cdk.Stack.of(context.stackManager.scope).account
         }:assumed-role/${authRoleParameter}/CognitoIdentityCredentials")`,
       ),
       qref(
         `$ctx.stash.put("unauthRole", "arn:aws:sts::${
-          cdk.Stack.of(context.stackManager.rootStack).account
+          cdk.Stack.of(context.stackManager.scope).account
         }:assumed-role/${unauthRoleParameter}/CognitoIdentityCredentials")`,
       ),
     );

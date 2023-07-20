@@ -353,10 +353,10 @@ function createResolver(
     const unauthRoleParameter = (context.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
     requestTemplate.push(
       `$util.qr($ctx.stash.put("authRole", "arn:aws:sts::${
-        cdk.Stack.of(context.stackManager.rootStack).account
+        cdk.Stack.of(context.stackManager.scope).account
       }:assumed-role/${authRoleParameter}/CognitoIdentityCredentials"))`,
       `$util.qr($ctx.stash.put("unauthRole", "arn:aws:sts::${
-        cdk.Stack.of(context.stackManager.rootStack).account
+        cdk.Stack.of(context.stackManager.scope).account
       }:assumed-role/${unauthRoleParameter}/CognitoIdentityCredentials"))`,
     );
   }

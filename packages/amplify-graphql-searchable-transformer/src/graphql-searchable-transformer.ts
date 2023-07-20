@@ -308,7 +308,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     stack.templateOptions.description = 'An auto-generated nested stack for searchable.';
     stack.templateOptions.templateFormatVersion = '2010-09-09';
 
-    const parameterMap = createParametersInStack(context.stackManager.rootStack);
+    const parameterMap = createParametersInStack(context.stackManager.scope);
 
     const domain = createSearchableDomain(
       stack,
@@ -388,7 +388,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         ),
       );
 
-      resolver.mapToStack(stack);
+      resolver.setScope(stack);
       context.resolvers.addResolver(typeName, def.fieldName, resolver);
     }
 

@@ -13,7 +13,6 @@ import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfac
 import { AppSyncFunctionConfigurationProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationConfig } from 'aws-cdk-lib/aws-appsync';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
-import * as cdk from 'aws-cdk-lib';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnElement } from 'aws-cdk-lib';
 import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
@@ -114,7 +113,7 @@ export const enum ConflictHandlerType {
 }
 
 // @public (undocumented)
-function createSyncLambdaIAMPolicy(context: TransformerContextProvider, stack: cdk.Stack, name: string, region?: string): iam.Policy;
+function createSyncLambdaIAMPolicy(context: TransformerContextProvider, scope: Construct, name: string, region?: string): iam.Policy;
 
 // Warning: (ae-forgotten-export) The symbol "TransformerContext" needs to be exported by the entry point index.d.ts
 //
@@ -434,15 +433,13 @@ export class StackManager implements StackManagerProvider {
     // (undocumented)
     getParameter: (name: string) => CfnParameter | void;
     // (undocumented)
+    getScopeFor: (resourceId: string, defaultStackName?: string) => Construct;
+    // (undocumented)
     getStack: (stackName: string) => Stack;
     // (undocumented)
-    getStackFor: (resourceId: string, defaultStackName?: string) => Stack;
-    // (undocumented)
     hasStack: (stackName: string) => boolean;
-    // Warning: (ae-forgotten-export) The symbol "TransformerRootStack" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
-    readonly rootStack: TransformerRootStack;
+    readonly scope: Construct;
 }
 
 // @public (undocumented)
@@ -576,6 +573,8 @@ export abstract class TransformerModelEnhancerBase extends TransformerModelBase 
     constructor(name: string, doc: DocumentNode_2 | string, type?: TransformerPluginType);
 }
 
+// Warning: (ae-forgotten-export) The symbol "TransformerRootStack" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
 export class TransformerNestedStack extends TransformerRootStack {
     // Warning: (ae-forgotten-export) The symbol "TransformerNestedStackProps" needs to be exported by the entry point index.d.ts
@@ -645,13 +644,13 @@ export class TransformerResolver implements TransformerResolverProvider {
     // (undocumented)
     findSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider) => Slot | undefined;
     // (undocumented)
-    mapToStack: (stack: Stack) => void;
+    setScope: (scope: Construct) => void;
     // (undocumented)
     slotExists: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider) => boolean;
     // (undocumented)
     synthesize: (context: TransformerContextProvider, api: GraphQLAPIProvider) => void;
     // (undocumented)
-    synthesizeResolvers: (stack: Stack, api: GraphQLAPIProvider, slotsNames: string[]) => AppSyncFunctionConfigurationProvider[];
+    synthesizeResolvers: (scope: Construct, api: GraphQLAPIProvider, slotsNames: string[]) => AppSyncFunctionConfigurationProvider[];
     // (undocumented)
     updateSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider) => void;
 }

@@ -56,9 +56,9 @@ describe('GraphQLTransform', () => {
       } as unknown as TransformerOutput;
       transform.testGenerateGraphQlApi(stackManager, transformerOutput);
       if (isAPIKeyExpected) {
-        expect(stackManager.rootStack.node.tryFindChild('GraphQLAPIKeyOutput')).toBeDefined();
+        expect(stackManager.scope.node.tryFindChild('GraphQLAPIKeyOutput')).toBeDefined();
       } else {
-        expect(stackManager.rootStack.node.tryFindChild('GraphQLAPIKeyOutput')).toBeUndefined();
+        expect(stackManager.scope.node.tryFindChild('GraphQLAPIKeyOutput')).toBeUndefined();
       }
     };
 
