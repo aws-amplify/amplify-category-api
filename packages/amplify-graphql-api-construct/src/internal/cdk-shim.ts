@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as os from 'os';
-import { Template } from '@aws-amplify/graphql-transformer-interfaces';
+import { Template } from '@aws-amplify/graphql-transformer';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { CfnIncludeProps } from 'aws-cdk-lib/cloudformation-include';
 import { Construct } from 'constructs';

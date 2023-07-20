@@ -5,6 +5,7 @@ import * as fs from 'fs-extra';
 import { v4 } from 'uuid';
 import { DynamoDB } from 'aws-sdk';
 import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
+import { ExecuteTransformConfig } from '@aws-amplify/graphql-transformer';
 import { processTransformerStacks } from '../../CFNParser/appsync-resource-processor';
 import { configureDDBDataSource, createAndUpdateTable } from '../../utils/dynamo-db';
 import { getFunctionDetails } from './lambda-helper';
@@ -18,6 +19,22 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
     getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('../amplify-dynamodb-simulator'),
   },
 }));
+
+export const defaultTransformParams: Pick<ExecuteTransformConfig, 'transformersFactoryArgs' | 'transformParameters'> = {
+  transformersFactoryArgs: {},
+  transformParameters: {
+    shouldDeepMergeDirectiveConfigDefaults: true,
+    disableResolverDeduping: false,
+    sandboxModeEnabled: false,
+    useSubUsernameForDefaultIdentityClaim: true,
+    populateOwnerFieldForStaticGroupAuth: true,
+    suppressApiKeyGeneration: false,
+    secondaryKeyAsGSI: true,
+    enableAutoIndexQueryNames: true,
+    respectPrimaryKeyAttributesOnConnectionField: true,
+    enableSearchNodeToNodeEncryption: false,
+  },
+};
 
 export async function launchDDBLocal() {
   let dbPath;

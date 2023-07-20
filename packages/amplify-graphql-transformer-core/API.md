@@ -4,17 +4,15 @@
 
 ```ts
 
-import { AmplifyApiGraphQlResourceStackTemplate } from '@aws-amplify/graphql-transformer-interfaces';
 import { APIIAMResourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ApiKeyConfig } from 'aws-cdk-lib/aws-appsync';
-import { App } from 'aws-cdk-lib';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import { AppSyncFunctionConfigurationProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import type { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationConfig } from 'aws-cdk-lib/aws-appsync';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
-import { CfnElement } from 'aws-cdk-lib';
 import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
 import { CfnParameter } from 'aws-cdk-lib';
 import { CfnParameterProps } from 'aws-cdk-lib';
@@ -22,7 +20,6 @@ import { CfnResource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql/language';
@@ -43,15 +40,13 @@ import { InputObjectTypeExtensionNode } from 'graphql';
 import { InputValueDefinitionNode } from 'graphql';
 import { InterfaceTypeDefinitionNode } from 'graphql';
 import { InterfaceTypeExtensionNode } from 'graphql';
-import { IStackSynthesizer } from 'aws-cdk-lib';
-import { ISynthesisSession } from 'aws-cdk-lib';
 import { Location as Location_2 } from 'graphql';
 import { LogConfig } from 'aws-cdk-lib/aws-appsync';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelFieldMap } from '@aws-amplify/graphql-transformer-interfaces';
 import { MutationFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { NamedTypeNode } from 'graphql';
-import { NestedStackProps } from 'aws-cdk-lib';
+import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeExtensionNode } from 'graphql';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
@@ -61,7 +56,6 @@ import { Stack } from 'aws-cdk-lib';
 import { StackManagerProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { StringValueNode } from 'graphql';
 import { SubscriptionFieldType } from '@aws-amplify/graphql-transformer-interfaces';
-import { Template } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerAuthProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -220,10 +214,10 @@ export class GraphQLTransform {
     getLogs(): TransformerLog[];
     // (undocumented)
     preProcessSchema(schema: DocumentNode): DocumentNode;
-    // Warning: (ae-forgotten-export) The symbol "DatasourceTransformationConfig" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "TransformOption" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    transform(schema: string, datasourceConfig?: DatasourceTransformationConfig): DeploymentResources;
+    transform({ scope, nestedStackProvider, assetProvider, schema, datasourceConfig }: TransformOption): void;
 }
 
 // @public (undocumented)
@@ -233,15 +227,13 @@ export interface GraphQLTransformOptions {
     // (undocumented)
     readonly host?: TransformHostProvider;
     // (undocumented)
-    readonly overrideConfig?: OverrideConfig;
-    // (undocumented)
     readonly resolverConfig?: ResolverConfig;
     // Warning: (ae-forgotten-export) The symbol "StackMapping" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     readonly stackMapping?: StackMapping;
     // (undocumented)
-    readonly stacks?: Record<string, Template>;
+    readonly stacks?: Record<string, any>;
     // (undocumented)
     readonly transformers: TransformerPluginProvider[];
     // (undocumented)
@@ -385,12 +377,6 @@ export class ObjectDefinitionWrapper {
 }
 
 // @public (undocumented)
-export type OverrideConfig = {
-    overrideFlag: boolean;
-    applyOverride: (stackManager: StackManager) => AmplifyApiGraphQlResourceStackTemplate;
-};
-
-// @public (undocumented)
 export const RDS_SCHEMA_FILE_NAME = "schema.rds.graphql";
 
 // @public (undocumented)
@@ -421,15 +407,11 @@ export class SchemaValidationError extends Error {
 // @public (undocumented)
 export class StackManager implements StackManagerProvider {
     // Warning: (ae-forgotten-export) The symbol "ResourceToStackMap" needs to be exported by the entry point index.d.ts
-    constructor(app: App, resourceMapping: ResourceToStackMap);
+    constructor(scope: Construct, nestedStackProvider: NestedStackProvider, resourceMapping: ResourceToStackMap);
     // (undocumented)
     addParameter: (name: string, props: CfnParameterProps) => CfnParameter;
     // (undocumented)
     createStack: (stackName: string) => Stack;
-    // (undocumented)
-    getCloudFormationTemplates: () => Map<string, Template>;
-    // (undocumented)
-    getMappingTemplates: () => Map<string, string>;
     // (undocumented)
     getParameter: (name: string) => CfnParameter | void;
     // (undocumented)
@@ -573,24 +555,6 @@ export abstract class TransformerModelEnhancerBase extends TransformerModelBase 
     constructor(name: string, doc: DocumentNode_2 | string, type?: TransformerPluginType);
 }
 
-// Warning: (ae-forgotten-export) The symbol "TransformerRootStack" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export class TransformerNestedStack extends TransformerRootStack {
-    // Warning: (ae-forgotten-export) The symbol "TransformerNestedStackProps" needs to be exported by the entry point index.d.ts
-    constructor(scope: Construct, id: string, props?: TransformerNestedStackProps);
-    // (undocumented)
-    readonly nestedStackResource?: CfnResource;
-    // (undocumented)
-    setParameter(name: string, value: string): void;
-    // (undocumented)
-    get stackId(): string;
-    // (undocumented)
-    get stackName(): string;
-    // (undocumented)
-    readonly templateFile: string;
-}
-
 // @public (undocumented)
 export abstract class TransformerPluginBase implements TransformerPluginProvider {
     constructor(name: string, document: DocumentNode_2 | string, pluginType?: TransformerPluginType);
@@ -628,10 +592,10 @@ export interface TransformerProjectConfig {
     resolvers: Record<string, string>;
     // (undocumented)
     schema: string;
-    // Warning: (ae-forgotten-export) The symbol "Template_2" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "Template" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    stacks: Record<string, Template_2>;
+    stacks: Record<string, Template>;
 }
 
 // @public (undocumented)

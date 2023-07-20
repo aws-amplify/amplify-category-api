@@ -11,7 +11,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
-import { isResolvableObject, Stack, CfnParameter, Lazy } from 'aws-cdk-lib';
+import { isResolvableObject, CfnParameter, Lazy, Stack } from 'aws-cdk-lib';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
 import { Construct } from 'constructs';

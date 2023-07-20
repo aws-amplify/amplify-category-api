@@ -1,6 +1,5 @@
 import * as path from 'path';
 import fs from 'fs-extra';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerProjectConfig } from '@aws-amplify/graphql-transformer-core';
 import rimraf from 'rimraf';
 import {
@@ -15,6 +14,7 @@ import { CloudFormation, Fn } from 'cloudform-types';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { pullAllBy, find } from 'lodash';
 import { printer } from '@aws-amplify/amplify-prompts';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer';
 
 const PARAMETERS_FILE_NAME = 'parameters.json';
 const CUSTOM_ROLES_FILE_NAME = 'custom-roles.json';
