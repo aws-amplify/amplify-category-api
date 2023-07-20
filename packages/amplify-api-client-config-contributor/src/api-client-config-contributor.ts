@@ -1,4 +1,4 @@
-import { ApiOutput } from '@aws-amplify/api-client-config-schema';
+import { ApiOutput, ApiOutputKey } from '@aws-amplify/api-client-config-schema';
 import { ApiClientConfig, ApiClientConfigMapping } from './api-client-config';
 
 // no access to CLI types
@@ -16,13 +16,8 @@ export class ApiClientConfigContributor {
   /**
    * Given some BackendOutput, contribute the data API portion of the client config
    */
-  contribute({
-    // no type safety on apiOutput name
-    // Build would succeed in data and cli repo if name was changed.
-    apiOutput,
-  }: {
-    apiOutput: ApiOutput;
-  }): ApiClientConfig | Record<string, never> {
+  contribute(output: { [ApiOutputKey]: ApiOutput }): ApiClientConfig | Record<string, never> {
+    const { apiOutput } = output;
     if (apiOutput === undefined) {
       return {};
     }
