@@ -32,7 +32,7 @@ describe('amplify add api (GraphQL)', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a project and add the simple_model api with transformer version 1', async () => {
+  it('init a project and add the simple_model api with overides and transformer version 2', async () => {
     const envName = 'devtest';
     const projName = 'simplemodel';
     const cliInputsFilePath = path.join(projRoot, 'amplify', 'backend', 'api', `${projName}`, 'cli-inputs.json');
