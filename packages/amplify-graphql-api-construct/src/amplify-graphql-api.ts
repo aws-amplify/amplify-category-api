@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import * as cdk from 'aws-cdk-lib';
 import * as cfninclude from 'aws-cdk-lib/cloudformation-include';
 import { executeTransform } from '@aws-amplify/graphql-transformer';
+import { ApiOutput } from '@aws-amplify/api-client-config-schema';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
   preprocessSchema,
@@ -157,5 +158,23 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
           },
         } as FunctionSlot;
       });
+  }
+
+  /**
+   * Set the ouputs that should be stored by the backend engine
+   */
+  output(): ApiOutput {
+    const apiOutput: ApiOutput = {
+      version: '1',
+      payload: {
+        awsAppsyncApiEndpoint: this.resources.cfnGraphqlApi.attrGraphQlUrl,
+      },
+    };
+
+    if (this.resources.cfnApiKey) {
+      apiOutput.payload.awsAppsyncApiKey = this.resources.cfnApiKey?.attrApiKey;
+    }
+
+    return apiOutput;
   }
 }

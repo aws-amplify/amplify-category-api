@@ -4,6 +4,7 @@
 
 ```ts
 
+import { ApiOutput } from '@aws-amplify/api-client-config-schema';
 import { AppsyncFunctionProps } from 'aws-cdk-lib/aws-appsync';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
@@ -40,6 +41,7 @@ export type AmplifyApiSchemaPreprocessorOutput = {
 export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends Construct {
     constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps<SchemaType>);
     getGeneratedFunctionSlots(): FunctionSlot[];
+    output(): ApiOutput;
     readonly resources: AmplifyGraphqlApiResources;
 }
 
