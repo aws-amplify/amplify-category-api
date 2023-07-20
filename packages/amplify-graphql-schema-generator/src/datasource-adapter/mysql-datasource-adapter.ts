@@ -104,9 +104,10 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
 
   public async getTablesList(): Promise<string[]> {
     const SHOW_TABLES_QUERY = 'SHOW TABLES';
-    const result = this.useVPC && this.vpcSchemaInspectorLambda
-      ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, SHOW_TABLES_QUERY, this.vpcLambdaRegion)
-      : (await this.dbBuilder.raw(SHOW_TABLES_QUERY))[0];
+    const result =
+      this.useVPC && this.vpcSchemaInspectorLambda
+        ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, SHOW_TABLES_QUERY, this.vpcLambdaRegion)
+        : (await this.dbBuilder.raw(SHOW_TABLES_QUERY))[0];
 
     const tables: string[] = result.map((row: any) => {
       const [firstKey] = Object.keys(row);
@@ -149,9 +150,10 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     // Query INFORMATION_SCHEMA.COLUMNS table and load fields of all the tables from the database
     const LOAD_FIELDS_QUERY = `SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '${this.config.database}'`;
     this.fields = [];
-    const columnResult = this.useVPC && this.vpcSchemaInspectorLambda
-      ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, LOAD_FIELDS_QUERY, this.vpcLambdaRegion)
-      : (await this.dbBuilder.raw(LOAD_FIELDS_QUERY))[0];
+    const columnResult =
+      this.useVPC && this.vpcSchemaInspectorLambda
+        ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, LOAD_FIELDS_QUERY, this.vpcLambdaRegion)
+        : (await this.dbBuilder.raw(LOAD_FIELDS_QUERY))[0];
     this.setFields(columnResult);
   }
 
@@ -172,9 +174,10 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     // Query INFORMATION_SCHEMA.STATISTICS table and load indexes of all the tables from the database
     const LOAD_INDEXES_QUERY = `SELECT * FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = '${this.config.database}'`;
     this.indexes = [];
-    const indexResult = this.useVPC && this.vpcSchemaInspectorLambda
-      ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, LOAD_INDEXES_QUERY, this.vpcLambdaRegion)
-      : (await this.dbBuilder.raw(LOAD_INDEXES_QUERY))[0];
+    const indexResult =
+      this.useVPC && this.vpcSchemaInspectorLambda
+        ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, LOAD_INDEXES_QUERY, this.vpcLambdaRegion)
+        : (await this.dbBuilder.raw(LOAD_INDEXES_QUERY))[0];
     this.setIndexes(indexResult);
   }
 

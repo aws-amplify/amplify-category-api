@@ -114,9 +114,12 @@ const checkHostInDBClusters = async (hostname: string, region: string): Promise<
   };
 };
 
-const getSubnetIds = async (subnetGroupName: string, region: string): Promise<{
-  subnetIds: string[],
-  vpcId: string,
+const getSubnetIds = async (
+  subnetGroupName: string,
+  region: string,
+): Promise<{
+  subnetIds: string[];
+  vpcId: string;
 }> => {
   const client = new RDSClient({ region });
   const command = new DescribeDBSubnetGroupsCommand({
@@ -135,7 +138,8 @@ const getSubnetIds = async (subnetGroupName: string, region: string): Promise<{
  * @param hostname Hostname of the database.
  * @param region AWS region.
  */
-export const getHostVpc = async (hostname: string, region: string): Promise<VpcConfig | undefined> => (checkHostInDBInstances(hostname, region) ?? checkHostInDBClusters(hostname, region));
+export const getHostVpc = async (hostname: string, region: string): Promise<VpcConfig | undefined> =>
+  checkHostInDBInstances(hostname, region) ?? checkHostInDBClusters(hostname, region);
 
 /**
  * Provisions a lambda function to introspect the database schema.
@@ -151,8 +155,9 @@ export const provisionSchemaInspectorLambda = async (lambdaName: string, vpc: Vp
   spinner.start('Provisioning a function to introspect the database schema...');
   try {
     if (existingLambda) {
-      const vpcConfigMismatch = existingLambda.VpcConfig?.SecurityGroupIds?.sort().join() !== vpc.securityGroupIds.sort().join()
-        || existingLambda.VpcConfig?.SubnetIds?.sort().join() !== vpc.subnetIds.sort().join();
+      const vpcConfigMismatch =
+        existingLambda.VpcConfig?.SecurityGroupIds?.sort().join() !== vpc.securityGroupIds.sort().join() ||
+        existingLambda.VpcConfig?.SubnetIds?.sort().join() !== vpc.subnetIds.sort().join();
       if (vpcConfigMismatch) {
         await deleteSchemaInspectorLambdaRole(lambdaName, region);
         createLambda = true;
@@ -260,11 +265,7 @@ const createPolicy = async (policyName: string): Promise<Policy | undefined> => 
         {
           Effect: 'Allow',
           Resource: '*',
-          Action: [
-            'ec2:CreateNetworkInterface',
-            'ec2:DescribeNetworkInterfaces',
-            'ec2:DeleteNetworkInterface',
-          ],
+          Action: ['ec2:CreateNetworkInterface', 'ec2:DescribeNetworkInterfaces', 'ec2:DeleteNetworkInterface'],
         },
       ],
     }),
@@ -332,10 +333,12 @@ export const invokeSchemaInspectorLambda = async (funcName, dbConfig, query, reg
   const encoder = new TextEncoder();
   const command = new InvokeCommand({
     FunctionName: funcName,
-    Payload: encoder.encode(JSON.stringify({
-      config: dbConfig,
-      query,
-    })),
+    Payload: encoder.encode(
+      JSON.stringify({
+        config: dbConfig,
+        query,
+      }),
+    ),
     LogType: LogType.Tail,
   });
 

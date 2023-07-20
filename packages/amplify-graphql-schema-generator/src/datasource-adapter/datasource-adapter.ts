@@ -44,7 +44,7 @@ export abstract class DataSourceAdapter {
     primaryKey && model.setPrimaryKey(primaryKey.getFields());
     indexes.forEach((index) => model.addIndex(index.name, index.getFields()));
     return model;
-  } 
+  }
 
   public useVpc(vpcSchemaInspectorLambda: string, region: string): void {
     this.useVPC = true;

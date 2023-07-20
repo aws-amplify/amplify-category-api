@@ -222,6 +222,9 @@ module.exports = {
     // Ignore CHANGELOG.md files
     '/packages/*/CHANGELOG.md',
 
+    '/packages/amplify-graphql-model-transformer/rds-lambda',
+    '/packages/amplify-graphql-model-transformer/rds-patching-lambda',
+    '/packages/amplify-graphql-model-transformer/publish-notification-lambda',
     'client-test-apps',
   ],
 };

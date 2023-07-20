@@ -24,9 +24,8 @@ export const establishDBConnection = (config: any): any => {
       },
       debug: false,
     });
-  }
-  catch(err) {
+  } catch (err) {
     console.log(err);
     throw err;
   }
-}
+};
