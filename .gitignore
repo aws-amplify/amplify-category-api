@@ -47,3 +47,5 @@ test.out.log
 packages/amplify-graphiql-explorer/.eslintcache
 !packages/amplify-graphql-model-transformer/src/__tests__/overrides/build/override.js
 scripts/cci/job.data.json
+packages/amplify-api-client-config-schema/lib
+packages/amplify-api-client-config-contributor/lib
