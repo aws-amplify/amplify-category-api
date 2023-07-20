@@ -53,27 +53,32 @@ export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
   return printBlock('Initialization default values')(compoundExpression(statements));
 };
 
-export const generateLambdaCreateRequestTemplate = (tableName: string, operationName: string): string => printBlock('Invoke RDS Lambda data source')(
-  compoundExpression([
-    set(ref('lambdaInput'), obj({})),
-    set(ref('lambdaInput.table'), str(tableName)),
-    set(ref('lambdaInput.args'), obj({})),
-    set(ref('lambdaInput.operation'), str('CREATE')),
-    set(ref('lambdaInput.operationName'), str(operationName)),
-    set(ref('lambdaInput.args.metadata'), obj({})),
-    set(ref('lambdaInput.args.metadata.keys'), list([])),
-    qref(methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([])))),
-    comment('Set the default values to put request'),
-    set(ref('lambdaInput.args.input'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
-    comment('copy the values from input'),
-    qref(methodCall(ref('lambdaInput.args.input.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments.input'), obj({})))),
-    obj({
-      version: str('2018-05-29'),
-      operation: str('Invoke'),
-      payload: methodCall(ref('util.toJson'), ref('lambdaInput')),
-    }),
-  ]),
-);
+export const generateLambdaCreateRequestTemplate = (tableName: string, operationName: string): string =>
+  printBlock('Invoke RDS Lambda data source')(
+    compoundExpression([
+      set(ref('lambdaInput'), obj({})),
+      set(ref('lambdaInput.table'), str(tableName)),
+      set(ref('lambdaInput.args'), obj({})),
+      set(ref('lambdaInput.operation'), str('CREATE')),
+      set(ref('lambdaInput.operationName'), str(operationName)),
+      set(ref('lambdaInput.args.metadata'), obj({})),
+      set(ref('lambdaInput.args.metadata.keys'), list([])),
+      qref(
+        methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
+      ),
+      comment('Set the default values to put request'),
+      set(ref('lambdaInput.args.input'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
+      comment('copy the values from input'),
+      qref(
+        methodCall(ref('lambdaInput.args.input.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments.input'), obj({}))),
+      ),
+      obj({
+        version: str('2018-05-29'),
+        operation: str('Invoke'),
+        payload: methodCall(ref('util.toJson'), ref('lambdaInput')),
+      }),
+    ]),
+  );
 
 /**
  * Generate VTL template that sets the default values for Update mutation
@@ -110,55 +115,55 @@ export const generateUpdateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
 /**
  * Generate VTL template that calls the lambda for an Update mutation
  */
-export const generateLambdaUpdateRequestTemplate = (
-  tableName: string,
-  operationName: string,
-  modelIndexFields: string[],
-): string => printBlock('Invoke RDS Lambda data source')(
-  compoundExpression([
-    set(ref('lambdaInput'), obj({})),
-    set(ref('lambdaInput.table'), str(tableName)),
-    set(ref('lambdaInput.args'), obj({})),
-    set(ref('lambdaInput.operation'), str('UPDATE')),
-    set(ref('lambdaInput.operationName'), str(operationName)),
-    set(ref('lambdaInput.args.metadata'), obj({})),
-    set(ref('lambdaInput.args.metadata.keys'), list([])),
-    qref(methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([])))),
-    comment('Set the default values to put request'),
-    set(ref('lambdaInput.args.input'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
-    comment('copy the values from input'),
-    qref(methodCall(ref('lambdaInput.args.input.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments.input'), obj({})))),
-    set(ref('lambdaInput.args.condition'), methodCall(ref('util.defaultIfNull'), ref('context.arguments.condition'), obj({}))),
-    obj({
-      version: str('2018-05-29'),
-      operation: str('Invoke'),
-      payload: methodCall(ref('util.toJson'), ref('lambdaInput')),
-    }),
-  ]),
-);
+export const generateLambdaUpdateRequestTemplate = (tableName: string, operationName: string, modelIndexFields: string[]): string =>
+  printBlock('Invoke RDS Lambda data source')(
+    compoundExpression([
+      set(ref('lambdaInput'), obj({})),
+      set(ref('lambdaInput.table'), str(tableName)),
+      set(ref('lambdaInput.args'), obj({})),
+      set(ref('lambdaInput.operation'), str('UPDATE')),
+      set(ref('lambdaInput.operationName'), str(operationName)),
+      set(ref('lambdaInput.args.metadata'), obj({})),
+      set(ref('lambdaInput.args.metadata.keys'), list([])),
+      qref(
+        methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
+      ),
+      comment('Set the default values to put request'),
+      set(ref('lambdaInput.args.input'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
+      comment('copy the values from input'),
+      qref(
+        methodCall(ref('lambdaInput.args.input.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments.input'), obj({}))),
+      ),
+      set(ref('lambdaInput.args.condition'), methodCall(ref('util.defaultIfNull'), ref('context.arguments.condition'), obj({}))),
+      obj({
+        version: str('2018-05-29'),
+        operation: str('Invoke'),
+        payload: methodCall(ref('util.toJson'), ref('lambdaInput')),
+      }),
+    ]),
+  );
 
 /**
  * Generate VTL template that calls the lambda for a Delete mutation
  */
-export const generateLambdaDeleteRequestTemplate = (
-  tableName: string,
-  operationName: string,
-  modelIndexFields: string[],
-): string => printBlock('Invoke RDS Lambda data source')(
-  compoundExpression([
-    set(ref('lambdaInput'), obj({})),
-    set(ref('lambdaInput.table'), str(tableName)),
-    set(ref('lambdaInput.args'), ref('context.arguments')),
-    set(ref('lambdaInput.operation'), str('DELETE')),
-    set(ref('lambdaInput.operationName'), str(operationName)),
-    set(ref('lambdaInput.args.metadata'), obj({})),
-    set(ref('lambdaInput.args.metadata.keys'), list([])),
-    qref(methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([])))),
-    set(ref('lambdaInput.args.condition'), methodCall(ref('util.defaultIfNull'), ref('context.arguments.condition'), obj({}))),
-    obj({
-      version: str('2018-05-29'),
-      operation: str('Invoke'),
-      payload: methodCall(ref('util.toJson'), ref('lambdaInput')),
-    }),
-  ]),
-);
+export const generateLambdaDeleteRequestTemplate = (tableName: string, operationName: string, modelIndexFields: string[]): string =>
+  printBlock('Invoke RDS Lambda data source')(
+    compoundExpression([
+      set(ref('lambdaInput'), obj({})),
+      set(ref('lambdaInput.table'), str(tableName)),
+      set(ref('lambdaInput.args'), ref('context.arguments')),
+      set(ref('lambdaInput.operation'), str('DELETE')),
+      set(ref('lambdaInput.operationName'), str(operationName)),
+      set(ref('lambdaInput.args.metadata'), obj({})),
+      set(ref('lambdaInput.args.metadata.keys'), list([])),
+      qref(
+        methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
+      ),
+      set(ref('lambdaInput.args.condition'), methodCall(ref('util.defaultIfNull'), ref('context.arguments.condition'), obj({}))),
+      obj({
+        version: str('2018-05-29'),
+        operation: str('Invoke'),
+        payload: methodCall(ref('util.toJson'), ref('lambdaInput')),
+      }),
+    ]),
+  );

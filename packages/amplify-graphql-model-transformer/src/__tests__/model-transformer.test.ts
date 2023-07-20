@@ -1,5 +1,11 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { ConflictHandlerType, DatasourceType, GraphQLTransform, SyncConfig, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import {
+  ConflictHandlerType,
+  DatasourceType,
+  GraphQLTransform,
+  SyncConfig,
+  validateModelSchema,
+} from '@aws-amplify/graphql-transformer-core';
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, ListValueNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
 import { Template } from 'aws-cdk-lib/assertions';
@@ -1520,7 +1526,7 @@ describe('ModelTransformer: ', () => {
     modelToDatasourceMap.set('Post', {
       dbType: 'MySQL',
       provisionDB: false,
-    })
+    });
     const out = transformer.transform(validSchema, {
       modelToDatasourceMap,
     });

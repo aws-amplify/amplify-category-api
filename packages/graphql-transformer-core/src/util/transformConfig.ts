@@ -269,18 +269,15 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
  */
 export const readSchema = async (
   projectDirectory: string,
-): Promise<{schema: string, modelToDatasourceMap: Map<string, DatasourceType>}> => {
+): Promise<{ schema: string; modelToDatasourceMap: Map<string, DatasourceType> }> => {
   let modelToDatasourceMap = new Map<string, DatasourceType>();
-  const schemaFilePaths = [
-    path.join(projectDirectory, 'schema.graphql'),
-    path.join(projectDirectory, 'schema.rds.graphql'),
-  ];
+  const schemaFilePaths = [path.join(projectDirectory, 'schema.graphql'), path.join(projectDirectory, 'schema.rds.graphql')];
 
   const existingSchemaFiles = schemaFilePaths.filter((p) => fs.existsSync(p));
   const schemaDirectoryPath = path.join(projectDirectory, 'schema');
   let amplifyInputType;
   let schema = '';
-  if (!(_.isEmpty(existingSchemaFiles))) {
+  if (!_.isEmpty(existingSchemaFiles)) {
     // Schema.graphql contains the models for DynamoDB datasource.
     // Schema.rds.graphql contains the models for imported 'MySQL' datasource.
     // Intentionally using 'for ... of ...' instead of 'object.foreach' to process this in sequence.
@@ -317,8 +314,12 @@ export const readSchema = async (
 
 export const removeAmplifyInput = (schema: string): SchemaReaderConfig => {
   const parsedSchema = parse(schema);
-  const amplifyType = parsedSchema.definitions.find((obj) => obj.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && obj.name.value === 'AMPLIFY') as InputObjectTypeDefinitionNode;
-  const schemaWithoutAmplifyInput = parsedSchema.definitions.filter((obj) => obj.kind !== Kind.INPUT_OBJECT_TYPE_DEFINITION || obj.name.value !== 'AMPLIFY');
+  const amplifyType = parsedSchema.definitions.find(
+    (obj) => obj.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && obj.name.value === 'AMPLIFY',
+  ) as InputObjectTypeDefinitionNode;
+  const schemaWithoutAmplifyInput = parsedSchema.definitions.filter(
+    (obj) => obj.kind !== Kind.INPUT_OBJECT_TYPE_DEFINITION || obj.name.value !== 'AMPLIFY',
+  );
   (parsedSchema as any).definitions = schemaWithoutAmplifyInput;
   return {
     amplifyType,

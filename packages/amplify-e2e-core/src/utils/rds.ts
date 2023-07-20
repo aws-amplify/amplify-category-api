@@ -4,7 +4,7 @@ import {
   waitUntilDBInstanceAvailable,
   DeleteDBInstanceCommand,
   CreateDBInstanceCommandInput,
-} from "@aws-sdk/client-rds";
+} from '@aws-sdk/client-rds';
 import { EC2Client, AuthorizeSecurityGroupIngressCommand, RevokeSecurityGroupIngressCommand } from '@aws-sdk/client-ec2';
 import { knex } from 'knex';
 
@@ -18,27 +18,27 @@ const DEFAULT_SECURITY_GROUP = 'default';
  * @returns EndPoint address, port and database name of the created RDS instance.
  */
 export const createRDSInstance = async (config: {
-  identifier: string,
-  engine: 'mysql',
-  dbname: string,
-  username: string,
-  password: string,
-  region: string,
-  instanceClass?: string,
-  storage?: number,
-  publiclyAccessible?: boolean,
-}): Promise<{endpoint: string, port: number, dbName: string}> => {
+  identifier: string;
+  engine: 'mysql';
+  dbname: string;
+  username: string;
+  password: string;
+  region: string;
+  instanceClass?: string;
+  storage?: number;
+  publiclyAccessible?: boolean;
+}): Promise<{ endpoint: string; port: number; dbName: string }> => {
   const client = new RDSClient({ region: config.region });
   const params: CreateDBInstanceCommandInput = {
     /** input parameters */
-    "DBInstanceClass": config.instanceClass ?? DEFAULT_DB_INSTANCE_TYPE,
-    "DBInstanceIdentifier": config.identifier,
-    "AllocatedStorage": config.storage ?? DEFAULT_DB_STORAGE,
-    "Engine": config.engine,
-    "DBName": config.dbname,
-    "MasterUsername": config.username,
-    "MasterUserPassword": config.password,
-    "PubliclyAccessible": config.publiclyAccessible ?? true,
+    DBInstanceClass: config.instanceClass ?? DEFAULT_DB_INSTANCE_TYPE,
+    DBInstanceIdentifier: config.identifier,
+    AllocatedStorage: config.storage ?? DEFAULT_DB_STORAGE,
+    Engine: config.engine,
+    DBName: config.dbname,
+    MasterUsername: config.username,
+    MasterUserPassword: config.password,
+    PubliclyAccessible: config.publiclyAccessible ?? true,
   };
   const command = new CreateDBInstanceCommand(params);
 
@@ -144,23 +144,23 @@ export const addRDSPortInboundRule = async (config: {
 };
 
 export const addRDSPortInboundRuleToGroupId = async (config: {
-  region: string,
-  port: number,
-  securityGroupId: string,
-  cidrIp: string,
+  region: string;
+  port: number;
+  securityGroupId: string;
+  cidrIp: string;
 }): Promise<void> => {
   const ec2_client = new EC2Client({
     region: config.region,
   });
-  
+
   const command = new AuthorizeSecurityGroupIngressCommand({
     GroupId: config.securityGroupId,
     FromPort: config.port,
     ToPort: config.port,
-    IpProtocol: "TCP",
+    IpProtocol: 'TCP',
     CidrIp: config.cidrIp,
   });
-  
+
   try {
     await ec2_client.send(command);
   } catch (error) {
@@ -168,7 +168,7 @@ export const addRDSPortInboundRuleToGroupId = async (config: {
     // Ignore this error
     // It usually throws error if the security group rule is a duplicate
     // If the rule is not added, we will get an error while establishing connection to the database
-  } 
+  }
 };
 
 /**

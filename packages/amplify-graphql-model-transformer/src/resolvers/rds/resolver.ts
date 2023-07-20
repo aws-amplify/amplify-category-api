@@ -1,9 +1,4 @@
-import {
-  CfnMapping,
-  Duration,
-  Fn,
-  Stack,
-} from 'aws-cdk-lib';
+import { CfnMapping, Duration, Fn, Stack } from 'aws-cdk-lib';
 import {
   Expression,
   compoundExpression,
@@ -21,14 +16,7 @@ import {
 import { ResourceConstants } from 'graphql-transformer-common';
 import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { GraphQLAPIProvider, RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  Effect,
-  IRole,
-  Policy,
-  PolicyStatement,
-  Role,
-  ServicePrincipal,
-} from 'aws-cdk-lib/aws-iam';
+import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import path from 'path';
@@ -47,13 +35,10 @@ const RDSLayerMappingID = 'RDSLayerResourceMapping';
  * Define RDS Lambda Layer region mappings
  * @param scope Construct
  */
-export const setRDSLayerMappings = (scope: Construct, mapping?: RDSLayerMapping): CfnMapping => new CfnMapping(
-  scope,
-  RDSLayerMappingID,
-  {
+export const setRDSLayerMappings = (scope: Construct, mapping?: RDSLayerMapping): CfnMapping =>
+  new CfnMapping(scope, RDSLayerMappingID, {
     mapping: getLatestLayers(mapping),
-  },
-);
+  });
 
 const getLatestLayers = (latestLayers?: RDSLayerMapping): RDSLayerMapping => {
   if (latestLayers && Object.keys(latestLayers).length > 0) {
@@ -236,20 +221,18 @@ export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEn
     );
   }
 
-  role.attachInlinePolicy(new Policy(stack, RDSLambdaLogAccessPolicy, {
-    statements: policyStatements,
-    policyName: `${roleName}Policy`,
-  }));
+  role.attachInlinePolicy(
+    new Policy(stack, RDSLambdaLogAccessPolicy, {
+      statements: policyStatements,
+      policyName: `${roleName}Policy`,
+    }),
+  );
 
   role.addToPolicy(
     new PolicyStatement({
       effect: Effect.ALLOW,
       resources: ['*'],
-      actions: [
-        'ec2:CreateNetworkInterface',
-        'ec2:DescribeNetworkInterfaces',
-        'ec2:DeleteNetworkInterface',
-      ],
+      actions: ['ec2:CreateNetworkInterface', 'ec2:DescribeNetworkInterfaces', 'ec2:DeleteNetworkInterface'],
     }),
   );
 
@@ -286,20 +269,18 @@ export const createRdsPatchingLambdaRole = (roleName: string, stack: Construct, 
     }),
   ];
 
-  role.attachInlinePolicy(new Policy(stack, RDSPatchingLambdaLogAccessPolicy, {
-    statements: policyStatements,
-    policyName: `${roleName}Policy`,
-  }));
+  role.attachInlinePolicy(
+    new Policy(stack, RDSPatchingLambdaLogAccessPolicy, {
+      statements: policyStatements,
+      policyName: `${roleName}Policy`,
+    }),
+  );
 
   role.addToPolicy(
     new PolicyStatement({
       effect: Effect.ALLOW,
       resources: ['*'],
-      actions: [
-        'ec2:CreateNetworkInterface',
-        'ec2:DescribeNetworkInterfaces',
-        'ec2:DeleteNetworkInterface',
-      ],
+      actions: ['ec2:CreateNetworkInterface', 'ec2:DescribeNetworkInterfaces', 'ec2:DeleteNetworkInterface'],
     }),
   );
 
@@ -312,25 +293,28 @@ export const createRdsPatchingLambdaRole = (roleName: string, stack: Construct, 
  * @param operation string
  * @param operationName string
  */
-export const generateLambdaRequestTemplate = (tableName: string, operation: string, operationName: string): string => printBlock('Invoke RDS Lambda data source')(
-  compoundExpression([
-    set(ref('lambdaInput'), obj({})),
-    set(ref('lambdaInput.args'), obj({})),
-    set(ref('lambdaInput.table'), str(tableName)),
-    set(ref('lambdaInput.operation'), str(operation)),
-    set(ref('lambdaInput.operationName'), str(operationName)),
-    set(ref('lambdaInput.args.metadata'), obj({})),
-    set(ref('lambdaInput.args.metadata.keys'), list([])),
-    qref(methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([])))),
-    set(ref('lambdaInput.args.input'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
-    qref(methodCall(ref('lambdaInput.args.input.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
-    obj({
-      version: str('2018-05-29'),
-      operation: str('Invoke'),
-      payload: methodCall(ref('util.toJson'), ref('lambdaInput')),
-    }),
-  ]),
-);
+export const generateLambdaRequestTemplate = (tableName: string, operation: string, operationName: string): string =>
+  printBlock('Invoke RDS Lambda data source')(
+    compoundExpression([
+      set(ref('lambdaInput'), obj({})),
+      set(ref('lambdaInput.args'), obj({})),
+      set(ref('lambdaInput.table'), str(tableName)),
+      set(ref('lambdaInput.operation'), str(operation)),
+      set(ref('lambdaInput.operationName'), str(operationName)),
+      set(ref('lambdaInput.args.metadata'), obj({})),
+      set(ref('lambdaInput.args.metadata.keys'), list([])),
+      qref(
+        methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
+      ),
+      set(ref('lambdaInput.args.input'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
+      qref(methodCall(ref('lambdaInput.args.input.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
+      obj({
+        version: str('2018-05-29'),
+        operation: str('Invoke'),
+        payload: methodCall(ref('util.toJson'), ref('lambdaInput')),
+      }),
+    ]),
+  );
 
 /**
  * Generate RDS Lambda response template

@@ -1,5 +1,5 @@
-import { LambdaClient, ListLayerVersionsCommand, ListLayerVersionsCommandOutput } from "@aws-sdk/client-lambda";
-import { PublishCommand, SNSClient } from "@aws-sdk/client-sns";
+import { LambdaClient, ListLayerVersionsCommand, ListLayerVersionsCommandOutput } from '@aws-sdk/client-lambda';
+import { PublishCommand, SNSClient } from '@aws-sdk/client-sns';
 
 const MAX_ITEMS = 50;
 const { LAYER_NAME, SNS_TOPIC_ARN, SNS_TOPIC_REGION } = process.env;

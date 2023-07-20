@@ -1070,9 +1070,7 @@ export const importRDSDatabase = (cwd: string, opts: ImportApiOptions & { apiExi
     promptDBInformation(importCommands, options);
 
     if (options.useVpc) {
-      importCommands
-        .wait(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/)
-        .sendConfirmYes();
+      importCommands.wait(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/).sendConfirmYes();
     }
 
     importCommands.wait(/.*Successfully imported the database schema into.*/).run((err: Error) => {
@@ -1083,12 +1081,15 @@ export const importRDSDatabase = (cwd: string, opts: ImportApiOptions & { apiExi
       }
     });
   });
-}
+};
 
 export function apiUpdateSecrets(cwd: string, opts: ImportApiOptions) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
-    const updateSecretsCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['update-secrets', 'api'], { cwd, stripColors: true });
+    const updateSecretsCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['update-secrets', 'api'], {
+      cwd,
+      stripColors: true,
+    });
     promptDBInformation(updateSecretsCommands, options);
     updateSecretsCommands.wait('Successfully updated the secrets for the database.');
     updateSecretsCommands.run((err: Error) => {
@@ -1141,17 +1142,15 @@ export function removeApi(cwd: string) {
   });
 }
 
-const promptDBInformation = (
-  executionContext: ExecutionContext,
-  options: ImportApiOptions,
-): ExecutionContext => executionContext
-  .wait('Enter the database url or host name:')
-  .sendLine(options.host)
-  .wait('Enter the port number:')
-  .sendLine(JSON.stringify(options.port || 3306))
-  .wait('Enter the username:')
-  .sendLine(options.username)
-  .wait('Enter the password:')
-  .sendLine(options.password)
-  .wait('Enter the database name:')
-  .sendLine(options.database);
+const promptDBInformation = (executionContext: ExecutionContext, options: ImportApiOptions): ExecutionContext =>
+  executionContext
+    .wait('Enter the database url or host name:')
+    .sendLine(options.host)
+    .wait('Enter the port number:')
+    .sendLine(JSON.stringify(options.port || 3306))
+    .wait('Enter the username:')
+    .sendLine(options.username)
+    .wait('Enter the password:')
+    .sendLine(options.password)
+    .wait('Enter the database name:')
+    .sendLine(options.database);

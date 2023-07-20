@@ -6,11 +6,7 @@ export const parseDatabaseUrl = (databaseUrl: string): Partial<RDSDataSourceConf
   const allowedProtocols = ['mysql', 'mysql2'];
   try {
     const parsedDatabaseUrl = new URL(databaseUrl);
-    const {
-      username,
-      password,
-      hostname: host,
-    } = parsedDatabaseUrl;
+    const { username, password, hostname: host } = parsedDatabaseUrl;
     const database = parsedDatabaseUrl?.pathname?.slice(1);
     const port = parseInt(parsedDatabaseUrl?.port, 10);
     const engine = parsedDatabaseUrl?.protocol?.slice(0, -1) as ImportedRDSType;

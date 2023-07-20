@@ -69,14 +69,9 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       );
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const patchingLambda = createRdsPatchingLambda(
-        patchingLambdaStack,
-        context.api,
-        patchingLambdaRole,
-        {
-          LAMBDA_FUNCTION_ARN: lambda.functionArn,
-        },
-      );
+      const patchingLambda = createRdsPatchingLambda(patchingLambdaStack, context.api, patchingLambdaRole, {
+        LAMBDA_FUNCTION_ARN: lambda.functionArn,
+      });
 
       // Add SNS subscription for patching notifications
       const patchingSubscriptionStack = context.stackManager.getStackFor(RDSPatchingSubscriptionLogicalID, RDS_STACK_NAME);

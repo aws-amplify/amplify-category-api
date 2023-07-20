@@ -20,11 +20,10 @@ import { serviceMetadataFor } from '../utils/dynamic-imports';
 import { serviceWalkthroughResultToAddApiRequest } from '../utils/service-walkthrough-result-to-add-api-request';
 import { getCfnApiArtifactHandler } from '../cfn-api-artifact-handler';
 
-
 const service = 'AppSync';
 
 export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<ImportAppSyncAPIInputs> => {
-  let apiName:string;
+  let apiName: string;
   const existingAPIs = getAppSyncAPINames();
   if (existingAPIs?.length > 0) {
     apiName = existingAPIs[0];
@@ -72,21 +71,13 @@ export const writeDefaultGraphQLSchema = async (
   }
 };
 
-export const databaseConfigurationInputWalkthrough = async (
-  engine: ImportedDataSourceType,
-): Promise<ImportedDataSourceConfig> => {
+export const databaseConfigurationInputWalkthrough = async (engine: ImportedDataSourceType): Promise<ImportedDataSourceConfig> => {
   printer.info('Please provide the following database connection information:');
   const url = await prompter.input('Enter the database url or host name:');
 
   let isValidUrl = true;
   const parsedDatabaseUrl = parseDatabaseUrl(url);
-  let {
-    host,
-    port,
-    database,
-    username,
-    password,
-  } = parsedDatabaseUrl;
+  let { host, port, database, username, password } = parsedDatabaseUrl;
 
   if (!host) {
     isValidUrl = false;

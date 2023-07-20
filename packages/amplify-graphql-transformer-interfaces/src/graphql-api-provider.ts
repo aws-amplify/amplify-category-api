@@ -72,7 +72,7 @@ export type VpcConfig = {
 export type RDSLayerMapping = {
   [key: string]: {
     layerRegion: string;
-  }
+  };
 };
 
 export interface AppSyncFunctionConfigurationProvider extends IConstruct {

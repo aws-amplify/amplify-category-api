@@ -42,9 +42,14 @@ export const constructDefaultGlobalAmplifyInput = async (
   includeAuthRule: boolean = true,
 ) => {
   const inputs = await getGlobalAmplifyInputEntries(context, dataSourceType, includeAuthRule);
-  const inputsString = inputs.reduce((acc: string, input): string =>
-    acc + ` ${input.name}: ${input.type} = ${input.type === 'String' ? '"'+ input.default + '"' : input.default} ${input.comment ? '# ' + input.comment: ''} \n`
-  , '');
+  const inputsString = inputs.reduce(
+    (acc: string, input): string =>
+      acc +
+      ` ${input.name}: ${input.type} = ${input.type === 'String' ? '"' + input.default + '"' : input.default} ${
+        input.comment ? '# ' + input.comment : ''
+      } \n`,
+    '',
+  );
   return `input AMPLIFY {\n${inputsString}}\n`;
 };
 
@@ -60,10 +65,7 @@ export const readRDSGlobalAmplifyInput = async (pathToSchemaFile: string): Promi
   const parsedSchema = parse(schemaContent);
 
   const inputNode = parsedSchema.definitions.find(
-    (definition) =>
-      definition.kind === 'InputObjectTypeDefinition' &&
-      definition.name &&
-      definition.name.value === 'AMPLIFY',
+    (definition) => definition.kind === 'InputObjectTypeDefinition' && definition.name && definition.name.value === 'AMPLIFY',
   );
 
   if (inputNode) {

@@ -162,13 +162,7 @@ export const defaultPrintTransformerLog = (log: TransformerLog): void => {
  * @returns the transformed api deployment resources.
  */
 export const executeTransform = (config: ExecuteTransformConfig): DeploymentResources => {
-  const {
-    schema,
-    modelToDatasourceMap,
-    datasourceSecretParameterLocations,
-    printTransformerLog,
-    rdsLayerMapping,
-  } = config;
+  const { schema, modelToDatasourceMap, datasourceSecretParameterLocations, printTransformerLog, rdsLayerMapping } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
   const transform = constructTransform(config);

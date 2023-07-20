@@ -16,10 +16,15 @@ export const getVpcMetadataLambdaName = (appId: string, envName: string): string
   if (appId && envName) {
     return `${appId}-rds-schema-inspector-${envName}`;
   }
-  throw new Error("AppId and environment name are required to generate the schema inspector lambda.");
+  throw new Error('AppId and environment name are required to generate the schema inspector lambda.');
 };
 
-export const getExistingConnectionSecrets = async (context: $TSContext, secretsKey: string, apiName: string, envName?: string): Promise<RDSConnectionSecrets|undefined> => {
+export const getExistingConnectionSecrets = async (
+  context: $TSContext,
+  secretsKey: string,
+  apiName: string,
+  envName?: string,
+): Promise<RDSConnectionSecrets | undefined> => {
   try {
     const environmentName = envName || stateManager.getCurrentEnvName();
     const appId = stateManager.getAppID();
@@ -119,13 +124,13 @@ export const deleteConnectionSecrets = async (context: $TSContext, secretsKey: s
     return;
   }
   const ssmClient = await SSMClient.getInstance(context);
-  const secretParameterPaths = secretNames.map(secret => {
+  const secretParameterPaths = secretNames.map((secret) => {
     return getParameterStoreSecretPath(secret, secretsKey, apiName, environmentName, AmplifyAppId);
   });
   await ssmClient.deleteSecrets(secretParameterPaths);
 };
 
-// TODO: This is not used. Leaving it here for now. Generate schema step already checks for connection. 
+// TODO: This is not used. Leaving it here for now. Generate schema step already checks for connection.
 export const testDatabaseConnection = async (config: RDSConnectionSecrets): Promise<boolean> => {
   // Establish the connection
   let adapter: DataSourceAdapter;
@@ -151,7 +156,7 @@ export const testDatabaseConnection = async (config: RDSConnectionSecrets): Prom
 // this will be an extension point when we support multiple database imports.
 export const getSecretsKey = (): string => 'schema';
 
-export const getDatabaseName = async (context: $TSContext, apiName: string, secretsKey: string): Promise<string|undefined> => {
+export const getDatabaseName = async (context: $TSContext, apiName: string, secretsKey: string): Promise<string | undefined> => {
   const environmentName = stateManager.getCurrentEnvName();
   const appId = stateManager.getAppID();
   const ssmClient = await SSMClient.getInstance(context);
@@ -194,7 +199,11 @@ export const removeVpcSchemaInspectorLambda = async (context: $TSContext): Promi
   }
 };
 
-export const getConnectionSecrets = async (context: $TSContext, secretsKey: string, engine: ImportedRDSType): Promise<{ secrets: RDSConnectionSecrets, storeSecrets: boolean }> => {
+export const getConnectionSecrets = async (
+  context: $TSContext,
+  secretsKey: string,
+  engine: ImportedRDSType,
+): Promise<{ secrets: RDSConnectionSecrets; storeSecrets: boolean }> => {
   const apiName = getAppSyncAPIName();
   const existingSecrets = await getExistingConnectionSecrets(context, secretsKey, apiName);
   if (existingSecrets) {

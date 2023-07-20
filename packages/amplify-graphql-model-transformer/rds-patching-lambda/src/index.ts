@@ -1,4 +1,4 @@
-import { LambdaClient, UpdateFunctionConfigurationCommand, UpdateFunctionConfigurationCommandOutput } from "@aws-sdk/client-lambda";
+import { LambdaClient, UpdateFunctionConfigurationCommand, UpdateFunctionConfigurationCommandOutput } from '@aws-sdk/client-lambda';
 
 const SNS_EVENT_SOURCE = 'aws:sns';
 
@@ -39,9 +39,7 @@ const updateFunction = async (layerArn: string): Promise<UpdateFunctionConfigura
   const lambdaFunctionArn = process.env.LAMBDA_FUNCTION_ARN;
   const command = new UpdateFunctionConfigurationCommand({
     FunctionName: lambdaFunctionArn,
-    Layers: [
-      layerArn,
-    ],
+    Layers: [layerArn],
   });
   const response = await client.send(command);
   return response;
