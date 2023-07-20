@@ -20,6 +20,7 @@ const mockGetParameters = jest.fn(({ Names }) => {
 jest.mock('aws-sdk', () => {
   return {
     config: {
+      // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
       update() {
         return {};
       },
