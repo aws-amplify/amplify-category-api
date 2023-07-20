@@ -39,11 +39,11 @@ export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConf
       const userPoolId = stackManager.addParameter('AuthCognitoUserPoolId', {
         type: 'String',
       }).valueAsString;
-      const rootStack = stackManager.rootStack;
+      const scope = stackManager.scope;
       return {
         authorizationType: authType,
         userPoolConfig: {
-          userPool: UserPool.fromUserPoolId(rootStack, 'transformer-user-pool', userPoolId),
+          userPool: UserPool.fromUserPoolId(scope, 'transformer-user-pool', userPoolId),
         },
       };
     case AuthorizationType.IAM:

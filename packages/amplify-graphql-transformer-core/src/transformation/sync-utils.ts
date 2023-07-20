@@ -8,6 +8,7 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { Construct } from 'constructs';
 import { TransformerContext } from '../transformer-context';
 import { ResolverConfig, SyncConfig, SyncConfigLambda } from '../config/transformer-config';
 
@@ -18,9 +19,9 @@ type DeltaSyncConfig = {
 };
 
 export function createSyncTable(context: TransformerContext) {
-  const stack = context.stackManager.getStackFor(SyncResourceIDs.syncTableName);
+  const scope = context.stackManager.getScopeFor(SyncResourceIDs.syncTableName);
   const tableName = context.resourceHelper.generateTableName(SyncResourceIDs.syncTableName);
-  new Table(stack, SyncResourceIDs.syncDataSourceID, {
+  new Table(scope, SyncResourceIDs.syncDataSourceID, {
     tableName,
     partitionKey: {
       name: SyncResourceIDs.syncPrimaryKey,
@@ -36,17 +37,17 @@ export function createSyncTable(context: TransformerContext) {
     timeToLiveAttribute: '_ttl',
   });
 
-  createSyncIAMRole(context, stack, tableName);
+  createSyncIAMRole(context, scope, tableName);
 }
 
-function createSyncIAMRole(context: TransformerContext, stack: cdk.Stack, tableName: string) {
-  const role = new iam.Role(stack, SyncResourceIDs.syncIAMRoleName, {
+function createSyncIAMRole(context: TransformerContext, scope: Construct, tableName: string) {
+  const role = new iam.Role(scope, SyncResourceIDs.syncIAMRoleName, {
     roleName: context.resourceHelper.generateIAMRoleName(SyncResourceIDs.syncIAMRoleName),
     assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
   });
 
   role.attachInlinePolicy(
-    new iam.Policy(stack, 'DynamoDBAccess', {
+    new iam.Policy(scope, 'DynamoDBAccess', {
       statements: [
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
@@ -128,11 +129,11 @@ export function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncCo
 
 export function createSyncLambdaIAMPolicy(
   context: TransformerContextProvider,
-  stack: cdk.Stack,
+  scope: Construct,
   name: string,
   region?: string,
 ): iam.Policy {
-  return new iam.Policy(stack, 'InvokeLambdaFunction', {
+  return new iam.Policy(scope, 'InvokeLambdaFunction', {
     statements: [
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,

@@ -1,13 +1,13 @@
 import * as path from 'path';
 import { GraphQLAPIProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { EventSourceMapping, IFunction, LayerVersion, Runtime, StartingPosition } from 'aws-cdk-lib/aws-lambda';
-import { CfnParameter, Fn, Stack, Duration } from 'aws-cdk-lib';
+import { CfnParameter, Fn, Duration } from 'aws-cdk-lib';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { ResourceConstants, SearchableResourceIDs } from 'graphql-transformer-common';
 
 export const createLambda = (
-  stack: Stack,
+  scope: Construct,
   apiGraphql: GraphQLAPIProvider,
   parameterMap: Map<string, CfnParameter>,
   lambdaRole: IRole,
@@ -32,7 +32,7 @@ export const createLambda = (
     Runtime.PYTHON_3_8,
     [
       LayerVersion.fromLayerVersionArn(
-        stack,
+        scope,
         'LambdaLayerVersion',
         Fn.findInMap('LayerResourceMapping', Fn.ref('AWS::Region'), 'layerRegion'),
       ),
@@ -40,7 +40,7 @@ export const createLambda = (
     lambdaRole,
     enviroment,
     undefined,
-    stack,
+    scope,
   );
 };
 

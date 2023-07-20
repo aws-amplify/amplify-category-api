@@ -13,6 +13,7 @@ import {
   RoleDefinition,
   RolesByProvider,
 } from './definitions';
+import { Construct } from 'constructs';
 
 export * from './constants';
 export * from './definitions';
@@ -116,12 +117,12 @@ export const getAuthDirectiveRules = (authDir: DirectiveWrapper, options?: GetAu
 /**
  * gets stack name if the field is paired with function, predictions, or by itself
  */
-export const getStackForField = (
+export const getScopeForField = (
   ctx: TransformerContextProvider,
   obj: ObjectTypeDefinitionNode,
   fieldName: string,
   hasModelDirective: boolean,
-): Stack => {
+): Construct => {
   const fieldNode = obj.fields.find((f) => f.name.value === fieldName);
   const fieldDirectives = fieldNode.directives.map((d) => d.name.value);
   if (fieldDirectives.includes('function')) {
@@ -133,7 +134,7 @@ export const getStackForField = (
   if (hasModelDirective) {
     return ctx.stackManager.getStack(obj.name.value);
   }
-  return ctx.stackManager.rootStack;
+  return ctx.stackManager.scope;
 };
 
 /**

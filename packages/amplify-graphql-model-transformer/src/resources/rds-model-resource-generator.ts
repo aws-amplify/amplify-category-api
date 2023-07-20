@@ -18,14 +18,14 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
     if (this.isEnabled()) {
       const secretEntry = context.datasourceSecretParameterLocations.get(MYSQL_DB_TYPE);
       const { RDSLambdaIAMRoleLogicalID, RDSLambdaLogicalID, RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-      const lambdaRoleStack = context.stackManager.getStackFor(RDSLambdaIAMRoleLogicalID, RDS_STACK_NAME);
-      const lambdaStack = context.stackManager.getStackFor(RDSLambdaLogicalID, RDS_STACK_NAME);
+      const lambdaRoleScope = context.stackManager.getScopeFor(RDSLambdaIAMRoleLogicalID, RDS_STACK_NAME);
+      const lambdaScope = context.stackManager.getScopeFor(RDSLambdaLogicalID, RDS_STACK_NAME);
       const role = createRdsLambdaRole(
         context.resourceHelper.generateIAMRoleName(RDSLambdaIAMRoleLogicalID),
-        lambdaRoleStack,
+        lambdaRoleScope,
         secretEntry as RDSConnectionSecrets,
       );
-      const lambda = createRdsLambda(lambdaStack, context.api, role, {
+      const lambda = createRdsLambda(lambdaScope, context.api, role, {
         username: secretEntry?.username ?? '',
         password: secretEntry?.password ?? '',
         host: secretEntry?.host ?? '',
@@ -33,8 +33,8 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
         database: secretEntry?.database ?? '',
       });
 
-      const lambdaDataSourceStack = context.stackManager.getStackFor(RDSLambdaDataSourceLogicalID, RDS_STACK_NAME);
-      const rdsDatasource = context.api.host.addLambdaDataSource(`${RDSLambdaDataSourceLogicalID}`, lambda, {}, lambdaDataSourceStack);
+      const lambdaDataSourceScope = context.stackManager.getScopeFor(RDSLambdaDataSourceLogicalID, RDS_STACK_NAME);
+      const rdsDatasource = context.api.host.addLambdaDataSource(`${RDSLambdaDataSourceLogicalID}`, lambda, {}, lambdaDataSourceScope);
       this.models.forEach((model) => {
         context.dataSources.add(model, rdsDatasource);
         this.datasourceMap[model.name.value] = rdsDatasource;

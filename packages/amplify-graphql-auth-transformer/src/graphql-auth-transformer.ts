@@ -105,7 +105,7 @@ import {
   getSubscriptionFieldNames,
   addDirectivesToField,
   getSearchableConfig,
-  getStackForField,
+  getScopeForField,
   NONE_DS,
   hasRelationalDirective,
   getPartitionKey,
@@ -534,7 +534,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       );
     } else {
       const hasModelDirective = def.directives.some((dir) => dir.name.value === 'model');
-      const stack = getStackForField(ctx, def, fieldName, hasModelDirective);
+      const scope = getScopeForField(ctx, def, fieldName, hasModelDirective);
 
       resolver = ctx.resolvers.addResolver(
         typeName,
@@ -553,7 +553,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         ),
       );
 
-      resolver.mapToStack(stack);
+      resolver.setScope(scope);
     }
   };
 
@@ -837,7 +837,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   ): void => {
     const roleDefinitions = roles.map((r) => this.roleMap.get(r)!);
     const hasModelDirective = def.directives.some((dir) => dir.name.value === 'model');
-    const stack = getStackForField(ctx, def, fieldName, hasModelDirective);
+    const scope = getScopeForField(ctx, def, fieldName, hasModelDirective);
     if (ctx.api.host.hasResolver(typeName, fieldName)) {
       // TODO: move pipeline resolvers created in the api host to the resolver manager
       /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -852,7 +852,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${fieldName}.auth.req.vtl`),
         MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
         NONE_DS,
-        stack,
+        scope,
       );
       (fieldResolver.pipelineConfig.functions as string[]).unshift(authFunction.functionId);
     } else {
@@ -877,7 +877,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
           ['finish'],
         ),
       );
-      resolver.mapToStack(stack);
+      resolver.setScope(scope);
     }
   };
 
@@ -1245,17 +1245,17 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       } else {
         const authRoleParameter = (ctx.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
         const authPolicyDocuments = createPolicyDocumentForManagedPolicy(this.authPolicyResources);
-        const { rootStack } = ctx.stackManager;
+        const { scope } = ctx.stackManager;
         // we need to add the arn path as this is something cdk is looking for when using imported roles in policies
         const iamAuthRoleArn = iam.Role.fromRoleArn(
-          rootStack,
+          scope,
           'auth-role-name',
-          `arn:aws:iam::${cdk.Stack.of(rootStack).account}:role/${authRoleParameter}`,
+          `arn:aws:iam::${cdk.Stack.of(scope).account}:role/${authRoleParameter}`,
         );
         authPolicyDocuments.forEach((authPolicyDocument, i) => {
           const paddedIndex = `${i + 1}`.padStart(2, '0');
           const resourceName = `${ResourceConstants.RESOURCES.AuthRolePolicy}${paddedIndex}`;
-          new iam.ManagedPolicy(rootStack, resourceName, {
+          new iam.ManagedPolicy(scope, resourceName, {
             document: iam.PolicyDocument.fromJson(authPolicyDocument),
             roles: [iamAuthRoleArn],
           });
@@ -1269,16 +1269,16 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       }
       const unauthRoleParameter = (ctx.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
       const unauthPolicyDocuments = createPolicyDocumentForManagedPolicy(this.unauthPolicyResources);
-      const { rootStack } = ctx.stackManager;
+      const { scope } = ctx.stackManager;
       const iamUnauthRoleArn = iam.Role.fromRoleArn(
-        rootStack,
+        scope,
         'unauth-role-name',
-        `arn:aws:iam::${cdk.Stack.of(rootStack).account}:role/${unauthRoleParameter}`,
+        `arn:aws:iam::${cdk.Stack.of(scope).account}:role/${unauthRoleParameter}`,
       );
       unauthPolicyDocuments.forEach((unauthPolicyDocument, i) => {
         const paddedIndex = `${i + 1}`.padStart(2, '0');
         const resourceName = `${ResourceConstants.RESOURCES.UnauthRolePolicy}${paddedIndex}`;
-        new iam.ManagedPolicy(ctx.stackManager.rootStack, resourceName, {
+        new iam.ManagedPolicy(ctx.stackManager.scope, resourceName, {
           document: iam.PolicyDocument.fromJson(unauthPolicyDocument),
           roles: [iamUnauthRoleArn],
         });
