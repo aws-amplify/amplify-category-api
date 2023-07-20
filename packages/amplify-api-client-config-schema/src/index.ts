@@ -6,4 +6,9 @@ export const versionedApiOutputSchema = z.discriminatedUnion('version', [
   // this is where additional api major version schemas would go
 ]);
 
+/**
+ *
+ */
 export type ApiOutput = z.infer<typeof versionedApiOutputSchema>;
+
+export const ApiOutputKey = 'apiOutput';

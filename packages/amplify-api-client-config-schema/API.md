@@ -10,6 +10,9 @@ import { z } from 'zod';
 export type ApiOutput = z.infer<typeof versionedApiOutputSchema>;
 
 // @public (undocumented)
+export const ApiOutputKey = "apiOutput";
+
+// @public (undocumented)
 export const versionedApiOutputSchema: z.ZodDiscriminatedUnion<"version", [z.ZodObject<{
     version: z.ZodLiteral<"1">;
     payload: z.ZodObject<{

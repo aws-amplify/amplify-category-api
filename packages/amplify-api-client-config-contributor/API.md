@@ -9,7 +9,7 @@ import { ApiOutput } from '@aws-amplify/api-client-config-schema';
 // @public (undocumented)
 export type ApiClientConfig = {
     aws_appsync_region?: string;
-    aws_appsync_graphqlEndpoint?: string;
+    aws_appsync_graphqlEndpoint: string;
     aws_appsync_authenticationType?: string;
     aws_appsync_apiKey?: string;
 };
@@ -32,9 +32,6 @@ export enum ApiClientConfigMapping {
     // (undocumented)
     aws_appsync_region = "awsAppsyncRegion"
 }
-
-// @public (undocumented)
-export const ApiOutputKey = "apiOutput";
 
 // (No @packageDocumentation comment for this package)
 
