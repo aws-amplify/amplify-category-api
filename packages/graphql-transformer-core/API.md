@@ -299,6 +299,11 @@ const readSchema: (projectDirectory: string) => Promise<{
 export { readSchema as readProjectSchema }
 export { readSchema }
 
+// Warning: (ae-forgotten-export) The symbol "SchemaReaderConfig" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export const removeAmplifyInput: (schema: string) => SchemaReaderConfig;
+
 // @public (undocumented)
 export type ResolverConfig = {
     project?: SyncConfig;
