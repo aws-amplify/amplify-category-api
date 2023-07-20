@@ -1,10 +1,11 @@
 import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
 import { Lazy } from 'aws-cdk-lib';
+import { S3Asset } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLApi } from '../graphql-api';
-import { FileAsset } from './file-asset';
+import { assetManager } from '../transformer-context/asset-manager';
 
 export class TransformerSchema {
-  private asset?: FileAsset;
+  private asset?: S3Asset;
 
   private api?: GraphQLApi;
 
@@ -21,7 +22,7 @@ export class TransformerSchema {
         definitionS3Location: Lazy.string({
           produce: () => {
             const asset = schema.addAsset();
-            return asset.s3Url;
+            return asset.s3ObjectUrl;
           },
         }),
       });
@@ -29,12 +30,12 @@ export class TransformerSchema {
     return this.schemaConstruct;
   };
 
-  private addAsset = (): FileAsset => {
+  private addAsset = (): S3Asset => {
     if (!this.api) {
       throw new Error('Schema not bound');
     }
     if (!this.asset) {
-      this.asset = new FileAsset(this.api, 'schema', { fileName: 'schema.graphql', fileContent: this.definition });
+      this.asset = assetManager.createAsset(this.api, 'schema', { fileName: 'schema.graphql', fileContent: this.definition });
     }
     return this.asset;
   };

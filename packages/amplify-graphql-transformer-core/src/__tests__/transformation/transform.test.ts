@@ -1,5 +1,11 @@
-import { AppSyncAuthConfiguration, TransformerPluginProvider, TransformerPluginType } from '@aws-amplify/graphql-transformer-interfaces';
-import { App } from 'aws-cdk-lib';
+import {
+  AppSyncAuthConfiguration,
+  NestedStackProvider,
+  TransformerPluginProvider,
+  TransformerPluginType,
+} from '@aws-amplify/graphql-transformer-interfaces';
+import { App, NestedStack, Stack } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { GraphQLApi } from '../../graphql-api';
 import { GraphQLTransform } from '../../transformation/transform';
 import { TransformerOutput } from '../../transformer-context/output';
@@ -10,6 +16,10 @@ class TestGraphQLTransform extends GraphQLTransform {
     return this.generateGraphQlApi(stackManager, output);
   }
 }
+
+const testNestedStackProvider: NestedStackProvider = {
+  provide: (scope: Construct, name: string): Stack => new NestedStack(scope, name),
+};
 
 const mockTransformer: TransformerPluginProvider = {
   pluginType: TransformerPluginType.DATA_SOURCE_PROVIDER,
@@ -50,7 +60,9 @@ describe('GraphQLTransform', () => {
       transform: TestGraphQLTransform;
       isAPIKeyExpected: boolean;
     }): void => {
-      const stackManager = new StackManager(new App(), {});
+      const app = new App();
+      const stack = new Stack(app, 'TestStack');
+      const stackManager = new StackManager(stack, testNestedStackProvider, {});
       const transformerOutput = {
         buildSchema: jest.fn(() => ''),
       } as unknown as TransformerOutput;
@@ -77,7 +89,9 @@ describe('GraphQLTransform', () => {
 
     it('can be invoked', () => {
       const transform = new TestGraphQLTransform({ transformers: [mockTransformer] });
-      const stackManager = new StackManager(new App(), {});
+      const app = new App();
+      const stack = new Stack(app, 'TestStack');
+      const stackManager = new StackManager(stack, testNestedStackProvider, {});
       const transformerOutput = {
         buildSchema: jest.fn(() => ''),
       } as unknown as TransformerOutput;

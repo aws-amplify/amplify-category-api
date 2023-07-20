@@ -1,4 +1,4 @@
-import { DeploymentResources as DeploymentResourcesV2 } from '@aws-amplify/graphql-transformer-interfaces';
+import { DeploymentResources as DeploymentResourcesV2 } from '@aws-amplify/graphql-transformer';
 import { DeploymentResources as DeploymentResourcesV1 } from 'graphql-transformer-core';
 import { $TSContext, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
 import { AmplifyGraphQLTransformerErrorConverter } from '../errors/amplify-error-converter';

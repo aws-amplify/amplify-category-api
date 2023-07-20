@@ -24,7 +24,7 @@ import { validateModelSchema } from './validation';
 import { TransformFormatter } from './TransformFormatter';
 import { TransformConfig, SyncUtils } from './util';
 import { FeatureFlagProvider, NoopFeatureFlagProvider } from './FeatureFlags';
-import { DeploymentResources } from './deployment-resources';
+import { DeploymentResources } from './DeploymentResources';
 
 function isFunction(obj: any) {
   return obj && typeof obj === 'function';

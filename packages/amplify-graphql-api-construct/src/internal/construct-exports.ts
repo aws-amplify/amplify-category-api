@@ -1,4 +1,4 @@
-import { Template } from '@aws-amplify/graphql-transformer-interfaces';
+import { Template } from '@aws-amplify/graphql-transformer';
 import { CfnResource } from 'aws-cdk-lib';
 import { CfnGraphQLApi, CfnGraphQLSchema, CfnApiKey, CfnResolver, CfnFunctionConfiguration, CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';

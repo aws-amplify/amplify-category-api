@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelResourceIDs, ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode } from 'graphql';
-import { SyncUtils, TransformerNestedStack } from '@aws-amplify/graphql-transformer-core';
+import { SyncUtils } from '@aws-amplify/graphql-transformer-core';
 import { AttributeType, CfnTable, StreamViewType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -106,17 +106,14 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
       allowedValues: ['true', 'false'],
     });
     // add the connection between the root and nested stack so the values can be passed down
-    (scope as TransformerNestedStack).setParameter(readIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS));
-    (scope as TransformerNestedStack).setParameter(writeIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS));
-    (scope as TransformerNestedStack).setParameter(billingMode.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBBillingMode));
-    (scope as TransformerNestedStack).setParameter(
+    (scope as cdk.NestedStack).setParameter(readIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS));
+    (scope as cdk.NestedStack).setParameter(writeIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS));
+    (scope as cdk.NestedStack).setParameter(billingMode.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBBillingMode));
+    (scope as cdk.NestedStack).setParameter(
       pointInTimeRecovery.node.id,
       cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery),
     );
-    (scope as TransformerNestedStack).setParameter(
-      enableSSE.node.id,
-      cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption),
-    );
+    (scope as cdk.NestedStack).setParameter(enableSSE.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption));
 
     // Add conditions.
     new cdk.CfnCondition(scope, ResourceConstants.CONDITIONS.HasEnvironmentParameter, {
