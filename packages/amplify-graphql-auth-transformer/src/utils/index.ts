@@ -1,7 +1,7 @@
 import { DirectiveWrapper, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthMode, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { Stack } from 'aws-cdk-lib';
 import { ObjectTypeDefinitionNode } from 'graphql';
+import { Construct } from 'constructs';
 import { MODEL_OPERATIONS, READ_MODEL_OPERATIONS } from './constants';
 import {
   AuthProvider,
@@ -13,7 +13,6 @@ import {
   RoleDefinition,
   RolesByProvider,
 } from './definitions';
-import { Construct } from 'constructs';
 
 export * from './constants';
 export * from './definitions';

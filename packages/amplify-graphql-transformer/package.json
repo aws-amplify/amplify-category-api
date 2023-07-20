@@ -46,6 +46,10 @@
     "rimraf": "^3.0.0",
     "ts-jest": "26.4.4"
   },
+  "peerDependencies": {
+    "aws-cdk-lib": "^2.80.0",
+    "constructs": "^10.0.5"
+  },
   "jest": {
     "testURL": "http://localhost",
     "transform": {

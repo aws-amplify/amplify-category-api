@@ -52,13 +52,13 @@ export class ApiCategorySchemaNotFoundError extends Error {
 // @public (undocumented)
 export function buildAPIProject(opts: ProjectOptions): Promise<{
     resolvers: Record<string, string>;
-    stacks: Record<string, Template_2>;
-    stackMapping: StackMapping_3;
+    stacks: Record<string, Template_4>;
+    stackMapping: StackMapping_4;
     pipelineFunctions: Record<string, string>;
     functions: Record<string, string>;
     schema: string;
     userOverriddenSlots: string[];
-    rootStack: Template_2;
+    rootStack: Template_4;
 }>;
 
 // Warning: (ae-forgotten-export) The symbol "DiffableProject" needs to be exported by the entry point index.d.ts
@@ -127,6 +127,8 @@ export type DBType = 'MySQL' | 'DDB';
 //
 // @public (undocumented)
 export interface DeploymentResources extends ResolversFunctionsAndSchema, NestedStacks {
+    // Warning: (ae-forgotten-export) The symbol "StackMapping_3" needs to be exported by the entry point index.d.ts
+    //
     // (undocumented)
     stackMapping: StackMapping_3;
 }
@@ -608,8 +610,8 @@ export { writeConfig as writeTransformerConfiguration }
 
 // Warnings were encountered during analysis:
 //
-// src/util/amplifyUtils.ts:49:56 - (ae-forgotten-export) The symbol "Template_2" needs to be exported by the entry point index.d.ts
-// src/util/amplifyUtils.ts:52:3 - (ae-forgotten-export) The symbol "StackMapping_3" needs to be exported by the entry point index.d.ts
+// src/util/amplifyUtils.ts:49:56 - (ae-forgotten-export) The symbol "Template_4" needs to be exported by the entry point index.d.ts
+// src/util/amplifyUtils.ts:52:3 - (ae-forgotten-export) The symbol "StackMapping_4" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

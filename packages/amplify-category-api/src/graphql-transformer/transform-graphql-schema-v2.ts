@@ -1,11 +1,7 @@
 import path from 'path';
 import { RDSConnectionSecrets, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
-import {
-  AppSyncAuthConfiguration,
-  DeploymentResources,
-  TransformerLog,
-  TransformerLogLevel,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer';
+import { AppSyncAuthConfiguration, TransformerLog, TransformerLogLevel } from '@aws-amplify/graphql-transformer-interfaces';
 import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';

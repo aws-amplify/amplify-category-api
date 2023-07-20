@@ -1,6 +1,6 @@
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
+import { ModelTransformer } from '../graphql-model-transformer';
 import { getFieldOnObjectType, getObjectType } from './test-utils/helpers';
 
 describe('createdAt field tests', () => {

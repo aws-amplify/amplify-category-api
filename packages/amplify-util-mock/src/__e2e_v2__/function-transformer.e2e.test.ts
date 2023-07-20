@@ -1,8 +1,6 @@
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
-import { deploy, logDebug, GraphQLClient } from '../__e2e__/utils';
+import { executeTransform } from '@aws-amplify/graphql-transformer';
+import { deploy, logDebug, GraphQLClient, defaultTransformParams } from '../__e2e__/utils';
 
 jest.setTimeout(2000000);
 
@@ -32,10 +30,10 @@ describe('@function transformer', () => {
         msg: String!
       }`;
     try {
-      const transformer = new GraphQLTransform({
-        transformers: [new ModelTransformer(), new FunctionTransformer()],
+      const out = executeTransform({
+        ...defaultTransformParams,
+        schema: validSchema,
       });
-      const out = transformer.transform(validSchema);
       const result = await deploy(out);
       server = result.simulator;
 

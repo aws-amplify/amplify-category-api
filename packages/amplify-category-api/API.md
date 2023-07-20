@@ -8,7 +8,7 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import * as cdk from 'aws-cdk-lib';
 import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
 import { Construct } from 'constructs';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer';
 import { DeploymentResources as DeploymentResources_2 } from 'graphql-transformer-core';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
