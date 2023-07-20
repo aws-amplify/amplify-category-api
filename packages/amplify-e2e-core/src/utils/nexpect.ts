@@ -517,15 +517,13 @@ function chain(context: Context): ExecutionContext {
           context.queue.shift();
           evalContext(data, '_expect');
         }
-      } else {
+      } else if (currentFn(data)) {
         //
         // If the `currentFn` is any other function then evaluate it
         //
-        if (currentFn(data)) {
-          // Evaluate the next function if it does not need input
-          var nextFn = context.queue[0];
-          if (nextFn && !nextFn.requiresInput) evalContext(data);
-        }
+        // Evaluate the next function if it does not need input
+        var nextFn = context.queue[0];
+        if (nextFn && !nextFn.requiresInput) evalContext(data);
       }
     }
 
