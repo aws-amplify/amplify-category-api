@@ -1,6 +1,6 @@
 import { MYSQL_DB_TYPE, RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { Topic } from 'aws-cdk-lib/aws-sns';
+import { Topic , SubscriptionFilter } from 'aws-cdk-lib/aws-sns';
 import { LambdaSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { ModelVTLGenerator, RDSModelVTLGenerator } from '../resolvers';
@@ -13,7 +13,6 @@ import {
 } from '../resolvers/rds';
 import { ModelResourceGenerator } from './model-resource-generator';
 import { Fn } from 'aws-cdk-lib';
-import { SubscriptionFilter } from 'aws-cdk-lib/aws-sns';
 
 export const RDS_STACK_NAME = 'RdsApiStack';
 // Beta SNS topic - 'arn:aws:sns:us-east-1:956468067974:AmplifyRDSLayerNotification'
