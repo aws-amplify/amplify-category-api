@@ -2,6 +2,7 @@ import { ConflictHandlerType, GraphQLTransform, SyncConfig, validateModelSchema 
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
 import { Template } from 'aws-cdk-lib/assertions';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '../graphql-model-transformer';
 import {
   doNotExpectFields,
@@ -24,10 +25,10 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     validateModelSchema(parse(out.schema));
