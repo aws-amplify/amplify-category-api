@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@1.2.8...@aws-amplify/graphql-index-transformer@1.2.9) (2023-07-21)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
 ## [1.2.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@1.2.7...@aws-amplify/graphql-index-transformer@1.2.8) (2023-07-17)
 
 **Note:** Version bump only for package @aws-amplify/graphql-index-transformer
