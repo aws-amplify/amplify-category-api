@@ -23,7 +23,7 @@ export class ApiClientConfigContributor {
     // Build would succeed in data and cli repo if name was changed.
     apiOutput,
   }: {
-    apiOutput: ApiOutput;
+    apiOutput?: ApiOutput;
   }): ApiClientConfig | Record<string, never> {
     if (apiOutput === undefined) {
       return {};
