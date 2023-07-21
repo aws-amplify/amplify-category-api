@@ -1,8 +1,8 @@
-import { CfnResource } from "aws-cdk-lib";
-import * as fs from "fs-extra";
-import * as path from "path";
-import _ from "lodash";
-import { pathManager, stateManager } from "@aws-amplify/amplify-cli-core";
+import { CfnResource } from 'aws-cdk-lib';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import _ from 'lodash';
+import { pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { StackManager } from '@aws-amplify/graphql-transformer-core';
 import { AmplifyApiGraphQlResourceStackTemplate } from '@aws-amplify/graphql-transformer-interfaces';
 import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
