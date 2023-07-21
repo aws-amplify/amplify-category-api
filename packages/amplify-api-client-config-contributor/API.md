@@ -17,7 +17,7 @@ export type ApiClientConfig = {
 // @public
 export class ApiClientConfigContributor {
     contribute({ apiOutput, }: {
-        apiOutput: ApiOutput;
+        apiOutput?: ApiOutput;
     }): ApiClientConfig | Record<string, never>;
 }
 
