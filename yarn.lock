@@ -657,10 +657,10 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v5/-/asset-node-proxy-agent-v5-2.0.165.tgz#c169599d83beceea7e638082ef9833997f04c85d"
   integrity sha512-bsyLQD/vqXQcc9RDmlM1XqiFNO/yewgVFXmkMcQkndJbmE/jgYkzewwYGrBlfL725hGLQipXq19+jwWwdsXQqg==
 
-"@aws-cdk/aws-apigatewayv2-alpha@~2.68.0-alpha.0":
-  version "2.68.0-alpha.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-apigatewayv2-alpha/-/aws-apigatewayv2-alpha-2.68.0-alpha.0.tgz#f9cfe135eedbd60aacc48735b63323ea7961c5db"
-  integrity sha512-UZ1GBt7DfxKLfs49Fg1Y33/RRVoD1NZDd0V+e9Tj/dkSm9d0JEiuMU8TRtandsd38kl7n1fSLEVsXu3/WAYAPg==
+"@aws-cdk/aws-apigatewayv2-alpha@~2.80.0-alpha.0":
+  version "2.80.0-alpha.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-apigatewayv2-alpha/-/aws-apigatewayv2-alpha-2.80.0-alpha.0.tgz#37a1c2ef166aea24bcf58b3efa776511c6b8569a"
+  integrity sha512-XBvDiay46ThYP5hoPcwVfzE9egPiwHMGUpVepg6qJ+HQwCmLesbArwurmG2TXcfRbO06uXrAWmWpAqQmh7nstw==
 
 "@aws-cdk/cfnspec@2.80.0-alpha.0":
   version "2.80.0-alpha.0"
