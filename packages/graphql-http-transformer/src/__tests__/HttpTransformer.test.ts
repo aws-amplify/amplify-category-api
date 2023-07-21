@@ -3,7 +3,7 @@ import { GraphQLTransform } from 'graphql-transformer-core';
 import { ResolverResourceIDs } from 'graphql-transformer-common';
 import { HttpTransformer } from '../HttpTransformer';
 
-test('Test HttpTransformer with four basic requests', () => {
+test('HttpTransformer with four basic requests', () => {
   const validSchema = `
     type Comment {
         id: ID!
@@ -28,7 +28,7 @@ test('Test HttpTransformer with four basic requests', () => {
   expect(out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'stillMore')]).toBeTruthy();
 });
 
-test('Test HttpTransformer with URL params happy case', () => {
+test('HttpTransformer with URL params happy case', () => {
   const validSchema = `
     type Comment {
         id: ID!
@@ -78,7 +78,7 @@ test('Test HttpTransformer with URL params happy case', () => {
   expect(out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'deleter')]).toBeTruthy();
 });
 
-test('Test that HttpTransformer throws an error when missing protocol in URL argument', () => {
+test('that HttpTransformer throws an error when missing protocol in URL argument', () => {
   const validSchema = `
     type Comment {
         id: ID!
@@ -95,7 +95,7 @@ test('Test that HttpTransformer throws an error when missing protocol in URL arg
   }
 });
 
-test('Test HttpTransformer with URL and headers params happy case', () => {
+test('HttpTransformer with URL and headers params happy case', () => {
   const validSchema = `
     type Comment {
         id: ID!
@@ -128,7 +128,7 @@ test('Test HttpTransformer with URL and headers params happy case', () => {
   expect(out.resolvers['Comment.complexPut.req.vtl']).toContain('$util.qr($headers.put("X-Header", "X-Header-ValuePut"))');
 });
 
-test('Test HttpTransformer with four basic requests with env on the URI', () => {
+test('HttpTransformer with four basic requests with env on the URI', () => {
   const validSchema = `
     type Comment {
         id: ID!
@@ -202,7 +202,7 @@ test('Test HttpTransformer with four basic requests with env on the URI', () => 
   ).toBe('env');
 });
 
-test('Test HttpTransformer with four basic requests with env on the hostname', () => {
+test('HttpTransformer with four basic requests with env on the hostname', () => {
   const validSchema = `
     type Comment {
         id: ID!
@@ -253,7 +253,7 @@ test('Test HttpTransformer with four basic requests with env on the hostname', (
   expect(out.stacks.HttpStack.Resources[stillMoreDatasource].Properties.HttpConfig.Endpoint['Fn::Sub'][1].env.Ref).toBe('env');
 });
 
-test('Test HttpTransformer with four basic requests with aws_region on the URI', () => {
+test('HttpTransformer with four basic requests with aws_region on the URI', () => {
   const validSchema = `
     type Comment {
         id: ID!
@@ -327,7 +327,7 @@ test('Test HttpTransformer with four basic requests with aws_region on the URI',
   ).toBe('AWS::Region');
 });
 
-test('Test HttpTransformer with four basic requests with aws_region on the hostname', () => {
+test('HttpTransformer with four basic requests with aws_region on the hostname', () => {
   const validSchema = `
     type Comment {
         id: ID!

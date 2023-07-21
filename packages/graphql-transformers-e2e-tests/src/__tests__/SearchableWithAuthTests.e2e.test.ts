@@ -364,7 +364,7 @@ type CreatePostInput = {
  */
 
 // cognito owner check
-test('test Comments as owner', async () => {
+test('Comments as owner', async () => {
   const ownerResponse: any = await GRAPHQL_CLIENT_1.query({
     query: gql`
       query SearchComments {
@@ -385,7 +385,7 @@ test('test Comments as owner', async () => {
 });
 
 // cognito static group check
-test('test Comments as user in writer group', async () => {
+test('Comments as user in writer group', async () => {
   const writerResponse: any = await GRAPHQL_CLIENT_2.query({
     query: gql`
       query SearchComments {
@@ -414,7 +414,7 @@ test('test Comments as user in writer group', async () => {
 });
 
 // cognito test as unauthorized user
-test('test Comments as user that is not an owner nor is in writer group', async () => {
+test('Comments as user that is not an owner nor is in writer group', async () => {
   const user3Response: any = await GRAPHQL_CLIENT_3.query({
     query: gql`
       query SearchComments {
@@ -435,7 +435,7 @@ test('test Comments as user that is not an owner nor is in writer group', async 
 });
 
 // cognito dynamic group check
-test('test Todo as user in the dynamic group admin', async () => {
+test('Todo as user in the dynamic group admin', async () => {
   const adminResponse: any = await GRAPHQL_CLIENT_2.query({
     query: gql`
       query SearchTodos {
@@ -460,7 +460,7 @@ test('test Todo as user in the dynamic group admin', async () => {
 });
 
 // iam test
-test('test Post as authorized user', async () => {
+test('Post as authorized user', async () => {
   const authUser: any = await GRAPHQL_IAM_AUTH_CLIENT.query({
     query: gql`
       query SearchPosts {
@@ -485,7 +485,7 @@ test('test Post as authorized user', async () => {
 });
 
 // test apikey 2nd scenario
-test('test searchPosts with apikey and secret removed', async () => {
+test('searchPosts with apikey and secret removed', async () => {
   const apiKeyResponse: any = await GRAPHQL_APIKEY_CLIENT.query({
     query: gql`
       query SearchPosts {
@@ -510,7 +510,7 @@ test('test searchPosts with apikey and secret removed', async () => {
 });
 
 // test iam/apiKey schema with unauth user
-test('test post as an cognito user that is not allowed in this schema', async () => {
+test('post as an cognito user that is not allowed in this schema', async () => {
   try {
     await GRAPHQL_CLIENT_3.query({
       query: gql`

@@ -204,7 +204,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test(`Test 'public' authStrategy`, async () => {
+test(`'public' authStrategy`, async () => {
   try {
     const createMutation = gql`
       mutation {
@@ -252,7 +252,7 @@ test(`Test 'public' authStrategy`, async () => {
   }
 });
 
-test(`Test 'private' authStrategy`, async () => {
+test(`'private' authStrategy`, async () => {
   try {
     const createMutation = gql`
       mutation {

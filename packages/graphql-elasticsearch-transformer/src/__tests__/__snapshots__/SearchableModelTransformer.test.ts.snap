@@ -1,61 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SearchableModelTransformer with external versioning 1`] = `
-"#set( $indexPath = \\"/post/doc/_search\\" )
-#set( $nonKeywordFields = [] )
-#if( $util.isNullOrEmpty($context.args.sort) )
-  #set( $sortDirection = \\"desc\\" )
-  #set( $sortField = \\"id\\" )
-#else
-  #set( $sortDirection = $util.defaultIfNull($context.args.sort.direction, \\"desc\\") )
-  #set( $sortField = $util.defaultIfNull($context.args.sort.field, \\"id\\") )
-#end
-#if( $nonKeywordFields.contains($sortField) )
-  #set( $sortField0 = $util.toJson($sortField) )
-#else
-  #set( $sortField0 = $util.toJson(\\"\${sortField}.keyword\\") )
-#end
-{
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"GET\\",
-  \\"path\\": \\"$indexPath\\",
-  \\"params\\": {
-      \\"body\\":     {
-                #if( $context.args.nextToken )\\"search_after\\": [$util.toJson($context.args.nextToken)], #end
-                #if( $context.args.from )\\"from\\": $context.args.from, #end
-                \\"size\\": #if( $context.args.limit ) $context.args.limit #else 100 #end,
-                \\"sort\\": [{$sortField0: { \\"order\\" : $util.toJson($sortDirection) }}],
-                \\"version\\": true,
-                \\"query\\": #if( $context.args.filter )
-$util.transform.toElasticsearchQueryDSL($ctx.args.filter)
-#else
-{
-      \\"match_all\\": {}
-  }
-#end
-                }
-  }
-}"
-`;
-
-exports[`SearchableModelTransformer with external versioning 2`] = `
-"#set( $es_items = [] )
-#foreach( $entry in $context.result.hits.hits )
-  #if( !$foreach.hasNext )
-    #set( $nextToken = $entry.sort.get(0) )
-  #end
-  #set( $row = $entry.get(\\"_source\\") )
-  $util.qr($row.put(\\"_version\\", $entry.get(\\"_version\\")))
-  $util.qr($es_items.add($row))
-#end
-$util.toJson({
-  \\"items\\": $es_items,
-  \\"total\\": $ctx.result.hits.total,
-  \\"nextToken\\": $nextToken
-})"
-`;
-
-exports[`Test SearchableModelTransformer validation happy case 1`] = `
+exports[`SearchableModelTransformer validation happy case 1`] = `
 "type Post {
   id: ID!
   title: String!
@@ -264,7 +209,62 @@ type SearchablePostConnection {
 "
 `;
 
-exports[`Test SearchableModelTransformer with multiple model searchable directives 1`] = `
+exports[`SearchableModelTransformer with external versioning 1`] = `
+"#set( $indexPath = \\"/post/doc/_search\\" )
+#set( $nonKeywordFields = [] )
+#if( $util.isNullOrEmpty($context.args.sort) )
+  #set( $sortDirection = \\"desc\\" )
+  #set( $sortField = \\"id\\" )
+#else
+  #set( $sortDirection = $util.defaultIfNull($context.args.sort.direction, \\"desc\\") )
+  #set( $sortField = $util.defaultIfNull($context.args.sort.field, \\"id\\") )
+#end
+#if( $nonKeywordFields.contains($sortField) )
+  #set( $sortField0 = $util.toJson($sortField) )
+#else
+  #set( $sortField0 = $util.toJson(\\"\${sortField}.keyword\\") )
+#end
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"GET\\",
+  \\"path\\": \\"$indexPath\\",
+  \\"params\\": {
+      \\"body\\":     {
+                #if( $context.args.nextToken )\\"search_after\\": [$util.toJson($context.args.nextToken)], #end
+                #if( $context.args.from )\\"from\\": $context.args.from, #end
+                \\"size\\": #if( $context.args.limit ) $context.args.limit #else 100 #end,
+                \\"sort\\": [{$sortField0: { \\"order\\" : $util.toJson($sortDirection) }}],
+                \\"version\\": true,
+                \\"query\\": #if( $context.args.filter )
+$util.transform.toElasticsearchQueryDSL($ctx.args.filter)
+#else
+{
+      \\"match_all\\": {}
+  }
+#end
+                }
+  }
+}"
+`;
+
+exports[`SearchableModelTransformer with external versioning 2`] = `
+"#set( $es_items = [] )
+#foreach( $entry in $context.result.hits.hits )
+  #if( !$foreach.hasNext )
+    #set( $nextToken = $entry.sort.get(0) )
+  #end
+  #set( $row = $entry.get(\\"_source\\") )
+  $util.qr($row.put(\\"_version\\", $entry.get(\\"_version\\")))
+  $util.qr($es_items.add($row))
+#end
+$util.toJson({
+  \\"items\\": $es_items,
+  \\"total\\": $ctx.result.hits.total,
+  \\"nextToken\\": $nextToken
+})"
+`;
+
+exports[`SearchableModelTransformer with multiple model searchable directives 1`] = `
 "type Post {
   id: ID!
   title: String!
@@ -540,7 +540,7 @@ type SearchableUserConnection {
 "
 `;
 
-exports[`Test SearchableModelTransformer with only create mutations 1`] = `
+exports[`SearchableModelTransformer with only create mutations 1`] = `
 "type Post {
   id: ID!
   title: String!
@@ -734,7 +734,7 @@ type SearchablePostConnection {
 "
 `;
 
-exports[`Test SearchableModelTransformer with query overrides 1`] = `
+exports[`SearchableModelTransformer with query overrides 1`] = `
 "type Post {
   id: ID!
   title: String!
@@ -943,7 +943,7 @@ type SearchablePostConnection {
 "
 `;
 
-exports[`Test SearchableModelTransformer with sort fields 1`] = `
+exports[`SearchableModelTransformer with sort fields 1`] = `
 "type Post {
   id: ID!
   title: String!

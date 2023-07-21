@@ -23,7 +23,7 @@ const featureFlags = {
   getNumber: jest.fn(),
   getObject: jest.fn(),
 };
-test('Test custom root types with additional fields.', () => {
+test('custom root types with additional fields.', () => {
   const validSchema = `
     type Query {
         additionalQueryField: String

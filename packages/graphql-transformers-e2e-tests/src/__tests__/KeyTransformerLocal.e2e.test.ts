@@ -21,7 +21,7 @@ const featureFlags = {
   getNumber: jest.fn(),
   getObject: jest.fn(),
 };
-test('Test that a primary @key with a single field changes the hash key.', () => {
+test('that a primary @key with a single field changes the hash key.', () => {
   const validSchema = `
     type Test @model @key(fields: ["email"]) {
         email: String!
@@ -46,7 +46,7 @@ test('Test that a primary @key with a single field changes the hash key.', () =>
   expectArguments(getTestField, ['email']);
 });
 
-test('Test that a primary @key with 2 fields changes the hash and sort key.', () => {
+test('that a primary @key with 2 fields changes the hash and sort key.', () => {
   const validSchema = `
     type Test @model @key(fields: ["email", "kind"]) {
         email: String!
@@ -79,7 +79,7 @@ test('Test that a primary @key with 2 fields changes the hash and sort key.', ()
   expectArguments(getTestField, ['email', 'kind']);
 });
 
-test('Test that a primary @key with id as hashKey does not have it required in createInput', () => {
+test('that a primary @key with id as hashKey does not have it required in createInput', () => {
   const validSchema = `
     type Test @model @key(fields: ["id", "kind"]) {
         id: ID!
@@ -107,7 +107,7 @@ test('Test that a primary @key with id as hashKey does not have it required in c
   expectNonNullFields(deleteInput, ['id', 'kind']);
 });
 
-test('Test that a primary @key with id and createdAt it is not a required in createInput', () => {
+test('that a primary @key with id and createdAt it is not a required in createInput', () => {
   const validSchema = `
     type Test @model @key(fields: ["id", "createdAt"]) {
         id: ID!
@@ -135,7 +135,7 @@ test('Test that a primary @key with id and createdAt it is not a required in cre
   expectNonNullFields(deleteInput, ['id', 'createdAt']);
 });
 
-test('Test that a primary @key with emailId and location makes it a required in createInput', () => {
+test('that a primary @key with emailId and location makes it a required in createInput', () => {
   const validSchema = `
     type Test @model @key(fields: ["emailId", "location"]) {
         emailId: AWSEmail!
@@ -163,7 +163,7 @@ test('Test that a primary @key with emailId and location makes it a required in 
   expectNonNullFields(deleteInput, ['emailId', 'location']);
 });
 
-test('Test that a primary @key with 3 fields changes the hash and sort keys.', () => {
+test('that a primary @key with 3 fields changes the hash and sort keys.', () => {
   const validSchema = `
     type Test @model @key(fields: ["email", "kind", "date"]) {
         email: String!
@@ -202,7 +202,7 @@ test('Test that a primary @key with 3 fields changes the hash and sort keys.', (
   expectArguments(listTestField, ['email', 'kindDate', 'filter', 'nextToken', 'limit', 'sortDirection']);
 });
 
-test('Test that a secondary @key with 3 fields changes the hash and sort keys and adds a query fields correctly.', () => {
+test('that a secondary @key with 3 fields changes the hash and sort keys and adds a query fields correctly.', () => {
   const validSchema = `
     type Test @model @key(name: "GSI", fields: ["email", "kind", "date"], queryField: "listByEmailKindDate") {
         email: String!
@@ -251,7 +251,7 @@ test('Test that a secondary @key with 3 fields changes the hash and sort keys an
   expectArguments(listTestField, ['filter', 'nextToken', 'limit']);
 });
 
-test('Test that a secondary @key with a single field adds a GSI.', () => {
+test('that a secondary @key with a single field adds a GSI.', () => {
   const validSchema = `
     type Test @model @key(name: "GSI_Email", fields: ["email"], queryField: "testsByEmail") {
         id: ID!
@@ -283,7 +283,7 @@ test('Test that a secondary @key with a single field adds a GSI.', () => {
   expectArguments(queryIndexField, ['email', 'filter', 'nextToken', 'limit', 'sortDirection']);
 });
 
-test('Test that a secondary @key with a multiple field adds an GSI.', () => {
+test('that a secondary @key with a multiple field adds an GSI.', () => {
   const validSchema = `
     type Test @model @key(fields: ["email", "createdAt"])
     @key(name: "CategoryGSI", fields: ["category", "createdAt"], queryField: "testsByCategory") {
@@ -334,7 +334,7 @@ test('Test that a secondary @key with a multiple field adds an GSI.', () => {
   expect(deleteInput.fields).toHaveLength(2);
 });
 
-test('Test that a secondary @key with a multiple field adds an LSI with GSI FF turned off', () => {
+test('that a secondary @key with a multiple field adds an LSI with GSI FF turned off', () => {
   const validSchema = `
     type Test
         @model @key(fields: ["email", "createdAt"])
@@ -378,7 +378,7 @@ test('Test that a secondary @key with a multiple field adds an LSI with GSI FF t
   expectArguments(listTestsField, ['email', 'createdAt', 'filter', 'nextToken', 'limit', 'sortDirection']);
 });
 
-test('Test that a secondary @key with a multiple field adds an GSI based on enabled feature flag.', () => {
+test('that a secondary @key with a multiple field adds an GSI based on enabled feature flag.', () => {
   const validSchema = `
     type Test
         @model @key(fields: ["email", "createdAt"])
@@ -422,7 +422,7 @@ test('Test that a secondary @key with a multiple field adds an GSI based on enab
   expectArguments(listTestsField, ['email', 'createdAt', 'filter', 'nextToken', 'limit', 'sortDirection']);
 });
 
-test('Test that a primary @key with complex fields will update the input objects.', () => {
+test('that a primary @key with complex fields will update the input objects.', () => {
   const validSchema = `
     type Test @model @key(fields: ["email"]) {
         email: String!
@@ -483,7 +483,7 @@ test('Test that a primary @key with complex fields will update the input objects
   expectNonNullInputValues(deleteInput, ['email']);
 });
 
-test('Test that connection type is generated for custom query when queries is set to null.', () => {
+test('that connection type is generated for custom query when queries is set to null.', () => {
   const validSchema = `
     type ContentCategory @model(queries: null, mutations: { create: "addContentToCategory", delete: "deleteContentFromCategory"})
     @key(name: "ContentByCategory", fields: ["category", "type", "language", "datetime"], queryField: "listContentByCategory")

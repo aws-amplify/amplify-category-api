@@ -8,7 +8,7 @@ import { applyFileBasedOverride } from '../../../graphql-transformer/override';
 jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
 jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
 
-describe('ModelTransformer: ', () => {
+describe('ModelTransformer:', () => {
   it('should override  model objects when given override config', () => {
     const validSchema = `
       type Post @model {
