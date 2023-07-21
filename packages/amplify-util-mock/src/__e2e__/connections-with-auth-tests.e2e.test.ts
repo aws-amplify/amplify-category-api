@@ -112,7 +112,7 @@ type Stage @model @auth(rules: [{ allow: groups, groups: ["Admin"]}]) {
       }),
     ],
     featureFlags: {
-      getBoolean: (name) => (name === 'improvePluralization' ? true : false),
+      getBoolean: (name) => name === 'improvePluralization',
     } as FeatureFlagProvider,
   });
 

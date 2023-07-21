@@ -218,7 +218,7 @@ export async function transformGraphQLSchemaV1(context, options) {
   }
   resources = resources.filter((resource) => resource.service === 'AppSync');
   // check if api is in update status or create status
-  const isNewAppSyncAPI: boolean = resourcesToBeCreated.filter((resource) => resource.service === 'AppSync').length === 0 ? false : true;
+  const isNewAppSyncAPI: boolean = resourcesToBeCreated.filter((resource) => resource.service === 'AppSync').length !== 0;
 
   if (!resourceDir) {
     // There can only be one appsync resource

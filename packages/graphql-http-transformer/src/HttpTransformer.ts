@@ -148,12 +148,12 @@ export class HttpTransformer extends Transformer {
     if (queryBodyArgsArray.length > 0) {
       // for GET requests, leave the nullability of the query parameters unchanged -
       // but for PUT, POST and PATCH, unwrap any non-nulls
-      const queryInputObject = makeHttpQueryInputObject(parent, field, queryBodyArgsArray, method === 'GET' ? false : true);
+      const queryInputObject = makeHttpQueryInputObject(parent, field, queryBodyArgsArray, method !== 'GET');
       const bodyInputObject = makeHttpBodyInputObject(parent, field, queryBodyArgsArray, true);
 
       // if any of the arguments for the query are non-null,
       // make the newly generated type wrapper non-null too (only really applies for GET requests)
-      const makeNonNull = queryInputObject.fields.filter((a) => a.type.kind === Kind.NON_NULL_TYPE).length > 0 ? true : false;
+      const makeNonNull = queryInputObject.fields.filter((a) => a.type.kind === Kind.NON_NULL_TYPE).length > 0;
 
       ctx.addInput(queryInputObject);
       newFieldArgsArray.push(makeHttpArgument('query', queryInputObject, makeNonNull));

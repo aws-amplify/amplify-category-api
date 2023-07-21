@@ -87,7 +87,7 @@ const BUCKET_TEST_REGEX = /test/;
 const IAM_TEST_REGEX = /!RotateE2eAwsToken-e2eTestContextRole|-integtest$|^amplify-|^eu-|^us-|^ap-/;
 const STALE_DURATION_MS = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
 
-const isCI = (): boolean => (process.env.CI && process.env.CODEBUILD ? true : false);
+const isCI = (): boolean => (!!(process.env.CI && process.env.CODEBUILD));
 /*
  * Exit on expired token as all future requests will fail.
  */
