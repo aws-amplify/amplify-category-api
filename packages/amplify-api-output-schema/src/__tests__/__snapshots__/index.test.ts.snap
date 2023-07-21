@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Output Schema throws error when missing required paramse 1`] = `
+"[
+  {
+    \\"code\\": \\"invalid_type\\",
+    \\"expected\\": \\"string\\",
+    \\"received\\": \\"undefined\\",
+    \\"path\\": [
+      \\"payload\\",
+      \\"awsAppsyncApiEndpoint\\"
+    ],
+    \\"message\\": \\"Required\\"
+  }
+]"
+`;
+
+exports[`Output Schema throws error when parsing invalid schema 1`] = `
+"[
+  {
+    \\"code\\": \\"invalid_type\\",
+    \\"expected\\": \\"object\\",
+    \\"received\\": \\"number\\",
+    \\"path\\": [],
+    \\"message\\": \\"Expected object, received number\\"
+  }
+]"
+`;
+
+exports[`Output Schema throws version is not matching 1`] = `
+"[
+  {
+    \\"code\\": \\"invalid_union_discriminator\\",
+    \\"options\\": [
+      \\"1\\"
+    ],
+    \\"path\\": [
+      \\"version\\"
+    ],
+    \\"message\\": \\"Invalid discriminator value. Expected '1'\\"
+  }
+]"
+`;
