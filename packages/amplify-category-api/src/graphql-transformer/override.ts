@@ -1,7 +1,6 @@
-import * as path from 'path';
 import { CfnResource } from 'aws-cdk-lib';
 import * as fs from 'fs-extra';
-import * as vm from 'vm2';
+import * as path from 'path';
 import _ from 'lodash';
 import { pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { StackManager } from '@aws-amplify/graphql-transformer-core';
@@ -63,18 +62,6 @@ export function applyFileBasedOverride(stackManager: StackManager, overrideDirPa
   });
 
   const appsyncResourceObj = convertToAppsyncResourceObj(amplifyApiObj);
-  const overrideCode: string = fs.readFileSync(overrideFilePath, 'utf-8');
-  const sandboxNode = new vm.NodeVM({
-    console: 'inherit',
-    timeout: 5000,
-    sandbox: {},
-    require: {
-      context: 'sandbox',
-      builtin: ['path'],
-      external: true,
-    },
-  });
-  // Remove these when moving override up to amplify-category-api level
   const { envName } = stateManager.getLocalEnvInfo();
   const { projectName } = stateManager.getProjectConfig();
   const projectInfo = {
@@ -82,7 +69,10 @@ export function applyFileBasedOverride(stackManager: StackManager, overrideDirPa
     projectName,
   };
   try {
-    sandboxNode.run(overrideCode, overrideFilePath).override(appsyncResourceObj, projectInfo);
+    const overrideImport = require(overrideFilePath);
+    if (overrideImport && overrideImport?.override && typeof overrideImport?.override === 'function') {
+      overrideImport.override(appsyncResourceObj, projectInfo);
+    }
   } catch (err) {
     throw new InvalidOverrideError(err);
   }

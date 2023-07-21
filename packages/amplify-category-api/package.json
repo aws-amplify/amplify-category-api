@@ -65,8 +65,7 @@
     "node-fetch": "^2.6.7",
     "ora": "^4.0.3",
     "rimraf": "^3.0.0",
-    "uuid": "^8.3.2",
-    "vm2": "^3.9.8"
+    "uuid": "^8.3.2"
   },
   "peerDependencies": {
     "@aws-amplify/amplify-cli-core": "4.0.4",
