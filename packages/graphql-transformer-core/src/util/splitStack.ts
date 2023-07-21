@@ -1,6 +1,6 @@
-import { NestedStacks, Template } from '@aws-amplify/graphql-transformer-interfaces';
 import { Fn, CloudFormation, StringParameter } from 'cloudform-types';
 import Output from 'cloudform-types/types/output';
+import { NestedStacks, Template } from '../deployment-resources';
 import { getTemplateReferences } from './getTemplateReferences';
 import getIn from './getIn';
 import setIn from './setIn';
