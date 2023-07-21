@@ -131,7 +131,7 @@ export class APITest {
     const parameterFilePath = await this.getAPIParameterFilePath(context);
     try {
       let shouldReload;
-      if (this.resolverOverrideManager.isTemplateFile(filePath, action === 'unlink' ? true : false)) {
+      if (this.resolverOverrideManager.isTemplateFile(filePath, action === 'unlink')) {
         switch (action) {
           case 'add':
             shouldReload = this.resolverOverrideManager.onAdd(filePath);

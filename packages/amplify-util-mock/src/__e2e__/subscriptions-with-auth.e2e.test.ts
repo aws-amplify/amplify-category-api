@@ -131,7 +131,7 @@ beforeAll(async () => {
       }),
     ],
     featureFlags: {
-      getBoolean: (name) => (name === 'improvePluralization' ? true : false),
+      getBoolean: (name) => name === 'improvePluralization',
     } as FeatureFlagProvider,
   });
 
