@@ -9,6 +9,7 @@ if [ -z "$BRANCH_NAME" ]; then
   exit 1
 else
   git checkout $BRANCH_NAME
+  git pull
   git fetch --all
   yarn install
   git restore .
