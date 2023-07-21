@@ -16,7 +16,7 @@ const aws = require('aws-sdk');
 
 const dummyReader = new AuroraServerlessMySQLDatabaseReader(dbRegion, secretStoreArn, clusterArn, testDBName, aws);
 
-test('Test describe table', async () => {
+test('describe table', async () => {
   const MockAuroraClient = jest.fn<AuroraDataAPIClient>(() => ({
     describeTable: jest.fn((tableName: string) => {
       const tableColumns = [];
@@ -101,7 +101,7 @@ function describeTableTestCommon(tableName: string, fieldLength: number, isForei
   expect(tableContext.createTypeDefinition.fields.length).toEqual(fieldLength);
 }
 
-test('Test hydrate template context', async () => {
+test('hydrate template context', async () => {
   const context = await dummyReader.hydrateTemplateContext(new TemplateContext(null, null, null, null));
   expect(context.secretStoreArn).toEqual(secretStoreArn);
   expect(context.databaseName).toEqual(testDBName);
@@ -110,7 +110,7 @@ test('Test hydrate template context', async () => {
   expect(context.databaseSchema).toEqual('mysql');
 });
 
-test('Test list tables', async () => {
+test('list tables', async () => {
   const MockAuroraClient = jest.fn<AuroraDataAPIClient>(() => ({
     listTables: jest.fn(() => {
       return [tableAName, tableBName, tableCName, tableDName];
@@ -128,7 +128,7 @@ test('Test list tables', async () => {
   expect(tableNames.indexOf(tableDName) > -1).toBe(true);
 });
 
-test('Test lookup foreign key', async () => {
+test('lookup foreign key', async () => {
   const MockAuroraClient = jest.fn<AuroraDataAPIClient>(() => ({
     getTableForeignKeyReferences: jest.fn((tableName: string) => {
       if (tableName == tableBName) {

@@ -966,7 +966,7 @@ describe('owner based @auth', () => {
     });
 
     describe('owner field as part of global secondary index', () => {
-      test('handles ownerfield as part of sortKeyFields of GSI with default identity claim ', () => {
+      test('handles ownerfield as part of sortKeyFields of GSI with default identity claim', () => {
         const schema = `
           type Note @model @auth(rules: [{ allow: owner }]) 
           {  
@@ -985,7 +985,7 @@ describe('owner based @auth', () => {
 
         expect(out.resolvers['Note.notesByNoteTypeAndOwner.auth.1.req.vtl']).toMatchSnapshot();
       });
-      test('handles ownerfield as part of sortKeyFields of GSI with username identity claim ', () => {
+      test('handles ownerfield as part of sortKeyFields of GSI with username identity claim', () => {
         const schema = `
           type Note @model @auth(rules: [{ allow: owner, identityClaim: "username" }]) 
           {  
@@ -1003,7 +1003,7 @@ describe('owner based @auth', () => {
         });
         expect(out.resolvers['Note.notesByNoteTypeAndOwner.auth.1.req.vtl']).toMatchSnapshot();
       });
-      test('handles ownerfield as GSI field with default identity claim ', () => {
+      test('handles ownerfield as GSI field with default identity claim', () => {
         const schema = `
           type Note @model @auth(rules: [{ allow: owner }]) 
           {  
@@ -1021,7 +1021,7 @@ describe('owner based @auth', () => {
         });
         expect(out.resolvers['Note.notesByOwner.auth.1.req.vtl']).toMatchSnapshot();
       });
-      test('handles ownerfield as GSI field with username identity claim ', () => {
+      test('handles ownerfield as GSI field with username identity claim', () => {
         const schema = `
           type Note @model @auth(rules: [{ allow: owner, identityClaim: "username" }]) 
           {  

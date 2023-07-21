@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test per-field @auth on a @connection field 1`] = `
+exports[`per-field @auth on a @connection field 1`] = `
 "#if( $util.isNullOrEmpty($ctx.result) )
   #return
 #end
@@ -64,7 +64,7 @@ $util.toJson($ctx.result)
 #end"
 `;
 
-exports[`Test per-field @auth without model 1`] = `
+exports[`per-field @auth without model 1`] = `
 Object {
   "Properties": Object {
     "PolicyDocument": Object {
@@ -105,7 +105,7 @@ Object {
 }
 `;
 
-exports[`Test per-field @auth without model 2`] = `
+exports[`per-field @auth without model 2`] = `
 "## [Start] Determine request authentication mode **
 #if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
   #set( $authMode = \\"userPools\\" )
@@ -142,7 +142,7 @@ exports[`Test per-field @auth without model 2`] = `
 }"
 `;
 
-exports[`Test that subscriptions are only generated if the respective mutation operation exists 1`] = `
+exports[`that subscriptions are only generated if the respective mutation operation exists 1`] = `
 "## [Start] Checking for allowed operations which can return this field **
 #set( $operation = $util.defaultIfNull($context.source.operation, \\"null\\") )
 #if( $operation == \\"Mutation\\" )
@@ -153,7 +153,7 @@ $util.toJson(null)
 ## [End] Checking for allowed operations which can return this field **"
 `;
 
-exports[`Test that subscriptions are only generated if the respective mutation operation exists 2`] = `
+exports[`that subscriptions are only generated if the respective mutation operation exists 2`] = `
 "## [Start] Setting the operation **
 $util.qr($ctx.result.put(\\"operation\\", \\"Mutation\\"))
 ## [End] Setting the operation **
@@ -165,7 +165,7 @@ $util.toJson($ctx.result)
 #end"
 `;
 
-exports[`Test that subscriptions are only generated if the respective mutation operation exists 3`] = `
+exports[`that subscriptions are only generated if the respective mutation operation exists 3`] = `
 "## [Start] Setting the operation **
 $util.qr($ctx.result.put(\\"operation\\", \\"Mutation\\"))
 ## [End] Setting the operation **
@@ -177,7 +177,7 @@ $util.toJson($ctx.result)
 #end"
 `;
 
-exports[`Test that subscriptions are only generated if the respective mutation operation exists 4`] = `
+exports[`that subscriptions are only generated if the respective mutation operation exists 4`] = `
 "## [Start] Setting the operation **
 $util.qr($ctx.result.put(\\"operation\\", \\"Mutation\\"))
 ## [End] Setting the operation **

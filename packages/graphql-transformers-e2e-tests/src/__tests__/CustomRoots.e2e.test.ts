@@ -24,7 +24,7 @@ const featureFlags = {
   getObject: jest.fn(),
 };
 
-test('Test custom root types with additional fields.', () => {
+test('custom root types with additional fields.', () => {
   const validSchema = `
     type Query {
         additionalQueryField: String
@@ -57,7 +57,7 @@ test('Test custom root types with additional fields.', () => {
   expectFields(subscriptionType, ['onCreatePost', 'onUpdatePost', 'onDeletePost', 'additionalSubscriptionField']);
 });
 
-test('Test custom root query, mutation, and subscriptions.', () => {
+test('custom root query, mutation, and subscriptions.', () => {
   const validSchema = `
     # If I intentionally leave out mutation/subscription then no mutations/subscriptions
     # will be created even if @model is used.
@@ -104,7 +104,7 @@ test('Test custom root query, mutation, and subscriptions.', () => {
   expectFields(subscriptionType, ['onCreatePost', 'onUpdatePost', 'onDeletePost', 'onCreateOrUpdate']);
 });
 
-test('Test custom roots without any directives. This should still be valid.', () => {
+test('custom roots without any directives. This should still be valid.', () => {
   const validSchema = `
     schema {
         query: Query2

@@ -395,7 +395,7 @@ afterAll(async () => {
  */
 
 // tests using cognito
-test('Test that only authorized members are allowed to view subscriptions', async () => {
+test('that only authorized members are allowed to view subscriptions', async () => {
   // subscribe to create students as user 2
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
@@ -439,7 +439,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
   });
 });
 
-test('Test a subscription on update', async () => {
+test('a subscription on update', async () => {
   // subscribe to update students as user 2
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME2, REAL_PASSWORD);
@@ -493,7 +493,7 @@ test('Test a subscription on update', async () => {
   });
 });
 
-test('Test a subscription on delete', async () => {
+test('a subscription on delete', async () => {
   // subscribe to onDelete as user 2
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME2, REAL_PASSWORD);
@@ -548,7 +548,7 @@ test('Test a subscription on delete', async () => {
   });
 });
 
-test('test that group is only allowed to listen to subscriptions and listen to onCreate', async () => {
+test('that group is only allowed to listen to subscriptions and listen to onCreate', async () => {
   const memberID = '001';
   const memberName = 'username00';
   // test that a user that only read can't mutate
@@ -703,7 +703,7 @@ test('authorized group is allowed to listen to onDelete', async () => {
 });
 
 // ownerField Tests
-test('Test subscription onCreatePost with ownerField', async () => {
+test('subscription onCreatePost with ownerField', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
@@ -742,7 +742,7 @@ test('Test subscription onCreatePost with ownerField', async () => {
   });
 });
 
-test('Test onCreatePost with incorrect owner argument should throw an error', async () => {
+test('onCreatePost with incorrect owner argument should throw an error', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const failedObserver = API.graphql({
@@ -777,7 +777,7 @@ test('Test onCreatePost with incorrect owner argument should throw an error', as
 });
 
 // iam tests
-test('Test that IAM can listen and read to onCreatePost', async () => {
+test('that IAM can listen and read to onCreatePost', async () => {
   const postID = 'subscriptionID';
   const postTitle = 'titleMadeByPostOwner';
 
@@ -824,7 +824,7 @@ test('Test that IAM can listen and read to onCreatePost', async () => {
   await subscriptionPromise;
 });
 
-test('test that subcsription with apiKey', async () => {
+test('that subcsription with apiKey', async () => {
   reconfigureAmplifyAPI('API_KEY', API_KEY);
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
@@ -866,7 +866,7 @@ test('test that subcsription with apiKey', async () => {
   });
 });
 
-test('test that subscription with apiKey onUpdate', async () => {
+test('that subscription with apiKey onUpdate', async () => {
   reconfigureAmplifyAPI('API_KEY', API_KEY);
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
@@ -922,7 +922,7 @@ test('test that subscription with apiKey onUpdate', async () => {
   });
 });
 
-test('test that subscription with apiKey onDelete', async () => {
+test('that subscription with apiKey onDelete', async () => {
   reconfigureAmplifyAPI('API_KEY', API_KEY);
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
@@ -970,7 +970,7 @@ test('test that subscription with apiKey onDelete', async () => {
   });
 });
 
-test('Test onCreateOwnerInvalidClaim with invalid owner claims fails', async () => {
+test('onCreateOwnerInvalidClaim with invalid owner claims fails', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME2, REAL_PASSWORD);
   const failedObserver = API.graphql({

@@ -15,7 +15,7 @@ const featureFlags = {
   getNumber: jest.fn(),
   getObject: jest.fn(),
 };
-test('Test that subscriptions are only generated if the respective mutation operation exists', () => {
+test('that subscriptions are only generated if the respective mutation operation exists', () => {
   const validSchema = `
       type Salary
         @model
@@ -61,7 +61,7 @@ test('Test that subscriptions are only generated if the respective mutation oper
   expect(out.resolvers['Mutation.deleteSalary.res.vtl']).toMatchSnapshot();
 });
 
-test('Test per-field @auth on a @connection field', () => {
+test('per-field @auth on a @connection field', () => {
   const validSchema = `
     type Post
       @model
@@ -113,7 +113,7 @@ test('Test per-field @auth on a @connection field', () => {
   expect(resolvers['Tag.post.res.vtl']).toContain('$util.toJson($ctx.result)');
 });
 
-test('Test per-field @auth without model', () => {
+test('per-field @auth without model', () => {
   const validSchema = `
     type Query {
       listContext: String @auth(rules: [{ allow: groups, groups: ["Allowed"] }, { allow: private, provider: iam }])
