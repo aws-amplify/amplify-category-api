@@ -1,7 +1,7 @@
 {
-  "name": "@aws-amplify/api-client-config-schema",
+  "name": "@aws-amplify/api-output-schema",
   "version": "0.0.1",
-  "description": "Client config schema for AppSync API.",
+  "description": "Output schema for AppSync API.",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",

@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import * as cdk from 'aws-cdk-lib';
 import * as cfninclude from 'aws-cdk-lib/cloudformation-include';
 import { executeTransform } from '@aws-amplify/graphql-transformer';
-import { ApiOutput } from '@aws-amplify/api-client-config-schema';
+import { ApiOutput } from '@aws-amplify/api-output-schema';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
   preprocessSchema,

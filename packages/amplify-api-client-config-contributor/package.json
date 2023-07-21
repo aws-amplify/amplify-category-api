@@ -27,7 +27,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/api-client-config-schema": "0.0.1"
+    "@aws-amplify/api-output-schema": "0.0.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
