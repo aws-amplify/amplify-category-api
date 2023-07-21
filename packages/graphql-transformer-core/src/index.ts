@@ -1,6 +1,5 @@
 import './polyfills/Object.assign';
 import { print } from 'graphql';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContext, MappingParameters } from './TransformerContext';
 import { Transformer } from './Transformer';
 import { ITransformer } from './ITransformer';
@@ -31,6 +30,7 @@ import {
   SyncConfig,
 } from './util/transformConfig';
 import { EXTRA_DIRECTIVES_DOCUMENT } from './validation';
+import { DeploymentResources } from './deployment-resources';
 
 export * from './errors';
 export * from './util';
