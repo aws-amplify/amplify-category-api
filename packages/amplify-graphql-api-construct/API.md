@@ -4,7 +4,7 @@
 
 ```ts
 
-import { ApiOutput } from '@aws-amplify/api-client-config-schema';
+import { ApiOutput } from '@aws-amplify/api-output-schema';
 import { AppsyncFunctionProps } from 'aws-cdk-lib/aws-appsync';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';

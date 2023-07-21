@@ -4,7 +4,7 @@
 
 ```ts
 
-import { ApiOutput } from '@aws-amplify/api-client-config-schema';
+import { ApiOutput } from '@aws-amplify/api-output-schema';
 
 // @public (undocumented)
 export type ApiClientConfig = {
