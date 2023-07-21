@@ -41,6 +41,7 @@ const directiveDefinition = `
 
 export class PrimaryKeyTransformer extends TransformerPluginBase {
   private directiveList: PrimaryKeyDirectiveConfiguration[] = [];
+
   private resolverMap: Map<TransformerResolverProvider, string> = new Map();
 
   constructor() {

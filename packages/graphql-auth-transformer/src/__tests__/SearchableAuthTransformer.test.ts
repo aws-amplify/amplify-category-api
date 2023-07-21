@@ -1,7 +1,8 @@
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { ModelAuthTransformer } from '../ModelAuthTransformer';
 import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
+import { ModelAuthTransformer } from '../ModelAuthTransformer';
+
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {

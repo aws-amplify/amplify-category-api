@@ -1238,7 +1238,7 @@ export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void>
   });
 }
 
-//add default auth with pre token generation trigger
+// add default auth with pre token generation trigger
 export function addAuthWithPreTokenGenerationTrigger(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd: projectDir, stripColors: true })
@@ -1251,7 +1251,7 @@ export function addAuthWithPreTokenGenerationTrigger(projectDir: string): Promis
       .wait('What attributes are required for signing up?')
       .sendCarriageReturn()
       .wait('Do you want to enable any of the following capabilities')
-      .send(KEY_UP_ARROW) //Override ID Token Claims
+      .send(KEY_UP_ARROW) // Override ID Token Claims
       .sendLine(' ')
       .wait('Successfully added the Lambda function locally')
       .wait('Do you want to edit your alter-claims function now')

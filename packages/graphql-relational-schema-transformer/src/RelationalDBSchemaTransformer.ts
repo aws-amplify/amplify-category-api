@@ -1,4 +1,5 @@
 import { Kind, ObjectTypeDefinitionNode, SchemaDefinitionNode, InputObjectTypeDefinitionNode, DocumentNode } from 'graphql';
+import { plurality, toUpper } from 'graphql-transformer-common';
 import {
   getSingletonListTypeNode,
   getNamedType,
@@ -12,7 +13,6 @@ import {
 } from './RelationalDBSchemaTransformerUtils';
 import { RelationalDBParsingException } from './RelationalDBParsingException';
 import { IRelationalDBReader } from './IRelationalDBReader';
-import { plurality, toUpper } from 'graphql-transformer-common';
 
 /**
  * This class is used to transition all of the columns and key metadata from a table for use
@@ -21,13 +21,20 @@ import { plurality, toUpper } from 'graphql-transformer-common';
  */
 export class TableContext {
   tableTypeDefinition: ObjectTypeDefinitionNode;
+
   createTypeDefinition: InputObjectTypeDefinitionNode;
+
   updateTypeDefinition: InputObjectTypeDefinitionNode;
+
   // Table primary key metadata, to help properly key queries and mutations.
   tableKeyField: string;
+
   tableKeyFieldType: string;
+
   stringFieldList: string[];
+
   intFieldList: string[];
+
   constructor(
     typeDefinition: ObjectTypeDefinitionNode,
     createDefinition: InputObjectTypeDefinitionNode,
@@ -56,14 +63,23 @@ export class TableContext {
  */
 export class TemplateContext {
   schemaDoc: DocumentNode;
+
   typePrimaryKeyMap: Map<string, string>;
+
   typePrimaryKeyTypeMap: Map<string, string>;
+
   stringFieldMap: Map<string, string[]>;
+
   intFieldMap: Map<string, string[]>;
+
   secretStoreArn: string;
+
   rdsClusterIdentifier: string;
+
   databaseName: string;
+
   databaseSchema: string;
+
   region: string;
 
   constructor(
@@ -83,7 +99,9 @@ export class TemplateContext {
 
 export class RelationalDBSchemaTransformer {
   dbReader: IRelationalDBReader;
+
   database: string;
+
   improvePluralization: boolean;
 
   constructor(dbReader: IRelationalDBReader, database: string, improvePluralization: boolean) {
@@ -130,7 +148,7 @@ export class RelationalDBSchemaTransformer {
         // Generate the 'connection' type for each table type definition
         // TODO: Determine if Connection is needed as Data API doesn't provide pagination
         // TODO: As we add different db sources, we should conditionally do this even if we don't for Aurora serverless.
-        //types.push(this.getConnectionType(tableName))
+        // types.push(this.getConnectionType(tableName))
         // Generate the create operation input for each table type definition
         types.push(type.createTypeDefinition);
         // Generate the default shape for the table's structure

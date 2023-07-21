@@ -18,13 +18,21 @@ const ROOT_CFN_DESCRIPTION = 'API Gateway Resource for AWS Amplify CLI';
 
 export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigwResourceTemplate {
   restApi: apigw.CfnRestApi;
+
   deploymentResource: apigw.CfnDeployment;
+
   paths: Record<string, any>;
+
   policies: { [pathName: string]: ApigwPathPolicy };
+
   private _scope: Construct;
+
   private _props: ApigwInputs;
+
   private _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
+
   private _cfnParameterValues: Record<string, any>;
+
   private _seenLogicalIds: Set<string>;
 
   constructor(scope: Construct, id: string, props: ApigwInputs) {

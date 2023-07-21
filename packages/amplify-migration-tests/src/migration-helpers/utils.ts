@@ -1,3 +1,4 @@
+import { Writable } from 'stream';
 import { v4 as uuid } from 'uuid';
 import {
   amplifyPull,
@@ -13,7 +14,6 @@ import {
   parametersExists,
 } from 'amplify-category-api-e2e-core';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
-import { Writable } from 'stream';
 import stripAnsi = require('strip-ansi');
 
 /**

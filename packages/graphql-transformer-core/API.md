@@ -292,12 +292,17 @@ export const PARAMETERS_FILE_NAME = "parameters.json";
 export type ProjectRule = (diffs: Diff[], currentBuild: DiffableProject, nextBuild: DiffableProject) => void;
 
 // @public (undocumented)
-function readSchema(projectDirectory: string): Promise<{
+const readSchema: (projectDirectory: string) => Promise<{
     schema: string;
     modelToDatasourceMap: Map<string, DatasourceType>;
 }>;
 export { readSchema as readProjectSchema }
 export { readSchema }
+
+// Warning: (ae-forgotten-export) The symbol "SchemaReaderConfig" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export const removeAmplifyInput: (schema: string) => SchemaReaderConfig;
 
 // @public (undocumented)
 export type ResolverConfig = {

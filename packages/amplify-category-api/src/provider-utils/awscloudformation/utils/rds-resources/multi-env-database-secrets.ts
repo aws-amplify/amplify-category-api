@@ -1,5 +1,5 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { storeConnectionSecrets, getExistingConnectionSecrets } from '../../utils/rds-secrets/database-secrets';
+import { storeConnectionSecrets, getExistingConnectionSecrets } from '../../utils/rds-resources/database-resources';
 import { printer } from '@aws-amplify/amplify-prompts';
 
 type EnvironmentInfo = {

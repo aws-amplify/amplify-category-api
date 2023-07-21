@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {
   $TSContext,
   AmplifyError,
@@ -19,7 +20,6 @@ import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import { readTransformerConfiguration, TRANSFORM_CURRENT_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';
 import _ from 'lodash';
-import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { category } from '../../category-constants';
 import { ApiArtifactHandler, ApiArtifactHandlerOptions } from '../api-artifact-handler';

@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import {
   Aws,
   CfnResource,
@@ -12,21 +13,27 @@ import {
   Token,
 } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import * as crypto from 'crypto';
 import { TransformerRootStack } from './root-stack';
 import { TransformerStackSythesizer } from './stack-synthesizer';
+
 export type TransformerNestedStackProps = NestedStackProps & {
   synthesizer?: IStackSynthesizer;
 };
 export class TransformerNestedStack extends TransformerRootStack {
   public readonly templateFile: string;
+
   public readonly nestedStackResource?: CfnResource;
 
   private readonly parameters: { [name: string]: string };
+
   private readonly resource: CfnStack;
+
   private readonly _contextualStackId: string;
+
   private readonly _contextualStackName: string;
+
   private _templateUrl?: string;
+
   private _rootStack: Stack;
 
   constructor(scope: Construct, id: string, props: TransformerNestedStackProps = {}) {

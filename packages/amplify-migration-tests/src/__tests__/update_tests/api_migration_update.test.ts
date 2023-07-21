@@ -1,3 +1,5 @@
+import { existsSync } from 'fs';
+import { join } from 'path';
 import {
   amplifyPush,
   amplifyPushUpdate,
@@ -12,9 +14,7 @@ import {
   updateAPIWithResolutionStrategyWithModels,
   getProjectConfig,
 } from 'amplify-category-api-e2e-core';
-import { existsSync } from 'fs';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
-import { join } from 'path';
 import {
   initJSProjectWithProfile,
   versionCheck,
@@ -124,7 +124,7 @@ describe('api migration update test', () => {
     expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
     expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
 
-    //update and push with codebase
+    // update and push with codebase
     await updateAPIWithResolutionStrategyWithModels(projRoot, { testingWithLatestCodebase: true });
 
     transformConfig = getTransformConfig(projRoot, name);

@@ -14,6 +14,7 @@ import {
 } from 'amplify-category-api-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+
 (global as any).fetch = require('node-fetch');
 
 describe('transformer model searchable migration test', () => {

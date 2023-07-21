@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Customer @model @key(fields: ["email"]) {
   email: String!
@@ -6,7 +6,7 @@ type Customer @model @key(fields: ["email"]) {
 }
 
 ##key/howTo1`;
-//mutations
+// mutations
 export const mutation = `
 mutation CreateCustomer(
     $input: CreateCustomerInput!
@@ -36,7 +36,7 @@ export const expected_result_mutation = {
   },
 };
 
-//queries
+// queries
 export const query = `
 query GetCustomerById {
   getCustomer(email: "me@email.com") {

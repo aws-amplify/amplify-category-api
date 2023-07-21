@@ -56,6 +56,7 @@ import { NestedStackProps } from 'aws-cdk-lib';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeExtensionNode } from 'graphql';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
+import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { S3MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { SchemaDefinitionNode } from 'graphql';
 import { Stack } from 'aws-cdk-lib';
@@ -87,6 +88,7 @@ import { TypeNode } from 'graphql';
 import { TypeSystemDefinitionNode } from 'graphql';
 import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
+import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export const APICategory = "api";
@@ -232,11 +234,19 @@ export interface GraphQLTransformOptions {
     // (undocumented)
     readonly authConfig?: AppSyncAuthConfiguration;
     // (undocumented)
+    readonly disableResolverDeduping?: boolean;
+    // (undocumented)
     readonly host?: TransformHostProvider;
+    // (undocumented)
+    readonly legacyApiKeyEnabled?: boolean;
     // (undocumented)
     readonly overrideConfig?: OverrideConfig;
     // (undocumented)
+    readonly rdsLayerMapping?: RDSLayerMapping;
+    // (undocumented)
     readonly resolverConfig?: ResolverConfig;
+    // (undocumented)
+    readonly sqlLambdaVpcConfig?: VpcConfig;
     // Warning: (ae-forgotten-export) The symbol "StackMapping" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)

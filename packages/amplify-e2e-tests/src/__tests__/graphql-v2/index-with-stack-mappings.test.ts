@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {
   initJSProjectWithProfile,
   deleteProject,
@@ -10,7 +11,6 @@ import {
   setStackMapping,
   getProjectMeta,
 } from 'amplify-category-api-e2e-core';
-import * as path from 'path';
 import * as fs from 'fs-extra';
 import { assertNotNull } from '@aws-amplify/graphql-transformer-core/lib/cdk-compat/stack-synthesizer';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';

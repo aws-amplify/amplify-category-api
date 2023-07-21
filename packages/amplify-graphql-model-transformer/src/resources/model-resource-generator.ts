@@ -20,13 +20,21 @@ import { ModelTransformerOptions } from '../types';
  */
 export abstract class ModelResourceGenerator {
   protected datasourceMap: Record<string, DataSourceProvider> = {};
+
   private resolverMap: Record<string, TransformerResolverProvider> = {};
+
   protected generatorType = 'ModelResourceGenerator';
+
   private enabled = false;
+
   private provisioned = false;
+
   private unprovisioned = false;
+
   protected models: Array<ObjectTypeDefinitionNode> = new Array<ObjectTypeDefinitionNode>();
+
   protected modelDirectiveMap: Map<string, ModelDirectiveConfiguration> = new Map<string, ModelDirectiveConfiguration>();
+
   protected options: ModelTransformerOptions;
 
   constructor(options: ModelTransformerOptions = {}) {
@@ -344,10 +352,11 @@ export abstract class ModelResourceGenerator {
         operationName: fieldName,
         modelConfig: this.modelDirectiveMap.get(type.name.value)!,
       };
+      const initializeIdField = !!type.fields!.find((field) => field.name.value === 'id');
       resolver.addToSlot(
         'init',
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateCreateInitSlotTemplate(initSlotConfig),
+          vtlGenerator.generateCreateInitSlotTemplate(initSlotConfig, initializeIdField),
           `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
         ),
       );

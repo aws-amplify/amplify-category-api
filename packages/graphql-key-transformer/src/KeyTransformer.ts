@@ -114,6 +114,7 @@ export class KeyTransformer extends Transformer {
       }
     }
   };
+
   /**
    * Augment the table key structures based on the @key.
    */
@@ -755,9 +756,11 @@ export class KeyTransformer extends Transformer {
       }
     }
   }
+
   private typeExist(type: string, ctx: TransformerContext): boolean {
     return Boolean(type in ctx.nodeMap);
   }
+
   private supportsConditions(context: TransformerContext) {
     return context.getTransformerVersion() >= CONDITIONS_MINIMUM_VERSION;
   }

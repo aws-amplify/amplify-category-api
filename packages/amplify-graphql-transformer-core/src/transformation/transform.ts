@@ -6,6 +6,8 @@ import {
   TransformerPluginProvider,
   TransformHostProvider,
   TransformerLog,
+  VpcConfig,
+  RDSLayerMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
@@ -34,8 +36,11 @@ import { TransformerContext } from '../transformer-context';
 import { TransformerOutput } from '../transformer-context/output';
 import { StackManager } from '../transformer-context/stack-manager';
 import { adoptAuthModes, IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils/authType';
-import * as SyncUtils from './sync-utils';
 import { MappingTemplate } from '../cdk-compat';
+import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
+import { DatasourceType } from '../config/project-config';
+import { defaultTransformParameters } from '../transformer-context/transform-parameters';
+import * as SyncUtils from './sync-utils';
 import { UserDefinedSlot, OverrideConfig, DatasourceTransformationConfig } from './types';
 import {
   makeSeenTransformationKey,
@@ -48,9 +53,6 @@ import {
   sortTransformerPlugins,
 } from './utils';
 import { validateAuthModes, validateModelSchema } from './validation';
-import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
-import { DatasourceType } from '../config/project-config';
-import { defaultTransformParameters } from '../transformer-context/transform-parameters';
 
 /**
  * Returns whether typeof the provided object is function.
@@ -82,17 +84,31 @@ export interface GraphQLTransformOptions {
   readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   readonly resolverConfig?: ResolverConfig;
   readonly overrideConfig?: OverrideConfig;
+  readonly sqlLambdaVpcConfig?: VpcConfig;
+  readonly legacyApiKeyEnabled?: boolean;
+  readonly rdsLayerMapping?: RDSLayerMapping;
+  readonly disableResolverDeduping?: boolean;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
   private transformers: TransformerPluginProvider[];
+
   private stackMappingOverrides: StackMapping;
+
   private app: App | undefined;
+
   private readonly authConfig: AppSyncAuthConfiguration;
+
   private readonly resolverConfig?: ResolverConfig;
+
   private readonly userDefinedSlots: Record<string, UserDefinedSlot[]>;
+
   private readonly overrideConfig?: OverrideConfig;
+  private readonly sqlLambdaVpcConfig?: VpcConfig;
+  private readonly disableResolverDeduping?: boolean;
+  private readonly legacyApiKeyEnabled?: boolean;
   private readonly transformParameters: TransformParameters;
+  private readonly rdsLayerMapping?: RDSLayerMapping;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
   // that specifies we have run already run a directive at a given location.
@@ -125,6 +141,10 @@ export class GraphQLTransform {
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
     this.overrideConfig = options.overrideConfig;
     this.resolverConfig = options.resolverConfig || {};
+    this.sqlLambdaVpcConfig = options.sqlLambdaVpcConfig;
+    this.legacyApiKeyEnabled = options.legacyApiKeyEnabled;
+    this.disableResolverDeduping = options.disableResolverDeduping;
+    this.sqlLambdaVpcConfig = options.sqlLambdaVpcConfig;
     this.transformParameters = {
       ...defaultTransformParameters,
       ...(options.transformParameters ?? {}),
@@ -182,6 +202,8 @@ export class GraphQLTransform {
       this.transformParameters,
       this.resolverConfig,
       datasourceConfig?.datasourceSecretParameterLocations,
+      this.sqlLambdaVpcConfig,
+      this.rdsLayerMapping,
     );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),

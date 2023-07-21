@@ -1,6 +1,6 @@
+import * as path from 'path';
 import { $TSContext, pathManager } from '@aws-amplify/amplify-cli-core';
 import { prompter } from '@aws-amplify/amplify-prompts';
-import * as path from 'path';
 import { category } from '../../../category-constants';
 import { gqlSchemaFilename } from '../aws-constants';
 

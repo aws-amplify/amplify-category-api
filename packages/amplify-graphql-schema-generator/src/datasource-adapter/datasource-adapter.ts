@@ -2,12 +2,26 @@ import { Field, FieldType, Index, Model } from '../schema-representation';
 
 export abstract class DataSourceAdapter {
   public abstract getTablesList(): Promise<string[]>;
+
   public abstract getFields(tableName: string): Promise<Field[]>;
+
   public abstract getPrimaryKey(tableName: string): Promise<Index | null>;
+
   public abstract getIndexes(tableName: string): Promise<Index[]>;
+
   public abstract mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columnType: string): FieldType;
+
   public abstract initialize(): Promise<void>;
+
   public abstract cleanup(): void;
+
+  public abstract test(): Promise<boolean>;
+
+  public useVPC = false;
+
+  public vpcSchemaInspectorLambda: string | undefined = undefined;
+
+  public vpcLambdaRegion: string | undefined = undefined;
 
   public async getModels(): Promise<Model[]> {
     const tableNames = await this.getTablesList();
@@ -30,5 +44,11 @@ export abstract class DataSourceAdapter {
     primaryKey && model.setPrimaryKey(primaryKey.getFields());
     indexes.forEach((index) => model.addIndex(index.name, index.getFields()));
     return model;
+  }
+
+  public useVpc(vpcSchemaInspectorLambda: string, region: string): void {
+    this.useVPC = true;
+    this.vpcSchemaInspectorLambda = vpcSchemaInspectorLambda;
+    this.vpcLambdaRegion = region;
   }
 }

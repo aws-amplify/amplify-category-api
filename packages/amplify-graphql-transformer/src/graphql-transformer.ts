@@ -20,6 +20,8 @@ import {
   TransformerPluginProvider,
   TransformerLog,
   TransformerLogLevel,
+  VpcConfig,
+  RDSLayerMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
 import {
@@ -55,6 +57,8 @@ export type TransformConfig = {
   userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   stackMapping?: Record<string, string>;
   transformParameters: TransformParameters;
+  sqlLambdaVpcConfig?: VpcConfig;
+  rdsLayerMapping?: RDSLayerMapping;
 };
 
 export const constructTransformerChain = (options?: TransformerFactoryArgs): TransformerPluginProvider[] => {
@@ -100,6 +104,8 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
     stacks,
     stackMapping,
     transformParameters,
+    sqlLambdaVpcConfig,
+    rdsLayerMapping,
   } = config;
 
   const transformers = constructTransformerChain(transformersFactoryArgs);
@@ -113,6 +119,8 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
     userDefinedSlots,
     resolverConfig,
     overrideConfig,
+    sqlLambdaVpcConfig,
+    rdsLayerMapping,
   });
 };
 
@@ -121,6 +129,8 @@ export type ExecuteTransformConfig = TransformConfig & {
   modelToDatasourceMap?: Map<string, DatasourceType>;
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
   printTransformerLog?: (log: TransformerLog) => void;
+  sqlLambdaVpcConfig?: VpcConfig;
+  rdsLayerMapping?: RDSLayerMapping;
 };
 
 /**
@@ -152,7 +162,7 @@ export const defaultPrintTransformerLog = (log: TransformerLog): void => {
  * @returns the transformed api deployment resources.
  */
 export const executeTransform = (config: ExecuteTransformConfig): DeploymentResources => {
-  const { schema, modelToDatasourceMap, datasourceSecretParameterLocations, printTransformerLog } = config;
+  const { schema, modelToDatasourceMap, datasourceSecretParameterLocations, printTransformerLog, rdsLayerMapping } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
   const transform = constructTransform(config);
@@ -161,6 +171,7 @@ export const executeTransform = (config: ExecuteTransformConfig): DeploymentReso
     return transform.transform(schema, {
       modelToDatasourceMap,
       datasourceSecretParameterLocations,
+      rdsLayerMapping,
     });
   } finally {
     transform.getLogs().forEach(printLog);

@@ -1,15 +1,15 @@
+import * as path from 'path';
+import * as os from 'os';
 import { default as S3 } from 'aws-sdk/clients/s3';
 import moment from 'moment';
+import { Output } from 'aws-sdk/clients/cloudformation';
+import { ResourceConstants } from 'graphql-transformer-common';
+import * as fs from 'fs-extra';
 import { GraphQLTransform } from '../../amplify-graphql-transformer-core/lib';
 import { CloudFormationClient } from './CloudFormationClient';
 import { GraphQLClient } from './GraphQLClient';
 import { S3Client } from './S3Client';
-import * as path from 'path';
-import * as os from 'os';
 import { cleanupStackAfterTest, deploy } from './deployNestedStacks';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { ResourceConstants } from 'graphql-transformer-common';
-import * as fs from 'fs-extra';
 import { resolveTestRegion } from './testSetup';
 
 const region = resolveTestRegion();

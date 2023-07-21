@@ -1,10 +1,10 @@
 import { $TSContext, pathManager } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
+import { constructTransformerChain } from '@aws-amplify/graphql-transformer';
 import { transformGraphQLSchemaV2 } from '../../graphql-transformer/transform-graphql-schema-v2';
 import { generateTransformerOptions } from '../../graphql-transformer/transformer-options-v2';
 import { getAppSyncAPIName } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { constructTransformerChain } from '@aws-amplify/graphql-transformer';
 import { AmplifyCLIFeatureFlagAdapter } from '../../graphql-transformer/amplify-cli-feature-flag-adapter';
 
 jest.mock('@aws-amplify/amplify-cli-core');

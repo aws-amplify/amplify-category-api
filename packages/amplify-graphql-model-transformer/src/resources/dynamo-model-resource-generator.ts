@@ -7,8 +7,8 @@ import { AttributeType, CfnTable, StreamViewType, Table, TableEncryption } from 
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnRole } from 'aws-cdk-lib/aws-iam';
-import { ModelResourceGenerator } from './model-resource-generator';
 import { DynamoDBModelVTLGenerator, ModelVTLGenerator } from '../resolvers';
+import { ModelResourceGenerator } from './model-resource-generator';
 
 /**
  * DynamoModelResourceGenerator is an implementation of ModelResourceGenerator,

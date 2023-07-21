@@ -15,17 +15,23 @@ import {
 import { formatter, printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as vm from 'vm2';
 import { AmplifyApigwResourceStack, ApigwInputs, CrudOperation, Path } from '.';
 import { ApigwInputState } from '../apigw-input-state';
 import { ADMIN_QUERIES_NAME } from '../../../category-constants';
+
 export class ApigwStackTransform {
   cliInputs: ApigwInputs;
+
   resourceTemplateObj: AmplifyApigwResourceStack | undefined;
+
   cliInputsState: ApigwInputState;
+
   cfn: Template;
+
   cfnInputParams: Record<string, any>;
+
   resourceName: string;
+
   private _app: cdk.App;
 
   constructor(context: $TSContext, resourceName: string, cliInputState?: ApigwInputState) {
@@ -195,24 +201,6 @@ export class ApigwStackTransform {
       }
 
       if (override && typeof override === 'function') {
-        let overrideCode: string;
-        try {
-          overrideCode = await fs.readFile(overrideJSFilePath, 'utf-8');
-        } catch (error) {
-          formatter.list(['No override file found', `To override ${this.resourceName} run amplify override api`]);
-          return;
-        }
-
-        const sandboxNode = new vm.NodeVM({
-          console: 'inherit',
-          timeout: 5000,
-          sandbox: {},
-          require: {
-            context: 'sandbox',
-            builtin: ['path'],
-            external: true,
-          },
-        });
         const { envName } = stateManager.getLocalEnvInfo();
         const { projectName } = stateManager.getProjectConfig();
         const projectInfo = {
@@ -220,9 +208,7 @@ export class ApigwStackTransform {
           projectName,
         };
         try {
-          await sandboxNode
-            .run(overrideCode, overrideJSFilePath)
-            .override(this.resourceTemplateObj as AmplifyApigwResourceStack, projectInfo);
+          override(this.resourceTemplateObj as AmplifyApigwResourceStack, projectInfo);
         } catch (err) {
           throw new AmplifyError(
             'InvalidOverrideError',

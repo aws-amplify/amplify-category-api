@@ -17,7 +17,7 @@ function verifyNodePackage(pluginDirPath: string): boolean {
   }
 
   try {
-    fs.readFileSync(pluginPackageJsonFilePath); //package.json needs to be valid json file
+    fs.readFileSync(pluginPackageJsonFilePath); // package.json needs to be valid json file
     const pluginModule = require(pluginDirPath);
     return verifyAmplifyManifest(pluginDirPath, pluginModule);
   } catch (err) {

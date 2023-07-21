@@ -1,5 +1,5 @@
-import { sandboxMappingTemplate, generateAddAggregateValues, requestTemplate, responseTemplate } from '../generate-resolver-vtl';
 import { print } from 'graphql-mapping-template';
+import { sandboxMappingTemplate, generateAddAggregateValues, requestTemplate, responseTemplate } from '../generate-resolver-vtl';
 
 describe('sandboxMappingTemplate', () => {
   it('renders when sandbox is enabled', () => {

@@ -1,4 +1,4 @@
-//schema
+// schema
 const env = '${env}';
 export const schema = `
 #change: replaced "GraphQLResolverFunction" with the "<function-name>" placeholder, the test will replace it with the actual function name
@@ -15,7 +15,7 @@ type Comment {
   content: String
 }
 `;
-//functions
+// functions
 export const func = `
 const POSTS = [
   { id: 1, title: 'AWS Lambda: How To Guide.' },
@@ -76,7 +76,7 @@ exports.handler = async event => {
 };
 `;
 
-//queries
+// queries
 export const query = `
 #extra
 query Posts {

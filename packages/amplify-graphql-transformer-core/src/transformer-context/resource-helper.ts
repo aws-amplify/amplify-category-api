@@ -2,15 +2,16 @@ import { GraphQLAPIProvider, ModelFieldMap, TransformerResourceHelperProvider } 
 import { CfnParameter, Token } from 'aws-cdk-lib';
 import { ModelResourceIDs } from 'graphql-transformer-common';
 import md5 from 'md5';
+import { DirectiveNode, FieldNode, ObjectTypeDefinitionNode, ObjectTypeExtensionNode } from 'graphql';
 import { ModelFieldMapImpl } from './model-field-map';
 import { StackManager } from './stack-manager';
-import { DirectiveNode, FieldNode, ObjectTypeDefinitionNode, ObjectTypeExtensionNode } from 'graphql';
 
 /**
  * Contains helper methods for transformers to access and compile context about resource generation
  */
 export class TransformerResourceHelper implements TransformerResourceHelperProvider {
   private api?: GraphQLAPIProvider;
+
   private exclusionSet = new Set<string>();
 
   // a mapping of models that have been renamed with @mapsTo

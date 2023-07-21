@@ -2,7 +2,9 @@ export class ResourceConstants {
   public static NONE = 'NONE';
 
   public static DEFAULT_PAGE_LIMIT = 100;
+
   public static DEFAULT_SYNC_QUERY_PAGE_LIMIT = 100;
+
   public static DEFAULT_SEARCHABLE_PAGE_LIMIT = 100;
 
   public static readonly RESOURCES = {
@@ -29,9 +31,14 @@ export class ResourceConstants {
 
     // RDS
     RDSLambdaIAMRoleLogicalID: 'RDSLambdaIAMRole',
+    RDSLambdaLogAccessPolicy: 'RDSLambdaLogAccessPolicy',
+    RDSPatchingLambdaIAMRoleLogicalID: 'RDSPatchingLambdaIAMRole',
     RDSLambdaLogicalID: 'RDSLambdaLogicalID',
+    RDSPatchingLambdaLogAccessPolicy: 'RDSPatchingLambdaLogAccessPolicy',
+    RDSPatchingLambdaLogicalID: 'RDSPatchingLambdaLogicalID',
     RDSLambdaDataSourceLogicalID: 'RDSLambdaDataSource',
     RDSLambdaDataSourceLogicalName: 'RDSLambdaDatabase',
+    RDSPatchingSubscriptionLogicalID: 'RDSPatchingSubscriptionLogicalID',
 
     // Local. Try not to collide with model data sources.
     NoneDataSource: 'NoneDataSource',
@@ -41,6 +48,7 @@ export class ResourceConstants {
     AuthCognitoUserPoolNativeClientLogicalID: 'AuthCognitoUserPoolNativeClient',
     AuthCognitoUserPoolJSClientLogicalID: 'AuthCognitoUserPoolJSClient',
   };
+
   public static PARAMETERS = {
     // cli
     Env: 'env',
@@ -91,7 +99,9 @@ export class ResourceConstants {
     // Auth
     AuthCognitoUserPoolId: 'AuthCognitoUserPoolId',
   };
+
   public static MAPPINGS = {};
+
   public static CONDITIONS = {
     // Environment
     HasEnvironmentParameter: 'HasEnvironmentParameter',
@@ -105,6 +115,7 @@ export class ResourceConstants {
     ShouldCreateAPIKey: 'ShouldCreateAPIKey',
     APIKeyExpirationEpochIsPositive: 'APIKeyExpirationEpochIsPositive',
   };
+
   public static OUTPUTS = {
     // AppSync
     GraphQLAPIEndpointOutput: 'GraphQLAPIEndpointOutput',
@@ -128,6 +139,7 @@ export class ResourceConstants {
     AuthCognitoUserPoolNativeClientOutput: 'AuthCognitoUserPoolNativeClientId',
     AuthCognitoUserPoolJSClientOutput: 'AuthCognitoUserPoolJSClientId',
   };
+
   public static METADATA = {};
 
   public static readonly SNIPPETS = {

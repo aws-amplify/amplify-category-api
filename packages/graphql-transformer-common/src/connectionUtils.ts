@@ -1,6 +1,7 @@
+import { DirectiveNode, FieldDefinitionNode, InputValueDefinitionNode } from 'graphql';
 import { makeField, makeInputValueDefinition, makeNamedType } from './definition';
 import { ModelResourceIDs } from './ModelResourceIDs';
-import { DirectiveNode, FieldDefinitionNode, InputValueDefinitionNode } from 'graphql';
+
 export function makeConnectionField(
   fieldName: string,
   returnTypeName: string,

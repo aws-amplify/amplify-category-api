@@ -1,6 +1,6 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as os from 'os';
+import * as fs from 'fs-extra';
 import execa from 'execa';
 import * as e2eCore from '.';
 
@@ -13,6 +13,7 @@ import * as e2eCore from '.';
  */
 class CLIVersionController {
   #getCLIPathSpy: jest.SpyInstance<string>;
+
   /**
    * All CLI calls (that use getCLIVersion) will use the specified CLI version
    */

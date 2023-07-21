@@ -1,5 +1,5 @@
-import fs from 'fs-extra';
 import * as path from 'path';
+import fs from 'fs-extra';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerProjectConfig } from '@aws-amplify/graphql-transformer-core';
 import rimraf from 'rimraf';

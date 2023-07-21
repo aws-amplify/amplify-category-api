@@ -1,36 +1,46 @@
 import { DataSourceAdapter, MySQLDataSourceAdapter } from '../datasource-adapter';
 import { Engine, Field, FieldType, Index, Model, Schema } from '../schema-representation';
 import { generateGraphQLSchema, isComputeExpression } from '../schema-generator';
+
 class TestDataSourceAdapter extends DataSourceAdapter {
   public async initialize(): Promise<void> {
     // Do Nothing
   }
+
   public mapDataType(type: string, nullable: boolean): FieldType {
     return {
       kind: 'Scalar',
       name: 'String',
     };
   }
+
   public async getTablesList(): Promise<string[]> {
     return ['Test'];
   }
+
   public async getFields(tableName: string): Promise<Field[]> {
     return [];
   }
+
   public async getPrimaryKey(tableName: string): Promise<Index | null> {
     return null;
   }
+
   public async getIndexes(tableName: string): Promise<Index[]> {
     return [];
   }
+
   public cleanup(): void {
     // Do Nothing
+  }
+  public async test(): Promise<boolean> {
+    return true;
   }
 }
 
 describe('testDataSourceAdapter', () => {
   it('getModels call the default implementation', async () => {
-    let adapter: DataSourceAdapter = new TestDataSourceAdapter();
+    const adapter: DataSourceAdapter = new TestDataSourceAdapter();
     adapter.getTablesList = jest.fn(async () => ['Test']);
     adapter.getFields = jest.fn(async () => []);
     adapter.getPrimaryKey = jest.fn();

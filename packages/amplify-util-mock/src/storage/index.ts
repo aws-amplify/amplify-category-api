@@ -1,4 +1,5 @@
 import { StorageTest } from './storage';
+
 const MOCK_SUPPORTED_CATEGORY = ['S3'];
 const RESOURCE_NEEDS_PUSH = ['Cognito'];
 

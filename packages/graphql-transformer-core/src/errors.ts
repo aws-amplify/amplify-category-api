@@ -1,5 +1,5 @@
-import { GraphQLError, printError } from 'graphql';
 import * as os from 'os';
+import { GraphQLError, printError } from 'graphql';
 
 const GRAPHQL_TRANSFORMER_V2_DIRECTIVES = ['hasOne', 'index', 'primaryKey', 'belongsTo', 'manyToMany', 'hasMany', 'default'];
 export class InvalidTransformerError extends Error {
@@ -88,6 +88,7 @@ export class DestructiveMigrationError extends Error {
     }
     this.message = `${this.message}${os.EOL}ALL EXISTING DATA IN THESE TABLES WILL BE LOST!${os.EOL}If this is intended, rerun the command with '--allow-destructive-graphql-schema-updates'.`;
   }
+
   toString = () => this.message;
 }
 
@@ -100,12 +101,15 @@ export class InvalidMigrationError extends Error {
     Object.setPrototypeOf(this, new.target.prototype);
     this.name = 'InvalidMigrationError';
   }
+
   toString = () => `${this.message}\nCause: ${this.causedBy}\nHow to fix: ${this.fix}`;
 }
 
 export class InvalidGSIMigrationError extends InvalidMigrationError {
   fix: string;
+
   causedBy: string;
+
   constructor(message: string, causedBy: string, fix: string) {
     super(message, causedBy, fix);
     this.name = 'InvalidGSIMigrationError';
@@ -136,6 +140,7 @@ export class UnknownDirectiveError extends Error {
 
 export class ApiCategorySchemaNotFoundError extends Error {
   link: string;
+
   constructor(schemaFilePath: string) {
     super(`Could not find a schema at ${schemaFilePath}`);
     this.name = 'ApiCategorySchemaNotFoundError';

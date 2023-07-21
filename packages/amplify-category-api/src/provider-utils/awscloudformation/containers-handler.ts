@@ -1,7 +1,7 @@
+import * as path from 'path';
 import { $TSContext, createDefaultCustomPoliciesFile, pathManager } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { NETWORK_STACK_LOGICAL_ID } from '../../category-constants';
 import { DEPLOYMENT_MECHANISM } from './base-api-stack';
@@ -216,7 +216,7 @@ export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceC
     tokenSecretArn: gitHubInfo && gitHubInfo.tokenSecretArn,
   };
   if (gitHubToken) {
-    //#region Add token to secrets manager and get arn
+    // #region Add token to secrets manager and get arn
     const { StackName } = context.amplify.getProjectDetails().amplifyMeta.providers['awscloudformation'];
 
     const secretName = `${StackName}-${category}-${resourceName}-github-token`;
@@ -228,7 +228,7 @@ export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceC
     });
 
     newGithubInfo.tokenSecretArn = secretArn;
-    //#endregion
+    // #endregion
   }
 
   if (deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {

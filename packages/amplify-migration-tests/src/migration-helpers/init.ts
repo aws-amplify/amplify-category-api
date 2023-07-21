@@ -1,5 +1,5 @@
-import { addCITags, getCLIPath, nspawn as spawn } from 'amplify-category-api-e2e-core';
 import { EOL } from 'os';
+import { addCITags, getCLIPath, nspawn as spawn } from 'amplify-category-api-e2e-core';
 
 const defaultSettings = {
   name: EOL,

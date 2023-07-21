@@ -1,6 +1,6 @@
 import { AmplifyError, AmplifyErrorType, AmplifyException } from '@aws-amplify/amplify-cli-core';
-import { AmplifyGraphQLTransformerErrorConverter } from '../../errors/amplify-error-converter';
 import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
+import { AmplifyGraphQLTransformerErrorConverter } from '../../errors/amplify-error-converter';
 import { InvalidOverrideError } from '../../graphql-transformer/override';
 
 const errorType: AmplifyErrorType = 'DeploymentError';

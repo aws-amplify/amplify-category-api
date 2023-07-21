@@ -1,3 +1,5 @@
+import fs = require('fs');
+import path = require('path');
 import {
   ObjectTypeDefinitionNode,
   parse,
@@ -9,9 +11,6 @@ import {
 } from 'graphql';
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-
-import fs = require('fs');
-import path = require('path');
 
 jest.setTimeout(2000000);
 const featureFlags = {

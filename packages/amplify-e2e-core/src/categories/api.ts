@@ -1,7 +1,7 @@
+import * as path from 'path';
 import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import * as path from 'path';
 import {
   addFeatureFlag,
   checkIfBucketExists,
@@ -48,6 +48,7 @@ export interface ImportApiOptions {
   port: number;
   username: string;
   password: string;
+  useVpc?: boolean;
 }
 
 export const defaultOptions: AddApiOptions = {
@@ -425,12 +426,12 @@ export function updateApiConflictHandlerTypePerModel(cwd: string, opts?: Partial
       .wait('Select the models from below:')
       .send('a')
       .sendCarriageReturn()
-      .wait('Select the resolution strategy for') //First model
+      .wait('Select the resolution strategy for') // First model
       .sendKeyDown(2)
       .sendCarriageReturn() // Select Lambda Handler
       .wait(/.*Select from the options below.*/)
       .sendCarriageReturn() // Create a new Lambda
-      .wait('Select the resolution strategy for') //Second model
+      .wait('Select the resolution strategy for') // Second model
       .sendCarriageReturn() // Select Automerge Handler
       .wait(/.*Successfully updated resource*/)
       .run((err: Error) => {
@@ -834,7 +835,7 @@ function setupCognitoUserPool(chain: any) {
 }
 
 function setupIAM(chain: any) {
-  //no need to do anything
+  // no need to do anything
 }
 
 function setupOIDC(chain: any, settings?: any) {
@@ -1045,11 +1046,16 @@ export const removeTransformConfigValue = (projRoot: string, apiName: string, ke
   setTransformConfig(projRoot, apiName, transformConfig);
 };
 
-export function importRDSDatabase(cwd: string, opts: ImportApiOptions & { apiExists: boolean }) {
+export const importRDSDatabase = (cwd: string, opts: ImportApiOptions & { apiExists?: boolean }): Promise<void> => {
   const options = _.assign(defaultOptions, opts);
-  const database = options.database;
+  const vpcLambdaDeploymentDelayMS = 1000 * 60 * 12; // 12 minutes;
+
   return new Promise<void>((resolve, reject) => {
-    const importCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['import', 'api'], { cwd, stripColors: true });
+    const importCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['import', 'api', '--debug'], {
+      cwd,
+      stripColors: true,
+      noOutputTimeout: vpcLambdaDeploymentDelayMS,
+    });
     if (!options.apiExists) {
       importCommands
         .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
@@ -1061,9 +1067,11 @@ export function importRDSDatabase(cwd: string, opts: ImportApiOptions & { apiExi
         .sendCarriageReturn();
     }
 
-    importCommands.wait('Enter the name of the MySQL database to import:').sendLine(database);
+    promptDBInformation(importCommands, options);
 
-    askDBInformation(importCommands, options);
+    if (options.useVpc) {
+      importCommands.wait(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/).sendConfirmYes();
+    }
 
     importCommands.wait(/.*Successfully imported the database schema into.*/).run((err: Error) => {
       if (!err) {
@@ -1073,7 +1081,7 @@ export function importRDSDatabase(cwd: string, opts: ImportApiOptions & { apiExi
       }
     });
   });
-}
+};
 
 export function apiUpdateSecrets(cwd: string, opts: ImportApiOptions) {
   const options = _.assign(defaultOptions, opts);
@@ -1082,8 +1090,8 @@ export function apiUpdateSecrets(cwd: string, opts: ImportApiOptions) {
       cwd,
       stripColors: true,
     });
-    askDBInformation(updateSecretsCommands, options);
-    updateSecretsCommands.wait(`Successfully updated the secrets for ${options.database} database.`);
+    promptDBInformation(updateSecretsCommands, options);
+    updateSecretsCommands.wait('Successfully updated the secrets for the database.');
     updateSecretsCommands.run((err: Error) => {
       if (!err) {
         resolve();
@@ -1102,7 +1110,7 @@ export function apiGenerateSchema(cwd: string, opts: ImportApiOptions & { validC
       stripColors: true,
     });
     if (!options?.validCredentials) {
-      askDBInformation(generateSchemaCommands, options);
+      promptDBInformation(generateSchemaCommands, options);
     }
     generateSchemaCommands.run((err: Error) => {
       if (!err) {
@@ -1134,15 +1142,15 @@ export function removeApi(cwd: string) {
   });
 }
 
-const askDBInformation = (executionContext: ExecutionContext, options: ImportApiOptions) => {
-  const database = options.database;
-  return executionContext
-    .wait(`Enter the host for ${database} database:`)
+const promptDBInformation = (executionContext: ExecutionContext, options: ImportApiOptions): ExecutionContext =>
+  executionContext
+    .wait('Enter the database url or host name:')
     .sendLine(options.host)
-    .wait(`Enter the port for ${database} database:`)
+    .wait('Enter the port number:')
     .sendLine(JSON.stringify(options.port || 3306))
-    .wait(`Enter the username for ${database} database user:`)
+    .wait('Enter the username:')
     .sendLine(options.username)
-    .wait(`Enter the password for ${database} database user:`)
-    .sendLine(options.password);
-};
+    .wait('Enter the password:')
+    .sendLine(options.password)
+    .wait('Enter the database name:')
+    .sendLine(options.database);

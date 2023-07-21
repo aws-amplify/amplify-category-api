@@ -1,5 +1,6 @@
-import { TemplateContext, RelationalDBSchemaTransformer, TableContext } from '../RelationalDBSchemaTransformer';
 import { Kind, print } from 'graphql';
+import { toUpper } from 'graphql-transformer-common';
+import { TemplateContext, RelationalDBSchemaTransformer, TableContext } from '../RelationalDBSchemaTransformer';
 import { RelationalDBParsingException } from '../RelationalDBParsingException';
 import { IRelationalDBReader } from '../IRelationalDBReader';
 import {
@@ -11,7 +12,6 @@ import {
   getFieldDefinition,
   getInputTypeDefinition,
 } from '../RelationalDBSchemaTransformerUtils';
-import { toUpper } from 'graphql-transformer-common';
 
 const testDBName = 'testdb';
 const mockTableAName = 'a';

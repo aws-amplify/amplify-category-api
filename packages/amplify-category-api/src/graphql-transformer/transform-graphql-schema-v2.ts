@@ -1,29 +1,40 @@
-import { RDSConnectionSecrets, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
+import path from 'path';
+import { RDSConnectionSecrets, MYSQL_DB_TYPE, ImportedRDSType, DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
   DeploymentResources,
   TransformerLog,
   TransformerLogLevel,
+  VpcConfig,
+  RDSLayerMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
-import { printer } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { sanityCheckProject } from 'graphql-transformer-core';
 import _ from 'lodash';
-import path from 'path';
 import { isAuthModeUpdated } from './auth-mode-compare';
 import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerProjectOptions } from './transformer-options-types';
-import { getExistingConnectionSecretNames, getSecretsKey } from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
 import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { executeTransform } from '@aws-amplify/graphql-transformer';
+import {
+  getConnectionSecrets,
+  testDatabaseConnection,
+  getExistingConnectionSecretNames,
+  getSecretsKey,
+} from '../provider-utils/awscloudformation/utils/rds-resources/database-resources';
+import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
+import { getHostVpc } from '@aws-amplify/graphql-schema-generator';
+import fetch from 'node-fetch';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
 const SCHEMA_DIR_NAME = 'schema';
 const PROVIDER_NAME = 'awscloudformation';
+
+const LAYER_MAPPING_URL = 'https://amplify-rds-layer-resources.s3.amazonaws.com/rds-layer-mapping.json';
 
 /**
  * Transform GraphQL Schema
@@ -173,12 +184,23 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
     return undefined;
   }
 
+  const { modelToDatasourceMap } = opts.projectConfig;
+  const datasourceSecretMap = await getDatasourceSecretMap(context);
+  const datasourceMapValues: Array<DatasourceType> = modelToDatasourceMap ? Array.from(modelToDatasourceMap.values()) : [];
+  let sqlLambdaVpcConfig: VpcConfig | undefined;
+  if (datasourceMapValues.some((value) => value.dbType === MYSQL_DB_TYPE && !value.provisionDB)) {
+    sqlLambdaVpcConfig = await isSqlLambdaVpcConfigRequired(context, getSecretsKey(), ImportedRDSType.MYSQL);
+  }
+  const rdsLayerMapping = await getRDSLayerMapping();
+
   const transformOutput = executeTransform({
     ...opts,
     schema,
     modelToDatasourceMap: opts.projectConfig.modelToDatasourceMap,
-    datasourceSecretParameterLocations: await getDatasourceSecretMap(context),
+    datasourceSecretParameterLocations: datasourceSecretMap,
     printTransformerLog,
+    sqlLambdaVpcConfig,
+    rdsLayerMapping,
   });
 
   const builtProject = mergeUserConfigWithTransformOutput(opts.projectConfig, transformOutput, opts);
@@ -200,6 +222,35 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
   return builtProject;
 };
 
+const getRDSLayerMapping = async (): Promise<RDSLayerMapping> => {
+  try {
+    const response = await fetch(LAYER_MAPPING_URL);
+    if (response.status === 200) {
+      const result = await response.json();
+      return result as RDSLayerMapping;
+    }
+  } catch (err) {
+    // Ignore the error and return default layer mapping
+  }
+  printer.warn('Unable to load the latest RDS layer configuration, using local configuration.');
+  return {};
+};
+
+const isSqlLambdaVpcConfigRequired = async (
+  context: $TSContext,
+  secretsKey: string,
+  engine: ImportedRDSType,
+): Promise<VpcConfig | undefined> => {
+  const { secrets } = await getConnectionSecrets(context, secretsKey, engine);
+  const isDBPublic = await testDatabaseConnection(secrets);
+  if (isDBPublic) {
+    // No need to deploy the SQL Lambda in VPC if the DB is public
+    return undefined;
+  }
+  const vpcConfig = await getSQLLambdaVpcConfig(context);
+  return vpcConfig;
+};
+
 const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, RDSConnectionSecrets>> => {
   const outputMap = new Map<string, RDSConnectionSecrets>();
   const apiName = getAppSyncAPIName();
@@ -209,6 +260,14 @@ const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, 
     outputMap.set(MYSQL_DB_TYPE, rdsSecretPaths);
   }
   return outputMap;
+};
+
+const getSQLLambdaVpcConfig = async (context: $TSContext): Promise<VpcConfig | undefined> => {
+  const [secretsKey, engine] = [getSecretsKey(), ImportedRDSType.MYSQL];
+  const { secrets } = await getConnectionSecrets(context, secretsKey, engine);
+  const region = context.amplify.getProjectMeta().providers.awscloudformation.Region;
+  const vpcConfig = getHostVpc(secrets.host, region);
+  return vpcConfig;
 };
 
 const printTransformerLog = (log: TransformerLog): void => {

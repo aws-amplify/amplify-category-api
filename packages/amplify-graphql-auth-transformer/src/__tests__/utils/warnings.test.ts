@@ -1,8 +1,8 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '../../graphql-auth-transformer';
 import { defaultIdentityClaimWarning } from '../../utils/warnings';
-import { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 
 describe('defaultIdentityClaimWarning', () => {
   describe('owner based @auth', () => {

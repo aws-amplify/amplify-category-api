@@ -6,10 +6,10 @@ import {
   TransformerPreProcessContextProvider,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
 import { MapsToTransformer } from '../graphql-maps-to-transformer';
 import { attachInputMappingSlot, attachResponseMappingSlot, attachFilterAndConditionInputMappingSlot } from '../field-mapping-resolvers';
 import { createMappingLambda } from '../field-mapping-lambda';
-import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
 
 jest.mock('../field-mapping-resolvers');
 jest.mock('../field-mapping-lambda');

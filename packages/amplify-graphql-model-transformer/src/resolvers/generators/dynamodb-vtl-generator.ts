@@ -1,12 +1,4 @@
 import {
-  ModelCreateInitSlotConfig,
-  ModelCreateRequestConfig,
-  ModelDefaultResponseConfig,
-  ModelRequestConfig,
-  ModelUpdateRequestConfig,
-  ModelVTLGenerator,
-} from './vtl-generator';
-import {
   generateUpdateRequestTemplate,
   generateCreateRequestTemplate,
   generateCreateInitSlotTemplate,
@@ -20,41 +12,59 @@ import {
   generateSubscriptionResponseTemplate,
   generateDefaultResponseMappingTemplate,
 } from '../dynamodb';
+import {
+  ModelCreateInitSlotConfig,
+  ModelCreateRequestConfig,
+  ModelDefaultResponseConfig,
+  ModelRequestConfig,
+  ModelUpdateRequestConfig,
+  ModelVTLGenerator,
+} from './vtl-generator';
 
 export class DynamoDBModelVTLGenerator implements ModelVTLGenerator {
   generateUpdateRequestTemplate(config: ModelUpdateRequestConfig): string {
     return generateUpdateRequestTemplate(config.modelName, config.isSyncEnabled);
   }
+
   generateCreateRequestTemplate(config: ModelCreateRequestConfig): string {
     return generateCreateRequestTemplate(config.modelName, config.modelIndexFields);
   }
-  generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig): string {
-    return generateCreateInitSlotTemplate(config.modelConfig);
+  generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig, initializeIdField: boolean): string {
+    return generateCreateInitSlotTemplate(config.modelConfig, initializeIdField);
   }
+
   generateDeleteRequestTemplate(config: ModelUpdateRequestConfig): string {
     return generateDeleteRequestTemplate(config.modelName, config.isSyncEnabled);
   }
+
   generateUpdateInitSlotTemplate(config: ModelCreateInitSlotConfig): string {
     return generateUpdateInitSlotTemplate(config.modelConfig);
   }
+
   generateGetRequestTemplate(config: ModelRequestConfig): string {
     return generateGetRequestTemplate();
   }
+
   generateGetResponseTemplate(config: ModelUpdateRequestConfig): string {
     return generateGetResponseTemplate(config.isSyncEnabled);
   }
+
   generateListRequestTemplate(config: ModelRequestConfig): string {
     return generateListRequestTemplate();
   }
+
   generateSyncRequestTemplate(config: ModelRequestConfig): string {
     return generateSyncRequestTemplate();
   }
+
   generateSubscriptionRequestTemplate(): string {
     return generateSubscriptionRequestTemplate();
   }
+
   generateSubscriptionResponseTemplate(): string {
     return generateSubscriptionResponseTemplate();
   }
+
   generateDefaultResponseMappingTemplate(config: ModelDefaultResponseConfig): string {
     return generateDefaultResponseMappingTemplate(config.isSyncEnabled, config.mutation);
   }

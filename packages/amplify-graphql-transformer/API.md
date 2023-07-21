@@ -10,12 +10,14 @@ import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { OverrideConfig } from '@aws-amplify/graphql-transformer-core';
 import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
+import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
 import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
+import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export const constructTransform: (config: TransformConfig) => GraphQLTransform;
@@ -32,6 +34,8 @@ export type ExecuteTransformConfig = TransformConfig & {
     modelToDatasourceMap?: Map<string, DatasourceType>;
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
     printTransformerLog?: (log: TransformerLog) => void;
+    sqlLambdaVpcConfig?: VpcConfig;
+    rdsLayerMapping?: RDSLayerMapping;
 };
 
 // @public (undocumented)
@@ -44,6 +48,8 @@ export type TransformConfig = {
     userDefinedSlots?: Record<string, UserDefinedSlot[]>;
     stackMapping?: Record<string, string>;
     transformParameters: TransformParameters;
+    sqlLambdaVpcConfig?: VpcConfig;
+    rdsLayerMapping?: RDSLayerMapping;
 };
 
 // @public (undocumented)

@@ -1,11 +1,10 @@
-import { ResourceConstants } from 'graphql-transformer-common';
-import { GraphQLTransform } from 'graphql-transformer-core';
+import * as fs from 'fs';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
-import * as fs from 'fs';
-import { CloudFormationClient } from '../CloudFormationClient';
+import { GraphQLTransform } from 'graphql-transformer-core';
+import { ResourceConstants } from 'graphql-transformer-common';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as S3 } from 'aws-sdk/clients/s3';
 import { CreateBucketRequest } from 'aws-sdk/clients/s3';
@@ -14,9 +13,10 @@ import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { AWS } from '@aws-amplify/core';
 import { Auth } from 'aws-amplify';
 import gql from 'graphql-tag';
-import { S3Client } from '../S3Client';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { default as moment } from 'moment';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { CloudFormationClient } from '../CloudFormationClient';
+import { S3Client } from '../S3Client';
 import {
   createUserPool,
   createUserPoolClient,
@@ -47,6 +47,7 @@ if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+
 import { resolveTestRegion } from '../testSetup';
 
 const AWS_REGION = resolveTestRegion();

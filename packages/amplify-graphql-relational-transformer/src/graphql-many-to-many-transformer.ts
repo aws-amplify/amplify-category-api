@@ -73,10 +73,15 @@ const directiveDefinition = `
  */
 export class ManyToManyTransformer extends TransformerPluginBase {
   private relationMap = new Map<string, ManyToManyRelation>();
+
   private directiveList: ManyToManyDirectiveConfiguration[] = [];
+
   private modelTransformer: ModelTransformer;
+
   private indexTransformer: IndexTransformer;
+
   private hasOneTransformer: HasOneTransformer;
+
   private authProvider: TransformerAuthProvider;
 
   constructor(

@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { Duration, Expiration } from 'aws-cdk-lib';
 import {
   $TSContext,
@@ -19,7 +20,6 @@ import * as fs from 'fs-extra';
 import { collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
 import inquirer, { CheckboxQuestion, ListChoiceOptions, ListQuestion } from 'inquirer';
 import _ from 'lodash';
-import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { category } from '../../../category-constants';
 import { rootAssetDir } from '../aws-constants';

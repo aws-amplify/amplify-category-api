@@ -1,14 +1,14 @@
+import path from 'path';
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { getProjectMeta, getBackendAmplifyMeta } from 'amplify-category-api-e2e-core';
 import Amplify, { Auth } from 'aws-amplify';
 import fs from 'fs-extra';
-import path from 'path';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 
 const tempPassword = 'tempPassword';
 
-//setupUser will add user to a cognito group and make its status to be "CONFIRMED",
-//if groupName is specified, add the user to the group.
+// setupUser will add user to a cognito group and make its status to be "CONFIRMED",
+// if groupName is specified, add the user to the group.
 export async function setupUser(userPoolId: string, username: string, password: string, groupName?: string) {
   const region = userPoolId.split('_')[0]; // UserPoolId is in format `region_randomid`
   const cognitoClient = getConfiguredCognitoClient(region);
