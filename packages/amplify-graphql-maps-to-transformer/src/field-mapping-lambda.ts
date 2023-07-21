@@ -34,7 +34,7 @@ export const createMappingLambda = (host: TransformHostProvider, stackManager: S
     undefined, // layers
     role, // execution role,
     undefined, // env vars
-    undefined, // lambda timeout
+    cdk.Duration.seconds(30), // lambda timeout
     stack,
   );
 

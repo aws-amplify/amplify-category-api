@@ -15,6 +15,14 @@ export abstract class DataSourceAdapter {
 
   public abstract cleanup(): void;
 
+  public abstract test(): Promise<boolean>;
+
+  public useVPC = false;
+
+  public vpcSchemaInspectorLambda: string | undefined = undefined;
+
+  public vpcLambdaRegion: string | undefined = undefined;
+
   public async getModels(): Promise<Model[]> {
     const tableNames = await this.getTablesList();
     const models = [];
@@ -36,5 +44,11 @@ export abstract class DataSourceAdapter {
     primaryKey && model.setPrimaryKey(primaryKey.getFields());
     indexes.forEach((index) => model.addIndex(index.name, index.getFields()));
     return model;
+  }
+
+  public useVpc(vpcSchemaInspectorLambda: string, region: string): void {
+    this.useVPC = true;
+    this.vpcSchemaInspectorLambda = vpcSchemaInspectorLambda;
+    this.vpcLambdaRegion = region;
   }
 }

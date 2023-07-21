@@ -352,10 +352,11 @@ export abstract class ModelResourceGenerator {
         operationName: fieldName,
         modelConfig: this.modelDirectiveMap.get(type.name.value)!,
       };
+      const initializeIdField = !!type.fields!.find((field) => field.name.value === 'id');
       resolver.addToSlot(
         'init',
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateCreateInitSlotTemplate(initSlotConfig),
+          vtlGenerator.generateCreateInitSlotTemplate(initSlotConfig, initializeIdField),
           `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
         ),
       );

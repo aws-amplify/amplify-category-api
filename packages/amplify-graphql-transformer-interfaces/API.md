@@ -328,6 +328,13 @@ export enum QueryFieldType {
 }
 
 // @public (undocumented)
+export type RDSLayerMapping = {
+    [key: string]: {
+        layerRegion: string;
+    };
+};
+
+// @public (undocumented)
 type ReadonlyArray_2<T> = Readonly<Array<Readonly<T>>>;
 export { ReadonlyArray_2 as ReadonlyArray }
 
@@ -529,9 +536,13 @@ export interface TransformerContextProvider {
     // (undocumented)
     providerRegistry: TransformerProviderRegistry;
     // (undocumented)
+    readonly rdsLayerMapping?: RDSLayerMapping;
+    // (undocumented)
     resolvers: TransformerResolversManagerProvider;
     // (undocumented)
     resourceHelper: TransformerResourceHelperProvider;
+    // (undocumented)
+    readonly sqlLambdaVpcConfig?: VpcConfig;
     // (undocumented)
     stackManager: StackManagerProvider;
     // (undocumented)
@@ -803,7 +814,7 @@ export interface TransformHostProvider {
     // (undocumented)
     addLambdaFunction: (functionName: string, functionKey: string, handlerName: string, filePath: string, runtime: Runtime, layers?: ILayerVersion[], role?: IRole, environment?: {
         [key: string]: string;
-    }, timeout?: Duration, stack?: Stack) => IFunction;
+    }, timeout?: Duration, stack?: Stack, vpc?: VpcConfig) => IFunction;
     // (undocumented)
     addNoneDataSource(name: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource;
     // (undocumented)
@@ -841,6 +852,13 @@ export interface UserPoolConfig {
     // (undocumented)
     userPoolId: string;
 }
+
+// @public (undocumented)
+export type VpcConfig = {
+    vpcId: string;
+    subnetIds: string[];
+    securityGroupIds: string[];
+};
 
 // Warnings were encountered during analysis:
 //

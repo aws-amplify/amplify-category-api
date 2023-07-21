@@ -1,5 +1,5 @@
+import { DirectiveWrapper, EnumWrapper, FieldWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
 import { EnumValueDefinitionNode, Kind, print } from 'graphql';
-import { FieldWrapper, ObjectDefinitionWrapper, DirectiveWrapper, EnumWrapper } from '@aws-amplify/graphql-transformer-core';
 import { EnumType, Field, Index, Model, Schema } from '../schema-representation';
 
 export const generateGraphQLSchema = (schema: Schema): string => {

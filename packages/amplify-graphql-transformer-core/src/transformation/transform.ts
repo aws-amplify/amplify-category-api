@@ -6,6 +6,8 @@ import {
   TransformerPluginProvider,
   TransformHostProvider,
   TransformerLog,
+  VpcConfig,
+  RDSLayerMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
@@ -82,6 +84,10 @@ export interface GraphQLTransformOptions {
   readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   readonly resolverConfig?: ResolverConfig;
   readonly overrideConfig?: OverrideConfig;
+  readonly sqlLambdaVpcConfig?: VpcConfig;
+  readonly legacyApiKeyEnabled?: boolean;
+  readonly rdsLayerMapping?: RDSLayerMapping;
+  readonly disableResolverDeduping?: boolean;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
@@ -98,8 +104,11 @@ export class GraphQLTransform {
   private readonly userDefinedSlots: Record<string, UserDefinedSlot[]>;
 
   private readonly overrideConfig?: OverrideConfig;
-
+  private readonly sqlLambdaVpcConfig?: VpcConfig;
+  private readonly disableResolverDeduping?: boolean;
+  private readonly legacyApiKeyEnabled?: boolean;
   private readonly transformParameters: TransformParameters;
+  private readonly rdsLayerMapping?: RDSLayerMapping;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
   // that specifies we have run already run a directive at a given location.
@@ -132,6 +141,10 @@ export class GraphQLTransform {
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
     this.overrideConfig = options.overrideConfig;
     this.resolverConfig = options.resolverConfig || {};
+    this.sqlLambdaVpcConfig = options.sqlLambdaVpcConfig;
+    this.legacyApiKeyEnabled = options.legacyApiKeyEnabled;
+    this.disableResolverDeduping = options.disableResolverDeduping;
+    this.sqlLambdaVpcConfig = options.sqlLambdaVpcConfig;
     this.transformParameters = {
       ...defaultTransformParameters,
       ...(options.transformParameters ?? {}),
@@ -189,6 +202,8 @@ export class GraphQLTransform {
       this.transformParameters,
       this.resolverConfig,
       datasourceConfig?.datasourceSecretParameterLocations,
+      this.sqlLambdaVpcConfig,
+      this.rdsLayerMapping,
     );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
