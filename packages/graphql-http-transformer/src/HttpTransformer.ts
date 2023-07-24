@@ -166,14 +166,15 @@ export class HttpTransformer extends Transformer {
 
     // build the payload
     switch (method) {
-      case 'GET':
+      case 'GET': {
         const getResourceID = ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value);
         if (!ctx.getResource(getResourceID)) {
           const getResolver = this.resources.makeGetResolver(baseURL, path, parent.name.value, field.name.value, headers);
           ctx.setResource(getResourceID, getResolver);
         }
         break;
-      case 'POST':
+      }
+      case 'POST': {
         const postResourceID = ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value);
         if (!ctx.getResource(postResourceID)) {
           const postResolver = this.resources.makePostResolver(
@@ -187,7 +188,8 @@ export class HttpTransformer extends Transformer {
           ctx.setResource(postResourceID, postResolver);
         }
         break;
-      case 'PUT':
+      }
+      case 'PUT': {
         const putResourceID = ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value);
         if (!ctx.getResource(putResourceID)) {
           const putResolver = this.resources.makePutResolver(
@@ -201,14 +203,16 @@ export class HttpTransformer extends Transformer {
           ctx.setResource(putResourceID, putResolver);
         }
         break;
-      case 'DELETE':
+      }
+      case 'DELETE': {
         const deleteResourceID = ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value);
         if (!ctx.getResource(deleteResourceID)) {
           const deleteResolver = this.resources.makeDeleteResolver(baseURL, path, parent.name.value, field.name.value, headers);
           ctx.setResource(deleteResourceID, deleteResolver);
         }
         break;
-      case 'PATCH':
+      }
+      case 'PATCH': {
         const patchResourceID = ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value);
         if (!ctx.getResource(patchResourceID)) {
           const patchResolver = this.resources.makePatchResolver(
@@ -222,6 +226,7 @@ export class HttpTransformer extends Transformer {
           ctx.setResource(patchResourceID, patchResolver);
         }
         break;
+      }
       default:
       // nothing
     }

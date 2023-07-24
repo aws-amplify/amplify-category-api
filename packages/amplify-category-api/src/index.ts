@@ -300,7 +300,7 @@ export const executeAmplifyHeadlessCommand = async (context: $TSContext, headles
  */
 export const handleAmplifyEvent = async (context: $TSContext, args: any): Promise<void> => {
   switch (args.event) {
-    case 'InternalOnlyPostEnvRemove':
+    case 'InternalOnlyPostEnvRemove': {
       const meta = stateManager.getMeta();
       const apiName = getAppSyncResourceName(meta);
       if (!apiName) {
@@ -309,6 +309,7 @@ export const handleAmplifyEvent = async (context: $TSContext, args: any): Promis
       await deleteConnectionSecrets(context, apiName, args?.data?.envName);
       await removeVpcSchemaInspectorLambda(context);
       break;
+    }
     default:
     // other event handlers not implemented
   }
