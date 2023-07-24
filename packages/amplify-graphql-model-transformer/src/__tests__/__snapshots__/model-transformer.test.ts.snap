@@ -1,7 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ModelTransformer:  should filter known input types from create and update input fields 1`] = `
-"type Test {
+"
+type Test {
   id: ID!
   email: Email
   createdAt: AWSDateTime!
@@ -282,11 +283,13 @@ input ModelSubscriptionEmailFilterInput {
   or: [ModelSubscriptionEmailFilterInput]
   _deleted: ModelBooleanInput
 }
+
 "
 `;
 
 exports[`ModelTransformer:  should generate enum input objects 1`] = `
-"type Post {
+"
+type Post {
   id: ID!
   title: String!
   createdAt: AWSDateTime
@@ -807,6 +810,7 @@ input ModelSubscriptionCommentFilterInput {
   or: [ModelSubscriptionCommentFilterInput]
   _deleted: ModelBooleanInput
 }
+
 "
 `;
 
@@ -2572,7 +2576,8 @@ $util.toJson(null)
 `;
 
 exports[`ModelTransformer:  should have timestamps as nullable fields when the type makes it non-nullable 1`] = `
-"type Post {
+"
+type Post {
   id: ID!
   str: String
   createdAt: AWSDateTime!
@@ -2807,6 +2812,7 @@ type Subscription {
   onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
   onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
+
 "
 `;
 
@@ -3083,7 +3089,8 @@ $util.toJson($PutObject)
 `;
 
 exports[`ModelTransformer:  should not generate superfluous input and filter types 1`] = `
-"type Entity {
+"
+type Entity {
   id: ID!
   str: String
   createdAt: AWSDateTime!
@@ -3243,11 +3250,13 @@ enum ModelSortDirection {
 type Query {
   getEntity(id: ID!): Entity
 }
+
 "
 `;
 
 exports[`ModelTransformer:  should not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime 1`] = `
-"type Post {
+"
+type Post {
   id: ID!
   str: String
   createdAt: AWSTimestamp
@@ -3482,6 +3491,7 @@ type Subscription {
   onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
   onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
+
 "
 `;
 
@@ -3689,7 +3699,8 @@ $util.toJson($UpdateItem)
 `;
 
 exports[`ModelTransformer:  should not to include createdAt and updatedAt field when timestamps is set to null 1`] = `
-"type Post {
+"
+type Post {
   id: ID!
   str: String
   _version: Int!
@@ -3912,6 +3923,7 @@ type Subscription {
   onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
   onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
+
 "
 `;
 
@@ -4119,7 +4131,8 @@ $util.toJson($UpdateItem)
 `;
 
 exports[`ModelTransformer:  should successfully transform simple Embeddable type (non-model) schema 1`] = `
-"type NonModelType {
+"
+type NonModelType {
   id: ID!
   title: String!
 }
@@ -4273,11 +4286,13 @@ enum ModelSortDirection {
   ASC
   DESC
 }
+
 "
 `;
 
 exports[`ModelTransformer:  should successfully transform simple non-capitalized Model/Embeddable type (non-model) name schema 1`] = `
-"type modelType {
+"
+type modelType {
   id: ID!
   title: String!
   nonModelTypeValue: nonModelType
@@ -4515,11 +4530,13 @@ type Subscription {
   onUpdateModelType(filter: ModelSubscriptionModelTypeFilterInput): modelType @aws_subscribe(mutations: [\\"updateModelType\\"])
   onDeleteModelType(filter: ModelSubscriptionModelTypeFilterInput): modelType @aws_subscribe(mutations: [\\"deleteModelType\\"])
 }
+
 "
 `;
 
 exports[`ModelTransformer:  should support timestamp parameters when generating resolvers and output schema 1`] = `
-"type Post {
+"
+type Post {
   id: ID!
   str: String
   createdOn: AWSDateTime!
@@ -4744,6 +4761,7 @@ type Subscription {
   onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
   onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
+
 "
 `;
 
