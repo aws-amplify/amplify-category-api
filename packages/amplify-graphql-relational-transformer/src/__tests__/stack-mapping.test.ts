@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasManyTransformer } from '..';
 
 describe('transformer stack mapping', () => {
@@ -17,7 +17,8 @@ describe('transformer stack mapping', () => {
         blog: Blog @belongsTo
       }
     `;
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
       stackMapping: {
         BlogpostsResolver: 'myCustomStack1',
@@ -25,7 +26,6 @@ describe('transformer stack mapping', () => {
       },
     });
 
-    const result = transformer.transform(inputSchema);
     expect(Object.keys(result.stacks.myCustomStack1.Resources!).includes('BlogpostsResolver')).toBe(true);
     expect(Object.keys(result.stacks.myCustomStack2.Resources!).includes('PostblogResolver')).toBe(true);
 
