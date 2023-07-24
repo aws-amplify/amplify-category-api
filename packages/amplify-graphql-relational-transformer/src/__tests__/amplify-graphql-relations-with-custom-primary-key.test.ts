@@ -1,8 +1,9 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer, ManyToManyTransformer } from '..';
 
 describe('custom primary key and relational directives', () => {
@@ -22,11 +23,11 @@ describe('custom primary key and relational directives', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     });
 
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
@@ -57,11 +58,11 @@ describe('custom primary key and relational directives', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     });
 
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
@@ -103,11 +104,11 @@ describe('custom primary key and relational directives', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     });
 
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
@@ -138,11 +139,11 @@ describe('custom primary key and relational directives', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     });
 
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
@@ -172,11 +173,11 @@ describe('custom primary key and relational directives', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     });
 
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
@@ -248,11 +249,11 @@ describe('custom primary key and relational directives', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     });
 
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
@@ -318,11 +319,11 @@ describe('custom primary key and relational directives', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     });
 
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
@@ -396,14 +397,14 @@ describe('custom primary key and relational directives', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
       transformParameters: {
         respectPrimaryKeyAttributesOnConnectionField: false,
       },
     });
 
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
@@ -429,14 +430,14 @@ describe('custom primary key and relational directives', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
       transformParameters: {
         respectPrimaryKeyAttributesOnConnectionField: false,
       },
     });
 
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
@@ -477,7 +478,8 @@ describe('custom primary key and relational directives', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [
         new ModelTransformer(),
         new PrimaryKeyTransformer(),
@@ -487,7 +489,6 @@ describe('custom primary key and relational directives', () => {
       ],
     });
 
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
@@ -556,7 +557,8 @@ describe('custom primary key and relational directives', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       authConfig: {
         defaultAuthentication: {
           authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -573,7 +575,6 @@ describe('custom primary key and relational directives', () => {
       ],
     });
 
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
@@ -612,7 +613,8 @@ describe('custom primary key and relational directives', () => {
       const indexTransformer = new IndexTransformer();
       const hasOneTransformer = new HasOneTransformer();
       const primaryKeyTransformer = new PrimaryKeyTransformer();
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema: inputSchema,
         authConfig: {
           defaultAuthentication: {
             authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -629,7 +631,6 @@ describe('custom primary key and relational directives', () => {
         ],
         transformParameters: { respectPrimaryKeyAttributesOnConnectionField },
       });
-      const out = transformer.transform(inputSchema);
       expect(out).toBeDefined();
       const schema = parse(out.schema);
       validateModelSchema(schema);
@@ -754,10 +755,10 @@ describe('Resolvers for custom primary key and relational directives', () => {
   };
 
   it('should generate correct dynamoDB partition key and sort key for CPK schema in resolver VTL when CPK feature is enabled', () => {
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: setupTransformers(),
     });
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
@@ -772,13 +773,13 @@ describe('Resolvers for custom primary key and relational directives', () => {
     expect(out.resolvers['Tag.posts.req.vtl']).toMatchSnapshot();
   });
   it('should not generate sort key field in implicit hasMany relation when CPK feature is disabled', () => {
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: setupTransformers(),
       transformParameters: {
         respectPrimaryKeyAttributesOnConnectionField: false,
       },
     });
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     expect(out.resolvers['Post1.comments.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Post2.comments.req.vtl']).toMatchSnapshot();
