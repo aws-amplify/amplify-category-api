@@ -1,7 +1,7 @@
-'use strict';
 import { Match, Template } from 'aws-cdk-lib/assertions';
-import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { PredictionsTransformer } from '..';
 
 test('does not generate any resources if @predictions is unused', () => {
@@ -9,11 +9,11 @@ test('does not generate any resources if @predictions is unused', () => {
     type Query {
       speakTranslatedText: String
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema,
     transformers: [new PredictionsTransformer({ bucketName: 'myStorage${hash}-${env}' })],
   });
 
-  const out = transformer.transform(schema);
   validateModelSchema(parse(out.schema));
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
@@ -25,11 +25,11 @@ test('lambda function is added to pipeline when lambda dependent action is added
     type Query {
       speakTranslatedText: String @predictions(actions: [translateText convertTextToSpeech])
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new PredictionsTransformer({ bucketName: 'myStorage${hash}-${env}' })],
   });
 
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   validateModelSchema(parse(out.schema));
@@ -142,10 +142,10 @@ test('return type is a list based on the action', () => {
     type Query {
       translateLabels: String @predictions(actions: [identifyLabels translateText])
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new PredictionsTransformer({ bucketName: 'myStorage${hash}-${env}' })],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   validateModelSchema(parse(out.schema));
@@ -170,11 +170,11 @@ test('can use actions individually and in supported sequences', () => {
       speakTranslatedLabelText: String @predictions(actions: [identifyLabels translateText convertTextToSpeech])
       speakTranslatedText: String @predictions(actions: [translateText convertTextToSpeech])
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new PredictionsTransformer({ bucketName: 'myStorage${hash}-${env}' })],
   });
 
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   validateModelSchema(parse(out.schema));
@@ -189,13 +189,13 @@ test('throws if storage is not provided', () => {
     type Query {
       speakTranslatedText: String @predictions(actions: [translateText convertTextToSpeech])
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new PredictionsTransformer()],
-  });
 
-  expect(() => {
-    transformer.transform(validSchema);
-  }).toThrow('Please configure storage in your project in order to use the @predictions directive');
+  expect(() =>
+    testTransform({
+      schema: validSchema,
+      transformers: [new PredictionsTransformer()],
+    }),
+  ).toThrow('Please configure storage in your project in order to use the @predictions directive');
 });
 
 test('throws if @predictions is used under a non-Query', () => {
@@ -203,13 +203,13 @@ test('throws if @predictions is used under a non-Query', () => {
     type Mutation {
       speakTranslatedText: String @predictions(actions: [translateText convertTextToSpeech])
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new PredictionsTransformer({ bucketName: 'myStorage${hash}-${env}' })],
-  });
 
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow('@predictions directive only works under Query operations.');
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new PredictionsTransformer({ bucketName: 'myStorage${hash}-${env}' })],
+    }),
+  ).toThrow('@predictions directive only works under Query operations.');
 });
 
 test('throws if no actions are provided', () => {
@@ -217,13 +217,13 @@ test('throws if no actions are provided', () => {
     type Query {
       speakTranslatedText: String @predictions(actions: [])
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new PredictionsTransformer({ bucketName: 'myStorage${hash}-${env}' })],
-  });
 
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow('@predictions directive requires at least one action.');
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new PredictionsTransformer({ bucketName: 'myStorage${hash}-${env}' })],
+    }),
+  ).toThrow('@predictions directive requires at least one action.');
 });
 
 test('throws if an unsupported action sequence is provided', () => {
@@ -231,11 +231,11 @@ test('throws if an unsupported action sequence is provided', () => {
     type Query {
       speakTranslatedText: String @predictions(actions: [convertTextToSpeech translateText])
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new PredictionsTransformer({ bucketName: 'myStorage${hash}-${env}' })],
-  });
 
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow('translateText is not supported in this context!');
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new PredictionsTransformer({ bucketName: 'myStorage${hash}-${env}' })],
+    }),
+  ).toThrow('translateText is not supported in this context!');
 });
