@@ -39,7 +39,8 @@
     "constructs": "^10.0.5"
   },
   "devDependencies": {
-    "bestzip": "^2.1.5"
+    "bestzip": "^2.1.5",
+    "@aws-amplify/graphql-transformer-test-utils": "0.1.0"
   },
   "jest": {
     "transform": {
