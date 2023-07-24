@@ -7,7 +7,7 @@ import {
   HasOneTransformer,
   ManyToManyTransformer,
 } from '@aws-amplify/graphql-relational-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { Output } from 'aws-sdk/clients/cloudformation';
@@ -147,7 +147,8 @@ type ModelB @model {
     const modelTransformer = new ModelTransformer();
     const indexTransformer = new IndexTransformer();
     const hasOneTransformer = new HasOneTransformer();
-    const transformer = new GraphQLTransform({
+    out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [
         modelTransformer,
@@ -167,7 +168,6 @@ type ModelB @model {
         sandboxModeEnabled: true,
       },
     });
-    out = transformer.transform(validSchema);
   } catch (e) {
     console.error(`Failed to transform schema: ${e}`);
     expect(true).toEqual(false);

@@ -1,7 +1,7 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as moment } from 'moment';
@@ -103,7 +103,8 @@ beforeAll(async () => {
   const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
   const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformParameters: {
       useSubUsernameForDefaultIdentityClaim: false,
     },
@@ -115,7 +116,6 @@ beforeAll(async () => {
     },
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
   const finishedStack = await deploy(
     customS3Client,
     cf,
