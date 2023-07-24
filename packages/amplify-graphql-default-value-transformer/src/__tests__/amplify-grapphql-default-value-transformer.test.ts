@@ -1,6 +1,7 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { DefaultValueTransformer } from '..';
 
 describe('DefaultValueModelTransformer:', () => {
@@ -11,13 +12,12 @@ describe('DefaultValueModelTransformer:', () => {
         name: String @default(value: "hello world")
       }`;
 
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-    });
-
-    expect(() => {
-      transformer.transform(schema);
-    }).toThrow('The @default directive may only be added to object definitions annotated with @model.');
+    expect(() =>
+      testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
+      }),
+    ).toThrow('The @default directive may only be added to object definitions annotated with @model.');
   });
 
   it('throws if @default is used on a non scalar or enum field', () => {
@@ -32,13 +32,12 @@ describe('DefaultValueModelTransformer:', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-    });
-
-    expect(() => {
-      transformer.transform(schema);
-    }).toThrow('The @default directive may only be added to scalar or enum field types.');
+    expect(() =>
+      testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
+      }),
+    ).toThrow('The @default directive may only be added to scalar or enum field types.');
   });
 
   it('throws if @default is used with a null value', () => {
@@ -49,13 +48,12 @@ describe('DefaultValueModelTransformer:', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-    });
-
-    expect(() => {
-      transformer.transform(schema);
-    }).toThrow('Directive "@default" argument "value" of type "String!" is required, but it was not provided.');
+    expect(() =>
+      testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
+      }),
+    ).toThrow('Directive "@default" argument "value" of type "String!" is required, but it was not provided.');
   });
 
   it('throws if @default is used with invalid type. Int check.', () => {
@@ -66,13 +64,12 @@ describe('DefaultValueModelTransformer:', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-    });
-
-    expect(() => {
-      transformer.transform(schema);
-    }).toThrow('Default value "text" is not a valid Int.');
+    expect(() =>
+      testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
+      }),
+    ).toThrow('Default value "text" is not a valid Int.');
   });
 
   it('throws if @default is used with invalid type. Boolean check.', () => {
@@ -83,13 +80,12 @@ describe('DefaultValueModelTransformer:', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-    });
-
-    expect(() => {
-      transformer.transform(schema);
-    }).toThrow('Default value "text" is not a valid Boolean.');
+    expect(() =>
+      testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
+      }),
+    ).toThrow('Default value "text" is not a valid Boolean.');
   });
 
   it('throws if @default is used with invalid type. AWSJSON check.', () => {
@@ -100,13 +96,12 @@ describe('DefaultValueModelTransformer:', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-    });
-
-    expect(() => {
-      transformer.transform(schema);
-    }).toThrow('Default value "text" is not a valid AWSJSON.');
+    expect(() =>
+      testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
+      }),
+    ).toThrow('Default value "text" is not a valid AWSJSON.');
   });
 
   it('throws if @default is used with invalid type. AWSDate check.', () => {
@@ -117,13 +112,12 @@ describe('DefaultValueModelTransformer:', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-    });
-
-    expect(() => {
-      transformer.transform(schema);
-    }).toThrow('Default value "text" is not a valid AWSDate.');
+    expect(() =>
+      testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
+      }),
+    ).toThrow('Default value "text" is not a valid AWSDate.');
   });
 
   it('throws if @default is used with invalid type. AWSDateTime check.', () => {
@@ -134,13 +128,12 @@ describe('DefaultValueModelTransformer:', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-    });
-
-    expect(() => {
-      transformer.transform(schema);
-    }).toThrow('Default value "text" is not a valid AWSDateTime.');
+    expect(() =>
+      testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
+      }),
+    ).toThrow('Default value "text" is not a valid AWSDateTime.');
   });
 
   it('throws if @default is used with invalid type. AWSTime check.', () => {
@@ -151,13 +144,12 @@ describe('DefaultValueModelTransformer:', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-    });
-
-    expect(() => {
-      transformer.transform(schema);
-    }).toThrow('Default value "text" is not a valid AWSTime.');
+    expect(() =>
+      testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
+      }),
+    ).toThrow('Default value "text" is not a valid AWSTime.');
   });
 
   it('throws if @default is used with invalid type. AWSTimestamp check.', () => {
@@ -168,13 +160,12 @@ describe('DefaultValueModelTransformer:', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-    });
-
-    expect(() => {
-      transformer.transform(schema);
-    }).toThrow('Default value "text" is not a valid AWSTimestamp.');
+    expect(() =>
+      testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
+      }),
+    ).toThrow('Default value "text" is not a valid AWSTimestamp.');
   });
 
   it('throws if @default is used with invalid type. AWSURL check.', () => {
@@ -185,13 +176,12 @@ describe('DefaultValueModelTransformer:', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-    });
-
-    expect(() => {
-      transformer.transform(schema);
-    }).toThrow('Default value "text" is not a valid AWSURL.');
+    expect(() =>
+      testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
+      }),
+    ).toThrow('Default value "text" is not a valid AWSURL.');
   });
 
   it('throws if @default is used with invalid type. AWSPhone check.', () => {
@@ -202,13 +192,12 @@ describe('DefaultValueModelTransformer:', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-    });
-
-    expect(() => {
-      transformer.transform(schema);
-    }).toThrow('Default value "text" is not a valid AWSPhone.');
+    expect(() =>
+      testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
+      }),
+    ).toThrow('Default value "text" is not a valid AWSPhone.');
   });
 
   it('throws if @default is used with invalid type. AWSIPAddress check.', () => {
@@ -219,13 +208,12 @@ describe('DefaultValueModelTransformer:', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-    });
-
-    expect(() => {
-      transformer.transform(schema);
-    }).toThrow('Default value "text" is not a valid AWSIPAddress.');
+    expect(() =>
+      testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
+      }),
+    ).toThrow('Default value "text" is not a valid AWSIPAddress.');
   });
 
   it('should validate enum values', async () => {
@@ -241,13 +229,12 @@ describe('DefaultValueModelTransformer:', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-    });
-
-    expect(() => {
-      transformer.transform(inputSchema);
-    }).toThrow('Default value "INVALID" is not a member of Tag enum.');
+    expect(() =>
+      testTransform({
+        schema: inputSchema,
+        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
+      }),
+    ).toThrow('Default value "INVALID" is not a member of Tag enum.');
   });
 
   it('should be supported on a required field.', () => {
@@ -258,11 +245,10 @@ describe('DefaultValueModelTransformer:', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new DefaultValueTransformer()],
     });
-
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     expect(out.schema).toMatchSnapshot();
 
@@ -296,10 +282,10 @@ describe('DefaultValueModelTransformer:', () => {
         RANDOM
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new DefaultValueTransformer()],
     });
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     expect(out.schema).toMatchSnapshot();
 
@@ -314,10 +300,10 @@ describe('DefaultValueModelTransformer:', () => {
         stringValue: String @default(value: "hello world")
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new DefaultValueTransformer()],
     });
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     expect(out.resolvers).toBeDefined();
     expect(out.resolvers['Mutation.createPost.init.2.req.vtl']).toBeDefined();

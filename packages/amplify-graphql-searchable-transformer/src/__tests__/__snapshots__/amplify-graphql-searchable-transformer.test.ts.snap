@@ -1,7 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`SearchableModelTransformer enum type generates StringFilterInput 1`] = `
-"type Employee {
+"
+type Employee {
   id: ID!
   firstName: String!
   lastName: String!
@@ -377,11 +378,13 @@ input SearchableEmployeeAggregationInput {
   type: SearchableAggregateType!
   field: SearchableEmployeeAggregateField!
 }
+
 "
 `;
 
 exports[`SearchableModelTransformer validation happy case 1`] = `
-"type Post {
+"
+type Post {
   id: ID!
   title: String!
   createdAt: String
@@ -740,6 +743,7 @@ input SearchablePostAggregationInput {
   type: SearchableAggregateType!
   field: SearchablePostAggregateField!
 }
+
 "
 `;
 
@@ -1668,7 +1672,8 @@ $util.toJson({
 `;
 
 exports[`SearchableModelTransformer with multiple model searchable directives 1`] = `
-"type Post {
+"
+type Post {
   id: ID!
   title: String!
   createdAt: String
@@ -2126,11 +2131,13 @@ input SearchableUserAggregationInput {
   type: SearchableAggregateType!
   field: SearchableUserAggregateField!
 }
+
 "
 `;
 
 exports[`SearchableModelTransformer with only create mutations 1`] = `
-"type Post {
+"
+type Post {
   id: ID!
   title: String!
   createdAt: String
@@ -2474,11 +2481,13 @@ input SearchablePostAggregationInput {
   type: SearchableAggregateType!
   field: SearchablePostAggregateField!
 }
+
 "
 `;
 
 exports[`SearchableModelTransformer with query overrides 1`] = `
-"type Post {
+"
+type Post {
   id: ID!
   title: String!
   createdAt: String
@@ -2837,11 +2846,13 @@ input SearchablePostAggregationInput {
   type: SearchableAggregateType!
   field: SearchablePostAggregateField!
 }
+
 "
 `;
 
 exports[`SearchableModelTransformer with sort fields 1`] = `
-"type Post {
+"
+type Post {
   id: ID!
   title: String!
   createdAt: String
@@ -3200,5 +3211,6 @@ input SearchablePostAggregationInput {
   type: SearchableAggregateType!
   field: SearchablePostAggregateField!
 }
+
 "
 `;
