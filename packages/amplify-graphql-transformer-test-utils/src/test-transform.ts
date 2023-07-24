@@ -13,7 +13,7 @@ import { DeploymentResources, Template } from './deployment-resources';
 export type TestTransformParameters = {
   transformers: TransformerPluginProvider[];
   schema: string;
-  transformParameters?: TransformParameters;
+  transformParameters?: Partial<TransformParameters>;
   resolverConfig?: ResolverConfig;
   authConfig?: AppSyncAuthConfiguration;
   stacks?: Record<string, Template>;
