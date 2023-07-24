@@ -61,12 +61,13 @@ export function processApiResources(
         }
 
         break;
-      case 'AWS::AppSync::GraphQLApi':
+      case 'AWS::AppSync::GraphQLApi': {
         const resource = result as AppSyncAPIProcessedResource;
         appSyncConfig.appSync.name = resource.name;
         appSyncConfig.appSync.defaultAuthenticationType = resource.defaultAuthenticationType;
         appSyncConfig.appSync.additionalAuthenticationProviders = resource.additionalAuthenticationProviders || [];
         break;
+      }
       case 'AWS::AppSync::ApiKey':
         appSyncConfig.appSync.apiKey = (result as AppSyncAPIKeyProcessedResource).ApiKey;
         break;
