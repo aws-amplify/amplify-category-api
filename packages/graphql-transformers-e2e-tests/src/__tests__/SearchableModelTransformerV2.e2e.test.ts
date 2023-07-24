@@ -1,5 +1,5 @@
 import { ResourceConstants } from 'graphql-transformer-common';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { Output } from 'aws-sdk/clients/cloudformation';
@@ -82,19 +82,19 @@ beforeAll(async () => {
       count: Int
     }
     `;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    transformParameters: {
-      sandboxModeEnabled: true,
-    },
-  });
   try {
     await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
   } catch (e) {
     console.error(`Failed to create bucket: ${e}`);
   }
   try {
-    const out = transformer.transform(validSchema);
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
+    });
     const finishedStack = await deploy(
       customS3Client,
       cf,

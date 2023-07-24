@@ -1,7 +1,7 @@
 import path from 'path';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as S3 } from 'aws-sdk/clients/s3';
 import * as fs from 'fs-extra';
@@ -50,13 +50,13 @@ beforeAll(async () => {
   } catch (e) {
     console.warn(`Could not create bucket: ${e}`);
   }
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new ModelTransformer(), new PredictionsTransformer({ bucketName: BUCKET_NAME })],
     transformParameters: {
       sandboxModeEnabled: true,
     },
   });
-  const out = transformer.transform(validSchema);
   const finishedStack = await deploy(
     customS3Client,
     cf,

@@ -3,7 +3,7 @@ import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-in
 import { HasOneTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { CognitoIdentityServiceProvider as CognitoClient, S3, CognitoIdentity, IAM } from 'aws-sdk';
 import moment from 'moment';
@@ -273,7 +273,8 @@ beforeAll(async () => {
     useTokenAuth: true,
   });
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -303,7 +304,6 @@ beforeAll(async () => {
       useSubUsernameForDefaultIdentityClaim: false,
     },
   });
-  const out = transformer.transform(validSchema);
   const finishedStack = await deploy(
     customS3Client,
     cf,

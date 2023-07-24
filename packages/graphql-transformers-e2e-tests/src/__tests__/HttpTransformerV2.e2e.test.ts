@@ -1,4 +1,4 @@
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
@@ -100,14 +100,13 @@ beforeAll(async () => {
     expect(true).toEqual(false);
   }
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new ModelTransformer(), new HttpTransformer()],
     transformParameters: {
       sandboxModeEnabled: true,
     },
   });
-
-  const out = transformer.transform(validSchema);
 
   try {
     const finishedStack = await deploy(

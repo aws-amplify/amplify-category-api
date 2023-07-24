@@ -1,4 +1,3 @@
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import Amplify, { Auth } from 'aws-amplify';
 import {
   CreateGroupRequest,
@@ -16,6 +15,7 @@ import { IAM as cfnIAM, Cognito as cfnCognito } from 'cloudform-types';
 import { CognitoIdentityServiceProvider as CognitoClient, CognitoIdentity } from 'aws-sdk';
 import TestStorage from './TestStorage';
 import { resolveTestRegion } from './testSetup';
+import { DeploymentResources } from 'graphql-transformer-core';
 
 const region = resolveTestRegion();
 
