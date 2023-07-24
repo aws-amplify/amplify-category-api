@@ -1,5 +1,5 @@
 import { ResourceConstants } from 'graphql-transformer-common';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
@@ -205,7 +205,8 @@ beforeAll(async () => {
     console.warn(`Could not setup function: ${e}`);
     expect(true).toEqual(false);
   }
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'API_KEY',
@@ -214,7 +215,6 @@ beforeAll(async () => {
     },
     transformers: [new ModelTransformer(), new FunctionTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
   const finishedStack = await deploy(
     customS3Client,
     cf,

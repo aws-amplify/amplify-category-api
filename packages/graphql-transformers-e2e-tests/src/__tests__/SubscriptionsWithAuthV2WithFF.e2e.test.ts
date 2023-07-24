@@ -1,6 +1,6 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { CognitoIdentityServiceProvider as CognitoClient, S3, CognitoIdentity } from 'aws-sdk';
@@ -207,27 +207,6 @@ beforeAll(async () => {
       ])
       description: String
   }`;
-  const transformer = new GraphQLTransform({
-    authConfig: {
-      defaultAuthentication: {
-        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-      },
-      additionalAuthenticationProviders: [
-        {
-          authenticationType: 'API_KEY',
-          apiKeyConfig: {
-            description: 'E2E Test API Key',
-            apiKeyExpirationDays: 300,
-          },
-        },
-        {
-          authenticationType: 'AWS_IAM',
-        },
-      ],
-    },
-    transformers: [new ModelTransformer(), new AuthTransformer()],
-  });
-
   try {
     await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
   } catch (e) {
@@ -248,7 +227,27 @@ beforeAll(async () => {
     providerName: `cognito-idp.${AWS_REGION}.amazonaws.com/${USER_POOL_ID}`,
     clientId: userPoolClientId,
   });
-  const out = transformer.transform(validSchema);
+  const out = testTransform({
+    schema: validSchema,
+    authConfig: {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'API_KEY',
+          apiKeyConfig: {
+            description: 'E2E Test API Key',
+            apiKeyExpirationDays: 300,
+          },
+        },
+        {
+          authenticationType: 'AWS_IAM',
+        },
+      ],
+    },
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+  });
   const finishedStack = await deploy(
     customS3Client,
     cf,
