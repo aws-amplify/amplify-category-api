@@ -3,6 +3,7 @@ import { Lazy } from 'aws-cdk-lib';
 import { S3Asset } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLApi } from '../graphql-api';
 import { assetManager } from '../transformer-context/asset-manager';
+import { removeAmplifyInputDefinition } from '../transformation/utils';
 
 export class TransformerSchema {
   private asset?: S3Asset;
@@ -35,7 +36,10 @@ export class TransformerSchema {
       throw new Error('Schema not bound');
     }
     if (!this.asset) {
-      this.asset = assetManager.createAsset(this.api, 'schema', { fileName: 'schema.graphql', fileContent: this.definition });
+      this.asset = assetManager.createAsset(this.api, 'schema', {
+        fileName: 'schema.graphql',
+        fileContent: removeAmplifyInputDefinition(this.definition),
+      });
     }
     return this.asset;
   };
