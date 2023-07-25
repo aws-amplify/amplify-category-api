@@ -1,4 +1,4 @@
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
@@ -14,17 +14,15 @@ import { DefaultValueTransformer } from '@aws-amplify/graphql-default-value-tran
 import { TransformerPluginProvider, AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { V2TransformerTestConfig } from './test-case-types';
 
-export const v2transformerProvider = (config: Partial<V2TransformerTestConfig> = {}): GraphQLTransform => {
-  const transform = new GraphQLTransform({
+export const v2Transform = (schema: string, config: Partial<V2TransformerTestConfig> = {}): DeploymentResources =>
+  testTransform({
+    schema,
     transformers: config.transformers ?? getDefaultTransformers(),
     authConfig: defaultAuthConfig,
     transformParameters: {
       sandboxModeEnabled: true,
     },
   });
-
-  return transform;
-};
 
 const getDefaultTransformers = () => {
   const modelTransformer = new ModelTransformer();
