@@ -8,7 +8,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { AssetProvider, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
-import { App, Aws, CfnOutput, Fn } from 'aws-cdk-lib';
+import { Aws, CfnOutput, Fn } from 'aws-cdk-lib';
 import {
   EnumTypeDefinitionNode,
   EnumValueDefinitionNode,
@@ -97,8 +97,6 @@ export class GraphQLTransform {
 
   private stackMappingOverrides: StackMapping;
 
-  private app: App | undefined;
-
   private readonly authConfig: AppSyncAuthConfiguration;
 
   private readonly resolverConfig?: ResolverConfig;
@@ -182,7 +180,6 @@ export class GraphQLTransform {
   public transform({ scope, nestedStackProvider, assetProvider, schema, datasourceConfig }: TransformOption): void {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
-    this.app = new App();
     const context = new TransformerContext(
       scope,
       nestedStackProvider,
