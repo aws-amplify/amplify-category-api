@@ -27,6 +27,35 @@ import type { TransformParameters } from '@aws-amplify/graphql-transformer-inter
 import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 
 // @public (undocumented)
+export interface AmplifyApiGraphQlResourceStackTemplate {
+    // Warning: (ae-forgotten-export) The symbol "AppsyncApiStack" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    api?: Partial<AppsyncApiStack>;
+    // Warning: (ae-forgotten-export) The symbol "FunctionDirectiveStack" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    function?: Partial<FunctionDirectiveStack & AppsyncStackCommon>;
+    // Warning: (ae-forgotten-export) The symbol "HttpsDirectiveStack" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "AppsyncStackCommon" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    http?: Partial<HttpsDirectiveStack & AppsyncStackCommon>;
+    // Warning: (ae-forgotten-export) The symbol "ModelDirectiveStack" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    models?: Partial<Record<string, ModelDirectiveStack>>;
+    // Warning: (ae-forgotten-export) The symbol "OpenSearchDirectiveStack" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    opensearch?: Partial<OpenSearchDirectiveStack & AppsyncStackCommon>;
+    // Warning: (ae-forgotten-export) The symbol "PredictionsDirectiveStack" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    predictions?: Partial<PredictionsDirectiveStack & AppsyncStackCommon>;
+}
+
+// @public (undocumented)
 export interface DeploymentResources extends ResolversFunctionsAndSchema, NestedStacks {
     // (undocumented)
     stackMapping: StackMapping;
@@ -89,13 +118,15 @@ export interface Template {
 }
 
 // @public (undocumented)
-export const testTransform: (params: TestTransformParameters) => DeploymentResources;
+export const testTransform: (params: TestTransformParameters) => DeploymentResources & {
+    logs: any[];
+};
 
 // @public (undocumented)
 export type TestTransformParameters = {
     transformers: TransformerPluginProvider[];
     schema: string;
-    transformParameters?: TransformParameters;
+    transformParameters?: Partial<TransformParameters>;
     resolverConfig?: ResolverConfig;
     authConfig?: AppSyncAuthConfiguration;
     stacks?: Record<string, Template>;
