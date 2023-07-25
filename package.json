@@ -57,7 +57,8 @@
     "release-codebuild": "source ./scripts/cloud-release.sh && release",
     "view-test-artifact": "./scripts/view-test-artifacts.sh",
     "cleanup-stale-resources": "source ./scripts/cloud-utils.sh && cleanupStaleResources",
-    "depcheck": "eslint --no-eslintrc --config depcheck.config.js"
+    "depcheck": "eslint --no-eslintrc --config depcheck.config.js",
+    "cloud-e2e-debug": "source scripts/cloud-utils.sh && cloudE2EDebug"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-category-api/issues"

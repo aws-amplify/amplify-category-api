@@ -1,0 +1,20 @@
+# auto generated file. DO NOT EDIT manually
+version: 0.2
+env:
+  shell: bash
+  compute-type: BUILD_GENERAL1_MEDIUM
+batch:
+  fast-fail: false
+  build-graph:
+    - identifier: build_linux
+      buildspec: codebuild_specs/build_linux.yml
+      debug-session: true
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: publish_to_local_registry
+      buildspec: codebuild_specs/publish_to_local_registry.yml
+      debug-session: true
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+      depend-on:
+        - build_linux
