@@ -16,7 +16,7 @@ import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './uti
 import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerProjectOptions } from './transformer-options-types';
 import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { executeTransform } from '@aws-amplify/graphql-transformer';
+import { DeploymentResources, executeTransform } from '@aws-amplify/graphql-transformer';
 import {
   getConnectionSecrets,
   testDatabaseConnection,

@@ -1,4 +1,4 @@
-import { CfnMapping, Duration, Fn, Stack } from 'aws-cdk-lib';
+import { CfnMapping, Duration, Fn } from 'aws-cdk-lib';
 import {
   Expression,
   compoundExpression,
@@ -159,12 +159,12 @@ export const createRdsLambda = (
 
 /**
  * Create RDS Patching Lambda function
- * @param stack Construct
+ * @param scope Construct
  * @param apiGraphql GraphQLAPIProvider
  * @param lambdaRole IRole
  */
 export const createRdsPatchingLambda = (
-  stack: Stack,
+  scope: Construct,
   apiGraphql: GraphQLAPIProvider,
   lambdaRole: IRole,
   environment?: { [key: string]: string },
@@ -181,7 +181,7 @@ export const createRdsPatchingLambda = (
     lambdaRole,
     environment,
     Duration.minutes(6), // We have an arbituary wait time of up to 5 minutes in the lambda function to avoid throttling errors
-    stack,
+    scope,
     sqlLambdaVpcConfig,
   );
 };

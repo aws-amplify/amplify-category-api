@@ -693,11 +693,7 @@ export interface TransformHostProvider {
     // (undocumented)
     addLambdaFunction: (functionName: string, functionKey: string, handlerName: string, filePath: string, runtime: Runtime, layers?: ILayerVersion[], role?: IRole, environment?: {
         [key: string]: string;
-<<<<<<< HEAD
-    }, timeout?: Duration, scope?: Construct) => IFunction;
-=======
-    }, timeout?: Duration, stack?: Stack, vpc?: VpcConfig) => IFunction;
->>>>>>> origin/main
+    }, timeout?: Duration, scope?: Construct, vpc?: VpcConfig) => IFunction;
     // (undocumented)
     addNoneDataSource(name: string, options?: DataSourceOptions, scope?: Construct): NoneDataSource;
     // (undocumented)

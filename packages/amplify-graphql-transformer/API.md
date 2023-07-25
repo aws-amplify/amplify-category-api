@@ -136,7 +136,7 @@ export type TransformerFactoryArgs = {
 
 // Warnings were encountered during analysis:
 //
-// src/graphql-transformer.ts:111:3 - (ae-forgotten-export) The symbol "OverrideConfig" needs to be exported by the entry point index.d.ts
+// src/graphql-transformer.ts:127:3 - (ae-forgotten-export) The symbol "OverrideConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

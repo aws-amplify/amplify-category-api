@@ -1496,16 +1496,17 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
-    });
-    const modelToDatasourceMap = new Map<string, DatasourceType>();
-    modelToDatasourceMap.set('Post', {
-      dbType: 'MySQL',
-      provisionDB: false,
-    });
-    const out = transformer.transform(validSchema, {
-      modelToDatasourceMap,
+      modelToDatasourceMap: new Map(
+        Object.entries({
+          Post: {
+            dbType: 'MySQL',
+            provisionDB: false,
+          },
+        }),
+      ),
     });
     expect(out).toBeDefined();
 

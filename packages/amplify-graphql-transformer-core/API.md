@@ -231,15 +231,10 @@ export interface GraphQLTransformOptions {
     // (undocumented)
     readonly host?: TransformHostProvider;
     // (undocumented)
-<<<<<<< HEAD
-=======
     readonly legacyApiKeyEnabled?: boolean;
-    // (undocumented)
-    readonly overrideConfig?: OverrideConfig;
     // (undocumented)
     readonly rdsLayerMapping?: RDSLayerMapping;
     // (undocumented)
->>>>>>> origin/main
     readonly resolverConfig?: ResolverConfig;
     // (undocumented)
     readonly sqlLambdaVpcConfig?: VpcConfig;
