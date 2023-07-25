@@ -33,4 +33,73 @@ describe('AmplifyGraphqlApi', () => {
       );
     });
   });
+
+  describe('storeOutput', () => {
+    const tokenRegex = /\$\{Token\[TOKEN\.\d+\]\}/;
+    const awsRegionTokenRegex = /\$\{Token\[AWS\.Region\.\d+\]\}/;
+
+    test('stores output with outputStorageStrategy', () => {
+      const api = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
+        schema: /* GraphQL */ `
+          type Todo @model @auth(rules: [{ allow: public }]) {
+            description: String!
+          }
+        `,
+        authorizationConfig: {
+          apiKeyConfig: { expires: cdk.Duration.days(7) },
+        },
+      });
+
+      const addBackendOutputEntry = jest.fn();
+      const outputStorageStrategyMock = {
+        addBackendOutputEntry,
+        flush: jest.fn(),
+      };
+      api.storeOutput(outputStorageStrategyMock);
+      expect(addBackendOutputEntry).toBeCalledTimes(1);
+      expect(addBackendOutputEntry).toBeCalledWith('graphqlOutput', {
+        version: '1',
+        payload: {
+          awsAppsyncApiEndpoint: expect.stringMatching(tokenRegex),
+          awsAppsyncApiKey: expect.stringMatching(tokenRegex),
+          awsAppsyncAuthenticationType: 'API_KEY',
+          awsAppsyncRegion: expect.stringMatching(awsRegionTokenRegex),
+        },
+      });
+    });
+
+    test('does not store awsAppsyncApiKey when not present and changes awsAppsyncAuthenticationType', () => {
+      const api = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
+        schema: /* GraphQL */ `
+          type Todo @model {
+            description: String!
+          }
+        `,
+        authorizationConfig: {
+          oidcConfig: {
+            oidcProviderName: 'mock-provider-name',
+            oidcIssuerUrl: 'mock-issuer-url',
+            tokenExpiryFromAuth: cdk.Duration.days(1),
+            tokenExpiryFromIssue: cdk.Duration.days(1),
+          },
+        },
+      });
+
+      const addBackendOutputEntry = jest.fn();
+      const outputStorageStrategyMock = {
+        addBackendOutputEntry,
+        flush: jest.fn(),
+      };
+      api.storeOutput(outputStorageStrategyMock);
+      expect(addBackendOutputEntry).toBeCalledTimes(1);
+      expect(addBackendOutputEntry).toBeCalledWith('graphqlOutput', {
+        version: '1',
+        payload: {
+          awsAppsyncApiEndpoint: expect.stringMatching(tokenRegex),
+          awsAppsyncAuthenticationType: 'OPENID_CONNECT',
+          awsAppsyncRegion: expect.stringMatching(awsRegionTokenRegex),
+        },
+      });
+    });
+  });
 });

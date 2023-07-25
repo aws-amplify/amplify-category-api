@@ -23,6 +23,7 @@ import { IRole } from 'aws-cdk-lib/aws-iam';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { z } from 'zod';
 
 // @public
 export type AmplifyApiGraphqlSchema = SchemaFile | SchemaFile[] | string;
@@ -41,6 +42,9 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
     constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps<SchemaType>);
     getGeneratedFunctionSlots(): FunctionSlot[];
     readonly resources: AmplifyGraphqlApiResources;
+    // Warning: (ae-forgotten-export) The symbol "BackendOutputStorageStrategy" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "GraphqlOutput" needs to be exported by the entry point index.d.ts
+    storeOutput(outputStorageStrategy: BackendOutputStorageStrategy<GraphqlOutput>): void;
 }
 
 // @public

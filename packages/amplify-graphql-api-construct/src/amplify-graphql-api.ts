@@ -13,6 +13,9 @@ import {
 import type { AmplifyGraphqlApiResources, AmplifyGraphqlApiProps, FunctionSlot } from './types';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
 
+// These will be imported from CLI in future
+import { GraphqlOutput, GraphqlOutputKey, BackendOutputStorageStrategy } from './graphql-output';
+
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
  *
@@ -157,5 +160,25 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
           },
         } as FunctionSlot;
       });
+  }
+
+  /**
+   * Stores graphql api output to be used for client config generation
+   */
+  storeOutput(outputStorageStrategy: BackendOutputStorageStrategy<GraphqlOutput>): void {
+    const output: GraphqlOutput = {
+      version: '1',
+      payload: {
+        awsAppsyncApiEndpoint: this.resources.cfnGraphqlApi.attrGraphQlUrl,
+        awsAppsyncAuthenticationType: this.resources.cfnGraphqlApi.authenticationType,
+        awsAppsyncRegion: cdk.Stack.of(this).region,
+      },
+    };
+
+    if (this.resources.cfnApiKey) {
+      output.payload.awsAppsyncApiKey = this.resources.cfnApiKey.attrApiKey;
+    }
+
+    outputStorageStrategy.addBackendOutputEntry(GraphqlOutputKey, output);
   }
 }
