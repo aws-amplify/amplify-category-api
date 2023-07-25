@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationOIDCEntry, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse, InputValueDefinitionNode } from 'graphql';
 import { AuthTransformer } from '../graphql-auth-transformer';
@@ -152,8 +152,9 @@ const getRecursiveSchemaWithDiffModesOnParentType = (authDir1: string, authDir2:
   }
   `;
 
-const getTransformer = (authConfig: AppSyncAuthConfiguration): GraphQLTransform =>
-  new GraphQLTransform({
+const transform = (authConfig: AppSyncAuthConfiguration, schema: string): DeploymentResources =>
+  testTransform({
+    schema,
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
   });
@@ -200,10 +201,9 @@ const getField = (type, name): any => type.fields.find((f) => f.name.value === n
 describe('validation tests', () => {
   const validationTest = (authDirective, authConfig, expectedError): void => {
     const schema = getSchema(authDirective);
-    const transformer = getTransformer(authConfig);
 
     const t = (): void => {
-      transformer.transform(schema);
+      transform(authConfig, schema);
     };
 
     expect(t).toThrowError(expectedError);
@@ -277,9 +277,8 @@ describe('validation tests', () => {
 describe('schema generation directive tests', () => {
   const transformTest = (authDirective, authConfig, expectedDirectiveNames?: string[] | undefined): void => {
     const schema = getSchema(authDirective);
-    const transformer = getTransformer(authConfig);
 
-    const out = transformer.transform(schema);
+    const out = transform(authConfig, schema);
 
     const schemaDoc = parse(out.schema);
 
@@ -314,9 +313,8 @@ describe('schema generation directive tests', () => {
 
   test('Operation fields are getting the directive added, when type has the @auth for all operations', () => {
     const schema = getSchema(ownerAuthDirective);
-    const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
 
-    const out = transformer.transform(schema);
+    const out = transform(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']), schema);
     const schemaDoc = parse(out.schema);
     const queryType = getObjectType(schemaDoc, 'Query');
     const mutationType = getObjectType(schemaDoc, 'Mutation');
@@ -357,9 +355,8 @@ describe('schema generation directive tests', () => {
 
   test('Operation fields are getting the directive added, when type has the @auth only for allowed operations', () => {
     const schema = getSchema(ownerRestrictedPublicAuthDirective);
-    const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
 
-    const out = transformer.transform(schema);
+    const out = transform(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']), schema);
     const schemaDoc = parse(out.schema);
     const queryType = getObjectType(schemaDoc, 'Query');
     const mutationType = getObjectType(schemaDoc, 'Mutation');
@@ -388,9 +385,8 @@ describe('schema generation directive tests', () => {
 
   test('Field level @auth is propagated to type and the type related operations', () => {
     const schema = getSchemaWithFieldAuth(ownerRestrictedPublicAuthDirective);
-    const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
 
-    const out = transformer.transform(schema);
+    const out = transform(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']), schema);
     const schemaDoc = parse(out.schema);
     const queryType = getObjectType(schemaDoc, 'Query');
     const mutationType = getObjectType(schemaDoc, 'Mutation');
@@ -414,9 +410,8 @@ describe('schema generation directive tests', () => {
 
   test("'groups' @auth at field level is propagated to type and the type related operations", () => {
     const schema = getSchemaWithFieldAuth(groupsAuthDirective);
-    const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
 
-    const out = transformer.transform(schema);
+    const out = transform(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']), schema);
     const schemaDoc = parse(out.schema);
     const queryType = getObjectType(schemaDoc, 'Query');
     const mutationType = getObjectType(schemaDoc, 'Mutation');
@@ -441,9 +436,8 @@ describe('schema generation directive tests', () => {
 
   test("'groups' @auth at field level is propagated to type and the type related operations, also default provider for read", () => {
     const schema = getSchemaWithTypeAndFieldAuth(groupsAuthDirective, groupsWithApiKeyAuthDirective);
-    const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
 
-    const out = transformer.transform(schema);
+    const out = transform(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']), schema);
     const schemaDoc = parse(out.schema);
     const queryType = getObjectType(schemaDoc, 'Query');
     const mutationType = getObjectType(schemaDoc, 'Mutation');
@@ -467,9 +461,8 @@ describe('schema generation directive tests', () => {
 
   test('Nested types without @model not getting directives applied for iam, and no policy is generated', () => {
     const schema = getSchemaWithNonModelField('');
-    const transformer = getTransformer(withAuthModes(iamDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
 
-    const out = transformer.transform(schema);
+    const out = transform(withAuthModes(iamDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']), schema);
     const schemaDoc = parse(out.schema);
 
     const locationType = getObjectType(schemaDoc, 'Location');
@@ -486,9 +479,8 @@ describe('schema generation directive tests', () => {
 
   test('Nested types without @model not getting directives applied for iam, but policy is generated', () => {
     const schema = getSchemaWithNonModelField(privateIAMDirective);
-    const transformer = getTransformer(withAuthModes(iamDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
 
-    const out = transformer.transform(schema);
+    const out = transform(withAuthModes(iamDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']), schema);
     const schemaDoc = parse(out.schema);
 
     const locationType = getObjectType(schemaDoc, 'Location');
@@ -528,9 +520,8 @@ describe('schema generation directive tests', () => {
 
   test('Recursive types with diff auth modes on parent @model types', () => {
     const schema = getRecursiveSchemaWithDiffModesOnParentType(ownerAuthDirective, privateIAMDirective);
-    const transformer = getTransformer(withAuthModes(userPoolsDefaultConfig, ['AWS_IAM']));
 
-    const out = transformer.transform(schema);
+    const out = transform(withAuthModes(userPoolsDefaultConfig, ['AWS_IAM']), schema);
     const schemaDoc = parse(out.schema);
 
     const tagType = getObjectType(schemaDoc, 'Tag');
@@ -542,9 +533,8 @@ describe('schema generation directive tests', () => {
 
   test('Recursive types without @model', () => {
     const schema = getSchemaWithRecursiveNonModelField(ownerRestrictedIAMPrivateAuthDirective);
-    const transformer = getTransformer(withAuthModes(userPoolsDefaultConfig, ['AWS_IAM']));
 
-    const out = transformer.transform(schema);
+    const out = transform(withAuthModes(userPoolsDefaultConfig, ['AWS_IAM']), schema);
     const schemaDoc = parse(out.schema);
 
     const tagType = getObjectType(schemaDoc, 'Tag');
@@ -568,9 +558,8 @@ describe('schema generation directive tests', () => {
 
   test('Nested types without @model getting directives applied (cognito default, api key additional)', () => {
     const schema = getSchemaWithNonModelField(privateAndPublicDirective);
-    const transformer = getTransformer(withAuthModes(userPoolsDefaultConfig, ['API_KEY']));
 
-    const out = transformer.transform(schema);
+    const out = transform(withAuthModes(userPoolsDefaultConfig, ['API_KEY']), schema);
     const schemaDoc = parse(out.schema);
 
     const locationType = getObjectType(schemaDoc, 'Location');
@@ -603,11 +592,11 @@ describe('iam checks', () => {
 
   test('identity pool check gets added when using private rule', () => {
     const schema = getSchema(privateIAMDirective);
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema,
       authConfig: iamDefaultConfig,
       transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId })],
     });
-    const out = transformer.transform(schema);
     expect(out).toBeDefined();
     const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
     expect(createResolver).toContain(
@@ -621,11 +610,11 @@ describe('iam checks', () => {
 
   test('identity pool check does not get added when using public rule', () => {
     const schema = getSchema(publicIAMAuthDirective);
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema,
       authConfig: iamDefaultConfig,
       transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId })],
     });
-    const out = transformer.transform(schema);
     expect(out).toBeDefined();
     const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
     expect(createResolver).toContain('#if( $ctx.identity.userArn == $ctx.stash.unauthRole )');
@@ -635,11 +624,11 @@ describe('iam checks', () => {
 
   test('that admin roles are added when functions have access to the graphql api', () => {
     const schema = getSchema(privateIAMDirective);
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema,
       authConfig: iamDefaultConfig,
       transformers: [new ModelTransformer(), new AuthTransformer({ adminRoles })],
     });
-    const out = transformer.transform(schema);
     expect(out).toBeDefined();
     const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
     expect(createResolver).toContain('#set( $adminRoles = ["helloWorldFunction","echoMessageFunction"] )');
