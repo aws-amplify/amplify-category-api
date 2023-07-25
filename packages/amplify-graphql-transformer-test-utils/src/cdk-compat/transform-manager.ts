@@ -85,8 +85,6 @@ export class TransformManager {
         functions[templateName.replace('functions/', '')] = template;
       }
     }
-    // const compiledSchema = fileAssets.get('schema.graphql') || '';
-    // const schema = removeAmplifyInputDefinition(compiledSchema);
     const schema = fileAssets.get('schema.graphql') || '';
 
     return {
