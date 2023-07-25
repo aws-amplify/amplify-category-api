@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.1.8...@aws-amplify/graphql-schema-generator@0.3.0) (2023-07-21)
+
+### Features
+
+- **graphql:** add vpc support for import workflow ([44170f9](https://github.com/aws-amplify/amplify-category-api/commit/44170f9f6ea4c7fe8b30604037067c4d36f71d2e))
+- **graphql:** vpc support for sql lambda ([9cc4407](https://github.com/aws-amplify/amplify-category-api/commit/9cc4407bdc4799fe548919808961911a3d5995c7))
+
 ## [0.1.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.1.7...@aws-amplify/graphql-schema-generator@0.1.8) (2023-07-17)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-generator

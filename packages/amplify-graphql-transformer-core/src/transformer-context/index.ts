@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import {
   GraphQLAPIProvider,
   StackManagerProvider,
@@ -5,6 +6,8 @@ import {
   TransformerContextProvider,
   TransformerDataSourceManagerProvider,
   AppSyncAuthConfiguration,
+  VpcConfig,
+  RDSLayerMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { AssetProvider, NestedStackProvider, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
@@ -66,6 +69,8 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly modelToDatasourceMap: Map<string, DatasourceType>;
 
   public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
+  public readonly sqlLambdaVpcConfig?: VpcConfig;
+  public readonly rdsLayerMapping?: RDSLayerMapping;
 
   public metadata: TransformerContextMetadata;
 
@@ -80,6 +85,8 @@ export class TransformerContext implements TransformerContextProvider {
     transformParameters: TransformParameters,
     resolverConfig?: ResolverConfig,
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
+    sqlLambdaVpcConfig?: VpcConfig,
+    rdsLayerMapping?: RDSLayerMapping,
   ) {
     assetManager.setAssetProvider(assetProvider);
     this.output = new TransformerOutput(inputDocument);
@@ -95,6 +102,8 @@ export class TransformerContext implements TransformerContextProvider {
     this.metadata = new TransformerContextMetadata();
     this.modelToDatasourceMap = modelToDatasourceMap;
     this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
+    this.sqlLambdaVpcConfig = sqlLambdaVpcConfig;
+    this.rdsLayerMapping = rdsLayerMapping;
   }
 
   /**

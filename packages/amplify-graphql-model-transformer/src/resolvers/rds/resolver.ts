@@ -1,55 +1,199 @@
-// TODO: Split this file into seperated query, mutations and subscriptions files.
-
-import path from 'path';
+import { CfnMapping, Duration, Fn, Stack } from 'aws-cdk-lib';
 import {
-  str,
   Expression,
-  ref,
+  compoundExpression,
+  ifElse,
+  list,
   methodCall,
   obj,
-  qref,
-  ifElse,
-  compoundExpression,
-  toJson,
   printBlock,
+  qref,
+  ref,
   set,
-  list,
+  str,
+  toJson,
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { Construct } from 'constructs';
-import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLAPIProvider, RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
+import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { IFunction, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Construct } from 'constructs';
+import path from 'path';
+import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces/src';
 
+/**
+ * Define RDS Lambda operations
+ */
 export type OPERATIONS = 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'SYNC';
 
 const OPERATION_KEY = '__operation';
 
+const RDSLayerMappingID = 'RDSLayerResourceMapping';
+// TODO: This is temporary state, we need to modify this to a production layer
+/**
+ * Define RDS Lambda Layer region mappings
+ * @param scope Construct
+ */
+export const setRDSLayerMappings = (scope: Construct, mapping?: RDSLayerMapping): CfnMapping =>
+  new CfnMapping(scope, RDSLayerMappingID, {
+    mapping: getLatestLayers(mapping),
+  });
+
+const getLatestLayers = (latestLayers?: RDSLayerMapping): RDSLayerMapping => {
+  if (latestLayers && Object.keys(latestLayers).length > 0) {
+    return latestLayers;
+  }
+  const defaultLayerMapping = getDefaultLayerMapping();
+  return defaultLayerMapping;
+};
+
+// For beta use account '956468067974', layer name 'AmplifyRDSLayerBeta' and layer version '12' as of 2023-06-20
+// For prod use account '582037449441', layer name 'AmplifyRDSLayer' and layer version '3' as of 2023-06-20
+const getDefaultLayerMapping = (): RDSLayerMapping => ({
+  'ap-northeast-1': {
+    layerRegion: 'arn:aws:lambda:ap-northeast-1:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'us-east-1': {
+    layerRegion: 'arn:aws:lambda:us-east-1:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'ap-southeast-1': {
+    layerRegion: 'arn:aws:lambda:ap-southeast-1:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'eu-west-1': {
+    layerRegion: 'arn:aws:lambda:eu-west-1:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'us-west-1': {
+    layerRegion: 'arn:aws:lambda:us-west-1:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'ap-east-1': {
+    layerRegion: 'arn:aws:lambda:ap-east-1:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'ap-northeast-2': {
+    layerRegion: 'arn:aws:lambda:ap-northeast-2:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'ap-northeast-3': {
+    layerRegion: 'arn:aws:lambda:ap-northeast-3:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'ap-south-1': {
+    layerRegion: 'arn:aws:lambda:ap-south-1:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'ap-southeast-2': {
+    layerRegion: 'arn:aws:lambda:ap-southeast-2:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'ca-central-1': {
+    layerRegion: 'arn:aws:lambda:ca-central-1:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'eu-central-1': {
+    layerRegion: 'arn:aws:lambda:eu-central-1:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'eu-north-1': {
+    layerRegion: 'arn:aws:lambda:eu-north-1:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'eu-west-2': {
+    layerRegion: 'arn:aws:lambda:eu-west-2:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'eu-west-3': {
+    layerRegion: 'arn:aws:lambda:eu-west-3:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'sa-east-1': {
+    layerRegion: 'arn:aws:lambda:sa-east-1:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'us-east-2': {
+    layerRegion: 'arn:aws:lambda:us-east-2:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'us-west-2': {
+    layerRegion: 'arn:aws:lambda:us-west-2:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'cn-north-1': {
+    layerRegion: 'arn:aws:lambda:cn-north-1:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'cn-northwest-1': {
+    layerRegion: 'arn:aws:lambda:cn-northwest-1:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'us-gov-west-1': {
+    layerRegion: 'arn:aws:lambda:us-gov-west-1:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'us-gov-east-1': {
+    layerRegion: 'arn:aws:lambda:us-gov-east-1:582037449441:layer:AmplifyRDSLayer:5',
+  },
+  'me-south-1': {
+    layerRegion: 'arn:aws:lambda:me-south-1:582037449441:layer:AmplifyRDSLayer:5',
+  },
+});
+
+/**
+ * Create RDS Lambda function
+ * @param stack Construct
+ * @param apiGraphql GraphQLAPIProvider
+ * @param lambdaRole IRole
+ */
 export const createRdsLambda = (
   scope: Construct,
   apiGraphql: GraphQLAPIProvider,
   lambdaRole: IRole,
   environment?: { [key: string]: string },
+  sqlLambdaVpcConfig?: VpcConfig,
 ): IFunction => {
   const { RDSLambdaLogicalID } = ResourceConstants.RESOURCES;
-
   return apiGraphql.host.addLambdaFunction(
     RDSLambdaLogicalID,
     `functions/${RDSLambdaLogicalID}.zip`,
     'handler.run',
     path.resolve(__dirname, '..', '..', '..', 'lib', 'rds-lambda.zip'),
-    Runtime.NODEJS_16_X,
-    [],
+    Runtime.NODEJS_18_X,
+    [
+      LayerVersion.fromLayerVersionArn(
+        scope,
+        'SQLLambdaLayerVersion',
+        Fn.findInMap(RDSLayerMappingID, Fn.ref('AWS::Region'), 'layerRegion'),
+      ),
+    ],
     lambdaRole,
     environment,
-    undefined,
+    Duration.seconds(30),
     scope,
+    sqlLambdaVpcConfig,
   );
 };
 
+/**
+ * Create RDS Patching Lambda function
+ * @param stack Construct
+ * @param apiGraphql GraphQLAPIProvider
+ * @param lambdaRole IRole
+ */
+export const createRdsPatchingLambda = (
+  stack: Stack,
+  apiGraphql: GraphQLAPIProvider,
+  lambdaRole: IRole,
+  environment?: { [key: string]: string },
+  sqlLambdaVpcConfig?: VpcConfig,
+): IFunction => {
+  const { RDSPatchingLambdaLogicalID } = ResourceConstants.RESOURCES;
+  return apiGraphql.host.addLambdaFunction(
+    RDSPatchingLambdaLogicalID,
+    `functions/${RDSPatchingLambdaLogicalID}.zip`,
+    'index.handler',
+    path.resolve(__dirname, '..', '..', '..', 'lib', 'rds-patching-lambda.zip'),
+    Runtime.NODEJS_18_X,
+    [],
+    lambdaRole,
+    environment,
+    Duration.minutes(6), // We have an arbituary wait time of up to 5 minutes in the lambda function to avoid throttling errors
+    stack,
+    sqlLambdaVpcConfig,
+  );
+};
+
+/**
+ * Create RDS Lambda IAM role
+ * @param roleName string
+ * @param stack Construct
+ * @param secretEntry RDSConnectionSecrets
+ */
 export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEntry: RDSConnectionSecrets): IRole => {
-  const { RDSLambdaIAMRoleLogicalID } = ResourceConstants.RESOURCES;
+  const { RDSLambdaIAMRoleLogicalID, RDSLambdaLogAccessPolicy } = ResourceConstants.RESOURCES;
   const role = new Role(stack, RDSLambdaIAMRoleLogicalID, {
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
     roleName,
@@ -66,21 +210,91 @@ export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEn
       new PolicyStatement({
         actions: ['ssm:GetParameter', 'ssm:GetParameters'],
         effect: Effect.ALLOW,
-        resources: [`arn:aws:ssm:*:*:parameter${secretEntry.username}`, `arn:aws:ssm:*:*:parameter${secretEntry.password}`],
+        resources: [
+          `arn:aws:ssm:*:*:parameter${secretEntry.username}`,
+          `arn:aws:ssm:*:*:parameter${secretEntry.password}`,
+          `arn:aws:ssm:*:*:parameter${secretEntry.host}`,
+          `arn:aws:ssm:*:*:parameter${secretEntry.database}`,
+          `arn:aws:ssm:*:*:parameter${secretEntry.port}`,
+        ],
       }),
     );
   }
+
   role.attachInlinePolicy(
-    new Policy(stack, 'CloudwatchLogsAccess', {
+    new Policy(stack, RDSLambdaLogAccessPolicy, {
       statements: policyStatements,
+      policyName: `${roleName}Policy`,
+    }),
+  );
+
+  role.addToPolicy(
+    new PolicyStatement({
+      effect: Effect.ALLOW,
+      resources: ['*'],
+      actions: ['ec2:CreateNetworkInterface', 'ec2:DescribeNetworkInterfaces', 'ec2:DeleteNetworkInterface'],
     }),
   );
 
   return role;
 };
 
-export const generateLambdaRequestTemplate = (tableName: string, operation: string, operationName: string): string => {
-  return printBlock('Invoke RDS Lambda data source')(
+/**
+ * Create RDS Patching Lambda IAM role
+ * @param roleName string
+ * @param stack Construct
+ * @param functionArn FunctionArn
+ */
+export const createRdsPatchingLambdaRole = (roleName: string, stack: Construct, functionArn: string): IRole => {
+  const { RDSPatchingLambdaIAMRoleLogicalID, RDSPatchingLambdaLogAccessPolicy } = ResourceConstants.RESOURCES;
+  const role = new Role(stack, RDSPatchingLambdaIAMRoleLogicalID, {
+    assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+    roleName,
+  });
+  const policyStatements = [
+    new PolicyStatement({
+      actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+      effect: Effect.ALLOW,
+      resources: ['arn:aws:logs:*:*:*'],
+    }),
+    new PolicyStatement({
+      actions: ['lambda:UpdateFunctionConfiguration'],
+      effect: Effect.ALLOW,
+      resources: [functionArn],
+    }),
+    new PolicyStatement({
+      actions: ['lambda:GetLayerVersion', 'lambda:GetLayerVersionPolicy'],
+      effect: Effect.ALLOW,
+      resources: ['*'],
+    }),
+  ];
+
+  role.attachInlinePolicy(
+    new Policy(stack, RDSPatchingLambdaLogAccessPolicy, {
+      statements: policyStatements,
+      policyName: `${roleName}Policy`,
+    }),
+  );
+
+  role.addToPolicy(
+    new PolicyStatement({
+      effect: Effect.ALLOW,
+      resources: ['*'],
+      actions: ['ec2:CreateNetworkInterface', 'ec2:DescribeNetworkInterfaces', 'ec2:DeleteNetworkInterface'],
+    }),
+  );
+
+  return role;
+};
+
+/**
+ * Generate RDS Lambda request template
+ * @param tableName string
+ * @param operation string
+ * @param operationName string
+ */
+export const generateLambdaRequestTemplate = (tableName: string, operation: string, operationName: string): string =>
+  printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
       set(ref('lambdaInput.args'), obj({})),
@@ -101,8 +315,11 @@ export const generateLambdaRequestTemplate = (tableName: string, operation: stri
       }),
     ]),
   );
-};
 
+/**
+ * Generate RDS Lambda response template
+ * @param isSyncEnabled boolean
+ */
 export const generateGetLambdaResponseTemplate = (isSyncEnabled: boolean): string => {
   const statements: Expression[] = [];
   if (isSyncEnabled) {
@@ -125,6 +342,8 @@ export const generateGetLambdaResponseTemplate = (isSyncEnabled: boolean): strin
 /**
  * Generate common response template used by most of the resolvers.
  * Append operation if response is coming from a mutation, this is to protect field resolver for subscriptions
+ * @param isSyncEnabled boolean
+ * @param mutation boolean
  */
 export const generateDefaultLambdaResponseMappingTemplate = (isSyncEnabled: boolean, mutation = false): string => {
   const statements: Expression[] = [];

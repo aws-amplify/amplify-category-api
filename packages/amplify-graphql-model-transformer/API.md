@@ -47,7 +47,7 @@ export const createEnumModelFilters: (ctx: TransformerTransformSchemaStepContext
 // @public (undocumented)
 export class DynamoDBModelVTLGenerator implements ModelVTLGenerator {
     // (undocumented)
-    generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
+    generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig, initializeIdField: boolean): string;
     // (undocumented)
     generateCreateRequestTemplate(config: ModelCreateRequestConfig): string;
     // (undocumented)
@@ -282,7 +282,7 @@ export type ModelUpdateRequestConfig = ModelRequestConfig & {
 // @public (undocumented)
 export interface ModelVTLGenerator {
     // (undocumented)
-    generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
+    generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig, initializeIdField: boolean): string;
     // (undocumented)
     generateCreateRequestTemplate(config: ModelCreateRequestConfig): string;
     // (undocumented)
@@ -316,7 +316,7 @@ export const propagateApiKeyToNestedTypes: (ctx: TransformerContextProvider, def
 // @public (undocumented)
 export class RDSModelVTLGenerator implements ModelVTLGenerator {
     // (undocumented)
-    generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
+    generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig, initializeIdField: boolean): string;
     // (undocumented)
     generateCreateRequestTemplate(config: ModelCreateRequestConfig): string;
     // (undocumented)
