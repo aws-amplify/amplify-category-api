@@ -28,7 +28,7 @@ export type TestTransformParameters = {
  * This mirrors the old behavior of the graphql transformer, where we fully synthesize internally, for the purposes of
  * unit testing, and to introduce fewer changes during the refactor.
  */
-export const testTransform = (params: TestTransformParameters): DeploymentResources => {
+export const testTransform = (params: TestTransformParameters): DeploymentResources & { logs: any[] } => {
   const {
     schema,
     modelToDatasourceMap,
@@ -55,37 +55,41 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
 
   const transformManager = new TransformManager(overrideConfig);
 
-  try {
-    transform.transform({
-      scope: transformManager.getTransformScope(),
-      nestedStackProvider: transformManager.getNestedStackProvider(),
-      assetProvider: transformManager.getAssetProvider(),
-      schema,
-      datasourceConfig: {
-        modelToDatasourceMap,
-        datasourceSecretParameterLocations,
-      },
-    });
+  transform.transform({
+    scope: transformManager.getTransformScope(),
+    nestedStackProvider: transformManager.getNestedStackProvider(),
+    assetProvider: transformManager.getAssetProvider(),
+    schema,
+    datasourceConfig: {
+      modelToDatasourceMap,
+      datasourceSecretParameterLocations,
+    },
+  });
 
-    return transformManager.generateDeploymentResources();
-  } finally {
-    transform.getLogs().forEach((log) => {
-      switch (log.level) {
-        case TransformerLogLevel.ERROR:
-          console.error(log.message);
-          break;
-        case TransformerLogLevel.WARN:
-          console.warn(log.message);
-          break;
-        case TransformerLogLevel.INFO:
-          console.info(log.message);
-          break;
-        case TransformerLogLevel.DEBUG:
-          console.debug(log.message);
-          break;
-        default:
-          console.error(log.message);
-      }
-    });
-  }
+  const logs: any[] = [];
+
+  transform.getLogs().forEach((log) => {
+    logs.push(log);
+    switch (log.level) {
+      case TransformerLogLevel.ERROR:
+        console.error(log.message);
+        break;
+      case TransformerLogLevel.WARN:
+        console.warn(log.message);
+        break;
+      case TransformerLogLevel.INFO:
+        console.info(log.message);
+        break;
+      case TransformerLogLevel.DEBUG:
+        console.debug(log.message);
+        break;
+      default:
+        console.error(log.message);
+    }
+  });
+
+  return {
+    ...transformManager.generateDeploymentResources(),
+    logs,
+  };
 };
