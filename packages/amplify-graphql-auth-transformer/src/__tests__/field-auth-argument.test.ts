@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '../graphql-auth-transformer';
@@ -23,11 +23,11 @@ test('subscriptions are only generated if the respective mutation operation exis
     },
     additionalAuthenticationProviders: [],
   };
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
   // expect to generate subscription resolvers for create and update only
   expect(out).toBeDefined();
   const resources = out.rootStack.Resources;
@@ -51,11 +51,11 @@ test('per-field @auth without @model', () => {
     },
     additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
   };
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
 
   const resources = out.rootStack.Resources;
@@ -83,11 +83,13 @@ test('error on non null fields which need resolvers', () => {
     },
     additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
   };
-  const transformer = new GraphQLTransform({
-    authConfig,
-    transformers: [new ModelTransformer(), new AuthTransformer()],
-  });
-  expect(() => transformer.transform(invalidSchema)).toThrowErrorMatchingSnapshot();
+  expect(() =>
+    testTransform({
+      schema: invalidSchema,
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+    }),
+  ).toThrowErrorMatchingSnapshot();
 });
 
 test('does not generate field resolvers when private rule takes precedence over provider-related rules', () => {
@@ -104,11 +106,11 @@ test('does not generate field resolvers when private rule takes precedence over 
     },
     additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
   };
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
   expect(out.resolvers['Student.ssn.res.vtl']).toMatchSnapshot();
@@ -132,11 +134,11 @@ test('generates field resolver for other provider rules even if private removes 
     },
     additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
   };
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
   expect(out.resolvers['Student.ssn.res.vtl']).toMatchSnapshot();
@@ -168,11 +170,11 @@ describe('subscription disabled and userPools configured', () => {
           },
           additionalAuthenticationProviders: [],
         };
-        const transformer = new GraphQLTransform({
+        const out = testTransform({
+          schema: validSchema,
           authConfig,
           transformers: [new ModelTransformer(), new AuthTransformer()],
         });
-        const out = transformer.transform(validSchema);
         expect(out).toBeDefined();
 
         expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
@@ -215,11 +217,11 @@ describe('subscription disabled and userPools configured', () => {
           },
           additionalAuthenticationProviders: [],
         };
-        const transformer = new GraphQLTransform({
+        const out = testTransform({
+          schema: validSchema,
           authConfig,
           transformers: [new ModelTransformer(), new AuthTransformer()],
         });
-        const out = transformer.transform(validSchema);
         expect(out).toBeDefined();
 
         expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
@@ -260,11 +262,11 @@ describe('subscription disabled and userPools configured', () => {
           },
           additionalAuthenticationProviders: [],
         };
-        const transformer = new GraphQLTransform({
+        const out = testTransform({
+          schema: validSchema,
           authConfig,
           transformers: [new ModelTransformer(), new AuthTransformer()],
         });
-        const out = transformer.transform(validSchema);
         expect(out).toBeDefined();
 
         expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
@@ -307,11 +309,11 @@ describe('subscription disabled and userPools configured', () => {
           },
           additionalAuthenticationProviders: [],
         };
-        const transformer = new GraphQLTransform({
+        const out = testTransform({
+          schema: validSchema,
           authConfig,
           transformers: [new ModelTransformer(), new AuthTransformer()],
         });
-        const out = transformer.transform(validSchema);
         expect(out).toBeDefined();
 
         expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
@@ -352,14 +354,14 @@ describe('with identity claim feature flag disabled', () => {
       },
       additionalAuthenticationProviders: [],
     };
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
       transformParameters: {
         useSubUsernameForDefaultIdentityClaim: false,
       },
     });
-    const out = transformer.transform(validSchema);
     // expect to generate subscription resolvers for create and update only
     expect(out).toBeDefined();
     const resources = out.rootStack.Resources;
@@ -385,14 +387,14 @@ describe('with identity claim feature flag disabled', () => {
       },
       additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
     };
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
       transformParameters: {
         useSubUsernameForDefaultIdentityClaim: false,
       },
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const resources = out.rootStack.Resources;
@@ -419,14 +421,14 @@ describe('with identity claim feature flag disabled', () => {
       },
       additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
     };
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
       transformParameters: {
         useSubUsernameForDefaultIdentityClaim: false,
       },
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Student.ssn.res.vtl']).toMatchSnapshot();
@@ -450,14 +452,14 @@ describe('with identity claim feature flag disabled', () => {
       },
       additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
     };
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
       transformParameters: {
         useSubUsernameForDefaultIdentityClaim: false,
       },
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Student.ssn.res.vtl']).toMatchSnapshot();
@@ -489,14 +491,14 @@ describe('with identity claim feature flag disabled', () => {
             },
             additionalAuthenticationProviders: [],
           };
-          const transformer = new GraphQLTransform({
+          const out = testTransform({
+            schema: validSchema,
             authConfig,
             transformers: [new ModelTransformer(), new AuthTransformer()],
             transformParameters: {
               useSubUsernameForDefaultIdentityClaim: false,
             },
           });
-          const out = transformer.transform(validSchema);
           expect(out).toBeDefined();
 
           expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
@@ -536,11 +538,11 @@ describe('with identity claim feature flag disabled', () => {
             },
             additionalAuthenticationProviders: [],
           };
-          const transformer = new GraphQLTransform({
+          const out = testTransform({
+            schema: validSchema,
             authConfig,
             transformers: [new ModelTransformer(), new AuthTransformer()],
           });
-          const out = transformer.transform(validSchema);
           expect(out).toBeDefined();
 
           expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
@@ -581,14 +583,14 @@ describe('with identity claim feature flag disabled', () => {
             },
             additionalAuthenticationProviders: [],
           };
-          const transformer = new GraphQLTransform({
+          const out = testTransform({
+            schema: validSchema,
             authConfig,
             transformers: [new ModelTransformer(), new AuthTransformer()],
             transformParameters: {
               useSubUsernameForDefaultIdentityClaim: false,
             },
           });
-          const out = transformer.transform(validSchema);
           expect(out).toBeDefined();
 
           expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
@@ -628,11 +630,11 @@ describe('with identity claim feature flag disabled', () => {
             },
             additionalAuthenticationProviders: [],
           };
-          const transformer = new GraphQLTransform({
+          const out = testTransform({
+            schema: validSchema,
             authConfig,
             transformers: [new ModelTransformer(), new AuthTransformer()],
           });
-          const out = transformer.transform(validSchema);
           expect(out).toBeDefined();
 
           expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
