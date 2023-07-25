@@ -13,23 +13,8 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: publish_to_local_registry
       buildspec: codebuild_specs/publish_to_local_registry.yml
+      debug-session: true
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
       depend-on:
         - build_linux
-    - identifier: auth_2_datastore_modelgen_amplify_app_custom_transformers
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/auth_2.test.ts|src/__tests__/datastore-modelgen.test.ts|src/__tests__/amplify-app.test.ts|src/__tests__/graphql-v2/custom-transformers.test.ts
-          CLI_REGION: us-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: cleanup_e2e_resources
-      buildspec: codebuild_specs/cleanup_e2e_resources.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-      depend-on:
-        - auth_2_datastore_modelgen_amplify_app_custom_transformers
