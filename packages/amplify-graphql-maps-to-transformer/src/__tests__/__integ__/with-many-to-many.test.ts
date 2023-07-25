@@ -1,11 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { HasOneTransformer, ManyToManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
 import { expectedResolversForModelWithRenamedField } from './common';
 
@@ -22,12 +21,13 @@ const manyToManyMapped = /* GraphQL */ `
   }
 `;
 
-const transformSchema = (schema: string): DeploymentResources => {
+const transformSchema = (schema: string) => {
   const indexTransformer = new IndexTransformer();
   const modelTransformer = new ModelTransformer();
   const hasOneTransformer = new HasOneTransformer();
   const authTransformer = new AuthTransformer();
-  const transformer = new GraphQLTransform({
+  return testTransform({
+    schema,
     transformers: [
       modelTransformer,
       indexTransformer,
@@ -41,7 +41,6 @@ const transformSchema = (schema: string): DeploymentResources => {
       sandboxModeEnabled: true,
     },
   });
-  return transformer.transform(schema);
 };
 
 describe('mapsTo with manyToMany', () => {
