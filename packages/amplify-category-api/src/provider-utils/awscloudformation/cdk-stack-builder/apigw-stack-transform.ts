@@ -208,7 +208,7 @@ export class ApigwStackTransform {
         // eslint-disable-next-line import/no-dynamic-require
         const overrideImport = require(overrideJSFilePath);
         if (overrideImport && overrideImport?.override && typeof overrideImport?.override === 'function') {
-          overrideImport.override(this.resourceTemplateObj as AmplifyApigwResourceStack, projectInfo);
+          await overrideImport.override(this.resourceTemplateObj as AmplifyApigwResourceStack, projectInfo);
         }
       } catch (err) {
         throw new AmplifyError(
