@@ -8,8 +8,11 @@ if [ -z "$BRANCH_NAME" ]; then
   echo "BRANCH_NAME is missing"
   exit 1
 else
+  # These are more of an extra caution to make sure we have latest commits
+  git checkout main
+  git pull origin main
   git checkout $BRANCH_NAME
-  git pull
+  git pull origin $BRANCH_NAME
   git fetch --all
   yarn install
   git restore .
