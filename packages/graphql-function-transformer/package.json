@@ -1,6 +1,6 @@
 {
   "name": "graphql-function-transformer",
-  "version": "3.3.52",
+  "version": "3.3.53-test-tag-1.0",
   "description": "Implements the @function directive.",
   "repository": {
     "type": "git",
@@ -26,9 +26,9 @@
   "dependencies": {
     "cloudform-types": "^4.2.0",
     "graphql": "^15.5.0",
-    "graphql-mapping-template": "4.20.10",
-    "graphql-transformer-common": "4.24.8",
-    "graphql-transformer-core": "8.1.8"
+    "graphql-mapping-template": "4.20.11-test-tag-1.0",
+    "graphql-transformer-common": "4.25.0-test-tag-1.0",
+    "graphql-transformer-core": "8.1.9-test-tag-1.0"
   },
   "jest": {
     "transform": {

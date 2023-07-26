@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-test-tag-1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@0.0.7...@aws-amplify/graphql-transformer@0.1.0-test-tag-1.0) (2023-07-26)
+
+### Features
+
+- **graphql:** pull rds latest layer ([8325ef5](https://github.com/aws-amplify/amplify-category-api/commit/8325ef559b4bd5d86e9502bb1dc2cff833e7db0c))
+
 ## [0.0.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@0.0.6...@aws-amplify/graphql-transformer@0.0.7) (2023-07-17)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer

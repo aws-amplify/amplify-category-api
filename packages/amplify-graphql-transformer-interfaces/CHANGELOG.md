@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0-test-tag-1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@2.2.5...@aws-amplify/graphql-transformer-interfaces@2.3.0-test-tag-1.0) (2023-07-26)
+
+### Features
+
+- **graphql:** pull rds latest layer ([8325ef5](https://github.com/aws-amplify/amplify-category-api/commit/8325ef559b4bd5d86e9502bb1dc2cff833e7db0c))
+- **graphql:** vpc support for sql lambda ([9cc4407](https://github.com/aws-amplify/amplify-category-api/commit/9cc4407bdc4799fe548919808961911a3d5995c7))
+
 ## [2.2.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@2.2.4...@aws-amplify/graphql-transformer-interfaces@2.2.5) (2023-07-17)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces
