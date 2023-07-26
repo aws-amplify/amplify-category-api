@@ -83,7 +83,6 @@ function _setShell {
 function _buildLinux {
   _setShell
   echo "Linux Build"
-  codebuild-breakpoint
   yarn run production-build
   yarn build-tests
   storeCacheForBuildJob
