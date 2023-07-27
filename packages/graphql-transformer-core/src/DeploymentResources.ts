@@ -37,13 +37,10 @@ export interface NestedStacks {
   // All the nested stack templates.
   stacks: Record<string, Template>;
   // The full stack mapping for the deployment.
-  stackMapping: Record<string, string>;
+  stackMapping: StackMapping;
 }
 
 /**
  * The full set of resources needed for the deployment.
  */
-export interface DeploymentResources extends ResolversFunctionsAndSchema, NestedStacks {
-  // The full stack mapping for the deployment.
-  stackMapping: StackMapping;
-}
+export interface DeploymentResources extends ResolversFunctionsAndSchema, NestedStacks {}

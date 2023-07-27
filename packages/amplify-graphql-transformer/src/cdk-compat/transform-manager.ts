@@ -6,7 +6,7 @@ import { TransformerStackSythesizer } from './stack-synthesizer';
 import { TransformerNestedStack } from './nested-stack';
 import { TransformerRootStack } from './root-stack';
 import { AmplifyApiGraphQlResourceStackTemplate } from './amplify-api-resource-stack-types';
-import { FileAsset } from './file-asset';
+import { AmplifyS3Asset } from './amplify-s3-asset';
 
 export type OverrideConfig = {
   overrideFlag: boolean;
@@ -52,7 +52,7 @@ export class TransformManager {
 
   getAssetProvider(): AssetProvider {
     return {
-      provide: (scope: Construct, id: string, props: AssetProps): S3Asset => new FileAsset(scope, id, props),
+      provide: (scope: Construct, id: string, props: AssetProps): S3Asset => new AmplifyS3Asset(scope, id, props),
     };
   }
 
