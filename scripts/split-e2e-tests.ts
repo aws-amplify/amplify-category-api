@@ -36,7 +36,7 @@ const REPO_ROOT = join(__dirname, '..');
 const TEST_TIMINGS_PATH = join(REPO_ROOT, 'scripts', 'test-timings.data.json');
 const CODEBUILD_CONFIG_BASE_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_base.yml');
 const CODEBUILD_GENERATE_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow.yml');
-const CODEBUILD_DEBUG_CONFIG_PATH = join (REPO_ROOT, 'codebuild_specs', 'debug_workflow.yml')
+const CODEBUILD_DEBUG_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'debug_workflow.yml');
 const RUN_SOLO = [
   'src/__tests__/apigw.test.ts',
   'src/__tests__/api_2.test.ts',
@@ -306,10 +306,10 @@ function main(): void {
   let outputPath = CODEBUILD_GENERATE_CONFIG_PATH;
   let allBuilds = [...splitE2ETests, ...splitGqlTests, ...splitMigrationV5Tests, ...splitMigrationV6Tests, ...splitMigrationV10Tests];
   if (filteredTests.length > 0) {
-    allBuilds = allBuilds.filter(build => filteredTests.includes(build.identifier));
+    allBuilds = allBuilds.filter((build) => filteredTests.includes(build.identifier));
     if (filteredTests.includes(DEBUG_FLAG)) {
-      allBuilds = allBuilds.map(build => {
-        return { ...build, 'debug-session': true}
+      allBuilds = allBuilds.map((build) => {
+        return { ...build, 'debug-session': true };
       });
       outputPath = CODEBUILD_DEBUG_CONFIG_PATH;
     }
@@ -326,6 +326,6 @@ function main(): void {
   let currentBatch = [...baseBuildGraph, ...allBuilds, cleanupResources];
   configBase.batch['build-graph'] = currentBatch;
   saveConfig(configBase, outputPath);
-  console.log(`Successfully generated the buildspec at ${outputPath}`)
+  console.log(`Successfully generated the buildspec at ${outputPath}`);
 }
 main();
