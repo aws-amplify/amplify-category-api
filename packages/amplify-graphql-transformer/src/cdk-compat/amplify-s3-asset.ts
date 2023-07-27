@@ -9,7 +9,7 @@ export interface TemplateProps {
   readonly fileName: string;
 }
 
-export class FileAsset extends Construct implements cdk.IAsset {
+export class AmplifyS3Asset extends Construct implements cdk.IAsset {
   public readonly assetHash: string;
 
   public readonly httpUrl: string;

@@ -127,10 +127,6 @@ export type DBType = 'MySQL' | 'DDB';
 //
 // @public (undocumented)
 export interface DeploymentResources extends ResolversFunctionsAndSchema, NestedStacks {
-    // Warning: (ae-forgotten-export) The symbol "StackMapping_3" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    stackMapping: StackMapping_3;
 }
 
 // @public (undocumented)
