@@ -56,6 +56,7 @@
     "split-codebuild-e2e-tests": "yarn ts-node ./scripts/split-e2e-tests-codebuild.ts && git add codebuild_specs/e2e_workflow.yml",
     "release-codebuild": "source ./scripts/cloud-release.sh && release",
     "view-test-artifact": "./scripts/view-test-artifacts.sh",
+    "view-test-artifacts": "yarn ts-node --project ./scripts/tsconfig.json ./scripts/view-test-artifacts.ts",
     "cleanup-stale-resources": "source ./scripts/cloud-utils.sh && cleanupStaleResources",
     "depcheck": "eslint --no-eslintrc --config depcheck.config.js",
     "generate-debug-e2e-spec": "./scripts/generate-debug-spec-for-failed-e2e-tests.sh",
