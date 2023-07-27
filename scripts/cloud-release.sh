@@ -5,12 +5,19 @@ export RELEASE_PROFILE_NAME=AmplifyAPIPluginRelease
 export RELEASE_PROJECT_NAME=amplify-category-api-release-workflow
 
 function triggerRelease {
-  if [ -z "$1" ]
-  then
-    branch_name=$(git branch --show-current)
-  else
-    branch_name=$1
-  fi
   echo "Running release workflow from branch ${branch_name}"
+  triggerProjectBatch $RELEASE_ACCOUNT_PROD $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Prod" $RELEASE_PROJECT_NAME "release"
+}
+
+function triggerTagRelease {
+  branch_name=$(git branch --show-current)
+  echo "Running tag release workflow from branch ${branch_name}"
+
+  git fetch origin
+  if [ $(git rev-parse HEAD) != $(git rev-parse origin/${branch_name}) ]
+  then
+    echo "You have local commits on branch ${branch_name} that are not pushed to origin. Please push them before running the release workflow."
+    exit 1
+  fi
   triggerProjectBatch $RELEASE_ACCOUNT_PROD $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Prod" $RELEASE_PROJECT_NAME $branch_name
 }
