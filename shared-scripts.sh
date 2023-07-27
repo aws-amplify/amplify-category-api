@@ -105,12 +105,11 @@ function _verifyYarnLock {
 function _verifyCDKVersion {
   echo "Verify CDK Version"
   loadCacheFromBuildJob
-  yarn ts-node .circleci/validate_cdk_version.ts
+  yarn ts-node scripts/validate_cdk_version.ts
 }
 function _mockE2ETests {
   echo "Mock E2E Tests"
   loadCacheFromBuildJob
-  source .circleci/local_publish_helpers.sh
   cd packages/amplify-util-mock/
   yarn e2e
 }
@@ -142,7 +141,7 @@ function _publishToLocalRegistry {
     git fetch --tags https://github.com/aws-amplify/amplify-category-api
 
     source codebuild_specs/scripts/local_publish_helpers.sh
-    startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+    startLocalRegistry "$(pwd)/codebuild_specs/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     git config user.email not@used.com
     git config user.name "Doesnt Matter"
@@ -169,7 +168,7 @@ function _generateChangeLog {
 function _installCLIFromLocalRegistry {
     echo "Start verdaccio, install CLI"
     source codebuild_specs/scripts/local_publish_helpers.sh
-    startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+    startLocalRegistry "$(pwd)/codebuild_specs/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     # set longer timeout to avoid socket timeout error
@@ -268,7 +267,7 @@ function _cleanupE2EResources {
   echo "Running clean up script"
   build_batch_arn=$(aws codebuild batch-get-builds --ids $CODEBUILD_BUILD_ID | jq -r -c '.builds[0].buildBatchArn')
   echo "Cleanup resources for batch build $build_batch_arn"
-  yarn clean-cb-e2e-resources --buildBatchArn $build_batch_arn
+  yarn clean-e2e-resources --buildBatchArn $build_batch_arn
 }
 
 # The following functions are forked from circleci local publish helper

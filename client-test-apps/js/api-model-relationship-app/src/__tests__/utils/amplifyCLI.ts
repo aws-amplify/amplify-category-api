@@ -42,7 +42,7 @@ const setProjectFileTags = (projectPath: string, tags: Tag[]): void => {
 };
 
 const addCITags = (projectPath: string): void => {
-  if (process.env && (process.env['CIRCLECI'] || process.env['CODEBUILD'])) {
+  if (process.env && process.env['CODEBUILD']) {
     const tags = getProjectTags(projectPath);
 
     const addTagIfNotExist = (key: string, value: string): void => {
@@ -57,15 +57,7 @@ const addCITags = (projectPath: string): void => {
     const sanitizeTagValue = (value: string): string => {
       return value.replace(/[^ a-z0-9_.:/=+\-@]/gi, '');
     };
-    if (process.env['CIRCLECI']) {
-      addTagIfNotExist('circleci', sanitizeTagValue(process.env['CIRCLECI'] || 'N/A'));
-      addTagIfNotExist('circleci:branch', sanitizeTagValue(process.env['CIRCLE_BRANCH'] || 'N/A'));
-      addTagIfNotExist('circleci:sha1', sanitizeTagValue(process.env['CIRCLE_SHA1'] || 'N/A'));
-      addTagIfNotExist('circleci:workflow_id', sanitizeTagValue(process.env['CIRCLE_WORKFLOW_ID'] || 'N/A'));
-      addTagIfNotExist('circleci:build_id', sanitizeTagValue(process.env['CIRCLE_BUILD_NUM'] || 'N/A'));
-      addTagIfNotExist('circleci:build_url', sanitizeTagValue(process.env['CIRCLE_BUILD_URL'] || 'N/A'));
-      addTagIfNotExist('circleci:job', sanitizeTagValue(process.env['CIRCLE_JOB'] || 'N/A'));
-    } else if (process.env['CODEBUILD']) {
+    if (process.env['CODEBUILD']) {
       addTagIfNotExist('codebuild', sanitizeTagValue(process.env['CODEBUILD'] || 'N/A'));
       addTagIfNotExist('codebuild:batch_build_identifier', sanitizeTagValue(process.env['CODEBUILD_BATCH_BUILD_IDENTIFIER'] || 'N/A'));
       addTagIfNotExist('codebuild:build_id', sanitizeTagValue(process.env['CODEBUILD_BUILD_ID'] || 'N/A'));
@@ -165,7 +157,7 @@ const amplifyConfigure = (settings: AmplifyConfiguration): Promise<void> => {
     .runAsync();
 };
 
-const isCI = () => process.env.CI && (process.env.CIRCLECI || process.env.CODEBUILD);
+const isCI = () => process.env.CI && process.env.CODEBUILD;
 
  async function setupAmplify() {
   if (isCI()) {
