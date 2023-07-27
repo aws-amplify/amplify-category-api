@@ -6,7 +6,7 @@ import {
   SyncConfig,
   validateModelSchema,
 } from '@aws-amplify/graphql-transformer-core';
-import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, ListValueNode, NamedTypeNode, parse } from 'graphql';
+import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
 import { Template } from 'aws-cdk-lib/assertions';
 import {
@@ -87,6 +87,29 @@ describe('ModelTransformer: ', () => {
     parse(out.schema);
     expect(out.schema).toMatchSnapshot();
     expect(out.schema).toContain('input NonModelTypeInput');
+  });
+
+  it('id with non string type should require the field on create mutation', async () => {
+    const validSchema = `
+      type Task @model {
+          id: Int!
+          title: String!
+      }
+      `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    validateModelSchema(parse(out.schema));
+    const schema = parse(out.schema);
+    expect(out.schema).toMatchSnapshot();
+    const createTaskInput = getInputType(schema, 'CreateTaskInput');
+    expectFieldsOnInputType(createTaskInput!, ['id', 'title']);
+    const idField = createTaskInput!.fields!.find((f) => f.name.value === 'id');
+    expect(idField).toBeDefined();
+    expect(idField?.type.kind).toEqual('NonNullType');
   });
 
   it('should support custom query overrides', () => {
