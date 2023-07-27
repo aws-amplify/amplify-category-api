@@ -1,6 +1,6 @@
 /**
  * Usage: `yarn view-test-artifacts <buildBatchId>`
- * 
+ *
  * N.B. It is important to have your local environment configured for the correct codebuild account before running the script.
  * This script caches resources, but in the case the local resource state is out of sync, you may need to wipe the asset directory
  * that is printed when the script begins.
@@ -9,7 +9,7 @@
 import * as process from 'process';
 import * as path from 'path';
 import * as os from 'os';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CodeBuild, S3 } from 'aws-sdk';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -19,13 +19,7 @@ import execa from 'execa';
 const s3 = new S3();
 const progressBar = new SingleBar({}, Presets.shades_classic);
 
-type BuildStatus =
-  | 'FAILED'
-  | 'FAULT'
-  | 'IN_PROGRESS'
-  | 'STOPPED'
-  | 'SUCCEEDED'
-  | 'TIMED_OUT';
+type BuildStatus = 'FAILED' | 'FAULT' | 'IN_PROGRESS' | 'STOPPED' | 'SUCCEEDED' | 'TIMED_OUT';
 
 const buildStatusToIcon: Record<BuildStatus, string> = {
   FAILED: '❌',
@@ -58,7 +52,7 @@ const generateIndexFile = (directory: string, artifacts: TestArtifact[]): void =
     <td>${buildStatusToIcon[artifact.buildStatus]}[${artifact.buildStatus}]</td>
     <td>${artifact.artifactLocation ? `<a href="/${artifact.jobName}">Assets</a>` : ''}</td>
   </tr>`;
-    
+
   const fileContents = `<html>
 <head>
   <title>Test Artifacts</title>
@@ -92,11 +86,14 @@ const retrieveArtifactsForBatch = async (batchId: string): Promise<TestArtifact[
   const { buildBatches } = await codeBuild.batchGetBuildBatches({ ids: [batchId] }).promise();
   return (buildBatches || [])
     .flatMap((batch) =>
-      (batch.buildGroups || []).map((buildGroup) => ({
-        jobName: buildGroup.identifier,
-        buildStatus: buildGroup.currentBuildSummary?.buildStatus,
-        artifactLocation: buildGroup.currentBuildSummary?.primaryArtifact?.location,
-      }) as Partial<TestArtifact>),
+      (batch.buildGroups || []).map(
+        (buildGroup) =>
+          ({
+            jobName: buildGroup.identifier,
+            buildStatus: buildGroup.currentBuildSummary?.buildStatus,
+            artifactLocation: buildGroup.currentBuildSummary?.primaryArtifact?.location,
+          } as Partial<TestArtifact>),
+      ),
     )
     .filter(testArtifactIsComplete);
 };
@@ -114,16 +111,18 @@ const downloadSingleTestArtifact = async (tempDir: string, artifact: Required<Te
     throw new Error('Expected results');
   }
 
-  return Promise.all(listObjectsResponse.Contents.filter(hasKey).map(({ Key }) => {
-    const filePath = path.join(artifactDownloadPath, Key.split('/').pop()!);
-    return new Promise((resolve, reject) => {
-      const writer = fs.createWriteStream(filePath);
-      s3.getObject({ Bucket, Key }).createReadStream().pipe(writer);
-      writer.on('finish', resolve);
-      writer.on('close', resolve);
-      writer.on('error', reject);
-    });
-  }));
+  return Promise.all(
+    listObjectsResponse.Contents.filter(hasKey).map(({ Key }) => {
+      const filePath = path.join(artifactDownloadPath, Key.split('/').pop()!);
+      return new Promise((resolve, reject) => {
+        const writer = fs.createWriteStream(filePath);
+        s3.getObject({ Bucket, Key }).createReadStream().pipe(writer);
+        writer.on('finish', resolve);
+        writer.on('close', resolve);
+        writer.on('error', reject);
+      });
+    }),
+  );
 };
 
 /**
@@ -134,11 +133,13 @@ const downloadSingleTestArtifact = async (tempDir: string, artifact: Required<Te
  */
 const downloadTestArtifacts = async (tempDir: string, artifacts: Required<TestArtifact>[]): Promise<void> => {
   progressBar.start(artifacts.length, 0);
-  await Promise.all(artifacts.map(async (artifact) => {
-    await downloadSingleTestArtifact(tempDir, artifact);
-    progressBar.increment();
-    return;
-  }));
+  await Promise.all(
+    artifacts.map(async (artifact) => {
+      await downloadSingleTestArtifact(tempDir, artifact);
+      progressBar.increment();
+      return;
+    }),
+  );
   progressBar.stop();
 };
 
@@ -147,19 +148,21 @@ const inspectableStates = new Set<BuildStatus>(['FAILED', 'FAULT', 'TIMED_OUT'])
 /**
  * Explicitly remove artifact from assets we don't want to download.
  */
-const convertToArtifactForDownload = (artifact: TestArtifact): TestArtifact => inspectableStates.has(artifact.buildStatus)
-  ? artifact
-  : {
-    jobName: artifact.jobName,
-    buildStatus: artifact.buildStatus,
-  };
+const convertToArtifactForDownload = (artifact: TestArtifact): TestArtifact =>
+  inspectableStates.has(artifact.buildStatus)
+    ? artifact
+    : {
+        jobName: artifact.jobName,
+        buildStatus: artifact.buildStatus,
+      };
 
 const constructLocalState = async (dir: string, buildId: string): Promise<void> => {
   const artifacts = await retrieveArtifactsForBatch(buildId);
   const testsWithNonDownloadedArtifactsStripped = artifacts.map(convertToArtifactForDownload);
   generateIndexFile(dir, testsWithNonDownloadedArtifactsStripped);
-  const buildsWithArtifacts = testsWithNonDownloadedArtifactsStripped
-    .filter((artifact) => artifact.artifactLocation) as Required<TestArtifact>[];
+  const buildsWithArtifacts = testsWithNonDownloadedArtifactsStripped.filter(
+    (artifact) => artifact.artifactLocation,
+  ) as Required<TestArtifact>[];
   return downloadTestArtifacts(dir, buildsWithArtifacts);
 };
 
@@ -170,11 +173,10 @@ const main = async (buildId: string): Promise<void> => {
     }
     const assetDir = path.join(os.tmpdir(), 'test-artifacts', buildId.replace(':', ''));
     console.log(`Will download and serve assets from: ${assetDir}`);
-    if (!fs.existsSync(assetDir)) {
-      console.log('Retrieving and Downloading assets');
-      fs.mkdirSync(assetDir, { recursive: true });
-      await constructLocalState(assetDir, buildId);
-    }
+    fs.removeSync(assetDir);
+    console.log('Retrieving and Downloading assets');
+    fs.mkdirSync(assetDir, { recursive: true });
+    await constructLocalState(assetDir, buildId);
     await execa('npx', ['http-server', assetDir], { stdio: 'inherit' });
   } catch (e) {
     console.error(e);
