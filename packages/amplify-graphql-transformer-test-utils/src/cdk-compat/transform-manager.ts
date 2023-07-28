@@ -1,6 +1,12 @@
-import { App, Stack } from 'aws-cdk-lib';
+import { App, CfnParameter, CfnParameterProps, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import type { AssetProvider, NestedStackProvider, S3Asset, AssetProps } from '@aws-amplify/graphql-transformer-interfaces';
+import type {
+  AssetProvider,
+  NestedStackProvider,
+  S3Asset,
+  AssetProps,
+  ParameterManager,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { DeploymentResources, Template } from '../deployment-resources';
 import { TransformerStackSythesizer } from './stack-synthesizer';
 import { TransformerNestedStack } from './nested-stack';
@@ -18,13 +24,13 @@ export type OverrideConfig = {
  * and synthesizers, then provides mechanisms for synthesis.
  */
 export class TransformManager {
-  private readonly app: App;
+  private readonly app: App = new App();
   public readonly rootStack: TransformerRootStack;
   private readonly stackSynthesizer = new TransformerStackSythesizer();
   private readonly childStackSynthesizers: Map<string, TransformerStackSythesizer> = new Map();
+  private paramMap: Map<string, CfnParameter> = new Map();
 
   constructor(private readonly overrideConfig?: OverrideConfig) {
-    this.app = new App();
     this.rootStack = new TransformerRootStack(this.app, 'transformer-root-stack', {
       synthesizer: this.stackSynthesizer,
     });
@@ -53,6 +59,17 @@ export class TransformManager {
   getAssetProvider(): AssetProvider {
     return {
       provide: (scope: Construct, id: string, props: AssetProps): S3Asset => new FileAsset(scope, id, props),
+    };
+  }
+
+  getParameterManager(): ParameterManager {
+    return {
+      addParameter: (name: string, props: CfnParameterProps): CfnParameter => {
+        const param = new CfnParameter(this.rootStack, name, props);
+        this.paramMap.set(name, param);
+        return param;
+      },
+      getParameter: (name: string): CfnParameter | void => this.paramMap.get(name),
     };
   }
 

@@ -161,7 +161,7 @@ export class PredictionsTransformer extends TransformerPluginBase {
     }
 
     const stack: cdk.Stack = context.stackManager.createStack(PREDICTIONS_DIRECTIVE_STACK);
-    const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+    const env = context.parameterManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
     const createdResources = new Map<string, any>();
     const seenActions = new Set<string>();
     const role = new iam.Role(stack, PredictionsResourceIDs.iamRole, {
@@ -331,7 +331,7 @@ function createResolver(
   };
 
   if (referencesEnv(bucketName)) {
-    const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+    const env = context.parameterManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
     substitutions.env = env as unknown as string;
   }
   const requestTemplate = [
@@ -349,8 +349,8 @@ function createResolver(
     (mode) => mode?.authenticationType,
   );
   if (authModes.includes(AuthorizationType.IAM)) {
-    const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
-    const unauthRoleParameter = (context.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
+    const authRoleParameter = (context.parameterManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
+    const unauthRoleParameter = (context.parameterManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
     requestTemplate.push(
       `$util.qr($ctx.stash.put("authRole", "arn:aws:sts::${
         cdk.Stack.of(context.stackManager.scope).account
@@ -437,7 +437,7 @@ function removeEnvReference(value: string): string {
 }
 
 function joinWithEnv(context: TransformerContextProvider, separator: string, listToJoin: any[]): string {
-  const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+  const env = context.parameterManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
   return cdk.Fn.conditionIf(
     ResourceConstants.CONDITIONS.HasEnvironmentParameter,
     cdk.Fn.join(separator, [...listToJoin, env]),
@@ -539,7 +539,7 @@ function getStorageArn(context: TransformerContextProvider, bucketName: string):
   };
 
   if (referencesEnv(bucketName)) {
-    const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+    const env = context.parameterManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
     substitutions.env = env as unknown as string;
   }
 

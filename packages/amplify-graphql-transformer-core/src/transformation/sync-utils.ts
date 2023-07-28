@@ -3,7 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
 import {
-  StackManagerProvider,
+  ParameterManager,
   TransformerContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
@@ -109,7 +109,7 @@ export function getSyncConfig(ctx: TransformerTransformSchemaStepContextProvider
 
   if (syncConfig && isLambdaSyncConfig(syncConfig) && !syncConfig.LambdaConflictHandler.lambdaArn) {
     const { name, region } = syncConfig.LambdaConflictHandler;
-    const syncLambdaArn = syncLambdaArnResource(ctx.stackManager, name, region);
+    const syncLambdaArn = syncLambdaArnResource(ctx.parameterManager, name, region);
     syncConfig.LambdaConflictHandler.lambdaArn = syncLambdaArn;
   }
 
@@ -138,17 +138,17 @@ export function createSyncLambdaIAMPolicy(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['lambda:InvokeFunction'],
-        resources: [syncLambdaArnResource(context.stackManager, name, region)],
+        resources: [syncLambdaArnResource(context.parameterManager, name, region)],
       }),
     ],
   });
 }
 
-function syncLambdaArnResource(stackManager: StackManagerProvider, name: string, region?: string): string {
+function syncLambdaArnResource(parameterManager: ParameterManager, name: string, region?: string): string {
   const substitutions = {};
   if (referencesEnv(name)) {
     Object.assign(substitutions, {
-      env: stackManager.getParameter(ResourceConstants.PARAMETERS.Env),
+      env: parameterManager.getParameter(ResourceConstants.PARAMETERS.Env),
     });
   }
   return cdk.Fn.conditionIf(

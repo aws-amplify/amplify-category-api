@@ -1,4 +1,4 @@
-import { StackManagerProvider, NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { StackManagerProvider, NestedStackProvider, ParameterManager } from '@aws-amplify/graphql-transformer-interfaces';
 import { Stack, CfnParameter, CfnParameterProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
@@ -12,19 +12,12 @@ export class StackManager implements StackManagerProvider {
 
   private resourceToStackMap: Map<string, string>;
 
-  private paramMap: Map<string, CfnParameter> = new Map();
-
   constructor(
     public readonly scope: Construct,
     private readonly nestedStackProvider: NestedStackProvider,
     resourceMapping: ResourceToStackMap,
   ) {
-    // add Env Parameter to ensure to adhere to contract
     this.resourceToStackMap = new Map(Object.entries(resourceMapping));
-    this.addParameter('env', {
-      default: 'NONE',
-      type: 'String',
-    });
   }
 
   createStack = (stackName: string): Stack => {
@@ -52,12 +45,4 @@ export class StackManager implements StackManagerProvider {
     }
     throw new Error(`Stack ${stackName} is not created`);
   };
-
-  addParameter = (name: string, props: CfnParameterProps): CfnParameter => {
-    const param = new CfnParameter(this.scope, name, props);
-    this.paramMap.set(name, param);
-    return param;
-  };
-
-  getParameter = (name: string): CfnParameter | void => this.paramMap.get(name);
 }

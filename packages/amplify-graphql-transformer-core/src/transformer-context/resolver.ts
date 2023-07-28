@@ -370,8 +370,8 @@ export class TransformerResolver implements TransformerResolverProvider {
       (mode) => mode?.authenticationType === AuthorizationType.IAM,
     );
     if (hasIamAuth) {
-      const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
-      const unauthRoleParameter = (context.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
+      const authRoleParameter = (context.parameterManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
+      const unauthRoleParameter = (context.parameterManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
       /* eslint-disable indent */
       initResolver += dedent`\n
       $util.qr($ctx.stash.put("authRole", "arn:aws:sts::${

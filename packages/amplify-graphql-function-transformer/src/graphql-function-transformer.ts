@@ -65,7 +65,7 @@ export class FunctionTransformer extends TransformerPluginBase {
 
     const stack: cdk.Stack = context.stackManager.createStack(FUNCTION_DIRECTIVE_STACK);
     const createdResources = new Map<string, any>();
-    const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+    const env = context.parameterManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
 
     stack.templateOptions.templateFormatVersion = '2010-09-09';
     stack.templateOptions.description = 'An auto-generated nested stack for the @function directive.';
@@ -146,8 +146,8 @@ export class FunctionTransformer extends TransformerPluginBase {
           (mode) => mode?.authenticationType,
         );
         if (authModes.includes(AuthorizationType.IAM)) {
-          const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
-          const unauthRoleParameter = (context.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
+          const authRoleParameter = (context.parameterManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
+          const unauthRoleParameter = (context.parameterManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
           requestTemplate.push(
             qref(
               `$ctx.stash.put("authRole", "arn:aws:sts::${

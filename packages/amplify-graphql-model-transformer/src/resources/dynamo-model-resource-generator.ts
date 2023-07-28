@@ -25,28 +25,28 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
 
     if (this.isProvisioned()) {
       // add model related-parameters to the root stack
-      ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
+      ctx.parameterManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
         description: 'The number of read IOPS the table should support.',
         type: 'Number',
         default: 5,
       });
-      ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
+      ctx.parameterManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
         description: 'The number of write IOPS the table should support.',
         type: 'Number',
         default: 5,
       });
-      ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
+      ctx.parameterManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
         description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
         default: 'PAY_PER_REQUEST',
         allowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
       });
-      ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
+      ctx.parameterManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
         description: 'Whether to enable Point in Time Recovery on the table.',
         type: 'String',
         default: 'false',
         allowedValues: ['true', 'false'],
       });
-      ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
+      ctx.parameterManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
         description: 'Enable server side encryption powered by KMS.',
         type: 'String',
         default: 'true',
@@ -76,7 +76,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     const tableName = context.resourceHelper.generateTableName(def!.name.value);
 
     // Add parameters.
-    const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+    const env = context.parameterManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
     const readIops = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
       description: 'The number of read IOPS the table should support.',
       type: 'Number',

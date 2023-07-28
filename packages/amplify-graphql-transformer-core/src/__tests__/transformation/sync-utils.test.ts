@@ -7,7 +7,7 @@ describe('getSyncConfig', () => {
   const createMockContext = (resolverConfig: ResolverConfig): TransformerTransformSchemaStepContextProvider =>
     ({
       getResolverConfig: () => resolverConfig,
-      stackManager: {
+      parameterManager: {
         getParameter: (_: string) => jest.fn() as unknown as CfnParameter,
       },
     } as unknown as TransformerTransformSchemaStepContextProvider);

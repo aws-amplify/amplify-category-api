@@ -7,6 +7,7 @@ import { StackManagerProvider } from './stack-manager-provider';
 import { TransformerResourceHelperProvider } from './resource-resource-provider';
 import { TransformParameters } from './transform-parameters';
 import { TransformerResolversManagerProvider } from './transformer-resolver-provider';
+import { ParameterManager } from './parameter-manager';
 
 export interface TransformerContextMetadataProvider {
   set<T>(key: string, value: T): void;
@@ -27,6 +28,7 @@ export interface TransformerContextProvider {
   datasourceSecretParameterLocations: Map<string, TransformerSecrets>;
   output: TransformerContextOutputProvider;
   stackManager: StackManagerProvider;
+  parameterManager: ParameterManager;
   api: GraphQLAPIProvider;
   resourceHelper: TransformerResourceHelperProvider;
   authConfig: AppSyncAuthConfiguration;
@@ -47,6 +49,7 @@ export type TransformerBeforeStepContextProvider = Pick<
   | 'getResolverConfig'
   | 'authConfig'
   | 'stackManager'
+  | 'parameterManager'
 >;
 
 export type TransformerSchemaVisitStepContextProvider = Pick<
@@ -78,6 +81,7 @@ export type TransformerValidationStepContextProvider = Pick<
   | 'resourceHelper'
   | 'resolvers'
   | 'stackManager'
+  | 'parameterManager'
 >;
 
 export type TransformerPrepareStepContextProvider = TransformerValidationStepContextProvider;

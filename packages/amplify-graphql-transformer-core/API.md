@@ -14,8 +14,6 @@ import { AuthorizationConfig } from 'aws-cdk-lib/aws-appsync';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
-import { CfnParameter } from 'aws-cdk-lib';
-import { CfnParameterProps } from 'aws-cdk-lib';
 import { CfnResource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
@@ -49,6 +47,7 @@ import { NamedTypeNode } from 'graphql';
 import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeExtensionNode } from 'graphql';
+import { ParameterManager } from '@aws-amplify/graphql-transformer-interfaces';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { S3MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -211,7 +210,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "GraphQLApi" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    protected generateGraphQlApi(stackManager: StackManager, output: TransformerOutput): GraphQLApi;
+    protected generateGraphQlApi(stackManager: StackManagerProvider, parameterManager: ParameterManager, output: TransformerOutput): GraphQLApi;
     // (undocumented)
     getLogs(): TransformerLog[];
     // (undocumented)
@@ -219,7 +218,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "TransformOption" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    transform({ scope, nestedStackProvider, assetProvider, schema, datasourceConfig }: TransformOption): void;
+    transform({ scope, nestedStackProvider, assetProvider, parameterManager, schema, datasourceConfig }: TransformOption): void;
 }
 
 // @public (undocumented)
@@ -415,11 +414,7 @@ export class StackManager implements StackManagerProvider {
     // Warning: (ae-forgotten-export) The symbol "ResourceToStackMap" needs to be exported by the entry point index.d.ts
     constructor(scope: Construct, nestedStackProvider: NestedStackProvider, resourceMapping: ResourceToStackMap);
     // (undocumented)
-    addParameter: (name: string, props: CfnParameterProps) => CfnParameter;
-    // (undocumented)
     createStack: (stackName: string) => Stack;
-    // (undocumented)
-    getParameter: (name: string) => CfnParameter | void;
     // (undocumented)
     getScopeFor: (resourceId: string, defaultStackName?: string) => Construct;
     // (undocumented)

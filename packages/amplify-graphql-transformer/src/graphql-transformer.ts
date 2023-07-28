@@ -171,6 +171,7 @@ export const executeTransform = (config: ExecuteTransformConfig): DeploymentReso
       scope: transformManager.getTransformScope(),
       nestedStackProvider: transformManager.getNestedStackProvider(),
       assetProvider: transformManager.getAssetProvider(),
+      parameterManager: transformManager.getParameterManager(),
       schema,
       datasourceConfig: {
         modelToDatasourceMap,
