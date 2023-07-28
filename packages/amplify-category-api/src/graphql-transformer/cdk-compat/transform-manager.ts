@@ -7,7 +7,7 @@ import type {
   AssetProps,
   ParameterManager,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DeploymentResources, Template } from '../deployment-resources';
+import { DeploymentResources, Template } from './deployment-resources';
 import { TransformerStackSythesizer } from './stack-synthesizer';
 import { TransformerNestedStack } from './nested-stack';
 import { TransformerRootStack } from './root-stack';

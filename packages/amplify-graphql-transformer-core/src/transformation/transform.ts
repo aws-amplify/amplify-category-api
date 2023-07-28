@@ -77,7 +77,6 @@ export interface GraphQLTransformOptions {
   readonly stackMapping?: StackMapping;
   // transform config which can change the behavior of the transformer
   readonly authConfig?: AppSyncAuthConfiguration;
-  readonly stacks?: Record<string, any>;
   readonly transformParameters?: Partial<TransformParameters>;
   readonly host?: TransformHostProvider;
   readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;

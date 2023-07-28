@@ -1,6 +1,5 @@
 import { GraphQLClient } from './utils/graphql-client';
-import { executeTransform } from '@aws-amplify/graphql-transformer';
-import { defaultTransformParams, deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
+import { defaultTransformParams, deploy, launchDDBLocal, logDebug, terminateDDB, transformAndSynth } from './utils/index';
 
 let graphqlClient;
 let server;
@@ -17,7 +16,7 @@ beforeAll(async () => {
     }
     `;
   try {
-    const out = executeTransform({
+    const out = transformAndSynth({
       ...defaultTransformParams,
       schema: validSchema,
       transformParameters: {

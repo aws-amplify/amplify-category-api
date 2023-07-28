@@ -19,7 +19,6 @@ import _ from 'lodash';
 import { printer } from '@aws-amplify/amplify-prompts';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
 import { Construct } from 'constructs';
-import { OverrideConfig } from '@aws-amplify/graphql-transformer/lib/cdk-compat/transform-manager';
 import { contextUtil } from '../category-utils/context-util';
 import { shouldEnableNodeToNodeEncryption } from '../provider-utils/awscloudformation/current-backend-state/searchable-node-to-node-encryption';
 import { getAdminRoles, getIdentityPoolId } from './utils';
@@ -31,6 +30,7 @@ import { TransformerProjectOptions } from './transformer-options-types';
 import { searchablePushChecks } from './api-utils';
 import { parseUserDefinedSlots } from './user-defined-slots';
 import { applyFileBasedOverride } from './override';
+import { OverrideConfig } from './cdk-compat/transform-manager';
 
 export const APPSYNC_RESOURCE_SERVICE = 'AppSync';
 

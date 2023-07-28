@@ -8,7 +8,7 @@ import {
   HttpsDirectiveStack,
   OpenSearchDirectiveStack,
   ModelDirectiveStack,
-} from '@aws-amplify/graphql-transformer/lib/cdk-compat/amplify-api-resource-stack-types';
+} from '../cdk-compat/amplify-api-resource-stack-types';
 import { ConstructResourceMeta } from './types';
 
 export const stacksTypes: Record<string, string> = {

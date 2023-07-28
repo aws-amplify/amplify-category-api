@@ -5,9 +5,11 @@
 ```ts
 
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import type { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
+import { CfnElement } from 'aws-cdk-lib';
 import { CfnEventSourceMapping } from 'aws-cdk-lib/aws-lambda';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
@@ -20,8 +22,12 @@ import { CfnStack } from 'aws-cdk-lib';
 import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { DatasourceType } from '@aws-amplify/graphql-transformer-core';
+import { ISynthesisSession } from 'aws-cdk-lib';
+import type { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import type { ParameterManager } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
+import { Stack } from 'aws-cdk-lib';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
@@ -129,7 +135,6 @@ export type TestTransformParameters = {
     transformParameters?: Partial<TransformParameters>;
     resolverConfig?: ResolverConfig;
     authConfig?: AppSyncAuthConfiguration;
-    stacks?: Record<string, Template>;
     userDefinedSlots?: Record<string, UserDefinedSlot[]>;
     stackMapping?: Record<string, string>;
     modelToDatasourceMap?: Map<string, DatasourceType>;
@@ -137,9 +142,28 @@ export type TestTransformParameters = {
     overrideConfig?: OverrideConfig;
 };
 
+// @public (undocumented)
+export class TransformManager {
+    constructor(overrideConfig?: OverrideConfig | undefined);
+    // (undocumented)
+    generateDeploymentResources(): DeploymentResources;
+    // (undocumented)
+    getAssetProvider(): AssetProvider;
+    // (undocumented)
+    getNestedStackProvider(): NestedStackProvider;
+    // (undocumented)
+    getParameterManager(): ParameterManager;
+    // (undocumented)
+    getTransformScope(): Construct;
+    // Warning: (ae-forgotten-export) The symbol "TransformerRootStack" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    readonly rootStack: TransformerRootStack;
+}
+
 // Warnings were encountered during analysis:
 //
-// src/test-transform.ts:24:3 - (ae-forgotten-export) The symbol "OverrideConfig" needs to be exported by the entry point index.d.ts
+// src/test-transform.ts:23:3 - (ae-forgotten-export) The symbol "OverrideConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

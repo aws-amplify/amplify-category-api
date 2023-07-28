@@ -3,10 +3,12 @@
  */
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
-import { ResolverConfig, TransformerProjectConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
+import { ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import { DiffRule, ProjectRule } from 'graphql-transformer-core';
-import { Template, TransformerFactoryArgs } from '@aws-amplify/graphql-transformer';
-import { OverrideConfig } from '@aws-amplify/graphql-transformer/lib/cdk-compat/transform-manager';
+import { TransformerFactoryArgs } from '@aws-amplify/graphql-transformer';
+import { Template } from './cdk-compat/deployment-resources';
+import { TransformerProjectConfig } from './cdk-compat/project-config';
+import { OverrideConfig } from './cdk-compat/transform-manager';
 
 /**
  * Transformer Options used to create a GraphQL Transform and compile a GQL API

@@ -7,7 +7,6 @@ import {
   VpcConfig,
   RDSLayerMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer';
 import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { sanityCheckProject } from 'graphql-transformer-core';
@@ -28,6 +27,8 @@ import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, 
 import { printer } from '@aws-amplify/amplify-prompts';
 import { getHostVpc } from '@aws-amplify/graphql-schema-generator';
 import fetch from 'node-fetch';
+import { DeploymentResources } from './cdk-compat/deployment-resources';
+import { TransformManager } from './cdk-compat/transform-manager';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
@@ -193,8 +194,14 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
   }
   const rdsLayerMapping = await getRDSLayerMapping();
 
-  const transformOutput = executeTransform({
+  const transformManager = new TransformManager(opts.overrideConfig);
+
+  executeTransform({
     ...opts,
+    scope: transformManager.rootStack,
+    nestedStackProvider: transformManager.getNestedStackProvider(),
+    assetProvider: transformManager.getAssetProvider(),
+    parameterManager: transformManager.getParameterManager(),
     schema,
     modelToDatasourceMap: opts.projectConfig.modelToDatasourceMap,
     datasourceSecretParameterLocations: datasourceSecretMap,
@@ -202,6 +209,8 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
     sqlLambdaVpcConfig,
     rdsLayerMapping,
   });
+
+  const transformOutput = transformManager.generateDeploymentResources();
 
   const builtProject = mergeUserConfigWithTransformOutput(opts.projectConfig, transformOutput, opts);
 

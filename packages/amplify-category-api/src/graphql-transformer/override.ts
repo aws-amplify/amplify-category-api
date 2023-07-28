@@ -7,7 +7,7 @@ import { Construct } from 'constructs';
 import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { ConstructResourceMeta } from './types/types';
 import { convertToAppsyncResourceObj, getStackMeta } from './types/utils';
-import { AmplifyApiGraphQlResourceStackTemplate } from '@aws-amplify/graphql-transformer';
+import { AmplifyApiGraphQlResourceStackTemplate } from './cdk-compat/amplify-api-resource-stack-types';
 
 /**
  *
