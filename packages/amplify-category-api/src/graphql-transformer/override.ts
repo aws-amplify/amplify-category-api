@@ -1,7 +1,6 @@
-import * as path from 'path';
 import { CfnResource } from 'aws-cdk-lib';
 import * as fs from 'fs-extra';
-import * as vm from 'vm2';
+import * as path from 'path';
 import _ from 'lodash';
 import { pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { Construct } from 'constructs';
@@ -63,18 +62,6 @@ export function applyFileBasedOverride(scope: Construct, overrideDirPath?: strin
   });
 
   const appsyncResourceObj = convertToAppsyncResourceObj(amplifyApiObj);
-  const overrideCode: string = fs.readFileSync(overrideFilePath, 'utf-8');
-  const sandboxNode = new vm.NodeVM({
-    console: 'inherit',
-    timeout: 5000,
-    sandbox: {},
-    require: {
-      context: 'sandbox',
-      builtin: ['path'],
-      external: true,
-    },
-  });
-  // Remove these when moving override up to amplify-category-api level
   const { envName } = stateManager.getLocalEnvInfo();
   const { projectName } = stateManager.getProjectConfig();
   const projectInfo = {
@@ -82,7 +69,17 @@ export function applyFileBasedOverride(scope: Construct, overrideDirPath?: strin
     projectName,
   };
   try {
-    sandboxNode.run(overrideCode, overrideFilePath).override(appsyncResourceObj, projectInfo);
+    // TODO: Invoke `runOverride` from CLI core once core refactor is done, and
+    // this function can become async https://github.com/aws-amplify/amplify-cli/blob/7bc0b5654a585104a537c1a3f9615bd672435b58/packages/amplify-cli-core/src/overrides-manager/override-runner.ts#L4
+    // before importing the override file, we should clear the require cache to avoid
+    // importing an outdated version of the override file
+    // see: https://github.com/nodejs/modules/issues/307
+    // and https://stackoverflow.com/questions/9210542/node-js-require-cache-possible-to-invalidate
+    delete require.cache[require.resolve(overrideFilePath)];
+    const overrideImport = require(overrideFilePath);
+    if (overrideImport && overrideImport?.override && typeof overrideImport?.override === 'function') {
+      overrideImport.override(appsyncResourceObj, projectInfo);
+    }
   } catch (err) {
     throw new InvalidOverrideError(err);
   }

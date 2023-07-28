@@ -18,7 +18,7 @@ import { ModelDirectiveConfiguration } from '../../directive';
  * Generate mapping template that sets default values for create mutation
  * @param modelConfig directive configuration
  */
-export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfiguration): string => {
+export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfiguration, initializeIdField: boolean): string => {
   const statements: Expression[] = [
     // initialize defaultValues
     qref(
@@ -32,7 +32,9 @@ export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
 
   if (modelConfig?.timestamps) {
     statements.push(set(ref('createdAt'), methodCall(ref('util.time.nowISO8601'))));
-    statements.push(qref(methodCall(ref('ctx.stash.defaultValues.put'), str('id'), methodCall(ref('util.autoId')))));
+    if (initializeIdField) {
+      statements.push(qref(methodCall(ref('ctx.stash.defaultValues.put'), str('id'), methodCall(ref('util.autoId')))));
+    }
     if (modelConfig.timestamps.createdAt) {
       statements.push(qref(methodCall(ref('ctx.stash.defaultValues.put'), str(modelConfig.timestamps.createdAt), ref('createdAt'))));
     }
@@ -51,8 +53,8 @@ export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
   return printBlock('Initialization default values')(compoundExpression(statements));
 };
 
-export const generateLambdaCreateRequestTemplate = (tableName: string, operationName: string): string => {
-  return printBlock('Invoke RDS Lambda data source')(
+export const generateLambdaCreateRequestTemplate = (tableName: string, operationName: string): string =>
+  printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
       set(ref('lambdaInput.table'), str(tableName)),
@@ -77,7 +79,6 @@ export const generateLambdaCreateRequestTemplate = (tableName: string, operation
       }),
     ]),
   );
-};
 
 /**
  * Generate VTL template that sets the default values for Update mutation
@@ -114,8 +115,8 @@ export const generateUpdateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
 /**
  * Generate VTL template that calls the lambda for an Update mutation
  */
-export const generateLambdaUpdateRequestTemplate = (tableName: string, operationName: string, modelIndexFields: string[]) => {
-  return printBlock('Invoke RDS Lambda data source')(
+export const generateLambdaUpdateRequestTemplate = (tableName: string, operationName: string, modelIndexFields: string[]): string =>
+  printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
       set(ref('lambdaInput.table'), str(tableName)),
@@ -133,6 +134,7 @@ export const generateLambdaUpdateRequestTemplate = (tableName: string, operation
       qref(
         methodCall(ref('lambdaInput.args.input.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments.input'), obj({}))),
       ),
+      set(ref('lambdaInput.args.condition'), methodCall(ref('util.defaultIfNull'), ref('context.arguments.condition'), obj({}))),
       obj({
         version: str('2018-05-29'),
         operation: str('Invoke'),
@@ -140,13 +142,12 @@ export const generateLambdaUpdateRequestTemplate = (tableName: string, operation
       }),
     ]),
   );
-};
 
 /**
  * Generate VTL template that calls the lambda for a Delete mutation
  */
-export const generateLambdaDeleteRequestTemplate = (tableName: string, operationName: string, modelIndexFields: string[]) => {
-  return printBlock('Invoke RDS Lambda data source')(
+export const generateLambdaDeleteRequestTemplate = (tableName: string, operationName: string, modelIndexFields: string[]): string =>
+  printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
       set(ref('lambdaInput.table'), str(tableName)),
@@ -158,6 +159,7 @@ export const generateLambdaDeleteRequestTemplate = (tableName: string, operation
       qref(
         methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
       ),
+      set(ref('lambdaInput.args.condition'), methodCall(ref('util.defaultIfNull'), ref('context.arguments.condition'), obj({}))),
       obj({
         version: str('2018-05-29'),
         operation: str('Invoke'),
@@ -165,4 +167,3 @@ export const generateLambdaDeleteRequestTemplate = (tableName: string, operation
       }),
     ]),
   );
-};

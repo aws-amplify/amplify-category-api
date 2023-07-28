@@ -3,27 +3,24 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
 import _ from 'lodash';
-import {
-  ImportedRDSType,
-  RDS_SCHEMA_FILE_NAME,
-  ImportedDataSourceConfig,
-  RDSConnectionSecrets,
-} from '@aws-amplify/graphql-transformer-core';
+import { ImportedRDSType, RDS_SCHEMA_FILE_NAME, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
 import { databaseConfigurationInputWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/import-appsync-api-walkthrough';
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import {
-  getExistingConnectionSecrets,
   storeConnectionSecrets,
   getSecretsKey,
   getDatabaseName,
-} from '../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
+  getConnectionSecrets,
+} from '../../provider-utils/awscloudformation/utils/rds-resources/database-resources';
 import { writeSchemaFile, generateRDSSchema } from '../../provider-utils/awscloudformation/utils/graphql-schema-utils';
+import { PREVIEW_BANNER } from '../../category-constants';
 
 const subcommand = 'generate-schema';
 
 export const name = subcommand;
 
 export const run = async (context: $TSContext) => {
+  printer.warn(PREVIEW_BANNER);
   const apiName = getAppSyncAPIName();
   const apiResourceDir = getAPIResourceDir(apiName);
 
@@ -36,7 +33,7 @@ export const run = async (context: $TSContext) => {
   }
 
   const engine = ImportedRDSType.MYSQL;
-  const secretsKey = await getSecretsKey();
+  const secretsKey = getSecretsKey();
   const database = await getDatabaseName(context, apiName, secretsKey);
   if (!database) {
     printer.error(
@@ -46,10 +43,10 @@ export const run = async (context: $TSContext) => {
   }
 
   // read and validate the RDS connection secrets
-  const { secrets, storeSecrets } = await getConnectionSecrets(context, apiName, secretsKey, engine);
+  const { secrets, storeSecrets } = await getConnectionSecrets(context, secretsKey, engine);
   const databaseConfig: ImportedDataSourceConfig = {
     ...secrets,
-    engine: engine,
+    engine,
   };
 
   const schemaString = await generateRDSSchema(context, databaseConfig, pathToSchemaFile);
@@ -63,25 +60,4 @@ export const run = async (context: $TSContext) => {
     printer.warn('If your schema file is empty, it is likely that your database has no tables.');
   }
   printer.info(`Successfully imported the schema definition for ${databaseConfig.database} database into ${pathToSchemaFile}`);
-};
-
-const getConnectionSecrets = async (
-  context: $TSContext,
-  apiName: string,
-  secretsKey: string,
-  engine: ImportedRDSType,
-): Promise<{ secrets: RDSConnectionSecrets; storeSecrets: boolean }> => {
-  const existingSecrets = await getExistingConnectionSecrets(context, secretsKey, apiName);
-  if (existingSecrets) {
-    return {
-      secrets: existingSecrets,
-      storeSecrets: false,
-    };
-  }
-
-  const databaseConfig: ImportedDataSourceConfig = await databaseConfigurationInputWalkthrough(engine);
-  return {
-    secrets: databaseConfig,
-    storeSecrets: true,
-  };
 };

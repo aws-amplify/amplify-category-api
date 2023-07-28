@@ -1,4 +1,4 @@
-import { ConflictHandlerType, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType, DatasourceType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
 import { Template } from 'aws-cdk-lib/assertions';
@@ -1486,5 +1486,31 @@ describe('ModelTransformer: ', () => {
     expectFieldsOnInputType(updateTodoInput!, ['id']);
     const updateTodoIdField = getFieldOnInputType(updateTodoInput!, 'id');
     expect(updateTodoIdField.type.kind).toBe('NonNullType');
+  });
+
+  it('should successfully transform simple rds valid schema', async () => {
+    const validSchema = `
+      type Post @model {
+          id: ID!
+          title: String!
+      }
+    `;
+
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer()],
+      modelToDatasourceMap: new Map(
+        Object.entries({
+          Post: {
+            dbType: 'MySQL',
+            provisionDB: false,
+          },
+        }),
+      ),
+    });
+    expect(out).toBeDefined();
+
+    validateModelSchema(parse(out.schema));
+    parse(out.schema);
   });
 });

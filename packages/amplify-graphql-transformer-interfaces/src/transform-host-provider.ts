@@ -17,6 +17,7 @@ import {
   DataSourceOptions,
   SearchableDataSourceOptions,
   MappingTemplateProvider,
+  VpcConfig,
 } from './graphql-api-provider';
 
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
@@ -71,6 +72,7 @@ export interface TransformHostProvider {
     environment?: { [key: string]: string },
     timeout?: Duration,
     scope?: Construct,
+    vpc?: VpcConfig,
   ) => IFunction;
 
   getDataSource: (name: string) => BaseDataSource | void;

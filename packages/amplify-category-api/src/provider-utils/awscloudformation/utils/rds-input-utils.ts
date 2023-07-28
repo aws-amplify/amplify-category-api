@@ -50,7 +50,7 @@ export const constructDefaultGlobalAmplifyInput = async (
       } \n`,
     '',
   );
-  return `input Amplify {\n${inputsString}}\n`;
+  return `input AMPLIFY {\n${inputsString}}\n`;
 };
 
 export const readRDSGlobalAmplifyInput = async (pathToSchemaFile: string): Promise<InputObjectTypeDefinitionNode | undefined> => {
@@ -65,7 +65,7 @@ export const readRDSGlobalAmplifyInput = async (pathToSchemaFile: string): Promi
   const parsedSchema = parse(schemaContent);
 
   const inputNode = parsedSchema.definitions.find(
-    (definition) => definition.kind === 'InputObjectTypeDefinition' && definition.name && definition.name.value === 'Amplify',
+    (definition) => definition.kind === 'InputObjectTypeDefinition' && definition.name && definition.name.value === 'AMPLIFY',
   );
 
   if (inputNode) {

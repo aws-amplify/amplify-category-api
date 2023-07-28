@@ -33,11 +33,14 @@ class TestDataSourceAdapter extends DataSourceAdapter {
   public cleanup(): void {
     // Do Nothing
   }
+  public async test(): Promise<boolean> {
+    return true;
+  }
 }
 
 describe('testDataSourceAdapter', () => {
   it('getModels call the default implementation', async () => {
-    let adapter: DataSourceAdapter = new TestDataSourceAdapter();
+    const adapter: DataSourceAdapter = new TestDataSourceAdapter();
     adapter.getTablesList = jest.fn(async () => ['Test']);
     adapter.getFields = jest.fn(async () => []);
     adapter.getPrimaryKey = jest.fn();

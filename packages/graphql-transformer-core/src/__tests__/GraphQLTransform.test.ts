@@ -2,7 +2,7 @@ import { ObjectTypeDefinitionNode, DirectiveNode, parse } from 'graphql';
 import { GraphQLTransform } from '../GraphQLTransform';
 import { TransformerContext } from '../TransformerContext';
 import { Transformer } from '../Transformer';
-import { getDirectiveArguments, gql } from '../util';
+import { getDirectiveArguments, gql, removeAmplifyInput } from '../util';
 
 class ValidObjectTransformer extends Transformer {
   constructor() {
@@ -111,4 +111,14 @@ test('Test graphql transformer returns correct number of arguments from directiv
   const map: any = getDirectiveArguments(def.directives[0]);
   expect(map).not.toBeNull();
   expect(Object.keys(map)).toEqual(expect.arrayContaining(['mutations', 'queries']));
+});
+
+test('Remove amplify input should work', () => {
+  const { schema } = removeAmplifyInput(`
+    input AMPLIFY {
+      globalAuthRule: AuthRule = { allow: public }
+    }
+    type Post @model { id: ID! }
+  `);
+  expect(schema).toMatchSnapshot();
 });
