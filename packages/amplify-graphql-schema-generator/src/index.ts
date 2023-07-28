@@ -1,4 +1,4 @@
-export * from './schema-representation';
 export * from './datasource-adapter';
 export * from './schema-generator';
-// No-op change to trigger publish
+export * from './utils';
+export * from './schema-representation';

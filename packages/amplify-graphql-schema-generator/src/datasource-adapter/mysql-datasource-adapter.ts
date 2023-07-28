@@ -1,8 +1,11 @@
 import { knex } from 'knex';
 import { printer } from '@aws-amplify/amplify-prompts';
+import { invokeSchemaInspectorLambda } from '../utils/vpc-helper';
+import ora from 'ora';
 import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
 import { DataSourceAdapter } from './datasource-adapter';
 
+const spinner = ora();
 export interface MySQLDataSourceConfig {
   host: string;
   port: number;
@@ -46,10 +49,27 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     super();
   }
 
+  public async test(): Promise<boolean> {
+    const TEST_QUERY = 'SELECT 1';
+    try {
+      await this.dbBuilder.raw(TEST_QUERY);
+    } catch (error) {
+      return false;
+    }
+    return true;
+  }
+
   public async initialize(): Promise<void> {
-    await this.establishDBConnection();
-    await this.loadAllFields();
-    await this.loadAllIndexes();
+    spinner.start('Fetching the database schema...');
+    try {
+      await this.establishDBConnection();
+      await this.loadAllFields();
+      await this.loadAllIndexes();
+    } catch (error) {
+      spinner.fail('Failed to fetch the database schema.');
+      throw error;
+    }
+    spinner.succeed('Successfully fetched the database schema.');
   }
 
   private establishDBConnection() {
@@ -83,14 +103,17 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
   }
 
   public async getTablesList(): Promise<string[]> {
-    const result = (await this.dbBuilder.raw('SHOW TABLES'))[0];
+    const SHOW_TABLES_QUERY = 'SHOW TABLES';
+    const result =
+      this.useVPC && this.vpcSchemaInspectorLambda
+        ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, SHOW_TABLES_QUERY, this.vpcLambdaRegion)
+        : (await this.dbBuilder.raw(SHOW_TABLES_QUERY))[0];
 
     const tables: string[] = result.map((row: any) => {
       const [firstKey] = Object.keys(row);
       const tableName = row[firstKey];
       return tableName;
     });
-
     return tables;
   }
 
@@ -124,41 +147,49 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
   }
 
   private async loadAllFields(): Promise<void> {
-    this.fields = [];
     // Query INFORMATION_SCHEMA.COLUMNS table and load fields of all the tables from the database
-    const columnResult = (
-      await this.dbBuilder.raw(`SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '${this.config.database}'`)
-    )[0];
-    this.fields = columnResult.map((item: any) => {
-      return {
-        tableName: item['TABLE_NAME'],
-        columnName: item['COLUMN_NAME'],
-        default: item['COLUMN_DEFAULT'],
-        sequence: item['ORDINAL_POSITION'],
-        datatype: item['DATA_TYPE'],
-        columnType: item['COLUMN_TYPE'],
-        nullable: item['IS_NULLABLE'] === 'YES',
-        length: item['CHARACTER_MAXIMUM_LENGTH'],
-      };
-    });
+    const LOAD_FIELDS_QUERY = `SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '${this.config.database}'`;
+    this.fields = [];
+    const columnResult =
+      this.useVPC && this.vpcSchemaInspectorLambda
+        ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, LOAD_FIELDS_QUERY, this.vpcLambdaRegion)
+        : (await this.dbBuilder.raw(LOAD_FIELDS_QUERY))[0];
+    this.setFields(columnResult);
+  }
+
+  private setFields(fields: any): void {
+    this.fields = fields.map((item: any) => ({
+      tableName: item.TABLE_NAME,
+      columnName: item.COLUMN_NAME,
+      default: item.COLUMN_DEFAULT,
+      sequence: item.ORDINAL_POSITION,
+      datatype: item.DATA_TYPE,
+      columnType: item.COLUMN_TYPE,
+      nullable: item.IS_NULLABLE === 'YES',
+      length: item.CHARACTER_MAXIMUM_LENGTH,
+    }));
   }
 
   private async loadAllIndexes(): Promise<void> {
-    this.indexes = [];
     // Query INFORMATION_SCHEMA.STATISTICS table and load indexes of all the tables from the database
-    const indexResult = (
-      await this.dbBuilder.raw(`SELECT * FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = '${this.config.database}'`)
-    )[0];
-    this.indexes = indexResult.map((item: any) => {
-      return {
-        tableName: item['TABLE_NAME'],
-        indexName: item['INDEX_NAME'],
-        nonUnique: item['NON_UNIQUE'],
-        columnName: item['COLUMN_NAME'],
-        sequence: item['SEQ_IN_INDEX'],
-        nullable: item['NULLABLE'] === 'YES' ? true : false,
-      };
-    });
+    const LOAD_INDEXES_QUERY = `SELECT * FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = '${this.config.database}'`;
+    this.indexes = [];
+    const indexResult =
+      this.useVPC && this.vpcSchemaInspectorLambda
+        ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, LOAD_INDEXES_QUERY, this.vpcLambdaRegion)
+        : (await this.dbBuilder.raw(LOAD_INDEXES_QUERY))[0];
+    this.setIndexes(indexResult);
+  }
+
+  private setIndexes(indexes: any): void {
+    this.indexes = indexes.map((item: any) => ({
+      tableName: item.TABLE_NAME,
+      indexName: item.INDEX_NAME,
+      nonUnique: item.NON_UNIQUE,
+      columnName: item.COLUMN_NAME,
+      sequence: item.SEQ_IN_INDEX,
+      nullable: item.NULLABLE === 'YES',
+    }));
   }
 
   public async getPrimaryKey(tableName: string): Promise<Index | null> {

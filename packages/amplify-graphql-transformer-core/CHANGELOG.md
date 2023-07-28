@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@1.3.8...@aws-amplify/graphql-transformer-core@1.4.0) (2023-07-21)
+
+### Features
+
+- **graphql:** pull rds latest layer ([8325ef5](https://github.com/aws-amplify/amplify-category-api/commit/8325ef559b4bd5d86e9502bb1dc2cff833e7db0c))
+- **graphql:** vpc support for sql lambda ([9cc4407](https://github.com/aws-amplify/amplify-category-api/commit/9cc4407bdc4799fe548919808961911a3d5995c7))
+
 ## [1.3.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@1.3.7...@aws-amplify/graphql-transformer-core@1.3.8) (2023-07-17)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-core

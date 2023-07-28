@@ -3,6 +3,7 @@ import {
   MappingTemplateProvider,
   SearchableDataSourceOptions,
   TransformHostProvider,
+  VpcConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   BaseDataSource,
@@ -246,6 +247,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     environment?: { [key: string]: string },
     timeout?: Duration,
     scope?: Construct,
+    vpc?: VpcConfig,
   ): IFunction => {
     const dummyCode = 'if __name__ == "__main__":'; // assing dummy code so as to be overriden later
     const fn = new Function(scope || this.api, functionName, {
@@ -258,16 +260,25 @@ export class DefaultTransformHost implements TransformHostProvider {
       timeout,
     });
     fn.addLayers();
+    const cfnFn = fn.node.defaultChild as CfnFunction;
     const functionCode = new S3MappingFunctionCode(functionKey, filePath).bind(fn);
-    (fn.node.defaultChild as CfnFunction).code = {
+    cfnFn.code = {
       s3Key: functionCode.s3ObjectKey,
       s3Bucket: functionCode.s3BucketName,
     };
+
+    if (vpc?.vpcId) {
+      cfnFn.vpcConfig = {
+        subnetIds: vpc?.subnetIds,
+        securityGroupIds: vpc?.securityGroupIds,
+      };
+    }
+
     return fn;
   };
 
   /**
-   * Add a new NONE data source to the api
+   * Adds NONE DS to the API
    * @param id The data source's id
    * @param options optional configuration for data source
    * @param scope cdk scope to which this datasource needs to mapped to

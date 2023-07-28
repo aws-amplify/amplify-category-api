@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.25.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.24.8...graphql-transformer-common@4.25.0) (2023-07-21)
+
+### Features
+
+- **graphql:** patching rds lambda layer ([a751fcb](https://github.com/aws-amplify/amplify-category-api/commit/a751fcbe75daf1fd8a1ce37b97379ad6ca3d6cec))
+
 ## [4.24.8](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.24.7...graphql-transformer-common@4.24.8) (2023-07-17)
 
 **Note:** Version bump only for package graphql-transformer-common

@@ -1,11 +1,11 @@
 import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import { getParameterStoreSecretPath } from '@aws-amplify/graphql-transformer-core';
-import { getExistingConnectionSecrets } from '../../../../../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
+import { getExistingConnectionSecrets } from '../../../../../provider-utils/awscloudformation/utils/rds-resources/database-resources';
 
 const mockDatabase = 'mockdatabase';
 const mockAPIName = 'mockapi';
 
-jest.mock('../../../../../provider-utils/awscloudformation/utils/rds-secrets/ssmClient', () => ({
+jest.mock('../../../../../provider-utils/awscloudformation/utils/rds-resources/ssmClient', () => ({
   SSMClient: {
     getInstance: jest.fn().mockResolvedValue({
       getSecrets: jest.fn(),
