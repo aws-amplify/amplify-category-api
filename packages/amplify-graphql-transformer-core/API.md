@@ -227,19 +227,10 @@ export interface GraphQLTransformOptions {
     // (undocumented)
     readonly authConfig?: AppSyncAuthConfiguration;
     // (undocumented)
-    readonly disableResolverDeduping?: boolean;
-    // (undocumented)
     readonly host?: TransformHostProvider;
-    // (undocumented)
-<<<<<<< HEAD
-=======
-    readonly legacyApiKeyEnabled?: boolean;
-    // (undocumented)
-    readonly overrideConfig?: OverrideConfig;
     // (undocumented)
     readonly rdsLayerMapping?: RDSLayerMapping;
     // (undocumented)
->>>>>>> refs/remotes/origin/main
     readonly resolverConfig?: ResolverConfig;
     // (undocumented)
     readonly sqlLambdaVpcConfig?: VpcConfig;
