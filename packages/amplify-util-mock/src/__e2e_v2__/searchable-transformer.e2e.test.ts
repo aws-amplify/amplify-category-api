@@ -1,6 +1,5 @@
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
-import { executeTransform } from '@aws-amplify/graphql-transformer';
-import { deploy, launchDDBLocal, logDebug, GraphQLClient, terminateDDB, defaultTransformParams } from '../__e2e__/utils';
+import { deploy, launchDDBLocal, logDebug, GraphQLClient, terminateDDB, defaultTransformParams, transformAndSynth } from '../__e2e__/utils';
 
 jest.setTimeout(2000000);
 
@@ -18,7 +17,7 @@ describe('@searchable transformer', () => {
       }`;
 
     try {
-      const out = executeTransform({
+      const out = transformAndSynth({
         ...defaultTransformParams,
         schema: validSchema,
         transformParameters: {

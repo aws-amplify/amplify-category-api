@@ -1,6 +1,5 @@
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
-import { executeTransform } from '@aws-amplify/graphql-transformer';
-import { deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient, defaultTransformParams } from '../__e2e__/utils';
+import { deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient, defaultTransformParams, transformAndSynth } from '../__e2e__/utils';
 
 let GRAPHQL_CLIENT: GraphQLClient;
 let GRAPHQL_ENDPOINT: string;
@@ -60,7 +59,7 @@ describe('@model with relational transformers', () => {
         project: DProject @belongsTo(fields: ["dTeamProjectId"])
       }`;
     try {
-      const out = executeTransform({
+      const out = transformAndSynth({
         ...defaultTransformParams,
         schema: validSchema,
         transformParameters: {

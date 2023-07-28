@@ -8,7 +8,7 @@ import {
   UserDefinedSlot,
 } from '@aws-amplify/graphql-transformer-core';
 import { OverrideConfig, TransformManager } from './cdk-compat/transform-manager';
-import { DeploymentResources, Template } from './deployment-resources';
+import { DeploymentResources } from './deployment-resources';
 
 export type TestTransformParameters = {
   transformers: TransformerPluginProvider[];
@@ -16,7 +16,6 @@ export type TestTransformParameters = {
   transformParameters?: Partial<TransformParameters>;
   resolverConfig?: ResolverConfig;
   authConfig?: AppSyncAuthConfiguration;
-  stacks?: Record<string, Template>;
   userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   stackMapping?: Record<string, string>;
   modelToDatasourceMap?: Map<string, DatasourceType>;
@@ -38,7 +37,6 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     authConfig,
     resolverConfig,
     userDefinedSlots,
-    stacks,
     stackMapping,
     transformParameters,
   } = params;
@@ -47,7 +45,6 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     transformers,
     stackMapping,
     authConfig,
-    stacks,
     transformParameters,
     userDefinedSlots,
     resolverConfig,

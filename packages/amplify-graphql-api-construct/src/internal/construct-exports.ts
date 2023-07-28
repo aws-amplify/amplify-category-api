@@ -1,10 +1,10 @@
-import { Template } from '@aws-amplify/graphql-transformer';
 import { CfnResource } from 'aws-cdk-lib';
 import { CfnGraphQLApi, CfnGraphQLSchema, CfnApiKey, CfnResolver, CfnFunctionConfiguration, CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnRole, CfnPolicy } from 'aws-cdk-lib/aws-iam';
 import { CfnInclude } from 'aws-cdk-lib/cloudformation-include';
 import { AmplifyGraphqlApiResources } from '../types';
+import { Template } from './cdk-compat/deployment-resources';
 
 /**
  * Internal type for tracking which underlying nested stack (or root stack)

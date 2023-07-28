@@ -238,8 +238,6 @@ export interface GraphQLTransformOptions {
     // (undocumented)
     readonly stackMapping?: StackMapping;
     // (undocumented)
-    readonly stacks?: Record<string, any>;
-    // (undocumented)
     readonly transformers: TransformerPluginProvider[];
     // (undocumented)
     readonly transformParameters?: Partial<TransformParameters>;
@@ -577,26 +575,6 @@ export abstract class TransformerPluginBase implements TransformerPluginProvider
     readonly typeDefinitions: TypeDefinitionNode[];
     // (undocumented)
     protected warn(message: string): void;
-}
-
-// @public (undocumented)
-export interface TransformerProjectConfig {
-    // (undocumented)
-    config: TransformConfig;
-    // (undocumented)
-    functions: Record<string, string>;
-    // (undocumented)
-    modelToDatasourceMap: Map<string, DatasourceType>;
-    // (undocumented)
-    pipelineFunctions: Record<string, string>;
-    // (undocumented)
-    resolvers: Record<string, string>;
-    // (undocumented)
-    schema: string;
-    // Warning: (ae-forgotten-export) The symbol "Template" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    stacks: Record<string, Template>;
 }
 
 // @public (undocumented)

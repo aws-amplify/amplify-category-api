@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 import { ISynthesisSession, Stack, LegacyStackSynthesizer, FileAssetSource, FileAssetLocation, CfnParameter } from 'aws-cdk-lib';
-import { Template } from '../deployment-resources';
+import { Template } from './deployment-resources';
 import { TransformerRootStack } from './root-stack';
 
 /**

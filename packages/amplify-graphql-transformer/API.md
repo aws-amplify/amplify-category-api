@@ -5,22 +5,12 @@
 ```ts
 
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
-import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
-import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
-import { CfnEventSourceMapping } from 'aws-cdk-lib/aws-lambda';
-import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
-import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
-import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
-import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
-import { CfnPolicy } from 'aws-cdk-lib/aws-iam';
-import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
-import { CfnRole } from 'aws-cdk-lib/aws-iam';
-import { CfnStack } from 'aws-cdk-lib';
-import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
+import { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
 import { DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { ParameterManager } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
@@ -31,120 +21,33 @@ import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
-export interface AmplifyApiGraphQlResourceStackTemplate {
-    // Warning: (ae-forgotten-export) The symbol "AppsyncApiStack" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    api?: Partial<AppsyncApiStack>;
-    // Warning: (ae-forgotten-export) The symbol "FunctionDirectiveStack" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    function?: Partial<FunctionDirectiveStack & AppsyncStackCommon>;
-    // Warning: (ae-forgotten-export) The symbol "HttpsDirectiveStack" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "AppsyncStackCommon" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    http?: Partial<HttpsDirectiveStack & AppsyncStackCommon>;
-    // Warning: (ae-forgotten-export) The symbol "ModelDirectiveStack" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    models?: Partial<Record<string, ModelDirectiveStack>>;
-    // Warning: (ae-forgotten-export) The symbol "OpenSearchDirectiveStack" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    opensearch?: Partial<OpenSearchDirectiveStack & AppsyncStackCommon>;
-    // Warning: (ae-forgotten-export) The symbol "PredictionsDirectiveStack" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    predictions?: Partial<PredictionsDirectiveStack & AppsyncStackCommon>;
-}
-
-// @public (undocumented)
 export const constructTransform: (config: TransformConfig) => GraphQLTransform;
 
 // @public (undocumented)
 export const constructTransformerChain: (options?: TransformerFactoryArgs) => TransformerPluginProvider[];
 
 // @public (undocumented)
-export interface DeploymentResources extends ResolversFunctionsAndSchema, NestedStacks {
-}
-
-// @public (undocumented)
-export const executeTransform: (config: ExecuteTransformConfig) => DeploymentResources;
+export const executeTransform: (config: ExecuteTransformConfig) => void;
 
 // @public (undocumented)
 export type ExecuteTransformConfig = TransformConfig & {
     schema: string;
     modelToDatasourceMap?: Map<string, DatasourceType>;
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
-    overrideConfig?: OverrideConfig;
     printTransformerLog?: (log: TransformerLog) => void;
     sqlLambdaVpcConfig?: VpcConfig;
     rdsLayerMapping?: RDSLayerMapping;
+    scope: Construct;
+    nestedStackProvider: NestedStackProvider;
+    assetProvider: AssetProvider;
+    parameterManager: ParameterManager;
 };
-
-// @public (undocumented)
-export interface NestedStacks {
-    // (undocumented)
-    rootStack: Template;
-    // (undocumented)
-    stackMapping: StackMapping;
-    // (undocumented)
-    stacks: Record<string, Template>;
-}
-
-// @public (undocumented)
-export interface ResolversFunctionsAndSchema {
-    // (undocumented)
-    functions: Record<string, string>;
-    // (undocumented)
-    pipelineFunctions: Record<string, string>;
-    // (undocumented)
-    resolvers: Record<string, string>;
-    // (undocumented)
-    schema: string;
-    // (undocumented)
-    userOverriddenSlots: string[];
-}
-
-// @public (undocumented)
-export interface StackMapping {
-    // (undocumented)
-    [resourceId: string]: string;
-}
-
-// @public (undocumented)
-export interface Template {
-    // (undocumented)
-    AWSTemplateFormatVersion?: string;
-    // (undocumented)
-    Conditions?: Record<string, any>;
-    // (undocumented)
-    Description?: string;
-    // (undocumented)
-    Mappings?: {
-        [key: string]: {
-            [key: string]: Record<string, string | number | string[]>;
-        };
-    };
-    // (undocumented)
-    Metadata?: Record<string, any>;
-    // (undocumented)
-    Outputs?: Record<string, any>;
-    // (undocumented)
-    Parameters?: Record<string, any>;
-    // (undocumented)
-    Resources?: Record<string, any>;
-    // (undocumented)
-    Transform?: any;
-}
 
 // @public (undocumented)
 export type TransformConfig = {
     transformersFactoryArgs: TransformerFactoryArgs;
     resolverConfig?: ResolverConfig;
     authConfig?: AppSyncAuthConfiguration;
-    stacks?: Record<string, Template>;
     userDefinedSlots?: Record<string, UserDefinedSlot[]>;
     stackMapping?: Record<string, string>;
     transformParameters: TransformParameters;
@@ -160,10 +63,6 @@ export type TransformerFactoryArgs = {
     identityPoolId?: string;
     customTransformers?: TransformerPluginProvider[];
 };
-
-// Warnings were encountered during analysis:
-//
-// src/graphql-transformer.ts:127:3 - (ae-forgotten-export) The symbol "OverrideConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

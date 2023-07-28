@@ -13,7 +13,6 @@ export {
   SyncConfigServer,
   SyncConfigLambda,
   TransformConfig,
-  TransformerProjectConfig,
   DatasourceType,
   DBType,
 } from './config/index';

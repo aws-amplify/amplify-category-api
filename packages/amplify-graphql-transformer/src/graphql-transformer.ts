@@ -20,6 +20,9 @@ import {
   TransformerLogLevel,
   VpcConfig,
   RDSLayerMapping,
+  NestedStackProvider,
+  AssetProvider,
+  ParameterManager,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
 import {
@@ -29,8 +32,7 @@ import {
   ResolverConfig,
   UserDefinedSlot,
 } from '@aws-amplify/graphql-transformer-core';
-import { OverrideConfig, TransformManager } from './cdk-compat/transform-manager';
-import { DeploymentResources, Template } from './deployment-resources';
+import { Construct } from 'constructs';
 
 /**
  * Arguments passed into a TransformerFactory
@@ -51,7 +53,6 @@ export type TransformConfig = {
   transformersFactoryArgs: TransformerFactoryArgs;
   resolverConfig?: ResolverConfig;
   authConfig?: AppSyncAuthConfiguration;
-  stacks?: Record<string, Template>;
   userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   stackMapping?: Record<string, string>;
   transformParameters: TransformParameters;
@@ -98,7 +99,6 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
     authConfig,
     resolverConfig,
     userDefinedSlots,
-    stacks,
     stackMapping,
     transformParameters,
     sqlLambdaVpcConfig,
@@ -111,7 +111,6 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
     transformers,
     stackMapping,
     authConfig,
-    stacks,
     transformParameters,
     userDefinedSlots,
     resolverConfig,
@@ -124,10 +123,13 @@ export type ExecuteTransformConfig = TransformConfig & {
   schema: string;
   modelToDatasourceMap?: Map<string, DatasourceType>;
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
-  overrideConfig?: OverrideConfig;
   printTransformerLog?: (log: TransformerLog) => void;
   sqlLambdaVpcConfig?: VpcConfig;
   rdsLayerMapping?: RDSLayerMapping;
+  scope: Construct;
+  nestedStackProvider: NestedStackProvider;
+  assetProvider: AssetProvider;
+  parameterManager: ParameterManager;
 };
 
 /**
@@ -158,20 +160,28 @@ export const defaultPrintTransformerLog = (log: TransformerLog): void => {
  * @param config the configuration for the transform.
  * @returns the transformed api deployment resources.
  */
-export const executeTransform = (config: ExecuteTransformConfig): DeploymentResources => {
-  const { schema, modelToDatasourceMap, datasourceSecretParameterLocations, printTransformerLog, overrideConfig, rdsLayerMapping } = config;
+export const executeTransform = (config: ExecuteTransformConfig): void => {
+  const {
+    schema,
+    modelToDatasourceMap,
+    datasourceSecretParameterLocations,
+    printTransformerLog,
+    rdsLayerMapping,
+    scope,
+    nestedStackProvider,
+    assetProvider,
+    parameterManager,
+  } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
   const transform = constructTransform(config);
 
-  const transformManager = new TransformManager(overrideConfig);
-
   try {
     transform.transform({
-      scope: transformManager.getTransformScope(),
-      nestedStackProvider: transformManager.getNestedStackProvider(),
-      assetProvider: transformManager.getAssetProvider(),
-      parameterManager: transformManager.getParameterManager(),
+      scope,
+      nestedStackProvider,
+      assetProvider,
+      parameterManager,
       schema,
       datasourceConfig: {
         modelToDatasourceMap,
@@ -179,8 +189,6 @@ export const executeTransform = (config: ExecuteTransformConfig): DeploymentReso
         rdsLayerMapping,
       },
     });
-
-    return transformManager.generateDeploymentResources();
   } finally {
     transform.getLogs().forEach(printLog);
   }

@@ -5,7 +5,8 @@ import * as fs from 'fs-extra';
 import { v4 } from 'uuid';
 import { DynamoDB } from 'aws-sdk';
 import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
-import { ExecuteTransformConfig } from '@aws-amplify/graphql-transformer';
+import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
+import { DeploymentResources, TransformManager } from '@aws-amplify/graphql-transformer-test-utils';
 import { processTransformerStacks } from '../../CFNParser/appsync-resource-processor';
 import { configureDDBDataSource, createAndUpdateTable } from '../../utils/dynamo-db';
 import { getFunctionDetails } from './lambda-helper';
@@ -19,6 +20,20 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
     getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('../amplify-dynamodb-simulator'),
   },
 }));
+
+export const transformAndSynth = (
+  options: Omit<ExecuteTransformConfig, 'scope' | 'nestedStackProvider' | 'assetProvider' | 'parameterManager'>,
+): DeploymentResources => {
+  const transformManager = new TransformManager();
+  executeTransform({
+    ...options,
+    scope: transformManager.rootStack,
+    nestedStackProvider: transformManager.getNestedStackProvider(),
+    assetProvider: transformManager.getAssetProvider(),
+    parameterManager: transformManager.getParameterManager(),
+  });
+  return transformManager.generateDeploymentResources();
+};
 
 export const defaultTransformParams: Pick<ExecuteTransformConfig, 'transformersFactoryArgs' | 'transformParameters'> = {
   transformersFactoryArgs: {},

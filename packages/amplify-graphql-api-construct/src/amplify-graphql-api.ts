@@ -12,6 +12,7 @@ import {
 } from './internal';
 import type { AmplifyGraphqlApiResources, AmplifyGraphqlApiProps, FunctionSlot } from './types';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
+import { TransformManager } from './internal/cdk-compat/transform-manager';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -83,7 +84,13 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
     validateFunctionSlots(functionSlots ?? []);
     const separatedFunctionSlots = separateSlots([...(functionSlots ?? []), ...(processedFunctionSlots ?? [])]);
 
-    const transformedResources = executeTransform({
+    const transformManager = new TransformManager();
+
+    executeTransform({
+      scope: transformManager.rootStack,
+      nestedStackProvider: transformManager.getNestedStackProvider(),
+      assetProvider: transformManager.getAssetProvider(),
+      parameterManager: transformManager.getParameterManager(),
       schema: processedSchema,
       userDefinedSlots: parseUserDefinedSlots(separatedFunctionSlots),
       transformersFactoryArgs: {
@@ -101,6 +108,8 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
         ...(schemaTranslationBehavior ?? {}),
       },
     });
+
+    const transformedResources = transformManager.generateDeploymentResources();
 
     // Persist for the purposes of manifest generation.
     this.transformerGeneratedResolvers = transformedResources.resolvers;
