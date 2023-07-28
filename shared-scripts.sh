@@ -141,7 +141,7 @@ function _publishToLocalRegistry {
     git fetch --tags https://github.com/aws-amplify/amplify-category-api
 
     source codebuild_specs/scripts/local_publish_helpers.sh
-    startLocalRegistry "$(pwd)/codebuild_specs/verdaccio.yaml"
+    startLocalRegistry "$(pwd)/codebuild_specs/scripts/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     git config user.email not@used.com
     git config user.name "Doesnt Matter"
@@ -168,7 +168,7 @@ function _generateChangeLog {
 function _installCLIFromLocalRegistry {
     echo "Start verdaccio, install CLI"
     source codebuild_specs/scripts/local_publish_helpers.sh
-    startLocalRegistry "$(pwd)/codebuild_specs/verdaccio.yaml"
+    startLocalRegistry "$(pwd)/codebuild_specs/scripts/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     # set longer timeout to avoid socket timeout error
