@@ -234,6 +234,12 @@ export type NestedStackProvider = {
 };
 
 // @public (undocumented)
+export type ParameterManager = {
+    addParameter: (name: string, props: CfnParameterProps) => CfnParameter;
+    getParameter: (name: string) => CfnParameter | void;
+};
+
+// @public (undocumented)
 export enum QueryFieldType {
     // (undocumented)
     GET = "GET",
@@ -297,11 +303,7 @@ export interface SearchableDataSourceOptions extends DataSourceOptions {
 // @public (undocumented)
 export interface StackManagerProvider {
     // (undocumented)
-    addParameter: (name: string, props: CfnParameterProps) => CfnParameter;
-    // (undocumented)
     createStack: (stackName: string) => Stack;
-    // (undocumented)
-    getParameter: (name: string) => CfnParameter | void;
     // (undocumented)
     getScopeFor: (resourceId: string, defaultStackName?: string) => Construct;
     // (undocumented)
@@ -326,7 +328,7 @@ export enum SubscriptionFieldType {
 export type TransformerAuthProvider = TransformerPluginProvider;
 
 // @public (undocumented)
-export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager'>;
+export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'parameterManager'>;
 
 // @public (undocumented)
 export interface TransformerContextOutputProvider {
@@ -412,6 +414,8 @@ export interface TransformerContextProvider {
     modelToDatasourceMap: Map<string, DatasourceType>;
     // (undocumented)
     output: TransformerContextOutputProvider;
+    // (undocumented)
+    parameterManager: ParameterManager;
     // (undocumented)
     providerRegistry: TransformerProviderRegistry;
     // (undocumented)
@@ -678,7 +682,7 @@ export type TransformerSecrets = {
 export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;
 
 // @public (undocumented)
-export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'dataSources' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'resolvers' | 'stackManager'>;
+export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'dataSources' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'resolvers' | 'stackManager' | 'parameterManager'>;
 
 // @public (undocumented)
 export interface TransformHostProvider {

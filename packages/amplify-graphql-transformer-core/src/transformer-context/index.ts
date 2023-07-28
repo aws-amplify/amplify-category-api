@@ -1,4 +1,4 @@
-/* eslint-disable max-classes-per-file */
+/* eslint-disable max-classes-per-file, no-underscore-dangle */
 import {
   GraphQLAPIProvider,
   StackManagerProvider,
@@ -8,6 +8,7 @@ import {
   AppSyncAuthConfiguration,
   VpcConfig,
   RDSLayerMapping,
+  ParameterManager,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { AssetProvider, NestedStackProvider, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
@@ -40,7 +41,7 @@ export class TransformerContextMetadata implements TransformerContextMetadataPro
     this.metadata[key] = val;
   }
 
-  public has(key: string) {
+  public has(key: string): boolean {
     return this.metadata[key] !== undefined;
   }
 }
@@ -55,6 +56,8 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly providerRegistry: TransformerContextProviderRegistry;
 
   public readonly stackManager: StackManagerProvider;
+
+  public readonly parameterManager: ParameterManager;
 
   public readonly resourceHelper: TransformerResourceHelper;
 
@@ -78,6 +81,7 @@ export class TransformerContext implements TransformerContextProvider {
     scope: Construct,
     nestedStackProvider: NestedStackProvider,
     assetProvider: AssetProvider,
+    parameterManager: ParameterManager,
     public readonly inputDocument: DocumentNode,
     modelToDatasourceMap: Map<string, DatasourceType>,
     stackMapping: Record<string, string>,
@@ -93,10 +97,10 @@ export class TransformerContext implements TransformerContextProvider {
     this.resolvers = new ResolverManager();
     this.dataSources = new TransformerDataSourceManager();
     this.providerRegistry = new TransformerContextProviderRegistry();
-    const stackManager = new StackManager(scope, nestedStackProvider, stackMapping);
-    this.stackManager = stackManager;
+    this.parameterManager = parameterManager;
+    this.stackManager = new StackManager(scope, nestedStackProvider, stackMapping);
     this.authConfig = authConfig;
-    this.resourceHelper = new TransformerResourceHelper(stackManager);
+    this.resourceHelper = new TransformerResourceHelper(this.parameterManager);
     this.transformParameters = transformParameters;
     this.resolverConfig = resolverConfig;
     this.metadata = new TransformerContextMetadata();
@@ -111,7 +115,7 @@ export class TransformerContext implements TransformerContextProvider {
    * @param api API instance available publicaly when the transformation starts
    * @internal
    */
-  public bind(api: GraphQLAPIProvider) {
+  public bind(api: GraphQLAPIProvider): void {
     this._api = api;
     this.resourceHelper.bind(api);
   }

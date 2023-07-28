@@ -203,7 +203,7 @@ export class HttpTransformer extends TransformerPluginBase {
     }
 
     const stack: cdk.Stack = context.stackManager.createStack(HTTP_DIRECTIVE_STACK);
-    const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+    const env = context.parameterManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
     const region = stack.region;
 
     stack.templateOptions.templateFormatVersion = '2010-09-09';
@@ -224,7 +224,7 @@ export class HttpTransformer extends TransformerPluginBase {
 }
 
 function createResolver(stack: cdk.Stack, dataSourceId: string, context: TransformerContextProvider, config: HttpDirectiveConfiguration) {
-  const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+  const env = context.parameterManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
   const region = stack.region;
 
   const { method, supportsBody } = config;
@@ -289,8 +289,8 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
   );
 
   if (authModes.includes(AuthorizationType.IAM)) {
-    const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
-    const unauthRoleParameter = (context.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
+    const authRoleParameter = (context.parameterManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
+    const unauthRoleParameter = (context.parameterManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
 
     requestTemplate.push(
       qref(

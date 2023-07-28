@@ -1,19 +1,40 @@
 import {
   AppSyncAuthConfiguration,
   NestedStackProvider,
+  ParameterManager,
   TransformerPluginProvider,
   TransformerPluginType,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { App, NestedStack, Stack } from 'aws-cdk-lib';
+import { App, CfnParameter, CfnParameterProps, NestedStack, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { GraphQLApi } from '../../graphql-api';
-import { GraphQLTransform } from '../../transformation/transform';
+import { GraphQLTransform, GraphQLTransformOptions } from '../../transformation/transform';
 import { TransformerOutput } from '../../transformer-context/output';
 import { StackManager } from '../../transformer-context/stack-manager';
 
 class TestGraphQLTransform extends GraphQLTransform {
+  private stack = new Stack(undefined, 'TestStack');
+  private paramMap: Map<string, CfnParameter> = new Map();
+
+  constructor(options: GraphQLTransformOptions) {
+    super(options);
+    this.parameterManager.addParameter('env', {
+      default: 'NONE',
+      type: 'String',
+    });
+  }
+
+  private parameterManager: ParameterManager = {
+    addParameter: (name: string, props: CfnParameterProps): CfnParameter => {
+      const param = new CfnParameter(this.stack, name, props);
+      this.paramMap.set(name, param);
+      return param;
+    },
+    getParameter: (name: string): CfnParameter | void => this.paramMap.get(name),
+  };
+
   testGenerateGraphQlApi(stackManager: StackManager, output: TransformerOutput): GraphQLApi {
-    return this.generateGraphQlApi(stackManager, output);
+    return this.generateGraphQlApi(stackManager, this.parameterManager, output);
   }
 }
 

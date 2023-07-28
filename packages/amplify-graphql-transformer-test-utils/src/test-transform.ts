@@ -59,6 +59,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     scope: transformManager.getTransformScope(),
     nestedStackProvider: transformManager.getNestedStackProvider(),
     assetProvider: transformManager.getAssetProvider(),
+    parameterManager: transformManager.getParameterManager(),
     schema,
     datasourceConfig: {
       modelToDatasourceMap,

@@ -1,4 +1,4 @@
-import { CfnParameter, CfnParameterProps, Stack } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 export interface StackManagerProvider {
@@ -7,6 +7,4 @@ export interface StackManagerProvider {
   createStack: (stackName: string) => Stack;
   hasStack: (stackName: string) => boolean;
   getScopeFor: (resourceId: string, defaultStackName?: string) => Construct;
-  addParameter: (name: string, props: CfnParameterProps) => CfnParameter;
-  getParameter: (name: string) => CfnParameter | void;
 }
