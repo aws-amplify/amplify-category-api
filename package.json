@@ -58,7 +58,6 @@
     "view-test-artifacts": "yarn authenticate-e2e-profile && yarn ts-node --project ./scripts/tsconfig.json ./scripts/view-test-artifacts.ts",
     "cleanup-stale-resources": "source ./scripts/cloud-utils.sh && cleanupStaleResources",
     "depcheck": "eslint --no-eslintrc --config depcheck.config.js",
-    "generate-debug-e2e-spec": "./scripts/generate-debug-spec-for-failed-e2e-tests.sh",
     "cloud-e2e-debug": "source scripts/cloud-utils.sh && cloudE2EDebug",
     "authenticate-e2e-profile": "source scripts/cloud-utils.sh && authenticateWithE2EProfile"
   },
