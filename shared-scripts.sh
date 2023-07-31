@@ -306,22 +306,22 @@ function retry {
     MAX_ATTEMPTS=2
     SLEEP_DURATION=5
     FIRST_RUN=true
-    n=0
+    RUN_INDEX=0
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         rm -f $FAILED_TEST_REGEX_FILE
     fi
-    until [ $n -ge $MAX_ATTEMPTS ]
+    until [ $RUN_INDEX -ge $MAX_ATTEMPTS ]
     do
         echo "Attempting $@ with max retries $MAX_ATTEMPTS"
         setAwsAccountCredentials
-        "$@" && break
-        n=$[$n+1]
+        RUN_INDEX="$RUN_INDEX" "$@" && break
+        RUN_INDEX=$[$RUN_INDEX+1]
         FIRST_RUN=false
-        echo "Attempt $n completed."
+        echo "Attempt $RUN_INDEX completed."
         sleep $SLEEP_DURATION
     done
-    if [ $n -ge $MAX_ATTEMPTS ]; then
+    if [ $RUN_INDEX -ge $MAX_ATTEMPTS ]; then
         echo "failed: ${@}" >&2
         exit 1
     fi
@@ -329,7 +329,7 @@ function retry {
     resetAwsAccountCredentials
     TEST_SUITE=${TEST_SUITE:-"TestSuiteNotSet"}
     aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-category-api-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE --profile amplify-integ-test-user || true
-    echo "Attempt $n succeeded."
+    echo "Attempt $RUN_INDEX succeeded."
     exit 0 # don't fail the step if putting the metric fails
 }
 
