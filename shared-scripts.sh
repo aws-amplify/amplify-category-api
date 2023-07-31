@@ -140,6 +140,8 @@ function _publishToLocalRegistry {
     # Can be removed when using team account
     echo "fetching tags"
     git fetch --tags https://github.com/aws-amplify/amplify-category-api
+    # Create the folder to avoid failure when no packages are published due to no change detected
+    mkdir ../verdaccio-cache
 
     source codebuild_specs/scripts/local_publish_helpers.sh
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
