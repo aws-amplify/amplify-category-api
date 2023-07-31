@@ -11,7 +11,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
-import { isResolvableObject, CfnParameter, Lazy, Stack } from 'aws-cdk-lib';
+import { isResolvableObject, Lazy, Stack } from 'aws-cdk-lib';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
 import { Construct } from 'constructs';
@@ -19,7 +19,6 @@ import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
 import { InvalidDirectiveError } from '../errors';
 // eslint-disable-next-line import/no-cycle
 import * as SyncUtils from '../transformation/sync-utils';
-import { IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils';
 
 type Slot = {
   requestMappingTemplate?: MappingTemplateProvider;
@@ -370,16 +369,13 @@ export class TransformerResolver implements TransformerResolverProvider {
       (mode) => mode?.authenticationType === AuthorizationType.IAM,
     );
     if (hasIamAuth) {
-      const authRoleParameter = (context.parameterManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
-      const unauthRoleParameter = (context.parameterManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
+      const authRole = context.synthParameters.authenticatedUserRoleName;
+      const unauthRole = context.synthParameters.unauthenticatedUserRoleName;
+      const account = Stack.of(context.stackManager.scope).account;
       /* eslint-disable indent */
       initResolver += dedent`\n
-      $util.qr($ctx.stash.put("authRole", "arn:aws:sts::${
-        Stack.of(context.stackManager.scope).account
-      }:assumed-role/${authRoleParameter}/CognitoIdentityCredentials"))
-      $util.qr($ctx.stash.put("unauthRole", "arn:aws:sts::${
-        Stack.of(context.stackManager.scope).account
-      }:assumed-role/${unauthRoleParameter}/CognitoIdentityCredentials"))
+      $util.qr($ctx.stash.put("authRole", "arn:aws:sts::${account}:assumed-role/${authRole}/CognitoIdentityCredentials"))
+      $util.qr($ctx.stash.put("unauthRole", "arn:aws:sts::${account}:assumed-role/${unauthRole}/CognitoIdentityCredentials"))
       `;
       /* eslint-enable indent */
     }

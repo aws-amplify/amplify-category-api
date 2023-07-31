@@ -7,8 +7,6 @@
 import { BackedDataSource } from 'aws-cdk-lib/aws-appsync';
 import { BaseDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
-import { CfnParameter } from 'aws-cdk-lib';
-import { CfnParameterProps } from 'aws-cdk-lib';
 import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { CfnResource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
@@ -234,12 +232,6 @@ export type NestedStackProvider = {
 };
 
 // @public (undocumented)
-export type ParameterManager = {
-    addParameter: (name: string, props: CfnParameterProps) => CfnParameter;
-    getParameter: (name: string) => CfnParameter | void;
-};
-
-// @public (undocumented)
 export enum QueryFieldType {
     // (undocumented)
     GET = "GET",
@@ -325,10 +317,19 @@ export enum SubscriptionFieldType {
 }
 
 // @public (undocumented)
+export type SynthParameters = {
+    amplifyEnvironmentName: string;
+    apiName: string;
+    authenticatedUserRoleName?: string;
+    unauthenticatedUserRoleName?: string;
+    userPoolId?: string;
+};
+
+// @public (undocumented)
 export type TransformerAuthProvider = TransformerPluginProvider;
 
 // @public (undocumented)
-export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'parameterManager'>;
+export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'synthParameters'>;
 
 // @public (undocumented)
 export interface TransformerContextOutputProvider {
@@ -415,8 +416,6 @@ export interface TransformerContextProvider {
     // (undocumented)
     output: TransformerContextOutputProvider;
     // (undocumented)
-    parameterManager: ParameterManager;
-    // (undocumented)
     providerRegistry: TransformerProviderRegistry;
     // (undocumented)
     readonly rdsLayerMapping?: RDSLayerMapping;
@@ -428,6 +427,8 @@ export interface TransformerContextProvider {
     readonly sqlLambdaVpcConfig?: VpcConfig;
     // (undocumented)
     stackManager: StackManagerProvider;
+    // (undocumented)
+    synthParameters: SynthParameters;
     // (undocumented)
     transformParameters: TransformParameters;
 }
@@ -682,7 +683,7 @@ export type TransformerSecrets = {
 export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;
 
 // @public (undocumented)
-export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'dataSources' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'resolvers' | 'stackManager' | 'parameterManager'>;
+export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'dataSources' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'resolvers' | 'stackManager' | 'synthParameters'>;
 
 // @public (undocumented)
 export interface TransformHostProvider {

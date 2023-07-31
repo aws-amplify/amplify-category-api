@@ -26,8 +26,6 @@ export {
   collectDirectives,
   collectDirectivesByTypeNames,
   DirectiveWrapper,
-  IAM_AUTH_ROLE_PARAMETER,
-  IAM_UNAUTH_ROLE_PARAMETER,
   APICategory,
 } from './utils';
 export * from './utils/operation-names';

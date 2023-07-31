@@ -14,7 +14,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
-import { ArnFormat, CfnCondition, CfnParameter, Fn } from 'aws-cdk-lib';
+import { ArnFormat, CfnCondition, Fn } from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
 import { DirectiveNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { Expression, str } from 'graphql-mapping-template';
@@ -289,18 +289,14 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       return;
     }
 
-    const { Env } = ResourceConstants.PARAMETERS;
-
     const { HasEnvironmentParameter } = ResourceConstants.CONDITIONS;
 
     const stack = context.stackManager.createStack(STACK_NAME);
 
     setMappings(stack);
 
-    const envParam = context.parameterManager.getParameter(Env) as CfnParameter;
-
     new CfnCondition(stack, HasEnvironmentParameter, {
-      expression: Fn.conditionNot(Fn.conditionEquals(envParam, ResourceConstants.NONE)),
+      expression: Fn.conditionNot(Fn.conditionEquals(context.synthParameters.amplifyEnvironmentName, ResourceConstants.NONE)),
     });
 
     const isProjectUsingDataStore = context.isProjectUsingDataStore();

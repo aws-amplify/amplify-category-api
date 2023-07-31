@@ -22,7 +22,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc && cd vpc-db-lambda && rm -rf node_modules && npm install && tsc && cp -r node_modules lib && cd lib && bestzip --force node ../../lib/rds-schema-inspector.zip ./*",
+    "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf ./lib && rimraf ./vpc-db-lambda/lib",
     "test": "jest"

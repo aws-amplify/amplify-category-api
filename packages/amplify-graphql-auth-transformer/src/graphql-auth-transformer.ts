@@ -4,8 +4,6 @@ import {
   TransformerAuthBase,
   InvalidDirectiveError,
   MappingTemplate,
-  IAM_AUTH_ROLE_PARAMETER,
-  IAM_UNAUTH_ROLE_PARAMETER,
   TransformerResolver,
   getTable,
   getKeySchema,
@@ -1243,14 +1241,14 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
           throw new TransformerContractError('AuthRole policies should be generated, but no resources were added.');
         }
       } else {
-        const authRoleParameter = (ctx.parameterManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
+        const authRole = ctx.synthParameters.authenticatedUserRoleName;
         const authPolicyDocuments = createPolicyDocumentForManagedPolicy(this.authPolicyResources);
         const { scope } = ctx.stackManager;
         // we need to add the arn path as this is something cdk is looking for when using imported roles in policies
         const iamAuthRoleArn = iam.Role.fromRoleArn(
           scope,
           'auth-role-name',
-          `arn:aws:iam::${cdk.Stack.of(scope).account}:role/${authRoleParameter}`,
+          `arn:aws:iam::${cdk.Stack.of(scope).account}:role/${authRole}`,
         );
         authPolicyDocuments.forEach((authPolicyDocument, i) => {
           const paddedIndex = `${i + 1}`.padStart(2, '0');
@@ -1267,13 +1265,13 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       if (this.unauthPolicyResources.size === 0) {
         throw new TransformerContractError('UnauthRole policies should be generated, but no resources were added');
       }
-      const unauthRoleParameter = (ctx.parameterManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
+      const unauthRole = ctx.synthParameters.unauthenticatedUserRoleName;
       const unauthPolicyDocuments = createPolicyDocumentForManagedPolicy(this.unauthPolicyResources);
       const { scope } = ctx.stackManager;
       const iamUnauthRoleArn = iam.Role.fromRoleArn(
         scope,
         'unauth-role-name',
-        `arn:aws:iam::${cdk.Stack.of(scope).account}:role/${unauthRoleParameter}`,
+        `arn:aws:iam::${cdk.Stack.of(scope).account}:role/${unauthRole}`,
       );
       unauthPolicyDocuments.forEach((unauthPolicyDocument, i) => {
         const paddedIndex = `${i + 1}`.padStart(2, '0');

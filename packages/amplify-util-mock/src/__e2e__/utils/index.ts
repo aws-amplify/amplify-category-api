@@ -7,6 +7,7 @@ import { DynamoDB } from 'aws-sdk';
 import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
 import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
 import { DeploymentResources, TransformManager } from '@aws-amplify/graphql-transformer-test-utils';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { processTransformerStacks } from '../../CFNParser/appsync-resource-processor';
 import { configureDDBDataSource, createAndUpdateTable } from '../../utils/dynamo-db';
 import { getFunctionDetails } from './lambda-helper';
@@ -21,8 +22,19 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
   },
 }));
 
+const getAuthenticationTypesForAuthConfig = (authConfig?: AppSyncAuthConfiguration): (string | undefined)[] =>
+  [authConfig?.defaultAuthentication, ...(authConfig?.additionalAuthenticationProviders ?? [])].map(
+    (authConfigEntry) => authConfigEntry?.authenticationType,
+  );
+
+const hasIamAuth = (authConfig?: AppSyncAuthConfiguration): boolean =>
+  getAuthenticationTypesForAuthConfig(authConfig).some((authType) => authType === 'AWS_IAM');
+
+const hasUserPoolAuth = (authConfig?: AppSyncAuthConfiguration): boolean =>
+  getAuthenticationTypesForAuthConfig(authConfig).some((authType) => authType === 'AMAZON_COGNITO_USER_POOLS');
+
 export const transformAndSynth = (
-  options: Omit<ExecuteTransformConfig, 'scope' | 'nestedStackProvider' | 'assetProvider' | 'parameterManager'>,
+  options: Omit<ExecuteTransformConfig, 'scope' | 'nestedStackProvider' | 'assetProvider' | 'synthParameters'>,
 ): DeploymentResources => {
   const transformManager = new TransformManager();
   executeTransform({
@@ -30,7 +42,7 @@ export const transformAndSynth = (
     scope: transformManager.rootStack,
     nestedStackProvider: transformManager.getNestedStackProvider(),
     assetProvider: transformManager.getAssetProvider(),
-    parameterManager: transformManager.getParameterManager(),
+    synthParameters: transformManager.getSynthParameters(hasIamAuth(options.authConfig), hasUserPoolAuth(options.authConfig)),
   });
   return transformManager.generateDeploymentResources();
 };

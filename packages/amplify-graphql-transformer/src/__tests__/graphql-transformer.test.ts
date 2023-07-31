@@ -90,12 +90,9 @@ describe('executeTransform', () => {
           });
         },
       },
-      parameterManager: {
-        addParameter: (name: string, props: CfnParameterProps) => ({} as unknown as CfnParameter),
-        getParameter: (name: string): void | CfnParameter =>
-          ({
-            valueAsString: 'someval',
-          } as unknown as CfnParameter),
+      synthParameters: {
+        amplifyEnvironmentName: 'someval',
+        apiName: 'testApi',
       },
       ...defaultTransformConfig,
       schema: /* GraphQL */ `
@@ -119,34 +116,29 @@ describe('executeTransform', () => {
     let didLog = false;
     const assets = new Map<string, string>();
     const tempAssetDir = fs.mkdtempSync(path.join(os.tmpdir(), 'transformer-assets'));
-    const paramMap: Map<string, CfnParameter> = new Map();
-    const scope = new Stack();
     executeTransform({
-      scope,
+      scope: new Stack(),
       nestedStackProvider: {
-        provide: (scope: Construct, name: string) => new NestedStack(scope, name),
+        provide: (nestedStackScope: Construct, name: string) => new NestedStack(nestedStackScope, name),
       },
       assetProvider: {
-        provide: (scope: Construct, name: string, props: AssetProps) => {
-          assets.set(props.fileName, props.fileContent);
-          const filePath = path.join(tempAssetDir, props.fileName);
+        provide: (assetScope: Construct, assetId: string, assetProps: AssetProps) => {
+          assets.set(assetProps.fileName, assetProps.fileContent);
+          const filePath = path.join(tempAssetDir, assetProps.fileName);
           const fileDirName = path.dirname(filePath);
           if (!fs.existsSync(fileDirName)) {
             fs.mkdirSync(fileDirName, { recursive: true });
           }
-          fs.writeFileSync(filePath, props.fileContent);
-          return new Asset(scope, name, {
+          fs.writeFileSync(filePath, assetProps.fileContent);
+          return new Asset(assetScope, assetId, {
             path: filePath,
           });
         },
       },
-      parameterManager: {
-        addParameter: (name: string, props: CfnParameterProps): CfnParameter => {
-          const param = new CfnParameter(scope, name, props);
-          paramMap.set(name, param);
-          return param;
-        },
-        getParameter: (name: string): CfnParameter | void => paramMap.get(name),
+      synthParameters: {
+        amplifyEnvironmentName: 'testEnv',
+        apiName: 'testApi',
+        userPoolId: 'testUserPool',
       },
       ...defaultTransformConfig,
       schema: /* GraphQL */ `
@@ -185,12 +177,9 @@ describe('executeTransform', () => {
           });
         },
       },
-      parameterManager: {
-        addParameter: (name: string, props: CfnParameterProps) => ({} as unknown as CfnParameter),
-        getParameter: (name: string): void | CfnParameter =>
-          ({
-            valueAsString: 'someval',
-          } as unknown as CfnParameter),
+      synthParameters: {
+        amplifyEnvironmentName: 'someval',
+        apiName: 'testApi',
       },
       ...defaultTransformConfig,
       schema: /* GraphQL */ `

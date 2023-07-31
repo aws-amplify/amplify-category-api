@@ -47,7 +47,6 @@ import { NamedTypeNode } from 'graphql';
 import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeExtensionNode } from 'graphql';
-import { ParameterManager } from '@aws-amplify/graphql-transformer-interfaces';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { S3MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -56,6 +55,7 @@ import { Stack } from 'aws-cdk-lib';
 import { StackManagerProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { StringValueNode } from 'graphql';
 import { SubscriptionFieldType } from '@aws-amplify/graphql-transformer-interfaces';
+import { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerAuthProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -210,7 +210,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "GraphQLApi" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    protected generateGraphQlApi(stackManager: StackManagerProvider, parameterManager: ParameterManager, output: TransformerOutput): GraphQLApi;
+    protected generateGraphQlApi(stackManager: StackManagerProvider, synthParameters: SynthParameters, output: TransformerOutput): GraphQLApi;
     // (undocumented)
     getLogs(): TransformerLog[];
     // (undocumented)
@@ -218,7 +218,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "TransformOption" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    transform({ scope, nestedStackProvider, assetProvider, parameterManager, schema, datasourceConfig }: TransformOption): void;
+    transform({ scope, nestedStackProvider, assetProvider, synthParameters, schema, datasourceConfig }: TransformOption): void;
 }
 
 // @public (undocumented)
@@ -244,12 +244,6 @@ export interface GraphQLTransformOptions {
     // (undocumented)
     readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
 }
-
-// @public (undocumented)
-export const IAM_AUTH_ROLE_PARAMETER = "authRoleName";
-
-// @public (undocumented)
-export const IAM_UNAUTH_ROLE_PARAMETER = "unauthRoleName";
 
 // @public (undocumented)
 export type ImportAppSyncAPIInputs = {

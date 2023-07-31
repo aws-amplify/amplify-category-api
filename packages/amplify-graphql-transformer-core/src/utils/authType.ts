@@ -5,7 +5,7 @@ import {
   AppSyncAuthConfiguration,
   AppSyncAuthConfigurationEntry,
   AppSyncAuthMode,
-  ParameterManager,
+  SynthParameters,
   StackManagerProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 
@@ -17,25 +17,22 @@ const authTypeMap: Record<AppSyncAuthMode, any> = {
   AWS_LAMBDA: 'AWS_LAMBDA',
 };
 
-export const IAM_AUTH_ROLE_PARAMETER = 'authRoleName';
-export const IAM_UNAUTH_ROLE_PARAMETER = 'unauthRoleName';
-
 export const adoptAuthModes = (
   stackManager: StackManagerProvider,
-  parameterManager: ParameterManager,
+  synthParameters: SynthParameters,
   authConfig: AppSyncAuthConfiguration,
 ): AuthorizationConfig => {
   return {
-    defaultAuthorization: adoptAuthMode(stackManager, parameterManager, authConfig.defaultAuthentication),
+    defaultAuthorization: adoptAuthMode(stackManager, synthParameters, authConfig.defaultAuthentication),
     additionalAuthorizationModes: authConfig.additionalAuthenticationProviders?.map((entry) =>
-      adoptAuthMode(stackManager, parameterManager, entry),
+      adoptAuthMode(stackManager, synthParameters, entry),
     ),
   };
 };
 
 export const adoptAuthMode = (
   stackManager: StackManagerProvider,
-  parameterManager: ParameterManager,
+  synthParameters: SynthParameters,
   entry: AppSyncAuthConfigurationEntry,
 ): any => {
   const authType = authTypeMap[entry.authenticationType];
@@ -51,14 +48,13 @@ export const adoptAuthMode = (
         },
       };
     case AuthorizationType.USER_POOL:
-      // eslint-disable-next-line no-case-declarations
-      const userPoolId = parameterManager.addParameter('AuthCognitoUserPoolId', {
-        type: 'String',
-      }).valueAsString;
+      if (!synthParameters.userPoolId) {
+        throw new Error('Expected userPoolId to be present in synth parameters when user pool auth is specified.');
+      }
       return {
         authorizationType: authType,
         userPoolConfig: {
-          userPool: UserPool.fromUserPoolId(stackManager.scope, 'transformer-user-pool', userPoolId),
+          userPool: UserPool.fromUserPoolId(stackManager.scope, 'transformer-user-pool', synthParameters.userPoolId),
         },
       };
     case AuthorizationType.IAM:

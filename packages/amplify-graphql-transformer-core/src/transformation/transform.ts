@@ -7,7 +7,7 @@ import {
   NestedStackProvider,
   VpcConfig,
   RDSLayerMapping,
-  ParameterManager,
+  SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { AssetProvider, StackManagerProvider, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
@@ -35,7 +35,7 @@ import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError }
 import { GraphQLApi } from '../graphql-api';
 import { TransformerContext } from '../transformer-context';
 import { TransformerOutput } from '../transformer-context/output';
-import { adoptAuthModes, IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils/authType';
+import { adoptAuthModes } from '../utils/authType';
 import { MappingTemplate } from '../cdk-compat';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { DatasourceType } from '../config/project-config';
@@ -89,7 +89,7 @@ export type TransformOption = {
   scope: Construct;
   nestedStackProvider: NestedStackProvider;
   assetProvider: AssetProvider;
-  parameterManager: ParameterManager;
+  synthParameters: SynthParameters;
   schema: string;
   datasourceConfig?: DatasourceTransformationConfig;
 };
@@ -185,19 +185,14 @@ export class GraphQLTransform {
    * on to the next transformer. At the end of the transformation a
    * cloudformation template is returned.
    */
-  public transform({ scope, nestedStackProvider, assetProvider, parameterManager, schema, datasourceConfig }: TransformOption): void {
+  public transform({ scope, nestedStackProvider, assetProvider, synthParameters, schema, datasourceConfig }: TransformOption): void {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
-    // add Env Parameter to ensure to adhere to contract
-    parameterManager.addParameter('env', {
-      default: 'NONE',
-      type: 'String',
-    });
     const context = new TransformerContext(
       scope,
       nestedStackProvider,
       assetProvider,
-      parameterManager,
+      synthParameters,
       parsedDocument,
       datasourceConfig?.modelToDatasourceMap ?? new Map<string, DatasourceType>(),
       this.stackMappingOverrides,
@@ -294,7 +289,7 @@ export class GraphQLTransform {
 
     // Synth the API and make it available to allow transformer plugins to manipulate the API
     const output: TransformerOutput = context.output as TransformerOutput;
-    const api = this.generateGraphQlApi(context.stackManager, context.parameterManager, output);
+    const api = this.generateGraphQlApi(context.stackManager, context.synthParameters, output);
 
     // generate resolvers
     (context as TransformerContext).bind(api);
@@ -328,28 +323,22 @@ export class GraphQLTransform {
 
   protected generateGraphQlApi(
     stackManager: StackManagerProvider,
-    parameterManager: ParameterManager,
+    synthParameters: SynthParameters,
     output: TransformerOutput,
   ): GraphQLApi {
     // Todo: Move this to its own transformer plugin to support modifying the API
     // Like setting the auth mode and enabling logging and such
 
     const { scope } = stackManager;
-    const authorizationConfig = adoptAuthModes(stackManager, parameterManager, this.authConfig);
-    const apiName = parameterManager.addParameter('AppSyncApiName', {
-      default: 'AppSyncSimpleTransform',
-      type: 'String',
-    }).valueAsString;
-    const envName = parameterManager.getParameter('env');
-    if (!envName) {
-      throw new Error('Parameter `env` not configured properly.');
-    }
+    const authorizationConfig = adoptAuthModes(stackManager, synthParameters, this.authConfig);
+    const apiName = synthParameters.apiName;
+    const env = synthParameters.amplifyEnvironmentName;
     const api = new GraphQLApi(scope, 'GraphQLAPI', {
-      name: `${apiName}-${envName.valueAsString}`,
+      name: `${apiName}-${env}`,
       authorizationConfig,
       host: this.options.host,
       sandboxModeEnabled: this.transformParameters.sandboxModeEnabled,
-      environmentName: envName.valueAsString,
+      environmentName: env,
       disableResolverDeduping: this.transformParameters.disableResolverDeduping,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
@@ -374,11 +363,6 @@ export class GraphQLTransform {
         description: 'Your GraphQL API ID.',
         exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiKey']),
       });
-    }
-
-    if (authModes.includes(AuthorizationType.IAM)) {
-      parameterManager.addParameter(IAM_AUTH_ROLE_PARAMETER, { type: 'String' });
-      parameterManager.addParameter(IAM_UNAUTH_ROLE_PARAMETER, { type: 'String' });
     }
 
     new CfnOutput(scope, 'GraphQLAPIIdOutput', {

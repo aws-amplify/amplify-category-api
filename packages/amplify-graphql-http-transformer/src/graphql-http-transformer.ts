@@ -1,8 +1,6 @@
 import {
   DirectiveWrapper,
   generateGetArgumentsInput,
-  IAM_AUTH_ROLE_PARAMETER,
-  IAM_UNAUTH_ROLE_PARAMETER,
   MappingTemplate,
   TransformerContractError,
   TransformerPluginBase,
@@ -203,7 +201,7 @@ export class HttpTransformer extends TransformerPluginBase {
     }
 
     const stack: cdk.Stack = context.stackManager.createStack(HTTP_DIRECTIVE_STACK);
-    const env = context.parameterManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+    const env = context.synthParameters.amplifyEnvironmentName;
     const region = stack.region;
 
     stack.templateOptions.templateFormatVersion = '2010-09-09';
@@ -224,7 +222,7 @@ export class HttpTransformer extends TransformerPluginBase {
 }
 
 function createResolver(stack: cdk.Stack, dataSourceId: string, context: TransformerContextProvider, config: HttpDirectiveConfiguration) {
-  const env = context.parameterManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+  const env = context.synthParameters.amplifyEnvironmentName;
   const region = stack.region;
 
   const { method, supportsBody } = config;
@@ -289,20 +287,13 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
   );
 
   if (authModes.includes(AuthorizationType.IAM)) {
-    const authRoleParameter = (context.parameterManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
-    const unauthRoleParameter = (context.parameterManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
+    const authRole = context.synthParameters.authenticatedUserRoleName;
+    const unauthRole = context.synthParameters.unauthenticatedUserRoleName;
+    const account = cdk.Stack.of(context.stackManager.scope).account;
 
     requestTemplate.push(
-      qref(
-        `$ctx.stash.put("authRole", "arn:aws:sts::${
-          cdk.Stack.of(context.stackManager.scope).account
-        }:assumed-role/${authRoleParameter}/CognitoIdentityCredentials")`,
-      ),
-      qref(
-        `$ctx.stash.put("unauthRole", "arn:aws:sts::${
-          cdk.Stack.of(context.stackManager.scope).account
-        }:assumed-role/${unauthRoleParameter}/CognitoIdentityCredentials")`,
-      ),
+      qref(`$ctx.stash.put("authRole", "arn:aws:sts::${account}:assumed-role/${authRole}/CognitoIdentityCredentials")`),
+      qref(`$ctx.stash.put("unauthRole", "arn:aws:sts::${account}:assumed-role/${unauthRole}/CognitoIdentityCredentials")`),
     );
   }
 
@@ -352,7 +343,7 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
   );
 }
 
-function replaceEnvAndRegion(env: cdk.CfnParameter, region: string, value: string): string {
+function replaceEnvAndRegion(env: string, region: string, value: string): string {
   const vars: {
     [key: string]: string;
   } = {};
