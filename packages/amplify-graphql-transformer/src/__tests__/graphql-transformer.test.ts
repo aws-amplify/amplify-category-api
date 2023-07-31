@@ -1,6 +1,11 @@
 import * as path from 'path';
 import * as os from 'os';
-import { AppSyncAuthConfiguration, AssetProps, TransformerLogLevel, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  AppSyncAuthConfiguration,
+  AssetProps,
+  TransformerLogLevel,
+  TransformerPluginProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces/src';
 import { CfnParameter, CfnParameterProps, NestedStack, Stack } from 'aws-cdk-lib';
@@ -65,7 +70,7 @@ describe('executeTransform', () => {
   it('can be invoked', () => {
     const assets = new Map<string, string>();
     const tempAssetDir = fs.mkdtempSync(path.join(os.tmpdir(), 'transformer-assets'));
-  
+
     executeTransform({
       scope: new Stack(),
       nestedStackProvider: {
@@ -82,14 +87,15 @@ describe('executeTransform', () => {
           fs.writeFileSync(filePath, props.fileContent);
           return new Asset(scope, name, {
             path: filePath,
-          })
+          });
         },
       },
       parameterManager: {
-        addParameter: (name: string, props: CfnParameterProps) => ({}) as unknown as CfnParameter,
-        getParameter: (name: string): void | CfnParameter => ({
-          valueAsString: 'someval',
-        }) as unknown as CfnParameter,
+        addParameter: (name: string, props: CfnParameterProps) => ({} as unknown as CfnParameter),
+        getParameter: (name: string): void | CfnParameter =>
+          ({
+            valueAsString: 'someval',
+          } as unknown as CfnParameter),
       },
       ...defaultTransformConfig,
       schema: /* GraphQL */ `
@@ -131,7 +137,7 @@ describe('executeTransform', () => {
           fs.writeFileSync(filePath, props.fileContent);
           return new Asset(scope, name, {
             path: filePath,
-          })
+          });
         },
       },
       parameterManager: {
@@ -176,14 +182,15 @@ describe('executeTransform', () => {
           fs.writeFileSync(filePath, props.fileContent);
           return new Asset(scope, name, {
             path: filePath,
-          })
+          });
         },
       },
       parameterManager: {
-        addParameter: (name: string, props: CfnParameterProps) => ({}) as unknown as CfnParameter,
-        getParameter: (name: string): void | CfnParameter => ({
-          valueAsString: 'someval',
-        }) as unknown as CfnParameter,
+        addParameter: (name: string, props: CfnParameterProps) => ({} as unknown as CfnParameter),
+        getParameter: (name: string): void | CfnParameter =>
+          ({
+            valueAsString: 'someval',
+          } as unknown as CfnParameter),
       },
       ...defaultTransformConfig,
       schema: /* GraphQL */ `
