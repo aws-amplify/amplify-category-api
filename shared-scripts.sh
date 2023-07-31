@@ -402,6 +402,7 @@ function runGraphQLE2eTest {
 }
 
 function _deploy {
+  _setShell
   echo "Deploy"
   echo "Authenticate with NPM"
   PUBLISH_TOKEN=$(echo "$NPM_PUBLISH_TOKEN" | jq -r '.token')
