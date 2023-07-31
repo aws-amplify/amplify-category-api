@@ -1,5 +1,14 @@
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
-import { deploy, launchDDBLocal, terminateDDB, logDebug, reDeploy, GraphQLClient, defaultTransformParams, transformAndSynth } from '../__e2e__/utils';
+import {
+  deploy,
+  launchDDBLocal,
+  terminateDDB,
+  logDebug,
+  reDeploy,
+  GraphQLClient,
+  defaultTransformParams,
+  transformAndSynth,
+} from '../__e2e__/utils';
 
 let GRAPHQL_ENDPOINT: string;
 let GRAPHQL_CLIENT: GraphQLClient;
@@ -9,14 +18,15 @@ let server: AmplifyAppSyncSimulator;
 
 jest.setTimeout(2000000);
 
-const runTransformer = async (validSchema: string) => transformAndSynth({
-  ...defaultTransformParams,
-  schema: validSchema,
-  transformParameters: {
-    ...defaultTransformParams.transformParameters,
-    sandboxModeEnabled: true,
-  },
-});
+const runTransformer = async (validSchema: string) =>
+  transformAndSynth({
+    ...defaultTransformParams,
+    schema: validSchema,
+    transformParameters: {
+      ...defaultTransformParams.transformParameters,
+      sandboxModeEnabled: true,
+    },
+  });
 
 let ddbClient;
 const validSchema = /* GraphQL */ `
