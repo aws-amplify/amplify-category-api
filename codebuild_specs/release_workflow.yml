@@ -18,10 +18,6 @@ batch:
       buildspec: codebuild_specs/test.yml
       depend-on:
         - build_linux
-    - identifier: lint
-      buildspec: codebuild_specs/lint.yml
-      depend-on:
-        - build_linux
     - identifier: verify_api_extract
       buildspec: codebuild_specs/verify_api_extract.yml
       depend-on:

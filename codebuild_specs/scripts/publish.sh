@@ -16,6 +16,7 @@ else
   git fetch --all
   yarn install
   git restore .
+  yarn production-build
 fi
 
 if [ -z "$GITHUB_EMAIL" ]; then
