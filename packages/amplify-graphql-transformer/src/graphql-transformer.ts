@@ -22,7 +22,7 @@ import {
   RDSLayerMapping,
   NestedStackProvider,
   AssetProvider,
-  ParameterManager,
+  SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
 import {
@@ -129,7 +129,7 @@ export type ExecuteTransformConfig = TransformConfig & {
   scope: Construct;
   nestedStackProvider: NestedStackProvider;
   assetProvider: AssetProvider;
-  parameterManager: ParameterManager;
+  synthParameters: SynthParameters;
 };
 
 /**
@@ -170,7 +170,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
     scope,
     nestedStackProvider,
     assetProvider,
-    parameterManager,
+    synthParameters,
   } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
@@ -181,7 +181,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
       scope,
       nestedStackProvider,
       assetProvider,
-      parameterManager,
+      synthParameters,
       schema,
       datasourceConfig: {
         modelToDatasourceMap,

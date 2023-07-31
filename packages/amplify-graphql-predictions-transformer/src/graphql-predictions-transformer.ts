@@ -2,8 +2,6 @@ import * as path from 'path';
 import {
   DirectiveWrapper,
   generateGetArgumentsInput,
-  IAM_AUTH_ROLE_PARAMETER,
-  IAM_UNAUTH_ROLE_PARAMETER,
   InvalidDirectiveError,
   MappingTemplate,
   TransformerPluginBase,
@@ -161,7 +159,7 @@ export class PredictionsTransformer extends TransformerPluginBase {
     }
 
     const stack: cdk.Stack = context.stackManager.createStack(PREDICTIONS_DIRECTIVE_STACK);
-    const env = context.parameterManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+    const env = context.synthParameters.amplifyEnvironmentName;
     const createdResources = new Map<string, any>();
     const seenActions = new Set<string>();
     const role = new iam.Role(stack, PredictionsResourceIDs.iamRole, {
@@ -331,8 +329,8 @@ function createResolver(
   };
 
   if (referencesEnv(bucketName)) {
-    const env = context.parameterManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
-    substitutions.env = env as unknown as string;
+    const env = context.synthParameters.amplifyEnvironmentName;
+    substitutions.env = env;
   }
   const requestTemplate = [
     cdk.Fn.conditionIf(
@@ -349,15 +347,12 @@ function createResolver(
     (mode) => mode?.authenticationType,
   );
   if (authModes.includes(AuthorizationType.IAM)) {
-    const authRoleParameter = (context.parameterManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
-    const unauthRoleParameter = (context.parameterManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
+    const authRole = context.synthParameters.authenticatedUserRoleName;
+    const unauthRole = context.synthParameters.unauthenticatedUserRoleName;
+    const account = cdk.Stack.of(context.stackManager.scope).account;
     requestTemplate.push(
-      `$util.qr($ctx.stash.put("authRole", "arn:aws:sts::${
-        cdk.Stack.of(context.stackManager.scope).account
-      }:assumed-role/${authRoleParameter}/CognitoIdentityCredentials"))`,
-      `$util.qr($ctx.stash.put("unauthRole", "arn:aws:sts::${
-        cdk.Stack.of(context.stackManager.scope).account
-      }:assumed-role/${unauthRoleParameter}/CognitoIdentityCredentials"))`,
+      `$util.qr($ctx.stash.put("authRole", "arn:aws:sts::${account}:assumed-role/${authRole}/CognitoIdentityCredentials"))`,
+      `$util.qr($ctx.stash.put("unauthRole", "arn:aws:sts::${account}:assumed-role/${unauthRole}/CognitoIdentityCredentials"))`,
     );
   }
   requestTemplate.push(print(obj({})));
@@ -437,7 +432,7 @@ function removeEnvReference(value: string): string {
 }
 
 function joinWithEnv(context: TransformerContextProvider, separator: string, listToJoin: any[]): string {
-  const env = context.parameterManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+  const env = context.synthParameters.amplifyEnvironmentName;
   return cdk.Fn.conditionIf(
     ResourceConstants.CONDITIONS.HasEnvironmentParameter,
     cdk.Fn.join(separator, [...listToJoin, env]),
@@ -539,8 +534,8 @@ function getStorageArn(context: TransformerContextProvider, bucketName: string):
   };
 
   if (referencesEnv(bucketName)) {
-    const env = context.parameterManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
-    substitutions.env = env as unknown as string;
+    const env = context.synthParameters.amplifyEnvironmentName;
+    substitutions.env = env;
   }
 
   return cdk.Fn.conditionIf(

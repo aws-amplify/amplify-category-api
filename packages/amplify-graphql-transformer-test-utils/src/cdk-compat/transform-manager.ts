@@ -1,12 +1,6 @@
-import { App, CfnParameter, CfnParameterProps, Stack } from 'aws-cdk-lib';
+import { App, CfnParameter, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import type {
-  AssetProvider,
-  NestedStackProvider,
-  S3Asset,
-  AssetProps,
-  ParameterManager,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import type { AssetProvider, NestedStackProvider, S3Asset, AssetProps, SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { DeploymentResources, Template } from '../deployment-resources';
 import { TransformerStackSythesizer } from './stack-synthesizer';
 import { TransformerNestedStack } from './nested-stack';
@@ -62,15 +56,27 @@ export class TransformManager {
     };
   }
 
-  getParameterManager(): ParameterManager {
-    return {
-      addParameter: (name: string, props: CfnParameterProps): CfnParameter => {
-        const param = new CfnParameter(this.rootStack, name, props);
-        this.paramMap.set(name, param);
-        return param;
-      },
-      getParameter: (name: string): CfnParameter | void => this.paramMap.get(name),
+  getSynthParameters(hasIamAuth: boolean, hasUserPoolAuth: boolean): SynthParameters {
+    const envParameter = new CfnParameter(this.rootStack, 'env', {
+      default: 'NONE',
+      type: 'String',
+    });
+    const apiNameParameter = new CfnParameter(this.rootStack, 'AppSyncApiName', {
+      default: 'AppSyncSimpleTransform',
+      type: 'String',
+    });
+    const synthParameters: SynthParameters = {
+      amplifyEnvironmentName: envParameter.valueAsString,
+      apiName: apiNameParameter.valueAsString,
     };
+    if (hasIamAuth) {
+      synthParameters.authenticatedUserRoleName = new CfnParameter(this.rootStack, 'authRoleName', { type: 'String' }).valueAsString;
+      synthParameters.unauthenticatedUserRoleName = new CfnParameter(this.rootStack, 'unauthRoleName', { type: 'String' }).valueAsString;
+    }
+    if (hasUserPoolAuth) {
+      synthParameters.userPoolId = new CfnParameter(this.rootStack, 'AuthCognitoUserPoolId', { type: 'String' }).valueAsString;
+    }
+    return synthParameters;
   }
 
   generateDeploymentResources(): DeploymentResources {

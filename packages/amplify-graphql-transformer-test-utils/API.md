@@ -24,10 +24,10 @@ import { Construct } from 'constructs';
 import { DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import { ISynthesisSession } from 'aws-cdk-lib';
 import type { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import type { ParameterManager } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
 import { Stack } from 'aws-cdk-lib';
+import type { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
@@ -152,7 +152,7 @@ export class TransformManager {
     // (undocumented)
     getNestedStackProvider(): NestedStackProvider;
     // (undocumented)
-    getParameterManager(): ParameterManager;
+    getSynthParameters(hasIamAuth: boolean, hasUserPoolAuth: boolean): SynthParameters;
     // (undocumented)
     getTransformScope(): Construct;
     // Warning: (ae-forgotten-export) The symbol "TransformerRootStack" needs to be exported by the entry point index.d.ts

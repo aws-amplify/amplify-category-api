@@ -175,6 +175,17 @@ place .graphql files in a directory at ${schemaDirPath}`);
   return transformerOutput;
 };
 
+const getAuthenticationTypesForAuthConfig = (authConfig?: AppSyncAuthConfiguration): (string | undefined)[] =>
+  [authConfig?.defaultAuthentication, ...(authConfig?.additionalAuthenticationProviders ?? [])].map(
+    (authConfigEntry) => authConfigEntry?.authenticationType,
+  );
+
+const hasIamAuth = (authConfig?: AppSyncAuthConfiguration): boolean =>
+  getAuthenticationTypesForAuthConfig(authConfig).some((authType) => authType === 'AWS_IAM');
+
+const hasUserPoolAuth = (authConfig?: AppSyncAuthConfiguration): boolean =>
+  getAuthenticationTypesForAuthConfig(authConfig).some((authType) => authType === 'AMAZON_COGNITO_USER_POOLS');
+
 /**
  * buildAPIProject
  */
@@ -201,7 +212,7 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
     scope: transformManager.rootStack,
     nestedStackProvider: transformManager.getNestedStackProvider(),
     assetProvider: transformManager.getAssetProvider(),
-    parameterManager: transformManager.getParameterManager(),
+    synthParameters: transformManager.getSynthParameters(hasIamAuth(opts.authConfig), hasUserPoolAuth(opts.authConfig)),
     schema,
     modelToDatasourceMap: opts.projectConfig.modelToDatasourceMap,
     datasourceSecretParameterLocations: datasourceSecretMap,

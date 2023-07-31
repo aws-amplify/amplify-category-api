@@ -1,5 +1,4 @@
 import { Match, Template } from 'aws-cdk-lib/assertions';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { FunctionTransformer } from '..';

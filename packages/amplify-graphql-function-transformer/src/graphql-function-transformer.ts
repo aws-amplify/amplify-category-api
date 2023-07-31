@@ -1,11 +1,4 @@
-import {
-  DirectiveWrapper,
-  generateGetArgumentsInput,
-  IAM_AUTH_ROLE_PARAMETER,
-  IAM_UNAUTH_ROLE_PARAMETER,
-  MappingTemplate,
-  TransformerPluginBase,
-} from '@aws-amplify/graphql-transformer-core';
+import { DirectiveWrapper, generateGetArgumentsInput, MappingTemplate, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
@@ -65,7 +58,7 @@ export class FunctionTransformer extends TransformerPluginBase {
 
     const stack: cdk.Stack = context.stackManager.createStack(FUNCTION_DIRECTIVE_STACK);
     const createdResources = new Map<string, any>();
-    const env = context.parameterManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+    const env = context.synthParameters.amplifyEnvironmentName;
 
     stack.templateOptions.templateFormatVersion = '2010-09-09';
     stack.templateOptions.description = 'An auto-generated nested stack for the @function directive.';
@@ -146,19 +139,12 @@ export class FunctionTransformer extends TransformerPluginBase {
           (mode) => mode?.authenticationType,
         );
         if (authModes.includes(AuthorizationType.IAM)) {
-          const authRoleParameter = (context.parameterManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
-          const unauthRoleParameter = (context.parameterManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
+          const authRole = context.synthParameters.authenticatedUserRoleName;
+          const unauthRole = context.synthParameters.unauthenticatedUserRoleName;
+          const account = cdk.Stack.of(context.stackManager.scope).account;
           requestTemplate.push(
-            qref(
-              `$ctx.stash.put("authRole", "arn:aws:sts::${
-                cdk.Stack.of(context.stackManager.scope).account
-              }:assumed-role/${authRoleParameter}/CognitoIdentityCredentials")`,
-            ),
-            qref(
-              `$ctx.stash.put("unauthRole", "arn:aws:sts::${
-                cdk.Stack.of(context.stackManager.scope).account
-              }:assumed-role/${unauthRoleParameter}/CognitoIdentityCredentials")`,
-            ),
+            qref(`$ctx.stash.put("authRole", "arn:aws:sts::${account}:assumed-role/${authRole}/CognitoIdentityCredentials")`),
+            qref(`$ctx.stash.put("unauthRole", "arn:aws:sts::${account}:assumed-role/${unauthRole}/CognitoIdentityCredentials")`),
           );
         }
         requestTemplate.push(obj({}));
@@ -188,18 +174,20 @@ export class FunctionTransformer extends TransformerPluginBase {
   };
 }
 
-function lambdaArnResource(env: cdk.CfnParameter, name: string, region?: string, accountId?: string): string {
+const lambdaArnResource = (env: string, name: string, region?: string, accountId?: string): string => {
   const substitutions: { [key: string]: string } = {};
+  // eslint-disable-next-line no-template-curly-in-string
   if (name.includes('${env}')) {
-    substitutions.env = env as unknown as string;
+    substitutions.env = env;
   }
   return cdk.Fn.conditionIf(
     ResourceConstants.CONDITIONS.HasEnvironmentParameter,
     cdk.Fn.sub(lambdaArnKey(name, region, accountId), substitutions),
     cdk.Fn.sub(lambdaArnKey(name.replace(/(-\${env})/, ''), region, accountId)),
   ).toString();
-}
+};
 
-function lambdaArnKey(name: string, region?: string, accountId?: string): string {
+const lambdaArnKey = (name: string, region?: string, accountId?: string): string => {
+  // eslint-disable-next-line no-template-curly-in-string
   return `arn:aws:lambda:${region ? region : '${AWS::Region}'}:${accountId ? accountId : '${AWS::AccountId}'}:function:${name}`;
-}
+};

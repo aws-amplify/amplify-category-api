@@ -25,9 +25,7 @@ describe('basic functionality', () => {
 
     template.resourceCountIs('AWS::AppSync::GraphQLApi', 1);
     template.hasResourceProperties('AWS::AppSync::GraphQLApi', {
-      Name: {
-        'Fn::Join': ['', Match.arrayWith(['MyApi'])],
-      },
+      Name: 'MyApi-NONE',
     });
 
     template.resourceCountIs('AWS::AppSync::DataSource', 1);
@@ -106,9 +104,7 @@ describe('basic functionality', () => {
 
     template.resourceCountIs('AWS::AppSync::GraphQLApi', 1);
     template.hasResourceProperties('AWS::AppSync::GraphQLApi', {
-      Name: {
-        'Fn::Join': ['', Match.arrayWith(['TestApi'])],
-      },
+      Name: 'TestApi-NONE',
     });
   });
 });

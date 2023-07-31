@@ -1,10 +1,10 @@
 import {
   GraphQLAPIProvider,
   ModelFieldMap,
-  ParameterManager,
+  SynthParameters,
   TransformerResourceHelperProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { CfnParameter, Token } from 'aws-cdk-lib';
+import { Token } from 'aws-cdk-lib';
 import { ModelResourceIDs } from 'graphql-transformer-common';
 import md5 from 'md5';
 import { DirectiveNode, FieldNode, ObjectTypeDefinitionNode, ObjectTypeExtensionNode } from 'graphql';
@@ -24,7 +24,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
   // a map of objects that define fields of a model that are renamed
   readonly #modelFieldMaps = new Map<string, ModelFieldMap>();
 
-  constructor(private parameterManager: ParameterManager) {
+  constructor(private synthParameters: SynthParameters) {
     // set the model name mapping in ModelResourceIDs to use the same mapping as this class
     // yes, it would be better if ModelResourceIDs didn't have a bunch of static methods and this map could be injected into that class
     // but it would also be better if I could eat chocolate cake all day
@@ -38,8 +38,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     if (!this.api) {
       throw new Error('API not initialized');
     }
-    this.ensureEnv();
-    const env = (this.parameterManager.getParameter('env') as CfnParameter).valueAsString;
+    const env = this.synthParameters.amplifyEnvironmentName;
     const { apiId } = this.api!;
     const baseName = this.#modelNameMap.get(modelName) ?? modelName;
     return `${baseName}-${apiId}-${env}`;
@@ -49,8 +48,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     if (!this.api) {
       throw new Error('API not initialized');
     }
-    this.ensureEnv();
-    const env = (this.parameterManager.getParameter('env') as CfnParameter).valueAsString;
+    const env = this.synthParameters.amplifyEnvironmentName;
     const { apiId } = this.api!;
     // 38 = 26(apiId) + 10(env) + 2(-)
     const shortName = `${Token.isUnresolved(name) ? name : name.slice(0, 64 - 38 - 6)}${md5(name).slice(0, 6)}`;
@@ -142,15 +140,6 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     directive: DirectiveNode,
   ): boolean => {
     return this.exclusionSet.has(this.convertDirectiveConfigToKey(object, field, directive));
-  };
-
-  private ensureEnv = (): void => {
-    if (!this.parameterManager.getParameter('env')) {
-      this.parameterManager.addParameter('env', {
-        type: 'String',
-        default: 'NONE',
-      });
-    }
   };
 
   private convertDirectiveConfigToKey = (

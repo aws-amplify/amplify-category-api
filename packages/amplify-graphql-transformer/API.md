@@ -10,10 +10,10 @@ import { Construct } from 'constructs';
 import { DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ParameterManager } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
+import { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
@@ -40,7 +40,7 @@ export type ExecuteTransformConfig = TransformConfig & {
     scope: Construct;
     nestedStackProvider: NestedStackProvider;
     assetProvider: AssetProvider;
-    parameterManager: ParameterManager;
+    synthParameters: SynthParameters;
 };
 
 // @public (undocumented)

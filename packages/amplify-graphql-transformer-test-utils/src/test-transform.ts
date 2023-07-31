@@ -52,11 +52,18 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
 
   const transformManager = new TransformManager(overrideConfig);
 
+  const authConfigTypes = [authConfig?.defaultAuthentication, ...(authConfig?.additionalAuthenticationProviders ?? [])].map(
+    (authConfigEntry) => authConfigEntry?.authenticationType,
+  );
+
   transform.transform({
     scope: transformManager.getTransformScope(),
     nestedStackProvider: transformManager.getNestedStackProvider(),
     assetProvider: transformManager.getAssetProvider(),
-    parameterManager: transformManager.getParameterManager(),
+    synthParameters: transformManager.getSynthParameters(
+      authConfigTypes.some((type) => type === 'AWS_IAM'),
+      authConfigTypes.some((type) => type === 'AMAZON_COGNITO_USER_POOLS'),
+    ),
     schema,
     datasourceConfig: {
       modelToDatasourceMap,

@@ -8,7 +8,7 @@ import {
   AppSyncAuthConfiguration,
   VpcConfig,
   RDSLayerMapping,
-  ParameterManager,
+  SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { AssetProvider, NestedStackProvider, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
@@ -57,8 +57,6 @@ export class TransformerContext implements TransformerContextProvider {
 
   public readonly stackManager: StackManagerProvider;
 
-  public readonly parameterManager: ParameterManager;
-
   public readonly resourceHelper: TransformerResourceHelper;
 
   public readonly transformParameters: TransformParameters;
@@ -81,7 +79,7 @@ export class TransformerContext implements TransformerContextProvider {
     scope: Construct,
     nestedStackProvider: NestedStackProvider,
     assetProvider: AssetProvider,
-    parameterManager: ParameterManager,
+    public readonly synthParameters: SynthParameters,
     public readonly inputDocument: DocumentNode,
     modelToDatasourceMap: Map<string, DatasourceType>,
     stackMapping: Record<string, string>,
@@ -97,10 +95,9 @@ export class TransformerContext implements TransformerContextProvider {
     this.resolvers = new ResolverManager();
     this.dataSources = new TransformerDataSourceManager();
     this.providerRegistry = new TransformerContextProviderRegistry();
-    this.parameterManager = parameterManager;
     this.stackManager = new StackManager(scope, nestedStackProvider, stackMapping);
     this.authConfig = authConfig;
-    this.resourceHelper = new TransformerResourceHelper(this.parameterManager);
+    this.resourceHelper = new TransformerResourceHelper(this.synthParameters);
     this.transformParameters = transformParameters;
     this.resolverConfig = resolverConfig;
     this.metadata = new TransformerContextMetadata();

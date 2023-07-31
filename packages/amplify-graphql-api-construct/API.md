@@ -39,8 +39,6 @@ export type AmplifyApiSchemaPreprocessorOutput = {
 // @public
 export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends Construct {
     constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps<SchemaType>);
-    getGeneratedFunctionSlots(): FunctionSlot[];
-    readonly resources: AmplifyGraphqlApiResources;
 }
 
 // @public
