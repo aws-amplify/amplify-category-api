@@ -88,51 +88,51 @@ function cloudE2E {
 }
 
 function cloudE2EDebug {
-  echo Generating the debug E2E buildspec
-  if [ $# -eq 0 ]; then
-    echo "Please provide the batch build id of codebuild"
-    exit 1
-  fi
-  generatedDebugSpecForFailedTests $1
-  echo Running Prod E2E Test Suite
-  E2E_ROLE_NAME=CodebuildDeveloper
-  E2E_PROFILE_NAME=AmplifyAPIE2EProd
-  E2E_PROJECT_NAME=amplify-category-api-e2e-workflow
-  TARGET_BRANCH=$CURR_BRANCH
-  triggerProjectBatchWithDebugSession $E2E_ACCOUNT_PROD $E2E_ROLE_NAME $E2E_PROFILE_NAME $E2E_PROJECT_NAME $TARGET_BRANCH
+    echo Generating the debug E2E buildspec
+    if [ $# -eq 0 ]; then
+        echo "Please provide the batch build id of codebuild"
+        exit 1
+    fi
+    generatedDebugSpecForFailedTests $1
+    echo Running Prod E2E Test Suite
+    E2E_ROLE_NAME=CodebuildDeveloper
+    E2E_PROFILE_NAME=AmplifyAPIE2EProd
+    E2E_PROJECT_NAME=amplify-category-api-e2e-workflow
+    TARGET_BRANCH=$CURR_BRANCH
+    triggerProjectBatchWithDebugSession $E2E_ACCOUNT_PROD $E2E_ROLE_NAME $E2E_PROFILE_NAME $E2E_PROJECT_NAME $TARGET_BRANCH
 }
 
 function generatedDebugSpecForFailedTests {
-  # Get temporary access for the account
-  E2E_ROLE_NAME=CodebuildDeveloper
-  E2E_PROFILE_NAME=AmplifyAPIE2EProd
-  authenticate $E2E_ACCOUNT_PROD $E2E_ROLE_NAME "$E2E_PROFILE_NAME"
-  local batch_build_id=$1
-  echo "Getting failed test suites"
-  failed_tests=$(aws codebuild batch-get-build-batches --profile="$E2E_PROFILE_NAME" --ids "$batch_build_id" --region us-east-1 --query 'buildBatches[0].buildGroups' | jq -c '.[] | select(.currentBuildSummary.buildStatus == "FAILED").identifier')
-  if [ -z "$failed_tests" ]; then
-    echo "No failed tests found in batch $1"
-    exit 0
-  fi
-  echo $failed_tests | xargs yarn ts-node ./scripts/split-e2e-tests-codebuild.ts --debug
+    # Get temporary access for the account
+    E2E_ROLE_NAME=CodebuildDeveloper
+    E2E_PROFILE_NAME=AmplifyAPIE2EProd
+    authenticate $E2E_ACCOUNT_PROD $E2E_ROLE_NAME "$E2E_PROFILE_NAME"
+    local batch_build_id=$1
+    echo "Getting failed test suites"
+    failed_tests=$(aws codebuild batch-get-build-batches --profile="$E2E_PROFILE_NAME" --ids "$batch_build_id" --region us-east-1 --query 'buildBatches[0].buildGroups' | jq -c '.[] | select(.currentBuildSummary.buildStatus == "FAILED").identifier')
+    if [ -z "$failed_tests" ]; then
+        echo "No failed tests found in batch $1"
+        exit 0
+    fi
+    echo $failed_tests | xargs yarn ts-node ./scripts/split-e2e-tests-codebuild.ts --debug
 }
 
 function cleanupStaleResourcesBeta {
-  echo Running Beta E2E resource stale resource cleanup
-  CLEANUP_ROLE_NAME=CodebuildDeveloper
-  CLEANUP_PROFILE_NAME=AmplifyAPIE2EBeta
-  CLEANUP_PROJECT_NAME=amplify-category-api-cleanup-workflow
-  TARGET_BRANCH=$CURR_BRANCH
-  triggerProject $E2E_ACCOUNT_BETA $CLEANUP_ROLE_NAME $CLEANUP_PROFILE_NAME $CLEANUP_PROJECT_NAME $TARGET_BRANCH
+    echo Running Beta E2E resource stale resource cleanup
+    CLEANUP_ROLE_NAME=CodebuildDeveloper
+    CLEANUP_PROFILE_NAME=AmplifyAPIE2EBeta
+    CLEANUP_PROJECT_NAME=amplify-category-api-cleanup-workflow
+    TARGET_BRANCH=$CURR_BRANCH
+    triggerProject $E2E_ACCOUNT_BETA $CLEANUP_ROLE_NAME $CLEANUP_PROFILE_NAME $CLEANUP_PROJECT_NAME $TARGET_BRANCH
 }
 
 function cleanupStaleResources {
-  echo Running Prod E2E resource stale resource cleanup
-  CLEANUP_ROLE_NAME=CodebuildDeveloper
-  CLEANUP_PROFILE_NAME=AmplifyAPIE2EProd
-  CLEANUP_PROJECT_NAME=amplify-category-api-cleanup-workflow
-  TARGET_BRANCH=$CURR_BRANCH
-  triggerProject $E2E_ACCOUNT_PROD $CLEANUP_ROLE_NAME $CLEANUP_PROFILE_NAME $CLEANUP_PROJECT_NAME $TARGET_BRANCH
+    echo Running Prod E2E resource stale resource cleanup
+    CLEANUP_ROLE_NAME=CodebuildDeveloper
+    CLEANUP_PROFILE_NAME=AmplifyAPIE2EProd
+    CLEANUP_PROJECT_NAME=amplify-category-api-cleanup-workflow
+    TARGET_BRANCH=$CURR_BRANCH
+    triggerProject $E2E_ACCOUNT_PROD $CLEANUP_ROLE_NAME $CLEANUP_PROFILE_NAME $CLEANUP_PROJECT_NAME $TARGET_BRANCH
 }
 
 function authenticateWithE2EProfile {
