@@ -44,9 +44,10 @@ function triggerProjectBatchWithDebugSession {
     echo AWS Account: $account_number
     echo Project: $project_name 
     echo Target Branch: $target_branch
+    debug_spec=$(cat codebuild_specs/debug_workflow.yml)
     RESULT=$(aws codebuild start-build-batch --region=$REGION --profile="${profile_name}" --project-name $project_name --source-version=$target_branch \
      --debug-session-enabled \
-     --buildspec-override "codebuild_specs/debug_workflow.yml" \
+     --buildspec-override "$debug_spec" \
      --environment-variables-override name=BRANCH_NAME,value=$target_branch,type=PLAINTEXT \
      --query 'buildBatch.id' --output text)
     echo "https://$REGION.console.aws.amazon.com/codesuite/codebuild/$account_number/projects/$project_name/batch/$RESULT?region=$REGION"
