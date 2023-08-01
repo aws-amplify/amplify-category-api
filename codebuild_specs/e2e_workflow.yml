@@ -16,14 +16,49 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
       depend-on:
         - build_linux
-    - identifier: auth_2_datastore_modelgen_amplify_app_custom_transformers
+    - identifier: schema_iterative_rollback_1
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_MEDIUM
+        compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: >-
-            src/__tests__/auth_2.test.ts|src/__tests__/datastore-modelgen.test.ts|src/__tests__/amplify-app.test.ts|src/__tests__/graphql-v2/custom-transformers.test.ts
-          CLI_REGION: us-east-1
+          TEST_SUITE: src/__tests__/schema-iterative-rollback-1.test.ts
+          CLI_REGION: eu-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: schema_iterative_rollback_2
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/schema-iterative-rollback-2.test.ts
+          CLI_REGION: ap-southeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: schema_auth_11
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/schema-auth-11.test.ts
+          CLI_REGION: eu-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: api_11
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/api_11.test.ts
+          CLI_REGION: ap-southeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: api_2
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/api_2.test.ts
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: cleanup_e2e_resources
@@ -31,4 +66,4 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_SMALL
       depend-on:
-        - auth_2_datastore_modelgen_amplify_app_custom_transformers
+        - schema_iterative_rollback_1

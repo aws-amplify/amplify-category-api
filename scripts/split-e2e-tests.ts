@@ -40,6 +40,7 @@ const CODEBUILD_DEBUG_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'debug_wo
 const RUN_SOLO = [
   'src/__tests__/apigw.test.ts',
   'src/__tests__/api_2.test.ts',
+  'src/__tests__/api_11.test.ts',
   'src/__tests__/containers-api-1.test.ts',
   'src/__tests__/containers-api-2.test.ts',
   'src/__tests__/graphql-v2/searchable-datastore.test.ts',
@@ -64,6 +65,8 @@ const RUN_SOLO = [
   'src/__tests__/schema-auth-13.test.ts',
   'src/__tests__/schema-auth-14.test.ts',
   'src/__tests__/schema-auth-15.test.ts',
+  'src/__tests__/schema-iterative-rollback-1.test.ts',
+  'src/__tests__/schema-iterative-rollback-2.test.ts',
   'src/__tests__/schema-iterative-update-4.test.ts',
   'src/__tests__/schema-iterative-update-5.test.ts',
   'src/__tests__/schema-model.test.ts',
