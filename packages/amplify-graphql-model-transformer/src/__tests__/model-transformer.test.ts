@@ -1558,4 +1558,38 @@ describe('ModelTransformer: ', () => {
     validateModelSchema(parse(out.schema));
     parse(out.schema);
   });
+
+  it('should successfully transform rds schema with array and object fields', async () => {
+    const validSchema = `
+      type Note @model {
+          id: ID!
+          content: String!
+          tags: [String!]
+          attachments: Attachment
+      }
+
+      type Attachment {
+        report: String!
+        image: String!
+      }
+    `;
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+    });
+    const modelToDatasourceMap = new Map<string, DatasourceType>();
+    modelToDatasourceMap.set('Note', {
+      dbType: 'MySQL',
+      provisionDB: false,
+    });
+    const out = transformer.transform(validSchema, {
+      modelToDatasourceMap,
+    });
+    expect(out).toBeDefined();
+
+    validateModelSchema(parse(out.schema));
+    parse(out.schema);
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers).toMatchSnapshot();
+  });
 });
