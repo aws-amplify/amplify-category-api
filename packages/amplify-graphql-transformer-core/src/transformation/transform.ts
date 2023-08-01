@@ -11,7 +11,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { AssetProvider, StackManagerProvider, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
-import { Aws, CfnOutput, Fn } from 'aws-cdk-lib';
+import { Aws, CfnOutput, Fn, Stack } from 'aws-cdk-lib';
 import {
   EnumTypeDefinitionNode,
   EnumValueDefinitionNode,
@@ -358,20 +358,20 @@ export class GraphQLTransform {
         expires: apiKeyExpirationDays,
       });
 
-      new CfnOutput(scope, 'GraphQLAPIKeyOutput', {
+      new CfnOutput(Stack.of(scope), 'GraphQLAPIKeyOutput', {
         value: apiKey.attrApiKey,
         description: 'Your GraphQL API ID.',
         exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiKey']),
       });
     }
 
-    new CfnOutput(scope, 'GraphQLAPIIdOutput', {
+    new CfnOutput(Stack.of(scope), 'GraphQLAPIIdOutput', {
       value: api.apiId,
       description: 'Your GraphQL API ID.',
       exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiId']),
     });
 
-    new CfnOutput(scope, 'GraphQLAPIEndpointOutput', {
+    new CfnOutput(Stack.of(scope), 'GraphQLAPIEndpointOutput', {
       value: api.graphqlUrl,
       description: 'Your GraphQL API endpoint.',
       exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiEndpoint']),

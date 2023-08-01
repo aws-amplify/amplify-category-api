@@ -25,29 +25,29 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
 
     if (this.isProvisioned()) {
       // add model related-parameters to the root stack
-      const { scope } = ctx.stackManager;
-      new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
+      const rootStack = cdk.Stack.of(ctx.stackManager.scope);
+      new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
         description: 'The number of read IOPS the table should support.',
         type: 'Number',
         default: 5,
       });
-      new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
+      new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
         description: 'The number of write IOPS the table should support.',
         type: 'Number',
         default: 5,
       });
-      new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
+      new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
         description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
         default: 'PAY_PER_REQUEST',
         allowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
       });
-      new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
+      new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
         description: 'Whether to enable Point in Time Recovery on the table.',
         type: 'String',
         default: 'false',
         allowedValues: ['true', 'false'],
       });
-      new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
+      new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
         description: 'Enable server side encryption powered by KMS.',
         type: 'String',
         default: 'true',
@@ -160,15 +160,17 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     };
 
     const streamArnOutputId = `GetAtt${ModelResourceIDs.ModelTableStreamArn(def!.name.value)}`;
-    new cdk.CfnOutput(scope, streamArnOutputId, {
-      value: cdk.Fn.getAtt(tableLogicalName, 'StreamArn').toString(),
-      description: 'Your DynamoDB table StreamArn.',
-      exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', tableLogicalName, 'StreamArn']),
-    });
+    if (table.tableStreamArn) {
+      new cdk.CfnOutput(cdk.Stack.of(scope), streamArnOutputId, {
+        value: table.tableStreamArn,
+        description: 'Your DynamoDB table StreamArn.',
+        exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', tableLogicalName, 'StreamArn']),
+      });
+    }
 
     const tableNameOutputId = `GetAtt${tableLogicalName}Name`;
-    new cdk.CfnOutput(scope, tableNameOutputId, {
-      value: cdk.Fn.ref(tableLogicalName),
+    new cdk.CfnOutput(cdk.Stack.of(scope), tableNameOutputId, {
+      value: table.tableName,
       description: 'Your DynamoDB table name.',
       exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', tableLogicalName, 'Name']),
     });
@@ -209,7 +211,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     }
 
     const datasourceOutputId = `GetAtt${datasourceRoleLogicalID}Name`;
-    new cdk.CfnOutput(scope, datasourceOutputId, {
+    new cdk.CfnOutput(cdk.Stack.of(scope), datasourceOutputId, {
       value: dataSource.ds.attrName,
       description: 'Your model DataSource name.',
       exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', datasourceRoleLogicalID, 'Name']),
