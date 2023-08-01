@@ -19,7 +19,7 @@ function generatedDebugSpecForFailedTests {
     echo "No failed tests found in batch $1"
     exit 0
   fi
-  echo $failed_tests | xargs yarn ts-node ./scripts/split-e2e-tests-codebuild.ts --debug
+  echo $failed_tests | xargs yarn ts-node ./scripts/split-e2e-tests.ts --debug
   echo ""
   echo "Next steps:"
   echo "- add 'codebuild-breakpoint' to desired location in build specs or shared scripts"
