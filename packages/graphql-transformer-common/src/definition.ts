@@ -112,6 +112,18 @@ export function isScalarOrEnum(type: TypeNode, enums: EnumTypeDefinitionNode[]) 
   }
 }
 
+export const isArrayOrObject = (type: TypeNode, enums: EnumTypeDefinitionNode[]): boolean => {
+  if (type.kind === Kind.NON_NULL_TYPE) {
+    return isArrayOrObject(type.type, enums);
+  } else if (type.kind === Kind.LIST_TYPE) {
+    return true;
+  } else if (enums.some((e) => e.name.value === type.name.value)) {
+    return false;
+  } else {
+    return !DEFAULT_SCALARS[type.name.value];
+  }
+};
+
 export function isEnum(type: TypeNode, document: DocumentNode) {
   const baseType = getBaseType(type);
   return document.definitions.find((def) => {

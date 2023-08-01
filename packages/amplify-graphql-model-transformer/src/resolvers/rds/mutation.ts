@@ -12,7 +12,9 @@ import {
   str,
   toJson,
 } from 'graphql-mapping-template';
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelDirectiveConfiguration } from '../../directive';
+import { constructNonScalarFieldsStatement } from './resolver';
 
 /**
  * Generate mapping template that sets default values for create mutation
@@ -53,7 +55,7 @@ export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
   return printBlock('Initialization default values')(compoundExpression(statements));
 };
 
-export const generateLambdaCreateRequestTemplate = (tableName: string, operationName: string): string =>
+export const generateLambdaCreateRequestTemplate = (tableName: string, operationName: string, ctx: TransformerContextProvider): string =>
   printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
@@ -63,6 +65,7 @@ export const generateLambdaCreateRequestTemplate = (tableName: string, operation
       set(ref('lambdaInput.operationName'), str(operationName)),
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
+      constructNonScalarFieldsStatement(tableName, ctx),
       qref(
         methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
       ),
@@ -115,7 +118,12 @@ export const generateUpdateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
 /**
  * Generate VTL template that calls the lambda for an Update mutation
  */
-export const generateLambdaUpdateRequestTemplate = (tableName: string, operationName: string, modelIndexFields: string[]): string =>
+export const generateLambdaUpdateRequestTemplate = (
+  tableName: string,
+  operationName: string,
+  modelIndexFields: string[],
+  ctx: TransformerContextProvider,
+): string =>
   printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
@@ -125,6 +133,7 @@ export const generateLambdaUpdateRequestTemplate = (tableName: string, operation
       set(ref('lambdaInput.operationName'), str(operationName)),
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
+      constructNonScalarFieldsStatement(tableName, ctx),
       qref(
         methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
       ),
@@ -146,7 +155,12 @@ export const generateLambdaUpdateRequestTemplate = (tableName: string, operation
 /**
  * Generate VTL template that calls the lambda for a Delete mutation
  */
-export const generateLambdaDeleteRequestTemplate = (tableName: string, operationName: string, modelIndexFields: string[]): string =>
+export const generateLambdaDeleteRequestTemplate = (
+  tableName: string,
+  operationName: string,
+  modelIndexFields: string[],
+  ctx: TransformerContextProvider,
+): string =>
   printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
@@ -156,6 +170,7 @@ export const generateLambdaDeleteRequestTemplate = (tableName: string, operation
       set(ref('lambdaInput.operationName'), str(operationName)),
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
+      constructNonScalarFieldsStatement(tableName, ctx),
       qref(
         methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
       ),

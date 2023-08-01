@@ -13,14 +13,15 @@ import {
   str,
   toJson,
 } from 'graphql-mapping-template';
-import { ResourceConstants } from 'graphql-transformer-common';
+import { ResourceConstants, isArrayOrObject } from 'graphql-transformer-common';
 import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
-import { GraphQLAPIProvider, RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
+import { GraphQLAPIProvider, RDSLayerMapping, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import path from 'path';
 import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces/src';
+import { EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 
 /**
  * Define RDS Lambda operations
@@ -293,7 +294,12 @@ export const createRdsPatchingLambdaRole = (roleName: string, stack: Construct, 
  * @param operation string
  * @param operationName string
  */
-export const generateLambdaRequestTemplate = (tableName: string, operation: string, operationName: string): string =>
+export const generateLambdaRequestTemplate = (
+  tableName: string,
+  operation: string,
+  operationName: string,
+  ctx: TransformerContextProvider,
+): string =>
   printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
@@ -303,6 +309,7 @@ export const generateLambdaRequestTemplate = (tableName: string, operation: stri
       set(ref('lambdaInput.operationName'), str(operationName)),
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
+      constructNonScalarFieldsStatement(tableName, ctx),
       qref(
         methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
       ),
@@ -364,3 +371,14 @@ export const generateDefaultLambdaResponseMappingTemplate = (isSyncEnabled: bool
 
   return printBlock('ResponseTemplate')(compoundExpression(statements));
 };
+
+export const getNonScalarFields = (object: ObjectTypeDefinitionNode | undefined, ctx: TransformerContextProvider): string[] => {
+  if (!object) {
+    return [];
+  }
+  const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
+  return object.fields?.filter((f: FieldDefinitionNode) => isArrayOrObject(f.type, enums)).map((f) => f.name.value) || [];
+};
+
+export const constructNonScalarFieldsStatement = (tableName: string, ctx: TransformerContextProvider): Expression =>
+  set(ref('lambdaInput.args.metadata.nonScalarFields'), list(getNonScalarFields(ctx.output.getObject(tableName), ctx).map(str)));

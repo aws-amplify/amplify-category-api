@@ -1,6 +1,13 @@
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { compoundExpression, list, methodCall, obj, printBlock, qref, ref, set, str } from 'graphql-mapping-template';
+import { constructNonScalarFieldsStatement } from './resolver';
 
-export const generateLambdaListRequestTemplate = (tableName: string, operation: string, operationName: string): string => {
+export const generateLambdaListRequestTemplate = (
+  tableName: string,
+  operation: string,
+  operationName: string,
+  ctx: TransformerContextProvider,
+): string => {
   return printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
@@ -10,6 +17,7 @@ export const generateLambdaListRequestTemplate = (tableName: string, operation: 
       set(ref('lambdaInput.operationName'), str(operationName)),
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
+      constructNonScalarFieldsStatement(tableName, ctx),
       qref(
         methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
       ),
