@@ -9,4 +9,4 @@ phases:
   build:
     commands:
       - yarn production-build
-      - cd packages/amplify-e2e-tests && yarn clean-cb-e2e-resources
+      - cd packages/amplify-e2e-tests && yarn clean-e2e-resources
