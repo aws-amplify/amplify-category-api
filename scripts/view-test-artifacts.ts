@@ -16,8 +16,8 @@ import { CodeBuild, S3, SharedIniFileCredentials } from 'aws-sdk';
 import { SingleBar, Presets } from 'cli-progress';
 import execa from 'execa';
 
-const E2E_PROFILE_NAME='AmplifyAPIE2EProd';
-const credentials = new SharedIniFileCredentials({profile: E2E_PROFILE_NAME});
+const E2E_PROFILE_NAME = 'AmplifyAPIE2EProd';
+const credentials = new SharedIniFileCredentials({ profile: E2E_PROFILE_NAME });
 const s3 = new S3({ credentials });
 const codeBuild = new CodeBuild({ credentials, region: 'us-east-1' });
 const progressBar = new SingleBar({}, Presets.shades_classic);
