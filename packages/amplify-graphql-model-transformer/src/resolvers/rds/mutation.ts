@@ -118,7 +118,12 @@ export const generateUpdateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
 /**
  * Generate VTL template that calls the lambda for an Update mutation
  */
-export const generateLambdaUpdateRequestTemplate = (tableName: string, operationName: string, modelIndexFields: string[], ctx: TransformerContextProvider): string =>
+export const generateLambdaUpdateRequestTemplate = (
+  tableName: string,
+  operationName: string,
+  modelIndexFields: string[],
+  ctx: TransformerContextProvider,
+): string =>
   printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),

@@ -294,7 +294,12 @@ export const createRdsPatchingLambdaRole = (roleName: string, stack: Construct, 
  * @param operation string
  * @param operationName string
  */
-export const generateLambdaRequestTemplate = (tableName: string, operation: string, operationName: string, ctx: TransformerContextProvider): string =>
+export const generateLambdaRequestTemplate = (
+  tableName: string,
+  operation: string,
+  operationName: string,
+  ctx: TransformerContextProvider,
+): string =>
   printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
@@ -375,5 +380,5 @@ export const getNonScalarFields = (object: ObjectTypeDefinitionNode | undefined,
   return object.fields?.filter((f: FieldDefinitionNode) => isArrayOrObject(f.type, enums)).map((f) => f.name.value) || [];
 };
 
-export const constructNonScalarFieldsStatement = (tableName: string, ctx: TransformerContextProvider): Expression => 
+export const constructNonScalarFieldsStatement = (tableName: string, ctx: TransformerContextProvider): Expression =>
   set(ref('lambdaInput.args.metadata.nonScalarFields'), list(getNonScalarFields(ctx.output.getObject(tableName), ctx).map(str)));

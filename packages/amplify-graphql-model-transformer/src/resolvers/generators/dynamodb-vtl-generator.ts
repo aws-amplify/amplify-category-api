@@ -30,7 +30,7 @@ export class DynamoDBModelVTLGenerator implements ModelVTLGenerator {
   generateCreateRequestTemplate(config: ModelCreateRequestConfig, ctx: TransformerContextProvider): string {
     return generateCreateRequestTemplate(config.modelName, config.modelIndexFields);
   }
-  
+
   generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig, initializeIdField: boolean): string {
     return generateCreateInitSlotTemplate(config.modelConfig, initializeIdField);
   }

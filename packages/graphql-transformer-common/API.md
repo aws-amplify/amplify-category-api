@@ -94,6 +94,9 @@ export class HttpResourceIDs {
 }
 
 // @public (undocumented)
+export const isArrayOrObject: (type: TypeNode, enums: EnumTypeDefinitionNode[]) => boolean;
+
+// @public (undocumented)
 export function isEnum(type: TypeNode, document: DocumentNode): DefinitionNode;
 
 // @public (undocumented)
