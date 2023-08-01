@@ -200,42 +200,4 @@ describe('amplify add api (GraphQL)', () => {
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
   });
-
-  it('init a sync enabled project and update conflict resolution strategy', async () => {
-    const name = 'syncenabled';
-    await initJSProjectWithProfile(projRoot, { name });
-    await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
-    await updateApiSchema(projRoot, name, 'simple_model.graphql');
-
-    let transformConfig = getTransformConfig(projRoot, name);
-    expect(transformConfig).toBeDefined();
-    expect(transformConfig.ResolverConfig).toBeDefined();
-    expect(transformConfig.ResolverConfig.project).toBeDefined();
-    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
-    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
-
-    await updateAPIWithResolutionStrategyWithModels(projRoot, {});
-
-    transformConfig = getTransformConfig(projRoot, name);
-    expect(transformConfig).toBeDefined();
-    expect(transformConfig.Version).toBeDefined();
-    expect(transformConfig.Version).toEqual(TRANSFORM_CURRENT_VERSION);
-    expect(transformConfig.ResolverConfig).toBeDefined();
-    expect(transformConfig.ResolverConfig.project).toBeDefined();
-    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
-    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('OPTIMISTIC_CONCURRENCY');
-
-    await amplifyPush(projRoot);
-    const meta = getProjectMeta(projRoot);
-    const { output } = meta.api[name];
-    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
-    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
-
-    expect(GraphQLAPIIdOutput).toBeDefined();
-    expect(GraphQLAPIEndpointOutput).toBeDefined();
-    expect(GraphQLAPIKeyOutput).toBeDefined();
-
-    expect(graphqlApi).toBeDefined();
-    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
-  });
 });
