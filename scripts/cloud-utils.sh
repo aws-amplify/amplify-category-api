@@ -112,3 +112,9 @@ function cleanupStaleResources {
   TARGET_BRANCH=$CURR_BRANCH
   triggerProject $E2E_ACCOUNT_PROD $CLEANUP_ROLE_NAME $CLEANUP_PROFILE_NAME $CLEANUP_PROJECT_NAME $TARGET_BRANCH
 }
+
+function authenticateWithE2EProfile {
+    E2E_ROLE_NAME=CodebuildDeveloper
+    E2E_PROFILE_NAME=AmplifyAPIE2EProd
+    authenticate $E2E_ACCOUNT_PROD $E2E_ROLE_NAME $E2E_PROFILE_NAME
+}

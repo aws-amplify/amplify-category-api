@@ -11,12 +11,15 @@ import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs-extra';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { CodeBuild, S3 } from 'aws-sdk';
+import { CodeBuild, S3, SharedIniFileCredentials } from 'aws-sdk';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { SingleBar, Presets } from 'cli-progress';
 import execa from 'execa';
 
-const s3 = new S3();
+const E2E_PROFILE_NAME='AmplifyAPIE2EProd';
+const credentials = new SharedIniFileCredentials({profile: E2E_PROFILE_NAME});
+const s3 = new S3({ credentials });
+const codeBuild = new CodeBuild({ credentials, region: 'us-east-1' });
 const progressBar = new SingleBar({}, Presets.shades_classic);
 
 type BuildStatus = 'FAILED' | 'FAULT' | 'IN_PROGRESS' | 'STOPPED' | 'SUCCEEDED' | 'TIMED_OUT';
@@ -82,7 +85,6 @@ const generateIndexFile = (directory: string, artifacts: TestArtifact[]): void =
  * @param batchId the batch to look up.
  */
 const retrieveArtifactsForBatch = async (batchId: string): Promise<TestArtifact[]> => {
-  const codeBuild = new CodeBuild({ region: 'us-east-1' });
   const { buildBatches } = await codeBuild.batchGetBuildBatches({ ids: [batchId] }).promise();
   return (buildBatches || [])
     .flatMap((batch) =>
