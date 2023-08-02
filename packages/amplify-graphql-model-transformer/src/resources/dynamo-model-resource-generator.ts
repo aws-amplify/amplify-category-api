@@ -146,6 +146,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     });
     const cfnTable = table.node.defaultChild as CfnTable;
     setResourceName(cfnTable, modelName);
+    setResourceName(table, modelName);
 
     cfnTable.provisionedThroughput = cdk.Fn.conditionIf(usePayPerRequestBilling.logicalId, cdk.Fn.ref('AWS::NoValue'), {
       ReadCapacityUnits: readIops,
@@ -234,6 +235,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
       assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
     });
     setResourceName(role.node.defaultChild!, ModelResourceIDs.ModelTableIAMRoleID(def!.name.value));
+    setResourceName(role, ModelResourceIDs.ModelTableIAMRoleID(def!.name.value));
 
     const amplifyDataStoreTableName = context.resourceHelper.generateTableName(SyncResourceIDs.syncTableName);
     role.attachInlinePolicy(

@@ -19,7 +19,9 @@ import { Construct } from 'constructs';
 import { Duration } from 'aws-cdk-lib';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { IGraphqlApi } from 'aws-cdk-lib/aws-appsync';
 import { IRole } from 'aws-cdk-lib/aws-iam';
+import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -43,6 +45,20 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
 }
 
 // @public
+export type AmplifyGraphqlApiL1Resources = {
+    cfnGraphqlApi: CfnGraphQLApi;
+    cfnGraphqlSchema: CfnGraphQLSchema;
+    cfnApiKey?: CfnApiKey;
+    cfnResolvers: Record<string, CfnResolver>;
+    cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration>;
+    cfnDataSources: Record<string, CfnDataSource>;
+    cfnTables: Record<string, CfnTable>;
+    cfnRoles: Record<string, CfnRole>;
+    cfnFunctions: Record<string, CfnFunction>;
+    additionalCfnResources: Record<string, CfnResource>;
+};
+
+// @public
 export type AmplifyGraphqlApiProps<SchemaType = AmplifyApiGraphqlSchema> = {
     schema: SchemaType;
     schemaPreprocessor?: AmplifyApiSchemaPreprocessor<SchemaType>;
@@ -59,16 +75,11 @@ export type AmplifyGraphqlApiProps<SchemaType = AmplifyApiGraphqlSchema> = {
 
 // @public
 export type AmplifyGraphqlApiResources = {
-    cfnGraphqlApi: CfnGraphQLApi;
-    cfnGraphqlSchema: CfnGraphQLSchema;
-    cfnApiKey?: CfnApiKey;
-    cfnResolvers: Record<string, CfnResolver>;
-    cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration>;
-    cfnDataSources: Record<string, CfnDataSource>;
-    cfnTables: Record<string, CfnTable>;
-    cfnRoles: Record<string, CfnRole>;
-    cfnFunctions: Record<string, CfnFunction>;
-    additionalCfnResources: Record<string, CfnResource>;
+    graphqlApi: IGraphqlApi;
+    tables: Record<string, ITable>;
+    roles: Record<string, IRole>;
+    functions: Record<string, IFunction>;
+    cfnResources: AmplifyGraphqlApiL1Resources;
 };
 
 // @public

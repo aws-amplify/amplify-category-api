@@ -168,6 +168,7 @@ export class PredictionsTransformer extends TransformerPluginBase {
       assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
     });
     setResourceName(role.node.defaultChild!, PredictionsResourceIDs.iamRole);
+    setResourceName(role, PredictionsResourceIDs.iamRole);
 
     role.attachInlinePolicy(
       new iam.Policy(stack, 'PredictionsStorageAccess', {
@@ -410,7 +411,7 @@ function createPredictionsLambda(context: TransformerContextProvider, stack: cdk
       }),
     },
   });
-  setResourceName(role.node.defaultChild!, PredictionsResourceIDs.lambdaIAMRole);
+  setResourceName(role, PredictionsResourceIDs.lambdaIAMRole);
 
   return context.api.host.addLambdaFunction(
     PredictionsResourceIDs.lambdaName,

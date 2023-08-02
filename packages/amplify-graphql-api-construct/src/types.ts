@@ -8,9 +8,10 @@ import {
   CfnFunctionConfiguration,
   CfnDataSource,
   AppsyncFunctionProps,
+  IGraphqlApi,
 } from 'aws-cdk-lib/aws-appsync';
-import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
-import { IRole, CfnRole, CfnPolicy } from 'aws-cdk-lib/aws-iam';
+import { CfnTable, ITable } from 'aws-cdk-lib/aws-dynamodb';
+import { IRole, CfnRole } from 'aws-cdk-lib/aws-iam';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { IFunction, CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
@@ -381,10 +382,10 @@ export type AmplifyGraphqlApiProps<SchemaType = AmplifyApiGraphqlSchema> = {
 };
 
 /**
- * Accessible resources from the API which were generated as part of the transform.
+ * L1 CDK resources from the API which were generated as part of the transform.
  * These are potentially stored under nested stacks, but presented organized by type instead.
  */
-export type AmplifyGraphqlApiResources = {
+export type AmplifyGraphqlApiL1Resources = {
   /**
    * The Generated AppSync API L1 Resource
    */
@@ -429,8 +430,40 @@ export type AmplifyGraphqlApiResources = {
    * The Generated Lambda Function L1 Resources, keyed by function name.
    */
   cfnFunctions: Record<string, CfnFunction>;
+
   /**
    * Remaining L1 resources generated, keyed by logicalId.
    */
   additionalCfnResources: Record<string, CfnResource>;
+};
+
+/**
+ * Accessible resources from the API which were generated as part of the transform.
+ * These are potentially stored under nested stacks, but presented organized by type instead.
+ */
+export type AmplifyGraphqlApiResources = {
+  /**
+   * The Generated AppSync API L2 Resource, includes the Schema.
+   */
+  graphqlApi: IGraphqlApi;
+
+  /**
+   * The Generated DynamoDB Table L2 Resources, keyed by logicalId.
+   */
+  tables: Record<string, ITable>;
+
+  /**
+   * The Generated IAM Role L2 Resources, keyed by logicalId.
+   */
+  roles: Record<string, IRole>;
+
+  /**
+   * The Generated Lambda Function L1 Resources, keyed by function name.
+   */
+  functions: Record<string, IFunction>;
+
+  /**
+   * L1 Cfn Resources, for when dipping down a level of abstraction is desirable.
+   */
+  cfnResources: AmplifyGraphqlApiL1Resources;
 };
