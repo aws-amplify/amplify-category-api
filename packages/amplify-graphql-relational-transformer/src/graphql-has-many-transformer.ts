@@ -1,8 +1,11 @@
 /* eslint-disable no-param-reassign */
 import {
+  DBType,
+  DDB_DB_TYPE,
   DirectiveWrapper,
   generateGetArgumentsInput,
   InvalidDirectiveError,
+  MYSQL_DB_TYPE,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import {
@@ -23,7 +26,7 @@ import {
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
 import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { makeQueryConnectionWithKeyResolver, updateTableForConnection } from './resolvers';
+import { updateTableForConnection } from './resolvers';
 import {
   addFieldsToDefinition,
   convertSortKeyFieldsToSortKeyConnectionFields,
@@ -34,9 +37,11 @@ import {
 import { HasManyDirectiveConfiguration } from './types';
 import {
   ensureFieldsArray,
+  ensureReferencesArray,
   getConnectionAttributeName,
   getFieldsNodes,
   getObjectPrimaryKey,
+  getReferencesNodes,
   getRelatedType,
   getRelatedTypeIndex,
   registerHasManyForeignKeyMappings,
@@ -44,11 +49,13 @@ import {
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
+import { DDBRelationalResolverGenerator } from './resolver/ddb-generator';
+import { RDSRelationalResolverGenerator } from './resolver/rds-generator';
 
 const directiveName = 'hasMany';
 const defaultLimit = 100;
 const directiveDefinition = `
-  directive @${directiveName}(indexName: String, fields: [String!], limit: Int = ${defaultLimit}) on FIELD_DEFINITION
+  directive @${directiveName}(indexName: String, fields: [String!], references: [String!], limit: Int = ${defaultLimit}) on FIELD_DEFINITION
 `;
 
 /**
@@ -147,7 +154,10 @@ export class HasManyTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      config.relatedTypeIndex = getRelatedTypeIndex(config, context, config.indexName);
+      const dbType = ctx.modelToDatasourceMap.get(getBaseType(config.field.type))?.dbType ?? DDB_DB_TYPE;
+      if (dbType === DDB_DB_TYPE) {
+        config.relatedTypeIndex = getRelatedTypeIndex(config, context, config.indexName);
+      }
       ensureHasManyConnectionField(config, context);
       extendTypeWithConnection(config, context);
     }
@@ -157,24 +167,44 @@ export class HasManyTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      updateTableForConnection(config, context);
-      makeQueryConnectionWithKeyResolver(config, context);
+      const dbType = ctx.modelToDatasourceMap.get(getBaseType(config.field.type))?.dbType ?? DDB_DB_TYPE;
+      if (dbType === DDB_DB_TYPE) {
+        updateTableForConnection(config, context);
+      }
+      makeQueryResolver(config, context, dbType);
     }
   };
 }
 
+const makeQueryResolver = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider, dbType: DBType): void => {
+  const generator = dbType === DDB_DB_TYPE ? new DDBRelationalResolverGenerator() : new RDSRelationalResolverGenerator();
+  generator.makeQueryConnectionWithKeyResolver(config, ctx);
+};
+
 const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field } = config;
 
-  ensureFieldsArray(config);
+  const dbType = ctx.modelToDatasourceMap.get(getBaseType(field.type))?.dbType ?? DDB_DB_TYPE;
+  config.relatedType = getRelatedType(config, ctx);
+  
+  if (dbType === DDB_DB_TYPE) {
+    ensureFieldsArray(config);
+    config.fieldNodes = getFieldsNodes(config, ctx);
+  }
+  
+  if (dbType === MYSQL_DB_TYPE) {
+    ensureReferencesArray(config);
+    getReferencesNodes(config, ctx);
+  }
+  
   validateModelDirective(config);
 
   if (!isListType(field.type)) {
     throw new InvalidDirectiveError(`@${directiveName} must be used with a list. Use @hasOne for non-list types.`);
   }
 
-  config.fieldNodes = getFieldsNodes(config, ctx);
-  config.relatedType = getRelatedType(config, ctx);
+  
+  
   config.connectionFields = [];
   validateRelatedModelDirective(config);
   validateDisallowedDataStoreRelationships(config, ctx);

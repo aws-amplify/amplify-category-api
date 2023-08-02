@@ -117,6 +117,24 @@ export function ensureFieldsArray(config: HasManyDirectiveConfiguration | HasOne
   } else if (config.fields.length === 0) {
     throw new InvalidDirectiveError(`No fields passed to @${config.directiveName} directive.`);
   }
+
+  if (config.references) {
+    throw new InvalidDirectiveError(`DynamoDB models do not support 'references' on @${config.directiveName} directive.`);
+  }
+}
+
+export function ensureReferencesArray(config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration) {
+  if (!config.references) {
+    throw new InvalidDirectiveError(`References must be passed to @${config.directiveName} directive for RDS models.`);
+  } else if (!Array.isArray(config.references)) {
+    config.references = [config.references];
+  } else if (config.references.length === 0) {
+    throw new InvalidDirectiveError(`No references passed to @${config.directiveName} directive.`);
+  }
+
+  if (config.fields) {
+    throw new InvalidDirectiveError(`Relational database models do not support 'fields' on @${config.directiveName} directive.`);
+  }
 }
 
 export function getModelDirective(objectType: ObjectTypeDefinitionNode) {
@@ -163,6 +181,28 @@ export function getFieldsNodes(
 
     if (!isScalarOrEnum(fieldNode.type, enums)) {
       throw new InvalidDirectiveError(`All fields provided to @${directiveName} must be scalar or enum fields.`);
+    }
+
+    return fieldNode;
+  });
+}
+
+export function getReferencesNodes(
+  config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+) {
+  const { directiveName, references, relatedType } = config;
+  const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
+
+  return references.map((fieldName) => {
+    const fieldNode = relatedType.fields!.find((field) => field.name.value === fieldName);
+
+    if (!fieldNode) {
+      throw new InvalidDirectiveError(`${fieldName} is not a field in ${relatedType.name.value}`);
+    }
+
+    if (!isScalarOrEnum(fieldNode.type, enums)) {
+      throw new InvalidDirectiveError(`All references provided to @${directiveName} must be scalar or enum fields.`);
     }
 
     return fieldNode;

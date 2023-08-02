@@ -104,7 +104,7 @@ const generateFilterAndKeyConditionInputs = (config: HasManyDirectiveConfigurati
     ctx.output.addInput(tableXQueryFilterInput);
   }
 
-  if (relatedTypeIndex.length === 2) {
+  if (relatedTypeIndex && relatedTypeIndex.length === 2) {
     const sortKeyType = relatedTypeIndex[1].type;
     const baseType = getBaseType(sortKeyType);
     const namedType = makeNamedType(baseType);
@@ -259,10 +259,14 @@ export const ensureHasManyConnectionField = (
   config: HasManyDirectiveConfiguration | ManyToManyDirectiveConfiguration,
   ctx: TransformerContextProvider,
 ): void => {
-  const { field, fieldNodes, object, relatedType } = config;
+  const { field, fieldNodes, object, relatedType, references } = config;
 
   // If fields were explicitly provided to the directive, there is nothing else to do here.
-  if (fieldNodes.length > 0) {
+  if (fieldNodes?.length > 0) {
+    return;
+  }
+
+  if (references.length > 0) {
     return;
   }
 
@@ -417,7 +421,7 @@ const makeModelConnectionField = (config: HasManyDirectiveConfiguration): FieldD
   ];
 
   // Add sort key input if necessary.
-  if (fields.length < 2 && relatedTypeIndex.length > 1) {
+  if (fields && fields.length < 2 && relatedTypeIndex.length > 1) {
     let fieldName;
     let namedType;
 
