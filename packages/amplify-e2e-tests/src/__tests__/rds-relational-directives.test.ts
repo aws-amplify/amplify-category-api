@@ -9,7 +9,7 @@ import {
   deleteProject,
   deleteProjectDir,
   getAppSyncApi,
-  getProjectMeta, initJSProjectWithProfile,
+  getProjectMeta, importRDSDatabase, initJSProjectWithProfile,
   removeRDSPortInboundRule
 } from 'amplify-category-api-e2e-core';
 import { existsSync, writeFileSync } from 'fs-extra';
@@ -46,7 +46,7 @@ describe("RDS Relational Directives", () => {
 
     const meta = getProjectMeta(projRoot);
     const appRegion = meta.providers.awscloudformation.Region;
-    const { output } = meta.api.rdsapi;
+    const { output } = meta.api.rdsrelationalapi;
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
     const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, appRegion);
 
@@ -137,6 +137,16 @@ describe("RDS Relational Directives", () => {
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
 
     await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
+    
+    await importRDSDatabase(projRoot, {
+      database,
+      host,
+      port,
+      username,
+      password,
+      useVpc: false,
+      apiExists: true,
+    });
     
     const schema = /* GraphQL */ `
       input AMPLIFY {

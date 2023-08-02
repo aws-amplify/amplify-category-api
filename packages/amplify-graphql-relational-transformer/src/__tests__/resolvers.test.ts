@@ -1,5 +1,6 @@
 import { HasOneDirectiveConfiguration, HasManyDirectiveConfiguration } from '../types';
-import { makeGetItemConnectionWithKeyResolver, makeQueryConnectionWithKeyResolver } from '../resolvers';
+import { makeGetItemConnectionWithKeyResolver } from '../resolvers';
+import { DDBRelationalResolverGenerator } from '../resolver/ddb-generator';
 
 /**
  * Utility to create a partial of a given type for mocking purposes. Getting the right fields in place is on you.
@@ -18,8 +19,9 @@ describe('makeGetItemConnectionWithKeyResolver', () => {
 
 describe('makeQueryConnectionWithKeyResolver', () => {
   test('it requires either fields or connection fields to be populated with values', () => {
+    const ddbGenerator = new DDBRelationalResolverGenerator();
     expect(() =>
-      makeQueryConnectionWithKeyResolver(
+    ddbGenerator.makeQueryConnectionWithKeyResolver(
         createPartialMock<HasManyDirectiveConfiguration>({
           fields: [],
           connectionFields: [],

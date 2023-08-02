@@ -266,7 +266,7 @@ export const ensureHasManyConnectionField = (
     return;
   }
 
-  if (references.length > 0) {
+  if (references && references.length > 0) {
     return;
   }
 
