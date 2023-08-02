@@ -262,6 +262,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     });
     fn.addLayers();
     const cfnFn = fn.node.defaultChild as CfnFunction;
+    setResourceName(cfnFn, functionName);
     const functionCode = new S3MappingFunctionCode(functionKey, filePath).bind(fn);
     cfnFn.code = {
       s3Key: functionCode.s3ObjectKey,
