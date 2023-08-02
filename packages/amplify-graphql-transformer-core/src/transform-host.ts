@@ -7,6 +7,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   BaseDataSource,
+  CfnDataSource,
   DataSourceOptions,
   DynamoDbDataSource,
   HttpDataSource,
@@ -26,6 +27,7 @@ import { AppSyncFunctionConfiguration } from './appsync-function';
 import { SearchableDataSource } from './cdk-compat/searchable-datasource';
 import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat/template-asset';
 import { GraphQLApi } from './graphql-api';
+import { setResourceName } from './utils';
 
 type Slot = {
   requestMappingTemplate?: string;
@@ -59,17 +61,14 @@ export class DefaultTransformHost implements TransformHostProvider {
   }
 
   public getDataSource = (name: string): BaseDataSource | void => {
-    if (this.hasDataSource(name)) {
-      return this.dataSources.get(name);
-    }
+    return this.hasDataSource(name) ? this.dataSources.get(name) : undefined;
   };
 
   public hasResolver = (typeName: string, fieldName: string): boolean => this.resolvers.has(`${typeName}:${fieldName}`);
 
   public getResolver = (typeName: string, fieldName: string): CfnResolver | void => {
-    if (this.resolvers.has(`${typeName}:${fieldName}`)) {
-      return this.resolvers.get(`${typeName}:${fieldName}`);
-    }
+    const resolverRef = `${typeName}:${fieldName}`;
+    return this.resolvers.has(resolverRef) ? this.resolvers.get(resolverRef) : undefined;
   };
 
   addSearchableDataSource(
@@ -209,6 +208,7 @@ export class DefaultTransformHost implements TransformHostProvider {
           : { responseMappingTemplateS3Location: responseTemplateLocation }),
       });
       resolver.overrideLogicalId(resourceId);
+      setResourceName(resolver, `${typeName}.${fieldName}`);
       this.api.addSchemaDependency(resolver);
       return resolver;
     }
@@ -229,6 +229,7 @@ export class DefaultTransformHost implements TransformHostProvider {
         },
       });
       resolver.overrideLogicalId(resourceId);
+      setResourceName(resolver, `${typeName}.${fieldName}`);
       this.api.addSchemaDependency(resolver);
       this.resolvers.set(`${typeName}:${fieldName}`, resolver);
       return resolver;
@@ -284,11 +285,13 @@ export class DefaultTransformHost implements TransformHostProvider {
    * @param scope cdk scope to which this datasource needs to mapped to
    */
   protected doAddNoneDataSource(id: string, options?: DataSourceOptions, scope?: Construct): NoneDataSource {
-    return new NoneDataSource(scope ?? this.api, id, {
+    const noneDataSource = new NoneDataSource(scope ?? this.api, id, {
       api: this.api,
       name: options?.name,
       description: options?.description,
     });
+    setResourceName(noneDataSource.node.defaultChild!, options?.name ?? id);
+    return noneDataSource;
   }
 
   /**
@@ -308,7 +311,9 @@ export class DefaultTransformHost implements TransformHostProvider {
       serviceRole: options?.serviceRole,
     });
 
-    (ds as any).node.defaultChild.overrideLogicalId(id);
+    const cfnDataSource: CfnDataSource = (ds as any).node.defaultChild;
+    cfnDataSource.overrideLogicalId(id);
+    setResourceName(cfnDataSource, options?.name ?? id);
 
     return ds;
   }
@@ -330,7 +335,9 @@ export class DefaultTransformHost implements TransformHostProvider {
       authorizationConfig: options?.authorizationConfig,
     });
 
-    (ds as any).node.defaultChild.overrideLogicalId(id);
+    const cfnDataSource: CfnDataSource = (ds as any).node.defaultChild;
+    cfnDataSource.overrideLogicalId(id);
+    setResourceName(cfnDataSource, options?.name ?? id);
 
     return ds;
   }
@@ -351,13 +358,15 @@ export class DefaultTransformHost implements TransformHostProvider {
     options?: SearchableDataSourceOptions,
     scope?: Construct,
   ): SearchableDataSource {
-    return new SearchableDataSource(scope ?? this.api, id, {
+    const searchableDataSource = new SearchableDataSource(scope ?? this.api, id, {
       api: this.api,
       name: options?.name,
       endpoint,
       region,
       serviceRole: options?.serviceRole,
     });
+    setResourceName(searchableDataSource.node.defaultChild!, options?.name ?? id);
+    return searchableDataSource;
   }
 
   /**
@@ -376,7 +385,9 @@ export class DefaultTransformHost implements TransformHostProvider {
       description: options?.description,
     });
 
-    (ds as any).node.defaultChild.overrideLogicalId(id);
+    const cfnDataSource: CfnDataSource = (ds as any).node.defaultChild;
+    cfnDataSource.overrideLogicalId(id);
+    setResourceName(cfnDataSource, options?.name ?? id);
 
     return ds;
   }

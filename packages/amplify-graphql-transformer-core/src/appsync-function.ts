@@ -4,6 +4,7 @@ import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { Construct } from 'constructs';
 import { InlineTemplate } from './cdk-compat/template-asset';
 import { GraphQLApi } from './graphql-api';
+import { setResourceName } from './utils';
 
 export interface BaseFunctionConfigurationProps {
   /**
@@ -66,7 +67,7 @@ export class AppSyncFunctionConfiguration extends Construct {
         ? { responseMappingTemplate: responseTemplate }
         : { responseMappingTemplateS3Location: responseTemplate }),
     });
-
+    setResourceName(this.function, id);
     props.api.addSchemaDependency(this.function);
     if (props.dataSource instanceof BackedDataSource) {
       this.function.addDependency(props.dataSource?.ds);
