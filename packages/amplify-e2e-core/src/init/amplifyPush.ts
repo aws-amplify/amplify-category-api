@@ -143,22 +143,16 @@ export function cancelIterativeAmplifyPush(
       .sendCtrlC()
       .run((err: Error, signal) => {
         if (err) {
-          console.log('Error: ', err);
-          console.log('Signal: ', signal);
-          console.log('Env is: ', process.env.CODEBUILD)
-          console.log('Err msg is: ', err.message)
-          const result = !/Killed the process as no output receive/.test(err.message);
-          console.log('regex test: ', result);
+          if (process.env.CODEBUILD) {
+            if (!/Killed the process as no output receive/.test(err.message)) {
+              reject(err);
+            }
+          }
+          else if (!/Process exited with non zero exit code 130/.test(err.message)) {
+            reject(err);
+          }
         }
-        if (
-          err &&
-          (!/Process exited with non zero exit code 130/.test(err.message) ||
-            (process.env.CODEBUILD && !/Killed the process as no output receive/.test(err.message)))
-        ) {
-          reject(err);
-        } else {
-          resolve();
-        }
+        resolve();
       });
   });
 }
