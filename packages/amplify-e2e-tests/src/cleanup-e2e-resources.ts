@@ -20,7 +20,7 @@ const AWS_REGIONS_TO_RUN_TESTS = [
   'ap-southeast-2',
 ];
 
-const reportPath = path.normalize(path.join(__dirname, '..', 'amplify-e2e-reports', 'stale-resources.json'));
+const reportPathDir = path.normalize(path.join(__dirname, '..', 'amplify-e2e-reports'));
 
 const MULTI_JOB_APP = '<Amplify App reused by multiple apps>';
 const ORPHAN = '<orphan>';
@@ -532,7 +532,8 @@ const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, sta
   }
 };
 
-const generateReport = (jobs: _.Dictionary<ReportEntry>): void => {
+const generateReport = (jobs: _.Dictionary<ReportEntry>, accountIdx: number): void => {
+  const reportPath = path.join(reportPathDir, `stale-resources-${accountIdx}.json`)
   fs.ensureFileSync(reportPath);
   fs.writeFileSync(reportPath, JSON.stringify(jobs, null, 4));
 };
@@ -676,7 +677,7 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const allResources = await mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles);
   const staleResources = _.pickBy(allResources, filterPredicate);
 
-  generateReport(staleResources);
+  generateReport(staleResources, accountIndex);
   await deleteResources(account, accountIndex, staleResources);
   console.log(`${generateAccountInfo(account, accountIndex)} Cleanup done!`);
 };
