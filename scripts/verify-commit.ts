@@ -1,8 +1,8 @@
 import * as execa from 'execa';
 
 const main: () => void = () => {
-  if (process.env.CIRCLECI) {
-    console.log('Skipping config verification since this is already running in a CCI environment.');
+  if (process.env.CODEBUILD) {
+    console.log('Skipping config verification since this is already running in a CI environment.');
     return;
   }
   try {
