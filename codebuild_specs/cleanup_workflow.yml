@@ -10,3 +10,11 @@ phases:
     commands:
       - yarn production-build
       - cd packages/amplify-e2e-tests && yarn clean-e2e-resources
+  post_build:
+    commands:
+      - aws sts get-caller-identity
+      - source ./shared-scripts.sh && _scanArtifacts
+artifacts:
+  files:
+    - '**/*'
+  base-directory: $CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/amplify-e2e-reports

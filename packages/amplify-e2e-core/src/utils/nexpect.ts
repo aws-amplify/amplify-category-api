@@ -379,8 +379,6 @@ function chain(context: Context): ExecutionContext {
     }
 
     const exitHandler = (code: number, signal: any) => {
-      console.log('Code is ', code);
-      console.log('Signal is ', signal);
       noOutputTimer.clear();
       context.process.removeOnExitHandlers(exitHandler);
       if (logDumpFile) {

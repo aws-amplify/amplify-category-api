@@ -176,10 +176,6 @@ function _installCLIFromLocalRegistry {
     # set longer timeout to avoid socket timeout error
     npm config set fetch-retry-mintimeout 20000
     npm config set fetch-retry-maxtimeout 120000
-    # set random sleep time with maximum of 2 mins
-    random_sleep_duration=$((1 + ($RANDOM % 120)))
-    echo "Sleep for $random_sleep_duration seconds before installing CLI"
-    sleep $random_sleep_duration
     npm install -g @aws-amplify/cli-internal@12.2.0-aws-cdk-lib-2-28.0
     echo "using Amplify CLI version: "$(amplify --version)
     npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'

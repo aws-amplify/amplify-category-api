@@ -9,6 +9,10 @@ phases:
   build:
     commands:
       - source ./shared-scripts.sh && _cleanupE2EResources
+  post_build:
+    commands:
+      - aws sts get-caller-identity
+      - source ./shared-scripts.sh && _scanArtifacts
 artifacts:
   files:
     - '**/*'
