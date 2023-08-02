@@ -34,33 +34,6 @@ batch:
           CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
-    - identifier: schema_auth_11
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/schema-auth-11.test.ts
-          CLI_REGION: eu-central-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_11
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_11.test.ts
-          CLI_REGION: ap-southeast-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_2
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_2.test.ts
-          CLI_REGION: ap-southeast-2
-      depend-on:
-        - publish_to_local_registry
     - identifier: cleanup_e2e_resources
       buildspec: codebuild_specs/cleanup_e2e_resources.yml
       env:

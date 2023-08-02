@@ -142,13 +142,18 @@ export function cancelIterativeAmplifyPush(
       .wait(/.*AWS::AppSync::GraphQLSchema.*UPDATE_IN_PROGRESS.*/)
       .sendCtrlC()
       .run((err: Error, signal) => {
-        console.log('Error: ', err);
-        console.log('Signal: ', signal);
-        if (err && 
-          (!/Process exited with non zero exit code 130/.test(err.message)
-            || (process.env.CODEBUILD && (!/Killed the process as no output receive/.test(err.message)))
-            )
-          ) {
+        if (err) {
+          console.log('Error: ', err);
+          console.log('Signal: ', signal);
+          console.log('Env is: ', process.env.CODEBUILD)
+          const result = !/Killed the process as no output receive/.test(err.message);
+          console.log('regex test: ', result);
+        }
+        if (
+          err &&
+          (!/Process exited with non zero exit code 130/.test(err.message) ||
+            (process.env.CODEBUILD && !/Killed the process as no output receive/.test(err.message)))
+        ) {
           reject(err);
         } else {
           resolve();
