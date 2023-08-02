@@ -53,6 +53,7 @@ export const createLambdaRole = (context: TransformerContextProvider, stack: Con
     roleName: context.resourceHelper.generateIAMRoleName(parameterMap.get(OpenSearchStreamingIAMRoleName)?.valueAsString ?? ''),
   });
   setResourceName(role.node.defaultChild!, OpenSearchStreamingLambdaIAMRoleLogicalID);
+  setResourceName(role, OpenSearchStreamingLambdaIAMRoleLogicalID);
   role.attachInlinePolicy(
     new Policy(stack, 'CloudwatchLogsAccess', {
       statements: [
@@ -85,5 +86,6 @@ export const createEventSourceMapping = (
     startingPosition: StartingPosition.LATEST,
   });
   setResourceName(eventSourceMapping.node.defaultChild!, SearchableResourceIDs.SearchableEventSourceMappingID(type));
+  setResourceName(eventSourceMapping, SearchableResourceIDs.SearchableEventSourceMappingID(type));
   return eventSourceMapping;
 };

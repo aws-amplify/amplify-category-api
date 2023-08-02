@@ -263,6 +263,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     fn.addLayers();
     const cfnFn = fn.node.defaultChild as CfnFunction;
     setResourceName(cfnFn, functionName);
+    setResourceName(fn, functionName);
     const functionCode = new S3MappingFunctionCode(functionKey, filePath).bind(fn);
     cfnFn.code = {
       s3Key: functionCode.s3ObjectKey,
@@ -292,6 +293,7 @@ export class DefaultTransformHost implements TransformHostProvider {
       description: options?.description,
     });
     setResourceName(noneDataSource.node.defaultChild!, options?.name ?? id);
+    setResourceName(noneDataSource, options?.name ?? id);
     return noneDataSource;
   }
 
@@ -315,6 +317,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     const cfnDataSource: CfnDataSource = (ds as any).node.defaultChild;
     cfnDataSource.overrideLogicalId(id);
     setResourceName(cfnDataSource, options?.name ?? id);
+    setResourceName(ds, options?.name ?? id);
 
     return ds;
   }
@@ -339,6 +342,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     const cfnDataSource: CfnDataSource = (ds as any).node.defaultChild;
     cfnDataSource.overrideLogicalId(id);
     setResourceName(cfnDataSource, options?.name ?? id);
+    setResourceName(ds, options?.name ?? id);
 
     return ds;
   }
@@ -367,6 +371,7 @@ export class DefaultTransformHost implements TransformHostProvider {
       serviceRole: options?.serviceRole,
     });
     setResourceName(searchableDataSource.node.defaultChild!, options?.name ?? id);
+    setResourceName(searchableDataSource, options?.name ?? id);
     return searchableDataSource;
   }
 
@@ -389,6 +394,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     const cfnDataSource: CfnDataSource = (ds as any).node.defaultChild;
     cfnDataSource.overrideLogicalId(id);
     setResourceName(cfnDataSource, options?.name ?? id);
+    setResourceName(ds, options?.name ?? id);
 
     return ds;
   }

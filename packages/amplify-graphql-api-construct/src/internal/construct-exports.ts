@@ -1,10 +1,18 @@
 import { Construct } from 'constructs';
-import { CfnGraphQLApi, CfnGraphQLSchema, CfnApiKey, CfnResolver, CfnFunctionConfiguration, CfnDataSource } from 'aws-cdk-lib/aws-appsync';
-import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
-import { CfnRole, CfnPolicy } from 'aws-cdk-lib/aws-iam';
+import {
+  CfnGraphQLApi,
+  CfnGraphQLSchema,
+  CfnApiKey,
+  CfnResolver,
+  CfnFunctionConfiguration,
+  CfnDataSource,
+  GraphqlApi,
+} from 'aws-cdk-lib/aws-appsync';
+import { CfnTable, Table } from 'aws-cdk-lib/aws-dynamodb';
+import { CfnRole, Role } from 'aws-cdk-lib/aws-iam';
 import { CfnResource } from 'aws-cdk-lib';
 import { getResourceName } from '@aws-amplify/graphql-transformer-core';
-import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
+import { CfnFunction, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApiResources } from '../types';
 
 /**
@@ -23,9 +31,11 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
   const cfnResolvers: Record<string, CfnResolver> = {};
   const cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration> = {};
   const cfnDataSources: Record<string, CfnDataSource> = {};
+  const tables: Record<string, Table> = {};
   const cfnTables: Record<string, CfnTable> = {};
+  const roles: Record<string, Role> = {};
   const cfnRoles: Record<string, CfnRole> = {};
-  const cfnPolicies: Record<string, CfnPolicy> = {};
+  const functions: Record<string, LambdaFunction> = {};
   const cfnFunctions: Record<string, CfnFunction> = {};
   const additionalCfnResources: Record<string, CfnResource> = {};
 
@@ -59,16 +69,24 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       cfnFunctionConfigurations[resourceName] = currentScope;
       return;
     }
+    if (currentScope instanceof Table) {
+      tables[resourceName] = currentScope;
+      return;
+    }
     if (currentScope instanceof CfnTable) {
       cfnTables[resourceName] = currentScope;
+      return;
+    }
+    if (currentScope instanceof Role) {
+      roles[resourceName] = currentScope;
       return;
     }
     if (currentScope instanceof CfnRole) {
       cfnRoles[resourceName] = currentScope;
       return;
     }
-    if (currentScope instanceof CfnPolicy) {
-      cfnPolicies[resourceName] = currentScope;
+    if (currentScope instanceof LambdaFunction) {
+      functions[resourceName] = currentScope;
       return;
     }
     if (currentScope instanceof CfnFunction) {
@@ -97,15 +115,21 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
   }
 
   return {
-    cfnGraphqlApi,
-    cfnGraphqlSchema,
-    cfnApiKey,
-    cfnResolvers,
-    cfnFunctionConfigurations,
-    cfnDataSources,
-    cfnTables,
-    cfnRoles,
-    cfnFunctions,
-    additionalCfnResources,
+    graphqlApi: GraphqlApi.fromGraphqlApiAttributes(scope, 'L2GraphqlApi', { graphqlApiId: cfnGraphqlApi.attrApiId }),
+    tables,
+    roles,
+    functions,
+    cfnResources: {
+      cfnGraphqlApi,
+      cfnGraphqlSchema,
+      cfnApiKey,
+      cfnResolvers,
+      cfnFunctionConfigurations,
+      cfnDataSources,
+      cfnTables,
+      cfnRoles,
+      cfnFunctions,
+      additionalCfnResources,
+    },
   };
 };

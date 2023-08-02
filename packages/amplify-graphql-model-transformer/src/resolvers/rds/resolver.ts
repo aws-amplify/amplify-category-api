@@ -199,6 +199,7 @@ export const createRdsLambdaRole = (roleName: string, scope: Construct, secretEn
     roleName,
   });
   setResourceName(role.node.defaultChild!, RDSLambdaIAMRoleLogicalID);
+  setResourceName(role, RDSLambdaIAMRoleLogicalID);
   const policyStatements = [
     new PolicyStatement({
       actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
@@ -253,6 +254,7 @@ export const createRdsPatchingLambdaRole = (roleName: string, scope: Construct, 
     roleName,
   });
   setResourceName(role.node.defaultChild!, RDSPatchingLambdaIAMRoleLogicalID);
+  setResourceName(role, RDSPatchingLambdaIAMRoleLogicalID);
   const policyStatements = [
     new PolicyStatement({
       actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
