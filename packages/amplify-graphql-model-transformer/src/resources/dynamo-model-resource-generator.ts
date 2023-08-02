@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelResourceIDs, ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode } from 'graphql';
-import { SyncUtils } from '@aws-amplify/graphql-transformer-core';
+import { SyncUtils, setResourceName } from '@aws-amplify/graphql-transformer-core';
 import { AttributeType, CfnTable, StreamViewType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -73,8 +73,9 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
   }
 
   private createModelTable(scope: Construct, def: ObjectTypeDefinitionNode, context: TransformerContextProvider): void {
-    const tableLogicalName = ModelResourceIDs.ModelTableResourceID(def!.name.value);
-    const tableName = context.resourceHelper.generateTableName(def!.name.value);
+    const modelName = def!.name.value;
+    const tableLogicalName = ModelResourceIDs.ModelTableResourceID(modelName);
+    const tableName = context.resourceHelper.generateTableName(modelName);
 
     // Add parameters.
     const readIops = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
@@ -144,6 +145,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
       ...(context.isProjectUsingDataStore() ? { timeToLiveAttribute: '_ttl' } : undefined),
     });
     const cfnTable = table.node.defaultChild as CfnTable;
+    setResourceName(cfnTable, modelName);
 
     cfnTable.provisionedThroughput = cdk.Fn.conditionIf(usePayPerRequestBilling.logicalId, cdk.Fn.ref('AWS::NoValue'), {
       ReadCapacityUnits: readIops,

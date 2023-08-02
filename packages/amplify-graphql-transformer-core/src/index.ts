@@ -27,6 +27,8 @@ export {
   collectDirectivesByTypeNames,
   DirectiveWrapper,
   APICategory,
+  setResourceName,
+  getResourceName,
 } from './utils';
 export * from './utils/operation-names';
 export * from './errors';
