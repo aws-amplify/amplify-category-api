@@ -17,6 +17,7 @@ import { ArnFormat, CfnResource, Duration, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { DefaultTransformHost } from './transform-host';
+import { setResourceName } from './utils';
 
 export interface GraphqlApiProps {
   /**
@@ -330,6 +331,8 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
       managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs')],
     });
+    setResourceName(role.node.defaultChild!, 'ApiLogsRole');
+
     return {
       cloudWatchLogsRoleArn: role.roleArn,
       excludeVerboseContent: config.excludeVerboseContent,

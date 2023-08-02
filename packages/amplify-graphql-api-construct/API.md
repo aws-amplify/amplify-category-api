@@ -7,10 +7,10 @@
 import { AppsyncFunctionProps } from 'aws-cdk-lib/aws-appsync';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
+import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
 import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
-import { CfnPolicy } from 'aws-cdk-lib/aws-iam';
 import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { CfnResource } from 'aws-cdk-lib';
 import { CfnRole } from 'aws-cdk-lib/aws-iam';
@@ -67,7 +67,7 @@ export type AmplifyGraphqlApiResources = {
     cfnDataSources: Record<string, CfnDataSource>;
     cfnTables: Record<string, CfnTable>;
     cfnRoles: Record<string, CfnRole>;
-    cfnPolicies: Record<string, CfnPolicy>;
+    cfnFunctions: Record<string, CfnFunction>;
     additionalCfnResources: Record<string, CfnResource>;
 };
 

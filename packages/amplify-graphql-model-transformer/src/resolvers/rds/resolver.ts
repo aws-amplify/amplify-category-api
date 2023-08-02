@@ -14,7 +14,7 @@ import {
   toJson,
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
+import { RDSConnectionSecrets, setResourceName } from '@aws-amplify/graphql-transformer-core';
 import { GraphQLAPIProvider, RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
@@ -198,6 +198,7 @@ export const createRdsLambdaRole = (roleName: string, scope: Construct, secretEn
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
     roleName,
   });
+  setResourceName(role.node.defaultChild!, RDSLambdaIAMRoleLogicalID);
   const policyStatements = [
     new PolicyStatement({
       actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
@@ -251,6 +252,7 @@ export const createRdsPatchingLambdaRole = (roleName: string, scope: Construct, 
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
     roleName,
   });
+  setResourceName(role.node.defaultChild!, RDSPatchingLambdaIAMRoleLogicalID);
   const policyStatements = [
     new PolicyStatement({
       actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
