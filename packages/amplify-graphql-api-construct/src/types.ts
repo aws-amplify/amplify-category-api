@@ -426,11 +426,6 @@ export type AmplifyGraphqlApiResources = {
   cfnRoles: Record<string, CfnRole>;
 
   /**
-   * The Generated IAM Policy L1 Resources, keyed by logicalId.
-   */
-  cfnPolicies: Record<string, CfnPolicy>;
-
-  /**
    * The Generated Lambda Function L1 Resources, keyed by function name.
    */
   cfnFunctions: Record<string, CfnFunction>;

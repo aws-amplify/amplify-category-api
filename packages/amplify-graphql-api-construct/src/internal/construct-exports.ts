@@ -105,7 +105,6 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
     cfnDataSources,
     cfnTables,
     cfnRoles,
-    cfnPolicies,
     cfnFunctions,
     additionalCfnResources,
   };

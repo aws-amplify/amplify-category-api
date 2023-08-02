@@ -47,6 +47,7 @@ function createSyncIAMRole(context: TransformerContext, scope: Construct, tableN
     roleName: context.resourceHelper.generateIAMRoleName(SyncResourceIDs.syncIAMRoleName),
     assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
   });
+  setResourceName(role.node.defaultChild!, SyncResourceIDs.syncIAMRoleName);
 
   role.attachInlinePolicy(
     new iam.Policy(scope, 'DynamoDBAccess', {

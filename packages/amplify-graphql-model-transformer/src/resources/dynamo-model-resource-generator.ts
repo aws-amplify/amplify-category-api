@@ -233,6 +233,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
       roleName,
       assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
     });
+    setResourceName(role.node.defaultChild!, ModelResourceIDs.ModelTableIAMRoleID(def!.name.value));
 
     const amplifyDataStoreTableName = context.resourceHelper.generateTableName(SyncResourceIDs.syncTableName);
     role.attachInlinePolicy(

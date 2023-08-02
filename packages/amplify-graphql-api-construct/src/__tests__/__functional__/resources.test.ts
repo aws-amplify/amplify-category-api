@@ -328,4 +328,65 @@ describe('generated resource access', () => {
       expect(cfnFunctions.OpenSearchStreamingLambdaFunction).toBeDefined();
     });
   });
+
+  describe('iam resources', () => {
+    it('generates roles for normal models', () => {
+      const {
+        resources: { cfnRoles },
+      } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
+        schema: /* GraphQL */ `
+          type Todo @model @auth(rules: [{ allow: public }]) {
+            description: String!
+          }
+        `,
+        authorizationConfig: {
+          apiKeyConfig: { expires: cdk.Duration.days(7) },
+        },
+      });
+
+      expect(Object.values(cfnRoles).length).toEqual(1);
+      expect(cfnRoles.TodoIAMRole).toBeDefined();
+    });
+
+    it('generates roles for searchable models', () => {
+      const {
+        resources: { cfnRoles },
+      } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
+        schema: /* GraphQL */ `
+          type Todo @model @auth(rules: [{ allow: public }]) @searchable {
+            description: String!
+          }
+        `,
+        authorizationConfig: {
+          apiKeyConfig: { expires: cdk.Duration.days(7) },
+        },
+      });
+
+      expect(Object.values(cfnRoles).length).toEqual(3);
+      expect(cfnRoles.TodoIAMRole).toBeDefined();
+      expect(cfnRoles.OpenSearchAccessIAMRole).toBeDefined();
+      expect(cfnRoles.OpenSearchStreamingLambdaIAMRole).toBeDefined();
+    });
+  });
+
+  describe('additional resources', () => {
+    it('returns the search domain and event stream', () => {
+      const {
+        resources: { additionalCfnResources },
+      } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
+        schema: /* GraphQL */ `
+          type Todo @model @auth(rules: [{ allow: public }]) @searchable {
+            description: String!
+          }
+        `,
+        authorizationConfig: {
+          apiKeyConfig: { expires: cdk.Duration.days(7) },
+        },
+      });
+
+      expect(Object.values(additionalCfnResources).length).toEqual(2);
+      expect(additionalCfnResources.OpenSearchDomain).toBeDefined();
+      expect(additionalCfnResources.SearchableTodoLambdaMapping).toBeDefined();
+    });
+  });
 });

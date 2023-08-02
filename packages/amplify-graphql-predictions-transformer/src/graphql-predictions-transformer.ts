@@ -4,6 +4,7 @@ import {
   generateGetArgumentsInput,
   InvalidDirectiveError,
   MappingTemplate,
+  setResourceName,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import {
@@ -166,6 +167,7 @@ export class PredictionsTransformer extends TransformerPluginBase {
       roleName: joinWithEnv(context, '-', [PredictionsResourceIDs.iamRole, context.api.apiId]),
       assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
     });
+    setResourceName(role.node.defaultChild!, PredictionsResourceIDs.iamRole);
 
     role.attachInlinePolicy(
       new iam.Policy(stack, 'PredictionsStorageAccess', {
@@ -408,6 +410,7 @@ function createPredictionsLambda(context: TransformerContextProvider, stack: cdk
       }),
     },
   });
+  setResourceName(role.node.defaultChild!, PredictionsResourceIDs.lambdaIAMRole);
 
   return context.api.host.addLambdaFunction(
     PredictionsResourceIDs.lambdaName,

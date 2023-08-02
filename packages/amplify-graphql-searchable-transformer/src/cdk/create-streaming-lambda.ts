@@ -5,6 +5,7 @@ import { CfnParameter, Fn, Duration } from 'aws-cdk-lib';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { ResourceConstants, SearchableResourceIDs } from 'graphql-transformer-common';
+import { setResourceName } from '@aws-amplify/graphql-transformer-core';
 
 export const createLambda = (
   scope: Construct,
@@ -51,6 +52,7 @@ export const createLambdaRole = (context: TransformerContextProvider, stack: Con
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
     roleName: context.resourceHelper.generateIAMRoleName(parameterMap.get(OpenSearchStreamingIAMRoleName)?.valueAsString ?? ''),
   });
+  setResourceName(role.node.defaultChild!, OpenSearchStreamingLambdaIAMRoleLogicalID);
   role.attachInlinePolicy(
     new Policy(stack, 'CloudwatchLogsAccess', {
       statements: [
@@ -74,7 +76,7 @@ export const createEventSourceMapping = (
   tableStreamArn: string,
 ): EventSourceMapping => {
   const { OpenSearchStreamBatchSize, OpenSearchStreamMaximumBatchingWindowInSeconds } = ResourceConstants.PARAMETERS;
-  return new EventSourceMapping(stack, SearchableResourceIDs.SearchableEventSourceMappingID(type), {
+  const eventSourceMapping = new EventSourceMapping(stack, SearchableResourceIDs.SearchableEventSourceMappingID(type), {
     eventSourceArn: tableStreamArn,
     target,
     batchSize: parameterMap.get(OpenSearchStreamBatchSize)!.valueAsNumber,
@@ -82,4 +84,6 @@ export const createEventSourceMapping = (
     enabled: true,
     startingPosition: StartingPosition.LATEST,
   });
+  setResourceName(eventSourceMapping.node.defaultChild!, SearchableResourceIDs.SearchableEventSourceMappingID(type));
+  return eventSourceMapping;
 };
