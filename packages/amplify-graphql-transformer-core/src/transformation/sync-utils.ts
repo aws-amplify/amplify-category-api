@@ -11,6 +11,7 @@ import {
 import { Construct } from 'constructs';
 import { TransformerContext } from '../transformer-context';
 import { ResolverConfig, SyncConfig, SyncConfigLambda } from '../config/transformer-config';
+import { setResourceName } from '../utils';
 
 type DeltaSyncConfig = {
   DeltaSyncTableName: any;
@@ -21,7 +22,7 @@ type DeltaSyncConfig = {
 export function createSyncTable(context: TransformerContext) {
   const scope = context.stackManager.getScopeFor(SyncResourceIDs.syncTableName);
   const tableName = context.resourceHelper.generateTableName(SyncResourceIDs.syncTableName);
-  new Table(scope, SyncResourceIDs.syncDataSourceID, {
+  const syncTable = new Table(scope, SyncResourceIDs.syncDataSourceID, {
     tableName,
     partitionKey: {
       name: SyncResourceIDs.syncPrimaryKey,
@@ -36,6 +37,7 @@ export function createSyncTable(context: TransformerContext) {
     billingMode: BillingMode.PAY_PER_REQUEST,
     timeToLiveAttribute: '_ttl',
   });
+  setResourceName(syncTable.node.defaultChild!, SyncResourceIDs.syncTableName);
 
   createSyncIAMRole(context, scope, tableName);
 }

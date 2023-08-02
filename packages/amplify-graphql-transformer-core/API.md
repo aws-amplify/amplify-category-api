@@ -195,6 +195,9 @@ export const getKeySchema: (table: any, indexName?: string) => any;
 export const getParameterStoreSecretPath: (secret: string, secretsKey: string, apiName: string, environmentName: string, appId: string) => string;
 
 // @public (undocumented)
+export const getResourceName: (scope: Construct) => string | undefined;
+
+// @public (undocumented)
 export const getSortKeyFieldNames: (type: ObjectTypeDefinitionNode) => string[];
 
 // @public (undocumented)
@@ -400,6 +403,9 @@ export type ResolverConfig = {
 export class SchemaValidationError extends Error {
     constructor(errors: Readonly<GraphQLError[]>);
 }
+
+// @public (undocumented)
+export const setResourceName: (scope: Construct, name: string) => void;
 
 // @public (undocumented)
 export class StackManager implements StackManagerProvider {
