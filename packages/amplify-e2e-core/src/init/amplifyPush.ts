@@ -141,7 +141,9 @@ export function cancelIterativeAmplifyPush(
       .wait(`Deploying iterative update ${idx.current} of ${idx.max} into`)
       .wait(/.*AWS::AppSync::GraphQLSchema.*UPDATE_IN_PROGRESS.*/)
       .sendCtrlC()
-      .run((err: Error) => {
+      .run((err: Error, signal) => {
+        console.log('Error: ', err);
+        console.log('Signal: ', signal);
         if (err && !/Process exited with non zero exit code 130/.test(err.message)) {
           reject(err);
         } else {

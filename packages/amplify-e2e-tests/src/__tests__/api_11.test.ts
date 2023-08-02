@@ -10,7 +10,8 @@ import {
   getTransformConfig,
   initJSProjectWithProfile,
   updateApiSchema,
-  updateAPIWithResolutionStrategyWithModels,
+  amplifyPushUpdate,
+  apiDisableDataStore,
 } from 'amplify-category-api-e2e-core';
 import { existsSync } from 'fs';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
@@ -38,31 +39,14 @@ describe('amplify add api (GraphQL)', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a sync enabled project and update conflict resolution strategy', async () => {
-    const name = 'syncenabled';
+  it('init a project with conflict detection enabled and toggle disable', async () => {
+    const name = 'conflictdetection';
     await initJSProjectWithProfile(projRoot, { name });
     await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, name, 'simple_model.graphql');
 
-    let transformConfig = getTransformConfig(projRoot, name);
-    expect(transformConfig).toBeDefined();
-    expect(transformConfig.ResolverConfig).toBeDefined();
-    expect(transformConfig.ResolverConfig.project).toBeDefined();
-    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
-    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
-
-    await updateAPIWithResolutionStrategyWithModels(projRoot, {});
-
-    transformConfig = getTransformConfig(projRoot, name);
-    expect(transformConfig).toBeDefined();
-    expect(transformConfig.Version).toBeDefined();
-    expect(transformConfig.Version).toEqual(TRANSFORM_CURRENT_VERSION);
-    expect(transformConfig.ResolverConfig).toBeDefined();
-    expect(transformConfig.ResolverConfig.project).toBeDefined();
-    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
-    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('OPTIMISTIC_CONCURRENCY');
-
     await amplifyPush(projRoot);
+
     const meta = getProjectMeta(projRoot);
     const { output } = meta.api[name];
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
@@ -74,5 +58,21 @@ describe('amplify add api (GraphQL)', () => {
 
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+
+    const transformConfig = getTransformConfig(projRoot, name);
+    expect(transformConfig).toBeDefined();
+    expect(transformConfig.Version).toBeDefined();
+    expect(transformConfig.Version).toEqual(TRANSFORM_CURRENT_VERSION);
+    expect(transformConfig.ResolverConfig).toBeDefined();
+    expect(transformConfig.ResolverConfig.project).toBeDefined();
+    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
+    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
+
+    // remove datastore feature
+    await apiDisableDataStore(projRoot, {});
+    await amplifyPushUpdate(projRoot);
+    const disableDSConfig = getTransformConfig(projRoot, name);
+    expect(disableDSConfig).toBeDefined();
+    expect(_.isEmpty(disableDSConfig.ResolverConfig)).toBe(true);
   });
 });

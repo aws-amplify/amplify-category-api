@@ -2,8 +2,6 @@
 import {
   addApiWithBlankSchemaAndConflictDetection,
   amplifyPush,
-  amplifyPushUpdate,
-  apiDisableDataStore,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -129,43 +127,6 @@ describe('amplify add api (GraphQL)', () => {
     expect(updateResultData.updateNote.note).toEqual(updateInput.input.note);
   });
 
-  it('init a project with conflict detection enabled and toggle disable', async () => {
-    const name = 'conflictdetection';
-    await initJSProjectWithProfile(projRoot, { name });
-    await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
-    await updateApiSchema(projRoot, name, 'simple_model.graphql');
-
-    await amplifyPush(projRoot);
-
-    const meta = getProjectMeta(projRoot);
-    const { output } = meta.api[name];
-    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
-    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
-
-    expect(GraphQLAPIIdOutput).toBeDefined();
-    expect(GraphQLAPIEndpointOutput).toBeDefined();
-    expect(GraphQLAPIKeyOutput).toBeDefined();
-
-    expect(graphqlApi).toBeDefined();
-    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
-
-    const transformConfig = getTransformConfig(projRoot, name);
-    expect(transformConfig).toBeDefined();
-    expect(transformConfig.Version).toBeDefined();
-    expect(transformConfig.Version).toEqual(TRANSFORM_CURRENT_VERSION);
-    expect(transformConfig.ResolverConfig).toBeDefined();
-    expect(transformConfig.ResolverConfig.project).toBeDefined();
-    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
-    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
-
-    // remove datastore feature
-    await apiDisableDataStore(projRoot, {});
-    await amplifyPushUpdate(projRoot);
-    const disableDSConfig = getTransformConfig(projRoot, name);
-    expect(disableDSConfig).toBeDefined();
-    expect(_.isEmpty(disableDSConfig.ResolverConfig)).toBe(true);
-  });
-
   it('init a project with conflict detection enabled and admin UI enabled to generate datastore models in the cloud', async () => {
     const name = 'dsadminui';
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name });
@@ -196,6 +157,44 @@ describe('amplify add api (GraphQL)', () => {
     expect(GraphQLAPIKeyOutput).toBeDefined();
 
     const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
+
+    expect(graphqlApi).toBeDefined();
+    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+  });
+
+  it('init a sync enabled project and update conflict resolution strategy', async () => {
+    const name = 'syncenabled';
+    await initJSProjectWithProfile(projRoot, { name });
+    await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
+    await updateApiSchema(projRoot, name, 'simple_model.graphql');
+
+    let transformConfig = getTransformConfig(projRoot, name);
+    expect(transformConfig).toBeDefined();
+    expect(transformConfig.ResolverConfig).toBeDefined();
+    expect(transformConfig.ResolverConfig.project).toBeDefined();
+    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
+    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
+
+    await updateAPIWithResolutionStrategyWithModels(projRoot, {});
+
+    transformConfig = getTransformConfig(projRoot, name);
+    expect(transformConfig).toBeDefined();
+    expect(transformConfig.Version).toBeDefined();
+    expect(transformConfig.Version).toEqual(TRANSFORM_CURRENT_VERSION);
+    expect(transformConfig.ResolverConfig).toBeDefined();
+    expect(transformConfig.ResolverConfig.project).toBeDefined();
+    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
+    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('OPTIMISTIC_CONCURRENCY');
+
+    await amplifyPush(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const { output } = meta.api[name];
+    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
+
+    expect(GraphQLAPIIdOutput).toBeDefined();
+    expect(GraphQLAPIEndpointOutput).toBeDefined();
+    expect(GraphQLAPIKeyOutput).toBeDefined();
 
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
