@@ -146,6 +146,7 @@ export function cancelIterativeAmplifyPush(
           console.log('Error: ', err);
           console.log('Signal: ', signal);
           console.log('Env is: ', process.env.CODEBUILD)
+          console.log('Err msg is: ', err.message)
           const result = !/Killed the process as no output receive/.test(err.message);
           console.log('regex test: ', result);
         }
