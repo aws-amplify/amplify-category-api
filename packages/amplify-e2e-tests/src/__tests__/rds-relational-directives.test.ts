@@ -9,8 +9,10 @@ import {
   deleteProject,
   deleteProjectDir,
   getAppSyncApi,
-  getProjectMeta, importRDSDatabase, initJSProjectWithProfile,
-  removeRDSPortInboundRule
+  getProjectMeta,
+  importRDSDatabase,
+  initJSProjectWithProfile,
+  removeRDSPortInboundRule,
 } from 'amplify-category-api-e2e-core';
 import { existsSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
@@ -21,10 +23,10 @@ import gql from 'graphql-tag';
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
-describe("RDS Relational Directives", () => {
-  const publicIpCidr = "0.0.0.0/0";
+describe('RDS Relational Directives', () => {
+  const publicIpCidr = '0.0.0.0/0';
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
-  
+
   // Generate settings for RDS instance
   const username = db_user;
   const password = db_password;
@@ -137,7 +139,7 @@ describe("RDS Relational Directives", () => {
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
 
     await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
-    
+
     await importRDSDatabase(projRoot, {
       database,
       host,
@@ -147,11 +149,11 @@ describe("RDS Relational Directives", () => {
       useVpc: false,
       apiExists: true,
     });
-    
+
     const schema = /* GraphQL */ `
       input AMPLIFY {
         engine: String = "mysql"
-        globalAuthRule: AuthRule = {allow: public}
+        globalAuthRule: AuthRule = { allow: public }
       }
       type Blog @model {
         id: String! @primaryKey
@@ -183,40 +185,44 @@ describe("RDS Relational Directives", () => {
     expect(getBlog1.data.getBlog.id).toEqual('B-1');
     expect(getBlog1.data.getBlog.content).toEqual('Blog 1');
     expect(getBlog1.data.getBlog.posts.items.length).toEqual(3);
-    expect(getBlog1.data.getBlog.posts.items).toEqual(expect.arrayContaining([
-      expect.objectContaining({ id: 'P-1A', content: 'Post 1A' }),
-      expect.objectContaining({ id: 'P-1B', content: 'Post 1B' }),
-      expect.objectContaining({ id: 'P-1C', content: 'Post 1C' }),
-    ]));
+    expect(getBlog1.data.getBlog.posts.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: 'P-1A', content: 'Post 1A' }),
+        expect.objectContaining({ id: 'P-1B', content: 'Post 1B' }),
+        expect.objectContaining({ id: 'P-1C', content: 'Post 1C' }),
+      ]),
+    );
 
     const getBlog2 = await getBlog('B-2');
     expect(getBlog2.data.getBlog.id).toEqual('B-2');
     expect(getBlog2.data.getBlog.content).toEqual('Blog 2');
     expect(getBlog2.data.getBlog.posts.items.length).toEqual(2);
-    expect(getBlog2.data.getBlog.posts.items).toEqual(expect.arrayContaining([
-      expect.objectContaining({ id: 'P-2A', content: 'Post 2A' }),
-      expect.objectContaining({ id: 'P-2B', content: 'Post 2B' }),
-    ]));
+    expect(getBlog2.data.getBlog.posts.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: 'P-2A', content: 'Post 2A' }),
+        expect.objectContaining({ id: 'P-2B', content: 'Post 2B' }),
+      ]),
+    );
 
     const getBlog3 = await getBlog('B-3');
     expect(getBlog3.data.getBlog.id).toEqual('B-3');
     expect(getBlog3.data.getBlog.content).toEqual('Blog 3');
     expect(getBlog3.data.getBlog.posts.items.length).toEqual(1);
-    expect(getBlog3.data.getBlog.posts.items).toEqual(expect.arrayContaining([
-      expect.objectContaining({ id: 'P-3A', content: 'Post 3A' }),
-    ]));
+    expect(getBlog3.data.getBlog.posts.items).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: 'P-3A', content: 'Post 3A' })]),
+    );
   });
 
   // CURDL on Blog table helpers
   const createBlog = async (id: string, content: string): Promise<any> => {
     const createMutation = /* GraphQL */ `
-        mutation CreateBlog($input: CreateBlogInput!, $condition: ModelBlogConditionInput) {
-          createBlog(input: $input, condition: $condition) {
-            id
-            content
-          }
+      mutation CreateBlog($input: CreateBlogInput!, $condition: ModelBlogConditionInput) {
+        createBlog(input: $input, condition: $condition) {
+          id
+          content
         }
-      `;
+      }
+    `;
     const createInput = {
       input: {
         id,
@@ -234,13 +240,13 @@ describe("RDS Relational Directives", () => {
 
   const updateBlog = async (id: string, content: string): Promise<any> => {
     const updateMutation = /* GraphQL */ `
-        mutation UpdateBlog($input: UpdateBlogInput!, $condition: ModelBlogConditionInput) {
-          updateBlog(input: $input, condition: $condition) {
-            id
-            content
-          }
+      mutation UpdateBlog($input: UpdateBlogInput!, $condition: ModelBlogConditionInput) {
+        updateBlog(input: $input, condition: $condition) {
+          id
+          content
         }
-      `;
+      }
+    `;
     const updateInput = {
       input: {
         id,
@@ -258,13 +264,13 @@ describe("RDS Relational Directives", () => {
 
   const deleteBlog = async (id: string): Promise<any> => {
     const deleteMutation = /* GraphQL */ `
-        mutation DeleteBlog($input: DeleteBlogInput!, $condition: ModelBlogConditionInput) {
-          deleteBlog(input: $input, condition: $condition) {
-            id
-            content
-          }
+      mutation DeleteBlog($input: DeleteBlogInput!, $condition: ModelBlogConditionInput) {
+        deleteBlog(input: $input, condition: $condition) {
+          id
+          content
         }
-      `;
+      }
+    `;
     const deleteInput = {
       input: {
         id,
@@ -281,19 +287,19 @@ describe("RDS Relational Directives", () => {
 
   const getBlog = async (id: string): Promise<any> => {
     const getQuery = /* GraphQL */ `
-        query GetBlog($id: String!) {
-          getBlog(id: $id) {
-            id
-            content
-            posts {
-              items {
-                id
-                content
-              }
+      query GetBlog($id: String!) {
+        getBlog(id: $id) {
+          id
+          content
+          posts {
+            items {
+              id
+              content
             }
           }
         }
-      `;
+      }
+    `;
     const getInput = {
       id,
     };
@@ -308,21 +314,21 @@ describe("RDS Relational Directives", () => {
 
   const listBlogs = async (): Promise<any> => {
     const listQuery = /* GraphQL */ `
-        query ListBlogs {
-          listBlogs {
-            items {
-              id
-              content
-              posts {
-                items {
-                  id
-                  content
-                }
+      query ListBlogs {
+        listBlogs {
+          items {
+            id
+            content
+            posts {
+              items {
+                id
+                content
               }
             }
           }
         }
-      `;
+      }
+    `;
     const listResult: any = await appSyncClient.query({
       query: gql(listQuery),
       fetchPolicy: 'no-cache',
@@ -334,14 +340,14 @@ describe("RDS Relational Directives", () => {
   // CURDL on Post table helpers
   const createPost = async (id: string, content: string, blogId: string): Promise<any> => {
     const createMutation = /* GraphQL */ `
-        mutation CreatePost($input: CreatePostInput!, $condition: ModelPostConditionInput) {
-          createPost(input: $input, condition: $condition) {
-            id
-            content
-            blogId
-          }
+      mutation CreatePost($input: CreatePostInput!, $condition: ModelPostConditionInput) {
+        createPost(input: $input, condition: $condition) {
+          id
+          content
+          blogId
         }
-      `;
+      }
+    `;
     const createInput = {
       input: {
         id,
@@ -360,13 +366,13 @@ describe("RDS Relational Directives", () => {
 
   const updatePost = async (id: string, content: string): Promise<any> => {
     const updateMutation = /* GraphQL */ `
-        mutation UpdatePost($input: UpdatePostInput!, $condition: ModelPostConditionInput) {
-          updatePost(input: $input, condition: $condition) {
-            id
-            content
-          }
+      mutation UpdatePost($input: UpdatePostInput!, $condition: ModelPostConditionInput) {
+        updatePost(input: $input, condition: $condition) {
+          id
+          content
         }
-      `;
+      }
+    `;
     const updateInput = {
       input: {
         id,
@@ -384,13 +390,13 @@ describe("RDS Relational Directives", () => {
 
   const deletePost = async (id: string): Promise<any> => {
     const deleteMutation = /* GraphQL */ `
-        mutation DeletePost($input: DeletePostInput!, $condition: ModelPostConditionInput) {
-          deletePost(input: $input, condition: $condition) {
-            id
-            content
-          }
+      mutation DeletePost($input: DeletePostInput!, $condition: ModelPostConditionInput) {
+        deletePost(input: $input, condition: $condition) {
+          id
+          content
         }
-      `;
+      }
+    `;
     const deleteInput = {
       input: {
         id,
@@ -407,13 +413,13 @@ describe("RDS Relational Directives", () => {
 
   const getPost = async (id: string): Promise<any> => {
     const getQuery = /* GraphQL */ `
-        query GetPost($id: String!) {
-          getPost(id: $id) {
-            id
-            content
-          }
+      query GetPost($id: String!) {
+        getPost(id: $id) {
+          id
+          content
         }
-      `;
+      }
+    `;
     const getInput = {
       id,
     };
@@ -428,16 +434,16 @@ describe("RDS Relational Directives", () => {
 
   const listPosts = async (limit = 100, nextToken: string | null = null, filter: any = null): Promise<any> => {
     const listQuery = /* GraphQL */ `
-        query ListPosts($limit: Int, $nextToken: String, $filter: ModelPostFilterInput) {
-          listPosts(limit: $limit, nextToken: $nextToken, filter: $filter) {
-            items {
-              id
-              content
-            }
-            nextToken
+      query ListPosts($limit: Int, $nextToken: String, $filter: ModelPostFilterInput) {
+        listPosts(limit: $limit, nextToken: $nextToken, filter: $filter) {
+          items {
+            id
+            content
           }
+          nextToken
         }
-      `;
+      }
+    `;
     const listResult: any = await appSyncClient.query({
       query: gql(listQuery),
       fetchPolicy: 'no-cache',
@@ -450,4 +456,4 @@ describe("RDS Relational Directives", () => {
 
     return listResult;
   };
-}); 
+});

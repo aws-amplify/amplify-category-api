@@ -1,18 +1,18 @@
 import {
-  RDSTestDataProvider, 
-  addApiWithoutSchema, 
-  addRDSPortInboundRule, 
-  amplifyPush, 
-  createNewProjectDir, 
-  createRDSInstance, 
-  deleteDBInstance, 
-  deleteProject, 
-  deleteProjectDir, 
-  getAppSyncApi, 
-  getProjectMeta, 
-  importRDSDatabase, 
-  initJSProjectWithProfile, 
-  removeRDSPortInboundRule, 
+  RDSTestDataProvider,
+  addApiWithoutSchema,
+  addRDSPortInboundRule,
+  amplifyPush,
+  createNewProjectDir,
+  createRDSInstance,
+  deleteDBInstance,
+  deleteProject,
+  deleteProjectDir,
+  getAppSyncApi,
+  getProjectMeta,
+  importRDSDatabase,
+  initJSProjectWithProfile,
+  removeRDSPortInboundRule,
 } from 'amplify-category-api-e2e-core';
 import axios from 'axios';
 import { existsSync, readFileSync } from 'fs-extra';
@@ -25,10 +25,10 @@ import gql from 'graphql-tag';
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
-describe("RDS Model Directive", () => {
-  const publicIpCidr = "0.0.0.0/0";
+describe('RDS Model Directive', () => {
+  const publicIpCidr = '0.0.0.0/0';
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
-  
+
   // Generate settings for RDS instance
   const username = db_user;
   const password = db_password;
@@ -84,11 +84,9 @@ describe("RDS Model Directive", () => {
     await cleanupDatabase();
   });
 
-  beforeEach(async () => {
-  });
+  beforeEach(async () => {});
 
-  afterEach(async () => {
-  });
+  afterEach(async () => {});
 
   const setupDatabase = async () => {
     // This test performs the below
@@ -121,10 +119,10 @@ describe("RDS Model Directive", () => {
     });
 
     await dbAdapter.runQuery([
-      "CREATE TABLE Contact (id VARCHAR(40) PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))",
-      "CREATE TABLE Person (personId INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))",
-      "CREATE TABLE Employee (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))",
-      "CREATE TABLE Student (studentId INT NOT NULL, classId CHAR(1) NOT NULL, FirstName VARCHAR(20), LastName VARCHAR(50), PRIMARY KEY (studentId, classId))",
+      'CREATE TABLE Contact (id VARCHAR(40) PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
+      'CREATE TABLE Person (personId INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
+      'CREATE TABLE Employee (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
+      'CREATE TABLE Student (studentId INT NOT NULL, classId CHAR(1) NOT NULL, FirstName VARCHAR(20), LastName VARCHAR(50), PRIMARY KEY (studentId, classId))',
     ]);
     dbAdapter.cleanup();
   };
@@ -149,7 +147,7 @@ describe("RDS Model Directive", () => {
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
 
     await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
-    
+
     await importRDSDatabase(projRoot, {
       database,
       host,
@@ -164,25 +162,27 @@ describe("RDS Model Directive", () => {
     const schema = parse(schemaContent);
 
     // Generated schema should contains the types and fields from the database
-    const contactObjectType = schema.definitions.find(d => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Contact') as ObjectTypeDefinitionNode;
-    const personObjectType = schema.definitions.find(d => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Person');
-    const employeeObjectType = schema.definitions.find(d => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Employee');
+    const contactObjectType = schema.definitions.find(
+      (d) => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Contact',
+    ) as ObjectTypeDefinitionNode;
+    const personObjectType = schema.definitions.find((d) => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Person');
+    const employeeObjectType = schema.definitions.find((d) => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Employee');
 
     expect(contactObjectType).toBeDefined();
     expect(personObjectType).toBeDefined();
     expect(employeeObjectType).toBeDefined();
 
     // Verify the fields in the generated schema on type 'Contacts'
-    const contactsIdFieldType = contactObjectType.fields.find(f => f.name.value === 'id');
-    const contactsFirstNameFieldType = contactObjectType.fields.find(f => f.name.value === 'FirstName');
-    const contactsLastNameFieldType = contactObjectType.fields.find(f => f.name.value === 'LastName');
+    const contactsIdFieldType = contactObjectType.fields.find((f) => f.name.value === 'id');
+    const contactsFirstNameFieldType = contactObjectType.fields.find((f) => f.name.value === 'FirstName');
+    const contactsLastNameFieldType = contactObjectType.fields.find((f) => f.name.value === 'LastName');
 
     expect(contactsIdFieldType).toBeDefined();
     expect(contactsFirstNameFieldType).toBeDefined();
     expect(contactsLastNameFieldType).toBeDefined();
 
     // PrimaryKey directive must be defined on Id field.
-    expect(contactsIdFieldType.directives.find(d => d.name.value === 'primaryKey')).toBeDefined();
+    expect(contactsIdFieldType.directives.find((d) => d.name.value === 'primaryKey')).toBeDefined();
   };
 
   test('check CRUDL on contact table with default primary key', async () => {
@@ -214,10 +214,12 @@ describe("RDS Model Directive", () => {
 
     const listContactsResult = await listContacts();
     expect(listContactsResult.data.listContacts.items.length).toEqual(2);
-    expect(listContactsResult.data.listContacts.items).toEqual(expect.arrayContaining([
-      expect.objectContaining({ id: contact1.data.createContact.id, FirstName: 'David', LastName: 'Jones' }),
-      expect.objectContaining({ id: contact2.data.createContact.id, FirstName: 'Chris', LastName: 'Sundersingh' }),
-    ]));
+    expect(listContactsResult.data.listContacts.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: contact1.data.createContact.id, FirstName: 'David', LastName: 'Jones' }),
+        expect.objectContaining({ id: contact2.data.createContact.id, FirstName: 'Chris', LastName: 'Sundersingh' }),
+      ]),
+    );
 
     const deleteContact1 = await deleteContact(contact1.data.createContact.id);
     expect(deleteContact1.data.deleteContact.id).toEqual(contact1.data.createContact.id);
@@ -226,9 +228,11 @@ describe("RDS Model Directive", () => {
 
     const listContactsResultAfterDelete = await listContacts();
     expect(listContactsResultAfterDelete.data.listContacts.items.length).toEqual(1);
-    expect(listContactsResultAfterDelete.data.listContacts.items).toEqual(expect.arrayContaining([
-      expect.objectContaining({ id: contact2.data.createContact.id, FirstName: 'Chris', LastName: 'Sundersingh' }),
-    ]));
+    expect(listContactsResultAfterDelete.data.listContacts.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: contact2.data.createContact.id, FirstName: 'Chris', LastName: 'Sundersingh' }),
+      ]),
+    );
   });
 
   test('check CRUDL, filter, limit and nextToken on student table with composite key', async () => {
@@ -286,55 +290,63 @@ describe("RDS Model Directive", () => {
 
     const listStudentsResult = await listStudents();
     expect(listStudentsResult.data.listStudents.items.length).toEqual(3);
-    expect(listStudentsResult.data.listStudents.items).toEqual(expect.arrayContaining([
-      expect.objectContaining({ studentId: 1, classId: 'B', FirstName: 'Chris', LastName: 'Sundersingh' }),
-      expect.objectContaining({ studentId: 2, classId: 'A', FirstName: 'John', LastName: 'Smith' }),
-      expect.objectContaining({ studentId: 2, classId: 'B', FirstName: 'Jane', LastName: 'Doe' }),
-    ]));
+    expect(listStudentsResult.data.listStudents.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ studentId: 1, classId: 'B', FirstName: 'Chris', LastName: 'Sundersingh' }),
+        expect.objectContaining({ studentId: 2, classId: 'A', FirstName: 'John', LastName: 'Smith' }),
+        expect.objectContaining({ studentId: 2, classId: 'B', FirstName: 'Jane', LastName: 'Doe' }),
+      ]),
+    );
 
     // Validate limit and nextToken
     const listStudentsResultWithLimit = await listStudents(2);
     expect(listStudentsResultWithLimit.data.listStudents.items.length).toEqual(2);
-    expect(listStudentsResultWithLimit.data.listStudents.items).toEqual(expect.arrayContaining([
-      expect.objectContaining({ studentId: 1, classId: 'B', FirstName: 'Chris', LastName: 'Sundersingh' }),
-      expect.objectContaining({ studentId: 2, classId: 'A', FirstName: 'John', LastName: 'Smith' }),
-    ]));
+    expect(listStudentsResultWithLimit.data.listStudents.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ studentId: 1, classId: 'B', FirstName: 'Chris', LastName: 'Sundersingh' }),
+        expect.objectContaining({ studentId: 2, classId: 'A', FirstName: 'John', LastName: 'Smith' }),
+      ]),
+    );
     expect(listStudentsResultWithLimit.data.listStudents.nextToken).toBeDefined();
 
     const listStudentsResultWithNextToken = await listStudents(2, listStudentsResultWithLimit.data.listStudents.nextToken);
     expect(listStudentsResultWithNextToken.data.listStudents.items.length).toEqual(1);
-    expect(listStudentsResultWithNextToken.data.listStudents.items).toEqual(expect.arrayContaining([
-      expect.objectContaining({ studentId: 2, classId: 'B', FirstName: 'Jane', LastName: 'Doe' }),
-    ]));
+    expect(listStudentsResultWithNextToken.data.listStudents.items).toEqual(
+      expect.arrayContaining([expect.objectContaining({ studentId: 2, classId: 'B', FirstName: 'Jane', LastName: 'Doe' })]),
+    );
     expect(listStudentsResultWithNextToken.data.listStudents.nextToken).toBeNull();
 
     // Validate filter
-    const listStudentsResultWithFilter = await listStudents(10, null, { and: [{ FirstName: { eq: 'John' } }, { LastName: { eq: 'Smith' } }] });
+    const listStudentsResultWithFilter = await listStudents(10, null, {
+      and: [{ FirstName: { eq: 'John' } }, { LastName: { eq: 'Smith' } }],
+    });
     expect(listStudentsResultWithFilter.data.listStudents.items.length).toEqual(1);
-    expect(listStudentsResultWithFilter.data.listStudents.items).toEqual(expect.arrayContaining([
-      expect.objectContaining({ studentId: 2, classId: 'A', FirstName: 'John', LastName: 'Smith' }),
-    ]));
+    expect(listStudentsResultWithFilter.data.listStudents.items).toEqual(
+      expect.arrayContaining([expect.objectContaining({ studentId: 2, classId: 'A', FirstName: 'John', LastName: 'Smith' })]),
+    );
     expect(listStudentsResultWithFilter.data.listStudents.nextToken).toBeNull();
 
     const listStudentsResultWithFilter2 = await listStudents(10, null, { FirstName: { size: { eq: 4 } } });
     expect(listStudentsResultWithFilter2.data.listStudents.items.length).toEqual(2);
-    expect(listStudentsResultWithFilter2.data.listStudents.items).toEqual(expect.arrayContaining([
-      expect.objectContaining({ studentId: 2, classId: 'A', FirstName: 'John', LastName: 'Smith' }),
-      expect.objectContaining({ studentId: 2, classId: 'A', FirstName: 'John', LastName: 'Smith' }),
-    ]));
+    expect(listStudentsResultWithFilter2.data.listStudents.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ studentId: 2, classId: 'A', FirstName: 'John', LastName: 'Smith' }),
+        expect.objectContaining({ studentId: 2, classId: 'A', FirstName: 'John', LastName: 'Smith' }),
+      ]),
+    );
   });
 
   // CURDL on Contact table helpers
   const createContact = async (firstName: string, lastName: string) => {
     const createMutation = /* GraphQL */ `
-        mutation CreateContact($input: CreateContactInput!, $condition: ModelContactConditionInput) {
-          createContact(input: $input, condition: $condition) {
-            id
-            FirstName
-            LastName
-          }
+      mutation CreateContact($input: CreateContactInput!, $condition: ModelContactConditionInput) {
+        createContact(input: $input, condition: $condition) {
+          id
+          FirstName
+          LastName
         }
-      `;
+      }
+    `;
     const createInput = {
       input: {
         FirstName: firstName,
@@ -352,14 +364,14 @@ describe("RDS Model Directive", () => {
 
   const updateContact = async (id: string, firstName: string, lastName: string) => {
     const updateMutation = /* GraphQL */ `
-        mutation UpdateContact($input: UpdateContactInput!, $condition: ModelContactConditionInput) {
-          updateContact(input: $input, condition: $condition) {
-            id
-            FirstName
-            LastName
-          }
+      mutation UpdateContact($input: UpdateContactInput!, $condition: ModelContactConditionInput) {
+        updateContact(input: $input, condition: $condition) {
+          id
+          FirstName
+          LastName
         }
-      `;
+      }
+    `;
     const updateInput = {
       input: {
         id,
@@ -378,14 +390,14 @@ describe("RDS Model Directive", () => {
 
   const deleteContact = async (id: string) => {
     const deleteMutation = /* GraphQL */ `
-        mutation DeleteContact($input: DeleteContactInput!, $condition: ModelContactConditionInput) {
-          deleteContact(input: $input, condition: $condition) {
-            id
-            FirstName
-            LastName
-          }
+      mutation DeleteContact($input: DeleteContactInput!, $condition: ModelContactConditionInput) {
+        deleteContact(input: $input, condition: $condition) {
+          id
+          FirstName
+          LastName
         }
-      `;
+      }
+    `;
     const deleteInput = {
       input: {
         id,
@@ -402,14 +414,14 @@ describe("RDS Model Directive", () => {
 
   const getContact = async (id: string) => {
     const getQuery = /* GraphQL */ `
-        query GetContact($id: String!) {
-          getContact(id: $id) {
-            id
-            FirstName
-            LastName
-          }
+      query GetContact($id: String!) {
+        getContact(id: $id) {
+          id
+          FirstName
+          LastName
         }
-      `;
+      }
+    `;
     const getInput = {
       id,
     };
@@ -424,16 +436,16 @@ describe("RDS Model Directive", () => {
 
   const listContacts = async () => {
     const listQuery = /* GraphQL */ `
-        query ListContact {
-          listContacts {
-            items {
-              id
-              FirstName
-              LastName
-            }
+      query ListContact {
+        listContacts {
+          items {
+            id
+            FirstName
+            LastName
           }
         }
-      `;
+      }
+    `;
     const listResult: any = await appSyncClient.query({
       query: gql(listQuery),
       fetchPolicy: 'no-cache',
@@ -445,15 +457,15 @@ describe("RDS Model Directive", () => {
   // CURDL on Student table helpers
   const createStudent = async (studentId: number, classId: string, firstName: string, lastName: string) => {
     const createMutation = /* GraphQL */ `
-        mutation CreateStuden($input: CreateStudentInput!, $condition: ModelStudentConditionInput) {
-          createStudent(input: $input, condition: $condition) {
-            studentId
-            classId
-            FirstName
-            LastName
-          }
+      mutation CreateStuden($input: CreateStudentInput!, $condition: ModelStudentConditionInput) {
+        createStudent(input: $input, condition: $condition) {
+          studentId
+          classId
+          FirstName
+          LastName
         }
-      `;
+      }
+    `;
     const createInput = {
       input: {
         studentId,
@@ -473,15 +485,15 @@ describe("RDS Model Directive", () => {
 
   const updateStudent = async (studentId: number, classId: string, firstName: string, lastName: string) => {
     const updateMutation = /* GraphQL */ `
-        mutation UpdateStudent($input: UpdateStudentInput!, $condition: ModelStudentConditionInput) {
-          updateStudent(input: $input, condition: $condition) {
-            studentId,
-            classId,
-            FirstName
-            LastName
-          }
+      mutation UpdateStudent($input: UpdateStudentInput!, $condition: ModelStudentConditionInput) {
+        updateStudent(input: $input, condition: $condition) {
+          studentId
+          classId
+          FirstName
+          LastName
         }
-      `;
+      }
+    `;
     const updateInput = {
       input: {
         studentId,
@@ -501,15 +513,15 @@ describe("RDS Model Directive", () => {
 
   const deleteStudent = async (studentId: number, classId: string) => {
     const deleteMutation = /* GraphQL */ `
-        mutation DeleteStudent($input: DeleteStudentInput!, $condition: ModelStudentConditionInput) {
-          deleteStudent(input: $input, condition: $condition) {
-            studentId
-            classId
-            FirstName
-            LastName
-          }
+      mutation DeleteStudent($input: DeleteStudentInput!, $condition: ModelStudentConditionInput) {
+        deleteStudent(input: $input, condition: $condition) {
+          studentId
+          classId
+          FirstName
+          LastName
         }
-      `;
+      }
+    `;
     const deleteInput = {
       input: {
         studentId,
@@ -527,15 +539,15 @@ describe("RDS Model Directive", () => {
 
   const getStudent = async (studentId: number, classId: string) => {
     const getQuery = /* GraphQL */ `
-        query GetStudent($studentId: Int!, $classId: String!) {
-          getStudent(studentId: $studentId, classId: $classId) {
-            studentId
-            classId
-            FirstName
-            LastName
-          }
+      query GetStudent($studentId: Int!, $classId: String!) {
+        getStudent(studentId: $studentId, classId: $classId) {
+          studentId
+          classId
+          FirstName
+          LastName
         }
-      `;
+      }
+    `;
     const getInput = {
       studentId,
       classId,
@@ -551,18 +563,18 @@ describe("RDS Model Directive", () => {
 
   const listStudents = async (limit: number = 100, nextToken: string | null = null, filter: any = null) => {
     const listQuery = /* GraphQL */ `
-        query ListStudents($limit: Int, $nextToken: String, $filter: ModelStudentFilterInput) {
-          listStudents(limit: $limit, nextToken: $nextToken, filter: $filter) {
-            items {
-              studentId
-              classId
-              FirstName
-              LastName
-            }
-            nextToken
+      query ListStudents($limit: Int, $nextToken: String, $filter: ModelStudentFilterInput) {
+        listStudents(limit: $limit, nextToken: $nextToken, filter: $filter) {
+          items {
+            studentId
+            classId
+            FirstName
+            LastName
           }
+          nextToken
         }
-      `;
+      }
+    `;
     const listResult: any = await appSyncClient.query({
       query: gql(listQuery),
       fetchPolicy: 'no-cache',
@@ -575,4 +587,4 @@ describe("RDS Model Directive", () => {
 
     return listResult;
   };
-}); 
+});

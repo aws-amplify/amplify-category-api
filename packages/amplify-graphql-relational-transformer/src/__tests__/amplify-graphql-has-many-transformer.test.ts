@@ -912,7 +912,6 @@ describe('@hasMany connection field nullability tests', () => {
 });
 
 describe('@hasMany directive with RDS datasource', () => {
-  
   test('happy case should generate correct resolvers', () => {
     const modelToDatasourceMap = new Map<string, DatasourceType>();
     modelToDatasourceMap.set('Blog', {
@@ -992,5 +991,4 @@ describe('@hasMany directive with RDS datasource', () => {
     expect(out.resolvers['System.parts.res.vtl']).toBeDefined();
     expect(out.resolvers['System.parts.res.vtl']).toMatchSnapshot();
   });
-
 });

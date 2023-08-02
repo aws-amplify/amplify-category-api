@@ -1,17 +1,17 @@
 import {
-  addApiWithoutSchema, 
-  amplifyPush, 
-  apiGqlCompile, 
-  createNewProjectDir, 
-  createRDSInstance, 
-  deleteDBInstance, 
-  deleteProject, 
-  deleteProjectDir, 
-  getAppSyncApi, 
-  getProjectMeta, 
-  importRDSDatabase, 
+  addApiWithoutSchema,
+  amplifyPush,
+  apiGqlCompile,
+  createNewProjectDir,
+  createRDSInstance,
+  deleteDBInstance,
+  deleteProject,
+  deleteProjectDir,
+  getAppSyncApi,
+  getProjectMeta,
+  importRDSDatabase,
   initJSProjectWithProfile,
-  updateSchema, 
+  updateSchema,
 } from 'amplify-category-api-e2e-core';
 import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
@@ -31,9 +31,9 @@ const APPSYNC_DATA_SOURCE_TYPE = 'AWS::AppSync::DataSource';
 const SNS_TOPIC_REGION = 'us-east-1';
 const SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:582037449441:AmplifyRDSLayerNotification';
 
-describe("RDS Tests", () => {
+describe('RDS Tests', () => {
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
-  
+
   // Generate settings for RDS instance
   const username = db_user;
   const password = db_password;
@@ -45,8 +45,7 @@ describe("RDS Tests", () => {
   const projName = 'rdsimportapi';
   let projRoot;
 
-  beforeAll(async () => {
-  });
+  beforeAll(async () => {});
 
   afterAll(async () => {
     await cleanupDatabase();
@@ -82,21 +81,21 @@ describe("RDS Tests", () => {
     await deleteDBInstance(identifier, region);
   };
 
-  it("import workflow of mysql relational database within vpc with no public access", async () => {
+  it('import workflow of mysql relational database within vpc with no public access', async () => {
     const apiName = 'rdsapivpc';
     await initJSProjectWithProfile(projRoot, {
       disableAmplifyAppCreation: false,
       name: projName,
     });
-    
+
     const metaAfterInit = getProjectMeta(projRoot);
     region = metaAfterInit.providers.awscloudformation.Region;
     await setupDatabase();
-  
+
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
 
     await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
-    
+
     // This only verifies the prompt for VPC access. Does not verify the actual import.
     await importRDSDatabase(projRoot, {
       database: 'mysql', // Import the default 'mysql' database
@@ -113,14 +112,16 @@ describe("RDS Tests", () => {
 
     // Generated schema should contain the types with model directive
     // db is one of the default table in mysql database
-    const dbObjectType = schema.definitions.find(d => d.kind === 'ObjectTypeDefinition' && d.name.value === 'db') as ObjectTypeDefinitionNode;
+    const dbObjectType = schema.definitions.find(
+      (d) => d.kind === 'ObjectTypeDefinition' && d.name.value === 'db',
+    ) as ObjectTypeDefinitionNode;
     expect(dbObjectType).toBeDefined();
-    expect(dbObjectType.directives.find(d => d.name.value === 'model')).toBeDefined();
+    expect(dbObjectType.directives.find((d) => d.name.value === 'model')).toBeDefined();
 
     const updatedSchema = gql`
       input AMPLIFY {
         engine: String = "mysql"
-        globalAuthRule: AuthRule = {allow: public}
+        globalAuthRule: AuthRule = { allow: public }
       }
 
       type component @model {
@@ -158,7 +159,9 @@ describe("RDS Tests", () => {
     expect(rdsPatchingLambdaFunction.Properties.Environment.Variables).toBeDefined();
     expect(rdsPatchingLambdaFunction.Properties.Environment.Variables.LAMBDA_FUNCTION_ARN).toBeDefined();
     const rdsDataSourceLambda = getResource(resources, 'RDSLambdaDataSource', APPSYNC_DATA_SOURCE_TYPE);
-    expect(rdsPatchingLambdaFunction.Properties.Environment.Variables.LAMBDA_FUNCTION_ARN).toEqual(rdsDataSourceLambda.Properties.LambdaConfig.LambdaFunctionArn);
+    expect(rdsPatchingLambdaFunction.Properties.Environment.Variables.LAMBDA_FUNCTION_ARN).toEqual(
+      rdsDataSourceLambda.Properties.LambdaConfig.LambdaFunctionArn,
+    );
 
     // Validate subscription
     const rdsPatchingSubscription = getResource(resources, 'RDSPatchingLambdaLogicalID', CDK_SUBSCRIPTION_TYPE);
@@ -211,10 +214,10 @@ describe("RDS Tests", () => {
       expect(err.message).toEqual('GraphQL error: Unable to get the database credentials. Check the logs for more details.');
     }
   });
-}); 
+});
 
 const getResource = (resources: Map<string, any>, resourcePrefix: string, resourceType: string): any => {
-  const keys = Array.from(Object.keys(resources)).filter(key => key.startsWith(resourcePrefix));
+  const keys = Array.from(Object.keys(resources)).filter((key) => key.startsWith(resourcePrefix));
   for (const key of keys) {
     const resource = resources[key];
     if (resource.Type === resourceType) {
@@ -225,16 +228,16 @@ const getResource = (resources: Map<string, any>, resourcePrefix: string, resour
 
 const listComponents = async (client) => {
   const listComponents = /* GraphQL */ `
-      query listComponents {
-        listComponents {
-          items {
-            component_group_id
-            component_id
-            component_urn
-          }
+    query listComponents {
+      listComponents {
+        items {
+          component_group_id
+          component_id
+          component_urn
         }
       }
-    `;
+    }
+  `;
   const listResult: any = await client.query({
     query: gql(listComponents),
     fetchPolicy: 'no-cache',

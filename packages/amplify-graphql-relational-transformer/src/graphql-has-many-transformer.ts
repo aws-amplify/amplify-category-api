@@ -186,25 +186,23 @@ const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContext
 
   const dbType = ctx.modelToDatasourceMap.get(getBaseType(field.type))?.dbType ?? DDB_DB_TYPE;
   config.relatedType = getRelatedType(config, ctx);
-  
+
   if (dbType === DDB_DB_TYPE) {
     ensureFieldsArray(config);
     config.fieldNodes = getFieldsNodes(config, ctx);
   }
-  
+
   if (dbType === MYSQL_DB_TYPE) {
     ensureReferencesArray(config);
     getReferencesNodes(config, ctx);
   }
-  
+
   validateModelDirective(config);
 
   if (!isListType(field.type)) {
     throw new InvalidDirectiveError(`@${directiveName} must be used with a list. Use @hasOne for non-list types.`);
   }
 
-  
-  
   config.connectionFields = [];
   validateRelatedModelDirective(config);
   validateDisallowedDataStoreRelationships(config, ctx);

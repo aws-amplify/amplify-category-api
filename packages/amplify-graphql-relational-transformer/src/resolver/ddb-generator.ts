@@ -1,9 +1,39 @@
-import { MappingTemplate, getKeySchema, getTable } from "@aws-amplify/graphql-transformer-core";
-import { TransformerContextProvider } from "@aws-amplify/graphql-transformer-interfaces";
-import { DynamoDBMappingTemplate, Expression, ObjectNode, bool, compoundExpression, equals, ifElse, iff, int, isNullOrEmpty, list, methodCall, not, nul, obj, print, qref, raw, ref, set, str } from "graphql-mapping-template";
-import { ModelResourceIDs, ResolverResourceIDs, applyCompositeKeyConditionExpression, applyKeyConditionExpression, attributeTypeFromScalar, setArgs, toCamelCase } from "graphql-transformer-common";
-import { HasManyDirectiveConfiguration } from "../types";
-import { RelationalResolverGenerator } from "./generator";
+import { MappingTemplate, getKeySchema, getTable } from '@aws-amplify/graphql-transformer-core';
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  DynamoDBMappingTemplate,
+  Expression,
+  ObjectNode,
+  bool,
+  compoundExpression,
+  equals,
+  ifElse,
+  iff,
+  int,
+  isNullOrEmpty,
+  list,
+  methodCall,
+  not,
+  nul,
+  obj,
+  print,
+  qref,
+  raw,
+  ref,
+  set,
+  str,
+} from 'graphql-mapping-template';
+import {
+  ModelResourceIDs,
+  ResolverResourceIDs,
+  applyCompositeKeyConditionExpression,
+  applyKeyConditionExpression,
+  attributeTypeFromScalar,
+  setArgs,
+  toCamelCase,
+} from 'graphql-transformer-common';
+import { HasManyDirectiveConfiguration } from '../types';
+import { RelationalResolverGenerator } from './generator';
 
 const SORT_KEY_VALUE = 'sortKeyValue';
 const CONNECTION_STACK = 'ConnectionStack';
@@ -11,19 +41,18 @@ const authFilter = ref('ctx.stash.authFilter');
 const PARTITION_KEY_VALUE = 'partitionKeyValue';
 
 export class DDBRelationalResolverGenerator implements RelationalResolverGenerator {
-
   makeExpression = (keySchema: any[], connectionAttributes: string[]): ObjectNode => {
     if (keySchema[1] && connectionAttributes[1]) {
       let condensedSortKeyValue;
-  
+
       if (connectionAttributes.length > 2) {
         const rangeKeyFields = connectionAttributes.slice(1);
-  
+
         condensedSortKeyValue = rangeKeyFields
           .map((keyField, idx) => `\${${SORT_KEY_VALUE}${idx}}`)
           .join(ModelResourceIDs.ModelCompositeKeySeparator());
       }
-  
+
       return obj({
         expression: str('#partitionKey = :partitionKey AND #sortKey = :sortKey'),
         expressionNames: obj({
@@ -36,7 +65,7 @@ export class DDBRelationalResolverGenerator implements RelationalResolverGenerat
         }),
       });
     }
-  
+
     return obj({
       expression: str('#partitionKey = :partitionKey'),
       expressionNames: obj({
@@ -46,7 +75,7 @@ export class DDBRelationalResolverGenerator implements RelationalResolverGenerat
         ':partitionKey': ref(`util.dynamodb.toDynamoDB($${PARTITION_KEY_VALUE})`),
       }),
     });
-  }
+  };
 
   /**
    * Create a resolver that queries an item in DynamoDB.
@@ -74,18 +103,18 @@ export class DDBRelationalResolverGenerator implements RelationalResolverGenerat
         ),
       set(ref('query'), this.makeExpression(keySchema, connectionAttributes)),
     ];
-  
+
     // If the key schema has a sort key but one is not provided for the query, let a sort key be
     // passed in via $ctx.args.
     if (keySchema[1] && !connectionAttributes[1]) {
       const sortKeyFieldName = keySchema[1].attributeName;
       const sortKeyField = relatedType.fields!.find((f) => f.name.value === sortKeyFieldName);
-  
+
       if (sortKeyField) {
         setup.push(applyKeyConditionExpression(sortKeyFieldName, attributeTypeFromScalar(sortKeyField.type), 'query'));
       } else {
         const sortKeyFieldNames = sortKeyFieldName.split(ModelResourceIDs.ModelCompositeKeySeparator());
-  
+
         setup.push(applyCompositeKeyConditionExpression(sortKeyFieldNames, 'query', toCamelCase(sortKeyFieldNames), sortKeyFieldName));
       }
     }
@@ -120,7 +149,7 @@ export class DDBRelationalResolverGenerator implements RelationalResolverGenerat
         ]),
       ),
     );
-  
+
     const queryArguments = {
       query: raw('$util.toJson($query)'),
       scanIndexForward: ifElse(
@@ -132,11 +161,11 @@ export class DDBRelationalResolverGenerator implements RelationalResolverGenerat
       limit: ref('limit'),
       nextToken: ifElse(ref('context.args.nextToken'), ref('util.toJson($context.args.nextToken)'), nul()),
     } as any;
-  
+
     if (indexName) {
       queryArguments.index = str(indexName);
     }
-  
+
     const queryObj = DynamoDBMappingTemplate.query(queryArguments);
     const resolverResourceId = ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value);
     const resolver = ctx.resolvers.generateQueryResolver(
@@ -175,9 +204,8 @@ export class DDBRelationalResolverGenerator implements RelationalResolverGenerat
         `${object.name.value}.${field.name.value}.res.vtl`,
       ),
     );
-  
+
     resolver.mapToStack(ctx.stackManager.getStackFor(resolverResourceId, CONNECTION_STACK));
     ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
-  }
-
+  };
 }

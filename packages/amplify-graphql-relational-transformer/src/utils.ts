@@ -123,7 +123,9 @@ export function ensureFieldsArray(config: HasManyDirectiveConfiguration | HasOne
   }
 }
 
-export function ensureReferencesArray(config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration) {
+export function ensureReferencesArray(
+  config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
+) {
   if (!config.references) {
     throw new InvalidDirectiveError(`References must be passed to @${config.directiveName} directive for RDS models.`);
   } else if (!Array.isArray(config.references)) {
