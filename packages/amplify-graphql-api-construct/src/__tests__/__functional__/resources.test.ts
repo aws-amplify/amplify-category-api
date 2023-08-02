@@ -308,4 +308,24 @@ describe('generated resource access', () => {
       expect(api.resources.cfnTables.AmplifyDataStore).toBeDefined();
     });
   });
+
+  describe('lambda resources', () => {
+    it('generates a lambda function for searchable models', () => {
+      const {
+        resources: { cfnFunctions },
+      } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
+        schema: /* GraphQL */ `
+          type Todo @model @auth(rules: [{ allow: public }]) @searchable {
+            description: String!
+          }
+        `,
+        authorizationConfig: {
+          apiKeyConfig: { expires: cdk.Duration.days(7) },
+        },
+      });
+
+      expect(Object.values(cfnFunctions).length).toEqual(1);
+      expect(cfnFunctions.OpenSearchStreamingLambdaFunction).toBeDefined();
+    });
+  });
 });

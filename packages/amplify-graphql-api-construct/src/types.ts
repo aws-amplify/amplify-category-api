@@ -12,7 +12,7 @@ import {
 import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole, CfnRole, CfnPolicy } from 'aws-cdk-lib/aws-iam';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
-import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { IFunction, CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
@@ -430,6 +430,10 @@ export type AmplifyGraphqlApiResources = {
    */
   cfnPolicies: Record<string, CfnPolicy>;
 
+  /**
+   * The Generated Lambda Function L1 Resources, keyed by function name.
+   */
+  cfnFunctions: Record<string, CfnFunction>;
   /**
    * Remaining L1 resources generated, keyed by logicalId.
    */

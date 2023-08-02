@@ -4,6 +4,7 @@ import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnRole, CfnPolicy } from 'aws-cdk-lib/aws-iam';
 import { CfnResource } from 'aws-cdk-lib';
 import { getResourceName } from '@aws-amplify/graphql-transformer-core';
+import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApiResources } from '../types';
 
 /**
@@ -25,6 +26,7 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
   const cfnTables: Record<string, CfnTable> = {};
   const cfnRoles: Record<string, CfnRole> = {};
   const cfnPolicies: Record<string, CfnPolicy> = {};
+  const cfnFunctions: Record<string, CfnFunction> = {};
   const additionalCfnResources: Record<string, CfnResource> = {};
 
   const classifyConstruct = (currentScope: Construct): void => {
@@ -69,6 +71,10 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       cfnPolicies[resourceName] = currentScope;
       return;
     }
+    if (currentScope instanceof CfnFunction) {
+      cfnFunctions[resourceName] = currentScope;
+      return;
+    }
     if (currentScope instanceof CfnResource) {
       additionalCfnResources[resourceName] = currentScope;
       return;
@@ -83,11 +89,11 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
   scope.node.children.forEach(walkAndClassifyConstructTree);
 
   if (!cfnGraphqlApi) {
-    throw new Error('Expected something');
+    throw new Error('Expected to find AWS::AppSync::GraphQLApi in the generated resource scope.');
   }
 
   if (!cfnGraphqlSchema) {
-    throw new Error('Expected something');
+    throw new Error('Expected to find AWS::AppSync::GraphQLSchema in the generated resource scope.');
   }
 
   return {
@@ -100,6 +106,7 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
     cfnTables,
     cfnRoles,
     cfnPolicies,
+    cfnFunctions,
     additionalCfnResources,
   };
 };
