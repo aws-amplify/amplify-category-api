@@ -13,6 +13,7 @@ env:
 phases:
   build:
     commands:
+      - codebuild-breakpoint
       - source ./shared-scripts.sh && _runMigrationV10Test
   post_build:
     commands:
