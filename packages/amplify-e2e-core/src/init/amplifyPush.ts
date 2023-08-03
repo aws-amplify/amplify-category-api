@@ -149,8 +149,7 @@ export function cancelIterativeAmplifyPush(
             if (!/Killed the process as no output receive/.test(err.message)) {
               reject(err);
             }
-          }
-          else if (!/Process exited with non zero exit code 130/.test(err.message)) {
+          } else if (!/Process exited with non zero exit code 130/.test(err.message)) {
             reject(err);
           }
         }

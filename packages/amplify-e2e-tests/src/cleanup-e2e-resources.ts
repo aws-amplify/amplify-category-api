@@ -533,7 +533,7 @@ const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, sta
 };
 
 const generateReport = (jobs: _.Dictionary<ReportEntry>, accountIdx: number): void => {
-  const reportPath = path.join(reportPathDir, `stale-resources-${accountIdx}.json`)
+  const reportPath = path.join(reportPathDir, `stale-resources-${accountIdx}.json`);
   fs.ensureFileSync(reportPath);
   fs.writeFileSync(reportPath, JSON.stringify(jobs, null, 4));
 };
