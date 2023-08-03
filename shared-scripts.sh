@@ -195,15 +195,20 @@ function _loadTestAccountCredentials {
     export AWS_SECRET_ACCESS_KEY=$(echo $creds | jq -c -r ".Credentials.SecretAccessKey")
     export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")
 }
-function _runE2ETestsLinux {
-    echo "RUN E2E Tests Linux"
+function _setupE2ETestsLinux {
+    echo "Setup E2E Tests Linux"
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     _installCLIFromLocalRegistry  
     _loadTestAccountCredentials
     _setShell
+}
+
+function _runE2ETestsLinux {
+    echo "RUN E2E Tests Linux"
     retry runE2eTest
 }
+
 function _runGqlE2ETests {
     echo "RUN GraphQL E2E tests"
     loadCacheFromBuildJob
