@@ -10,7 +10,7 @@ export type {
   AmplifyApiSchemaPreprocessorOutput,
   AmplifyGraphqlApiProps,
   AmplifyGraphqlApiResources,
-  AmplifyGraphqlApiL1Resources,
+  AmplifyGraphqlApiCfnResources,
   FunctionSlotBase,
   MutationFunctionSlot,
   QueryFunctionSlot,

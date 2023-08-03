@@ -331,8 +331,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
       managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs')],
     });
-    setResourceName(role.node.defaultChild!, 'ApiLogsRole');
-    setResourceName(role, 'ApiLogsRole');
+    setResourceName(role, { name: 'ApiLogsRole', setOnDefaultChild: true });
 
     return {
       cloudWatchLogsRoleArn: role.roleArn,

@@ -2,13 +2,22 @@ import { Construct, MetadataEntry } from 'constructs';
 
 const resourceNameKey = 'graphqltransformer:resourceName';
 
+export type SetResourceNameProps = {
+  name: string;
+  setOnDefaultChild?: boolean;
+};
+
 /**
  * Set a resource name on a provided construct.
  * @param scope the construct to set hte resource name on.
- * @param name the name to set.
+ * @param props.name the name to set.
+ * @param props.setOnDefaultChild whether to set in the defaultChild or not.
  */
-export const setResourceName = (scope: Construct, name: string): void => {
+export const setResourceName = (scope: Construct, { name, setOnDefaultChild }: SetResourceNameProps): void => {
   scope.node.addMetadata(resourceNameKey, name);
+  if (setOnDefaultChild && scope.node.defaultChild && scope.node.defaultChild) {
+    scope.node.defaultChild.node.addMetadata(resourceNameKey, name);
+  }
 };
 
 /**

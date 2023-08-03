@@ -67,7 +67,7 @@ export class AppSyncFunctionConfiguration extends Construct {
         ? { responseMappingTemplate: responseTemplate }
         : { responseMappingTemplateS3Location: responseTemplate }),
     });
-    setResourceName(this.function, id);
+    setResourceName(this.function, { name: id });
     props.api.addSchemaDependency(this.function);
     if (props.dataSource instanceof BackedDataSource) {
       this.function.addDependency(props.dataSource?.ds);

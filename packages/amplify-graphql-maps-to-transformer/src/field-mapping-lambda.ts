@@ -24,8 +24,7 @@ export const createMappingLambda = (host: TransformHostProvider, stackManager: S
   const role = new iam.Role(stack, roleName, {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
   });
-  setResourceName(role.node.defaultChild!, roleName);
-  setResourceName(role, roleName);
+  setResourceName(role, { name: roleName, setOnDefaultChild: true });
 
   // create lambda
   const funcLogicalId = `${baseName}LambdaFunction`;

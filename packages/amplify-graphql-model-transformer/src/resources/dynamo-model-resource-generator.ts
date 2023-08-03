@@ -145,8 +145,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
       ...(context.isProjectUsingDataStore() ? { timeToLiveAttribute: '_ttl' } : undefined),
     });
     const cfnTable = table.node.defaultChild as CfnTable;
-    setResourceName(cfnTable, modelName);
-    setResourceName(table, modelName);
+    setResourceName(table, { name: modelName, setOnDefaultChild: true });
 
     cfnTable.provisionedThroughput = cdk.Fn.conditionIf(usePayPerRequestBilling.logicalId, cdk.Fn.ref('AWS::NoValue'), {
       ReadCapacityUnits: readIops,
@@ -234,8 +233,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
       roleName,
       assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
     });
-    setResourceName(role.node.defaultChild!, ModelResourceIDs.ModelTableIAMRoleID(def!.name.value));
-    setResourceName(role, ModelResourceIDs.ModelTableIAMRoleID(def!.name.value));
+    setResourceName(role, { name: ModelResourceIDs.ModelTableIAMRoleID(def!.name.value), setOnDefaultChild: true });
 
     const amplifyDataStoreTableName = context.resourceHelper.generateTableName(SyncResourceIDs.syncTableName);
     role.attachInlinePolicy(

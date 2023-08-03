@@ -52,8 +52,7 @@ export const createLambdaRole = (context: TransformerContextProvider, stack: Con
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
     roleName: context.resourceHelper.generateIAMRoleName(parameterMap.get(OpenSearchStreamingIAMRoleName)?.valueAsString ?? ''),
   });
-  setResourceName(role.node.defaultChild!, OpenSearchStreamingLambdaIAMRoleLogicalID);
-  setResourceName(role, OpenSearchStreamingLambdaIAMRoleLogicalID);
+  setResourceName(role, { name: OpenSearchStreamingLambdaIAMRoleLogicalID, setOnDefaultChild: true });
   role.attachInlinePolicy(
     new Policy(stack, 'CloudwatchLogsAccess', {
       statements: [
@@ -85,7 +84,6 @@ export const createEventSourceMapping = (
     enabled: true,
     startingPosition: StartingPosition.LATEST,
   });
-  setResourceName(eventSourceMapping.node.defaultChild!, SearchableResourceIDs.SearchableEventSourceMappingID(type));
-  setResourceName(eventSourceMapping, SearchableResourceIDs.SearchableEventSourceMappingID(type));
+  setResourceName(eventSourceMapping, { name: SearchableResourceIDs.SearchableEventSourceMappingID(type), setOnDefaultChild: true });
   return eventSourceMapping;
 };

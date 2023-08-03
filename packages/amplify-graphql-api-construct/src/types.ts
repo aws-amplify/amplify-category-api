@@ -385,7 +385,7 @@ export type AmplifyGraphqlApiProps<SchemaType = AmplifyApiGraphqlSchema> = {
  * L1 CDK resources from the API which were generated as part of the transform.
  * These are potentially stored under nested stacks, but presented organized by type instead.
  */
-export type AmplifyGraphqlApiL1Resources = {
+export type AmplifyGraphqlApiCfnResources = {
   /**
    * The Generated AppSync API L1 Resource
    */
@@ -465,5 +465,5 @@ export type AmplifyGraphqlApiResources = {
   /**
    * L1 Cfn Resources, for when dipping down a level of abstraction is desirable.
    */
-  cfnResources: AmplifyGraphqlApiL1Resources;
+  cfnResources: AmplifyGraphqlApiCfnResources;
 };

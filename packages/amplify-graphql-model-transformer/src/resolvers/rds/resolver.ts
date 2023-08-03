@@ -198,8 +198,7 @@ export const createRdsLambdaRole = (roleName: string, scope: Construct, secretEn
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
     roleName,
   });
-  setResourceName(role.node.defaultChild!, RDSLambdaIAMRoleLogicalID);
-  setResourceName(role, RDSLambdaIAMRoleLogicalID);
+  setResourceName(role, { name: RDSLambdaIAMRoleLogicalID, setOnDefaultChild: true });
   const policyStatements = [
     new PolicyStatement({
       actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
@@ -253,8 +252,7 @@ export const createRdsPatchingLambdaRole = (roleName: string, scope: Construct, 
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
     roleName,
   });
-  setResourceName(role.node.defaultChild!, RDSPatchingLambdaIAMRoleLogicalID);
-  setResourceName(role, RDSPatchingLambdaIAMRoleLogicalID);
+  setResourceName(role, { name: RDSPatchingLambdaIAMRoleLogicalID, setOnDefaultChild: true });
   const policyStatements = [
     new PolicyStatement({
       actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
