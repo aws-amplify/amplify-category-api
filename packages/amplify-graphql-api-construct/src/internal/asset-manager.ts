@@ -8,8 +8,10 @@ import * as cdk from 'aws-cdk-lib';
  */
 export class AssetManager {
   private readonly tempAssetDir: string = cdk.FileSystem.mkdtemp('transformer-assets');
+  public readonly resolverAssets: Record<string, string> = {};
 
   public addAsset(fileName: string, contents: string): string {
+    this.trackResolverAsset(fileName, contents);
     const filePath = path.join(this.tempAssetDir, fileName);
     const fileDirName = path.dirname(filePath);
     if (!fs.existsSync(fileDirName)) {
@@ -17,5 +19,12 @@ export class AssetManager {
     }
     fs.writeFileSync(filePath, contents);
     return filePath;
+  }
+
+  private trackResolverAsset(fileName: string, contents: string): void {
+    if (fileName.startsWith('resolvers')) {
+      const resolverFileName = fileName.split('/')[1];
+      this.resolverAssets[resolverFileName] = contents;
+    }
   }
 }
