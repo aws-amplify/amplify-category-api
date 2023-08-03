@@ -1,4 +1,4 @@
-import { getFieldNameFor, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
+import { getFieldNameFor, getPrimaryKeyFields, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import {
   FieldMapEntry,
   ResolverReferenceEntry,
@@ -22,6 +22,33 @@ import {
   HasOneDirectiveConfiguration,
   ManyToManyDirectiveConfiguration,
 } from './types';
+
+export const validateParentReferencesFields = (
+  config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+): void => {
+  const { directiveName, object, references, relatedType } = config;
+  const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
+
+  const primaryKeys = getPrimaryKeyFields(object);
+  if (primaryKeys.length !== references.length) {
+    throw new InvalidDirectiveError(
+      `The number of references provided to @${directiveName} must match the number of primary keys on ${object.name.value}.`,
+    );
+  }
+
+  for (const reference of references) {
+    const fieldNode = relatedType.fields!.find((field) => field.name.value === reference);
+
+    if (!fieldNode) {
+      throw new InvalidDirectiveError(`${reference} is not a field in ${relatedType.name.value}`);
+    }
+
+    if (!isScalarOrEnum(fieldNode.type, enums)) {
+      throw new InvalidDirectiveError(`All fields provided to @${directiveName} must be scalar or enum fields.`);
+    }
+  }
+};
 
 export function getRelatedTypeIndex(
   config: HasOneDirectiveConfiguration,

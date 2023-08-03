@@ -47,6 +47,7 @@ import {
   registerHasManyForeignKeyMappings,
   validateDisallowedDataStoreRelationships,
   validateModelDirective,
+  validateParentReferencesFields,
   validateRelatedModelDirective,
 } from './utils';
 import { DDBRelationalResolverGenerator } from './resolver/ddb-generator';
@@ -157,6 +158,8 @@ export class HasManyTransformer extends TransformerPluginBase {
       const dbType = ctx.modelToDatasourceMap.get(getBaseType(config.field.type))?.dbType ?? DDB_DB_TYPE;
       if (dbType === DDB_DB_TYPE) {
         config.relatedTypeIndex = getRelatedTypeIndex(config, context, config.indexName);
+      } else if (dbType === MYSQL_DB_TYPE) {
+        validateParentReferencesFields(config, context);
       }
       ensureHasManyConnectionField(config, context);
       extendTypeWithConnection(config, context);
