@@ -306,3 +306,42 @@ test('read get list auth operations', () => {
   expect(out.resolvers['Subscription.onDeleteTestRead.auth.1.req.vtl']).toContain('#set( $isAuthorized = true )');
   expect(out.resolvers['Subscription.onUpdateTestRead.auth.1.req.vtl']).toContain('#set( $isAuthorized = true )');
 });
+
+test('can update on model without delete', () => {
+  const config: SyncConfig = {
+    ConflictDetection: 'VERSION',
+    ConflictHandler: ConflictHandlerType.AUTOMERGE,
+  };
+
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'API_KEY',
+    },
+    additionalAuthenticationProviders: [
+      {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        userPoolConfig: {
+          userPoolId: 'authauthdelete089485ba',
+        },
+      },
+    ],
+  };
+  const validSchema = `
+    type UserData @model @auth(rules: [{allow: owner, operations: [create, read, update]}]) {
+    email: String
+    nick: String
+  }`;
+
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
+    resolverConfig: {
+      project: config,
+    },
+  });
+
+  const { resolvers } = transformer.transform(validSchema);
+
+  expect(resolvers['Mutation.updateUserData.auth.1.res.vtl']).toMatchSnapshot();
+  expect(resolvers['Mutation.deleteUserData.auth.1.res.vtl']).toMatchSnapshot();
+});
