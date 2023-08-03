@@ -45,7 +45,7 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
 }
 
 // @public
-export type AmplifyGraphqlApiL1Resources = {
+export type AmplifyGraphqlApiCfnResources = {
     cfnGraphqlApi: CfnGraphQLApi;
     cfnGraphqlSchema: CfnGraphQLSchema;
     cfnApiKey?: CfnApiKey;
@@ -79,7 +79,7 @@ export type AmplifyGraphqlApiResources = {
     tables: Record<string, ITable>;
     roles: Record<string, IRole>;
     functions: Record<string, IFunction>;
-    cfnResources: AmplifyGraphqlApiL1Resources;
+    cfnResources: AmplifyGraphqlApiCfnResources;
 };
 
 // @public

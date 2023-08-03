@@ -208,7 +208,7 @@ export class DefaultTransformHost implements TransformHostProvider {
           : { responseMappingTemplateS3Location: responseTemplateLocation }),
       });
       resolver.overrideLogicalId(resourceId);
-      setResourceName(resolver, `${typeName}.${fieldName}`);
+      setResourceName(resolver, { name: `${typeName}.${fieldName}` });
       this.api.addSchemaDependency(resolver);
       return resolver;
     }
@@ -229,7 +229,7 @@ export class DefaultTransformHost implements TransformHostProvider {
         },
       });
       resolver.overrideLogicalId(resourceId);
-      setResourceName(resolver, `${typeName}.${fieldName}`);
+      setResourceName(resolver, { name: `${typeName}.${fieldName}` });
       this.api.addSchemaDependency(resolver);
       this.resolvers.set(`${typeName}:${fieldName}`, resolver);
       return resolver;
@@ -262,8 +262,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     });
     fn.addLayers();
     const cfnFn = fn.node.defaultChild as CfnFunction;
-    setResourceName(cfnFn, functionName);
-    setResourceName(fn, functionName);
+    setResourceName(fn, { name: functionName, setOnDefaultChild: true });
     const functionCode = new S3MappingFunctionCode(functionKey, filePath).bind(fn);
     cfnFn.code = {
       s3Key: functionCode.s3ObjectKey,
@@ -292,8 +291,7 @@ export class DefaultTransformHost implements TransformHostProvider {
       name: options?.name,
       description: options?.description,
     });
-    setResourceName(noneDataSource.node.defaultChild!, options?.name ?? id);
-    setResourceName(noneDataSource, options?.name ?? id);
+    setResourceName(noneDataSource, { name: options?.name ?? id, setOnDefaultChild: true });
     return noneDataSource;
   }
 
@@ -316,8 +314,7 @@ export class DefaultTransformHost implements TransformHostProvider {
 
     const cfnDataSource: CfnDataSource = (ds as any).node.defaultChild;
     cfnDataSource.overrideLogicalId(id);
-    setResourceName(cfnDataSource, options?.name ?? id);
-    setResourceName(ds, options?.name ?? id);
+    setResourceName(ds, { name: options?.name ?? id, setOnDefaultChild: true });
 
     return ds;
   }
@@ -341,8 +338,7 @@ export class DefaultTransformHost implements TransformHostProvider {
 
     const cfnDataSource: CfnDataSource = (ds as any).node.defaultChild;
     cfnDataSource.overrideLogicalId(id);
-    setResourceName(cfnDataSource, options?.name ?? id);
-    setResourceName(ds, options?.name ?? id);
+    setResourceName(ds, { name: options?.name ?? id, setOnDefaultChild: true });
 
     return ds;
   }
@@ -370,8 +366,7 @@ export class DefaultTransformHost implements TransformHostProvider {
       region,
       serviceRole: options?.serviceRole,
     });
-    setResourceName(searchableDataSource.node.defaultChild!, options?.name ?? id);
-    setResourceName(searchableDataSource, options?.name ?? id);
+    setResourceName(searchableDataSource, { name: options?.name ?? id, setOnDefaultChild: true });
     return searchableDataSource;
   }
 
@@ -393,8 +388,7 @@ export class DefaultTransformHost implements TransformHostProvider {
 
     const cfnDataSource: CfnDataSource = (ds as any).node.defaultChild;
     cfnDataSource.overrideLogicalId(id);
-    setResourceName(cfnDataSource, options?.name ?? id);
-    setResourceName(ds, options?.name ?? id);
+    setResourceName(ds, { name: options?.name ?? id, setOnDefaultChild: true });
 
     return ds;
   }

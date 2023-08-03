@@ -34,8 +34,7 @@ export const createSearchableDomain = (
   });
 
   const cfnDomain = domain.node.defaultChild as CfnDomain;
-  setResourceName(cfnDomain, OpenSearchDomainLogicalID);
-  setResourceName(domain, OpenSearchDomainLogicalID);
+  setResourceName(domain, { name: OpenSearchDomainLogicalID, setOnDefaultChild: true });
 
   // CDK started to append hash to logical id of search domain.
   // This line overrides that behavior to avoid deletion and re-creation of existing domains.
@@ -64,7 +63,6 @@ export const createSearchableDomainRole = (
     assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
     roleName: context.resourceHelper.generateIAMRoleName(roleName),
   });
-  setResourceName(role.node.defaultChild!, OpenSearchAccessIAMRoleLogicalID);
-  setResourceName(role, OpenSearchAccessIAMRoleLogicalID);
+  setResourceName(role, { name: OpenSearchAccessIAMRoleLogicalID, setOnDefaultChild: true });
   return role;
 };

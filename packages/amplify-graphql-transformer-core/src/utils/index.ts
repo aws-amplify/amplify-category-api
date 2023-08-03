@@ -6,3 +6,4 @@ export { DEFAULT_SCHEMA_DEFINITION } from './defaultSchema';
 export { getParameterStoreSecretPath } from './rds-secret-utils';
 export const APICategory = 'api';
 export { setResourceName, getResourceName } from './resource-name';
+export type { SetResourceNameProps } from './resource-name';

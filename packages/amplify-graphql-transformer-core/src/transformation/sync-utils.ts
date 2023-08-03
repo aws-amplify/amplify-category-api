@@ -37,8 +37,7 @@ export function createSyncTable(context: TransformerContext) {
     billingMode: BillingMode.PAY_PER_REQUEST,
     timeToLiveAttribute: '_ttl',
   });
-  setResourceName(syncTable.node.defaultChild!, SyncResourceIDs.syncTableName);
-  setResourceName(syncTable, SyncResourceIDs.syncTableName);
+  setResourceName(syncTable, { name: SyncResourceIDs.syncTableName, setOnDefaultChild: true });
 
   createSyncIAMRole(context, scope, tableName);
 }
@@ -48,8 +47,7 @@ function createSyncIAMRole(context: TransformerContext, scope: Construct, tableN
     roleName: context.resourceHelper.generateIAMRoleName(SyncResourceIDs.syncIAMRoleName),
     assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
   });
-  setResourceName(role.node.defaultChild!, SyncResourceIDs.syncIAMRoleName);
-  setResourceName(role, SyncResourceIDs.syncIAMRoleName);
+  setResourceName(role, { name: SyncResourceIDs.syncIAMRoleName, setOnDefaultChild: true });
 
   role.attachInlinePolicy(
     new iam.Policy(scope, 'DynamoDBAccess', {
