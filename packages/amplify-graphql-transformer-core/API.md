@@ -404,10 +404,14 @@ export class SchemaValidationError extends Error {
     constructor(errors: Readonly<GraphQLError[]>);
 }
 
-// Warning: (ae-forgotten-export) The symbol "SetResourceNameProps" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
 export const setResourceName: (scope: Construct, { name, setOnDefaultChild }: SetResourceNameProps) => void;
+
+// @public (undocumented)
+export type SetResourceNameProps = {
+    name: string;
+    setOnDefaultChild?: boolean;
+};
 
 // @public (undocumented)
 export class StackManager implements StackManagerProvider {
