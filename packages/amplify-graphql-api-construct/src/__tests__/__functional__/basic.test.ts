@@ -107,4 +107,36 @@ describe('basic functionality', () => {
       Name: 'TestApi-NONE',
     });
   });
+
+  it('generates a nested stack per-model and for connections', () => {
+    const stack = new cdk.Stack();
+    const api = new AmplifyGraphqlApi(stack, 'TestApi', {
+      schema: /* GraphQL */ `
+        type Blog @model @auth(rules: [{ allow: public }]) {
+          title: String!
+          posts: [Post] @hasMany
+        }
+
+        type Post @model @auth(rules: [{ allow: public }]) {
+          title: String!
+          blog: Blog @belongsTo
+        }
+      `,
+      authorizationConfig: {
+        apiKeyConfig: { expires: cdk.Duration.days(7) },
+      },
+    });
+
+    expect(api.resources.nestedStacks.Blog).toBeDefined();
+    const blogTemplate = Template.fromStack(api.resources.nestedStacks.Blog);
+    expect(blogTemplate).toBeDefined();
+
+    expect(api.resources.nestedStacks.Post).toBeDefined();
+    const postTemplate = Template.fromStack(api.resources.nestedStacks.Post);
+    expect(postTemplate).toBeDefined();
+
+    expect(api.resources.nestedStacks.ConnectionStack).toBeDefined();
+    const connectionTemplate = Template.fromStack(api.resources.nestedStacks.ConnectionStack);
+    expect(connectionTemplate).toBeDefined();
+  });
 });
