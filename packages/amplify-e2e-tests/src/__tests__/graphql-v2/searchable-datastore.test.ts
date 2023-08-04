@@ -17,7 +17,7 @@ import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 
 (global as any).fetch = require('node-fetch');
 
-describe.skip('transformer model searchable migration test', () => {
+describe('transformer model searchable migration test', () => {
   let projRoot: string;
   let projectName: string;
   let appSyncClient = undefined;
