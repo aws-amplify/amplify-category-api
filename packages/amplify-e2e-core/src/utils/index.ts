@@ -33,7 +33,7 @@ export * from './refresh-credentials';
 config();
 
 // eslint-disable-next-line spellcheck/spell-checker
-export const TEST_PROFILE_NAME = isCI() ? 'amplify-integ-test-user' : 'default';
+export const TEST_PROFILE_NAME = 'amplify-integ-test-user';
 
 export function deleteProjectDir(root: string) {
   rimraf.sync(root);
