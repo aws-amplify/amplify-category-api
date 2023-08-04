@@ -4,7 +4,7 @@ import { gql } from 'graphql-transformer-core';
 type SelectionSet = {
   mutation: MutationSelectionSet;
   query: QueryCompleteSelectionSet;
-}
+};
 
 type QueryCompleteSelectionSet = {
   get: string;
@@ -18,9 +18,7 @@ type MutationSelectionSet = {
 };
 
 export class GQLQueryHelper {
-  
-  constructor(private client: AWSAppSyncClient<any>, private name: string, private selectionSet: SelectionSet) {
-  }
+  constructor(private client: AWSAppSyncClient<any>, private name: string, private selectionSet: SelectionSet) {}
 
   create = async (operation: string, input: any, selectionSet?: string): Promise<any> => {
     const finalSelectionSet = selectionSet ?? this.selectionSet.mutation.create;
@@ -35,7 +33,9 @@ export class GQLQueryHelper {
       input,
     };
     const createResult: any = await this.client.mutate({
-      mutation: gql`${createMutation}`,
+      mutation: gql`
+        ${createMutation}
+      `,
       fetchPolicy: 'no-cache',
       variables: createInput,
     });
@@ -56,7 +56,9 @@ export class GQLQueryHelper {
       input,
     };
     const updateResult: any = await this.client.mutate({
-      mutation: gql`${updateMutation}`,
+      mutation: gql`
+        ${updateMutation}
+      `,
       fetchPolicy: 'no-cache',
       variables: updateInput,
     });
@@ -77,7 +79,9 @@ export class GQLQueryHelper {
       input,
     };
     const deleteResult: any = await this.client.mutate({
-      mutation: gql`${deleteMutation}`,
+      mutation: gql`
+        ${deleteMutation}
+      `,
       fetchPolicy: 'no-cache',
       variables: deleteInput,
     });
@@ -94,7 +98,9 @@ export class GQLQueryHelper {
       ...input,
     };
     const getResult: any = await this.client.query({
-      query: gql`${getQuery}`,
+      query: gql`
+        ${getQuery}
+      `,
       fetchPolicy: 'no-cache',
       variables: getInput,
     });
@@ -111,12 +117,13 @@ export class GQLQueryHelper {
       ...input,
     };
     const listResult: any = await this.client.query({
-      query: gql`${listQuery}`,
+      query: gql`
+        ${listQuery}
+      `,
       fetchPolicy: 'no-cache',
       variables: listInput,
     });
 
     return listResult;
   };
-  
 }

@@ -201,7 +201,7 @@ export class HasOneTransformer extends TransformerPluginBase {
 
 const validate = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field } = config;
-  
+
   const dbType = getDatasourceType(field.type, ctx);
   config.relatedType = getRelatedType(config, ctx);
 

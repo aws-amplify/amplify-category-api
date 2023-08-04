@@ -175,7 +175,13 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
       resolverResourceId,
       dataSource as any,
       MappingTemplate.s3MappingTemplateFromString(
-        this.generateHasOneLambdaRequestTemplate(relatedType.name.value, 'GET_FIRST', 'GetItemConnectionQuery', connectionCondition, relatedTypePrimaryKeys),
+        this.generateHasOneLambdaRequestTemplate(
+          relatedType.name.value,
+          'GET_FIRST',
+          'GetItemConnectionQuery',
+          connectionCondition,
+          relatedTypePrimaryKeys,
+        ),
         `${object.name.value}.${field.name.value}.req.vtl`,
       ),
       MappingTemplate.s3MappingTemplateFromString(
@@ -197,13 +203,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     const primaryKeys = getPrimaryKeyFields(relatedType);
     references.forEach((r, index) => {
       connectionCondition.push(
-        qref(
-          methodCall(
-            ref('lambdaInput.args.input.put'),
-            str(primaryKeys[index]),
-            ref(`util.defaultIfNull($ctx.source.${r}, "")`),
-          ),
-        ),
+        qref(methodCall(ref('lambdaInput.args.input.put'), str(primaryKeys[index]), ref(`util.defaultIfNull($ctx.source.${r}, "")`))),
       );
     });
     const resolverResourceId = ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value);
@@ -213,7 +213,13 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
       resolverResourceId,
       dataSource as any,
       MappingTemplate.s3MappingTemplateFromString(
-        this.generateHasOneLambdaRequestTemplate(relatedType.name.value, 'GET', 'BelongsToConnectionQuery', connectionCondition, primaryKeys),
+        this.generateHasOneLambdaRequestTemplate(
+          relatedType.name.value,
+          'GET',
+          'BelongsToConnectionQuery',
+          connectionCondition,
+          primaryKeys,
+        ),
         `${object.name.value}.${field.name.value}.req.vtl`,
       ),
       MappingTemplate.s3MappingTemplateFromString(

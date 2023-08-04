@@ -230,7 +230,7 @@ describe('RDS Relational Directives', () => {
       content: 'Post 3A',
       blogId: 'B-3',
     });
-    
+
     const getBlog1 = await blogHelper.get({
       id: 'B-1',
     });
@@ -272,24 +272,34 @@ describe('RDS Relational Directives', () => {
     expect(listBlogs.data.listBlogs.items.length).toEqual(3);
     expect(listBlogs.data.listBlogs.items).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ id: 'B-1', content: 'Blog 1', posts: expect.objectContaining({
-          items: expect.arrayContaining([
-            expect.objectContaining({ id: 'P-1A', content: 'Post 1A' }),
-            expect.objectContaining({ id: 'P-1B', content: 'Post 1B' }),
-            expect.objectContaining({ id: 'P-1C', content: 'Post 1C' }),
-          ]),
-        })}),
-        expect.objectContaining({ id: 'B-2', content: 'Blog 2', posts: expect.objectContaining({
-          items: expect.arrayContaining([
-            expect.objectContaining({ id: 'P-2A', content: 'Post 2A' }),
-            expect.objectContaining({ id: 'P-2B', content: 'Post 2B' }),
-          ]),
-        })}),
-        expect.objectContaining({ id: 'B-3', content: 'Blog 3', posts: expect.objectContaining({
-          items: expect.arrayContaining([
-            expect.objectContaining({ id: 'P-3A', content: 'Post 3A' }),
-          ]),
-        })}),
+        expect.objectContaining({
+          id: 'B-1',
+          content: 'Blog 1',
+          posts: expect.objectContaining({
+            items: expect.arrayContaining([
+              expect.objectContaining({ id: 'P-1A', content: 'Post 1A' }),
+              expect.objectContaining({ id: 'P-1B', content: 'Post 1B' }),
+              expect.objectContaining({ id: 'P-1C', content: 'Post 1C' }),
+            ]),
+          }),
+        }),
+        expect.objectContaining({
+          id: 'B-2',
+          content: 'Blog 2',
+          posts: expect.objectContaining({
+            items: expect.arrayContaining([
+              expect.objectContaining({ id: 'P-2A', content: 'Post 2A' }),
+              expect.objectContaining({ id: 'P-2B', content: 'Post 2B' }),
+            ]),
+          }),
+        }),
+        expect.objectContaining({
+          id: 'B-3',
+          content: 'Blog 3',
+          posts: expect.objectContaining({
+            items: expect.arrayContaining([expect.objectContaining({ id: 'P-3A', content: 'Post 3A' })]),
+          }),
+        }),
       ]),
     );
 
@@ -306,30 +316,54 @@ describe('RDS Relational Directives', () => {
     expect(listPosts.data.listPosts.items.length).toEqual(6);
     expect(listPosts.data.listPosts.items).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ id: 'P-1A', content: 'Post 1A', blog: expect.objectContaining({
-          id: 'B-1',
-          content: 'Blog 1',
-        })}),
-        expect.objectContaining({ id: 'P-1B', content: 'Post 1B', blog: expect.objectContaining({
-          id: 'B-1',
-          content: 'Blog 1',
-        })}),
-        expect.objectContaining({ id: 'P-1C', content: 'Post 1C', blog: expect.objectContaining({
-          id: 'B-1',
-          content: 'Blog 1',
-        })}),
-        expect.objectContaining({ id: 'P-2A', content: 'Post 2A', blog: expect.objectContaining({
-          id: 'B-2',
-          content: 'Blog 2',
-        })}),
-        expect.objectContaining({ id: 'P-2B', content: 'Post 2B', blog: expect.objectContaining({
-          id: 'B-2',
-          content: 'Blog 2',
-        })}),
-        expect.objectContaining({ id: 'P-3A', content: 'Post 3A', blog: expect.objectContaining({
-          id: 'B-3',
-          content: 'Blog 3',
-        })}),
+        expect.objectContaining({
+          id: 'P-1A',
+          content: 'Post 1A',
+          blog: expect.objectContaining({
+            id: 'B-1',
+            content: 'Blog 1',
+          }),
+        }),
+        expect.objectContaining({
+          id: 'P-1B',
+          content: 'Post 1B',
+          blog: expect.objectContaining({
+            id: 'B-1',
+            content: 'Blog 1',
+          }),
+        }),
+        expect.objectContaining({
+          id: 'P-1C',
+          content: 'Post 1C',
+          blog: expect.objectContaining({
+            id: 'B-1',
+            content: 'Blog 1',
+          }),
+        }),
+        expect.objectContaining({
+          id: 'P-2A',
+          content: 'Post 2A',
+          blog: expect.objectContaining({
+            id: 'B-2',
+            content: 'Blog 2',
+          }),
+        }),
+        expect.objectContaining({
+          id: 'P-2B',
+          content: 'Post 2B',
+          blog: expect.objectContaining({
+            id: 'B-2',
+            content: 'Blog 2',
+          }),
+        }),
+        expect.objectContaining({
+          id: 'P-3A',
+          content: 'Post 3A',
+          blog: expect.objectContaining({
+            id: 'B-3',
+            content: 'Blog 3',
+          }),
+        }),
       ]),
     );
   });
@@ -382,18 +416,26 @@ describe('RDS Relational Directives', () => {
     expect(listUsers.data.listUsers.items.length).toEqual(3);
     expect(listUsers.data.listUsers.items).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ id: 'U-1', name: 'User 1', profile: expect.objectContaining({
-          id: 'P-1',
-          details: 'Profile 1',
-        })}),
-        expect.objectContaining({ id: 'U-2', name: 'User 2', profile: expect.objectContaining({
-          id: 'P-2',
-          details: 'Profile 2',
-        })}),
+        expect.objectContaining({
+          id: 'U-1',
+          name: 'User 1',
+          profile: expect.objectContaining({
+            id: 'P-1',
+            details: 'Profile 1',
+          }),
+        }),
+        expect.objectContaining({
+          id: 'U-2',
+          name: 'User 2',
+          profile: expect.objectContaining({
+            id: 'P-2',
+            details: 'Profile 2',
+          }),
+        }),
         expect.objectContaining({ id: 'U-3', name: 'User 3', profile: null }),
       ]),
     );
-    
+
     const getProfile1 = await profileHelper.get({
       id: 'P-1',
     });
@@ -407,17 +449,24 @@ describe('RDS Relational Directives', () => {
     expect(listProfiles.data.listProfiles.items.length).toEqual(2);
     expect(listProfiles.data.listProfiles.items).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ id: 'P-1', details: 'Profile 1', user: expect.objectContaining({
-          id: 'U-1',
-          name: 'User 1',
-        })}),
-        expect.objectContaining({ id: 'P-2', details: 'Profile 2', user: expect.objectContaining({
-          id: 'U-2',
-          name: 'User 2',
-        })}),
+        expect.objectContaining({
+          id: 'P-1',
+          details: 'Profile 1',
+          user: expect.objectContaining({
+            id: 'U-1',
+            name: 'User 1',
+          }),
+        }),
+        expect.objectContaining({
+          id: 'P-2',
+          details: 'Profile 2',
+          user: expect.objectContaining({
+            id: 'U-2',
+            name: 'User 2',
+          }),
+        }),
       ]),
     );
-
   });
 
   const constructBlogHelper = (): GQLQueryHelper => {

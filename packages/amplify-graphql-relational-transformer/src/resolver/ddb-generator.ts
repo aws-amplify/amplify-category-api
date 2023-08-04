@@ -338,10 +338,10 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
 
   buildKeyValueExpression = (fieldName: string, object: ObjectTypeDefinitionNode, isPartitionKey = false): Expression => {
     const field = object.fields?.find((it) => it.name.value === fieldName);
-  
+
     // can be auto-generated
     const attributeType = field ? attributeTypeFromScalar(field.type) : 'S';
-  
+
     return ref(
       `util.parseJson($util.dynamodb.toDynamoDBJson($util.${attributeType === 'S' ? 'defaultIfNullOrBlank' : 'defaultIfNull'}(${
         isPartitionKey ? `$${PARTITION_KEY_VALUE}` : `$ctx.source.${fieldName}`

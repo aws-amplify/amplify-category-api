@@ -240,7 +240,7 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
  */
 export const ensureBelongsToConnectionField = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { relationType, relatedType, references, relatedField } = config;
-  if (relationType === 'hasOne' || references && references.length > 0) {
+  if (relationType === 'hasOne' || (references && references.length > 0)) {
     ensureHasOneConnectionField(config, ctx);
   } else {
     // hasMany

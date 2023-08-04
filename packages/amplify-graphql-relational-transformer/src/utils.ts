@@ -50,10 +50,7 @@ export const validateParentReferencesFields = (
   }
 };
 
-export const validateChildReferencesFields = (
-  config: BelongsToDirectiveConfiguration,
-  ctx: TransformerContextProvider,
-): void => {
+export const validateChildReferencesFields = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { directiveName, object, references, relatedType } = config;
   const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
 
@@ -243,10 +240,7 @@ export function getFieldsNodes(
   });
 }
 
-export function getReferencesNodes(
-  config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration,
-  ctx: TransformerContextProvider,
-) {
+export function getReferencesNodes(config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration, ctx: TransformerContextProvider) {
   const { directiveName, references, relatedType } = config;
   const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
 
@@ -265,10 +259,7 @@ export function getReferencesNodes(
   });
 }
 
-export function getBelongsToReferencesNodes(
-  config: BelongsToDirectiveConfiguration,
-  ctx: TransformerContextProvider,
-) {
+export function getBelongsToReferencesNodes(config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider) {
   const { directiveName, references, object } = config;
   const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
 

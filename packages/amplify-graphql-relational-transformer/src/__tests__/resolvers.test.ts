@@ -15,9 +15,7 @@ describe('makeGetItemConnectionWithKeyResolver', () => {
     const generator = getGenerator(DDB_DB_TYPE);
     expect(() =>
       generator.makeHasOneGetItemConnectionWithKeyResolver(
-        createPartialMock<HasOneDirectiveConfiguration>(
-          { relatedTypeIndex: [] },
-        ),
+        createPartialMock<HasOneDirectiveConfiguration>({ relatedTypeIndex: [] }),
         createPartialMock(),
       ),
     ).toThrowErrorMatchingInlineSnapshot('"Expected relatedType index fields to be set for connection."');
@@ -28,7 +26,7 @@ describe('makeQueryConnectionWithKeyResolver', () => {
   test('it requires either fields or connection fields to be populated with values', () => {
     const generator = getGenerator(DDB_DB_TYPE);
     expect(() =>
-    generator.makeHasManyGetItemsConnectionWithKeyResolver(
+      generator.makeHasManyGetItemsConnectionWithKeyResolver(
         createPartialMock<HasManyDirectiveConfiguration>({
           fields: [],
           connectionFields: [],
