@@ -4,7 +4,7 @@ import * as rimraf from 'rimraf';
 import { config } from 'dotenv';
 import execa from 'execa';
 import { v4 as uuid } from 'uuid';
-import { getLayerDirectoryName, LayerDirectoryType } from '..';
+import { getLayerDirectoryName, isCI, LayerDirectoryType } from '..';
 
 export * from './add-ci-tags';
 export * from './api';
@@ -31,6 +31,9 @@ export * from './refresh-credentials';
 
 // run dotenv config to update env variable
 config();
+
+// eslint-disable-next-line spellcheck/spell-checker
+export const TEST_PROFILE_NAME = isCI() ? 'amplify-integ-test-user' : 'default';
 
 export function deleteProjectDir(root: string) {
   rimraf.sync(root);

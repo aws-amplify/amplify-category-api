@@ -27,6 +27,10 @@ describe('transformer model searchable migration test', () => {
   let projectName: string;
   let appSyncClient = undefined;
 
+  beforeAll(() => {
+    tryScheduleCredentialRefresh();
+  });
+  
   beforeEach(async () => {
     projectName = createRandomName();
     projRoot = await createNewProjectDir(createRandomName());
@@ -120,3 +124,7 @@ describe('transformer model searchable migration test', () => {
     expect(response.data.createTodo).toBeDefined();
   };
 });
+function tryScheduleCredentialRefresh() {
+  throw new Error('Function not implemented.');
+}
+
