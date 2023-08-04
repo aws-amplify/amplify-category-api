@@ -29,4 +29,23 @@ describe('predictions category', () => {
       });
     });
   });
+
+  it('generates a nested stack for predictions directive', () => {
+    const stack = new cdk.Stack();
+    const api = new AmplifyGraphqlApi(stack, 'TestApi', {
+      schema: /* GraphQL */ `
+        type Query {
+          recognizeTextFromImage: String @predictions(actions: [identifyText])
+        }
+      `,
+      authorizationConfig: {
+        apiKeyConfig: { expires: cdk.Duration.days(7) },
+      },
+      predictionsBucket: new s3.Bucket(stack, 'PredictionsBucket'),
+    });
+
+    expect(api.resources.nestedStacks.PredictionsDirectiveStack).toBeDefined();
+    const predictionsTemplate = Template.fromStack(api.resources.nestedStacks.PredictionsDirectiveStack);
+    expect(predictionsTemplate).toBeDefined();
+  });
 });

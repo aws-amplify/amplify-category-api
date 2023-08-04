@@ -10,7 +10,7 @@ import {
 } from 'aws-cdk-lib/aws-appsync';
 import { CfnTable, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnRole, Role } from 'aws-cdk-lib/aws-iam';
-import { CfnResource } from 'aws-cdk-lib';
+import { CfnResource, NestedStack } from 'aws-cdk-lib';
 import { getResourceName } from '@aws-amplify/graphql-transformer-core';
 import { CfnFunction, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApiResources, FunctionSlot } from '../types';
@@ -114,11 +114,16 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
     throw new Error('Expected to find AWS::AppSync::GraphQLSchema in the generated resource scope.');
   }
 
+  const nestedStacks: Record<string, NestedStack> = Object.fromEntries(
+    scope.node.children.filter(NestedStack.isNestedStack).map((nestedStack: NestedStack) => [nestedStack.node.id, nestedStack]),
+  );
+
   return {
     graphqlApi: GraphqlApi.fromGraphqlApiAttributes(scope, 'L2GraphqlApi', { graphqlApiId: cfnGraphqlApi.attrApiId }),
     tables,
     roles,
     functions,
+    nestedStacks,
     cfnResources: {
       cfnGraphqlApi,
       cfnGraphqlSchema,

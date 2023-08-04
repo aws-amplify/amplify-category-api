@@ -23,6 +23,7 @@ import { IGraphqlApi } from 'aws-cdk-lib/aws-appsync';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
+import { NestedStack } from 'aws-cdk-lib';
 import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
@@ -81,6 +82,7 @@ export type AmplifyGraphqlApiResources = {
     roles: Record<string, IRole>;
     functions: Record<string, IFunction>;
     cfnResources: AmplifyGraphqlApiCfnResources;
+    nestedStacks: Record<string, NestedStack>;
 };
 
 // @public
