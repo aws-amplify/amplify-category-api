@@ -196,14 +196,9 @@ export type AmplifyApiSchemaPreprocessor<SchemaType> = (schema: SchemaType) => A
 
 /**
  * Params exposed to support configuring and overriding pipelined slots. This allows configuration of the underlying function,
- * including the datasource, request/response mapping templates, or setting a JS resolver up instead.
+ * including the request and response mapping templates.
  */
-export type FunctionSlotOverride = Partial<
-  Pick<
-    AppsyncFunctionProps,
-    'name' | 'description' | 'dataSource' | 'requestMappingTemplate' | 'responseMappingTemplate' | 'code' | 'runtime'
-  >
->;
+export type FunctionSlotOverride = Partial<Pick<AppsyncFunctionProps, 'requestMappingTemplate' | 'responseMappingTemplate'>>;
 
 /**
  * Common slot parameters.

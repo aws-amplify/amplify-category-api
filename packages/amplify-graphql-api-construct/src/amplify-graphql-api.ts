@@ -77,7 +77,6 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
       throw new Error('functionNameMap not yet supported in this revision.');
     }
 
-    // TODO: This needs to be removed, and exists just to bridge what we have today w/ what we want down the road.
     validateFunctionSlots(functionSlots ?? []);
     const separatedFunctionSlots = separateSlots([...(functionSlots ?? []), ...(processedFunctionSlots ?? [])]);
 
