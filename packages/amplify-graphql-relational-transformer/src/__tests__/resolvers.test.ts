@@ -21,7 +21,7 @@ describe('makeQueryConnectionWithKeyResolver', () => {
   test('it requires either fields or connection fields to be populated with values', () => {
     const ddbGenerator = new DDBRelationalResolverGenerator();
     expect(() =>
-      ddbGenerator.makeQueryConnectionWithKeyResolver(
+      ddbGenerator.makeHasManyGetItemsConnectionWithKeyResolver(
         createPartialMock<HasManyDirectiveConfiguration>({
           fields: [],
           connectionFields: [],

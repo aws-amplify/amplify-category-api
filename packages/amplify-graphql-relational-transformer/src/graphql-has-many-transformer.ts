@@ -4,6 +4,7 @@ import {
   DDB_DB_TYPE,
   DirectiveWrapper,
   generateGetArgumentsInput,
+  getDatasourceType,
   InvalidDirectiveError,
   MYSQL_DB_TYPE,
   TransformerPluginBase,
@@ -50,8 +51,7 @@ import {
   validateParentReferencesFields,
   validateRelatedModelDirective,
 } from './utils';
-import { DDBRelationalResolverGenerator } from './resolver/ddb-generator';
-import { RDSRelationalResolverGenerator } from './resolver/rds-generator';
+import { getGenerator } from './resolver/generator-factory';
 
 const directiveName = 'hasMany';
 const defaultLimit = 100;
@@ -155,7 +155,7 @@ export class HasManyTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      const dbType = ctx.modelToDatasourceMap.get(getBaseType(config.field.type))?.dbType ?? DDB_DB_TYPE;
+      const dbType = getDatasourceType(config.field.type, context);
       if (dbType === DDB_DB_TYPE) {
         config.relatedTypeIndex = getRelatedTypeIndex(config, context, config.indexName);
       } else if (dbType === MYSQL_DB_TYPE) {
@@ -170,7 +170,7 @@ export class HasManyTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      const dbType = ctx.modelToDatasourceMap.get(getBaseType(config.field.type))?.dbType ?? DDB_DB_TYPE;
+      const dbType = getDatasourceType(config.field.type, context);
       if (dbType === DDB_DB_TYPE) {
         updateTableForConnection(config, context);
       }
@@ -180,14 +180,14 @@ export class HasManyTransformer extends TransformerPluginBase {
 }
 
 const makeQueryResolver = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider, dbType: DBType): void => {
-  const generator = dbType === DDB_DB_TYPE ? new DDBRelationalResolverGenerator() : new RDSRelationalResolverGenerator();
-  generator.makeQueryConnectionWithKeyResolver(config, ctx);
+  const generator = getGenerator(dbType);
+  generator.makeHasManyGetItemsConnectionWithKeyResolver(config, ctx);
 };
 
 const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field } = config;
 
-  const dbType = ctx.modelToDatasourceMap.get(getBaseType(field.type))?.dbType ?? DDB_DB_TYPE;
+  const dbType = getDatasourceType(field.type, ctx);
   config.relatedType = getRelatedType(config, ctx);
 
   if (dbType === DDB_DB_TYPE) {

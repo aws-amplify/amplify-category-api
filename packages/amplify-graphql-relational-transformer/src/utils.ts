@@ -50,6 +50,33 @@ export const validateParentReferencesFields = (
   }
 };
 
+export const validateChildReferencesFields = (
+  config: BelongsToDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+): void => {
+  const { directiveName, object, references, relatedType } = config;
+  const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
+
+  const primaryKeys = getPrimaryKeyFields(relatedType);
+  if (primaryKeys.length !== references.length) {
+    throw new InvalidDirectiveError(
+      `The number of references provided to @${directiveName} must match the number of primary keys on ${relatedType.name.value}.`,
+    );
+  }
+
+  for (const reference of references) {
+    const fieldNode = object.fields!.find((field) => field.name.value === reference);
+
+    if (!fieldNode) {
+      throw new InvalidDirectiveError(`${reference} is not a field in ${object.name.value}`);
+    }
+
+    if (!isScalarOrEnum(fieldNode.type, enums)) {
+      throw new InvalidDirectiveError(`All fields provided to @${directiveName} must be scalar or enum fields.`);
+    }
+  }
+};
+
 export function getRelatedTypeIndex(
   config: HasOneDirectiveConfiguration,
   ctx: TransformerContextProvider,
@@ -217,7 +244,7 @@ export function getFieldsNodes(
 }
 
 export function getReferencesNodes(
-  config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
+  config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration,
   ctx: TransformerContextProvider,
 ) {
   const { directiveName, references, relatedType } = config;
@@ -228,6 +255,28 @@ export function getReferencesNodes(
 
     if (!fieldNode) {
       throw new InvalidDirectiveError(`${fieldName} is not a field in ${relatedType.name.value}`);
+    }
+
+    if (!isScalarOrEnum(fieldNode.type, enums)) {
+      throw new InvalidDirectiveError(`All references provided to @${directiveName} must be scalar or enum fields.`);
+    }
+
+    return fieldNode;
+  });
+}
+
+export function getBelongsToReferencesNodes(
+  config: BelongsToDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+) {
+  const { directiveName, references, object } = config;
+  const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
+
+  return references.map((fieldName) => {
+    const fieldNode = object.fields!.find((field) => field.name.value === fieldName);
+
+    if (!fieldNode) {
+      throw new InvalidDirectiveError(`${fieldName} is not a field in ${object.name.value}`);
     }
 
     if (!isScalarOrEnum(fieldNode.type, enums)) {

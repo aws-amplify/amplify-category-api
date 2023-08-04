@@ -1,8 +1,11 @@
 /* eslint-disable no-param-reassign */
 import {
+  DDB_DB_TYPE,
   DirectiveWrapper,
   generateGetArgumentsInput,
+  getDatasourceType,
   InvalidDirectiveError,
+  MYSQL_DB_TYPE,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import {
@@ -32,7 +35,6 @@ import {
 import { produce } from 'immer';
 import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { WritableDraft } from 'immer/dist/types/types-external';
-import { makeGetItemConnectionWithKeyResolver } from './resolvers';
 import {
   addFieldsToDefinition,
   convertSortKeyFieldsToSortKeyConnectionFields,
@@ -42,20 +44,24 @@ import {
 import { HasOneDirectiveConfiguration, ObjectDefinition } from './types';
 import {
   ensureFieldsArray,
+  ensureReferencesArray,
   getConnectionAttributeName,
   getFieldsNodes,
   getObjectPrimaryKey,
+  getReferencesNodes,
   getRelatedType,
   getRelatedTypeIndex,
   registerHasOneForeignKeyMappings,
   validateDisallowedDataStoreRelationships,
   validateModelDirective,
+  validateParentReferencesFields,
   validateRelatedModelDirective,
 } from './utils';
+import { getGenerator } from './resolver/generator-factory';
 
 const directiveName = 'hasOne';
 const directiveDefinition = `
-  directive @${directiveName}(fields: [String!]) on FIELD_DEFINITION
+  directive @${directiveName}(fields: [String!], references: [String!]) on FIELD_DEFINITION
 `;
 
 /**
@@ -172,7 +178,12 @@ export class HasOneTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      config.relatedTypeIndex = getRelatedTypeIndex(config, context);
+      const dbType = getDatasourceType(config.field.type, context);
+      if (dbType === DDB_DB_TYPE) {
+        config.relatedTypeIndex = getRelatedTypeIndex(config, context);
+      } else if (dbType === MYSQL_DB_TYPE) {
+        validateParentReferencesFields(config, context);
+      }
       ensureHasOneConnectionField(config, context);
     }
   };
@@ -181,23 +192,35 @@ export class HasOneTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      makeGetItemConnectionWithKeyResolver(config, context);
+      const dbType = getDatasourceType(config.field.type, context);
+      const generator = getGenerator(dbType);
+      generator.makeHasOneGetItemConnectionWithKeyResolver(config, context);
     }
   };
 }
 
 const validate = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field } = config;
+  
+  const dbType = getDatasourceType(field.type, ctx);
+  config.relatedType = getRelatedType(config, ctx);
 
-  ensureFieldsArray(config);
+  if (dbType === DDB_DB_TYPE) {
+    ensureFieldsArray(config);
+    config.fieldNodes = getFieldsNodes(config, ctx);
+  }
+
+  if (dbType === MYSQL_DB_TYPE) {
+    ensureReferencesArray(config);
+    getReferencesNodes(config, ctx);
+  }
+
   validateModelDirective(config);
 
   if (isListType(field.type)) {
     throw new InvalidDirectiveError(`@${directiveName} cannot be used with lists. Use @hasMany instead.`);
   }
 
-  config.fieldNodes = getFieldsNodes(config, ctx);
-  config.relatedType = getRelatedType(config, ctx);
   config.connectionFields = [];
   validateRelatedModelDirective(config);
   validateDisallowedDataStoreRelationships(config, ctx);
