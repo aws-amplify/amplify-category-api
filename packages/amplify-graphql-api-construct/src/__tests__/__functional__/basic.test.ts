@@ -25,7 +25,7 @@ describe('basic functionality', () => {
 
     template.resourceCountIs('AWS::AppSync::GraphQLApi', 1);
     template.hasResourceProperties('AWS::AppSync::GraphQLApi', {
-      Name: 'MyApi-NONE',
+      Name: 'MyApi',
     });
 
     template.resourceCountIs('AWS::AppSync::DataSource', 1);
@@ -104,7 +104,7 @@ describe('basic functionality', () => {
 
     template.resourceCountIs('AWS::AppSync::GraphQLApi', 1);
     template.hasResourceProperties('AWS::AppSync::GraphQLApi', {
-      Name: 'TestApi-NONE',
+      Name: 'TestApi',
     });
   });
 });

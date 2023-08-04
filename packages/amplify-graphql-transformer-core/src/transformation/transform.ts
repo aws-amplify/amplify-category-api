@@ -333,8 +333,12 @@ export class GraphQLTransform {
     const authorizationConfig = adoptAuthModes(stackManager, synthParameters, this.authConfig);
     const apiName = synthParameters.apiName;
     const env = synthParameters.amplifyEnvironmentName;
+    // N.B. changing the GraphqlApi Name is a 'No Interruptions' action,
+    // so theoretically this optional env suffix behavior should be safe to apply retroactively to CLI users.
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-graphqlapi.html#aws-resource-appsync-graphqlapi-properties
+    const name = env === 'NONE' ? apiName : `${apiName}-${env}`;
     const api = new GraphQLApi(scope, 'GraphQLAPI', {
-      name: `${apiName}-${env}`,
+      name,
       authorizationConfig,
       host: this.options.host,
       sandboxModeEnabled: this.transformParameters.sandboxModeEnabled,
