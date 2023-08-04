@@ -319,7 +319,6 @@ $util.qr($lambdaInput.args.filter.put(\\"systemName\\", {
   \\"eq\\": $util.defaultIfNull($ctx.source.systemName, \\"\\")
 }))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
-#set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
@@ -632,7 +631,6 @@ $util.qr($lambdaInput.args.filter.put(\\"blogId\\", {
   \\"eq\\": $util.defaultIfNull($ctx.source.id, \\"\\")
 }))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
-#set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",

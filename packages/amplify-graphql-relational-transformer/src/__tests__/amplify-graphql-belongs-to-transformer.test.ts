@@ -1,6 +1,6 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { DatasourceType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { DocumentNode, Kind, parse } from 'graphql';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 
@@ -713,5 +713,87 @@ describe('@belongsTo connection field nullability tests', () => {
       expect(updateInputConnectedField2.type.kind).toBe(Kind.NAMED_TYPE);
       expect(updateInputConnectedField2.type.name.value).toBe('String');
     });
+  });
+});
+
+describe('@belongsTo directive with RDS datasource', () => {
+  test('happy case should generate correct resolvers', () => {
+    const modelToDatasourceMap = new Map<string, DatasourceType>();
+    modelToDatasourceMap.set('User', {
+      dbType: 'MySQL',
+      provisionDB: false,
+    });
+    modelToDatasourceMap.set('Profile', {
+      dbType: 'MySQL',
+      provisionDB: false,
+    });
+
+    const inputSchema = `
+      type User @model {
+        id: String! @primaryKey
+        name: String
+        profile: Profile @hasOne(references: ["userId"])
+      }
+      type Profile @model {
+        id: String! @primaryKey
+        createdAt: AWSDateTime
+        userId: String!
+        user: User @belongsTo(references: ["userId"])
+      }
+    `;
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+    });
+
+    const out = transformer.transform(inputSchema, { modelToDatasourceMap });
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['Profile.user.req.vtl']).toBeDefined();
+    expect(out.resolvers['Profile.user.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Profile.user.res.vtl']).toBeDefined();
+    expect(out.resolvers['Profile.user.res.vtl']).toMatchSnapshot();
+  });
+
+  test('composite key should generate correct resolvers', () => {
+    const modelToDatasourceMap = new Map<string, DatasourceType>();
+    modelToDatasourceMap.set('User', {
+      dbType: 'MySQL',
+      provisionDB: false,
+    });
+    modelToDatasourceMap.set('Profile', {
+      dbType: 'MySQL',
+      provisionDB: false,
+    });
+
+    const inputSchema = `
+      type User @model {
+        firstName: String! @primaryKey(sortKeyFields: ["lastName"])
+        lastName: String!
+        profile: Profile @hasOne(references: ["userFirstName", "userLastName"])
+      }
+      type Profile @model {
+        profileId: String! @primaryKey
+        userFirstName: String
+        userLastName: String!
+        user: User @belongsTo(references: ["userFirstName", "userLastName"])
+      }
+    `;
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+    });
+
+    const out = transformer.transform(inputSchema, { modelToDatasourceMap });
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['Profile.user.req.vtl']).toBeDefined();
+    expect(out.resolvers['Profile.user.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Profile.user.res.vtl']).toBeDefined();
+    expect(out.resolvers['Profile.user.res.vtl']).toMatchSnapshot();
   });
 });

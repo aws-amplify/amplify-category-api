@@ -1,6 +1,7 @@
+import { DDB_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import { HasOneDirectiveConfiguration, HasManyDirectiveConfiguration } from '../types';
-import { makeGetItemConnectionWithKeyResolver } from '../resolvers';
 import { DDBRelationalResolverGenerator } from '../resolver/ddb-generator';
+import { getGenerator } from '../resolver/generator-factory';
 
 /**
  * Utility to create a partial of a given type for mocking purposes. Getting the right fields in place is on you.
@@ -11,17 +12,23 @@ const createPartialMock = <T>(mockFields?: Partial<T>): T => (mockFields || {}) 
 
 describe('makeGetItemConnectionWithKeyResolver', () => {
   test('it throws on empty related type index field', () => {
+    const generator = getGenerator(DDB_DB_TYPE);
     expect(() =>
-      makeGetItemConnectionWithKeyResolver(createPartialMock<HasOneDirectiveConfiguration>({ relatedTypeIndex: [] }), createPartialMock()),
+      generator.makeHasOneGetItemConnectionWithKeyResolver(
+        createPartialMock<HasOneDirectiveConfiguration>(
+          { relatedTypeIndex: [] },
+        ),
+        createPartialMock(),
+      ),
     ).toThrowErrorMatchingInlineSnapshot('"Expected relatedType index fields to be set for connection."');
   });
 });
 
 describe('makeQueryConnectionWithKeyResolver', () => {
   test('it requires either fields or connection fields to be populated with values', () => {
-    const ddbGenerator = new DDBRelationalResolverGenerator();
+    const generator = getGenerator(DDB_DB_TYPE);
     expect(() =>
-      ddbGenerator.makeHasManyGetItemsConnectionWithKeyResolver(
+    generator.makeHasManyGetItemsConnectionWithKeyResolver(
         createPartialMock<HasManyDirectiveConfiguration>({
           fields: [],
           connectionFields: [],
