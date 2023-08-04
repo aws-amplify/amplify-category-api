@@ -45,7 +45,7 @@ export const validateParentReferencesFields = (
     }
 
     if (!isScalarOrEnum(fieldNode.type, enums)) {
-      throw new InvalidDirectiveError(`All fields provided to @${directiveName} must be scalar or enum fields.`);
+      throw new InvalidDirectiveError(`All reference fields provided to @${directiveName} must be scalar or enum fields.`);
     }
   }
 };
@@ -72,7 +72,7 @@ export const validateChildReferencesFields = (
     }
 
     if (!isScalarOrEnum(fieldNode.type, enums)) {
-      throw new InvalidDirectiveError(`All fields provided to @${directiveName} must be scalar or enum fields.`);
+      throw new InvalidDirectiveError(`All reference fields provided to @${directiveName} must be scalar or enum fields.`);
     }
   }
 };
@@ -164,6 +164,10 @@ export function getRelatedTypeIndex(
 }
 
 export function ensureFieldsArray(config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration) {
+  if (config.references) {
+    throw new InvalidDirectiveError(`DynamoDB models do not support 'references' on @${config.directiveName} directive.`);
+  }
+
   if (!config.fields) {
     config.fields = [];
   } else if (!Array.isArray(config.fields)) {
@@ -171,25 +175,21 @@ export function ensureFieldsArray(config: HasManyDirectiveConfiguration | HasOne
   } else if (config.fields.length === 0) {
     throw new InvalidDirectiveError(`No fields passed to @${config.directiveName} directive.`);
   }
-
-  if (config.references) {
-    throw new InvalidDirectiveError(`DynamoDB models do not support 'references' on @${config.directiveName} directive.`);
-  }
 }
 
 export function ensureReferencesArray(
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
 ) {
+  if (config.fields) {
+    throw new InvalidDirectiveError(`Relational database models do not support 'fields' on @${config.directiveName} directive.`);
+  }
+
   if (!config.references) {
-    throw new InvalidDirectiveError(`References must be passed to @${config.directiveName} directive for RDS models.`);
+    throw new InvalidDirectiveError(`Reference fields must be passed to @${config.directiveName} directive for RDS models.`);
   } else if (!Array.isArray(config.references)) {
     config.references = [config.references];
   } else if (config.references.length === 0) {
-    throw new InvalidDirectiveError(`No references passed to @${config.directiveName} directive.`);
-  }
-
-  if (config.fields) {
-    throw new InvalidDirectiveError(`Relational database models do not support 'fields' on @${config.directiveName} directive.`);
+    throw new InvalidDirectiveError(`No reference fields passed to @${config.directiveName} directive.`);
   }
 }
 

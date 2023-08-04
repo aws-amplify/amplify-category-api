@@ -18,7 +18,7 @@ import { existsSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import path from 'path';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import gql from 'graphql-tag';
+import { GQLQueryHelper } from '../query-utils/gql-helper';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -115,6 +115,8 @@ describe('RDS Relational Directives', () => {
     await dbAdapter.runQuery([
       'CREATE TABLE Blog (id VARCHAR(40) PRIMARY KEY, content VARCHAR(255))',
       'CREATE TABLE Post (id VARCHAR(40) PRIMARY KEY, content VARCHAR(255), blogId VARCHAR(40))',
+      'CREATE TABLE User (id VARCHAR(40) PRIMARY KEY, name VARCHAR(255))',
+      'CREATE TABLE Profile (id VARCHAR(40) PRIMARY KEY, details VARCHAR(255), userId VARCHAR(40))',
     ]);
     dbAdapter.cleanup();
   };
@@ -163,25 +165,75 @@ describe('RDS Relational Directives', () => {
       type Post @model {
         id: String! @primaryKey
         content: String
-        blogId: String
+        blogId: String!
+        blog: Blog @belongsTo(references: ["blogId"])
+      }
+      type User @model {
+        id: String! @primaryKey
+        name: String
+        profile: Profile @hasOne(references: ["userId"])
+      }
+      type Profile @model {
+        id: String! @primaryKey
+        details: String
+        userId: String!
+        user: User @belongsTo(references: ["userId"])
       }
     `;
     writeFileSync(rdsSchemaFilePath, schema, 'utf8');
   };
 
-  test('check hasMany field on blog table', async () => {
-    await createBlog('B-1', 'Blog 1');
-    await createBlog('B-2', 'Blog 2');
-    await createBlog('B-3', 'Blog 3');
+  test('check hasMany and belongsTo directives on blog and post tables', async () => {
+    const blogHelper = constructBlogHelper();
+    const postHelper = constructPostHelper();
 
-    await createPost('P-1A', 'Post 1A', 'B-1');
-    await createPost('P-1B', 'Post 1B', 'B-1');
-    await createPost('P-1C', 'Post 1C', 'B-1');
-    await createPost('P-2A', 'Post 2A', 'B-2');
-    await createPost('P-2B', 'Post 2B', 'B-2');
-    await createPost('P-3A', 'Post 3A', 'B-3');
+    await blogHelper.create('createBlog', {
+      id: 'B-1',
+      content: 'Blog 1',
+    });
+    await blogHelper.create('createBlog', {
+      id: 'B-2',
+      content: 'Blog 2',
+    });
+    await blogHelper.create('createBlog', {
+      id: 'B-3',
+      content: 'Blog 3',
+    });
 
-    const getBlog1 = await getBlog('B-1');
+    await postHelper.create('createPost', {
+      id: 'P-1A',
+      content: 'Post 1A',
+      blogId: 'B-1',
+    });
+    await postHelper.create('createPost', {
+      id: 'P-1B',
+      content: 'Post 1B',
+      blogId: 'B-1',
+    });
+    await postHelper.create('createPost', {
+      id: 'P-1C',
+      content: 'Post 1C',
+      blogId: 'B-1',
+    });
+    await postHelper.create('createPost', {
+      id: 'P-2A',
+      content: 'Post 2A',
+      blogId: 'B-2',
+    });
+    await postHelper.create('createPost', {
+      id: 'P-2B',
+      content: 'Post 2B',
+      blogId: 'B-2',
+    });
+    await postHelper.create('createPost', {
+      id: 'P-3A',
+      content: 'Post 3A',
+      blogId: 'B-3',
+    });
+    
+    const getBlog1 = await blogHelper.get({
+      id: 'B-1',
+    });
     expect(getBlog1.data.getBlog.id).toEqual('B-1');
     expect(getBlog1.data.getBlog.content).toEqual('Blog 1');
     expect(getBlog1.data.getBlog.posts.items.length).toEqual(3);
@@ -193,7 +245,9 @@ describe('RDS Relational Directives', () => {
       ]),
     );
 
-    const getBlog2 = await getBlog('B-2');
+    const getBlog2 = await blogHelper.get({
+      id: 'B-2',
+    });
     expect(getBlog2.data.getBlog.id).toEqual('B-2');
     expect(getBlog2.data.getBlog.content).toEqual('Blog 2');
     expect(getBlog2.data.getBlog.posts.items.length).toEqual(2);
@@ -204,89 +258,176 @@ describe('RDS Relational Directives', () => {
       ]),
     );
 
-    const getBlog3 = await getBlog('B-3');
+    const getBlog3 = await blogHelper.get({
+      id: 'B-3',
+    });
     expect(getBlog3.data.getBlog.id).toEqual('B-3');
     expect(getBlog3.data.getBlog.content).toEqual('Blog 3');
     expect(getBlog3.data.getBlog.posts.items.length).toEqual(1);
     expect(getBlog3.data.getBlog.posts.items).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: 'P-3A', content: 'Post 3A' })]),
     );
+
+    const listBlogs = await blogHelper.list();
+    expect(listBlogs.data.listBlogs.items.length).toEqual(3);
+    expect(listBlogs.data.listBlogs.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: 'B-1', content: 'Blog 1', posts: expect.objectContaining({
+          items: expect.arrayContaining([
+            expect.objectContaining({ id: 'P-1A', content: 'Post 1A' }),
+            expect.objectContaining({ id: 'P-1B', content: 'Post 1B' }),
+            expect.objectContaining({ id: 'P-1C', content: 'Post 1C' }),
+          ]),
+        })}),
+        expect.objectContaining({ id: 'B-2', content: 'Blog 2', posts: expect.objectContaining({
+          items: expect.arrayContaining([
+            expect.objectContaining({ id: 'P-2A', content: 'Post 2A' }),
+            expect.objectContaining({ id: 'P-2B', content: 'Post 2B' }),
+          ]),
+        })}),
+        expect.objectContaining({ id: 'B-3', content: 'Blog 3', posts: expect.objectContaining({
+          items: expect.arrayContaining([
+            expect.objectContaining({ id: 'P-3A', content: 'Post 3A' }),
+          ]),
+        })}),
+      ]),
+    );
+
+    const getPost1A = await postHelper.get({
+      id: 'P-1A',
+    });
+    expect(getPost1A.data.getPost.id).toEqual('P-1A');
+    expect(getPost1A.data.getPost.content).toEqual('Post 1A');
+    expect(getPost1A.data.getPost.blog).toBeDefined();
+    expect(getPost1A.data.getPost.blog.id).toEqual('B-1');
+    expect(getPost1A.data.getPost.blog.content).toEqual('Blog 1');
+
+    const listPosts = await postHelper.list();
+    expect(listPosts.data.listPosts.items.length).toEqual(6);
+    expect(listPosts.data.listPosts.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: 'P-1A', content: 'Post 1A', blog: expect.objectContaining({
+          id: 'B-1',
+          content: 'Blog 1',
+        })}),
+        expect.objectContaining({ id: 'P-1B', content: 'Post 1B', blog: expect.objectContaining({
+          id: 'B-1',
+          content: 'Blog 1',
+        })}),
+        expect.objectContaining({ id: 'P-1C', content: 'Post 1C', blog: expect.objectContaining({
+          id: 'B-1',
+          content: 'Blog 1',
+        })}),
+        expect.objectContaining({ id: 'P-2A', content: 'Post 2A', blog: expect.objectContaining({
+          id: 'B-2',
+          content: 'Blog 2',
+        })}),
+        expect.objectContaining({ id: 'P-2B', content: 'Post 2B', blog: expect.objectContaining({
+          id: 'B-2',
+          content: 'Blog 2',
+        })}),
+        expect.objectContaining({ id: 'P-3A', content: 'Post 3A', blog: expect.objectContaining({
+          id: 'B-3',
+          content: 'Blog 3',
+        })}),
+      ]),
+    );
   });
 
-  // CURDL on Blog table helpers
-  const createBlog = async (id: string, content: string): Promise<any> => {
-    const createMutation = /* GraphQL */ `
-      mutation CreateBlog($input: CreateBlogInput!, $condition: ModelBlogConditionInput) {
-        createBlog(input: $input, condition: $condition) {
-          id
-          content
-        }
-      }
-    `;
-    const createInput = {
-      input: {
-        id,
-        content,
-      },
-    };
-    const createResult: any = await appSyncClient.mutate({
-      mutation: gql(createMutation),
-      fetchPolicy: 'no-cache',
-      variables: createInput,
+  test('check hasOne and belongsTo directives on user and profile tables', async () => {
+    const userHelper = constructUserHelper();
+    const profileHelper = constructProfileHelper();
+
+    await userHelper.create('createUser', {
+      id: 'U-1',
+      name: 'User 1',
+    });
+    await userHelper.create('createUser', {
+      id: 'U-2',
+      name: 'User 2',
+    });
+    await userHelper.create('createUser', {
+      id: 'U-3',
+      name: 'User 3',
     });
 
-    return createResult;
-  };
-
-  const updateBlog = async (id: string, content: string): Promise<any> => {
-    const updateMutation = /* GraphQL */ `
-      mutation UpdateBlog($input: UpdateBlogInput!, $condition: ModelBlogConditionInput) {
-        updateBlog(input: $input, condition: $condition) {
-          id
-          content
-        }
-      }
-    `;
-    const updateInput = {
-      input: {
-        id,
-        content,
-      },
-    };
-    const updateResult: any = await appSyncClient.mutate({
-      mutation: gql(updateMutation),
-      fetchPolicy: 'no-cache',
-      variables: updateInput,
+    await profileHelper.create('createProfile', {
+      id: 'P-1',
+      details: 'Profile 1',
+      userId: 'U-1',
+    });
+    await profileHelper.create('createProfile', {
+      id: 'P-2',
+      details: 'Profile 2',
+      userId: 'U-2',
     });
 
-    return updateResult;
-  };
-
-  const deleteBlog = async (id: string): Promise<any> => {
-    const deleteMutation = /* GraphQL */ `
-      mutation DeleteBlog($input: DeleteBlogInput!, $condition: ModelBlogConditionInput) {
-        deleteBlog(input: $input, condition: $condition) {
-          id
-          content
-        }
-      }
-    `;
-    const deleteInput = {
-      input: {
-        id,
-      },
-    };
-    const deleteResult: any = await appSyncClient.mutate({
-      mutation: gql(deleteMutation),
-      fetchPolicy: 'no-cache',
-      variables: deleteInput,
+    const getUser1 = await userHelper.get({
+      id: 'U-1',
     });
+    expect(getUser1.data.getUser.id).toEqual('U-1');
+    expect(getUser1.data.getUser.name).toEqual('User 1');
+    expect(getUser1.data.getUser.profile).toBeDefined();
+    expect(getUser1.data.getUser.profile.id).toEqual('P-1');
+    expect(getUser1.data.getUser.profile.details).toEqual('Profile 1');
 
-    return deleteResult;
-  };
+    const getUser3 = await userHelper.get({
+      id: 'U-3',
+    });
+    expect(getUser3.data.getUser.id).toEqual('U-3');
+    expect(getUser3.data.getUser.name).toEqual('User 3');
+    expect(getUser3.data.getUser.profile).toBeNull();
 
-  const getBlog = async (id: string): Promise<any> => {
-    const getQuery = /* GraphQL */ `
+    const listUsers = await userHelper.list();
+    expect(listUsers.data.listUsers.items.length).toEqual(3);
+    expect(listUsers.data.listUsers.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: 'U-1', name: 'User 1', profile: expect.objectContaining({
+          id: 'P-1',
+          details: 'Profile 1',
+        })}),
+        expect.objectContaining({ id: 'U-2', name: 'User 2', profile: expect.objectContaining({
+          id: 'P-2',
+          details: 'Profile 2',
+        })}),
+        expect.objectContaining({ id: 'U-3', name: 'User 3', profile: null }),
+      ]),
+    );
+    
+    const getProfile1 = await profileHelper.get({
+      id: 'P-1',
+    });
+    expect(getProfile1.data.getProfile.id).toEqual('P-1');
+    expect(getProfile1.data.getProfile.details).toEqual('Profile 1');
+    expect(getProfile1.data.getProfile.user).toBeDefined();
+    expect(getProfile1.data.getProfile.user.id).toEqual('U-1');
+    expect(getProfile1.data.getProfile.user.name).toEqual('User 1');
+
+    const listProfiles = await profileHelper.list();
+    expect(listProfiles.data.listProfiles.items.length).toEqual(2);
+    expect(listProfiles.data.listProfiles.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: 'P-1', details: 'Profile 1', user: expect.objectContaining({
+          id: 'U-1',
+          name: 'User 1',
+        })}),
+        expect.objectContaining({ id: 'P-2', details: 'Profile 2', user: expect.objectContaining({
+          id: 'U-2',
+          name: 'User 2',
+        })}),
+      ]),
+    );
+
+  });
+
+  const constructBlogHelper = (): GQLQueryHelper => {
+    const createSelectionSet = /* GraphQL */ `
+      id
+      content
+    `;
+    const updateSelectionSet = createSelectionSet;
+    const deleteSelectionSet = createSelectionSet;
+    const getSelectionSet = /* GraphQL */ `
       query GetBlog($id: String!) {
         getBlog(id: $id) {
           id
@@ -300,20 +441,7 @@ describe('RDS Relational Directives', () => {
         }
       }
     `;
-    const getInput = {
-      id,
-    };
-    const getResult: any = await appSyncClient.query({
-      query: gql(getQuery),
-      fetchPolicy: 'no-cache',
-      variables: getInput,
-    });
-
-    return getResult;
-  };
-
-  const listBlogs = async (): Promise<any> => {
-    const listQuery = /* GraphQL */ `
+    const listSelectionSet = /* GraphQL */ `
       query ListBlogs {
         listBlogs {
           items {
@@ -329,131 +457,162 @@ describe('RDS Relational Directives', () => {
         }
       }
     `;
-    const listResult: any = await appSyncClient.query({
-      query: gql(listQuery),
-      fetchPolicy: 'no-cache',
-    });
-
-    return listResult;
-  };
-
-  // CURDL on Post table helpers
-  const createPost = async (id: string, content: string, blogId: string): Promise<any> => {
-    const createMutation = /* GraphQL */ `
-      mutation CreatePost($input: CreatePostInput!, $condition: ModelPostConditionInput) {
-        createPost(input: $input, condition: $condition) {
-          id
-          content
-          blogId
-        }
-      }
-    `;
-    const createInput = {
-      input: {
-        id,
-        content,
-        blogId,
+    const helper = new GQLQueryHelper(appSyncClient, 'Blog', {
+      mutation: {
+        create: createSelectionSet,
+        update: updateSelectionSet,
+        delete: deleteSelectionSet,
       },
-    };
-    const createResult: any = await appSyncClient.mutate({
-      mutation: gql(createMutation),
-      fetchPolicy: 'no-cache',
-      variables: createInput,
-    });
-
-    return createResult;
-  };
-
-  const updatePost = async (id: string, content: string): Promise<any> => {
-    const updateMutation = /* GraphQL */ `
-      mutation UpdatePost($input: UpdatePostInput!, $condition: ModelPostConditionInput) {
-        updatePost(input: $input, condition: $condition) {
-          id
-          content
-        }
-      }
-    `;
-    const updateInput = {
-      input: {
-        id,
-        content,
+      query: {
+        get: getSelectionSet,
+        list: listSelectionSet,
       },
-    };
-    const updateResult: any = await appSyncClient.mutate({
-      mutation: gql(updateMutation),
-      fetchPolicy: 'no-cache',
-      variables: updateInput,
     });
 
-    return updateResult;
+    return helper;
   };
 
-  const deletePost = async (id: string): Promise<any> => {
-    const deleteMutation = /* GraphQL */ `
-      mutation DeletePost($input: DeletePostInput!, $condition: ModelPostConditionInput) {
-        deletePost(input: $input, condition: $condition) {
-          id
-          content
-        }
-      }
+  const constructPostHelper = (): GQLQueryHelper => {
+    const createSelectionSet = /* GraphQL */ `
+      id
+      content
     `;
-    const deleteInput = {
-      input: {
-        id,
-      },
-    };
-    const deleteResult: any = await appSyncClient.mutate({
-      mutation: gql(deleteMutation),
-      fetchPolicy: 'no-cache',
-      variables: deleteInput,
-    });
-
-    return deleteResult;
-  };
-
-  const getPost = async (id: string): Promise<any> => {
-    const getQuery = /* GraphQL */ `
+    const updateSelectionSet = createSelectionSet;
+    const deleteSelectionSet = createSelectionSet;
+    const getSelectionSet = /* GraphQL */ `
       query GetPost($id: String!) {
         getPost(id: $id) {
           id
           content
-        }
-      }
-    `;
-    const getInput = {
-      id,
-    };
-    const getResult: any = await appSyncClient.query({
-      query: gql(getQuery),
-      fetchPolicy: 'no-cache',
-      variables: getInput,
-    });
-
-    return getResult;
-  };
-
-  const listPosts = async (limit = 100, nextToken: string | null = null, filter: any = null): Promise<any> => {
-    const listQuery = /* GraphQL */ `
-      query ListPosts($limit: Int, $nextToken: String, $filter: ModelPostFilterInput) {
-        listPosts(limit: $limit, nextToken: $nextToken, filter: $filter) {
-          items {
+          blog {
             id
             content
           }
-          nextToken
         }
       }
     `;
-    const listResult: any = await appSyncClient.query({
-      query: gql(listQuery),
-      fetchPolicy: 'no-cache',
-      variables: {
-        limit,
-        nextToken,
-        filter,
+    const listSelectionSet = /* GraphQL */ `
+      query ListPosts {
+        listPosts {
+          items {
+            id
+            content
+            blog {
+              id
+              content
+            }
+          }
+        }
+      }
+    `;
+    const helper = new GQLQueryHelper(appSyncClient, 'Post', {
+      mutation: {
+        create: createSelectionSet,
+        update: updateSelectionSet,
+        delete: deleteSelectionSet,
+      },
+      query: {
+        get: getSelectionSet,
+        list: listSelectionSet,
       },
     });
 
-    return listResult;
+    return helper;
+  };
+
+  const constructUserHelper = (): GQLQueryHelper => {
+    const createSelectionSet = /* GraphQL */ `
+      id
+      name
+    `;
+    const updateSelectionSet = createSelectionSet;
+    const deleteSelectionSet = createSelectionSet;
+    const getSelectionSet = /* GraphQL */ `
+      query GetUser($id: String!) {
+        getUser(id: $id) {
+          id
+          name
+          profile {
+            id
+            details
+          }
+        }
+      }
+    `;
+    const listSelectionSet = /* GraphQL */ `
+      query ListUsers {
+        listUsers {
+          items {
+            id
+            name
+            profile {
+              id
+              details
+            }
+          }
+        }
+      }
+    `;
+    const helper = new GQLQueryHelper(appSyncClient, 'User', {
+      mutation: {
+        create: createSelectionSet,
+        update: updateSelectionSet,
+        delete: deleteSelectionSet,
+      },
+      query: {
+        get: getSelectionSet,
+        list: listSelectionSet,
+      },
+    });
+
+    return helper;
+  };
+
+  const constructProfileHelper = (): GQLQueryHelper => {
+    const createSelectionSet = /* GraphQL */ `
+      id
+      details
+    `;
+    const updateSelectionSet = createSelectionSet;
+    const deleteSelectionSet = createSelectionSet;
+    const getSelectionSet = /* GraphQL */ `
+      query GetProfile($id: String!) {
+        getProfile(id: $id) {
+          id
+          details
+          user {
+            id
+            name
+          }
+        }
+      }
+    `;
+    const listSelectionSet = /* GraphQL */ `
+      query ListProfiles {
+        listProfiles {
+          items {
+            id
+            details
+            user {
+              id
+              name
+            }
+          }
+        }
+      }
+    `;
+    const helper = new GQLQueryHelper(appSyncClient, 'Profile', {
+      mutation: {
+        create: createSelectionSet,
+        update: updateSelectionSet,
+        delete: deleteSelectionSet,
+      },
+      query: {
+        get: getSelectionSet,
+        list: listSelectionSet,
+      },
+    });
+
+    return helper;
   };
 });
