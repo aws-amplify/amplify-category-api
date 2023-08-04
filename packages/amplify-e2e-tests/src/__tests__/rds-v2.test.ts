@@ -1,15 +1,15 @@
 import {
-  RDSTestDataProvider, 
-  addApiWithoutSchema, 
-  addRDSPortInboundRule, 
-  createNewProjectDir, 
-  createRDSInstance, 
-  deleteDBInstance, 
-  deleteProject, 
-  deleteProjectDir, 
-  importRDSDatabase, 
-  initJSProjectWithProfile, 
-  removeRDSPortInboundRule, 
+  RDSTestDataProvider,
+  addApiWithoutSchema,
+  addRDSPortInboundRule,
+  createNewProjectDir,
+  createRDSInstance,
+  deleteDBInstance,
+  deleteProject,
+  deleteProjectDir,
+  importRDSDatabase,
+  initJSProjectWithProfile,
+  removeRDSPortInboundRule,
 } from 'amplify-category-api-e2e-core';
 import axios from 'axios';
 import { existsSync, readFileSync } from 'fs-extra';
@@ -17,8 +17,8 @@ import generator from 'generate-password';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
 import path from 'path';
 
-describe("RDS Tests", () => {
-  let publicIpCidr = "0.0.0.0/0";
+describe('RDS Tests', () => {
+  let publicIpCidr = '0.0.0.0/0';
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
   const RDS_MAPPING_FILE = 'https://amplify-rds-layer-resources.s3.amazonaws.com/rds-layer-mapping.json';
 
@@ -35,7 +35,7 @@ describe("RDS Tests", () => {
 
   beforeAll(async () => {
     // Get the public IP of the machine running the test
-    const url = "http://api.ipify.org/";
+    const url = 'http://api.ipify.org/';
     const response = await axios(url);
     publicIpCidr = `${response.data.trim()}/32`;
     await setupDatabase();
@@ -87,9 +87,9 @@ describe("RDS Tests", () => {
       database: db.dbName,
     });
     await dbAdapter.runQuery([
-      "CREATE TABLE Contacts (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))",
-      "CREATE TABLE Person (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))",
-      "CREATE TABLE Employee (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))",
+      'CREATE TABLE Contacts (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
+      'CREATE TABLE Person (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
+      'CREATE TABLE Employee (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
     ]);
     dbAdapter.cleanup();
   };
@@ -105,7 +105,7 @@ describe("RDS Tests", () => {
     await deleteDBInstance(identifier, region);
   };
 
-  it("import workflow of mysql relational database with public access", async () => {
+  it('import workflow of mysql relational database with public access', async () => {
     const apiName = 'rdsapi';
     await initJSProjectWithProfile(projRoot, {
       disableAmplifyAppCreation: false,
@@ -113,7 +113,7 @@ describe("RDS Tests", () => {
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
 
     await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
-    
+
     await importRDSDatabase(projRoot, {
       database,
       host,
@@ -128,90 +128,92 @@ describe("RDS Tests", () => {
     const schema = parse(schemaContent);
 
     // Generated schema should contains the types and fields from the database
-    const contactsObjectType = schema.definitions.find(d => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Contacts') as ObjectTypeDefinitionNode;
-    const personObjectType = schema.definitions.find(d => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Person');
-    const employeeObjectType = schema.definitions.find(d => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Employee');
+    const contactsObjectType = schema.definitions.find(
+      (d) => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Contacts',
+    ) as ObjectTypeDefinitionNode;
+    const personObjectType = schema.definitions.find((d) => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Person');
+    const employeeObjectType = schema.definitions.find((d) => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Employee');
 
     expect(contactsObjectType).toBeDefined();
     expect(personObjectType).toBeDefined();
     expect(employeeObjectType).toBeDefined();
 
     // Verify the fields in the generated schema on type 'Contacts'
-    const contactsIdFieldType = contactsObjectType.fields.find(f => f.name.value === 'ID');
-    const contactsFirstNameFieldType = contactsObjectType.fields.find(f => f.name.value === 'FirstName');
-    const contactsLastNameFieldType = contactsObjectType.fields.find(f => f.name.value === 'LastName');
+    const contactsIdFieldType = contactsObjectType.fields.find((f) => f.name.value === 'ID');
+    const contactsFirstNameFieldType = contactsObjectType.fields.find((f) => f.name.value === 'FirstName');
+    const contactsLastNameFieldType = contactsObjectType.fields.find((f) => f.name.value === 'LastName');
 
     expect(contactsIdFieldType).toBeDefined();
     expect(contactsFirstNameFieldType).toBeDefined();
     expect(contactsLastNameFieldType).toBeDefined();
 
     // PrimaryKey directive must be defined on Id field.
-    expect(contactsIdFieldType.directives.find(d => d.name.value === 'primaryKey')).toBeDefined();
+    expect(contactsIdFieldType.directives.find((d) => d.name.value === 'primaryKey')).toBeDefined();
   });
 
   // This test must be updated if the rds layer mapping file is updated
-  test("check the rds layer mapping file on the service account is available", async () => {
+  test('check the rds layer mapping file on the service account is available', async () => {
     const rdsMappingFile = await axios.get(RDS_MAPPING_FILE);
     expect(rdsMappingFile).toBeDefined();
     expect(rdsMappingFile.data).toBeDefined();
     expect(rdsMappingFile.data).toMatchObject({
-      "ap-northeast-1": {
-        "layerRegion": "arn:aws:lambda:ap-northeast-1:582037449441:layer:AmplifyRDSLayer:8"
+      'ap-northeast-1': {
+        layerRegion: 'arn:aws:lambda:ap-northeast-1:582037449441:layer:AmplifyRDSLayer:10',
       },
-      "us-east-1": {
-        "layerRegion": "arn:aws:lambda:us-east-1:582037449441:layer:AmplifyRDSLayer:8"
+      'us-east-1': {
+        layerRegion: 'arn:aws:lambda:us-east-1:582037449441:layer:AmplifyRDSLayer:10',
       },
-      "ap-southeast-1": {
-        "layerRegion": "arn:aws:lambda:ap-southeast-1:582037449441:layer:AmplifyRDSLayer:8"
+      'ap-southeast-1': {
+        layerRegion: 'arn:aws:lambda:ap-southeast-1:582037449441:layer:AmplifyRDSLayer:10',
       },
-      "eu-west-1": {
-        "layerRegion": "arn:aws:lambda:eu-west-1:582037449441:layer:AmplifyRDSLayer:8"
+      'eu-west-1': {
+        layerRegion: 'arn:aws:lambda:eu-west-1:582037449441:layer:AmplifyRDSLayer:10',
       },
-      "us-west-1": {
-        "layerRegion": "arn:aws:lambda:us-west-1:582037449441:layer:AmplifyRDSLayer:8"
+      'us-west-1': {
+        layerRegion: 'arn:aws:lambda:us-west-1:582037449441:layer:AmplifyRDSLayer:10',
       },
-      "ap-east-1": {
-        "layerRegion": "arn:aws:lambda:ap-east-1:582037449441:layer:AmplifyRDSLayer:8"
+      'ap-east-1': {
+        layerRegion: 'arn:aws:lambda:ap-east-1:582037449441:layer:AmplifyRDSLayer:10',
       },
-      "ap-northeast-2": {
-        "layerRegion": "arn:aws:lambda:ap-northeast-2:582037449441:layer:AmplifyRDSLayer:8"
+      'ap-northeast-2': {
+        layerRegion: 'arn:aws:lambda:ap-northeast-2:582037449441:layer:AmplifyRDSLayer:10',
       },
-      "ap-northeast-3": {
-        "layerRegion": "arn:aws:lambda:ap-northeast-3:582037449441:layer:AmplifyRDSLayer:8"
+      'ap-northeast-3': {
+        layerRegion: 'arn:aws:lambda:ap-northeast-3:582037449441:layer:AmplifyRDSLayer:10',
       },
-      "ap-south-1": {
-        "layerRegion": "arn:aws:lambda:ap-south-1:582037449441:layer:AmplifyRDSLayer:8"
+      'ap-south-1': {
+        layerRegion: 'arn:aws:lambda:ap-south-1:582037449441:layer:AmplifyRDSLayer:10',
       },
-      "ap-southeast-2": {
-        "layerRegion": "arn:aws:lambda:ap-southeast-2:582037449441:layer:AmplifyRDSLayer:8"
+      'ap-southeast-2': {
+        layerRegion: 'arn:aws:lambda:ap-southeast-2:582037449441:layer:AmplifyRDSLayer:10',
       },
-      "ca-central-1": {
-        "layerRegion": "arn:aws:lambda:ca-central-1:582037449441:layer:AmplifyRDSLayer:8"
+      'ca-central-1': {
+        layerRegion: 'arn:aws:lambda:ca-central-1:582037449441:layer:AmplifyRDSLayer:10',
       },
-      "eu-central-1": {
-        "layerRegion": "arn:aws:lambda:eu-central-1:582037449441:layer:AmplifyRDSLayer:8"
+      'eu-central-1': {
+        layerRegion: 'arn:aws:lambda:eu-central-1:582037449441:layer:AmplifyRDSLayer:10',
       },
-      "eu-north-1": {
-        "layerRegion": "arn:aws:lambda:eu-north-1:582037449441:layer:AmplifyRDSLayer:8"
+      'eu-north-1': {
+        layerRegion: 'arn:aws:lambda:eu-north-1:582037449441:layer:AmplifyRDSLayer:10',
       },
-      "eu-west-2": {
-        "layerRegion": "arn:aws:lambda:eu-west-2:582037449441:layer:AmplifyRDSLayer:8"
+      'eu-west-2': {
+        layerRegion: 'arn:aws:lambda:eu-west-2:582037449441:layer:AmplifyRDSLayer:10',
       },
-      "eu-west-3": {
-        "layerRegion": "arn:aws:lambda:eu-west-3:582037449441:layer:AmplifyRDSLayer:8"
+      'eu-west-3': {
+        layerRegion: 'arn:aws:lambda:eu-west-3:582037449441:layer:AmplifyRDSLayer:10',
       },
-      "sa-east-1": {
-        "layerRegion": "arn:aws:lambda:sa-east-1:582037449441:layer:AmplifyRDSLayer:8"
+      'sa-east-1': {
+        layerRegion: 'arn:aws:lambda:sa-east-1:582037449441:layer:AmplifyRDSLayer:10',
       },
-      "us-east-2": {
-        "layerRegion": "arn:aws:lambda:us-east-2:582037449441:layer:AmplifyRDSLayer:8"
+      'us-east-2': {
+        layerRegion: 'arn:aws:lambda:us-east-2:582037449441:layer:AmplifyRDSLayer:10',
       },
-      "us-west-2": {
-        "layerRegion": "arn:aws:lambda:us-west-2:582037449441:layer:AmplifyRDSLayer:8"
+      'us-west-2': {
+        layerRegion: 'arn:aws:lambda:us-west-2:582037449441:layer:AmplifyRDSLayer:10',
       },
-      "me-south-1": {
-        "layerRegion": "arn:aws:lambda:me-south-1:582037449441:layer:AmplifyRDSLayer:8"
-      }
+      'me-south-1': {
+        layerRegion: 'arn:aws:lambda:me-south-1:582037449441:layer:AmplifyRDSLayer:10',
+      },
     });
   });
-}); 
+});
