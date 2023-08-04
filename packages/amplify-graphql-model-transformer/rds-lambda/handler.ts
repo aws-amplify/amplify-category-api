@@ -12,7 +12,8 @@ export const run = async (event): Promise<any> => {
     const config = await getDBConfig();
     adapter = await getDBAdapter(config);
   }
-  const result = await adapter.executeRequest(event);
+  const debugMode = process.env.DEBUG_MODE === 'true';
+  const result = await adapter.executeRequest(event, debugMode);
   return result;
 };
 
