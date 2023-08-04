@@ -144,7 +144,7 @@ export type FunctionSlotBase = {
 };
 
 // @public
-export type FunctionSlotOverride = Partial<Pick<AppsyncFunctionProps, 'name' | 'description' | 'dataSource' | 'requestMappingTemplate' | 'responseMappingTemplate' | 'code' | 'runtime'>>;
+export type FunctionSlotOverride = Partial<Pick<AppsyncFunctionProps, 'requestMappingTemplate' | 'responseMappingTemplate'>>;
 
 // @public
 export type IAMAuthorizationConfig = {
