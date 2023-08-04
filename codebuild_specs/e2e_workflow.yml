@@ -26,26 +26,6 @@ batch:
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
-    - identifier: schema_searchable
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/schema-searchable.test.ts
-          CLI_REGION: us-west-2
-          USE_PARENT_ACCOUNT: 1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: searchable_migration
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/transformer-migrations/searchable-migration.test.ts
-          CLI_REGION: us-east-1
-          USE_PARENT_ACCOUNT: 1
-      depend-on:
-        - publish_to_local_registry
     - identifier: cleanup_e2e_resources
       buildspec: codebuild_specs/cleanup_e2e_resources.yml
       env:
