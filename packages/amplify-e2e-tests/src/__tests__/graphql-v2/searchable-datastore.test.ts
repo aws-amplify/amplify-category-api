@@ -10,6 +10,7 @@ import {
   getProjectMeta,
   createNewProjectDir,
   deleteProjectDir,
+  tryScheduleCredentialRefresh,
 } from 'amplify-category-api-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
@@ -159,7 +160,3 @@ describe('transformer model searchable migration test', () => {
     } while (searchResponse.data.searchTodos?.items?.length < expectedCount && currentRetryCount <= maxRetryCount);
   };
 });
-function tryScheduleCredentialRefresh() {
-  throw new Error('Function not implemented.');
-}
-

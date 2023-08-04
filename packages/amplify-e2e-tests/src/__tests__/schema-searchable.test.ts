@@ -3,6 +3,7 @@ import {
   deleteProject,
   createNewProjectDir,
   deleteProjectDir,
+  tryScheduleCredentialRefresh,
 } from 'amplify-category-api-e2e-core';
 import { testSchema } from '../schema-api-directives';
 
@@ -28,7 +29,3 @@ describe('api directives @searchable', () => {
     expect(testresult).toBeTruthy();
   });
 });
-function tryScheduleCredentialRefresh() {
-  throw new Error('Function not implemented.');
-}
-

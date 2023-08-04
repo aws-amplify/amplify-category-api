@@ -28,12 +28,13 @@ export * from './hooks';
 export * from './transform-current-project-to-git-pulled-project';
 export * from './rds';
 export * from './refresh-credentials';
+export * from './credentials-rotator';
 
 // run dotenv config to update env variable
 config();
 
 // eslint-disable-next-line spellcheck/spell-checker
-export const TEST_PROFILE_NAME = 'amplify-integ-test-user';
+export const TEST_PROFILE_NAME = isCI() ? 'amplify-integ-test-user' : 'default';
 
 export function deleteProjectDir(root: string) {
   rimraf.sync(root);
