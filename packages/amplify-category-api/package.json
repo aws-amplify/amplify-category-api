@@ -68,10 +68,10 @@
     "uuid": "^8.3.2"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.4",
+    "@aws-amplify/amplify-cli-core": "4.2.4-rc.43f73ab268.0",
     "@aws-amplify/amplify-environment-parameters": "^1.5.0",
     "@aws-amplify/amplify-prompts": "^2.6.8",
-    "@aws-amplify/amplify-provider-awscloudformation": "^8.1.0",
+    "@aws-amplify/amplify-provider-awscloudformation": "^8.4.0-rc.43f73ab268.0",
     "amplify-headless-interface": "^1.17.3",
     "amplify-util-headless-input": "^1.9.12",
     "aws-cdk-lib": "^2.80.0",
