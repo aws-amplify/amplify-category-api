@@ -13,6 +13,7 @@ env:
 phases:
   build:
     commands:
+      - codebuild-breakpoint
       - source ./shared-scripts.sh && _runMigrationV5Test
   post_build:
     commands:
@@ -21,5 +22,5 @@ phases:
 
 artifacts:
   files:
-    - $CODEBUILD_SRC_DIR/packages/amplify-migration-tests/amplify-migration-reports/*
-  discard-paths: yes
+    - '**/*'
+  base-directory: $CODEBUILD_SRC_DIR/packages/amplify-migration-tests/amplify-migration-reports
