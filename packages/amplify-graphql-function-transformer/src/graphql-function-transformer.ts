@@ -23,7 +23,7 @@ const directiveDefinition = /* GraphQL */ `
 export class FunctionTransformer extends TransformerPluginBase {
   private resolverGroups: Map<FieldDefinitionNode, FunctionDirectiveConfiguration[]> = new Map();
 
-  constructor() {
+  constructor(private readonly functionNameMap?: Record<string, lambda.IFunction>) {
     super('amplify-function-transformer', directiveDefinition);
   }
 
@@ -73,15 +73,14 @@ export class FunctionTransformer extends TransformerPluginBase {
         const dataSourceId = FunctionResourceIDs.FunctionDataSourceID(config.name, config.region, config.accountId);
 
         if (!createdResources.has(dataSourceId)) {
+          const referencedFunction: lambda.IFunction =
+            this.functionNameMap && config.name in this.functionNameMap
+              ? this.functionNameMap[config.name]
+              : lambda.Function.fromFunctionAttributes(stack, `${dataSourceId}Function`, {
+                  functionArn: lambdaArnResource(env, config.name, config.region, config.accountId),
+                });
           const dataSourceScope = context.stackManager.getScopeFor(dataSourceId, FUNCTION_DIRECTIVE_STACK);
-          const dataSource = context.api.host.addLambdaDataSource(
-            dataSourceId,
-            lambda.Function.fromFunctionAttributes(stack, `${dataSourceId}Function`, {
-              functionArn: lambdaArnResource(env, config.name, config.region, config.accountId),
-            }),
-            {},
-            dataSourceScope,
-          );
+          const dataSource = context.api.host.addLambdaDataSource(dataSourceId, referencedFunction, {}, dataSourceScope);
           createdResources.set(dataSourceId, dataSource);
         }
 

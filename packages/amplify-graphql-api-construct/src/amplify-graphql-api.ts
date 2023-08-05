@@ -72,11 +72,6 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
 
     const { processedSchema, processedFunctionSlots } = preprocessSchema(unprocessedSchema, schemaPreprocessor);
 
-    // TODO: Wire referenced functions into the transform.
-    if (functionNameMap && Object.keys(functionNameMap).length > 0) {
-      throw new Error('functionNameMap not yet supported in this revision.');
-    }
-
     validateFunctionSlots(functionSlots ?? []);
     const separatedFunctionSlots = separateSlots([...(functionSlots ?? []), ...(processedFunctionSlots ?? [])]);
 
@@ -112,6 +107,7 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
         adminRoles,
         customTransformers: transformers ?? [],
         ...(predictionsBucket ? { storageConfig: { bucketName: predictionsBucket.bucketName } } : {}),
+        functionNameMap,
       },
       authConfig,
       stackMapping: stackMappings ?? {},
