@@ -5,7 +5,7 @@ describe('api directives @auth batch 8', () => {
   let projectDir: string;
 
   beforeEach(async () => {
-    projectDir = await createNewProjectDir('auth8');
+    projectDir = await createNewProjectDir('auth10');
     await initJSProjectWithProfile(projectDir, {});
   });
 
