@@ -33,6 +33,7 @@ import {
   UserDefinedSlot,
 } from '@aws-amplify/graphql-transformer-core';
 import { Construct } from 'constructs';
+import { IFunction } from 'aws-cdk-lib/aws-lambda';
 
 /**
  * Arguments passed into a TransformerFactory
@@ -44,6 +45,7 @@ export type TransformerFactoryArgs = {
   adminRoles?: Array<string>;
   identityPoolId?: string;
   customTransformers?: TransformerPluginProvider[];
+  functionNameMap?: Record<string, IFunction>;
 };
 
 /**
@@ -71,7 +73,7 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
 
   return [
     modelTransformer,
-    new FunctionTransformer(),
+    new FunctionTransformer(options?.functionNameMap),
     new HttpTransformer(),
     new PredictionsTransformer(options?.storageConfig),
     new PrimaryKeyTransformer(),

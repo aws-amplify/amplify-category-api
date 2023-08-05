@@ -9,6 +9,7 @@ import { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
 import { DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
@@ -62,6 +63,7 @@ export type TransformerFactoryArgs = {
     adminRoles?: Array<string>;
     identityPoolId?: string;
     customTransformers?: TransformerPluginProvider[];
+    functionNameMap?: Record<string, IFunction>;
 };
 
 // (No @packageDocumentation comment for this package)
