@@ -53,15 +53,7 @@ export const constructDefaultGlobalAmplifyInput = async (
   return `input AMPLIFY {\n${inputsString}}\n`;
 };
 
-export const readRDSGlobalAmplifyInput = async (pathToSchemaFile: string): Promise<InputObjectTypeDefinitionNode | undefined> => {
-  if (!fs.existsSync(pathToSchemaFile)) {
-    return;
-  }
-  const schemaContent = fs.readFileSync(pathToSchemaFile, 'utf-8');
-  if (_.isEmpty(schemaContent)) {
-    return;
-  }
-
+export const readRDSGlobalAmplifyInput = async (schemaContent: string): Promise<InputObjectTypeDefinitionNode | undefined> => {
   const parsedSchema = parse(schemaContent);
 
   const inputNode = parsedSchema.definitions.find(
@@ -73,8 +65,23 @@ export const readRDSGlobalAmplifyInput = async (pathToSchemaFile: string): Promi
   }
 };
 
-export const constructRDSGlobalAmplifyInput = async (context: $TSContext, config: any, pathToSchemaFile: string): Promise<string> => {
-  const existingInputNode: any = (await readRDSGlobalAmplifyInput(pathToSchemaFile)) || {};
+export const readRDSSchema = async (pathToSchemaFile: string): Promise<string | undefined> => {
+  if (!fs.existsSync(pathToSchemaFile)) {
+    return;
+  }
+  const schemaContent = fs.readFileSync(pathToSchemaFile, 'utf-8');
+  if (_.isEmpty(schemaContent)) {
+    return;
+  }
+  return schemaContent;
+};
+
+export const constructRDSGlobalAmplifyInput = async (
+  context: $TSContext,
+  config: any,
+  schemaContent: string | undefined,
+): Promise<string> => {
+  const existingInputNode: any = schemaContent ? await readRDSGlobalAmplifyInput(schemaContent) : {};
   if (existingInputNode?.fields && existingInputNode?.fields?.length > 0) {
     const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL)).map((item) => item.name);
     expectedInputs.forEach((input) => {

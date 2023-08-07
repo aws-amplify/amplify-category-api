@@ -11,7 +11,7 @@ import {
   getHostVpc,
   provisionSchemaInspectorLambda,
 } from '@aws-amplify/graphql-schema-generator';
-import { constructRDSGlobalAmplifyInput } from './rds-input-utils';
+import { constructRDSGlobalAmplifyInput, readRDSSchema } from './rds-input-utils';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { $TSContext, AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
 import { getVpcMetadataLambdaName } from './rds-resources/database-resources';
@@ -61,8 +61,12 @@ export const generateRDSSchema = async (
   adapter.cleanup();
   models.forEach((m) => schema.addModel(m));
 
+  const existingSchema = await readRDSSchema(pathToSchemaFile);
   const schemaString =
-    (await constructRDSGlobalAmplifyInput(context, databaseConfig, pathToSchemaFile)) + os.EOL + os.EOL + generateGraphQLSchema(schema);
+    (await constructRDSGlobalAmplifyInput(context, databaseConfig, existingSchema)) +
+    os.EOL +
+    os.EOL +
+    generateGraphQLSchema(schema, existingSchema);
   return schemaString;
 };
 
