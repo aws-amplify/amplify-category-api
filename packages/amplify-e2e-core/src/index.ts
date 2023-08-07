@@ -7,6 +7,7 @@ import * as ini from 'ini';
 import { v4 as uuid } from 'uuid';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { gt } from 'semver';
+import { sleep } from '.';
 
 export * from './configure/';
 export * from './init/';
@@ -71,7 +72,7 @@ export function getNpmPath() {
 }
 
 export function isCI(): boolean {
-  return process.env.CI && (process.env.CIRCLECI || process.env.CODEBUILD) ? true : false;
+  return process.env.CI && process.env.CODEBUILD ? true : false;
 }
 
 export function injectSessionToken(profileName: string) {
@@ -120,6 +121,12 @@ export async function createNewProjectDir(
   } while (fs.existsSync(projectDir));
 
   fs.ensureDirSync(projectDir);
+  // createProjectDir(..) is something that nearly every test uses
+  // Commands like 'init' would collide with each other if they occurred too close to one another.
+  // Especially for nexpect output waiting
+  // This makes it a perfect candidate for staggering test start times
+  const initialDelay = Math.floor(Math.random() * 180 * 1000); // between 0 to 3 min
+  await sleep(initialDelay);
   console.log(projectDir);
   return projectDir;
 }

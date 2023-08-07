@@ -105,12 +105,11 @@ function _verifyYarnLock {
 function _verifyCDKVersion {
   echo "Verify CDK Version"
   loadCacheFromBuildJob
-  yarn ts-node .circleci/validate_cdk_version.ts
+  yarn ts-node scripts/validate_cdk_version.ts
 }
 function _mockE2ETests {
   echo "Mock E2E Tests"
   loadCacheFromBuildJob
-  source .circleci/local_publish_helpers.sh
   cd packages/amplify-util-mock/
   yarn e2e
 }
@@ -140,9 +139,11 @@ function _publishToLocalRegistry {
     # Can be removed when using team account
     echo "fetching tags"
     git fetch --tags https://github.com/aws-amplify/amplify-category-api
+    # Create the folder to avoid failure when no packages are published due to no change detected
+    mkdir ../verdaccio-cache
 
     source codebuild_specs/scripts/local_publish_helpers.sh
-    startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+    startLocalRegistry "$(pwd)/codebuild_specs/scripts/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     git config user.email not@used.com
     git config user.name "Doesnt Matter"
@@ -169,7 +170,7 @@ function _generateChangeLog {
 function _installCLIFromLocalRegistry {
     echo "Start verdaccio, install CLI"
     source codebuild_specs/scripts/local_publish_helpers.sh
-    startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+    startLocalRegistry "$(pwd)/codebuild_specs/scripts/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     # set longer timeout to avoid socket timeout error
@@ -194,15 +195,20 @@ function _loadTestAccountCredentials {
     export AWS_SECRET_ACCESS_KEY=$(echo $creds | jq -c -r ".Credentials.SecretAccessKey")
     export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")
 }
-function _runE2ETestsLinux {
-    echo "RUN E2E Tests Linux"
+function _setupE2ETestsLinux {
+    echo "Setup E2E Tests Linux"
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     _installCLIFromLocalRegistry  
     _loadTestAccountCredentials
     _setShell
+}
+
+function _runE2ETestsLinux {
+    echo "RUN E2E Tests Linux"
     retry runE2eTest
 }
+
 function _runGqlE2ETests {
     echo "RUN GraphQL E2E tests"
     loadCacheFromBuildJob
@@ -268,7 +274,7 @@ function _cleanupE2EResources {
   echo "Running clean up script"
   build_batch_arn=$(aws codebuild batch-get-builds --ids $CODEBUILD_BUILD_ID | jq -r -c '.builds[0].buildBatchArn')
   echo "Cleanup resources for batch build $build_batch_arn"
-  yarn clean-cb-e2e-resources --buildBatchArn $build_batch_arn
+  yarn clean-e2e-resources buildBatchArn $build_batch_arn
 }
 
 # The following functions are forked from circleci local publish helper
@@ -306,22 +312,22 @@ function retry {
     MAX_ATTEMPTS=2
     SLEEP_DURATION=5
     FIRST_RUN=true
-    n=0
+    RUN_INDEX=0
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         rm -f $FAILED_TEST_REGEX_FILE
     fi
-    until [ $n -ge $MAX_ATTEMPTS ]
+    until [ $RUN_INDEX -ge $MAX_ATTEMPTS ]
     do
         echo "Attempting $@ with max retries $MAX_ATTEMPTS"
         setAwsAccountCredentials
-        "$@" && break
-        n=$[$n+1]
+        RUN_INDEX="$RUN_INDEX" "$@" && break
+        RUN_INDEX=$[$RUN_INDEX+1]
         FIRST_RUN=false
-        echo "Attempt $n completed."
+        echo "Attempt $RUN_INDEX completed."
         sleep $SLEEP_DURATION
     done
-    if [ $n -ge $MAX_ATTEMPTS ]; then
+    if [ $RUN_INDEX -ge $MAX_ATTEMPTS ]; then
         echo "failed: ${@}" >&2
         exit 1
     fi
@@ -329,7 +335,7 @@ function retry {
     resetAwsAccountCredentials
     TEST_SUITE=${TEST_SUITE:-"TestSuiteNotSet"}
     aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-category-api-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE --profile amplify-integ-test-user || true
-    echo "Attempt $n succeeded."
+    echo "Attempt $RUN_INDEX succeeded."
     exit 0 # don't fail the step if putting the metric fails
 }
 
@@ -402,8 +408,8 @@ function runGraphQLE2eTest {
 }
 
 function _deploy {
+  _setShell
   echo "Deploy"
-  loadCacheFromBuildJob
   echo "Authenticate with NPM"
   PUBLISH_TOKEN=$(echo "$NPM_PUBLISH_TOKEN" | jq -r '.token')
   echo "//registry.npmjs.org/:_authToken=$PUBLISH_TOKEN" > ~/.npmrc

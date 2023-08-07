@@ -9,4 +9,8 @@ phases:
   build:
     commands:
       - yarn production-build
-      - cd packages/amplify-e2e-tests && yarn clean-cb-e2e-resources
+      - cd packages/amplify-e2e-tests && yarn clean-e2e-resources
+artifacts:
+  files:
+    - '**/*'
+  base-directory: $CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/amplify-e2e-reports

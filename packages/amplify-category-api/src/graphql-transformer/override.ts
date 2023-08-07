@@ -69,6 +69,13 @@ export function applyFileBasedOverride(stackManager: StackManager, overrideDirPa
     projectName,
   };
   try {
+    // TODO: Invoke `runOverride` from CLI core once core refactor is done, and
+    // this function can become async https://github.com/aws-amplify/amplify-cli/blob/7bc0b5654a585104a537c1a3f9615bd672435b58/packages/amplify-cli-core/src/overrides-manager/override-runner.ts#L4
+    // before importing the override file, we should clear the require cache to avoid
+    // importing an outdated version of the override file
+    // see: https://github.com/nodejs/modules/issues/307
+    // and https://stackoverflow.com/questions/9210542/node-js-require-cache-possible-to-invalidate
+    delete require.cache[require.resolve(overrideFilePath)];
     const overrideImport = require(overrideFilePath);
     if (overrideImport && overrideImport?.override && typeof overrideImport?.override === 'function') {
       overrideImport.override(appsyncResourceObj, projectInfo);
