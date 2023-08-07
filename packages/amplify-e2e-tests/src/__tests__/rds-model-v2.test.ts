@@ -336,8 +336,29 @@ describe('RDS Model Directive', () => {
     );
   });
 
+  test('check invalid CRUD operation returns generic error message', async () => {
+    const contact1 = await createContact('David', 'Smith');
+    expect(contact1.data.createContact.id).toBeDefined();
+
+    const createContactInvalid = await createContact('Jason', 'Bourne', contact1.data.createContact.id);
+    expect(createContactInvalid.data.createContact).toBeNull();
+    checkGenericError(createContactInvalid?.errors);
+
+    const nonExistentId = 'doesnotexist';
+    const getContactInvalid = await getContact(nonExistentId);
+    expect(getContactInvalid.data.getContact).toBeNull();
+
+    const updateContactInvalid = await updateContact(nonExistentId, 'David', 'Jones');
+    expect(updateContactInvalid.data.updateContact).toBeNull();
+    checkGenericError(updateContactInvalid?.errors);
+
+    const deleteContactInvalid = await deleteContact(nonExistentId);
+    expect(deleteContactInvalid.data.deleteContact).toBeNull();
+    checkGenericError(deleteContactInvalid?.errors);
+  });
+
   // CURDL on Contact table helpers
-  const createContact = async (firstName: string, lastName: string) => {
+  const createContact = async (firstName: string, lastName: string, id?: string) => {
     const createMutation = /* GraphQL */ `
       mutation CreateContact($input: CreateContactInput!, $condition: ModelContactConditionInput) {
         createContact(input: $input, condition: $condition) {
@@ -353,6 +374,11 @@ describe('RDS Model Directive', () => {
         LastName: lastName,
       },
     };
+
+    if (id) {
+      createInput.input['id'] = id;
+    }
+
     const createResult: any = await appSyncClient.mutate({
       mutation: gql(createMutation),
       fetchPolicy: 'no-cache',
@@ -586,5 +612,11 @@ describe('RDS Model Directive', () => {
     });
 
     return listResult;
+  };
+
+  const checkGenericError = async (errors?: any[]) => {
+    expect(errors).toBeDefined();
+    expect(errors).toHaveLength(1);
+    expect(errors[0].message).toEqual('Error processing the request. Check the logs for more details.');
   };
 });
