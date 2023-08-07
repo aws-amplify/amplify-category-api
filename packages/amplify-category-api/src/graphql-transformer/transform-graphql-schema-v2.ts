@@ -1,5 +1,11 @@
 import path from 'path';
-import { RDSConnectionSecrets, MYSQL_DB_TYPE, ImportedRDSType, DatasourceType } from '@aws-amplify/graphql-transformer-core';
+import {
+  RDSConnectionSecrets,
+  MYSQL_DB_TYPE,
+  ImportedRDSType,
+  DatasourceType,
+  UserDefinedSlot,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
   TransformerLog,
@@ -11,22 +17,22 @@ import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { sanityCheckProject } from 'graphql-transformer-core';
 import _ from 'lodash';
-import { isAuthModeUpdated } from './auth-mode-compare';
-import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
-import { generateTransformerOptions } from './transformer-options-v2';
-import { TransformerProjectOptions } from './transformer-options-types';
-import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { executeTransform } from '@aws-amplify/graphql-transformer';
+import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
+import { getHostVpc } from '@aws-amplify/graphql-schema-generator';
+import fetch from 'node-fetch';
 import {
   getConnectionSecrets,
   testDatabaseConnection,
   getExistingConnectionSecretNames,
   getSecretsKey,
 } from '../provider-utils/awscloudformation/utils/rds-resources/database-resources';
-import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
-import { printer } from '@aws-amplify/amplify-prompts';
-import { getHostVpc } from '@aws-amplify/graphql-schema-generator';
-import fetch from 'node-fetch';
+import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { isAuthModeUpdated } from './auth-mode-compare';
+import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
+import { generateTransformerOptions } from './transformer-options-v2';
+import { TransformerProjectOptions } from './transformer-options-types';
 import { DeploymentResources } from './cdk-compat/deployment-resources';
 import { TransformManager } from './cdk-compat/transform-manager';
 
@@ -34,7 +40,6 @@ const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
 const SCHEMA_DIR_NAME = 'schema';
 const PROVIDER_NAME = 'awscloudformation';
-
 const LAYER_MAPPING_URL = 'https://amplify-rds-layer-resources.s3.amazonaws.com/rds-layer-mapping.json';
 
 /**
@@ -221,7 +226,10 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
     rdsLayerMapping,
   });
 
-  const transformOutput = transformManager.generateDeploymentResources();
+  const transformOutput: DeploymentResources = {
+    ...transformManager.generateDeploymentResources(),
+    userOverriddenSlots: opts.userDefinedSlots ? getUserOverridenSlots(opts.userDefinedSlots) : [],
+  };
 
   const builtProject = mergeUserConfigWithTransformOutput(opts.projectConfig, transformOutput, opts);
 
@@ -241,6 +249,13 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
 
   return builtProject;
 };
+
+export const getUserOverridenSlots = (userDefinedSlots: Record<string, UserDefinedSlot[]>): string[] =>
+  Object.values(userDefinedSlots)
+    .flat()
+    .flatMap((slot) => [slot.requestResolver?.fileName, slot.responseResolver?.fileName])
+    .flat()
+    .filter((slotName) => slotName !== undefined);
 
 const getRDSLayerMapping = async (): Promise<RDSLayerMapping> => {
   try {
