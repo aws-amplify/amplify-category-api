@@ -200,7 +200,9 @@ describe('apply schema overrides for JSON fields', () => {
     const editedDocument = parse(editedSchema);
     const updatedDocument = applySchemaOverrides(document, editedDocument);
     stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
-    expect(printer.warn).toHaveBeenCalledWith('The field title has been changed to an optional type while it is required in the database. This may result in SQL errors in the mutations.');
+    expect(printer.warn).toHaveBeenCalledWith(
+      'The field title has been changed to an optional type while it is required in the database. This may result in SQL errors in the mutations.',
+    );
   });
 
   it('should warn when changing required JSON field to optional Non-Model type', () => {
@@ -223,7 +225,9 @@ describe('apply schema overrides for JSON fields', () => {
     const editedDocument = parse(editedSchema);
     const updatedDocument = applySchemaOverrides(document, editedDocument);
     stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
-    expect(printer.warn).toHaveBeenCalledWith('The field title has been changed to an optional type while it is required in the database. This may result in SQL errors in the mutations.');
+    expect(printer.warn).toHaveBeenCalledWith(
+      'The field title has been changed to an optional type while it is required in the database. This may result in SQL errors in the mutations.',
+    );
   });
 });
 

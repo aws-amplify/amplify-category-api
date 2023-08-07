@@ -341,23 +341,20 @@ describe('RDS Model Directive', () => {
 
     try {
       await createContact('Jason', 'Bourne', contact1.data.createContact.id);
-    }
-    catch (err) {
+    } catch (err) {
       checkGenericError(err?.message);
     }
 
     const nonExistentId = 'doesnotexist';
     try {
       await updateContact(nonExistentId, 'David', 'Jones');
-    }
-    catch (err) {
+    } catch (err) {
       checkGenericError(err?.message);
     }
 
     try {
       await deleteContact(nonExistentId);
-    }
-    catch (err) {
+    } catch (err) {
       checkGenericError(err?.message);
     }
   });

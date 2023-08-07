@@ -57,9 +57,11 @@ export const getParentNode = (ancestors: any[]): ObjectTypeDefinitionNode | unde
 };
 
 export const checkDestructiveNullabilityChange = (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => {
-    const isFieldRequired = isNonNullType(field?.type);
-    const isExistingFieldRequired = isNonNullType(existingField?.type);
-    if (isFieldRequired && !isExistingFieldRequired) {
-        printer.warn(`The field ${field?.name?.value} has been changed to an optional type while it is required in the database. This may result in SQL errors in the mutations.`);
-    } 
+  const isFieldRequired = isNonNullType(field?.type);
+  const isExistingFieldRequired = isNonNullType(existingField?.type);
+  if (isFieldRequired && !isExistingFieldRequired) {
+    printer.warn(
+      `The field ${field?.name?.value} has been changed to an optional type while it is required in the database. This may result in SQL errors in the mutations.`,
+    );
+  }
 };
