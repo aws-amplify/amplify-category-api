@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.13.2-rds.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.13.1...amplify-category-api-e2e-tests@3.13.2-rds.0) (2023-08-07)
+
+### Bug Fixes
+
+- **api:** make id optional if not a string type ([48ecac0](https://github.com/aws-amplify/amplify-category-api/commit/48ecac0989097106a531ebb898abbda7a0f1745c))
+
 ## [3.13.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.13.0...amplify-category-api-e2e-tests@3.13.1) (2023-08-07)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests

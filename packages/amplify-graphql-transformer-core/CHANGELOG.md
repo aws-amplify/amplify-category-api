@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0-rds.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@1.4.0...@aws-amplify/graphql-transformer-core@1.5.0-rds.0) (2023-08-07)
+
+### Bug Fixes
+
+- **api:** make id optional if not a string type ([48ecac0](https://github.com/aws-amplify/amplify-category-api/commit/48ecac0989097106a531ebb898abbda7a0f1745c))
+
+### Features
+
+- **api:** rds has many support ([42b4c9f](https://github.com/aws-amplify/amplify-category-api/commit/42b4c9f770dec01f02b397ad2a231232395d577d))
+
 # [1.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@1.3.8...@aws-amplify/graphql-transformer-core@1.4.0) (2023-07-21)
 
 ### Features
