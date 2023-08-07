@@ -51,6 +51,9 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
 
   public async test(): Promise<boolean> {
     const TEST_QUERY = 'SELECT 1';
+    if (!this.dbBuilder) {
+      this.establishDBConnection();
+    }
     try {
       await this.dbBuilder.raw(TEST_QUERY);
     } catch (error) {

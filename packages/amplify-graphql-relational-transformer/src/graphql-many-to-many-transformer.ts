@@ -47,7 +47,7 @@ import {
   registerManyToManyForeignKeyMappings,
   validateModelDirective,
 } from './utils';
-import { makeQueryConnectionWithKeyResolver, updateTableForConnection } from './resolvers';
+import { updateTableForConnection } from './resolvers';
 import {
   ensureHasManyConnectionField,
   extendTypeWithConnection,
@@ -57,6 +57,7 @@ import {
   getSortKeyFieldsNoContext,
 } from './schema';
 import { HasOneTransformer } from './graphql-has-one-transformer';
+import { DDBRelationalResolverGenerator } from './resolver/ddb-generator';
 
 const directiveName = 'manyToMany';
 const defaultLimit = 100;
@@ -491,7 +492,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       updateTableForConnection(config, context);
-      makeQueryConnectionWithKeyResolver(config, context);
+      new DDBRelationalResolverGenerator().makeHasManyGetItemsConnectionWithKeyResolver(config, context);
     }
   };
 }

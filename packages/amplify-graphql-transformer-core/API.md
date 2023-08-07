@@ -191,6 +191,9 @@ export type GetArgumentsOptions = {
     deepMergeArguments?: boolean;
 };
 
+// @public (undocumented)
+export const getDatasourceType: (type: TypeNode, ctx: TransformerContextProvider) => DBType;
+
 // Warning: (ae-forgotten-export) The symbol "Operation" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -201,6 +204,9 @@ export const getKeySchema: (table: any, indexName?: string) => any;
 
 // @public (undocumented)
 export const getParameterStoreSecretPath: (secret: string, secretsKey: string, apiName: string, environmentName: string, appId: string) => string;
+
+// @public (undocumented)
+export const getPrimaryKeyFields: (type: ObjectTypeDefinitionNode) => string[];
 
 // @public (undocumented)
 export const getSortKeyFieldNames: (type: ObjectTypeDefinitionNode) => string[];

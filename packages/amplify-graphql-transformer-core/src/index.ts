@@ -30,6 +30,8 @@ export {
   IAM_AUTH_ROLE_PARAMETER,
   IAM_UNAUTH_ROLE_PARAMETER,
   APICategory,
+  getPrimaryKeyFields,
+  getDatasourceType,
 } from './utils';
 export * from './utils/operation-names';
 export * from './errors';
