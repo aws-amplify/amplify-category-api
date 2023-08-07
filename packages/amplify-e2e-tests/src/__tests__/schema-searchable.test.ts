@@ -13,7 +13,7 @@ describe('api directives @searchable', () => {
   beforeAll(() => {
     tryScheduleCredentialRefresh();
   });
-  
+
   beforeEach(async () => {
     projectDir = await createNewProjectDir('searchable');
     await initJSProjectWithProfile(projectDir, {});

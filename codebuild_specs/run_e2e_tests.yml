@@ -13,9 +13,9 @@ phases:
       - codebuild-breakpoint
       - source ./shared-scripts.sh && _setupE2ETestsLinux
       - source ./shared-scripts.sh && _runE2ETestsLinux
-      - source ./shared-scripts.sh && _unassumeTestAccountCredentials
   post_build:
     commands:
+      - source ./shared-scripts.sh && _unassumeTestAccountCredentials
       - aws sts get-caller-identity
       - source ./shared-scripts.sh && _scanArtifacts
 

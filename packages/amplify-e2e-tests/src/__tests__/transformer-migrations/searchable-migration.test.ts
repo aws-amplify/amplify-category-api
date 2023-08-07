@@ -30,7 +30,7 @@ describe('transformer model searchable migration test', () => {
   beforeAll(() => {
     tryScheduleCredentialRefresh();
   });
-  
+
   beforeEach(async () => {
     projectName = createRandomName();
     projRoot = await createNewProjectDir(createRandomName());
