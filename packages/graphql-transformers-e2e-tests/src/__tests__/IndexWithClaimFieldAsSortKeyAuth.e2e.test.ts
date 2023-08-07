@@ -94,7 +94,7 @@ beforeAll(async () => {
     const indexTransformer = new IndexTransformer();
     const authTransformer = new AuthTransformer();
     const primaryKeyTransformer = new PrimaryKeyTransformer();
-    const out = testTransform({
+    out = testTransform({
       schema: validSchema,
       authConfig: {
         defaultAuthentication: {
