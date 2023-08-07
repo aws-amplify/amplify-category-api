@@ -18,7 +18,7 @@ describe('api directives @auth batch 14', () => {
 
   describe('javascript libraries', () => {
     beforeEach(async () => {
-      projectDir = await createNewProjectDir('auth1');
+      projectDir = await createNewProjectDir('auth14');
       await initJSProjectWithProfile(projectDir, {});
       addFeatureFlag(projectDir, 'graphqlTransformer', 'useSubUsernameForDefaultIdentityClaim', true);
     });

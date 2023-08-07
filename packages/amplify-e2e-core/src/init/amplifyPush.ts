@@ -141,12 +141,19 @@ export function cancelIterativeAmplifyPush(
       .wait(`Deploying iterative update ${idx.current} of ${idx.max} into`)
       .wait(/.*AWS::AppSync::GraphQLSchema.*UPDATE_IN_PROGRESS.*/)
       .sendCtrlC()
-      .run((err: Error) => {
-        if (err && !/Process exited with non zero exit code 130/.test(err.message)) {
-          reject(err);
-        } else {
-          resolve();
+      .run((err: Error, signal) => {
+        if (err) {
+          if (process.env.CODEBUILD) {
+            // In codebuild the code 130 is not sent but with exit code 2
+            // This is to catch the error in that scenario so that the test will proceed
+            if (!/Killed the process as no output receive/.test(err.message)) {
+              reject(err);
+            }
+          } else if (!/Process exited with non zero exit code 130/.test(err.message)) {
+            reject(err);
+          }
         }
+        resolve();
       });
   });
 }

@@ -6,7 +6,6 @@
 
 # Changes to CI/CD scripts/buildspecs need admin approval
 
-/.circleci/ @aws-amplify/amplify-data-admins
 /scripts/ @aws-amplify/amplify-data-admins
 /shared-scripts.sh @aws-amplify/amplify-data-admins
 /codebuild_specs/ @aws-amplify/amplify-data-admins
