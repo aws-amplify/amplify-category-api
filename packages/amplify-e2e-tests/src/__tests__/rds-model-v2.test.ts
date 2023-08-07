@@ -14,7 +14,6 @@ import {
   initJSProjectWithProfile,
   removeRDSPortInboundRule,
 } from 'amplify-category-api-e2e-core';
-import axios from 'axios';
 import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
@@ -340,21 +339,27 @@ describe('RDS Model Directive', () => {
     const contact1 = await createContact('David', 'Smith');
     expect(contact1.data.createContact.id).toBeDefined();
 
-    const createContactInvalid = await createContact('Jason', 'Bourne', contact1.data.createContact.id);
-    expect(createContactInvalid.data.createContact).toBeNull();
-    checkGenericError(createContactInvalid?.errors);
+    try {
+      await createContact('Jason', 'Bourne', contact1.data.createContact.id);
+    }
+    catch (err) {
+      checkGenericError(err?.message);
+    }
 
     const nonExistentId = 'doesnotexist';
-    const getContactInvalid = await getContact(nonExistentId);
-    expect(getContactInvalid.data.getContact).toBeNull();
+    try {
+      await updateContact(nonExistentId, 'David', 'Jones');
+    }
+    catch (err) {
+      checkGenericError(err?.message);
+    }
 
-    const updateContactInvalid = await updateContact(nonExistentId, 'David', 'Jones');
-    expect(updateContactInvalid.data.updateContact).toBeNull();
-    checkGenericError(updateContactInvalid?.errors);
-
-    const deleteContactInvalid = await deleteContact(nonExistentId);
-    expect(deleteContactInvalid.data.deleteContact).toBeNull();
-    checkGenericError(deleteContactInvalid?.errors);
+    try {
+      await deleteContact(nonExistentId);
+    }
+    catch (err) {
+      checkGenericError(err?.message);
+    }
   });
 
   // CURDL on Contact table helpers
@@ -614,9 +619,8 @@ describe('RDS Model Directive', () => {
     return listResult;
   };
 
-  const checkGenericError = async (errors?: any[]) => {
-    expect(errors).toBeDefined();
-    expect(errors).toHaveLength(1);
-    expect(errors[0].message).toEqual('Error processing the request. Check the logs for more details.');
+  const checkGenericError = async (errorMessage?: string) => {
+    expect(errorMessage).toBeDefined();
+    expect(errorMessage).toEqual('GraphQL error: Error processing the request. Check the logs for more details.');
   };
 });

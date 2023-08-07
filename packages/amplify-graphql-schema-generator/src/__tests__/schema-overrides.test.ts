@@ -1,5 +1,8 @@
 import { applySchemaOverrides } from '../schema-generator';
 import { print, parse } from 'graphql';
+import { printer } from '@aws-amplify/amplify-prompts';
+
+jest.mock('@aws-amplify/amplify-prompts');
 
 describe('apply schema overrides for JSON fields', () => {
   it('should retain JSON to List type edits', () => {
@@ -179,6 +182,48 @@ describe('apply schema overrides for JSON fields', () => {
         `);
     const updatedDocument = applySchemaOverrides(document, editedDocument);
     stringsMatchWithoutWhitespace(print(updatedDocument), schema);
+  });
+
+  it('should warn when changing required JSON field to optional list', () => {
+    const document = parse(`
+        type Post @model {
+            id: ID!
+            title: AWSJSON!
+        }
+    `);
+    const editedSchema = `
+        type Post @model {
+            id: ID!
+            title: [String]
+        }
+    `;
+    const editedDocument = parse(editedSchema);
+    const updatedDocument = applySchemaOverrides(document, editedDocument);
+    stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
+    expect(printer.warn).toHaveBeenCalledWith('The field title has been changed to an optional type while it is required in the database. This may result in SQL errors in the mutations.');
+  });
+
+  it('should warn when changing required JSON field to optional Non-Model type', () => {
+    const document = parse(`
+        type Post @model {
+            id: ID!
+            title: AWSJSON!
+        }
+    `);
+    const editedSchema = `
+        type Post @model {
+            id: ID!
+            title: NonModel
+        }
+
+        type NonModel {
+            id: ID!
+        }
+    `;
+    const editedDocument = parse(editedSchema);
+    const updatedDocument = applySchemaOverrides(document, editedDocument);
+    stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
+    expect(printer.warn).toHaveBeenCalledWith('The field title has been changed to an optional type while it is required in the database. This may result in SQL errors in the mutations.');
   });
 });
 

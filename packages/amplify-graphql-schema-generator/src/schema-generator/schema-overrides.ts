@@ -1,5 +1,6 @@
 import { DocumentNode, FieldDefinitionNode, ObjectTypeDefinitionNode, visit } from 'graphql';
-import { isArrayOrObject, findMatchingField, getNonModelTypes, isOfType } from 'graphql-transformer-common';
+import { isArrayOrObject, findMatchingField, getNonModelTypes, isOfType, isNonNullType } from 'graphql-transformer-common';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 export const applySchemaOverrides = (document: DocumentNode, existingDocument: DocumentNode): DocumentNode => {
   const schemaVisitor = {
@@ -41,6 +42,8 @@ export const applyJSONFieldTypeOverrides = (field: FieldDefinitionNode, existing
     return field;
   }
 
+  checkDestructiveNullabilityChange(field, existingField);
+
   return {
     ...field,
     ...{ type: existingField?.type },
@@ -51,4 +54,12 @@ export const getParentNode = (ancestors: any[]): ObjectTypeDefinitionNode | unde
   if (ancestors && ancestors?.length > 0) {
     return ancestors[ancestors.length - 1] as ObjectTypeDefinitionNode;
   }
+};
+
+export const checkDestructiveNullabilityChange = (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => {
+    const isFieldRequired = isNonNullType(field?.type);
+    const isExistingFieldRequired = isNonNullType(existingField?.type);
+    if (isFieldRequired && !isExistingFieldRequired) {
+        printer.warn(`The field ${field?.name?.value} has been changed to an optional type while it is required in the database. This may result in SQL errors in the mutations.`);
+    } 
 };
