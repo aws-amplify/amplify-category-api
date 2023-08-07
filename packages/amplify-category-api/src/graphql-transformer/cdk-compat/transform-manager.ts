@@ -78,7 +78,7 @@ export class TransformManager {
     return synthParameters;
   }
 
-  generateDeploymentResources(): DeploymentResources {
+  generateDeploymentResources(): Omit<DeploymentResources, 'userOverriddenSlots'> {
     if (this.overrideConfig?.overrideFlag) {
       this.overrideConfig.applyOverride(this.rootStack);
     }
@@ -117,7 +117,6 @@ export class TransformManager {
       stacks: childStacks,
       rootStack: rootStackTemplate!,
       stackMapping: {},
-      userOverriddenSlots: [],
     };
   }
 
