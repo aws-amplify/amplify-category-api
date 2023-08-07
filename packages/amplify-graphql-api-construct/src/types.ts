@@ -15,6 +15,8 @@ import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+// These will be imported from CLI in future
+import { GraphqlOutput, BackendOutputStorageStrategy } from './graphql-output';
 
 /**
  * Configuration for IAM Authorization on the Graphql API.
@@ -378,6 +380,11 @@ export type AmplifyGraphqlApiProps<SchemaType = AmplifyApiGraphqlSchema> = {
    * refer to https://docs.amplify.aws/cli/reference/feature-flags/#graphQLTransformer
    */
   schemaTranslationBehavior?: Partial<SchemaTranslationBehavior>;
+
+  /**
+   * Strategy to store construct outputs. If no outputStorageStrategey is provided a default strategy will be used.
+   */
+  outputStorageStrategy?: BackendOutputStorageStrategy<GraphqlOutput>;
 };
 
 /**

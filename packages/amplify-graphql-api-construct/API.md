@@ -42,9 +42,6 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
     constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps<SchemaType>);
     getGeneratedFunctionSlots(): FunctionSlot[];
     readonly resources: AmplifyGraphqlApiResources;
-    // Warning: (ae-forgotten-export) The symbol "BackendOutputStorageStrategy" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "GraphqlOutput" needs to be exported by the entry point index.d.ts
-    storeOutput(outputStorageStrategy: BackendOutputStorageStrategy<GraphqlOutput>): void;
 }
 
 // @public
@@ -60,6 +57,7 @@ export type AmplifyGraphqlApiProps<SchemaType = AmplifyApiGraphqlSchema> = {
     transformers?: TransformerPluginProvider[];
     predictionsBucket?: IBucket;
     schemaTranslationBehavior?: Partial<SchemaTranslationBehavior>;
+    outputStorageStrategy?: BackendOutputStorageStrategy<GraphqlOutput>;
 };
 
 // @public
@@ -201,6 +199,11 @@ export type SubscriptionFunctionSlot = FunctionSlotBase & {
 export type UserPoolAuthorizationConfig = {
     userPool: IUserPool;
 };
+
+// Warnings were encountered during analysis:
+//
+// src/types.ts:387:3 - (ae-forgotten-export) The symbol "BackendOutputStorageStrategy" needs to be exported by the entry point index.d.ts
+// src/types.ts:387:3 - (ae-forgotten-export) The symbol "GraphqlOutput" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

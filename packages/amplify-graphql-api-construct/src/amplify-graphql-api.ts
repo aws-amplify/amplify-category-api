@@ -14,7 +14,13 @@ import type { AmplifyGraphqlApiResources, AmplifyGraphqlApiProps, FunctionSlot }
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
 
 // These will be imported from CLI in future
-import { GraphqlOutput, GraphqlOutputKey, BackendOutputStorageStrategy, AwsAppsyncAuthenticationType } from './graphql-output';
+import {
+  GraphqlOutput,
+  GraphqlOutputKey,
+  BackendOutputStorageStrategy,
+  AwsAppsyncAuthenticationType,
+  StackMetadataBackendOutputStorageStrategy,
+} from './graphql-output';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -66,6 +72,7 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
       stackMappings,
       schemaTranslationBehavior,
       functionNameMap,
+      outputStorageStrategy,
     } = props;
 
     const {
@@ -137,6 +144,7 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
     });
 
     this.resources = generateConstructExports(transformedResources.rootStack, transformedResources.stacks, transformerStack);
+    this.storeOutput(outputStorageStrategy);
   }
 
   /**
@@ -165,7 +173,7 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
   /**
    * Stores graphql api output to be used for client config generation
    */
-  storeOutput(outputStorageStrategy: BackendOutputStorageStrategy<GraphqlOutput>): void {
+  private storeOutput(outputStorageStrategy?: BackendOutputStorageStrategy<GraphqlOutput>): void {
     const output: GraphqlOutput = {
       version: '1',
       payload: {
@@ -179,6 +187,12 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
       output.payload.awsAppsyncApiKey = this.resources.cfnApiKey.attrApiKey;
     }
 
-    outputStorageStrategy.addBackendOutputEntry(GraphqlOutputKey, output);
+    const strategy = outputStorageStrategy ? outputStorageStrategy : new StackMetadataBackendOutputStorageStrategy(cdk.Stack.of(this));
+    strategy.addBackendOutputEntry(GraphqlOutputKey, output);
+
+    // only flush if outputStorageStrategy was not provided
+    if (!outputStorageStrategy) {
+      strategy.flush();
+    }
   }
 }
