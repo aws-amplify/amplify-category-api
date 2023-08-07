@@ -127,7 +127,7 @@ interface AddApiOptions {
 
 const defaultOptions: AddApiOptions = {
   apiName: '\r',
-  testingWithLatestCodebase: true,
+  testingWithLatestCodebase: false,
   transformerVersion: 2,
 };
 
