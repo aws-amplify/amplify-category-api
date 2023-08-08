@@ -191,6 +191,8 @@ module.exports = {
         '@typescript-eslint/unbound-method': 'off',
         'jest/unbound-method': 'error',
         '@typescript-eslint/no-explicit-any': 'off',
+        // jest describe/test can be very long
+        'max-lines-per-function': 'off',
       },
     },
   ],
