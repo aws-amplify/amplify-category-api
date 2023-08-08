@@ -53,10 +53,7 @@ describe('Amplify Input read/write from schema', () => {
       globalAuthRule: AuthRule = { allow: public } # This "input" configures a global authorization rule to enable public access to all models in this schema. Learn more about authorization rules here:https://docs.amplify.aws/cli/graphql/authorization-rules 
     }`;
 
-    readFileSync_mock.mockReturnValue(mockInputSchema);
-    existsSync_mock.mockReturnValue(true);
-
-    const readInputNode = await readRDSGlobalAmplifyInput('mock/path');
+    const readInputNode = await readRDSGlobalAmplifyInput(mockInputSchema);
     expect(readInputNode).toMatchSnapshot();
   });
 
@@ -73,16 +70,13 @@ describe('Amplify Input read/write from schema', () => {
       globalAuthRule: AuthRule = { allow: public } # This "input" configures a global authorization rule to enable public access to all models in this schema. Learn more about authorization rules here:https://docs.amplify.aws/cli/graphql/authorization-rules 
     }`;
 
-    readFileSync_mock.mockReturnValue(mockInputSchema);
-    existsSync_mock.mockReturnValue(true);
-
     const userInputs = {
       host: 'mockdatabase.rds.amazonaws.com',
       port: 1010,
       database: 'mockdatabase',
     };
 
-    const constructedInputDefinition = await constructRDSGlobalAmplifyInput(mockContext, userInputs, '');
+    const constructedInputDefinition = await constructRDSGlobalAmplifyInput(mockContext, userInputs, mockInputSchema);
     expect(constructedInputDefinition).toMatchSnapshot();
   });
 });
