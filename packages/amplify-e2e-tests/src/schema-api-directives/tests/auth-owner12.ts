@@ -6,7 +6,7 @@ type Todo @model @auth(rules: [{allow: owner, operations: [create, read, update]
   content: String!
 }
 
-##auth/owner5`;
+##auth/owner12`;
 // mutations
 export const mutation1 = `
 mutation CreateTodo(
