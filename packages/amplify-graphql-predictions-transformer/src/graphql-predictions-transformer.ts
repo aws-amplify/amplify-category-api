@@ -2,10 +2,9 @@ import * as path from 'path';
 import {
   DirectiveWrapper,
   generateGetArgumentsInput,
-  IAM_AUTH_ROLE_PARAMETER,
-  IAM_UNAUTH_ROLE_PARAMETER,
   InvalidDirectiveError,
   MappingTemplate,
+  setResourceName,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import {
@@ -161,13 +160,14 @@ export class PredictionsTransformer extends TransformerPluginBase {
     }
 
     const stack: cdk.Stack = context.stackManager.createStack(PREDICTIONS_DIRECTIVE_STACK);
-    const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+    const env = context.synthParameters.amplifyEnvironmentName;
     const createdResources = new Map<string, any>();
     const seenActions = new Set<string>();
     const role = new iam.Role(stack, PredictionsResourceIDs.iamRole, {
       roleName: joinWithEnv(context, '-', [PredictionsResourceIDs.iamRole, context.api.apiId]),
       assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
     });
+    setResourceName(role, { name: PredictionsResourceIDs.iamRole, setOnDefaultChild: true });
 
     role.attachInlinePolicy(
       new iam.Policy(stack, 'PredictionsStorageAccess', {
@@ -331,8 +331,8 @@ function createResolver(
   };
 
   if (referencesEnv(bucketName)) {
-    const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
-    substitutions.env = env as unknown as string;
+    const env = context.synthParameters.amplifyEnvironmentName;
+    substitutions.env = env;
   }
   const requestTemplate = [
     cdk.Fn.conditionIf(
@@ -349,15 +349,12 @@ function createResolver(
     (mode) => mode?.authenticationType,
   );
   if (authModes.includes(AuthorizationType.IAM)) {
-    const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
-    const unauthRoleParameter = (context.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
+    const authRole = context.synthParameters.authenticatedUserRoleName;
+    const unauthRole = context.synthParameters.unauthenticatedUserRoleName;
+    const account = cdk.Stack.of(context.stackManager.scope).account;
     requestTemplate.push(
-      `$util.qr($ctx.stash.put("authRole", "arn:aws:sts::${
-        cdk.Stack.of(context.stackManager.rootStack).account
-      }:assumed-role/${authRoleParameter}/CognitoIdentityCredentials"))`,
-      `$util.qr($ctx.stash.put("unauthRole", "arn:aws:sts::${
-        cdk.Stack.of(context.stackManager.rootStack).account
-      }:assumed-role/${unauthRoleParameter}/CognitoIdentityCredentials"))`,
+      `$util.qr($ctx.stash.put("authRole", "arn:aws:sts::${account}:assumed-role/${authRole}/CognitoIdentityCredentials"))`,
+      `$util.qr($ctx.stash.put("unauthRole", "arn:aws:sts::${account}:assumed-role/${unauthRole}/CognitoIdentityCredentials"))`,
     );
   }
   requestTemplate.push(print(obj({})));
@@ -413,6 +410,7 @@ function createPredictionsLambda(context: TransformerContextProvider, stack: cdk
       }),
     },
   });
+  setResourceName(role, { name: PredictionsResourceIDs.lambdaIAMRole, setOnDefaultChild: true });
 
   return context.api.host.addLambdaFunction(
     PredictionsResourceIDs.lambdaName,
@@ -437,7 +435,7 @@ function removeEnvReference(value: string): string {
 }
 
 function joinWithEnv(context: TransformerContextProvider, separator: string, listToJoin: any[]): string {
-  const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+  const env = context.synthParameters.amplifyEnvironmentName;
   return cdk.Fn.conditionIf(
     ResourceConstants.CONDITIONS.HasEnvironmentParameter,
     cdk.Fn.join(separator, [...listToJoin, env]),
@@ -539,8 +537,8 @@ function getStorageArn(context: TransformerContextProvider, bucketName: string):
   };
 
   if (referencesEnv(bucketName)) {
-    const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
-    substitutions.env = env as unknown as string;
+    const env = context.synthParameters.amplifyEnvironmentName;
+    substitutions.env = env;
   }
 
   return cdk.Fn.conditionIf(

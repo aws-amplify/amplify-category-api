@@ -7,10 +7,10 @@
 import { AppsyncFunctionProps } from 'aws-cdk-lib/aws-appsync';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
+import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
 import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
-import { CfnPolicy } from 'aws-cdk-lib/aws-iam';
 import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { CfnResource } from 'aws-cdk-lib';
 import { CfnRole } from 'aws-cdk-lib/aws-iam';
@@ -19,8 +19,11 @@ import { Construct } from 'constructs';
 import { Duration } from 'aws-cdk-lib';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { IGraphqlApi } from 'aws-cdk-lib/aws-appsync';
 import { IRole } from 'aws-cdk-lib/aws-iam';
+import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
+import { NestedStack } from 'aws-cdk-lib';
 import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
@@ -39,9 +42,23 @@ export type AmplifyApiSchemaPreprocessorOutput = {
 // @public
 export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends Construct {
     constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps<SchemaType>);
-    getGeneratedFunctionSlots(): FunctionSlot[];
+    readonly generatedFunctionSlots: FunctionSlot[];
     readonly resources: AmplifyGraphqlApiResources;
 }
+
+// @public
+export type AmplifyGraphqlApiCfnResources = {
+    cfnGraphqlApi: CfnGraphQLApi;
+    cfnGraphqlSchema: CfnGraphQLSchema;
+    cfnApiKey?: CfnApiKey;
+    cfnResolvers: Record<string, CfnResolver>;
+    cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration>;
+    cfnDataSources: Record<string, CfnDataSource>;
+    cfnTables: Record<string, CfnTable>;
+    cfnRoles: Record<string, CfnRole>;
+    cfnFunctions: Record<string, CfnFunction>;
+    additionalCfnResources: Record<string, CfnResource>;
+};
 
 // @public
 export type AmplifyGraphqlApiProps<SchemaType = AmplifyApiGraphqlSchema> = {
@@ -60,16 +77,12 @@ export type AmplifyGraphqlApiProps<SchemaType = AmplifyApiGraphqlSchema> = {
 
 // @public
 export type AmplifyGraphqlApiResources = {
-    cfnGraphqlApi: CfnGraphQLApi;
-    cfnGraphqlSchema: CfnGraphQLSchema;
-    cfnApiKey?: CfnApiKey;
-    cfnResolvers: Record<string, CfnResolver>;
-    cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration>;
-    cfnDataSources: Record<string, CfnDataSource>;
-    cfnTables: Record<string, CfnTable>;
-    cfnRoles: Record<string, CfnRole>;
-    cfnPolicies: Record<string, CfnPolicy>;
-    additionalCfnResources: Record<string, CfnResource>;
+    graphqlApi: IGraphqlApi;
+    tables: Record<string, ITable>;
+    roles: Record<string, IRole>;
+    functions: Record<string, IFunction>;
+    cfnResources: AmplifyGraphqlApiCfnResources;
+    nestedStacks: Record<string, NestedStack>;
 };
 
 // @public
@@ -131,7 +144,7 @@ export type FunctionSlotBase = {
 };
 
 // @public
-export type FunctionSlotOverride = Partial<Pick<AppsyncFunctionProps, 'name' | 'description' | 'dataSource' | 'requestMappingTemplate' | 'responseMappingTemplate' | 'code' | 'runtime'>>;
+export type FunctionSlotOverride = Partial<Pick<AppsyncFunctionProps, 'requestMappingTemplate' | 'responseMappingTemplate'>>;
 
 // @public
 export type IAMAuthorizationConfig = {

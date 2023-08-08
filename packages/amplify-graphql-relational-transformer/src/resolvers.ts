@@ -176,7 +176,7 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
     ),
   );
 
-  resolver.mapToStack(ctx.stackManager.getStackFor(resolverResourceId, CONNECTION_STACK));
+  resolver.setScope(ctx.stackManager.getScopeFor(resolverResourceId, CONNECTION_STACK));
   ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
 }
 
@@ -308,7 +308,7 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
     ),
   );
 
-  resolver.mapToStack(ctx.stackManager.getStackFor(resolverResourceId, CONNECTION_STACK));
+  resolver.setScope(ctx.stackManager.getScopeFor(resolverResourceId, CONNECTION_STACK));
   ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
 }
 

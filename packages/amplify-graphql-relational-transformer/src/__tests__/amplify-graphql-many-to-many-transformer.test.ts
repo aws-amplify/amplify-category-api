@@ -5,6 +5,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, ObjectTypeDefinitionNode, parse } from 'graphql';
+import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { HasOneTransformer, ManyToManyTransformer } from '..';
 import { hasGeneratedDirective, hasGeneratedField } from './test-helpers';
 
@@ -429,7 +430,10 @@ test('creates join table with implicitly defined primary keys', () => {
 });
 
 describe('Pre Processing Many To Many Tests', () => {
-  let transformer: GraphQLTransform;
+  let transformer: {
+    transform: (inputSchema: string) => DeploymentResources;
+    preProcessSchema: (schema: DocumentNode) => DocumentNode;
+  };
 
   beforeEach(() => {
     transformer = createTransformer();
@@ -638,8 +642,8 @@ describe('Pre Processing Many To Many Tests', () => {
   });
 });
 
-function createTransformer(authConfig?: AppSyncAuthConfiguration) {
-  const transformerAuthConfig: AppSyncAuthConfiguration = authConfig ?? {
+function createTransformer(overrideAuthConfig?: AppSyncAuthConfiguration) {
+  const authConfig: AppSyncAuthConfiguration = overrideAuthConfig ?? {
     defaultAuthentication: {
       authenticationType: 'API_KEY',
     },
@@ -650,25 +654,26 @@ function createTransformer(authConfig?: AppSyncAuthConfiguration) {
   const indexTransformer = new IndexTransformer();
   const hasOneTransformer = new HasOneTransformer();
   const primaryKeyTransformer = new PrimaryKeyTransformer();
-  const transformer = new GraphQLTransform({
-    authConfig: transformerAuthConfig,
-    transformers: [
-      modelTransformer,
-      primaryKeyTransformer,
-      indexTransformer,
-      hasOneTransformer,
-      new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
-      authTransformer,
-    ],
-    transformParameters: {
-      shouldDeepMergeDirectiveConfigDefaults: false,
-      enableAutoIndexQueryNames: false,
-      respectPrimaryKeyAttributesOnConnectionField: false,
-      populateOwnerFieldForStaticGroupAuth: false,
-    },
-  });
-
-  return transformer;
+  const manyToManyTransformer = new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer);
+  const transformers = [
+    modelTransformer,
+    primaryKeyTransformer,
+    indexTransformer,
+    hasOneTransformer,
+    manyToManyTransformer,
+    authTransformer,
+  ];
+  const transformParameters = {
+    shouldDeepMergeDirectiveConfigDefaults: false,
+    enableAutoIndexQueryNames: false,
+    respectPrimaryKeyAttributesOnConnectionField: false,
+    populateOwnerFieldForStaticGroupAuth: false,
+  };
+  return {
+    transform: (schema: string) => testTransform({ schema, authConfig, transformers, transformParameters }),
+    preProcessSchema: (schema: DocumentNode) =>
+      new GraphQLTransform({ authConfig, transformers, transformParameters }).preProcessSchema(schema),
+  };
 }
 
 function expectObjectAndFields(schema: DocumentNode, type: String, fields: String[]) {

@@ -132,7 +132,7 @@ export abstract class ModelResourceGenerator {
             `${query.typeName}.${query.fieldName}.{slotName}.{slotIndex}.req.vtl`,
           ),
         );
-        resolver.mapToStack(context.stackManager.getStackFor(query.resolverLogicalId, def!.name.value));
+        resolver.setScope(context.stackManager.getScopeFor(query.resolverLogicalId, def!.name.value));
         context.resolvers.addResolver(query.typeName, query.fieldName, resolver);
       });
 
@@ -166,7 +166,7 @@ export abstract class ModelResourceGenerator {
             `${mutation.typeName}.${mutation.fieldName}.{slotName}.{slotIndex}.req.vtl`,
           ),
         );
-        resolver.mapToStack(context.stackManager.getStackFor(mutation.resolverLogicalId, def!.name.value));
+        resolver.setScope(context.stackManager.getScopeFor(mutation.resolverLogicalId, def!.name.value));
         context.resolvers.addResolver(mutation.typeName, mutation.fieldName, resolver);
       });
 
@@ -213,7 +213,7 @@ export abstract class ModelResourceGenerator {
               ),
             );
           }
-          resolver.mapToStack(context.stackManager.getStackFor(subscription.resolverLogicalId, def!.name.value));
+          resolver.setScope(context.stackManager.getScopeFor(subscription.resolverLogicalId, def!.name.value));
           context.resolvers.addResolver(subscription.typeName, subscription.fieldName, resolver);
         });
       }

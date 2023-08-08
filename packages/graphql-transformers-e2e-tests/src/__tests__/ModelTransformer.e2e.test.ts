@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as S3 } from 'aws-sdk/clients/s3';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -86,13 +86,13 @@ beforeAll(async () => {
       description: String
     }
   `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new ModelTransformer()],
     transformParameters: {
       sandboxModeEnabled: true,
     },
   });
-  const out = transformer.transform(validSchema);
 
   try {
     await awsS3Client

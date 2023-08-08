@@ -11,15 +11,14 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
-import { isResolvableObject, Stack, CfnParameter, Lazy } from 'aws-cdk-lib';
+import { isResolvableObject, Lazy, Stack } from 'aws-cdk-lib';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
+import { Construct } from 'constructs';
 import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
 import { InvalidDirectiveError } from '../errors';
 // eslint-disable-next-line import/no-cycle
 import * as SyncUtils from '../transformation/sync-utils';
-import { IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils';
-import { StackManager } from './stack-manager';
 
 type Slot = {
   requestMappingTemplate?: MappingTemplateProvider;
@@ -133,7 +132,7 @@ export class TransformerResolver implements TransformerResolverProvider {
 
   private readonly slotNames: Set<string>;
 
-  private stack?: Stack;
+  private scope?: Construct;
 
   constructor(
     private typeName: string,
@@ -163,8 +162,8 @@ export class TransformerResolver implements TransformerResolverProvider {
     this.slotNames = new Set([...requestSlots, ...responseSlots]);
   }
 
-  mapToStack = (stack: Stack): void => {
-    this.stack = stack;
+  setScope = (scope: Construct): void => {
+    this.scope = scope;
   };
 
   addToSlot = (
@@ -252,10 +251,10 @@ export class TransformerResolver implements TransformerResolverProvider {
   };
 
   synthesize = (context: TransformerContextProvider, api: GraphQLAPIProvider): void => {
-    const stack = this.stack || (context.stackManager as StackManager).rootStack;
+    const scope = this.scope || context.stackManager.scope;
     this.ensureNoneDataSource(api);
-    const requestFns = this.synthesizeResolvers(stack, api, this.requestSlots);
-    const responseFns = this.synthesizeResolvers(stack, api, this.responseSlots);
+    const requestFns = this.synthesizeResolvers(scope, api, this.requestSlots);
+    const responseFns = this.synthesizeResolvers(scope, api, this.responseSlots);
     // substitute template name values
     [this.requestMappingTemplate, this.requestMappingTemplate].map((template) => this.substituteSlotInfo(template, 'main', 0));
 
@@ -264,7 +263,7 @@ export class TransformerResolver implements TransformerResolverProvider {
       this.requestMappingTemplate,
       this.responseMappingTemplate,
       this.datasource?.name || NONE_DATA_SOURCE_NAME,
-      stack,
+      scope,
     );
 
     let dataSourceType = 'NONE';
@@ -370,16 +369,13 @@ export class TransformerResolver implements TransformerResolverProvider {
       (mode) => mode?.authenticationType === AuthorizationType.IAM,
     );
     if (hasIamAuth) {
-      const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
-      const unauthRoleParameter = (context.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
+      const authRole = context.synthParameters.authenticatedUserRoleName;
+      const unauthRole = context.synthParameters.unauthenticatedUserRoleName;
+      const account = Stack.of(context.stackManager.scope).account;
       /* eslint-disable indent */
       initResolver += dedent`\n
-      $util.qr($ctx.stash.put("authRole", "arn:aws:sts::${
-        Stack.of(context.stackManager.rootStack).account
-      }:assumed-role/${authRoleParameter}/CognitoIdentityCredentials"))
-      $util.qr($ctx.stash.put("unauthRole", "arn:aws:sts::${
-        Stack.of(context.stackManager.rootStack).account
-      }:assumed-role/${unauthRoleParameter}/CognitoIdentityCredentials"))
+      $util.qr($ctx.stash.put("authRole", "arn:aws:sts::${account}:assumed-role/${authRole}/CognitoIdentityCredentials"))
+      $util.qr($ctx.stash.put("unauthRole", "arn:aws:sts::${account}:assumed-role/${unauthRole}/CognitoIdentityCredentials"))
       `;
       /* eslint-enable indent */
     }
@@ -392,11 +388,11 @@ export class TransformerResolver implements TransformerResolverProvider {
       this.resolverLogicalId,
       undefined,
       [...requestFns, dataSourceProviderFn, ...responseFns].map((fn) => fn.functionId),
-      stack,
+      scope,
     );
   };
 
-  synthesizeResolvers = (stack: Stack, api: GraphQLAPIProvider, slotsNames: string[]): AppSyncFunctionConfigurationProvider[] => {
+  synthesizeResolvers = (scope: Construct, api: GraphQLAPIProvider, slotsNames: string[]): AppSyncFunctionConfigurationProvider[] => {
     const appSyncFunctions: AppSyncFunctionConfigurationProvider[] = [];
 
     for (const slotName of slotsNames) {
@@ -416,7 +412,7 @@ export class TransformerResolver implements TransformerResolverProvider {
             requestMappingTemplate || MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
             responseMappingTemplate || MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
             dataSource?.name || NONE_DATA_SOURCE_NAME,
-            stack,
+            scope,
           );
           appSyncFunctions.push(fn);
         }

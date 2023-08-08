@@ -2,10 +2,10 @@ import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces'
 import { BaseDataSource } from 'aws-cdk-lib/aws-appsync';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { Stack } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 
 export const createSearchableDataSource = (
-  stack: Stack,
+  scope: Construct,
   graphqlApiProvider: GraphQLAPIProvider,
   domainEndpoint: string,
   role: IRole,
@@ -21,6 +21,6 @@ export const createSearchableDataSource = (
       serviceRole: role,
       name: OpenSearchDataSourceLogicalID,
     },
-    stack,
+    scope,
   );
 };

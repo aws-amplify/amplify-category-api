@@ -1,7 +1,8 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { ConflictHandlerType, GraphQLTransform, SyncConfig } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType, SyncConfig } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AccessControlMatrix } from '../accesscontrol';
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { MODEL_OPERATIONS } from '../utils';
@@ -22,11 +23,13 @@ test('invalid granular read operation at the field level', () => {
       id: ID!
       name: String @auth(rules: [{ allow: public, operations: [ get, create ]}])
     }`;
-  const transformer = new GraphQLTransform({
-    authConfig,
-    transformers: [new ModelTransformer(), new AuthTransformer()],
-  });
-  expect(() => transformer.transform(invalidSchema)).toThrowError("'get' operation is not allowed at the field level.");
+  expect(() =>
+    testTransform({
+      schema: invalidSchema,
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+    }),
+  ).toThrowError("'get' operation is not allowed at the field level.");
 });
 
 test('renamed subscriptions should generate auth resolver', () => {
@@ -50,11 +53,11 @@ test('renamed subscriptions should generate auth resolver', () => {
       assignedTo: String!
       comments: String
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
 
   // should generate auth resolver for renamed subscription
@@ -76,11 +79,13 @@ test('invalid read list operation combination', () => {
       id: ID!
       name: String
     }`;
-  const transformer = new GraphQLTransform({
-    authConfig,
-    transformers: [new ModelTransformer(), new AuthTransformer()],
-  });
-  expect(() => transformer.transform(invalidSchema)).toThrowError(
+  expect(() =>
+    testTransform({
+      schema: invalidSchema,
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+    }),
+  ).toThrowError(
     "'list' operations are specified in addition to 'read'. Either remove 'read' to limit access only to 'list' or only keep 'read' to grant all get,list,search,listen,sync access.",
   );
 });
@@ -97,11 +102,13 @@ test('invalid read get operation combination', () => {
       id: ID!
       name: String
     }`;
-  const transformer = new GraphQLTransform({
-    authConfig,
-    transformers: [new ModelTransformer(), new AuthTransformer()],
-  });
-  expect(() => transformer.transform(invalidSchema)).toThrowError(
+  expect(() =>
+    testTransform({
+      schema: invalidSchema,
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+    }),
+  ).toThrowError(
     "'get' operations are specified in addition to 'read'. Either remove 'read' to limit access only to 'get' or only keep 'read' to grant all get,list,search,listen,sync access.",
   );
 });
@@ -232,7 +239,8 @@ test('read get list auth operations', () => {
     }
   `;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig,
     transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
     resolverConfig: {
@@ -240,7 +248,6 @@ test('read get list auth operations', () => {
     },
   });
 
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
 
   // listen
