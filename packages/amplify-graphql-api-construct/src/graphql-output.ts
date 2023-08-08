@@ -26,7 +26,7 @@ export type GraphqlOutput = z.infer<typeof versionedGraphqlOutputSchema>;
 export const GraphqlOutputKey = 'graphqlOutput';
 
 // Types that need to be exported from CLI types package
-type BackendOutputEntry<T extends Record<string, string> = Record<string, string>> = {
+export type BackendOutputEntry<T extends Record<string, string> = Record<string, string>> = {
   readonly version: string;
   readonly payload: T;
 };
