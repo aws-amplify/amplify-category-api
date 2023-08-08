@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { executeTransform } from '@aws-amplify/graphql-transformer';
-import { NestedStack } from 'aws-cdk-lib';
+import { NestedStack, Stack } from 'aws-cdk-lib';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { AssetProps } from '@aws-amplify/graphql-transformer-interfaces';
 import {
@@ -14,6 +14,15 @@ import {
 } from './internal';
 import type { AmplifyGraphqlApiResources, AmplifyGraphqlApiProps, FunctionSlot } from './types';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
+
+// These will be imported from CLI in future
+import {
+  GraphqlOutput,
+  GraphqlOutputKey,
+  BackendOutputStorageStrategy,
+  AwsAppsyncAuthenticationType,
+  StackMetadataBackendOutputStorageStrategy,
+} from './graphql-output';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -65,6 +74,7 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
       stackMappings,
       schemaTranslationBehavior,
       functionNameMap,
+      outputStorageStrategy,
     } = props;
 
     const { authConfig, identityPoolId, adminRoles, authSynthParameters } =
@@ -120,5 +130,34 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
 
     this.resources = getGeneratedResources(this);
     this.generatedFunctionSlots = getGeneratedFunctionSlots(assetManager.resolverAssets);
+    this.storeOutput(outputStorageStrategy);
+  }
+
+  /**
+   * Stores graphql api output to be used for client config generation
+   * @param outputStorageStrategy Strategy to store construct outputs. If no outputStorageStrategey is provided a default strategy will be used.
+   */
+  private storeOutput(outputStorageStrategy?: BackendOutputStorageStrategy<GraphqlOutput>): void {
+    const stack = Stack.of(this);
+    const output: GraphqlOutput = {
+      version: '1',
+      payload: {
+        awsAppsyncApiEndpoint: this.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl,
+        awsAppsyncAuthenticationType: this.resources.cfnResources.cfnGraphqlApi.authenticationType as AwsAppsyncAuthenticationType,
+        awsAppsyncRegion: stack.region,
+      },
+    };
+
+    if (this.resources.cfnResources.cfnApiKey) {
+      output.payload.awsAppsyncApiKey = this.resources.cfnResources.cfnApiKey.attrApiKey;
+    }
+
+    const strategy = outputStorageStrategy ? outputStorageStrategy : new StackMetadataBackendOutputStorageStrategy(stack);
+    strategy.addBackendOutputEntry(GraphqlOutputKey, output);
+
+    // only flush if using default outputStorageStrategy
+    if (!outputStorageStrategy) {
+      strategy.flush();
+    }
   }
 }

@@ -28,4 +28,6 @@ export type {
   SchemaTranslationBehavior,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';
-// No-op change to trigger publish
+
+// remove these exports when provided by cli
+export { GraphqlOutput, BackendOutputStorageStrategy, BackendOutputEntry, versionedGraphqlOutputSchema } from './graphql-output';
