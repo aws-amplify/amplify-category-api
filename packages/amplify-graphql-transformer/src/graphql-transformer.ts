@@ -15,23 +15,25 @@ import {
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import {
   AppSyncAuthConfiguration,
-  DeploymentResources,
-  Template,
   TransformerPluginProvider,
   TransformerLog,
   TransformerLogLevel,
   VpcConfig,
   RDSLayerMapping,
+  NestedStackProvider,
+  AssetProvider,
+  SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
 import {
   DatasourceType,
   GraphQLTransform,
-  OverrideConfig,
   RDSConnectionSecrets,
   ResolverConfig,
   UserDefinedSlot,
 } from '@aws-amplify/graphql-transformer-core';
+import { Construct } from 'constructs';
+import { IFunction } from 'aws-cdk-lib/aws-lambda';
 
 /**
  * Arguments passed into a TransformerFactory
@@ -43,6 +45,7 @@ export type TransformerFactoryArgs = {
   adminRoles?: Array<string>;
   identityPoolId?: string;
   customTransformers?: TransformerPluginProvider[];
+  functionNameMap?: Record<string, IFunction>;
 };
 
 /**
@@ -52,8 +55,6 @@ export type TransformConfig = {
   transformersFactoryArgs: TransformerFactoryArgs;
   resolverConfig?: ResolverConfig;
   authConfig?: AppSyncAuthConfiguration;
-  stacks?: Record<string, Template>;
-  overrideConfig?: OverrideConfig;
   userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   stackMapping?: Record<string, string>;
   transformParameters: TransformParameters;
@@ -72,7 +73,7 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
 
   return [
     modelTransformer,
-    new FunctionTransformer(),
+    new FunctionTransformer(options?.functionNameMap),
     new HttpTransformer(),
     new PredictionsTransformer(options?.storageConfig),
     new PrimaryKeyTransformer(),
@@ -99,9 +100,7 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
     transformersFactoryArgs,
     authConfig,
     resolverConfig,
-    overrideConfig,
     userDefinedSlots,
-    stacks,
     stackMapping,
     transformParameters,
     sqlLambdaVpcConfig,
@@ -114,11 +113,9 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
     transformers,
     stackMapping,
     authConfig,
-    stacks,
     transformParameters,
     userDefinedSlots,
     resolverConfig,
-    overrideConfig,
     sqlLambdaVpcConfig,
     rdsLayerMapping,
   });
@@ -131,6 +128,10 @@ export type ExecuteTransformConfig = TransformConfig & {
   printTransformerLog?: (log: TransformerLog) => void;
   sqlLambdaVpcConfig?: VpcConfig;
   rdsLayerMapping?: RDSLayerMapping;
+  scope: Construct;
+  nestedStackProvider: NestedStackProvider;
+  assetProvider: AssetProvider;
+  synthParameters: SynthParameters;
 };
 
 /**
@@ -161,17 +162,34 @@ export const defaultPrintTransformerLog = (log: TransformerLog): void => {
  * @param config the configuration for the transform.
  * @returns the transformed api deployment resources.
  */
-export const executeTransform = (config: ExecuteTransformConfig): DeploymentResources => {
-  const { schema, modelToDatasourceMap, datasourceSecretParameterLocations, printTransformerLog, rdsLayerMapping } = config;
+export const executeTransform = (config: ExecuteTransformConfig): void => {
+  const {
+    schema,
+    modelToDatasourceMap,
+    datasourceSecretParameterLocations,
+    printTransformerLog,
+    rdsLayerMapping,
+    scope,
+    nestedStackProvider,
+    assetProvider,
+    synthParameters,
+  } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
   const transform = constructTransform(config);
 
   try {
-    return transform.transform(schema, {
-      modelToDatasourceMap,
-      datasourceSecretParameterLocations,
-      rdsLayerMapping,
+    transform.transform({
+      scope,
+      nestedStackProvider,
+      assetProvider,
+      synthParameters,
+      schema,
+      datasourceConfig: {
+        modelToDatasourceMap,
+        datasourceSecretParameterLocations,
+        rdsLayerMapping,
+      },
     });
   } finally {
     transform.getLogs().forEach(printLog);

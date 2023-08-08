@@ -2,7 +2,7 @@ import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-tran
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import moment from 'moment';
@@ -153,30 +153,6 @@ beforeAll(async () => {
     secret: String @auth(rules: [{ allow: groups, groups: ["admin"] }, { allow: groups, groupsField: "groupsField" }])
     }
   `;
-  const transformer = new GraphQLTransform({
-    authConfig: {
-      defaultAuthentication: {
-        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-      },
-      additionalAuthenticationProviders: [
-        {
-          authenticationType: 'API_KEY',
-          apiKeyConfig: {
-            description: 'E2E Test API Key',
-            apiKeyExpirationDays: 300,
-          },
-        },
-        {
-          authenticationType: 'AWS_IAM',
-        },
-      ],
-    },
-    transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
-    transformParameters: {
-      useSubUsernameForDefaultIdentityClaim: false,
-      populateOwnerFieldForStaticGroupAuth: false,
-    },
-  });
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
   USER_POOL_ID = userPoolResponse.UserPool.Id;
   const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
@@ -196,7 +172,31 @@ beforeAll(async () => {
     console.error(`Failed to create bucket: ${e}`);
   }
   try {
-    const out = transformer.transform(validSchema);
+    const out = testTransform({
+      schema: validSchema,
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [
+          {
+            authenticationType: 'API_KEY',
+            apiKeyConfig: {
+              description: 'E2E Test API Key',
+              apiKeyExpirationDays: 300,
+            },
+          },
+          {
+            authenticationType: 'AWS_IAM',
+          },
+        ],
+      },
+      transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
+      transformParameters: {
+        useSubUsernameForDefaultIdentityClaim: false,
+        populateOwnerFieldForStaticGroupAuth: false,
+      },
+    });
     const finishedStack = await deploy(
       customS3Client,
       cf,

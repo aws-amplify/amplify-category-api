@@ -1,4 +1,4 @@
-import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry, SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   ApiKeyAuthorizationConfig,
   AuthorizationConfig,
@@ -102,6 +102,8 @@ const convertAuthConfigToAppSyncAuth = (authConfig: AuthorizationConfig): AppSyn
   };
 };
 
+export type AuthSynthParameters = Pick<SynthParameters, 'userPoolId' | 'authenticatedUserRoleName' | 'unauthenticatedUserRoleName'>;
+
 export interface AuthConfig {
   /** used mainly in the before step to pass the authConfig from the transformer core down to the directive */
   authConfig?: AppSyncAuthConfiguration;
@@ -112,7 +114,7 @@ export interface AuthConfig {
   /**
    * Params to include the the cfnInclude statement, this is striclty part of the shim for now, and should be refactored out pre-GA.
    */
-  cfnIncludeParameters: Record<string, any>;
+  authSynthParameters: AuthSynthParameters;
 }
 
 /**
@@ -124,7 +126,7 @@ export const convertAuthorizationModesToTransformerAuthConfig = (authConfig: Aut
   authConfig: convertAuthConfigToAppSyncAuth(authConfig),
   adminRoles: authConfig.iamConfig?.adminRoles?.map((role) => role.roleName) ?? [],
   identityPoolId: authConfig.iamConfig?.identityPoolId,
-  cfnIncludeParameters: getAuthParameters(authConfig),
+  authSynthParameters: getSynthParameters(authConfig),
 });
 
 /**
@@ -132,8 +134,12 @@ export const convertAuthorizationModesToTransformerAuthConfig = (authConfig: Aut
  * @param authConfig the auth modes provided to the construct.
  * @returns a record of params to be consumed by the CfnInclude statement.
  */
-const getAuthParameters = (authConfig: AuthorizationConfig): Record<string, any> => ({
-  ...(authConfig.userPoolConfig?.userPool ? { AuthCognitoUserPoolId: authConfig.userPoolConfig.userPool.userPoolId } : {}),
-  ...(authConfig?.iamConfig?.authenticatedUserRole ? { authRoleName: authConfig.iamConfig.authenticatedUserRole.roleName } : {}),
-  ...(authConfig?.iamConfig?.unauthenticatedUserRole ? { unauthRoleName: authConfig.iamConfig.unauthenticatedUserRole.roleName } : {}),
+const getSynthParameters = (authConfig: AuthorizationConfig): AuthSynthParameters => ({
+  ...(authConfig.userPoolConfig?.userPool ? { userPoolId: authConfig.userPoolConfig.userPool.userPoolId } : {}),
+  ...(authConfig?.iamConfig?.authenticatedUserRole
+    ? { authenticatedUserRoleName: authConfig.iamConfig.authenticatedUserRole.roleName }
+    : {}),
+  ...(authConfig?.iamConfig?.unauthenticatedUserRole
+    ? { unauthenticatedUserRoleName: authConfig.iamConfig.unauthenticatedUserRole.roleName }
+    : {}),
 });

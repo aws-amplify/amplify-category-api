@@ -1,14 +1,9 @@
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import {
-  ConflictHandlerType,
-  DatasourceType,
-  GraphQLTransform,
-  SyncConfig,
-  validateModelSchema,
-} from '@aws-amplify/graphql-transformer-core';
-import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, ListValueNode, NamedTypeNode, parse } from 'graphql';
+import { ConflictHandlerType, DatasourceType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
 import { Template } from 'aws-cdk-lib/assertions';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { ModelTransformer } from '../graphql-model-transformer';
 import {
   doNotExpectFields,
   expectFields,
@@ -30,10 +25,10 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     validateModelSchema(parse(out.schema));
@@ -48,10 +43,10 @@ describe('ModelTransformer: ', () => {
           title: String!
       }
       `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     validateModelSchema(parse(out.schema));
@@ -71,7 +66,8 @@ describe('ModelTransformer: ', () => {
           title: String!
       }
       `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: alsoValidSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
         project: {
@@ -80,7 +76,6 @@ describe('ModelTransformer: ', () => {
         },
       },
     });
-    const out = transformer.transform(alsoValidSchema);
     expect(out).toBeDefined();
 
     validateModelSchema(parse(out.schema));
@@ -98,11 +93,10 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -141,11 +135,10 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -164,10 +157,10 @@ describe('ModelTransformer: ', () => {
             updatedAt: String
         }
         `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -185,11 +178,10 @@ describe('ModelTransformer: ', () => {
         updatedAt: String
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -209,10 +201,10 @@ describe('ModelTransformer: ', () => {
         updatedAt: String
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -234,10 +226,10 @@ describe('ModelTransformer: ', () => {
             updatedAt: String
         }
         `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -268,10 +260,10 @@ describe('ModelTransformer: ', () => {
           different3: String
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -303,10 +295,10 @@ describe('ModelTransformer: ', () => {
         different3: String
     }
   `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -327,10 +319,10 @@ describe('ModelTransformer: ', () => {
         str: String
       }
     `;
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
     expect(result.schema).toBeDefined();
     const schema = parse(result.schema);
@@ -360,10 +352,10 @@ describe('ModelTransformer: ', () => {
       query: Query
     }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const parsed = parse(out.schema);
     validateModelSchema(parsed);
@@ -387,10 +379,10 @@ describe('ModelTransformer: ', () => {
         text: String!
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -414,12 +406,12 @@ describe('ModelTransformer: ', () => {
         str: String
       }
     `;
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer()],
-    });
-    expect(() => transformer.transform(invalidSchema)).toThrowError(
-      "'Subscription' is a reserved type name and currently in use within the default schema element.",
-    );
+    expect(() =>
+      testTransform({
+        schema: invalidSchema,
+        transformers: [new ModelTransformer()],
+      }),
+    ).toThrowError("'Subscription' is a reserved type name and currently in use within the default schema element.");
   });
 
   it('should not add default primary key when ID is defined', () => {
@@ -429,10 +421,10 @@ describe('ModelTransformer: ', () => {
         str: String
       }
     `;
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
     expect(result.schema).toBeDefined();
     const schema = parse(result.schema);
@@ -457,14 +449,14 @@ describe('ModelTransformer: ', () => {
         updatedAt: String
       }
     `;
-    const transformer = new GraphQLTransform({
+
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       transformParameters: {
         shouldDeepMergeDirectiveConfigDefaults: false,
       },
     });
-
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -491,11 +483,10 @@ describe('ModelTransformer: ', () => {
           name: String!
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -540,11 +531,10 @@ describe('ModelTransformer: ', () => {
         lastStatus: Status!
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -581,10 +571,10 @@ describe('ModelTransformer: ', () => {
           JEDI
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -621,10 +611,10 @@ describe('ModelTransformer: ', () => {
           createdAt: String
           updatedAt: String
       }`;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -654,10 +644,10 @@ describe('ModelTransformer: ', () => {
       title: String!
     }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -681,10 +671,10 @@ describe('ModelTransformer: ', () => {
         updatedAt: String
     }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -703,13 +693,13 @@ describe('ModelTransformer: ', () => {
       str: String
     }
     `;
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       transformParameters: {
         shouldDeepMergeDirectiveConfigDefaults: false,
       },
     });
-    const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
     expect(result.schema).toBeDefined();
     expect(result.schema).toMatchSnapshot();
@@ -724,7 +714,8 @@ describe('ModelTransformer: ', () => {
       str: String
     }
     `;
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
         project: {
@@ -733,7 +724,6 @@ describe('ModelTransformer: ', () => {
         },
       },
     });
-    const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
     expect(result.schema).toBeDefined();
     expect(result.schema).toMatchSnapshot();
@@ -753,7 +743,8 @@ describe('ModelTransformer: ', () => {
     updatedAt: AWSTimestamp
   }
   `;
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
         project: {
@@ -762,7 +753,6 @@ describe('ModelTransformer: ', () => {
         },
       },
     });
-    const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
     expect(result.schema).toBeDefined();
     expect(result.schema).toMatchSnapshot();
@@ -782,7 +772,8 @@ describe('ModelTransformer: ', () => {
         updatedAt: AWSDateTime!
       }
     `;
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
         project: {
@@ -791,8 +782,6 @@ describe('ModelTransformer: ', () => {
         },
       },
     });
-
-    const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
     expect(result.schema).toBeDefined();
     expect(result.schema).toMatchSnapshot();
@@ -810,7 +799,8 @@ describe('ModelTransformer: ', () => {
       str: String
     }
     `;
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
         project: {
@@ -819,7 +809,6 @@ describe('ModelTransformer: ', () => {
         },
       },
     });
-    const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
     expect(result.schema).toBeDefined();
     expect(result.schema).toMatchSnapshot();
@@ -841,7 +830,8 @@ describe('ModelTransformer: ', () => {
         id: ID!
       }
     `;
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
         project: {
@@ -850,8 +840,6 @@ describe('ModelTransformer: ', () => {
         },
       },
     });
-
-    const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
     expect(result.schema).toBeDefined();
     expect(result.schema).toMatchSnapshot();
@@ -911,7 +899,8 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
         project: {
@@ -920,7 +909,6 @@ describe('ModelTransformer: ', () => {
         },
       },
     });
-    const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
     expect(result.schema).toBeDefined();
     const schema = parse(result.schema);
@@ -949,10 +937,10 @@ describe('ModelTransformer: ', () => {
         jsonField: AWSJSON
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     validateModelSchema(parse(out.schema));
   });
@@ -965,18 +953,16 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const config: SyncConfig = {
-      ConflictDetection: 'VERSION',
-      ConflictHandler: ConflictHandlerType.AUTOMERGE,
-    };
-
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
-        project: config,
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        },
       },
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -996,21 +982,19 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const config: SyncConfig = {
-      ConflictDetection: 'VERSION',
-      ConflictHandler: ConflictHandlerType.LAMBDA,
-      LambdaConflictHandler: {
-        name: 'myLambdaConflictHandler',
-      },
-    };
-
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
-        project: config,
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.LAMBDA,
+          LambdaConflictHandler: {
+            name: 'myLambdaConflictHandler',
+          },
+        },
       },
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -1029,19 +1013,16 @@ describe('ModelTransformer: ', () => {
           updatedAt: String
       }
     `;
-
-    const config: SyncConfig = {
-      ConflictDetection: 'VERSION',
-      ConflictHandler: ConflictHandlerType.OPTIMISTIC,
-    };
-
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
-        project: config,
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.OPTIMISTIC,
+        },
       },
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -1059,18 +1040,16 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const config: SyncConfig = {
-      ConflictDetection: 'VERSION',
-      ConflictHandler: ConflictHandlerType.AUTOMERGE,
-    };
-
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
-        project: config,
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        },
       },
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -1124,11 +1103,10 @@ describe('ModelTransformer: ', () => {
       name: String
     }`;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -1157,19 +1135,19 @@ describe('ModelTransformer: ', () => {
       name: String
     }`;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
       resolverConfig: {
         project: {
           ConflictDetection: 'VERSION',
           ConflictHandler: ConflictHandlerType.AUTOMERGE,
         },
       },
-      transformers: [new ModelTransformer()],
-      transformParameters: {
-        sandboxModeEnabled: true,
-      },
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
@@ -1236,7 +1214,12 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
       resolverConfig: {
         project: {
           ConflictDetection: 'VERSION',
@@ -1256,12 +1239,7 @@ describe('ModelTransformer: ', () => {
           },
         },
       },
-      transformers: [new ModelTransformer()],
-      transformParameters: {
-        sandboxModeEnabled: true,
-      },
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
@@ -1337,13 +1315,13 @@ describe('ModelTransformer: ', () => {
     const validSchema = `type Todo @model {
       name: String
     }`;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       transformParameters: {
         sandboxModeEnabled: true,
       },
     });
-    const out = transformer.transform(validSchema);
 
     const rootStack = out.rootStack;
     expect(rootStack).toBeDefined();
@@ -1366,7 +1344,12 @@ describe('ModelTransformer: ', () => {
       id: ID
       tags: [Tag]
     }`;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
       authConfig: {
         defaultAuthentication: {
           authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -1377,12 +1360,7 @@ describe('ModelTransformer: ', () => {
           },
         ],
       },
-      transformers: [new ModelTransformer()],
-      transformParameters: {
-        sandboxModeEnabled: true,
-      },
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const schema = parse(out.schema);
@@ -1418,15 +1396,14 @@ describe('ModelTransformer: ', () => {
         name: String!
       }
     `;
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer()],
       stackMapping: {
         CreateBlogResolver: 'myCustomStack1',
         UpdateBlogResolver: 'myCustomStack2',
       },
     });
-
-    const result = transformer.transform(inputSchema);
     expect(Object.keys(result.stacks.myCustomStack1.Resources!).includes('CreateBlogResolver')).toBe(true);
     expect(Object.keys(result.stacks.myCustomStack2.Resources!).includes('UpdateBlogResolver')).toBe(true);
 
@@ -1449,10 +1426,10 @@ describe('ModelTransformer: ', () => {
     type Query {
       todo: Todo @aws_lambda
     }`;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const schema = parse(out.schema);
@@ -1468,10 +1445,10 @@ describe('ModelTransformer: ', () => {
         id: ID!
     }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -1492,10 +1469,10 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -1519,16 +1496,17 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
-    });
-    const modelToDatasourceMap = new Map<string, DatasourceType>();
-    modelToDatasourceMap.set('Post', {
-      dbType: 'MySQL',
-      provisionDB: false,
-    });
-    const out = transformer.transform(validSchema, {
-      modelToDatasourceMap,
+      modelToDatasourceMap: new Map(
+        Object.entries({
+          Post: {
+            dbType: 'MySQL',
+            provisionDB: false,
+          },
+        }),
+      ),
     });
     expect(out).toBeDefined();
 

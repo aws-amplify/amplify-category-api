@@ -6,26 +6,27 @@ import { convertAuthorizationModesToTransformerAuthConfig } from '../../internal
 describe('convertAuthorizationModesToTransformerAuthConfig', () => {
   it('generates userPool auth parameters', () => {
     const userPool = { userPoolId: 'testId' } as IUserPool;
-    const { cfnIncludeParameters } = convertAuthorizationModesToTransformerAuthConfig({
+    const {
+      authSynthParameters: { userPoolId },
+    } = convertAuthorizationModesToTransformerAuthConfig({
       userPoolConfig: { userPool },
     });
-    expect('AuthCognitoUserPoolId' in cfnIncludeParameters).toEqual(true);
-    expect(cfnIncludeParameters.AuthCognitoUserPoolId).toEqual('testId');
+    expect(userPoolId).toEqual('testId');
   });
 
   it('generates auth and unauth role parameters', () => {
     const authenticatedUserRole = { roleName: 'testAuthRole' } as IRole;
     const unauthenticatedUserRole = { roleName: 'testUnauthRole' } as IRole;
-    const { cfnIncludeParameters } = convertAuthorizationModesToTransformerAuthConfig({
+    const {
+      authSynthParameters: { authenticatedUserRoleName, unauthenticatedUserRoleName },
+    } = convertAuthorizationModesToTransformerAuthConfig({
       iamConfig: {
         authenticatedUserRole,
         unauthenticatedUserRole,
       },
     });
-    expect('authRoleName' in cfnIncludeParameters).toEqual(true);
-    expect(cfnIncludeParameters.authRoleName).toEqual('testAuthRole');
-    expect('unauthRoleName' in cfnIncludeParameters).toEqual(true);
-    expect(cfnIncludeParameters.unauthRoleName).toEqual('testUnauthRole');
+    expect(authenticatedUserRoleName).toEqual('testAuthRole');
+    expect(unauthenticatedUserRoleName).toEqual('testUnauthRole');
   });
 
   it('generates for multiple auth modes', () => {

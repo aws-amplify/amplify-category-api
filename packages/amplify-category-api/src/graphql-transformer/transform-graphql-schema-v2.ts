@@ -1,8 +1,13 @@
 import path from 'path';
-import { RDSConnectionSecrets, MYSQL_DB_TYPE, ImportedRDSType, DatasourceType } from '@aws-amplify/graphql-transformer-core';
+import {
+  RDSConnectionSecrets,
+  MYSQL_DB_TYPE,
+  ImportedRDSType,
+  DatasourceType,
+  UserDefinedSlot,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
-  DeploymentResources,
   TransformerLog,
   TransformerLogLevel,
   VpcConfig,
@@ -12,28 +17,29 @@ import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { sanityCheckProject } from 'graphql-transformer-core';
 import _ from 'lodash';
-import { isAuthModeUpdated } from './auth-mode-compare';
-import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
-import { generateTransformerOptions } from './transformer-options-v2';
-import { TransformerProjectOptions } from './transformer-options-types';
-import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { executeTransform } from '@aws-amplify/graphql-transformer';
+import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
+import { getHostVpc } from '@aws-amplify/graphql-schema-generator';
+import fetch from 'node-fetch';
 import {
   getConnectionSecrets,
   testDatabaseConnection,
   getExistingConnectionSecretNames,
   getSecretsKey,
 } from '../provider-utils/awscloudformation/utils/rds-resources/database-resources';
-import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
-import { printer } from '@aws-amplify/amplify-prompts';
-import { getHostVpc } from '@aws-amplify/graphql-schema-generator';
-import fetch from 'node-fetch';
+import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { isAuthModeUpdated } from './auth-mode-compare';
+import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
+import { generateTransformerOptions } from './transformer-options-v2';
+import { TransformerProjectOptions } from './transformer-options-types';
+import { DeploymentResources } from './cdk-compat/deployment-resources';
+import { TransformManager } from './cdk-compat/transform-manager';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
 const SCHEMA_DIR_NAME = 'schema';
 const PROVIDER_NAME = 'awscloudformation';
-
 const LAYER_MAPPING_URL = 'https://amplify-rds-layer-resources.s3.amazonaws.com/rds-layer-mapping.json';
 
 /**
@@ -174,6 +180,17 @@ place .graphql files in a directory at ${schemaDirPath}`);
   return transformerOutput;
 };
 
+const getAuthenticationTypesForAuthConfig = (authConfig?: AppSyncAuthConfiguration): (string | undefined)[] =>
+  [authConfig?.defaultAuthentication, ...(authConfig?.additionalAuthenticationProviders ?? [])].map(
+    (authConfigEntry) => authConfigEntry?.authenticationType,
+  );
+
+const hasIamAuth = (authConfig?: AppSyncAuthConfiguration): boolean =>
+  getAuthenticationTypesForAuthConfig(authConfig).some((authType) => authType === 'AWS_IAM');
+
+const hasUserPoolAuth = (authConfig?: AppSyncAuthConfiguration): boolean =>
+  getAuthenticationTypesForAuthConfig(authConfig).some((authType) => authType === 'AMAZON_COGNITO_USER_POOLS');
+
 /**
  * buildAPIProject
  */
@@ -193,8 +210,14 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
   }
   const rdsLayerMapping = await getRDSLayerMapping();
 
-  const transformOutput = executeTransform({
+  const transformManager = new TransformManager(opts.overrideConfig);
+
+  executeTransform({
     ...opts,
+    scope: transformManager.rootStack,
+    nestedStackProvider: transformManager.getNestedStackProvider(),
+    assetProvider: transformManager.getAssetProvider(),
+    synthParameters: transformManager.getSynthParameters(hasIamAuth(opts.authConfig), hasUserPoolAuth(opts.authConfig)),
     schema,
     modelToDatasourceMap: opts.projectConfig.modelToDatasourceMap,
     datasourceSecretParameterLocations: datasourceSecretMap,
@@ -202,6 +225,11 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
     sqlLambdaVpcConfig,
     rdsLayerMapping,
   });
+
+  const transformOutput: DeploymentResources = {
+    ...transformManager.generateDeploymentResources(),
+    userOverriddenSlots: opts.userDefinedSlots ? getUserOverridenSlots(opts.userDefinedSlots) : [],
+  };
 
   const builtProject = mergeUserConfigWithTransformOutput(opts.projectConfig, transformOutput, opts);
 
@@ -221,6 +249,13 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
 
   return builtProject;
 };
+
+export const getUserOverridenSlots = (userDefinedSlots: Record<string, UserDefinedSlot[]>): string[] =>
+  Object.values(userDefinedSlots)
+    .flat()
+    .flatMap((slot) => [slot.requestResolver?.fileName, slot.responseResolver?.fileName])
+    .flat()
+    .filter((slotName) => slotName !== undefined);
 
 const getRDSLayerMapping = async (): Promise<RDSLayerMapping> => {
   try {

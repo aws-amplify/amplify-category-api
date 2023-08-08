@@ -1,8 +1,5 @@
-import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
-import { deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient } from '../__e2e__/utils';
+import { deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient, defaultTransformParams, transformAndSynth } from '../__e2e__/utils';
 
 let GRAPHQL_ENDPOINT: string;
 let GRAPHQL_CLIENT: GraphQLClient;
@@ -53,10 +50,10 @@ describe('@model transformer', () => {
       }`;
 
     try {
-      const transformer = new GraphQLTransform({
-        transformers: [new ModelTransformer(), new AuthTransformer()],
+      const out = transformAndSynth({
+        ...defaultTransformParams,
+        schema: validSchema,
       });
-      const out = await transformer.transform(validSchema);
       let ddbClient;
       ({ dbPath, emulator: ddbEmulator, client: ddbClient } = await launchDDBLocal());
       const result = await deploy(out, ddbClient);

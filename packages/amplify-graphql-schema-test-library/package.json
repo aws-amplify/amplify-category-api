@@ -38,7 +38,8 @@
     "@aws-amplify/graphql-relational-transformer": "1.2.9",
     "@aws-amplify/graphql-searchable-transformer": "1.2.11",
     "@aws-amplify/graphql-transformer-core": "1.4.0",
-    "@aws-amplify/graphql-transformer-interfaces": "2.3.0"
+    "@aws-amplify/graphql-transformer-interfaces": "2.3.0",
+    "@aws-amplify/graphql-transformer-test-utils": "0.1.0"
   },
   "jest": {
     "transform": {

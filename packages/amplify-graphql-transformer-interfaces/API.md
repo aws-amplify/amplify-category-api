@@ -6,22 +6,9 @@
 
 import { BackedDataSource } from 'aws-cdk-lib/aws-appsync';
 import { BaseDataSource } from 'aws-cdk-lib/aws-appsync';
-import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
-import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
-import { CfnEventSourceMapping } from 'aws-cdk-lib/aws-lambda';
-import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
-import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
-import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
-import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
-import { CfnParameter } from 'aws-cdk-lib';
-import { CfnParameterProps } from 'aws-cdk-lib';
-import { CfnPolicy } from 'aws-cdk-lib/aws-iam';
 import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { CfnResource } from 'aws-cdk-lib';
-import { CfnRole } from 'aws-cdk-lib/aws-iam';
-import { CfnStack } from 'aws-cdk-lib';
-import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
@@ -60,26 +47,6 @@ import { TypeDefinitionNode } from 'graphql';
 import { TypeSystemDefinitionNode } from 'graphql';
 import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
-
-// @public (undocumented)
-export interface AmplifyApiGraphQlResourceStackTemplate {
-    // Warning: (ae-forgotten-export) The symbol "AppsyncApiStack" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    api?: Partial<AppsyncApiStack>;
-    // (undocumented)
-    function?: Partial<FunctionDirectiveStack & AppsyncStackCommon>;
-    // (undocumented)
-    http?: Partial<HttpsDirectiveStack & AppsyncStackCommon>;
-    // (undocumented)
-    models?: Partial<Record<string, ModelDirectiveStack>>;
-    // (undocumented)
-    opensearch?: Partial<OpenSearchDirectiveStack & AppsyncStackCommon>;
-    // Warning: (ae-forgotten-export) The symbol "PredictionsDirectiveStack" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    predictions?: Partial<PredictionsDirectiveStack & AppsyncStackCommon>;
-}
 
 // @public (undocumented)
 export interface APIIAMResourceProvider {
@@ -159,9 +126,14 @@ export interface AppSyncFunctionConfigurationProvider extends IConstruct {
 }
 
 // @public (undocumented)
-export type AppsyncStackCommon = {
-    resolvers?: Record<string, CfnResolver>;
-    appsyncFunctions?: Record<string, CfnFunctionConfiguration>;
+export type AssetProps = {
+    readonly fileContent: string;
+    readonly fileName: string;
+};
+
+// @public (undocumented)
+export type AssetProvider = {
+    provide: (scope: Construct, name: string, props: AssetProps) => S3Asset;
 };
 
 // Warning: (ae-forgotten-export) The symbol "NoneDataSourceProvider" needs to be exported by the entry point index.d.ts
@@ -182,12 +154,6 @@ export interface DataSourceProvider extends BackedDataSource {
 }
 
 // @public (undocumented)
-export interface DeploymentResources extends ResolversFunctionsAndSchema, NestedStacks {
-    // (undocumented)
-    stackMapping: StackMapping;
-}
-
-// @public (undocumented)
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
     // (undocumented)
     readonly serviceRole: IRole;
@@ -198,16 +164,6 @@ export type FieldMapEntry = {
     originalFieldName: string;
     currentFieldName: string;
 };
-
-// @public (undocumented)
-export interface FunctionDirectiveStack {
-    // (undocumented)
-    lambdaDataSource: Record<string, CfnDataSource>;
-    // (undocumented)
-    lambdaDataSourceRole: Record<string, CfnRole>;
-    // (undocumented)
-    lambdaDataSourceServiceRoleDefaultPolicy: Record<string, CfnPolicy>;
-}
 
 // @public (undocumented)
 export interface GraphQLAPIProvider extends IConstruct {
@@ -232,16 +188,6 @@ export interface GraphQLAPIProvider extends IConstruct {
 }
 
 // @public (undocumented)
-export interface HttpsDirectiveStack {
-    // (undocumented)
-    httpDataSourceServiceRole?: Record<string, CfnRole>;
-    // (undocumented)
-    httpDataSourceServiceRoleDefaultPolicy?: Record<string, CfnPolicy>;
-    // (undocumented)
-    httpsDataSource?: Record<string, CfnDataSource>;
-}
-
-// @public (undocumented)
 export interface InlineMappingTemplateProvider {
     // (undocumented)
     bind: (scope: Construct) => string;
@@ -262,11 +208,6 @@ export enum MappingTemplateType {
     S3_LOCATION = "S3_LOCATION"
 }
 
-// Warning: (ae-forgotten-export) The symbol "DDBModelDirectiveStack" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export type ModelDirectiveStack = AppsyncStackCommon & DDBModelDirectiveStack;
-
 // @public (undocumented)
 export type ModelFieldMap = {
     addMappedField: (entry: FieldMapEntry) => ModelFieldMap;
@@ -286,36 +227,9 @@ export enum MutationFieldType {
 }
 
 // @public (undocumented)
-export interface NestedStacks {
-    // (undocumented)
-    rootStack: Template;
-    // (undocumented)
-    stackMapping: Record<string, string>;
-    // (undocumented)
-    stacks: Record<string, Template>;
-}
-
-// @public (undocumented)
-export interface OpenSearchDirectiveStack {
-    // (undocumented)
-    CloudwatchLogsAccess?: CfnPolicy;
-    // (undocumented)
-    OpenSearchAccessIAMRole?: CfnRole;
-    // (undocumented)
-    OpenSearchAccessIAMRoleDefaultPolicy?: CfnPolicy;
-    // (undocumented)
-    OpenSearchDataSource?: CfnDataSource;
-    // (undocumented)
-    OpenSearchDomain?: CfnDomain;
-    // (undocumented)
-    OpenSearchModelLambdaMapping?: Record<string, CfnEventSourceMapping>;
-    // (undocumented)
-    OpenSearchStreamingLambdaFunction?: CfnFunction;
-    // (undocumented)
-    OpenSearchStreamingLambdaIAMRole?: CfnRole;
-    // (undocumented)
-    OpenSearchStreamingLambdaIAMRoleDefaultPolicy?: CfnPolicy;
-}
+export type NestedStackProvider = {
+    provide: (scope: Construct, name: string) => Stack;
+};
 
 // @public (undocumented)
 export enum QueryFieldType {
@@ -346,18 +260,13 @@ export type ResolverReferenceEntry = {
 };
 
 // @public (undocumented)
-export interface ResolversFunctionsAndSchema {
-    // (undocumented)
-    functions: Record<string, string>;
-    // (undocumented)
-    pipelineFunctions: Record<string, string>;
-    // (undocumented)
-    resolvers: Record<string, string>;
-    // (undocumented)
-    schema: string;
-    // (undocumented)
-    userOverriddenSlots: string[];
-}
+export type S3Asset = {
+    assetHash: string;
+    httpUrl: string;
+    s3BucketName: string;
+    s3ObjectKey: string;
+    s3ObjectUrl: string;
+};
 
 // @public (undocumented)
 export interface S3MappingFunctionCodeProvider {
@@ -386,25 +295,15 @@ export interface SearchableDataSourceOptions extends DataSourceOptions {
 // @public (undocumented)
 export interface StackManagerProvider {
     // (undocumented)
-    addParameter: (name: string, props: CfnParameterProps) => CfnParameter;
-    // (undocumented)
     createStack: (stackName: string) => Stack;
     // (undocumented)
-    getParameter: (name: string) => CfnParameter | void;
+    getScopeFor: (resourceId: string, defaultStackName?: string) => Construct;
     // (undocumented)
     getStack: (stackName: string) => Stack;
     // (undocumented)
-    getStackFor: (resourceId: string, defaultStackName?: string) => Stack;
-    // (undocumented)
     hasStack: (stackName: string) => boolean;
     // (undocumented)
-    readonly rootStack: Stack;
-}
-
-// @public (undocumented)
-export interface StackMapping {
-    // (undocumented)
-    [resourceId: string]: string;
+    readonly scope: Construct;
 }
 
 // @public (undocumented)
@@ -418,36 +317,19 @@ export enum SubscriptionFieldType {
 }
 
 // @public (undocumented)
-export interface Template {
-    // (undocumented)
-    AWSTemplateFormatVersion?: string;
-    // (undocumented)
-    Conditions?: Record<string, any>;
-    // (undocumented)
-    Description?: string;
-    // (undocumented)
-    Mappings?: {
-        [key: string]: {
-            [key: string]: Record<string, string | number | string[]>;
-        };
-    };
-    // (undocumented)
-    Metadata?: Record<string, any>;
-    // (undocumented)
-    Outputs?: Record<string, any>;
-    // (undocumented)
-    Parameters?: Record<string, any>;
-    // (undocumented)
-    Resources?: Record<string, any>;
-    // (undocumented)
-    Transform?: any;
-}
+export type SynthParameters = {
+    amplifyEnvironmentName: string;
+    apiName: string;
+    authenticatedUserRoleName?: string;
+    unauthenticatedUserRoleName?: string;
+    userPoolId?: string;
+};
 
 // @public (undocumented)
 export type TransformerAuthProvider = TransformerPluginProvider;
 
 // @public (undocumented)
-export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager'>;
+export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'synthParameters'>;
 
 // @public (undocumented)
 export interface TransformerContextOutputProvider {
@@ -545,6 +427,8 @@ export interface TransformerContextProvider {
     readonly sqlLambdaVpcConfig?: VpcConfig;
     // (undocumented)
     stackManager: StackManagerProvider;
+    // (undocumented)
+    synthParameters: SynthParameters;
     // (undocumented)
     transformParameters: TransformParameters;
 }
@@ -730,7 +614,7 @@ export interface TransformerResolverProvider {
     // (undocumented)
     addToSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
     // (undocumented)
-    mapToStack: (stack: Stack) => void;
+    setScope: (scope: Construct) => void;
     // (undocumented)
     synthesize: (context: TransformerContextProvider, api: GraphQLAPIProvider) => void;
 }
@@ -799,28 +683,28 @@ export type TransformerSecrets = {
 export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;
 
 // @public (undocumented)
-export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'dataSources' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'resolvers' | 'stackManager'>;
+export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'dataSources' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'resolvers' | 'stackManager' | 'synthParameters'>;
 
 // @public (undocumented)
 export interface TransformHostProvider {
     // (undocumented)
-    addAppSyncFunction: (name: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, dataSourceName: string, stack?: Stack) => AppSyncFunctionConfigurationProvider;
+    addAppSyncFunction: (name: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, dataSourceName: string, scope?: Construct) => AppSyncFunctionConfigurationProvider;
     // (undocumented)
-    addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource;
+    addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, scope?: Construct): DynamoDbDataSource;
     // (undocumented)
-    addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, stack?: Stack): HttpDataSource;
+    addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, scope?: Construct): HttpDataSource;
     // (undocumented)
-    addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource;
+    addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, scope?: Construct): LambdaDataSource;
     // (undocumented)
     addLambdaFunction: (functionName: string, functionKey: string, handlerName: string, filePath: string, runtime: Runtime, layers?: ILayerVersion[], role?: IRole, environment?: {
         [key: string]: string;
-    }, timeout?: Duration, stack?: Stack, vpc?: VpcConfig) => IFunction;
+    }, timeout?: Duration, scope?: Construct, vpc?: VpcConfig) => IFunction;
     // (undocumented)
-    addNoneDataSource(name: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource;
+    addNoneDataSource(name: string, options?: DataSourceOptions, scope?: Construct): NoneDataSource;
     // (undocumented)
-    addResolver: (typeName: string, fieldName: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, resolverLogicalId?: string, dataSourceName?: string, pipelineConfig?: string[], stack?: Stack) => CfnResolver;
+    addResolver: (typeName: string, fieldName: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, resolverLogicalId?: string, dataSourceName?: string, pipelineConfig?: string[], scope?: Construct) => CfnResolver;
     // (undocumented)
-    addSearchableDataSource(name: string, endpoint: string, region: string, options?: SearchableDataSourceOptions, stack?: Stack): BaseDataSource;
+    addSearchableDataSource(name: string, endpoint: string, region: string, options?: SearchableDataSourceOptions, scope?: Construct): BaseDataSource;
     // (undocumented)
     getDataSource: (name: string) => BaseDataSource | void;
     // (undocumented)

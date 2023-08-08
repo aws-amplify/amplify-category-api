@@ -37,17 +37,17 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
         RDSLambdaDataSourceLogicalID,
         RDSPatchingSubscriptionLogicalID,
       } = ResourceConstants.RESOURCES;
-      const lambdaRoleStack = context.stackManager.getStackFor(RDSLambdaIAMRoleLogicalID, RDS_STACK_NAME);
-      const lambdaStack = context.stackManager.getStackFor(RDSLambdaLogicalID, RDS_STACK_NAME);
-      setRDSLayerMappings(lambdaStack, context.rdsLayerMapping);
+      const lambdaRoleScope = context.stackManager.getScopeFor(RDSLambdaIAMRoleLogicalID, RDS_STACK_NAME);
+      const lambdaScope = context.stackManager.getScopeFor(RDSLambdaLogicalID, RDS_STACK_NAME);
+      setRDSLayerMappings(lambdaScope, context.rdsLayerMapping);
       const role = createRdsLambdaRole(
         context.resourceHelper.generateIAMRoleName(RDSLambdaIAMRoleLogicalID),
-        lambdaRoleStack,
+        lambdaRoleScope,
         secretEntry as RDSConnectionSecrets,
       );
 
       const lambda = createRdsLambda(
-        lambdaStack,
+        lambdaScope,
         context.api,
         role,
         {
@@ -60,22 +60,22 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
         context.sqlLambdaVpcConfig,
       );
 
-      const patchingLambdaRoleStack = context.stackManager.getStackFor(RDSPatchingLambdaIAMRoleLogicalID, RDS_STACK_NAME);
-      const patchingLambdaStack = context.stackManager.getStackFor(RDSPatchingLambdaLogicalID, RDS_STACK_NAME);
+      const patchingLambdaRoleScope = context.stackManager.getScopeFor(RDSPatchingLambdaIAMRoleLogicalID, RDS_STACK_NAME);
+      const patchingLambdaScope = context.stackManager.getScopeFor(RDSPatchingLambdaLogicalID, RDS_STACK_NAME);
       const patchingLambdaRole = createRdsPatchingLambdaRole(
         context.resourceHelper.generateIAMRoleName(RDSPatchingLambdaIAMRoleLogicalID),
-        patchingLambdaRoleStack,
+        patchingLambdaRoleScope,
         lambda.functionArn,
       );
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const patchingLambda = createRdsPatchingLambda(patchingLambdaStack, context.api, patchingLambdaRole, {
+      const patchingLambda = createRdsPatchingLambda(patchingLambdaScope, context.api, patchingLambdaRole, {
         LAMBDA_FUNCTION_ARN: lambda.functionArn,
       });
 
       // Add SNS subscription for patching notifications
-      const patchingSubscriptionStack = context.stackManager.getStackFor(RDSPatchingSubscriptionLogicalID, RDS_STACK_NAME);
-      const snsTopic = Topic.fromTopicArn(patchingSubscriptionStack, 'RDSPatchingTopic', RDS_PATCHING_SNS_TOPIC_ARN);
+      const patchingSubscriptionScope = context.stackManager.getScopeFor(RDSPatchingSubscriptionLogicalID, RDS_STACK_NAME);
+      const snsTopic = Topic.fromTopicArn(patchingSubscriptionScope, 'RDSPatchingTopic', RDS_PATCHING_SNS_TOPIC_ARN);
       const subscription = new LambdaSubscription(patchingLambda, {
         filterPolicy: {
           Region: SubscriptionFilter.stringFilter({
@@ -85,8 +85,8 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       });
       snsTopic.addSubscription(subscription);
 
-      const lambdaDataSourceStack = context.stackManager.getStackFor(RDSLambdaDataSourceLogicalID, RDS_STACK_NAME);
-      const rdsDatasource = context.api.host.addLambdaDataSource(`${RDSLambdaDataSourceLogicalID}`, lambda, {}, lambdaDataSourceStack);
+      const lambdaDataSourceScope = context.stackManager.getScopeFor(RDSLambdaDataSourceLogicalID, RDS_STACK_NAME);
+      const rdsDatasource = context.api.host.addLambdaDataSource(`${RDSLambdaDataSourceLogicalID}`, lambda, {}, lambdaDataSourceScope);
       this.models.forEach((model) => {
         context.dataSources.add(model, rdsDatasource);
         this.datasourceMap[model.name.value] = rdsDatasource;

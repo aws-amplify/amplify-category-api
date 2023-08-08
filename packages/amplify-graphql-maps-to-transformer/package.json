@@ -45,7 +45,8 @@
     "@aws-amplify/graphql-relational-transformer": "1.2.9",
     "@aws-amplify/graphql-searchable-transformer": "1.2.11",
     "graphql": "^15.5.0",
-    "mkdirp": "^0.5.5"
+    "mkdirp": "^0.5.5",
+    "@aws-amplify/graphql-transformer-test-utils": "0.1.0"
   },
   "jest": {
     "transform": {
