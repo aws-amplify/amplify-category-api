@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import { AmplifyGraphqlApi } from '../amplify-graphql-api';
 
 describe('AmplifyGraphqlApi', () => {
@@ -35,70 +36,142 @@ describe('AmplifyGraphqlApi', () => {
   });
 
   describe('storeOutput', () => {
-    const tokenRegex = /\$\{Token\[TOKEN\.\d+\]\}/;
-    const awsRegionTokenRegex = /\$\{Token\[AWS\.Region\.\d+\]\}/;
+    describe('default outputStorageStrategy', () => {
+      test('stores output with outputStorageStrategy', () => {
+        const stack = new cdk.Stack();
+        new AmplifyGraphqlApi(stack, 'TestApi', {
+          schema: /* GraphQL */ `
+            type Todo @model @auth(rules: [{ allow: public }]) {
+              description: String!
+            }
+          `,
+          authorizationConfig: {
+            apiKeyConfig: { expires: cdk.Duration.days(7) },
+          },
+        });
+        const template = Template.fromStack(stack);
 
-    test('stores output with outputStorageStrategy', () => {
-      const api = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
-        schema: /* GraphQL */ `
-          type Todo @model @auth(rules: [{ allow: public }]) {
-            description: String!
+        expect(template.toJSON().Metadata).toMatchInlineSnapshot(`
+          Object {
+            "AWS::Amplify::Output": Object {
+              "graphqlOutput": Object {
+                "stackOutputs": Array [
+                  "awsAppsyncApiEndpoint",
+                  "awsAppsyncAuthenticationType",
+                  "awsAppsyncRegion",
+                  "awsAppsyncApiKey",
+                ],
+                "version": "1",
+              },
+            },
           }
-        `,
-        authorizationConfig: {
-          apiKeyConfig: { expires: cdk.Duration.days(7) },
-        },
-      });
-
-      const addBackendOutputEntry = jest.fn();
-      const outputStorageStrategyMock = {
-        addBackendOutputEntry,
-        flush: jest.fn(),
-      };
-      api.storeOutput(outputStorageStrategyMock);
-      expect(addBackendOutputEntry).toBeCalledTimes(1);
-      expect(addBackendOutputEntry).toBeCalledWith('graphqlOutput', {
-        version: '1',
-        payload: {
-          awsAppsyncApiEndpoint: expect.stringMatching(tokenRegex),
-          awsAppsyncApiKey: expect.stringMatching(tokenRegex),
-          awsAppsyncAuthenticationType: 'API_KEY',
-          awsAppsyncRegion: expect.stringMatching(awsRegionTokenRegex),
-        },
+        `);
+        template.hasOutput(
+          'awsAppsyncApiEndpoint',
+          Match.exact({
+            Value: {
+              'Fn::GetAtt': ['GraphQLAPI', 'GraphQLUrl'],
+            },
+          }),
+        );
+        template.hasOutput(
+          'awsAppsyncAuthenticationType',
+          Match.exact({
+            Value: 'API_KEY',
+          }),
+        );
+        template.hasOutput(
+          'awsAppsyncRegion',
+          Match.exact({
+            Value: {
+              Ref: 'AWS::Region',
+            },
+          }),
+        );
+        template.hasOutput(
+          'awsAppsyncApiKey',
+          Match.exact({
+            Value: {
+              'Fn::GetAtt': ['GraphQLAPIDefaultApiKey215A6DD7', 'ApiKey'],
+            },
+          }),
+        );
       });
     });
 
-    test('does not store awsAppsyncApiKey when not present and changes awsAppsyncAuthenticationType', () => {
-      const api = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
-        schema: /* GraphQL */ `
-          type Todo @model {
-            description: String!
-          }
-        `,
-        authorizationConfig: {
-          oidcConfig: {
-            oidcProviderName: 'mock-provider-name',
-            oidcIssuerUrl: 'mock-issuer-url',
-            tokenExpiryFromAuth: cdk.Duration.days(1),
-            tokenExpiryFromIssue: cdk.Duration.days(1),
-          },
-        },
-      });
+    describe('custom outputStorageStrategy', () => {
+      const tokenRegex = /\$\{Token\[TOKEN\.\d+\]\}/;
+      const awsRegionTokenRegex = /\$\{Token\[AWS\.Region\.\d+\]\}/;
 
       const addBackendOutputEntry = jest.fn();
-      const outputStorageStrategyMock = {
+      const flush = jest.fn();
+      const outputStorageStrategy = {
         addBackendOutputEntry,
-        flush: jest.fn(),
+        flush,
       };
-      api.storeOutput(outputStorageStrategyMock);
-      expect(addBackendOutputEntry).toBeCalledTimes(1);
-      expect(addBackendOutputEntry).toBeCalledWith('graphqlOutput', {
-        version: '1',
-        payload: {
-          awsAppsyncApiEndpoint: expect.stringMatching(tokenRegex),
-          awsAppsyncAuthenticationType: 'OPENID_CONNECT',
-          awsAppsyncRegion: expect.stringMatching(awsRegionTokenRegex),
-        },
+
+      afterEach(() => {
+        addBackendOutputEntry.mockReset();
+        flush.mockReset();
+      });
+
+      test('stores output with outputStorageStrategy', () => {
+        const stack = new cdk.Stack();
+        new AmplifyGraphqlApi(stack, 'TestApi', {
+          schema: /* GraphQL */ `
+            type Todo @model @auth(rules: [{ allow: public }]) {
+              description: String!
+            }
+          `,
+          authorizationConfig: {
+            apiKeyConfig: { expires: cdk.Duration.days(7) },
+          },
+          outputStorageStrategy,
+        });
+
+        expect(addBackendOutputEntry).toBeCalledTimes(1);
+        expect(addBackendOutputEntry).toBeCalledWith('graphqlOutput', {
+          version: '1',
+          payload: {
+            awsAppsyncApiEndpoint: expect.stringMatching(tokenRegex),
+            awsAppsyncApiKey: expect.stringMatching(tokenRegex),
+            awsAppsyncAuthenticationType: 'API_KEY',
+            awsAppsyncRegion: expect.stringMatching(awsRegionTokenRegex),
+          },
+        });
+        expect(flush).not.toBeCalled();
+      });
+
+      test('does not store awsAppsyncApiKey when not present and changes awsAppsyncAuthenticationType', () => {
+        const stack = new cdk.Stack();
+        new AmplifyGraphqlApi(stack, 'TestApi', {
+          schema: /* GraphQL */ `
+            type Todo @model {
+              description: String!
+            }
+          `,
+          authorizationConfig: {
+            oidcConfig: {
+              oidcProviderName: 'mock-provider-name',
+              oidcIssuerUrl: 'mock-issuer-url',
+              tokenExpiryFromAuth: cdk.Duration.days(1),
+              tokenExpiryFromIssue: cdk.Duration.days(1),
+            },
+          },
+          outputStorageStrategy,
+        });
+
+        const template = Template.fromStack(stack);
+        expect(addBackendOutputEntry).toBeCalledTimes(1);
+        expect(addBackendOutputEntry).toBeCalledWith('graphqlOutput', {
+          version: '1',
+          payload: {
+            awsAppsyncApiEndpoint: expect.stringMatching(tokenRegex),
+            awsAppsyncAuthenticationType: 'OPENID_CONNECT',
+            awsAppsyncRegion: expect.stringMatching(awsRegionTokenRegex),
+          },
+        });
+        expect(flush).not.toBeCalled();
       });
     });
   });
