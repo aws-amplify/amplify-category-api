@@ -478,6 +478,28 @@
     handlebars "4.7.7"
     yargs "^15.1.0"
 
+"@aws-amplify/graphql-transformer-core@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-core/-/graphql-transformer-core-1.4.0.tgz#90c8f498470f79f1232475f8bfe20588ccbd5ff3"
+  integrity sha512-5tgDBsjWdEMYzSM4xT5AczhnmO+ZJ+hbYyWVzWbNycPdalKjX6stEABcGltzprEuafyCuYCLxkNCHARiltXUDw==
+  dependencies:
+    "@aws-amplify/graphql-transformer-interfaces" "2.3.0"
+    fs-extra "^8.1.0"
+    graphql "^15.5.0"
+    graphql-transformer-common "4.25.0"
+    hjson "^3.2.2"
+    lodash "^4.17.21"
+    md5 "^2.3.0"
+    object-hash "^3.0.0"
+    ts-dedent "^2.0.0"
+
+"@aws-amplify/graphql-transformer-interfaces@2.3.0", "@aws-amplify/graphql-transformer-interfaces@^2.3.0":
+  version "2.3.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-interfaces/-/graphql-transformer-interfaces-2.3.0.tgz#fee01fbbcb0572201e1e3553503db9f706fc01dd"
+  integrity sha512-GC3zsT3RGK7XPdt/sLDOS69lY0vcob7ozoAuBtLotA9CrmuxHuSAWwYr3diqyt5Jn0z6c64DGjbiLD3XD00kyg==
+  dependencies:
+    graphql "^15.5.0"
+
 "@aws-amplify/graphql-types-generator@3.0.3":
   version "3.0.3"
   resolved "https://registry.npmjs.org/@aws-amplify/graphql-types-generator/-/graphql-types-generator-3.0.3.tgz#56563355bb0a03feeb47c3ef8c0c764509993d29"
