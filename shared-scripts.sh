@@ -276,6 +276,12 @@ function _cleanupE2EResources {
   echo "Cleanup resources for batch build $build_batch_arn"
   yarn clean-e2e-resources buildBatchArn $build_batch_arn
 }
+function _unassumeTestAccountCredentials {
+    echo "Unassume Role"
+    unset AWS_ACCESS_KEY_ID
+    unset AWS_SECRET_ACCESS_KEY
+    unset AWS_SESSION_TOKEN
+}
 
 # The following functions are forked from circleci local publish helper
 # The e2e helper functions are moved for codebuild usage
@@ -334,7 +340,7 @@ function retry {
 
     resetAwsAccountCredentials
     TEST_SUITE=${TEST_SUITE:-"TestSuiteNotSet"}
-    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-category-api-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE --profile amplify-integ-test-user || true
+    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-category-api-e2e-tests --unit Count --value $RUN_INDEX --dimensions testFile=$TEST_SUITE --profile amplify-integ-test-user || true
     echo "Attempt $RUN_INDEX succeeded."
     exit 0 # don't fail the step if putting the metric fails
 }
