@@ -35,7 +35,7 @@
     "lodash": "^4.17.21"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.4",
+    "@aws-amplify/amplify-cli-core": "4.2.4-rc.43f73ab268.0",
     "@aws-amplify/amplify-environment-parameters": "^1.5.0",
     "@aws-amplify/amplify-prompts": "^2.6.8"
   },
