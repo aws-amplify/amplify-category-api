@@ -7,9 +7,6 @@ env:
     CI: true
     CODEBUILD: true
     NODE_OPTIONS: --max-old-space-size=8096
-    # mock values to test artifact scanning
-    ENV_VAR_WITH_SECRETS: 'MOCK_ENV_VAR_FOR_SCANNING_SECRETS'
-    MOCK_ENV_VAR_FOR_SCANNING_SECRETS: 'abc123xyz'
 phases:
   build:
     commands:
@@ -23,5 +20,5 @@ phases:
 
 artifacts:
   files:
-    - $CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/amplify-e2e-reports/*
-  discard-paths: yes
+    - '**/*'
+  base-directory: $CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/amplify-e2e-reports

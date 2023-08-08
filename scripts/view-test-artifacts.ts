@@ -115,7 +115,8 @@ const downloadSingleTestArtifact = async (tempDir: string, artifact: Required<Te
 
   return Promise.all(
     listObjectsResponse.Contents.filter(hasKey).map(({ Key }) => {
-      const filePath = path.join(artifactDownloadPath, Key.split('/').pop()!);
+      const filePath = path.join(artifactDownloadPath, Key.split('/').slice(3).join('/'));
+      fs.ensureDirSync(path.dirname(filePath));
       return new Promise((resolve, reject) => {
         const writer = fs.createWriteStream(filePath);
         s3.getObject({ Bucket, Key }).createReadStream().pipe(writer);

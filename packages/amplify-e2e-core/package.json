@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-e2e-core",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "description": "Core testing library",
   "repository": {
     "type": "git",
@@ -46,6 +46,6 @@
     "@types/ini": "^1.3.31"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.4"
+    "@aws-amplify/amplify-cli-core": "4.2.4-rc.43f73ab268.0"
   }
 }
