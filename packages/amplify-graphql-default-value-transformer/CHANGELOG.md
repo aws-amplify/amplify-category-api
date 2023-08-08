@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.14-no-internal-synth.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-default-value-transformer@1.1.13...@aws-amplify/graphql-default-value-transformer@1.1.14-no-internal-synth.0) (2023-08-08)
+
+### Bug Fixes
+
+- default-value, index, predictions, and searchable tests pass ([65c57e2](https://github.com/aws-amplify/amplify-category-api/commit/65c57e2c73e4b7dd39eec426858aef5cd16587d3))
+
 ## [1.1.13](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-default-value-transformer@1.1.12...@aws-amplify/graphql-default-value-transformer@1.1.13) (2023-07-21)
 
 **Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer

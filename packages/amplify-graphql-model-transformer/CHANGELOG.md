@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0-no-internal-synth.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@1.4.0...@aws-amplify/graphql-model-transformer@1.5.0-no-internal-synth.0) (2023-08-08)
+
+### Bug Fixes
+
+- mode-transformer tests pass ([e955bf8](https://github.com/aws-amplify/amplify-category-api/commit/e955bf8ebc38b87cafdaeb0dd3ebc6bfa544a983))
+
+### Features
+
+- support returning L1 resources in api construct ([9680a3b](https://github.com/aws-amplify/amplify-category-api/commit/9680a3be6b667dd5d8f5a6e7ebf9627c33b5a198))
+
 # [1.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@1.3.8...@aws-amplify/graphql-model-transformer@1.4.0) (2023-07-21)
 
 ### Bug Fixes

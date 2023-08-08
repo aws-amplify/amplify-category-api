@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-dynamodb-simulator",
-  "version": "2.4.12",
+  "version": "2.4.13-no-internal-synth.0",
   "description": "DynamoDB emulator NodeJS wrapper",
   "private": "true",
   "repository": {

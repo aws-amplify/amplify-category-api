@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.43-no-internal-synth.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-migration-tests@2.3.42...amplify-category-api-graphql-migration-tests@2.3.43-no-internal-synth.0) (2023-08-08)
+
+### Bug Fixes
+
+- additional package unit tests now pass ([93f788c](https://github.com/aws-amplify/amplify-category-api/commit/93f788c8c3d930d6c0c3013c9edd3de746a797e8))
+
 ## [2.3.42](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-migration-tests@2.3.41...amplify-category-api-graphql-migration-tests@2.3.42) (2023-07-21)
 
 **Note:** Version bump only for package amplify-category-api-graphql-migration-tests

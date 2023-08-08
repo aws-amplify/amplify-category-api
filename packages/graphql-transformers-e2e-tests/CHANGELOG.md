@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.4.14-no-internal-synth.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.4.13...amplify-category-api-graphql-transformers-e2e-tests@8.4.14-no-internal-synth.0) (2023-08-08)
+
+### Bug Fixes
+
+- build-tests target passes now ([8d972fe](https://github.com/aws-amplify/amplify-category-api/commit/8d972fe711bd995b16ad35e81059085b0a27f997))
+- fix IndexWithClaimFieldAsSortKeyAuth gql e2e test (incorrect regreplace) ([4a0d48b](https://github.com/aws-amplify/amplify-category-api/commit/4a0d48b0f77949911b5a4db7acea87957d5a8989))
+
 ## [8.4.13](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.4.12...amplify-category-api-graphql-transformers-e2e-tests@8.4.13) (2023-07-21)
 
 **Note:** Version bump only for package amplify-category-api-graphql-transformers-e2e-tests

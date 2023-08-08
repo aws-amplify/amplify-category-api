@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.10-no-internal-synth.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@1.2.9...@aws-amplify/graphql-index-transformer@1.2.10-no-internal-synth.0) (2023-08-08)
+
+### Bug Fixes
+
+- default-value, index, predictions, and searchable tests pass ([65c57e2](https://github.com/aws-amplify/amplify-category-api/commit/65c57e2c73e4b7dd39eec426858aef5cd16587d3))
+
 ## [1.2.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@1.2.8...@aws-amplify/graphql-index-transformer@1.2.9) (2023-07-21)
 
 **Note:** Version bump only for package @aws-amplify/graphql-index-transformer

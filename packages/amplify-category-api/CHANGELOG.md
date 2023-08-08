@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.5.4-no-internal-synth.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.5.3...@aws-amplify/amplify-category-api@5.5.4-no-internal-synth.0) (2023-08-08)
+
+### Bug Fixes
+
+- api category tests pass ([3cad421](https://github.com/aws-amplify/amplify-category-api/commit/3cad42102b8cf5c89594d149722870a6f8a4c4b4))
+- re-enable userOverriddenSlot response from api category transformation, to support mock ([f472eae](https://github.com/aws-amplify/amplify-category-api/commit/f472eae00c6f62c112ff5d654d53a67e9d097199))
+- test fix ([e5bf364](https://github.com/aws-amplify/amplify-category-api/commit/e5bf3643ff90dcc4f89933bf44ccfb94117caf67))
+
 ## [5.5.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.5.2...@aws-amplify/amplify-category-api@5.5.3) (2023-08-07)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

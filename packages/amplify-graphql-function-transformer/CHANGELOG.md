@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0-no-internal-synth.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-function-transformer@1.2.11...@aws-amplify/graphql-function-transformer@1.3.0-no-internal-synth.0) (2023-08-08)
+
+### Bug Fixes
+
+- function transformer tests pass ([c953991](https://github.com/aws-amplify/amplify-category-api/commit/c953991a9c94ef2e7956fd14e1453d4b0edab143))
+
+### Features
+
+- enable passing in generated functions to the graphql transform ([58e79ef](https://github.com/aws-amplify/amplify-category-api/commit/58e79ef453b455e7931338a049ebca4eda3025c5))
+
 ## [1.2.11](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-function-transformer@1.2.10...@aws-amplify/graphql-function-transformer@1.2.11) (2023-07-21)
 
 **Note:** Version bump only for package @aws-amplify/graphql-function-transformer

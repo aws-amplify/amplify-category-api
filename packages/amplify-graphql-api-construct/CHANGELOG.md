@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0-no-internal-synth.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.4.1...@aws-amplify/graphql-construct-alpha@0.5.0-no-internal-synth.0) (2023-08-08)
+
+### Bug Fixes
+
+- dereference function pointers, instead of writing filename to assets ([decc7c6](https://github.com/aws-amplify/amplify-category-api/commit/decc7c6a1f6f2cfb487567a53f78e912bf4cfac4))
+
+### Features
+
+- enable passing in generated functions to the graphql transform ([58e79ef](https://github.com/aws-amplify/amplify-category-api/commit/58e79ef453b455e7931338a049ebca4eda3025c5))
+- expose transformer nested stacks in construct ([ddd6ca2](https://github.com/aws-amplify/amplify-category-api/commit/ddd6ca2e07ac839fee06c0bcb4089ef744907607))
+- support returning L1 resources in api construct ([9680a3b](https://github.com/aws-amplify/amplify-category-api/commit/9680a3be6b667dd5d8f5a6e7ebf9627c33b5a198))
+
 ## [0.4.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.4.0...@aws-amplify/graphql-construct-alpha@0.4.1) (2023-07-21)
 
 **Note:** Version bump only for package @aws-amplify/graphql-construct-alpha

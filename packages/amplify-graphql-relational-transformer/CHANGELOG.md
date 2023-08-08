@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.10-no-internal-synth.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@1.2.9...@aws-amplify/graphql-relational-transformer@1.2.10-no-internal-synth.0) (2023-08-08)
+
+### Bug Fixes
+
+- relational tests now pass ([40455d2](https://github.com/aws-amplify/amplify-category-api/commit/40455d25cdd936f17a2c9a04b580690c02b4703b))
+
 ## [1.2.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@1.2.8...@aws-amplify/graphql-relational-transformer@1.2.9) (2023-07-21)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer

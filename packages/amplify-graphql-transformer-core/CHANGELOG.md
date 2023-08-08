@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0-no-internal-synth.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@1.4.0...@aws-amplify/graphql-transformer-core@1.5.0-no-internal-synth.0) (2023-08-08)
+
+### Bug Fixes
+
+- remove unnecessary app creation in core ([b6f02e2](https://github.com/aws-amplify/amplify-category-api/commit/b6f02e2eae3e64c1124cb1ebca009bf707f10c8f))
+
+### Features
+
+- support returning L1 resources in api construct ([9680a3b](https://github.com/aws-amplify/amplify-category-api/commit/9680a3be6b667dd5d8f5a6e7ebf9627c33b5a198))
+
 # [1.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@1.3.8...@aws-amplify/graphql-transformer-core@1.4.0) (2023-07-21)
 
 ### Features

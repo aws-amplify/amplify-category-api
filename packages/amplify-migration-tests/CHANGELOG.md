@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.33-no-internal-synth.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-migration-tests@5.0.32...amplify-category-api-migration-tests@5.0.33-no-internal-synth.0) (2023-08-08)
+
+**Note:** Version bump only for package amplify-category-api-migration-tests
+
 ## [5.0.32](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-migration-tests@5.0.31...amplify-category-api-migration-tests@5.0.32) (2023-08-07)
 
 **Note:** Version bump only for package amplify-category-api-migration-tests

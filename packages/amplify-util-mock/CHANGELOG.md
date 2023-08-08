@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.1.14-no-internal-synth.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.1.13...amplify-category-api-util-mock@6.1.14-no-internal-synth.0) (2023-08-08)
+
+### Bug Fixes
+
+- all tests now pass ([32f350d](https://github.com/aws-amplify/amplify-category-api/commit/32f350d659a969e7f98b7c699d589649cdfb41b0))
+- prettier updates ([9db64fd](https://github.com/aws-amplify/amplify-category-api/commit/9db64fd6f338d163b0ac378253337d89419c0f76))
+
 ## [6.1.13](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.1.12...amplify-category-api-util-mock@6.1.13) (2023-07-21)
 
 **Note:** Version bump only for package amplify-category-api-util-mock
