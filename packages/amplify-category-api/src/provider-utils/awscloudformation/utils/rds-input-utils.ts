@@ -1,4 +1,4 @@
-import { parse, print, InputObjectTypeDefinitionNode } from 'graphql';
+import { parse, print, InputObjectTypeDefinitionNode, DocumentNode } from 'graphql';
 import * as fs from 'fs-extra';
 import { $TSContext, ApiCategoryFacade, getGraphQLTransformerAuthDocLink } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
@@ -53,10 +53,8 @@ export const constructDefaultGlobalAmplifyInput = async (
   return `input AMPLIFY {\n${inputsString}}\n`;
 };
 
-export const readRDSGlobalAmplifyInput = async (schemaContent: string): Promise<InputObjectTypeDefinitionNode | undefined> => {
-  const parsedSchema = parse(schemaContent);
-
-  const inputNode = parsedSchema.definitions.find(
+export const readRDSGlobalAmplifyInput = async (schemaDocument: DocumentNode): Promise<InputObjectTypeDefinitionNode | undefined> => {
+  const inputNode = schemaDocument.definitions.find(
     (definition) => definition.kind === 'InputObjectTypeDefinition' && definition.name && definition.name.value === 'AMPLIFY',
   );
 
@@ -76,12 +74,8 @@ export const readRDSSchema = async (pathToSchemaFile: string): Promise<string | 
   return schemaContent;
 };
 
-export const constructRDSGlobalAmplifyInput = async (
-  context: $TSContext,
-  config: any,
-  schemaContent: string | undefined,
-): Promise<string> => {
-  const existingInputNode: any = schemaContent ? await readRDSGlobalAmplifyInput(schemaContent) : {};
+export const constructRDSGlobalAmplifyInput = async (context: $TSContext, config: any, schemaDocument: DocumentNode): Promise<string> => {
+  const existingInputNode: any = await readRDSGlobalAmplifyInput(schemaDocument);
   if (existingInputNode?.fields && existingInputNode?.fields?.length > 0) {
     const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL)).map((item) => item.name);
     expectedInputs.forEach((input) => {

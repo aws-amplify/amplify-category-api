@@ -3,7 +3,7 @@ import { EnumValueDefinitionNode, Kind, print, parse, DocumentNode } from 'graph
 import { EnumType, Field, Index, Model, Schema } from '../schema-representation';
 import { applySchemaOverrides } from './schema-overrides';
 
-export const generateGraphQLSchema = (schema: Schema, existingSchema?: string): string => {
+export const generateGraphQLSchema = (schema: Schema, existingSchemaDocument?: DocumentNode): string => {
   const models = schema.getModels();
   const document: any = {
     kind: Kind.DOCUMENT,
@@ -35,7 +35,7 @@ export const generateGraphQLSchema = (schema: Schema, existingSchema?: string): 
     document.definitions.push(type.serialize());
   });
 
-  const documentWithOverrides = existingSchema ? applySchemaOverrides(document as DocumentNode, parse(existingSchema)) : document;
+  const documentWithOverrides = applySchemaOverrides(document as DocumentNode, existingSchemaDocument);
   const schemaStr = print(documentWithOverrides);
   return schemaStr;
 };

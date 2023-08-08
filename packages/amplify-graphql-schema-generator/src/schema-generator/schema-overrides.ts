@@ -2,7 +2,11 @@ import { DocumentNode, FieldDefinitionNode, ObjectTypeDefinitionNode, visit } fr
 import { isArrayOrObject, findMatchingField, getNonModelTypes, isOfType, isNonNullType } from 'graphql-transformer-common';
 import { printer } from '@aws-amplify/amplify-prompts';
 
-export const applySchemaOverrides = (document: DocumentNode, existingDocument: DocumentNode): DocumentNode => {
+export const applySchemaOverrides = (document: DocumentNode, existingDocument?: DocumentNode): DocumentNode => {
+  if (!existingDocument) {
+    return document;
+  }
+
   const schemaVisitor = {
     FieldDefinition: {
       leave(node: FieldDefinitionNode, key, parent, path, ancestors): any {
