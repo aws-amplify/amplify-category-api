@@ -339,15 +339,14 @@ test('can update on model without delete', () => {
     nick: String
   }`;
 
-  const transformer = new GraphQLTransform({
+  const { resolvers } = testTransform({
+    schema: validSchema,
     authConfig,
     transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
     resolverConfig: {
       project: config,
     },
   });
-
-  const { resolvers } = transformer.transform(validSchema);
 
   expect(resolvers['Mutation.updateUserData.auth.1.res.vtl']).toMatchSnapshot();
   expect(resolvers['Mutation.deleteUserData.auth.1.res.vtl']).toMatchSnapshot();
