@@ -94,13 +94,13 @@
     uuid "^8.3.2"
     ws "^8.5.0"
 
-"@aws-amplify/amplify-category-custom@3.1.4-rc.43f73ab268.0":
-  version "3.1.4-rc.43f73ab268.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/amplify-category-custom/-/amplify-category-custom-3.1.4-rc.43f73ab268.0.tgz#82aa4bc58d381c119fb6cb68a2c325babd178037"
-  integrity sha512-hJHXwsCL7iRqWVJTxckFRNWkDU14d2BO2JHfoqMCInEIFgFmcHJWcLQwu+jl+re8lEcQ5j9B/nc5QPfKQ1GW0A==
+"@aws-amplify/amplify-category-custom@3.1.4-aug-transformer-mv-bump.0":
+  version "3.1.4-aug-transformer-mv-bump.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-category-custom/-/amplify-category-custom-3.1.4-aug-transformer-mv-bump.0.tgz#f74690fb6c7abd30c717f2d2225127b393889295"
+  integrity sha512-6ri2026H3v12OftNMymUmFxgsD8QJVWRSD9uuVMZWsmXXDbRu6VfzUwwagIgHHK+wmBQcKclgcOZ6UijJGpgXg==
   dependencies:
-    "@aws-amplify/amplify-cli-core" "4.2.4-rc.43f73ab268.0"
-    "@aws-amplify/amplify-prompts" "2.8.1-rc.43f73ab268.0"
+    "@aws-amplify/amplify-cli-core" "4.2.4-aug-transformer-mv-bump.0"
+    "@aws-amplify/amplify-prompts" "2.8.1-aug-transformer-mv-bump.0"
     aws-cdk-lib "~2.80.0"
     execa "^5.1.1"
     fs-extra "^8.1.0"
@@ -133,15 +133,15 @@
     promise-sequential "^1.1.1"
     uuid "^8.3.2"
 
-"@aws-amplify/amplify-cli-core@4.2.4", "@aws-amplify/amplify-cli-core@4.2.4-aug-transformer-mv-bump.0", "@aws-amplify/amplify-cli-core@4.2.4-rc.43f73ab268.0":
-  version "4.2.4-rc.43f73ab268.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/amplify-cli-core/-/amplify-cli-core-4.2.4-rc.43f73ab268.0.tgz#3dc2ff61b675ce67f11bb01f8b594c1d8e786eed"
-  integrity sha512-DcwpcAsDBnVXLjcRFypFP4MQB0t0O0idj6ZtBZnKp36DNX4JIfIRJgeXY1kLjcIkcAMEh2A+2ITw7O5X8GY6Dg==
+"@aws-amplify/amplify-cli-core@4.2.4", "@aws-amplify/amplify-cli-core@4.2.4-aug-transformer-mv-bump.0":
+  version "4.2.4-aug-transformer-mv-bump.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-cli-core/-/amplify-cli-core-4.2.4-aug-transformer-mv-bump.0.tgz#9b0bce8b21ddc9e71348cc14667da4a859386096"
+  integrity sha512-eSyL8s3Oe0yXnP3wXpMcH4KKvKSEStvMmkMeFetzglECFuNcPKoO35GOxmXgjFH0WrtfvKCUiWSG3tJ4f4p1cw==
   dependencies:
-    "@aws-amplify/amplify-cli-logger" "1.3.3"
+    "@aws-amplify/amplify-cli-logger" "1.3.4-aug-transformer-mv-bump.0"
     "@aws-amplify/amplify-function-plugin-interface" "1.11.0"
-    "@aws-amplify/amplify-prompts" "2.8.1-rc.43f73ab268.0"
-    "@aws-amplify/graphql-transformer-interfaces" "^2.3.0"
+    "@aws-amplify/amplify-prompts" "2.8.1-aug-transformer-mv-bump.0"
+    "@aws-amplify/graphql-transformer-interfaces" "^3.1.0"
     "@aws-sdk/util-arn-parser" "^3.310.0"
     "@yarnpkg/lockfile" "^1.1.0"
     ajv "^6.12.6"
@@ -169,10 +169,10 @@
     which "^2.0.2"
     yaml "^2.2.2"
 
-"@aws-amplify/amplify-cli-logger@1.3.3":
-  version "1.3.3"
-  resolved "https://registry.npmjs.org/@aws-amplify/amplify-cli-logger/-/amplify-cli-logger-1.3.3.tgz#d50d006f71b1a8f9e6bfe71f8e691c96d307aa04"
-  integrity sha512-GTaTMu6p5xJqimiCuzv0NDdx7/APV5YgOFtpX6GQoTIJ7jjCMB1MmKyfUKrt843ATQpfZ0ClokkyGJlzgMvYzw==
+"@aws-amplify/amplify-cli-logger@1.3.4-aug-transformer-mv-bump.0":
+  version "1.3.4-aug-transformer-mv-bump.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-cli-logger/-/amplify-cli-logger-1.3.4-aug-transformer-mv-bump.0.tgz#afb01faf8e44cc49f1f4f81c624ecc99622d81aa"
+  integrity sha512-QpViqrnGSFdjKaC7hPyK6EeSMblZMFOU3U4A+gotpgkvAc/AHQ/t9gsvMxkA7FntPxqbLpN49kSpvixnwIYq+g==
   dependencies:
     winston "^3.3.3"
     winston-daily-rotate-file "^4.5.0"
@@ -191,12 +191,12 @@
     ajv "^6.12.6"
     lodash "^4.17.21"
 
-"@aws-amplify/amplify-environment-parameters@1.7.4-rc.43f73ab268.0":
-  version "1.7.4-rc.43f73ab268.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/amplify-environment-parameters/-/amplify-environment-parameters-1.7.4-rc.43f73ab268.0.tgz#9fdd9e86dfbdeb4a248f47bb21c5e4f49c79afe7"
-  integrity sha512-HtHar/9hBmiILaglNm7c5My4QoD2+kTWQ0jCuqD6fZU0fZjy6vMTjGpEKdpV++OW/aM0fZMk4OE1Kegm8NbJlg==
+"@aws-amplify/amplify-environment-parameters@1.7.4-aug-transformer-mv-bump.0":
+  version "1.7.4-aug-transformer-mv-bump.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-environment-parameters/-/amplify-environment-parameters-1.7.4-aug-transformer-mv-bump.0.tgz#1443f1064ffbc071168b37beea02dd6b81b34b22"
+  integrity sha512-L7urgnR/sqYWNgJrb8mGTT3yHoFV0hQ2iTRc0Q50yb3O/ZiD+bKIdp2apdbrPYqLX983Xd5IrL3icT1H6jkPkQ==
   dependencies:
-    "@aws-amplify/amplify-cli-core" "4.2.4-rc.43f73ab268.0"
+    "@aws-amplify/amplify-cli-core" "4.2.4-aug-transformer-mv-bump.0"
     ajv "^6.12.6"
     lodash "^4.17.21"
 
@@ -258,30 +258,29 @@
     chalk "^4.1.1"
     enquirer "^2.3.6"
 
-"@aws-amplify/amplify-prompts@2.8.1-rc.43f73ab268.0":
-  version "2.8.1-rc.43f73ab268.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/amplify-prompts/-/amplify-prompts-2.8.1-rc.43f73ab268.0.tgz#e9e9ee66aae2294d03727bf23cc25610f22d5d5d"
-  integrity sha512-LzdsBAxURXlMr4Do+zR+4eSYzHTni4mE+mi52K3MI480zXRFt9NyXfjU0nox4+AYM85AkW5ixST/09a+EO7xcg==
+"@aws-amplify/amplify-prompts@2.8.1-aug-transformer-mv-bump.0":
+  version "2.8.1-aug-transformer-mv-bump.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-prompts/-/amplify-prompts-2.8.1-aug-transformer-mv-bump.0.tgz#91640606b80feeb23bd8240c3664583feef01ee2"
+  integrity sha512-f1zX13pSuAbCJ9l59ox0eMLWy8kmUfDdefFx4YU7bloHLAs2YXZkHfvd96ZzZN1zXbUFIhUccBIWCgURvRJBFw==
   dependencies:
     "@aws-amplify/amplify-cli-shared-interfaces" "1.2.3"
     chalk "^4.1.1"
     enquirer "^2.3.6"
 
-"@aws-amplify/amplify-provider-awscloudformation@8.4.0-rc.43f73ab268.0", "@aws-amplify/amplify-provider-awscloudformation@^8.4.0-aug-transformer-mv-bump.0":
-  version "8.4.0-rc.43f73ab268.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/amplify-provider-awscloudformation/-/amplify-provider-awscloudformation-8.4.0-rc.43f73ab268.0.tgz#44b925415a4a92e6e3d5e7378806b289a59c66f9"
-  integrity sha512-wF07X55ZXdvjokA7hRUAxr93c3ZewC/XaYUPiEhxq4GAzAdixBY1Uq9C+yQPBCZlXHegeiqI8L3Xg65CGOZoIw==
+"@aws-amplify/amplify-provider-awscloudformation@8.4.0-aug-transformer-mv-bump.0", "@aws-amplify/amplify-provider-awscloudformation@^8.4.0-aug-transformer-mv-bump.0":
+  version "8.4.0-aug-transformer-mv-bump.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-provider-awscloudformation/-/amplify-provider-awscloudformation-8.4.0-aug-transformer-mv-bump.0.tgz#9b07272fd5e320749033738fdbe84e6dde1a42d2"
+  integrity sha512-C3W5KHKCB/WNw8TtpSVVGdPNECstCDp5q0BUJCSmH/1zsMpTJ9GTWIshoiQjzPjfYd09x4juRtzy++eGBESKrA==
   dependencies:
-    "@aws-amplify/amplify-category-custom" "3.1.4-rc.43f73ab268.0"
-    "@aws-amplify/amplify-cli-core" "4.2.4-rc.43f73ab268.0"
-    "@aws-amplify/amplify-cli-logger" "1.3.3"
-    "@aws-amplify/amplify-environment-parameters" "1.7.4-rc.43f73ab268.0"
-    "@aws-amplify/amplify-prompts" "2.8.1-rc.43f73ab268.0"
+    "@aws-amplify/amplify-category-custom" "3.1.4-aug-transformer-mv-bump.0"
+    "@aws-amplify/amplify-cli-core" "4.2.4-aug-transformer-mv-bump.0"
+    "@aws-amplify/amplify-cli-logger" "1.3.4-aug-transformer-mv-bump.0"
+    "@aws-amplify/amplify-environment-parameters" "1.7.4-aug-transformer-mv-bump.0"
+    "@aws-amplify/amplify-prompts" "2.8.1-aug-transformer-mv-bump.0"
     "@aws-amplify/amplify-util-import" "2.7.0"
-    "@aws-amplify/cli-extensibility-helper" "3.0.14-rc.43f73ab268.0"
-    "@aws-amplify/graphql-transformer-core" "^1.4.0"
-    "@aws-amplify/graphql-transformer-interfaces" "^2.3.0"
-    amplify-codegen "^4.1.4"
+    "@aws-amplify/cli-extensibility-helper" "3.0.14-aug-transformer-mv-bump.0"
+    "@aws-amplify/graphql-transformer-interfaces" "^3.1.0"
+    amplify-codegen "^4.2.0"
     archiver "^5.3.0"
     aws-cdk-lib "~2.80.0"
     aws-sdk "^2.1405.0"
@@ -297,7 +296,7 @@
     fs-extra "^8.1.0"
     glob "^7.2.0"
     graphql "^15.5.0"
-    graphql-transformer-core "^8.1.9"
+    graphql-transformer-core "^8.1.10"
     ignore "^5.2.0"
     ini "^1.3.5"
     inquirer "^7.3.3"
@@ -383,6 +382,23 @@
     strip-indent "^3.0.0"
     ts-dedent "^1.1.0"
 
+"@aws-amplify/appsync-modelgen-plugin@2.5.3":
+  version "2.5.3"
+  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.5.3.tgz#5929a54b4429a11148f6a09c59ed57674cdac571"
+  integrity sha512-ZQUUyhhRYxD/KzMH9UUMtN8SenrB5aYudPUQM6ZnXmdEzGZ62yuHhiE/VbggHOcQiLXd/2zoWjr0shwZi0w5Ow==
+  dependencies:
+    "@graphql-codegen/plugin-helpers" "^1.18.8"
+    "@graphql-codegen/visitor-plugin-common" "^1.22.0"
+    "@graphql-tools/utils" "^6.0.18"
+    "@types/node" "^12.12.6"
+    "@types/pluralize" "0.0.29"
+    chalk "^3.0.0"
+    change-case "^4.1.1"
+    lower-case-first "^2.0.1"
+    pluralize "^8.0.0"
+    strip-indent "^3.0.0"
+    ts-dedent "^1.1.0"
+
 "@aws-amplify/auth@4.6.17":
   version "4.6.17"
   resolved "https://registry.npmjs.org/@aws-amplify/auth/-/auth-4.6.17.tgz#5030e515467d2f9469eaa388a46370c7d5648772"
@@ -400,13 +416,13 @@
   dependencies:
     "@aws-amplify/core" "4.7.15"
 
-"@aws-amplify/cli-extensibility-helper@3.0.14-rc.43f73ab268.0":
-  version "3.0.14-rc.43f73ab268.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/cli-extensibility-helper/-/cli-extensibility-helper-3.0.14-rc.43f73ab268.0.tgz#db00033300b64b7948e2bb14b7fcda737723eed8"
-  integrity sha512-qIt2tY+y9akeBtbDsCYYfBNluarfE8Q8zzz4hD0htZW1dmGMNYsrj6bRrFWjDNh79fMtu0ES5w3kRPb3LnGU9A==
+"@aws-amplify/cli-extensibility-helper@3.0.14-aug-transformer-mv-bump.0":
+  version "3.0.14-aug-transformer-mv-bump.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/cli-extensibility-helper/-/cli-extensibility-helper-3.0.14-aug-transformer-mv-bump.0.tgz#171a6ea7fce7eb7146ca8be62075dafe390fff98"
+  integrity sha512-xNDXnmYrr+93Ms9gRMWhcirRcDDpiaMHVEn44RqhYlETqrt2m/+VJx41z/u5tx5Jr/LZuxvkryXZ9wgy7dxoyg==
   dependencies:
-    "@aws-amplify/amplify-category-custom" "3.1.4-rc.43f73ab268.0"
-    "@aws-amplify/amplify-cli-core" "4.2.4-rc.43f73ab268.0"
+    "@aws-amplify/amplify-category-custom" "3.1.4-aug-transformer-mv-bump.0"
+    "@aws-amplify/amplify-cli-core" "4.2.4-aug-transformer-mv-bump.0"
     aws-cdk-lib "~2.80.0"
 
 "@aws-amplify/core@4.7.15":
@@ -468,32 +484,44 @@
     handlebars "4.7.7"
     yargs "^15.1.0"
 
-"@aws-amplify/graphql-transformer-core@^1.4.0":
-  version "1.4.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-core/-/graphql-transformer-core-1.4.0.tgz#90c8f498470f79f1232475f8bfe20588ccbd5ff3"
-  integrity sha512-5tgDBsjWdEMYzSM4xT5AczhnmO+ZJ+hbYyWVzWbNycPdalKjX6stEABcGltzprEuafyCuYCLxkNCHARiltXUDw==
-  dependencies:
-    "@aws-amplify/graphql-transformer-interfaces" "2.3.0"
-    fs-extra "^8.1.0"
-    graphql "^15.5.0"
-    graphql-transformer-common "4.25.0"
-    hjson "^3.2.2"
-    lodash "^4.17.21"
-    md5 "^2.3.0"
-    object-hash "^3.0.0"
-    ts-dedent "^2.0.0"
-
-"@aws-amplify/graphql-transformer-interfaces@2.3.0", "@aws-amplify/graphql-transformer-interfaces@^2.3.0":
-  version "2.3.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-interfaces/-/graphql-transformer-interfaces-2.3.0.tgz#fee01fbbcb0572201e1e3553503db9f706fc01dd"
-  integrity sha512-GC3zsT3RGK7XPdt/sLDOS69lY0vcob7ozoAuBtLotA9CrmuxHuSAWwYr3diqyt5Jn0z6c64DGjbiLD3XD00kyg==
+"@aws-amplify/graphql-docs-generator@4.0.5":
+  version "4.0.5"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-docs-generator/-/graphql-docs-generator-4.0.5.tgz#6a3abcfa9645f8f73fea84d89b80a9a22c9e008b"
+  integrity sha512-b3hdEK+vuJp+RSoLqNUqCYSf/2OaC5hFPuVp4yHlE4rvNXGbiXTcRS0/6oDWzjhAvjTwROLn+xOXj5VAbAhwcQ==
   dependencies:
     graphql "^15.5.0"
+    handlebars "4.7.7"
+    yargs "^15.1.0"
 
 "@aws-amplify/graphql-types-generator@3.0.3":
   version "3.0.3"
   resolved "https://registry.npmjs.org/@aws-amplify/graphql-types-generator/-/graphql-types-generator-3.0.3.tgz#56563355bb0a03feeb47c3ef8c0c764509993d29"
   integrity sha512-fWWQeAWkVNMM2onsxjKPxi8qtywwJVbjsIjJGYGlfBEg2tzQYsWFZ9wyBF55PZHhEcROQbznumA6D44Do69xdQ==
+  dependencies:
+    "@babel/generator" "7.0.0-beta.4"
+    "@babel/types" "7.0.0-beta.4"
+    "@types/babel-generator" "^6.25.0"
+    "@types/fs-extra" "^8.1.0"
+    "@types/prettier" "^1.19.0"
+    "@types/rimraf" "^3.0.0"
+    babel-generator "^6.26.1"
+    babel-types "^6.26.0"
+    change-case "^4.1.1"
+    common-tags "^1.8.0"
+    core-js "^3.6.4"
+    fs-extra "^8.1.0"
+    glob "^7.1.6"
+    graphql "^15.5.0"
+    inflected "^2.0.4"
+    prettier "^1.19.1"
+    rimraf "^3.0.0"
+    source-map-support "^0.5.16"
+    yargs "^15.1.0"
+
+"@aws-amplify/graphql-types-generator@3.2.0":
+  version "3.2.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-types-generator/-/graphql-types-generator-3.2.0.tgz#66d1bff5d43010f14b71fd8308f164945f7cabbf"
+  integrity sha512-hxCq0pCSjH2lU98cLw1wje2xjBNjTQa8CHoAaGizF+ozaTOzrfAS1n1MVD6U815sqrPMSQ2DPcjLYO21CTRFDw==
   dependencies:
     "@babel/generator" "7.0.0-beta.4"
     "@babel/types" "7.0.0-beta.4"
@@ -8350,6 +8378,28 @@ amplify-codegen@^4.1.4:
     "@aws-amplify/appsync-modelgen-plugin" "2.5.1"
     "@aws-amplify/graphql-docs-generator" "4.0.3"
     "@aws-amplify/graphql-types-generator" "3.0.3"
+    "@graphql-codegen/core" "2.6.6"
+    chalk "^3.0.0"
+    fs-extra "^8.1.0"
+    glob-all "^3.1.0"
+    glob-parent "^6.0.2"
+    graphql "^15.5.0"
+    graphql-config "^2.2.1"
+    inquirer "^7.3.3"
+    js-yaml "^4.0.0"
+    ora "^4.0.3"
+    prettier "^1.19.1"
+    semver "^7.3.5"
+    slash "^3.0.0"
+
+amplify-codegen@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-4.2.0.tgz#61aaad94d01c57f64e659bc57b5040d82d9bff33"
+  integrity sha512-eUKYR0V465DmQbwP56vnWYVGsu03OGAPntAU9F2tX8y+xqSmI+m0k9ynr5qc3dBRERLqHbIfDttxbij7bEEHEw==
+  dependencies:
+    "@aws-amplify/appsync-modelgen-plugin" "2.5.3"
+    "@aws-amplify/graphql-docs-generator" "4.0.5"
+    "@aws-amplify/graphql-types-generator" "3.2.0"
     "@graphql-codegen/core" "2.6.6"
     chalk "^3.0.0"
     fs-extra "^8.1.0"
