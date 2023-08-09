@@ -19,6 +19,7 @@ import {
   InputObjectTypeDefinitionNode,
   UnionTypeDefinitionNode,
   DocumentNode,
+  DefinitionNode,
 } from 'graphql';
 
 type ScalarMap = {
@@ -412,3 +413,50 @@ export function makeListType(type: TypeNode): ListTypeNode {
     type,
   };
 }
+
+export const findMatchingField = (
+  field: FieldDefinitionNode,
+  objectType: ObjectTypeDefinitionNode,
+  document: DocumentNode,
+): FieldDefinitionNode | undefined => {
+  const matchingObject = findObjectDefinition(document, objectType?.name?.value);
+  if (!matchingObject) {
+    return;
+  }
+  return matchingObject?.fields?.find((f) => f?.name?.value === field?.name?.value);
+};
+
+export const findObjectDefinition = (document: DocumentNode, name: string): ObjectTypeDefinitionNode | undefined => {
+  return document.definitions?.find((def) => def?.kind === 'ObjectTypeDefinition' && def?.name?.value === name) as
+    | ObjectTypeDefinitionNode
+    | undefined;
+};
+
+export const isNamedType = (type: TypeNode): boolean => {
+  return type?.kind === Kind.NAMED_TYPE || (type?.kind === Kind.NON_NULL_TYPE && type?.type?.kind === Kind.NAMED_TYPE);
+};
+
+export const getNonModelTypes = (document: DocumentNode): DefinitionNode[] => {
+  const nonModels = document.definitions?.filter((def) => isNonModelType(def));
+  return nonModels;
+};
+
+export const isNonModelType = (definition: DefinitionNode) => {
+  return definition?.kind === 'ObjectTypeDefinition' && !directiveExists(definition, 'model');
+};
+
+export const directiveExists = (definition: ObjectTypeDefinitionNode, name: string) => {
+  return definition?.directives?.find((directive) => directive?.name?.value === name);
+};
+
+export const isOfType = (type: TypeNode, name: string): boolean => {
+  if (type.kind === Kind.NON_NULL_TYPE) {
+    return isOfType(type?.type, name);
+  }
+
+  if (!isNamedType(type)) {
+    return false;
+  }
+
+  return (type as NamedTypeNode).name?.value === name;
+};

@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-transformer-core": "1.4.0",
+    "graphql-transformer-common": "4.25.0",
     "@aws-sdk/client-iam": "3.338.0",
     "@aws-sdk/client-lambda": "3.338.0",
     "@aws-sdk/client-rds": "3.338.0",

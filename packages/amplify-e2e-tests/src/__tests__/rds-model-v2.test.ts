@@ -14,7 +14,6 @@ import {
   initJSProjectWithProfile,
   removeRDSPortInboundRule,
 } from 'amplify-category-api-e2e-core';
-import axios from 'axios';
 import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
@@ -336,8 +335,32 @@ describe('RDS Model Directive', () => {
     );
   });
 
+  test('check invalid CRUD operation returns generic error message', async () => {
+    const contact1 = await createContact('David', 'Smith');
+    expect(contact1.data.createContact.id).toBeDefined();
+
+    try {
+      await createContact('Jason', 'Bourne', contact1.data.createContact.id);
+    } catch (err) {
+      checkGenericError(err?.message);
+    }
+
+    const nonExistentId = 'doesnotexist';
+    try {
+      await updateContact(nonExistentId, 'David', 'Jones');
+    } catch (err) {
+      checkGenericError(err?.message);
+    }
+
+    try {
+      await deleteContact(nonExistentId);
+    } catch (err) {
+      checkGenericError(err?.message);
+    }
+  });
+
   // CURDL on Contact table helpers
-  const createContact = async (firstName: string, lastName: string) => {
+  const createContact = async (firstName: string, lastName: string, id?: string) => {
     const createMutation = /* GraphQL */ `
       mutation CreateContact($input: CreateContactInput!, $condition: ModelContactConditionInput) {
         createContact(input: $input, condition: $condition) {
@@ -353,6 +376,11 @@ describe('RDS Model Directive', () => {
         LastName: lastName,
       },
     };
+
+    if (id) {
+      createInput.input['id'] = id;
+    }
+
     const createResult: any = await appSyncClient.mutate({
       mutation: gql(createMutation),
       fetchPolicy: 'no-cache',
@@ -586,5 +614,10 @@ describe('RDS Model Directive', () => {
     });
 
     return listResult;
+  };
+
+  const checkGenericError = async (errorMessage?: string) => {
+    expect(errorMessage).toBeDefined();
+    expect(errorMessage).toEqual('GraphQL error: Error processing the request. Check the logs for more details.');
   };
 });

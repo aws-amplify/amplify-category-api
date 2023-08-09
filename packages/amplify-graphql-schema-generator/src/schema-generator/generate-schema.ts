@@ -1,8 +1,9 @@
 import { DirectiveWrapper, EnumWrapper, FieldWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
-import { EnumValueDefinitionNode, Kind, print } from 'graphql';
+import { EnumValueDefinitionNode, Kind, print, parse, DocumentNode } from 'graphql';
 import { EnumType, Field, Index, Model, Schema } from '../schema-representation';
+import { applySchemaOverrides } from './schema-overrides';
 
-export const generateGraphQLSchema = (schema: Schema): string => {
+export const generateGraphQLSchema = (schema: Schema, existingSchemaDocument?: DocumentNode | undefined): string => {
   const models = schema.getModels();
   const document: any = {
     kind: Kind.DOCUMENT,
@@ -34,7 +35,8 @@ export const generateGraphQLSchema = (schema: Schema): string => {
     document.definitions.push(type.serialize());
   });
 
-  const schemaStr = print(document);
+  const documentWithOverrides = applySchemaOverrides(document as DocumentNode, existingSchemaDocument);
+  const schemaStr = print(documentWithOverrides);
   return schemaStr;
 };
 

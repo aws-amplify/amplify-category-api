@@ -1,4 +1,4 @@
-import { parse, print, InputObjectTypeDefinitionNode } from 'graphql';
+import { parse, print, InputObjectTypeDefinitionNode, DocumentNode } from 'graphql';
 import * as fs from 'fs-extra';
 import { $TSContext, ApiCategoryFacade, getGraphQLTransformerAuthDocLink } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
@@ -53,18 +53,13 @@ export const constructDefaultGlobalAmplifyInput = async (
   return `input AMPLIFY {\n${inputsString}}\n`;
 };
 
-export const readRDSGlobalAmplifyInput = async (pathToSchemaFile: string): Promise<InputObjectTypeDefinitionNode | undefined> => {
-  if (!fs.existsSync(pathToSchemaFile)) {
+export const readRDSGlobalAmplifyInput = async (
+  schemaDocument: DocumentNode | undefined,
+): Promise<InputObjectTypeDefinitionNode | undefined> => {
+  if (!schemaDocument) {
     return;
   }
-  const schemaContent = fs.readFileSync(pathToSchemaFile, 'utf-8');
-  if (_.isEmpty(schemaContent)) {
-    return;
-  }
-
-  const parsedSchema = parse(schemaContent);
-
-  const inputNode = parsedSchema.definitions.find(
+  const inputNode = schemaDocument.definitions.find(
     (definition) => definition.kind === 'InputObjectTypeDefinition' && definition.name && definition.name.value === 'AMPLIFY',
   );
 
@@ -73,9 +68,24 @@ export const readRDSGlobalAmplifyInput = async (pathToSchemaFile: string): Promi
   }
 };
 
-export const constructRDSGlobalAmplifyInput = async (context: $TSContext, config: any, pathToSchemaFile: string): Promise<string> => {
-  const existingInputNode: any = (await readRDSGlobalAmplifyInput(pathToSchemaFile)) || {};
-  if (existingInputNode?.fields && existingInputNode?.fields?.length > 0) {
+export const readRDSSchema = async (pathToSchemaFile: string): Promise<string | undefined> => {
+  if (!fs.existsSync(pathToSchemaFile)) {
+    return;
+  }
+  const schemaContent = fs.readFileSync(pathToSchemaFile, 'utf-8');
+  if (_.isEmpty(schemaContent)) {
+    return;
+  }
+  return schemaContent;
+};
+
+export const constructRDSGlobalAmplifyInput = async (
+  context: $TSContext,
+  config: any,
+  schemaDocument: DocumentNode | undefined,
+): Promise<string> => {
+  const existingInputNode: any = await readRDSGlobalAmplifyInput(schemaDocument);
+  if (existingInputNode && existingInputNode?.fields && existingInputNode?.fields?.length > 0) {
     const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL)).map((item) => item.name);
     expectedInputs.forEach((input) => {
       const inputNodeField = existingInputNode?.fields?.find((field: any) => field?.name?.value === input);
