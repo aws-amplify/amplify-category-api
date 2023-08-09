@@ -63,7 +63,7 @@ export const generateRDSSchema = async (
   models.forEach((m) => schema.addModel(m));
 
   const existingSchema = await readRDSSchema(pathToSchemaFile);
-  const existingSchemaDocument = parseSchema(existingSchema);
+  const existingSchemaDocument = parseSchema(existingSchema, pathToSchemaFile);
 
   const schemaString =
     (await constructRDSGlobalAmplifyInput(context, databaseConfig, existingSchemaDocument)) +
@@ -97,7 +97,7 @@ const retryWithVpcLambda = async (context, databaseConfig, adapter): Promise<boo
   return false;
 };
 
-const parseSchema = (schemaContent?: string): DocumentNode | undefined => {
+const parseSchema = (schemaContent: string | undefined, pathToSchemaFile: string): DocumentNode | undefined => {
   if (!schemaContent) {
     return;
   }
@@ -109,6 +109,6 @@ const parseSchema = (schemaContent?: string): DocumentNode | undefined => {
     }
     return document;
   } catch (err) {
-    throw new Error(`The schema file is not a valid GraphQL document. ${err?.message}`);
+    throw new Error(`The schema file at ${pathToSchemaFile} is not a valid GraphQL document. ${err?.message}`);
   }
 };

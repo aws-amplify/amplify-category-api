@@ -53,7 +53,12 @@ export const constructDefaultGlobalAmplifyInput = async (
   return `input AMPLIFY {\n${inputsString}}\n`;
 };
 
-export const readRDSGlobalAmplifyInput = async (schemaDocument: DocumentNode): Promise<InputObjectTypeDefinitionNode | undefined> => {
+export const readRDSGlobalAmplifyInput = async (
+  schemaDocument: DocumentNode | undefined,
+): Promise<InputObjectTypeDefinitionNode | undefined> => {
+  if (!schemaDocument) {
+    return;
+  }
   const inputNode = schemaDocument.definitions.find(
     (definition) => definition.kind === 'InputObjectTypeDefinition' && definition.name && definition.name.value === 'AMPLIFY',
   );
@@ -74,9 +79,13 @@ export const readRDSSchema = async (pathToSchemaFile: string): Promise<string | 
   return schemaContent;
 };
 
-export const constructRDSGlobalAmplifyInput = async (context: $TSContext, config: any, schemaDocument: DocumentNode): Promise<string> => {
+export const constructRDSGlobalAmplifyInput = async (
+  context: $TSContext,
+  config: any,
+  schemaDocument: DocumentNode | undefined,
+): Promise<string> => {
   const existingInputNode: any = await readRDSGlobalAmplifyInput(schemaDocument);
-  if (existingInputNode?.fields && existingInputNode?.fields?.length > 0) {
+  if (existingInputNode && existingInputNode?.fields && existingInputNode?.fields?.length > 0) {
     const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL)).map((item) => item.name);
     expectedInputs.forEach((input) => {
       const inputNodeField = existingInputNode?.fields?.find((field: any) => field?.name?.value === input);

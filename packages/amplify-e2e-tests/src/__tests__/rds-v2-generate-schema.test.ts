@@ -204,7 +204,7 @@ describe('RDS Generate Schema tests', () => {
       username,
       password,
       validCredentials: true,
-      errMessage: 'The schema is not a valid GraphQL document. Syntax Error: Cannot parse the unexpected character "/".',
+      errMessage: `The schema file at ${rdsSchemaFilePath} is not a valid GraphQL document. Syntax Error: Cannot parse the unexpected character "/".`,
     });
   });
 });
