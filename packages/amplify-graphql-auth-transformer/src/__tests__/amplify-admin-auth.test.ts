@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AuthTransformer } from '../graphql-auth-transformer';
 
 const ADMIN_UI_ROLES = ['us-fake-1_uuid_Full-access/CognitoIdentityCredentials', 'us-fake-1_uuid_Manage-only/CognitoIdentityCredentials'];
@@ -13,7 +13,8 @@ test('simple model with public auth rule and amplify admin app is present', () =
     createdAt: String
     updatedAt: String
   }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'API_KEY',
@@ -31,7 +32,6 @@ test('simple model with public auth rule and amplify admin app is present', () =
       }),
     ],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.schema).toContain('Post @aws_api_key @aws_iam');
 });
@@ -45,7 +45,8 @@ test('simple model with public auth rule and amplify admin app is not enabled', 
           updatedAt: String
       }
       `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'API_KEY',
@@ -54,7 +55,6 @@ test('simple model with public auth rule and amplify admin app is not enabled', 
     },
     transformers: [new ModelTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.schema).not.toContain('Post @aws_api_key @aws_iam');
 });
@@ -68,7 +68,8 @@ test('model with public auth rule without all operations and amplify admin app i
           updatedAt: String
       }
       `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'API_KEY',
@@ -86,7 +87,6 @@ test('model with public auth rule without all operations and amplify admin app i
       }),
     ],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
 
   expect(out.schema).toContain('type Post @aws_iam @aws_api_key');
@@ -108,7 +108,8 @@ test('simple model with private auth rule and amplify admin app is present', () 
           updatedAt: String
       }
       `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -126,7 +127,6 @@ test('simple model with private auth rule and amplify admin app is present', () 
       }),
     ],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.schema).toContain('type Post @aws_iam @aws_cognito_user_pools');
 });
@@ -140,7 +140,8 @@ test('simple model with private auth rule and amplify admin app not enabled', ()
           updatedAt: String
       }
       `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -153,7 +154,6 @@ test('simple model with private auth rule and amplify admin app not enabled', ()
     },
     transformers: [new ModelTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.schema).not.toContain('type Post @aws_iam @aws_cognito_user_pools');
 });
@@ -167,7 +167,8 @@ test('simple model with private auth rule, few operations, and amplify admin app
           updatedAt: String
       }
       `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -185,7 +186,6 @@ test('simple model with private auth rule, few operations, and amplify admin app
       }),
     ],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.schema).toContain('type Post @aws_iam @aws_cognito_user_pools');
   expect(out.schema).toContain(
@@ -212,7 +212,8 @@ test('simple model with private IAM auth rule, few operations, and amplify admin
           updatedAt: String
       }
       `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -230,7 +231,6 @@ test('simple model with private IAM auth rule, few operations, and amplify admin
       }),
     ],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.schema).toContain('Post @aws_iam');
   expect(out.schema).not.toContain(
@@ -257,7 +257,8 @@ test('simple model with AdminUI enabled should add IAM policy only for fields th
           updatedAt: String
       }
       `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -275,7 +276,6 @@ test('simple model with AdminUI enabled should add IAM policy only for fields th
       }),
     ],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.schema).toContain('Post @aws_iam @aws_cognito_user_pool');
   expect(out.schema).toContain(
@@ -319,7 +319,8 @@ test('admin roles should be return the field name inside field resolvers', () =>
       description: String
       secretValue: String @auth(rules: [{ allow: owner }])
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -337,7 +338,6 @@ test('admin roles should be return the field name inside field resolvers', () =>
       }),
     ],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
 
   expect(out.resolvers['Student.secretValue.req.vtl']).toMatchSnapshot();

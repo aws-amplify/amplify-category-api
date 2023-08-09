@@ -1,7 +1,6 @@
-'use strict';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { parse } from 'graphql';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { HttpTransformer } from '..';
 
 test('generates expected VTL', () => {
@@ -20,10 +19,10 @@ test('generates expected VTL', () => {
       ): String @http(method: PUT, url: "https://jsonplaceholder.typicode.com/posts/:title/:id/\${ctx.source.id}", headers: [{key: "X-Header", value: "X-Header-ValuePut"}])
     }
     `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new HttpTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   expect(out.resolvers).toMatchSnapshot();
@@ -42,10 +41,10 @@ test('it generates the expected resources', () => {
       stillMore: String @http(method: PATCH, url: "https://www.api.com/ping/id")
     }
     `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new HttpTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   parse(out.schema);
@@ -184,10 +183,10 @@ test('URL params happy path', () => {
       body: String
     }
     `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new HttpTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   parse(out.schema);
@@ -210,13 +209,12 @@ test('it throws an error when missing protocol in URL argument', () => {
       content: String @http(method: POST, url: "www.api.com/ping")
     }
     `;
-  const transformer = new GraphQLTransform({
-    transformers: [new HttpTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(validSchema);
-  }).toThrow('@http directive at location 56 requires a url parameter that begins with http:// or https://.');
+  expect(() =>
+    testTransform({
+      schema: validSchema,
+      transformers: [new HttpTransformer()],
+    }),
+  ).toThrow('@http directive at location 56 requires a url parameter that begins with http:// or https://.');
 });
 
 test('env on the URI path', () => {
@@ -226,10 +224,10 @@ test('env on the URI path', () => {
       content: String @http(method: POST, url: "http://www.api.com/ping\${env}")
     }
   `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new HttpTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   parse(out.schema);
@@ -252,10 +250,10 @@ test('env on the hostname', () => {
       stillMore: String @http(method: PATCH, url: "https://\${env}www.api.com/ping/id")
     }
   `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new HttpTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   parse(out.schema);
@@ -334,10 +332,10 @@ test('aws_region on the URI path', () => {
       content: String @http(method: POST, url: "http://www.api.com/ping\${aws_region}")
     }
   `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new HttpTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   parse(out.schema);
@@ -360,10 +358,10 @@ test('aws_region on the hostname', () => {
       stillMore: String @http(method: PATCH, url: "https://\${aws_region}www.api.com/ping/id")
     }
   `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new HttpTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   parse(out.schema);

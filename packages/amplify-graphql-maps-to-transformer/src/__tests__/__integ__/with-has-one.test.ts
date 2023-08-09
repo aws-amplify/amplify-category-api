@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
 import { expectedResolversForModelWithRenamedField } from './common';
@@ -43,13 +43,13 @@ const biDiHasOneMapped = /* GraphQL */ `
 `;
 
 const transformSchema = (schema: string) => {
-  const transformer = new GraphQLTransform({
+  return testTransform({
+    schema,
     transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer(), new MapsToTransformer()],
     transformParameters: {
       sandboxModeEnabled: true,
     },
   });
-  return transformer.transform(schema);
 };
 
 describe('@mapsTo with @hasOne', () => {

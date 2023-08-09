@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
@@ -29,13 +29,13 @@ const mappedHasManyAndSearchableSchema = /* GraphQL */ `
 `;
 
 const transformSchema = (schema: string) => {
-  const transformer = new GraphQLTransform({
+  return testTransform({
+    schema,
     transformers: [new ModelTransformer(), new HasManyTransformer(), new SearchableModelTransformer(), new MapsToTransformer()],
     transformParameters: {
       sandboxModeEnabled: true,
     },
   });
-  return transformer.transform(schema);
 };
 
 describe('mapsTo with searchable', () => {

@@ -5,14 +5,16 @@
 ```ts
 
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { Construct } from 'constructs';
 import { DatasourceType } from '@aws-amplify/graphql-transformer-core';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { OverrideConfig } from '@aws-amplify/graphql-transformer-core';
+import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
-import { Template } from '@aws-amplify/graphql-transformer-interfaces';
+import { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
@@ -26,7 +28,7 @@ export const constructTransform: (config: TransformConfig) => GraphQLTransform;
 export const constructTransformerChain: (options?: TransformerFactoryArgs) => TransformerPluginProvider[];
 
 // @public (undocumented)
-export const executeTransform: (config: ExecuteTransformConfig) => DeploymentResources;
+export const executeTransform: (config: ExecuteTransformConfig) => void;
 
 // @public (undocumented)
 export type ExecuteTransformConfig = TransformConfig & {
@@ -36,6 +38,10 @@ export type ExecuteTransformConfig = TransformConfig & {
     printTransformerLog?: (log: TransformerLog) => void;
     sqlLambdaVpcConfig?: VpcConfig;
     rdsLayerMapping?: RDSLayerMapping;
+    scope: Construct;
+    nestedStackProvider: NestedStackProvider;
+    assetProvider: AssetProvider;
+    synthParameters: SynthParameters;
 };
 
 // @public (undocumented)
@@ -43,8 +49,6 @@ export type TransformConfig = {
     transformersFactoryArgs: TransformerFactoryArgs;
     resolverConfig?: ResolverConfig;
     authConfig?: AppSyncAuthConfiguration;
-    stacks?: Record<string, Template>;
-    overrideConfig?: OverrideConfig;
     userDefinedSlots?: Record<string, UserDefinedSlot[]>;
     stackMapping?: Record<string, string>;
     transformParameters: TransformParameters;
@@ -59,6 +63,7 @@ export type TransformerFactoryArgs = {
     adminRoles?: Array<string>;
     identityPoolId?: string;
     customTransformers?: TransformerPluginProvider[];
+    functionNameMap?: Record<string, IFunction>;
 };
 
 // (No @packageDocumentation comment for this package)

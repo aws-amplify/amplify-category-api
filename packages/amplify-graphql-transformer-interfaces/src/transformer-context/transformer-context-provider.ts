@@ -7,6 +7,7 @@ import { StackManagerProvider } from './stack-manager-provider';
 import { TransformerResourceHelperProvider } from './resource-resource-provider';
 import { TransformParameters } from './transform-parameters';
 import { TransformerResolversManagerProvider } from './transformer-resolver-provider';
+import { SynthParameters } from './synth-parameters';
 
 export interface TransformerContextMetadataProvider {
   set<T>(key: string, value: T): void;
@@ -31,6 +32,7 @@ export interface TransformerContextProvider {
   resourceHelper: TransformerResourceHelperProvider;
   authConfig: AppSyncAuthConfiguration;
   transformParameters: TransformParameters;
+  synthParameters: SynthParameters;
 
   isProjectUsingDataStore(): boolean;
   getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
@@ -47,6 +49,7 @@ export type TransformerBeforeStepContextProvider = Pick<
   | 'getResolverConfig'
   | 'authConfig'
   | 'stackManager'
+  | 'synthParameters'
 >;
 
 export type TransformerSchemaVisitStepContextProvider = Pick<
@@ -78,6 +81,7 @@ export type TransformerValidationStepContextProvider = Pick<
   | 'resourceHelper'
   | 'resolvers'
   | 'stackManager'
+  | 'synthParameters'
 >;
 
 export type TransformerPrepareStepContextProvider = TransformerValidationStepContextProvider;

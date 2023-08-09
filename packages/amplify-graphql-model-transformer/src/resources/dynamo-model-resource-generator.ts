@@ -2,11 +2,12 @@ import * as cdk from 'aws-cdk-lib';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelResourceIDs, ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode } from 'graphql';
-import { SyncUtils, TransformerNestedStack } from '@aws-amplify/graphql-transformer-core';
+import { SyncUtils, setResourceName } from '@aws-amplify/graphql-transformer-core';
 import { AttributeType, CfnTable, StreamViewType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnRole } from 'aws-cdk-lib/aws-iam';
+import { Construct } from 'constructs';
 import { DynamoDBModelVTLGenerator, ModelVTLGenerator } from '../resolvers';
 import { ModelResourceGenerator } from './model-resource-generator';
 
@@ -24,28 +25,29 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
 
     if (this.isProvisioned()) {
       // add model related-parameters to the root stack
-      ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
+      const rootStack = cdk.Stack.of(ctx.stackManager.scope);
+      new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
         description: 'The number of read IOPS the table should support.',
         type: 'Number',
         default: 5,
       });
-      ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
+      new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
         description: 'The number of write IOPS the table should support.',
         type: 'Number',
         default: 5,
       });
-      ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
+      new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
         description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
         default: 'PAY_PER_REQUEST',
         allowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
       });
-      ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
+      new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
         description: 'Whether to enable Point in Time Recovery on the table.',
         type: 'String',
         default: 'false',
         allowedValues: ['true', 'false'],
       });
-      ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
+      new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
         description: 'Enable server side encryption powered by KMS.',
         type: 'String',
         default: 'true',
@@ -57,9 +59,9 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
       // This name is used by the mock functionality. Changing this can break mock.
       const tableBaseName = ctx.resourceHelper.getModelNameMapping(model!.name.value);
       const tableLogicalName = ModelResourceIDs.ModelTableResourceID(tableBaseName);
-      const stack = ctx.stackManager.getStackFor(tableLogicalName, tableBaseName);
+      const scope = ctx.stackManager.getScopeFor(tableLogicalName, tableBaseName);
 
-      this.createModelTable(stack, model, ctx);
+      this.createModelTable(scope, model, ctx);
     });
 
     this.generateResolvers(ctx);
@@ -70,71 +72,68 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     return new DynamoDBModelVTLGenerator();
   }
 
-  private createModelTable(stack: cdk.Stack, def: ObjectTypeDefinitionNode, context: TransformerContextProvider): void {
-    const tableLogicalName = ModelResourceIDs.ModelTableResourceID(def!.name.value);
-    const tableName = context.resourceHelper.generateTableName(def!.name.value);
+  private createModelTable(scope: Construct, def: ObjectTypeDefinitionNode, context: TransformerContextProvider): void {
+    const modelName = def!.name.value;
+    const tableLogicalName = ModelResourceIDs.ModelTableResourceID(modelName);
+    const tableName = context.resourceHelper.generateTableName(modelName);
 
     // Add parameters.
-    const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
-    const readIops = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
+    const readIops = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
       description: 'The number of read IOPS the table should support.',
       type: 'Number',
       default: 5,
     });
-    const writeIops = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
+    const writeIops = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
       description: 'The number of write IOPS the table should support.',
       type: 'Number',
       default: 5,
     });
-    const billingMode = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
+    const billingMode = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
       description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
       type: 'String',
       default: 'PAY_PER_REQUEST',
       allowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
     });
-    const pointInTimeRecovery = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
+    const pointInTimeRecovery = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
       description: 'Whether to enable Point in Time Recovery on the table.',
       type: 'String',
       default: 'false',
       allowedValues: ['true', 'false'],
     });
-    const enableSSE = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
+    const enableSSE = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
       description: 'Enable server side encryption powered by KMS.',
       type: 'String',
       default: 'true',
       allowedValues: ['true', 'false'],
     });
     // add the connection between the root and nested stack so the values can be passed down
-    (stack as TransformerNestedStack).setParameter(readIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS));
-    (stack as TransformerNestedStack).setParameter(writeIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS));
-    (stack as TransformerNestedStack).setParameter(billingMode.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBBillingMode));
-    (stack as TransformerNestedStack).setParameter(
+    (scope as cdk.NestedStack).setParameter(readIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS));
+    (scope as cdk.NestedStack).setParameter(writeIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS));
+    (scope as cdk.NestedStack).setParameter(billingMode.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBBillingMode));
+    (scope as cdk.NestedStack).setParameter(
       pointInTimeRecovery.node.id,
       cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery),
     );
-    (stack as TransformerNestedStack).setParameter(
-      enableSSE.node.id,
-      cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption),
-    );
+    (scope as cdk.NestedStack).setParameter(enableSSE.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption));
 
     // Add conditions.
-    new cdk.CfnCondition(stack, ResourceConstants.CONDITIONS.HasEnvironmentParameter, {
-      expression: cdk.Fn.conditionNot(cdk.Fn.conditionEquals(env, ResourceConstants.NONE)),
+    new cdk.CfnCondition(scope, ResourceConstants.CONDITIONS.HasEnvironmentParameter, {
+      expression: cdk.Fn.conditionNot(cdk.Fn.conditionEquals(context.synthParameters.amplifyEnvironmentName, ResourceConstants.NONE)),
     });
-    const useSSE = new cdk.CfnCondition(stack, ResourceConstants.CONDITIONS.ShouldUseServerSideEncryption, {
+    const useSSE = new cdk.CfnCondition(scope, ResourceConstants.CONDITIONS.ShouldUseServerSideEncryption, {
       expression: cdk.Fn.conditionEquals(enableSSE, 'true'),
     });
-    const usePayPerRequestBilling = new cdk.CfnCondition(stack, ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling, {
+    const usePayPerRequestBilling = new cdk.CfnCondition(scope, ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling, {
       expression: cdk.Fn.conditionEquals(billingMode, 'PAY_PER_REQUEST'),
     });
-    const usePointInTimeRecovery = new cdk.CfnCondition(stack, ResourceConstants.CONDITIONS.ShouldUsePointInTimeRecovery, {
+    const usePointInTimeRecovery = new cdk.CfnCondition(scope, ResourceConstants.CONDITIONS.ShouldUsePointInTimeRecovery, {
       expression: cdk.Fn.conditionEquals(pointInTimeRecovery, 'true'),
     });
 
     const removalPolicy = this.options.EnableDeletionProtection ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY;
 
     // Expose a way in context to allow proper resource naming
-    const table = new Table(stack, tableLogicalName, {
+    const table = new Table(scope, tableLogicalName, {
       tableName,
       partitionKey: {
         name: 'id',
@@ -146,6 +145,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
       ...(context.isProjectUsingDataStore() ? { timeToLiveAttribute: '_ttl' } : undefined),
     });
     const cfnTable = table.node.defaultChild as CfnTable;
+    setResourceName(table, { name: modelName, setOnDefaultChild: true });
 
     cfnTable.provisionedThroughput = cdk.Fn.conditionIf(usePayPerRequestBilling.logicalId, cdk.Fn.ref('AWS::NoValue'), {
       ReadCapacityUnits: readIops,
@@ -162,29 +162,31 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     };
 
     const streamArnOutputId = `GetAtt${ModelResourceIDs.ModelTableStreamArn(def!.name.value)}`;
-    new cdk.CfnOutput(stack, streamArnOutputId, {
-      value: cdk.Fn.getAtt(tableLogicalName, 'StreamArn').toString(),
-      description: 'Your DynamoDB table StreamArn.',
-      exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', tableLogicalName, 'StreamArn']),
-    });
+    if (table.tableStreamArn) {
+      new cdk.CfnOutput(cdk.Stack.of(scope), streamArnOutputId, {
+        value: table.tableStreamArn,
+        description: 'Your DynamoDB table StreamArn.',
+        exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', tableLogicalName, 'StreamArn']),
+      });
+    }
 
     const tableNameOutputId = `GetAtt${tableLogicalName}Name`;
-    new cdk.CfnOutput(stack, tableNameOutputId, {
-      value: cdk.Fn.ref(tableLogicalName),
+    new cdk.CfnOutput(cdk.Stack.of(scope), tableNameOutputId, {
+      value: table.tableName,
       description: 'Your DynamoDB table name.',
       exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', tableLogicalName, 'Name']),
     });
 
-    const role = this.createIAMRole(context, def, stack, tableName);
+    const role = this.createIAMRole(context, def, scope, tableName);
     const tableDataSourceLogicalName = `${def!.name.value}Table`;
-    this.createModelTableDataSource(def, context, table, stack, role, tableDataSourceLogicalName);
+    this.createModelTableDataSource(def, context, table, scope, role, tableDataSourceLogicalName);
   }
 
   private createModelTableDataSource(
     def: ObjectTypeDefinitionNode,
     context: TransformerContextProvider,
     table: Table,
-    stack: cdk.Stack,
+    scope: Construct,
     role: iam.Role,
     dataSourceLogicalName: string,
   ): void {
@@ -193,7 +195,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
       datasourceRoleLogicalID,
       table,
       { name: dataSourceLogicalName, serviceRole: role },
-      stack,
+      scope,
     );
 
     const cfnDataSource = dataSource.node.defaultChild as CfnDataSource;
@@ -211,7 +213,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     }
 
     const datasourceOutputId = `GetAtt${datasourceRoleLogicalID}Name`;
-    new cdk.CfnOutput(stack, datasourceOutputId, {
+    new cdk.CfnOutput(cdk.Stack.of(scope), datasourceOutputId, {
       value: dataSource.ds.attrName,
       description: 'Your model DataSource name.',
       exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', datasourceRoleLogicalID, 'Name']),
@@ -225,16 +227,17 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
   /**
    * createIAMRole
    */
-  createIAMRole = (context: TransformerContextProvider, def: ObjectTypeDefinitionNode, stack: cdk.Stack, tableName: string): iam.Role => {
+  createIAMRole = (context: TransformerContextProvider, def: ObjectTypeDefinitionNode, scope: Construct, tableName: string): iam.Role => {
     const roleName = context.resourceHelper.generateIAMRoleName(ModelResourceIDs.ModelTableIAMRoleID(def!.name.value));
-    const role = new iam.Role(stack, ModelResourceIDs.ModelTableIAMRoleID(def!.name.value), {
+    const role = new iam.Role(scope, ModelResourceIDs.ModelTableIAMRoleID(def!.name.value), {
       roleName,
       assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
     });
+    setResourceName(role, { name: ModelResourceIDs.ModelTableIAMRoleID(def!.name.value), setOnDefaultChild: true });
 
     const amplifyDataStoreTableName = context.resourceHelper.generateTableName(SyncResourceIDs.syncTableName);
     role.attachInlinePolicy(
-      new iam.Policy(stack, 'DynamoDBAccess', {
+      new iam.Policy(scope, 'DynamoDBAccess', {
         statements: [
           new iam.PolicyStatement({
             effect: iam.Effect.ALLOW,
@@ -278,7 +281,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     const syncConfig = SyncUtils.getSyncConfig(context, def!.name.value);
     if (syncConfig && SyncUtils.isLambdaSyncConfig(syncConfig)) {
       role.attachInlinePolicy(
-        SyncUtils.createSyncLambdaIAMPolicy(context, stack, syncConfig.LambdaConflictHandler.name, syncConfig.LambdaConflictHandler.region),
+        SyncUtils.createSyncLambdaIAMPolicy(context, scope, syncConfig.LambdaConflictHandler.name, syncConfig.LambdaConflictHandler.region),
       );
     }
 

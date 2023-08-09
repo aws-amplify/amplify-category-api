@@ -1,23 +1,6 @@
-import * as path from 'path';
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import {
-  MappingTemplate,
-  GraphQLTransform,
-  SyncUtils,
-  StackManager,
-  DatasourceType,
-  MYSQL_DB_TYPE,
-  DDB_DB_TYPE,
-  DBType,
-} from '@aws-amplify/graphql-transformer-core';
-import {
-  DataSourceProvider,
-  StackManagerProvider,
-  TransformerContextProvider,
-  TransformerPluginProvider,
-  TransformerResolverProvider,
-  AmplifyApiGraphQlResourceStackTemplate,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { MappingTemplate, DatasourceType, MYSQL_DB_TYPE, DDB_DB_TYPE, DBType } from '@aws-amplify/graphql-transformer-core';
+import { DataSourceProvider, TransformerContextProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import * as cdk from 'aws-cdk-lib';
@@ -27,17 +10,13 @@ import {
   block,
   bool,
   compoundExpression,
-  DynamoDBMappingTemplate,
-  equals,
   Expression,
   forEach,
   ifElse,
   iff,
   int,
-  isNullOrEmpty,
   list,
   methodCall,
-  nul,
   not,
   obj,
   print,
@@ -530,7 +509,7 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
     ),
   );
 
-  resolver.mapToStack(ctx.stackManager.getStackFor(resolverResourceId, stackId));
+  resolver.setScope(ctx.stackManager.getScopeFor(resolverResourceId, stackId));
   ctx.resolvers.addResolver(object.name.value, queryField, resolver);
 }
 

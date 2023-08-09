@@ -27,7 +27,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "1.4.0",
+    "@aws-amplify/graphql-transformer-core": "2.0.0",
     "fs-extra": "^8.1.0",
     "glob": "^7.2.0",
     "graphql": "^15.5.0",
@@ -35,7 +35,7 @@
     "lodash": "^4.17.21"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.4",
+    "@aws-amplify/amplify-cli-core": "4.2.4-rc.43f73ab268.0",
     "@aws-amplify/amplify-environment-parameters": "^1.5.0",
     "@aws-amplify/amplify-prompts": "^2.6.8"
   },

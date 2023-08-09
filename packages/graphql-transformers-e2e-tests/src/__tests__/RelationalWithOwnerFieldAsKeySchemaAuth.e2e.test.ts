@@ -2,7 +2,7 @@ import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { S3, CognitoIdentityServiceProvider as CognitoClient } from 'aws-sdk';
@@ -83,7 +83,8 @@ beforeAll(async () => {
     const hasManyTransformer = new HasManyTransformer();
     const authTransformer = new AuthTransformer();
     const primaryKeyTransformer = new PrimaryKeyTransformer();
-    const transformer = new GraphQLTransform({
+    out = testTransform({
+      schema: validSchema,
       authConfig: {
         defaultAuthentication: {
           authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -92,7 +93,6 @@ beforeAll(async () => {
       },
       transformers: [modelTransformer, primaryKeyTransformer, hasManyTransformer, authTransformer],
     });
-    out = transformer.transform(validSchema);
   } catch (e) {
     console.error(`Failed to transform schema: ${e}`);
     expect(true).toEqual(false);

@@ -1,7 +1,7 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { Output } from 'aws-sdk/clients/cloudformation';
@@ -335,22 +335,22 @@ describe('@model with @auth', () => {
       },
       additionalAuthenticationProviders: [],
     };
-    const transformer = new GraphQLTransform({
-      authConfig,
-      transformers: [
-        new ModelTransformer(),
-        new PrimaryKeyTransformer(),
-        new IndexTransformer(),
-        new HasOneTransformer(),
-        new AuthTransformer(),
-      ],
-    });
     const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
     USER_POOL_ID = userPoolResponse.UserPool.Id;
     const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
     const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
     try {
-      const out = transformer.transform(validSchema);
+      const out = testTransform({
+        schema: validSchema,
+        authConfig,
+        transformers: [
+          new ModelTransformer(),
+          new PrimaryKeyTransformer(),
+          new IndexTransformer(),
+          new HasOneTransformer(),
+          new AuthTransformer(),
+        ],
+      });
       const finishedStack = await deploy(
         customS3Client,
         cf,

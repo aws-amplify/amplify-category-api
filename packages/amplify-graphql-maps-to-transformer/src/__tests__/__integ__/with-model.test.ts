@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 
 describe('@mapsTo directive on model type', () => {
@@ -10,13 +10,13 @@ describe('@mapsTo directive on model type', () => {
         title: String!
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: basicSchema,
       transformers: [new ModelTransformer(), new MapsToTransformer()],
       transformParameters: {
         sandboxModeEnabled: true,
       },
     });
-    const out = transformer.transform(basicSchema);
     expect(out.stacks.Task.Resources!.TaskTable!.Properties.TableName).toMatchInlineSnapshot(`
       Object {
         "Fn::Join": Array [
