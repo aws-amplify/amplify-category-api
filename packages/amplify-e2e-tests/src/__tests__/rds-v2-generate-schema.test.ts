@@ -11,6 +11,7 @@ import {
   initJSProjectWithProfile,
   removeRDSPortInboundRule,
   apiGenerateSchema,
+  apiGenerateSchemaWithError,
 } from 'amplify-category-api-e2e-core';
 import axios from 'axios';
 import { existsSync, readFileSync, writeFileSync } from 'fs-extra';
@@ -30,6 +31,7 @@ describe('RDS Generate Schema tests', () => {
   const database = 'default_db';
   let host = 'localhost';
   const identifier = `integtest${db_identifier}`;
+  const apiName = 'rdsapi';
 
   let projRoot;
 
@@ -39,6 +41,21 @@ describe('RDS Generate Schema tests', () => {
     const response = await axios(url);
     publicIpCidr = `${response.data.trim()}/32`;
     await setupDatabase();
+    await initJSProjectWithProfile(projRoot, {
+      disableAmplifyAppCreation: false,
+    });
+
+    await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
+
+    await importRDSDatabase(projRoot, {
+      database,
+      host,
+      port,
+      username,
+      password,
+      useVpc: false,
+      apiExists: true,
+    });
   });
 
   afterAll(async () => {
@@ -105,24 +122,7 @@ describe('RDS Generate Schema tests', () => {
   };
 
   it('preserves the schema edits for mysql relational database', async () => {
-    const apiName = 'rdsapi';
-    await initJSProjectWithProfile(projRoot, {
-      disableAmplifyAppCreation: false,
-    });
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
-
-    await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
-
-    await importRDSDatabase(projRoot, {
-      database,
-      host,
-      port,
-      username,
-      password,
-      useVpc: false,
-      apiExists: true,
-    });
-
     const schemaContent = readFileSync(rdsSchemaFilePath, 'utf8');
     const schema = parse(schemaContent);
 
@@ -184,5 +184,27 @@ describe('RDS Generate Schema tests', () => {
     // The re-generated schema preserves the edits that were made
     const regeneratedSchema = readFileSync(rdsSchemaFilePath, 'utf8');
     expect(regeneratedSchema.replace(/\s/g, '')).toEqual(editedSchema.replace(/\s/g, ''));
+  });
+
+  it('throws error when an invalid edit is made to the schema', async () => {
+    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+    // Make edits to the generated schema to make it invalid
+    const editedSchema = `
+        // This comment is invalid in GraphQL schema
+        input AMPLIFY {
+            engine: String = "mysql"
+            globalAuthRule: AuthRule = {allow: public}
+        }
+      `;
+    writeFileSync(rdsSchemaFilePath, editedSchema);
+    await apiGenerateSchemaWithError(projRoot, {
+      database,
+      host,
+      port,
+      username,
+      password,
+      validCredentials: true,
+      errMessage: 'The schema is not a valid GraphQL document. Syntax Error: Cannot parse the unexpected character "/".',
+    });
   });
 });

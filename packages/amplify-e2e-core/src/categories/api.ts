@@ -1122,6 +1122,27 @@ export function apiGenerateSchema(cwd: string, opts: ImportApiOptions & { validC
   });
 }
 
+export function apiGenerateSchemaWithError(cwd: string, opts: ImportApiOptions & { validCredentials: boolean; errMessage: string }) {
+  const options = _.assign(defaultOptions, opts);
+  return new Promise<void>((resolve, reject) => {
+    const generateSchemaCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['generate-schema', 'api'], {
+      cwd,
+      stripColors: true,
+    });
+    if (!options?.validCredentials) {
+      promptDBInformation(generateSchemaCommands, options);
+    }
+    generateSchemaCommands.wait(options.errMessage);
+    generateSchemaCommands.run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
+  });
+}
+
 export function removeApi(cwd: string) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'api'], { cwd, stripColors: true })
