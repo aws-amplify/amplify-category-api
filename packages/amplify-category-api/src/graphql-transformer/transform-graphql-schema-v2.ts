@@ -17,6 +17,7 @@ import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './uti
 import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerProjectOptions } from './transformer-options-types';
 import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { checkForUnsupportedDirectives } from '../provider-utils/awscloudformation/utils/rds-resources/utils';
 import { executeTransform } from '@aws-amplify/graphql-transformer';
 import {
   getConnectionSecrets,
@@ -183,6 +184,8 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
   if (!schema) {
     return undefined;
   }
+
+  checkForUnsupportedDirectives(schema, opts.projectConfig.modelToDatasourceMap);
 
   const { modelToDatasourceMap } = opts.projectConfig;
   const datasourceSecretMap = await getDatasourceSecretMap(context);
