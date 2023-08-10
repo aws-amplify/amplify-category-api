@@ -3,6 +3,7 @@ import { checkForUnsupportedDirectives } from '../../../../provider-utils/awsclo
 describe('check for unsupported RDS directives', () => {
   const modelToDatasourceMap = new Map();
   modelToDatasourceMap.set('Post', { dbType: 'MySQL' });
+  modelToDatasourceMap.set('Tag', { dbType: 'DDB' });
 
   it('should throw error if auth directive is present on a model', () => {
     const schema = `
@@ -11,7 +12,9 @@ describe('check for unsupported RDS directives', () => {
                 title: String!
             }
         `;
-    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowError();
+    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
+      `"Directive @auth  belonging to a type Post is not supported on RDS datasource backed types. Following directives are not supported on RDS datasource backed types: auth, searchable, predictions, function, manyToMany, http, mapsTo"`,
+    );
   });
 
   it('should throw error if auth directive is present on a field', () => {
@@ -21,7 +24,9 @@ describe('check for unsupported RDS directives', () => {
                 title: String! @auth(rules: [{allow: owner}])
             }
         `;
-    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowError();
+    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
+      `"Directive @auth on field title belonging to a type Post is not supported on RDS datasource backed types. Following directives are not supported on RDS datasource backed types: auth, searchable, predictions, function, manyToMany, http, mapsTo"`,
+    );
   });
 
   it('should throw error if searchable directive is present on a model', () => {
@@ -31,7 +36,9 @@ describe('check for unsupported RDS directives', () => {
                 title: String!
             }
         `;
-    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowError();
+    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
+      `"Directive @searchable  belonging to a type Post is not supported on RDS datasource backed types. Following directives are not supported on RDS datasource backed types: auth, searchable, predictions, function, manyToMany, http, mapsTo"`,
+    );
   });
 
   it('should throw error if predictions directive is present on a query type field', () => {
@@ -40,7 +47,9 @@ describe('check for unsupported RDS directives', () => {
                 recognizeTextFromImage: String @predictions(actions: [identifyText])
             }
         `;
-    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowError();
+    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
+      `"Directive @predictions on field recognizeTextFromImage belonging to a type Query is not supported on RDS datasource backed types. Following directives are not supported on RDS datasource backed types: auth, searchable, predictions, function, manyToMany, http, mapsTo"`,
+    );
   });
 
   it('should throw error if function directive is present on a field', () => {
@@ -49,7 +58,9 @@ describe('check for unsupported RDS directives', () => {
                 echo(msg: String): String @function(name: "echofunction")
             }
         `;
-    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowError();
+    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
+      `"Directive @function on field echo belonging to a type Query is not supported on RDS datasource backed types. Following directives are not supported on RDS datasource backed types: auth, searchable, predictions, function, manyToMany, http, mapsTo"`,
+    );
   });
 
   it('should throw error if manyToMany directive is present on a field', () => {
@@ -67,7 +78,9 @@ describe('check for unsupported RDS directives', () => {
                 posts: [Post] @manyToMany(relationName: "PostTags")
             }
         `;
-    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowError();
+    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
+      `"Directive @manyToMany on field tags belonging to a type Post is not supported on RDS datasource backed types. Following directives are not supported on RDS datasource backed types: auth, searchable, predictions, function, manyToMany, http, mapsTo"`,
+    );
   });
 
   it('should throw error if http directive is present on a field', () => {
@@ -83,7 +96,9 @@ describe('check for unsupported RDS directives', () => {
                 listPosts: [Post] @http(url: "https://www.example.com/posts")
             }
         `;
-    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowError();
+    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
+      `"Directive @http on field listPosts belonging to a type Query is not supported on RDS datasource backed types. Following directives are not supported on RDS datasource backed types: auth, searchable, predictions, function, manyToMany, http, mapsTo"`,
+    );
   });
 
   it('should throw error if mapsTo directive is present on a model', () => {
@@ -93,6 +108,38 @@ describe('check for unsupported RDS directives', () => {
                 title: String!
             }
         `;
-    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowError();
+    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
+      `"Directive @mapsTo  belonging to a type Post is not supported on RDS datasource backed types. Following directives are not supported on RDS datasource backed types: auth, searchable, predictions, function, manyToMany, http, mapsTo"`,
+    );
+  });
+
+  it('should not throw error if there are only DDB models', () => {
+    const modelToDatasourceMap = new Map();
+    modelToDatasourceMap.set('Post', { dbType: 'DDB' });
+    const schema = `
+            type Post @model @mapsTo(name: "Article") {
+                id: ID!
+                title: String!
+            }
+        `;
+    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).not.toThrowError();
+  });
+
+  it('early return if model_to_datasource map is empty or undefined', () => {
+    const modelToDatasourceMap = new Map();
+    const schema = `
+            type Post @model @mapsTo(name: "Article") {
+                id: ID!
+                title: String!
+            }
+        `;
+    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).not.toThrowError();
+  });
+
+  it('early return if schema is empty or undefined', () => {
+    const modelToDatasourceMap = new Map();
+    modelToDatasourceMap.set('Post', { dbType: 'MySQL' });
+    const schema = '';
+    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).not.toThrowError();
   });
 });
