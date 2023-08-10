@@ -12,12 +12,17 @@ export const checkForUnsupportedDirectives = (schema: string, modelToDatasourceM
   const rdsModels = Array.from(modelToDatasourceMap?.entries())
     .filter(([key, value]) => value?.dbType === MYSQL_DB_TYPE)
     .map(([key, value]) => key);
+
+  if (_.isEmpty(rdsModels)) {
+    return;
+  }
+
   const document = parse(schema);
   const schemaVisitor = {
     FieldDefinition: {
       enter(node: FieldDefinitionNode, key, parent, path, ancestors): any {
         const parentName = getParentName(ancestors);
-        if (!(parentName === 'Query') && !rdsModels.includes(parentName)) {
+        if (!(parentName === 'Query') && !rdsModels?.includes(parentName)) {
           return;
         }
         node?.directives?.map((directive) => {
@@ -30,7 +35,7 @@ export const checkForUnsupportedDirectives = (schema: string, modelToDatasourceM
     ObjectTypeDefinition: {
       enter(node: ObjectTypeDefinitionNode): any {
         const typeName = node?.name?.value;
-        if (!(typeName === 'Query') && !rdsModels.includes(typeName)) {
+        if (!(typeName === 'Query') && !rdsModels?.includes(typeName)) {
           return;
         }
         node?.directives?.map((directive) => {
