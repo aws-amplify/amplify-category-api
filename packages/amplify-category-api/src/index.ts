@@ -15,7 +15,11 @@ import * as fs from 'fs-extra';
 import { RDS_SCHEMA_FILE_NAME, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import _ from 'lodash';
 import { run } from './commands/api/console';
-import { getAppSyncAuthConfig, getAppSyncResourceName , getAPIResourceDir } from './provider-utils/awscloudformation/utils/amplify-meta-utils';
+import {
+  getAppSyncAuthConfig,
+  getAppSyncResourceName,
+  getAPIResourceDir,
+} from './provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { provider } from './provider-utils/awscloudformation/aws-constants';
 import { ApigwStackTransform } from './provider-utils/awscloudformation/cdk-stack-builder';
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';

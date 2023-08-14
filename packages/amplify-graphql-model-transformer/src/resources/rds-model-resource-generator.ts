@@ -1,6 +1,6 @@
 import { MYSQL_DB_TYPE, RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { Topic , SubscriptionFilter } from 'aws-cdk-lib/aws-sns';
+import { Topic, SubscriptionFilter } from 'aws-cdk-lib/aws-sns';
 import { LambdaSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { ModelVTLGenerator, RDSModelVTLGenerator } from '../resolvers';
