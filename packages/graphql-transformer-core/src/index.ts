@@ -14,21 +14,12 @@ import {
   revertAPIMigration,
   CLOUDFORMATION_FILE_NAME,
   PARAMETERS_FILE_NAME,
-  getSanityCheckRules,
 } from './util/amplifyUtils';
 import {
   readSchema as readProjectSchema,
   loadProject as readProjectConfiguration,
   loadConfig as readTransformerConfiguration,
   writeConfig as writeTransformerConfiguration,
-  TRANSFORM_CONFIG_FILE_NAME,
-  TRANSFORM_BASE_VERSION,
-  TRANSFORM_CURRENT_VERSION,
-  TransformConfig,
-  ConflictHandlerType,
-  ConflictDetectionType,
-  ResolverConfig,
-  SyncConfig,
 } from './util/transformConfig';
 import { EXTRA_DIRECTIVES_DOCUMENT } from './validation';
 
@@ -46,7 +37,6 @@ export { FeatureFlagProvider } from './FeatureFlags';
 
 export {
   GraphQLTransform,
-  TransformConfig,
   TransformerContext,
   MappingParameters,
   Transformer,
@@ -63,16 +53,8 @@ export {
   readTransformerConfiguration,
   writeTransformerConfiguration,
   revertAPIMigration,
-  TRANSFORM_CONFIG_FILE_NAME,
-  TRANSFORM_BASE_VERSION,
-  TRANSFORM_CURRENT_VERSION,
-  ConflictHandlerType,
-  ConflictDetectionType,
-  ResolverConfig,
-  SyncConfig,
   DeploymentResources,
   CLOUDFORMATION_FILE_NAME,
   PARAMETERS_FILE_NAME,
-  getSanityCheckRules,
 };
 // No-op change to trigger publish
