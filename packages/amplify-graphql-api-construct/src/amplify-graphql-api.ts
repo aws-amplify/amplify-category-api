@@ -142,6 +142,7 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
     const output: GraphqlOutput = {
       version: '1',
       payload: {
+        awsAppsyncApiId: this.resources.cfnResources.cfnGraphqlApi.attrApiId,
         awsAppsyncApiEndpoint: this.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl,
         awsAppsyncAuthenticationType: this.resources.cfnResources.cfnGraphqlApi.authenticationType as AwsAppsyncAuthenticationType,
         awsAppsyncRegion: stack.region,
