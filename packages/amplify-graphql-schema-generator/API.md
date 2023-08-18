@@ -4,6 +4,22 @@
 
 ```ts
 
+import { DocumentNode } from 'graphql';
+import { FieldDefinitionNode } from 'graphql';
+import { ObjectTypeDefinitionNode } from 'graphql';
+
+// @public (undocumented)
+export const applyFieldOverrides: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => FieldDefinitionNode;
+
+// @public (undocumented)
+export const applyJSONFieldTypeOverrides: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => FieldDefinitionNode;
+
+// @public (undocumented)
+export const applySchemaOverrides: (document: DocumentNode, existingDocument?: DocumentNode | undefined) => DocumentNode;
+
+// @public (undocumented)
+export const checkDestructiveNullabilityChange: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => void;
+
 // @public (undocumented)
 export interface CustomType {
     // (undocumented)
@@ -100,10 +116,13 @@ export type FieldDataType = 'String' | 'ID' | 'Int' | 'Float' | 'AWSJSON' | 'AWS
 export type FieldType = DefaultType | CustomType | ListType | NonNullType | EnumType;
 
 // @public (undocumented)
-export const generateGraphQLSchema: (schema: Schema) => string;
+export const generateGraphQLSchema: (schema: Schema, existingSchemaDocument?: DocumentNode | undefined) => string;
 
 // @public (undocumented)
 export const getHostVpc: (hostname: string, region: string) => Promise<VpcConfig | undefined>;
+
+// @public (undocumented)
+export const getParentNode: (ancestors: any[]) => ObjectTypeDefinitionNode | undefined;
 
 // @public (undocumented)
 export class Index {
