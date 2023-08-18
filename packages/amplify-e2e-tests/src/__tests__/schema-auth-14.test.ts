@@ -32,6 +32,11 @@ describe('api directives @auth batch 14', () => {
       const testResult = await testSchema(projectDir, 'auth', 'owner8');
       expect(testResult).toBeTruthy();
     });
+
+    it('auth owner12', async () => {
+      const testResult = await testSchema(projectDir, 'auth', 'owner12');
+      expect(testResult).toBeTruthy();
+    });
   });
 
   describe('android libraries', () => {

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-schema-generator",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Amplify GraphQL schema generator",
   "repository": {
     "type": "git",
@@ -25,10 +25,11 @@
     "build": "tsc && cd vpc-db-lambda && rm -rf node_modules && npm install && tsc && cp -r node_modules lib && cd lib && bestzip --force node ../../lib/rds-schema-inspector.zip ./*",
     "watch": "tsc -w",
     "clean": "rimraf ./lib && rimraf ./vpc-db-lambda/lib",
-    "test": "jest"
+    "test": "jest",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "1.4.0",
+    "@aws-amplify/graphql-transformer-core": "2.1.0",
     "graphql-transformer-common": "4.25.0",
     "@aws-sdk/client-iam": "3.338.0",
     "@aws-sdk/client-lambda": "3.338.0",
@@ -40,7 +41,7 @@
     "ora": "^4.0.3"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-prompts": "^2.6.8"
+    "@aws-amplify/amplify-prompts": "^2.8.1-aug-transformer-mv-bump.0"
   },
   "devDependencies": {
     "@types/node": "^12.12.6"

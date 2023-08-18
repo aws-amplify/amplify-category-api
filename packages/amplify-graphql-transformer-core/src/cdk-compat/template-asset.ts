@@ -3,16 +3,17 @@ import * as crypto from 'crypto';
 import {
   InlineMappingTemplateProvider,
   MappingTemplateType,
+  S3Asset,
   S3MappingFunctionCodeProvider,
   S3MappingTemplateProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
-import { FileAsset } from './file-asset';
+import { assetManager } from '../transformer-context/asset-manager';
 
 export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
   public readonly type = MappingTemplateType.S3_LOCATION;
 
-  private asset?: FileAsset;
+  private asset?: S3Asset;
 
   private fileName: string;
 
@@ -23,9 +24,9 @@ export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
     this.filePath = filePath;
   }
 
-  bind(scope: Construct): FileAsset {
+  bind(scope: Construct): S3Asset {
     if (!this.asset) {
-      this.asset = new FileAsset(scope, `Code${this.fileName}`, {
+      this.asset = assetManager.createAsset(scope, `Code${this.fileName}`, {
         fileContent: this.filePath,
         fileName: this.fileName,
       });
@@ -33,12 +34,13 @@ export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
     return this.asset;
   }
 }
+
 export class S3MappingTemplate implements S3MappingTemplateProvider {
   private content: string;
 
   private name: string;
 
-  private asset?: FileAsset;
+  private asset?: S3Asset;
 
   public readonly type = MappingTemplateType.S3_LOCATION;
 
@@ -55,12 +57,12 @@ export class S3MappingTemplate implements S3MappingTemplateProvider {
   bind(scope: Construct): string {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
-      this.asset = new FileAsset(scope, `Template${this.name}`, {
+      this.asset = assetManager.createAsset(scope, `Template${this.name}`, {
         fileContent: this.content,
         fileName: this.name,
       });
     }
-    return this.asset.s3Url;
+    return this.asset.s3ObjectUrl;
   }
 
   /**

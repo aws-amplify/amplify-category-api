@@ -2,7 +2,7 @@ import { print } from 'graphql';
 import { EXTRA_DIRECTIVES_DOCUMENT } from './transformation/validation';
 
 export { GraphQLTransform, GraphQLTransformOptions, SyncUtils } from './transformation';
-export { OverrideConfig, UserDefinedSlot, UserDefinedResolver } from './transformation/types';
+export { UserDefinedSlot, UserDefinedResolver } from './transformation/types';
 export { validateModelSchema } from './transformation/validation';
 export {
   ConflictDetectionType,
@@ -13,7 +13,6 @@ export {
   SyncConfigServer,
   SyncConfigLambda,
   TransformConfig,
-  TransformerProjectConfig,
   DatasourceType,
   DBType,
 } from './config/index';
@@ -27,12 +26,13 @@ export {
   collectDirectives,
   collectDirectivesByTypeNames,
   DirectiveWrapper,
-  IAM_AUTH_ROLE_PARAMETER,
-  IAM_UNAUTH_ROLE_PARAMETER,
   APICategory,
   getPrimaryKeyFields,
   getDatasourceType,
+  setResourceName,
+  getResourceName,
 } from './utils';
+export type { SetResourceNameProps } from './utils';
 export * from './utils/operation-names';
 export * from './errors';
 export {
@@ -60,7 +60,7 @@ export const getAppSyncServiceExtraDirectives = (): string => {
   return print(EXTRA_DIRECTIVES_DOCUMENT);
 };
 
-export { MappingTemplate, TransformerNestedStack } from './cdk-compat';
+export { MappingTemplate } from './cdk-compat';
 export {
   EnumWrapper,
   FieldWrapper,

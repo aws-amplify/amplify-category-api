@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-dynamodb-simulator",
-  "version": "2.4.12",
+  "version": "2.4.13",
   "description": "DynamoDB emulator NodeJS wrapper",
   "private": "true",
   "repository": {
@@ -32,7 +32,7 @@
     "which": "^2.0.2"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.4"
+    "@aws-amplify/amplify-cli-core": "4.2.4-aug-transformer-mv-bump.0"
   },
   "devDependencies": {
     "get-port": "^5.1.1",

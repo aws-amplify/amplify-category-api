@@ -18,7 +18,7 @@ export class FileAsset extends Construct implements cdk.IAsset {
 
   public readonly s3ObjectKey: string;
 
-  public readonly s3Url: string;
+  public readonly s3ObjectUrl: string;
 
   constructor(scope: Construct, id: string, props: TemplateProps) {
     super(scope, id);
@@ -40,7 +40,7 @@ export class FileAsset extends Construct implements cdk.IAsset {
       this.httpUrl = asset.httpUrl;
       this.s3BucketName = asset.bucketName;
       this.s3ObjectKey = asset.objectKey;
-      this.s3Url = asset.s3ObjectUrl;
+      this.s3ObjectUrl = asset.s3ObjectUrl;
     } else {
       // TODO: handle a generic synthesizer by creating a asset in output path
       throw new Error('Template asset can be used only with TransformerStackSynthesizer');

@@ -11,13 +11,14 @@ import {
   stateManager,
 } from '@aws-amplify/amplify-cli-core';
 import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { collectDirectivesByTypeNames, OverrideConfig, StackManager } from '@aws-amplify/graphql-transformer-core';
+import { collectDirectivesByTypeNames } from '@aws-amplify/graphql-transformer-core';
 import { getSanityCheckRules, loadProject } from 'graphql-transformer-core';
 import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import _ from 'lodash';
 import { printer } from '@aws-amplify/amplify-prompts';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
+import { Construct } from 'constructs';
 import { contextUtil } from '../category-utils/context-util';
 import { shouldEnableNodeToNodeEncryption } from '../provider-utils/awscloudformation/current-backend-state/searchable-node-to-node-encryption';
 import { getAdminRoles, getIdentityPoolId } from './utils';
@@ -29,6 +30,7 @@ import { TransformerProjectOptions } from './transformer-options-types';
 import { searchablePushChecks } from './api-utils';
 import { parseUserDefinedSlots } from './user-defined-slots';
 import { applyFileBasedOverride } from './override';
+import { OverrideConfig } from './cdk-compat/transform-manager';
 
 export const APPSYNC_RESOURCE_SERVICE = 'AppSync';
 
@@ -228,7 +230,7 @@ export const generateTransformerOptions = async (context: $TSContext, options: a
   };
 
   const overrideConfig: OverrideConfig = {
-    applyOverride: (stackManager: StackManager) => applyFileBasedOverride(stackManager),
+    applyOverride: (scope: Construct) => applyFileBasedOverride(scope),
     ...options.overrideConfig,
   };
 

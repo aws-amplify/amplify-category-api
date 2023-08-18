@@ -1,6 +1,6 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse } from 'graphql';
 import { AuthTransformer, SEARCHABLE_AGGREGATE_TYPES } from '..';
@@ -44,11 +44,11 @@ test('auth logic is enabled on owner/static rules in os request', () => {
     },
     additionalAuthenticationProviders: [],
   };
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig,
     transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
   // expect response resolver to contain auth logic for owner rule
   expect(out).toBeDefined();
   expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain('$util.qr($ownerClaimsList0.add($ownerClaim0))');
@@ -90,11 +90,11 @@ test('auth logic is enabled for iam/apiKey auth rules', () => {
       },
     ],
   };
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig,
     transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.schema).toBeDefined();
   const schemaDoc = parse(out.schema);
@@ -132,11 +132,11 @@ test('aggregate items are added to stash for iam public auth rule', () => {
       },
     ],
   };
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig,
     transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.schema).toBeDefined();
   // expect to set allowed agg fields in stash before return
@@ -163,11 +163,11 @@ describe('identity flag feature flag disabled', () => {
       },
       additionalAuthenticationProviders: [],
     };
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
     });
-    const out = transformer.transform(validSchema);
     // expect response resolver to contain auth logic for owner rule
     expect(out).toBeDefined();
     expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain('$util.qr($ownerClaimsList0.add($ownerClaim0))');

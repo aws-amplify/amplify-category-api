@@ -1,4 +1,4 @@
-import { CfnMapping, Duration, Fn, Stack } from 'aws-cdk-lib';
+import { CfnMapping, Duration, Fn } from 'aws-cdk-lib';
 import {
   Expression,
   compoundExpression,
@@ -14,7 +14,7 @@ import {
   toJson,
 } from 'graphql-mapping-template';
 import { ResourceConstants, isArrayOrObject } from 'graphql-transformer-common';
-import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
+import { RDSConnectionSecrets, setResourceName } from '@aws-amplify/graphql-transformer-core';
 import { GraphQLAPIProvider, RDSLayerMapping, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
@@ -126,12 +126,12 @@ const getDefaultLayerMapping = (): RDSLayerMapping => ({
 
 /**
  * Create RDS Lambda function
- * @param stack Construct
+ * @param scope Construct
  * @param apiGraphql GraphQLAPIProvider
  * @param lambdaRole IRole
  */
 export const createRdsLambda = (
-  stack: Stack,
+  scope: Construct,
   apiGraphql: GraphQLAPIProvider,
   lambdaRole: IRole,
   environment?: { [key: string]: string },
@@ -146,7 +146,7 @@ export const createRdsLambda = (
     Runtime.NODEJS_18_X,
     [
       LayerVersion.fromLayerVersionArn(
-        stack,
+        scope,
         'SQLLambdaLayerVersion',
         Fn.findInMap(RDSLayerMappingID, Fn.ref('AWS::Region'), 'layerRegion'),
       ),
@@ -154,19 +154,19 @@ export const createRdsLambda = (
     lambdaRole,
     environment,
     Duration.seconds(30),
-    stack,
+    scope,
     sqlLambdaVpcConfig,
   );
 };
 
 /**
  * Create RDS Patching Lambda function
- * @param stack Construct
+ * @param scope Construct
  * @param apiGraphql GraphQLAPIProvider
  * @param lambdaRole IRole
  */
 export const createRdsPatchingLambda = (
-  stack: Stack,
+  scope: Construct,
   apiGraphql: GraphQLAPIProvider,
   lambdaRole: IRole,
   environment?: { [key: string]: string },
@@ -183,7 +183,7 @@ export const createRdsPatchingLambda = (
     lambdaRole,
     environment,
     Duration.minutes(6), // We have an arbituary wait time of up to 5 minutes in the lambda function to avoid throttling errors
-    stack,
+    scope,
     sqlLambdaVpcConfig,
   );
 };
@@ -191,15 +191,16 @@ export const createRdsPatchingLambda = (
 /**
  * Create RDS Lambda IAM role
  * @param roleName string
- * @param stack Construct
+ * @param scope Construct
  * @param secretEntry RDSConnectionSecrets
  */
-export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEntry: RDSConnectionSecrets): IRole => {
+export const createRdsLambdaRole = (roleName: string, scope: Construct, secretEntry: RDSConnectionSecrets): IRole => {
   const { RDSLambdaIAMRoleLogicalID, RDSLambdaLogAccessPolicy } = ResourceConstants.RESOURCES;
-  const role = new Role(stack, RDSLambdaIAMRoleLogicalID, {
+  const role = new Role(scope, RDSLambdaIAMRoleLogicalID, {
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
     roleName,
   });
+  setResourceName(role, { name: RDSLambdaIAMRoleLogicalID, setOnDefaultChild: true });
   const policyStatements = [
     new PolicyStatement({
       actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
@@ -224,7 +225,7 @@ export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEn
   }
 
   role.attachInlinePolicy(
-    new Policy(stack, RDSLambdaLogAccessPolicy, {
+    new Policy(scope, RDSLambdaLogAccessPolicy, {
       statements: policyStatements,
       policyName: `${roleName}Policy`,
     }),
@@ -244,15 +245,16 @@ export const createRdsLambdaRole = (roleName: string, stack: Construct, secretEn
 /**
  * Create RDS Patching Lambda IAM role
  * @param roleName string
- * @param stack Construct
+ * @param scope Construct
  * @param functionArn FunctionArn
  */
-export const createRdsPatchingLambdaRole = (roleName: string, stack: Construct, functionArn: string): IRole => {
+export const createRdsPatchingLambdaRole = (roleName: string, scope: Construct, functionArn: string): IRole => {
   const { RDSPatchingLambdaIAMRoleLogicalID, RDSPatchingLambdaLogAccessPolicy } = ResourceConstants.RESOURCES;
-  const role = new Role(stack, RDSPatchingLambdaIAMRoleLogicalID, {
+  const role = new Role(scope, RDSPatchingLambdaIAMRoleLogicalID, {
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
     roleName,
   });
+  setResourceName(role, { name: RDSPatchingLambdaIAMRoleLogicalID, setOnDefaultChild: true });
   const policyStatements = [
     new PolicyStatement({
       actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
@@ -272,7 +274,7 @@ export const createRdsPatchingLambdaRole = (roleName: string, stack: Construct, 
   ];
 
   role.attachInlinePolicy(
-    new Policy(stack, RDSPatchingLambdaLogAccessPolicy, {
+    new Policy(scope, RDSPatchingLambdaLogAccessPolicy, {
       statements: policyStatements,
       policyName: `${roleName}Policy`,
     }),

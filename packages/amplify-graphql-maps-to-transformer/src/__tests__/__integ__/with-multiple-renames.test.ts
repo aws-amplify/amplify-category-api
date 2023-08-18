@@ -1,4 +1,5 @@
-import { ConflictHandlerType, GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
@@ -53,7 +54,8 @@ const multipleForeignKeyRenames = /* GraphQL */ `
 `;
 
 const transformSchema = (schema: string, enableDataStore = false) => {
-  const transformer = new GraphQLTransform({
+  return testTransform({
+    schema,
     transformers: [
       new ModelTransformer(),
       new HasManyTransformer(),
@@ -73,7 +75,6 @@ const transformSchema = (schema: string, enableDataStore = false) => {
         }
       : undefined,
   });
-  return transformer.transform(schema);
 };
 
 test('@mapsTo with multiple foreign key field renames on single model', () => {

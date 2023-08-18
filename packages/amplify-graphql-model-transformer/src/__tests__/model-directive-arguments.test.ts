@@ -1,6 +1,7 @@
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { ModelTransformer } from '../graphql-model-transformer';
 import { getFieldOnObjectType, getObjectType } from './test-utils/helpers';
 
 describe('createdAt field tests', () => {
@@ -12,11 +13,10 @@ describe('createdAt field tests', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: doc,
       transformers: [new ModelTransformer()],
     });
-
-    const out = transformer.transform(doc);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -37,11 +37,10 @@ describe('createdAt field tests', () => {
         title: String
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: doc,
       transformers: [new ModelTransformer()],
     });
-
-    const out = transformer.transform(doc);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -62,11 +61,10 @@ describe('createdAt field tests', () => {
         title: String
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: doc,
       transformers: [new ModelTransformer()],
     });
-
-    const out = transformer.transform(doc);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -88,10 +86,10 @@ describe('createdAt field tests', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: doc,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(doc);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -113,10 +111,10 @@ describe('createdAt field tests', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: doc,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(doc);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -140,11 +138,10 @@ describe('updatedAt field tests', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: doc,
       transformers: [new ModelTransformer()],
     });
-
-    const out = transformer.transform(doc);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -166,11 +163,10 @@ describe('updatedAt field tests', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: doc,
       transformers: [new ModelTransformer()],
     });
-
-    const out = transformer.transform(doc);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -191,11 +187,10 @@ describe('updatedAt field tests', () => {
         title: String
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: doc,
       transformers: [new ModelTransformer()],
     });
-
-    const out = transformer.transform(doc);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -217,10 +212,10 @@ describe('updatedAt field tests', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: doc,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(doc);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -242,10 +237,10 @@ describe('updatedAt field tests', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: doc,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(doc);
     expect(out).toBeDefined();
 
     const definition = out.schema;

@@ -2,6 +2,7 @@ import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-in
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { DatasourceType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { DocumentNode, Kind, parse } from 'graphql';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 
 test('fails if @belongsTo was used on an object that is not a model type', () => {
@@ -16,11 +17,13 @@ test('fails if @belongsTo was used on an object that is not a model type', () =>
       id: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new BelongsToTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('@belongsTo must be on an @model object type field.');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError('@belongsTo must be on an @model object type field.');
 });
 
 test('fails if @belongsTo was used with a related type that is not a model', () => {
@@ -35,11 +38,13 @@ test('fails if @belongsTo was used with a related type that is not a model', () 
       id: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new BelongsToTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('Object type Test1 must be annotated with @model.');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError('Object type Test1 must be annotated with @model.');
 });
 
 test('fails if the related type does not exist', () => {
@@ -54,11 +59,13 @@ test('fails if the related type does not exist', () => {
       id: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new BelongsToTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('Unknown type "Test2". Did you mean "Test" or "Test1"?');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError('Unknown type "Test2". Did you mean "Test" or "Test1"?');
 });
 
 test('fails if an empty list of fields is passed in', () => {
@@ -73,11 +80,13 @@ test('fails if an empty list of fields is passed in', () => {
       id: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new BelongsToTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('No fields passed to @belongsTo directive.');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError('No fields passed to @belongsTo directive.');
 });
 
 test('fails if any of the fields passed in are not in the parent model', () => {
@@ -93,11 +102,13 @@ test('fails if any of the fields passed in are not in the parent model', () => {
       friendID: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new BelongsToTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('name is not a field in Test');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError('name is not a field in Test');
 });
 
 test('fails if @belongsTo field does not match related type primary key', () => {
@@ -114,11 +125,13 @@ test('fails if @belongsTo field does not match related type primary key', () => 
       name: String!
       test: Test @hasOne
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('email field is not of type ID');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError('email field is not of type ID');
 });
 
 test('fails if sort key type does not match related type sort key', () => {
@@ -135,11 +148,13 @@ test('fails if sort key type does not match related type sort key', () => {
       name: String!
       test: Test @hasOne
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('email field is not of type ID');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError('email field is not of type ID');
 });
 
 test('fails if partial sort key is provided', () => {
@@ -156,13 +171,13 @@ test('fails if partial sort key is provided', () => {
       name: String!
       test: Test @hasOne
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError(
-    'Invalid @belongsTo directive on testObj. Partial sort keys are not accepted.',
-  );
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError('Invalid @belongsTo directive on testObj. Partial sort keys are not accepted.');
 });
 
 test('accepts @belongsTo without a sort key', () => {
@@ -181,11 +196,12 @@ test('accepts @belongsTo without a sort key', () => {
     }
     `;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
-  });
-
-  expect(() => transformer.transform(inputSchema)).not.toThrowError();
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+    }),
+  ).not.toThrowError();
 });
 
 test('fails if used on a list field', () => {
@@ -201,11 +217,13 @@ test('fails if used on a list field', () => {
       name: String!
       test: Test @hasOne
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('@belongsTo cannot be used with lists.');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError('@belongsTo cannot be used with lists.');
 });
 
 test('fails if object type fields are provided', () => {
@@ -220,11 +238,13 @@ test('fails if object type fields are provided', () => {
       id: ID! @primaryKey
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new BelongsToTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('All fields provided to @belongsTo must be scalar or enum fields.');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError('All fields provided to @belongsTo must be scalar or enum fields.');
 });
 
 test('fails if a bidirectional relationship does not exist', () => {
@@ -240,11 +260,13 @@ test('fails if a bidirectional relationship does not exist', () => {
       name: String!
       owner: Test @belongsTo
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new BelongsToTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('Test must have a relationship with Test1 in order to use @belongsTo.');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError('Test must have a relationship with Test1 in order to use @belongsTo.');
 });
 
 test('creates belongs to relationship with implicit fields', () => {
@@ -261,11 +283,11 @@ test('creates belongs to relationship with implicit fields', () => {
       email: String!
       otherHalf2: Test @belongsTo
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -319,11 +341,11 @@ test('regression test for implicit id field on related type', () => {
       chargerID: ID
       charger: BatteryCharger @belongsTo(fields: ["chargerID"])
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -345,7 +367,8 @@ test('support for belongs to with Int fields', () => {
       owningBank: ItemBank @belongsTo(fields: ["owningBankId"])
     }`;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [
       new ModelTransformer(),
       new PrimaryKeyTransformer(),
@@ -355,7 +378,6 @@ test('support for belongs to with Int fields', () => {
     ],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -446,16 +468,18 @@ test('Should not resolve to secondary index of connected model if the index is d
     }
   `;
 
-  const transformer = new GraphQLTransform({
-    transformers: [
-      new ModelTransformer(),
-      new PrimaryKeyTransformer(),
-      new IndexTransformer(),
-      new HasManyTransformer(),
-      new BelongsToTransformer(),
-    ],
-  });
-  expect(() => transformer.transform(inputSchema)).not.toThrow();
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [
+        new ModelTransformer(),
+        new PrimaryKeyTransformer(),
+        new IndexTransformer(),
+        new HasManyTransformer(),
+        new BelongsToTransformer(),
+      ],
+    }),
+  ).not.toThrow();
 });
 
 describe('@belongsTo connection field nullability tests', () => {
@@ -476,11 +500,11 @@ describe('@belongsTo connection field nullability tests', () => {
           todo: Todo @belongsTo
         }
       `;
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema: inputSchema,
         transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
       });
 
-      const out = transformer.transform(inputSchema);
       expect(out).toBeDefined();
       const schema = parse(out.schema);
       validateModelSchema(schema);
@@ -539,11 +563,11 @@ describe('@belongsTo connection field nullability tests', () => {
           todo: Todo! @belongsTo
         }
       `;
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema: inputSchema,
         transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
       });
 
-      const out = transformer.transform(inputSchema);
       expect(out).toBeDefined();
       const schema = parse(out.schema);
       validateModelSchema(schema);
@@ -604,11 +628,11 @@ describe('@belongsTo connection field nullability tests', () => {
           todo: Todo! @belongsTo
         }
       `;
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema: inputSchema,
         transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
       });
 
-      const out = transformer.transform(inputSchema);
       expect(out).toBeDefined();
       const schema = parse(out.schema);
       validateModelSchema(schema);
@@ -667,11 +691,11 @@ describe('@belongsTo connection field nullability tests', () => {
           todo: Todo @belongsTo
         }
       `;
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema: inputSchema,
         transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
       });
 
-      const out = transformer.transform(inputSchema);
       expect(out).toBeDefined();
       const schema = parse(out.schema);
       validateModelSchema(schema);

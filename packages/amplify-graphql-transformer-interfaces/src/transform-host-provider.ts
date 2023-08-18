@@ -1,4 +1,4 @@
-import { Duration, Stack } from 'aws-cdk-lib';
+import { Duration } from 'aws-cdk-lib';
 import {
   BaseDataSource,
   DynamoDbDataSource,
@@ -11,6 +11,7 @@ import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IFunction, ILayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { IRole } from 'aws-cdk-lib/aws-iam';
+import { Construct } from 'constructs';
 import {
   AppSyncFunctionConfigurationProvider,
   DataSourceOptions,
@@ -29,16 +30,16 @@ export interface DynamoDbDataSourceOptions extends DataSourceOptions {
 export interface TransformHostProvider {
   setAPI(api: GraphqlApiBase): void;
 
-  addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, stack?: Stack): HttpDataSource;
-  addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource;
-  addNoneDataSource(name: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource;
-  addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource;
+  addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, scope?: Construct): HttpDataSource;
+  addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, scope?: Construct): DynamoDbDataSource;
+  addNoneDataSource(name: string, options?: DataSourceOptions, scope?: Construct): NoneDataSource;
+  addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, scope?: Construct): LambdaDataSource;
   addSearchableDataSource(
     name: string,
     endpoint: string,
     region: string,
     options?: SearchableDataSourceOptions,
-    stack?: Stack,
+    scope?: Construct,
   ): BaseDataSource;
 
   addAppSyncFunction: (
@@ -46,7 +47,7 @@ export interface TransformHostProvider {
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
     dataSourceName: string,
-    stack?: Stack,
+    scope?: Construct,
   ) => AppSyncFunctionConfigurationProvider;
 
   addResolver: (
@@ -57,7 +58,7 @@ export interface TransformHostProvider {
     resolverLogicalId?: string,
     dataSourceName?: string,
     pipelineConfig?: string[],
-    stack?: Stack,
+    scope?: Construct,
   ) => CfnResolver;
 
   addLambdaFunction: (
@@ -70,7 +71,7 @@ export interface TransformHostProvider {
     role?: IRole,
     environment?: { [key: string]: string },
     timeout?: Duration,
-    stack?: Stack,
+    scope?: Construct,
     vpc?: VpcConfig,
   ) => IFunction;
 

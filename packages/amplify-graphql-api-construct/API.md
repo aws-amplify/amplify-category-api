@@ -7,10 +7,10 @@
 import { AppsyncFunctionProps } from 'aws-cdk-lib/aws-appsync';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
+import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
 import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
-import { CfnPolicy } from 'aws-cdk-lib/aws-iam';
 import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { CfnResource } from 'aws-cdk-lib';
 import { CfnRole } from 'aws-cdk-lib/aws-iam';
@@ -19,10 +19,14 @@ import { Construct } from 'constructs';
 import { Duration } from 'aws-cdk-lib';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { IGraphqlApi } from 'aws-cdk-lib/aws-appsync';
 import { IRole } from 'aws-cdk-lib/aws-iam';
+import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
+import { NestedStack } from 'aws-cdk-lib';
 import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { z } from 'zod';
 
 // @public
 export type AmplifyApiGraphqlSchema = SchemaFile | SchemaFile[] | string;
@@ -39,9 +43,23 @@ export type AmplifyApiSchemaPreprocessorOutput = {
 // @public
 export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends Construct {
     constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps<SchemaType>);
-    getGeneratedFunctionSlots(): FunctionSlot[];
+    readonly generatedFunctionSlots: FunctionSlot[];
     readonly resources: AmplifyGraphqlApiResources;
 }
+
+// @public
+export type AmplifyGraphqlApiCfnResources = {
+    cfnGraphqlApi: CfnGraphQLApi;
+    cfnGraphqlSchema: CfnGraphQLSchema;
+    cfnApiKey?: CfnApiKey;
+    cfnResolvers: Record<string, CfnResolver>;
+    cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration>;
+    cfnDataSources: Record<string, CfnDataSource>;
+    cfnTables: Record<string, CfnTable>;
+    cfnRoles: Record<string, CfnRole>;
+    cfnFunctions: Record<string, CfnFunction>;
+    additionalCfnResources: Record<string, CfnResource>;
+};
 
 // @public
 export type AmplifyGraphqlApiProps<SchemaType = AmplifyApiGraphqlSchema> = {
@@ -56,20 +74,17 @@ export type AmplifyGraphqlApiProps<SchemaType = AmplifyApiGraphqlSchema> = {
     transformers?: TransformerPluginProvider[];
     predictionsBucket?: IBucket;
     schemaTranslationBehavior?: Partial<SchemaTranslationBehavior>;
+    outputStorageStrategy?: BackendOutputStorageStrategy<GraphqlOutput>;
 };
 
 // @public
 export type AmplifyGraphqlApiResources = {
-    cfnGraphqlApi: CfnGraphQLApi;
-    cfnGraphqlSchema: CfnGraphQLSchema;
-    cfnApiKey?: CfnApiKey;
-    cfnResolvers: Record<string, CfnResolver>;
-    cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration>;
-    cfnDataSources: Record<string, CfnDataSource>;
-    cfnTables: Record<string, CfnTable>;
-    cfnRoles: Record<string, CfnRole>;
-    cfnPolicies: Record<string, CfnPolicy>;
-    additionalCfnResources: Record<string, CfnResource>;
+    graphqlApi: IGraphqlApi;
+    tables: Record<string, ITable>;
+    roles: Record<string, IRole>;
+    functions: Record<string, IFunction>;
+    cfnResources: AmplifyGraphqlApiCfnResources;
+    nestedStacks: Record<string, NestedStack>;
 };
 
 // @public
@@ -91,6 +106,18 @@ export type AuthorizationConfig = {
 // @public
 export type AutomergeConflictResolutionStrategy = ConflictResolutionStrategyBase & {
     handlerType: 'AUTOMERGE';
+};
+
+// @public (undocumented)
+export type BackendOutputEntry<T extends Record<string, string> = Record<string, string>> = {
+    readonly version: string;
+    readonly payload: T;
+};
+
+// @public (undocumented)
+export type BackendOutputStorageStrategy<T extends BackendOutputEntry> = {
+    addBackendOutputEntry(keyName: string, backendOutputEntry: T): void;
+    flush(): void;
 };
 
 // @public
@@ -131,7 +158,10 @@ export type FunctionSlotBase = {
 };
 
 // @public
-export type FunctionSlotOverride = Partial<Pick<AppsyncFunctionProps, 'name' | 'description' | 'dataSource' | 'requestMappingTemplate' | 'responseMappingTemplate' | 'code' | 'runtime'>>;
+export type FunctionSlotOverride = Partial<Pick<AppsyncFunctionProps, 'requestMappingTemplate' | 'responseMappingTemplate'>>;
+
+// @public (undocumented)
+export type GraphqlOutput = z.infer<typeof versionedGraphqlOutputSchema>;
 
 // @public
 export type IAMAuthorizationConfig = {
@@ -197,6 +227,43 @@ export type SubscriptionFunctionSlot = FunctionSlotBase & {
 export type UserPoolAuthorizationConfig = {
     userPool: IUserPool;
 };
+
+// @public (undocumented)
+export const versionedGraphqlOutputSchema: z.ZodDiscriminatedUnion<"version", [z.ZodObject<{
+    version: z.ZodLiteral<"1">;
+    payload: z.ZodObject<{
+        awsAppsyncRegion: z.ZodString;
+        awsAppsyncApiEndpoint: z.ZodString;
+        awsAppsyncAuthenticationType: z.ZodEnum<["API_KEY", "AWS_LAMBDA", "AWS_IAM", "OPENID_CONNECT", "AMAZON_COGNITO_USER_POOLS"]>;
+        awsAppsyncApiKey: z.ZodOptional<z.ZodString>;
+    }, "strip", z.ZodTypeAny, {
+        awsAppsyncRegion: string;
+        awsAppsyncApiEndpoint: string;
+        awsAppsyncAuthenticationType: "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT" | "AWS_LAMBDA";
+        awsAppsyncApiKey?: string | undefined;
+    }, {
+        awsAppsyncRegion: string;
+        awsAppsyncApiEndpoint: string;
+        awsAppsyncAuthenticationType: "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT" | "AWS_LAMBDA";
+        awsAppsyncApiKey?: string | undefined;
+    }>;
+}, "strip", z.ZodTypeAny, {
+    version: "1";
+    payload: {
+        awsAppsyncRegion: string;
+        awsAppsyncApiEndpoint: string;
+        awsAppsyncAuthenticationType: "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT" | "AWS_LAMBDA";
+        awsAppsyncApiKey?: string | undefined;
+    };
+}, {
+    version: "1";
+    payload: {
+        awsAppsyncRegion: string;
+        awsAppsyncApiEndpoint: string;
+        awsAppsyncAuthenticationType: "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT" | "AWS_LAMBDA";
+        awsAppsyncApiKey?: string | undefined;
+    };
+}>]>;
 
 // (No @packageDocumentation comment for this package)
 

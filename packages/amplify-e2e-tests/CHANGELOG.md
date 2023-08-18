@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.14.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.13.1...amplify-category-api-e2e-tests@3.14.0) (2023-08-09)
+
+### Bug Fixes
+
+- allow update on operations create, read, update ([#1762](https://github.com/aws-amplify/amplify-category-api/issues/1762)) ([7247ae8](https://github.com/aws-amplify/amplify-category-api/commit/7247ae8d5312b07e155d175da038ea869f790e83))
+
+### Features
+
+- bump major version of transformer packages ([2458c84](https://github.com/aws-amplify/amplify-category-api/commit/2458c8426da5772aa669d37e11f99ee9c6c5ac2e))
+
 ## [3.13.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.13.0...amplify-category-api-e2e-tests@3.13.1) (2023-08-07)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests
