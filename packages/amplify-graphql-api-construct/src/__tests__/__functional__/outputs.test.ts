@@ -23,6 +23,7 @@ describe('storeOutput', () => {
           "AWS::Amplify::Output": Object {
             "graphqlOutput": Object {
               "stackOutputs": Array [
+                "awsAppsyncApiId",
                 "awsAppsyncApiEndpoint",
                 "awsAppsyncAuthenticationType",
                 "awsAppsyncRegion",
@@ -101,6 +102,7 @@ describe('storeOutput', () => {
         version: '1',
         payload: {
           awsAppsyncApiEndpoint: expect.stringMatching(tokenRegex),
+          awsAppsyncApiId: expect.stringMatching(tokenRegex),
           awsAppsyncApiKey: expect.stringMatching(tokenRegex),
           awsAppsyncAuthenticationType: 'API_KEY',
           awsAppsyncRegion: expect.stringMatching(awsRegionTokenRegex),
@@ -133,6 +135,7 @@ describe('storeOutput', () => {
       expect(addBackendOutputEntry).toBeCalledWith('graphqlOutput', {
         version: '1',
         payload: {
+          awsAppsyncApiId: expect.stringMatching(tokenRegex),
           awsAppsyncApiEndpoint: expect.stringMatching(tokenRegex),
           awsAppsyncAuthenticationType: 'OPENID_CONNECT',
           awsAppsyncRegion: expect.stringMatching(awsRegionTokenRegex),
