@@ -331,46 +331,27 @@ function createResolver(
   };
 
   if (referencesEnv(bucketName)) {
-    const env = context.synthParameters.amplifyEnvironmentName;
-    substitutions.env = env;
+    substitutions.env = context.synthParameters.amplifyEnvironmentName;
   }
-  const requestTemplate = [
-    cdk.Fn.conditionIf(
-      ResourceConstants.CONDITIONS.HasEnvironmentParameter,
-      cdk.Fn.sub(`$util.qr($ctx.stash.put("s3Bucket", "${bucketName}"))`, substitutions),
-      cdk.Fn.sub(`$util.qr($ctx.stash.put("s3Bucket", "${removeEnvReference(bucketName)}"))`, {
-        hash: cdk.Fn.select(3, cdk.Fn.split('-', cdk.Fn.ref('AWS::StackName'))),
-      }),
-    ) as unknown as string,
-    print(compoundExpression([qref('$ctx.stash.put("isList", false)')])),
-  ];
-  // TODO: predictions should use resolver manager
-  const authModes = [context.authConfig.defaultAuthentication, ...(context.authConfig.additionalAuthenticationProviders || [])].map(
-    (mode) => mode?.authenticationType,
-  );
-  if (authModes.includes(AuthorizationType.IAM)) {
-    const authRole = context.synthParameters.authenticatedUserRoleName;
-    const unauthRole = context.synthParameters.unauthenticatedUserRoleName;
-    const account = cdk.Stack.of(context.stackManager.scope).account;
-    requestTemplate.push(
-      `$util.qr($ctx.stash.put("authRole", "arn:aws:sts::${account}:assumed-role/${authRole}/CognitoIdentityCredentials"))`,
-      `$util.qr($ctx.stash.put("unauthRole", "arn:aws:sts::${account}:assumed-role/${unauthRole}/CognitoIdentityCredentials"))`,
-    );
-  }
-  requestTemplate.push(print(obj({})));
+
+  // If we receive a cdk token, then it can be assumed that the resolved value doesn't need
+  // further substitutions applied to it. In the case of a hard-coded value, then apply hash and env subs
+  const setBucketLine = cdk.Token.isUnresolved(bucketName)
+    ? `$util.qr($ctx.stash.put("s3Bucket", "${bucketName}"))`
+    : (cdk.Fn.conditionIf(
+        ResourceConstants.CONDITIONS.HasEnvironmentParameter,
+        cdk.Fn.sub(`$util.qr($ctx.stash.put("s3Bucket", "${bucketName}"))`, substitutions),
+        cdk.Fn.sub(`$util.qr($ctx.stash.put("s3Bucket", "${removeEnvReference(bucketName)}"))`, {
+          hash: cdk.Fn.select(3, cdk.Fn.split('-', cdk.Fn.ref('AWS::StackName'))),
+        }),
+      ) as unknown as string);
 
   return context.api.host.addResolver(
     config.resolverTypeName,
     config.resolverFieldName,
     MappingTemplate.inlineTemplateFromString(
       cdk.Fn.join('\n', [
-        cdk.Fn.conditionIf(
-          ResourceConstants.CONDITIONS.HasEnvironmentParameter,
-          cdk.Fn.sub(`$util.qr($ctx.stash.put("s3Bucket", "${bucketName}"))`, substitutions),
-          cdk.Fn.sub(`$util.qr($ctx.stash.put("s3Bucket", "${removeEnvReference(bucketName)}"))`, {
-            hash: cdk.Fn.select(3, cdk.Fn.split('-', cdk.Fn.ref('AWS::StackName'))),
-          }),
-        ) as unknown as string,
+        setBucketLine,
         print(compoundExpression([qref('$ctx.stash.put("isList", false)'), obj({})])),
       ]) as unknown as string,
     ),
@@ -541,11 +522,15 @@ function getStorageArn(context: TransformerContextProvider, bucketName: string):
     substitutions.env = env;
   }
 
-  return cdk.Fn.conditionIf(
-    ResourceConstants.CONDITIONS.HasEnvironmentParameter,
-    cdk.Fn.sub(s3ArnKey(bucketName), substitutions),
-    cdk.Fn.sub(s3ArnKey(removeEnvReference(bucketName)), { hash: cdk.Fn.select(3, cdk.Fn.split('-', cdk.Fn.ref('AWS::StackName'))) }),
-  ) as unknown as string;
+  // If we receive a cdk token, then it can be assumed that the resolved value doesn't need
+  // further substitutions applied to it. In the case of a hard-coded value, then apply hash and env subs
+  return cdk.Token.isUnresolved(bucketName)
+    ? s3ArnKey(bucketName)
+    : (cdk.Fn.conditionIf(
+        ResourceConstants.CONDITIONS.HasEnvironmentParameter,
+        cdk.Fn.sub(s3ArnKey(bucketName), substitutions),
+        cdk.Fn.sub(s3ArnKey(removeEnvReference(bucketName)), { hash: cdk.Fn.select(3, cdk.Fn.split('-', cdk.Fn.ref('AWS::StackName'))) }),
+      ) as unknown as string);
 }
 
 function createActionFunction(context: TransformerContextProvider, stack: cdk.Stack, action: string, datasourceName: string) {
