@@ -27,6 +27,7 @@ describe('storeOutput', () => {
                 "awsAppsyncApiEndpoint",
                 "awsAppsyncAuthenticationType",
                 "awsAppsyncRegion",
+                "amplifyApiModelSchemaS3Uri",
                 "awsAppsyncApiKey",
               ],
               "version": "1",
@@ -70,6 +71,7 @@ describe('storeOutput', () => {
   describe('custom outputStorageStrategy', () => {
     const tokenRegex = /\$\{Token\[TOKEN\.\d+\]\}/;
     const awsRegionTokenRegex = /\$\{Token\[AWS\.Region\.\d+\]\}/;
+    const s3UriTokenRegex = /s3:\/\/\$\{Token\[TOKEN\.\d+\]\}\/.*/;
 
     const addBackendOutputEntry = jest.fn();
     const flush = jest.fn();
@@ -106,6 +108,7 @@ describe('storeOutput', () => {
           awsAppsyncApiKey: expect.stringMatching(tokenRegex),
           awsAppsyncAuthenticationType: 'API_KEY',
           awsAppsyncRegion: expect.stringMatching(awsRegionTokenRegex),
+          amplifyApiModelSchemaS3Uri: expect.stringMatching(s3UriTokenRegex),
         },
       });
       expect(flush).not.toBeCalled();
@@ -130,7 +133,6 @@ describe('storeOutput', () => {
         outputStorageStrategy,
       });
 
-      const template = Template.fromStack(stack);
       expect(addBackendOutputEntry).toBeCalledTimes(1);
       expect(addBackendOutputEntry).toBeCalledWith('graphqlOutput', {
         version: '1',
@@ -139,6 +141,7 @@ describe('storeOutput', () => {
           awsAppsyncApiEndpoint: expect.stringMatching(tokenRegex),
           awsAppsyncAuthenticationType: 'OPENID_CONNECT',
           awsAppsyncRegion: expect.stringMatching(awsRegionTokenRegex),
+          amplifyApiModelSchemaS3Uri: expect.stringMatching(s3UriTokenRegex),
         },
       });
       expect(flush).not.toBeCalled();
