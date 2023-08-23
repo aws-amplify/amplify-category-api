@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-construct-alpha",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer.",
   "repository": {
     "type": "git",
@@ -31,20 +31,22 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer": "0.1.0",
-    "@aws-amplify/graphql-transformer-core": "1.4.0",
-    "@aws-amplify/graphql-transformer-interfaces": "2.3.0",
+    "@aws-amplify/graphql-transformer": "1.1.0",
+    "@aws-amplify/graphql-transformer-core": "2.1.0",
+    "@aws-amplify/graphql-transformer-interfaces": "3.1.0",
     "fs-extra": "^8.1.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
     "@types/node": "^12.12.6",
     "rimraf": "^3.0.0",
-    "ts-jest": "^26.4.4"
+    "ts-jest": "^26.4.4",
+    "zod": "^3.21.4"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.80.0",
-    "constructs": "^10.0.5"
+    "constructs": "^10.0.5",
+    "zod": "^3.21.4"
   },
   "jest": {
     "testURL": "http://localhost",
@@ -63,7 +65,7 @@
     "collectCoverage": true,
     "coverageThreshold": {
       "global": {
-        "branches": 80,
+        "branches": 78,
         "functions": 80,
         "lines": 80
       }

@@ -14,7 +14,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
-import { ArnFormat, CfnCondition, CfnParameter, Fn } from 'aws-cdk-lib';
+import { ArnFormat, CfnCondition, Fn } from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
 import { DirectiveNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { Expression, str } from 'graphql-mapping-template';
@@ -289,18 +289,14 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       return;
     }
 
-    const { Env } = ResourceConstants.PARAMETERS;
-
     const { HasEnvironmentParameter } = ResourceConstants.CONDITIONS;
 
     const stack = context.stackManager.createStack(STACK_NAME);
 
     setMappings(stack);
 
-    const envParam = context.stackManager.getParameter(Env) as CfnParameter;
-
     new CfnCondition(stack, HasEnvironmentParameter, {
-      expression: Fn.conditionNot(Fn.conditionEquals(envParam, ResourceConstants.NONE)),
+      expression: Fn.conditionNot(Fn.conditionEquals(context.synthParameters.amplifyEnvironmentName, ResourceConstants.NONE)),
     });
 
     const isProjectUsingDataStore = context.isProjectUsingDataStore();
@@ -308,7 +304,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     stack.templateOptions.description = 'An auto-generated nested stack for searchable.';
     stack.templateOptions.templateFormatVersion = '2010-09-09';
 
-    const parameterMap = createParametersInStack(context.stackManager.rootStack);
+    const parameterMap = createParametersInStack(context.stackManager.scope);
 
     const domain = createSearchableDomain(
       stack,
@@ -388,7 +384,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         ),
       );
 
-      resolver.mapToStack(stack);
+      resolver.setScope(stack);
       context.resolvers.addResolver(typeName, def.fieldName, resolver);
     }
 

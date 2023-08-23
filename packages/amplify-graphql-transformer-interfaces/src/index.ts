@@ -32,14 +32,7 @@ export {
   RDSLayerMapping,
 } from './graphql-api-provider';
 export { TransformHostProvider, DynamoDbDataSourceOptions } from './transform-host-provider';
-export { DeploymentResources, NestedStacks, ResolversFunctionsAndSchema, StackMapping, Template } from './deployment-resources';
 export { TransformerLog, TransformerLogLevel } from './transformer-log';
-export {
-  AmplifyApiGraphQlResourceStackTemplate,
-  AppsyncStackCommon,
-  FunctionDirectiveStack,
-  HttpsDirectiveStack,
-  ModelDirectiveStack,
-  OpenSearchDirectiveStack,
-} from './amplify-api-resource-stack-types';
 export type { TransformParameters } from './transformer-context/transform-parameters';
+export type { NestedStackProvider } from './nested-stack-provider';
+export type { AssetProps, AssetProvider, S3Asset } from './asset-provider';

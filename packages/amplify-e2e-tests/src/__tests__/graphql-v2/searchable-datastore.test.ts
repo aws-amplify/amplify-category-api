@@ -10,7 +10,7 @@ import {
   getProjectMeta,
   createNewProjectDir,
   deleteProjectDir,
-  refreshCredentials,
+  tryScheduleCredentialRefresh,
 } from 'amplify-category-api-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
@@ -22,6 +22,10 @@ describe('transformer model searchable migration test', () => {
   let projectName: string;
   let appSyncClient = undefined;
 
+  beforeAll(() => {
+    tryScheduleCredentialRefresh();
+  });
+
   beforeEach(async () => {
     projectName = createRandomName();
     projRoot = await createNewProjectDir(createRandomName());
@@ -32,8 +36,7 @@ describe('transformer model searchable migration test', () => {
   });
 
   afterEach(async () => {
-    const newCreds = refreshCredentials();
-    await deleteProject(projRoot, newCreds);
+    await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });
 

@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -171,22 +171,23 @@ beforeAll(async () => {
           { allow: groups, groups: ["Admin"], operations: [create, read] },
           { allow: owner, ownerField: "owner1", operations : [read, update]}])
     }`;
-  const transformer = new GraphQLTransform({
-    authConfig: {
-      defaultAuthentication: {
-        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-      },
-      additionalAuthenticationProviders: [],
-    },
-    transformers: [new ModelTransformer(), new AuthTransformer()],
-  });
+
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
   USER_POOL_ID = userPoolResponse.UserPool.Id;
   const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
   const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
   try {
     // Clean the bucket
-    const out = transformer.transform(validSchema);
+    const out = testTransform({
+      schema: validSchema,
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [],
+      },
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+    });
 
     const finishedStack = await deploy(
       customS3Client,

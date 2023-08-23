@@ -28,6 +28,7 @@ import { cleanupStackAfterTest, deploy } from './deployNestedStacks';
 import { IAMHelper } from './IAMHelper';
 import { S3Client } from './S3Client';
 import { resolveTestRegion } from './testSetup';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 
 const REGION = resolveTestRegion();
 const IAM_HELPER = new IAMHelper(REGION);
@@ -476,12 +477,12 @@ export const deploySchema = async (
   });
 
   const authConfig: AppSyncAuthConfiguration = generateAuthConfig(REGION, userPoolId, userPoolClientId);
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema,
     authConfig,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer({ identityPoolId })],
   });
 
-  const out = transformer.transform(schema);
   const customS3Client = new S3Client(REGION);
 
   const finishedStack = await deploy(

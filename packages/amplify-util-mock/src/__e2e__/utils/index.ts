@@ -5,6 +5,9 @@ import * as fs from 'fs-extra';
 import { v4 } from 'uuid';
 import { DynamoDB } from 'aws-sdk';
 import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
+import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
+import { DeploymentResources, TransformManager } from '@aws-amplify/graphql-transformer-test-utils';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { processTransformerStacks } from '../../CFNParser/appsync-resource-processor';
 import { configureDDBDataSource, createAndUpdateTable } from '../../utils/dynamo-db';
 import { getFunctionDetails } from './lambda-helper';
@@ -18,6 +21,47 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
     getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('../amplify-dynamodb-simulator'),
   },
 }));
+
+const getAuthenticationTypesForAuthConfig = (authConfig?: AppSyncAuthConfiguration): (string | undefined)[] =>
+  [authConfig?.defaultAuthentication, ...(authConfig?.additionalAuthenticationProviders ?? [])].map(
+    (authConfigEntry) => authConfigEntry?.authenticationType,
+  );
+
+const hasIamAuth = (authConfig?: AppSyncAuthConfiguration): boolean =>
+  getAuthenticationTypesForAuthConfig(authConfig).some((authType) => authType === 'AWS_IAM');
+
+const hasUserPoolAuth = (authConfig?: AppSyncAuthConfiguration): boolean =>
+  getAuthenticationTypesForAuthConfig(authConfig).some((authType) => authType === 'AMAZON_COGNITO_USER_POOLS');
+
+export const transformAndSynth = (
+  options: Omit<ExecuteTransformConfig, 'scope' | 'nestedStackProvider' | 'assetProvider' | 'synthParameters'>,
+): DeploymentResources => {
+  const transformManager = new TransformManager();
+  executeTransform({
+    ...options,
+    scope: transformManager.rootStack,
+    nestedStackProvider: transformManager.getNestedStackProvider(),
+    assetProvider: transformManager.getAssetProvider(),
+    synthParameters: transformManager.getSynthParameters(hasIamAuth(options.authConfig), hasUserPoolAuth(options.authConfig)),
+  });
+  return transformManager.generateDeploymentResources();
+};
+
+export const defaultTransformParams: Pick<ExecuteTransformConfig, 'transformersFactoryArgs' | 'transformParameters'> = {
+  transformersFactoryArgs: {},
+  transformParameters: {
+    shouldDeepMergeDirectiveConfigDefaults: true,
+    disableResolverDeduping: false,
+    sandboxModeEnabled: false,
+    useSubUsernameForDefaultIdentityClaim: true,
+    populateOwnerFieldForStaticGroupAuth: true,
+    suppressApiKeyGeneration: false,
+    secondaryKeyAsGSI: true,
+    enableAutoIndexQueryNames: true,
+    respectPrimaryKeyAttributesOnConnectionField: true,
+    enableSearchNodeToNodeEncryption: false,
+  },
+};
 
 export async function launchDDBLocal() {
   let dbPath;

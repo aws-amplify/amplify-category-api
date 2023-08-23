@@ -62,7 +62,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
       ),
     );
 
-    resolver.mapToStack(ctx.stackManager.getStackFor(resolverResourceId, CONNECTION_STACK));
+    resolver.setScope(ctx.stackManager.getScopeFor(resolverResourceId, CONNECTION_STACK));
     ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
   };
 
@@ -190,7 +190,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
       ),
     );
 
-    resolver.mapToStack(ctx.stackManager.getStackFor(resolverResourceId, CONNECTION_STACK));
+    resolver.setScope(ctx.stackManager.getScopeFor(resolverResourceId, CONNECTION_STACK));
     ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
   };
 
@@ -228,7 +228,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
       ),
     );
 
-    resolver.mapToStack(ctx.stackManager.getStackFor(resolverResourceId, CONNECTION_STACK));
+    resolver.setScope(ctx.stackManager.getScopeFor(resolverResourceId, CONNECTION_STACK));
     ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
   };
 }

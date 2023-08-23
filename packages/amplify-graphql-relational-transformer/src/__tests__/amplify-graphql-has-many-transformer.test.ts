@@ -2,6 +2,7 @@ import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-in
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ConflictHandlerType, DatasourceType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { Kind, parse } from 'graphql';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 import { hasGeneratedField } from './test-helpers';
 
@@ -17,11 +18,13 @@ test('fails if used as a has one relation', () => {
       id: ID! @primaryKey
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('@hasMany must be used with a list. Use @hasOne for non-list types.');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+    }),
+  ).toThrowError('@hasMany must be used with a list. Use @hasOne for non-list types.');
 });
 
 test('fails if the provided indexName does not exist.', () => {
@@ -37,11 +40,13 @@ test('fails if the provided indexName does not exist.', () => {
       friendID: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('Index notDefault does not exist for model Test1');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+    }),
+  ).toThrowError('Index notDefault does not exist for model Test1');
 });
 
 test('fails if a partial sort key is provided', () => {
@@ -57,13 +62,13 @@ test('fails if a partial sort key is provided', () => {
       friendID: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError(
-    'Invalid @hasMany directive on testObj. Partial sort keys are not accepted.',
-  );
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer()],
+    }),
+  ).toThrowError('Invalid @hasMany directive on testObj. Partial sort keys are not accepted.');
 });
 
 test('accepts @hasMany without a sort key', () => {
@@ -79,11 +84,13 @@ test('accepts @hasMany without a sort key', () => {
       friendID: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).not.toThrowError();
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer()],
+    }),
+  ).not.toThrowError();
 });
 
 test('fails if provided sort key type does not match custom index sort key type', () => {
@@ -99,11 +106,13 @@ test('fails if provided sort key type does not match custom index sort key type'
       friendID: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('email field is not of type ID');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer()],
+    }),
+  ).toThrowError('email field is not of type ID');
 });
 
 test('fails if partition key type passed in does not match custom index partition key type', () => {
@@ -120,11 +129,12 @@ test('fails if partition key type passed in does not match custom index partitio
       name: String!
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer()],
-  });
-
-  expect(() => transformer.transform(inputSchema)).toThrowError('email field is not of type ID');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer()],
+    }),
+  ).toThrowError('email field is not of type ID');
 });
 
 test('fails if @hasMany was used on an object that is not a model type', () => {
@@ -139,11 +149,13 @@ test('fails if @hasMany was used on an object that is not a model type', () => {
       id: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasManyTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('@hasMany must be on an @model object type field.');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasManyTransformer()],
+    }),
+  ).toThrowError('@hasMany must be on an @model object type field.');
 });
 
 test('fails if @hasMany was used with a related type that is not a model', () => {
@@ -158,11 +170,13 @@ test('fails if @hasMany was used with a related type that is not a model', () =>
       id: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasManyTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('Object type Test1 must be annotated with @model.');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasManyTransformer()],
+    }),
+  ).toThrowError('Object type Test1 must be annotated with @model.');
 });
 
 test('fails if the related type does not exist', () => {
@@ -177,11 +191,13 @@ test('fails if the related type does not exist', () => {
       id: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasManyTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('Unknown type "Test2". Did you mean "Test" or "Test1"?');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasManyTransformer()],
+    }),
+  ).toThrowError('Unknown type "Test2". Did you mean "Test" or "Test1"?');
 });
 
 test('fails if an empty list of fields is passed in', () => {
@@ -196,11 +212,13 @@ test('fails if an empty list of fields is passed in', () => {
       id: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasManyTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('No fields passed to @hasMany directive.');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasManyTransformer()],
+    }),
+  ).toThrowError('No fields passed to @hasMany directive.');
 });
 
 test('fails if any of the fields passed in are not in the parent model', () => {
@@ -216,11 +234,13 @@ test('fails if any of the fields passed in are not in the parent model', () => {
       friendID: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('name is not a field in Test');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+    }),
+  ).toThrowError('name is not a field in Test');
 });
 
 test('has many query case', () => {
@@ -236,11 +256,11 @@ test('has many query case', () => {
       friendID: ID!
       email: String!
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -272,11 +292,11 @@ test('bidirectional has many query case', () => {
       id: ID!
       posts: [Post] @hasMany(indexName: "byOwner", fields: ["id"])
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new IndexTransformer(), new BelongsToTransformer(), new HasManyTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -322,11 +342,11 @@ test('has many query with a composite sort key', () => {
       email: String!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -361,11 +381,11 @@ test('has many query with a composite sort key passed in as an argument', () => 
       email: String!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -407,7 +427,8 @@ test('many to many query', () => {
       posts: [PostEditor] @hasMany(indexName: "byEditor", fields: ["id"])
     }`;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     resolverConfig: {
       project: {
         ConflictDetection: 'VERSION',
@@ -428,7 +449,6 @@ test('many to many query', () => {
     },
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -446,11 +466,11 @@ test('has many with implicit index and fields', () => {
       id: ID!
       content: String
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new HasManyTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -494,12 +514,12 @@ test('has many with implicit index and fields and a user-defined primary key', (
       id: ID!
       content: String
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     transformParameters: { respectPrimaryKeyAttributesOnConnectionField: false },
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -556,11 +576,11 @@ test('the limit of 100 is used by default', () => {
       id: ID!
       content: String
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new HasManyTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -579,11 +599,11 @@ test('the default limit argument can be overridden', () => {
       id: ID!
       content: String
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new HasManyTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -650,7 +670,8 @@ test('validates VTL of a complex schema', () => {
         postID: ID!
         post: Post @hasOne(fields: ["postID"])
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [
       new ModelTransformer(),
       new PrimaryKeyTransformer(),
@@ -666,7 +687,6 @@ test('validates VTL of a complex schema', () => {
     },
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -684,11 +704,11 @@ test('@hasMany and @hasMany can point at each other if DataStore is not enabled'
       id: ID!
       blog: [Blog] @hasMany
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new HasManyTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -705,19 +725,18 @@ test('@hasMany and @hasMany cannot point at each other if DataStore is enabled',
       id: ID!
       blog: [Blog] @hasMany
     }`;
-  const transformer = new GraphQLTransform({
-    resolverConfig: {
-      project: {
-        ConflictDetection: 'VERSION',
-        ConflictHandler: ConflictHandlerType.AUTOMERGE,
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      resolverConfig: {
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        },
       },
-    },
-    transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
-  });
-
-  expect(() => transformer.transform(inputSchema)).toThrowError(
-    'Blog and Post cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.',
-  );
+      transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
+    }),
+  ).toThrowError('Blog and Post cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.');
 });
 
 test('recursive @hasMany relationships are supported if DataStore is enabled', () => {
@@ -726,7 +745,8 @@ test('recursive @hasMany relationships are supported if DataStore is enabled', (
       id: ID!
       posts: [Blog] @hasMany
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     resolverConfig: {
       project: {
         ConflictDetection: 'VERSION',
@@ -736,7 +756,6 @@ test('recursive @hasMany relationships are supported if DataStore is enabled', (
     transformers: [new ModelTransformer(), new HasManyTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -751,11 +770,11 @@ test('has many with queries null generate correct filter input objects for scala
     type Bar @model(queries: null) {
       strings: [String]
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -786,11 +805,11 @@ test('has many with queries null generate correct filter input objects for enum 
       open
       closed
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new HasManyTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -863,11 +882,11 @@ describe('@hasMany connection field nullability tests', () => {
         description: String
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     });
 
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);

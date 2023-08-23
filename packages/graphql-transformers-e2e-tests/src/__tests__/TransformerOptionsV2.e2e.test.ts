@@ -1,5 +1,4 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { Output } from 'aws-sdk/clients/cloudformation';
@@ -9,6 +8,7 @@ import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import moment from 'moment';
 import { ResourceConstants } from 'graphql-transformer-common';
 import gql from 'graphql-tag';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { createUserPool, createUserPoolClient, configureAmplify } from '../cognitoUtils';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
@@ -100,7 +100,8 @@ describe('V2 transformer options', () => {
             ],
           };
 
-          const transformer = new GraphQLTransform({
+          const out = testTransform({
+            schema: validSchema,
             authConfig,
             transformers: [new ModelTransformer(), new AuthTransformer()],
             userDefinedSlots,
@@ -109,7 +110,6 @@ describe('V2 transformer options', () => {
             },
           });
 
-          const out = transformer.transform(validSchema);
           const finishedStack = await deploy(
             customS3Client,
             cf,

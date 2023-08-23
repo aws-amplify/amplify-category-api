@@ -1,7 +1,6 @@
-import { AmplifyApiGraphQlResourceStackTemplate, RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
+import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { DatasourceType } from '../config';
 import { RDSConnectionSecrets } from '../types';
-import { StackManager } from '../transformer-context/stack-manager';
 
 export type UserDefinedSlot = {
   resolverTypeName: string;
@@ -14,11 +13,6 @@ export type UserDefinedSlot = {
 export type UserDefinedResolver = {
   fileName: string;
   template: string;
-};
-
-export type OverrideConfig = {
-  overrideFlag: boolean;
-  applyOverride: (stackManager: StackManager) => AmplifyApiGraphQlResourceStackTemplate;
 };
 
 export type DatasourceTransformationConfig = {

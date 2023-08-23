@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.2.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.1.13...amplify-category-api-util-mock@6.2.0) (2023-08-09)
+
+### Features
+
+- bump major version of transformer packages ([2458c84](https://github.com/aws-amplify/amplify-category-api/commit/2458c8426da5772aa669d37e11f99ee9c6c5ac2e))
+
 ## [6.1.13](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.1.12...amplify-category-api-util-mock@6.1.13) (2023-07-21)
 
 **Note:** Version bump only for package amplify-category-api-util-mock

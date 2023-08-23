@@ -9,7 +9,7 @@ import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityservice
 import { default as S3 } from 'aws-sdk/clients/s3';
 import { ResourceConstants } from 'graphql-transformer-common';
 import gql from 'graphql-tag';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import 'isomorphic-fetch';
 import { default as moment } from 'moment';
 import { CloudFormationClient } from '../CloudFormationClient';
@@ -92,7 +92,8 @@ beforeAll(async () => {
     console.warn(`Could not create bucket: ${e}`);
   }
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -112,7 +113,6 @@ beforeAll(async () => {
     },
     transformers: [new ModelTransformer(), new FunctionTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
 
   // create userpool
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
