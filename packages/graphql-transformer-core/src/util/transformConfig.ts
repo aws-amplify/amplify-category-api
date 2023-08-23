@@ -171,8 +171,9 @@ interface ProjectConfiguration {
   };
   config: TransformConfig;
   modelToDatasourceMap: Map<string, DatasourceType>;
+  customQueries: Map<string, string>;
 }
-export async function loadProject(projectDirectory: string, opts?: ProjectOptions): Promise<ProjectConfiguration> {
+export const loadProject = async (projectDirectory: string, opts?: ProjectOptions): Promise<ProjectConfiguration> => {
   // Schema
   const { schema, modelToDatasourceMap } = await readSchema(projectDirectory);
 
@@ -207,6 +208,23 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
         const pipelineFunctionPath = path.join(pipelineFunctionDirectory, pipelineFunctionFile);
         pipelineFunctions[pipelineFunctionFile] = await fs.readFile(pipelineFunctionPath, 'utf8');
       }
+    }
+  }
+
+  // Load Custom Queries
+  const customQueries = new Map<string, string>();
+  const customQueriesDirectoryName = 'sql-statements';
+  const customQueriesDirectory = path.join(projectDirectory, customQueriesDirectoryName);
+  const customQueriesDirExists = await fs.exists(customQueriesDirectory);
+  if (customQueriesDirExists) {
+    const queryFiles = await fs.readdir(customQueriesDirectory);
+    for (const queryFile of queryFiles) {
+      if (!queryFile.endsWith('.sql')) {
+        continue;
+      }
+      const queryFileName = path.parse(queryFile).name;
+      const queryFilePath = path.join(customQueriesDirectory, queryFile);
+      customQueries.set(queryFileName, await fs.readFile(queryFilePath, 'utf8'));
     }
   }
 
@@ -258,8 +276,9 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
     schema,
     config,
     modelToDatasourceMap,
+    customQueries,
   };
-}
+};
 
 /**
  * Given a project directory read the schema from disk. The schema may be a
