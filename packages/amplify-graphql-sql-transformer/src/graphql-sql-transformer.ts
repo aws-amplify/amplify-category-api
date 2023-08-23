@@ -88,14 +88,7 @@ export class SqlTransformer extends TransformerPluginBase {
       resolverFns.forEach((config) => {
         const { RDSLambdaDataSourceLogicalID: dataSourceId } = ResourceConstants.RESOURCES;
         const dataSource = context.api.host.getDataSource(dataSourceId);
-        const MISSING_QUERY_STATEMENT = 'MISSING_CUSTOM_QUERY';
-        if (config.reference && !context.customQueries.has(config.reference)) {
-          throw new InvalidDirectiveError(
-            `@sql directive 'reference' argument must be a valid custom query name. Check type "${config.resolverTypeName}" and field "${config.resolverFieldName}". The custom query "${config.reference}" does not exist in "sql-statements" directory.`,
-          );
-        }
-
-        const statement = config.statement ?? (config.reference ? context.customQueries.get(config.reference) : MISSING_QUERY_STATEMENT);
+        const statement = getStatement(config, context.customQueries);
         const resolverResourceId = ResolverResourceIDs.ResolverResourceID(config.resolverTypeName, config.resolverFieldName);
         const resolver = context.resolvers.generateQueryResolver(
           config.resolverTypeName,
@@ -103,7 +96,7 @@ export class SqlTransformer extends TransformerPluginBase {
           resolverResourceId,
           dataSource as any,
           MappingTemplate.s3MappingTemplateFromString(
-            generateSqlLambdaRequestTemplate(statement ?? MISSING_QUERY_STATEMENT, 'RAW_SQL', config.resolverFieldName),
+            generateSqlLambdaRequestTemplate(statement, 'RAW_SQL', config.resolverFieldName),
             `${config.resolverTypeName}.${config.resolverFieldName}.req.vtl`,
           ),
           MappingTemplate.s3MappingTemplateFromString(
@@ -118,6 +111,29 @@ export class SqlTransformer extends TransformerPluginBase {
     });
   };
 }
+
+const getStatement = (config: SqlDirectiveConfiguration, customQueries: Map<string, string>): string => {
+  if (config.reference && !customQueries.has(config.reference)) {
+    throw new InvalidDirectiveError(
+      `@sql directive 'reference' argument must be a valid custom query name. Check type "${config.resolverTypeName}" and field "${config.resolverFieldName}". The custom query "${config.reference}" does not exist in "sql-statements" directory.`,
+    );
+  }
+
+  if (config.reference && config.statement) {
+    throw new InvalidDirectiveError(
+      `@sql directive can have either 'statement' or 'reference' argument but not both. Check type "${config.resolverTypeName}" and field "${config.resolverFieldName}".`,
+    );
+  }
+
+  if (config.statement !== undefined && config.statement.trim().length === 0) {
+    throw new InvalidDirectiveError(
+      `@sql directive 'statement' argument must not be empty. Check type "${config.resolverTypeName}" and field "${config.resolverFieldName}".`,
+    );
+  }
+
+  const statement = config.statement ?? customQueries.get(config.reference!);
+  return statement!;
+};
 
 export const generateSqlLambdaRequestTemplate = (statement: string, operation: string, operationName: string): string => {
   return printBlock('Invoke RDS Lambda data source')(
