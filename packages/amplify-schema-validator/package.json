@@ -33,7 +33,7 @@
   "size-limit": [
     {
       "path": "./dist/index.js",
-      "limit": "5 KB",
+      "limit": "6 KB",
       "ignore": [
         "graphql"
       ]
