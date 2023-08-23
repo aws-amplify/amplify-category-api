@@ -1,6 +1,4 @@
-import { DocumentNode, Kind, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
-import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
-import { getGraphqlName, toUpper } from '../helpers/util';
+import { DocumentNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { ValidationError } from '../exceptions/validation-error';
 
 /**
