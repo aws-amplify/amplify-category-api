@@ -62,7 +62,7 @@ const allValidatorsWithContext = [
  */
 export const validateSchema = (schemaString: string): void => {
   const schema = parse(schemaString);
-  const validationErrors = allValidators.flatMap((validate) => validate(schema));
+  const validationErrors = allValidators.flatMap(validate => validate(schema));
   if (validationErrors.length > 0) {
     const allErrorMessages = validationErrors.map((error: Error) => `${error.name} - ${error.message}`);
     throw new ValidationError(allErrorMessages.join('\n'));
@@ -79,7 +79,7 @@ export const validateSchema = (schemaString: string): void => {
  */
 export const validateSchemaWithContext = (schemaString: string, props: ValidateSchemaProps): void => {
   const schema = parse(schemaString);
-  const validationErrors = allValidatorsWithContext.flatMap((validate) => validate(schema, props));
+  const validationErrors = allValidatorsWithContext.flatMap(validate => validate(schema, props));
   if (validationErrors.length > 0) {
     const allErrorMessages = validationErrors.map((error: Error) => `${error.name} - ${error.message}`);
     throw new ValidationError(allErrorMessages.join('\n'));

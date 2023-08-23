@@ -1,10 +1,10 @@
-type Contact @model @auth(rules: [{allow: public}]) {
+type Contact @model @auth(rules: [{ allow: public }]) {
   id: ID!
   users: [User] @manyToMany(relationName: "UserContact")
   Users: String
 }
 
-type User @model @auth(rules: [{allow: public}]) {
+type User @model @auth(rules: [{ allow: public }]) {
   id: ID!
   name: String
   image: String
