@@ -40,32 +40,30 @@ const preserveRelationalDirectives = (document: DocumentNode, existingDocument: 
   if (!existingDocument) {
     return document;
   }
-  existingDocument.definitions.filter(
-    (def) => def.kind === 'ObjectTypeDefinition' &&
-    def.directives.find((dir) => dir.name.value === MODEL_DIRECTIVE_NAME)
-  ).forEach((existingObject: ObjectTypeDefinitionNode) => {
-    const newObject = document.definitions.find((def) => def.kind === 'ObjectTypeDefinition' && def.name.value === existingObject.name.value) as ObjectTypeDefinitionNode;
-    if (!newObject) {
-      return;
-    }
-    const relationalFields = existingObject.fields.filter(
-      (field) => field.directives.find((dir) => RELATIONAL_DIRECTIVES.includes(dir.name.value))
-    );
-    const newObjectWrapper = new ObjectDefinitionWrapper(newObject);
-    relationalFields.forEach((relationalField: FieldDefinitionNode) => {
-      newObjectWrapper.fields.push(new FieldWrapper(relationalField));
-    });
+  existingDocument.definitions
+    .filter((def) => def.kind === 'ObjectTypeDefinition' && def.directives.find((dir) => dir.name.value === MODEL_DIRECTIVE_NAME))
+    .forEach((existingObject: ObjectTypeDefinitionNode) => {
+      const newObject = document.definitions.find(
+        (def) => def.kind === 'ObjectTypeDefinition' && def.name.value === existingObject.name.value,
+      ) as ObjectTypeDefinitionNode;
+      if (!newObject) {
+        return;
+      }
+      const relationalFields = existingObject.fields.filter((field) =>
+        field.directives.find((dir) => RELATIONAL_DIRECTIVES.includes(dir.name.value)),
+      );
+      const newObjectWrapper = new ObjectDefinitionWrapper(newObject);
+      relationalFields.forEach((relationalField: FieldDefinitionNode) => {
+        newObjectWrapper.fields.push(new FieldWrapper(relationalField));
+      });
 
-    if (relationalFields.length > 0) {
-      // If relational fields are found on a model, 
-      // remove the existing model and add the new one with the relational fields to preserve manual edits.
-      const excludedDefinitions = documentWrapper.definitions.filter((def) => def.name.value !== existingObject.name.value);
-      documentWrapper.definitions = [
-        ...excludedDefinitions,
-        newObjectWrapper.serialize(),
-      ];
-    }
-  });
+      if (relationalFields.length > 0) {
+        // If relational fields are found on a model,
+        // remove the existing model and add the new one with the relational fields to preserve manual edits.
+        const excludedDefinitions = documentWrapper.definitions.filter((def) => def.name.value !== existingObject.name.value);
+        documentWrapper.definitions = [...excludedDefinitions, newObjectWrapper.serialize()];
+      }
+    });
 
   return documentWrapper;
 };

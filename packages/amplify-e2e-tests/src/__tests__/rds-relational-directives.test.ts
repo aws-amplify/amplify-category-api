@@ -606,7 +606,7 @@ describe('RDS Relational Directives', () => {
     expect(noItemsResult.data.getCityByZip).toHaveLength(0);
   });
 
-  test('relational directives should be preserved on regenerate schema', async() => {
+  test('relational directives should be preserved on regenerate schema', async () => {
     await apiGenerateSchema(projRoot, {
       database,
       host,
@@ -621,7 +621,9 @@ describe('RDS Relational Directives', () => {
     const schema = parse(regeneratedSchema);
 
     // Check posts field on Blog type
-    const blogType = schema.definitions.find((def) => def.kind === 'ObjectTypeDefinition' && def.name.value === 'Blog') as ObjectTypeDefinitionNode;
+    const blogType = schema.definitions.find(
+      (def) => def.kind === 'ObjectTypeDefinition' && def.name.value === 'Blog',
+    ) as ObjectTypeDefinitionNode;
     expect(blogType).toBeDefined();
     const blogPostsField = blogType.fields.find((field) => field.name.value === 'posts');
     expect(blogPostsField).toBeDefined();
@@ -629,7 +631,9 @@ describe('RDS Relational Directives', () => {
     expect(blogsPostsDirective).toBeDefined();
 
     // Check posts field on Blog type
-    const postType = schema.definitions.find((def) => def.kind === 'ObjectTypeDefinition' && def.name.value === 'Post') as ObjectTypeDefinitionNode;
+    const postType = schema.definitions.find(
+      (def) => def.kind === 'ObjectTypeDefinition' && def.name.value === 'Post',
+    ) as ObjectTypeDefinitionNode;
     expect(postType).toBeDefined();
     const postBlogField = postType.fields.find((field) => field.name.value === 'blog');
     expect(postBlogField).toBeDefined();
@@ -637,7 +641,9 @@ describe('RDS Relational Directives', () => {
     expect(postBlogDirective).toBeDefined();
 
     // Check profile field on User type
-    const userType = schema.definitions.find((def) => def.kind === 'ObjectTypeDefinition' && def.name.value === 'User') as ObjectTypeDefinitionNode;
+    const userType = schema.definitions.find(
+      (def) => def.kind === 'ObjectTypeDefinition' && def.name.value === 'User',
+    ) as ObjectTypeDefinitionNode;
     expect(userType).toBeDefined();
     const userProfileField = userType.fields.find((field) => field.name.value === 'profile');
     expect(userProfileField).toBeDefined();
@@ -645,7 +651,9 @@ describe('RDS Relational Directives', () => {
     expect(userProfileDirective).toBeDefined();
 
     // Check profile field on User type
-    const profileType = schema.definitions.find((def) => def.kind === 'ObjectTypeDefinition' && def.name.value === 'Profile') as ObjectTypeDefinitionNode;
+    const profileType = schema.definitions.find(
+      (def) => def.kind === 'ObjectTypeDefinition' && def.name.value === 'Profile',
+    ) as ObjectTypeDefinitionNode;
     expect(profileType).toBeDefined();
     const profileUserField = profileType.fields.find((field) => field.name.value === 'user');
     expect(profileUserField).toBeDefined();

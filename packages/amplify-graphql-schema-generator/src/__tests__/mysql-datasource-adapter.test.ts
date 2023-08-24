@@ -159,7 +159,7 @@ describe('testDataSourceAdapter', () => {
     const amplifyInputType = gql`
       input AMPLIFY {
         engine: String = "mysql"
-        globalAuthRule: AuthRule = {allow: public}
+        globalAuthRule: AuthRule = { allow: public }
         include: [String] = ["Tasks"]
       }
     `;
@@ -200,7 +200,7 @@ describe('testDataSourceAdapter', () => {
     const amplifyInputType = gql`
       input AMPLIFY {
         engine: String = "mysql"
-        globalAuthRule: AuthRule = {allow: public}
+        globalAuthRule: AuthRule = { allow: public }
         exclude: [String] = ["Tasks"]
       }
     `;
@@ -241,12 +241,14 @@ describe('testDataSourceAdapter', () => {
     const amplifyInputType = gql`
       input AMPLIFY {
         engine: String = "mysql"
-        globalAuthRule: AuthRule = {allow: public}
+        globalAuthRule: AuthRule = { allow: public }
         include: [String] = ["Tasks"]
         exclude: [String] = ["Tasks"]
       }
     `;
-    expect(() => generateGraphQLSchema(dbschema, amplifyInputType)).toThrowError('Cannot specify both include and exclude options. Please check your GraphQL schema.');
+    expect(() => generateGraphQLSchema(dbschema, amplifyInputType)).toThrowError(
+      'Cannot specify both include and exclude options. Please check your GraphQL schema.',
+    );
   });
 
   it('providing incorrect include and exclude datatype should throw an error', () => {
@@ -281,20 +283,24 @@ describe('testDataSourceAdapter', () => {
     const amplifyInputTypeInclude = gql`
       input AMPLIFY {
         engine: String = "mysql"
-        globalAuthRule: AuthRule = {allow: public}
+        globalAuthRule: AuthRule = { allow: public }
         include: String = "Tasks"
       }
     `;
-    expect(() => generateGraphQLSchema(dbschema, amplifyInputTypeInclude)).toThrowError('Invalid value for include option. Please check your GraphQL schema.');
+    expect(() => generateGraphQLSchema(dbschema, amplifyInputTypeInclude)).toThrowError(
+      'Invalid value for include option. Please check your GraphQL schema.',
+    );
 
     const amplifyInputTypeExclude = gql`
       input AMPLIFY {
         engine: String = "mysql"
-        globalAuthRule: AuthRule = {allow: public}
+        globalAuthRule: AuthRule = { allow: public }
         exclude: String = "Tasks"
       }
     `;
-    expect(() => generateGraphQLSchema(dbschema, amplifyInputTypeExclude)).toThrowError('Invalid value for include option. Please check your GraphQL schema.');
+    expect(() => generateGraphQLSchema(dbschema, amplifyInputTypeExclude)).toThrowError(
+      'Invalid value for include option. Please check your GraphQL schema.',
+    );
   });
 
   it('generate schema retains hasOne and belongsTo relationship', () => {
@@ -317,7 +323,7 @@ describe('testDataSourceAdapter', () => {
     const existingSchema = gql`
       input AMPLIFY {
         engine: String = "mysql"
-        globalAuthRule: AuthRule = {allow: public}
+        globalAuthRule: AuthRule = { allow: public }
       }
       type User @model {
         id: Int!
@@ -356,7 +362,7 @@ describe('testDataSourceAdapter', () => {
     const existingSchema = gql`
       input AMPLIFY {
         engine: String = "mysql"
-        globalAuthRule: AuthRule = {allow: public}
+        globalAuthRule: AuthRule = { allow: public }
       }
       type Blog @model {
         id: Int!

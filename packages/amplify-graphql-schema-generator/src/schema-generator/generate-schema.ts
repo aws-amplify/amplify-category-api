@@ -1,5 +1,13 @@
 import { DirectiveWrapper, EnumWrapper, FieldWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
-import { EnumValueDefinitionNode, Kind, print, parse, DocumentNode, InputObjectTypeDefinitionNode, ListValueNode, StringValueNode } from 'graphql';
+import {
+  EnumValueDefinitionNode,
+  Kind,
+  print,
+  DocumentNode,
+  InputObjectTypeDefinitionNode,
+  ListValueNode,
+  StringValueNode,
+} from 'graphql';
 import { EnumType, Field, Index, Model, Schema } from '../schema-representation';
 import { applySchemaOverrides } from './schema-overrides';
 
@@ -13,7 +21,6 @@ export const generateGraphQLSchema = (schema: Schema, existingSchemaDocument?: D
   const { includeTables, excludeTables } = getIncludeExcludeConfig(existingSchemaDocument);
 
   models.forEach((model) => {
-
     // Verify whether a table should be included or excluded
     if (includeTables.length > 0 && !includeTables.includes(model.getName())) {
       return;
@@ -268,7 +275,9 @@ const getIncludeExcludeConfig = (document: DocumentNode | undefined): IncludeExc
     return emptyConfig;
   }
 
-  const amplifyInputType = document.definitions.find((d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'AMPLIFY') as InputObjectTypeDefinitionNode;
+  const amplifyInputType = document.definitions.find(
+    (d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'AMPLIFY',
+  ) as InputObjectTypeDefinitionNode;
   if (!amplifyInputType) {
     return emptyConfig;
   }
@@ -286,19 +295,14 @@ const getIncludeExcludeConfig = (document: DocumentNode | undefined): IncludeExc
 
   const includeTables = (includeFieldNodeValue as ListValueNode)?.values.map((v: StringValueNode) => v.value);
   const excludeTables = (excludeFieldNodeValue as ListValueNode)?.values.map((v: StringValueNode) => v.value);
-  if (
-    includeTables &&
-    includeTables.length > 0 &&
-    excludeTables &&
-    excludeTables.length > 0
-  ) {
+  if (includeTables && includeTables.length > 0 && excludeTables && excludeTables.length > 0) {
     throw new Error('Cannot specify both include and exclude options. Please check your GraphQL schema.');
   }
 
   return {
     includeTables: includeTables || [],
     excludeTables: excludeTables || [],
-  }
+  };
 };
 
 /**
