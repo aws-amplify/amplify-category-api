@@ -11,17 +11,17 @@ import { ValidationError } from '../exceptions/validation-error';
 export const validateFieldNamesAreUniqueWithRelationsPresent = (schema: DocumentNode): Error[] => {
   const errors: Error[] = [];
   const objectTypeDefinitions = schema.definitions.filter(
-    defintion => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,
+    (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,
   ) as ObjectTypeDefinitionNode[];
-  objectTypeDefinitions.forEach(objectTypeDefinition => {
-    const directiveFields = objectTypeDefinition.fields?.filter(objectField =>
+  objectTypeDefinitions.forEach((objectTypeDefinition) => {
+    const directiveFields = objectTypeDefinition.fields?.filter((objectField) =>
       objectField.directives?.some(
-        directive => directive.name.value === 'manyToMany' || directive.name.value === 'hasMany' || directive.name.value === 'hasOne',
+        (directive) => directive.name.value === 'manyToMany' || directive.name.value === 'hasMany' || directive.name.value === 'hasOne',
       ),
     );
 
     const uniquefields = new Set();
-    directiveFields?.forEach(field => {
+    directiveFields?.forEach((field) => {
       const val = field.name.value;
       if (!uniquefields.has(val.toLowerCase())) {
         uniquefields.add(val.toLowerCase());
