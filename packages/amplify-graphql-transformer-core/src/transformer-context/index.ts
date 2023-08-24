@@ -70,8 +70,12 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly modelToDatasourceMap: Map<string, DatasourceType>;
 
   public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
+
   public readonly sqlLambdaVpcConfig?: VpcConfig;
+
   public readonly rdsLayerMapping?: RDSLayerMapping;
+
+  public readonly customQueries: Map<string, string>;
 
   public metadata: TransformerContextMetadata;
 
@@ -82,6 +86,7 @@ export class TransformerContext implements TransformerContextProvider {
     public readonly synthParameters: SynthParameters,
     public readonly inputDocument: DocumentNode,
     modelToDatasourceMap: Map<string, DatasourceType>,
+    customQueries: Map<string, string>,
     stackMapping: Record<string, string>,
     authConfig: AppSyncAuthConfiguration,
     transformParameters: TransformParameters,
@@ -105,6 +110,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
     this.sqlLambdaVpcConfig = sqlLambdaVpcConfig;
     this.rdsLayerMapping = rdsLayerMapping;
+    this.customQueries = customQueries;
   }
 
   /**

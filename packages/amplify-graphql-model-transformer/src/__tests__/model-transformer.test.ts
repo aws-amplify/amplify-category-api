@@ -1,10 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import {
-  ConflictHandlerType,
-  DatasourceType,
-  GraphQLTransform,
-  validateModelSchema,
-} from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType, DatasourceType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
 import { Template } from 'aws-cdk-lib/assertions';
@@ -96,10 +91,10 @@ describe('ModelTransformer: ', () => {
           title: String!
       }
       `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     validateModelSchema(parse(out.schema));
@@ -1557,15 +1552,14 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer()],
-    });
     const modelToDatasourceMap = new Map<string, DatasourceType>();
     modelToDatasourceMap.set('Note', {
       dbType: 'MySQL',
       provisionDB: false,
     });
-    const out = transformer.transform(validSchema, {
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer()],
       modelToDatasourceMap,
     });
     expect(out).toBeDefined();

@@ -766,11 +766,11 @@ describe('@belongsTo directive with RDS datasource', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+      modelToDatasourceMap,
     });
-
-    const out = transformer.transform(inputSchema, { modelToDatasourceMap });
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
@@ -806,11 +806,11 @@ describe('@belongsTo directive with RDS datasource', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+      modelToDatasourceMap,
     });
-
-    const out = transformer.transform(inputSchema, { modelToDatasourceMap });
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);

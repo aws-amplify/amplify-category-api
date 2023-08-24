@@ -194,6 +194,7 @@ export class GraphQLTransform {
       synthParameters,
       parsedDocument,
       datasourceConfig?.modelToDatasourceMap ?? new Map<string, DatasourceType>(),
+      datasourceConfig?.customQueries ?? new Map<string, string>(),
       this.stackMappingOverrides,
       this.authConfig,
       this.transformParameters,

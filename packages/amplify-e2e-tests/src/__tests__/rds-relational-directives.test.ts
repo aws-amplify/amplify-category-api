@@ -14,11 +14,12 @@ import {
   initJSProjectWithProfile,
   removeRDSPortInboundRule,
 } from 'amplify-category-api-e2e-core';
-import { existsSync, writeFileSync } from 'fs-extra';
+import { existsSync, writeFileSync, mkdirSync } from 'fs-extra';
 import generator from 'generate-password';
 import path from 'path';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
+import { gql } from 'graphql-transformer-core';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -117,6 +118,15 @@ describe('RDS Relational Directives', () => {
       'CREATE TABLE Post (id VARCHAR(40) PRIMARY KEY, content VARCHAR(255), blogId VARCHAR(40))',
       'CREATE TABLE User (id VARCHAR(40) PRIMARY KEY, name VARCHAR(255))',
       'CREATE TABLE Profile (id VARCHAR(40) PRIMARY KEY, details VARCHAR(255), userId VARCHAR(40))',
+      'CREATE TABLE ZipCode (zip VARCHAR(40) PRIMARY KEY, city VARCHAR(255), state VARCHAR(255), country VARCHAR(255))',
+      `
+        CREATE PROCEDURE getCityByZip (zipcode VARCHAR(40))
+        BEGIN 
+            SELECT * FROM ZipCode WHERE zip = zipcode;
+        end;
+      `,
+      "INSERT INTO ZipCode VALUES ('20158', 'Hamilton', 'VA', 'US')",
+      "INSERT INTO ZipCode VALUES ('20160', 'Lincoln', 'VA', 'US')",
     ]);
     dbAdapter.cleanup();
   };
@@ -130,6 +140,19 @@ describe('RDS Relational Directives', () => {
       cidrIp: publicIpCidr,
     });
     await deleteDBInstance(identifier, region);
+  };
+
+  const createSqlStatementsDirectory = (apiName: string): void => {
+    const sqlStatementsDirPath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'sql-statements');
+    if (!existsSync(sqlStatementsDirPath)) {
+      mkdirSync(sqlStatementsDirPath);
+    }
+  };
+
+  const createSqlStatementFile = (apiName: string, statement: string, fileName: string): void => {
+    const sqlStatementsDirPath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'sql-statements');
+    const scriptFilePath = path.join(sqlStatementsDirPath, `${fileName}.sql`);
+    writeFileSync(scriptFilePath, statement);
   };
 
   const initProjectAndImportSchema = async (): Promise<void> => {
@@ -179,8 +202,22 @@ describe('RDS Relational Directives', () => {
         userId: String!
         user: User @belongsTo(references: ["userId"])
       }
+      type ZipCode {
+        zip: String!
+        city: String
+        state: String
+        country: String
+      }
+      type Query {
+        getCityByZipStatement(zip: String!): [ZipCode] @sql(statement: "SELECT * FROM ZipCode WHERE zip = :zip")
+        getCityByZip(zipcode: String!): [ZipCode] @sql(reference: "getCityByZip")
+      }
     `;
     writeFileSync(rdsSchemaFilePath, schema, 'utf8');
+
+    // Create SQL scripts
+    createSqlStatementsDirectory(apiName);
+    createSqlStatementFile(apiName, 'CALL getCityByZip(:zipcode)', 'getCityByZip');
   };
 
   test('check hasMany and belongsTo directives on blog and post tables', async () => {
@@ -467,6 +504,104 @@ describe('RDS Relational Directives', () => {
         }),
       ]),
     );
+  });
+
+  test('@sql statement and reference should work', async () => {
+    // Validate @sql statement option
+    const sqlStatementQuery = /* GraphQL */ `
+      query GetCityByZipStatement($zip: String!) {
+        getCityByZipStatement(zip: $zip) {
+          zip
+          city
+          state
+          country
+        }
+      }
+    `;
+
+    const parameters = {
+      zip: '20158',
+    };
+
+    const result = await appSyncClient.query({
+      query: gql`
+        ${sqlStatementQuery}
+      `,
+      fetchPolicy: 'no-cache',
+      variables: parameters,
+    });
+
+    expect(result).toBeDefined();
+    expect(result.data).toBeDefined();
+    expect(result.data.getCityByZipStatement).toBeDefined();
+    expect(result.data.getCityByZipStatement).toHaveLength(1);
+    expect(result.data.getCityByZipStatement).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          zip: '20158',
+          city: 'Hamilton',
+          state: 'VA',
+          country: 'US',
+        }),
+      ]),
+    );
+
+    // Verify reference argument and stored procedure call which produce output
+    const sqlReferenceQuery = /* GraphQL */ `
+      query GetCityByZip($zipcode: String!) {
+        getCityByZip(zipcode: $zipcode) {
+          zip
+          city
+          state
+          country
+        }
+      }
+    `;
+
+    const referenceParameters = {
+      zipcode: '20160',
+    };
+
+    const referenceResult = await appSyncClient.query({
+      query: gql`
+        ${sqlReferenceQuery}
+      `,
+      fetchPolicy: 'no-cache',
+      variables: referenceParameters,
+    });
+
+    expect(referenceResult).toBeDefined();
+    expect(referenceResult.data).toBeDefined();
+    expect(referenceResult.data.getCityByZip).toBeDefined();
+    expect(referenceResult.data.getCityByZip).toHaveLength(1);
+    expect(referenceResult.data.getCityByZip).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          zip: '20160',
+          city: 'Lincoln',
+          state: 'VA',
+          country: 'US',
+        }),
+      ]),
+    );
+
+    // Validate stored procedure call with no output
+    const noItemsParameters = {
+      zipcode: '12345',
+    };
+
+    const noItemsResult = await appSyncClient.query({
+      query: gql`
+        ${sqlReferenceQuery}
+      `,
+      fetchPolicy: 'no-cache',
+      variables: noItemsParameters,
+    });
+
+    expect(noItemsResult).toBeDefined();
+    expect(noItemsResult.data).toBeDefined();
+    expect(noItemsResult.data.getCityByZip).toBeDefined();
+    expect(noItemsResult.data.getCityByZip).toHaveLength(0);
   });
 
   const constructBlogHelper = (): GQLQueryHelper => {

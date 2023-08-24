@@ -35,6 +35,7 @@
     "@aws-amplify/graphql-index-transformer": "2.1.0",
     "@aws-amplify/graphql-maps-to-transformer": "3.1.0",
     "@aws-amplify/graphql-model-transformer": "2.1.0",
+    "@aws-amplify/graphql-sql-transformer": "0.0.1",
     "@aws-amplify/graphql-predictions-transformer": "2.1.0",
     "@aws-amplify/graphql-relational-transformer": "2.1.0",
     "@aws-amplify/graphql-searchable-transformer": "2.1.0",

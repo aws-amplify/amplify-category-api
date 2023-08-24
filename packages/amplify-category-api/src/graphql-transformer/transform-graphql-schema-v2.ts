@@ -223,6 +223,7 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
     synthParameters: transformManager.getSynthParameters(hasIamAuth(opts.authConfig), hasUserPoolAuth(opts.authConfig)),
     schema,
     modelToDatasourceMap: opts.projectConfig.modelToDatasourceMap,
+    customQueries: opts.projectConfig.customQueries,
     datasourceSecretParameterLocations: datasourceSecretMap,
     printTransformerLog,
     sqlLambdaVpcConfig,

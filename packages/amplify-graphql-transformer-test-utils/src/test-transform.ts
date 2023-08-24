@@ -20,6 +20,7 @@ export type TestTransformParameters = {
   stackMapping?: Record<string, string>;
   modelToDatasourceMap?: Map<string, DatasourceType>;
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
+  customQueries?: Map<string, string>;
   overrideConfig?: OverrideConfig;
 };
 
@@ -32,6 +33,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     schema,
     modelToDatasourceMap,
     datasourceSecretParameterLocations,
+    customQueries,
     overrideConfig,
     transformers,
     authConfig,
@@ -68,6 +70,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     datasourceConfig: {
       modelToDatasourceMap,
       datasourceSecretParameterLocations,
+      customQueries,
     },
   });
 

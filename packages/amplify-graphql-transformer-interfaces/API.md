@@ -396,6 +396,8 @@ export interface TransformerContextProvider {
     // (undocumented)
     authConfig: AppSyncAuthConfiguration;
     // (undocumented)
+    customQueries: Map<string, string>;
+    // (undocumented)
     dataSources: TransformerDataSourceManagerProvider;
     // (undocumented)
     datasourceSecretParameterLocations: Map<string, TransformerSecrets>;

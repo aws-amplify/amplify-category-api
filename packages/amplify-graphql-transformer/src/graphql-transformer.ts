@@ -5,6 +5,7 @@ import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { SqlTransformer } from '@aws-amplify/graphql-sql-transformer';
 import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
 import {
   BelongsToTransformer,
@@ -86,6 +87,7 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
     authTransformer,
     new MapsToTransformer(),
     new SearchableModelTransformer(),
+    new SqlTransformer(),
     ...(options?.customTransformers ?? []),
   ];
 };
@@ -124,6 +126,7 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
 export type ExecuteTransformConfig = TransformConfig & {
   schema: string;
   modelToDatasourceMap?: Map<string, DatasourceType>;
+  customQueries?: Map<string, string>;
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
   printTransformerLog?: (log: TransformerLog) => void;
   sqlLambdaVpcConfig?: VpcConfig;
@@ -173,6 +176,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
     nestedStackProvider,
     assetProvider,
     synthParameters,
+    customQueries,
   } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
@@ -189,6 +193,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
         modelToDatasourceMap,
         datasourceSecretParameterLocations,
         rdsLayerMapping,
+        customQueries,
       },
     });
   } finally {

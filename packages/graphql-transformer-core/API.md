@@ -265,7 +265,7 @@ export { loadConfig as readTransformerConfiguration }
 // Warning: (ae-forgotten-export) The symbol "ProjectConfiguration" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-function loadProject(projectDirectory: string, opts?: ProjectOptions): Promise<ProjectConfiguration>;
+const loadProject: (projectDirectory: string, opts?: ProjectOptions) => Promise<ProjectConfiguration>;
 export { loadProject }
 export { loadProject as readProjectConfiguration }
 

@@ -15,4 +15,5 @@ export interface TransformerProjectConfig {
   stacks: Record<string, Template>;
   config: TransformConfig;
   modelToDatasourceMap: Map<string, DatasourceType>;
+  customQueries: Map<string, string>;
 }
