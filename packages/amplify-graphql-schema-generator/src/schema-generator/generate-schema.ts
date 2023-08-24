@@ -1,13 +1,5 @@
 import { DirectiveWrapper, EnumWrapper, FieldWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
-import {
-  EnumValueDefinitionNode,
-  Kind,
-  print,
-  DocumentNode,
-  InputObjectTypeDefinitionNode,
-  ListValueNode,
-  StringValueNode,
-} from 'graphql';
+import { EnumValueDefinitionNode, Kind, print, DocumentNode, InputObjectTypeDefinitionNode, ListValueNode, StringValueNode } from 'graphql';
 import { EnumType, Field, Index, Model, Schema } from '../schema-representation';
 import { applySchemaOverrides } from './schema-overrides';
 
