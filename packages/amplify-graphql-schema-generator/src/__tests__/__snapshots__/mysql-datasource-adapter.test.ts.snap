@@ -1,5 +1,51 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`testDataSourceAdapter exclude option should not import the given tables 1`] = `
+"type Capital @model {
+  id: Int! @primaryKey
+  name: String
+  countryId: Int @index(name: \\"countryId\\")
+}
+
+type Country @model {
+  id: Int! @primaryKey
+  name: String
+}
+"
+`;
+
+exports[`testDataSourceAdapter generate schema retains hasMany and belongsTo relationship 1`] = `
+"type Blog @model {
+  id: Int! @primaryKey
+  name: String
+  posts: [Post] @hasMany(references: [\\"userId\\"])
+}
+
+type Post @model {
+  id: Int! @primaryKey
+  content: String
+  blogId: Int!
+  blog: Blog @belongsTo(references: [\\"userId\\"])
+}
+"
+`;
+
+exports[`testDataSourceAdapter generate schema retains hasOne and belongsTo relationship 1`] = `
+"type User @model {
+  id: Int! @primaryKey
+  name: String
+  profile: Profile @hasOne(references: [\\"userId\\"])
+}
+
+type Profile @model {
+  id: Int! @primaryKey
+  content: String
+  userId: Int!
+  user: User @belongsTo(references: [\\"userId\\"])
+}
+"
+`;
+
 exports[`testDataSourceAdapter generates a default directive and optional types for fields with literal default values 1`] = `
 "type Account @model {
   id: Int! @primaryKey
@@ -24,6 +70,16 @@ exports[`testDataSourceAdapter generates primary key fields as required without 
   serialNumber: Int!
   ownerName: String
   amount: Float!
+}
+"
+`;
+
+exports[`testDataSourceAdapter include option should import only the given tables 1`] = `
+"type Tasks @model {
+  id: String! @primaryKey(sortKeyFields: [\\"title\\"])
+  title: String @index(name: \\"tasks_title\\") @index(name: \\"tasks_title_description\\", sortKeyFields: [\\"description\\"])
+  description: String
+  priority: String
 }
 "
 `;

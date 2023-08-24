@@ -1,5 +1,5 @@
 import { DirectiveWrapper, EnumWrapper, FieldWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
-import { EnumValueDefinitionNode, Kind, print, parse, DocumentNode } from 'graphql';
+import { EnumValueDefinitionNode, Kind, print, parse, DocumentNode, InputObjectTypeDefinitionNode, ListValueNode, StringValueNode } from 'graphql';
 import { EnumType, Field, Index, Model, Schema } from '../schema-representation';
 import { applySchemaOverrides } from './schema-overrides';
 
@@ -10,7 +10,18 @@ export const generateGraphQLSchema = (schema: Schema, existingSchemaDocument?: D
     definitions: [],
   };
 
+  const { includeTables, excludeTables } = getIncludeExcludeConfig(existingSchemaDocument);
+
   models.forEach((model) => {
+
+    // Verify whether a table should be included or excluded
+    if (includeTables.length > 0 && !includeTables.includes(model.getName())) {
+      return;
+    }
+    if (excludeTables.length > 0 && excludeTables.includes(model.getName())) {
+      return;
+    }
+
     const primaryKey = model.getPrimaryKey();
     if (!primaryKey) {
       return;
@@ -244,6 +255,50 @@ const addPrimaryKey = (type: ObjectDefinitionWrapper, primaryKey: Index): void =
       arguments: keyArguments,
     }),
   );
+};
+
+type IncludeExcludeConfig = {
+  includeTables: string[];
+  excludeTables: string[];
+};
+
+const getIncludeExcludeConfig = (document: DocumentNode | undefined): IncludeExcludeConfig => {
+  const emptyConfig = { includeTables: [], excludeTables: [] };
+  if (!document) {
+    return emptyConfig;
+  }
+
+  const amplifyInputType = document.definitions.find((d) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'AMPLIFY') as InputObjectTypeDefinitionNode;
+  if (!amplifyInputType) {
+    return emptyConfig;
+  }
+
+  const includeFieldNodeValue = amplifyInputType.fields.find((f) => f.name.value === 'include')?.defaultValue;
+  const excludeFieldNodeValue = amplifyInputType.fields.find((f) => f.name.value === 'exclude')?.defaultValue;
+
+  if (includeFieldNodeValue && includeFieldNodeValue.kind !== 'ListValue') {
+    throw new Error('Invalid value for include option. Please check your GraphQL schema.');
+  }
+
+  if (excludeFieldNodeValue && excludeFieldNodeValue.kind !== 'ListValue') {
+    throw new Error('Invalid value for include option. Please check your GraphQL schema.');
+  }
+
+  const includeTables = (includeFieldNodeValue as ListValueNode)?.values.map((v: StringValueNode) => v.value);
+  const excludeTables = (excludeFieldNodeValue as ListValueNode)?.values.map((v: StringValueNode) => v.value);
+  if (
+    includeTables &&
+    includeTables.length > 0 &&
+    excludeTables &&
+    excludeTables.length > 0
+  ) {
+    throw new Error('Cannot specify both include and exclude options. Please check your GraphQL schema.');
+  }
+
+  return {
+    includeTables: includeTables || [],
+    excludeTables: excludeTables || [],
+  }
 };
 
 /**
