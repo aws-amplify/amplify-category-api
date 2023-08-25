@@ -9,8 +9,11 @@ import {
   getHostVpc,
 } from '../vpc-helper';
 
-
 const sendSpy = jest.spyOn(RDSClient.prototype, 'send');
+
+const vpcId = 'vpc-aaaaaaaaaaaaaaaaa';
+const subnetIds = ['subnet-1111111111', 'subnet-2222222222'];
+const securityGroupIds = ['sg-abc123'];
 
 describe('detect VPC settings', () => {
 
@@ -26,6 +29,11 @@ describe('detect VPC settings', () => {
     );
 
     expect(result).toBeDefined();
+    expect(result?.vpcId).toEqual(vpcId);
+    expect(result?.subnetIds).toEqual(expect.arrayContaining(subnetIds));
+    expect(result?.subnetIds.length).toEqual(subnetIds.length);
+    expect(result?.securityGroupIds).toEqual(expect.arrayContaining(securityGroupIds));
+    expect(result?.securityGroupIds.length).toEqual(securityGroupIds.length);
   });
 
   it('should detect VPC settings for an RDS cluster', async () => {
@@ -43,6 +51,11 @@ describe('detect VPC settings', () => {
     );
 
     expect(result).toBeDefined();
+    expect(result?.vpcId).toEqual(vpcId);
+    expect(result?.subnetIds).toEqual(expect.arrayContaining(subnetIds));
+    expect(result?.subnetIds.length).toEqual(subnetIds.length);
+    expect(result?.securityGroupIds).toEqual(expect.arrayContaining(securityGroupIds));
+    expect(result?.securityGroupIds.length).toEqual(securityGroupIds.length);
   });
 
 });
@@ -68,7 +81,7 @@ const instanceResponse: DescribeDBInstancesCommandOutput = {
             'DBSecurityGroups': [],
             'VpcSecurityGroups': [
                 {
-                    'VpcSecurityGroupId': 'sg-abc123',
+                    'VpcSecurityGroupId': securityGroupIds[0],
                     'Status': 'active'
                 }
             ],
@@ -82,11 +95,11 @@ const instanceResponse: DescribeDBInstancesCommandOutput = {
             'DBSubnetGroup': {
                 'DBSubnetGroupName': 'default-vpc-abc123',
                 'DBSubnetGroupDescription': 'Created from the RDS Management Console',
-                'VpcId': 'vpc-aaaaaaaaaaaaaaaaa',
+                'VpcId': vpcId,
                 'SubnetGroupStatus': 'Complete',
                 'Subnets': [
                     {
-                        'SubnetIdentifier': 'subnet-1111111111',
+                        'SubnetIdentifier': subnetIds[0],
                         'SubnetAvailabilityZone': {
                             'Name': 'us-west-2b'
                         },
@@ -94,7 +107,7 @@ const instanceResponse: DescribeDBInstancesCommandOutput = {
                         'SubnetStatus': 'Active'
                     },
                     {
-                        'SubnetIdentifier': 'subnet-2222222222',
+                        'SubnetIdentifier': subnetIds[1],
                         'SubnetAvailabilityZone': {
                             'Name': 'us-west-2b'
                         },
@@ -182,7 +195,7 @@ const clusterResponse: DescribeDBClustersCommandOutput = {
       ],
       'VpcSecurityGroups': [
         {
-          'VpcSecurityGroupId': 'sg-abc123',
+          'VpcSecurityGroupId': securityGroupIds[0],
           'Status': 'active'
         }
       ],
@@ -218,11 +231,11 @@ const subnetResponse: DescribeDBSubnetGroupsCommandOutput = {
     {
       'DBSubnetGroupName': 'default-vpc-abc123',
       'DBSubnetGroupDescription': 'Created from the RDS Management Console',
-      'VpcId': 'vpc-aaaaaaaaaaaaaaaaa',
+      'VpcId': vpcId,
       'SubnetGroupStatus': 'Complete',
       'Subnets': [
         {
-          'SubnetIdentifier': 'subnet-1111111111',
+          'SubnetIdentifier': subnetIds[0],
           'SubnetAvailabilityZone': {
             'Name': 'us-west-2b'
           },
@@ -230,7 +243,7 @@ const subnetResponse: DescribeDBSubnetGroupsCommandOutput = {
           'SubnetStatus': 'Active'
         },
         {
-          'SubnetIdentifier': 'subnet-2222222222',
+          'SubnetIdentifier': subnetIds[1],
           'SubnetAvailabilityZone': {
             'Name': 'us-west-2b'
           },
