@@ -23,7 +23,7 @@ const AMPLIFY_MANAGE_ROLE = '_Manage-only/CognitoIdentityCredentials';
 const PROVIDER_NAME = 'awscloudformation';
 
 interface CustomRolesConfig {
-  adminRoleNames?: Array<string>;
+  adminRoleNames?: Array<string> | string;
 }
 
 export const getIdentityPoolId = async (ctx: $TSContext): Promise<string | undefined> => {
@@ -73,7 +73,10 @@ export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string | u
     if (fs.existsSync(customRoleFile)) {
       const customRoleConfig = JSONUtilities.readJson<CustomRolesConfig>(customRoleFile);
       if (customRoleConfig && customRoleConfig.adminRoleNames) {
-        const adminRoleNames = customRoleConfig.adminRoleNames
+        const customAdminRoles = Array.isArray(customRoleConfig.adminRoleNames)
+          ? customRoleConfig.adminRoleNames
+          : [customRoleConfig.adminRoleNames];
+        const adminRoleNames = customAdminRoles
           // eslint-disable-next-line no-template-curly-in-string
           .map((r) => (r.includes('${env}') ? r.replace('${env}', currentEnv) : r));
         adminRoles.push(...adminRoleNames);
