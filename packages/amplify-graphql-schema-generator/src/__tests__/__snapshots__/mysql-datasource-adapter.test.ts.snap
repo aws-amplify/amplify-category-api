@@ -30,7 +30,7 @@ type Post @model {
 "
 `;
 
-exports[`testDataSourceAdapter generate schema retains hasOne and belongsTo relationship 1`] = `
+exports[`testDataSourceAdapter generate schema retains hasOne and belongsTo relationship and removes the non-relational fields added manually 1`] = `
 "type User @model {
   id: Int! @primaryKey
   name: String

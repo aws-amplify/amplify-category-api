@@ -37,9 +37,6 @@ const preserveRelationalDirectives = (document: DocumentNode, existingDocument: 
   const RELATIONAL_DIRECTIVES = ['hasOne', 'hasMany', 'belongsTo'];
   const documentWrapper = document as any;
 
-  if (!existingDocument) {
-    return document;
-  }
   existingDocument.definitions
     .filter((def) => def.kind === 'ObjectTypeDefinition' && def.directives.find((dir) => dir.name.value === MODEL_DIRECTIVE_NAME))
     .forEach((existingObject: ObjectTypeDefinitionNode) => {

@@ -303,7 +303,7 @@ describe('testDataSourceAdapter', () => {
     );
   });
 
-  it('generate schema retains hasOne and belongsTo relationship', () => {
+  it('generate schema retains hasOne and belongsTo relationship and removes the non-relational fields added manually', () => {
     const dbschema = new Schema(new Engine('MySQL'));
 
     let model = new Model('User');
@@ -328,11 +328,13 @@ describe('testDataSourceAdapter', () => {
       type User @model {
         id: Int!
         name: String
+        manuallyAddedField: String
         profile: Profile @hasOne(references: ["userId"])
       }
       type Profile @model {
         id: Int!
         content: String
+        manuallyAddedField: String
         userId: Int!
         user: User @belongsTo(references: ["userId"])
       }
