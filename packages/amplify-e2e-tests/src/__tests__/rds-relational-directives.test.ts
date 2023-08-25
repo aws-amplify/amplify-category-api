@@ -3,6 +3,7 @@ import {
   addApiWithoutSchema,
   addRDSPortInboundRule,
   amplifyPush,
+  apiGenerateSchema,
   createNewProjectDir,
   createRDSInstance,
   deleteDBInstance,
@@ -14,12 +15,13 @@ import {
   initJSProjectWithProfile,
   removeRDSPortInboundRule,
 } from 'amplify-category-api-e2e-core';
-import { existsSync, writeFileSync, mkdirSync } from 'fs-extra';
+import { existsSync, writeFileSync, mkdirSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import path from 'path';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
 import { gql } from 'graphql-transformer-core';
+import { ObjectTypeDefinitionNode, parse } from 'graphql';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -602,6 +604,61 @@ describe('RDS Relational Directives', () => {
     expect(noItemsResult.data).toBeDefined();
     expect(noItemsResult.data.getCityByZip).toBeDefined();
     expect(noItemsResult.data.getCityByZip).toHaveLength(0);
+  });
+
+  test('relational directives should be preserved on regenerate schema', async () => {
+    await apiGenerateSchema(projRoot, {
+      database,
+      host,
+      port,
+      username,
+      password,
+      validCredentials: true,
+    });
+    const apiName = 'rdsrelationalapi';
+    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+    const regeneratedSchema = readFileSync(rdsSchemaFilePath, 'utf8');
+    const schema = parse(regeneratedSchema);
+
+    // Check posts field on Blog type
+    const blogType = schema.definitions.find(
+      (def) => def.kind === 'ObjectTypeDefinition' && def.name.value === 'Blog',
+    ) as ObjectTypeDefinitionNode;
+    expect(blogType).toBeDefined();
+    const blogPostsField = blogType.fields.find((field) => field.name.value === 'posts');
+    expect(blogPostsField).toBeDefined();
+    const blogsPostsDirective = blogPostsField.directives.find((directive) => directive.name.value === 'hasMany');
+    expect(blogsPostsDirective).toBeDefined();
+
+    // Check posts field on Blog type
+    const postType = schema.definitions.find(
+      (def) => def.kind === 'ObjectTypeDefinition' && def.name.value === 'Post',
+    ) as ObjectTypeDefinitionNode;
+    expect(postType).toBeDefined();
+    const postBlogField = postType.fields.find((field) => field.name.value === 'blog');
+    expect(postBlogField).toBeDefined();
+    const postBlogDirective = postBlogField.directives.find((directive) => directive.name.value === 'belongsTo');
+    expect(postBlogDirective).toBeDefined();
+
+    // Check profile field on User type
+    const userType = schema.definitions.find(
+      (def) => def.kind === 'ObjectTypeDefinition' && def.name.value === 'User',
+    ) as ObjectTypeDefinitionNode;
+    expect(userType).toBeDefined();
+    const userProfileField = userType.fields.find((field) => field.name.value === 'profile');
+    expect(userProfileField).toBeDefined();
+    const userProfileDirective = userProfileField.directives.find((directive) => directive.name.value === 'hasOne');
+    expect(userProfileDirective).toBeDefined();
+
+    // Check profile field on User type
+    const profileType = schema.definitions.find(
+      (def) => def.kind === 'ObjectTypeDefinition' && def.name.value === 'Profile',
+    ) as ObjectTypeDefinitionNode;
+    expect(profileType).toBeDefined();
+    const profileUserField = profileType.fields.find((field) => field.name.value === 'user');
+    expect(profileUserField).toBeDefined();
+    const profileUserDirective = profileUserField.directives.find((directive) => directive.name.value === 'belongsTo');
+    expect(profileUserDirective).toBeDefined();
   });
 
   const constructBlogHelper = (): GQLQueryHelper => {
