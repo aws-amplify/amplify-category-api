@@ -14,7 +14,6 @@ import { Construct } from 'constructs';
 import { NETWORK_STACK_LOGICAL_ID } from '../../category-constants';
 import Container from './docker-compose/ecs-objects/container';
 import { GitHubSourceActionInfo, PipelineWithAwaiter } from './pipeline-with-awaiter';
-import { ResourcesVpcConfig } from 'cloudform-types/types/eks/cluster';
 
 const PIPELINE_AWAITER_ZIP = 'custom-resource-pipeline-awaiter.zip';
 
@@ -552,6 +551,14 @@ export abstract class ContainersStack extends cdk.Stack {
     Object.keys(cfn.Parameters).forEach((k) => {
       if (k.startsWith('AssetParameters')) {
         delete cfn.Parameters[k];
+      }
+    });
+
+    // Until we update CDK lib to >= 2.87, custom resources use older nodejs version in lambda,
+    // explicitly overriding the generated resources.
+    Object.values(cfn.Resources).forEach((resource: any) => {
+      if (resource.Type === 'AWS::Lambda::Function' && resource.Properties.Runtime && resource.Properties.Runtime === 'nodejs14.x') {
+        resource.Properties.Runtime = 'nodejs16.x';
       }
     });
 
