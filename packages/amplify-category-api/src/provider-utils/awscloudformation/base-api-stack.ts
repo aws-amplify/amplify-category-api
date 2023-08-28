@@ -555,14 +555,6 @@ export abstract class ContainersStack extends cdk.Stack {
       }
     });
 
-    // Until we update CDK lib to >= 2.87, custom resources use older nodejs version in lambda,
-    // explicitly overriding the generated resources.
-    Object.values(cfn.Resources).forEach((resource: any) => {
-      if (resource.Type === 'AWS::Lambda::Function' && resource.Properties.Runtime && resource.Properties.Runtime !== 'nodejs18.x') {
-        resource.Properties.Runtime = 'nodejs18.x';
-      }
-    });
-
     return cfn;
   }
 }
