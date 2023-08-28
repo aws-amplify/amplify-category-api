@@ -139,7 +139,7 @@ const getSubnetIds = async (
  * @param region AWS region.
  */
 export const getHostVpc = async (hostname: string, region: string): Promise<VpcConfig | undefined> =>
-  await checkHostInDBInstances(hostname, region) ?? await checkHostInDBClusters(hostname, region);
+  (await checkHostInDBInstances(hostname, region)) ?? (await checkHostInDBClusters(hostname, region));
 
 /**
  * Provisions a lambda function to introspect the database schema.
