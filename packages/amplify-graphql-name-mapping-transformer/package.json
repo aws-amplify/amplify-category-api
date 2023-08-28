@@ -1,11 +1,11 @@
 {
   "name": "@aws-amplify/graphql-maps-to-transformer",
   "version": "3.1.2",
-  "description": "Amplify GraphQL @mapsTo transformer",
+  "description": "Amplify GraphQL name mapping transformer",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",
-    "directory": "packages/amplify-graphql-maps-to-transformer"
+    "directory": "packages/amplify-graphql-name-mapping-transformer"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
