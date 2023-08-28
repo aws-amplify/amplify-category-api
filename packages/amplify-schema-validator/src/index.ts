@@ -24,6 +24,7 @@ import { validateBelongsToIsUsedWhenDatastoreInUse } from './validators/use-belo
 import { validateDirectivesFromOlderTransformerVersionAreNotUsed } from './validators/use-directives-from-older-transformer-version';
 import { validateDirectivesFromNewerTransformerVersionAreNotUsed } from './validators/use-directives-from-newer-transformer-version';
 import { ValidateSchemaProps } from './helpers/schema-validator-props';
+import { validateFieldNamesAreUniqueWithRelationsPresent } from './validators/unique-field-names-with-relation';
 
 const allValidators = [
   validateIndexScalarTypes,
@@ -43,6 +44,7 @@ const allValidators = [
   validateIndexExistsInRelatedModel,
   validateEnumIsDefinedOnce,
   validateKeyExistsInRelatedModel,
+  validateFieldNamesAreUniqueWithRelationsPresent,
 ];
 
 const allValidatorsWithContext = [

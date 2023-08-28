@@ -162,6 +162,15 @@ export class TransformerResolver implements TransformerResolverProvider {
     this.slotNames = new Set([...requestSlots, ...responseSlots]);
   }
 
+  /**
+   * Map a resolver to a given stack.
+   * @deprecated, use setScope instead.
+   * @param stack the stack you are mapping to
+   */
+  mapToStack = (stack: Stack): void => {
+    this.scope = stack;
+  };
+
   setScope = (scope: Construct): void => {
     this.scope = scope;
   };
