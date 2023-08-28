@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.15.0-rds-1.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.14.0...amplify-category-api-e2e-tests@3.15.0-rds-1.0) (2023-08-28)
+
+### Bug Fixes
+
+- **api:** make id optional if not a string type ([48ecac0](https://github.com/aws-amplify/amplify-category-api/commit/48ecac0989097106a531ebb898abbda7a0f1745c))
+
+### Features
+
+- **api:** custom queries support using sql directive ([5214037](https://github.com/aws-amplify/amplify-category-api/commit/52140374ca974956c5d5eac09fec91a51cfc9027))
+- **api:** specify include or exclude tables option to generate schema ([1fa52a1](https://github.com/aws-amplify/amplify-category-api/commit/1fa52a1f0c0d7bf82caebc94241774ac3b5c8aa1))
+
 # [3.14.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.13.1...amplify-category-api-e2e-tests@3.14.0) (2023-08-09)
 
 ### Bug Fixes

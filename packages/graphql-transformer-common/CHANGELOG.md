@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.26.0-rds-1.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.25.0...graphql-transformer-common@4.26.0-rds-1.0) (2023-08-28)
+
+### Features
+
+- **api:** add arrays and objects support for rds datasource ([cbfb017](https://github.com/aws-amplify/amplify-category-api/commit/cbfb017029e45c6e7cb8fea4250794d02afff4ca))
+
 # [4.25.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.24.8...graphql-transformer-common@4.25.0) (2023-07-21)
 
 ### Features

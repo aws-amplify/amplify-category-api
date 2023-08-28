@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0-rds-1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.4.0...@aws-amplify/graphql-schema-generator@0.5.0-rds-1.0) (2023-08-28)
+
+### Bug Fixes
+
+- Fix schema import for RDS clusters in VPCs ([942ad39](https://github.com/aws-amplify/amplify-category-api/commit/942ad3923e826f77cc20a65beee3dfadd21e32ef))
+
+### Features
+
+- **api:** specify include or exclude tables option to generate schema ([1fa52a1](https://github.com/aws-amplify/amplify-category-api/commit/1fa52a1f0c0d7bf82caebc94241774ac3b5c8aa1))
+
 # [0.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.3.0...@aws-amplify/graphql-schema-generator@0.4.0) (2023-08-09)
 
 ### Features

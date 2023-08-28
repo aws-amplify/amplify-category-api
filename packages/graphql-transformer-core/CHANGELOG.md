@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.2.0-rds-1.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.1.10...graphql-transformer-core@8.2.0-rds-1.0) (2023-08-28)
+
+### Features
+
+- **api:** custom queries support using sql directive ([5214037](https://github.com/aws-amplify/amplify-category-api/commit/52140374ca974956c5d5eac09fec91a51cfc9027))
+
 ## [8.1.10](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.1.9...graphql-transformer-core@8.1.10) (2023-08-09)
 
 **Note:** Version bump only for package graphql-transformer-core
