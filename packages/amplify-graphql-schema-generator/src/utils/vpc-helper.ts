@@ -139,7 +139,7 @@ const getSubnetIds = async (
  * @param region AWS region.
  */
 export const getHostVpc = async (hostname: string, region: string): Promise<VpcConfig | undefined> =>
-  checkHostInDBInstances(hostname, region) ?? checkHostInDBClusters(hostname, region);
+  (await checkHostInDBInstances(hostname, region)) ?? (await checkHostInDBClusters(hostname, region));
 
 /**
  * Provisions a lambda function to introspect the database schema.
@@ -150,7 +150,7 @@ export const getHostVpc = async (hostname: string, region: string): Promise<VpcC
 export const provisionSchemaInspectorLambda = async (lambdaName: string, vpc: VpcConfig, region: string): Promise<void> => {
   const roleName = `${lambdaName}-execution-role`;
   let createLambda = true;
-  const iamRole = await createRoleIfNotExists(roleName);
+  const iamRole = await createRoleIfNotExists(roleName, region);
   const existingLambda = await getSchemaInspectorLambda(lambdaName, region);
   spinner.start('Provisioning a function to introspect the database schema...');
   try {
@@ -237,13 +237,13 @@ const updateSchemaInspectorLambda = async (lambdaName: string, region: string): 
   await lambdaClient.send(new UpdateFunctionCodeCommand(params));
 };
 
-const createRoleIfNotExists = async (roleName): Promise<Role> => {
-  let role = await getRole(roleName);
+const createRoleIfNotExists = async (roleName: string, region: string): Promise<Role> => {
+  let role = await getRole(roleName, region);
   // Wait for role created with SDK to propagate.
   // Otherwise it will throw error "The role defined for the function cannot be assumed by Lambda" while creating the lambda.
   const ROLE_PROPAGATION_DELAY = 10000;
   if (!role) {
-    role = await createRole(roleName);
+    role = await createRole(roleName, region);
     await sleep(ROLE_PROPAGATION_DELAY);
   }
   return role;
@@ -255,8 +255,8 @@ const createRoleIfNotExists = async (roleName): Promise<Role> => {
  */
 export const sleep = async (milliseconds: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
-const createPolicy = async (policyName: string): Promise<Policy | undefined> => {
-  const client = new IAMClient({});
+const createPolicy = async (policyName: string, region: string): Promise<Policy | undefined> => {
+  const client = new IAMClient({ region });
   const command = new CreatePolicyCommand({
     PolicyName: policyName,
     PolicyDocument: JSON.stringify({
@@ -275,9 +275,9 @@ const createPolicy = async (policyName: string): Promise<Policy | undefined> => 
   return result.Policy;
 };
 
-const createRole = async (roleName): Promise<Role | undefined> => {
-  const client = new IAMClient({});
-  const policy = await createPolicy(`${roleName}-policy`);
+const createRole = async (roleName: string, region: string): Promise<Role | undefined> => {
+  const client = new IAMClient({ region });
+  const policy = await createPolicy(`${roleName}-policy`, region);
   const command = new CreateRoleCommand({
     AssumeRolePolicyDocument: JSON.stringify({
       Version: '2012-10-17',
@@ -304,8 +304,8 @@ const createRole = async (roleName): Promise<Role | undefined> => {
   return result.Role;
 };
 
-const getRole = async (roleName): Promise<Role | undefined> => {
-  const client = new IAMClient({});
+const getRole = async (roleName: string, region: string): Promise<Role | undefined> => {
+  const client = new IAMClient({ region });
   const command = new GetRoleCommand({
     RoleName: roleName,
   });
