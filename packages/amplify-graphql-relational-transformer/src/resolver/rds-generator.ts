@@ -32,6 +32,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     const { field, references, object, relatedType } = config;
     const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
     const dataSource = ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID);
+    const mappedTableName = ctx.resourceHelper.getModelNameMapping(relatedType.name.value);
 
     const connectionCondition: Expression[] = [];
     const primaryKeys = getPrimaryKeyFields(object);
@@ -53,7 +54,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
       resolverResourceId,
       dataSource as any,
       MappingTemplate.s3MappingTemplateFromString(
-        this.generateHasManyLambdaRequestTemplate(relatedType.name.value, 'LIST', 'ConnectionQuery', connectionCondition),
+        this.generateHasManyLambdaRequestTemplate(mappedTableName, 'LIST', 'ConnectionQuery', connectionCondition),
         `${object.name.value}.${field.name.value}.req.vtl`,
       ),
       MappingTemplate.s3MappingTemplateFromString(
@@ -153,6 +154,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     const { field, references, object, relatedType } = config;
     const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
     const dataSource = ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID);
+    const mappedTableName = ctx.resourceHelper.getModelNameMapping(relatedType.name.value);
 
     const connectionCondition: Expression[] = [];
     const primaryKeys = getPrimaryKeyFields(object);
@@ -176,7 +178,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
       dataSource as any,
       MappingTemplate.s3MappingTemplateFromString(
         this.generateHasOneLambdaRequestTemplate(
-          relatedType.name.value,
+          mappedTableName,
           'GET_FIRST',
           'GetItemConnectionQuery',
           connectionCondition,
@@ -198,6 +200,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     const { field, references, object, relatedType } = config;
     const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
     const dataSource = ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID);
+    const mappedTableName = ctx.resourceHelper.getModelNameMapping(relatedType.name.value);
 
     const connectionCondition: Expression[] = [];
     const primaryKeys = getPrimaryKeyFields(relatedType);
@@ -213,13 +216,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
       resolverResourceId,
       dataSource as any,
       MappingTemplate.s3MappingTemplateFromString(
-        this.generateHasOneLambdaRequestTemplate(
-          relatedType.name.value,
-          'GET',
-          'BelongsToConnectionQuery',
-          connectionCondition,
-          primaryKeys,
-        ),
+        this.generateHasOneLambdaRequestTemplate(mappedTableName, 'GET', 'BelongsToConnectionQuery', connectionCondition, primaryKeys),
         `${object.name.value}.${field.name.value}.req.vtl`,
       ),
       MappingTemplate.s3MappingTemplateFromString(
