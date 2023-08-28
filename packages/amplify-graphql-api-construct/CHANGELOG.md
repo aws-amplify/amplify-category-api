@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.5.0...@aws-amplify/graphql-construct-alpha@0.6.0) (2023-08-28)
+
+### Bug Fixes
+
+- don't perform sub if bucketName is an unresolved token ([7750868](https://github.com/aws-amplify/amplify-category-api/commit/7750868b2da660f1b31d6a23c73b7d8543120fd6))
+
+### Features
+
+- add model schema uri to outputs ([b6ce89c](https://github.com/aws-amplify/amplify-category-api/commit/b6ce89c25dffb7f8ede40bd629499b5dca5584f1))
+- store api id on stack output ([#1801](https://github.com/aws-amplify/amplify-category-api/issues/1801)) ([cd54115](https://github.com/aws-amplify/amplify-category-api/commit/cd54115786ee12227b01a4adcb323f10a663096a))
+
 # [0.5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.4.1...@aws-amplify/graphql-construct-alpha@0.5.0) (2023-08-09)
 
 ### Bug Fixes
