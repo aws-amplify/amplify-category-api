@@ -105,16 +105,12 @@ test('Test per-field @auth on a @connection field', () => {
     ],
   });
 
-  try {
-    const out = transformer.transform(validSchema);
-    expect(out).toBeDefined();
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
 
-    const resolvers = out.resolvers;
-    expect(resolvers['Tag.post.res.vtl']).toMatchSnapshot();
-    expect(resolvers['Tag.post.res.vtl']).toContain('$util.toJson($ctx.result)');
-  } catch (err) {
-    throw err;
-  }
+  const resolvers = out.resolvers;
+  expect(resolvers['Tag.post.res.vtl']).toMatchSnapshot();
+  expect(resolvers['Tag.post.res.vtl']).toContain('$util.toJson($ctx.result)');
 });
 
 test('Test per-field @auth without model', () => {
