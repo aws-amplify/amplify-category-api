@@ -8,8 +8,7 @@ import {
   InputValueDefinitionNode,
   print,
 } from 'graphql';
-import { getDirectiveArgument, isScalar } from 'graphql-transformer-common';
-import { ResolverResourceIDs, HttpResourceIDs } from 'graphql-transformer-common';
+import { getDirectiveArgument, isScalar, ResolverResourceIDs, HttpResourceIDs } from 'graphql-transformer-common';
 import { ResourceFactory } from './resources';
 import { makeUrlParamInputObject, makeHttpArgument, makeHttpQueryInputObject, makeHttpBodyInputObject } from './definitions';
 

@@ -13,6 +13,7 @@ import {
   JSONUtilities,
   pathManager,
   stateManager,
+  exitOnNextTick,
 } from '@aws-amplify/amplify-cli-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import {
@@ -28,7 +29,6 @@ import {
   buildAPIProject,
   getSanityCheckRules,
 } from 'graphql-transformer-core';
-import { exitOnNextTick } from '@aws-amplify/amplify-cli-core';
 import { isAuthModeUpdated } from './auth-mode-compare';
 import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import { searchablePushChecks } from './api-utils';
