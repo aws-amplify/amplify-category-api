@@ -1,6 +1,20 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
+import { DDB_DB_TYPE, MYSQL_DB_TYPE, DBType } from '@aws-amplify/graphql-transformer-core';
+import { constructModelToDataSourceMap, testTableNameMapping } from './common';
+import { RefersToTransformer } from '../../graphql-refers-to-transformer';
+
+const transformSchema = (schema: string, dbType: DBType) => {
+  return testTransform({
+    schema,
+    transformers: [new ModelTransformer(), new MapsToTransformer(), new RefersToTransformer()],
+    modelToDatasourceMap: constructModelToDataSourceMap(['Todo'], dbType),
+    transformParameters: {
+      sandboxModeEnabled: true,
+    },
+  });
+};
 
 describe('@mapsTo directive on model type', () => {
   it('generates table name with mapped name', () => {
@@ -10,13 +24,7 @@ describe('@mapsTo directive on model type', () => {
         title: String!
       }
     `;
-    const out = testTransform({
-      schema: basicSchema,
-      transformers: [new ModelTransformer(), new MapsToTransformer()],
-      transformParameters: {
-        sandboxModeEnabled: true,
-      },
-    });
+    const out = transformSchema(basicSchema, DDB_DB_TYPE);
     expect(out.stacks.Task.Resources!.TaskTable!.Properties.TableName).toMatchInlineSnapshot(`
       Object {
         "Fn::Join": Array [
@@ -55,5 +63,18 @@ describe('@mapsTo directive on model type', () => {
         },
       }
     `);
+  });
+});
+
+describe('@refersTo with RDS Models', () => {
+  it('model table names are mapped', () => {
+    const basicSchema = /* GraphQL */ `
+      type Todo @model @refersTo(name: "Task") {
+        id: ID!
+        title: String!
+      }
+    `;
+    const out = transformSchema(basicSchema, MYSQL_DB_TYPE);
+    testTableNameMapping('Todo', 'Task', out);
   });
 });

@@ -6,14 +6,12 @@ import {
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode, DirectiveNode, Kind, DefinitionNode, DocumentNode, ObjectTypeExtensionNode } from 'graphql';
-import { createMappingLambda } from './field-mapping-lambda';
-import { attachFilterAndConditionInputMappingSlot, attachInputMappingSlot, attachResponseMappingSlot } from './field-mapping-resolvers';
 import { shouldBeAppliedToModel, getMappedName, updateTypeMapping, setTypeMappingInSchema } from './graphql-name-mapping';
 
 const directiveName = 'refersTo';
 
 const directiveDefinition = `
-  directive @${directiveName}(name: String!) on OBJECT, FIELD_DEFINITION
+  directive @${directiveName}(name: String!) on OBJECT | FIELD_DEFINITION
 `;
 
 export class RefersToTransformer extends TransformerPluginBase {
@@ -39,19 +37,6 @@ export class RefersToTransformer extends TransformerPluginBase {
    */
   preMutateSchema = (context: TransformerPreProcessContextProvider) => {
     setTypeMappingInSchema(context, directiveName);
-  };
-
-  /**
-   * During the generateResolvers step, the refersTo transformer reads all of the model field mappings from the resourceHelper and generates
-   * VTL to map the current field names to the original field names
-   */
-  after = (context: TransformerContextProvider) => {
-    context.resourceHelper.getModelFieldMapKeys().forEach((modelName) => {
-      const modelFieldMap = context.resourceHelper.getModelFieldMap(modelName);
-      if (modelFieldMap.getMappedFields().length) {
-        throw new Error('field mappings should be empty');
-      }
-    });
   };
 }
 

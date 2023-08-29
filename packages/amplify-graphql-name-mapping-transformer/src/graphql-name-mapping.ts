@@ -61,7 +61,7 @@ export const getMappedName = (
   const schemaHasConflictingModel = !!inputDocument.definitions.find(hasModelWithNamePredicate(originalName));
   if (schemaHasConflictingModel) {
     throw new InvalidDirectiveError(
-      `Cannot apply ${directiveName} with name ${originalName} on type ${modelName} because ${originalName} model already exists in the schema.`,
+      `Cannot apply ${directiveName} with name "${originalName}" on type "${modelName}" because "${originalName}" model already exists in the schema.`,
     );
   }
 

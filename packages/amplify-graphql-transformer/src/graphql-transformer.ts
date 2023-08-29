@@ -3,7 +3,7 @@ import { DefaultValueTransformer } from '@aws-amplify/graphql-default-value-tran
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
+import { MapsToTransformer, RefersToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { SqlTransformer } from '@aws-amplify/graphql-sql-transformer';
 import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
@@ -87,6 +87,7 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
     new DefaultValueTransformer(),
     authTransformer,
     new MapsToTransformer(),
+    new RefersToTransformer(),
     new SearchableModelTransformer(),
     new SqlTransformer(),
     ...(options?.customTransformers ?? []),

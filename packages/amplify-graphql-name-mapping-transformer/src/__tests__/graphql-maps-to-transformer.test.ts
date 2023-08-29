@@ -10,6 +10,8 @@ import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
 import { MapsToTransformer } from '../graphql-maps-to-transformer';
 import { attachInputMappingSlot, attachResponseMappingSlot, attachFilterAndConditionInputMappingSlot } from '../field-mapping-resolvers';
 import { createMappingLambda } from '../field-mapping-lambda';
+import { constructModelToDataSourceMap } from './__integ__/common';
+import { DDB_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 
 jest.mock('../field-mapping-resolvers');
 jest.mock('../field-mapping-lambda');
@@ -47,6 +49,7 @@ describe('@mapsTo directive', () => {
     schemaHelper: {
       setTypeMapping: setTypeMapping_mock,
     },
+    modelToDatasourceMap: constructModelToDataSourceMap(['TestName'], DDB_DB_TYPE),
   };
 
   const lambdaDataSource_stub = 'lambdaDataSource_stub' as unknown as LambdaDataSource;
@@ -95,7 +98,7 @@ describe('@mapsTo directive', () => {
     stubDirective.arguments = [];
     expect(() =>
       mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
-    ).toThrowErrorMatchingInlineSnapshot(`"name is required in @mapsTo directive"`);
+    ).toThrowErrorMatchingInlineSnapshot(`"name is required in @mapsTo directive."`);
   });
 
   it('requires a string value for name', () => {
@@ -116,7 +119,9 @@ describe('@mapsTo directive', () => {
     const [stubDefinition, stubDirective, stubTransformerContext] = getTransformerInputsFromSchema(conflictingModelSchema);
     expect(() =>
       mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
-    ).toThrowErrorMatchingInlineSnapshot(`"Type TestName cannot map to OriginalName because OriginalName is a model in the schema."`);
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Cannot apply mapsTo with name \\"OriginalName\\" on type \\"TestName\\" because \\"OriginalName\\" model already exists in the schema."`,
+    );
   });
 
   it('attaches input and response mapping templates for mutations', () => {
