@@ -1,11 +1,11 @@
-import { TransformerPluginBase, InvalidDirectiveError, DDB_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
+import { TransformerPluginBase, DDB_DB_TYPE, isRDSModel } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerPluginType,
   TransformerPreProcessContextProvider,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { ObjectTypeDefinitionNode, DirectiveNode, Kind, DefinitionNode, DocumentNode, ObjectTypeExtensionNode } from 'graphql';
+import { ObjectTypeDefinitionNode, DirectiveNode, ObjectTypeExtensionNode } from 'graphql';
 import { createMappingLambda } from './field-mapping-lambda';
 import { attachFilterAndConditionInputMappingSlot, attachInputMappingSlot, attachResponseMappingSlot } from './field-mapping-resolvers';
 import { shouldBeAppliedToModel, getMappedName, updateTypeMapping, setTypeMappingInSchema } from './graphql-name-mapping';
@@ -46,6 +46,9 @@ export class MapsToTransformer extends TransformerPluginBase {
    */
   after = (context: TransformerContextProvider) => {
     context.resourceHelper.getModelFieldMapKeys().forEach((modelName) => {
+      if (isRDSModel(context, modelName)) {
+        return;
+      }
       const modelFieldMap = context.resourceHelper.getModelFieldMap(modelName);
       if (!modelFieldMap.getMappedFields().length) {
         return;

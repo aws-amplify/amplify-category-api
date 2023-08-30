@@ -5,6 +5,7 @@ import {
   generateGetArgumentsInput,
   getDatasourceType,
   InvalidDirectiveError,
+  isRDSModel,
   MYSQL_DB_TYPE,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
@@ -164,10 +165,14 @@ export class HasOneTransformer extends TransformerPluginBase {
    */
   prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList.forEach((config) => {
+      const modelName = config.object.name.value;
+      if (isRDSModel(context as TransformerContextProvider, modelName)) {
+        return;
+      }
       registerHasOneForeignKeyMappings({
         transformParameters: context.transformParameters,
         resourceHelper: context.resourceHelper,
-        thisTypeName: config.object.name.value,
+        thisTypeName: modelName,
         thisFieldName: config.field.name.value,
         relatedType: config.relatedType,
       });
