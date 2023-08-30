@@ -1,8 +1,12 @@
 import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
-import { getParameterStoreSecretPath, RDSConnectionSecrets, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
+import {
+  getParameterStoreSecretPath,
+  RDSConnectionSecrets,
+  ImportedRDSType,
+  ImportedDataSourceConfig,
+} from '@aws-amplify/graphql-transformer-core';
 import { SSMClient } from './ssmClient';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { MySQLDataSourceAdapter, Schema, Engine, DataSourceAdapter, MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { DeleteFunctionCommand, LambdaClient } from '@aws-sdk/client-lambda';

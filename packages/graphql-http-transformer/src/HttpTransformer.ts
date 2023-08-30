@@ -8,8 +8,7 @@ import {
   InputValueDefinitionNode,
   print,
 } from 'graphql';
-import { getDirectiveArgument, isScalar } from 'graphql-transformer-common';
-import { ResolverResourceIDs, HttpResourceIDs } from 'graphql-transformer-common';
+import { getDirectiveArgument, isScalar, ResolverResourceIDs, HttpResourceIDs } from 'graphql-transformer-common';
 import { ResourceFactory } from './resources';
 import { makeUrlParamInputObject, makeHttpArgument, makeHttpQueryInputObject, makeHttpBodyInputObject } from './definitions';
 
@@ -148,12 +147,12 @@ export class HttpTransformer extends Transformer {
     if (queryBodyArgsArray.length > 0) {
       // for GET requests, leave the nullability of the query parameters unchanged -
       // but for PUT, POST and PATCH, unwrap any non-nulls
-      const queryInputObject = makeHttpQueryInputObject(parent, field, queryBodyArgsArray, method === 'GET' ? false : true);
+      const queryInputObject = makeHttpQueryInputObject(parent, field, queryBodyArgsArray, method !== 'GET');
       const bodyInputObject = makeHttpBodyInputObject(parent, field, queryBodyArgsArray, true);
 
       // if any of the arguments for the query are non-null,
       // make the newly generated type wrapper non-null too (only really applies for GET requests)
-      const makeNonNull = queryInputObject.fields.filter((a) => a.type.kind === Kind.NON_NULL_TYPE).length > 0 ? true : false;
+      const makeNonNull = queryInputObject.fields.filter((a) => a.type.kind === Kind.NON_NULL_TYPE).length > 0;
 
       ctx.addInput(queryInputObject);
       newFieldArgsArray.push(makeHttpArgument('query', queryInputObject, makeNonNull));
@@ -166,14 +165,15 @@ export class HttpTransformer extends Transformer {
 
     // build the payload
     switch (method) {
-      case 'GET':
+      case 'GET': {
         const getResourceID = ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value);
         if (!ctx.getResource(getResourceID)) {
           const getResolver = this.resources.makeGetResolver(baseURL, path, parent.name.value, field.name.value, headers);
           ctx.setResource(getResourceID, getResolver);
         }
         break;
-      case 'POST':
+      }
+      case 'POST': {
         const postResourceID = ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value);
         if (!ctx.getResource(postResourceID)) {
           const postResolver = this.resources.makePostResolver(
@@ -187,7 +187,8 @@ export class HttpTransformer extends Transformer {
           ctx.setResource(postResourceID, postResolver);
         }
         break;
-      case 'PUT':
+      }
+      case 'PUT': {
         const putResourceID = ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value);
         if (!ctx.getResource(putResourceID)) {
           const putResolver = this.resources.makePutResolver(
@@ -201,14 +202,16 @@ export class HttpTransformer extends Transformer {
           ctx.setResource(putResourceID, putResolver);
         }
         break;
-      case 'DELETE':
+      }
+      case 'DELETE': {
         const deleteResourceID = ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value);
         if (!ctx.getResource(deleteResourceID)) {
           const deleteResolver = this.resources.makeDeleteResolver(baseURL, path, parent.name.value, field.name.value, headers);
           ctx.setResource(deleteResourceID, deleteResolver);
         }
         break;
-      case 'PATCH':
+      }
+      case 'PATCH': {
         const patchResourceID = ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value);
         if (!ctx.getResource(patchResourceID)) {
           const patchResolver = this.resources.makePatchResolver(
@@ -222,6 +225,7 @@ export class HttpTransformer extends Transformer {
           ctx.setResource(patchResourceID, patchResolver);
         }
         break;
+      }
       default:
       // nothing
     }

@@ -52,7 +52,7 @@ const template: Template = {
   },
 };
 
-test('Test getTemplateReferences', () => {
+test('getTemplateReferences', () => {
   const referenceMap = getTemplateReferences(template); // JSON.parse(JSON.stringify(template, null, 4)));
   expect(referenceMap).toBeTruthy();
   expect(referenceMap.env).toEqual([['Conditions', 'IsProd', 'Fn::Equals', '0']]);

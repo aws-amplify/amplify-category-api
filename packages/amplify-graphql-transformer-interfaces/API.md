@@ -7,6 +7,7 @@
 import { BackedDataSource } from 'aws-cdk-lib/aws-appsync';
 import { BaseDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
+import { CfnParameter } from 'aws-cdk-lib';
 import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { CfnResource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
@@ -297,9 +298,13 @@ export interface StackManagerProvider {
     // (undocumented)
     createStack: (stackName: string) => Stack;
     // (undocumented)
+    getParameter: (name: string) => CfnParameter | void;
+    // (undocumented)
     getScopeFor: (resourceId: string, defaultStackName?: string) => Construct;
     // (undocumented)
     getStack: (stackName: string) => Stack;
+    // (undocumented)
+    getStackFor: (resourceId: string, defaultStackName?: string) => Construct;
     // (undocumented)
     hasStack: (stackName: string) => boolean;
     // (undocumented)
@@ -616,6 +621,8 @@ export interface TransformerResolverProvider {
     // (undocumented)
     addToSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
     // (undocumented)
+    mapToStack: (stack: Stack) => void;
+    // (undocumented)
     setScope: (scope: Construct) => void;
     // (undocumented)
     synthesize: (context: TransformerContextProvider, api: GraphQLAPIProvider) => void;
@@ -717,6 +724,12 @@ export interface TransformHostProvider {
     hasResolver: (typeName: string, fieldName: string) => boolean;
     // (undocumented)
     setAPI(api: GraphqlApiBase): void;
+}
+
+// @public (undocumented)
+export interface TransformParameterProvider {
+    // (undocumented)
+    provide: (name: string) => CfnParameter | void;
 }
 
 // @public (undocumented)

@@ -392,7 +392,7 @@ export class ResourceFactory {
    */
   public makeCreateResolver({ type, nameOverride, syncConfig, mutationTypeName = 'Mutation' }: MutationResolverInput) {
     const fieldName = nameOverride ? nameOverride : graphqlName('create' + toUpper(type));
-    const isSyncEnabled = syncConfig ? true : false;
+    const isSyncEnabled = !!syncConfig;
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
@@ -484,7 +484,7 @@ export class ResourceFactory {
     optionalNonNullableFields,
   }: MutationUpdateResolverInput) {
     const fieldName = nameOverride ? nameOverride : graphqlName(`update` + toUpper(type));
-    const isSyncEnabled = syncConfig ? true : false;
+    const isSyncEnabled = !!syncConfig;
     const optionalNonNullableExpression: Expression[] = optionalNonNullableFields.map(str);
 
     return new AppSync.Resolver({
@@ -744,7 +744,7 @@ export class ResourceFactory {
    */
   public makeDeleteResolver({ type, nameOverride, syncConfig, mutationTypeName = 'Mutation' }: MutationResolverInput) {
     const fieldName = nameOverride ? nameOverride : graphqlName('delete' + toUpper(type));
-    const isSyncEnabled = syncConfig ? true : false;
+    const isSyncEnabled = !!syncConfig;
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),

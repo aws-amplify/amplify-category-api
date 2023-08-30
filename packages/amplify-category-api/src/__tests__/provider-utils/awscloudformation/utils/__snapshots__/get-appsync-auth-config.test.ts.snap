@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`test function with default and additional auth config 1`] = `
+exports[`function with default and additional auth config 1`] = `
 Object {
   "additionalAuthenticationProviders": Array [
     Object {
@@ -18,7 +18,7 @@ Object {
 }
 `;
 
-exports[`test function with default auth config 1`] = `
+exports[`function with default auth config 1`] = `
 Object {
   "additionalAuthenticationProviders": Array [],
   "defaultAuthentication": Object {

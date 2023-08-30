@@ -14,6 +14,7 @@ import { AuthorizationConfig } from 'aws-cdk-lib/aws-appsync';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
+import { CfnParameter } from 'aws-cdk-lib';
 import { CfnResource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
@@ -74,6 +75,7 @@ import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-
 import { TransformerSecrets } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformParameterProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TypeDefinitionNode } from 'graphql';
 import { TypeNode } from 'graphql';
@@ -227,7 +229,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "TransformOption" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    transform({ scope, nestedStackProvider, assetProvider, synthParameters, schema, datasourceConfig }: TransformOption): void;
+    transform({ scope, nestedStackProvider, parameterProvider, assetProvider, synthParameters, schema, datasourceConfig, }: TransformOption): void;
 }
 
 // @public (undocumented)
@@ -422,13 +424,17 @@ export type SetResourceNameProps = {
 // @public (undocumented)
 export class StackManager implements StackManagerProvider {
     // Warning: (ae-forgotten-export) The symbol "ResourceToStackMap" needs to be exported by the entry point index.d.ts
-    constructor(scope: Construct, nestedStackProvider: NestedStackProvider, resourceMapping: ResourceToStackMap);
+    constructor(scope: Construct, nestedStackProvider: NestedStackProvider, parameterProvider: TransformParameterProvider | undefined, resourceMapping: ResourceToStackMap);
     // (undocumented)
     createStack: (stackName: string) => Stack;
+    // (undocumented)
+    getParameter: (name: string) => CfnParameter | void;
     // (undocumented)
     getScopeFor: (resourceId: string, defaultStackName?: string) => Construct;
     // (undocumented)
     getStack: (stackName: string) => Stack;
+    // (undocumented)
+    getStackFor: (resourceId: string, defaultStackName?: string) => Construct;
     // (undocumented)
     hasStack: (stackName: string) => boolean;
     // (undocumented)
@@ -598,6 +604,8 @@ export class TransformerResolver implements TransformerResolverProvider {
     //
     // (undocumented)
     findSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider) => Slot | undefined;
+    // (undocumented)
+    mapToStack: (stack: Stack) => void;
     // (undocumented)
     setScope: (scope: Construct) => void;
     // (undocumented)

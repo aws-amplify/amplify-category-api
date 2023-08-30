@@ -72,13 +72,14 @@ export class TransformerOutput implements TransformerContextOutputProvider {
         case Kind.INTERFACE_TYPE_DEFINITION:
         case Kind.INPUT_OBJECT_TYPE_DEFINITION:
         case Kind.ENUM_TYPE_DEFINITION:
-        case Kind.UNION_TYPE_DEFINITION:
+        case Kind.UNION_TYPE_DEFINITION: {
           const typeDef = inputDef as TypeDefinitionNode;
           if (this.isAmplifyInput(typeDef.name.value)) break;
           if (!this.getType(typeDef.name.value)) {
             this.addType(typeDef);
           }
           break;
+        }
         case Kind.SCHEMA_DEFINITION:
           if (!this.getSchema()) {
             const typeDef = inputDef as SchemaDefinitionNode;

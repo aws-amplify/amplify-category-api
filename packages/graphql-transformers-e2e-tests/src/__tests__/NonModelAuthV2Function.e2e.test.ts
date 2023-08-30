@@ -218,7 +218,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('Test calling echo function as a user via IAM', async () => {
+test('calling echo function as a user via IAM', async () => {
   const query = gql`
     query {
       echo(msg: "Hello")
