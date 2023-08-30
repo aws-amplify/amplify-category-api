@@ -358,7 +358,7 @@ export async function uploadDeployment(opts: UploadOptions) {
 
   const { directory, upload } = opts;
 
-  var fileNames = glob.sync('**/*', {
+  let fileNames = glob.sync('**/*', {
     cwd: directory,
     nodir: true,
   });

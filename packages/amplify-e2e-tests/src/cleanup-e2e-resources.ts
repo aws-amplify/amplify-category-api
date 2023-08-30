@@ -428,7 +428,7 @@ const deleteIamRoles = async (account: AWSAccountInfo, accountIndex: number, rol
   // Sending consecutive delete role requests is throwing Rate limit exceeded exception.
   // We introduce a brief delay between batches
   const batchSize = 20;
-  for (var i = 0; i < roles.length; i += batchSize) {
+  for (let i = 0; i < roles.length; i += batchSize) {
     const rolesToDelete = roles.slice(i, i + batchSize);
     await Promise.all(rolesToDelete.map((role) => deleteIamRole(account, accountIndex, role)));
     await sleep(5000);
