@@ -1,7 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-<<<<<<< HEAD
-exports[`ModelTransformer:  id with non string type should require the field on create mutation 1`] = `
+exports[`ModelTransformer: id with non string type should require the field on create mutation 1`] = `
 "type Task {
   id: Int!
   title: String!
@@ -220,10 +219,7 @@ type Subscription {
 "
 `;
 
-exports[`ModelTransformer:  should filter known input types from create and update input fields 1`] = `
-=======
 exports[`ModelTransformer: should filter known input types from create and update input fields 1`] = `
->>>>>>> main
 "type Test {
   id: ID!
   email: Email
@@ -4341,7 +4337,7 @@ $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **"
 `;
 
-exports[`ModelTransformer:  should successfully transform rds schema with array and object fields 1`] = `
+exports[`ModelTransformer: should successfully transform rds schema with array and object fields 1`] = `
 "type Note {
   id: ID!
   content: String!
@@ -4576,7 +4572,7 @@ type Subscription {
 "
 `;
 
-exports[`ModelTransformer:  should successfully transform rds schema with array and object fields 2`] = `
+exports[`ModelTransformer: should successfully transform rds schema with array and object fields 2`] = `
 Object {
   "Mutation.createNote.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
@@ -4810,7 +4806,7 @@ $util.toJson(null)
 }
 `;
 
-exports[`ModelTransformer:  should successfully transform simple Embeddable type (non-model) schema 1`] = `
+exports[`ModelTransformer: should successfully transform simple Embeddable type (non-model) schema 1`] = `
 "type NonModelType {
   id: ID!
   title: String!
