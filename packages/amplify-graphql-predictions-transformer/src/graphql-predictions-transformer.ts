@@ -12,9 +12,8 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DataSourceOptions, HttpDataSource, LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
+import { DataSourceOptions, HttpDataSource, LambdaDataSource, CfnResolver, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
-import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { makeListType, makeNamedType, makeNonNullType, PredictionsResourceIDs, ResourceConstants } from 'graphql-transformer-common';
@@ -44,7 +43,6 @@ import {
   str,
   toJson,
 } from 'graphql-mapping-template';
-import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { actionToDataSourceMap, actionToRoleAction, allowedActions } from './utils/action-maps';
 import {
   amzJsonContentType,
@@ -398,7 +396,7 @@ function createPredictionsLambda(context: TransformerContextProvider, stack: cdk
     `functions/${functionId}.zip`,
     PredictionsResourceIDs.lambdaHandlerName,
     path.join(__dirname, '..', 'lib', 'predictionsLambdaFunction.zip'),
-    lambda.Runtime.NODEJS_16_X,
+    lambda.Runtime.NODEJS_18_X,
     [],
     role,
     {},

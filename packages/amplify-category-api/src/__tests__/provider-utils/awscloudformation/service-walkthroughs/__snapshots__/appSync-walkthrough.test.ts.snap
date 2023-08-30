@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`correct Auth Config dont configure additional auth types  1`] = `
+exports[`correct Auth Config dont configure additional auth types 1`] = `
 Object {
   "additionalAuthenticationProviders": Array [
     Object {

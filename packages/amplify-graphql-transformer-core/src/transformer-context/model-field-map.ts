@@ -32,12 +32,10 @@ export class ModelFieldMapImpl implements ModelFieldMap {
     const existingEntry = this.#resolverReferences.find(resolverReferenceEqualsPredicate(entry));
     if (!existingEntry) {
       this.#resolverReferences.push(entry);
-    } else {
-      if (existingEntry.isList !== entry.isList) {
-        throw new Error(
-          `Resolver of type [${existingEntry.typeName}] and field [${existingEntry.fieldName}] already registered with isList set to [${existingEntry.isList}]`,
-        );
-      }
+    } else if (existingEntry.isList !== entry.isList) {
+      throw new Error(
+        `Resolver of type [${existingEntry.typeName}] and field [${existingEntry.fieldName}] already registered with isList set to [${existingEntry.isList}]`,
+      );
     }
     return this;
   };

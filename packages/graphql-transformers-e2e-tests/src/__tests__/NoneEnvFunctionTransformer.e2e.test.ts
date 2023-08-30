@@ -151,7 +151,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('Test simple echo function', async () => {
+test('simple echo function', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         echoNoEnv(msg: "Hello") {

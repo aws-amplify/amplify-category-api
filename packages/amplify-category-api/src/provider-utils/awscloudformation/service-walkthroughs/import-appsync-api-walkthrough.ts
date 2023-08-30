@@ -7,13 +7,12 @@ import {
   ImportedDataSourceType,
   ImportedRDSType,
   ImportedDataSourceConfig,
+  RDS_SCHEMA_FILE_NAME,
 } from '@aws-amplify/graphql-transformer-core';
 import { storeConnectionSecrets, getSecretsKey, getExistingConnectionSecrets } from '../utils/rds-resources/database-resources';
 import { parseDatabaseUrl } from '../utils/database-url';
-import { RDS_SCHEMA_FILE_NAME } from '@aws-amplify/graphql-transformer-core';
 import { constructDefaultGlobalAmplifyInput } from '../utils/rds-input-utils';
-import { getAPIResourceDir } from '../utils/amplify-meta-utils';
-import { getAppSyncAPINames } from '../utils/amplify-meta-utils';
+import { getAPIResourceDir, getAppSyncAPINames } from '../utils/amplify-meta-utils';
 import { writeSchemaFile } from '../utils/graphql-schema-utils';
 import { serviceApiInputWalkthrough } from './appSync-walkthrough';
 import { serviceMetadataFor } from '../utils/dynamic-imports';

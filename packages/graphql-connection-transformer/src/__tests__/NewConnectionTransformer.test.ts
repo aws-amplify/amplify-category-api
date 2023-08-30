@@ -345,7 +345,7 @@ test('ModelConnectionTransformer should fail if partition key type passed in doe
   expect(() => transformer.transform(validSchema)).toThrowError('email field is not of type ID');
 });
 
-test('Test ModelConnectionTransformer for One-to-One getItem case.', () => {
+test('ModelConnectionTransformer for One-to-One getItem case.', () => {
   const validSchema = `
     type Test @model {
         id: ID!
@@ -379,7 +379,7 @@ test('Test ModelConnectionTransformer for One-to-One getItem case.', () => {
   expect(relatedField.type.kind).toEqual(Kind.NAMED_TYPE);
 });
 
-test('Test ModelConnectionTransformer for One-to-Many query case.', () => {
+test('ModelConnectionTransformer for One-to-Many query case.', () => {
   const validSchema = `
     type Test @model {
         id: ID!
@@ -418,7 +418,7 @@ test('Test ModelConnectionTransformer for One-to-Many query case.', () => {
   expect((relatedField.type as any).name.value).toEqual('ModelTest1Connection');
 });
 
-test('Test ModelConnectionTransformer for bidirectional One-to-Many query case.', () => {
+test('ModelConnectionTransformer for bidirectional One-to-Many query case.', () => {
   const validSchema = `
     type Post
         @model
@@ -462,7 +462,7 @@ test('Test ModelConnectionTransformer for bidirectional One-to-Many query case.'
   expect(userField.type.kind).toEqual(Kind.NAMED_TYPE);
 });
 
-test('Test ModelConnectionTransformer for One-to-Many query with a composite sort key.', () => {
+test('ModelConnectionTransformer for One-to-Many query with a composite sort key.', () => {
   const validSchema = `
     type Test @model {
         id: ID!
@@ -502,7 +502,7 @@ test('Test ModelConnectionTransformer for One-to-Many query with a composite sor
 
   expect((relatedField.type as any).name.value).toEqual('ModelTest1Connection');
 });
-test('Test ModelConnectionTransformer for One-to-Many query with a composite sort key passed in as an argument.', () => {
+test('ModelConnectionTransformer for One-to-Many query with a composite sort key passed in as an argument.', () => {
   const validSchema = `
     type Test @model {
         id: ID!
@@ -543,7 +543,7 @@ test('Test ModelConnectionTransformer for One-to-Many query with a composite sor
   expect((relatedField.type as any).name.value).toEqual('ModelTest1Connection');
 });
 
-test('Test ModelConnectionTransformer for One-to-One getItem with composite sort key.', () => {
+test('ModelConnectionTransformer for One-to-One getItem with composite sort key.', () => {
   const validSchema = `
     type Test @model {
         id: ID!
