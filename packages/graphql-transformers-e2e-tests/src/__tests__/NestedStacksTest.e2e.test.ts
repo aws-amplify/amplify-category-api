@@ -93,7 +93,7 @@ function verifyInputCount(doc: DocumentNode, type: string, count: number): boole
 }
 
 function cleanUpFiles(directory: string) {
-  var files = fs.readdirSync(directory);
+  let files = fs.readdirSync(directory);
   for (const file of files) {
     const dir = path.join(directory, file);
     if (!fs.lstatSync(dir).isDirectory()) {
