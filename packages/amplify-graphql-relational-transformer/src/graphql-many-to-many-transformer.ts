@@ -463,7 +463,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
         renamedFields.push({ originalFieldName: d2FieldNameIdOrig, currentFieldName: d2FieldNameId });
       }
 
-      if (renamedFields.length && isRDSModel(context as TransformerContextProvider, name)) {
+      if (renamedFields.length && !isRDSModel(context as TransformerContextProvider, name)) {
         registerManyToManyForeignKeyMappings({
           resourceHelper: ctx.resourceHelper,
           typeName: name,
