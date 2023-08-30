@@ -28,6 +28,8 @@ export {
   AppSyncAuthMode,
   UserPoolConfig,
   VpcConfig,
+  VpcSubnetConfig,
+  SubnetAvailabilityZone,
   SearchableDataSourceOptions,
   RDSLayerMapping,
 } from './graphql-api-provider';

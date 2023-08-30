@@ -6,7 +6,6 @@ import {
   TransformerContextProvider,
   TransformerDataSourceManagerProvider,
   AppSyncAuthConfiguration,
-  VpcConfig,
   RDSLayerMapping,
   SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -15,6 +14,7 @@ import type {
   NestedStackProvider,
   TransformParameterProvider,
   TransformParameters,
+  VpcSubnetConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { DocumentNode } from 'graphql';
@@ -76,7 +76,7 @@ export class TransformerContext implements TransformerContextProvider {
 
   public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
 
-  public readonly sqlLambdaVpcConfig?: VpcConfig;
+  public readonly sqlLambdaVpcConfig?: VpcSubnetConfig;
 
   public readonly rdsLayerMapping?: RDSLayerMapping;
 
@@ -98,7 +98,7 @@ export class TransformerContext implements TransformerContextProvider {
     transformParameters: TransformParameters,
     resolverConfig?: ResolverConfig,
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
-    sqlLambdaVpcConfig?: VpcConfig,
+    sqlLambdaVpcConfig?: VpcSubnetConfig,
     rdsLayerMapping?: RDSLayerMapping,
   ) {
     assetManager.setAssetProvider(assetProvider);

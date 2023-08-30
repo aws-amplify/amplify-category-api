@@ -82,7 +82,7 @@ import { TypeNode } from 'graphql';
 import { TypeSystemDefinitionNode } from 'graphql';
 import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
-import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import type { VpcSubnetConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export const APICategory = "api";
@@ -243,7 +243,7 @@ export interface GraphQLTransformOptions {
     // (undocumented)
     readonly resolverConfig?: ResolverConfig;
     // (undocumented)
-    readonly sqlLambdaVpcConfig?: VpcConfig;
+    readonly sqlLambdaVpcConfig?: VpcSubnetConfig;
     // Warning: (ae-forgotten-export) The symbol "StackMapping" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)

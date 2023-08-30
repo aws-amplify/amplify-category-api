@@ -1,5 +1,5 @@
 import { DocumentNode } from 'graphql';
-import { AppSyncAuthConfiguration, GraphQLAPIProvider, RDSLayerMapping, VpcConfig } from '../graphql-api-provider';
+import { AppSyncAuthConfiguration, GraphQLAPIProvider, RDSLayerMapping, VpcSubnetConfig } from '../graphql-api-provider';
 import { TransformerDataSourceManagerProvider, DatasourceType } from './transformer-datasource-provider';
 import { TransformerProviderRegistry } from './transformer-provider-registry';
 import { TransformerContextOutputProvider } from './transformer-context-output-provider';
@@ -37,7 +37,7 @@ export interface TransformerContextProvider {
 
   isProjectUsingDataStore(): boolean;
   getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
-  readonly sqlLambdaVpcConfig?: VpcConfig;
+  readonly sqlLambdaVpcConfig?: VpcSubnetConfig;
   readonly rdsLayerMapping?: RDSLayerMapping;
 }
 

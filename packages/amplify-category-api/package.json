@@ -38,6 +38,7 @@
     "@aws-cdk/aws-apigatewayv2-alpha": "~2.80.0-alpha.0",
     "@aws-sdk/client-iam": "3.338.0",
     "@aws-sdk/client-lambda": "3.338.0",
+    "@aws-sdk/client-ec2": "3.338.0",
     "@graphql-tools/merge": "^6.0.18",
     "@octokit/rest": "^18.0.9",
     "aws-sdk": "^2.1113.0",

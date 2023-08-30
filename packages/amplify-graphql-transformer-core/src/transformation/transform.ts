@@ -14,6 +14,7 @@ import type {
   StackManagerProvider,
   TransformParameterProvider,
   TransformParameters,
+  VpcSubnetConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { Aws, CfnOutput, Fn, Stack } from 'aws-cdk-lib';
@@ -86,7 +87,7 @@ export interface GraphQLTransformOptions {
   readonly host?: TransformHostProvider;
   readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   readonly resolverConfig?: ResolverConfig;
-  readonly sqlLambdaVpcConfig?: VpcConfig;
+  readonly sqlLambdaVpcConfig?: VpcSubnetConfig;
   readonly rdsLayerMapping?: RDSLayerMapping;
 }
 
@@ -113,7 +114,7 @@ export class GraphQLTransform {
 
   private readonly userDefinedSlots: Record<string, UserDefinedSlot[]>;
 
-  private readonly sqlLambdaVpcConfig?: VpcConfig;
+  private readonly sqlLambdaVpcConfig?: VpcSubnetConfig;
   private readonly transformParameters: TransformParameters;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
@@ -146,7 +147,6 @@ export class GraphQLTransform {
     this.stackMappingOverrides = options.stackMapping || {};
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
     this.resolverConfig = options.resolverConfig || {};
-    this.sqlLambdaVpcConfig = options.sqlLambdaVpcConfig;
     this.sqlLambdaVpcConfig = options.sqlLambdaVpcConfig;
     this.transformParameters = {
       ...defaultTransformParameters,

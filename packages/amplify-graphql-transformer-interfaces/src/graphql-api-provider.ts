@@ -69,6 +69,16 @@ export type VpcConfig = {
   securityGroupIds: string[];
 };
 
+export type SubnetAvailabilityZone = {
+  SubnetId: string;
+  AvailabilityZone: string;
+};
+
+export type VpcSubnetConfig = {
+  vpcConfig: VpcConfig;
+  subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
+};
+
 export type RDSLayerMapping = {
   [key: string]: {
     layerRegion: string;
