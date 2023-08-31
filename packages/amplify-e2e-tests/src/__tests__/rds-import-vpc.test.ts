@@ -25,6 +25,7 @@ import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 (global as any).fetch = require('node-fetch');
 
 const CDK_FUNCTION_TYPE = 'AWS::Lambda::Function';
+const CDK_VPC_ENDPOINT_TYPE = 'AWS::EC2::VPCEndpoint';
 const CDK_SUBSCRIPTION_TYPE = 'AWS::SNS::Subscription';
 const APPSYNC_DATA_SOURCE_TYPE = 'AWS::AppSync::DataSource';
 
@@ -63,7 +64,7 @@ describe('RDS Tests', () => {
     deleteProjectDir(projRoot);
   });
 
-  const setupDatabase = async () => {
+  const setupDatabase = async (): Promise<void> => {
     const db = await createRDSInstance({
       identifier,
       engine: 'mysql',
@@ -77,7 +78,7 @@ describe('RDS Tests', () => {
     host = db.endpoint;
   };
 
-  const cleanupDatabase = async () => {
+  const cleanupDatabase = async (): Promise<void> => {
     await deleteDBInstance(identifier, region);
   };
 
@@ -151,6 +152,12 @@ describe('RDS Tests', () => {
     expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds).toBeDefined();
     expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds.length).toBeGreaterThan(0);
 
+    expect(getResource(resources, 'RDSVpcEndpointssm', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, 'RDSVpcEndpointssmmessages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, 'RDSVpcEndpointkms', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, 'RDSVpcEndpointec2', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, 'RDSVpcEndpointec2messages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+
     // Validate patching lambda and subscription
     const rdsPatchingLambdaFunction = getResource(resources, 'RDSPatchingLambdaLogicalID', CDK_FUNCTION_TYPE);
     expect(rdsPatchingLambdaFunction).toBeDefined();
@@ -207,12 +214,13 @@ describe('RDS Tests', () => {
     // VPC will not have VPC endpoints for SSM defined and the security group's inbound rule for port 443 is not defined.
     // Expect the listComponents query to fail with an error.
     expect(appSyncClient).toBeDefined();
-    try {
-      await listComponents(appSyncClient);
-      throw new Error('Expected listComponents to fail.');
-    } catch (err) {
-      expect(err.message).toEqual('GraphQL error: Unable to get the database credentials. Check the logs for more details.');
-    }
+
+    const result = await listComponents(appSyncClient);
+    expect(result).toBeDefined();
+    expect(result.data).toBeDefined();
+    expect(result.data.listComponents).toBeDefined();
+    expect(result.data.listComponents.items).toBeDefined();
+    expect(result.data.listComponents.items.length).toEqual(0);
   });
 });
 
@@ -227,7 +235,7 @@ const getResource = (resources: Map<string, any>, resourcePrefix: string, resour
 };
 
 const listComponents = async (client) => {
-  const listComponents = /* GraphQL */ `
+  const listComponentsQuery = /* GraphQL */ `
     query listComponents {
       listComponents {
         items {
@@ -239,7 +247,7 @@ const listComponents = async (client) => {
     }
   `;
   const listResult: any = await client.query({
-    query: gql(listComponents),
+    query: gql(listComponentsQuery),
     fetchPolicy: 'no-cache',
   });
 

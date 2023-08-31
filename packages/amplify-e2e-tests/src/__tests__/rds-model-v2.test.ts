@@ -87,7 +87,7 @@ describe('RDS Model Directive', () => {
 
   afterEach(async () => {});
 
-  const setupDatabase = async () => {
+  const setupDatabase = async (): Promise<void> => {
     // This test performs the below
     // 1. Create a RDS Instance
     // 2. Add the external IP address of the current machine to security group inbound rule to allow public access
@@ -126,7 +126,7 @@ describe('RDS Model Directive', () => {
     dbAdapter.cleanup();
   };
 
-  const cleanupDatabase = async () => {
+  const cleanupDatabase = async (): Promise<void> => {
     // 1. Remove the IP address from the security group
     // 2. Delete the RDS instance
     await removeRDSPortInboundRule({

@@ -18,7 +18,11 @@ export const run = async (event): Promise<any> => {
 };
 
 const createSSMClient = (): void => {
-  secretsClient = new SSMClient({});
+  const DNS_SEPERATOR = ':';
+  const endpoint = process.env.SSM_ENDPOINT?.split(DNS_SEPERATOR).pop();
+  secretsClient = new SSMClient({
+    endpoint: `https://${endpoint}`,
+  });
 };
 
 const wait10SecondsAndThrowError = async (): Promise<void> => {

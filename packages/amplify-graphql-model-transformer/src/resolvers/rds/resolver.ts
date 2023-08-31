@@ -146,8 +146,13 @@ export const createRdsLambda = (
 ): IFunction => {
   const { RDSLambdaLogicalID } = ResourceConstants.RESOURCES;
 
+  let ssmEndpoint = Fn.join('', ['ssm.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
   if (sqlLambdaVpcConfig && sqlLambdaVpcConfig.vpcConfig) {
-    addVpcEndpointForSecretsManager(scope, sqlLambdaVpcConfig);
+    const endpoints = addVpcEndpointForSecretsManager(scope, sqlLambdaVpcConfig);
+    const ssmEndpointEntries = endpoints.find((endpoint) => endpoint.service === 'ssm')?.endpoint.attrDnsEntries;
+    if (ssmEndpointEntries) {
+      ssmEndpoint = Fn.select(0, ssmEndpointEntries);
+    }
   }
 
   return apiGraphql.host.addLambdaFunction(
@@ -164,28 +169,38 @@ export const createRdsLambda = (
       ),
     ],
     lambdaRole,
-    environment,
+    {
+      ...environment,
+      SSM_ENDPOINT: ssmEndpoint,
+    },
     Duration.seconds(30),
     scope,
     sqlLambdaVpcConfig?.vpcConfig,
   );
 };
 
-const addVpcEndpoint = (scope: Construct, sqlLambdaVpcConfig: VpcSubnetConfig, serviceSuffix: string): void => {
+const addVpcEndpoint = (scope: Construct, sqlLambdaVpcConfig: VpcSubnetConfig, serviceSuffix: string): CfnVPCEndpoint => {
   const serviceEndpointPrefix = 'com.amazonaws';
-  new CfnVPCEndpoint(scope, `RDSVpcEndpoint${serviceSuffix}`, {
+  return new CfnVPCEndpoint(scope, `RDSVpcEndpoint${serviceSuffix}`, {
     serviceName: Fn.join('', [serviceEndpointPrefix, '.', Fn.ref('AWS::Region'), '.', serviceSuffix]), // Sample: com.amazonaws.us-east-1.ssmmessages
     vpcEndpointType: 'Interface',
     vpcId: sqlLambdaVpcConfig.vpcConfig.vpcId,
     subnetIds: extractSubnetForVpcEndpoint(sqlLambdaVpcConfig.subnetAvailabilityZoneConfig),
     securityGroupIds: sqlLambdaVpcConfig.vpcConfig.securityGroupIds,
+    privateDnsEnabled: false,
   });
 };
 
-const addVpcEndpointForSecretsManager = (scope: Construct, sqlLambdaVpcConfig: VpcSubnetConfig): void => {
+const addVpcEndpointForSecretsManager = (
+  scope: Construct,
+  sqlLambdaVpcConfig: VpcSubnetConfig,
+): { service: string, endpoint: CfnVPCEndpoint }[] => {
   const services = ['ssm', 'ssmmessages', 'ec2', 'ec2messages', 'kms'];
-  services.map((service) => {
-    addVpcEndpoint(scope, sqlLambdaVpcConfig, service);
+  return services.map((service) => {
+    return {
+      service,
+      endpoint: addVpcEndpoint(scope, sqlLambdaVpcConfig, service),
+    };
   });
 };
 
