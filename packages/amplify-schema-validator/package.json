@@ -3,7 +3,7 @@
   "main": "./dist/index.js",
   "private": true,
   "types": "./dist/index.d.ts",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "files": [
     "dist",
     "!**/__tests__/**/*"
@@ -33,7 +33,7 @@
   "size-limit": [
     {
       "path": "./dist/index.js",
-      "limit": "5 KB",
+      "limit": "6 KB",
       "ignore": [
         "graphql"
       ]

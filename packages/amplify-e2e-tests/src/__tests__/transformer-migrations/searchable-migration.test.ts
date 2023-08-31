@@ -6,8 +6,6 @@ import {
   addFeatureFlag,
   createRandomName,
   addAuthWithDefault,
-} from 'amplify-category-api-e2e-core';
-import {
   addApiWithoutSchema,
   updateApiSchema,
   getProjectMeta,

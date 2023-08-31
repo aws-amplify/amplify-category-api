@@ -5,8 +5,7 @@ import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { default as S3 } from 'aws-sdk/clients/s3';
-import { CreateBucketRequest } from 'aws-sdk/clients/s3';
+import { default as S3, CreateBucketRequest } from 'aws-sdk/clients/s3';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { default as moment } from 'moment';
 import { GraphQLClient } from '../GraphQLClient';
@@ -267,7 +266,7 @@ afterAll(async () => {
 /**
  * Tests
  */
-test('Test that only Admins can create Employee records.', async () => {
+test('that only Admins can create Employee records.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createEmployee(input: { e_mail: "user2@test.com", salary: 100 }) {
@@ -308,7 +307,7 @@ test('Test that only Admins can create Employee records.', async () => {
   expect(tryToCreateAsNonAdmin2.errors).toHaveLength(1);
 });
 
-test('Test that only Admins may update salary & e_mail.', async () => {
+test('that only Admins may update salary & e_mail.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createEmployee(input: { e_mail: "user2@test.com", salary: 100 }) {
@@ -390,7 +389,7 @@ test('Test that only Admins may update salary & e_mail.', async () => {
   expect(updateAsAdmin2.data.updateEmployee.salary).toEqual(99);
 });
 
-test('Test that owners may update their bio.', async () => {
+test('that owners may update their bio.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createEmployee(input: { e_mail: "user2@test.com", salary: 100 }) {
@@ -422,7 +421,7 @@ test('Test that owners may update their bio.', async () => {
   expect(tryToUpdateAsNonAdmin.data.updateEmployee.salary).toEqual(100);
 });
 
-test('Test that everyone may view employee bios.', async () => {
+test('that everyone may view employee bios.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createEmployee(input: { e_mail: "user3@test.com", salary: 100, bio: "Likes long walks on the beach" }) {
@@ -478,7 +477,7 @@ test('Test that everyone may view employee bios.', async () => {
   expect(seenId).toEqual(true);
 });
 
-test('Test that only owners may "delete" i.e. update the field to null.', async () => {
+test('that only owners may "delete" i.e. update the field to null.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createEmployee(input: { e_mail: "user3@test.com", salary: 200, notes: "note1" }) {
@@ -543,7 +542,7 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
   expect(deleteNotes.data.updateEmployee.notes).toBeNull();
 });
 
-test('Test with auth with subscriptions on default behavior', async () => {
+test('with auth with subscriptions on default behavior', async () => {
   /**
    * client 1 and 2 are in the same user pool though client 1 should
    * not be able to see notes if they are created by client 2

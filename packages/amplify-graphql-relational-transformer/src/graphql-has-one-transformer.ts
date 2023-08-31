@@ -13,6 +13,7 @@ import {
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
+  TransformerPreProcessContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   ArgumentNode,
@@ -33,7 +34,6 @@ import {
   makeValueNode,
 } from 'graphql-transformer-common';
 import { produce } from 'immer';
-import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { WritableDraft } from 'immer/dist/types/types-external';
 import {
   addFieldsToDefinition,

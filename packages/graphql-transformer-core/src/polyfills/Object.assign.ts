@@ -10,11 +10,11 @@ if (typeof Object.assign !== 'function') {
         throw new TypeError('Cannot convert undefined or null to object');
       }
 
-      var output = Object(target);
-      for (var index = 1; index < arguments.length; index++) {
-        var source = arguments[index];
+      let output = Object(target);
+      for (let index = 1; index < arguments.length; index++) {
+        let source = arguments[index];
         if (source !== undefined && source !== null) {
-          for (var nextKey in source) {
+          for (let nextKey in source) {
             if (source.hasOwnProperty(nextKey)) {
               output[nextKey] = source[nextKey];
             }

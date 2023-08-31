@@ -295,7 +295,7 @@ export const serviceApiInputWalkthrough = async (context: $TSContext, serviceMet
     let { basicApiSettings } = await inquirer.prompt([basicInfoQuestion]);
 
     switch (basicApiSettings) {
-      case 'API_NAME':
+      case 'API_NAME': {
         const resourceQuestions = [
           {
             type: inputs[1].type,
@@ -313,6 +313,7 @@ export const serviceApiInputWalkthrough = async (context: $TSContext, serviceMet
         resourceAnswers[inputs[0].key] = resourceAnswers[inputs[1].key];
         allDefaultValues[inputs[1].key] = resourceAnswers[inputs[1].key];
         break;
+      }
       case 'API_AUTH_MODE':
         // Ask additonal questions
         ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context));

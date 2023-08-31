@@ -164,7 +164,7 @@ function printNewLine(node: NewLineNode): string {
 }
 
 function printReturn(node: ReturnNode, indent: string = ''): string {
-  var suffix: string = '';
+  let suffix: string = '';
   if (node.value !== undefined) {
     suffix = printParens(parens(node.value));
   }

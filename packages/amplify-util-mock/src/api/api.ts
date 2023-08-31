@@ -6,8 +6,7 @@ import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-c
 import * as chokidar from 'chokidar';
 
 import { getInvoker } from '@aws-amplify/amplify-category-function';
-import { getAmplifyMeta, getMockDataDirectory } from '../utils';
-import { checkJavaVersion } from '../utils/index';
+import { getAmplifyMeta, getMockDataDirectory, checkJavaVersion } from '../utils';
 import { processAppSyncResources } from '../CFNParser';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { configureDDBDataSource, createAndUpdateTable } from '../utils/dynamo-db';
@@ -132,7 +131,7 @@ export class APITest {
     const parameterFilePath = await this.getAPIParameterFilePath(context);
     try {
       let shouldReload;
-      if (this.resolverOverrideManager.isTemplateFile(filePath, action === 'unlink' ? true : false)) {
+      if (this.resolverOverrideManager.isTemplateFile(filePath, action === 'unlink')) {
         switch (action) {
           case 'add':
             shouldReload = this.resolverOverrideManager.onAdd(filePath);
