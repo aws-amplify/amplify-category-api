@@ -1,7 +1,17 @@
 import { DirectiveWrapper, EnumWrapper, FieldWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
-import { EnumValueDefinitionNode, Kind, print, DocumentNode, InputObjectTypeDefinitionNode, ListValueNode, StringValueNode } from 'graphql';
+import {
+  EnumValueDefinitionNode,
+  Kind,
+  print,
+  DocumentNode,
+  InputObjectTypeDefinitionNode,
+  ListValueNode,
+  StringValueNode,
+  DirectiveNode,
+} from 'graphql';
 import { EnumType, Field, Index, Model, Schema } from '../schema-representation';
 import { applySchemaOverrides } from './schema-overrides';
+import { singular } from 'pluralize';
 
 export const generateGraphQLSchema = (schema: Schema, existingSchemaDocument?: DocumentNode | undefined): string => {
   const models = schema.getModels();
@@ -120,22 +130,31 @@ const convertInternalFieldTypeToGraphQL = (field: Field, isPrimaryKeyField: bool
 };
 
 const constructObjectType = (model: Model) => {
+  const modelName = model.getName();
+  const directives = [];
+
+  const modelRenameDirective = getRefersToDirective(modelName);
+  if (modelRenameDirective) {
+    directives.push(modelRenameDirective);
+  }
+
+  const modelDirective = {
+    kind: Kind.DIRECTIVE,
+    name: {
+      kind: 'Name',
+      value: 'model',
+    },
+  } as DirectiveNode;
+  directives.push(modelDirective);
+
   return new ObjectDefinitionWrapper({
     kind: Kind.OBJECT_TYPE_DEFINITION,
     name: {
       kind: 'Name',
-      value: model.getName(),
+      value: modelName,
     },
     fields: [],
-    directives: [
-      {
-        kind: Kind.DIRECTIVE,
-        name: {
-          kind: 'Name',
-          value: 'model',
-        },
-      },
-    ],
+    directives: directives,
   });
 };
 
@@ -314,4 +333,46 @@ export const isComputeExpression = (value: string) => {
     return true;
   }
   return false;
+};
+
+export const getRefersToDirective = (modelName: string): DirectiveNode | undefined => {
+  const mappedModelName = convertToGraphQLIdiomaticNaming(modelName);
+  if (mappedModelName !== modelName) {
+    return {
+      kind: Kind.DIRECTIVE,
+      name: {
+        kind: 'Name',
+        value: 'refersTo',
+      },
+      arguments: [
+        {
+          kind: 'Argument',
+          name: {
+            kind: 'Name',
+            value: 'name',
+          },
+          value: {
+            kind: 'StringValue',
+            value: mappedModelName,
+          },
+        },
+      ],
+    } as DirectiveNode;
+  }
+};
+
+export const convertToGraphQLIdiomaticNaming = (modelName: string): string => {
+  const singularModelName = singularizeWord(modelName);
+  const modelNameParts = singularModelName.split('_');
+  if (modelNameParts.length === 1) {
+    return singularModelName.charAt(0).toUpperCase() + singularModelName.slice(1);
+  }
+  if (modelNameParts.length > 1) {
+    return modelNameParts.map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join('');
+  }
+  return singularModelName;
+};
+
+export const singularizeWord = (word: string) => {
+  return singular(word);
 };
