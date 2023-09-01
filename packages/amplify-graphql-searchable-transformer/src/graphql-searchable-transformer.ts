@@ -449,7 +449,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     for (const def of this.searchableObjectTypeDefinitions) {
       const modelName = def.node.name.value;
       if (isRDSModel(ctx as TransformerContextProvider, modelName)) {
-        continue;
+        throw new InvalidDirectiveError(`@searchable is not supported on "${modelName}" model as it uses RDS datasource.`);
       }
       ctx.resourceHelper.getModelFieldMap(modelName).addResolverReference({ typeName: 'Query', fieldName: def.fieldName, isList: true });
     }
