@@ -11,9 +11,10 @@
   "license": "Apache-2.0",
   "main": "lib/index.js",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
-    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "build": "jsii",
+    "watch": "jsii -w",
+    "package": "jsii-pacmak",
+    "clean": "rimraf lib tsconfig.json tsconfig.tsbuildinfo node_modules",
     "test": "jest",
     "test-watch": "jest --watch",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
@@ -25,28 +26,49 @@
     "awscdk",
     "amplify",
     "api",
-    "appsync"
+    "appsync",
+    "awscdk"
   ],
   "publishConfig": {
     "access": "public"
   },
+  "bundledDependencies": [
+    "@aws-amplify/graphql-transformer",
+    "@aws-amplify/graphql-transformer-core",
+    "@aws-amplify/graphql-transformer-interfaces",
+    "zod"
+  ],
   "dependencies": {
     "@aws-amplify/graphql-transformer": "1.1.2",
     "@aws-amplify/graphql-transformer-core": "2.1.2",
     "@aws-amplify/graphql-transformer-interfaces": "3.1.2",
-    "fs-extra": "^8.1.0"
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
     "@types/node": "^12.12.6",
     "rimraf": "^3.0.0",
     "ts-jest": "^26.4.4",
-    "zod": "^3.21.4"
+    "zod": "^3.21.4",
+    "jsii": "^5.1.5",
+    "jsii-pacmak": "^1.84.0",
+    "aws-cdk-lib": "2.80.0",
+    "constructs": "10.0.5"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.80.0",
-    "constructs": "^10.0.5",
-    "zod": "^3.21.4"
+    "constructs": "^10.0.5"
+  },
+  "stability": "experimental",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {},
+    "versionFormat": "full",
+    "tsc": {
+      "rootDir": "src",
+      "outDir": "lib"
+    }
   },
   "jest": {
     "testURL": "http://localhost",

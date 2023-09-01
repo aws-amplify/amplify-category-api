@@ -2,6 +2,7 @@
 
 import { CfnOutput, Stack } from 'aws-cdk-lib';
 import { z } from 'zod';
+import { IBackendOutputStorageStrategy } from './types';
 
 const AwsAppsyncAuthenticationType = z.enum(['API_KEY', 'AWS_LAMBDA', 'AWS_IAM', 'OPENID_CONNECT', 'AMAZON_COGNITO_USER_POOLS']);
 export type AwsAppsyncAuthenticationType = z.infer<typeof AwsAppsyncAuthenticationType>;
@@ -33,17 +34,6 @@ export type BackendOutputEntry<T extends Record<string, string> = Record<string,
   readonly payload: T;
 };
 
-type BackendOutput = Record<string, BackendOutputEntry>;
-
-export type BackendOutputStorageStrategy<T extends BackendOutputEntry> = {
-  addBackendOutputEntry(keyName: string, backendOutputEntry: T): void;
-
-  /**
-   * Write all pending data to the destination
-   */
-  flush(): void;
-};
-
 export const amplifyStackMetadataKey = 'AWS::Amplify::Output';
 
 export const backendOutputEntryStackMetadataSchema = z.object({
@@ -69,8 +59,16 @@ export type BackendOutputStackMetadata = z.infer<typeof backendOutputStackMetada
 /**
  * Implementation of BackendOutputStorageStrategy that stores config data in stack metadata and outputs
  */
-export class StackMetadataBackendOutputStorageStrategy implements BackendOutputStorageStrategy<BackendOutputEntry> {
+export class StackMetadataBackendOutputStorageStrategy implements IBackendOutputStorageStrategy {
   private readonly metadata: BackendOutputStackMetadata = {};
+  private backendOutputEntry?: BackendOutputEntry;
+
+  static isStackMetadataBackendOutputStorageStrategy(
+    strategy: IBackendOutputStorageStrategy,
+  ): strategy is StackMetadataBackendOutputStorageStrategy {
+    return strategy instanceof StackMetadataBackendOutputStorageStrategy;
+  }
+
   /**
    * Initialize the instance with a stack.
    *
@@ -78,20 +76,28 @@ export class StackMetadataBackendOutputStorageStrategy implements BackendOutputS
    */
   constructor(private readonly stack: Stack) {}
 
+  setBackendOutputEntry(backendOutputEntry: BackendOutputEntry): void {
+    this.backendOutputEntry = backendOutputEntry;
+  }
+
   /**
    * Store construct output as stack output and add pending metadata to the metadata object.
    *
    * Metadata is not written to the stack until flush() is called
    */
-  addBackendOutputEntry(keyName: string, backendOutputEntry: BackendOutputEntry): void {
+  addBackendOutputEntry(keyName: string): void {
+    if (!this.backendOutputEntry) {
+      return;
+    }
+
     // add all the data values as stack outputs
-    Object.entries(backendOutputEntry.payload).forEach(([key, value]) => {
+    Object.entries(this.backendOutputEntry.payload).forEach(([key, value]) => {
       new CfnOutput(this.stack, key, { value });
     });
 
     this.metadata[keyName] = {
-      version: backendOutputEntry.version,
-      stackOutputs: Object.keys(backendOutputEntry.payload),
+      version: this.backendOutputEntry.version,
+      stackOutputs: Object.keys(this.backendOutputEntry.payload),
     };
   }
 
