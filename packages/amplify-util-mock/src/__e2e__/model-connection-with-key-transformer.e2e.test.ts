@@ -114,7 +114,7 @@ beforeAll(async () => {
         }),
       ],
       featureFlags: {
-        getBoolean: (name) => name === 'improvePluralization',
+        getBoolean: (name) => (name === 'improvePluralization' ? true : false),
       } as FeatureFlagProvider,
     });
     const out = transformer.transform(validSchema);

@@ -142,15 +142,14 @@ export async function processDockerConfig(
   for await (const fileName of containerDefinitionFileNames) {
     switch (deploymentMechanism) {
       case DEPLOYMENT_MECHANISM.FULLY_MANAGED:
-      case DEPLOYMENT_MECHANISM.SELF_MANAGED: {
+      case DEPLOYMENT_MECHANISM.SELF_MANAGED:
         const filePath = path.normalize(path.join(srcPath, fileName));
 
         if (fs.existsSync(filePath)) {
           containerDefinitionFiles[fileName] = fs.readFileSync(filePath).toString();
         }
         break;
-      }
-      case DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED: {
+      case DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED:
         const { path: repoUri, tokenSecretArn } = gitHubInfo;
 
         const { SecretString: gitHubToken } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'retrieveSecret', {
@@ -181,7 +180,6 @@ export async function processDockerConfig(
           }
         }
         break;
-      }
       default: {
         const exhaustiveCheck: never = deploymentMechanism;
         throw new Error(`Unhandled type [${exhaustiveCheck}]`);

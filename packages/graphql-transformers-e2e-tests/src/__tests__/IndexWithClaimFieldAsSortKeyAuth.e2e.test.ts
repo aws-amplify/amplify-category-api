@@ -193,7 +193,7 @@ afterAll(async () => {
  * Test queries below
  */
 
-test('when identity claim is sub::username, user1 should not access user2 records when logging in with user1 and querying with GSI', async () => {
+test('when identity claim is sub::username, user1 should not access user2 records when logging in with user1 and querying with GSI ', async () => {
   await createNote1(USER_POOL_AUTH_CLIENT_1, { noteId: 'i1-u1', noteType: 't1' });
   await createNote1(USER_POOL_AUTH_CLIENT_1, { noteId: 'i2-u1', noteType: 't1' });
   await createNote1(USER_POOL_AUTH_CLIENT_1, { noteId: 'i3-u1', noteType: 't1' });
@@ -217,7 +217,7 @@ test('when identity claim is sub::username, user1 should not access user2 record
   expect(resultItems.filter((item) => item.owner === USERNAME2).length).toBe(0);
 });
 
-test('when identity claim is username, user1 should not access user2 records when logging in with user1 and querying with GSI', async () => {
+test('when identity claim is username, user1 should not access user2 records when logging in with user1 and querying with GSI ', async () => {
   await createNote2(USER_POOL_AUTH_CLIENT_1, { noteId: 'i1-u1', noteType: 't1', owner: USERNAME1 });
   await createNote2(USER_POOL_AUTH_CLIENT_1, { noteId: 'i2-u1', noteType: 't1', owner: USERNAME1 });
   await createNote2(USER_POOL_AUTH_CLIENT_1, { noteId: 'i3-u1', noteType: 't1', owner: USERNAME1 });
@@ -239,7 +239,7 @@ test('when identity claim is username, user1 should not access user2 records whe
   expect(resultItems.filter((item) => item.owner === USERNAME2).length).toBe(0);
 });
 
-test('when dynamic group auth is applied, user1 should not access user2 records when logging in with user1 and querying with GSI', async () => {
+test('when dynamic group auth is applied, user1 should not access user2 records when logging in with user1 and querying with GSI ', async () => {
   await createNote3(USER_POOL_AUTH_CLIENT_1, { noteId: 'i1-u1', noteType: 't1', group: ADMIN_GROUP_NAME });
   await createNote3(USER_POOL_AUTH_CLIENT_1, { noteId: 'i2-u1', noteType: 't1', group: ADMIN_GROUP_NAME });
   await createNote3(USER_POOL_AUTH_CLIENT_1, { noteId: 'i3-u1', noteType: 't1', group: ADMIN_GROUP_NAME });

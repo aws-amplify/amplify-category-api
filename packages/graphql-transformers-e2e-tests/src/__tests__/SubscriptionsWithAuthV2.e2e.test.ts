@@ -6,10 +6,11 @@ import { Output } from 'aws-sdk/clients/cloudformation';
 import { CognitoIdentityServiceProvider as CognitoClient, S3, CognitoIdentity } from 'aws-sdk';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { AWS } from '@aws-amplify/core';
-import { Auth, API } from 'aws-amplify';
+import { Auth } from 'aws-amplify';
 import gql from 'graphql-tag';
 import { default as moment } from 'moment';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
+import { API } from 'aws-amplify';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import * as Observable from 'zen-observable';
 import { S3Client } from '../S3Client';
@@ -395,7 +396,7 @@ afterAll(async () => {
  */
 
 // tests using cognito
-test('that only authorized members are allowed to view subscriptions', async () => {
+test('Test that only authorized members are allowed to view subscriptions', async () => {
   // subscribe to create students as user 2
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
@@ -439,7 +440,7 @@ test('that only authorized members are allowed to view subscriptions', async () 
   });
 });
 
-test('a subscription on update', async () => {
+test('Test a subscription on update', async () => {
   // subscribe to update students as user 2
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME2, REAL_PASSWORD);
@@ -493,7 +494,7 @@ test('a subscription on update', async () => {
   });
 });
 
-test('a subscription on delete', async () => {
+test('Test a subscription on delete', async () => {
   // subscribe to onDelete as user 2
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME2, REAL_PASSWORD);
@@ -548,7 +549,7 @@ test('a subscription on delete', async () => {
   });
 });
 
-test('that group is only allowed to listen to subscriptions and listen to onCreate', async () => {
+test('test that group is only allowed to listen to subscriptions and listen to onCreate', async () => {
   const memberID = '001';
   const memberName = 'username00';
   // test that a user that only read can't mutate
@@ -703,7 +704,7 @@ test('authorized group is allowed to listen to onDelete', async () => {
 });
 
 // ownerField Tests
-test('subscription onCreatePost with ownerField', async () => {
+test('Test subscription onCreatePost with ownerField', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
@@ -742,7 +743,7 @@ test('subscription onCreatePost with ownerField', async () => {
   });
 });
 
-test('onCreatePost with incorrect owner argument should throw an error', async () => {
+test('Test onCreatePost with incorrect owner argument should throw an error', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const failedObserver = API.graphql({
@@ -777,7 +778,7 @@ test('onCreatePost with incorrect owner argument should throw an error', async (
 });
 
 // iam tests
-test('that IAM can listen and read to onCreatePost', async () => {
+test('Test that IAM can listen and read to onCreatePost', async () => {
   const postID = 'subscriptionID';
   const postTitle = 'titleMadeByPostOwner';
 
@@ -824,7 +825,7 @@ test('that IAM can listen and read to onCreatePost', async () => {
   await subscriptionPromise;
 });
 
-test('that subcsription with apiKey', async () => {
+test('test that subcsription with apiKey', async () => {
   reconfigureAmplifyAPI('API_KEY', API_KEY);
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
@@ -866,7 +867,7 @@ test('that subcsription with apiKey', async () => {
   });
 });
 
-test('that subscription with apiKey onUpdate', async () => {
+test('test that subscription with apiKey onUpdate', async () => {
   reconfigureAmplifyAPI('API_KEY', API_KEY);
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
@@ -922,7 +923,7 @@ test('that subscription with apiKey onUpdate', async () => {
   });
 });
 
-test('that subscription with apiKey onDelete', async () => {
+test('test that subscription with apiKey onDelete', async () => {
   reconfigureAmplifyAPI('API_KEY', API_KEY);
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
@@ -970,7 +971,7 @@ test('that subscription with apiKey onDelete', async () => {
   });
 });
 
-test('onCreateOwnerInvalidClaim with invalid owner claims fails', async () => {
+test('Test onCreateOwnerInvalidClaim with invalid owner claims fails', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME2, REAL_PASSWORD);
   const failedObserver = API.graphql({

@@ -67,7 +67,7 @@ const template: Template = {
   },
 };
 
-test('getTemplateReferences', () => {
+test('Test getTemplateReferences', () => {
   const formatter = new TransformFormatter();
   const ff = new NoopFeatureFlagProvider();
   const context = new TransformerContext('type Post @model { id: ID! title: String }', ff);

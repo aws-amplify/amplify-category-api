@@ -1,5 +1,6 @@
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { BackedDataSource, BaseDataSource, CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
+import { BackedDataSource, BaseDataSource } from 'aws-cdk-lib/aws-appsync';
+import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { Construct } from 'constructs';
 import { InlineTemplate } from './cdk-compat/template-asset';
 import { GraphQLApi } from './graphql-api';

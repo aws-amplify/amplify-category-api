@@ -545,26 +545,13 @@ export function initCDKProject(cwd: string, templatePath: string): Promise<strin
           });
         }),
     )
-    .then(
-      () =>
-        new Promise<void>((resolve, reject) => {
-          // add esbuild for bundling in NodeJsFunction
-          spawn('npm', ['install', '--save', 'esbuild'], { cwd, stripColors: true }).run((err: Error) => {
-            if (!err) {
-              resolve();
-            } else {
-              reject(err);
-            }
-          });
-        }),
-    )
     .then(() => readFile(path.join(cwd, 'package.json'), 'utf8'))
     .then((packageJson) => JSON.parse(packageJson).name.replace(/_/g, '-'));
 }
 
 export function cdkDeploy(cwd: string, option: string): Promise<any> {
   return new Promise<void>((resolve, reject) => {
-    spawn(getNpxPath(), ['cdk', 'deploy', '--outputs-file', 'outputs.json', '--require-approval', 'never', option], {
+    spawn(getNpxPath(), ['cdk', 'deploy', '--outputs-file', 'outputs.json', option], {
       cwd,
       stripColors: true,
       // npx cdk does not work on verdaccio

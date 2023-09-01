@@ -84,7 +84,7 @@ afterAll(async () => {
   await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf);
 });
 
-test('translate and convert text to speech', async () => {
+test('test translate and convert text to speech', async () => {
   // logic to test graphql
   const response = await GRAPHQL_CLIENT.query(
     `query SpeakTranslatedText($input: SpeakTranslatedTextInput!) {
@@ -109,7 +109,7 @@ test('translate and convert text to speech', async () => {
   expect(pollyURL).toMatch(/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/);
 });
 
-test('translate text individually', async () => {
+test('test translate text individually', async () => {
   const germanTranslation = /((\bDies\b)|(\bdas\b)|(\bder\b)) ist ein ((\bStimmtest\b)|(\Sprachtest\b)|(\bStimmetest\b))/i;
   const response = await GRAPHQL_CLIENT.query(
     `query TranslateThis($input: TranslateThisInput!) {
@@ -130,7 +130,7 @@ test('translate text individually', async () => {
   expect(translatedText).toMatch(germanTranslation);
 });
 
-test('identify image text', async () => {
+test('test identify image text', async () => {
   const file = path.join(__dirname, 'test-data', 'amazon.png');
   const buffer = fs.readFileSync(file);
 
@@ -158,7 +158,7 @@ test('identify image text', async () => {
   expect(response.data.translateImageText).toEqual('Available on amazon R');
 });
 
-test('identify labels', async () => {
+test('test identify labels', async () => {
   const file = path.join(__dirname, 'test-data', 'dogs.png');
   const buffer = fs.readFileSync(file);
 

@@ -127,7 +127,7 @@ beforeAll(async () => {
       }),
     ],
     featureFlags: {
-      getBoolean: (name) => name === 'improvePluralization',
+      getBoolean: (name) => (name === 'improvePluralization' ? true : false),
     } as FeatureFlagProvider,
   });
 
@@ -204,7 +204,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test(`'public' authStrategy`, async () => {
+test(`Test 'public' authStrategy`, async () => {
   try {
     const createMutation = gql`
       mutation {
@@ -252,7 +252,7 @@ test(`'public' authStrategy`, async () => {
   }
 });
 
-test(`'private' authStrategy`, async () => {
+test(`Test 'private' authStrategy`, async () => {
   try {
     const createMutation = gql`
       mutation {

@@ -14,7 +14,7 @@ const featureFlags = {
   getObject: jest.fn(),
 };
 
-test('"read" auth operation', () => {
+test('Test "read" auth operation', () => {
   const validSchema = `
     type Post @model @auth(rules: [{allow: groups, groups: ["Admin", "Dev"], operations: [read]}]) {
         id: ID!
@@ -46,7 +46,7 @@ test('"read" auth operation', () => {
   expect(out.resolvers['Query.listPosts.res.vtl']).toContain('Authorization rule:');
 });
 
-test('"create", "update", "delete" auth operations', () => {
+test('Test "create", "update", "delete" auth operations', () => {
   const validSchema = `
     type Post @model @auth(rules: [{allow: groups, groups: ["Admin", "Dev"], operations: [create, update, delete]}]) {
         id: ID!
@@ -86,7 +86,7 @@ test('"create", "update", "delete" auth operations', () => {
   expect(out.resolvers['Mutation.deletePost.req.vtl']).toMatchSnapshot();
 });
 
-test('that operation overwrites queries in auth operations', () => {
+test('Test that operation overwrites queries in auth operations', () => {
   const validSchema = `
     type Post @model @auth(rules: [{allow: groups, groups: ["Admin", "Dev"], queries: [get, list], operations: [create, update, delete]}]) {
         id: ID!
@@ -126,7 +126,7 @@ test('that operation overwrites queries in auth operations', () => {
   expect(out.resolvers['Mutation.deletePost.req.vtl']).toMatchSnapshot();
 });
 
-test('that checks subscription resolvers are generated with auth logic', () => {
+test('Test that checks subscription resolvers are generated with auth logic', () => {
   const validSchema = `
     type Salary @model
     @auth( rules: [
@@ -165,7 +165,7 @@ test('that checks subscription resolvers are generated with auth logic', () => {
   expect(out.resolvers['Subscription.onUpdateSalary.res.vtl']).toMatchSnapshot();
 });
 
-test('that checks subscription resolvers are created without auth logic', () => {
+test('Test that checks subscription resolvers are created without auth logic', () => {
   const validSchema = `
     type Salary @model(
         subscriptions: {
@@ -206,7 +206,7 @@ test('that checks subscription resolvers are created without auth logic', () => 
   expect(out.resolvers['Subscription.onUpdateSalary.res.vtl']).toMatchSnapshot();
 });
 
-test('that subscriptions are only generated if the respective mutation operation exists', () => {
+test('Test that subscriptions are only generated if the respective mutation operation exists', () => {
   const validSchema = `
     type Salary @model(
         mutations: {

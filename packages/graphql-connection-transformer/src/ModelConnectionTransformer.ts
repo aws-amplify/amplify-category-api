@@ -32,9 +32,8 @@ import {
   attributeTypeFromScalar,
   makeScalarKeyConditionForType,
   makeNamedType,
-  ResolverResourceIDs,
-  ModelResourceIDs,
 } from 'graphql-transformer-common';
+import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common';
 import Table, { KeySchema, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
 import { updateInputWithConnectionField } from './definitions';
 import { ResourceFactory } from './resources';

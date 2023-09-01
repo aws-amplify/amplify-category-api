@@ -6,11 +6,9 @@ import {
   addFeatureFlag,
   createRandomName,
   addAuthWithDefault,
-  addApiWithoutSchema,
-  updateApiSchema,
-  createNewProjectDir,
-  deleteProjectDir,
 } from 'amplify-category-api-e2e-core';
+import { addApiWithoutSchema, updateApiSchema } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 
 describe('transformer @http migration test', () => {
   let projRoot: string;

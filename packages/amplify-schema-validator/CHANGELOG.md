@@ -3,12 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.2.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-validation@0.2.6...@aws-amplify/graphql-schema-validation@0.2.7) (2023-08-28)
-
-### Bug Fixes
-
-- **graphql-schema-validation:** relationship names not unique ([#1819](https://github.com/aws-amplify/amplify-category-api/issues/1819)) ([275affc](https://github.com/aws-amplify/amplify-category-api/commit/275affc821a0981cbba167d894bc5d9e47816046))
-
 ## [0.2.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-validation@0.2.5...@aws-amplify/graphql-schema-validation@0.2.6) (2023-08-09)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-validation

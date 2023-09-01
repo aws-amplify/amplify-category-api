@@ -338,7 +338,7 @@ afterAll(async () => {
  */
 
 // cognito owner check
-test('Comments as owner', async () => {
+test('test Comments as owner', async () => {
   const ownerResponse: any = await GRAPHQL_CLIENT_1.query({
     query: gql`
       query SearchComments {
@@ -359,7 +359,7 @@ test('Comments as owner', async () => {
 });
 
 // cognito static group check
-test('Comments as user in writer group', async () => {
+test('test Comments as user in writer group', async () => {
   const writerResponse: any = await GRAPHQL_CLIENT_2.query({
     query: gql`
       query SearchComments {
@@ -406,7 +406,7 @@ test('Comments as user in writer group', async () => {
 });
 
 // cognito test as unauthorized user
-test('Comments as user that is not an owner nor is in writer group', async () => {
+test('test Comments as user that is not an owner nor is in writer group', async () => {
   const user3Response: any = await GRAPHQL_CLIENT_3.query({
     query: gql`
       query SearchComments {
@@ -427,7 +427,7 @@ test('Comments as user that is not an owner nor is in writer group', async () =>
 });
 
 // cognito dynamic group check
-test('Todo as user in the dynamic group admin', async () => {
+test('test Todo as user in the dynamic group admin', async () => {
   const adminResponse: any = await GRAPHQL_CLIENT_2.query({
     query: gql`
       query SearchTodos {
@@ -466,7 +466,7 @@ test('Todo as user in the dynamic group admin', async () => {
 });
 
 // iam test
-test('Post as authorized user', async () => {
+test('test Post as authorized user', async () => {
   const authUser: any = await GRAPHQL_IAM_AUTH_CLIENT.query({
     query: gql`
       query SearchPosts {
@@ -510,7 +510,7 @@ test('Post as authorized user', async () => {
 });
 
 // test apikey 2nd scenario
-test('searchPosts with apikey and secret removed', async () => {
+test('test searchPosts with apikey and secret removed', async () => {
   const apiKeyResponse: any = await GRAPHQL_APIKEY_CLIENT.query({
     query: gql`
       query SearchPosts {
@@ -549,7 +549,7 @@ test('searchPosts with apikey and secret removed', async () => {
 });
 
 // test iam/apiKey schema with unauth user
-test('post as an cognito user that is not allowed in this schema', async () => {
+test('test post as an cognito user that is not allowed in this schema', async () => {
   try {
     await GRAPHQL_CLIENT_3.query({
       query: gql`
@@ -571,7 +571,7 @@ test('post as an cognito user that is not allowed in this schema', async () => {
   }
 });
 
-test('that apikey is not allowed to query aggregations on secret for post', async () => {
+test('test that apikey is not allowed to query aggregations on secret for post', async () => {
   try {
     await GRAPHQL_APIKEY_CLIENT.query({
       query: gql`
@@ -598,7 +598,7 @@ test('that apikey is not allowed to query aggregations on secret for post', asyn
   }
 });
 
-test('that iam can run aggregations on secret field', async () => {
+test('test that iam can run aggregations on secret field', async () => {
   try {
     const response: any = await GRAPHQL_IAM_AUTH_CLIENT.query({
       query: gql`
@@ -645,7 +645,7 @@ test('that iam can run aggregations on secret field', async () => {
   }
 });
 
-test('that admin can run aggregate query on protected field', async () => {
+test('test that admin can run aggregate query on protected field', async () => {
   try {
     const response: any = await GRAPHQL_CLIENT_2.query({
       query: gql`
@@ -688,7 +688,7 @@ test('that admin can run aggregate query on protected field', async () => {
   }
 });
 
-test('that member in writer group has writer group auth when running aggregate query', async () => {
+test('test that member in writer group has writer group auth when running aggregate query', async () => {
   try {
     const response: any = await GRAPHQL_CLIENT_4.query({
       query: gql`
@@ -731,7 +731,7 @@ test('that member in writer group has writer group auth when running aggregate q
   }
 });
 
-test('that an owner is not authorized to perform an agg query on the secret field', async () => {
+test('test that an owner is not authorized to perform an agg query on the secret field', async () => {
   try {
     const response: any = await GRAPHQL_CLIENT_1.query({
       query: gql`
@@ -761,7 +761,7 @@ test('that an owner is not authorized to perform an agg query on the secret fiel
     expect(err).not.toBeDefined();
   }
 });
-test('that an owner can run aggregations on records which belong to them', async () => {
+test('test that an owner can run aggregations on records which belong to them', async () => {
   try {
     const response: any = await GRAPHQL_CLIENT_1.query({
       query: gql`

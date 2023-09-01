@@ -153,7 +153,7 @@ function chain(context: Context): ExecutionContext {
     wait: function (expectation: string | RegExp, callback = (data: string) => {}): ExecutionContext {
       let _wait: ExecutionStep = {
         fn: (data) => {
-          let val = testExpectation(data, expectation, context);
+          var val = testExpectation(data, expectation, context);
           if (val === true && typeof callback === 'function') {
             callback(data);
           }
@@ -197,7 +197,7 @@ function chain(context: Context): ExecutionContext {
       return chain(context);
     },
     send: function (line: string): ExecutionContext {
-      let _send: ExecutionStep = {
+      var _send: ExecutionStep = {
         fn: () => {
           context.process.write(line);
           return true;
@@ -212,7 +212,7 @@ function chain(context: Context): ExecutionContext {
     },
     sendKeyDown: function (repeat?: number): ExecutionContext {
       const repetitions = repeat ? Math.max(1, repeat) : 1;
-      let _send: ExecutionStep = {
+      var _send: ExecutionStep = {
         fn: () => {
           for (let i = 0; i < repetitions; ++i) {
             context.process.write(KEY_DOWN_ARROW);
@@ -229,7 +229,7 @@ function chain(context: Context): ExecutionContext {
     },
     sendKeyUp: function (repeat?: number): ExecutionContext {
       const repetitions = repeat ? Math.max(1, repeat) : 1;
-      let _send: ExecutionStep = {
+      var _send: ExecutionStep = {
         fn: () => {
           for (let i = 0; i < repetitions; ++i) {
             context.process.write(KEY_UP_ARROW);
@@ -245,7 +245,7 @@ function chain(context: Context): ExecutionContext {
       return chain(context);
     },
     sendConfirmYes: function (): ExecutionContext {
-      let _send: ExecutionStep = {
+      var _send: ExecutionStep = {
         fn: () => {
           context.process.write(`Y${RETURN}`);
           return true;
@@ -259,7 +259,7 @@ function chain(context: Context): ExecutionContext {
       return chain(context);
     },
     sendYes: function (): ExecutionContext {
-      let _send: ExecutionStep = {
+      var _send: ExecutionStep = {
         fn: () => {
           context.process.write(`Y`);
           return true;
@@ -273,7 +273,7 @@ function chain(context: Context): ExecutionContext {
       return chain(context);
     },
     sendConfirmNo: function (): ExecutionContext {
-      let _send: ExecutionStep = {
+      var _send: ExecutionStep = {
         fn: () => {
           context.process.write(`N${RETURN}`);
           return true;
@@ -287,7 +287,7 @@ function chain(context: Context): ExecutionContext {
       return chain(context);
     },
     sendNo: function (): ExecutionContext {
-      let _send: ExecutionStep = {
+      var _send: ExecutionStep = {
         fn: () => {
           context.process.write(`N`);
           return true;
@@ -301,7 +301,7 @@ function chain(context: Context): ExecutionContext {
       return chain(context);
     },
     sendCtrlC: function (): ExecutionContext {
-      let _send: ExecutionStep = {
+      var _send: ExecutionStep = {
         fn: () => {
           context.process.write(`${CONTROL_C}${RETURN}`);
           return true;
@@ -315,7 +315,7 @@ function chain(context: Context): ExecutionContext {
       return chain(context);
     },
     sendCtrlA: function (): ExecutionContext {
-      let _send: ExecutionStep = {
+      var _send: ExecutionStep = {
         fn: () => {
           context.process.write(`${CONTROL_A}`);
           return true;
@@ -329,7 +329,7 @@ function chain(context: Context): ExecutionContext {
       return chain(context);
     },
     sendEof: function (): ExecutionContext {
-      let _sendEof: ExecutionStep = {
+      var _sendEof: ExecutionStep = {
         fn: () => {
           context.process.sendEof();
           return true;
@@ -343,7 +343,7 @@ function chain(context: Context): ExecutionContext {
       return chain(context);
     },
     delay: function (milliseconds: number): ExecutionContext {
-      let _delay: ExecutionStep = {
+      var _delay: ExecutionStep = {
         fn: () => {
           const startCallback = Date.now();
 
@@ -483,7 +483,7 @@ function chain(context: Context): ExecutionContext {
     // function run had `name`.
     //
     function evalContext(data: string, name?: string): void {
-      let step = context.queue[0];
+      var step = context.queue[0];
       const { fn: currentFn, name: currentFnName, shift } = step;
 
       if (!currentFn || (name === '_expect' && currentFnName === '_expect')) {
@@ -517,13 +517,15 @@ function chain(context: Context): ExecutionContext {
           context.queue.shift();
           evalContext(data, '_expect');
         }
-      } else if (currentFn(data)) {
+      } else {
         //
         // If the `currentFn` is any other function then evaluate it
         //
-        // Evaluate the next function if it does not need input
-        let nextFn = context.queue[0];
-        if (nextFn && !nextFn.requiresInput) evalContext(data);
+        if (currentFn(data)) {
+          // Evaluate the next function if it does not need input
+          var nextFn = context.queue[0];
+          if (nextFn && !nextFn.requiresInput) evalContext(data);
+        }
       }
     }
 
@@ -550,7 +552,7 @@ function chain(context: Context): ExecutionContext {
         data = strip(data);
       }
 
-      let lines = data.split(EOL).filter(function (line) {
+      var lines = data.split(EOL).filter(function (line) {
         return line.length > 0 && line !== '\r';
       });
       stdout = stdout.concat(lines);
@@ -578,7 +580,7 @@ function chain(context: Context): ExecutionContext {
       const { fn: currentFn, name: currentFnName } = step;
       const nonEmptyLines = stdout.map((line) => line.replace('\r', '').trim()).filter((line) => line !== '');
 
-      let lastLine = nonEmptyLines[nonEmptyLines.length - 1];
+      var lastLine = nonEmptyLines[nonEmptyLines.length - 1];
 
       if (!lastLine) {
         onError(createUnexpectedEndError('No data from child with non-empty queue.', remainingQueue), false);
@@ -656,7 +658,7 @@ function createUnexpectedEndError(message: string, remainingQueue: ExecutionStep
   const desc: string[] = remainingQueue.map(function (it) {
     return it.description;
   });
-  let msg = message + '\n' + desc.join('\n');
+  var msg = message + '\n' + desc.join('\n');
 
   return new AssertionError({
     message: msg,
@@ -666,14 +668,14 @@ function createUnexpectedEndError(message: string, remainingQueue: ExecutionStep
 }
 
 function createExpectationError(expected: string | RegExp, actual: string) {
-  let expectation;
+  var expectation;
   if (types.isRegExp(expected)) {
     expectation = 'to match ' + expected;
   } else {
     expectation = 'to contain ' + JSON.stringify(expected);
   }
 
-  let err = new AssertionError({
+  var err = new AssertionError({
     message: format('expected %j %s', actual, expectation),
     actual: actual,
     expected: expected,

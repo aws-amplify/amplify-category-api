@@ -53,7 +53,7 @@ export const getAuthDirectiveRules = (authDir: DirectiveWrapper, options?: GetAu
   };
 
   const { rules } = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }, options);
-  rules?.forEach((rule) => {
+  rules.forEach((rule) => {
     const operations: (ModelOperation | 'read')[] = rule.operations ?? MODEL_OPERATIONS;
 
     // In case a customer defines a single dynamic group as a string, put it to an array

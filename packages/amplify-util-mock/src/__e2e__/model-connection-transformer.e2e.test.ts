@@ -50,7 +50,7 @@ beforeAll(async () => {
         new ModelConnectionTransformer(),
       ],
       featureFlags: {
-        getBoolean: (name) => name === 'improvePluralization',
+        getBoolean: (name) => (name === 'improvePluralization' ? true : false),
       } as FeatureFlagProvider,
     });
     const out = transformer.transform(validSchema);
@@ -90,7 +90,7 @@ afterAll(async () => {
  * Test queries below
  */
 
-test('queryPost query', async () => {
+test('Test queryPost query', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Query" }) {
@@ -149,7 +149,7 @@ const whenmid = '2018-12-01T00:00:00.000Z';
 const when2 = '2019-10-01T00:00:01.000Z';
 const whenfuture = '2020-10-01T00:00:00.000Z';
 
-test('queryPost query with sortField', async () => {
+test('Test queryPost query with sortField', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "${title}" }) {
@@ -400,7 +400,7 @@ test('queryPost query with sortField', async () => {
   expect(itemsDescWithKeyConditionBetween[0].id).toEqual(createCommentResponse2.data.createSortedComment.id);
 });
 
-test('create comment without a post and then querying the comment.', async () => {
+test('Test create comment without a post and then querying the comment.', async () => {
   try {
     const createCommentResponse1 = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -441,7 +441,7 @@ test('create comment without a post and then querying the comment.', async () =>
   }
 });
 
-test('default limit is 50', async () => {
+test('Test default limit is 50', async () => {
   // create Auth logic around this
   const postID = 'e2eConnectionPost';
   const postTitle = 'samplePost';

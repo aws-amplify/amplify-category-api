@@ -15,11 +15,7 @@ import * as fs from 'fs-extra';
 import { RDS_SCHEMA_FILE_NAME, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import _ from 'lodash';
 import { run } from './commands/api/console';
-import {
-  getAppSyncAuthConfig,
-  getAppSyncResourceName,
-  getAPIResourceDir,
-} from './provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { getAppSyncAuthConfig, getAppSyncResourceName } from './provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { provider } from './provider-utils/awscloudformation/aws-constants';
 import { ApigwStackTransform } from './provider-utils/awscloudformation/cdk-stack-builder';
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
@@ -27,6 +23,7 @@ import { askAuthQuestions } from './provider-utils/awscloudformation/service-wal
 import { authConfigToAppSyncAuthType } from './provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { checkAppsyncApiResourceMigration } from './provider-utils/awscloudformation/utils/check-appsync-api-migration';
 import { getAppSyncApiResourceName } from './provider-utils/awscloudformation/utils/getAppSyncApiName';
+import { getAPIResourceDir } from './provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { configureMultiEnvDBSecrets } from './provider-utils/awscloudformation/utils/rds-resources/multi-env-database-secrets';
 import {
   deleteConnectionSecrets,
@@ -303,7 +300,7 @@ export const executeAmplifyHeadlessCommand = async (context: $TSContext, headles
  */
 export const handleAmplifyEvent = async (context: $TSContext, args: any): Promise<void> => {
   switch (args.event) {
-    case 'InternalOnlyPostEnvRemove': {
+    case 'InternalOnlyPostEnvRemove':
       const meta = stateManager.getMeta();
       const apiName = getAppSyncResourceName(meta);
       if (!apiName) {
@@ -312,7 +309,6 @@ export const handleAmplifyEvent = async (context: $TSContext, args: any): Promis
       await deleteConnectionSecrets(context, apiName, args?.data?.envName);
       await removeVpcSchemaInspectorLambda(context);
       break;
-    }
     default:
     // other event handlers not implemented
   }

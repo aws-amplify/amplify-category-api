@@ -1,13 +1,6 @@
 import { App, CfnParameter, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import type {
-  AssetProvider,
-  NestedStackProvider,
-  S3Asset,
-  AssetProps,
-  SynthParameters,
-  TransformParameterProvider,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import type { AssetProvider, NestedStackProvider, S3Asset, AssetProps, SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { DeploymentResources, Template } from './deployment-resources';
 import { TransformerStackSythesizer } from './stack-synthesizer';
 import { TransformerNestedStack } from './nested-stack';
@@ -29,15 +22,11 @@ export class TransformManager {
   public readonly rootStack: TransformerRootStack;
   private readonly stackSynthesizer = new TransformerStackSythesizer();
   private readonly childStackSynthesizers: Map<string, TransformerStackSythesizer> = new Map();
-  private synthParameters: SynthParameters;
-  private paramMap: Map<string, CfnParameter>;
 
-  constructor(private readonly overrideConfig: OverrideConfig | undefined, hasIamAuth: boolean, hasUserPoolAuth: boolean) {
+  constructor(private readonly overrideConfig?: OverrideConfig) {
     this.rootStack = new TransformerRootStack(this.app, 'transformer-root-stack', {
       synthesizer: this.stackSynthesizer,
     });
-
-    this.generateParameters(hasIamAuth, hasUserPoolAuth);
   }
 
   getTransformScope(): Construct {
@@ -66,45 +55,27 @@ export class TransformManager {
     };
   }
 
-  private generateParameters(hasIamAuth: boolean, hasUserPoolAuth: boolean): void {
-    this.paramMap = new Map();
+  getSynthParameters(hasIamAuth: boolean, hasUserPoolAuth: boolean): SynthParameters {
     const envParameter = new CfnParameter(this.rootStack, 'env', {
       default: 'NONE',
       type: 'String',
     });
-    this.paramMap.set('env', envParameter);
     const apiNameParameter = new CfnParameter(this.rootStack, 'AppSyncApiName', {
       default: 'AppSyncSimpleTransform',
       type: 'String',
     });
-    this.paramMap.set('AppSyncApiName', apiNameParameter);
-    this.synthParameters = {
+    const synthParameters: SynthParameters = {
       amplifyEnvironmentName: envParameter.valueAsString,
       apiName: apiNameParameter.valueAsString,
     };
     if (hasIamAuth) {
-      const authenticatedUserRoleNameParameter = new CfnParameter(this.rootStack, 'authRoleName', { type: 'String' });
-      this.synthParameters.authenticatedUserRoleName = authenticatedUserRoleNameParameter.valueAsString;
-      this.paramMap.set('authRoleName', authenticatedUserRoleNameParameter);
-      const unauthenticatedUserRoleNameParameter = new CfnParameter(this.rootStack, 'unauthRoleName', { type: 'String' });
-      this.synthParameters.unauthenticatedUserRoleName = unauthenticatedUserRoleNameParameter.valueAsString;
-      this.paramMap.set('unauthRoleName', unauthenticatedUserRoleNameParameter);
+      synthParameters.authenticatedUserRoleName = new CfnParameter(this.rootStack, 'authRoleName', { type: 'String' }).valueAsString;
+      synthParameters.unauthenticatedUserRoleName = new CfnParameter(this.rootStack, 'unauthRoleName', { type: 'String' }).valueAsString;
     }
     if (hasUserPoolAuth) {
-      const userPoolIdParameter = new CfnParameter(this.rootStack, 'AuthCognitoUserPoolId', { type: 'String' });
-      this.synthParameters.userPoolId = userPoolIdParameter.valueAsString;
-      this.paramMap.set('AuthCognitoUserPoolId', userPoolIdParameter);
+      synthParameters.userPoolId = new CfnParameter(this.rootStack, 'AuthCognitoUserPoolId', { type: 'String' }).valueAsString;
     }
-  }
-
-  getParameterProvider(): TransformParameterProvider {
-    return {
-      provide: (name: string): CfnParameter | void => this.paramMap.get(name),
-    };
-  }
-
-  getSynthParameters(): SynthParameters {
-    return this.synthParameters;
+    return synthParameters;
   }
 
   generateDeploymentResources(): Omit<DeploymentResources, 'userOverriddenSlots'> {

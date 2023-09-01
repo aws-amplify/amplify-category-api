@@ -70,7 +70,7 @@ async function addNonContainerResource(context: $TSContext, service: string, opt
 
   const serviceWalkthroughPromise: Promise<any> = serviceWalkthrough(context, serviceMetadata);
   switch (service) {
-    case AmplifySupportedService.APPSYNC: {
+    case AmplifySupportedService.APPSYNC:
       const walkthroughResult = await serviceWalkthroughPromise;
       const askToEdit = walkthroughResult.askToEdit;
       const apiName = await getCfnApiArtifactHandler(context).createArtifacts(serviceWalkthroughResultToAddApiRequest(walkthroughResult));
@@ -78,11 +78,9 @@ async function addNonContainerResource(context: $TSContext, service: string, opt
         await editSchemaFlow(context, apiName);
       }
       return apiName;
-    }
-    case AmplifySupportedService.APIGW: {
+    case AmplifySupportedService.APIGW:
       const apigwInputState = new ApigwInputState(context);
       return apigwInputState.addApigwResource(serviceWalkthroughPromise, options);
-    }
     default:
       return legacyAddResource(serviceWalkthroughPromise, context, category, service, options);
   }
@@ -264,10 +262,9 @@ async function updateNonContainerResource(context: $TSContext, service: string) 
   switch (service) {
     case AmplifySupportedService.APPSYNC:
       return updateWalkthroughPromise.then(getCfnApiArtifactHandler(context).updateArtifacts);
-    default: {
+    default:
       const apigwInputState = new ApigwInputState(context);
       return apigwInputState.updateApigwResource(updateWalkthroughPromise);
-    }
   }
 }
 

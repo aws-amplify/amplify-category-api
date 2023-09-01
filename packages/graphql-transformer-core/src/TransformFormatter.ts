@@ -1,7 +1,8 @@
 import { Fn, StringParameter } from 'cloudform-types';
 import Resource from 'cloudform-types/types/resource';
-import { makeOperationType, makeSchema, ResourceConstants } from 'graphql-transformer-common';
+import { makeOperationType, makeSchema } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode, print } from 'graphql';
+import { ResourceConstants } from 'graphql-transformer-common';
 import { stripDirectives } from './stripDirectives';
 import { SchemaResourceUtil } from './util/SchemaResourceUtil';
 import splitStack from './util/splitStack';

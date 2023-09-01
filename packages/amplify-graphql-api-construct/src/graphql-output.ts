@@ -13,8 +13,6 @@ export const graphqlOutputSchemaV1 = z.object({
     awsAppsyncApiEndpoint: z.string(),
     awsAppsyncAuthenticationType: AwsAppsyncAuthenticationType,
     awsAppsyncApiKey: z.string().optional(),
-    awsAppsyncApiId: z.string(),
-    amplifyApiModelSchemaS3Uri: z.string(),
   }),
 });
 

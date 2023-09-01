@@ -24,7 +24,7 @@ const featureFlags = {
   getObject: jest.fn(),
 };
 
-test('custom root types with additional fields.', () => {
+test('Test custom root types with additional fields.', () => {
   const validSchema = `
     type Query {
         additionalQueryField: String
@@ -57,7 +57,7 @@ test('custom root types with additional fields.', () => {
   expectFields(subscriptionType, ['onCreatePost', 'onUpdatePost', 'onDeletePost', 'additionalSubscriptionField']);
 });
 
-test('custom root query, mutation, and subscriptions.', () => {
+test('Test custom root query, mutation, and subscriptions.', () => {
   const validSchema = `
     # If I intentionally leave out mutation/subscription then no mutations/subscriptions
     # will be created even if @model is used.
@@ -104,7 +104,7 @@ test('custom root query, mutation, and subscriptions.', () => {
   expectFields(subscriptionType, ['onCreatePost', 'onUpdatePost', 'onDeletePost', 'onCreateOrUpdate']);
 });
 
-test('custom roots without any directives. This should still be valid.', () => {
+test('Test custom roots without any directives. This should still be valid.', () => {
   const validSchema = `
     schema {
         query: Query2
@@ -172,7 +172,7 @@ function verifyInputCount(doc: DocumentNode, type: string, count: number): boole
 }
 
 function cleanUpFiles(directory: string) {
-  let files = fs.readdirSync(directory);
+  var files = fs.readdirSync(directory);
   for (const file of files) {
     const dir = path.join(directory, file);
     if (!fs.lstatSync(dir).isDirectory()) {

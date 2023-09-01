@@ -42,7 +42,7 @@ const templateGenerator = new RelationalDBTemplateGenerator(context);
  * Test for verifying that provided a valid TemplateContext, we are
  * generating the base cloudform template (the cfn specs sans resolvers)
  */
-test('Base CloudForm Template Generation', () => {
+test('Test Base CloudForm Template Generation', () => {
   const template = templateGenerator.createTemplate(emptyCliContext);
 
   expect(template).toBeDefined();
@@ -61,7 +61,7 @@ test('Base CloudForm Template Generation', () => {
  * Test for verifying that provided a base template, we are generating
  * a template with the Relational Resolvers attached.
  */
-test('Adding Resolvers to CloudForm Template', () => {
+test('Test Adding Resolvers to CloudForm Template', () => {
   const baseTemplate = templateGenerator.createTemplate(emptyCliContext);
   expect(baseTemplate).toBeDefined();
   expect(baseTemplate.Resources).toBeDefined();
@@ -75,7 +75,7 @@ test('Adding Resolvers to CloudForm Template', () => {
  * Test for verifying that provided a base template, we are generating the
  * cfn template as a JSON string.
  */
-test('Printing the cloudform template as a JSON', () => {
+test('Test Printing the cloudform template as a JSON', () => {
   const baseTemplate = templateGenerator.createTemplate(emptyCliContext);
   expect(baseTemplate).toBeDefined();
 

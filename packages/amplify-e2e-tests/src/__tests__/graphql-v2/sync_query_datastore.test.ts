@@ -1,13 +1,6 @@
-import {
-  initJSProjectWithProfile,
-  deleteProject,
-  amplifyPush,
-  addApiWithBlankSchemaAndConflictDetection,
-  updateApiSchema,
-  getProjectMeta,
-  createNewProjectDir,
-  deleteProjectDir,
-} from 'amplify-category-api-e2e-core';
+import { initJSProjectWithProfile, deleteProject, amplifyPush } from 'amplify-category-api-e2e-core';
+import { addApiWithBlankSchemaAndConflictDetection, updateApiSchema, getProjectMeta } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 

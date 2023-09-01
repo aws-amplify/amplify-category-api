@@ -428,7 +428,7 @@ afterAll(async () => {
   }
 });
 
-test("'public' authStrategy", async () => {
+test("test 'public' authStrategy", async () => {
   try {
     const createMutation = gql`
       mutation {
@@ -478,7 +478,7 @@ test("'public' authStrategy", async () => {
   }
 });
 
-test(`'public' provider: 'iam' authStrategy`, async () => {
+test(`Test 'public' provider: 'iam' authStrategy`, async () => {
   try {
     const createMutation = gql`
       mutation {
@@ -533,7 +533,7 @@ test(`'public' provider: 'iam' authStrategy`, async () => {
   }
 });
 
-test(`'private' authStrategy`, async () => {
+test(`Test 'private' authStrategy`, async () => {
   try {
     const createMutation = gql`
       mutation {
@@ -588,7 +588,7 @@ test(`'private' authStrategy`, async () => {
   }
 });
 
-test(`only allow private iam arn`, async () => {
+test(`Test only allow private iam arn`, async () => {
   try {
     const createMutation = gql`
       mutation {
@@ -667,7 +667,7 @@ test(`only allow private iam arn`, async () => {
   }
 });
 
-test(`'private' provider: 'iam' authStrategy`, async () => {
+test(`Test 'private' provider: 'iam' authStrategy`, async () => {
   // This test reuses the unauth role, but any IAM credentials would work
   // in real world scenarios, we've to see if provider override works.
 

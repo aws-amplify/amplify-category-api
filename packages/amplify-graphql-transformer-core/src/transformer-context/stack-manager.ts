@@ -1,5 +1,5 @@
-import { StackManagerProvider, NestedStackProvider, TransformParameterProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { CfnParameter, Stack } from 'aws-cdk-lib';
+import { StackManagerProvider, NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 export type ResourceToStackMap = Record<string, string>;
@@ -15,7 +15,6 @@ export class StackManager implements StackManagerProvider {
   constructor(
     public readonly scope: Construct,
     private readonly nestedStackProvider: NestedStackProvider,
-    private readonly parameterProvider: TransformParameterProvider | undefined,
     resourceMapping: ResourceToStackMap,
   ) {
     this.resourceToStackMap = new Map(Object.entries(resourceMapping));
@@ -39,23 +38,6 @@ export class StackManager implements StackManagerProvider {
     }
     return this.createStack(stackName);
   };
-
-  /**
-   * Alias for `getScopeFor` to maintain some backwards compatibility for 3p plugins.
-   * @deprecated - use `getScopeFor` instead.
-   * @param resourceId the resourceId to search for
-   * @param defaultStackName the default stack name to retrieve.
-   * @returns the stack, or a new one if not yet defined.
-   */
-  getStackFor = (resourceId: string, defaultStackName?: string): Construct => this.getScopeFor(resourceId, defaultStackName);
-
-  /**
-   * Retrieve a parameter used for synth.
-   * @deprecated - use `context.synthParameters.amplifyEnvironmentName` (e.g. for `env`) to retrieve known parameters.
-   * @param name the param name to retrieve.
-   * @returns the parameter, or none if not defined.
-   */
-  getParameter = (name: string): CfnParameter | void => this.parameterProvider && this.parameterProvider.provide(name);
 
   getStack = (stackName: string): Stack => {
     if (this.stacks.has(stackName)) {

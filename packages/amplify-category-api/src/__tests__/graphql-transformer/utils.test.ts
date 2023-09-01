@@ -1,8 +1,8 @@
 import * as path from 'path';
 import { DatasourceType } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
-import { $TSContext, CloudformationProviderFacade, pathManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk, getAdminRoles } from '../../graphql-transformer/utils';
+import { $TSContext, CloudformationProviderFacade } from '@aws-amplify/amplify-cli-core';
+import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from '../../graphql-transformer/utils';
 import { TransformerProjectConfig } from '../../graphql-transformer/cdk-compat/project-config';
 import { DeploymentResources } from '../../graphql-transformer/cdk-compat/deployment-resources';
 
@@ -283,60 +283,6 @@ describe('graphql transformer utils', () => {
           },
         });
       });
-    });
-  });
-
-  describe('read Admin role names from custom-roles.json', () => {
-    const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
-    pathManagerMock.getResourceDirectoryPath.mockReturnValue('mockdir');
-    const mockContext = {
-      amplify: {
-        getEnvInfo: () => ({
-          envName: 'test',
-        }),
-        getResourceStatus: () => ({
-          allResources: [],
-          resourcesToBeDeleted: [],
-        }),
-      },
-    } as unknown as $TSContext;
-
-    it('should return empty array if custom-roles.json does not exist', async () => {
-      fs_mock.existsSync.mockReturnValueOnce(false);
-      const adminRoles = await getAdminRoles(mockContext, 'test');
-      expect(adminRoles).toEqual([]);
-    });
-
-    it('should return empty array if custom-roles.json does not contain admin roles', async () => {
-      const JSONUtilitiesMock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
-      JSONUtilitiesMock.readJson.mockReturnValueOnce({
-        adminRoleNames: [],
-      });
-      fs_mock.existsSync.mockReturnValueOnce(true);
-      const adminRoles = await getAdminRoles(mockContext, 'test');
-      expect(adminRoles).toEqual([]);
-    });
-
-    it('should return admin roles if present as array in custom-roles.json', async () => {
-      const JSONUtilitiesMock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
-      const testRole = 'my-custom-role';
-      JSONUtilitiesMock.readJson.mockReturnValueOnce({
-        adminRoleNames: [testRole],
-      });
-      fs_mock.existsSync.mockReturnValueOnce(true);
-      const adminRoles = await getAdminRoles(mockContext, 'test');
-      expect(adminRoles).toEqual([testRole]);
-    });
-
-    it('should return admin roles if present as string in custom-roles.json', async () => {
-      const JSONUtilitiesMock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
-      const testRole = 'my-custom-role';
-      JSONUtilitiesMock.readJson.mockReturnValueOnce({
-        adminRoleNames: testRole,
-      });
-      fs_mock.existsSync.mockReturnValueOnce(true);
-      const adminRoles = await getAdminRoles(mockContext, 'test');
-      expect(adminRoles).toEqual([testRole]);
     });
   });
 });

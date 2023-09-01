@@ -29,10 +29,9 @@ export class EcsStack extends ContainersStack {
         new cdk.CfnOutput(this, 'ApiName', { value: ecsProps.apiName });
         new cdk.CfnOutput(this, 'RootUrl', { value: api.attrApiEndpoint });
         break;
-      default: {
+      default:
         const invalidApiType: never = apiType;
         throw new Error(`Invalid api type ${invalidApiType}`);
-      }
     }
   }
 

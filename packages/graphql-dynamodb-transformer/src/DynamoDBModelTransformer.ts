@@ -169,7 +169,7 @@ export class DynamoDBModelTransformer extends Transformer {
     // TODO: Handle types with more than a single "id" hash key
     const typeName = def.name.value;
     this.setSyncConfig(ctx, typeName);
-    const isSyncEnabled = !!this.opts.SyncConfig;
+    const isSyncEnabled = this.opts.SyncConfig ? true : false;
     const tableLogicalID = ModelResourceIDs.ModelTableResourceID(typeName);
     const iamRoleLogicalID = ModelResourceIDs.ModelTableIAMRoleID(typeName);
     const dataSourceRoleLogicalID = ModelResourceIDs.ModelTableDataSourceID(typeName);
@@ -280,7 +280,7 @@ export class DynamoDBModelTransformer extends Transformer {
     nonModelArray: ObjectTypeDefinitionNode[],
   ) => {
     const typeName = def.name.value;
-    const isSyncEnabled = !!this.opts.SyncConfig;
+    const isSyncEnabled = this.opts.SyncConfig ? true : false;
 
     const mutationFields = [];
     // Get any name overrides provided by the user. If an empty map it provided
@@ -423,7 +423,7 @@ export class DynamoDBModelTransformer extends Transformer {
     let shouldMakeList = true;
     let getFieldNameOverride = undefined;
     let listFieldNameOverride = undefined;
-    const isSyncEnabled = !!this.opts.SyncConfig;
+    const isSyncEnabled = this.opts.SyncConfig ? true : false;
 
     // Figure out which queries to make and if they have name overrides.
     // If queries is undefined (default), create all queries

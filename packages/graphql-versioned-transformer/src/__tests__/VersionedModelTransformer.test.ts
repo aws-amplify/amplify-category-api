@@ -26,7 +26,7 @@ const featureFlags = {
   getObject: jest.fn(),
 };
 
-test('VersionedModelTransformer validation happy case', () => {
+test('Test VersionedModelTransformer validation happy case', () => {
   const validSchema = `
     type Post @model @versioned {
         id: ID!
@@ -51,7 +51,7 @@ test('VersionedModelTransformer validation happy case', () => {
   // Use e2e tests to test resolver logic.
 });
 
-test('VersionedModelTransformer validation fails when provided version field of wrong type.', () => {
+test('Test VersionedModelTransformer validation fails when provided version field of wrong type.', () => {
   const validSchema = `
     type Post @model @versioned {
         id: ID!
@@ -72,7 +72,7 @@ test('VersionedModelTransformer validation fails when provided version field of 
   }
 });
 
-test('VersionedModelTransformer version field replaced by non-null if provided as nullable.', () => {
+test('Test VersionedModelTransformer version field replaced by non-null if provided as nullable.', () => {
   const validSchema = `
     type Post @model @versioned {
         id: ID!

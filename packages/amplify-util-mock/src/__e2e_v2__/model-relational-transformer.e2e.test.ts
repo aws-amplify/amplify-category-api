@@ -81,7 +81,7 @@ describe('@model with relational transformer', () => {
    * Test queries below
    */
 
-  test('queryPost query', async () => {
+  test('Test queryPost query', async () => {
     const createResponse = await GRAPHQL_CLIENT.query(
       `mutation {
           createPost(input: { title: "Test Query" }) {
@@ -131,7 +131,7 @@ describe('@model with relational transformer', () => {
     expect(items[0].id).toEqual(createCommentResponse.data.createComment.id);
   });
 
-  test('create comment without a post and then querying the comment.', async () => {
+  test('Test create comment without a post and then querying the comment.', async () => {
     const comment1 = 'a comment and a date! - 1';
 
     try {
@@ -172,7 +172,7 @@ describe('@model with relational transformer', () => {
     }
   });
 
-  test('default limit is 50', async () => {
+  test('Test default limit is 50', async () => {
     const postID = 'e2eConnectionPost';
     const postTitle = 'samplePost';
     const createPost = await GRAPHQL_CLIENT.query(

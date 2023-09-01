@@ -58,10 +58,10 @@ const mockContext: $TSContext = {
   },
 } as unknown as $TSContext;
 
-test('function with default auth config', async () => {
+test('test function with default auth config', async () => {
   expect(await getAuthConfig(mockContext, 'mockapiResource')).toMatchSnapshot();
 });
 
-test('function with default and additional auth config', async () => {
+test('test function with default and additional auth config', async () => {
   expect(await getAuthConfig(mockContext, 'mockapiResource')).toMatchSnapshot();
 });

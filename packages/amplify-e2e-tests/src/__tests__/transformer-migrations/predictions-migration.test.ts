@@ -7,12 +7,9 @@ import {
   createRandomName,
   addS3AndAuthWithAuthOnlyAccess,
   amplifyPushForce,
-  addApiWithoutSchema,
-  updateApiSchema,
-  getProjectMeta,
-  createNewProjectDir,
-  deleteProjectDir,
 } from 'amplify-category-api-e2e-core';
+import { addApiWithoutSchema, updateApiSchema, getProjectMeta } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
 

@@ -9,12 +9,7 @@ import {
   RDSLayerMapping,
   SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import type {
-  AssetProvider,
-  StackManagerProvider,
-  TransformParameterProvider,
-  TransformParameters,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import type { AssetProvider, StackManagerProvider, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { Aws, CfnOutput, Fn, Stack } from 'aws-cdk-lib';
 import {
@@ -93,7 +88,6 @@ export interface GraphQLTransformOptions {
 export type TransformOption = {
   scope: Construct;
   nestedStackProvider: NestedStackProvider;
-  parameterProvider?: TransformParameterProvider;
   assetProvider: AssetProvider;
   synthParameters: SynthParameters;
   schema: string;
@@ -190,21 +184,12 @@ export class GraphQLTransform {
    * on to the next transformer. At the end of the transformation a
    * cloudformation template is returned.
    */
-  public transform({
-    scope,
-    nestedStackProvider,
-    parameterProvider,
-    assetProvider,
-    synthParameters,
-    schema,
-    datasourceConfig,
-  }: TransformOption): void {
+  public transform({ scope, nestedStackProvider, assetProvider, synthParameters, schema, datasourceConfig }: TransformOption): void {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
     const context = new TransformerContext(
       scope,
       nestedStackProvider,
-      parameterProvider,
       assetProvider,
       synthParameters,
       parsedDocument,

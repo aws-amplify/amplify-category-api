@@ -71,7 +71,7 @@ export function getNpmPath() {
 }
 
 export function isCI(): boolean {
-  return !!(process.env.CI && process.env.CODEBUILD);
+  return process.env.CI && process.env.CODEBUILD ? true : false;
 }
 
 export function injectSessionToken(profileName: string) {
