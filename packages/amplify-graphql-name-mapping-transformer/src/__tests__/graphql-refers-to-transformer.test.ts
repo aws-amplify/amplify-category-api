@@ -58,6 +58,16 @@ describe('@refersTo directive', () => {
     }
   `;
 
+  const duplicateNameMappingModelSchema = /* GraphQL */ `
+    type ${modelName} @model @refersTo(name: "OriginalName") {
+      id: ID!
+    }
+
+    type DuplicateName @model @refersTo(name: "OriginalName") {
+      id: ID!
+    }
+  `;
+
   const getTransformerInputsFromSchema = (schema: string, modelName: string) => {
     const ast = parse(schema);
     const stubDefinition = ast.definitions.find(
@@ -85,7 +95,7 @@ describe('@refersTo directive', () => {
     stubDirective.arguments = [];
     expect(() =>
       refersToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
-    ).toThrowErrorMatchingInlineSnapshot(`"refersTo is not supported on type TestName. It can only be used on a @model type."`);
+    ).toThrowErrorMatchingInlineSnapshot(`"@refersTo is not supported on type TestName. It can only be used on a @model type."`);
   });
 
   it('can be applied only on RDS models', () => {
@@ -99,7 +109,7 @@ describe('@refersTo directive', () => {
     stubDirective.arguments = [];
     expect(() =>
       refersToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
-    ).toThrowErrorMatchingInlineSnapshot(`"refersTo is not supported on type DDBModel. It can only be used on a @model type."`);
+    ).toThrowErrorMatchingInlineSnapshot(`"@refersTo is not supported on type DDBModel. It can only be used on a @model type."`);
   });
 
   it('requires a name to be specified', () => {
@@ -129,7 +139,19 @@ describe('@refersTo directive', () => {
     expect(() =>
       refersToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Cannot apply refersTo with name \\"OriginalName\\" on type \\"TestName\\" because \\"OriginalName\\" model already exists in the schema."`,
+      `"Cannot apply @refersTo with name \\"OriginalName\\" on type \\"TestName\\" because \\"OriginalName\\" model already exists in the schema."`,
+    );
+  });
+
+  it('throws if a model name mapping is duplicate', () => {
+    const [stubDefinition, stubDirective, stubTransformerContext] = getTransformerInputsFromSchema(
+      duplicateNameMappingModelSchema,
+      modelName,
+    );
+    expect(() =>
+      refersToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Cannot apply @refersTo with name \\"OriginalName\\" on type \\"TestName\\" because \\"DuplicateName\\" model already has the same name mapping."`,
     );
   });
 

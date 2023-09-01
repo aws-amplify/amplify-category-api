@@ -17,7 +17,7 @@
   ],
   "private": true,
   "scripts": {
-    "e2e": "npm run setup-profile && jest --verbose --forceExit",
+    "e2e": "jest --verbose --forceExit",
     "build-tests": "tsc --build tsconfig.tests.json",
     "setup-profile": "ts-node ./src/configure_tests.ts",
     "clean-stale-test-buckets": "ts-node ./src/cleanup-stale-test-buckets.ts",

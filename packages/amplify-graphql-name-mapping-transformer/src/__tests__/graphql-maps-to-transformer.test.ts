@@ -120,7 +120,7 @@ describe('@mapsTo directive', () => {
     expect(() =>
       mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Cannot apply mapsTo with name \\"OriginalName\\" on type \\"TestName\\" because \\"OriginalName\\" model already exists in the schema."`,
+      `"Cannot apply @mapsTo with name \\"OriginalName\\" on type \\"TestName\\" because \\"OriginalName\\" model already exists in the schema."`,
     );
   });
 

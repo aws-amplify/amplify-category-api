@@ -36,7 +36,7 @@ export const shouldBeAppliedToModel = (definition: ObjectTypeDefinitionNode | Ob
   const typeName = definition.name.value;
   const hasModelDirective = !!definition.directives?.find((directive) => directive.name.value === 'model');
   if (!hasModelDirective) {
-    throw new InvalidDirectiveError(`${directiveName} is not supported on type ${typeName}. It can only be used on a @model type.`);
+    throw new InvalidDirectiveError(`@${directiveName} is not supported on type ${typeName}. It can only be used on a @model type.`);
   }
 };
 
@@ -61,7 +61,18 @@ export const getMappedName = (
   const schemaHasConflictingModel = !!inputDocument.definitions.find(hasModelWithNamePredicate(originalName));
   if (schemaHasConflictingModel) {
     throw new InvalidDirectiveError(
-      `Cannot apply ${directiveName} with name "${originalName}" on type "${modelName}" because "${originalName}" model already exists in the schema.`,
+      `Cannot apply @${directiveName} with name "${originalName}" on type "${modelName}" because "${originalName}" model already exists in the schema.`,
+    );
+  }
+
+  const modelsWithDuplicateName = inputDocument?.definitions?.filter((def) =>
+    isModelWithDuplicateMapping(def, modelName, originalName, directiveName),
+  );
+  if (modelsWithDuplicateName?.length > 0) {
+    throw new InvalidDirectiveError(
+      `Cannot apply @${directiveName} with name "${originalName}" on type "${modelName}" because "${
+        (modelsWithDuplicateName[0] as ObjectTypeDefinitionNode)?.name?.value
+      }" model already has the same name mapping.`,
     );
   }
 
@@ -71,3 +82,13 @@ export const getMappedName = (
 // returns a predicate for determining if a DefinitionNode is an model object with the given name
 const hasModelWithNamePredicate = (name: string) => (node: DefinitionNode) =>
   node.kind === Kind.OBJECT_TYPE_DEFINITION && !!node.directives?.find((dir) => dir.name.value === 'model') && node.name.value === name;
+
+// checks if a DefinitionNode is a model object with the given mapped name
+const isModelWithDuplicateMapping = (node: DefinitionNode, modelName: string, mappedName: string, directiveName: string) =>
+  node.kind === Kind.OBJECT_TYPE_DEFINITION &&
+  node?.name?.value !== modelName &&
+  !!node.directives?.find(
+    (dir) =>
+      dir.name.value === directiveName &&
+      dir.arguments?.find((arg) => arg.name.value === 'name' && arg.value.kind === Kind.STRING && arg.value.value === mappedName),
+  );

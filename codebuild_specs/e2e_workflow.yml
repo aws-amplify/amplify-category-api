@@ -146,35 +146,33 @@ batch:
           CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
-    - identifier: >-
-        rds_import_vpc_rds_model_v2_rds_relational_directives_rds_v2_generate_schema
+    - identifier: rds_refers_to_rds_relational_directives_rds_v2_generate_schema_api_1
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/rds-import-vpc.test.ts|src/__tests__/rds-model-v2.test.ts|src/__tests__/rds-relational-directives.test.ts|src/__tests__/rds-v2-generate-schema.test.ts
+            src/__tests__/rds-refers-to.test.ts|src/__tests__/rds-relational-directives.test.ts|src/__tests__/rds-v2-generate-schema.test.ts|src/__tests__/api_1.test.ts
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: api_1_resolvers_sync_query_datastore_api_6
+    - identifier: resolvers_sync_query_datastore_api_6_api_lambda_auth
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts|src/__tests__/api_6.test.ts
-          CLI_REGION: us-east-2
+            src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts|src/__tests__/api_6.test.ts|src/__tests__/graphql-v2/api_lambda_auth.test.ts
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
-    - identifier: api_lambda_auth_api_9
+    - identifier: api_9
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          TEST_SUITE: >-
-            src/__tests__/graphql-v2/api_lambda_auth.test.ts|src/__tests__/api_9.test.ts
-          CLI_REGION: eu-central-1
+          TEST_SUITE: src/__tests__/api_9.test.ts
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: function_migration
