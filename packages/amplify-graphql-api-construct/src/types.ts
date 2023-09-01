@@ -364,13 +364,19 @@ export interface IAmplifyGraphqlSchema {
   functionSlots(): FunctionSlot[];
 }
 
+export interface BackendOutputEntry {
+  readonly version: string;
+  readonly payload: Record<string, string>;
+}
+
 export interface IBackendOutputStorageStrategy {
   /**
    * Add an entry to backend output.
    * @param keyName the key
+   * @param strategy the backend output strategy information.
    */
   // eslint-disable-next-line @typescript-eslint/method-signature-style
-  addBackendOutputEntry(keyName: string): void;
+  addBackendOutputEntry(keyName: string, strategy: BackendOutputEntry): void;
 
   /**
    * Write all pending data to the destination

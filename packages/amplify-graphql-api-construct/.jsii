@@ -3488,14 +3488,6 @@
   },
   "schema": "jsii/0.10.0",
   "targets": {
-    "java": {
-      "maven": {
-        "artifactId": "graphql-api-construct",
-        "groupId": "aws.amplify",
-        "versionSuffix": ".PREVIEW"
-      },
-      "package": "aws.amplify.graphqlapiconstruct"
-    },
     "js": {
       "npm": "@aws-amplify/graphql-construct-alpha"
     }
@@ -3676,7 +3668,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 459
+        "line": 465
       },
       "name": "AmplifyGraphqlApiCfnResources",
       "properties": [
@@ -3689,7 +3681,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 508
+            "line": 514
           },
           "name": "additionalCfnResources",
           "type": {
@@ -3710,7 +3702,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 488
+            "line": 494
           },
           "name": "cfnDataSources",
           "type": {
@@ -3731,7 +3723,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 483
+            "line": 489
           },
           "name": "cfnFunctionConfigurations",
           "type": {
@@ -3752,7 +3744,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 503
+            "line": 509
           },
           "name": "cfnFunctions",
           "type": {
@@ -3773,7 +3765,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 463
+            "line": 469
           },
           "name": "cfnGraphqlApi",
           "type": {
@@ -3789,7 +3781,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 468
+            "line": 474
           },
           "name": "cfnGraphqlSchema",
           "type": {
@@ -3805,7 +3797,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 478
+            "line": 484
           },
           "name": "cfnResolvers",
           "type": {
@@ -3826,7 +3818,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 498
+            "line": 504
           },
           "name": "cfnRoles",
           "type": {
@@ -3847,7 +3839,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 493
+            "line": 499
           },
           "name": "cfnTables",
           "type": {
@@ -3868,7 +3860,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 473
+            "line": 479
           },
           "name": "cfnApiKey",
           "optional": true,
@@ -3891,7 +3883,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 386
+        "line": 392
       },
       "name": "AmplifyGraphqlApiProps",
       "properties": [
@@ -3905,7 +3897,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 402
+            "line": 408
           },
           "name": "authorizationConfig",
           "type": {
@@ -3921,7 +3913,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 390
+            "line": 396
           },
           "name": "schema",
           "type": {
@@ -3938,7 +3930,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 396
+            "line": 402
           },
           "name": "apiName",
           "optional": true,
@@ -3956,7 +3948,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 416
+            "line": 422
           },
           "name": "conflictResolution",
           "optional": true,
@@ -3976,7 +3968,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 410
+            "line": 416
           },
           "name": "functionNameMap",
           "optional": true,
@@ -3999,7 +3991,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 431
+            "line": 437
           },
           "name": "functionSlots",
           "optional": true,
@@ -4034,7 +4026,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 452
+            "line": 458
           },
           "name": "outputStorageStrategy",
           "optional": true,
@@ -4051,7 +4043,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 441
+            "line": 447
           },
           "name": "predictionsBucket",
           "optional": true,
@@ -4068,7 +4060,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 447
+            "line": 453
           },
           "name": "schemaTranslationBehavior",
           "optional": true,
@@ -4086,7 +4078,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 425
+            "line": 431
           },
           "name": "stackMappings",
           "optional": true,
@@ -4108,7 +4100,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 436
+            "line": 442
           },
           "name": "transformers",
           "optional": true,
@@ -4136,7 +4128,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 515
+        "line": 521
       },
       "name": "AmplifyGraphqlApiResources",
       "properties": [
@@ -4149,7 +4141,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 539
+            "line": 545
           },
           "name": "cfnResources",
           "type": {
@@ -4165,7 +4157,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 534
+            "line": 540
           },
           "name": "functions",
           "type": {
@@ -4186,7 +4178,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 519
+            "line": 525
           },
           "name": "graphqlApi",
           "type": {
@@ -4202,7 +4194,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 544
+            "line": 550
           },
           "name": "nestedStacks",
           "type": {
@@ -4223,7 +4215,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 529
+            "line": 535
           },
           "name": "roles",
           "type": {
@@ -4244,7 +4236,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 524
+            "line": 530
           },
           "name": "tables",
           "type": {
@@ -4469,6 +4461,58 @@
         }
       ],
       "symbolId": "src/types:AutomergeConflictResolutionStrategy"
+    },
+    "@aws-amplify/graphql-construct-alpha.BackendOutputEntry": {
+      "assembly": "@aws-amplify/graphql-construct-alpha",
+      "datatype": true,
+      "docs": {
+        "stability": "experimental"
+      },
+      "fqn": "@aws-amplify/graphql-construct-alpha.BackendOutputEntry",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "src/types.ts",
+        "line": 367
+      },
+      "name": "BackendOutputEntry",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "experimental"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 369
+          },
+          "name": "payload",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "experimental"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 368
+          },
+          "name": "version",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "src/types:BackendOutputEntry"
     },
     "@aws-amplify/graphql-construct-alpha.ConflictResolution": {
       "assembly": "@aws-amplify/graphql-construct-alpha",
@@ -4915,7 +4959,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 367
+        "line": 372
       },
       "methods": [
         {
@@ -4926,7 +4970,7 @@
           },
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 373
+            "line": 379
           },
           "name": "addBackendOutputEntry",
           "parameters": [
@@ -4937,6 +4981,15 @@
               "name": "keyName",
               "type": {
                 "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "the backend output strategy information."
+              },
+              "name": "strategy",
+              "type": {
+                "fqn": "@aws-amplify/graphql-construct-alpha.BackendOutputEntry"
               }
             }
           ]
@@ -4949,7 +5002,7 @@
           },
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 379
+            "line": 385
           },
           "name": "flush"
         }
@@ -5713,5 +5766,5 @@
     }
   },
   "version": "0.6.1",
-  "fingerprint": "U1Typ7T16k+iCpu049UmuRXwtG23QUs/zU7PRmbVxlE="
+  "fingerprint": "mCR/jCM+BcULJBPnFlwVTSasjQGiZti0/ISiC8t/NFA="
 }

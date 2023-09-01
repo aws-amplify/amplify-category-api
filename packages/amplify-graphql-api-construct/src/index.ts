@@ -26,8 +26,9 @@ export type {
   SchemaTranslationBehavior,
   IAmplifyGraphqlSchema,
   IBackendOutputStorageStrategy,
+  BackendOutputEntry,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';
 
 // remove these exports when provided by cli
-export { GraphqlOutput, BackendOutputEntry, versionedGraphqlOutputSchema } from './graphql-output';
+export { GraphqlOutput, versionedGraphqlOutputSchema } from './graphql-output';

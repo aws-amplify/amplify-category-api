@@ -153,10 +153,7 @@ export class AmplifyGraphqlApi extends Construct {
     }
 
     const strategy = outputStorageStrategy ? outputStorageStrategy : new StackMetadataBackendOutputStorageStrategy(stack);
-    if (StackMetadataBackendOutputStorageStrategy.isStackMetadataBackendOutputStorageStrategy(strategy)) {
-      strategy.setBackendOutputEntry(output);
-    }
-    strategy.addBackendOutputEntry(GraphqlOutputKey);
+    strategy.addBackendOutputEntry(GraphqlOutputKey, output);
 
     // only flush if using default outputStorageStrategy
     if (!outputStorageStrategy) {

@@ -14,7 +14,7 @@
     "build": "jsii",
     "watch": "jsii -w",
     "package": "jsii-pacmak",
-    "clean": "rimraf lib tsconfig.json tsconfig.tsbuildinfo node_modules",
+    "clean": "rimraf lib dist tsconfig.json tsconfig.tsbuildinfo node_modules",
     "test": "jest",
     "test-watch": "jest --watch",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
@@ -63,6 +63,9 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
+    "excludeTypescript": [
+      "src/__tests__/*"
+    ],
     "targets": {},
     "versionFormat": "full",
     "tsc": {
