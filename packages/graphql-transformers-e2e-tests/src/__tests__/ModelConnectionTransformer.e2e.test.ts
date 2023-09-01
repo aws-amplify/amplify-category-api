@@ -140,7 +140,7 @@ afterAll(async () => {
  * Test queries below
  */
 
-test('Test queryPost query', async () => {
+test('queryPost query', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Query" }) {
@@ -199,7 +199,7 @@ const whenmid = '2018-12-01T00:00:00.000Z';
 const when2 = '2019-10-01T00:00:01.000Z';
 const whenfuture = '2020-10-01T00:00:00.000Z';
 
-test('Test queryPost query with sortField', async () => {
+test('queryPost query with sortField', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "${title}" }) {
@@ -450,7 +450,7 @@ test('Test queryPost query with sortField', async () => {
   expect(itemsDescWithKeyConditionBetween[0].id).toEqual(createCommentResponse2.data.createSortedComment.id);
 });
 
-test('Test create comment without a post and then querying the comment.', async () => {
+test('create comment without a post and then querying the comment.', async () => {
   try {
     const createCommentResponse1 = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -491,7 +491,7 @@ test('Test create comment without a post and then querying the comment.', async 
   }
 });
 
-test('Test album self connection.', async () => {
+test('album self connection.', async () => {
   const createAlbum = await GRAPHQL_CLIENT.query(
     `mutation {
         createAlbum(input: { title: "Test Album" }) {
@@ -535,7 +535,7 @@ test('Test album self connection.', async () => {
   expect(queryAlbum.data.getAlbum.title).toEqual('Test Album');
 });
 
-test('Test default limit is 50', async () => {
+test('default limit is 50', async () => {
   // create Auth logic around this
   const postID = 'e2eConnectionPost';
   const postTitle = 'samplePost';

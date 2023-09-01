@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ModelTransformer:  id with non string type should require the field on create mutation 1`] = `
+exports[`ModelTransformer: id with non string type should require the field on create mutation 1`] = `
 "type Task {
   id: Int!
   title: String!
@@ -219,7 +219,7 @@ type Subscription {
 "
 `;
 
-exports[`ModelTransformer:  should filter known input types from create and update input fields 1`] = `
+exports[`ModelTransformer: should filter known input types from create and update input fields 1`] = `
 "type Test {
   id: ID!
   email: Email
@@ -504,7 +504,7 @@ input ModelSubscriptionEmailFilterInput {
 "
 `;
 
-exports[`ModelTransformer:  should generate enum input objects 1`] = `
+exports[`ModelTransformer: should generate enum input objects 1`] = `
 "type Post {
   id: ID!
   title: String!
@@ -1029,7 +1029,7 @@ input ModelSubscriptionCommentFilterInput {
 "
 `;
 
-exports[`ModelTransformer:  should generate sync resolver with ConflictHandlerType.Automerge 1`] = `
+exports[`ModelTransformer: should generate sync resolver with ConflictHandlerType.Automerge 1`] = `
 Object {
   "Mutation.createPost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
@@ -1616,7 +1616,7 @@ $util.toJson(null)
 }
 `;
 
-exports[`ModelTransformer:  should generate sync resolver with ConflictHandlerType.LAMBDA 1`] = `
+exports[`ModelTransformer: should generate sync resolver with ConflictHandlerType.LAMBDA 1`] = `
 Object {
   "Mutation.createPost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
@@ -2203,7 +2203,7 @@ $util.toJson(null)
 }
 `;
 
-exports[`ModelTransformer:  should generate sync resolver with ConflictHandlerType.Optimistic 1`] = `
+exports[`ModelTransformer: should generate sync resolver with ConflictHandlerType.Optimistic 1`] = `
 Object {
   "Mutation.createPost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
@@ -2790,7 +2790,7 @@ $util.toJson(null)
 }
 `;
 
-exports[`ModelTransformer:  should have timestamps as nullable fields when the type makes it non-nullable 1`] = `
+exports[`ModelTransformer: should have timestamps as nullable fields when the type makes it non-nullable 1`] = `
 "type Post {
   id: ID!
   str: String
@@ -3029,7 +3029,7 @@ type Subscription {
 "
 `;
 
-exports[`ModelTransformer:  should have timestamps as nullable fields when the type makes it non-nullable 2`] = `
+exports[`ModelTransformer: should have timestamps as nullable fields when the type makes it non-nullable 2`] = `
 "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -3098,7 +3098,7 @@ $util.toJson($PutObject)
 ## [End] Create Request template. **"
 `;
 
-exports[`ModelTransformer:  should have timestamps as nullable fields when the type makes it non-nullable 3`] = `
+exports[`ModelTransformer: should have timestamps as nullable fields when the type makes it non-nullable 3`] = `
 "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -3232,7 +3232,7 @@ $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **"
 `;
 
-exports[`ModelTransformer:  should not add default primary key when ID is defined 1`] = `
+exports[`ModelTransformer: should not add default primary key when ID is defined 1`] = `
 "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -3301,7 +3301,7 @@ $util.toJson($PutObject)
 ## [End] Create Request template. **"
 `;
 
-exports[`ModelTransformer:  should not generate superfluous input and filter types 1`] = `
+exports[`ModelTransformer: should not generate superfluous input and filter types 1`] = `
 "type Entity {
   id: ID!
   str: String
@@ -3465,7 +3465,7 @@ type Query {
 "
 `;
 
-exports[`ModelTransformer:  should not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime 1`] = `
+exports[`ModelTransformer: should not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime 1`] = `
 "type Post {
   id: ID!
   str: String
@@ -3704,7 +3704,7 @@ type Subscription {
 "
 `;
 
-exports[`ModelTransformer:  should not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime 2`] = `
+exports[`ModelTransformer: should not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime 2`] = `
 "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -3773,7 +3773,7 @@ $util.toJson($PutObject)
 ## [End] Create Request template. **"
 `;
 
-exports[`ModelTransformer:  should not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime 3`] = `
+exports[`ModelTransformer: should not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime 3`] = `
 "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -3907,7 +3907,7 @@ $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **"
 `;
 
-exports[`ModelTransformer:  should not to include createdAt and updatedAt field when timestamps is set to null 1`] = `
+exports[`ModelTransformer: should not to include createdAt and updatedAt field when timestamps is set to null 1`] = `
 "type Post {
   id: ID!
   str: String
@@ -4134,7 +4134,7 @@ type Subscription {
 "
 `;
 
-exports[`ModelTransformer:  should not to include createdAt and updatedAt field when timestamps is set to null 2`] = `
+exports[`ModelTransformer: should not to include createdAt and updatedAt field when timestamps is set to null 2`] = `
 "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -4203,7 +4203,7 @@ $util.toJson($PutObject)
 ## [End] Create Request template. **"
 `;
 
-exports[`ModelTransformer:  should not to include createdAt and updatedAt field when timestamps is set to null 3`] = `
+exports[`ModelTransformer: should not to include createdAt and updatedAt field when timestamps is set to null 3`] = `
 "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -4337,7 +4337,7 @@ $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **"
 `;
 
-exports[`ModelTransformer:  should successfully transform rds schema with array and object fields 1`] = `
+exports[`ModelTransformer: should successfully transform rds schema with array and object fields 1`] = `
 "type Note {
   id: ID!
   content: String!
@@ -4572,7 +4572,7 @@ type Subscription {
 "
 `;
 
-exports[`ModelTransformer:  should successfully transform rds schema with array and object fields 2`] = `
+exports[`ModelTransformer: should successfully transform rds schema with array and object fields 2`] = `
 Object {
   "Mutation.createNote.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
@@ -4806,7 +4806,7 @@ $util.toJson(null)
 }
 `;
 
-exports[`ModelTransformer:  should successfully transform simple Embeddable type (non-model) schema 1`] = `
+exports[`ModelTransformer: should successfully transform simple Embeddable type (non-model) schema 1`] = `
 "type NonModelType {
   id: ID!
   title: String!
@@ -4964,7 +4964,7 @@ enum ModelSortDirection {
 "
 `;
 
-exports[`ModelTransformer:  should successfully transform simple non-capitalized Model/Embeddable type (non-model) name schema 1`] = `
+exports[`ModelTransformer: should successfully transform simple non-capitalized Model/Embeddable type (non-model) name schema 1`] = `
 "type modelType {
   id: ID!
   title: String!
@@ -5206,7 +5206,7 @@ type Subscription {
 "
 `;
 
-exports[`ModelTransformer:  should support timestamp parameters when generating resolvers and output schema 1`] = `
+exports[`ModelTransformer: should support timestamp parameters when generating resolvers and output schema 1`] = `
 "type Post {
   id: ID!
   str: String
@@ -5435,7 +5435,7 @@ type Subscription {
 "
 `;
 
-exports[`ModelTransformer:  should support timestamp parameters when generating resolvers and output schema 2`] = `
+exports[`ModelTransformer: should support timestamp parameters when generating resolvers and output schema 2`] = `
 "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -5504,7 +5504,7 @@ $util.toJson($PutObject)
 ## [End] Create Request template. **"
 `;
 
-exports[`ModelTransformer:  should support timestamp parameters when generating resolvers and output schema 3`] = `
+exports[`ModelTransformer: should support timestamp parameters when generating resolvers and output schema 3`] = `
 "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -5638,7 +5638,7 @@ $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **"
 `;
 
-exports[`ModelTransformer:  the datastore table should be configured 1`] = `
+exports[`ModelTransformer: the datastore table should be configured 1`] = `
 "## [Start] Sync Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $queryFilterContainsAuthField = false )
@@ -5722,7 +5722,7 @@ null
 ## [End] Sync Request template. **"
 `;
 
-exports[`ModelTransformer:  the datastore table should be configured 2`] = `
+exports[`ModelTransformer: the datastore table should be configured 2`] = `
 "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type, $ctx.result)

@@ -41,6 +41,8 @@ describe('RDS Generate Schema tests', () => {
     const response = await axios(url);
     publicIpCidr = `${response.data.trim()}/32`;
     await setupDatabase();
+
+    projRoot = await createNewProjectDir('rdsimportapi');
     await initJSProjectWithProfile(projRoot, {
       disableAmplifyAppCreation: false,
     });
@@ -60,19 +62,19 @@ describe('RDS Generate Schema tests', () => {
 
   afterAll(async () => {
     await cleanupDatabase();
-  });
 
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('rdsimportapi');
-  });
-
-  afterEach(async () => {
     const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
     if (existsSync(metaFilePath)) {
       await deleteProject(projRoot);
     }
     deleteProjectDir(projRoot);
   });
+
+  // beforeEach(async () => {
+  // });
+
+  // afterEach(async () => {
+  // });
 
   const setupDatabase = async () => {
     // This test performs the below

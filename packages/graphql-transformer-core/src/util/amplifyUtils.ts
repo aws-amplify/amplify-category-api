@@ -358,7 +358,7 @@ export async function uploadDeployment(opts: UploadOptions) {
 
   const { directory, upload } = opts;
 
-  var fileNames = glob.sync('**/*', {
+  let fileNames = glob.sync('**/*', {
     cwd: directory,
     nodir: true,
   });
@@ -600,7 +600,7 @@ async function updateToIntermediateProject(projectDirectory: string, project: Am
         }
         break;
       }
-      case 'AWS::AppSync::GraphQLSchema':
+      case 'AWS::AppSync::GraphQLSchema': {
         const alteredResource = { ...resource };
         alteredResource.Properties.DefinitionS3Location = {
           'Fn::Sub': [
@@ -617,6 +617,7 @@ async function updateToIntermediateProject(projectDirectory: string, project: Am
         };
         filteredResources[key] = alteredResource;
         break;
+      }
       default:
         break; // Everything else will live in a nested stack.
     }

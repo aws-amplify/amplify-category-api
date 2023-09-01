@@ -58,7 +58,7 @@ function getTableContext(tableName: string): TableContext {
   );
 }
 
-test('Test schema generation end to end', async () => {
+test('schema generation end to end', async () => {
   const MockRelationalDBReader = jest.fn<IRelationalDBReader>(() => ({
     listTables: jest.fn(() => {
       return [mockTableAName, mockTableBName, mockTableCName, mockTableDName];
@@ -111,7 +111,7 @@ test('Test schema generation end to end', async () => {
   console.log(schemaString);
 });
 
-test('Test list tables fails', async () => {
+test('list tables fails', async () => {
   const MockRelationalDBReader = jest.fn<IRelationalDBReader>(() => ({
     listTables: jest.fn(() => {
       throw new Error('Mocked failure on list tables.');
@@ -137,7 +137,7 @@ test('Test list tables fails', async () => {
   expect(mockReader.describeTable).not.toHaveBeenCalled();
 });
 
-test('Test describe table fails', async () => {
+test('describe table fails', async () => {
   const MockRelationalDBReader = jest.fn<IRelationalDBReader>(() => ({
     listTables: jest.fn(() => {
       return [mockTableAName, mockTableBName, mockTableCName, mockTableDName];
@@ -164,7 +164,7 @@ test('Test describe table fails', async () => {
   expect(mockReader.describeTable).toHaveBeenCalledWith(mockTableAName);
 });
 
-test('Test connection type shape', () => {
+test('connection type shape', () => {
   const testType = 'type name';
   const MockRelationalDBReader = jest.fn<IRelationalDBReader>(() => ({}));
   const mockReader = new MockRelationalDBReader();
@@ -174,7 +174,7 @@ test('Test connection type shape', () => {
   expect(connectionType.name.value).toEqual(`${testType}Connection`);
 });
 
-test('Test schema type node creation', () => {
+test('schema type node creation', () => {
   const MockRelationalDBReader = jest.fn<IRelationalDBReader>(() => ({}));
   const mockReader = new MockRelationalDBReader();
   const dummyTransformer = new RelationalDBSchemaTransformer(mockReader, testDBName);

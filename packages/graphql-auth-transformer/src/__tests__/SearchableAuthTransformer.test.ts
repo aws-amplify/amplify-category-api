@@ -14,7 +14,7 @@ const featureFlags = {
   getObject: jest.fn(),
 };
 
-test('test auth logic is enabled on owner/static rules in resposne es resolver', () => {
+test('auth logic is enabled on owner/static rules in resposne es resolver', () => {
   const validSchema = `
         type Comment @model
             @searchable
@@ -55,7 +55,7 @@ test('test auth logic is enabled on owner/static rules in resposne es resolver',
   );
 });
 
-test('test auth logic is enabled for iam/apiKey auth rules in response es resolver', () => {
+test('auth logic is enabled for iam/apiKey auth rules in response es resolver', () => {
   const validSchema = `
         type Post @model
             @searchable

@@ -1,6 +1,5 @@
-import { $TSContext, pathManager } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, pathManager, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
 import { constructTransformerChain } from '@aws-amplify/graphql-transformer';
 import { getUserOverridenSlots, transformGraphQLSchemaV2 } from '../../graphql-transformer/transform-graphql-schema-v2';
 import { generateTransformerOptions } from '../../graphql-transformer/transformer-options-v2';

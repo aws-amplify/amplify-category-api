@@ -1,11 +1,23 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
-import { App } from 'aws-cdk-lib';
-import { BackendStack } from './stacks/backend-stack';
+import { App, Stack, Duration } from 'aws-cdk-lib';
+import { AmplifyGraphqlApi } from '@aws-amplify/graphql-construct-alpha';
 
 const packageJson = require('../package.json');
 
 const app = new App();
-const env = { region: process.env.CLI_REGION || 'us-west-2' };
+const stack = new Stack(app, packageJson.name.replace(/_/g, '-'), {
+  env: { region: process.env.CLI_REGION || 'us-west-2' },
+});
 
-new BackendStack(app, packageJson.name.replace(/_/g, '-'), { env });
+new AmplifyGraphqlApi(stack, 'GraphqlApi', {
+  apiName: 'MyGraphQLApi',
+  schema: /* GraphQL */ `
+    type Todo @model @auth(rules: [{ allow: public }]) {
+      description: String!
+    }
+  `,
+  authorizationConfig: {
+    apiKeyConfig: { expires: Duration.days(7) },
+  },
+});

@@ -296,7 +296,7 @@ export class ObjectDefinitionWrapper {
 
   hasField = (name: string): boolean => {
     const field = this.fields.find((f) => f.name === name);
-    return field ? true : false;
+    return !!field;
   };
 
   getField = (name: string): FieldWrapper => {
@@ -359,7 +359,7 @@ export class InputObjectDefinitionWrapper {
 
   hasField = (name: string): boolean => {
     const field = this.fields.find((f) => f.name === name);
-    return field ? true : false;
+    return !!field;
   };
 
   getField = (name: string): InputFieldWrapper => {
