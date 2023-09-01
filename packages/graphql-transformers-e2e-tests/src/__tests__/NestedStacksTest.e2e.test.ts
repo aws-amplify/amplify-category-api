@@ -23,7 +23,7 @@ const featureFlags = {
   getNumber: jest.fn(),
   getObject: jest.fn(),
 };
-test('custom root types with additional fields.', () => {
+test('Test custom root types with additional fields.', () => {
   const validSchema = `
     type Query {
         additionalQueryField: String
@@ -93,7 +93,7 @@ function verifyInputCount(doc: DocumentNode, type: string, count: number): boole
 }
 
 function cleanUpFiles(directory: string) {
-  let files = fs.readdirSync(directory);
+  var files = fs.readdirSync(directory);
   for (const file of files) {
     const dir = path.join(directory, file);
     if (!fs.lstatSync(dir).isDirectory()) {

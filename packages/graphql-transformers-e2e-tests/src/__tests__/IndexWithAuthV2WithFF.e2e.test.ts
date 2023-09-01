@@ -172,34 +172,34 @@ afterAll(async () => {
  * Test queries below
  */
 
-test('createOrder mutation as admin', async () => {
+test('Test createOrder mutation as admin', async () => {
   const response = await createOrder(GRAPHQL_CLIENT_1, USERNAME2, 'order1');
   expect(response.data.createOrder.customerEmail).toBeDefined();
   expect(response.data.createOrder.orderId).toEqual('order1');
   expect(response.data.createOrder.createdAt).toBeDefined();
 });
 
-test('createOrder mutation as owner', async () => {
+test('Test createOrder mutation as owner', async () => {
   const response = await createOrder(GRAPHQL_CLIENT_2, USERNAME2, 'order2');
   expect(response.data.createOrder.customerEmail).toBeDefined();
   expect(response.data.createOrder.orderId).toEqual('order2');
   expect(response.data.createOrder.createdAt).toBeDefined();
 });
 
-test('createOrder mutation as owner', async () => {
+test('Test createOrder mutation as owner', async () => {
   const response = await createOrder(GRAPHQL_CLIENT_3, USERNAME2, 'order3');
   expect(response.data.createOrder).toBeNull();
   expect(response.errors).toHaveLength(1);
 });
 
-test('list orders as owner', async () => {
+test('Test list orders as owner', async () => {
   await createOrder(GRAPHQL_CLIENT_3, USERNAME3, 'owned1');
   await createOrder(GRAPHQL_CLIENT_3, USERNAME3, 'owned2');
   const listResponse = await listOrders(GRAPHQL_CLIENT_3, USERNAME3, { beginsWith: 'owned' });
   expect(listResponse.data.listOrders.items).toHaveLength(2);
 });
 
-test('list orders as non owner', async () => {
+test('Test list orders as non owner', async () => {
   await createOrder(GRAPHQL_CLIENT_3, USERNAME3, 'unowned1');
   await createOrder(GRAPHQL_CLIENT_3, USERNAME3, 'unowned2');
   const listResponse = await listOrders(GRAPHQL_CLIENT_2, USERNAME3, { beginsWith: 'unowned' });
@@ -207,26 +207,26 @@ test('list orders as non owner', async () => {
   expect(listResponse.errors).toHaveLength(1);
 });
 
-test('get orders as owner', async () => {
+test('Test get orders as owner', async () => {
   await createOrder(GRAPHQL_CLIENT_2, USERNAME2, 'myobj');
   const getResponse = await getOrder(GRAPHQL_CLIENT_2, USERNAME2, 'myobj');
   expect(getResponse.data.getOrder.orderId).toEqual('myobj');
 });
 
-test('get orders as non-owner', async () => {
+test('Test get orders as non-owner', async () => {
   await createOrder(GRAPHQL_CLIENT_2, USERNAME2, 'notmyobj');
   const getResponse = await getOrder(GRAPHQL_CLIENT_3, USERNAME2, 'notmyobj');
   expect(getResponse.data.getOrder).toBeNull();
   expect(getResponse.errors).toHaveLength(1);
 });
 
-test('query orders as owner', async () => {
+test('Test query orders as owner', async () => {
   await createOrder(GRAPHQL_CLIENT_3, USERNAME3, 'ownedby3a');
   const listResponse = await ordersByOrderId(GRAPHQL_CLIENT_3, 'ownedby3a');
   expect(listResponse.data.ordersByOrderId.items).toHaveLength(1);
 });
 
-test('query orders as non owner', async () => {
+test('Test query orders as non owner', async () => {
   await createOrder(GRAPHQL_CLIENT_3, USERNAME3, 'notownedby2a');
   const listResponse = await ordersByOrderId(GRAPHQL_CLIENT_2, 'notownedby2a');
   expect(listResponse.data.ordersByOrderId.items).toHaveLength(0);

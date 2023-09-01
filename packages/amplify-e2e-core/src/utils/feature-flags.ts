@@ -1,5 +1,6 @@
 import _ from 'lodash';
-import { JSONUtilities, pathManager, FeatureFlagsEntry } from '@aws-amplify/amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { pathManager, FeatureFlagsEntry } from '@aws-amplify/amplify-cli-core';
 
 type FeatureFlagData = { features: FeatureFlagsEntry };
 const getFeatureFlagFilePath = (projectRoot: string) => {

@@ -19,7 +19,8 @@ import {
   HttpMappingTemplate,
 } from 'graphql-mapping-template';
 import { IAM, Fn, AppSync, Lambda } from 'cloudform-types';
-import DataSource, { HttpConfig, LambdaConfig } from 'cloudform-types/types/appSync/dataSource';
+import { HttpConfig, LambdaConfig } from 'cloudform-types/types/appSync/dataSource';
+import DataSource from 'cloudform-types/types/appSync/dataSource';
 import { Policy } from 'cloudform-types/types/iam/group';
 import { iamActions } from './predictions_utils';
 

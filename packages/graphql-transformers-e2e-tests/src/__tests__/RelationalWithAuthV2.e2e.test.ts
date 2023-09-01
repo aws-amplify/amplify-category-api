@@ -229,7 +229,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('creating a post and immediately view it via the User.posts connection.', async () => {
+test('Test creating a post and immediately view it via the User.posts connection.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createUser(input: { id: "user1@test.com" }) {
@@ -320,7 +320,7 @@ test('Testing reading an owner protected field as a non owner', async () => {
   expect(response3.data.getFieldProtected.ownerOnly).toEqual('owner-protected');
 });
 
-test('that @connection resolvers respect @model read operations.', async () => {
+test('Test that @connection resolvers respect @model read operations.', async () => {
   const response1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createOpenTopLevel(input: { id: "1", owner: "${USERNAME1}", name: "open" }) {
@@ -388,7 +388,7 @@ test('that @connection resolvers respect @model read operations.', async () => {
 });
 
 // Per field auth in mutations
-test('that owners cannot set the field of a FieldProtected object unless authorized.', async () => {
+test('Test that owners cannot set the field of a FieldProtected object unless authorized.', async () => {
   const response1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createFieldProtected(input: { id: "2", owner: "${USERNAME1}", ownerOnly: "owner-protected" }) {
@@ -436,7 +436,7 @@ test('that owners cannot set the field of a FieldProtected object unless authori
   expect(response3.errors).toHaveLength(1);
 });
 
-test('that owners cannot update the field of a FieldProtected object unless authorized.', async () => {
+test('Test that owners cannot update the field of a FieldProtected object unless authorized.', async () => {
   const response1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createFieldProtected(input: { owner: "${USERNAME1}", ownerOnly: "owner-protected" }) {

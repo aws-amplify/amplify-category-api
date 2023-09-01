@@ -15,7 +15,7 @@ const featureFlags = {
   getNumber: jest.fn(),
   getObject: jest.fn(),
 };
-test('that subscriptions are only generated if the respective mutation operation exists', () => {
+test('Test that subscriptions are only generated if the respective mutation operation exists', () => {
   const validSchema = `
       type Salary
         @model
@@ -61,7 +61,7 @@ test('that subscriptions are only generated if the respective mutation operation
   expect(out.resolvers['Mutation.deleteSalary.res.vtl']).toMatchSnapshot();
 });
 
-test('per-field @auth on a @connection field', () => {
+test('Test per-field @auth on a @connection field', () => {
   const validSchema = `
     type Post
       @model
@@ -105,15 +105,19 @@ test('per-field @auth on a @connection field', () => {
     ],
   });
 
-  const out = transformer.transform(validSchema);
-  expect(out).toBeDefined();
+  try {
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
 
-  const resolvers = out.resolvers;
-  expect(resolvers['Tag.post.res.vtl']).toMatchSnapshot();
-  expect(resolvers['Tag.post.res.vtl']).toContain('$util.toJson($ctx.result)');
+    const resolvers = out.resolvers;
+    expect(resolvers['Tag.post.res.vtl']).toMatchSnapshot();
+    expect(resolvers['Tag.post.res.vtl']).toContain('$util.toJson($ctx.result)');
+  } catch (err) {
+    throw err;
+  }
 });
 
-test('per-field @auth without model', () => {
+test('Test per-field @auth without model', () => {
   const validSchema = `
     type Query {
       listContext: String @auth(rules: [{ allow: groups, groups: ["Allowed"] }, { allow: private, provider: iam }])

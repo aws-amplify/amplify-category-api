@@ -11,13 +11,9 @@ import {
   makeInputValueDefinition,
   STANDARD_SCALARS,
   makeNonNullType,
-  ResolverResourceIDs,
-  SearchableResourceIDs,
-  ModelResourceIDs,
-  getBaseType,
-  ResourceConstants,
 } from 'graphql-transformer-common';
 import { Expression, str } from 'graphql-mapping-template';
+import { ResolverResourceIDs, SearchableResourceIDs, ModelResourceIDs, getBaseType, ResourceConstants } from 'graphql-transformer-common';
 import {
   makeSearchableScalarInputObject,
   makeSearchableXFilterInputObject,

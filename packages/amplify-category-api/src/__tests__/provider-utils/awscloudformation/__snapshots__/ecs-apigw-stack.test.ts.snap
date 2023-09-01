@@ -1256,14 +1256,13 @@ Object {
       ],
       "Properties": Object {
         "Code": Object {
-          "ZipFile": "const { CloudFormation } = require('@aws-sdk/client-cloudformation');
-const { CodePipeline } = require('@aws-sdk/client-codepipeline');
+          "ZipFile": "const AWS = require('aws-sdk');
 
 const stageName = 'Source';
 const actionName = 'Source';
 
-const codePipeline = new CodePipeline();
-const cloudFormation = new CloudFormation();
+const codePipeline = new AWS.CodePipeline();
+const cloudFormation = new AWS.CloudFormation();
 
 exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
   const { pipelineName, artifactBucketName, artifactKey, deploymentMechanism } = ResourceProperties;
@@ -1275,7 +1274,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
       return { IsComplete: true };
     case 'Update':
       const [, StackName] = StackId.split('/');
-      const { Stacks } = await cloudFormation.describeStacks({ StackName });
+      const { Stacks } = await cloudFormation.describeStacks({ StackName }).promise();
       const [{ StackStatus }] = Stacks;
 
       if (StackStatus.includes('ROLLBACK')) {
@@ -1286,7 +1285,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
   let stages;
 
   try {
-    const { pipeline } = await codePipeline.getPipeline({ name: pipelineName });
+    const { pipeline } = await codePipeline.getPipeline({ name: pipelineName }).promise();
 
     ({ stages } = pipeline);
   } catch (error) {
@@ -1338,7 +1337,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
   let execution;
 
   try {
-    const { pipelineExecutionSummaries } = await codePipeline.listPipelineExecutions({ pipelineName });
+    const { pipelineExecutionSummaries } = await codePipeline.listPipelineExecutions({ pipelineName }).promise();
 
     [execution] = pipelineExecutionSummaries;
   } catch (error) {
@@ -1374,7 +1373,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs18.x",
+        "Runtime": "nodejs16.x",
         "Timeout": 15,
       },
       "Type": "AWS::Lambda::Function",
@@ -1493,7 +1492,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs18.x",
+        "Runtime": "nodejs16.x",
         "Timeout": 15,
       },
       "Type": "AWS::Lambda::Function",
@@ -1567,7 +1566,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs16.x",
+        "Runtime": "nodejs14.x",
         "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
@@ -1712,7 +1711,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs16.x",
+        "Runtime": "nodejs14.x",
         "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
@@ -1861,7 +1860,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs16.x",
+        "Runtime": "nodejs14.x",
         "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
@@ -2199,24 +2198,25 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
       ],
       "Properties": Object {
         "Code": Object {
-          "ZipFile": "const { CodePipeline } = require('@aws-sdk/client-codepipeline');
-const { ECS } = require('@aws-sdk/client-ecs');
+          "ZipFile": "const AWS = require('aws-sdk');
 
-const codepipeline = new CodePipeline();
-const ecs = new ECS();
+const codepipeline = new AWS.CodePipeline();
+const ecs = new AWS.ECS();
 
 const { DESIRED_COUNT: desiredCountStr, CLUSTER_NAME: cluster, SERVICE_NAME: service } = process.env;
 
 const desiredCount = parseInt(desiredCountStr, 10);
 
 exports.handler = async function({ 'CodePipeline.job': { id: jobId } }) {
-  await ecs.updateService({
-    service,
-    cluster,
-    desiredCount,
-  });
+  await ecs
+    .updateService({
+      service,
+      cluster,
+      desiredCount,
+    })
+    .promise();
 
-  return await codepipeline.putJobSuccessResult({ jobId });
+  return await codepipeline.putJobSuccessResult({ jobId }).promise();
 };
 ",
         },
@@ -2236,7 +2236,7 @@ exports.handler = async function({ 'CodePipeline.job': { id: jobId } }) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs18.x",
+        "Runtime": "nodejs16.x",
         "Timeout": 15,
       },
       "Type": "AWS::Lambda::Function",

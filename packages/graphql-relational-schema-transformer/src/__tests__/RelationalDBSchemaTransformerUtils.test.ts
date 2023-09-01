@@ -17,7 +17,7 @@ import {
   getSingletonListTypeNode,
 } from '../RelationalDBSchemaTransformerUtils';
 
-test('operation type node creation', () => {
+test('Test operation type node creation', () => {
   const operationType = 'query';
   const namedNode = getNamedType('Query');
   const operationTypeNode = getOperationTypeDefinition(operationType, namedNode);
@@ -26,21 +26,21 @@ test('operation type node creation', () => {
   expect(operationTypeNode.type).toEqual(namedNode);
 });
 
-test('non null type node creation', () => {
+test('Test non null type node creation', () => {
   const namedTypeNode = getNamedType('test name');
   const nonNullNamedTypeNode = getNonNullType(namedTypeNode);
   expect(nonNullNamedTypeNode.kind).toEqual(Kind.NON_NULL_TYPE);
   expect(nonNullNamedTypeNode.type).toEqual(namedTypeNode);
 });
 
-test('named type node creation', () => {
+test('Test named type node creation', () => {
   const name = 'test name';
   const namedTypeNode = getNamedType(name);
   expect(namedTypeNode.kind).toEqual(Kind.NAMED_TYPE);
   expect(namedTypeNode.name.value).toEqual(name);
 });
 
-test('input value definition node creation', () => {
+test('Test input value definition node creation', () => {
   const name = 'input name';
   const nameNode = getNamedType('type name');
   const inputDefinitionNode = getInputValueDefinition(nameNode, name);
@@ -50,7 +50,7 @@ test('input value definition node creation', () => {
   expect(inputDefinitionNode.name.value).toEqual(name);
 });
 
-test('operation field definition node creation', () => {
+test('Test operation field definition node creation', () => {
   const name = 'field name';
   const args = [getInputValueDefinition(null, 'test name')];
   const namedNode = getNamedType('test name');
@@ -61,7 +61,7 @@ test('operation field definition node creation', () => {
   expect(operationFieldDefinitionNode.directives).toEqual([]);
 });
 
-test('field definition node creation', () => {
+test('Test field definition node creation', () => {
   const fieldName = 'field name';
   const namedNode = getNamedType('type name');
   const fieldDefinitionNode = getFieldDefinition(fieldName, namedNode);
@@ -71,7 +71,7 @@ test('field definition node creation', () => {
   expect(fieldDefinitionNode.name.value).toEqual(fieldName);
 });
 
-test('type definition node creation', () => {
+test('Test type definition node creation', () => {
   const fieldList = [getFieldDefinition('field name', null)];
   const typeName = 'type name';
   const typeDefinitionNode = getTypeDefinition(fieldList, typeName);
@@ -82,28 +82,28 @@ test('type definition node creation', () => {
   expect(typeDefinitionNode.fields).toEqual(fieldList);
 });
 
-test('name node creaton', () => {
+test('Test name node creaton', () => {
   const name = 'name string';
   const nameNode = getNameNode(name);
   expect(nameNode.kind).toEqual(Kind.NAME);
   expect(nameNode.value).toEqual(name);
 });
 
-test('list value node creation', () => {
+test('Test list value node creation', () => {
   const valueList = [getStringValueNode('string a'), getStringValueNode('string b')];
   const listValueNode = getListValueNode(valueList);
   expect(listValueNode.kind).toEqual(Kind.LIST);
   expect(listValueNode.values).toEqual(valueList);
 });
 
-test('singleton list type node creation', () => {
+test('Test singleton list type node creation', () => {
   const value = 'singleton';
   const listTypeNode = getSingletonListTypeNode(value);
   expect(listTypeNode.kind).toEqual(Kind.LIST_TYPE);
   expect(listTypeNode.type).toEqual(getNamedType('singleton'));
 });
 
-test('object type node creation', () => {
+test('Test object type node creation', () => {
   const name = 'name';
   const inputNode = getInputTypeDefinition([], name);
   expect(inputNode.kind).toEqual(Kind.INPUT_OBJECT_TYPE_DEFINITION);
@@ -111,21 +111,21 @@ test('object type node creation', () => {
   expect(inputNode.name.value).toEqual(name);
 });
 
-test('string value node creation', () => {
+test('Test string value node creation', () => {
   const stringValue = 'string value';
   const stringValueNode = getStringValueNode(stringValue);
   expect(stringValueNode.kind).toEqual(Kind.STRING);
   expect(stringValueNode.value).toEqual(stringValue);
 });
 
-test('directive node creation', () => {
+test('Test directive node creation', () => {
   const directiveNode = getDirectiveNode('directive name');
   expect(directiveNode.kind).toEqual(Kind.DIRECTIVE);
   expect(directiveNode.name).toBeDefined();
   expect(directiveNode.arguments.length).toEqual(1);
 });
 
-test('argument node creation', () => {
+test('Test argument node creation', () => {
   const argumentNode = getArgumentNode('argument name');
   expect(argumentNode.kind).toEqual(Kind.ARGUMENT);
   expect(argumentNode.name).toBeDefined();
@@ -133,31 +133,31 @@ test('argument node creation', () => {
   expect(argumentNode.value.kind).toEqual(Kind.LIST);
 });
 
-test('type conversion to AWSDateTime', () => {
+test('Test type conversion to AWSDateTime', () => {
   expect(getGraphQLTypeFromMySQLType('datetime')).toEqual('AWSDateTime');
 });
 
-test('type conversion to AWSDate', () => {
+test('Test type conversion to AWSDate', () => {
   expect(getGraphQLTypeFromMySQLType('date')).toEqual('AWSDate');
 });
 
-test('type conversion to AWSTime', () => {
+test('Test type conversion to AWSTime', () => {
   expect(getGraphQLTypeFromMySQLType('time')).toEqual('AWSTime');
 });
 
-test('type conversion to AWSTimestamp', () => {
+test('Test type conversion to AWSTimestamp', () => {
   expect(getGraphQLTypeFromMySQLType('timestamp')).toEqual('AWSTimestamp');
 });
 
-test('type conversion to AWSJSON', () => {
+test('Test type conversion to AWSJSON', () => {
   expect(getGraphQLTypeFromMySQLType('jSoN')).toEqual('AWSJSON');
 });
 
-test('type conversion to Boolean', () => {
+test('Test type conversion to Boolean', () => {
   expect(getGraphQLTypeFromMySQLType('BOOl')).toEqual('Boolean');
 });
 
-test('type conversion to Int', () => {
+test('Test type conversion to Int', () => {
   expect(getGraphQLTypeFromMySQLType('Int')).toEqual('Int');
   expect(getGraphQLTypeFromMySQLType('Int(100)')).toEqual('Int');
   expect(getGraphQLTypeFromMySQLType('inteGER')).toEqual('Int');
@@ -168,7 +168,7 @@ test('type conversion to Int', () => {
   expect(getGraphQLTypeFromMySQLType('BIT')).toEqual('Int');
 });
 
-test('type conversion to Float', () => {
+test('Test type conversion to Float', () => {
   expect(getGraphQLTypeFromMySQLType('FloAT')).toEqual('Float');
   expect(getGraphQLTypeFromMySQLType('DOUBle')).toEqual('Float');
   expect(getGraphQLTypeFromMySQLType('REAL')).toEqual('Float');
@@ -180,7 +180,7 @@ test('type conversion to Float', () => {
   expect(getGraphQLTypeFromMySQLType('Numeric')).toEqual('Float');
 });
 
-test('type conversion defaults to String', () => {
+test('Test type conversion defaults to String', () => {
   expect(getGraphQLTypeFromMySQLType('gibberish random stuff')).toEqual('String');
   expect(getGraphQLTypeFromMySQLType('timesta')).toEqual('String');
   expect(getGraphQLTypeFromMySQLType('boo')).toEqual('String');

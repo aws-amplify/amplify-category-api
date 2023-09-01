@@ -10,12 +10,7 @@ import {
   RDSLayerMapping,
   SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import type {
-  AssetProvider,
-  NestedStackProvider,
-  TransformParameterProvider,
-  TransformParameters,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import type { AssetProvider, NestedStackProvider, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { DocumentNode } from 'graphql';
 import { Construct } from 'constructs';
@@ -87,7 +82,6 @@ export class TransformerContext implements TransformerContextProvider {
   constructor(
     scope: Construct,
     nestedStackProvider: NestedStackProvider,
-    parameterProvider: TransformParameterProvider | undefined,
     assetProvider: AssetProvider,
     public readonly synthParameters: SynthParameters,
     public readonly inputDocument: DocumentNode,
@@ -106,7 +100,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.resolvers = new ResolverManager();
     this.dataSources = new TransformerDataSourceManager();
     this.providerRegistry = new TransformerContextProviderRegistry();
-    this.stackManager = new StackManager(scope, nestedStackProvider, parameterProvider, stackMapping);
+    this.stackManager = new StackManager(scope, nestedStackProvider, stackMapping);
     this.authConfig = authConfig;
     this.resourceHelper = new TransformerResourceHelper(this.synthParameters);
     this.transformParameters = transformParameters;

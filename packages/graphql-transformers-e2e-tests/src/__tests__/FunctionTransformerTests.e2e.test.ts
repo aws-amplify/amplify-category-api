@@ -169,7 +169,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('simple echo function', async () => {
+test('Test simple echo function', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         echo(msg: "Hello") {
@@ -187,7 +187,7 @@ test('simple echo function', async () => {
   expect(response.data.echo.fieldName).toEqual('echo');
 });
 
-test('simple echoEnv function', async () => {
+test('Test simple echoEnv function', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         echoEnv(msg: "Hello") {
@@ -205,7 +205,7 @@ test('simple echoEnv function', async () => {
   expect(response.data.echoEnv.fieldName).toEqual('echoEnv');
 });
 
-test('simple duplicate function', async () => {
+test('Test simple duplicate function', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         duplicate(msg: "Hello") {
@@ -223,7 +223,7 @@ test('simple duplicate function', async () => {
   expect(response.data.duplicate.fieldName).toEqual('duplicate');
 });
 
-test('pipeline of @function(s)', async () => {
+test('Test pipeline of @function(s)', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         pipeline(msg: "IGNORED")
@@ -233,7 +233,7 @@ test('pipeline of @function(s)', async () => {
   expect(response.data.pipeline).toEqual('Hello, world!');
 });
 
-test('pipelineReverse of @function(s)', async () => {
+test('Test pipelineReverse of @function(s)', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         pipelineReverse(msg: "Hello") {

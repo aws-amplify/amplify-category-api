@@ -24,7 +24,7 @@ const featureFlags = {
   getObject: jest.fn(),
 };
 
-test('ModelConnectionTransformer simple one to many happy case', () => {
+test('Test ModelConnectionTransformer simple one to many happy case', () => {
   const validSchema = `
     type Post @model {
         id: ID!
@@ -65,7 +65,7 @@ test('ModelConnectionTransformer simple one to many happy case', () => {
   expect(connectionUpdateId).toBeTruthy();
 });
 
-test('ModelConnectionTransformer simple one to many happy case with custom keyField', () => {
+test('Test ModelConnectionTransformer simple one to many happy case with custom keyField', () => {
   const validSchema = `
     type Post @model {
         id: ID!
@@ -106,7 +106,7 @@ test('ModelConnectionTransformer simple one to many happy case with custom keyFi
   expect(connectionUpdateId).toBeTruthy();
 });
 
-test('that ModelConnection Transformer throws error when the field in connection is not found in the related Type', () => {
+test('Test that ModelConnection Transformer throws error when the field in connection is not found in the related Type', () => {
   const invalidSchema = `
   type Post @model {
     name: String!
@@ -132,7 +132,7 @@ test('that ModelConnection Transformer throws error when the field in connection
   }
 });
 
-test('ModelConnectionTransformer simple one to many happy case with custom keyField', () => {
+test('Test ModelConnectionTransformer simple one to many happy case with custom keyField', () => {
   const validSchema = `
     type Post @model {
         id: ID!
@@ -178,7 +178,7 @@ test('ModelConnectionTransformer simple one to many happy case with custom keyFi
   expect(connectionUpdateId.type.kind).toEqual(Kind.NAMED_TYPE);
 });
 
-test('ModelConnectionTransformer complex one to many happy case', () => {
+test('Test ModelConnectionTransformer complex one to many happy case', () => {
   const validSchema = `
     type Post @model {
         id: ID!
@@ -227,7 +227,7 @@ test('ModelConnectionTransformer complex one to many happy case', () => {
   expect((postField.type as any).name.value).toEqual('Post');
 });
 
-test('ModelConnectionTransformer many to many should fail', () => {
+test('Test ModelConnectionTransformer many to many should fail', () => {
   const validSchema = `
     type Post @model {
         id: ID!
@@ -254,7 +254,7 @@ test('ModelConnectionTransformer many to many should fail', () => {
   }
 });
 
-test('ModelConnectionTransformer many to many should fail due to missing other "name"', () => {
+test('Test ModelConnectionTransformer many to many should fail due to missing other "name"', () => {
   const validSchema = `
     type Post @model {
         id: ID!
@@ -283,7 +283,7 @@ test('ModelConnectionTransformer many to many should fail due to missing other "
   }
 });
 
-test('ModelConnectionTransformer many to many should fail due to missing other "name"', () => {
+test('Test ModelConnectionTransformer many to many should fail due to missing other "name"', () => {
   const validSchema = `
     type Post @model {
         id: ID!
@@ -312,7 +312,7 @@ test('ModelConnectionTransformer many to many should fail due to missing other "
   expect(postConnection).toBeDefined();
 });
 
-test('ModelConnectionTransformer with non null @connections', () => {
+test('Test ModelConnectionTransformer with non null @connections', () => {
   const validSchema = `
     type Post @model {
         id: ID!
@@ -378,7 +378,7 @@ test('ModelConnectionTransformer with non null @connections', () => {
   expect(postConnectionId.type.kind).toEqual(Kind.NON_NULL_TYPE);
 });
 
-test('ModelConnectionTransformer with sortField fails if not specified in associated type', () => {
+test('Test ModelConnectionTransformer with sortField fails if not specified in associated type', () => {
   const validSchema = `
     type Post @model {
         id: ID!
@@ -400,7 +400,7 @@ test('ModelConnectionTransformer with sortField fails if not specified in associ
   }).toThrowError();
 });
 
-test('ModelConnectionTransformer with sortField creates a connection resolver with a sort key condition.', () => {
+test('Test ModelConnectionTransformer with sortField creates a connection resolver with a sort key condition.', () => {
   const validSchema = `
     type Post @model {
         id: ID!
@@ -431,7 +431,7 @@ test('ModelConnectionTransformer with sortField creates a connection resolver wi
   expectArguments(commentField, ['createdAt', 'filter', 'limit', 'nextToken', 'sortDirection']);
 });
 
-test('ModelConnectionTransformer throws with invalid key fields', () => {
+test('Test ModelConnectionTransformer throws with invalid key fields', () => {
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
     featureFlags,
@@ -489,7 +489,7 @@ test('ModelConnectionTransformer throws with invalid key fields', () => {
   expect(() => transformer.transform(invalidSchema3)).toThrow();
 });
 
-test('ModelConnectionTransformer does not throw with valid key fields', () => {
+test('Test ModelConnectionTransformer does not throw with valid key fields', () => {
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
     featureFlags,
@@ -547,7 +547,7 @@ test('ModelConnectionTransformer does not throw with valid key fields', () => {
   expect(() => transformer.transform(validSchema3)).toBeTruthy();
 });
 
-test('ModelConnectionTransformer sortField with missing @key should fail', () => {
+test('Test ModelConnectionTransformer sortField with missing @key should fail', () => {
   const validSchema = `
     type Model1 @model(subscriptions: null)
     {
@@ -577,7 +577,7 @@ test('ModelConnectionTransformer sortField with missing @key should fail', () =>
   }
 });
 
-test('ModelConnectionTransformer overrides the default limit', () => {
+test('Test ModelConnectionTransformer overrides the default limit', () => {
   const validSchema = `
     type Post @model {
         id: ID!
@@ -603,7 +603,7 @@ test('ModelConnectionTransformer overrides the default limit', () => {
   expect(out.resolvers['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 50) )');
 });
 
-test('ModelConnectionTransformer uses the default limit', () => {
+test('Test ModelConnectionTransformer uses the default limit', () => {
   const validSchema = `
     type Post @model {
         id: ID!
@@ -629,7 +629,7 @@ test('ModelConnectionTransformer uses the default limit', () => {
   );
 });
 
-test('ModelConnectionTransformer with keyField overrides the default limit', () => {
+test('Test ModelConnectionTransformer with keyField overrides the default limit', () => {
   const validSchema = `
     type Post @model {
         id: ID!
@@ -655,7 +655,7 @@ test('ModelConnectionTransformer with keyField overrides the default limit', () 
   expect(out.resolvers['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 50) )');
 });
 
-test('ModelConnectionTransformer with keyField uses the default limit', () => {
+test('Test ModelConnectionTransformer with keyField uses the default limit', () => {
   const validSchema = `
     type Post @model {
         id: ID!

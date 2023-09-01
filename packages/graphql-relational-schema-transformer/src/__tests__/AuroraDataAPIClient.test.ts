@@ -7,7 +7,7 @@ const databaseName = 'Animals';
 const tableAName = 'Dog';
 const tableBName = 'Owners';
 
-test('list tables', async () => {
+test('Test list tables', async () => {
   const rdsPromise = {
     promise: jest.fn().mockImplementation(() => {
       return new Promise((resolve, reject) => {
@@ -76,7 +76,7 @@ test('list tables', async () => {
   expect(tables[0]).toEqual(tableAName);
 });
 
-test('foreign key lookup', async () => {
+test('Test foreign key lookup', async () => {
   const rdsPromise = {
     promise: jest.fn().mockImplementation(() => {
       return new Promise((resolve, reject) => {
@@ -139,7 +139,7 @@ test('foreign key lookup', async () => {
   expect(tables[0]).toEqual(tableAName);
 });
 
-test('describe table', async () => {
+test('Test describe table', async () => {
   const rdsPromise = {
     promise: jest.fn().mockImplementation(() => {
       return new Promise((resolve, reject) => {

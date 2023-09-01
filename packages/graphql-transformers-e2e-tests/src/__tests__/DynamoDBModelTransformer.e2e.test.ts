@@ -171,7 +171,7 @@ afterEach(async () => {
 /**
  * Test queries below
  */
-test('createAuthor mutation', async () => {
+test('Test createAuthor mutation', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `mutation($input: CreateAuthorInput!) {
           createAuthor(input: $input) {
@@ -201,7 +201,7 @@ test('createAuthor mutation', async () => {
   expect(response.data.createAuthor.entityMetadata.isActive).toEqual(true);
 });
 
-test('createPost mutation', async () => {
+test('Test createPost mutation', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `mutation {
           createPost(input: { title: "Hello, World!" }) {
@@ -218,7 +218,7 @@ test('createPost mutation', async () => {
   expect(response.data.createPost.createdAt).toBeDefined();
   expect(response.data.createPost.updatedAt).toBeDefined();
 });
-test('updateComment mutation with null and empty', async () => {
+test('Test updateComment mutation with null and empty', async () => {
   const requiredFieldValue = 'thisisrequired';
   const notRequiredFieldValue = 'thisisnotrequired';
   const response = await GRAPHQL_CLIENT.query(
@@ -279,7 +279,7 @@ test('updateComment mutation with null and empty', async () => {
     'An argument you marked as Non-Null is set to Null in the query or the body of your request.',
   );
 });
-test('updatePost mutation', async () => {
+test('Test updatePost mutation', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
           createPost(input: { title: "Test Update" }) {
@@ -305,7 +305,7 @@ test('updatePost mutation', async () => {
   expect(updateResponse.data.updatePost.title).toEqual('Bye, World!');
 });
 
-test('createPost and updatePost mutation with a client generated id.', async () => {
+test('Test createPost and updatePost mutation with a client generated id.', async () => {
   const clientId = 'a-client-side-generated-id';
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
@@ -367,7 +367,7 @@ test('createPost and updatePost mutation with a client generated id.', async () 
   expect(getResponse2.data.getPost).toBeNull();
 });
 
-test('deletePost mutation', async () => {
+test('Test deletePost mutation', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
           createPost(input: { title: "Test Delete" }) {
@@ -403,7 +403,7 @@ test('deletePost mutation', async () => {
   expect(getResponse.data.getPost).toBeNull();
 });
 
-test('getPost query', async () => {
+test('Test getPost query', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
           createPost(input: { title: "Test Get" }) {
@@ -429,7 +429,7 @@ test('getPost query', async () => {
   expect(getResponse.data.getPost.title).toEqual('Test Get');
 });
 
-test('listPosts query', async () => {
+test('Test listPosts query', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
           createPost(input: { title: "Test List" }) {
@@ -459,7 +459,7 @@ test('listPosts query', async () => {
   expect(items.length).toBeGreaterThan(0);
 });
 
-test('listPosts query with filter', async () => {
+test('Test listPosts query with filter', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
           createPost(input: { title: "Test List with filter" }) {
@@ -494,7 +494,7 @@ test('listPosts query with filter', async () => {
   expect(items[0].title).toEqual('Test List with filter');
 });
 
-test('enum filters List', async () => {
+test('Test enum filters List', async () => {
   await GRAPHQL_CLIENT.query(
     `mutation {
           createPost(input: { title: "Appears in New Hope", appearsIn: [NEWHOPE], episode: NEWHOPE }) {
@@ -654,7 +654,7 @@ test('enum filters List', async () => {
   });
 });
 
-test('next token', async () => {
+test('Test next token', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
             first: createPost(input: { title: "Test create for next token one" }) {
@@ -715,7 +715,7 @@ test('next token', async () => {
   expect(items2.length).toBeGreaterThan(0);
 });
 
-test('createPost mutation with non-model types', async () => {
+test('Test createPost mutation with non-model types', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `mutation CreatePost($input: CreatePostInput!) {
           createPost(input: $input) {
@@ -763,7 +763,7 @@ test('createPost mutation with non-model types', async () => {
   expect(response.data.createPost.appearsIn).toEqual(['NEWHOPE']);
 });
 
-test('updatePost mutation with non-model types', async () => {
+test('Test updatePost mutation with non-model types', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
           createPost(input: { title: "Test Update" }) {
@@ -823,7 +823,7 @@ test('updatePost mutation with non-model types', async () => {
 });
 
 describe('Timestamp configuration', () => {
-  test('createdAt is present in the schema', async () => {
+  test('Test createdAt is present in the schema', async () => {
     const response = await GRAPHQL_CLIENT.query(
       /* GraphQL */ `
         mutation CreateComment {

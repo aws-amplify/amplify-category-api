@@ -30,6 +30,8 @@ export async function initWithoutCredentialFileAndNoNewUserSetup(projRoot) {
       fs.renameSync(credentialsFilePath, credentialsFilePathHide);
     }
     await initWorkflow(projRoot, settings);
+  } catch (e) {
+    throw e;
   } finally {
     if (fs.existsSync(configFilePathHide)) {
       fs.renameSync(configFilePathHide, configFilePath);

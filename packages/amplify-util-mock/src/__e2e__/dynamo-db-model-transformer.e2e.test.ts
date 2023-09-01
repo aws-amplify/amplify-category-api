@@ -60,7 +60,7 @@ beforeAll(async () => {
         }),
       ],
       featureFlags: {
-        getBoolean: (name) => name === 'improvePluralization',
+        getBoolean: (name) => (name === 'improvePluralization' ? true : false),
       } as FeatureFlagProvider,
     });
     const out = await transformer.transform(validSchema);
@@ -124,7 +124,7 @@ afterEach(async () => {
 /**
  * Test queries below
  */
-test('createAuthor mutation', async () => {
+test('Test createAuthor mutation', async () => {
   try {
     const response = await GRAPHQL_CLIENT.query(
       `mutation($input: CreateAuthorInput!) {
@@ -157,7 +157,7 @@ test('createAuthor mutation', async () => {
   }
 });
 
-test('createPost mutation', async () => {
+test('Test createPost mutation', async () => {
   try {
     const response = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -181,7 +181,7 @@ test('createPost mutation', async () => {
   }
 });
 
-test('query on get query with null field', async () => {
+test('Test query on get query with null field', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `
     mutation {
@@ -217,7 +217,7 @@ test('query on get query with null field', async () => {
   }
 });
 
-test('updatePost mutation', async () => {
+test('Test updatePost mutation', async () => {
   try {
     const createResponse = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -251,7 +251,7 @@ test('updatePost mutation', async () => {
   }
 });
 
-test('createPost and updatePost mutation with a client generated id.', async () => {
+test('Test createPost and updatePost mutation with a client generated id.', async () => {
   try {
     const clientId = 'a-client-side-generated-id';
     const createResponse = await GRAPHQL_CLIENT.query(
@@ -324,7 +324,7 @@ test('createPost and updatePost mutation with a client generated id.', async () 
   }
 });
 
-test('deletePost mutation', async () => {
+test('Test deletePost mutation', async () => {
   try {
     const createResponse = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -369,7 +369,7 @@ test('deletePost mutation', async () => {
   }
 });
 
-test('getPost query', async () => {
+test('Test getPost query', async () => {
   try {
     const createResponse = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -401,7 +401,7 @@ test('getPost query', async () => {
   }
 });
 
-test('listPosts query', async () => {
+test('Test listPosts query', async () => {
   try {
     const createResponse = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -437,7 +437,7 @@ test('listPosts query', async () => {
   }
 });
 
-test('listPosts query with filter', async () => {
+test('Test listPosts query with filter', async () => {
   try {
     const createResponse = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -479,7 +479,7 @@ test('listPosts query with filter', async () => {
   }
 });
 
-test('enum filters List', async () => {
+test('Test enum filters List', async () => {
   try {
     await GRAPHQL_CLIENT.query(
       `mutation {
@@ -647,7 +647,7 @@ test('enum filters List', async () => {
   }
 });
 
-test('createPost mutation with non-model types', async () => {
+test('Test createPost mutation with non-model types', async () => {
   try {
     const response = await GRAPHQL_CLIENT.query(
       `mutation CreatePost($input: CreatePostInput!) {
@@ -701,7 +701,7 @@ test('createPost mutation with non-model types', async () => {
   }
 });
 
-test('updatePost mutation with non-model types', async () => {
+test('Test updatePost mutation with non-model types', async () => {
   try {
     const createResponse = await GRAPHQL_CLIENT.query(
       `mutation {

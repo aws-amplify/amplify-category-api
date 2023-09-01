@@ -22,7 +22,7 @@ const mapComposeEntriesToContainer = (record: [string, v1Types.DefinitionsServic
   const { image, ports, build, command, entrypoint, env_file, environment, working_dir, user } = v;
   const { container_name: name = k } = v;
 
-  let healthcheck: v2Types.DefinitionsHealthcheck = {};
+  var healthcheck: v2Types.DefinitionsHealthcheck = {};
   if (hasHealthCheck(v)) {
     Object.entries(v).forEach((item: [string, v2Types.DefinitionsHealthcheck]) => {
       const [, healthVal] = item;

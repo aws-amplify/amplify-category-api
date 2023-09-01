@@ -87,7 +87,7 @@ const BUCKET_TEST_REGEX = /test/;
 const IAM_TEST_REGEX = /!RotateE2eAwsToken-e2eTestContextRole|-integtest$|^amplify-|^eu-|^us-|^ap-/;
 const STALE_DURATION_MS = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
 
-const isCI = (): boolean => !!(process.env.CI && process.env.CODEBUILD);
+const isCI = (): boolean => (process.env.CI && process.env.CODEBUILD ? true : false);
 /*
  * Exit on expired token as all future requests will fail.
  */
@@ -428,7 +428,7 @@ const deleteIamRoles = async (account: AWSAccountInfo, accountIndex: number, rol
   // Sending consecutive delete role requests is throwing Rate limit exceeded exception.
   // We introduce a brief delay between batches
   const batchSize = 20;
-  for (let i = 0; i < roles.length; i += batchSize) {
+  for (var i = 0; i < roles.length; i += batchSize) {
     const rolesToDelete = roles.slice(i, i + batchSize);
     await Promise.all(rolesToDelete.map((role) => deleteIamRole(account, accountIndex, role)));
     await sleep(5000);

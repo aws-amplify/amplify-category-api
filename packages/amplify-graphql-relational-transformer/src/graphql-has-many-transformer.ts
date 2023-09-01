@@ -14,7 +14,6 @@ import {
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
-  TransformerPreProcessContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import {
@@ -27,6 +26,7 @@ import {
 } from 'graphql';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
+import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { updateTableForConnection } from './resolvers';
 import {
   addFieldsToDefinition,

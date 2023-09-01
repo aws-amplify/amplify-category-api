@@ -202,7 +202,7 @@ afterAll(async () => {
  * Test queries below
  */
 
-test('Parent.child getItem', async () => {
+test('Test Parent.child getItem', async () => {
   const createChild = await GRAPHQL_CLIENT.query(
     `mutation {
         createChild(input: { id: "1", name: "child1" }) {
@@ -245,7 +245,7 @@ test('Parent.child getItem', async () => {
   expect(child.name).toEqual(createParent.data.createParent.childName);
 });
 
-test('Child.parents query', async () => {
+test('Test Child.parents query', async () => {
   const createChild = await GRAPHQL_CLIENT.query(
     `mutation {
         createChild(input: { id: "2", name: "child2" }) {
@@ -295,7 +295,7 @@ test('Child.parents query', async () => {
   expect(items[0].childName).toEqual(createParent1.data.createParent.childName);
 });
 
-test('PostModel.singleAuthor GetItem with composite sortkey', async () => {
+test('Test PostModel.singleAuthor GetItem with composite sortkey', async () => {
   const createUser = await GRAPHQL_CLIENT.query(
     `mutation {
         createUser(input: { id: "123", name: "Bob", surname: "Rob" }) {
@@ -349,7 +349,7 @@ test('PostModel.singleAuthor GetItem with composite sortkey', async () => {
   expect(author.surname).toEqual(createUser.data.createUser.surname);
 });
 
-test('PostModel.authors query with composite sortkey', async () => {
+test('Test PostModel.authors query with composite sortkey', async () => {
   const createUser = await GRAPHQL_CLIENT.query(
     `mutation {
         createUserModel(input: { id: "123", rollNumber: 1, name: "Bob", surname: "Rob" }) {
@@ -433,7 +433,7 @@ test('PostModel.authors query with composite sortkey', async () => {
   expect(items[1].name).toEqual(createUser2.data.createUserModel.name);
 });
 
-test(`the default limit.`, async () => {
+test(`Test the default limit.`, async () => {
   for (let i = 0; i < 51; i++) {
     await GRAPHQL_CLIENT.query(
       `mutation {
@@ -469,7 +469,7 @@ test(`the default limit.`, async () => {
   expect(createResponse.data.createPost.authors.items.length).toEqual(50);
 });
 
-test('PostModel.authors query with composite sortkey passed as arg.', async () => {
+test('Test PostModel.authors query with composite sortkey passed as arg.', async () => {
   const createUser = await GRAPHQL_CLIENT.query(
     `mutation {
         createUser(input: { id: "123", name: "Bobby", surname: "Rob" }) {
@@ -518,7 +518,7 @@ test('PostModel.authors query with composite sortkey passed as arg.', async () =
   expect(items[0].surname).toEqual(createUser.data.createUser.surname);
 });
 
-test('User.authorPosts.posts query followed by getItem (intermediary model)', async () => {
+test('Test User.authorPosts.posts query followed by getItem (intermediary model)', async () => {
   const createPostAuthor = await GRAPHQL_CLIENT.query(
     `mutation {
         createPostAuthor(input: { authorID: "123", postID: "321" }) {
@@ -555,7 +555,7 @@ test('User.authorPosts.posts query followed by getItem (intermediary model)', as
   expect(items[0].post.postContents).toEqual(['potato']);
 });
 
-test('User.friendship.friend query (reflexive has many).', async () => {
+test('Test User.friendship.friend query (reflexive has many).', async () => {
   const createUser = await GRAPHQL_CLIENT.query(
     `mutation {
         createUser(input: { id: "12", name: "Bobby", surname: "Rob" }) {

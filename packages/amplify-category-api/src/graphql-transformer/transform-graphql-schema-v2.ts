@@ -213,15 +213,14 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
   }
   const rdsLayerMapping = await getRDSLayerMapping();
 
-  const transformManager = new TransformManager(opts.overrideConfig, hasIamAuth(opts.authConfig), hasUserPoolAuth(opts.authConfig));
+  const transformManager = new TransformManager(opts.overrideConfig);
 
   executeTransform({
     ...opts,
     scope: transformManager.rootStack,
     nestedStackProvider: transformManager.getNestedStackProvider(),
     assetProvider: transformManager.getAssetProvider(),
-    parameterProvider: transformManager.getParameterProvider(),
-    synthParameters: transformManager.getSynthParameters(),
+    synthParameters: transformManager.getSynthParameters(hasIamAuth(opts.authConfig), hasUserPoolAuth(opts.authConfig)),
     schema,
     modelToDatasourceMap: opts.projectConfig.modelToDatasourceMap,
     customQueries: opts.projectConfig.customQueries,

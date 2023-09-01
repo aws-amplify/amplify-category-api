@@ -13,7 +13,7 @@ afterEach(() => jest.clearAllMocks());
  * Test for verifying that provided a template context, the resolver generator
  * creates the CRUDL AppSync Resolver resources.
  */
-test('Basic CRUDL Resolver Generation', () => {
+test('Test Basic CRUDL Resolver Generation', () => {
   // SETUP
   const schema = parse(`
       type Pet {

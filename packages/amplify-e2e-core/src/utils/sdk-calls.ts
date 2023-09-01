@@ -306,7 +306,7 @@ export const putKinesisRecords = async (data: string, partitionKey: string, stre
 export const getCloudWatchEventRule = async (targetName: string, region: string) => {
   config.update({ region });
   const service = new CloudWatchEvents();
-  let params = {
+  var params = {
     TargetArn: targetName /* required */,
   };
   let ruleName;

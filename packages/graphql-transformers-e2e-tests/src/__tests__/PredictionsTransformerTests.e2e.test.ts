@@ -101,7 +101,7 @@ afterAll(async () => {
   await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf);
 });
 
-test('translate and convert text to speech', async () => {
+test('test translate and convert text to speech', async () => {
   // logic to test graphql
   const response = await GRAPHQL_CLIENT.query(
     `query SpeakTranslatedText($input: SpeakTranslatedTextInput!) {
@@ -126,7 +126,7 @@ test('translate and convert text to speech', async () => {
   expect(pollyURL).toMatch(/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/);
 });
 
-test('translate text individually', async () => {
+test('test translate text individually', async () => {
   const germanTranslation = /((\bDies\b)|(\bdas\b)|(\bder\b)) ist ein ((\bStimmtest\b)|(\Sprachtest\b)|(\bStimmetest\b))/i;
   const response = await GRAPHQL_CLIENT.query(
     `query TranslateThis($input: TranslateThisInput!) {

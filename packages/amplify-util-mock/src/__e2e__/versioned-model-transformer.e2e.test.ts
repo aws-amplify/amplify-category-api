@@ -26,7 +26,7 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
       transformers: [new DynamoDBModelTransformer(), new VersionedModelTransformer()],
       featureFlags: {
-        getBoolean: (name) => name === 'improvePluralization',
+        getBoolean: (name) => (name === 'improvePluralization' ? true : false),
       } as FeatureFlagProvider,
     });
     const out = transformer.transform(validSchema);
@@ -65,7 +65,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('createPost mutation', async () => {
+test('Test createPost mutation', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Hello, World!" }) {
@@ -85,7 +85,7 @@ test('createPost mutation', async () => {
   expect(response.data.createPost.version).toEqual(1);
 });
 
-test('updatePost mutation', async () => {
+test('Test updatePost mutation', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Update" }) {
@@ -119,7 +119,7 @@ test('updatePost mutation', async () => {
   expect(updateResponse.data.updatePost.version).toEqual(2);
 });
 
-test('failed updatePost mutation with wrong version', async () => {
+test('Test failed updatePost mutation with wrong version', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Update" }) {
@@ -154,7 +154,7 @@ test('failed updatePost mutation with wrong version', async () => {
   expect((updateResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 });
 
-test('deletePost mutation', async () => {
+test('Test deletePost mutation', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Delete" }) {
@@ -184,7 +184,7 @@ test('deletePost mutation', async () => {
   expect(deleteResponse.data.deletePost.version).toEqual(createResponse.data.createPost.version);
 });
 
-test('deletePost mutation with wrong version', async () => {
+test('Test deletePost mutation with wrong version', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Delete" }) {
