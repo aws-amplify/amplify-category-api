@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.3-jsii-build.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.1.2...@aws-amplify/graphql-model-transformer@2.1.3-jsii-build.0) (2023-09-01)
+
+### Bug Fixes
+
+- npm publish ignore tests and lambdas sources ([e1411cd](https://github.com/aws-amplify/amplify-category-api/commit/e1411cdd5e34cefa6b2fc08fcf49aab4c0afc727))
+
 ## [2.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.1.1...@aws-amplify/graphql-model-transformer@2.1.2) (2023-08-30)
 
 **Note:** Version bump only for package @aws-amplify/graphql-model-transformer

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.14.3-jsii-build.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.14.2...amplify-category-api-e2e-tests@3.14.3-jsii-build.0) (2023-09-01)
+
+### Bug Fixes
+
+- disable tsc on new imports ([36484e0](https://github.com/aws-amplify/amplify-category-api/commit/36484e067512ed11f3ac98cf86e701cbd3ac1f4f))
+- fixing tests, and reverting slight change to output strategy ([524ee39](https://github.com/aws-amplify/amplify-category-api/commit/524ee39c55e58c915e17662d002b06e72b6eeccb))
+
 ## [3.14.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.14.1...amplify-category-api-e2e-tests@3.14.2) (2023-08-30)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests
