@@ -17,7 +17,7 @@
     "clean": "rimraf lib dist tsconfig.json tsconfig.tsbuildinfo node_modules",
     "test": "jest",
     "test-watch": "jest --watch",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node --project extract-api.tsconfig.json ../../scripts/extract-api.ts"
   },
   "keywords": [
     "graphql",
@@ -53,7 +53,8 @@
     "jsii": "^5.1.5",
     "jsii-pacmak": "^1.84.0",
     "aws-cdk-lib": "2.80.0",
-    "constructs": "10.0.5"
+    "constructs": "10.0.5",
+    "ts-node": "^8.10.1"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.80.0",
