@@ -12,6 +12,7 @@ import {
   importRDSDatabase,
   initJSProjectWithProfile,
   updateSchema,
+  getResource,
 } from 'amplify-category-api-e2e-core';
 import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
@@ -223,16 +224,6 @@ describe('RDS Tests', () => {
     expect(result.data.listComponents.items.length).toEqual(0);
   });
 });
-
-const getResource = (resources: Map<string, any>, resourcePrefix: string, resourceType: string): any => {
-  const keys = Array.from(Object.keys(resources)).filter((key) => key.startsWith(resourcePrefix));
-  for (const key of keys) {
-    const resource = resources[key];
-    if (resource.Type === resourceType) {
-      return resource;
-    }
-  }
-};
 
 const listComponents = async (client) => {
   const listComponentsQuery = /* GraphQL */ `

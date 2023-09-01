@@ -257,3 +257,14 @@ export class RDSTestDataProvider {
     }
   }
 }
+
+export const getResource = (resources: Map<string, any>, resourcePrefix: string, resourceType: string): any => {
+  const keys = Array.from(Object.keys(resources)).filter((key) => key.startsWith(resourcePrefix));
+  for (const key of keys) {
+    const resource = resources[key];
+    if (resource.Type === resourceType) {
+      return resource;
+    }
+  }
+  return undefined;
+};

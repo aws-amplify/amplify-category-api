@@ -194,7 +194,7 @@ const addVpcEndpoint = (scope: Construct, sqlLambdaVpcConfig: VpcSubnetConfig, s
 const addVpcEndpointForSecretsManager = (
   scope: Construct,
   sqlLambdaVpcConfig: VpcSubnetConfig,
-): { service: string, endpoint: CfnVPCEndpoint }[] => {
+): { service: string; endpoint: CfnVPCEndpoint }[] => {
   const services = ['ssm', 'ssmmessages', 'ec2', 'ec2messages', 'kms'];
   return services.map((service) => {
     return {
