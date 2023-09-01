@@ -107,6 +107,9 @@ export const getAuthConfig: (context: $TSContext, resourceName: string) => Promi
 export function getContainers(composeContents?: string, dockerfileContents?: string): DockerServiceInfo;
 
 // @public (undocumented)
+export const getDefaultDirectiveDefinitions: () => string;
+
+// @public (undocumented)
 export const getDirectiveDefinitions: (context: $TSContext, resourceDir: string) => Promise<string>;
 
 // @public (undocumented)

@@ -3,6 +3,7 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { print } from 'graphql';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { constructTransformerChain } from '@aws-amplify/graphql-transformer';
+import { ITransformer } from 'graphql-transformer-core';
 import { getTransformerFactoryV1 } from './transformer-factory';
 import { getTransformerVersion } from './transformer-version';
 import { loadCustomTransformersV2 } from './transformer-options-v2';
@@ -16,6 +17,14 @@ export const getDirectiveDefinitions = async (context: $TSContext, resourceDir: 
   const transformList =
     transformerVersion === 2 ? await getTransformListV2(resourceDir) : await getTransformerFactoryV1(context, resourceDir)(true);
 
+  return getDirectivesFromTransformList(transformList);
+};
+
+export const getDefaultDirectiveDefinitions = (): string => {
+  return getDirectivesFromTransformList(constructTransformerChain());
+};
+
+const getDirectivesFromTransformList = (transformList: TransformerPluginProvider[] | ITransformer[]): string => {
   const transformDirectives = transformList
     .map((transform) => [transform.directive, ...transform.typeDefinitions].map((node) => print(node)).join('\n'))
     .join('\n');
