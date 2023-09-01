@@ -16,7 +16,7 @@ import {
   verifyMatchingTypes,
 } from './test-utils/helpers';
 
-describe('ModelTransformer: ', () => {
+describe('ModelTransformer:', () => {
   it('should successfully transform simple valid schema', async () => {
     const validSchema = `
       type Post @model {
@@ -626,7 +626,7 @@ describe('ModelTransformer: ', () => {
     expect(verifyInputCount(parsed, 'TagInput', 1)).toBeTruthy();
   });
 
-  it('it should generate filter inputs', () => {
+  it('should generate filter inputs', () => {
     const validSchema = `
       type Post @model {
           id: ID!

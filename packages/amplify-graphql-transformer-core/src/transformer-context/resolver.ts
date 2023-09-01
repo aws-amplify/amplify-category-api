@@ -9,8 +9,7 @@ import {
   TransformerResolverProvider,
   TransformerResolversManagerProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
-import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
+import { AuthorizationType, CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { isResolvableObject, Lazy, Stack } from 'aws-cdk-lib';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
@@ -161,6 +160,15 @@ export class TransformerResolver implements TransformerResolverProvider {
     }
     this.slotNames = new Set([...requestSlots, ...responseSlots]);
   }
+
+  /**
+   * Map a resolver to a given stack.
+   * @deprecated, use setScope instead.
+   * @param stack the stack you are mapping to
+   */
+  mapToStack = (stack: Stack): void => {
+    this.scope = stack;
+  };
 
   setScope = (scope: Construct): void => {
     this.scope = scope;

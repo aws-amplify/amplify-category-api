@@ -9,7 +9,7 @@ export class JsonMockStack extends cdk.Stack {
     const jsonLambda = new lambda.Function(this, 'jsonServerFunction', {
       code: new lambda.AssetCode('src-server'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_18_X,
     });
 
     const api = new apigateway.LambdaRestApi(this, 'jsonMockApi', {

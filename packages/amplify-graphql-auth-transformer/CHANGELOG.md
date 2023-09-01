@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.1.1...@aws-amplify/graphql-auth-transformer@3.1.2) (2023-08-30)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [3.1.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.1.0...@aws-amplify/graphql-auth-transformer@3.1.1) (2023-08-28)
+
+### Bug Fixes
+
+- cannot read properties of undefined ([#1804](https://github.com/aws-amplify/amplify-category-api/issues/1804)) ([f68b257](https://github.com/aws-amplify/amplify-category-api/commit/f68b25748a070dd470232c5ea9c24f34318cf5e2))
+
 # [3.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@2.1.13...@aws-amplify/graphql-auth-transformer@3.1.0) (2023-08-09)
 
 ### Bug Fixes

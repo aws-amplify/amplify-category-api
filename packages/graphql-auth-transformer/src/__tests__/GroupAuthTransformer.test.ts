@@ -14,7 +14,7 @@ const featureFlags = {
   getObject: jest.fn(),
 };
 
-test('Test ModelAuthTransformer validation happy case w/ static groups', () => {
+test('ModelAuthTransformer validation happy case w/ static groups', () => {
   const validSchema = `
     type Post @model @auth(rules: [{allow: groups, groups: ["Admin", "Dev"]}]) {
         id: ID!
@@ -44,7 +44,7 @@ test('Test ModelAuthTransformer validation happy case w/ static groups', () => {
   );
 });
 
-test('Test ModelAuthTransformer validation happy case w/ dynamic groups', () => {
+test('ModelAuthTransformer validation happy case w/ dynamic groups', () => {
   const validSchema = `
     type Post @model @auth(rules: [{allow: groups, groupsField: "groups"}]) {
         id: ID!
@@ -75,7 +75,7 @@ test('Test ModelAuthTransformer validation happy case w/ dynamic groups', () => 
   );
 });
 
-test('Test ModelAuthTransformer validation happy case w/ dynamic group', () => {
+test('ModelAuthTransformer validation happy case w/ dynamic group', () => {
   const validSchema = `
     type Post @model @auth(rules: [{allow: groups, groupsField: "group"}]) {
         id: ID!
@@ -106,7 +106,7 @@ test('Test ModelAuthTransformer validation happy case w/ dynamic group', () => {
   );
 });
 
-test('Test ModelAuthTransformer validation @auth on non @model. Should fail.', () => {
+test('ModelAuthTransformer validation @auth on non @model. Should fail.', () => {
   try {
     const validSchema = `
             type Post @auth(rules: [{allow: groups, groupsField: "groups"}]) {
