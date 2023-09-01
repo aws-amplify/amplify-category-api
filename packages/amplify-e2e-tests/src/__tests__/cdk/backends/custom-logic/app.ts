@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import { App, Stack, Duration } from 'aws-cdk-lib';
+// @ts-ignore
 import { AmplifyGraphqlApi, AmplifyGraphqlSchema } from '@aws-amplify/graphql-construct-alpha';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Resolver, Code, FunctionRuntime } from 'aws-cdk-lib/aws-appsync';

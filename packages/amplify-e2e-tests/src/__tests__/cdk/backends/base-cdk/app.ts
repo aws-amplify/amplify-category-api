@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import { App, Stack, Duration } from 'aws-cdk-lib';
+// @ts-ignore
 import { AmplifyGraphqlApi, AmplifyGraphqlSchema } from '@aws-amplify/graphql-construct-alpha';
 
 const packageJson = require('../package.json');
