@@ -16,3 +16,4 @@ packages/amplify-graphql-model-transformer/rds-lambda/
 packages/amplify-graphql-model-transformer/publish-notification-lambda/lib/
 packages/amplify-graphql-schema-generator/vpc-db-lambda/lib/
 packages/amplify-graphql-model-transformer/rds-patching-lambda/lib/
+packages/amplify-graphql-api-construct/tsconfig.json
