@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-e2e-tests",
-  "version": "3.14.3-jsii-build.0",
+  "version": "3.14.3-jsii-build.1",
   "description": "E2e test suite",
   "repository": {
     "type": "git",

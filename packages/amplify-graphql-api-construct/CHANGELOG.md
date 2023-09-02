@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0-jsii-build.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.7.0-jsii-build.0...@aws-amplify/graphql-construct-alpha@0.7.0-jsii-build.1) (2023-09-02)
+
+### Bug Fixes
+
+- exporting graphql schema, and adding tests ([e49ea68](https://github.com/aws-amplify/amplify-category-api/commit/e49ea68f97460d31e40634087925840aef419224))
+- update jsii assembly ([1ece51a](https://github.com/aws-amplify/amplify-category-api/commit/1ece51ade0d33951f7495e7ade91ee344c294174))
+
 # [0.7.0-jsii-build.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.6.1...@aws-amplify/graphql-construct-alpha@0.7.0-jsii-build.0) (2023-09-01)
 
 ### Bug Fixes
