@@ -6,7 +6,7 @@
     ]
   },
   "bundled": {
-    "@aws-amplify/graphql-transformer": "1.1.2",
+    "@aws-amplify/graphql-transformer": "1.1.3-jsii-build.0",
     "@aws-amplify/graphql-transformer-core": "2.1.2",
     "@aws-amplify/graphql-transformer-interfaces": "3.1.2",
     "zod": "^3.21.4"
@@ -5845,6 +5845,6 @@
       "symbolId": "src/types:UserPoolAuthorizationConfig"
     }
   },
-  "version": "0.6.1",
-  "fingerprint": "mDXCbTDBxSIwdEnzUkboyw03g1IPGOhynrHiCiplNv0="
+  "version": "0.7.0-jsii-build.0",
+  "fingerprint": "Yqk2BWIXolyxK0nkui0ljJr0Ogh8o09O7DoRHtZtueI="
 }
