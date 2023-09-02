@@ -2,23 +2,31 @@ import * as os from 'os';
 import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
 import { IAmplifyGraphqlSchema } from './types';
 
-const noOpSchema: Omit<IAmplifyGraphqlSchema, 'definition'> = {
-  functionSlots: () => [],
-};
-
+/**
+ * Class exposing utilities to produce IAmplifyGraphqlSchema objects given various inputs.
+ */
 export class AmplifyGraphqlSchema {
-  static fromString = (schema: string): IAmplifyGraphqlSchema => ({
-    ...noOpSchema,
-    definition: () => schema,
-  });
+  /**
+   * Produce a schema definition from a string input
+   * @param schema the graphql input as a string
+   * @returns a fully formed amplify graphql schema interface
+   */
+  static fromString(schema: string): IAmplifyGraphqlSchema {
+    return {
+      definition: schema,
+      functionSlots: [],
+    };
+  }
 
-  static fromSchemaFile = (schemaFile: SchemaFile): IAmplifyGraphqlSchema => ({
-    ...noOpSchema,
-    definition: () => schemaFile.definition,
-  });
-
-  static fromSchemaFiles = (schemaFiles: SchemaFile[]): IAmplifyGraphqlSchema => ({
-    ...noOpSchema,
-    definition: () => schemaFiles.map((schemaFile) => schemaFile.definition).join(os.EOL),
-  });
+  /**
+   * Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema
+   * @param schemaFiles the schema files to process
+   * @returns a fully formed amplify graphql schema interface
+   */
+  static fromSchemaFiles(...schemaFiles: SchemaFile[]): IAmplifyGraphqlSchema {
+    return {
+      definition: schemaFiles.map((schemaFile) => schemaFile.definition).join(os.EOL),
+      functionSlots: [],
+    };
+  }
 }

@@ -79,7 +79,7 @@ export class AmplifyGraphqlApi extends Construct {
       convertAuthorizationModesToTransformerAuthConfig(authorizationConfig);
 
     validateFunctionSlots(functionSlots ?? []);
-    const separatedFunctionSlots = separateSlots([...(functionSlots ?? []), ...schema.functionSlots()]);
+    const separatedFunctionSlots = separateSlots([...(functionSlots ?? []), ...schema.functionSlots]);
 
     // Allow amplifyEnvironmentName to be retrieve from context, and use value 'NONE' if no value can be found.
     // amplifyEnvironmentName is required for logical id suffixing, as well as Exports from the nested stacks.
@@ -105,7 +105,7 @@ export class AmplifyGraphqlApi extends Construct {
         apiName: props.apiName ?? id,
         ...authSynthParameters,
       },
-      schema: schema.definition(),
+      schema: schema.definition,
       userDefinedSlots: parseUserDefinedSlots(separatedFunctionSlots),
       transformersFactoryArgs: {
         authConfig,
@@ -124,7 +124,7 @@ export class AmplifyGraphqlApi extends Construct {
       },
     });
 
-    this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: schema.definition() });
+    this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: schema.definition });
 
     this.resources = getGeneratedResources(this);
     this.generatedFunctionSlots = getGeneratedFunctionSlots(assetManager.resolverAssets);

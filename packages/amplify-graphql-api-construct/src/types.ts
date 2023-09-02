@@ -353,15 +353,13 @@ export interface IAmplifyGraphqlSchema {
    * Return the schema definition as a graphql string.
    * @returns the rendered schema.
    */
-  // eslint-disable-next-line @typescript-eslint/method-signature-style
-  definition(): string;
+  readonly definition: string;
 
   /**
    * Retrieve any function slots defined explicitly in the schema.
    * @returns generated function slots
    */
-  // eslint-disable-next-line @typescript-eslint/method-signature-style
-  functionSlots(): FunctionSlot[];
+  readonly functionSlots: FunctionSlot[];
 }
 
 export interface BackendOutputEntry {

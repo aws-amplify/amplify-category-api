@@ -24,6 +24,7 @@ import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { MappingTemplate } from 'aws-cdk-lib/aws-appsync';
 import { NestedStack } from 'aws-cdk-lib';
+import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
 import { z } from 'zod';
 
 // @public
@@ -76,6 +77,12 @@ export interface AmplifyGraphqlApiResources {
     readonly nestedStacks: Record<string, NestedStack>;
     readonly roles: Record<string, IRole>;
     readonly tables: Record<string, ITable>;
+}
+
+// @public
+export class AmplifyGraphqlSchema {
+    static fromSchemaFiles(...schemaFiles: SchemaFile[]): IAmplifyGraphqlSchema;
+    static fromString(schema: string): IAmplifyGraphqlSchema;
 }
 
 // @public
@@ -174,8 +181,8 @@ export interface IAMAuthorizationConfig {
 
 // @public
 export interface IAmplifyGraphqlSchema {
-    definition(): string;
-    functionSlots(): FunctionSlot[];
+    readonly definition: string;
+    readonly functionSlots: FunctionSlot[];
 }
 
 // @public (undocumented)
