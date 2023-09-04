@@ -1,7 +1,10 @@
-import { DocumentNode, FieldDefinitionNode, ObjectTypeDefinitionNode, visit } from 'graphql';
+import { DocumentNode, FieldDefinitionNode, ObjectTypeDefinitionNode, StringValueNode, visit } from 'graphql';
 import { isArrayOrObject, findMatchingField, getNonModelTypes, isOfType, isNonNullType } from 'graphql-transformer-common';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { FieldWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
+
+const MODEL_DIRECTIVE_NAME = 'model';
+const REFERS_TO_DIRECTIVE_NAME = 'refersTo';
 
 export const applySchemaOverrides = (document: DocumentNode, existingDocument?: DocumentNode | undefined): DocumentNode => {
   if (!existingDocument) {
@@ -24,6 +27,16 @@ export const applySchemaOverrides = (document: DocumentNode, existingDocument?: 
         return applyFieldOverrides(node, correspondingField);
       },
     },
+    ObjectTypeDefinition: {
+      leave: (node: ObjectTypeDefinitionNode, key, parent, path, ancestors) => {
+        const tableName = getTableName(node);
+        const correspondingModel = findMatchingModel(tableName, existingDocument);
+        if (!correspondingModel) return;
+
+        // eslint-disable-next-line consistent-return
+        return applyModelOverrides(node, correspondingModel);
+      },
+    },
   };
 
   updatedDocument = visit(updatedDocument, schemaVisitor);
@@ -33,7 +46,6 @@ export const applySchemaOverrides = (document: DocumentNode, existingDocument?: 
 };
 
 const preserveRelationalDirectives = (document: DocumentNode, existingDocument: DocumentNode): DocumentNode => {
-  const MODEL_DIRECTIVE_NAME = 'model';
   const RELATIONAL_DIRECTIVES = ['hasOne', 'hasMany', 'belongsTo'];
   const documentWrapper = document as any;
 
@@ -72,6 +84,13 @@ export const applyFieldOverrides = (field: FieldDefinitionNode, existingField: F
   };
 };
 
+export const applyModelOverrides = (obj: ObjectTypeDefinitionNode, existingObj: ObjectTypeDefinitionNode): ObjectTypeDefinitionNode => {
+  return {
+    ...obj,
+    ...applyModelNameOverrides(obj, existingObj),
+  };
+};
+
 export const applyJSONFieldTypeOverrides = (field: FieldDefinitionNode, existingField: FieldDefinitionNode): FieldDefinitionNode => {
   const isJSONType = isOfType(field?.type, 'AWSJSON');
   if (!isJSONType) {
@@ -91,6 +110,38 @@ export const applyJSONFieldTypeOverrides = (field: FieldDefinitionNode, existing
   };
 };
 
+export const applyModelNameOverrides = (obj: ObjectTypeDefinitionNode, existingObj: ObjectTypeDefinitionNode): ObjectTypeDefinitionNode => {
+  const tableName = getTableName(obj);
+  const existingTableName = getTableName(existingObj);
+  const existingTypeName = existingObj?.name?.value;
+
+  if (tableName !== existingTableName && tableName !== existingTypeName) {
+    return obj;
+  }
+  if (tableName === existingTypeName) {
+    // In this case, there is no need for refersTo since edits were made to keep the original table name as type name.
+    // For example, type Post @refersTo(name: "posts") -> type posts
+    return {
+      ...obj,
+      ...{ name: existingObj?.name },
+      ...{ directives: obj?.directives?.filter((dir) => dir.name.value !== REFERS_TO_DIRECTIVE_NAME) },
+    };
+  }
+  // In this case, keep the edited name and refersTo directive if it exists.
+  // For example, type Post @refersTo(name: "posts") -> type MyPost @refersTo(name: "posts")
+  // Or type Post -> type MyPost @refersTo(name: "Post")
+  return {
+    ...obj,
+    ...{ name: existingObj?.name },
+    ...{
+      directives: [
+        ...existingObj?.directives?.filter((dir) => dir.name.value === REFERS_TO_DIRECTIVE_NAME),
+        ...obj?.directives?.filter((dir) => dir.name.value !== REFERS_TO_DIRECTIVE_NAME),
+      ],
+    },
+  };
+};
+
 export const getParentNode = (ancestors: any[]): ObjectTypeDefinitionNode | undefined => {
   if (ancestors && ancestors?.length > 0) {
     return ancestors[ancestors.length - 1] as ObjectTypeDefinitionNode;
@@ -104,5 +155,29 @@ export const checkDestructiveNullabilityChange = (field: FieldDefinitionNode, ex
     printer.warn(
       `The field ${field?.name?.value} has been changed to an optional type while it is required in the database. This may result in SQL errors in the mutations.`,
     );
+  }
+};
+
+const getTableName = (object: ObjectTypeDefinitionNode): string => {
+  const refersToDirective = object.directives.find((dir) => dir.name.value === REFERS_TO_DIRECTIVE_NAME);
+  if (!refersToDirective) {
+    return object?.name?.value;
+  }
+  const tableName = refersToDirective?.arguments?.find((arg) => arg?.name?.value === 'name');
+  if (!tableName) {
+    return object?.name?.value;
+  }
+  return (tableName?.value as StringValueNode)?.value;
+};
+
+const findMatchingModel = (tableName: string, existingDocument: DocumentNode): ObjectTypeDefinitionNode | undefined => {
+  const matchedModel = existingDocument.definitions.find(
+    (def) =>
+      def?.kind === 'ObjectTypeDefinition' &&
+      def?.directives?.find((dir) => dir?.name?.value === MODEL_DIRECTIVE_NAME) &&
+      (def?.name?.value === tableName || getTableName(def) === tableName),
+  );
+  if (matchedModel) {
+    return matchedModel as ObjectTypeDefinitionNode;
   }
 };

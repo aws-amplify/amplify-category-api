@@ -1,7 +1,6 @@
 import { DataSourceAdapter, MySQLDataSourceAdapter } from '../datasource-adapter';
 import { Engine, Field, FieldType, Index, Model, Schema } from '../schema-representation';
 import { generateGraphQLSchema, isComputeExpression } from '../schema-generator';
-import { parse } from 'graphql';
 import { gql } from 'graphql-transformer-core';
 
 class TestDataSourceAdapter extends DataSourceAdapter {

@@ -12,6 +12,7 @@ import {
 import { EnumType, Field, Index, Model, Schema } from '../schema-representation';
 import { applySchemaOverrides } from './schema-overrides';
 import { singular } from 'pluralize';
+import { toPascalCase } from 'graphql-transformer-common';
 
 export const generateGraphQLSchema = (schema: Schema, existingSchemaDocument?: DocumentNode | undefined): string => {
   const models = schema.getModels();
@@ -133,9 +134,11 @@ const constructObjectType = (model: Model) => {
   const modelName = model.getName();
   const directives = [];
 
-  const modelRenameDirective = getRefersToDirective(modelName);
-  if (modelRenameDirective) {
-    directives.push(modelRenameDirective);
+  const modelTypeName = convertToGraphQLTypeName(modelName);
+  const modelNameNeedsMapping = modelTypeName !== modelName;
+  if (modelNameNeedsMapping) {
+    const modelNameMappingDirective = getRefersToDirective(modelName);
+    directives.push(modelNameMappingDirective);
   }
 
   const modelDirective = {
@@ -151,7 +154,7 @@ const constructObjectType = (model: Model) => {
     kind: Kind.OBJECT_TYPE_DEFINITION,
     name: {
       kind: 'Name',
-      value: modelName,
+      value: modelTypeName,
     },
     fields: [],
     directives: directives,
@@ -335,44 +338,33 @@ export const isComputeExpression = (value: string) => {
   return false;
 };
 
-export const getRefersToDirective = (modelName: string): DirectiveNode | undefined => {
-  const mappedModelName = convertToGraphQLIdiomaticNaming(modelName);
-  if (mappedModelName !== modelName) {
-    return {
-      kind: Kind.DIRECTIVE,
-      name: {
-        kind: 'Name',
-        value: 'refersTo',
-      },
-      arguments: [
-        {
-          kind: 'Argument',
-          name: {
-            kind: 'Name',
-            value: 'name',
-          },
-          value: {
-            kind: 'StringValue',
-            value: mappedModelName,
-          },
+export const getRefersToDirective = (name: string): DirectiveNode | undefined => {
+  return {
+    kind: Kind.DIRECTIVE,
+    name: {
+      kind: 'Name',
+      value: 'refersTo',
+    },
+    arguments: [
+      {
+        kind: 'Argument',
+        name: {
+          kind: 'Name',
+          value: 'name',
         },
-      ],
-    } as DirectiveNode;
-  }
+        value: {
+          kind: 'StringValue',
+          value: name,
+        },
+      },
+    ],
+  } as DirectiveNode;
 };
 
-export const convertToGraphQLIdiomaticNaming = (modelName: string): string => {
-  const singularModelName = singularizeWord(modelName);
-  const modelNameParts = singularModelName.split('_');
-  if (modelNameParts.length === 1) {
-    return singularModelName.charAt(0).toUpperCase() + singularModelName.slice(1);
-  }
-  if (modelNameParts.length > 1) {
-    return modelNameParts.map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join('');
-  }
-  return singularModelName;
-};
+export const convertToGraphQLTypeName = (modelName: string): string => {
+  // Convert non-alphanumeric characters to underscores
+  const cleanedInput = modelName.replace(/[^a-zA-Z0-9_]+/g, '_').trim();
 
-export const singularizeWord = (word: string) => {
-  return singular(word);
+  // Convert to PascalCase and Singularize
+  return singular(toPascalCase(cleanedInput?.split('_')));
 };

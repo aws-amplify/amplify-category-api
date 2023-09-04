@@ -75,7 +75,7 @@ exports[`testDataSourceAdapter generates primary key fields as required without 
 `;
 
 exports[`testDataSourceAdapter include option should import only the given tables 1`] = `
-"type Tasks @model {
+"type Task @refersTo(name: \\"Tasks\\") @model {
   id: String! @primaryKey(sortKeyFields: [\\"title\\"])
   title: String @index(name: \\"tasks_title\\") @index(name: \\"tasks_title_description\\", sortKeyFields: [\\"description\\"])
   description: String
@@ -96,7 +96,7 @@ type Country @model {
   name: String
 }
 
-type Tasks @model {
+type Task @refersTo(name: \\"Tasks\\") @model {
   id: String! @primaryKey(sortKeyFields: [\\"title\\"])
   title: String @index(name: \\"tasks_title\\") @index(name: \\"tasks_title_description\\", sortKeyFields: [\\"description\\"])
   description: String

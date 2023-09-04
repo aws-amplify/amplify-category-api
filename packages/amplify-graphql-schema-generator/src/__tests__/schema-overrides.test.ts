@@ -231,6 +231,80 @@ describe('apply schema overrides for JSON fields', () => {
   });
 });
 
+describe('apply schema overrides for models with refersTo', () => {
+  it('should be the same if no edits are made', () => {
+    const document = parse(`
+            type Post @refersTo(name: "posts") @model {
+                id: ID!
+                name: String
+            }
+        `);
+    const editedSchema = `
+            type Post @refersTo(name: "posts") @model {
+                id: ID!
+                name: String
+            }
+        `;
+    const editedDocument = parse(editedSchema);
+    const updatedDocument = applySchemaOverrides(document, editedDocument);
+    stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
+  });
+
+  it('should allow type name overrides', () => {
+    const document = parse(`
+            type Post @refersTo(name: "posts") @model {
+                id: ID!
+                name: String
+            }
+        `);
+    const editedSchema = `
+            type MyPost @refersTo(name: "posts") @model {
+                id: ID!
+                name: String
+            }
+        `;
+    const editedDocument = parse(editedSchema);
+    const updatedDocument = applySchemaOverrides(document, editedDocument);
+    stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
+  });
+
+  it('should allow removing inferred model name mappings', () => {
+    const document = parse(`
+            type Post @refersTo(name: "posts") @model {
+                id: ID!
+                title: String
+            }
+        `);
+    const editedSchema = `
+            type posts @model {
+                id: ID!
+                title: String
+            }
+        `;
+    const editedDocument = parse(editedSchema);
+    const updatedDocument = applySchemaOverrides(document, editedDocument);
+    stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
+  });
+
+  it('should allow adding refersTo to models', () => {
+    const document = parse(`
+            type Post @model {
+                id: ID!
+                title: String
+            }
+        `);
+    const editedSchema = `
+            type MyPost @refersTo(name: "Post") @model {
+                id: ID!
+                title: String
+            }
+        `;
+    const editedDocument = parse(editedSchema);
+    const updatedDocument = applySchemaOverrides(document, editedDocument);
+    stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
+  });
+});
+
 const stringsMatchWithoutWhitespace = (actual: string, expected: string) => {
   expect(actual.replace(/\s/g, '')).toEqual(expected.replace(/\s/g, ''));
 };
