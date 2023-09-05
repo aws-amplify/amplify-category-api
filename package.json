@@ -98,8 +98,6 @@
     "nohoist": [
       "@aws-amplify/cli-internal/amplify-codegen",
       "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-transformer",
-      "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-transformer/*",
-      "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-transformer/**",
       "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-transformer-core",
       "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-transformer-interfaces",
       "@aws-amplify/graphql-construct-alpha/zod",
