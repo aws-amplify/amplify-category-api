@@ -338,7 +338,7 @@ export const isComputeExpression = (value: string) => {
   return false;
 };
 
-export const getRefersToDirective = (name: string): DirectiveNode | undefined => {
+export const getRefersToDirective = (name: string): DirectiveNode => {
   return {
     kind: Kind.DIRECTIVE,
     name: {
