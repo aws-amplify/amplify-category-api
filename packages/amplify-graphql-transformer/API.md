@@ -20,7 +20,7 @@ import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-inte
 import { TransformParameterProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
 import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
-import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { VpcSubnetConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export const constructTransform: (config: TransformConfig) => GraphQLTransform;
@@ -38,7 +38,7 @@ export type ExecuteTransformConfig = TransformConfig & {
     customQueries?: Map<string, string>;
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
     printTransformerLog?: (log: TransformerLog) => void;
-    sqlLambdaVpcConfig?: VpcConfig;
+    sqlLambdaVpcConfig?: VpcSubnetConfig;
     rdsLayerMapping?: RDSLayerMapping;
     scope: Construct;
     nestedStackProvider: NestedStackProvider;
@@ -55,7 +55,7 @@ export type TransformConfig = {
     userDefinedSlots?: Record<string, UserDefinedSlot[]>;
     stackMapping?: Record<string, string>;
     transformParameters: TransformParameters;
-    sqlLambdaVpcConfig?: VpcConfig;
+    sqlLambdaVpcConfig?: VpcSubnetConfig;
     rdsLayerMapping?: RDSLayerMapping;
 };
 

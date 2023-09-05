@@ -10,8 +10,9 @@ import {
   AppSyncAuthConfiguration,
   TransformerLog,
   TransformerLogLevel,
-  VpcConfig,
+  VpcSubnetConfig,
   RDSLayerMapping,
+  SubnetAvailabilityZone,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -36,6 +37,7 @@ import { TransformerProjectOptions } from './transformer-options-types';
 import { DeploymentResources } from './cdk-compat/deployment-resources';
 import { TransformManager } from './cdk-compat/transform-manager';
 import { checkForUnsupportedDirectives } from '../provider-utils/awscloudformation/utils/rds-resources/utils';
+import { getAvaliabilityZoneOfSubnets } from '../provider-utils/vpc-utils';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
@@ -207,9 +209,9 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
   const { modelToDatasourceMap } = opts.projectConfig;
   const datasourceSecretMap = await getDatasourceSecretMap(context);
   const datasourceMapValues: Array<DatasourceType> = modelToDatasourceMap ? Array.from(modelToDatasourceMap.values()) : [];
-  let sqlLambdaVpcConfig: VpcConfig | undefined;
+  let sqlLambdaVpcConfig: VpcSubnetConfig | undefined;
   if (datasourceMapValues.some((value) => value.dbType === MYSQL_DB_TYPE && !value.provisionDB)) {
-    sqlLambdaVpcConfig = await isSqlLambdaVpcConfigRequired(context, getSecretsKey(), ImportedRDSType.MYSQL);
+    sqlLambdaVpcConfig = await isSqlLambdaVpcConfigRequired(context);
   }
   const rdsLayerMapping = await getRDSLayerMapping();
 
@@ -276,19 +278,17 @@ const getRDSLayerMapping = async (): Promise<RDSLayerMapping> => {
   return {};
 };
 
-const isSqlLambdaVpcConfigRequired = async (
-  context: $TSContext,
-  secretsKey: string,
-  engine: ImportedRDSType,
-): Promise<VpcConfig | undefined> => {
-  const { secrets } = await getConnectionSecrets(context, secretsKey, engine);
-  const isDBPublic = await testDatabaseConnection(secrets);
-  if (isDBPublic) {
-    // No need to deploy the SQL Lambda in VPC if the DB is public
+const isSqlLambdaVpcConfigRequired = async (context: $TSContext): Promise<VpcSubnetConfig | undefined> => {
+  // If the database is in VPC, we will use the same VPC configuration for the SQL lambda.
+  // Customers are required to add inbound rule for port 443 from the private subnet in the Security Group.
+  // https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-create-vpc.html#vpc-requirements-and-limitations
+  const vpcSubnetConfig = await getSQLLambdaVpcConfig(context);
+
+  if (!vpcSubnetConfig.vpcConfig) {
     return undefined;
   }
-  const vpcConfig = await getSQLLambdaVpcConfig(context);
-  return vpcConfig;
+
+  return vpcSubnetConfig;
 };
 
 const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, RDSConnectionSecrets>> => {
@@ -302,12 +302,19 @@ const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, 
   return outputMap;
 };
 
-const getSQLLambdaVpcConfig = async (context: $TSContext): Promise<VpcConfig | undefined> => {
+const getSQLLambdaVpcConfig = async (context: $TSContext): Promise<VpcSubnetConfig> => {
   const [secretsKey, engine] = [getSecretsKey(), ImportedRDSType.MYSQL];
   const { secrets } = await getConnectionSecrets(context, secretsKey, engine);
   const region = context.amplify.getProjectMeta().providers.awscloudformation.Region;
-  const vpcConfig = getHostVpc(secrets.host, region);
-  return vpcConfig;
+  const vpcConfig = await getHostVpc(secrets.host, region);
+  let subnetAvailabilityZoneConfig = [] as SubnetAvailabilityZone[];
+  if (vpcConfig && vpcConfig.subnetIds) {
+    subnetAvailabilityZoneConfig = await getAvaliabilityZoneOfSubnets(vpcConfig.subnetIds, region);
+  }
+  return {
+    vpcConfig,
+    subnetAvailabilityZoneConfig,
+  };
 };
 
 const printTransformerLog = (log: TransformerLog): void => {

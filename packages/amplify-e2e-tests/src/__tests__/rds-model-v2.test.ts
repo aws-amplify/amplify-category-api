@@ -13,6 +13,7 @@ import {
   importRDSDatabase,
   initJSProjectWithProfile,
   removeRDSPortInboundRule,
+  getResource,
 } from 'amplify-category-api-e2e-core';
 import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
@@ -23,6 +24,9 @@ import gql from 'graphql-tag';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+
+const CDK_FUNCTION_TYPE = 'AWS::Lambda::Function';
+const CDK_VPC_ENDPOINT_TYPE = 'AWS::EC2::VPCEndpoint';
 
 describe('RDS Model Directive', () => {
   const publicIpCidr = '0.0.0.0/0';
@@ -47,11 +51,16 @@ describe('RDS Model Directive', () => {
     await initProjectAndImportSchema();
     await amplifyPush(projRoot);
 
+    await verifyApiEndpointAndCreateClient();
+    verifySQLLambdaIsInVpc();
+  });
+
+  const verifyApiEndpointAndCreateClient = async (): Promise<void> => {
     const meta = getProjectMeta(projRoot);
-    const region = meta.providers.awscloudformation.Region;
+    const appRegion = meta.providers.awscloudformation.Region;
     const { output } = meta.api.rdsapi;
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
-    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, region);
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, appRegion);
 
     expect(GraphQLAPIIdOutput).toBeDefined();
     expect(GraphQLAPIEndpointOutput).toBeDefined();
@@ -72,7 +81,33 @@ describe('RDS Model Directive', () => {
         apiKey,
       },
     });
-  });
+  };
+
+  const verifySQLLambdaIsInVpc = (): void => {
+    // Validate the generated resources in the CloudFormation template
+    const apisDirectory = path.join(projRoot, 'amplify', 'backend', 'api');
+    const apiDirectory = path.join(apisDirectory, 'rdsapi');
+    const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', 'RdsApiStack.json');
+    const cfnTemplate = JSON.parse(readFileSync(cfnRDSTemplateFile, 'utf8'));
+    expect(cfnTemplate.Resources).toBeDefined();
+    const resources = cfnTemplate.Resources;
+
+    // Validate if the SQL lambda function has VPC configuration even if the database is accessible through internet
+    const rdsLambdaFunction = getResource(resources, 'RDSLambdaLogicalID', CDK_FUNCTION_TYPE);
+    expect(rdsLambdaFunction).toBeDefined();
+    expect(rdsLambdaFunction.Properties).toBeDefined();
+    expect(rdsLambdaFunction.Properties.VpcConfig).toBeDefined();
+    expect(rdsLambdaFunction.Properties.VpcConfig.SubnetIds).toBeDefined();
+    expect(rdsLambdaFunction.Properties.VpcConfig.SubnetIds.length).toBeGreaterThan(0);
+    expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds).toBeDefined();
+    expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds.length).toBeGreaterThan(0);
+
+    expect(getResource(resources, 'RDSVpcEndpointssm', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, 'RDSVpcEndpointssmmessages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, 'RDSVpcEndpointkms', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, 'RDSVpcEndpointec2', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, 'RDSVpcEndpointec2messages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+  };
 
   afterAll(async () => {
     const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
@@ -83,11 +118,7 @@ describe('RDS Model Directive', () => {
     await cleanupDatabase();
   });
 
-  beforeEach(async () => {});
-
-  afterEach(async () => {});
-
-  const setupDatabase = async () => {
+  const setupDatabase = async (): Promise<void> => {
     // This test performs the below
     // 1. Create a RDS Instance
     // 2. Add the external IP address of the current machine to security group inbound rule to allow public access
@@ -126,7 +157,7 @@ describe('RDS Model Directive', () => {
     dbAdapter.cleanup();
   };
 
-  const cleanupDatabase = async () => {
+  const cleanupDatabase = async (): Promise<void> => {
     // 1. Remove the IP address from the security group
     // 2. Delete the RDS instance
     await removeRDSPortInboundRule({
@@ -137,7 +168,7 @@ describe('RDS Model Directive', () => {
     await deleteDBInstance(identifier, region);
   };
 
-  const initProjectAndImportSchema = async () => {
+  const initProjectAndImportSchema = async (): Promise<void> => {
     const apiName = 'rdsapi';
     await initJSProjectWithProfile(projRoot, {
       disableAmplifyAppCreation: false,
@@ -342,25 +373,25 @@ describe('RDS Model Directive', () => {
     try {
       await createContact('Jason', 'Bourne', contact1.data.createContact.id);
     } catch (err) {
-      checkGenericError(err?.message);
+      await checkGenericError(err?.message);
     }
 
     const nonExistentId = 'doesnotexist';
     try {
       await updateContact(nonExistentId, 'David', 'Jones');
     } catch (err) {
-      checkGenericError(err?.message);
+      await checkGenericError(err?.message);
     }
 
     try {
       await deleteContact(nonExistentId);
     } catch (err) {
-      checkGenericError(err?.message);
+      await checkGenericError(err?.message);
     }
   });
 
   // CURDL on Contact table helpers
-  const createContact = async (firstName: string, lastName: string, id?: string) => {
+  const createContact = async (firstName: string, lastName: string, id?: string): Promise<Record<string, any>> => {
     const createMutation = /* GraphQL */ `
       mutation CreateContact($input: CreateContactInput!, $condition: ModelContactConditionInput) {
         createContact(input: $input, condition: $condition) {
@@ -390,7 +421,7 @@ describe('RDS Model Directive', () => {
     return createResult;
   };
 
-  const updateContact = async (id: string, firstName: string, lastName: string) => {
+  const updateContact = async (id: string, firstName: string, lastName: string): Promise<Record<string, any>> => {
     const updateMutation = /* GraphQL */ `
       mutation UpdateContact($input: UpdateContactInput!, $condition: ModelContactConditionInput) {
         updateContact(input: $input, condition: $condition) {
@@ -416,7 +447,7 @@ describe('RDS Model Directive', () => {
     return updateResult;
   };
 
-  const deleteContact = async (id: string) => {
+  const deleteContact = async (id: string): Promise<Record<string, any>> => {
     const deleteMutation = /* GraphQL */ `
       mutation DeleteContact($input: DeleteContactInput!, $condition: ModelContactConditionInput) {
         deleteContact(input: $input, condition: $condition) {
@@ -440,7 +471,7 @@ describe('RDS Model Directive', () => {
     return deleteResult;
   };
 
-  const getContact = async (id: string) => {
+  const getContact = async (id: string): Promise<Record<string, any>> => {
     const getQuery = /* GraphQL */ `
       query GetContact($id: String!) {
         getContact(id: $id) {
@@ -462,7 +493,7 @@ describe('RDS Model Directive', () => {
     return getResult;
   };
 
-  const listContacts = async () => {
+  const listContacts = async (): Promise<Record<string, any>> => {
     const listQuery = /* GraphQL */ `
       query ListContact {
         listContacts {
@@ -483,7 +514,7 @@ describe('RDS Model Directive', () => {
   };
 
   // CURDL on Student table helpers
-  const createStudent = async (studentId: number, classId: string, firstName: string, lastName: string) => {
+  const createStudent = async (studentId: number, classId: string, firstName: string, lastName: string): Promise<Record<string, any>> => {
     const createMutation = /* GraphQL */ `
       mutation CreateStuden($input: CreateStudentInput!, $condition: ModelStudentConditionInput) {
         createStudent(input: $input, condition: $condition) {
@@ -511,7 +542,7 @@ describe('RDS Model Directive', () => {
     return createResult;
   };
 
-  const updateStudent = async (studentId: number, classId: string, firstName: string, lastName: string) => {
+  const updateStudent = async (studentId: number, classId: string, firstName: string, lastName: string): Promise<Record<string, any>> => {
     const updateMutation = /* GraphQL */ `
       mutation UpdateStudent($input: UpdateStudentInput!, $condition: ModelStudentConditionInput) {
         updateStudent(input: $input, condition: $condition) {
@@ -539,7 +570,7 @@ describe('RDS Model Directive', () => {
     return updateResult;
   };
 
-  const deleteStudent = async (studentId: number, classId: string) => {
+  const deleteStudent = async (studentId: number, classId: string): Promise<Record<string, any>> => {
     const deleteMutation = /* GraphQL */ `
       mutation DeleteStudent($input: DeleteStudentInput!, $condition: ModelStudentConditionInput) {
         deleteStudent(input: $input, condition: $condition) {
@@ -565,7 +596,7 @@ describe('RDS Model Directive', () => {
     return deleteResult;
   };
 
-  const getStudent = async (studentId: number, classId: string) => {
+  const getStudent = async (studentId: number, classId: string): Promise<Record<string, any>> => {
     const getQuery = /* GraphQL */ `
       query GetStudent($studentId: Int!, $classId: String!) {
         getStudent(studentId: $studentId, classId: $classId) {
@@ -589,7 +620,7 @@ describe('RDS Model Directive', () => {
     return getResult;
   };
 
-  const listStudents = async (limit: number = 100, nextToken: string | null = null, filter: any = null) => {
+  const listStudents = async (limit = 100, nextToken: string | null = null, filter: any = null): Promise<Record<string, any>> => {
     const listQuery = /* GraphQL */ `
       query ListStudents($limit: Int, $nextToken: String, $filter: ModelStudentFilterInput) {
         listStudents(limit: $limit, nextToken: $nextToken, filter: $filter) {
@@ -616,7 +647,7 @@ describe('RDS Model Directive', () => {
     return listResult;
   };
 
-  const checkGenericError = async (errorMessage?: string) => {
+  const checkGenericError = async (errorMessage?: string): Promise<void> => {
     expect(errorMessage).toBeDefined();
     expect(errorMessage).toEqual('GraphQL error: Error processing the request. Check the logs for more details.');
   };

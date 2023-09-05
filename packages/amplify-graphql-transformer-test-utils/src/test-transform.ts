@@ -1,5 +1,5 @@
 import { AppSyncAuthConfiguration, TransformerPluginProvider, TransformerLogLevel } from '@aws-amplify/graphql-transformer-interfaces';
-import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import type { TransformParameters, VpcSubnetConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DatasourceType,
   GraphQLTransform,
@@ -22,6 +22,7 @@ export type TestTransformParameters = {
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
   customQueries?: Map<string, string>;
   overrideConfig?: OverrideConfig;
+  sqlLambdaVpcConfig?: VpcSubnetConfig;
 };
 
 /**
@@ -41,6 +42,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     userDefinedSlots,
     stackMapping,
     transformParameters,
+    sqlLambdaVpcConfig,
   } = params;
 
   const transform = new GraphQLTransform({
@@ -50,6 +52,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     transformParameters,
     userDefinedSlots,
     resolverConfig,
+    sqlLambdaVpcConfig,
   });
 
   const transformManager = new TransformManager(overrideConfig);

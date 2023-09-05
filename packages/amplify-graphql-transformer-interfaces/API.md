@@ -312,6 +312,12 @@ export interface StackManagerProvider {
 }
 
 // @public (undocumented)
+export type SubnetAvailabilityZone = {
+    SubnetId: string;
+    AvailabilityZone: string;
+};
+
+// @public (undocumented)
 export enum SubscriptionFieldType {
     // (undocumented)
     ON_CREATE = "ON_CREATE",
@@ -431,7 +437,7 @@ export interface TransformerContextProvider {
     // (undocumented)
     resourceHelper: TransformerResourceHelperProvider;
     // (undocumented)
-    readonly sqlLambdaVpcConfig?: VpcConfig;
+    readonly sqlLambdaVpcConfig?: VpcSubnetConfig;
     // (undocumented)
     stackManager: StackManagerProvider;
     // (undocumented)
@@ -757,6 +763,12 @@ export type VpcConfig = {
     vpcId: string;
     subnetIds: string[];
     securityGroupIds: string[];
+};
+
+// @public (undocumented)
+export type VpcSubnetConfig = {
+    vpcConfig: VpcConfig;
+    subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
 };
 
 // Warnings were encountered during analysis:

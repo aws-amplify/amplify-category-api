@@ -15,13 +15,20 @@ import {
 } from 'graphql-mapping-template';
 import { ResourceConstants, isArrayOrObject } from 'graphql-transformer-common';
 import { RDSConnectionSecrets, setResourceName } from '@aws-amplify/graphql-transformer-core';
-import { GraphQLAPIProvider, RDSLayerMapping, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  GraphQLAPIProvider,
+  RDSLayerMapping,
+  SubnetAvailabilityZone,
+  TransformerContextProvider,
+  VpcSubnetConfig,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import path from 'path';
 import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces/src';
 import { EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
+import { CfnVPCEndpoint } from 'aws-cdk-lib/aws-ec2';
 
 /**
  * Define RDS Lambda operations
@@ -135,9 +142,19 @@ export const createRdsLambda = (
   apiGraphql: GraphQLAPIProvider,
   lambdaRole: IRole,
   environment?: { [key: string]: string },
-  sqlLambdaVpcConfig?: VpcConfig,
+  sqlLambdaVpcConfig?: VpcSubnetConfig,
 ): IFunction => {
   const { RDSLambdaLogicalID } = ResourceConstants.RESOURCES;
+
+  let ssmEndpoint = Fn.join('', ['ssm.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
+  if (sqlLambdaVpcConfig && sqlLambdaVpcConfig.vpcConfig) {
+    const endpoints = addVpcEndpointForSecretsManager(scope, sqlLambdaVpcConfig);
+    const ssmEndpointEntries = endpoints.find((endpoint) => endpoint.service === 'ssm')?.endpoint.attrDnsEntries;
+    if (ssmEndpointEntries) {
+      ssmEndpoint = Fn.select(0, ssmEndpointEntries);
+    }
+  }
+
   return apiGraphql.host.addLambdaFunction(
     RDSLambdaLogicalID,
     `functions/${RDSLambdaLogicalID}.zip`,
@@ -152,11 +169,58 @@ export const createRdsLambda = (
       ),
     ],
     lambdaRole,
-    environment,
+    {
+      ...environment,
+      SSM_ENDPOINT: ssmEndpoint,
+    },
     Duration.seconds(30),
     scope,
-    sqlLambdaVpcConfig,
+    sqlLambdaVpcConfig?.vpcConfig,
   );
+};
+
+const addVpcEndpoint = (scope: Construct, sqlLambdaVpcConfig: VpcSubnetConfig, serviceSuffix: string): CfnVPCEndpoint => {
+  const serviceEndpointPrefix = 'com.amazonaws';
+  return new CfnVPCEndpoint(scope, `RDSVpcEndpoint${serviceSuffix}`, {
+    serviceName: Fn.join('', [serviceEndpointPrefix, '.', Fn.ref('AWS::Region'), '.', serviceSuffix]), // Sample: com.amazonaws.us-east-1.ssmmessages
+    vpcEndpointType: 'Interface',
+    vpcId: sqlLambdaVpcConfig.vpcConfig.vpcId,
+    subnetIds: extractSubnetForVpcEndpoint(sqlLambdaVpcConfig.subnetAvailabilityZoneConfig),
+    securityGroupIds: sqlLambdaVpcConfig.vpcConfig.securityGroupIds,
+    privateDnsEnabled: false,
+  });
+};
+
+const addVpcEndpointForSecretsManager = (
+  scope: Construct,
+  sqlLambdaVpcConfig: VpcSubnetConfig,
+): { service: string; endpoint: CfnVPCEndpoint }[] => {
+  const services = ['ssm', 'ssmmessages', 'ec2', 'ec2messages', 'kms'];
+  return services.map((service) => {
+    return {
+      service,
+      endpoint: addVpcEndpoint(scope, sqlLambdaVpcConfig, service),
+    };
+  });
+};
+
+/**
+ * Extract subnet ids for VPC endpoint - We only need one subnet per AZ.
+ * This is mandatory requirement for creating VPC endpoint.
+ * CDK Deployment will fail if you provide more than one subnet per AZ.
+ * @param avaliabilityZoneMappings SubnetAvailabilityZone[]
+ * @returns string[]
+ */
+const extractSubnetForVpcEndpoint = (avaliabilityZoneMappings: SubnetAvailabilityZone[]): string[] => {
+  const avaliabilityZones = [] as string[];
+  const result = [];
+  for (const subnet of avaliabilityZoneMappings) {
+    if (!avaliabilityZones.includes(subnet.AvailabilityZone)) {
+      avaliabilityZones.push(subnet.AvailabilityZone);
+      result.push(subnet.SubnetId);
+    }
+  }
+  return result;
 };
 
 /**
