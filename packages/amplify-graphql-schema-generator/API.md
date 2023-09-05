@@ -4,6 +4,7 @@
 
 ```ts
 
+import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql';
 import { FieldDefinitionNode } from 'graphql';
 import { ObjectTypeDefinitionNode } from 'graphql';
@@ -15,10 +16,19 @@ export const applyFieldOverrides: (field: FieldDefinitionNode, existingField: Fi
 export const applyJSONFieldTypeOverrides: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => FieldDefinitionNode;
 
 // @public (undocumented)
+export const applyModelNameOverrides: (obj: ObjectTypeDefinitionNode, existingObj: ObjectTypeDefinitionNode) => ObjectTypeDefinitionNode;
+
+// @public (undocumented)
+export const applyModelOverrides: (obj: ObjectTypeDefinitionNode, existingObj: ObjectTypeDefinitionNode) => ObjectTypeDefinitionNode;
+
+// @public (undocumented)
 export const applySchemaOverrides: (document: DocumentNode, existingDocument?: DocumentNode | undefined) => DocumentNode;
 
 // @public (undocumented)
 export const checkDestructiveNullabilityChange: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => void;
+
+// @public (undocumented)
+export const convertToGraphQLTypeName: (modelName: string) => string;
 
 // @public (undocumented)
 export interface CustomType {
@@ -123,6 +133,9 @@ export const getHostVpc: (hostname: string, region: string) => Promise<VpcConfig
 
 // @public (undocumented)
 export const getParentNode: (ancestors: any[]) => ObjectTypeDefinitionNode | undefined;
+
+// @public (undocumented)
+export const getRefersToDirective: (name: string) => DirectiveNode;
 
 // @public (undocumented)
 export class Index {
