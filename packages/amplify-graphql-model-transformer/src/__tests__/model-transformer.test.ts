@@ -15,6 +15,7 @@ import {
   verifyInputCount,
   verifyMatchingTypes,
 } from './test-utils/helpers';
+import { VpcSubnetConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 describe('ModelTransformer:', () => {
   it('should successfully transform simple valid schema', async () => {
@@ -1568,5 +1569,62 @@ describe('ModelTransformer:', () => {
     parse(out.schema);
     expect(out.schema).toMatchSnapshot();
     expect(out.resolvers).toMatchSnapshot();
+  });
+
+  it('sql lambda with vpc config should generate correct stack', async () => {
+    const validSchema = `
+      type Note @model {
+          id: ID!
+          content: String!
+      }
+    `;
+
+    const modelToDatasourceMap = new Map<string, DatasourceType>();
+    modelToDatasourceMap.set('Note', {
+      dbType: 'MySQL',
+      provisionDB: false,
+    });
+    const sqlLambdaVpcConfig: VpcSubnetConfig = {
+      vpcConfig: {
+        vpcId: 'vpc-123',
+        subnetIds: ['sub-123', 'sub-456'],
+        securityGroupIds: ['sg-123'],
+      },
+      subnetAvailabilityZoneConfig: [
+        {
+          SubnetId: 'sub-123',
+          AvailabilityZone: 'az-123'
+        },
+        {
+          SubnetId: 'sub-456',
+          AvailabilityZone: 'az-456'
+        },
+      ],
+    }
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer()],
+      modelToDatasourceMap,
+      sqlLambdaVpcConfig,
+    });
+    expect(out).toBeDefined();
+
+    validateModelSchema(parse(out.schema));
+    expect(out.stacks).toBeDefined();
+    expect(out.stacks.RdsApiStack).toBeDefined();
+    expect(out.stacks.RdsApiStack.Resources).toBeDefined();
+    const resourcesIds = Object.keys(out.stacks.RdsApiStack.Resources!) as string[];
+    const sqlLambda = out.stacks.RdsApiStack.Resources![resourcesIds.find((resource) => resource.startsWith('RDSLambdaLogicalID'))!];
+    expect(sqlLambda).toBeDefined();
+    expect(sqlLambda.Properties).toBeDefined();
+    expect(sqlLambda.Properties?.VpcConfig).toBeDefined();
+    expect(sqlLambda.Properties?.VpcConfig?.SubnetIds).toBeDefined();
+    expect(sqlLambda.Properties?.VpcConfig?.SubnetIds).toEqual(
+      expect.arrayContaining(['sub-123', 'sub-456']),
+    );
+    expect(sqlLambda.Properties?.VpcConfig?.SecurityGroupIds).toBeDefined();
+    expect(sqlLambda.Properties?.VpcConfig?.SecurityGroupIds).toEqual(
+      expect.arrayContaining(['sg-123']),
+    );    
   });
 });
