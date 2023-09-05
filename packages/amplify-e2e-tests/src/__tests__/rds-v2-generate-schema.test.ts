@@ -16,7 +16,7 @@ import {
 import axios from 'axios';
 import { existsSync, readFileSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
-import { ObjectTypeDefinitionNode, parse } from 'graphql';
+import { ObjectTypeDefinitionNode, StringValueNode, parse } from 'graphql';
 import path from 'path';
 
 describe('RDS Generate Schema tests', () => {
@@ -106,8 +106,9 @@ describe('RDS Generate Schema tests', () => {
       database: db.dbName,
     });
     await dbAdapter.runQuery([
-      'CREATE TABLE Contacts (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
+      'CREATE TABLE Contact (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
       'CREATE TABLE Person (ID INT PRIMARY KEY, Info JSON NOT NULL)',
+      'CREATE TABLE tbl_todos (ID INT PRIMARY KEY, description VARCHAR(20))',
     ]);
     dbAdapter.cleanup();
   };
@@ -123,30 +124,30 @@ describe('RDS Generate Schema tests', () => {
     await deleteDBInstance(identifier, region);
   };
 
-  it('preserves the schema edits for mysql relational database', async () => {
+  it('preserves the schema edits for mysql relational database and JSON field', async () => {
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
     const schemaContent = readFileSync(rdsSchemaFilePath, 'utf8');
     const schema = parse(schemaContent);
 
     // Generated schema should contains the types and fields from the database
-    const contactsObjectType = schema.definitions.find(
-      (d) => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Contacts',
+    const contactObjectType = schema.definitions.find(
+      (d) => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Contact',
     ) as ObjectTypeDefinitionNode;
     const personObjectType = schema.definitions.find(
       (d) => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Person',
     ) as ObjectTypeDefinitionNode;
-    expect(contactsObjectType).toBeDefined();
+    expect(contactObjectType).toBeDefined();
     expect(personObjectType).toBeDefined();
 
-    // Verify the fields in the generated schema on type 'Contacts'
-    const contactsIdFieldType = contactsObjectType.fields.find((f) => f.name.value === 'ID');
-    const contactsFirstNameFieldType = contactsObjectType.fields.find((f) => f.name.value === 'FirstName');
-    const contactsLastNameFieldType = contactsObjectType.fields.find((f) => f.name.value === 'LastName');
-    expect(contactsIdFieldType).toBeDefined();
-    expect(contactsFirstNameFieldType).toBeDefined();
-    expect(contactsLastNameFieldType).toBeDefined();
+    // Verify the fields in the generated schema on type 'Contact'
+    const contactIdFieldType = contactObjectType.fields.find((f) => f.name.value === 'ID');
+    const contactFirstNameFieldType = contactObjectType.fields.find((f) => f.name.value === 'FirstName');
+    const contactLastNameFieldType = contactObjectType.fields.find((f) => f.name.value === 'LastName');
+    expect(contactIdFieldType).toBeDefined();
+    expect(contactFirstNameFieldType).toBeDefined();
+    expect(contactLastNameFieldType).toBeDefined();
     // PrimaryKey directive must be defined on Id field.
-    expect(contactsIdFieldType.directives.find((d) => d.name.value === 'primaryKey')).toBeDefined();
+    expect(contactIdFieldType.directives.find((d) => d.name.value === 'primaryKey')).toBeDefined();
 
     // Verify the fields in the generated schema on type 'Person' before making edits
     const personsIdFieldType = personObjectType.fields.find((f) => f.name.value === 'ID');
@@ -162,7 +163,7 @@ describe('RDS Generate Schema tests', () => {
             globalAuthRule: AuthRule = {allow: public}
         }
 
-        type Contacts @model {
+        type Contact @model {
             ID: Int! @primaryKey
             FirstName: String
             LastName: String
@@ -171,6 +172,78 @@ describe('RDS Generate Schema tests', () => {
         type Person @model {
             ID: Int! @primaryKey
             Info: [String]!
+        }
+
+        type TblTodo @refersTo(name: "tbl_todos") @model {
+            ID: Int! @primaryKey
+            description: String
+        }
+      `;
+    writeFileSync(rdsSchemaFilePath, editedSchema);
+    await apiGenerateSchema(projRoot, {
+      database,
+      host,
+      port,
+      username,
+      password,
+      validCredentials: true,
+    });
+
+    // The re-generated schema preserves the edits that were made
+    const regeneratedSchema = readFileSync(rdsSchemaFilePath, 'utf8');
+    expect(regeneratedSchema.replace(/\s/g, '')).toEqual(editedSchema.replace(/\s/g, ''));
+  });
+
+  it('infers and preserves the model name mapping edits for mysql relational database', async () => {
+    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+    const schemaContent = readFileSync(rdsSchemaFilePath, 'utf8');
+    const schema = parse(schemaContent);
+
+    // Generated schema should infer the model type name mapping
+    const originalTodosObjectType = schema.definitions.find((d) => d.kind === 'ObjectTypeDefinition' && d.name.value === 'tbl_todos');
+    expect(originalTodosObjectType).toBeUndefined();
+
+    const mappedTodoObjectType = schema.definitions.find(
+      (d) => d.kind === 'ObjectTypeDefinition' && d.name.value === 'TblTodo',
+    ) as ObjectTypeDefinitionNode;
+    expect(mappedTodoObjectType).toBeDefined();
+
+    const inferredRefersTo = mappedTodoObjectType?.directives?.find(
+      (d) =>
+        d?.name?.value === 'refersTo' &&
+        d?.arguments?.find((arg) => arg?.name?.value === 'name' && (arg?.value as StringValueNode)?.value === 'tbl_todos'),
+    );
+    expect(inferredRefersTo).toBeDefined();
+
+    // Verify the fields in the generated schema on mapped model are as expected
+    const todoIdFieldType = mappedTodoObjectType.fields.find((f) => f.name.value === 'ID');
+    const todoDescriptionFieldType = mappedTodoObjectType.fields.find((f) => f.name.value === 'description');
+    expect(todoIdFieldType).toBeDefined();
+    expect(todoDescriptionFieldType).toBeDefined();
+    // PrimaryKey directive must be defined on Id field.
+    expect(todoIdFieldType.directives.find((d) => d.name.value === 'primaryKey')).toBeDefined();
+
+    // Make edits to the generated schema to update the inferred model type name
+    const editedSchema = `
+        input AMPLIFY {
+            engine: String = "mysql"
+            globalAuthRule: AuthRule = {allow: public}
+        }
+
+        type Contact @model {
+            ID: Int! @primaryKey
+            FirstName: String
+            LastName: String
+        }
+
+        type Person @model {
+            ID: Int! @primaryKey
+            Info: [String]!
+        }
+
+        type Todo @refersTo(name: "tbl_todos") @model {
+            ID: Int! @primaryKey
+            description: String
         }
       `;
     writeFileSync(rdsSchemaFilePath, editedSchema);
