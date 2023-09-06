@@ -231,6 +231,174 @@ describe('apply schema overrides for JSON fields', () => {
   });
 });
 
+describe('apply schema overrides for models with refersTo', () => {
+  it('should be the same if no edits are made', () => {
+    const document = parse(`
+            type Post @refersTo(name: "posts") @model {
+                id: ID!
+                name: String
+            }
+        `);
+    const editedSchema = `
+            type Post @refersTo(name: "posts") @model {
+                id: ID!
+                name: String
+            }
+        `;
+    const editedDocument = parse(editedSchema);
+    const updatedDocument = applySchemaOverrides(document, editedDocument);
+    stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
+  });
+
+  it('should allow type name overrides', () => {
+    const document = parse(`
+            type Post @refersTo(name: "posts") @model {
+                id: ID!
+                name: String
+            }
+        `);
+    const editedSchema = `
+            type MyPost @refersTo(name: "posts") @model {
+                id: ID!
+                name: String
+            }
+        `;
+    const editedDocument = parse(editedSchema);
+    const updatedDocument = applySchemaOverrides(document, editedDocument);
+    stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
+  });
+
+  it('should allow removing inferred model name mappings', () => {
+    const document = parse(`
+            type Post @refersTo(name: "posts") @model {
+                id: ID!
+                title: String
+            }
+        `);
+    const editedSchema = `
+            type posts @model {
+                id: ID!
+                title: String
+            }
+        `;
+    const editedDocument = parse(editedSchema);
+    const updatedDocument = applySchemaOverrides(document, editedDocument);
+    stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
+  });
+
+  it('should allow adding refersTo to models', () => {
+    const document = parse(`
+            type Post @model {
+                id: ID!
+                title: String
+            }
+        `);
+    const editedSchema = `
+            type MyPost @refersTo(name: "Post") @model {
+                id: ID!
+                title: String
+            }
+        `;
+    const editedDocument = parse(editedSchema);
+    const updatedDocument = applySchemaOverrides(document, editedDocument);
+    stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
+  });
+
+  it('should retain relational and model namings when used together', () => {
+    const documents = [
+      parse(`
+            type Profile @model {
+                id: String! @primaryKey
+                details: String
+                userId: String
+            }
+        
+            type User @refersTo(name: "Users") @model {
+                id: String! @primaryKey
+                name: String
+            }
+        `),
+
+      parse(`
+            type Profile @model {
+                id: String! @primaryKey
+                details: String
+                userId: String
+            }
+        
+            type User @refersTo(name: "Users") @model {
+                id: String! @primaryKey
+                name: String
+            }
+        `),
+    ];
+    const editedSchemas = [
+      `type Portfolio @refersTo(name: "Profile") @model {
+            id: String! @primaryKey
+            details: String
+            userId: String
+            user: User @belongsTo(references: "userId")
+        }
+    
+        type User @refersTo(name: "Users") @model {
+            id: String! @primaryKey
+            name: String
+            portfolio: Portfolio @hasOne(references: "userId")
+        }`,
+
+      `type Profile @model {
+            id: String! @primaryKey
+            details: String
+            userId: String
+            user: User @belongsTo(references: "userId")
+        }
+    
+        type User @refersTo(name: "Users") @model {
+            id: String! @primaryKey
+            name: String
+            profile: Profile @hasOne(references: "userId")
+        }`,
+    ];
+    documents.forEach((document, index) => {
+      const editedDocument = parse(editedSchemas[index]);
+      const updatedDocument = applySchemaOverrides(document, editedDocument);
+      stringsMatchWithoutWhitespace(print(updatedDocument), editedSchemas[index]);
+    });
+  });
+
+  it('should retain relational directives', () => {
+    const document = parse(`
+        type Profile @model {
+            id: String! @primaryKey
+            details: String
+            userId: String
+        }
+      
+        type User @model {
+            id: String! @primaryKey
+            name: String
+        }
+    `);
+    const editedSchema = `
+        type Profile @model {
+            id: String! @primaryKey
+            details: String
+            userId: String
+            user: User @belongsTo(references: "userId")
+        }
+    
+        type User @model {
+            id: String! @primaryKey
+            name: String
+            profile: Profile @hasOne(references: "userId")
+        }
+    `;
+    const editedDocument = parse(editedSchema);
+    const updatedDocument = applySchemaOverrides(document, editedDocument);
+    stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
+  });
+});
+
 const stringsMatchWithoutWhitespace = (actual: string, expected: string) => {
   expect(actual.replace(/\s/g, '')).toEqual(expected.replace(/\s/g, ''));
 };

@@ -87,7 +87,7 @@ describe('RDS Tests', () => {
       database: db.dbName,
     });
     await dbAdapter.runQuery([
-      'CREATE TABLE Contacts (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
+      'CREATE TABLE Contact (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
       'CREATE TABLE Person (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
       'CREATE TABLE Employee (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
     ]);
@@ -128,27 +128,27 @@ describe('RDS Tests', () => {
     const schema = parse(schemaContent);
 
     // Generated schema should contains the types and fields from the database
-    const contactsObjectType = schema.definitions.find(
-      (d) => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Contacts',
+    const contactObjectType = schema.definitions.find(
+      (d) => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Contact',
     ) as ObjectTypeDefinitionNode;
     const personObjectType = schema.definitions.find((d) => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Person');
     const employeeObjectType = schema.definitions.find((d) => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Employee');
 
-    expect(contactsObjectType).toBeDefined();
+    expect(contactObjectType).toBeDefined();
     expect(personObjectType).toBeDefined();
     expect(employeeObjectType).toBeDefined();
 
-    // Verify the fields in the generated schema on type 'Contacts'
-    const contactsIdFieldType = contactsObjectType.fields.find((f) => f.name.value === 'ID');
-    const contactsFirstNameFieldType = contactsObjectType.fields.find((f) => f.name.value === 'FirstName');
-    const contactsLastNameFieldType = contactsObjectType.fields.find((f) => f.name.value === 'LastName');
+    // Verify the fields in the generated schema on type 'Contact'
+    const contactIdFieldType = contactObjectType.fields.find((f) => f.name.value === 'ID');
+    const contactFirstNameFieldType = contactObjectType.fields.find((f) => f.name.value === 'FirstName');
+    const contactLastNameFieldType = contactObjectType.fields.find((f) => f.name.value === 'LastName');
 
-    expect(contactsIdFieldType).toBeDefined();
-    expect(contactsFirstNameFieldType).toBeDefined();
-    expect(contactsLastNameFieldType).toBeDefined();
+    expect(contactIdFieldType).toBeDefined();
+    expect(contactFirstNameFieldType).toBeDefined();
+    expect(contactLastNameFieldType).toBeDefined();
 
     // PrimaryKey directive must be defined on Id field.
-    expect(contactsIdFieldType.directives.find((d) => d.name.value === 'primaryKey')).toBeDefined();
+    expect(contactIdFieldType.directives.find((d) => d.name.value === 'primaryKey')).toBeDefined();
   });
 
   // This test must be updated if the rds layer mapping file is updated

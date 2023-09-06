@@ -115,7 +115,7 @@ describe('RDS Tests', () => {
     // Generated schema should contain the types with model directive
     // db is one of the default table in mysql database
     const dbObjectType = schema.definitions.find(
-      (d) => d.kind === 'ObjectTypeDefinition' && d.name.value === 'db',
+      (d) => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Db',
     ) as ObjectTypeDefinitionNode;
     expect(dbObjectType).toBeDefined();
     expect(dbObjectType.directives.find((d) => d.name.value === 'model')).toBeDefined();

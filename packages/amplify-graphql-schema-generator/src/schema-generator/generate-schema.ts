@@ -1,7 +1,19 @@
 import { DirectiveWrapper, EnumWrapper, FieldWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
-import { EnumValueDefinitionNode, Kind, print, DocumentNode, InputObjectTypeDefinitionNode, ListValueNode, StringValueNode } from 'graphql';
+import {
+  EnumValueDefinitionNode,
+  Kind,
+  print,
+  DocumentNode,
+  InputObjectTypeDefinitionNode,
+  ListValueNode,
+  StringValueNode,
+  DirectiveNode,
+  ObjectTypeDefinitionNode,
+} from 'graphql';
 import { EnumType, Field, Index, Model, Schema } from '../schema-representation';
 import { applySchemaOverrides } from './schema-overrides';
+import { singular } from 'pluralize';
+import { toPascalCase } from 'graphql-transformer-common';
 
 export const generateGraphQLSchema = (schema: Schema, existingSchemaDocument?: DocumentNode | undefined): string => {
   const models = schema.getModels();
@@ -46,7 +58,7 @@ export const generateGraphQLSchema = (schema: Schema, existingSchemaDocument?: D
   });
 
   const documentWithOverrides = applySchemaOverrides(document as DocumentNode, existingSchemaDocument);
-  const schemaStr = print(documentWithOverrides);
+  const schemaStr = printSchema(documentWithOverrides);
   return schemaStr;
 };
 
@@ -120,22 +132,33 @@ const convertInternalFieldTypeToGraphQL = (field: Field, isPrimaryKeyField: bool
 };
 
 const constructObjectType = (model: Model) => {
+  const modelName = model.getName();
+  const directives = [];
+
+  const modelTypeName = convertToGraphQLTypeName(modelName);
+  const modelNameNeedsMapping = modelTypeName !== modelName;
+  if (modelNameNeedsMapping) {
+    const modelNameMappingDirective = getRefersToDirective(modelName);
+    directives.push(modelNameMappingDirective);
+  }
+
+  const modelDirective = {
+    kind: Kind.DIRECTIVE,
+    name: {
+      kind: 'Name',
+      value: 'model',
+    },
+  } as DirectiveNode;
+  directives.push(modelDirective);
+
   return new ObjectDefinitionWrapper({
     kind: Kind.OBJECT_TYPE_DEFINITION,
     name: {
       kind: 'Name',
-      value: model.getName(),
+      value: modelTypeName,
     },
     fields: [],
-    directives: [
-      {
-        kind: Kind.DIRECTIVE,
-        name: {
-          kind: 'Name',
-          value: 'model',
-        },
-      },
-    ],
+    directives: directives,
   });
 };
 
@@ -314,4 +337,54 @@ export const isComputeExpression = (value: string) => {
     return true;
   }
   return false;
+};
+
+export const getRefersToDirective = (name: string): DirectiveNode => {
+  return {
+    kind: Kind.DIRECTIVE,
+    name: {
+      kind: 'Name',
+      value: 'refersTo',
+    },
+    arguments: [
+      {
+        kind: 'Argument',
+        name: {
+          kind: 'Name',
+          value: 'name',
+        },
+        value: {
+          kind: 'StringValue',
+          value: name,
+        },
+      },
+    ],
+  } as DirectiveNode;
+};
+
+export const convertToGraphQLTypeName = (modelName: string): string => {
+  // Convert non-alphanumeric characters to underscores
+  const cleanedInput = modelName.replace(/[^a-zA-Z0-9_]+/g, '_').trim();
+
+  // Convert to PascalCase and Singularize
+  return singular(toPascalCase(cleanedInput?.split('_')));
+};
+
+export const printSchema = (document: DocumentNode): string => {
+  const sortedDocument = sortDocument(document);
+  return print(sortedDocument);
+};
+
+const sortDocument = (document: DocumentNode): DocumentNode => {
+  const documentWrapper = document as any;
+  documentWrapper.definitions = [...document?.definitions].sort((def1, def2) => {
+    if ((def1 as ObjectTypeDefinitionNode)?.name?.value > (def2 as ObjectTypeDefinitionNode)?.name?.value) {
+      return 1;
+    }
+    if ((def1 as ObjectTypeDefinitionNode)?.name?.value < (def2 as ObjectTypeDefinitionNode)?.name?.value) {
+      return -1;
+    }
+    return 0;
+  });
+  return documentWrapper;
 };
