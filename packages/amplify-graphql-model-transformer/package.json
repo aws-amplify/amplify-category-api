@@ -29,7 +29,8 @@
     "clean": "rimraf ./lib && rimraf ./rds-lambda/lib && rimraf ./rds-patching-lambda/lib && rimraf ./publish-notification-lambda/lib",
     "test": "jest",
     "test-watch": "jest --watch",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "build-custom-resource-lambda": "cd lib/resources/custom-resource-lambda && bestzip --force node ../../custom-resource-lambda.zip ./* && cd -"
   },
   "dependencies": {
     "@aws-amplify/graphql-transformer-core": "2.1.2",
@@ -44,7 +45,8 @@
   },
   "devDependencies": {
     "@aws-amplify/graphql-transformer-test-utils": "0.2.2",
-    "@types/node": "^12.12.6"
+    "@types/node": "^12.12.6",
+    "@types/aws-lambda": "8.10.119"
   },
   "jest": {
     "transform": {

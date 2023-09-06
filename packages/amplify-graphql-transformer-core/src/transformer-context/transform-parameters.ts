@@ -5,6 +5,7 @@ export const defaultTransformParameters: TransformParameters = {
   shouldDeepMergeDirectiveConfigDefaults: true,
   disableResolverDeduping: false,
   sandboxModeEnabled: false,
+  useAmplifyManagedTableResources: false,
 
   // Auth Params
   useSubUsernameForDefaultIdentityClaim: true,

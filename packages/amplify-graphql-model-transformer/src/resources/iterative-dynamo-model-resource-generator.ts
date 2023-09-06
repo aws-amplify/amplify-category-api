@@ -3,20 +3,29 @@ import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-int
 import { ModelResourceIDs, ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { SyncUtils, setResourceName } from '@aws-amplify/graphql-transformer-core';
-import { AttributeType, CfnTable, StreamViewType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
+import { AttributeType, CfnTable, ITable, StreamViewType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnRole } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { DynamoDBModelVTLGenerator, ModelVTLGenerator } from '../resolvers';
-import { ModelResourceGenerator } from './model-resource-generator';
 
+import { Duration, aws_iam, aws_lambda, custom_resources, aws_logs} from 'aws-cdk-lib';
+import { CustomResource } from 'aws-cdk-lib';
+import { DynamoModelResourceGenerator } from './dynamo-model-resource-generator';
+import * as path from 'path';
+
+
+export const ITERATIVE_TABLE_STACK_NAME = 'AmplifyTableManager'
 /**
  * DynamoModelResourceGenerator is an implementation of ModelResourceGenerator,
  * providing necessary utilities to generate the DynamoDB resources for models
  */
-export class DynamoModelResourceGenerator extends ModelResourceGenerator {
+export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGenerator {
   protected readonly generatorType = 'DynamoModelResourceGenerator';
+  // Base path lambdas
+  private customResourceServiceToken: string = '';
+
 
   generateResources(ctx: TransformerContextProvider): void {
     if (!this.isEnabled()) {
@@ -24,6 +33,8 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     }
 
     if (this.isProvisioned()) {
+      // const tableManagerStack = ctx.stackManager.createStack(ITERATIVE_TABLE_STACK_NAME);
+
       // add model related-parameters to the root stack
       const rootStack = cdk.Stack.of(ctx.stackManager.scope);
       new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
@@ -53,6 +64,10 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
         default: 'true',
         allowedValues: ['true', 'false'],
       });
+
+
+      const tableManagerStack = ctx.stackManager.getScopeFor('AmplifyTableCustomProvider' ,ITERATIVE_TABLE_STACK_NAME);
+      this.createCustomProviderResource(tableManagerStack, ctx);
     }
 
     this.models.forEach((model) => {
@@ -67,6 +82,46 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     this.generateResolvers(ctx);
   }
 
+  createCustomProviderResource(scope: Construct, context: TransformerContextProvider): void {
+// Policy that grants access to Create/Update/Delete DynamoDB tables
+    const ddbManagerPolicy = new aws_iam.Policy(scope, 'CreateUpdateDeleteTablesPolicy');
+    ddbManagerPolicy.addStatements(
+      new aws_iam.PolicyStatement({
+        actions: ['dynamodb:CreateTable', 'dynamodb:UpdateTable', 'dynamodb:DeleteTable', 'dynamodb:DescribeTable'],
+        resources: ['*'],
+      })
+    );
+
+    const lambdaCode = aws_lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'lib', 'resources', 'custom-resource-lambda'));
+
+    // lambda that will handle DDB CFN events
+    const gsiOnEventHandler = new aws_lambda.Function(scope, 'TableOnEventHandler', {
+      runtime: aws_lambda.Runtime.NODEJS_16_X,
+      code: lambdaCode,
+      handler: 'custom-resource-handler.onEvent',
+      timeout: Duration.minutes(8),
+    });
+
+    // lambda that will poll for provisioning to complete
+    const gsiIsCompleteHandler = new aws_lambda.Function(scope, 'TableIsCompleteHandler', {
+      runtime: aws_lambda.Runtime.NODEJS_16_X,
+      code: lambdaCode,
+      handler: 'custom-resource-handler.isComplete',
+      timeout: Duration.minutes(8),
+    });
+
+    ddbManagerPolicy.attachToRole(gsiOnEventHandler.role!);
+    ddbManagerPolicy.attachToRole(gsiIsCompleteHandler.role!);
+    const gsiCustomProvider = new custom_resources.Provider(scope, 'TableCustomProvider', {
+      onEventHandler: gsiOnEventHandler,
+      isCompleteHandler: gsiIsCompleteHandler,
+      logRetention: aws_logs.RetentionDays.ONE_MONTH,
+      queryInterval: Duration.seconds(30),
+      totalTimeout: Duration.hours(2),
+    });
+    this.customResourceServiceToken = gsiCustomProvider.serviceToken;
+  }
+
   // eslint-disable-next-line class-methods-use-this
   getVTLGenerator(): ModelVTLGenerator {
     return new DynamoDBModelVTLGenerator();
@@ -75,7 +130,8 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
   createModelTable(scope: Construct, def: ObjectTypeDefinitionNode, context: TransformerContextProvider): void {
     const modelName = def!.name.value;
     const tableLogicalName = ModelResourceIDs.ModelTableResourceID(modelName);
-    const tableName = context.resourceHelper.generateTableName(modelName);
+    const tableNameOrig = context.resourceHelper.generateTableName(modelName);
+    const tableName = 'TestTodoIterativeDeploy'
 
     // Add parameters.
     const readIops = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
@@ -106,7 +162,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
       default: 'true',
       allowedValues: ['true', 'false'],
     });
-    // add the connection between the root and nested stack so the values can be passed down
+    // // add the connection between the root and nested stack so the values can be passed down
     (scope as cdk.NestedStack).setParameter(readIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS));
     (scope as cdk.NestedStack).setParameter(writeIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS));
     (scope as cdk.NestedStack).setParameter(billingMode.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBBillingMode));
@@ -116,7 +172,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     );
     (scope as cdk.NestedStack).setParameter(enableSSE.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption));
 
-    // Add conditions.
+    // // Add conditions.
     new cdk.CfnCondition(scope, ResourceConstants.CONDITIONS.HasEnvironmentParameter, {
       expression: cdk.Fn.conditionNot(cdk.Fn.conditionEquals(context.synthParameters.amplifyEnvironmentName, ResourceConstants.NONE)),
     });
@@ -133,33 +189,74 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     const removalPolicy = this.options.EnableDeletionProtection ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY;
 
     // Expose a way in context to allow proper resource naming
-    const table = new Table(scope, tableLogicalName, {
-      tableName,
-      partitionKey: {
-        name: 'id',
-        type: AttributeType.STRING,
+    const tableState = {
+      TableName: tableName,
+      AttributeDefinitions: [
+        {
+          AttributeName: 'id',
+          AttributeType: 'S',
+        },
+      ],
+      KeySchema: [
+        {
+          AttributeName: 'id',
+          KeyType: 'HASH',
+        },
+      ],
+      ProvisionedThroughput: {
+        ReadCapacityUnits: 5, 
+        WriteCapacityUnits: 5
       },
-      stream: StreamViewType.NEW_AND_OLD_IMAGES,
-      encryption: TableEncryption.DEFAULT,
-      removalPolicy,
-      ...(context.isProjectUsingDataStore() ? { timeToLiveAttribute: '_ttl' } : undefined),
+      StreamSpecification: {
+        StreamEnabled: true,
+        StreamViewType: 'NEW_AND_OLD_IMAGES'
+      }
+    };
+    const tableResource = new CustomResource(scope, tableLogicalName, {
+      serviceToken: this.customResourceServiceToken,
+      properties: {
+        Template: JSON.stringify(tableState),
+        TableName: tableNameOrig,
+      }
     });
-    const cfnTable = table.node.defaultChild as CfnTable;
-    setResourceName(table, { name: modelName, setOnDefaultChild: true });
+    setResourceName(tableResource, { name: modelName, setOnDefaultChild: true });
 
-    cfnTable.provisionedThroughput = cdk.Fn.conditionIf(usePayPerRequestBilling.logicalId, cdk.Fn.ref('AWS::NoValue'), {
+    // construct a wrapper around the custom table to allow normal CDK operations on top of it
+    const table = Table.fromTableAttributes(scope, `CustomTable${tableLogicalName}`, {
+      tableArn: tableResource.getAttString('TableArn'),
+      tableStreamArn: tableResource.getAttString('TableStreamArn')
+    });
+    const cfnTable = tableResource.node.defaultChild as cdk.CfnCustomResource;
+    // const table = new Table(scope, tableLogicalName, {
+    //   tableName,
+    //   partitionKey: {
+    //     name: 'id',
+    //     type: AttributeType.STRING,
+    //   },
+    //   stream: StreamViewType.NEW_AND_OLD_IMAGES,
+    //   encryption: TableEncryption.DEFAULT,
+    //   removalPolicy,
+    //   ...(context.isProjectUsingDataStore() ? { timeToLiveAttribute: '_ttl' } : undefined),
+    // });
+    // const cfnTable = table.node.defaultChild as CfnTable;
+    // setResourceName(table, { name: modelName, setOnDefaultChild: true });
+    cfnTable.addPropertyOverride('ProvisonedThroughput', cdk.Fn.conditionIf(usePayPerRequestBilling.logicalId, cdk.Fn.ref('AWS::NoValue'), {
       ReadCapacityUnits: readIops,
       WriteCapacityUnits: writeIops,
-    });
-    cfnTable.pointInTimeRecoverySpecification = cdk.Fn.conditionIf(
+    }))
+    cfnTable.addPropertyOverride('PointInTimeRecoverySpecification', cdk.Fn.conditionIf(
       usePointInTimeRecovery.logicalId,
       { PointInTimeRecoveryEnabled: true },
       cdk.Fn.ref('AWS::NoValue'),
-    );
-    cfnTable.billingMode = cdk.Fn.conditionIf(usePayPerRequestBilling.logicalId, 'PAY_PER_REQUEST', cdk.Fn.ref('AWS::NoValue')).toString();
-    cfnTable.sseSpecification = {
+    ));
+    cfnTable.addPropertyOverride('BillingMode', cdk.Fn.conditionIf(
+      usePayPerRequestBilling.logicalId,
+      'PAY_PER_REQUEST',
+      cdk.Fn.ref('AWS::NoValue')
+    ).toString());
+    cfnTable.addPropertyOverride('SSESpecification', {
       sseEnabled: cdk.Fn.conditionIf(useSSE.logicalId, true, false),
-    };
+    })
 
     const streamArnOutputId = `GetAtt${ModelResourceIDs.ModelTableStreamArn(def!.name.value)}`;
     if (table.tableStreamArn) {
@@ -185,7 +282,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
   createModelTableDataSource(
     def: ObjectTypeDefinitionNode,
     context: TransformerContextProvider,
-    table: Table,
+    table: ITable,
     scope: Construct,
     role: iam.Role,
     dataSourceLogicalName: string,
@@ -288,3 +385,4 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     return role;
   };
 }
+

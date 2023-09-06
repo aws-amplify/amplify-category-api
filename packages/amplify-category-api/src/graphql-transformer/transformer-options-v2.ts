@@ -291,6 +291,8 @@ const generateTransformParameters = (
       pathManager.getCurrentCloudBackendDirPath(),
     ),
     sandboxModeEnabled,
+    // Values used for AmplifyGraphqlApi construct ONLY
+    useAmplifyManagedTableResources: false,
   };
 };
 
