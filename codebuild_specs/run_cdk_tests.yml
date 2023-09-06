@@ -23,4 +23,4 @@ phases:
 artifacts:
   files:
     - '**/*'
-  base-directory: $CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/amplify-e2e-reports
+  base-directory: $CODEBUILD_SRC_DIR/packages/amplify-graphql-api-construct/amplify-e2e-reports

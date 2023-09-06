@@ -123,16 +123,7 @@
     "excludeTypescript": [
       "src/__tests__/*"
     ],
-    "targets": {
-      "java": {
-        "package": "aws.amplify.graphqlapi",
-        "maven": {
-          "groupId": "aws.amplify",
-          "artifactId": "graphqlapi",
-          "versionSuffix": ".PREVIEW"
-        }
-      }
-    },
+    "targets": {},
     "versionFormat": "full",
     "tsc": {
       "rootDir": "src",
