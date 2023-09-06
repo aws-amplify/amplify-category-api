@@ -229,6 +229,9 @@ export interface NonNullType {
 }
 
 // @public (undocumented)
+export const printSchema: (document: DocumentNode) => string;
+
+// @public (undocumented)
 export const provisionSchemaInspectorLambda: (lambdaName: string, vpc: VpcConfig, region: string) => Promise<void>;
 
 // @public (undocumented)
