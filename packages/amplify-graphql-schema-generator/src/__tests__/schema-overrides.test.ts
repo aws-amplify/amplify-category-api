@@ -303,6 +303,100 @@ describe('apply schema overrides for models with refersTo', () => {
     const updatedDocument = applySchemaOverrides(document, editedDocument);
     stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
   });
+
+  it('should retain relational and model namings when used together', () => {
+    const documents = [
+      parse(`
+            type Profile @model {
+                id: String! @primaryKey
+                details: String
+                userId: String
+            }
+        
+            type User @refersTo(name: "Users") @model {
+                id: String! @primaryKey
+                name: String
+            }
+        `),
+
+      parse(`
+            type Profile @model {
+                id: String! @primaryKey
+                details: String
+                userId: String
+            }
+        
+            type User @refersTo(name: "Users") @model {
+                id: String! @primaryKey
+                name: String
+            }
+        `),
+    ];
+    const editedSchemas = [
+      `type Portfolio @refersTo(name: "Profile") @model {
+            id: String! @primaryKey
+            details: String
+            userId: String
+            user: User @belongsTo(references: "userId")
+        }
+    
+        type User @refersTo(name: "Users") @model {
+            id: String! @primaryKey
+            name: String
+            portfolio: Portfolio @hasOne(references: "userId")
+        }`,
+
+      `type Profile @model {
+            id: String! @primaryKey
+            details: String
+            userId: String
+            user: User @belongsTo(references: "userId")
+        }
+    
+        type User @refersTo(name: "Users") @model {
+            id: String! @primaryKey
+            name: String
+            profile: Profile @hasOne(references: "userId")
+        }`,
+    ];
+    documents.forEach((document, index) => {
+      const editedDocument = parse(editedSchemas[index]);
+      const updatedDocument = applySchemaOverrides(document, editedDocument);
+      stringsMatchWithoutWhitespace(print(updatedDocument), editedSchemas[index]);
+    });
+  });
+
+  it('should retain relational directives', () => {
+    const document = parse(`
+        type Profile @model {
+            id: String! @primaryKey
+            details: String
+            userId: String
+        }
+      
+        type User @model {
+            id: String! @primaryKey
+            name: String
+        }
+    `);
+    const editedSchema = `
+        type Profile @model {
+            id: String! @primaryKey
+            details: String
+            userId: String
+            user: User @belongsTo(references: "userId")
+        }
+    
+        type User @model {
+            id: String! @primaryKey
+            name: String
+            profile: Profile @hasOne(references: "userId")
+        }
+    `;
+    const editedDocument = parse(editedSchema);
+    const updatedDocument = applySchemaOverrides(document, editedDocument);
+    stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
+  });
 });
 
 const stringsMatchWithoutWhitespace = (actual: string, expected: string) => {

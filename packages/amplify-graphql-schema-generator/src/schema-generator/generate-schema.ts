@@ -8,6 +8,7 @@ import {
   ListValueNode,
   StringValueNode,
   DirectiveNode,
+  ObjectTypeDefinitionNode,
 } from 'graphql';
 import { EnumType, Field, Index, Model, Schema } from '../schema-representation';
 import { applySchemaOverrides } from './schema-overrides';
@@ -57,7 +58,7 @@ export const generateGraphQLSchema = (schema: Schema, existingSchemaDocument?: D
   });
 
   const documentWithOverrides = applySchemaOverrides(document as DocumentNode, existingSchemaDocument);
-  const schemaStr = print(documentWithOverrides);
+  const schemaStr = printSchema(documentWithOverrides);
   return schemaStr;
 };
 
@@ -367,4 +368,23 @@ export const convertToGraphQLTypeName = (modelName: string): string => {
 
   // Convert to PascalCase and Singularize
   return singular(toPascalCase(cleanedInput?.split('_')));
+};
+
+export const printSchema = (document: DocumentNode): string => {
+  const sortedDocument = sortDocument(document);
+  return print(sortedDocument);
+};
+
+const sortDocument = (document: DocumentNode): DocumentNode => {
+  const documentWrapper = document as any;
+  documentWrapper.definitions = [...document?.definitions].sort((def1, def2) => {
+    if ((def1 as ObjectTypeDefinitionNode)?.name?.value > (def2 as ObjectTypeDefinitionNode)?.name?.value) {
+      return 1;
+    }
+    if ((def1 as ObjectTypeDefinitionNode)?.name?.value < (def2 as ObjectTypeDefinitionNode)?.name?.value) {
+      return -1;
+    }
+    return 0;
+  });
+  return documentWrapper;
 };

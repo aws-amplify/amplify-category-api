@@ -1,6 +1,7 @@
-import { convertToGraphQLTypeName } from '../schema-generator/generate-schema';
+import { convertToGraphQLTypeName, printSchema } from '../schema-generator/generate-schema';
 import { Engine, Field, Model, Schema } from '../schema-representation';
 import { generateGraphQLSchema } from '../schema-generator';
+import { parse } from 'graphql';
 
 describe('Type name conversions', () => {
   it('GraphQL idiomatic type name conversions', () => {
@@ -33,5 +34,28 @@ describe('Type name conversions', () => {
 
     const graphqlSchema = generateGraphQLSchema(dbschema);
     expect(graphqlSchema).toMatchSnapshot();
+  });
+});
+
+describe('Format generated schema', () => {
+  it('generates schema with consistent type ordering', () => {
+    const document = parse(`
+        type User @model {
+            id: ID!
+        }
+        type Profile @model {
+            id: ID!
+        }
+    `);
+    expect(printSchema(document)).toMatchInlineSnapshot(`
+      "type Profile @model {
+        id: ID!
+      }
+
+      type User @model {
+        id: ID!
+      }
+      "
+    `);
   });
 });

@@ -31,17 +31,17 @@ type Post @model {
 `;
 
 exports[`testDataSourceAdapter generate schema retains hasOne and belongsTo relationship and removes the non-relational fields added manually 1`] = `
-"type User @model {
-  id: Int! @primaryKey
-  name: String
-  profile: Profile @hasOne(references: [\\"userId\\"])
-}
-
-type Profile @model {
+"type Profile @model {
   id: Int! @primaryKey
   content: String
   userId: Int!
   user: User @belongsTo(references: [\\"userId\\"])
+}
+
+type User @model {
+  id: Int! @primaryKey
+  name: String
+  profile: Profile @hasOne(references: [\\"userId\\"])
 }
 "
 `;
@@ -106,15 +106,15 @@ type Task @refersTo(name: \\"Tasks\\") @model {
 `;
 
 exports[`testDataSourceAdapter test generate graphql schema on model with enum field 1`] = `
-"enum Profile_type {
-  Manager
-  Employee
-}
-
-type Profile @model {
+"type Profile @model {
   id: Int! @primaryKey
   name: String
   type: Profile_type
+}
+
+enum Profile_type {
+  Manager
+  Employee
 }
 "
 `;

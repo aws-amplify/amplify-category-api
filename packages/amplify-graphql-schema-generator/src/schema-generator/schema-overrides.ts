@@ -52,9 +52,8 @@ const preserveRelationalDirectives = (document: DocumentNode, existingDocument: 
   existingDocument.definitions
     .filter((def) => def.kind === 'ObjectTypeDefinition' && def.directives.find((dir) => dir.name.value === MODEL_DIRECTIVE_NAME))
     .forEach((existingObject: ObjectTypeDefinitionNode) => {
-      const newObject = document.definitions.find(
-        (def) => def.kind === 'ObjectTypeDefinition' && def.name.value === existingObject.name.value,
-      ) as ObjectTypeDefinitionNode;
+      const existingTableName = getTableName(existingObject);
+      const newObject = findMatchingModel(existingTableName, document);
       if (!newObject) {
         return;
       }
@@ -69,7 +68,7 @@ const preserveRelationalDirectives = (document: DocumentNode, existingDocument: 
       if (relationalFields.length > 0) {
         // If relational fields are found on a model,
         // remove the existing model and add the new one with the relational fields to preserve manual edits.
-        const excludedDefinitions = documentWrapper.definitions.filter((def) => def.name.value !== existingObject.name.value);
+        const excludedDefinitions = documentWrapper.definitions.filter((def) => getTableName(def) !== existingTableName);
         documentWrapper.definitions = [...excludedDefinitions, newObjectWrapper.serialize()];
       }
     });
