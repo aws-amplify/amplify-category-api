@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0-construct-uses-jsii.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.6.1...@aws-amplify/graphql-construct-alpha@0.7.0-construct-uses-jsii.0) (2023-09-06)
+
+### Bug Fixes
+
+- add all nested deps for construct into deps, bundledDeps, and nohoist ([439fa42](https://github.com/aws-amplify/amplify-category-api/commit/439fa42f60740c14267c70cb56ef1ad397fb115f))
+- enable autoDeleteObjects on the codegen bucket ([ba508a6](https://github.com/aws-amplify/amplify-category-api/commit/ba508a608ee1c3dbd5f87e515af8044dea9af951))
+- exporting graphql schema, and adding tests ([e49ea68](https://github.com/aws-amplify/amplify-category-api/commit/e49ea68f97460d31e40634087925840aef419224))
+- fixing tests, and reverting slight change to output strategy ([524ee39](https://github.com/aws-amplify/amplify-category-api/commit/524ee39c55e58c915e17662d002b06e72b6eeccb))
+
+### Features
+
+- enable jsii builds for the api construct ([6175fdc](https://github.com/aws-amplify/amplify-category-api/commit/6175fdc1d3ee19d99394c38d8b96671a55a388fa))
+
 ## [0.6.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.6.0...@aws-amplify/graphql-construct-alpha@0.6.1) (2023-08-30)
 
 **Note:** Version bump only for package @aws-amplify/graphql-construct-alpha

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.3-construct-uses-jsii.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.1.2...@aws-amplify/graphql-maps-to-transformer@3.1.3-construct-uses-jsii.0) (2023-09-06)
+
+### Bug Fixes
+
+- no nested call, starting verify script ([a8320c8](https://github.com/aws-amplify/amplify-category-api/commit/a8320c8dd3551ebaf7ae635d8dc874cac23e2cc0))
+- remove mkdirp from devDeps, since it's causing yarn to fail ([74f862c](https://github.com/aws-amplify/amplify-category-api/commit/74f862ca0aec8ceac366fabacc3cfc948aba0977))
+
 ## [3.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.1.1...@aws-amplify/graphql-maps-to-transformer@3.1.2) (2023-08-30)
 
 **Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
