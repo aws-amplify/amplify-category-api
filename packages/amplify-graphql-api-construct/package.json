@@ -11,13 +11,15 @@
   "license": "Apache-2.0",
   "main": "lib/index.js",
   "scripts": {
-    "build": "jsii",
+    "build": "yarn readme:reset && jsii && yarn readme:regenerate",
     "watch": "jsii -w",
     "package": "jsii-pacmak",
     "clean": "rimraf lib dist tsconfig.json tsconfig.tsbuildinfo node_modules",
     "test": "jest",
     "test-watch": "jest --watch",
-    "extract-api": "ts-node --project extract-api.tsconfig.json ../../scripts/extract-api.ts"
+    "extract-api": "ts-node --project extract-api.tsconfig.json ../../scripts/extract-api.ts",
+    "readme:reset": "cp README_HEAD.md README.md",
+    "readme:regenerate": "jsii-docgen --readme --output README.md"
   },
   "keywords": [
     "graphql",
@@ -107,6 +109,7 @@
     "ts-jest": "^26.4.4",
     "zod": "^3.21.4",
     "jsii": "^5.1.5",
+    "jsii-docgen": "9.1.2",
     "jsii-pacmak": "^1.84.0",
     "aws-cdk-lib": "2.80.0",
     "constructs": "10.0.5",
