@@ -12,7 +12,7 @@ phases:
     commands:
       - codebuild-breakpoint
       - source ./shared-scripts.sh && _setupCDKTestsLinux
-      - source ./shared-scripts.sh && _runE2ETestsLinux
+      - source ./shared-scripts.sh && _runCDKTestsLinux
   post_build:
     commands:
       - source ./shared-scripts.sh && _disableLocalRegistry
