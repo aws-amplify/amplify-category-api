@@ -39,7 +39,9 @@
     "node-pty": "beta",
     "chalk": "^4.1.1",
     "strip-ansi": "^6.0.0",
-    "retimer": "2.0.0"
+    "retimer": "2.0.0",
+    "uuid": "^8.3.2",
+    "jest-environment-node": "^26.6.2"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.149",

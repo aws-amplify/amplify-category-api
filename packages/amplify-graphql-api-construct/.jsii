@@ -3516,6 +3516,14 @@
   },
   "schema": "jsii/0.10.0",
   "targets": {
+    "java": {
+      "maven": {
+        "artifactId": "graphqlapi",
+        "groupId": "aws.amplify",
+        "versionSuffix": ".PREVIEW"
+      },
+      "package": "aws.amplify.graphqlapi"
+    },
     "js": {
       "npm": "@aws-amplify/graphql-construct-alpha"
     }
@@ -5874,5 +5882,5 @@
     }
   },
   "version": "0.6.1",
-  "fingerprint": "PF5DXTSxnNUJa+m1jxW5jAa/b9QTwf4LwQ5uEjbjct4="
+  "fingerprint": "MovHFAdZbvA1rfrziPazGJJjradk18+8jDpBGkVlCns="
 }
