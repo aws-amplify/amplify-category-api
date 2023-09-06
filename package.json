@@ -81,8 +81,7 @@
   "lint-staged": {
     "*.{md,yml,yaml,json,graphql}": "prettier --write",
     "*.{js,ts,jsx,tsx}": [
-      "prettier --write",
-      "yarn depcheck"
+      "prettier --write"
     ]
   },
   "author": "Amazon Web Services",

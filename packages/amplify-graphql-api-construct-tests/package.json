@@ -23,7 +23,13 @@
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts"
   },
   "dependencies": {
-    "aws-sdk": "^2.1113.0",
+    "@aws-sdk/client-amplify": "^3.405.0",
+    "@aws-sdk/client-cloudformation": "^3.405.0",
+    "@aws-sdk/client-codebuild": "^3.405.0",
+    "@aws-sdk/client-iam": "^3.405.0",
+    "@aws-sdk/client-organizations": "^3.405.0",
+    "@aws-sdk/client-s3": "^3.405.0",
+    "@aws-sdk/client-sts": "^3.405.0",
     "dotenv": "^8.2.0",
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.21",

@@ -1,18 +1,16 @@
-import { S3 } from 'aws-sdk';
+import { S3, waitUntilBucketNotExists, ObjectIdentifier, ListObjectVersionsCommandOutput } from '@aws-sdk/client-s3';
 import _ from 'lodash';
 
 export const deleteS3Bucket = async (bucket: string, providedS3Client: S3 | undefined = undefined): Promise<void> => {
   const s3 = providedS3Client ? providedS3Client : new S3();
-  let continuationToken: Required<Pick<S3.ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'>> = undefined;
-  const objectKeyAndVersion = <S3.ObjectIdentifier[]>[];
+  let continuationToken: Required<Pick<ListObjectVersionsCommandOutput, 'KeyMarker' | 'VersionIdMarker'>> = undefined;
+  const objectKeyAndVersion = <ObjectIdentifier[]>[];
   let truncated = false;
   do {
-    const results = await s3
-      .listObjectVersions({
-        Bucket: bucket,
-        ...continuationToken,
-      })
-      .promise();
+    const results = await s3.listObjectVersions({
+      Bucket: bucket,
+      ...continuationToken,
+    });
 
     results.Versions?.forEach(({ Key, VersionId }) => {
       objectKeyAndVersion.push({ Key, VersionId });
@@ -36,13 +34,11 @@ export const deleteS3Bucket = async (bucket: string, providedS3Client: S3 | unde
         },
       };
     })
-    .map((delParams) => s3.deleteObjects(delParams).promise());
+    .map((delParams) => s3.deleteObjects(delParams));
   await Promise.all(deleteReq);
-  await s3
-    .deleteBucket({
-      Bucket: bucket,
-    })
-    .promise();
+  await s3.deleteBucket({
+    Bucket: bucket,
+  });
   await bucketNotExists(bucket);
 };
 
@@ -53,7 +49,13 @@ const bucketNotExists = async (bucket: string): Promise<boolean> => {
     $waiter: { maxAttempts: 10, delay: 30 },
   };
   try {
-    await s3.waitFor('bucketNotExists', params).promise();
+    await waitUntilBucketNotExists(
+      {
+        client: s3,
+        maxWaitTime: 200,
+      },
+      params,
+    );
     return true;
   } catch (error) {
     if (error.statusCode === 200) {
