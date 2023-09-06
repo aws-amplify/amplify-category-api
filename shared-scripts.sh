@@ -181,6 +181,21 @@ function _installCLIFromLocalRegistry {
     npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'
     unsetNpmRegistryUrl
 }
+function _setupLocalRegistry {
+    echo "Start verdaccio"
+    source codebuild_specs/scripts/local_publish_helpers.sh
+    startLocalRegistry "$(pwd)/codebuild_specs/scripts/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+    changeNpmGlobalPath
+    # set longer timeout to avoid socket timeout error
+    npm config set fetch-retry-mintimeout 20000
+    npm config set fetch-retry-maxtimeout 120000
+}
+function _disableLocalRegistry {
+    echo "Stop verdaccio"
+    source codebuild_specs/scripts/local_publish_helpers.sh
+    unsetNpmRegistryUrl
+}
 function _loadTestAccountCredentials {
     echo ASSUMING PARENT TEST ACCOUNT credentials
     session_id=$((1 + $RANDOM % 10000))
@@ -200,6 +215,15 @@ function _setupE2ETestsLinux {
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     _installCLIFromLocalRegistry  
+    _loadTestAccountCredentials
+    _setShell
+}
+
+function _setupCDKTestsLinux {
+    echo "Setup CDK Tests Linux"
+    loadCacheFromBuildJob
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    _setupLocalRegistry  
     _loadTestAccountCredentials
     _setShell
 }
