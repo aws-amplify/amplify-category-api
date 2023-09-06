@@ -100,7 +100,7 @@ describe('@refersTo directive', () => {
 
   it('can be applied only on RDS models', () => {
     const schema = /* GraphQL */ `
-      type DDBModel @refersTo(name: "OriginalName") {
+      type DDBModel @refersTo(name: "OriginalName") @model {
         id: ID!
       }
     `;
@@ -109,7 +109,7 @@ describe('@refersTo directive', () => {
     stubDirective.arguments = [];
     expect(() =>
       refersToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
-    ).toThrowErrorMatchingInlineSnapshot(`"@refersTo is not supported on type DDBModel. It can only be used on a @model type."`);
+    ).toThrowErrorMatchingInlineSnapshot(`"refersTo is only supported on RDS models. DDBModel is not an RDS model."`);
   });
 
   it('requires a name to be specified', () => {
