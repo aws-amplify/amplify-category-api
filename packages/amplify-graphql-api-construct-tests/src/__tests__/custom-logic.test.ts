@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { createNewProjectDir, deleteProjectDir, initCDKProject, cdkDeploy, cdkDestroy } from 'amplify-category-api-e2e-core';
-import { graphql } from './graphql-utils';
+import { createNewProjectDir, deleteProjectDir, initCDKProject, cdkDeploy, cdkDestroy } from '../cdk-commands';
+import { graphql } from '../graphql-request';
 
 describe('CDK GraphQL Transformer - Custom Logic', () => {
   let projRoot: string;

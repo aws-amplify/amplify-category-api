@@ -6,7 +6,8 @@ import yargs from 'yargs';
 import * as aws from 'aws-sdk';
 import _ from 'lodash';
 import fs from 'fs-extra';
-import { deleteS3Bucket, sleep } from 'amplify-category-api-e2e-core';
+import { deleteS3Bucket } from './delete-s3-bucket';
+import { sleep } from './sleep';
 
 // Ensure to update scripts/split-e2e-tests.ts is also updated this gets updated
 const AWS_REGIONS_TO_RUN_TESTS = [
