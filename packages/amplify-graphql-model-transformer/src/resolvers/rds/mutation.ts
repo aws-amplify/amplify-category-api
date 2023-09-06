@@ -55,11 +55,12 @@ export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
   return printBlock('Initialization default values')(compoundExpression(statements));
 };
 
-export const generateLambdaCreateRequestTemplate = (tableName: string, operationName: string, ctx: TransformerContextProvider): string =>
-  printBlock('Invoke RDS Lambda data source')(
+export const generateLambdaCreateRequestTemplate = (tableName: string, operationName: string, ctx: TransformerContextProvider): string => {
+  const mappedTableName = ctx.resourceHelper.getModelNameMapping(tableName);
+  return printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
-      set(ref('lambdaInput.table'), str(tableName)),
+      set(ref('lambdaInput.table'), str(mappedTableName)),
       set(ref('lambdaInput.args'), obj({})),
       set(ref('lambdaInput.operation'), str('CREATE')),
       set(ref('lambdaInput.operationName'), str(operationName)),
@@ -82,6 +83,7 @@ export const generateLambdaCreateRequestTemplate = (tableName: string, operation
       }),
     ]),
   );
+};
 
 /**
  * Generate VTL template that sets the default values for Update mutation
@@ -123,11 +125,12 @@ export const generateLambdaUpdateRequestTemplate = (
   operationName: string,
   modelIndexFields: string[],
   ctx: TransformerContextProvider,
-): string =>
-  printBlock('Invoke RDS Lambda data source')(
+): string => {
+  const mappedTableName = ctx.resourceHelper.getModelNameMapping(tableName);
+  return printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
-      set(ref('lambdaInput.table'), str(tableName)),
+      set(ref('lambdaInput.table'), str(mappedTableName)),
       set(ref('lambdaInput.args'), obj({})),
       set(ref('lambdaInput.operation'), str('UPDATE')),
       set(ref('lambdaInput.operationName'), str(operationName)),
@@ -151,6 +154,7 @@ export const generateLambdaUpdateRequestTemplate = (
       }),
     ]),
   );
+};
 
 /**
  * Generate VTL template that calls the lambda for a Delete mutation
@@ -160,11 +164,12 @@ export const generateLambdaDeleteRequestTemplate = (
   operationName: string,
   modelIndexFields: string[],
   ctx: TransformerContextProvider,
-): string =>
-  printBlock('Invoke RDS Lambda data source')(
+): string => {
+  const mappedTableName = ctx.resourceHelper.getModelNameMapping(tableName);
+  return printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
-      set(ref('lambdaInput.table'), str(tableName)),
+      set(ref('lambdaInput.table'), str(mappedTableName)),
       set(ref('lambdaInput.args'), ref('context.arguments')),
       set(ref('lambdaInput.operation'), str('DELETE')),
       set(ref('lambdaInput.operationName'), str(operationName)),
@@ -182,3 +187,4 @@ export const generateLambdaDeleteRequestTemplate = (
       }),
     ]),
   );
+};

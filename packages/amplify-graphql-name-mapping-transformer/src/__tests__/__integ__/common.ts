@@ -1,3 +1,6 @@
+import { DBType } from '@aws-amplify/graphql-transformer-core';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-test-utils';
+
 // indexes next to each resolver can help to match the resolver to the snapshot files
 export const expectedResolversForModelWithRenamedField = (modelName: string) => [
   // create resolver sequence
@@ -27,3 +30,36 @@ export const expectedResolversForModelWithRenamedField = (modelName: string) => 
   `Query.list${modelName}s.preDataLoad.1.res.vtl`, // 15
   `Query.list${modelName}s.postDataLoad.1.res.vtl`, // 16
 ];
+
+export const expectedResolversForModelWithRefersTo = (modelName: string) => [
+  `Mutation.create${modelName}.req.vtl`,
+  `Mutation.update${modelName}.req.vtl`,
+  `Mutation.delete${modelName}.req.vtl`,
+  `Query.get${modelName}.req.vtl`,
+  `Query.list${modelName}s.req.vtl`,
+];
+
+export const testTableNameMapping = (modelName: string, tableName: string, out: DeploymentResources) => {
+  const expectedResolvers: string[] = expectedResolversForModelWithRefersTo(modelName);
+  expectedResolvers.forEach((resolver) => {
+    expect(out.resolvers[resolver]).toContain(`lambdaInput.table = "${tableName}"`);
+    expect(out.resolvers[resolver]).toMatchSnapshot();
+  });
+};
+
+export const testRelationalFieldMapping = (resolverName: string, tableName: string, out: DeploymentResources) => {
+  expect(out.resolvers[resolverName]).toContain(`lambdaInput.table = "${tableName}"`);
+  expect(out.resolvers[resolverName]).toMatchSnapshot();
+};
+
+export const constructModelToDataSourceMap = (modelNames: string[], dbType: DBType) => {
+  return new Map(
+    modelNames.map((modelName) => [
+      modelName,
+      {
+        dbType,
+        provisionDB: true,
+      },
+    ]),
+  );
+};

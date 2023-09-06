@@ -2,7 +2,14 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
-import { expectedResolversForModelWithRenamedField } from './common';
+import {
+  expectedResolversForModelWithRenamedField,
+  constructModelToDataSourceMap,
+  testTableNameMapping,
+  testRelationalFieldMapping,
+} from './common';
+import { DDB_DB_TYPE, MYSQL_DB_TYPE, DBType } from '@aws-amplify/graphql-transformer-core';
+import { RefersToTransformer } from '../../graphql-refers-to-transformer';
 
 const mappedHasOne = /* GraphQL */ `
   type Employee @model @mapsTo(name: "Person") {
@@ -42,10 +49,31 @@ const biDiHasOneMapped = /* GraphQL */ `
   }
 `;
 
-const transformSchema = (schema: string) => {
+const refersToHasOne = /* GraphQL */ `
+  type Employee @model @refersTo(name: "Person") {
+    id: ID!
+    task: Task @hasOne(references: ["employeeId"])
+  }
+
+  type Task @model @refersTo(name: "Todo") {
+    id: ID!
+    title: String
+    employeeId: String!
+    employee: Employee @belongsTo(references: ["employeeId"])
+  }
+`;
+
+const transformSchema = (schema: string, dbType: DBType) => {
   return testTransform({
     schema,
-    transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer(), new MapsToTransformer()],
+    transformers: [
+      new ModelTransformer(),
+      new HasOneTransformer(),
+      new BelongsToTransformer(),
+      new MapsToTransformer(),
+      new RefersToTransformer(),
+    ],
+    modelToDatasourceMap: constructModelToDataSourceMap(['Employee', 'Task'], dbType),
     transformParameters: {
       sandboxModeEnabled: true,
     },
@@ -54,7 +82,7 @@ const transformSchema = (schema: string) => {
 
 describe('@mapsTo with @hasOne', () => {
   it('adds CRUD input and output mappings on hasOne type', () => {
-    const out = transformSchema(mappedHasOne);
+    const out = transformSchema(mappedHasOne, DDB_DB_TYPE);
     const expectedResolvers: string[] = expectedResolversForModelWithRenamedField('Employee');
     expectedResolvers.forEach((resolver) => {
       expect(out.resolvers[resolver]).toMatchSnapshot();
@@ -62,7 +90,7 @@ describe('@mapsTo with @hasOne', () => {
   });
 
   it('if belongsTo related type is renamed, adds mappings when fetching related type through hasOne field', () => {
-    const out = transformSchema(mappedBelongsTo);
+    const out = transformSchema(mappedBelongsTo, DDB_DB_TYPE);
     expect(out.resolvers['Employee.task.postDataLoad.1.res.vtl']).toMatchInlineSnapshot(`
       "$util.qr($ctx.prev.result.put(\\"taskEmployeeId\\", $ctx.prev.result.todoEmployeeId))
       $util.qr($ctx.prev.result.remove(\\"todoEmployeeId\\"))
@@ -71,7 +99,7 @@ describe('@mapsTo with @hasOne', () => {
   });
 
   it('if bi-di hasOne, remaps foreign key in both types', () => {
-    const out = transformSchema(biDiHasOneMapped);
+    const out = transformSchema(biDiHasOneMapped, DDB_DB_TYPE);
     expect(out.resolvers['Employee.task.postDataLoad.1.res.vtl']).toMatchInlineSnapshot(`
       "$util.qr($ctx.prev.result.put(\\"taskEmployeeId\\", $ctx.prev.result.todoEmployeeId))
       $util.qr($ctx.prev.result.remove(\\"todoEmployeeId\\"))
@@ -82,5 +110,15 @@ describe('@mapsTo with @hasOne', () => {
       $util.qr($ctx.prev.result.remove(\\"personTaskId\\"))
       $util.toJson($ctx.prev.result)"
     `);
+  });
+});
+
+describe('@refersTo with @hasOne for RDS Models', () => {
+  it('model table names are mapped', () => {
+    const out = transformSchema(refersToHasOne, MYSQL_DB_TYPE);
+    testTableNameMapping('Employee', 'Person', out);
+    testTableNameMapping('Task', 'Todo', out);
+    testRelationalFieldMapping('Employee.task.req.vtl', 'Todo', out);
+    testRelationalFieldMapping('Task.employee.req.vtl', 'Person', out);
   });
 });

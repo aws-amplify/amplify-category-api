@@ -22,6 +22,15 @@ export class MapsToTransformer extends TransformerPluginBase {
     preMutateSchema: (context: TransformerPreProcessContextProvider) => void;
 }
 
+// @public (undocumented)
+export class RefersToTransformer extends TransformerPluginBase {
+    constructor();
+    // (undocumented)
+    object: (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider) => void;
+    // (undocumented)
+    preMutateSchema: (context: TransformerPreProcessContextProvider) => void;
+}
+
 // (No @packageDocumentation comment for this package)
 
 ```

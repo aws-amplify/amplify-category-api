@@ -7,6 +7,7 @@ import {
   InvalidDirectiveError,
   MYSQL_DB_TYPE,
   TransformerPluginBase,
+  isRDSModel,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -132,11 +133,15 @@ export class BelongsToTransformer extends TransformerPluginBase {
     this.directiveList
       .filter((config) => config.relationType === 'hasOne')
       .forEach((config) => {
+        const modelName = config.object.name.value;
+        if (isRDSModel(context as TransformerContextProvider, modelName)) {
+          return;
+        }
         // a belongsTo with hasOne behaves the same as hasOne
         registerHasOneForeignKeyMappings({
           transformParameters: context.transformParameters,
           resourceHelper: context.resourceHelper,
-          thisTypeName: config.object.name.value,
+          thisTypeName: modelName,
           thisFieldName: config.field.name.value,
           relatedType: config.relatedType,
         });

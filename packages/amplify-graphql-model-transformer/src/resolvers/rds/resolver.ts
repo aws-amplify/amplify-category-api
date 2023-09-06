@@ -366,12 +366,13 @@ export const generateLambdaRequestTemplate = (
   operation: string,
   operationName: string,
   ctx: TransformerContextProvider,
-): string =>
-  printBlock('Invoke RDS Lambda data source')(
+): string => {
+  const mappedTableName = ctx.resourceHelper.getModelNameMapping(tableName);
+  return printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
       set(ref('lambdaInput.args'), obj({})),
-      set(ref('lambdaInput.table'), str(tableName)),
+      set(ref('lambdaInput.table'), str(mappedTableName)),
       set(ref('lambdaInput.operation'), str(operation)),
       set(ref('lambdaInput.operationName'), str(operationName)),
       set(ref('lambdaInput.args.metadata'), obj({})),
@@ -389,6 +390,7 @@ export const generateLambdaRequestTemplate = (
       }),
     ]),
   );
+};
 
 /**
  * Generate RDS Lambda response template

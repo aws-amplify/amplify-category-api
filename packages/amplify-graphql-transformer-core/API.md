@@ -347,6 +347,9 @@ export class InvalidTransformerError extends Error {
 function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda;
 
 // @public (undocumented)
+export const isRDSModel: (context: TransformerContextProvider, modelName: string) => boolean | undefined;
+
+// @public (undocumented)
 export class MappingTemplate {
     // Warning: (ae-forgotten-export) The symbol "InlineTemplate" needs to be exported by the entry point index.d.ts
     //

@@ -3,9 +3,14 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { getSchemaDeployer, SchemaDeployer } from '../deploySchema';
+import { DDB_DB_TYPE, DatasourceType } from '@aws-amplify/graphql-transformer-core';
 
 describe('@mapsTo transformer', () => {
   jest.setTimeout(1000 * 60 * 15); // 15 minutes
+  const ddbInfo: DatasourceType = {
+    dbType: DDB_DB_TYPE,
+    provisionDB: true,
+  };
   const transform = (schema: string) =>
     testTransform({
       schema,
@@ -14,6 +19,13 @@ describe('@mapsTo transformer', () => {
         sandboxModeEnabled: true,
       },
       transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer(), new MapsToTransformer()],
+      modelToDatasourceMap: new Map(
+        Object.entries({
+          Post: ddbInfo,
+          Comment: ddbInfo,
+          Article: ddbInfo,
+        }),
+      ),
     });
   const initialSchema = /* GraphQL */ `
     type Post @model {
