@@ -186,7 +186,6 @@ function _setupLocalRegistry {
     source codebuild_specs/scripts/local_publish_helpers.sh
     startLocalRegistry "$(pwd)/codebuild_specs/scripts/verdaccio.yaml"
     setNpmRegistryUrlToLocal
-    changeNpmGlobalPath
     # set longer timeout to avoid socket timeout error
     npm config set fetch-retry-mintimeout 20000
     npm config set fetch-retry-maxtimeout 120000
