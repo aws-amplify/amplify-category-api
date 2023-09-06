@@ -58,7 +58,7 @@ export const getAppSyncServiceExtraDirectives = (): string => {
   return print(EXTRA_DIRECTIVES_DOCUMENT);
 };
 
-export { MappingTemplate, S3MappingFunctionCode } from './cdk-compat';
+export { MappingTemplate } from './cdk-compat';
 export {
   EnumWrapper,
   FieldWrapper,
