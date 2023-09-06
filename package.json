@@ -59,7 +59,8 @@
     "cleanup-stale-resources": "source ./scripts/cloud-utils.sh && cleanupStaleResources",
     "depcheck": "eslint --no-eslintrc --config depcheck.config.js",
     "cloud-e2e-debug": "source scripts/cloud-utils.sh && cloudE2EDebug",
-    "authenticate-e2e-profile": "source scripts/cloud-utils.sh && authenticateWithE2EProfile"
+    "authenticate-e2e-profile": "source scripts/cloud-utils.sh && authenticateWithE2EProfile",
+    "verify-construct-dependencies": "ts-node ./scripts/verify-construct-dependencies.ts"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-category-api/issues"
