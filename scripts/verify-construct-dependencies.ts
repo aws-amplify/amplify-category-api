@@ -145,6 +145,16 @@ const validateConstructDependenciesAreConfigured = (deps: string[]): string[] =>
 };
 
 /**
+ * Deps don't seem to bundle when they're also in devDependencies, validate none of those exist.
+ * @param deps the dependencies to validate against
+ * @returns a list of warning strings for incorrectly included devDependencies
+ */
+const validateConstructDevDependenciesAreConfigured = (deps: string[]): string[] => {
+  const devDependencyKeys = new Set(Object.keys(getCdkConstructPackageJson().devDependencies));
+  return deps.filter((depName) => devDependencyKeys.has(depName)).map((depName) => `${depName} found in construct devDependencies`);
+};
+
+/**
  * Validate that there is a bundled dependency in the construct for each dependency required.
  * @param deps the deps to check exist in bundled dependencies
  */
@@ -175,6 +185,7 @@ const main = (): void => {
       ...validateNohoistsAreConfigured(dedupedDepListWithoutSemver),
       ...validateConstructDependenciesAreConfigured(dedupedDepListWithoutSemver),
       ...validateConstructBundledDependenciesAreConfigured(dedupedDepListWithoutSemver),
+      ...validateConstructDevDependenciesAreConfigured(dedupedDepListWithoutSemver),
     ];
     if (validationErrors.length > 0) {
       console.error(`Caught Validation Errors: ${validationErrors.join('\n')}`);
