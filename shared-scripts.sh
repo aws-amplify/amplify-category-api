@@ -202,6 +202,7 @@ function _setupE2ETestsLinux {
     _installCLIFromLocalRegistry
     cd packages/amplify-graphql-api-construct
     yarn package
+    cd ../..
     _loadTestAccountCredentials
     _setShell
 }
